@@ -2,15 +2,18 @@ import gzip
 from freezegun import freeze_time
 import pytest
 from SymantecCloudSecureWebGatewayLongRunningEventCollector import (
+    HandlingDuplicates,
     LastRun,
+    extract_logs_and_push_to_XSIAM,
     get_events_and_write_to_file_system,
     Client,
     get_size_gzip_file,
-    get_start_and_ent_date,
+    get_start_and_end_date,
+    get_start_date_for_next_fetch,
     get_status_and_token_from_file_system,
     get_the_last_row_that_incomplete,
-    is_duplicate,
-    is_first_fetch,
+    management_next_fetch,
+    parse_events,
 )
 import demistomock as demisto
 from pathlib import Path
@@ -21,7 +24,7 @@ def client():
     return Client("https://api.example.com", "user", "pass", False, False)
 
 
-def test_write_events_to_file(requests_mock, client):
+def test_get_events_and_write_to_file_system(requests_mock, client):
     requests_mock.get(
         "https://api.example.com/reportpod/logs/sync", content=b"event1\nevent2"
     )
@@ -57,7 +60,7 @@ def test_get_start_and_end_date(args, start_date, expected_start, expected_end):
         - Case 3: Ensure the start date should be the stored date
     """
     with freeze_time("2020-01-01T00:00:00Z"):
-        start, end = get_start_and_ent_date(args, start_date)
+        start, end = get_start_and_end_date(args, start_date)
 
         assert start == expected_start
         assert end == expected_end
@@ -78,7 +81,7 @@ def test_get_start_and_end_date(args, start_date, expected_start, expected_end):
         (b"", "", ""),
     ],
 )
-def test_extract_status_and_token(
+def test_get_status_and_token_from_file_system(
     tmpdir, content_file: bytes, expected_status: str, expected_token: str
 ):
     """
@@ -107,7 +110,7 @@ def test_extract_status_and_token(
         ([b"line1"], 0, b""),
     ],
 )
-def test_extract_last_incomplete_line(
+def test_get_the_last_row_that_incomplete(
     lines: list[bytes], file_size: int, expected_line: bytes
 ):
     """
@@ -151,21 +154,348 @@ def test_get_size_gzip_file(tmpdir, data: bytes, expected_size: int):
         assert f.tell() == 0
 
 
-@pytest.mark.parametrize('last_run, args, expected', [
-    ({}, {}, True),
-    ({'start_date': 123}, {}, False),
-    ({}, {'since': '1'}, False),
-    (None, {}, True),
-])
-def test_is_first_fetch(last_run, args, expected):
-    assert is_first_fetch(last_run, args) == expected
-
-
-@pytest.mark.parametrize('id_, cur_time, last_time, dup_ids, expected', [
-    ('id1', '2020-01-01 00:00:00', '2020-01-01 00:00:00', ['id1'], True),
-    ('id2', '2020-01-01 00:00:00', '2020-01-01 00:00:00', ['id1'], False), 
-    ('id3', '2020-01-01 00:01:00', '2020-01-01 00:00:00', ['id1'], False)
-])
+@pytest.mark.parametrize(
+    "id_, cur_time, last_time, dup_ids, expected",
+    [
+        ("id1", "2020-01-01 00:00:00", "2020-01-01 00:00:00", ["id1"], True),
+        ("id2", "2020-01-01 00:00:00", "2020-01-01 00:00:00", ["id1"], False),
+        ("id3", "2020-01-01 00:01:00", "2020-01-01 00:00:00", ["id1"], False),
+    ],
+)
 def test_is_duplicate(id_, cur_time, last_time, dup_ids, expected):
-    ''''''
-    assert is_duplicate(id_, cur_time, last_time, dup_ids) == expected
+    """ """
+    handling_duplicates = HandlingDuplicates(
+        max_time=last_time, events_suspected_duplicates=dup_ids
+    )
+    assert handling_duplicates.is_duplicate(id_, cur_time) == expected
+
+
+@freeze_time("2020-01-01 00:00:00")
+@pytest.mark.parametrize(
+    "start_time, time_of_last_fetched_event, expected",
+    [
+        (0, "2020-01-01 00:00:00", 1577829600000),
+        (1000, "invalid", 1000),
+        (1000, None, 1000),
+    ],
+)
+def test_get_start_date_for_next_fetch(
+    start_time: int, time_of_last_fetched_event: str | None, expected
+):
+    next_start = get_start_date_for_next_fetch(start_time, time_of_last_fetched_event)
+    assert next_start == expected
+
+
+@pytest.mark.parametrize(
+    (
+        "time_of_last_fetched_event, new_events_suspected_duplicates, handling_duplicates,"
+        "expected_time_of_last_fetched_event, expected_events_suspected_duplicates, expected_token_expired"
+    ),
+    [
+        (
+            "2020-01-01 00:00:01",
+            ["id_3", "id_4"],
+            HandlingDuplicates(
+                max_time="2020-01-01 00:00:00",
+                events_suspected_duplicates=["id_1", "id_2"],
+            ),
+            "2020-01-01 00:00:01",
+            ["id_3", "id_4"],
+            False,
+        ),
+        (
+            "2020-01-01 00:00:00",
+            ["id_3", "id_4"],
+            HandlingDuplicates(
+                max_time="2020-01-01 00:00:00",
+                events_suspected_duplicates=["id_1", "id_2"],
+            ),
+            "2020-01-01 00:00:00",
+            ["id_1", "id_2", "id_3", "id_4"],
+            True,
+        ),
+        (
+            "2020-01-01 00:00:00",
+            ["id_0", "id_1"],
+            HandlingDuplicates(
+                max_time="2020-01-01 00:00:01",
+                events_suspected_duplicates=["id_2", "id_3"],
+            ),
+            "2020-01-01 00:00:01",
+            ["id_2", "id_3"],
+            True,
+        ),
+    ],
+)
+def test_management_next_fetch(
+    time_of_last_fetched_event: str,
+    new_events_suspected_duplicates: list[str],
+    handling_duplicates: HandlingDuplicates,
+    expected_time_of_last_fetched_event: str,
+    expected_events_suspected_duplicates: list[str],
+    expected_token_expired: bool,
+):
+    """
+    Given:
+        1. `time_of_last_fetched_event` grater than `handling_duplicates.max_time`
+        2. `time_of_last_fetched_event` equal to `handling_duplicates.max_time`
+        3. `time_of_last_fetched_event` less than `handling_duplicates.max_time`
+    When:
+        - run `management_next_fetch` function
+    Then:
+        Ensure:
+        - For case 1, the `last_run_model` updated with
+          new time_of_last_fetched_event and new_events_suspected_duplicates.
+        - For case 2, append the new duplicate ids to existing ones.
+        - For case 3, not updated time_of_last_fetched_event
+          and events_suspected_duplicates in last_run_model.
+    """
+    last_run_model = management_next_fetch(
+        start_date=123,
+        new_token="test",
+        time_of_last_fetched_event=time_of_last_fetched_event,
+        new_events_suspected_duplicates=new_events_suspected_duplicates,
+        handling_duplicates=handling_duplicates,
+        token_expired=True,
+    )
+
+    assert (
+        last_run_model.time_of_last_fetched_event == expected_time_of_last_fetched_event
+    )
+    assert (
+        last_run_model.events_suspected_duplicates
+        == expected_events_suspected_duplicates
+    )
+    assert last_run_model.token_expired == expected_token_expired
+
+
+@pytest.mark.parametrize(
+    "mock_events, expected_call",
+    [
+        ([b"event1"], 1),
+        ([], 0),
+    ],
+)
+def test_extract_logs_and_push_to_XSIAM(
+    mocker, mock_events: list[bytes], expected_call: int
+):
+    """
+    Given:
+        - args for extract_logs_and_push_to_XSIAM function
+    When:
+        - run `extract_logs_and_push_to_XSIAM` function
+    Then:
+        - Ensure 'send_events_to_xsiam' is called with the expected number of calls
+          depending on whether events are returned from `parse_events`
+    """
+    mocker.patch(
+        "SymantecCloudSecureWebGatewayLongRunningEventCollector.extract_logs_from_zip_file",
+        side_effect=[[b"event1"]],
+    )
+    mocker.patch(
+        "SymantecCloudSecureWebGatewayLongRunningEventCollector.parse_events",
+        return_value=(mock_events, ""),
+    )
+    mock_send_events_to_xsiam = mocker.patch(
+        "SymantecCloudSecureWebGatewayLongRunningEventCollector.send_events_to_xsiam"
+    )
+
+    extract_logs_and_push_to_XSIAM(LastRun(), "tmp/tmp", False)
+    assert mock_send_events_to_xsiam.call_count == expected_call
+
+
+@pytest.mark.parametrize(
+    "mock_parse_events, mock_send_events_to_xsiam, expected_call",
+    [
+        (Exception("Parse error"), None, "Error parsing events: Parse error"),
+        (
+            ((["event"], ""),),
+            Exception("Send error"),
+            "Failed to send events to XSOAR. Error: Send error",
+        ),
+    ],
+)
+def test_extract_logs_and_push_to_XSIAM_failure(
+    mocker,
+    mock_parse_events: Exception | tuple[list[str], str],
+    mock_send_events_to_xsiam: Exception | None,
+    expected_call: str,
+):
+    """
+    Given:
+        - args for extract_logs_and_push_to_XSIAM function
+    When:
+        - run `extract_logs_and_push_to_XSIAM` function with mocked failures
+    Then:
+        - Ensure that depending on the exception
+          the function `demisto.debug` is called with the expected str
+    """
+    mocker.patch(
+        "SymantecCloudSecureWebGatewayLongRunningEventCollector.extract_logs_from_zip_file",
+        side_effect=[[b"event1"]],
+    )
+    mocker.patch(
+        "SymantecCloudSecureWebGatewayLongRunningEventCollector.parse_events",
+        side_effect=mock_parse_events,
+    )
+    mock_send_events_to_xsiam = mocker.patch(
+        "SymantecCloudSecureWebGatewayLongRunningEventCollector.send_events_to_xsiam",
+        side_effect=mock_send_events_to_xsiam,
+    )
+    mock_assertion = mocker.patch.object(demisto, "debug")
+
+    extract_logs_and_push_to_XSIAM(LastRun(), "tmp/tmp", False)
+
+    mock_assertion.assert_called_with(expected_call)
+
+
+@pytest.mark.parametrize(
+    (
+        "logs,token_expired, time_of_last_fetched_event,"
+        "new_events_suspected_duplicates, handling_duplicates,"
+        "expected_events, expected_max_value,"
+        "expected_new_events_suspected_duplicates"
+    ),
+    [
+        pytest.param(
+            [
+                b"log1 2020-01-01 00:00:00 -- -- -- -- -- id1",
+                b"log2 2020-01-01 00:00:01 -- -- -- -- -- id2",
+            ],
+            False,
+            "",
+            [],
+            HandlingDuplicates("2020-01-01 00:00:00", ["id2"]),
+            [
+                "log1 2020-01-01 00:00:00 -- -- -- -- -- id1",
+                "log2 2020-01-01 00:00:01 -- -- -- -- -- id2",
+            ],
+            "2020-01-01 00:00:01",
+            ["id2"],
+            id="no duplicates and there should a single id in new_events_suspected_duplicates",
+        ),
+        pytest.param(
+            [
+                b"log1 2020-01-01 00:01:00 -- -- -- -- -- id1",
+                b"log2 2020-01-01 00:01:01 -- -- -- -- -- id2",
+                b"log2 2020-01-01 00:01:01 -- -- -- -- -- id3",
+            ],
+            False,
+            "2020-01-01 00:00:59",
+            ["id0"],
+            HandlingDuplicates("2020-01-01 00:00:00", ["id2"]),
+            [
+                "log1 2020-01-01 00:01:00 -- -- -- -- -- id1",
+                "log2 2020-01-01 00:01:01 -- -- -- -- -- id2",
+                "log2 2020-01-01 00:01:01 -- -- -- -- -- id3",
+            ],
+            "2020-01-01 00:01:01",
+            ["id2", "id3"],
+            id="no duplicates and there should two ids in new_events_suspected_duplicates",
+        ),
+    ],
+)
+def test_parse_events_without_duplicates(
+    logs: list[bytes],
+    token_expired: bool,
+    time_of_last_fetched_event: str,
+    new_events_suspected_duplicates: list[str],
+    handling_duplicates: HandlingDuplicates,
+    expected_events: list[str],
+    expected_max_value: str,
+    expected_new_events_suspected_duplicates: list[str],
+):
+    """
+    Given:
+        - args for parse_events function when `token_expired` is False.
+    When:
+        - run `parse_events` function with mocked data
+    Then:
+        - Ensure that events, max_value and new_events_suspected_duplicates are as expected.
+    """
+    events, max_value = parse_events(
+        logs=logs,
+        token_expired=token_expired,
+        time_of_last_fetched_event=time_of_last_fetched_event,
+        new_events_suspected_duplicates=new_events_suspected_duplicates,
+        handling_duplicates=handling_duplicates,
+    )
+
+    assert events == expected_events
+    assert max_value == expected_max_value
+    assert new_events_suspected_duplicates == expected_new_events_suspected_duplicates
+
+
+@pytest.mark.parametrize(
+    "logs,token_expired, time_of_last_fetched_event,"
+    "new_events_suspected_duplicates, handling_duplicates,"
+    "expected_events, expected_max_value,"
+    "expected_new_events_suspected_duplicates",
+    [
+        pytest.param(
+            [
+                b"log1 2020-01-01 00:01:00 -- -- -- -- -- id1",
+                b"log2 2020-01-01 00:01:01 -- -- -- -- -- id2",
+                b"log3 2020-01-01 00:01:01 -- -- -- -- -- id3",
+                b"log4 2020-01-01 00:01:01 -- -- -- -- -- id4",
+            ],
+            True,
+            "2020-01-01 00:00:59",
+            ["id0"],
+            HandlingDuplicates("2020-01-01 00:01:01", ["id2", "id3"]),
+            [
+                "log4 2020-01-01 00:01:01 -- -- -- -- -- id4",
+            ],
+            "2020-01-01 00:01:01",
+            ["id4"],
+            id="suspected duplicates and there should a single id in new_events_suspected_duplicates",
+        ),
+        pytest.param(
+            [
+                b"log1 2020-01-01 00:01:00 -- -- -- -- -- id1",
+                b"log2 2020-01-01 00:01:01 -- -- -- -- -- id2",
+                b"log3 2020-01-01 00:01:01 -- -- -- -- -- id3",
+                b"log4 2020-01-01 00:01:02 -- -- -- -- -- id4",
+            ],
+            True,
+            "2020-01-01 00:00:59",
+            ["id2", "id3"],
+            HandlingDuplicates("2020-01-01 00:01:01", ["id2", "id3"]),
+            [
+                "log4 2020-01-01 00:01:02 -- -- -- -- -- id4",
+            ],
+            "2020-01-01 00:01:02",
+            ["id4"],
+            id="suspected duplicates and there should a single id in new_events_suspected_duplicates",
+        ),
+    ],
+)
+def test_parse_events_with_duplicates(
+    logs: list[bytes],
+    token_expired: bool,
+    time_of_last_fetched_event: str,
+    new_events_suspected_duplicates: list[str],
+    handling_duplicates: HandlingDuplicates,
+    expected_events: list[str],
+    expected_max_value: str,
+    expected_new_events_suspected_duplicates: list[str],
+):
+    """
+    Given:
+        - args for parse_events function when `token_expired` is True.
+    When:
+        - run `parse_events` function with mocked data
+    Then:
+        - Ensure that events, max_value and new_events_suspected_duplicates are as expected.
+    """
+    events, max_value = parse_events(
+        logs=logs,
+        token_expired=token_expired,
+        time_of_last_fetched_event=time_of_last_fetched_event,
+        new_events_suspected_duplicates=new_events_suspected_duplicates,
+        handling_duplicates=handling_duplicates,
+    )
+
+    assert events == expected_events
+    assert max_value == expected_max_value
+    assert new_events_suspected_duplicates == expected_new_events_suspected_duplicates

@@ -32,6 +32,37 @@ class LastRun(NamedTuple):
     token: str | None = None
     time_of_last_fetched_event: str | None = None
     events_suspected_duplicates: list[str] | None = None
+    token_expired: bool = False
+
+
+class HandlingDuplicates(NamedTuple):
+    max_time: str = ""
+    events_suspected_duplicates: list[str] = []
+
+    def is_duplicate(
+        self,
+        id_: str,
+        cur_time: str,
+    ) -> bool:
+        """
+        Checks whether the event already fetched if so returns True otherwise False
+
+        Args:
+            id_ (str): id of the event
+            cur_time (str): the time of the event
+            time_of_last_fetched_event (str): The time of the last event that already fetched
+            events_suspected_duplicates (list[str]): The ids of all events from the latest time of the last fetch
+        """
+
+        # The event time is later than the late time of the last fetch
+        if cur_time > self.max_time:
+            return False
+
+        # The time of the event is equal to the late time of the last fetch,
+        # checks if its id is there is in the list of events that have already been fetched
+        return not (
+            cur_time == self.max_time and id_ not in self.events_suspected_duplicates
+        )
 
 
 class Client(BaseClient):
@@ -81,31 +112,10 @@ def get_events_and_write_to_file_system(
         for chunk in res.iter_content(chunk_size=MAX_CHUNK_SIZE_TO_WRITE):
             tmp_file.write(chunk)
 
-    file_size = get_file_size(Path(tmp_file.name))  # ????
-    demisto.debug(f"File size is {file_size}")  # ????
-
     return Path(tmp_file.name)
 
 
-def get_current_time_as_timestamp() -> int:
-    now = datetime.now().astimezone(pytz.utc)
-    return date_to_timestamp(now)
-
-
-"""??? def is_more_than_half_an_hour_since_last_fetch(last_fetch: int, current_time: int):
-    time_difference = datetime.fromtimestamp(current_time) - datetime.fromtimestamp(
-        last_fetch
-    )
-    return time_difference > timedelta(minutes=30)"""
-
-
-"""?def is_it_first_10_minutes_of_hour():
-    # Get current time in UTC
-    now = get_current_time_as_timestamp() / 1000
-    return datetime.fromtimestamp(now).minute < 10"""
-
-
-def get_start_and_ent_date(
+def get_start_and_end_date(
     args: dict[str, str], start_date: str | None
 ) -> tuple[int, int]:
     """
@@ -169,58 +179,6 @@ def get_file_size(file_path: Path) -> int:
     return file_path.stat().st_size
 
 
-''' -- # def extract_logs_from_response2(response: Response) -> list[bytes]:
-#     """
-#     - Extracts the data from the zip file returned from the API
-#       and then extracts the events from the gzip files into a list of events as bytes
-#     - When there is no zip file returns an empty list
-#     Args:
-#         response (Response)
-#     Returns:
-#         list[bytes]: list of events as bytes
-#     """
-#     logs: list[bytes] = []
-#     demisto.debug(f"size of the zip file: {len(response.content) / (1024 ** 2):.2f} MB")
-#     # try:
-#     #     # extract the ZIP file
-#     #     with ZipFile(BytesIO(response.content)) as outer_zip:
-#     #         # iterate all gzip files
-#     #         for file in outer_zip.infolist():
-#     #             # check if the file is gzip
-#     #             if file.filename.lower().endswith(".gz"):
-#     #                 try:
-#     #                     with outer_zip.open(file) as nested_zip_file, gzip.open(
-#     #                         nested_zip_file, "rb"
-#     #                     ) as f:
-#     #                         logs.extend(f.readlines())
-#     #                 except Exception as e:
-#     #                     demisto.debug(
-#     #                         f"Crashed at the open the internal file {file.filename} file, Error: {e}"
-#     #                     )
-#     #             else:  # the file is not gzip
-#     #                 demisto.debug(
-#     #                     f"The {file.filename} file is not of gzip type"
-#     #                 )
-#     # except BadZipFile as e:
-#     #     try:
-#     #         # checks whether no events returned
-#     #         if response.content.decode().startswith("X-sync"):
-#     #             demisto.debug("No events returned from the api")
-#     #         else:
-#     #             demisto.debug(
-#     #                 f"The external file type is not of type ZIP, Error: {e},"
-#     #                 "the response.content is {}".format(response.content)
-#     #             )
-#     #     except Exception:
-#     #         demisto.debug(
-#     #             f"The external file type is not of type ZIP, Error: {e},"
-#     #             "the response.content is {}".format(response.content)
-#     #         )
-#     # except Exception as e:
-#     #     raise ValueError(f"There is no specific error for the crash, Error: {e}")
-#     return logs'''
-
-
 def get_the_last_row_that_incomplete(lines: list[bytes], file_size: int) -> bytes:
     """
     Args:
@@ -233,47 +191,6 @@ def get_the_last_row_that_incomplete(lines: list[bytes], file_size: int) -> byte
     if lines and not lines[-1].endswith(b"\n") and file_size > 0:
         return lines[-1]
     return b""
-
-
-'''def read_file_in_batches(
-    f: GzipFile, file_size: int
-) -> Generator[list[bytes], None, None]:
-    """
-    - Reads the gzipped file in batches to avoid loading the entire file into memory.
-    - Splits the file data into lines, handling cases where a line spans batch boundaries.
-    - Yields lists of lines for each batch.
-    """
-    remaining_last_line_part: bytes = b""
-    while file_size > 0:
-        # Get the chunk size for reading from the file,
-        # limited to MAX_CHUNK_SIZE_TO_READ or less
-        chunk = min(file_size, MAX_CHUNK_SIZE_TO_READ)
-
-        # Subtracting the chunk to be read from the size of the file
-        file_size -= chunk
-
-        # Reads a chunk of data from the gzip file.
-        try:
-            raw_event_parts = f.read(chunk).splitlines()
-        except Exception as e:
-            demisto.debug(f"Error occurred while reading file: {e}")
-            break
-
-        # Concatenates any remaining last line from previous batch
-        # to the first line of current batch to handle log lines split across batches
-        if remaining_last_line_part:
-            raw_event_parts[0] = remaining_last_line_part + raw_event_parts[0]
-
-        # Checks if the last line is incomplete and saves it for concatenating
-        # with the next batch. Yields the current batch without the incomplete line.
-        # If no incomplete line, resets the remaining line part and yields the batch.
-        if remaining_last_line_part := get_the_last_row_that_incomplete(
-            raw_event_parts, file_size
-        ):
-            yield raw_event_parts[:-1]
-        else:
-            remaining_last_line_part = b""
-            yield raw_event_parts'''
 
 
 def extract_logs_from_zip_file(file_path: Path) -> Generator[list[bytes], None, None]:
@@ -376,95 +293,12 @@ def get_size_gzip_file(f: GzipFile) -> int:
     return file_size
 
 
-def is_first_fetch(last_run: dict[str, str | list[str]], args: dict[str, str]) -> bool:
-    """
-    Returns True if this fetch is a first fetch,
-    Returns False if it is manually run by the `symantec-get-events` command or is a second fetch and later
-    """
-    return (
-        not last_run.get("start_date") if isinstance(last_run, dict) else True
-    ) and ("since" not in args)
-
-
-def is_duplicate(
-    id_: str,
-    cur_time: str,
-    time_of_last_fetched_event: str,
-    events_suspected_duplicates: list[str],
-) -> bool:
-    """
-    Checks whether the event already fetched if so returns True otherwise False
-
-    Args:
-        id_ (str): id of the event
-        cur_time (str): the time of the event
-        time_of_last_fetched_event (str): The time of the last event that already fetched
-        events_suspected_duplicates (list[str]): The ids of all events from the latest time of the last fetch
-    """
-
-    # The event time is later than the late time of the last fetch
-    if cur_time > time_of_last_fetched_event:
-        return False
-
-    # The time of the event is equal to the late time of the last fetch,
-    # checks if its id is there is in the list of events that have already been fetched
-    return not (
-        cur_time == time_of_last_fetched_event
-        and id_ not in events_suspected_duplicates
-    )
-
-
-"""def organize_of_events(
-    logs: list[bytes],
-    token_expired: bool,
-    time_of_last_fetched_event: str,
-    events_suspected_duplicates: list[str],
-) -> tuple[list[str], str, list[str]]:
-    events: list[str] = []
-    max_time = time_of_last_fetched_event
-    max_values = events_suspected_duplicates
-
-    demisto.debug(f"The len of the events before filter {len(logs)}")
-    for log in logs:
-        event = log.decode()
-        if event.startswith("#"):
-            continue
-        parts = event.split(" ")
-        try:
-            id_ = parts[-1]
-        except Exception as e:
-            demisto.debug(f"Error occurred while splitting event: {e} -> {event}")
-        try:
-            cur_time = f"{parts[1]} {parts[2]}"
-        except Exception as e:
-            demisto.debug(f"Error occurred while splitting event 1: {e} -> {event}")
-
-        if token_expired and (
-            is_duplicate(
-                id_,
-                cur_time,
-                time_of_last_fetched_event,
-                events_suspected_duplicates,
-            )
-        ):
-            continue
-        if cur_time > max_time:
-            max_time = cur_time
-            max_values = [id_]
-        elif cur_time == max_time:
-            max_values.append(id_)
-        events.append(event)
-
-    demisto.debug(f"The len of the events after filter {len(events)}")
-    return events, max_time, max_values"""
-
-
 def parse_events(
     logs: list[bytes],
     token_expired: bool,
     time_of_last_fetched_event: str,
-    events_suspected_duplicates: list[str],
     new_events_suspected_duplicates: list[str],
+    handling_duplicates: HandlingDuplicates = HandlingDuplicates(),
 ) -> tuple[list[str], str]:
     """Parses raw log events into a list of event strings.
 
@@ -504,11 +338,9 @@ def parse_events(
 
         # In case that token is expired, checks if the event is a duplicate,
         # if so skips the event
-        if token_expired and is_duplicate(
+        if token_expired and handling_duplicates.is_duplicate(
             id_=id_,
             cur_time=cur_time,
-            time_of_last_fetched_event=time_of_last_fetched_event,
-            events_suspected_duplicates=events_suspected_duplicates,
         ):
             continue
 
@@ -526,6 +358,153 @@ def parse_events(
     return events, max_time
 
 
+def get_start_date_for_next_fetch(
+    start_date: int, time_of_last_fetched_event: str
+) -> int:
+    """
+    Calculates the start date for the next fetch based on the last fetched event time.
+    If last fetched event time is valid datetime, converts to timestamp.
+    Otherwise defaults to original `start_date`.
+    """
+    if time_of_last_fetched_event:
+        # Converts the `time_of_last_fetched_event` to a timestamp
+        # to use for the start date of the next fetch.
+        try:
+            start_date_for_next_fetch = date_to_timestamp(
+                date_str_or_dt=time_of_last_fetched_event,
+                date_format=DATE_FORMAT,
+            )
+        except Exception:
+            # If the conversion fails,
+            # defaults to the original start date.
+            demisto.debug("time_of_last_fetched_event is not datetime")
+            start_date_for_next_fetch = start_date
+    else:
+        start_date_for_next_fetch = start_date
+    return start_date_for_next_fetch
+
+
+def management_next_fetch(
+    start_date: int,
+    new_token: str,
+    time_of_last_fetched_event: str,
+    new_events_suspected_duplicates: list[str],
+    handling_duplicates: HandlingDuplicates,
+    token_expired: bool,
+):
+    """
+    Updates the integration context with the information
+    needed for the next fetch.
+
+    It handles updating the duplicate event tracking if a newer event time is seen.
+
+    Returns a LastRun object containing the data for the next run.
+    """
+
+    start_date_for_next_fetch = get_start_date_for_next_fetch(
+        start_date, time_of_last_fetched_event
+    )
+
+    if time_of_last_fetched_event > handling_duplicates.max_time:
+        # A newer event time was seen, reset duplicate tracking
+        new_last_run_model = LastRun(
+            start_date=str(start_date_for_next_fetch),
+            token=str(new_token),
+            time_of_last_fetched_event=str(time_of_last_fetched_event),
+            events_suspected_duplicates=new_events_suspected_duplicates,
+        )
+
+    elif time_of_last_fetched_event == handling_duplicates.max_time:
+        # Newer event time is not visible, keep duplicate existing tracking
+        # plus the new ids retrieved with the same time
+        new_last_run_model = LastRun(
+            start_date=str(start_date_for_next_fetch),
+            token=str(new_token),
+            time_of_last_fetched_event=handling_duplicates.max_time,
+            events_suspected_duplicates=handling_duplicates.events_suspected_duplicates
+            + new_events_suspected_duplicates,
+            token_expired=token_expired,
+        )
+
+    else:
+        # Newer or equal event time is not visible, keep duplicate existing tracking
+        new_last_run_model = LastRun(
+            start_date=str(start_date_for_next_fetch),
+            token=str(new_token),
+            time_of_last_fetched_event=handling_duplicates.max_time,
+            events_suspected_duplicates=handling_duplicates.events_suspected_duplicates,
+            token_expired=token_expired,
+        )
+
+    # Updates the integration context with the new LastRun model.
+    set_integration_context({"last_run": new_last_run_model._asdict()})
+
+    return new_last_run_model
+
+
+def extract_logs_and_push_to_XSIAM(
+    last_run_model: LastRun, tmp_file_path: Path, token_expired: bool
+) -> tuple[str, list[str], HandlingDuplicates]:
+    """Extracts logs from the zip file downloaded from the API, parses the events,
+    and sends them to XSIAM in batches if any events exist.
+
+    Args:
+        last_run_model: The last run model containing the state of the previous run.
+        tmp_file_path: The path to the temporary zip file downloaded from the API.
+        token_expired: Whether the API token has expired.
+
+    Returns:
+        A tuple containing:
+        - The time of the last fetched event.
+        - A list of event IDs suspected to be duplicates.
+        - The handling_duplicates object containing state about duplicate handling.
+    """
+    # Initialize variables
+    new_events_suspected_duplicates: list[str] = []
+    time_of_last_fetched_event: str = last_run_model.time_of_last_fetched_event or ""
+    handling_duplicates = HandlingDuplicates(
+        max_time=time_of_last_fetched_event,
+        events_suspected_duplicates=last_run_model.events_suspected_duplicates or [],
+    )
+
+    # Extracts logs from the zip file downloaded from the API, parses the events,
+    # sends them to XSIAM in batches if any events exist.
+    for part_logs in extract_logs_from_zip_file(tmp_file_path):
+        try:
+            # Parse the events
+            (
+                events,
+                time_of_last_fetched_event,
+            ) = parse_events(
+                part_logs,
+                token_expired,
+                time_of_last_fetched_event,
+                new_events_suspected_duplicates,
+                handling_duplicates=handling_duplicates,
+            )
+
+            try:
+                if events:
+                    # Send events to XSIAM in batches
+                    send_events_to_xsiam(
+                        events,
+                        VENDOR,
+                        PRODUCT,
+                        chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT // 2,
+                    )
+                    demisto.debug(f"len of the events is: {len(events)}")
+            except Exception as e:
+                demisto.debug(f"Failed to send events to XSOAR. Error: {e}")
+        except Exception as e:
+            demisto.debug(f"Error parsing events: {e}")
+
+    return (
+        time_of_last_fetched_event,
+        new_events_suspected_duplicates,
+        handling_duplicates,
+    )
+
+
 """ FETCH EVENTS """
 
 
@@ -533,33 +512,27 @@ def get_events_command(
     client: Client,
     args: dict[str, str],
     last_run_model: LastRun,
-    is_first_fetch: bool,
-) -> LastRun:
+) -> None:
     """ """
-    time_of_last_fetched_event: str = last_run_model.time_of_last_fetched_event or ""
-    events_suspected_duplicates: list[str] = (
-        last_run_model.events_suspected_duplicates or []
-    )
-    new_events_suspected_duplicates: list[str] = []
-
-    # Set the fetch times, where the `end_time` is consistently set to the current time.
-    # The `start_time` is determined by the `last_run`,
-    # and if it does not exist, it is set to one minute prior.
-    start_date, end_date = get_start_and_ent_date(
-        args=args, start_date=last_run_model.start_date
-    )
-
-    # Set the parameters for the API call
-    params: dict[str, Union[str, int]] = {
-        "startDate": start_date,
-        "endDate": end_date,
-        "token": last_run_model.token or "none",
-    }
 
     # Make API call in streaming to fetch events and writing to a temporary file on the disk.
     status = "more"
     while status != "done":
-        demisto.debug(f"In the meantime the {time_of_last_fetched_event=}")
+        token_expired = last_run_model.token_expired
+        # Set the fetch times, where the `end_time` is consistently set to the current time.
+        # The `start_time` is determined by the `last_run`,
+        # and if it does not exist, it is set to one minute prior.
+        start_date, end_date = get_start_and_end_date(
+            args=args, start_date=last_run_model.start_date
+        )
+
+        # Set the parameters for the API call
+        params: dict[str, Union[str, int]] = {
+            "startDate": start_date,
+            "endDate": end_date,
+            "token": last_run_model.token or "none",
+        }
+
         try:
             tmp_file_path = get_events_and_write_to_file_system(
                 client, params, last_run_model
@@ -568,8 +541,13 @@ def get_events_command(
             try:
                 if e.res is not None and e.res.status_code == 410:
                     demisto.debug(f"The token has expired: {e}")
-                    token_expired = True
-                    params["token"] = "none"
+                    last_run_model = LastRun(
+                        start_date=start_date,
+                        token="none",
+                        time_of_last_fetched_event=last_run_model.time_of_last_fetched_event,
+                        events_suspected_duplicates=last_run_model.events_suspected_duplicates,
+                        token_expired=True,
+                    )
                     continue
                 elif e.res is not None and e.res.status_code == 423:
                     demisto.debug(f"API access is blocked: {e}")
@@ -596,229 +574,34 @@ def get_events_command(
             tmp_file_path.unlink()
             continue
 
-        # Insert a new token into the parameters for the next API call
-        params["token"] = new_token
-
-        # Checks if this is the first fetch.
-        # if so, ignores events returned from the API
-        # and continues to the next fetch
-        if is_first_fetch:
-            demisto.debug(
-                "The current fetch is the first fetch, "
-                "the collector ignores all events that return from the api, "
-                "and will start collecting them from the next time onwards"
-            )
-            continue
-
-        # Extracts logs from the zip file downloaded from the API, parses the events,
-        # sends them to XSIAM in batches if any events exist.
-        for part_logs in extract_logs_from_zip_file(tmp_file_path):
-            try:
-                # Parse the events
-                (
-                    events,
-                    time_of_last_fetched_event,
-                ) = parse_events(
-                    part_logs,
-                    token_expired,
-                    time_of_last_fetched_event,
-                    events_suspected_duplicates,
-                    new_events_suspected_duplicates,
-                )
-
-                try:
-                    if events:
-                        # Send events to XSIAM in batches
-                        send_events_to_xsiam(
-                            events,
-                            VENDOR,
-                            PRODUCT,
-                            chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT // 2,
-                        )
-                        demisto.debug(f"len of the events is: {len(events)}")
-                except Exception:
-                    demisto.debug(
-                        f"Failed to send events to XSOAR. Error: {traceback.format_exc()}"
-                    )
-            except Exception as e:
-                demisto.debug(f"Error parsing events: {e}")
+        (
+            time_of_last_fetched_event,
+            new_events_suspected_duplicates,
+            handling_duplicates,
+        ) = extract_logs_and_push_to_XSIAM(last_run_model, tmp_file_path, token_expired)
 
         # Removes the tmp file
         tmp_file_path.unlink()
 
-    demisto.debug(f"after end {time_of_last_fetched_event}")
-    if time_of_last_fetched_event:
-        # Converts the `time_of_last_fetched_event` to a timestamp
-        # to use for the start date of the next fetch.
-        try:
-            start_date_for_next_fetch = date_to_timestamp(
-                date_str_or_dt=time_of_last_fetched_event,
-                date_format=DATE_FORMAT,
-            )
-        except Exception:
-            # If the conversion fails,
-            # defaults to the original start date.
-            demisto.debug("time_of_last_fetched_event is not datetime")
-            start_date_for_next_fetch = start_date
-    else:
-        start_date_for_next_fetch = start_date
-
-    # Creates a LastRun object for the next run.
-    new_last_run_model = LastRun(
-        start_date=str(start_date_for_next_fetch),
-        token=str(params["token"]),
-        time_of_last_fetched_event=str(time_of_last_fetched_event),
-        events_suspected_duplicates=new_events_suspected_duplicates,
-    )
-
-    return new_last_run_model
-
-
-''' --- def get_events_command(
-    client: Client, args: dict[str, str], last_run_model: LastRun, is_first_fetch: bool
-) -> tuple[list[str], LastRun]:
-    """
-    ...
-    """
-    logs: list[bytes] = []
-    token_expired: bool = False
-    time_of_last_fetched_event = ""
-    events_suspected_duplicates: list[str] = []
-
-    start_date, end_date = get_start_and_ent_date(
-        args=args, start_date=last_run_model.start_date
-    )
-    params: dict[str, Union[str, int]] = {
-        "startDate": start_date,
-        "endDate": end_date,
-        "token": last_run_model.token or "none",
-    }
-
-    demisto.debug(
-        f"start fetch from {start_date} to {end_date} with {last_run_model.token or 'none'}"
-    )
-
-    status = "more"
-    while status != "done":
-        try:
-            # demisto.debug("start fetching events - API")
-            # res = write_to_file_system(client, params)
-            # res = client.get_logs(params=params)
-            demisto.debug("end fetching events - API")
-        except DemistoException as e:
-            try:
-                if e.res is not None and e.res.status_code == 410:
-                    demisto.debug(f"The token has expired: {e}")
-                    token_expired = True
-                    params["token"] = "none"
-                    continue
-                elif e.res is not None and e.res.status_code == 423:
-                    demisto.debug(f"API access is blocked: {e}")
-                elif e.res is not None and e.res.status_code == 429:
-                    demisto.debug(f"Crashed on limit of api calls: {e}")
-                else:
-                    demisto.debug(f"Some ERROR: {e=}")
-                    raise e
-            except Exception as err:
-                demisto.debug(f"Some ERROR: {e=} after the error: {err}")
-                raise e
-        except Exception as err:
-            demisto.debug(f"Some ERROR: {err}")
-            raise err
-        file_size = get_file_size(res)
-        demisto.debug(f"size of the file system: {file_size / (1024 ** 2):.2f} MB")
-        status, params["token"] = get_status_and_token_from_file_system(res)
-        # status, params["token"] = get_status_and_token_from_res(res)
-        demisto.debug(f"The status is {status}")
-
-        if status == "abort":
-            demisto.debug(
-                f"the status is {status}, the fetch will start again with the same values"
-            )
-            if is_first_fetch:
-                return [], LastRun(**{})
-            logs = []
-            if params["token"] == "none":
-                token_expired = True
-            params["token"] = last_run_model.token or "none"
-            continue
-
-        if is_first_fetch:
-            demisto.debug(
-                "The current fetch is the first fetch, "
-                "the collector ignores all events that return from the api, "
-                "and will start collecting them from the next time onwards"
-            )
-            continue
-        for part_logs in extract_logs_from_response(res):
-            try:
-                (
-                    events,
-                    time_of_last_fetched_event,
-                    parts_events_suspected_duplicates,
-                ) = organize_of_events(
-                    part_logs,
-                    token_expired,
-                    time_of_last_fetched_event
-                    or last_run_model.time_of_last_fetched_event
-                    or "",
-                    events_suspected_duplicates
-                    or last_run_model.events_suspected_duplicates
-                    or [],
-                )
-                try:
-                    if events:
-                        send_events_to_xsiam(
-                            events,
-                            VENDOR,
-                            PRODUCT,
-                            chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT // 2,
-                        )
-                        demisto.debug(f"len of the events is: {len(events)}")
-                except Exception:
-                    demisto.debug(
-                        f"Failed to send events to XSOAR. Error: {traceback.format_exc()}"
-                    )
-            except Exception as e:
-                demisto.debug(f"Error organizing events: {e}")
-        res.unlink()
-
-    demisto.debug(f"{time_of_last_fetched_event=}")
-    if time_of_last_fetched_event:
-        try:
-            start_date_for_next_fetch = date_to_timestamp(
-                date_str_or_dt=time_of_last_fetched_event,
-                date_format="%Y-%m-%d %H:%M:%S",
-            )
-        except Exception:
-            demisto.debug("time_of_last_fetched_event is not datetime")
-            start_date_for_next_fetch = start_date
-    else:
-        start_date_for_next_fetch = start_date
-
-    new_last_run_model = LastRun(
-        start_date=str(start_date_for_next_fetch),
-        token=str(params["token"]),
-        time_of_last_fetched_event=time_of_last_fetched_event,
-        events_suspected_duplicates=events_suspected_duplicates,
-        # last_fetch=int(get_current_time_as_timestamp() / 1000)
-    )
-
-    # demisto.debug(
-    #     f"End fetch from {start_date} to {end_date} with {len(events)} events,"
-    #     f"{time_of_last_fetched_event=} and {events_suspected_duplicates=}"
-    # )
-    return [], new_last_run_model
-    # return [], LastRun(
-    #     start_date=str(start_date),
-    
-    #     token=str(params["token"]),
-    #     last_fetch=int(get_current_time_as_timestamp() / 1000),
-    # )
-    # return [], LastRun(start_date=str(start_date), token=str(params["token"]))'''
+        last_run_model = management_next_fetch(
+            start_date,
+            new_token,
+            time_of_last_fetched_event,
+            new_events_suspected_duplicates,
+            handling_duplicates,
+            token_expired=token_expired,
+        )
 
 
 def test_module(client: Client):
+    start_date, end_date = get_start_and_end_date({}, None)
+    params: dict[str, Union[str, int]] = {
+            "startDate": start_date,
+            "endDate": end_date,
+            "token": "none",
+    }
+
+    client.get_logs(params)
     return "ok"
 
 
@@ -846,24 +629,12 @@ def perform_long_running_loop(client: Client, args: dict[str, str]):
             integration_context = get_integration_context()
             demisto.debug(f"Starting new fetch with {integration_context=}")
             integration_context = integration_context.get("last_run")
-            if integration_context and "last_fetch" in integration_context:
-                del integration_context["last_fetch"]
-            if date_to_timestamp(datetime.now().astimezone(pytz.utc)) > 1700048580000:
-                last_run_obj = (
-                    LastRun(**integration_context) if integration_context else LastRun()
-                )
-            else:
-                last_run_obj = LastRun(start_date="1700032320000")
-            # first_fetch = is_first_fetch(integration_context, args)
-            demisto.debug(f"{last_run_obj._asdict()}")
-            last_run_obj = get_events_command(
-                client, args, last_run_obj, is_first_fetch=False
+            last_run_obj = (
+                LastRun(**integration_context) if integration_context else LastRun()
             )
-            first_fetch = False
 
-            set_integration_context({"last_run": last_run_obj._asdict()})
-            integration_context_for_debug = get_integration_context()  # ????
-            demisto.debug(f"{integration_context_for_debug=}")  # ????
+            get_events_command(client, args, last_run_obj)
+
         except Exception as e:
             demisto.debug(f"Failed to fetch logs from API. Error: {e}")
         time.sleep(FETCH_SLEEP)
