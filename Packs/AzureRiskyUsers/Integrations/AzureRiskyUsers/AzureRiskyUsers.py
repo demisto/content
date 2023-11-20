@@ -7,7 +7,6 @@ from urllib.parse import parse_qs
 from typing import Any
 from MicrosoftApiModule import *  # noqa: E402
 import urllib3
-from typing import Any
 
 CLIENT_CREDENTIALS_FLOW = 'Client Credentials'
 DEVICE_FLOW = 'Device Code'
@@ -244,7 +243,15 @@ def pages_puller(client: Client, response: dict[str, Any], limit: int = 1) -> tu
     return response_data[:limit], next_link
 
 
-def get_user_human_readable(users: list):
+def get_user_human_readable(users: list) -> Any:
+    """Creates the human readable fo the command_results object.
+
+    Args:
+        users (list): A list of users from the response.
+
+    Returns:
+        Any: tableToMarkdown function output.
+    """
     table_headers = ['id', 'userDisplayName', 'userPrincipalName', 'riskLevel',
                      'riskState', 'riskDetail', 'riskLastUpdatedDateTime']
     table_outputs = [{key: user.get(key) for key in user if key in table_headers}
