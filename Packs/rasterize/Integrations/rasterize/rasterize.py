@@ -85,13 +85,14 @@ def ensure_chrome_running():
         with open(os.devnull, "w") as fnull:
             result = subprocess.call(command, stdout=fnull, stderr=fnull)
             demisto.debug(f'start_chrome_headless output: {result}')
+            return is_chrome_headless_running()
     except Exception as ex:
         demisto.info(f'Exception running chrome headless, {ex}')
+    return False
 
 
 def pychrome_screenshot_image(path, width, height, wait_time, max_page_load_time, full_screen,
                               include_url):
-    ensure_chrome_running()
     browser = pychrome.Browser(url="http://127.0.0.1:9222")
     tab = browser.new_tab()
 
@@ -111,7 +112,6 @@ def pychrome_screenshot_image(path, width, height, wait_time, max_page_load_time
 
 def pychrome_screenshot_pdf(path, width, height, wait_time, max_page_load_time, full_screen,
                             include_url):
-    ensure_chrome_running()
     browser = pychrome.Browser(url="http://127.0.0.1:9222")
     tab = browser.new_tab()
 
@@ -130,7 +130,8 @@ def pychrome_screenshot_pdf(path, width, height, wait_time, max_page_load_time, 
 
     finally:
         tab.stop()
-        browser.close_tab(tab)
+        close_tab_response = browser.close_tab(tab)
+        demisto.debug(f"{path=}, {close_tab_response=}")
 
 
 def check_width_and_height(width: int, height: int) -> tuple[int, int]:
@@ -265,6 +266,18 @@ def merge_options(default_options, user_options):
 #     return zombies, ps_out
 
 
+def is_chrome_headless_running():
+    ps_out = subprocess.check_output(['ps', '-ef'],
+                                     stderr=subprocess.STDOUT, universal_newlines=True)
+    chrome_headless_substrings = [
+                                  "chrom",
+                                  "headless",
+                                  "--remote-debugging-port=9222",
+                                  ]
+    lines = ps_out.splitlines()
+    return [ f for f in lines if all(c in f for c in chrome_headless_substrings) ]
+
+
 # def quit_driver_and_display_and_reap_children(driver, display):
 #     """
 #     Quits the driver's and display's sessions and reaps all of zombie child processes
@@ -318,7 +331,8 @@ def rasterize(path: str, width: int, height: int, r_type: RasterizeType = Raster
     :param full_screen: when set to True, the snapshot will take the whole page
     :param r_mode: rasterizing mode see: RasterizeMode enum.
     """
-    demisto.debug(f'Rasterizing using mode: {r_mode}')
+    chrome_headless_running = ensure_chrome_running()
+    demisto.debug(f'Rasterizing, {chrome_headless_running=}, using mode: {r_mode}')
     page_load_time = max_page_load_time if max_page_load_time > 0 else DEFAULT_PAGE_LOAD_TIME
     # from collections.abc import Callable ## should be in the imports above, around line 15
     # rasterize_funcs: tuple[Callable, ...] = ()
