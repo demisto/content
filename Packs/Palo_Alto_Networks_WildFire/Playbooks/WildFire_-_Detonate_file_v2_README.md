@@ -1,4 +1,4 @@
-Detonate one or more files using the Wildfire integration. This playbook
+Detonate one or more files using the Wildfire v2 integration. This playbook
 returns relevant reports to the War Room and file reputations to the context data.
 The detonation supports the following file types -
 APK, JAR, DOC, DOCX, RTF, XLS, XLSX, PPT, PPTX, OOXML, PE32, PE, PDF, DMG, PKG, RAR, 7Z, JS, ELF, HTA, LNK, VBS, PS1, PERL, PYTHON, SHELL.
@@ -15,8 +15,8 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* WildFire-v2
 * Palo_Alto_Networks_WildFire_v2
+* WildFire-v2
 
 ### Scripts
 
@@ -24,8 +24,8 @@ This playbook does not use any sub-playbooks.
 
 ### Commands
 
-* wildfire-upload
 * wildfire-report
+* wildfire-upload
 
 ## Playbook Inputs
 
@@ -35,7 +35,7 @@ This playbook does not use any sub-playbooks.
 | --- | --- | --- | --- |
 | File | File object of the file to detonate. The file is taken from the context. | File | Optional |
 | Interval | The duration for executing the polling \(in minutes\). | 1 | Optional |
-| Timeout | The duration after which to stop polling and to resume the playbook. \(in minutes\) | 15 | Optional |
+| Timeout | The duration after which to stop polling and to resume the playbook. \(in minutes\) | 8 | Optional |
 | ReportFileType | The resource type to download. |  | Optional |
 
 ## Playbook Outputs
@@ -71,6 +71,7 @@ This playbook does not use any sub-playbooks.
 | WildFire.Report.MD5 | The MD5 hash of the submission. | string |
 | WildFire.Report.FileType | The type of the submission. | string |
 | WildFire.Report.Size | The size of the submission. | number |
+| WildFire.Report.detection_reasons.description | Reason for the detection verdict. | string |
 
 ## Playbook Image
 
