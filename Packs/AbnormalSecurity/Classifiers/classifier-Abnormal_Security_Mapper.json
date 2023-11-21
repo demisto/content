@@ -6,7 +6,7 @@
         "AbnormalSecurity": {
             "dontMapEventToLabels": true,
             "internalMapping": {
-                "Abnormal Security Abuse Campaign Attack Type ": {
+                "Abnormal Security Abuse Campaign Attack Type": {
                     "simple": "attackType"
                 },
                 "Abnormal Security Abuse Campaign First Reported": {
@@ -63,7 +63,7 @@
                 "Abnormal Security Attack Vector": {
                     "simple": "messages.attackVector"
                 },
-                "Abnormal Security Attacked Party ": {
+                "Abnormal Security Attacked Party": {
                     "simple": "messages.attackedParty"
                 },
                 "Abnormal Security Auto Remediated": {
@@ -78,10 +78,10 @@
                 "Abnormal Security Case Status": {
                     "simple": "case_status"
                 },
-                "Abnormal Security Customer Visible Time ": {
+                "Abnormal Security Customer Visible Time": {
                     "simple": "customerVisibleTime"
                 },
-                "Abnormal Security First Observed Time ": {
+                "Abnormal Security First Observed Time": {
                     "simple": "firstObserved"
                 },
                 "Abnormal Security From Address": {
@@ -90,7 +90,7 @@
                 "Abnormal Security From Name ": {
                     "simple": "messages.fromName"
                 },
-                "Abnormal Security Impersonated Party ": {
+                "Abnormal Security Impersonated Party": {
                     "simple": "messages.impersonatedParty"
                 },
                 "Abnormal Security Internet Message ID": {
@@ -102,13 +102,13 @@
                 "Abnormal Security Message ID": {
                     "simple": "messages.abxMessageId"
                 },
-                "Abnormal Security Portal URL ": {
+                "Abnormal Security Portal URL": {
                     "simple": "messages.abxPortalUrl"
                 },
                 "Abnormal Security Post Remediated": {
                     "simple": "messages.postRemediated"
                 },
-                "Abnormal Security Received Time ": {
+                "Abnormal Security Received Time": {
                     "simple": "messages.receivedTime"
                 },
                 "Abnormal Security Recipient Address": {
@@ -123,7 +123,7 @@
                 "Abnormal Security Reply To Emails": {
                     "simple": "messages.replyToEmails"
                 },
-                "Abnormal Security Return Path ": {
+                "Abnormal Security Return Path": {
                     "simple": "messages.returnPath"
                 },
                 "Abnormal Security Sender Domain": {
@@ -132,10 +132,10 @@
                 "Abnormal Security Sender IP Address": {
                     "simple": "messages.senderIpAddress"
                 },
-                "Abnormal Security Sent Time ": {
+                "Abnormal Security Sent Time": {
                     "simple": "messages.sentTime"
                 },
-                "Abnormal Security Severity ": {
+                "Abnormal Security Severity": {
                     "simple": "severity"
                 },
                 "Abnormal Security Severity Level": {
