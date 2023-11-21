@@ -1063,7 +1063,7 @@ def handle_submitted_notable(service: client.Service, notable: Notable, enrichme
                         demisto.debug(f'Enrichment {enrichment.type} for notable {notable.id} is still not done')
                 except Exception as e:
 
-                demisto.error(
+                    demisto.error(
                         f"Caught an exception while retrieving {enrichment.type}\
                         enrichment results for notable {notable.id}: {str(e)}"
                     )
