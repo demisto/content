@@ -3,7 +3,7 @@ from datetime import datetime
 
 
 class Data:
-    command_args: dict[str, str] = {}
+    command_args: dict[str, Any] = {}
     client_func_kwargs: dict[str, Any] = {}
     client_func_return: Any = None
     context_outputs: dict | list | None = None
@@ -304,105 +304,243 @@ class account_move(Data):
 """
 
 
-class account_create(Data):
-    command_args = {
-        "account_name": "account_name",
-        "email": "email",
-        "iam_user_access_to_billing": "iam_user_access_to_billing",
-        "role_name": "role_name",
-        "tags": "key1=value1,key2=value2",
-        "request_id": "request_id",
-        "interval_in_seconds": "interval_in_seconds",
-        "timeout": "timeout",
-        "roleArn": "roleArn",
-    }
-    client_func_kwargs = {}
-    client_func_return = None
-    context_outputs = None
-    readable_output = None
+# class account_create(Data):
+#     command_args = {
+#         "account_name": "account_name",
+#         "email": "email",
+#         "iam_user_access_to_billing": "iam_user_access_to_billing",
+#         "role_name": "role_name",
+#         "tags": "key1=value1,key2=value2",
+#         "request_id": "request_id",
+#         "interval_in_seconds": "interval_in_seconds",
+#         "timeout": "timeout",
+#         "roleArn": "roleArn",
+#     }
+#     client_func_kwargs = {}
+#     client_func_return = None
+#     context_outputs = None
+#     readable_output = """
+# """
 
 
-class account_close(Data):
-    command_args = {
-        "account_id": "account_id",
-        "is_closed": True
-    }
-    client_func_kwargs = {}
-    client_func_return = None
-    context_outputs = None
-    readable_output = None
+# class account_close(Data):
+#     command_args = {
+#         "account_id": "account_id",
+#         "is_closed": True
+#     }
+#     client_func_kwargs = {}
+#     client_func_return = None
+#     context_outputs = None
+#     readable_output = """
+# """
 
 
 class organization_unit_create(Data):
     command_args = {"name": "name", "parent_id": "parent_id", "tags": "key1=value1,key2=value2"}
-    client_func_kwargs = {}
-    client_func_return = None
-    context_outputs = None
-    readable_output = None
+    client_func_kwargs = {'ParentId': 'parent_id', 'Name': 'name', 'Tags': [{'key1': 'value1', 'key2': 'value2'}]}
+    client_func_return = {
+        'OrganizationalUnit': {
+            'Id': 'id',
+            'Arn': 'arn',
+            'Name': 'name'
+        }
+    }
+    context_outputs = {
+        'Id': 'id',
+        'Arn': 'arn',
+        'Name': 'name'
+    }
+    readable_output = """### AWS Organization Unit
+|Id|Name|Arn|
+|---|---|---|
+| id | name | arn |
+"""
 
 
 class organization_unit_delete(Data):
     command_args = {"organizational_unit_id": "organizational_unit_id"}
-    client_func_kwargs = {}
-    client_func_return = None
-    context_outputs = None
-    readable_output = None
+    client_func_kwargs = {"OrganizationalUnitId": "organizational_unit_id"}
+    readable_output = """### AWS Organization Unit Deleted
+|OrganizationalUnitId|
+|---|
+| organizational_unit_id |
+"""
 
 
 class organization_unit_rename(Data):
     command_args = {"organizational_unit_id": "organizational_unit_id", "name": "name"}
-    client_func_kwargs = {}
-    client_func_return = None
-    context_outputs = None
-    readable_output = None
+    client_func_kwargs = {"OrganizationalUnitId": "organizational_unit_id", "Name": "name"}
+    readable_output = """### AWS Organization Unit Renamed
+|Name|OrganizationalUnitId|
+|---|---|
+| name | organizational_unit_id |
+"""
 
 
 class policy_list(Data):
-    command_args = {"policy_type": "policy_type"}
-    client_func_kwargs = {}
-    client_func_return = None
-    context_outputs = None
-    readable_output = None
+    command_args = {"policy_type": "AI Services Opt Out Policy"}
+    client_func_kwargs = {"Filter": 'AISERVICES_OPT_OUT_POLICY'}
+    client_func_return = (
+        [
+            {
+                'Id': 'id1',
+                'Arn': 'arn1',
+                'Name': 'name1',
+                'Description': 'desc1',
+                'Type': 'type1',
+                'AwsManaged': True
+            },
+            {
+                'Id': 'id2',
+                'Arn': 'arn2',
+                'Name': 'name2',
+                'Description': 'desc2',
+                'Type': 'type2',
+                'AwsManaged': False
+            },
+        ],
+        'next_token'
+    )
+    context_outputs = [
+        [
+            {
+                'Id': 'id1',
+                'Arn': 'arn1',
+                'Name': 'name1',
+                'Description': 'desc1',
+                'Type': 'type1',
+                'AwsManaged': True
+            },
+            {
+                'Id': 'id2',
+                'Arn': 'arn2',
+                'Name': 'name2',
+                'Description': 'desc2',
+                'Type': 'type2',
+                'AwsManaged': False
+            },
+        ],
+        {'PolicyNextToken': 'next_token'}
+    ]
+    readable_output = """### AWS Organization Policies
+|Id|Arn|Name|Description|Type|AwsManaged|
+|---|---|---|---|---|---|
+| id1 | arn1 | name1 | desc1 | type1 | true |
+| id2 | arn2 | name2 | desc2 | type2 | false |
+"""
 
 
 class target_policy_list(Data):
-    command_args = {"policy_type": "policy_type", "target_id": "target_id"}
-    client_func_kwargs = {}
-    client_func_return = None
-    context_outputs = None
-    readable_output = None
+    command_args = {"policy_type": "Service Control Policy", "target_id": "target_id"}
+    client_func_kwargs = {"Filter": 'SERVICE_CONTROL_POLICY', "TargetId": "target_id"}
+    client_func_return = (
+        [
+            {
+                'Id': 'id1',
+                'Arn': 'arn1',
+                'Name': 'name1',
+                'Description': 'desc1',
+                'Type': 'type1',
+                'AwsManaged': True
+            },
+            {
+                'Id': 'id2',
+                'Arn': 'arn2',
+                'Name': 'name2',
+                'Description': 'desc2',
+                'Type': 'type2',
+                'AwsManaged': False
+            },
+        ],
+        'next_token'
+    )
+    context_outputs = [
+        [
+            {
+                'Id': 'id1',
+                'Arn': 'arn1',
+                'Name': 'name1',
+                'Description': 'desc1',
+                'Type': 'type1',
+                'AwsManaged': True
+            },
+            {
+                'Id': 'id2',
+                'Arn': 'arn2',
+                'Name': 'name2',
+                'Description': 'desc2',
+                'Type': 'type2',
+                'AwsManaged': False
+            },
+        ],
+        {'TargetPolicyNextToken': 'next_token'}
+    ]
+    readable_output = """### AWS Organization *target_id* Policies
+|Id|Arn|Name|Description|Type|AwsManaged|
+|---|---|---|---|---|---|
+| id1 | arn1 | name1 | desc1 | type1 | true |
+| id2 | arn2 | name2 | desc2 | type2 | false |
+"""
 
 
 class policy_get(Data):
     command_args = {"policy_id": "policy_id"}
-    client_func_kwargs = {}
-    client_func_return = None
-    context_outputs = None
-    readable_output = None
+    client_func_kwargs = {"PolicyId": "policy_id"}
+    client_func_return = {
+        'Policy': {
+            'PolicySummary': {
+                'Id': 'id',
+                'Arn': 'arn',
+                'Name': 'name',
+                'Description': 'desc',
+                'Type': 'type',
+                'AwsManaged': True
+            },
+            'Content': ...
+        }
+    }
+    context_outputs = {
+        'Id': 'id',
+        'Arn': 'arn',
+        'Name': 'name',
+        'Description': 'desc',
+        'Type': 'type',
+        'AwsManaged': True
+    }
+    readable_output = """### AWS Organization Policies
+|Id|Arn|Name|Description|Type|AwsManaged|
+|---|---|---|---|---|---|
+| id | arn | name | desc | type | true |
+"""
 
 
 class policy_delete(Data):
     command_args = {"policy_id": "policy_id"}
-    client_func_kwargs = {}
-    client_func_return = None
-    context_outputs = None
-    readable_output = None
+    client_func_kwargs = {"PolicyId": "policy_id"}
+    readable_output = """### AWS Organization Policy Deleted
+|PolicyId|
+|---|
+| policy_id |
+"""
 
 
 class policy_attach(Data):
     command_args = {"policy_id": "policy_id", "target_id": "target_id"}
-    client_func_kwargs = {}
-    client_func_return = None
-    context_outputs = None
-    readable_output = None
+    client_func_kwargs = {"PolicyId": "policy_id", "TargetId": "target_id"}
+    readable_output = """### AWS Organization Policy Attached
+|PolicyId|
+|---|
+| policy_id |
+"""
 
 
 class policy_target_list(Data):
     command_args = {"policy_id": "policy_id"}
-    client_func_kwargs = {}
+    client_func_kwargs = {"PolicyId": "policy_id"}
     client_func_return = None
     context_outputs = None
-    readable_output = None
+    readable_output = """
+"""
 
 
 class resource_tag_add(Data):
@@ -410,7 +548,8 @@ class resource_tag_add(Data):
     client_func_kwargs = {}
     client_func_return = None
     context_outputs = None
-    readable_output = None
+    readable_output = """
+"""
 
 
 class resource_tag_list(Data):
@@ -418,4 +557,5 @@ class resource_tag_list(Data):
     client_func_kwargs = {}
     client_func_return = None
     context_outputs = None
-    readable_output = None
+    readable_output = """
+"""

@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 ''' CONSTANTS '''
 
 SERVICE_NAME = 'organizations'
-REGION = 'us-east-1'
+REGION = 'eu-central-1'
 MAX_PAGINATION = 20
 POLICY_TYPE_MAP: dict[str, 'PolicyTypeType'] = {
     'Service Control Policy': 'SERVICE_CONTROL_POLICY',
@@ -57,7 +57,7 @@ def create_client(args: dict, params: dict) -> 'OrganizationsClient':
         params.get('retries')
     ).aws_session(
         service=SERVICE_NAME,
-        region=args.get('region'),
+        region=REGION,
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -121,7 +121,9 @@ def build_tags(tags: str) -> list:
     '''Turns the tags provided by the args in the format "key=value" into the format expected by AWS'''
     result = []
     for tag in argToList(tags):
-        key, _, value = tag.partition('=')
+        key, eq, value = tag.partition('=')
+        if not eq:
+            raise DemistoException('Tags must be provided in the format "key=value".')
         result.append(
             {
                 'Key': key,
@@ -519,10 +521,10 @@ def target_policy_list_command(args: dict, aws_client: 'OrganizationsClient') ->
 
     return CommandResults(
         outputs=next_token_output_dict(
-            'Policy', next_token, policies, 'Id',
+            'TargetPolicy', next_token, policies, 'Id',
         ),
         readable_output=tableToMarkdown(
-            'AWS Organization Policies',
+            f'AWS Organization *{args["target_id"]}* Policies',
             policies,
             [
                 'Id', 'Arn', 'Name',
@@ -609,7 +611,7 @@ def policy_target_list_command(args: dict, aws_client: 'OrganizationsClient') ->
             'TargetId'
         ),
         readable_output=tableToMarkdown(
-            'AWS Organization Policy Targets',
+            f'AWS Organization *{args["policy_id"]}* Targets',
             targets,
             ['TargetId', 'Arn', 'Name', 'Type'],
             removeNull=True

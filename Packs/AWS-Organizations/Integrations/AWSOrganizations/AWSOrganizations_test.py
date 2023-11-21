@@ -33,33 +33,29 @@ class MockOrganizationsClient:  # (OrganizationsClient):
     #     assert account_close.client_func_kwargs == kwargs
     #     return account_close.client_func_return
 
-    # def organization_unit_create(self, **kwargs):
-    #     assert organization_unit_create.client_func_kwargs == kwargs
-    #     return organization_unit_create.client_func_return
+    def create_organizational_unit(self, **kwargs):
+        assert organization_unit_create.client_func_kwargs == kwargs
+        return organization_unit_create.client_func_return
 
-    # def organization_unit_delete(self, **kwargs):
-    #     assert organization_unit_delete.client_func_kwargs == kwargs
-    #     return organization_unit_delete.client_func_return
+    def delete_organizational_unit(self, **kwargs):
+        assert organization_unit_delete.client_func_kwargs == kwargs
 
-    # def organization_unit_rename(self, **kwargs):
-    #     assert organization_unit_rename.client_func_kwargs == kwargs
-    #     return organization_unit_rename.client_func_return
+    def update_organizational_unit(self, **kwargs):
+        assert organization_unit_rename.client_func_kwargs == kwargs
 
-    # def policy_get(self, **kwargs):
-    #     assert policy_get.client_func_kwargs == kwargs
-    #     return policy_get.client_func_return
+    def describe_policy(self, **kwargs):
+        assert policy_get.client_func_kwargs == kwargs
+        return policy_get.client_func_return
 
-    # def policy_delete(self, **kwargs):
-    #     assert policy_delete.client_func_kwargs == kwargs
-    #     return policy_delete.client_func_return
+    def delete_policy(self, **kwargs):
+        assert policy_delete.client_func_kwargs == kwargs
+        return policy_delete.client_func_return
 
-    # def policy_attach(self, **kwargs):
-    #     assert policy_attach.client_func_kwargs == kwargs
-    #     return policy_attach.client_func_return
+    def attach_policy(self, **kwargs):
+        assert policy_attach.client_func_kwargs == kwargs
 
-    # def resource_tag_add(self, **kwargs):
-    #     assert resource_tag_add.client_func_kwargs == kwargs
-    #     return resource_tag_add.client_func_return
+    def tag_resource(self, **kwargs):
+        assert resource_tag_add.client_func_kwargs == kwargs
 
 
 def get_mock_paginate(kwargs: dict, return_obj):
