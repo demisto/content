@@ -311,7 +311,7 @@ script:
     - contextPath: InfoFile.Type
       description: The type of the image/pdf file.
       type: string
-  dockerimage: devdemisto/chromium:119.0.6045.80969
+  dockerimage: devdemisto/chromium:119.0.6045.80970
   runonce: false
   script: '-'
   subtype: python3
