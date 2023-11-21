@@ -1051,13 +1051,19 @@ def handle_submitted_notable(service: client.Service, notable: Notable, enrichme
                     job = client.Job(service=service, sid=enrichment.id)
                     if job.is_done():
                         demisto.debug(f'Handling open {enrichment.type} enrichment for notable {notable.id}')
-                        for item in results.JSONResultsReader(job.results(output_mode=OUTPUT_MODE_JSON)):
+                        all_items = results.JSONResultsReader(job.results(output_mode=OUTPUT_MODE_JSON))
+                        demisto.debug(f'{notable.id} {enrichment.type} successful. {len(all_items)}')
+                        for item in all_items:
                             if handle_message(item):
                                 continue
                             enrichment.data.append(item)
                         enrichment.status = Enrichment.SUCCESSFUL
+                        demisto.debug(f'{notable.id} {enrichment.type} successful. {len(enrichment.data)=}')
+                    else:
+                        demisto.debug(f'Enrichment {enrichment.type} for notable {notable.id} is still not done')
                 except Exception as e:
-                    demisto.error(
+
+                demisto.error(
                         f"Caught an exception while retrieving {enrichment.type}\
                         enrichment results for notable {notable.id}: {str(e)}"
                     )
