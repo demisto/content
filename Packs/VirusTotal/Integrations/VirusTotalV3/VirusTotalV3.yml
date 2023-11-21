@@ -31,14 +31,24 @@ configuration:
   defaultvalue: 'false'
   type: 8
   required: false
-- display: File Threshold. Minimum number of positive results from VT scanners to consider the file malicious.
-  name: fileThreshold
+- display: File Malicious Threshold. Minimum number of positive results from VT scanners to consider the file malicious.
+  name: fileMaliciousThreshold
   defaultvalue: '10'
   type: 0
   required: false
-- display: IP Threshold. Minimum number of positive results from VT scanners to consider the IP malicious.
-  name: ipThreshold
+- display: File Suspicious Threshold. Minimum number of positive and suspicious results from VT scanners to consider the file suspicious.
+  name: fileSuspiciousThreshold
+  defaultvalue: '5'
+  type: 0
+  required: false
+  - display: IP Malicious Threshold. Minimum number of positive results from VT scanners to consider the IP malicious.
+  name: ipMaliciousThreshold
   defaultvalue: '10'
+  type: 0
+  required: false
+- display: IP Suspicious Threshold. Minimum number of positive and suspicious results from VT scanners to consider the IP suspicious.
+  name: ipSuspiciousThreshold
+  defaultvalue: '5'
   type: 0
   required: false
 - display: Disable reputation lookups for private IP addresses
@@ -47,14 +57,24 @@ configuration:
   type: 8
   required: false
   additionalinfo: To reduce the number of lookups made to the VT API, this option can be selected to gracefully skip enrichment of any IP addresses allocated for private networks.
-- display: URL Threshold. Minimum number of positive results from VT scanners to consider the URL malicious.
-  name: urlThreshold
+- display: URL Malicious Threshold. Minimum number of positive results from VT scanners to consider the URL malicious.
+  name: urlMaliciousThreshold
   defaultvalue: '10'
   type: 0
   required: false
-- display: Domain Threshold. Minimum number of positive results from VT scanners to consider the domain malicious.
-  name: domainThreshold
+- display: URL Suspicious Threshold. Minimum number of positive and suspicious results from VT scanners to consider the URL suspicious.
+  name: urlSuspiciousThreshold
+  defaultvalue: '5'
+  type: 0
+  required: false
+- display: Domain Malicious Threshold. Minimum number of positive results from VT scanners to consider the Domain malicious.
+  name: domainMaliciousThreshold
   defaultvalue: '10'
+  type: 0
+  required: false
+- display: Domain Suspicious Threshold. Minimum number of positive and suspicious results from VT scanners to consider the Domain suspicious.
+  name: domainSuspiciousThreshold
+  defaultvalue: '5'
   type: 0
   required: false
 - display: 'Preferred Vendors List. CSV list of vendors who are considered more trustworthy.'
@@ -87,10 +107,15 @@ configuration:
   defaultvalue: '10000'
   type: 0
   required: false
-- display: 'Premium Subscription Only: Relationship Files Threshold'
-  name: relationship_threshold
+- display: 'Premium Subscription Only: Relationship Malicious Files Threshold'
+  name: relationshipMaliciousThreshold
   type: 0
   defaultvalue: '3'
+  required: false
+- display: 'Premium Subscription Only: Relationship Suspicious Files Threshold'
+  name: relationshipSuspiciousThreshold
+  type: 0
+  defaultvalue: '2'
   required: false
 - additionalinfo: Select the list of relationships to retrieve from the API. Note that relationships that are signed with * key are available only for the VirusTotal premium API key.
   display: IP Relationships
