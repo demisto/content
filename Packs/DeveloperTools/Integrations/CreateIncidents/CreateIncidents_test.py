@@ -1,9 +1,9 @@
 import json
 import io
 from collections import namedtuple
-
+from CommonServerPython import DemistoException
 import CreateIncidents
-
+import demistomock as demisto
 import pytest
 
 Attachment = namedtuple('Attachment', ['name', 'content'])
@@ -20,6 +20,7 @@ def util_loaf_file(path):
 
 
 incident_list = util_load_json('test_data/incidents_examples.json')
+incident = util_loaf_file('test_data/incidents.json')
 context_list = util_load_json('test_data/context_examples.json')
 attachment_content = util_loaf_file('test_data/YOU HAVE WON 10000$.eml')
 CLIENT_MOCK = CreateIncidents.Client('example_url.com', False, False)
@@ -232,3 +233,34 @@ def test_create_test_incident_command_happy(mocker, incidents, attachment, expec
                                                             'attachment_paths': attachment})
     assert type(parse_mock.call_args[0][0]) == list
     assert len(parse_mock.call_args[0][0]) == expected
+
+
+ARGS = [{'incident_entry_id': 'entry_id', 'incident_raw_json': '{"name": "incident}'},
+        {'incident_entry_id': '', 'incident_raw_json': ''}]
+
+
+@pytest.mark.parametrize('args', ARGS)
+def test_create_test_incident_from_json_command_raise_error(args):
+    """
+    Given: Invalid command arguments
+    When: creating a new incident from file
+    Then: Makes sure client fails with correct error
+    """
+
+    with pytest.raises(DemistoException) as e:
+        CreateIncidents.create_test_incident_from_json_command(args)
+    assert str(e.value) == 'Please insert entry_id or incident_raw_json, and not both'
+
+
+def test_create_test_incident_from_json_command(mocker):
+    """
+    Given: Raw json that represents incident
+           Entry id represents incident attachment
+    When: creating a new incident from file
+    Then: Makes sure attachments are added
+    """
+    args = {'incident_raw_json': incident, 'attachment_entry_ids': 'entry_id'}
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': 'path', 'name': 'fileName'})
+    set_context_mock = mocker.patch.object(CreateIncidents, 'set_integration_context')
+    CreateIncidents.create_test_incident_from_json_command(args)
+    assert 'entry_id_attachment' in set_context_mock.call_args_list[0][0][0]['incidents'][0]
