@@ -11082,7 +11082,7 @@ def xsiam_api_call_with_retries(
     response = None
 
     while status_code != 200 and attempt_num < num_of_attempts + 1:
-        demisto.debug(f'Sending {data_type} into xsiam, attempt number {attempt_num}')
+        demisto.debug('Sending {data_type} into xsiam, attempt number {attempt_num}'.format(data_type=data_type, attempt_num=attempt_num))
         # in the last try we should raise an exception if any error occurred, including 429
         ok_codes = (200, 429) if attempt_num < num_of_attempts else None
         response = client._http_request(
@@ -11251,12 +11251,13 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     collector_name = calling_context.get('IntegrationBrand', '')
     items_count = len(data) if isinstance(data, list) else 1
     if data_type not in DATA_TYPES:
-        demisto.debug(f"data type must be one of these values: {DATA_TYPES}")
+        demisto.debug("data type must be one of these values: {types}".format(types=DATA_TYPES))
         return
 
     if not data:
-        demisto.debug(f'send_data_to_xsiam function received no {data_type}, skipping the API call to send {data_type} to XSIAM')
-        demisto.updateModuleHealth({f'{data_type}Pulled': data_size})
+        demisto.debug('send_data_to_xsiam function received no {data_type}, '
+                      'skipping the API call to send {data} to XSIAM'.format(data_type=data_type, data=data_type))
+        demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
         return
 
     # only in case we have data to send to XSIAM we continue with this flow.
@@ -11269,7 +11270,8 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         # Separating each event with a new line
         data = '\n'.join(data)
     elif not isinstance(data, str):
-        raise DemistoException(f'Unsupported type: {type(data)} for the {data_type} parameter. Should be a string or list.')
+        raise DemistoException('Unsupported type: {data} for the {data_type} parameter.'
+                               ' Should be a string or list.'.format(data=type(data), data_type=data_type))
     if not data_format:
         data_format = 'text'
 
@@ -11291,7 +11293,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         headers['snapshot_id'] = str(round(time.time() * 1000))
         headers['total_items_count'] = str(items_count)
 
-    header_msg = f'Error sending new {data_type} into XSIAM.\n'
+    header_msg = 'Error sending new {data_type} into XSIAM.\n'.format(data_type = data_type)
 
     def data_error_handler(res):
         """
@@ -11332,7 +11334,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
                                     num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
                                     zipped_data=zipped_data, is_json_response=True)
 
-    demisto.updateModuleHealth({f'{data_type}Pulled': data_size})
+    demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
 
 ###########################################
 #     DO NOT ADD LINES AFTER THIS ONE     #
