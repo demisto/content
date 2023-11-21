@@ -343,7 +343,7 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_t
     if late_indexed_pagination := last_run_data.get('late_indexed_pagination'):
         # code for additional pagination fetch here
         window = f'{kwargs_oneshot.get("earliest_time")}-{kwargs_oneshot.get("latest_time")}'
-        demisto.debug(f'[SplunkPy] additional fetch for the window {window}')
+        demisto.debug(f'[SplunkPy] additional fetch for the window {window} to check for late indexed incidents')
         if last_run_fetched_ids:
             exclude_id_where = f'where not event_id in ({",".join(last_run_fetched_ids)})'
             fetch_query = f'{fetch_query} | {exclude_id_where}'
@@ -372,10 +372,10 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_t
             incident_ids_to_add.append(incident_id)
             incidents.append(inc)
             notables.append(notable_incident)
-            extensive_log(f'[SplunkPy] - Fetched incident {item.get("event_id", incident_id)} to be created.')
+            extensive_log(f'[SplunkPy] - Fetched incident {incident_id} to be created.')
         else:
             num_of_dropped += 1
-            extensive_log(f'[SplunkPy] - Dropped incident {item.get("event_id", incident_id)} due to duplication.')
+            extensive_log(f'[SplunkPy] - Dropped incident {incident_id} due to duplication.')
 
     current_epoch_time = int(time.time())
     extensive_log(f'[SplunkPy] Size of last_run_fetched_ids before adding new IDs: {len(last_run_fetched_ids)}')
@@ -404,6 +404,7 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_t
     # so the next run earliest time will be the latest_time from this iteration
     # should also set when num_of_dropped == FETCH_LIMIT
     if (len(incidents) + num_of_dropped) < FETCH_LIMIT:
+        demisto.debug(f'[SplunkPy] Number of fetched incidents, dropped or not, is less than {FETCH_LIMIT=}. Starting new page')
         next_run_earliest_time = latest_time
         new_last_run = {
             'time': next_run_earliest_time,
@@ -414,21 +415,26 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_t
     # we get limit notables from splunk
     # we should fetch the entire queue with offset - so set the offset, time and latest_time for the next run
     else:
+        demisto.debug(f'[SplunkPy] Number of fetched incidents, dropped or not, is equal to {FETCH_LIMIT=}. Continue pagination')
         new_last_run = {
             'time': occured_start_time,
             'latest_time': latest_time,
             'offset': search_offset + FETCH_LIMIT,
             'found_incidents_ids': last_run_fetched_ids
         }
-    
+    new_last_run['late_indexed_pagination'] = False
     # Need to fetch again this "window" to be sure no "late" indexed events are missed
     if num_of_dropped == FETCH_LIMIT and '`notable`' in fetch_query:
+        demisto.debug('Need to fetch again this "window" to be sure no "late" indexed events are missed')
         new_last_run['late_indexed_pagination'] = True
     # If we are in the process of checking late indexed events, and len(fetch_incidents) == FETCH_LIMIT,
     # that means we need to continue the process of checking late indexed events
     if len(incidents) == FETCH_LIMIT and late_indexed_pagination:
-         new_last_run['late_indexed_pagination'] = True
-    demisto.debug(f'SplunkPy - {new_last_run["time"]=}, {new_last_run["latest_time"]=}, {new_last_run["offset"]=}')
+        demisto.debug(f'Number of valid incidents equals {FETCH_LIMIT=}, and current fetch checked for late indexed events.'
+                      ' Continue checking for late events')
+        new_last_run['late_indexed_pagination'] = True
+    demisto.debug(f'SplunkPy set last run - {new_last_run["time"]=}, {new_last_run["latest_time"]=}, {new_last_run["offset"]=}'
+                  f', late_indexed_pagination={new_last_run.get("late_indexed_pagination")}')
 
     last_run_data.update(new_last_run)
     demisto.setLastRun(last_run_data)
