@@ -3171,8 +3171,8 @@ def main():
     remove_nulls_from_dictionary(params)
     # get connectivity parameters
     server_url = params.get('server_url', '').strip()
-    client_id = params.get('client_id', '').strip()
-    client_secret_key = params.get('client_secret_key', '').strip()
+    client_id = str(dict_safe_get(params, ["credentials", "identifier"])).strip()
+    client_secret_key = str(dict_safe_get(params, ["credentials", "password"])).strip()
     verify_certificate = not argToBoolean(params.get('insecure', False))
     proxy = argToBoolean(params.get('proxy', False))
 

@@ -8,18 +8,12 @@ configuration:
   name: server_url
   required: true
   type: 0
-- additionalinfo: Identifies a client or application for authentication and authorization in the Vectra AI platform.
-  display: Client ID
-  name: client_id
+- display: Client ID
+  displaypassword: Client Secret Key
+  name: credentials
+  type: 9
   required: true
-  type: 0
-- additionalinfo: Secret key used for secure communication with the Vectra AI platform.
-  display: Client Secret Key
-  hidden: false
-  name: client_secret_key
-  required: true
-  type: 4
-- additionalinfo: When checked, no SSL certificates check will be done when interracting with the Vectra XDR API. It's insecure. (Default - unchecked)
+- additionalinfo: When checked, no SSL certificates check will be done when interacting with the Vectra XDR API. It's insecure. (Default - unchecked)
   display: Trust any certificate (not secure)
   name: insecure
   required: false

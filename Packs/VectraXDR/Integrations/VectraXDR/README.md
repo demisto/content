@@ -27,14 +27,14 @@ This integration supports only cloud instances of Vectra XDR. To configure an in
     | Server URL | URL of the Vectra AI platform. | True |
     | Client ID | Identifies a client or application for authentication and authorization in the Vectra AI platform. | True |
     | Client Secret Key | Secret key used for secure communication with the Vectra AI platform. | True |
-    | Trust any certificate (not secure) | When checked, no SSL certificates check will be done when interracting with the Vectra XDR API. It's insecure. (Default - unchecked) | False |
+    | Trust any certificate (not secure) | When checked, no SSL certificates check will be done when interacting with the Vectra XDR API. It's insecure. \(Default - unchecked\) | False |
     | Use system proxy settings | Use the system proxy settings to reach with the Vectra XDR API. | False |
     | Fetch incidents |  | False |
     | Max Fetch | The maximum number of entities to fetch each time. If the value is greater than 200, it will be considered as 200. The maximum is 200. | False |
     | First Fetch Time | The date or relative timestamp from which to begin fetching entities.<br/><br/>Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/>    <br/>For example: 01 May 2023, 01 Mar 2021 04:45:33, 2022-04-17T14:05:44Z. | False |
-    | Mirroring Direction | The mirroring direction in which to mirror the entities. You can mirror "Incoming" (from Vectra to XSOAR), "Outgoing" (from XSOAR to Vectra), or in both directions. | False |
+    | Mirroring Direction | The mirroring direction in which to mirror the entities. You can mirror "Incoming" \(from Vectra to XSOAR\), "Outgoing" \(from XSOAR to Vectra\), or in both directions. | False |
     | Mirror tag for notes | The tag value should be used to mirror the entity note by adding the same tag in the notes. | False |
-    | Entity Type | Entity Type(Host, Account). | False |
+    | Entity Type | Entity Type\(Host, Account\). | False |
     | Prioritized | Retrieve only prioritize entities based on the configuration on the Vectra platform. If not selected will fetch all entities. | False |
     | Tags | Retrieve entities that contain any of the tags specified. Supports comma-separated values. | False |
     | Detection Category | Retrieve detections belonging to a specified category. | False |
