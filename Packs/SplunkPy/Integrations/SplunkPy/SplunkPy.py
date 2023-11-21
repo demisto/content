@@ -917,7 +917,7 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
         ):
             status, earliest_offset, latest_offset = get_drilldown_timeframe(notable_data, raw_dict)
             if status:
-                kwargs = {"count": num_enrichment_events, "exec_mode": "normal"}
+                kwargs = {"max_count": num_enrichment_events, "exec_mode": "normal"}
                 if latest_offset:
                     kwargs['latest_time'] = latest_offset
                 if earliest_offset:
@@ -958,7 +958,7 @@ def identity_enrichment(service: client.Service, notable_data, num_enrichment_ev
         fields=["user", "src_user"],
         add_backslash=True,
     ):
-        kwargs = {"count": num_enrichment_events, "exec_mode": "normal"}
+        kwargs = {"max_count": num_enrichment_events, "exec_mode": "normal"}
         query = f'| inputlookup identity_lookup_expanded where {users}'
         demisto.debug(f"Identity query for notable {notable_data[EVENT_ID]}: {query}")
         try:
@@ -988,7 +988,7 @@ def asset_enrichment(service: client.Service, notable_data, num_enrichment_event
         prefix="asset",
         fields=["src", "dest", "src_ip", "dst_ip"],
     ):
-        kwargs = {"count": num_enrichment_events, "exec_mode": "normal"}
+        kwargs = {"max_count": num_enrichment_events, "exec_mode": "normal"}
         query = f'| inputlookup append=T asset_lookup_by_str where {assets} \
                 | inputlookup append=t asset_lookup_by_cidr where {assets} \
                 | rename _key as asset_id \
