@@ -48,7 +48,6 @@ def get_new_packs(git_sha1):
     diff_cmd = f'git diff --diff-filter=A --name-only {git_sha1} */{PACK_METADATA}'
     try:
         diff_result = run_command(diff_cmd, exit_on_error=False)
-        logging.critical('finish get_new_packs run_command')
     except RuntimeError:
         logging.critical(
             'Unable to get the SHA1 of the commit in which the version was released. This can happen if your '
