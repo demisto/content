@@ -83,7 +83,6 @@ def determine_reviewer(potential_reviewers: list[str], repo: Repository) -> str:
         assignees = {assignee.login for assignee in pull.assignees}
         for reviewer in potential_reviewers:
             if reviewer in assignees:
-                print(f'{reviewer=}, {pull}')
                 assigned_prs_per_potential_reviewer[reviewer] = assigned_prs_per_potential_reviewer.get(reviewer, 0) + 1
     print(f'{assigned_prs_per_potential_reviewer=}')
     selected_reviewer = sorted(assigned_prs_per_potential_reviewer,
