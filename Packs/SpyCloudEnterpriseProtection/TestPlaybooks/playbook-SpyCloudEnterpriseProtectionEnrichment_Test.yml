@@ -57,7 +57,7 @@ tasks:
       version: -1
       name: spycloud-list-breaches
       description: ''
-      script: SpyCloud|||spycloud-list-breaches
+      script: spycloud-list-breaches
       type: regular
       iscommand: true
       brand: ''
@@ -454,7 +454,7 @@ tasks:
       version: -1
       name: spycloud-get-breach-data
       description: ''
-      script: SpyCloud|||spycloud-get-breach-data
+      script: spycloud-get-breach-data
       type: regular
       iscommand: true
       brand: ''
@@ -853,7 +853,7 @@ tasks:
       version: -1
       name: spycloud-domain-data
       description: ''
-      script: SpyCloud|||spycloud-domain-data
+      script: spycloud-domain-data
       type: regular
       iscommand: true
       brand: ''
@@ -1142,7 +1142,7 @@ tasks:
       version: -1
       name: spycloud-username-data
       description: ''
-      script: SpyCloud|||spycloud-username-data
+      script: spycloud-username-data
       type: regular
       iscommand: true
       brand: ''
@@ -1431,7 +1431,7 @@ tasks:
       version: -1
       name: spycloud-ip-address-data
       description: ''
-      script: SpyCloud|||spycloud-ip-address-data
+      script: spycloud-ip-address-data
       type: regular
       iscommand: true
       brand: ''
@@ -1720,7 +1720,7 @@ tasks:
       version: -1
       name: spycloud-email-data
       description: ''
-      script: SpyCloud|||spycloud-email-data
+      script: spycloud-email-data
       type: regular
       iscommand: true
       brand: ''
@@ -2009,7 +2009,7 @@ tasks:
       version: -1
       name: spycloud-password-data
       description: ''
-      script: SpyCloud|||spycloud-password-data
+      script: spycloud-password-data
       type: regular
       iscommand: true
       brand: ''
@@ -2298,7 +2298,7 @@ tasks:
       version: -1
       name: spycloud-watchlist-data
       description: ''
-      script: SpyCloud|||spycloud-watchlist-data
+      script: spycloud-watchlist-data
       type: regular
       iscommand: true
       brand: ''
@@ -2585,7 +2585,7 @@ tasks:
       version: -1
       name: spycloud-compass-device-data
       description: ''
-      script: SpyCloud|||spycloud-compass-device-data
+      script: spycloud-compass-device-data
       type: regular
       iscommand: true
       brand: ''
@@ -2874,7 +2874,7 @@ tasks:
       version: -1
       name: spycloud-compass-data-list
       description: ''
-      script: SpyCloud|||spycloud-compass-data-list
+      script: spycloud-compass-data-list
       type: regular
       iscommand: true
       brand: ''
@@ -3161,7 +3161,7 @@ tasks:
       version: -1
       name: spycloud-compass-device-list
       description: ''
-      script: SpyCloud|||spycloud-compass-device-list
+      script: spycloud-compass-device-list
       type: regular
       iscommand: true
       brand: ''
@@ -3448,7 +3448,7 @@ tasks:
       version: -1
       name: spycloud-compass-application-data
       description: ''
-      script: SpyCloud|||spycloud-compass-application-data
+      script: spycloud-compass-application-data
       type: regular
       iscommand: true
       brand: ''

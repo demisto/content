@@ -1,6 +1,5 @@
 import pytest
 import json
-import io
 from SpyCloudEnterpriseProtectionFeed import (
     Client,
     fetch_incident,
@@ -11,7 +10,7 @@ from CommonServerPython import DemistoException
 
 
 def util_load_json(path):
-    with io.open(path, mode="r") as f:
+    with open(path) as f:
         return json.loads(f.read())
 
 
@@ -39,9 +38,7 @@ def test_spy_cloud_error_handler():
         status_code=429,
         headers={"x-amzn-ErrorType": "LimitExceededException"},
     )
-    err_msg = (
-        "You have exceeded your monthly quota. Kindly " "contact SpyCloud " "support."
-    )
+    err_msg = "You have exceeded your monthly quota. Kindly contact SpyCloud support."
     with pytest.raises(DemistoException, match=err_msg):
         client.spy_cloud_error_handler(response)
 

@@ -3,7 +3,7 @@ from json import dumps
 
 import demistomock as demisto
 from CommonServerPython import *  # noqa: F401 # pylint:# disable=unused-wildcard-import
-from typing import Dict, List, Any
+from typing import Any
 from requests import Response
 from urllib3 import disable_warnings
 
@@ -20,12 +20,8 @@ DEFAULT_PAGE_SIZE = 50
 MAX_RETRIES = 5
 BACK_OFF_TIME = 0.1
 DEFAULT_OFFSET = 0
-PAGE_NUMBER_ERROR_MSG = (
-    "Invalid Input Error: page number should be greater " "than zero."
-)
-PAGE_SIZE_ERROR_MSG = (
-    "Invalid Input Error: page size should be greater than " "" "zero."
-)
+PAGE_NUMBER_ERROR_MSG = "Invalid Input Error: page number should be greater than zero."
+PAGE_SIZE_ERROR_MSG = "Invalid Input Error: page size should be greater than zero."
 LIMIT_EXCEED = "LimitExceededException"
 TOO_MANY_REQUESTS = "TooManyRequestsException"
 INVALID_IP = "Invalid IP"
@@ -34,9 +30,7 @@ X_AMAZON_ERROR_TYPE = "x-amzn-ErrorType"
 SPYCLOUD_ERROR = "SpyCloud-Error"
 INVALID_IP_MSG = "Kindly contact SpyCloud support to whitelist your IP Address."
 WRONG_API_URL = "Verify that the API URL parameter is correct and that you have access to the server from your host"
-MONTHLY_QUOTA_EXCEED_MSG = (
-    "You have exceeded your monthly quota. Kindly " "contact SpyCloud support."
-)
+MONTHLY_QUOTA_EXCEED_MSG = "You have exceeded your monthly quota. Kindly contact SpyCloud support."
 WATCHLIST_ENDPOINT = "breach/data/watchlist"
 DATE_TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default
 DEFAULT_DATE = "-1days"
@@ -76,8 +70,8 @@ class Client(BaseClient):
         self.apikey = apikey
 
     def query_spy_cloud_api(
-        self, end_point: str, params: Dict[Any, Any] = None, is_retry: bool = False
-    ) -> Dict:
+        self, end_point: str, params: dict[Any, Any] = None, is_retry: bool = False
+    ) -> dict:
         """
         Args:
          end_point (str): SpyCloud endpoint.
@@ -162,7 +156,7 @@ class Client(BaseClient):
 """ HELPER FUNCTIONS """
 
 
-def test_module(client: Client, params: Dict) -> str:
+def test_module(client: Client, params: dict) -> str:
     """
     Tests API connectivity and authentication
     When 'ok' is returned it indicates the integration works like
@@ -177,7 +171,7 @@ def test_module(client: Client, params: Dict) -> str:
     return "ok"
 
 
-def build_iterators(results: List) -> List:
+def build_iterators(results: list) -> list:
     """
     Function to parse data and create relationship.
     Args:
@@ -201,7 +195,7 @@ def build_iterators(results: List) -> List:
     return incident_record
 
 
-def create_spycloud_args(args: Dict, client: Client) -> Dict:
+def create_spycloud_args(args: dict, client: Client) -> dict:
     """
     This function creates a dictionary of the arguments sent to the SpyCloud
     API based on the demisto.args().
@@ -210,7 +204,7 @@ def create_spycloud_args(args: Dict, client: Client) -> Dict:
     Returns:
         Return arguments dict.
     """
-    spycloud_args: Dict
+    spycloud_args: dict
     last_run = client.get_last_run()
     since: Any
     since_modification_date: Any
@@ -263,7 +257,7 @@ def create_spycloud_args(args: Dict, client: Client) -> Dict:
     return spycloud_args
 
 
-def remove_duplicate(since_response: list, modified_response: list) -> List:
+def remove_duplicate(since_response: list, modified_response: list) -> list:
     """
     Function to remove duplicate record from two different calls.
     Args:
@@ -272,14 +266,14 @@ def remove_duplicate(since_response: list, modified_response: list) -> List:
     """
     demisto.debug(f"since_length {len(since_response)}")
     demisto.debug(f"mod_length {len(modified_response)}")
-    id_set = set(rec["document_id"] for rec in modified_response)
+    id_set = {rec["document_id"] for rec in modified_response}
     modified_response.extend(
         res for res in since_response if res["document_id"] not in id_set
     )
     return modified_response
 
 
-def fetch_incident(client: Client, args: Dict):
+def fetch_incident(client: Client, args: dict):
     """
     Function to create Incident and Indicator to XSOAR platform.
     Args:

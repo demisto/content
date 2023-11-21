@@ -1,5 +1,5 @@
 from math import ceil
-from typing import Dict, List, Optional, Any
+from typing import Any
 from collections import namedtuple
 import requests
 from urllib3 import disable_warnings
@@ -21,10 +21,8 @@ DEFAULT_PAGE_SIZE = 50
 MAX_RETRIES = 5
 BACK_OFF_TIME = 0.1
 DEFAULT_OFFSET = 0
-PAGE_NUMBER_ERROR_MSG = (
-    "Invalid Input Error: page number should be greater " "than zero."
-)
-PAGE_SIZE_ERROR_MSG = "Invalid Input Error: page size should be greater than " "zero."
+PAGE_NUMBER_ERROR_MSG = "Invalid Input Error: page number should be greater than zero."
+PAGE_SIZE_ERROR_MSG = "Invalid Input Error: page size should be greater than zero."
 LIMIT_EXCEED = "LimitExceededException"
 TOO_MANY_REQUESTS = "TooManyRequestsException"
 INVALID_IP = "Invalid IP"
@@ -33,9 +31,7 @@ X_AMAZON_ERROR_TYPE = "x-amzn-ErrorType"
 WRONG_API_URL = "Verify that the API URL parameter is correct and that you have access to the server from your host"
 SPYCLOUD_ERROR = "SpyCloud-Error"
 INVALID_IP_MSG = "Kindly contact SpyCloud support to whitelist your IP Address."
-MONTHLY_QUOTA_EXCEED_MSG = (
-    "You have exceeded your monthly quota. Kindly " "contact SpyCloud support."
-)
+MONTHLY_QUOTA_EXCEED_MSG = "You have exceeded your monthly quota. Kindly contact SpyCloud support."
 COMMAND_PARAMS = namedtuple(
     "COMMAND_PARAMS",
     ["endpoint", "title_string", "context", "key_field", "search_args"],
@@ -61,8 +57,8 @@ class Client(BaseClient):
         self.apikey = apikey
 
     def query_spy_cloud_api(
-        self, end_point: str, params: Dict[Any, Any] = None, is_retry: bool = False
-    ) -> Dict:
+        self, end_point: str, params: dict[Any, Any] = None, is_retry: bool = False
+    ) -> dict:
         """
         Args:
          end_point (str): SpyCloud endpoint.
@@ -113,7 +109,7 @@ class Client(BaseClient):
         elif response.status_code == 403:
             if INVALID_IP in response_headers.get(SPYCLOUD_ERROR, ""):
                 raise DemistoException(
-                    f'{response_headers.get(SPYCLOUD_ERROR, "")}. ' f"{INVALID_IP_MSG}",
+                    f'{response_headers.get(SPYCLOUD_ERROR, "")}.  {INVALID_IP_MSG}',
                     res=response,
                 )
             elif INVALID_API_KEY in response_headers.get(SPYCLOUD_ERROR, ""):
@@ -127,7 +123,7 @@ class Client(BaseClient):
 """ HELPER FUNCTIONS """
 
 
-def pagination(page: Optional[int], page_size: Optional[int], limit: Optional[int]):
+def pagination(page: int | None, page_size: int | None, limit: int | None):
     """
     Define pagination.
     Args:
@@ -154,7 +150,7 @@ def pagination(page: Optional[int], page_size: Optional[int], limit: Optional[in
     return limit, offset
 
 
-def get_paginated_results(results: List, offset: int, limit: int) -> List:
+def get_paginated_results(results: list, offset: int, limit: int) -> list:
     return results[offset:offset + limit]
 
 
@@ -173,7 +169,7 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
-def create_spycloud_args(args: Dict) -> Dict:
+def create_spycloud_args(args: dict) -> dict:
     """
     This function creates a dictionary of the arguments sent to the SpyCloud
     API based on the demisto.args().
@@ -183,7 +179,7 @@ def create_spycloud_args(args: Dict) -> Dict:
         Return arguments dict.
     """
 
-    spycloud_args: Dict = {}
+    spycloud_args: dict = {}
     since: Any = arg_to_datetime(args.get("since", None), "Since")
     until: Any = arg_to_datetime(args.get("until", None), "Until")
     since_modification_date: Any = arg_to_datetime(
@@ -221,7 +217,7 @@ def create_spycloud_args(args: Dict) -> Dict:
     return spycloud_args
 
 
-def breaches_lookup_to_markdown(response: List[Dict], title: str):
+def breaches_lookup_to_markdown(response: list[dict], title: str):
     """
     Parsing the SpyCloud data
     Args:
@@ -249,7 +245,7 @@ def breaches_lookup_to_markdown(response: List[Dict], title: str):
     return markdown
 
 
-def lookup_to_markdown_table(response: List[Dict], title: str):
+def lookup_to_markdown_table(response: list[dict], title: str):
     """
     Parsing the SpyCloud data
     Args:
@@ -298,7 +294,7 @@ def lookup_to_markdown_table(response: List[Dict], title: str):
     return markdown
 
 
-def command_helper_function(client: Client, args: Dict[str, Any], command: str):
+def command_helper_function(client: Client, args: dict[str, Any], command: str):
     """
     A helper function that aids in pagination for querying an API.
 
@@ -336,7 +332,7 @@ def command_helper_function(client: Client, args: Dict[str, Any], command: str):
     else:
         updated_limit, offset = pagination(page, page_size, limit)
         if total_records > offset:
-            for i in range(offset // 1000):
+            for _i in range(offset // 1000):
                 res = client.query_spy_cloud_api(endpoint, {"cursor": cursor})
                 cursor, results = res.get("cursor"), results + res.get("results", [])
         else:
@@ -361,7 +357,7 @@ def command_helper_function(client: Client, args: Dict[str, Any], command: str):
 
 
 def get_command_title_string(
-    sub_context: str, page: Optional[int], page_size: Optional[int], hits: Optional[int]
+    sub_context: str, page: int | None, page_size: int | None, hits: int | None
 ) -> str:
     """
     Define command title
