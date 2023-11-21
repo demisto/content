@@ -827,7 +827,7 @@ class Pack:
 
         if uploaded_packs_dir:
             shutil.copyfile(self.zip_path, uploaded_packs_dir / f"{self.name}.zip")
-        logging.debug(f"Finished sign_and_zip_pack for pack '{self.name}'")
+        logging.debug(f"Finished sign_and_zip_pack for pack '{self.name}', {self.zip_path=}")
         return True
 
     def upload_encrypted_private_content_to_storage(self, storage_bucket, storage_base_path, pack_artifacts_path):

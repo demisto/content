@@ -911,7 +911,7 @@ def get_images_data(packs_list: list, markdown_images_dict: dict):
 
 
 def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signature_key,
-                                       packs_dict):
+                                       packs_dict: dict[str, Pack]):
     """
     Uploads packs with mandatory dependencies zip for all packs
     Args:
@@ -945,7 +945,7 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
                     # zip the pack and each of the pack's dependencies (or copy existing zip if was already zipped)
                     if not (current_pack.zip_path and os.path.isfile(current_pack.zip_path)):
                         # the zip does not exist yet, zip the current pack
-                        task_status = pack.sign_and_zip_pack(signature_key)
+                        task_status = current_pack.sign_and_zip_pack(signature_key)
                         if not task_status:
                             # modify the pack's status to indicate the failure was in the dependencies zip step
                             pack.status = PackStatus.FAILED_CREATING_DEPENDENCIES_ZIP_SIGNING.name
