@@ -729,32 +729,13 @@ def get_a_list_of_unanalyzed_abuse_mailbox_campaigns_command(client, args):
 
     return command_results
 
-def consolidate_threat_messages(threat_messages):
-    consolidated_messages = {}
-
-    for message in threat_messages:
-        message_id = message.get('abxMessageId')
-
-        for key, value in message.items():
-            if key == 'abxMessageId':
-                continue
-
-            if key not in consolidated_messages:
-                consolidated_messages[key] = []
-
-            tagged_value = {'abxMessageId': message_id, 'value': value}
-            consolidated_messages[key].append(tagged_value)
-
-    return consolidated_messages
-
 
 def generate_threat_incidents(client, threats, current_iso_format_time):
     incidents = []
     for threat in threats:
-        consolidated_threat_details = None
+        threat_details = None
         try:
             threat_details = client.get_details_of_a_threat_request(threat["threatId"])
-            consolidated_threat_details = consolidate_threat_messages(threat_details["messages"])
         except Exception as e:
             logging.error(f"Failed to fetch details for threat {threat}: {e}")
 
@@ -762,7 +743,7 @@ def generate_threat_incidents(client, threats, current_iso_format_time):
             "dbotMirrorId": str(threat["threatId"]),
             "name": "Threat",
             "occurred": current_iso_format_time,
-            "rawJSON": json.dumps(consolidated_threat_details)
+            "rawJSON": json.dumps(threat_details) if threat_details else {}
         }
         incidents.append(incident)
 

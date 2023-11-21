@@ -1,5 +1,5 @@
 category: Data Enrichment & Threat Intelligence
-defaultmapperin: AbnormalSecurity Mapper
+defaultmapperin: Abnormal Security - Incoming Mapper
 commonfields:
   id: Abnormal Security
   version: -1
