@@ -81,11 +81,8 @@ def determine_reviewer(potential_reviewers: list[str], repo: Repository) -> str:
         if label_to_consider not in pr_labels:
             continue
         assignees = {assignee.login for assignee in pull.assignees}
-        requested_reviewers, _ = pull.get_review_requests()
-        reviewers_info = {requested_reviewer.login for requested_reviewer in requested_reviewers}
-        combined_list = assignees.union(reviewers_info)
         for reviewer in potential_reviewers:
-            if reviewer in combined_list:
+            if reviewer in assignees:
                 assigned_prs_per_potential_reviewer[reviewer] = assigned_prs_per_potential_reviewer.get(reviewer, 0) + 1
     print(f'{assigned_prs_per_potential_reviewer=}')
     selected_reviewer = sorted(assigned_prs_per_potential_reviewer,
