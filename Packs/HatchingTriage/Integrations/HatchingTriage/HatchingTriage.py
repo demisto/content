@@ -1,6 +1,6 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 
 import json
 import traceback
@@ -494,10 +494,13 @@ def query_search(client, **args) -> CommandResults:
 def main():
     params = demisto.params()
     args = demisto.args()
+    api_key = params.get("credentials", {}).get("password") or params.get("API Key")
+    if not api_key:
+        return_error('Please provide a valid API token')
     client = Client(
         params.get("base_url"),
         verify=params.get("Verify SSL"),
-        headers={"Authorization": f'Bearer {params.get("API Key")}'},
+        headers={"Authorization": f'Bearer {api_key}'},
         proxy=params.get("proxy", False)
     )
 

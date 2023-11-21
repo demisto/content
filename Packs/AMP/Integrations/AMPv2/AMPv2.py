@@ -14,6 +14,7 @@ from CommonServerUserPython import *  # pylint: disable=wildcard-import
 """ GLOBAL/PARAMS """  # pylint: disable=pointless-string-statement
 
 
+INTEGRATION_NAME = "Cisco AMP v2"
 DEFAULT_INTERVAL = 30
 DEFAULT_TIMEOUT = 600
 FETCH_LIMIT = 200
@@ -187,6 +188,7 @@ class Client(BaseClient):
         reliability: str,
         verify: bool = False,
         proxy: bool = False,
+        should_create_relationships: bool = True,
     ):
         """
         Build URL with authorization arguments to provide the required Basic Authentication.
@@ -207,6 +209,7 @@ class Client(BaseClient):
         )
 
         self.reliability = reliability
+        self.should_create_relationships = should_create_relationships
 
     def computer_list_request(
         self,
@@ -1163,13 +1166,13 @@ class Client(BaseClient):
 
 def fetch_incidents(
     client: Client,
-    last_run: Dict[str, Any],
+    last_run: dict[str, Any],
     first_fetch_time: str,
-    incident_severities: List[str | None],
-    event_types: List[int] = None,
+    incident_severities: list[str | None],
+    event_types: list[int] = None,
     max_incidents_to_fetch: int = FETCH_LIMIT,
     include_null_severities: bool = False,
-) -> Tuple[Dict[str, int], List[dict]]:
+) -> tuple[dict[str, int], list[dict]]:
     """
     Retrieves new alerts every interval (default is 1 minute).
     Implements the logic of making sure that incidents are fetched only once.
@@ -1181,23 +1184,29 @@ def fetch_incidents(
         client (Client): Cisco AMP client to run desired requests
         last_run (Dict[str, Any]):
             last_fetch: Time of the last processed incident.
-            previous_ids: List of incident IDs to that would not be repeated.
+            previous_ids: list of incident IDs to that would not be repeated.
         first_fetch_time (str): Determines the time of when fetching has been started.
-        event_types (List[int], optional): Event types to filter by.
+        event_types (list[int], optional): Event types to filter by.
             Defaults to None.
-        incident_severities (List[str], optional): Incident severities to filter by.
+        incident_severities (list[str], optional): Incident severities to filter by.
             Defaults to None.
         max_incidents_to_fetch (int, optional): Max number of incidents to fetch in a single run.
             Defaults to FETCH_LIMIT.
         include_null_severities (bool): Whether to include incidents without any severity.
 
     Returns:
-        Tuple[Dict[str, int], List[dict]]:
+        tuple[dict[str, int], list[dict]]:
             next_run: Contains information that will be used in the next run.
             incidents: List of incidents that will be created in XSOAR.
     """
     last_fetch = last_run.get("last_fetch")
+
+    # The list of event ids that are suspected of being duplicates
     previous_ids = set(last_run.get("previous_ids", []))
+
+    # Copy the previous_ids list to manage the events list suspectedof
+    # being duplicates for the next fetch
+    new_previous_ids = previous_ids.copy()
 
     # If a last fetch run doesn't exist, use the first fetch time.
     if last_fetch is None:
@@ -1205,10 +1214,28 @@ def fetch_incidents(
 
     last_fetch_timestamp = date_to_timestamp(last_fetch, ISO_8601_FORMAT)
 
-    response = client.event_list_request(start_date=last_fetch, event_types=event_types)
-    items = response["data"]
+    items: list[dict] = []
+    offset: int = 0
 
-    incidents: List[Dict[str, Any]] = []
+    # A loop of fetching the events,
+    # fetches all the events from the current time up
+    # to the provided start_time or last_fetch
+    while True:
+        response = client.event_list_request(start_date=last_fetch,
+                                             event_types=event_types,
+                                             limit=500,
+                                             offset=offset)
+        items = items + response["data"]
+
+        # Check if there are more pages to fetch
+        if "next" not in response["metadata"]["links"]:
+            # Reverses the list of events so that the list is in ascending order
+            # so that the earliest event will be the first in the list
+            items.reverse()
+            break
+        offset = len(items)
+
+    incidents: list[dict[str, Any]] = []
     incident_name = 'Cisco AMP Event ID:"{event_id}"'
 
     # Incase the severity acceptance list is empty, initialize it with all values.
@@ -1234,8 +1261,6 @@ def fetch_incidents(
         if (incident_id := str(item.get("id"))) in previous_ids:
             continue
 
-        previous_ids.add(incident_id)
-
         incident_timestamp = item["timestamp"] * 1000
         incident = remove_empty_elements(
             {
@@ -1245,7 +1270,7 @@ def fetch_incidents(
                 "occurred": timestamp_to_datestring(incident_timestamp),
                 "rawJSON": json.dumps(item),
                 "severity": XSOAR_SEVERITY_BY_AMP_SEVERITY.get(
-                    severity, IncidentSeverity.UNKNOWN
+                    str(severity), IncidentSeverity.UNKNOWN
                 ),
                 "details": str(item.get("event_type")),
                 "dbotMirrorId": incident_id,
@@ -1255,12 +1280,19 @@ def fetch_incidents(
         incidents.append(incident)
 
         # Update the latest incident time that was fetched.
+        # And accordingly initializing the list of `previous_ids`
+        # to the ids that belong to the time of the last incident received
         if incident_timestamp > last_fetch_timestamp:
+            new_previous_ids = {incident_id}
             last_fetch_timestamp = incident_timestamp
+
+        # Adding the event ID when the event time is equal to the last received event
+        elif incident_timestamp == last_fetch_timestamp:
+            new_previous_ids.add(incident_id)
 
     next_run = {
         "last_fetch": timestamp_to_datestring(last_fetch_timestamp),
-        "previous_ids": list(previous_ids),
+        "previous_ids": list(new_previous_ids),
     }
 
     return next_run, incidents
@@ -2034,6 +2066,41 @@ def computer_isolation_polling_command(
     )
 
 
+def create_relationships(
+    client: Client, indicator: str, relationship: dict[str, str | int | dict]
+):
+    '''
+    Creates relationships only when the event has a parent file for the file attached to the event
+    '''
+    if not client.should_create_relationships or not relationship:
+        return None
+
+    if not (identity := relationship.get("identity", {})) or not isinstance(
+        identity, dict
+    ):
+        return None
+
+    if (
+        not (entity_b := identity.get("sha256"))
+        or auto_detect_indicator_type(entity_b) != FeedIndicatorType.File
+    ):
+        return None
+
+    relationships = [
+        EntityRelationship(
+            name=EntityRelationship.Relationships.RELATED_TO,
+            entity_a=indicator,
+            entity_a_type=FeedIndicatorType.File,
+            entity_b=entity_b,
+            entity_b_type=FeedIndicatorType.File,
+            brand=INTEGRATION_NAME,
+            source_reliability=client.reliability,
+        )
+    ]
+
+    return relationships if relationships else None
+
+
 def event_list_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     """
     Get information about events with the option to filter them.
@@ -2113,6 +2180,15 @@ def event_list_command(client: Client, args: Dict[str, Any]) -> List[CommandResu
 
             dbot_score = get_dbotscore(client.reliability, sha256, disposition)
 
+            # Create relationships for the file indicator
+            relationships = (
+                create_relationships(
+                    client=client,
+                    indicator=sha256,
+                    relationship=dict_safe_get(context_output, ["file", "parent"]),
+                )
+            )
+
             file_indicator = Common.File(
                 md5=dict_safe_get(context_output, ["file", "identity", "md5"]),
                 sha1=dict_safe_get(context_output, ["file", "identity", "sha1"]),
@@ -2120,7 +2196,7 @@ def event_list_command(client: Client, args: Dict[str, Any]) -> List[CommandResu
                 path=dict_safe_get(context_output, ["file", "file_path"]),
                 name=dict_safe_get(context_output, ["file", "file_name"]),
                 hostname=dict_safe_get(context_output, ["computer", "hostname"]),
-                relationships=dict_safe_get(context_output, ["file", "parent"]),
+                relationships=relationships,
                 dbot_score=dbot_score,
             )
 
@@ -3699,6 +3775,7 @@ def main() -> None:
             verify=verify_certificate,
             reliability=reliability,
             proxy=proxy,
+            should_create_relationships=argToBoolean(params.get("create_relationships", True))
         )
 
         if command == "test-module":
