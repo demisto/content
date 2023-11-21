@@ -1,0 +1,29 @@
+comment: Get the Server URL.
+commonfields:
+  id: GetServerURL
+  version: -1
+enabled: true
+name: GetServerURL
+outputs:
+- contextPath: ServerURL.Host
+  description: The server host name.
+  type: String
+- contextPath: ServerURL.Port
+  description: The server port.
+  type: Number
+- contextPath: ServerURL.Scheme
+  description: The server scheme.
+  type: String
+- contextPath: ServerURL.URL
+  description: The server full URL.
+  type: String
+script: '-'
+subtype: python3
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.10.12.63474
+runas: DBotWeakRole
+tags: []
+tests:
+- no test
+fromversion: 5.0.0

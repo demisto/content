@@ -1,0 +1,282 @@
+category: Network Security
+commonfields:
+  id: Skyhigh Security
+  version: -1
+configuration:
+- defaultvalue: https://www.myshn.net
+  display: Base URL (e.g., https://www.myshn.net)
+  name: url
+  required: true
+  type: 0
+- additionalinfo: The username and password to use for the connection.
+  display: Credentials
+  name: credentials
+  required: true
+  type: 9
+- display: Maximum number of incidents to fetch every time. Default is 50. Maximum is 500.
+  defaultvalue: 50
+  name: max_fetch
+  type: 0
+  required: false
+- display: First fetch in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days). Default is 3 days.
+  name: first_fetch
+  type: 0
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+description: Skyhigh Security is a cloud-based, multi-tenant service that enables Cloud Discovery and Risk Monitoring, Cloud Usage Analytics, Cloud Access and Control.
+display: Skyhigh Security
+name: Skyhigh Security
+script:
+  commands:
+  - arguments:
+    - description: Maximum number of items that will be returned within a single response. Maximum is 500. If the limit value exceeds the 500 maximum, it will not be flagged as an error but will also not increase results.
+      name: limit
+    - description: Pagination support for use with a large “limit” value.
+      name: page
+    - description: Pagination support for use with a large “limit” value. The maximum is 500.
+      name: page_size
+    - default: true
+      defaultValue: 3 days
+      description: For time arguments use the ISO-8601 standard - '%Y-%m-%dT%H:%M:%SZ' or relative time (last X days).
+      name: start_time
+    - description: For time arguments use the ISO-8601 standard - '%Y-%m-%dT%H:%M:%SZ' or relative time (last X days).
+      name: end_time
+    - description: The actor IDs of the incidents to retrieve.
+      isArray: true
+      name: actor_ids
+    - description: The service names of the incidents to retrieve.
+      isArray: true
+      name: service_names
+    - auto: PREDEFINED
+      description: The type of the incidents to retrieve.
+      isArray: true
+      name: incident_types
+      predefined:
+      - Alert
+      - Threat
+    - auto: PREDEFINED
+      description: The categories of the incidents to retrieve. When defining the categories argument. the incident_types argument is ignored.
+      isArray: true
+      name: categories
+      predefined:
+      - Access
+      - Admin
+      - Audit
+      - CompromisedAccount
+      - Data
+      - InsiderThreat
+      - Policy
+      - PrivilegeAccess
+      - Vulnerability
+    description: Retrieves a list of incidents in ascending time modified order.
+    name: skyhigh-security-incident-query
+    outputs:
+    - contextPath: SkyhighSecurity.Incident
+      description: The incident's metadata.
+      type: Unknown
+  - arguments:
+    - description: The incidents IDs that should be updated.
+      isArray: true
+      name: incident_ids
+      required: true
+    - auto: PREDEFINED
+      description: The new status of the incidents.
+      name: status
+      predefined:
+      - new
+      - opened
+      - false positive
+      - resolved
+      - suppressed
+      - archived
+      required: true
+    description: |-
+      Update status of single/multiple incidents.
+      Note!
+      For multiple IDs, a single status will be applied for all IDs
+      e.g., 123, 456, 789 >> change status to >> closed.
+    name: skyhigh-security-incident-status-update
+  - arguments:
+    - description: The anomaly ID from where to retrieve the activities. Only for incidents of type anomaly (ANO-123).
+      name: anomaly_id
+      required: true
+    description: Fetches activities for a given anomaly ID.
+    name: skyhigh-security-anomaly-activity-list
+    outputs:
+    - contextPath: SkyhighSecurity.AnomalyActivity.timeStamp
+      description: The timestamp of the anomaly activity.
+      type: String
+    - contextPath: SkyhighSecurity.AnomalyActivity.actionName
+      description: The action name.
+      type: String
+    - contextPath: SkyhighSecurity.AnomalyActivity.asnName
+      description: The ASN name of an activity.
+      type: String
+    - contextPath: SkyhighSecurity.AnomalyActivity.city
+      description: The city where the anomaly activity occurred.
+      type: String
+    - contextPath: SkyhighSecurity.AnomalyActivity.collabGroup
+      description: The collaboration group for the anomaly activity.
+      type: String
+    - contextPath: SkyhighSecurity.AnomalyActivity.count
+      description: The number of anomalies detected.
+      type: Number
+    - contextPath: SkyhighSecurity.AnomalyActivity.country
+      description: The country of the anomaly activity.
+      type: String
+    - contextPath: SkyhighSecurity.AnomalyActivity.deviceManaged
+      description: Whether the anomaly activity is managed by the device or not.
+      type: Boolean
+    - contextPath: SkyhighSecurity.AnomalyActivity.directory
+      description: The directory of the anomaly activity.
+      type: String
+    - contextPath: SkyhighSecurity.AnomalyActivity.downloadBytes
+      description: The number of bytes downloaded by the anomaly activity.
+      type: Number
+    - contextPath: SkyhighSecurity.AnomalyActivity.eventCount
+      description: The number of anomalies detected.
+      type: Number
+    - contextPath: SkyhighSecurity.AnomalyActivity.fileFolderPath
+      description: The file folder path for the anomaly activity.
+      type: String
+    - contextPath: SkyhighSecurity.AnomalyActivity.fileName
+      description: The file name of the anomaly activity.
+      type: String
+    - contextPath: SkyhighSecurity.AnomalyActivity.fileSharingEnabled
+      description: Whether the CASB file sharing is enabled or not.
+      type: Boolean
+    - contextPath: SkyhighSecurity.AnomalyActivity.fileSize
+      description: The file size of the anomaly activity.
+      type: Number
+    - contextPath: SkyhighSecurity.AnomalyActivity.fileType
+      description: The file type of the anomaly activity.
+      type: String
+    - contextPath: SkyhighSecurity.AnomalyActivity.geoOrgNameV1
+      description: The geo organization name.
+      type: String
+    - contextPath: SkyhighSecurity.AnomalyActivity.httpMethod
+      description: The HTTP method used by the anomaly activity.
+      type: String
+    - contextPath: SkyhighSecurity.AnomalyActivity.instanceId
+      description: The instance ID for the anomaly activity.
+      type: String
+    - contextPath: SkyhighSecurity.AnomalyActivity.isSourceTrusted
+      description: Whether the anomaly activity source is trusted or not.
+      type: Boolean
+    - contextPath: SkyhighSecurity.AnomalyActivity.networkType
+      description: The network type for the anomaly.
+      type: String
+    - contextPath: SkyhighSecurity.AnomalyActivity.objectType
+      description: The object type for the anomaly activity.
+      type: String
+    - contextPath: SkyhighSecurity.AnomalyActivity.operation
+      description: The operation type.
+      type: String
+    - contextPath: SkyhighSecurity.AnomalyActivity.proxyDescription
+      description: The proxy description for the anomaly activity.
+      type: String
+    - contextPath: SkyhighSecurity.AnomalyActivity.proxyType
+      description: The proxy type for the anomaly activity.
+      type: String
+    - contextPath: SkyhighSecurity.AnomalyActivity.region
+      description: The Region where the anomaly activity occurred.
+      type: String
+    - contextPath: SkyhighSecurity.AnomalyActivity.serviceName
+      description: The name of the service.
+      type: String
+    - contextPath: SkyhighSecurity.AnomalyActivity.siteUrl
+      description: The URL of the CASB's site.
+      type: String
+    - contextPath: SkyhighSecurity.AnomalyActivity.sourceIP
+      description: The IP address of the source IP.
+      type: IP
+    - contextPath: SkyhighSecurity.AnomalyActivity.sourceIdentifier
+      description: The source identifier for the anomaly activity.
+      type: String
+    - contextPath: SkyhighSecurity.AnomalyActivity.targetId
+      description: The target ID for the anomaly activity.
+      type: String
+    - contextPath: SkyhighSecurity.AnomalyActivity.targetType
+      description: The anomaly activity type.
+      type: String
+    - contextPath: SkyhighSecurity.AnomalyActivity.tenantId
+      description: The tenant ID for the anomaly activity.
+      type: Number
+    - contextPath: SkyhighSecurity.AnomalyActivity.threatCategory
+      description: The threat category for the anomaly activity.
+      type: String
+    - contextPath: SkyhighSecurity.AnomalyActivity.trustEntity
+      description: The trust entity for the anomaly activity.
+      type: String
+    - contextPath: SkyhighSecurity.AnomalyActivity.trustReason
+      description: The trust reason of the anomaly activity.
+      type: String
+    - contextPath: SkyhighSecurity.AnomalyActivity.uploadBytes
+      description: The number of bytes uploaded.
+      type: Number
+    - contextPath: SkyhighSecurity.AnomalyActivity.url
+      description: The URL of the anomaly activity.
+      type: String
+    - contextPath: SkyhighSecurity.AnomalyActivity.user
+      description: The user who triggered the anomaly.
+      type: String
+  - arguments:
+    - description: Maximum number of policies that will be returned within a single response. Default is 50.
+      name: limit
+    - description: Pagination support for use with a large “limit” value.
+      name: page
+    - description: Pagination support for use with a large “limit” value.
+      name: page_size
+    - description: The name of the policies to retrieve.
+      isArray: true
+      name: name
+    description: List existing policy dictionaries.
+    name: skyhigh-security-policy-dictionary-list
+    outputs:
+    - contextPath: SkyhighSecurity.Dictionaries.ID
+      description: The ID for the dictionary.
+      type: Number
+    - contextPath: SkyhighSecurity.Dictionaries.LastModified
+      description: The date the dictionary was last modified.
+      type: String
+    - contextPath: SkyhighSecurity.Dictionaries.Name
+      description: The name of the dictionary.
+      type: String
+  - arguments:
+    - description: The dictionary where to set the policy.
+      name: dictionary_id
+      required: true
+    - description: A name for the new key-value which will be added in the dictionary.
+      name: name
+      required: true
+    - description: The value to be set in the dictionary for the given key-name. Multiple values can be separated by commas.
+      name: content
+      required: true
+    description: Adds new content to an existing policy dictionary.
+    name: skyhigh-security-policy-dictionary-update
+  dockerimage: demisto/python3:3.10.13.72123
+  isfetch: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+defaultclassifier: Skyhigh Security Incident
+defaultmapperin: Skyhigh Security Incoming Mapper
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

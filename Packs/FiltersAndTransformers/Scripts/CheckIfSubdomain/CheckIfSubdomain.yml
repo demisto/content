@@ -1,0 +1,26 @@
+commonfields:
+  id: CheckIfSubdomain
+  version: -1
+name: CheckIfSubdomain
+script: ''
+type: python
+tags:
+- filter
+comment: Checks whether a given domain is a subdomain of one of the listed domains.
+enabled: true
+args:
+- name: left
+  required: true
+  isArray: true
+  description: A list of domains to check if they are subdomains of the internal assets.
+- name: right
+  required: true
+  isArray: true
+  description: A list of internal assets (for example, mycompany.com)
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.10.12.63474
+runas: DBotWeakRole
+fromversion: 5.5.0
+tests:
+- CheckIfSubdomain_Test

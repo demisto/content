@@ -1,9 +1,8 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import tempfile
 from typing import Dict, Optional
 
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
 
 ''' IMPORTS '''
 import urllib3
@@ -41,7 +40,7 @@ class AddressObject(object):
         result: List[Dict[str, str]] = []
 
         indicator = props.find('Address_Value')
-        if indicator is None:
+        if indicator is None or indicator.string is None:
             return result
 
         indicator = indicator.string.encode('ascii', 'replace').decode()
@@ -89,7 +88,7 @@ class DomainNameObject(object):
             return []
 
         domain = props.find('Value')
-        if domain is None:
+        if domain is None or domain.string is None:
             return []
 
         return [{
@@ -177,7 +176,7 @@ class URIObject(object):
             return []
 
         url = props.find('Value')
-        if url is None:
+        if url is None or url.string is None:
             return []
 
         return [{
@@ -319,38 +318,40 @@ class StixDecode(object):
         # extract the Observable info
         if observables := package.find_all('Observable'):
             pprops = package_extract_properties(package)
-
             for o in observables:
-                gprops = observable_extract_properties(o)
+                try:
+                    gprops = observable_extract_properties(o)
 
-                obj = next((ob for ob in o if ob.name == 'Object'), None)
-                if obj is None:
-                    continue
+                    obj = next((ob for ob in o if ob.name == 'Object'), None)
+                    if obj is None:
+                        continue
 
-                # main properties
-                properties = next((c for c in obj if c.name == 'Properties'), None)
-                if properties is not None:
-                    for r in StixDecode.object_extract_properties(properties, kwargs):
-                        r.update(gprops)
-                        r.update(pprops)
-
-                        observable_result.append(r)
-
-                # then related objects
-                related = next((c for c in obj if c.name == 'Related_Objects'), None)
-                if related is not None:
-                    for robj in related:
-                        if robj.name != 'Related_Object':
-                            continue
-
-                        properties = next((c for c in robj if c.name == 'Properties'), None)
-                        if properties is None:
-                            continue
-
+                    # main properties
+                    properties = next((c for c in obj if c.name == 'Properties'), None)
+                    if properties is not None:
                         for r in StixDecode.object_extract_properties(properties, kwargs):
                             r.update(gprops)
                             r.update(pprops)
+
                             observable_result.append(r)
+
+                    # then related objects
+                    related = next((c for c in obj if c.name == 'Related_Objects'), None)
+                    if related is not None:
+                        for robj in related:
+                            if robj.name != 'Related_Object':
+                                continue
+
+                            properties = next((c for c in robj if c.name == 'Properties'), None)
+                            if properties is None:
+                                continue
+
+                            for r in StixDecode.object_extract_properties(properties, kwargs):
+                                r.update(gprops)
+                                r.update(pprops)
+                                observable_result.append(r)
+                except Exception as e:
+                    demisto.error(f"Error for {str(o)} with message {str(e)}")
 
         # extract the Indicator info
         if indicators := package.find_all('Indicator'):
@@ -508,8 +509,8 @@ class Taxii11(object):
 class TAXIIClient(object):
     def __init__(self, insecure: bool = True, polling_timeout: int = 20, initial_interval: str = '1 day',
                  discovery_service: str = '', poll_service: str = None, collection: str = None,
-                 credentials: dict = None, cert_text: str = None, key_text: str = None, feedTags: str = None,
-                 tlp_color: Optional[str] = None, **kwargs):
+                 credentials: dict = None, creds_certificate: dict = {}, cert_text: str = None, key_text: str = None,
+                 feedTags: str = None, tlp_color: Optional[str] = None, **kwargs):
         """
         TAXII Client
         :param insecure: Set to true to ignore https certificate
@@ -520,7 +521,8 @@ class TAXIIClient(object):
         :param collection: TAXII collection
         :param credentials: Username and password dict for basic auth
         :param cert_text: Certificate File as Text
-        :param cert_Key: Key File as Text
+        :param cert_key_text: Key File as Text - type 9 (credentials)
+        :param key_text: Key File as Text - type 4 (secret) - deprecated
         :param kwargs:
         """
         self.discovered_poll_service = None
@@ -561,6 +563,8 @@ class TAXIIClient(object):
                 self.username = credentials.get('identifier', None)
                 self.password = credentials.get('password', None)
 
+        cert_text = replace_spaces_in_credential(creds_certificate.get('identifier')) or cert_text
+        key_text = creds_certificate.get('password') or key_text
         if (cert_text and not key_text) or (not cert_text and key_text):
             raise Exception('You can not configure either certificate text or key, both are required.')
         if cert_text and key_text:

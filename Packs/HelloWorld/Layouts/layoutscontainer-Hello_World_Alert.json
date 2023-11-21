@@ -6,7 +6,7 @@
 	"version": -1,
 	"fromVersion": "6.0.0",
 	"detailsV2": {
-        "tabs": [
+		"tabs": [
 			{
 				"id": "summary",
 				"name": "Legacy Summary",
@@ -27,7 +27,7 @@
 								"dropEffect": "move",
 								"endCol": 4,
 								"fieldId": "name",
-								"height": 24,
+								"height": 22,
 								"id": "229a5320-4be3-11ea-ba78-e35cab9015ef",
 								"index": 0,
 								"listId": "gzwilepj4y-6eb55f90-4bdc-11ea-b133-95a0e83f73e4",
@@ -37,18 +37,18 @@
 							{
 								"endCol": 2,
 								"fieldId": "helloworldstatus",
-								"height": 24,
+								"height": 22,
 								"id": "8035cfc0-4bdc-11ea-b133-95a0e83f73e4",
-								"index": 2,
+								"index": 1,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
 								"fieldId": "helloworldtype",
-								"height": 24,
+								"height": 22,
 								"id": "810b4830-4bdc-11ea-b133-95a0e83f73e4",
-								"index": 3,
+								"index": 2,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -56,9 +56,9 @@
 								"dropEffect": "move",
 								"endCol": 2,
 								"fieldId": "details",
-								"height": 48,
+								"height": 44,
 								"id": "8de38d10-4bdc-11ea-b133-95a0e83f73e4",
-								"index": 4,
+								"index": 3,
 								"listId": "gzwilepj4y-6eb55f90-4bdc-11ea-b133-95a0e83f73e4",
 								"sectionItemType": "field",
 								"startCol": 0
@@ -66,25 +66,42 @@
 							{
 								"endCol": 2,
 								"fieldId": "severity",
-								"height": 24,
+								"height": 22,
 								"id": "938819c0-4bdc-11ea-b133-95a0e83f73e4",
-								"index": 5,
+								"index": 4,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
 								"fieldId": "helloworldid",
-								"height": 24,
+								"height": 22,
 								"id": "7ee3ad40-4bdc-11ea-b133-95a0e83f73e4",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "alerturl",
+								"height": 22,
+								"id": "e8bea480-5147-11ee-9bc5-e31c7e766721",
 								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "filehash",
+								"height": 22,
+								"id": "ff975620-5147-11ee-9bc5-e31c7e766721",
+								"index": 7,
 								"sectionItemType": "field",
 								"startCol": 0
 							}
 						],
 						"maxW": 3,
 						"minH": 1,
-						"minW": 1,
 						"moved": false,
 						"name": "Hello World",
 						"static": false,
@@ -392,5 +409,6 @@
 				"type": "canvas"
 			}
 		]
-    }
+	},
+ "marketplaces": ["xsoar"]
 }

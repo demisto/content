@@ -1,0 +1,23 @@
+{
+    "name": "Content Testing",
+    "description": "Supports assessment of upgraded Marketplace content packs against custom content and enables content testing within XSOAR.  Dynamically select and test automations, playbooks, and sub-playbooks as required prior to push to production.  Create a \"UnitTesting\" incident type and review the \"Help\" tab in the layout for description of the tools available and the examples using the testing tools.",
+    "support": "community",
+    "currentVersion": "2.1.1",
+    "author": "rurhrlaub",
+    "url": "",
+    "email": "",
+    "created": "2023-01-11T17:41:37Z",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "rurhrlaub"
+    ]
+}

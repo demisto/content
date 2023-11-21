@@ -1,0 +1,514 @@
+{
+    "OriginalValue": "test",
+    "Status": "Done",
+    "Data": {
+        "Value": "eccc999fef9c3bc0acd34fd1fd1419cf7408b66cda916a1de00054066d8e6cb9",
+        "Type": "Hashes",
+        "Sources": [
+            {
+                "Name": "Threat Library",
+                "ConfidenceLevel": 3
+            }
+        ],
+        "SystemTags": [
+            "Actions on Objective",
+            "Collection",
+            "Credential Access",
+            "Installation",
+            "T1056.001 - Input Capture: Keylogging",
+            "T1417.001 - Input Capture: Keylogging",
+            "backdoor",
+            "ccinfrastructure",
+            "credentialstealing",
+            "exploitkit",
+            "keylogging",
+            "malware related",
+            "pinkslipbot",
+            "polymorphic",
+            "polymorphicvirus",
+            "qakbot",
+            "qbot",
+            "quackbot",
+            "worm"
+        ],
+        "Tags": [],
+        "Status": "Active",
+        "IsKnownIoc": true,
+        "RelatedMalwares": [
+            "qakbot"
+        ],
+        "RelatedThreatActors": [],
+        "RelatedCampaigns": [],
+        "FirstSeen": "Data_FirstSeen",
+        "LastSeen": "Data_LastSeen",
+        "UpdateDate": "Data_UpdateDate",
+        "Whitelisted": false,
+        "Severity": {
+            "Value": "High",
+            "Score": 100,
+            "Origin": "system"
+        },
+        "AntivirusScanDate": "Data_AntivirusScanDate",
+        "FileName": "",
+        "FileType": "Win32 EXE",
+        "FileAuthor": "",
+        "FileDescription": "",
+        "FileSize": 114176,
+        "AntivirusDetectionRatio": "91%",
+        "AntivirusDetectedEngines": "67/73",
+        "AntivirusDetections": [
+            {
+                "Name": "Bkav",
+                "Version": "1.3.0.9899",
+                "Detected": true,
+                "Result": "W32.RammitNNA.PE"
+            },
+            {
+                "Name": "Lionic",
+                "Version": "4.2",
+                "Detected": false,
+                "Result": ""
+            },
+            {
+                "Name": "MicroWorld-eScan",
+                "Version": "14.0.409.0",
+                "Detected": true,
+                "Result": "Win32.Ramnit"
+            },
+            {
+                "Name": "FireEye",
+                "Version": "Data_AntivirusDetections[3]_Version",
+                "Detected": true,
+                "Result": "Generic.mg.aa268cd7c864a4f8"
+            },
+            {
+                "Name": "CAT-QuickHeal",
+                "Version": "14.00",
+                "Detected": true,
+                "Result": "W32.Ramnit.A"
+            },
+            {
+                "Name": "Qihoo-360",
+                "Version": "1.0.0.1120",
+                "Detected": true,
+                "Result": "Virus.Win32.Ramnit.B"
+            },
+            {
+                "Name": "McAfee",
+                "Version": "6.0.6.653",
+                "Detected": true,
+                "Result": "PWS-Zbot.gen.pq"
+            },
+            {
+                "Name": "Cylance",
+                "Version": "Data_AntivirusDetections[7]_Version",
+                "Detected": true,
+                "Result": "Unsafe"
+            },
+            {
+                "Name": "Zillya",
+                "Version": "2.0.0.4133",
+                "Detected": true,
+                "Result": "Virus.Nimnul.Win32.1"
+            },
+            {
+                "Name": "Paloalto",
+                "Version": "1.0",
+                "Detected": false,
+                "Result": ""
+            },
+            {
+                "Name": "Sangfor",
+                "Version": "1.0",
+                "Detected": true,
+                "Result": "Malware"
+            },
+            {
+                "Name": "K7AntiVirus",
+                "Version": "11.123.34756",
+                "Detected": true,
+                "Result": "Trojan ( 004bcce41 )"
+            },
+            {
+                "Name": "Alibaba",
+                "Version": "Data_AntivirusDetections[12]_Version",
+                "Detected": false,
+                "Result": ""
+            },
+            {
+                "Name": "K7GW",
+                "Version": "11.123.34756",
+                "Detected": true,
+                "Result": "Trojan ( 004bcce41 )"
+            },
+            {
+                "Name": "Cybereason",
+                "Version": "1.2.449",
+                "Detected": true,
+                "Result": "malicious.7c864a"
+            },
+            {
+                "Name": "Invincea",
+                "Version": "6.3.6.26157",
+                "Detected": true,
+                "Result": "heuristic"
+            },
+            {
+                "Name": "Baidu",
+                "Version": "Data_AntivirusDetections[16]_Version",
+                "Detected": true,
+                "Result": "Win32.Virus.Nimnul.a"
+            },
+            {
+                "Name": "F-Prot",
+                "Version": "Data_AntivirusDetections[17]_Version",
+                "Detected": true,
+                "Result": "W32/Ramnit.B!Generic"
+            },
+            {
+                "Name": "Symantec",
+                "Version": "Data_AntivirusDetections[18]_Version",
+                "Detected": true,
+                "Result": "W32.Ramnit!inf"
+            },
+            {
+                "Name": "TotalDefense",
+                "Version": "Data_AntivirusDetections[19]_Version",
+                "Detected": true,
+                "Result": "Win32/Ramnit.A"
+            },
+            {
+                "Name": "APEX",
+                "Version": "6.49",
+                "Detected": true,
+                "Result": "Malicious"
+            },
+            {
+                "Name": "Avast",
+                "Version": "18.4.3895.0",
+                "Detected": true,
+                "Result": "Win32:RmnDrp"
+            },
+            {
+                "Name": "ClamAV",
+                "Version": "Data_AntivirusDetections[22]_Version",
+                "Detected": true,
+                "Result": "test"
+            },
+            {
+                "Name": "Kaspersky",
+                "Version": "Data_AntivirusDetections[23]_Version",
+                "Detected": true,
+                "Result": "Virus.Win32.Nimnul.a"
+            },
+            {
+                "Name": "BitDefender",
+                "Version": "7.2",
+                "Detected": true,
+                "Result": "Win32.Ramnit"
+            },
+            {
+                "Name": "NANO-Antivirus",
+                "Version": "1.0.134.25119",
+                "Detected": true,
+                "Result": "test"
+            },
+            {
+                "Name": "test",
+                "Version": "5.6.0.1032",
+                "Detected": false,
+                "Result": ""
+            },
+            {
+                "Name": "Rising",
+                "Version": "Data_AntivirusDetections[27]_Version",
+                "Detected": true,
+                "Result": "test (CLASSIC)"
+            },
+            {
+                "Name": "Endgame",
+                "Version": "4.0.5",
+                "Detected": true,
+                "Result": "malicious (high confidence)"
+            },
+            {
+                "Name": "Emsisoft",
+                "Version": "2018.12.0.1641",
+                "Detected": true,
+                "Result": "Win32.Ramnit (B)"
+            },
+            {
+                "Name": "Comodo",
+                "Version": "32645",
+                "Detected": true,
+                "Result": "test"
+            },
+            {
+                "Name": "F-Secure",
+                "Version": "Data_AntivirusDetections[31]_Version",
+                "Detected": true,
+                "Result": "Malware.W32/Ramnit.CD"
+            },
+            {
+                "Name": "DrWeb",
+                "Version": "7.0.46.3050",
+                "Detected": true,
+                "Result": "VBS.Dropper.128"
+            },
+            {
+                "Name": "VIPRE",
+                "Version": "85340",
+                "Detected": true,
+                "Result": "Virus.Win32.Ramnit.a (v)"
+            },
+            {
+                "Name": "TrendMicro",
+                "Version": "11.0.0.1006",
+                "Detected": true,
+                "Result": "PE_RAMNIT.H"
+            },
+            {
+                "Name": "Fortinet",
+                "Version": "Data_AntivirusDetections[35]_Version",
+                "Detected": true,
+                "Result": "W32/Dropper.C3FC!tr"
+            },
+            {
+                "Name": "Trapmine",
+                "Version": "3.5.0.987",
+                "Detected": true,
+                "Result": "malicious.high.ml.score"
+            },
+            {
+                "Name": "CMC",
+                "Version": "2.7.2019.1",
+                "Detected": false,
+                "Result": ""
+            },
+            {
+                "Name": "Sophos",
+                "Version": "4.98.0",
+                "Detected": true,
+                "Result": "W32/Patched-I"
+            },
+            {
+                "Name": "Ikarus",
+                "Version": "Data_AntivirusDetections[39]_Version",
+                "Detected": true,
+                "Result": "Virus.Ramnit"
+            },
+            {
+                "Name": "Cyren",
+                "Version": "Data_AntivirusDetections[40]_Version",
+                "Detected": true,
+                "Result": "W32/Ramnit.B!Generic"
+            },
+            {
+                "Name": "Jiangmin",
+                "Version": "16.0.100",
+                "Detected": true,
+                "Result": "Win32/PatchFile.et"
+            },
+            {
+                "Name": "Webroot",
+                "Version": "1.0.0.403",
+                "Detected": true,
+                "Result": "W32.Ramnit.Gen"
+            },
+            {
+                "Name": "Avira",
+                "Version": "Data_AntivirusDetections[43]_Version",
+                "Detected": true,
+                "Result": "W32/Ramnit.CD"
+            },
+            {
+                "Name": "MAX",
+                "Version": "2019.9.16.1",
+                "Detected": true,
+                "Result": "malware (ai score=86)"
+            },
+            {
+                "Name": "Antiy-AVL",
+                "Version": "Data_AntivirusDetections[45]_Version",
+                "Detected": true,
+                "Result": "Virus/Win32.Nimnul.a"
+            },
+            {
+                "Name": "Kingsoft",
+                "Version": "2013.8.14.323",
+                "Detected": true,
+                "Result": "Win32.Ramnit.la.30720"
+            },
+            {
+                "Name": "Arcabit",
+                "Version": "1.0.0.877",
+                "Detected": true,
+                "Result": "Win32.Ramnit"
+            },
+            {
+                "Name": "ViRobot",
+                "Version": "2014.3.20.0",
+                "Detected": true,
+                "Result": "Win32.Ramnit.E"
+            },
+            {
+                "Name": "AhnLab-V3",
+                "Version": "3.18.1.10026",
+                "Detected": true,
+                "Result": "Win32/Ramnit.B"
+            },
+            {
+                "Name": "ZoneAlarm",
+                "Version": "1.0",
+                "Detected": true,
+                "Result": "Virus.Win32.Nimnul.a"
+            },
+            {
+                "Name": "Avast-Mobile",
+                "Version": "200720-00",
+                "Detected": false,
+                "Result": ""
+            },
+            {
+                "Name": "Microsoft",
+                "Version": "1.1.17200.2",
+                "Detected": true,
+                "Result": "test"
+            },
+            {
+                "Name": "Cynet",
+                "Version": "Data_AntivirusDetections[53]_Version",
+                "Detected": true,
+                "Result": "Malicious (score: 100)"
+            },
+            {
+                "Name": "ESET-NOD32",
+                "Version": "21687",
+                "Detected": true,
+                "Result": "Win32/Ramnit.A"
+            },
+            {
+                "Name": "Acronis",
+                "Version": "Data_AntivirusDetections[55]_Version",
+                "Detected": true,
+                "Result": "suspicious"
+            },
+            {
+                "Name": "BitDefenderTheta",
+                "Version": "7.2.37796.0",
+                "Detected": true,
+                "Result": "test"
+            },
+            {
+                "Name": "ALYac",
+                "Version": "Data_AntivirusDetections[57]_Version",
+                "Detected": true,
+                "Result": "Win32.Ramnit"
+            },
+            {
+                "Name": "TACHYON",
+                "Version": "2020-07-20.02",
+                "Detected": true,
+                "Result": "test"
+            },
+            {
+                "Name": "VBA32",
+                "Version": "4.4.1",
+                "Detected": true,
+                "Result": "Virus.Win32.Nimnul.a"
+            },
+            {
+                "Name": "Malwarebytes",
+                "Version": "3.6.4.335",
+                "Detected": true,
+                "Result": "Worm.Qakbot"
+            },
+            {
+                "Name": "Zoner",
+                "Version": "Data_AntivirusDetections[61]_Version",
+                "Detected": true,
+                "Result": "Trojan.Win32.33102"
+            },
+            {
+                "Name": "test",
+                "Version": "10.0.0.1040",
+                "Detected": true,
+                "Result": "PE_RAMNIT.H"
+            },
+            {
+                "Name": "Tencent",
+                "Version": "Data_AntivirusDetections[63]_Version",
+                "Detected": true,
+                "Result": "Virus.Win32.Nimnul.d"
+            },
+            {
+                "Name": "Yandex",
+                "Version": "Data_AntivirusDetections[64]_Version",
+                "Detected": true,
+                "Result": "Win32.Ramnit.Gen.3"
+            },
+            {
+                "Name": "SentinelOne",
+                "Version": "Data_AntivirusDetections[65]_Version",
+                "Detected": true,
+                "Result": "DFI - Suspicious PE"
+            },
+            {
+                "Name": "eGambit",
+                "Version": "",
+                "Detected": true,
+                "Result": "test"
+            },
+            {
+                "Name": "GData",
+                "Version": "A:25.26297B:27.19518",
+                "Detected": true,
+                "Result": "Win32.Virus.Ramnit.C"
+            },
+            {
+                "Name": "Ad-Aware",
+                "Version": "3.0.5.370",
+                "Detected": true,
+                "Result": "Win32.Ramnit"
+            },
+            {
+                "Name": "AVG",
+                "Version": "18.4.3895.0",
+                "Detected": true,
+                "Result": "Win32:RmnDrp"
+            },
+            {
+                "Name": "Panda",
+                "Version": "Data_AntivirusDetections[70]_Version",
+                "Detected": true,
+                "Result": "W32/Cosmu.gen"
+            },
+            {
+                "Name": "CrowdStrike",
+                "Version": "1.0",
+                "Detected": true,
+                "Result": "win/malicious_confidence_100% (D)"
+            },
+            {
+                "Name": "MaxSecure",
+                "Version": "Data_AntivirusDetections[72]_Version",
+                "Detected": true,
+                "Result": "Virus.Nimnul.A"
+            }
+        ],
+        "RelatedHashes": [
+            {
+                "Type": "MD5",
+                "Value": "aa268cd7c864a4f8453d37a72bb4a3c7"
+            },
+            {
+                "Type": "SHA1",
+                "Value": "1e4314f2d189ae71ef8f3e0f770f7a874a61d1bc"
+            },
+            {
+                "Type": "SHA256",
+                "Value": "eccc999fef9c3bc0acd34fd1fd1419cf7408b66cda916a1de00054066d8e6cb9"
+            }
+        ]
+    }
+}

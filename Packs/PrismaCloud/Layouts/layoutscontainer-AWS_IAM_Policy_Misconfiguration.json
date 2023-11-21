@@ -1,10 +1,4 @@
 {
-    "id": "AWS IAM Policy Misconfiguration",
-    "group": "incident",
-    "name": "AWS IAM Policy Misconfiguration Incident",
-    "description": "",
-    "version": -1,
-    "fromVersion": "6.0.0",
     "detailsV2": {
         "tabs": [
             {
@@ -73,7 +67,6 @@
                         ],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Case Details",
                         "static": false,
@@ -88,7 +81,6 @@
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Work Plan",
                         "static": false,
@@ -104,7 +96,6 @@
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Notes",
                         "static": false,
@@ -120,7 +111,6 @@
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Incident Timeline",
                         "query": {
@@ -146,7 +136,6 @@
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Team Members",
                         "static": false,
@@ -162,7 +151,6 @@
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Evidence",
                         "static": false,
@@ -178,7 +166,6 @@
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Linked Incidents",
                         "static": false,
@@ -194,7 +181,6 @@
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Child Incidents",
                         "static": false,
@@ -222,7 +208,6 @@
                         ],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Attachments",
                         "static": false,
@@ -241,83 +226,99 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "prismacloudid",
-                                "height": 24,
+                                "height": 22,
                                 "id": "7a4369a0-f8b8-11e9-a470-b7537b797c27",
                                 "index": 0,
+                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "prismacloudtime",
-                                "height": 24,
+                                "height": 22,
                                 "id": "97ada000-f8b8-11e9-a470-b7537b797c27",
                                 "index": 1,
                                 "listId": "gfrgdzfgei-57cfecc0-f766-11e9-8c27-6359f1848ae7",
+                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "prismacloudstatus",
-                                "height": 24,
+                                "height": 22,
                                 "id": "7fc5c850-f8b8-11e9-a470-b7537b797c27",
                                 "index": 2,
                                 "listId": "gfrgdzfgei-57cfecc0-f766-11e9-8c27-6359f1848ae7",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "prismaclouddismissalnote",
+                                "height": 22,
+                                "id": "ed6e5d00-3684-11ee-8c1f-a16407f8f329",
+                                "index": 3,
+                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
                                 "fieldId": "prismacloudreason",
-                                "height": 24,
+                                "height": 22,
                                 "id": "7cf9fe20-f8b8-11e9-a470-b7537b797c27",
-                                "index": 3,
+                                "index": 4,
+                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
                                 "fieldId": "firstseen",
-                                "height": 24,
+                                "height": 22,
                                 "id": "a5bd1cf0-f766-11e9-8c27-6359f1848ae7",
                                 "index": 0,
                                 "listId": "gfrgdzfgei-57cfecc0-f766-11e9-8c27-6359f1848ae7",
+                                "sectionItemType": "field",
                                 "startCol": 2
                             },
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
                                 "fieldId": "lastseen",
-                                "height": 24,
+                                "height": 22,
                                 "id": "a6b97e50-f766-11e9-8c27-6359f1848ae7",
                                 "index": 1,
                                 "listId": "gfrgdzfgei-57cfecc0-f766-11e9-8c27-6359f1848ae7",
+                                "sectionItemType": "field",
                                 "startCol": 2
                             },
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
                                 "fieldId": "riskscore",
-                                "height": 24,
+                                "height": 22,
                                 "id": "b062f170-f766-11e9-8c27-6359f1848ae7",
                                 "index": 2,
                                 "listId": "gfrgdzfgei-57cfecc0-f766-11e9-8c27-6359f1848ae7",
+                                "sectionItemType": "field",
                                 "startCol": 2
                             },
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
                                 "fieldId": "riskrating",
-                                "height": 24,
+                                "height": 22,
                                 "id": "aa6fa880-f766-11e9-8c27-6359f1848ae7",
                                 "index": 3,
                                 "listId": "gfrgdzfgei-57cfecc0-f766-11e9-8c27-6359f1848ae7",
+                                "sectionItemType": "field",
                                 "startCol": 2
                             }
                         ],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Prisma Cloud Alert Summary",
                         "static": false,
@@ -638,5 +639,15 @@
                 "type": "canvas"
             }
         ]
-    }
+    },
+    "group": "incident",
+    "id": "AWS IAM Policy Misconfiguration",
+    "name": "AWS IAM Policy Misconfiguration Incident",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "marketplaces": [
+        "xsoar"
+    ],
+    "description": ""
 }

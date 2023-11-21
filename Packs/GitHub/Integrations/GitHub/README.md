@@ -1643,6 +1643,35 @@ Gets the usage details of GitHub action workflows of private repositories by rep
 |---|---|---|---|
 |Git-Repo|12345|An Action|UBUNTU: {"total_ms": 12345}|
 
+### Github-get-check-run
+***
+Gets a check run details
+
+
+#### Base Command
+
+`Github-get-check-run`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| owner | Organization or Owner. | Required | 
+| repository | Git Repository Name. | Required | 
+| run_id | Check Run ID. | Optional | 
+| commit_id | Head Commit ID. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.CheckRuns.CheckRunConclusion | String | Check Run Conculsion | 
+| GitHub.CheckRuns.CheckRunAppName | String | Check Run App Name | 
+| GitHub.CheckRuns.CheckExternalID | String | Check Run External ID | 
+| GitHub.CheckRuns.CheckRunName | String | Check Run Name | 
+| GitHub.CheckRuns.CheckRunStatus | String | Check Run Status | 
+| GitHub.CheckRuns.CheckRunID | String | Check Run ID | 
+
 ### GitHub-get-file-content
 
 ***
@@ -2149,6 +2178,7 @@ Creates a release.
 | name | The name of the release. | Optional | 
 | tag_name | The name of the release tag. | Required | 
 | body | Text describing the contents of the tag. | Optional | 
+| ref | The target branch/commit SHA from where to create the release. | Optional | 
 | draft | Set to true to create a draft (unpublished) release, set to false to create a published one. Default is True. | Optional | 
 
 
@@ -2459,6 +2489,27 @@ Moves an issue in the project board to a different column.
 
 ```!GitHub-move-issue-to-project-board card_id=1111 column_id=1234 position="top"```
 
+### GitHub-add-issue-to-project-board
+***
+Adds an Issue as a card in column of a spesific project.
+
+
+#### Base Command
+
+`GitHub-add-issue-to-project-board`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| column_id | Column unique id . | Required | 
+| issue_unique_id | Issue unique ID. | Required | 
+| content_type | Content type of the project card. Default is Issue. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
 ### GitHub-get-path-data
 ***
 Gets the data of the a given path.
@@ -2748,3 +2799,209 @@ Gets release data from a given repository and organization.
 >|assets_url|author|body|created_at|draft|html_url|id|name|node_id|prerelease|tag_name|target_commitish|upload_url|url|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| https:<span>//</span>api.github.com/repos/content-bot/hello-world/releases/48262112/assets | login: content-bot<br/>id: 55035720<br/>node_id: MDQ6VXNlcjU1MDM1NzIw<br/>avatar_url: https:<span>//</span>avatars.githubusercontent.com/u/55035720?v=4<br/>gravatar_id: <br/>url: https:<span>//</span>api.github.com/users/content-bot<br/>html_url: https:<span>//</span>github.com/content-bot<br/>followers_url: https:<span>//</span>api.github.com/users/content-bot/followers<br/>following_url: https:<span>//</span>api.github.com/users/content-bot/following{/other_user}<br/>gists_url: https:<span>//</span>api.github.com/users/content-bot/gists{/gist_id}<br/>starred_url: https:<span>//</span>api.github.com/users/content-bot/starred{/owner}{/repo}<br/>subscriptions_url: https:<span>//</span>api.github.com/users/content-bot/subscriptions<br/>organizations_url: https:<span>//</span>api.github.com/users/content-bot/orgs<br/>repos_url: https:<span>//</span>api.github.com/users/content-bot/repos<br/>events_url: https:<span>//</span>api.github.com/users/content-bot/events{/privacy}<br/>received_events_url: https:<span>//</span>api.github.com/users/content-bot/received_events<br/>type: User<br/>site_admin: false | test | 2021-08-23T07:54:37Z | true | https:<span>//</span>github.com/content-bot/hello-world/releases/tag/untagged-e106615f0216817665d8 | 48262112 | 1.0.0 | MDc6UmVsZWFzZTQ4MjYyMTEy | false | 1.0.0 | master | https:<span>//</span>uploads.github.com/repos/content-bot/hello-world/releases/48262112/assets{?name,label} | https:<span>//</span>api.github.com/repos/content-bot/hello-world/releases/48262112 |
+
+### GitHub-update-comment
+***
+Update an already existing comment.
+
+
+#### Base Command
+
+`GitHub-update-comment`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue_number | The number of the issue to comment on. | Required | 
+| comment_id | the comment id to update. | Required | 
+| body | The contents of the comment. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.Comment.IssueNumber | Number | The number of the issue to which the comment belongs. | 
+| GitHub.Comment.ID | Number | The ID of the comment. | 
+| GitHub.Comment.NodeID | String | The node ID of the comment. | 
+| GitHub.Comment.Body | String | The body content of the comment. | 
+| GitHub.Comment.User.Login | String | The login of the user who commented. | 
+| GitHub.Comment.User.ID | Number | The ID of the user who commented. | 
+| GitHub.Comment.User.NodeID | String | The node ID of the user who commented. | 
+| GitHub.Comment.User.Type | String | The type of the user who commented. | 
+| GitHub.Comment.User.SiteAdmin | Boolean | Whether the user who commented is a site admin. | 
+
+### GitHub-delete-comment
+***
+Deletes a comment.
+
+
+#### Base Command
+
+`GitHub-delete-comment`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| comment_id | The id of comment to delete. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+### GitHub-add-assignee
+***
+Adds up to 10 assignees to an issue. Users already assigned to an issue are not replaced.
+
+
+#### Base Command
+
+`GitHub-add-assignee`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+|---|---|---|
+| assignee |Users to assign, can be a list of users | Required | 
+| pull_request_number|The number of PR/Issue to assign users to | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+|--- | --- |---|
+| GitHub.Assignees.assignees | String | assignees to the issue | 
+| GitHub.Assignees.assignees.login | String | Gists URL for user | 
+| GitHub.Assignees.assignees.gists_url | String | assignees to the issue | 
+| GitHub.Assignees.assignees.following_url | String | Following URL for user | 
+| GitHub.Assignees.assignees.followers_url | String | Followers URL for user | 
+| GitHub.Assignees.assignees.subscriptions_url | String | Subscriptions URL for user | 
+| GitHub.Assignees.assignees.received_events_url | String | Received events URL for user | 
+| GitHub.Assignees.assignees.events_url | String | Events URL for user | 
+| GitHub.Assignees.assignees.avatar_url | String | Avatar URL for user | 
+| GitHub.Assignees.assignees.url | String | URL for user for user | 
+| GitHub.Assignees.assignees.starred_url | String | Starred URL for user | 
+| GitHub.Assignees.assignees.organizations_url | String | Organizations URL for user | 
+| GitHub.Assignees.assignees.repos_url | String | Repos URL for user | 
+| GitHub.Assignees.assignees.gravatar_id | String | Gravatar_id for user | 
+| GitHub.Assignees.assignees.site_admin | String | Is user site admin | 
+| GitHub.Assignees.assignees.node_id | String | Node ID for user | 
+| GitHub.Assignees.assignees.type | String | Type of user | 
+| GitHub.Assignees.assignees.id | String | User ID | 
+| GitHub.Assignees.assignees.html_url | String | HTML URL for user | 
+
+### GitHub-trigger-workflow
+
+***
+Triggers a GitHub workflow on a given repository and workflow.
+
+#### Base Command
+
+`GitHub-trigger-workflow`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| owner | The GitHub owner (organization or username) of the repository. | Optional | 
+| repository | The GitHub repository name. | Optional | 
+| branch | The branch to trigger the workflow on. | Optional | 
+| workflow | The name of your workflow file. | Required | 
+| inputs | The inputs for the workflow. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+### GitHub-cancel-workflow
+
+***
+Cancels a GitHub workflow.
+
+#### Base Command
+
+`GitHub-cancel-workflow`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- |--------------|
+| owner | The GitHub owner (organization or username) of the repository. | Optional     | 
+| repository | The GitHub repository name. | Optional     | 
+| workflow_id | The ID of the workflow to cancel. | Required     | 
+
+#### Context Output
+
+There is no context output for this command.
+### GitHub-list-workflows
+
+***
+Returns a list of GitHub workflows on a given repository.
+
+#### Base Command
+
+`GitHub-list-workflows`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| owner | The GitHub owner (organization or username) of the repository. | Optional | 
+| repository | The GitHub repository name. | Optional | 
+| workflow | The name of your workflow file. | Required | 
+| limit | The number of workflows to return. Default is 100. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.Workflow.id | Number | The GitHub workflow ID \(per run\). | 
+| GitHub.Workflow.name | String | The GitHub workflow name. | 
+| GitHub.Workflow.head_branch | String | The branch on which the workflow ran. | 
+| GitHub.Workflow.head_sha | String | The commit SHA on which the workflow ran. | 
+| GitHub.Workflow.path | String | The GitHub workflow name path. | 
+| GitHub.Workflow.display_title | String | The GitHub workflow title. | 
+| GitHub.Workflow.run_number | Number | The GitHub workflow run number. | 
+| GitHub.Workflow.event | String | The GitHub workflow trigger type \(scheduled, dispatch\). | 
+| GitHub.Workflow.status | String | The GitHub workflow status \(in_progress, completed\). | 
+| GitHub.Workflow.conclusion | String | The GitHub workflow conclusion \(cancelled, success\). | 
+| GitHub.Workflow.workflow_id | String | The GitHub workflow ID \(per workflow\). | 
+| GitHub.Workflow.url | String | The GitHub workflow API URL. | 
+| GitHub.Workflow.html_url | String | The GitHub workflow HTML URL. | 
+| GitHub.Workflow.created_at | Date | Datetime the GitHub workflow was created at. | 
+| GitHub.Workflow.updated_at | Date | Datetime the GitHub workflow was updated at. | 
+
+#### Command example
+```!GitHub-list-workflows workflow=nightly.yml limit=1```
+#### Context Example
+```json
+{
+    "GitHub": {
+        "Workflow": {
+            "conclusion": null,
+            "created_at": "2023-07-04T08:36:31Z",
+            "display_title": "Private repo nightly build",
+            "event": "workflow_dispatch",
+            "head_branch": "master",
+            "head_sha": "123456abcdef",
+            "html_url": "https://github.com/demisto/content-private/actions/runs/123456",
+            "id": 123456,
+            "name": "Private repo nightly build",
+            "path": ".github/workflows/nightly.yml",
+            "run_number": 1178,
+            "status": "in_progress",
+            "updated_at": "2023-07-04T08:36:41Z",
+            "url": "https://api.github.com/repos/demisto/content-private/actions/runs/123456",
+            "workflow_id": 1212121
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### GitHub workflows
+>|created_at|display_title|event|head_branch|head_sha|html_url|id|name|path|run_number|status|updated_at|url|workflow_id|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 2023-07-04T08:36:31Z | Private repo nightly build | workflow_dispatch | master | 123456abcdef | https:<span>//</span>github.com/demisto/content-private/actions/runs/123456 | 123456 | Private repo nightly build | .github/workflows/nightly.yml | 1178 | in_progress | 2023-07-04T08:36:41Z | https:<span>//</span>api.github.com/repos/demisto/content-private/actions/runs/123456 | 1212121 |
+

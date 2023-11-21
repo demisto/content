@@ -1,6 +1,6 @@
-import io
 
-from pytest import raises, fixture
+import pytest
+from MobileIronCLOUD import get_partition_id
 
 from CommonServerPython import *
 
@@ -10,7 +10,7 @@ MOCK_PARAMS = {
 }
 
 
-@fixture
+@pytest.fixture
 def client():
     from MobileIronCLOUD import MobileIronCloudClient
 
@@ -22,19 +22,17 @@ def client():
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
 class TestGetPartitionId:
-    from MobileIronCLOUD import get_partition_id
-
     @staticmethod
     def test_get_partition_id_return_param(mocker, client):
         """It returns the value of partition id from params"""
 
         mocker.patch.object(demisto, 'params', return_value=MOCK_PARAMS)
-        result = TestGetPartitionId.get_partition_id(client)
+        result = get_partition_id(client)
 
         assert result == '12345'
 
@@ -52,7 +50,7 @@ class TestGetPartitionId:
         mock_response = util_load_json('test_data/tenant_spaces.json')
         requests_mock.get('/api/v1/tenant/partition/device', json=mock_response)
 
-        result = TestGetPartitionId.get_partition_id(client)
+        result = get_partition_id(client)
 
         assert result == '100001'
 
@@ -70,7 +68,7 @@ class TestGetPartitionId:
             'for_user': 'useremail',
             'default_partition_id': '10101'
         })
-        result = TestGetPartitionId.get_partition_id(client)
+        result = get_partition_id(client)
         assert result == '10101'
 
     @staticmethod
@@ -89,14 +87,14 @@ class TestGetPartitionId:
         mock_response = util_load_json('test_data/tenant_spaces.json')
         requests_mock.get('/api/v1/tenant/partition/device', json=mock_response)
 
-        result = TestGetPartitionId.get_partition_id(client)
+        result = get_partition_id(client)
 
         assert result == '100001'
 
 
 class TestClientGetDevicesData:
 
-    @fixture
+    @pytest.fixture
     def prepare_mock(self, requests_mock):
         mock_response_page_one = util_load_json('test_data/get_devices_response_page.json')
         mock_response_page_two = util_load_json('test_data/get_devices_response_page2.json')
@@ -184,7 +182,7 @@ def test_execute_device_action_command(client, requests_mock, mocker):
 
     requests_mock.put('/api/v1/device/unlock', json={'errors': None, 'result': 0})
 
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         execute_device_action_command(client, 'unlock')
 
 
@@ -206,7 +204,7 @@ def test_execute_send_message_command(client, requests_mock, mocker):
 
     requests_mock.put('/api/v1/device/message', json={'errors': None, 'result': 0})
 
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         execute_send_message_command(client)
 
 

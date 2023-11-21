@@ -1,0 +1,1844 @@
+id: Zendesk V2 TEST
+version: -1
+name: Zendesk V2 TEST
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1a58b3e2-39c3-4309-88e0-37b7a9e06326
+    type: start
+    task:
+      id: 1a58b3e2-39c3-4309-88e0-37b7a9e06326
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 245,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 78a80279-336d-4401-8c99-3465dba7e409
+    type: title
+    task:
+      id: 78a80279-336d-4401-8c99-3465dba7e409
+      version: -1
+      name: Users tasks
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 245,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: a46347a2-036d-4f0a-8838-3b9b5c5374b9
+    type: regular
+    task:
+      id: a46347a2-036d-4f0a-8838-3b9b5c5374b9
+      version: -1
+      name: get users (init - might fail)
+      script: 'Zendesk v2|||zendesk-user-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 245,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 6a204bf3-2b1c-4f03-808b-fd9ccaac1c1f
+    type: regular
+    task:
+      id: 6a204bf3-2b1c-4f03-808b-fd9ccaac1c1f
+      version: -1
+      name: delete context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 245,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 47f8adab-1624-43d6-8d88-ca198c82ba0f
+    type: regular
+    task:
+      id: 47f8adab-1624-43d6-8d88-ca198c82ba0f
+      version: -1
+      name: delete user (init - might fail)
+      script: 'Zendesk v2|||zendesk-user-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      user_id:
+        complex:
+          root: Zendesk.User
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Zendesk.User.name
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.users_test_username
+                iscontext: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: Zendesk.User.email
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.users_test_email
+                iscontext: true
+          accessor: id
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 245,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 79152734-bf21-4f64-8724-26fc44d305fe
+    type: regular
+    task:
+      id: 79152734-bf21-4f64-8724-26fc44d305fe
+      version: -1
+      name: create user
+      script: 'Zendesk v2|||zendesk-user-create'
+      type: regular
+      iscommand: true
+      brand: "Zendesk v2"
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      email:
+        simple: ${inputs.users_test_email}
+      name:
+        simple: ${inputs.users_test_username}
+      notes:
+        simple: test note
+      phone:
+        simple: "123456789"
+      role:
+        simple: ${inputs.users_test_role}
+      verified:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 245,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 3ac6fdd8-cc5f-4930-8225-d4994fce5d4c
+    type: regular
+    task:
+      id: 3ac6fdd8-cc5f-4930-8225-d4994fce5d4c
+      version: -1
+      name: delete users content
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      key:
+        simple: Zendesk.User
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 245,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 3e789545-b2e2-431b-840a-0dd5903b5c6f
+    type: regular
+    task:
+      id: 3e789545-b2e2-431b-840a-0dd5903b5c6f
+      version: -1
+      name: list users
+      script: 'Zendesk v2|||zendesk-user-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 245,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 6f799e61-420f-4348-8bcd-c69d27a4d3af
+    type: condition
+    task:
+      id: 6f799e61-420f-4348-8bcd-c69d27a4d3af
+      version: -1
+      name: check that the user exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Zendesk.User
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Zendesk.User.email
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.users_test_email
+                      iscontext: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Zendesk.User.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.users_test_username
+                      iscontext: true
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 245,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: a6111c8a-405b-446c-80d1-01ea3d43e570
+    type: regular
+    task:
+      id: a6111c8a-405b-446c-80d1-01ea3d43e570
+      version: -1
+      name: delete users content
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      key:
+        simple: Zendesk.User
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 2965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: f1776775-1df6-4854-8299-1eb9460a09cb
+    type: regular
+    task:
+      id: f1776775-1df6-4854-8299-1eb9460a09cb
+      version: -1
+      name: delete user
+      script: 'Zendesk v2|||zendesk-user-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      user_id:
+        complex:
+          root: Zendesk.User
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Zendesk.User.email
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.users_test_email
+                iscontext: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Zendesk.User.name
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.users_test_username
+                iscontext: true
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 634b0a2f-47bc-41e4-8f9e-150c7c612a7a
+    type: regular
+    task:
+      id: 634b0a2f-47bc-41e4-8f9e-150c7c612a7a
+      version: -1
+      name: get users
+      script: 'Zendesk v2|||zendesk-user-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 3140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: c5b67662-bece-4308-84d1-16fa83ed8ce7
+    type: condition
+    task:
+      id: c5b67662-bece-4308-84d1-16fa83ed8ce7
+      version: -1
+      name: 'check that user does not exist '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      exist:
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: exist
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Zendesk.User
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Zendesk.User.email
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.users_test_email
+                      iscontext: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: Zendesk.User.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.users_test_username
+                      iscontext: true
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 3315
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 2e70ee63-6349-4b46-8c85-52b92b00f793
+    type: title
+    task:
+      id: 2e70ee63-6349-4b46-8c85-52b92b00f793
+      version: -1
+      name: users test done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "41"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 3490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: d48a9f95-3aaa-421c-8f3d-4d9fb483632a
+    type: regular
+    task:
+      id: d48a9f95-3aaa-421c-8f3d-4d9fb483632a
+      version: -1
+      name: validation error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: playbook validation failed
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7715
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: e9a334b7-6468-469c-8939-f497e26ec59b
+    type: title
+    task:
+      id: e9a334b7-6468-469c-8939-f497e26ec59b
+      version: -1
+      name: Organization tasks
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 3810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: f3fca523-a00a-47e1-8163-965f54697fb0
+    type: regular
+    task:
+      id: f3fca523-a00a-47e1-8163-965f54697fb0
+      version: -1
+      name: list organizations
+      script: 'Zendesk v2|||zendesk-organization-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 3955
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 6c4251af-6312-4538-8dc2-2d2f1463c5f1
+    type: condition
+    task:
+      id: 6c4251af-6312-4538-8dc2-2d2f1463c5f1
+      version: -1
+      name: check organizations
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Zendesk.Organization
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 4130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: d72b255a-47ae-41a3-8b37-cdf72239d5ad
+    type: title
+    task:
+      id: d72b255a-47ae-41a3-8b37-cdf72239d5ad
+      version: -1
+      name: Organizations test done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "40"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 4305
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 87cdb0fc-15ba-4387-872e-15ae7841e96d
+    type: title
+    task:
+      id: 87cdb0fc-15ba-4387-872e-15ae7841e96d
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 7940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 7beb3bc7-3492-4eb8-814c-c9d124b45e7d
+    type: title
+    task:
+      id: 7beb3bc7-3492-4eb8-814c-c9d124b45e7d
+      version: -1
+      name: Ticket tests
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 5295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 3d47a2d7-0aa8-49e0-800d-809900ebc4c6
+    type: regular
+    task:
+      id: 3d47a2d7-0aa8-49e0-800d-809900ebc4c6
+      version: -1
+      name: create ticket
+      script: 'Zendesk v2|||zendesk-ticket-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      description:
+        simple: test playbook description
+      extend-context:
+        simple: ticket_id_to_update=id
+      ignore-outputs:
+        simple: "true"
+      requester:
+        simple: ${test_ticket_requester_email.[0]}
+      subject:
+        simple: ${inputs.ticket_test_subject}
+      type:
+        simple: task
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 5615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 5a50bc4d-c4d2-4043-869f-7312a591bc5c
+    type: regular
+    task:
+      id: 5a50bc4d-c4d2-4043-869f-7312a591bc5c
+      version: -1
+      name: get user
+      script: 'Zendesk v2|||zendesk-user-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      extend-context:
+        simple: test_ticket_requester_email=email
+      ignore-outputs:
+        simple: "true"
+      limit:
+        simple: "1"
+      role:
+        simple: agent
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 5440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: c4302dc7-2bdf-4311-89c6-cb210a34940f
+    type: regular
+    task:
+      id: c4302dc7-2bdf-4311-89c6-cb210a34940f
+      version: -1
+      name: delete users content
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      key:
+        simple: Zendesk.User
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: cba83f35-0dff-4e79-8091-795f8052f5a4
+    type: regular
+    task:
+      id: cba83f35-0dff-4e79-8091-795f8052f5a4
+      version: -1
+      name: get users
+      script: 'Zendesk v2|||zendesk-user-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 2615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 55a3f4c8-ff43-4b33-8b80-9cc70031b8be
+    type: regular
+    task:
+      id: 55a3f4c8-ff43-4b33-8b80-9cc70031b8be
+      version: -1
+      name: ' update ticket'
+      script: 'Zendesk v2|||zendesk-ticket-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      comment:
+        simple: added comment
+      ticket_id:
+        simple: ${ticket_id_to_update}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 5790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 356520fe-2c6e-4d24-86cc-2d03e9cdb667
+    type: regular
+    task:
+      id: 356520fe-2c6e-4d24-86cc-2d03e9cdb667
+      version: -1
+      name: list comments
+      script: 'Zendesk v2|||zendesk-ticket-comment-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      ticket_id:
+        simple: ${ticket_id_to_update}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 6315
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: becdbbb8-09da-4ad0-88d4-cbffdbd86a86
+    type: regular
+    task:
+      id: becdbbb8-09da-4ad0-88d4-cbffdbd86a86
+      version: -1
+      name: create a file to upload
+      description: |
+        Creates a file (using the given data input or entry ID) and uploads it to the current investigation War Room.
+      scriptName: FileCreateAndUploadV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      data:
+        simple: this is the body of the file
+      filename:
+        simple: attachment_to_upload.txt
+      ignore-outputs:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 5965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: e682ed0e-476a-4969-8607-58586a4e4daf
+    type: regular
+    task:
+      id: e682ed0e-476a-4969-8607-58586a4e4daf
+      version: -1
+      name: upload attachment
+      script: 'Zendesk v2|||zendesk-ticket-attachment-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      comment:
+        simple: file uploaded
+      file_id:
+        simple: ${File.EntryID}
+      ticket_id:
+        simple: ${ticket_id_to_update.[0]}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 6140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: ab243edb-793a-40bd-847f-c768c5fb65ef
+    type: regular
+    task:
+      id: ab243edb-793a-40bd-847f-c768c5fb65ef
+      version: -1
+      name: get attacment
+      script: 'Zendesk v2|||zendesk-attachment-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      attachment_id:
+        complex:
+          root: Zendesk.Ticket.Comment
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Zendesk.Ticket.Comment
+                iscontext: true
+          accessor: attachments.id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 6490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: b81918db-94c9-48a2-872c-3169e520b8f4
+    type: regular
+    task:
+      id: b81918db-94c9-48a2-872c-3169e520b8f4
+      version: -1
+      name: read file
+      description: Load the contents of a file into context.
+      scriptName: ReadFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      entryID:
+        simple: ${File.EntryID}
+      ignore-outputs:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 6665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 94fd3436-82c2-453c-80c6-d2ebe4b35e18
+    type: condition
+    task:
+      id: 94fd3436-82c2-453c-80c6-d2ebe4b35e18
+      version: -1
+      name: check file content
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "47"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: original_file_content
+            iscontext: true
+          right:
+            value:
+              simple: downloaded_file_content
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 7540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 6cd71a41-ea4b-4252-803b-8f544758e98b
+    type: regular
+    task:
+      id: 6cd71a41-ea4b-4252-803b-8f544758e98b
+      version: -1
+      name: read info file
+      description: Load the contents of a file into context.
+      scriptName: ReadFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      entryID:
+        simple: ${InfoFile.EntryID}
+      ignore-outputs:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 7190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 357ca8e7-fe53-42c1-8a95-b442394031cd
+    type: regular
+    task:
+      id: 357ca8e7-fe53-42c1-8a95-b442394031cd
+      version: -1
+      name: set file data
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      key:
+        simple: original_file_content
+      value:
+        simple: ${FileData}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 6840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 15e2d39d-6456-4362-88d0-b494bc6b712e
+    type: regular
+    task:
+      id: 15e2d39d-6456-4362-88d0-b494bc6b712e
+      version: -1
+      name: set file data
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      key:
+        simple: downloaded_file_content
+      value:
+        simple: ${FileData}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 7365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: bab8eb32-892f-4af2-879d-a1750f065ac8
+    type: regular
+    task:
+      id: bab8eb32-892f-4af2-879d-a1750f065ac8
+      version: -1
+      name: delete old file content
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      key:
+        simple: FileData
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 7015
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 882e9c30-766f-42c3-8cdb-6e5322846d76
+    type: regular
+    task:
+      id: 882e9c30-766f-42c3-8cdb-6e5322846d76
+      version: -1
+      name: list tickets with this user (init - might fail)
+      description: List Zendesk tickets.
+      script: 'Zendesk v2|||zendesk-ticket-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      filter:
+        simple: requested
+      user_id:
+        complex:
+          root: Zendesk.User
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Zendesk.User.name
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.users_test_username
+                iscontext: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: Zendesk.User.email
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.users_test_email
+                iscontext: true
+          accessor: id
+    separatecontext: false
+    continueonerror: true
+    view: |-
+      {
+        "position": {
+          "x": 245,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "39":
+    id: "39"
+    taskid: 75cae003-5bf0-4b10-8a99-0e07b2603695
+    type: regular
+    task:
+      id: 75cae003-5bf0-4b10-8a99-0e07b2603695
+      version: -1
+      name: close tickets (init - might fail).
+      description: Updates a Zendesk ticket.
+      script: 'Zendesk v2|||zendesk-ticket-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      status:
+        simple: closed
+      ticket_id:
+        simple: ${Zendesk.Ticket.id}
+    separatecontext: false
+    continueonerror: true
+    view: |-
+      {
+        "position": {
+          "x": 245,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "40":
+    id: "40"
+    taskid: d27415d5-0b82-4265-8620-a78262ab541b
+    type: regular
+    task:
+      id: d27415d5-0b82-4265-8620-a78262ab541b
+      version: -1
+      name: delete context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 4450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: ae40dae8-9541-400c-8c69-40116cef7c2e
+    type: regular
+    task:
+      id: ae40dae8-9541-400c-8c69-40116cef7c2e
+      version: -1
+      name: delete context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 3635
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 555736d4-8bba-4cdc-8da8-edb6c04194ce
+    type: regular
+    task:
+      id: 555736d4-8bba-4cdc-8da8-edb6c04194ce
+      version: -1
+      name: Get the user's group
+      description: "Get group's users. \nAllowed for: Admins, Agents and Light Agents."
+      script: '|||zendesk-group-user-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      group_id:
+        simple: ${Zendesk.User.default_group_id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 137abb2d-84d3-4f47-8bbb-284d8464c86b
+    type: title
+    task:
+      id: 137abb2d-84d3-4f47-8bbb-284d8464c86b
+      version: -1
+      name: Group Test
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "44"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 4625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: bc54dd3d-c27e-476b-887b-0d3c8840985a
+    type: regular
+    task:
+      id: bc54dd3d-c27e-476b-887b-0d3c8840985a
+      version: -1
+      name: Get Zendesk groups
+      description: "Get Zendesk groups. \nAllowed for: Admins, Agents."
+      script: '|||zendesk-group-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 4770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 8bb2112d-114a-4124-86a1-73c159c92eeb
+    type: condition
+    task:
+      id: 8bb2112d-114a-4124-86a1-73c159c92eeb
+      version: -1
+      name: Check Groups
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Zendesk.Group.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 4945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 3027a175-8d79-461f-8981-2948507d9e2e
+    type: regular
+    task:
+      id: 3027a175-8d79-461f-8981-2948507d9e2e
+      version: -1
+      name: Delete context - done group test
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 5120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 194c1fa8-e93d-4a95-82ab-94285a667838
+    type: regular
+    task:
+      id: 194c1fa8-e93d-4a95-82ab-94285a667838
+      version: -1
+      name: Delete Ticket
+      description: "Delete ticket. \nRequired permissions: Admins, Agents with permission to delete tickets.\nAgent delete permissions are set in Support.\nSee Deleting tickets in the Zendesk Support Help Center."
+      script: '|||zendesk-ticket-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      ticket_id:
+        simple: ${Zendesk.Ticket.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 7760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "33_16_#default#": 0.21,
+      "8_42_yes": 0.49
+    },
+    "paper": {
+      "dimensions": {
+        "height": 7955,
+        "width": 1030,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: users_test_username
+  value:
+    simple: MY_TEST_USER
+  required: true
+  description: ""
+  playbookInputQuery:
+- key: ""
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery:
+    query: ""
+    queryEntity: indicators
+    results:
+    daterange:
+      fromdate: 0001-01-01T00:00:00Z
+      todate: 0001-01-01T00:00:00Z
+      period:
+        by: ""
+        byto: ""
+        byfrom: ""
+        tovalue:
+        fromvalue:
+        field: ""
+      fromdatelicenseval: 0001-01-01T00:00:00Z
+    runFromLastJobTime: true
+- key: users_test_email
+  value:
+    simple: test@test.com
+  required: true
+  description: ""
+  playbookInputQuery:
+- key: users_test_role
+  value:
+    simple: end-user
+  required: true
+  description: ""
+  playbookInputQuery:
+- key: users_update_test_note
+  value:
+    simple: the update note of the user
+  required: false
+  description: ""
+  playbookInputQuery:
+- key: ticket_test_subject
+  value:
+    simple: the test playbook subject
+  required: false
+  description: ""
+  playbookInputQuery:
+outputs: []
+fromversion: 6.6.0
+description: ''

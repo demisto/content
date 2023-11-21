@@ -1,7 +1,9 @@
 import demistomock as demisto
 from CommonServerPython import *
+import urllib3
 
 # flake8: noqa: E501
+
 
 class Client:
     def __init__(self, params: Dict):
@@ -839,7 +841,8 @@ class Client:
 
         headers = self.cs_client._headers
 
-        response = self.cs_client.http_request('get', 'sensors/entities/download-installer/v1', params=params, headers=headers)
+        response = self.cs_client.http_request('get', 'sensors/entities/download-installer/v1', params=params, headers=headers,
+                                               resp_type='response')
 
         return response
 
@@ -1006,7 +1009,7 @@ class Client:
 
         headers = self.cs_client._headers
 
-        response = self.cs_client.http_request('get', 'devices/entities/devices/v1', params=params, headers=headers)
+        response = self.cs_client.http_request('get', 'devices/entities/devices/v2', params=params, headers=headers)
 
         return response
 
@@ -4984,16 +4987,15 @@ def devices_ran_on_command(client, args):
 
 def download_sensor_installer_by_id_command(client, args):
     id_ = str(args.get('id_', ''))
-
     response = client.download_sensor_installer_by_id_request(id_)
-    command_results = CommandResults(
-        outputs_prefix='CrowdStrike.domainDownloadItem',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
+    data = response.content
+    try:
+        file_name = response.headers.get('Content-Disposition').split('attachment; filename=')[1]
+    except Exception as err:
+        demisto.debug(f'Failed extracting filename from response headers - [{str(err)}]')
+        file_name = f'cs_installer-id-{id_}'
 
-    return command_results
+    return fileResult(filename=file_name, data=data, file_type=EntryType.FILE)
 
 
 def entitiesprocesses_command(client, args):
@@ -9575,7 +9577,9 @@ def main():
     demisto.debug(f'Command being called is {command}')
 
     try:
-        requests.packages.urllib3.disable_warnings()
+        # Disable insecure warnings
+        urllib3.disable_warnings()
+
         client = Client(params)
 
         commands = {

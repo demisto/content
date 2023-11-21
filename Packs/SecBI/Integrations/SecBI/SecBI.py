@@ -4,11 +4,11 @@ from CommonServerUserPython import *
 
 ''' IMPORTS '''
 
-import requests
+import urllib3
 from typing import Dict, Tuple
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 SECBI_API_ROOT = '/api/v1'

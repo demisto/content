@@ -1,0 +1,30 @@
+[INGEST:vendor="linux", product="linux", target_dataset="linux_linux_raw", no_hit=keep]
+filter _raw_log ~= "\w{3}\s+\d{1,2}\s\d{2}:\d{2}:\d{2}"
+| alter
+// Get the current year and timestamp.
+    tmp_get_current_year = arrayindex(regextract(to_string(_insert_time), "\d{4}"), 0),
+    tmp_get_timestamp = arrayindex(regextract(_raw_log, "\w{3}\s+\d{1,2}\s\d{2}:\d{2}:\d{2}"), 0)
+| alter 
+// Unifies the year and timestamp as String.
+    tmp_timestamp1 = concat(tmp_get_current_year, " ", tmp_get_timestamp)
+| alter 
+// Converts the full timestamp to datetime format (First option).
+    tmp_timestamp_format1 = parse_timestamp("%Y %b %d %H:%M:%S", tmp_timestamp1)
+| alter 
+// Check the days difference between the current and extracted time.
+    tmp_timeDiff = timestamp_diff(tmp_timestamp_format1, current_time(), "DAY")
+| alter 
+// If the number of days between extracted and current time is positive, reduce the current year by 1.
+    tmp_verify_year = if(tmp_timeDiff > 0, to_string(subtract(to_integer(tmp_get_current_year),1)),null)
+| alter
+// If the year was reduced by 1, unifies the reduced year and extracted timestamp as String.
+    tmp_timestamp2 = if(tmp_verify_year != null, concat(tmp_verify_year, " ", tmp_get_timestamp), null)
+| alter
+// Converts the full timestamp to datetime format (Second option).
+    tmp_timestamp_format2 = if(tmp_timestamp2 != null, parse_timestamp("%Y %b %d %H:%M:%S", tmp_timestamp2), null)
+| alter
+    tmp_check_which_timestamp = coalesce(tmp_timestamp_format2, tmp_timestamp_format1, _insert_time) 
+| alter
+// Check if the second option is null, if not, use the first option.
+    _time = tmp_check_which_timestamp
+| fields -tmp_get_current_year, tmp_get_timestamp, tmp_timestamp1, tmp_timestamp_format1, tmp_timeDiff, tmp_verify_year, tmp_timestamp2, tmp_timestamp_format2, tmp_check_which_timestamp;

@@ -1,0 +1,11 @@
+[INGEST:vendor="safenet", product="trusted_access", target_dataset="safenet_trusted_access_raw", no_hit=keep]
+filter timeStamp ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z"
+| alter 
+	tmp_date_part = arraystring(regextract(timeStamp, "(\d{4}\-\d{2}\-\d{2})T"), ""),
+    tmp_time_part = arraystring(regextract(timeStamp, "T(\d{2}\:\d{2}\:\d{2})\."), ""),
+    tmp_mili_part = arraystring(regextract(timeStamp, ":\d{2}(\.\d{3})"), "")
+| alter 
+	tmp_time_format = concat(tmp_date_part, " ", arraystring(arraycreate(tmp_time_part, tmp_mili_part), ""))
+| alter 
+	_time = parse_timestamp("%Y-%m-%d %H:%M:%E3S", tmp_time_format)
+| fields -tmp_date_part, tmp_time_part, tmp_mili_part, tmp_time_format;

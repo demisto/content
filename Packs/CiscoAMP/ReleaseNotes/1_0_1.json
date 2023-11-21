@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "This pack (CiscoAMP) is deprecated, and won't be updated. Please use the AMPv2 integration from the AMP pack instead."
+}

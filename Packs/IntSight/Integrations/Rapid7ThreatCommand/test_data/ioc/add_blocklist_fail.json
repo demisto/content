@@ -1,0 +1,6 @@
+{
+    "error": {
+        "name": "InvalidIocValue",
+        "message": "Encountered invalid IOC values. Please check your input."
+    }
+}

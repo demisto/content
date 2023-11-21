@@ -47,7 +47,7 @@ tasks:
       - "2"
     scriptarguments:
       earliest_time:
-        simple: -1000d
+        simple: -1500d
       event_limit: {}
       latest_time: {}
       query:

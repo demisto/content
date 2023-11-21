@@ -5,14 +5,14 @@ from CommonServerUserPython import *
 
 import os
 import json
-import requests
+import urllib3
 from google.cloud import bigquery
 from datetime import date
 import hashlib
 
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 
 ''' GLOBALS/PARAMS '''
@@ -140,8 +140,11 @@ def get_query_results(query_to_run=None):
     priority = args.get('priority', None)
     use_query_cache = args.get('use_query_cache', None)
     use_legacy_sql = args.get('use_legacy_sql', None)
-    google_service_creds = demisto.params()['google_service_creds']
+    google_service_creds = demisto.params().get('credentials_google_service', {}).get(
+        'password') or demisto.params()['google_service_creds']
     job_id = args.get('job_id', None)
+    if not google_service_creds:
+        raise DemistoException('Google service account JSON must be provided.')
     write_disposition = args.get('write_disposition', None)
     query_results = query(query_to_run, project_id, location, allow_large_results, default_dataset,
                           destination_table, kms_key_name, dry_run, priority, use_query_cache, use_legacy_sql,
@@ -368,7 +371,9 @@ def test_module():
     Perform basic get request to get item samples
     """
     try:
-        bigquery_client = start_and_return_bigquery_client(demisto.params()['google_service_creds'])
+        google_service_creds = demisto.params().get('credentials_google_service', {}).get(
+            'password') or demisto.params()['google_service_creds']
+        bigquery_client = start_and_return_bigquery_client(google_service_creds)
         query_job = bigquery_client.query(TEST_QUERY)
         query_results = query_job.result()
         results_rows_iterator = iter(query_results)

@@ -385,7 +385,8 @@ Retrieves the IAM access control policy for the specified folder.
 | --- | --- | --- |
 | folder_name | The folder name for which the policy is being requested. For example, folders/12342. | Required | 
 | limit | The maximum number of results to retrieve. Minimum value is 1. Default is 50. | Optional | 
-| page | The page number of the results to retrieve. Minimum value is 1. Default is 1. | Optional | 
+| page | The page number of the results to retrieve. Minimum value is 1. Default is 1. | Optional |
+| roles | A comma-separated list of roles. (Ex: "roles/bigquery.admin, roles/editor, roles/owner"). | Optional | 
 
 
 #### Context Output
@@ -2484,3 +2485,64 @@ There is no context output for this command.
 ```!gcp-iam-project-iam-policy-remove project_name="projects/project-name-3" role="roles/anthosidentityservice.serviceAgent"```
 #### Human Readable Output
 >Project projects/project-name-3 IAM policies updated successfully.
+
+### gcp-iam-tagbindings-list
+***
+List tag bindings (key value pair) applied to a project/folder/organization object.
+
+
+#### Base Command
+
+`gcp-iam-tagbindings-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| parent |  The name of the resource to list tag bindings under. For example, setting this field to 'folders/1234' would list all tags directly applied to that folder. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCPIAM.TagBindings.key | String | Tag bindings key. | 
+| GCPIAM.TagBindings.value | String | Tag bindings value. | 
+
+#### Command example
+```!gcp-iam-tagbindings-list parent="//cloudresourcemanager.googleapis.com/folders/111111111111"```
+#### Context Example
+```json
+{
+    "GCP": {
+        "IAM": {
+            "TagBindings": {
+                "key": "environment",
+                "value": "non-production"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Project projects/project-name-1 information:
+>|key|value|
+>|---|---|
+>| environment | non-production |
+
+### gcp-iam-service-account-generate-access-token
+
+***
+Create a short-lived access token for a service account. The generated token will be exposed to the context menu and War Room, and can potentially be logged.
+
+#### Base Command
+
+`gcp-iam-service-account-generate-access-token`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| service_account_email | The email address of the privilege-bearing service account for which the short-lived token is created. | Required | 
+| lifetime | Lifetime of the Access Token in seconds. Default is 3600. | Required | 

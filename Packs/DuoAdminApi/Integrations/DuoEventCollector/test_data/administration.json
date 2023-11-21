@@ -1,0 +1,10 @@
+[
+  {
+    "action": "user_update",
+    "description": "{\"notes\": \"Joe asked for their nickname to be displayed instead of Joseph.\", \"realname\": \"Joe Smith\"}",
+    "isotimestamp": "2020-01-24T15:09:42+00:00",
+    "object": "jsmith",
+    "timestamp": 1579878582,
+    "username": "admin"
+  }
+]

@@ -11,7 +11,7 @@ import os.path
 import copy
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+requests.packages.urllib3.disable_warnings()  # type: ignore[attr-defined]  # pylint: disable=no-member
 
 if not demisto.params().get("proxy", True):
     del os.environ["HTTP_PROXY"]
@@ -36,13 +36,11 @@ def load_host_url():
 
 def hash_file(filename):
     '''Calculate the SHA1 of a file'''
+    # The function was taken from here:
+    # https://stackoverflow.com/questions/3431825/generating-an-md5-checksum-of-a-file#answer-3431838
     h = hashlib.sha1()  # nosec
     with open(filename, 'rb') as f:
-        chunk = ''
-        while True:
-            chunk = f.read(1024)
-            if not chunk:
-                break
+        for chunk in iter(lambda: f.read(1024), b""):
             h.update(chunk)
     return h.hexdigest()
 
@@ -50,7 +48,7 @@ def hash_file(filename):
 def hash_url(url):
     '''Calculate the SHA1 of a URL'''
     h = hashlib.sha1()  # nosec
-    h.update(url)
+    h.update(url.encode('utf-8'))
     return h.hexdigest()
 
 
@@ -68,18 +66,20 @@ def get_epoch_from_datetime(dt):
 
 def calculate_checksum(api_key, headers, body=''):
     ''' Generates a Checksum for the api call '''
+    if not API_KEY:
+        raise DemistoException('API key must be provided.')
     temp = api_key
     if 'X-DTAS-ChecksumCalculatingOrder' in headers:
         x_dtas_checksum_calculating_order_list = headers['X-DTAS-ChecksumCalculatingOrder'].split(",")
         for key in x_dtas_checksum_calculating_order_list:
             temp += headers[key]
     else:
-        for key, value in headers.iteritems():
+        for key, value in headers.items():
             if ('X-DTAS-' in key and 'X-DTAS-Checksum' not in key and 'X-DTAS-ChecksumCalculatingOrder' not in key):
                 temp += value
 
     temp += body
-    return hashlib.sha1(temp)  # nosec
+    return hashlib.sha1(temp.encode('utf-8'))  # nosec
 
 
 def http_request(uri, method, headers, body={}, params={}, files={}):
@@ -99,7 +99,7 @@ def http_request(uri, method, headers, body={}, params={}, files={}):
 
     if (res.status_code != 102 and (res.status_code < 200 or res.status_code >= 300)):
         raise Exception('Got status code ' + str(res.status_code) + ' with body '
-                        + res.content + ' with headers ' + str(res.headers))
+                        + str(res.content) + ' with headers ' + str(res.headers))
     return res
 
 
@@ -130,7 +130,7 @@ def binary_to_boolean(binary):
 
 
 # GLOBAL VARIABLES #
-API_KEY = demisto.params()['apiKey']
+API_KEY = demisto.params().get('credentials_api_key', {}).get('password') or demisto.params().get('apiKey')
 PROTOCOL_VERSION = demisto.params()['protocol_version']
 SERVER_URL = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
 USE_SSL = not demisto.params().get('insecure', True)

@@ -1,0 +1,30 @@
+{
+  "data": [
+    {
+      "uniqueId": "BLOCK_FILE::-1845090846.-1424333057657783286",
+      "remediationType": "BLOCK_FILE",
+      "targetName": "fc61fdcad5a9d52a01bd2d596f2c92b9",
+      "targetId": "-1845090846.-1424333057657783286",
+      "machineName": "desktop-vg9ke2u",
+      "machineId": "-1845090846.1198775089551518743",
+      "machinesCount": 1,
+      "malopId": "11.-7780537507363356527",
+      "malopType": "MalopProcess",
+      "machineConnected": "false"
+    },
+    {
+      "uniqueId": "QUARANTINE_FILE::-1845090846.-1424333057657783286",
+      "remediationType": "QUARANTINE_FILE",
+      "targetName": "winrar-x64-602.pdf.exe",
+      "targetId": "-1845090846.-1424333057657783286",
+      "machineName": "desktop-vg9ke2u",
+      "machineId": "-1845090846.1198775089551518743",
+      "machinesCount": 1,
+      "malopId": "11.-7780537507363356527",
+      "malopType": "MalopProcess",
+      "machineConnected": "false"
+    }
+  ],
+  "status": "SUCCESS",
+  "errorMessage": ""
+}

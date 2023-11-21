@@ -1,0 +1,28 @@
+args:
+- description: xsoar-ws job UUID
+  name: uuid
+  required: true
+- default: true
+  defaultValue: XSOAR email
+  description: subject of the email
+  name: emailsubject
+- description: files to attach to the email
+  name: attachIDs
+comment: To parse the context data after running  xsoar-ws-get-action-status and resend emails to recipients who have not responded
+commonfields:
+  id: xsoar-ws-parse-context
+  version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+dockerimage: demisto/python3:3.10.12.63474
+enabled: true
+name: xsoar-ws-parse-context
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

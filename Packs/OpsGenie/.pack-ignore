@@ -1,9 +1,6 @@
 [file:README.md]
 ignore=RM106
 
-[file:OpsGenie.yml]
-ignore=IN145
-
 [file:OpsGenieV3_image.png]
 ignore=IM111
 
@@ -12,3 +9,11 @@ ignore=IM111
 
 [file:classifier-OpsGenie_-_Classifier.json]
 ignore=BA101
+
+[file:incidentfield-OpsGenie_AlertId.json]
+ignore=IF115
+
+[known_words]
+alertid
+tinyid
+

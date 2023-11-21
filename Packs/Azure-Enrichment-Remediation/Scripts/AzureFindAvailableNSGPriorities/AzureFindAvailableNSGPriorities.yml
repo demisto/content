@@ -1,0 +1,30 @@
+args:
+- description: The NSG priority to start finding available priorities from. The target priority cannot be 100.
+  name: target_rule_priority
+  required: true
+- description: 'The number of priorities that are available to be returned. (limit: 5)'
+  name: number_of_available_priorities_to_retrieve
+  required: true
+- description: 'The list of priorities from rules in an Azure Network Security Group. (limit: 995)'
+  isArray: true
+  name: list_of_priorities_from_rules
+  required: true
+comment: This script takes in a list of numbers that represent Azure priorities for NSG rules, a target priority number, and a number available priorities to return available priorities from the provided list.
+commonfields:
+  id: AzureFindAvailableNSGPriorities
+  version: -1
+dockerimage: demisto/python3:3.10.12.63474
+enabled: true
+name: AzureFindAvailableNSGPriorities
+outputs:
+- contextPath: AvailableAzureNSGPriorities
+  description: List of numbers that represent available Azure NSG priorities
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,32 @@
+{
+  "gitlab_gitlab_raw": {
+    "id": {
+      "type": "int",
+      "is_array": false
+    },
+    "_vendor": {
+      "type": "string",
+      "is_array": false
+    },
+    "_product": {
+      "type": "string",
+      "is_array": false
+    },
+    "author_id": {
+      "type": "int",
+      "is_array": false
+    },
+    "entity_id": {
+      "type": "int",
+      "is_array": false
+    },
+    "entity_type": {
+      "type": "string",
+      "is_array": false
+    },
+    "details": {
+      "type": "string",
+      "is_array": false
+    }
+  }
+}

@@ -1,0 +1,7 @@
+[INGEST:vendor="barracuda", product="waf", target_dataset="barracuda_waf_raw", no_hit=keep]
+filter _raw_log ~= "\d{4}\-\d+\-\d+\s\d+\:\d+\:\d+\.\d+\s[+|-]\d{4}"
+//supported format 2023-01-18 16:47:16.160 -0500
+| alter tmp_extracted_date = arraystring(regextract(_raw_log, "\d{4}\-\d{2}\-\d{2}\s\d{2}\:\d{2}\:\d{2}.\d{1,}\s[+-]\d{4}"), "")
+| alter tmp_parsed_date = parse_timestamp("%Y-%m-%d %H:%M:%E3S %z", tmp_extracted_date)
+| alter _time = tmp_parsed_date
+| fields -tmp_extracted_date, tmp_parsed_date;

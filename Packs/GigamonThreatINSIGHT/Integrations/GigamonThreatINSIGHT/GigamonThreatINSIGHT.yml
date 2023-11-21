@@ -1,0 +1,901 @@
+commonfields:
+  id: Gigamon ThreatINSIGHT
+  version: -1
+name: Gigamon ThreatINSIGHT
+display: Gigamon ThreatINSIGHT
+category: Network Security
+description: Gigamon ThreatINSIGHT is a cloud-native network detection and response solution built for the rapid detection of threat activity, investigation of suspicious behavior, proactive hunting for potential risks, and directing a fast and effective response to active threats.
+configuration:
+- display: API Token
+  name: api_key
+  type: 4
+  required: true
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  defaultvalue: 7 days
+  type: 0
+  required: true
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: Gigamon ThreatINSIGHT Detection
+  type: 13
+  required: false
+- display: 'Incident Filter: Account UUID (Optional)'
+  name: account_uuid
+  type: 0
+  required: false
+- display: Maximum incidents in each fetch each run
+  name: max_fetch
+  defaultvalue: '50'
+  type: 0
+  required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  type: 19
+  required: false
+script:
+  script: '-'
+  type: python
+  commands:
+  - name: insight-get-sensors
+    arguments:
+    - name: account_uuid
+      description: UUID of account to filter by.
+    - name: account_code
+      description: Account code to fiilter by.
+    - name: sensor_id
+      description: ID of the sensor to filter by.
+    - name: include
+      description: Include additional metadata such as status, interfaces, admin.sensor, admin.zeek, admin.suricata, etc.
+    - name: enabled
+      description: Filter by true or false. If not provided, all the sensors are returned
+    outputs:
+    - contextPath: Insight.Sensors.created
+      description: Date when the sensor was created
+      type: date
+    - contextPath: Insight.Sensors.updated
+      description: Date when the sensor was last updated
+      type: date
+    - contextPath: Insight.Sensors.sensor_id
+      description: ID code of the sensor
+      type: string
+    - contextPath: Insight.Sensors.account_code
+      description: ID code of the customer account
+      type: string
+    - contextPath: Insight.Sensors.location
+      description: Latitude and longitude where the sensor is located
+      type: string
+    - contextPath: Insight.Sensors.subdivison
+      description: State/Province where the sensor is located
+      type: string
+    - contextPath: Insight.Sensors.city
+      description: City where the sensor is located
+      type: string
+    - contextPath: Insight.Sensors.country
+      description: Country where the sensor is located
+      type: string
+    - contextPath: Insight.Sensors.tags
+      description: Labels added for this sensor
+      type: string
+    - contextPath: Insight.Sensors.pcap_enabled
+      description: If PCAP is enabled on the sensor (true/false)
+      type: boolean
+    description: Get a list of all sensors.
+  - name: insight-get-devices
+    arguments:
+    - name: start_date
+      description: Filter devices based on when they were seen.
+    - name: end_date
+      description: Filter devices based on when they were seen.
+    - name: cidr
+      description: Filter devices that are under a specific CIDR.
+    - name: sensor_id
+      description: Filter devices that were observed by a specific sensor.
+    - name: traffic_direction
+      description: Filter devices that have been noted to only have a certain directionality of traffic ("external" vs "internal").
+    - name: sort_by
+      auto: PREDEFINED
+      predefined:
+      - ip_address
+      - internal
+      - external
+      description: 'Sort output by: "ip_address", "internal", "external".'
+    - name: sort_direction
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+      description: Sort direction ("asc" vs "desc").
+    outputs:
+    - contextPath: Insight.Devices.date
+      description: Date when the device was first seen
+      type: date
+    - contextPath: Insight.Devices.external
+      description: If external traffic has been observed for this device
+      type: boolean
+    - contextPath: Insight.Devices.internal
+      description: If internal traffic has been observed for this device
+      type: boolean
+    - contextPath: Insight.Devices.ip_address
+      description: IP address of the device
+      type: string
+    - contextPath: Insight.Devices.sensor_id
+      description: ID code of the sensor
+      type: string
+    description: Get a list of all devices.
+  - name: insight-get-tasks
+    arguments:
+    - name: task_uuid
+      description: Filter to a specific task.
+    outputs:
+    - contextPath: Insight.Tasks.task_uuid
+      description: Unique ID of the task
+      type: string
+    - contextPath: Insight.Tasks.actual_start_time
+      description: Date when the task actually ended
+      type: date
+    - contextPath: Insight.Tasks.requested_start_time
+      description: Requested date for the task start
+      type: date
+    - contextPath: Insight.Tasks.updated_email
+      description: Email address of the user that updated the task
+      type: string
+    - contextPath: Insight.Tasks.created_uuid
+      description: Unique ID of the user that created the task
+      type: string
+    - contextPath: Insight.Tasks.created
+      description: Date when the task was created
+      type: date
+    - contextPath: Insight.Tasks.name
+      description: Name of the task
+      type: string
+    - contextPath: Insight.Tasks.status
+      description: Current status of the task
+      type: string
+    - contextPath: Insight.Tasks.created_email
+      description: Email address of the user that created the task
+      type: string
+    - contextPath: Insight.Tasks.updated_uuid
+      description: Unique ID of the user that updated the task
+      type: string
+    - contextPath: Insight.Tasks.bpf
+      description: Berkeley Packet Filter for the task
+      type: string
+    - contextPath: Insight.Tasks.actual_end_time
+      description: Date when the task actually ended
+      type: date
+    - contextPath: Insight.Tasks.account_code
+      description: ID code of the customer account
+      type: string
+    - contextPath: Insight.Tasks.requested_end_time
+      description: Requested date for the task end
+      type: date
+    - contextPath: Insight.Tasks.updated
+      description: Date when the task was updated
+      type: date
+    - contextPath: Insight.Tasks.description
+      description: Description of the task
+      type: string
+    - contextPath: Insight.Tasks.has_files
+      description: If this task has files (true/false)
+      type: boolean
+    - contextPath: Insight.Tasks.sensor_ids
+      description: Sensors this task is running on
+      type: string
+    - contextPath: Insight.Tasks.files
+      description: Files captured for this task
+      type: string
+    description: Get a list of all the PCAP tasks.
+  - name: insight-create-task
+    arguments:
+    - name: name
+      required: true
+      description: The name of the task.
+    - name: account_uuid
+      required: true
+      description: Account where the task will be created.
+    - name: description
+      required: true
+      description: A description for the task.
+    - name: bpf
+      required: true
+      description: The Berkeley Packet Filter for capture filtering.
+    - name: requested_start_date
+      required: true
+      description: The date the task will become active. (2019-01-30T00:00:00.000Z)
+    - name: requested_end_date
+      required: true
+      description: The date the task will become inactive. (2019-12-31T23:59:59.000Z)
+    - name: sensor_ids
+      description: Sensor IDs on which this task will run (separate multiple accounts by comma).
+    description: Create a new PCAP task.
+  - name: insight-get-telemetry-events
+    arguments:
+    - name: interval
+      auto: PREDEFINED
+      predefined:
+      - hour
+      - day
+      description: 'Interval to group by: hour (default) or day.'
+    - name: start_date
+      description: Start date/time to query for. The default is 1 day ago for interval=hour or 30 days ago for interval=day.
+    - name: end_date
+      description: End date/time to query for. The default is the current time.
+    - name: account_uuid
+      description: Account uuid to filter by.
+    - name: account_code
+      description: Account code to filter by.
+    - name: sensor_id
+      description: Sensor id to filter by.
+    - name: event_type
+      auto: PREDEFINED
+      predefined:
+      - flow
+      - dns
+      - http
+      - ssl
+      - x509
+      description: The type of event. Limited to flow, dns, http, ssl, and x509.
+    - name: group_by
+      auto: PREDEFINED
+      predefined:
+      - sensor_id
+      - event_type
+      description: 'Optionally group results by: sensor_id, event_type.'
+    outputs:
+    - contextPath: Insight.Telemetry.Events.timestamp
+      description: Timestamp of the grouped data
+      type: date
+    - contextPath: Insight.Telemetry.Events.event_count
+      description: Number of events
+      type: number
+    - contextPath: Insight.Telemetry.Events.sensor_id
+      description: Sensor name (if grouped by sensor_id)
+      type: string
+    - contextPath: Insight.Telemetry.Events.event_type
+      description: Type of event (if grouped by event_type)
+      type: string
+    description: Get event telemetry data grouped by time.
+  - name: insight-get-telemetry-packetstats
+    arguments:
+    - name: sensor_id
+      description: Scopes the returned metrics to the interfaces of the specified sensor ID.
+    - name: start_date
+      description: Scopes the returned metrics to dates after the given start_date. If empty returns most current packet stats.
+    - name: end_date
+      description: Scopes the returned metrics to dates before the given end_date. If empty returns most current packet stats
+    - name: interval
+      description: Aggregation interval. 1 hr is not specified by default.
+    - name: group_by
+      auto: PREDEFINED
+      predefined:
+      - interface_name
+      - sensor_id
+      - account_code
+      description: 'Option to group by the following fields: interface_name, sensor_id, account_code.'
+    - name: account_code
+      description: Account code to filter by.
+    outputs:
+    - contextPath: Insight.Telemetry.Packetstats.account_code
+      description: Account code the data was filtered by
+      type: string
+    - contextPath: Insight.Telemetry.Packetstats.timestamp
+      description: Timestamp of the grouped data
+      type: date
+    - contextPath: Insight.Telemetry.Packetstats.interface_name
+      description: Interface the packet data was recorded from
+      type: string
+    - contextPath: Insight.Telemetry.Packetstats.rx_bits_per_second
+      description: Receive throughput (bits per second)
+      type: number
+    - contextPath: Insight.Telemetry.Packetstats.rx_bytes
+      description: Receive data size (bytes)
+      type: number
+    - contextPath: Insight.Telemetry.Packetstats.rx_errors
+      description: Number of receive errors
+      type: number
+    - contextPath: Insight.Telemetry.Packetstats.rx_packets
+      description: Number of receive packets
+      type: number
+    - contextPath: Insight.Telemetry.Packetstats.sensor_id
+      description: Sensor ID packet data was recorded from
+      type: string
+    - contextPath: Insight.Telemetry.Packetstats.tx_bytes
+      description: Transmit data size (bytes)
+      type: number
+    - contextPath: Insight.Telemetry.Packetstats.tx_errors
+      description: Number of transmit errors
+      type: number
+    - contextPath: Insight.Telemetry.Packetstats.tx_packets
+      description: Number of transmit packets
+      type: number
+    description: Get packetstats telemetry data grouped by time.
+  - name: insight-get-telemetry-network
+    arguments:
+    - name: account_code
+      description: 'Account code to filter by.'
+    - name: interval
+      auto: PREDEFINED
+      predefined:
+      - day
+      - month_to_day
+      description: 'The interval to filter by (day, month_to_day).'
+    - name: latest_each_month
+      description: "latest_each_month\tNo\tNo\tFilters out all but the latest day and month_to_date for each month."
+    - name: sort_order
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+      description: 'Sorts by account code first, then timestamp. asc or desc. The default is desc.'
+    - name: limit
+      description: 'The maximum number of records to return, default: 100, max: 1000.'
+      defaultValue: '1000'
+    - name: offset
+      description: 'The number of records to skip past. Default: 0.'
+    - name: start_date
+      description: 'Start date to filter by.'
+    - name: end_date
+      description: 'End date to filter by.'
+    outputs:
+    - contextPath: Insight.Telemetry.NetworkUsage.account_code
+      description: The account code for the network usage.
+      type: string
+    - contextPath: Insight.Telemetry.NetworkUsage.percentile_bps
+      description: The top percentile BPS value across sensors.
+      type: long
+    - contextPath: Insight.Telemetry.NetworkUsage.percentile
+      description: Percentile of BPS records to calculate for percentile_bps.
+      type: int
+    - contextPath: Insight.Telemetry.NetworkUsage.interval
+      description: Time span the calculation was performed over (day, month_to_day).
+    - contextPath: Insight.Telemetry.Packetstats.timestamp
+      description: The date the calculation was performed until.
+      type: date
+    description: Get network telemetry data grouped by time
+  - name: insight-get-entity-summary
+    arguments:
+    - name: entity
+      required: true
+      description: IP or Domain to get entity data for.
+    outputs:
+    - contextPath: Insight.Entity.Summary.entity
+      description: Entity identifier
+      type: string
+    - contextPath: Insight.Entity.Summary.first_seen
+      description: First seen date for this entity
+      type: date
+    - contextPath: Insight.Entity.Summary.last_seen
+      description: Last seen date for this entity
+      type: date
+    - contextPath: Insight.Entity.Summary.prevalence_count_internal
+      description: Prevalence for this entity within the environment
+      type: number
+    description: Get summary information about an IP or domain.
+  - name: insight-get-entity-pdns
+    arguments:
+    - name: entity
+      required: true
+      description: IP or Domain to get passive DNS data for.
+    - name: record_type
+      description: Limit results to the specified DNS query type(s).
+    - name: source
+      description: Limit the results to the specified data source(s).
+    - name: resolve_external
+      description: When true, the service will query non-ICEBRG data sources. false by default.
+    - name: start_date
+      description: The earliest date before which to exclude results. Day granularity, inclusive.
+    - name: end_date
+      description: The latest date after which to exclude results. Day granularity, inclusive.
+    - name: account_uuid
+      description: Limit results to the specified account UUID(s). Defaults to all accounts for which the user has permission.
+    - name: limit
+      description: Maximum number of records to be returned. Default 1000.
+    outputs:
+    - contextPath: Insight.Entity.PDNS.account_uuid
+      description: Unique ID for the customer account
+      type: string
+    - contextPath: Insight.Entity.PDNS.first_seen
+      description: First seen date for matching dns information
+      type: date
+    - contextPath: Insight.Entity.PDNS.last_seen
+      description: Last seen date for matching dns information
+      type: date
+    - contextPath: Insight.Entity.PDNS.record_type
+      description: DNS record type
+      type: string
+    - contextPath: Insight.Entity.PDNS.resolved
+      description: Domain name resolved from the DNS record
+      type: string
+    - contextPath: Insight.Entity.PDNS.sensor_id
+      description: ID code of the sensor
+      type: string
+    - contextPath: Insight.Entity.PDNS.source
+      description: Source of the DNS record
+      type: string
+    description: Get passive DNS information about an IP or domain.
+  - name: insight-get-entity-dhcp
+    arguments:
+    - name: entity
+      required: true
+      description: IP to get DHCP data for.
+    - name: start_date
+      description: The earliest date before which to exclude results. Day granularity, inclusive.
+    - name: end_date
+      description: The latest date after which to exclude results. Day granularity, inclusive.
+    - name: account_uuid
+      description: Limit results to the specified account UUID(s). Defaults to all accounts for which the user has permission.
+    outputs:
+    - contextPath: Insight.Entity.DHCP.customer_id
+      description: ID code of the customer account
+      type: string
+    - contextPath: Insight.Entity.DHCP.hostnames
+      description: Hostname of the entity
+      type: string
+    - contextPath: Insight.Entity.DHCP.ip
+      description: IP Address of the entity
+      type: string
+    - contextPath: Insight.Entity.DHCP.lease_end
+      description: DHCP lease end date
+      type: date
+    - contextPath: Insight.Entity.DHCP.lease_start
+      description: DHCP lease start date
+      type: date
+    - contextPath: Insight.Entity.DHCP.mac
+      description: MAC address of the entity
+      type: string
+    - contextPath: Insight.Entity.DHCP.sensor_id
+      description: Sensor ID that recorded the entity data
+      type: string
+    - contextPath: Insight.Entity.DHCP.start_lease_as_long
+      description: Start Date as a long value
+      type: number
+    description: Get DHCP information about an IP address.
+  - name: insight-get-entity-file
+    arguments:
+    - name: hash
+      required: true
+      description: File hash. Can be an MD5, SHA1, or SHA256 hash of the file
+    outputs:
+    - contextPath: Insight.Entity.File.entity
+      description: The entity identifier
+      type: string
+    - contextPath: Insight.Entity.File.sha1
+      description: The entity SHA1 hash
+      type: string
+    - contextPath: Insight.Entity.File.sha256
+      description: The entity SHA256 hash
+      type: string
+    - contextPath: Insight.Entity.File.md5
+      description: The entity MD5 hash
+      type: string
+    - contextPath: Insight.Entity.File.customer_id
+      description: ID code of the customer account
+      type: string
+    - contextPath: Insight.Entity.File.names
+      description: File names for the entity
+      type: string
+    - contextPath: Insight.Entity.File.prevalence_count_internal
+      description: Prevalence for this file within the environment
+      type: number
+    - contextPath: Insight.Entity.File.last_seen
+      description: Last seen date for this file
+      type: date
+    - contextPath: Insight.Entity.File.mime_type
+      description: File MIME type
+      type: string
+    - contextPath: Insight.Entity.File.first_seen
+      description: First seen date for this file
+      type: date
+    - contextPath: Insight.Entity.File.bytes
+      description: File size
+      type: number
+    - contextPath: Insight.Entity.File.pe
+      description: File Portable Executable attributes
+      type: string
+    description: Get information about a file.
+  - name: insight-get-detections
+    arguments:
+    - name: rule_uuid
+      description: Filter to a specific rule.
+    - name: account_uuid
+      description: For those with access to multiple accounts, specify a single account to return results from.
+    - name: status
+      description: 'Filter by detection status: active, resolved.'
+    - name: device_ip
+      description: Device IP to filter by.
+    - name: sensor_id
+      description: Sensor ID to filter by.
+    - name: muted
+      description: 'List detections that a user muted: true / false.'
+    - name: muted_device
+      description: 'List detections for muted devices: true / false.'
+    - name: muted_rule
+      description: List detections for muted rules.
+    - name: include
+      auto: PREDEFINED
+      predefined:
+      - rules
+      - indicators
+      description: Include additional information in the response (rules).
+    - name: sort_by
+      auto: PREDEFINED
+      predefined:
+      - first_seen
+      - last_seen
+      - status
+      - device_ip
+      - indicator_count
+      description: 'Field to sort by (first_seen, last_seen, status, device_ip, indicator_count).'
+    - name: sort_order
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+      description: Sort direction ("asc" vs "desc").
+    - name: offset
+      description: The number of records to skip past.
+    - name: limit
+      description: 'The number of records to return, default: 100, max: 1000.'
+      defaultValue: '1000'
+    - name: created_start_date
+      description: Created start date to filter by (inclusive).
+    - name: created_end_date
+      description: Created end date to filter by (exclusive).
+    - name: created_or_shared_start_date
+      description: Created or shared start date to filter by (inclusive).
+    - name: created_or_shared_end_date
+      description: Created or shared end date to filter by (exclusive).
+    - name: active_start_date
+      description: Active start date to filter by (inclusive).
+    - name: active_end_date
+      description: Active end date to filter by (exclusive).
+    outputs:
+    - contextPath: Insight.Detections.muted_rule
+      description: Is this rule muted (true/false)
+      type: boolean
+    - contextPath: Insight.Detections.created
+      description: Date when the detection was created
+      type: date
+    - contextPath: Insight.Detections.account_uuid
+      description: Unique ID of the account for this detection
+    - contextPath: Insight.Detections.resolution_timestamp
+      description: Date when the detection was resolved
+      type: date
+    - contextPath: Insight.Detections.first_seen
+      description: Date when the detection was first seen
+      type: date
+    - contextPath: Insight.Detections.muted
+      description: If the detection is muted or not (true/false)
+      type: boolean
+    - contextPath: Insight.Detections.resolution
+      description: Resolution type
+      type: string
+    - contextPath: Insight.Detections.muted_user_uuid
+      description: Unique ID of the user that muted the detection
+      type: string
+    - contextPath: Insight.Detections.last_seen
+      description: Date when the detection was last seen
+      type: date
+    - contextPath: Insight.Detections.status
+      description: Current status of the detection
+      type: string
+    - contextPath: Insight.Detections.resolution_user_uuid
+      description: Unique identifier of the user that resolved the detection
+      type: string
+    - contextPath: Insight.Detections.resolution_comment
+      description: Comment entered when detection was resolved
+      type: string
+    - contextPath: Insight.Detections.muted_comment
+      description: Comment entered when detection was muted
+      type: string
+    - contextPath: Insight.Detections.sensor_id
+      description: ID code of the sensor
+      type: string
+    - contextPath: Insight.Detections.rule_uuid
+      description: Unique ID of the rule for this detection
+      type: string
+    - contextPath: Insight.Detections.updated
+      description: Date when the detection was last updated
+      type: date
+    - contextPath: Insight.Detections.uuid
+      description: Unique ID of the detection
+      type: string
+    - contextPath: Insight.Detections.muted_device_uuid
+      description: Unique ID of the muted device
+      type: string
+    - contextPath: Insight.Detections.device_ip
+      description: IP address of the detection
+      type: string
+    description: Get a list of detections.
+  - name: insight-get-detection-rules
+    arguments:
+    - name: account_uuid
+      description: For those with access to multiple accounts, specify a single account to return results from.
+    - name: search
+      description: Filter name or category.
+    - name: has_detections
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: Include rules that have unmuted, unresolved detections.
+    - name: severity
+      auto: PREDEFINED
+      predefined:
+      - low
+      - moderate
+      - high
+      description: 'Filter by severity: high, moderate, low.'
+    - name: confidence
+      auto: PREDEFINED
+      predefined:
+      - low
+      - moderate
+      - high
+      description: 'Filter by confidence: high, moderate, low.'
+    - name: category
+      auto: PREDEFINED
+      predefined:
+      - Attack:Command and Control
+      - Attack:Exploitation
+      - Attack:Exfiltration
+      - Attack:Installation
+      - Attack:Lateral Movement
+      - Attack:Infection Vector
+      - Attack:Miscellaneous
+      - Miscellaneous
+      - Posture:Anomalous Activity
+      - Posture:Insecure Configuration
+      - Posture:Potentially Unauthorized Software or Device
+      - Posture:Miscellaneous
+      - PUA:Adware
+      - PUA:Spyware
+      - PUA:Unauthorized Resource Use
+      - PUA:Miscellaneous
+      description: Category to filter by.
+    - name: rule_account_muted
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: 'Include muted rules: true / false.'
+    - name: enabled
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: Enabled rules only
+    - name: sort_by
+      auto: PREDEFINED
+      predefined:
+      - created
+      - updated
+      - detections
+      - severity
+      - confidence
+      - category
+      - last_seen
+      - detections_muted
+      description: 'The field to sort by: created, updated, detections, severity, confidence, category, last_seen, detections_muted. Defaults to updated.'
+    - name: sort_order
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+      description: Sort direction ("asc" vs "desc").
+    - name: offset
+      description: The number of records to skip past.
+    - name: limit
+      description: 'The number of records to return, default: 100, max: 1000.'
+    outputs:
+    - contextPath: Insight.Rules.enabled
+      description: 'Status of the rule: If true it is enabled, if false it is disabled.'
+      type: boolean
+    - contextPath: Insight.Rules.updated_user_uuid
+      description: User ID that updated the rule
+      type: string
+    - contextPath: Insight.Rules.rule_accounts
+      description: Accounts which have seen detections for this rule
+      type: string
+    - contextPath: Insight.Rules.auto_resolution_minutes
+      description: Length of time (in minutes) the rule will auto-resolve detections
+      type: number
+    - contextPath: Insight.Rules.created
+      description: Date the rule was created
+      type: date
+    - contextPath: Insight.Rules.account_uuid
+      description: Account ID the rule was created under
+      type: string
+    - contextPath: Insight.Rules.confidence
+      description: Confidence level of the rule
+      type: string
+    - contextPath: Insight.Rules.name
+      description: Name of the rule
+      type: string
+    - contextPath: Insight.Rules.created_user_uuid
+      description: User ID that created the rule
+      type: string
+    - contextPath: Insight.Rules.query_signature
+      description: IQL signature of the rule
+      type: string
+    - contextPath: Insight.Rules.shared_account_uuids
+      description: Account IDs the rule is visible to
+      type: string
+    - contextPath: Insight.Rules.run_account_uuids
+      description: Account IDs the rule runs on
+      type: string
+    - contextPath: Insight.Rules.updated
+      description: Date the rule was updated
+      type: date
+    - contextPath: Insight.Rules.uuid
+      description: Unique ID of the rule
+      type: string
+    - contextPath: Insight.Rules.description
+      description: Description of the rule
+      type: string
+    - contextPath: Insight.Rules.severity
+      description: Severity level of the rule
+      type: string
+    - contextPath: Insight.Rules.category
+      description: Category of the rule
+      type: string
+    description: Get a list of detection rules.
+  - name: insight-resolve-detection
+    arguments:
+    - name: detection_uuid
+      required: true
+      description: Detection UUID to resolve
+    - name: resolution
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - true_positive_mitigated
+      - true_positive_no_action
+      - false_positive
+      - unknown
+      description: 'Resolution state. Options: true_positive_mitigated, true_posititve_no_action, false_positive, unknown'
+    - name: resolution_comment
+      description: Optional comment for the resolution.
+    description: Resolve a specific detection.
+  - name: insight-get-detection-rule-events
+    arguments:
+    - name: rule_uuid
+      required: true
+      description: Rule UUID to get events for
+    - name: account_uuid
+      description: Account uuid to filter by.
+    - name: offset
+      description: The number of records to skip past
+    - name: limit
+      description: 'The number of records to return, default: 100, max: 1000.'
+    outputs:
+    - contextPath: Insight.Events.src_ip
+      description: Source IP address
+      type: string
+    - contextPath: Insight.Events.dst_ip
+      description: Destination IP address
+      type: string
+    - contextPath: Insight.Events.src_port
+      description: Source port number
+      type: number
+    - contextPath: Insight.Events.dst_port
+      description: Destination port number
+      type: number
+    - contextPath: Insight.Events.host_domain
+      description: Domain name
+      type: string
+    - contextPath: Insight.Events.flow_id
+      description: Unique ID of the flow record
+      type: string
+    - contextPath: Insight.Events.event_type
+      description: Event type
+      type: string
+    - contextPath: Insight.Events.sensor_id
+      description: ID code of the sensor
+      type: string
+    - contextPath: Insight.Events.timestamp
+      description: Date the event occurred
+      type: date
+    - contextPath: Insight.Events.customer_id
+      description: ID code of the customer account
+      type: string
+    - contextPath: Insight.Events.uuid
+      description: Unique ID for the event
+      type: string
+    description: Get a list of the events that matched on a specific rule.
+  - name: insight-create-detection-rule
+    arguments:
+    - name: account_uuid
+      required: true
+      description: Account where the rule will be created.
+    - name: name
+      required: true
+      description: The name of the rule.
+    - name: category
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Attack:Command and Control
+      - Attack:Exploitation
+      - Attack:Exfiltration
+      - Attack:Installation
+      - Attack:Lateral Movement
+      - Attack:Infection Vector
+      - Attack:Miscellaneous
+      - Miscellaneous
+      - Posture:Anomalous Activity
+      - Posture:Insecure Configuration
+      - Posture:Potentially Unauthorized Software or Device
+      - Posture:Miscellaneous
+      - PUA:Adware
+      - PUA:Spyware
+      - PUA:Unauthorized Resource Use
+      - PUA:Miscellaneous
+      description: The category of the rule.
+    - name: query_signature
+      required: true
+      description: The IQL query for the rule.
+    - name: description
+      required: true
+      description: A description for the rule.
+    - name: severity
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - low
+      - moderate
+      - high
+      description: The severity of the rule.
+    - name: confidence
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - low
+      - moderate
+      - high
+      description: The confidence of the rule.
+    - name: run_account_uuids
+      required: true
+      description: Account UUIDs on which this rule will run. This will usually be just your own account UUID. (separate multiple accounts by comma)
+    - name: auto_resolution_minutes
+      description: The number of minutes after which detections will be auto-resolved. If 0 then detections have to be manually resolved.
+    - name: device_ip_fields
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - DEFAULT
+      - src.ip
+      - dst.ip
+      - dhcp:assignment.ip
+      - dns:answers.ip
+      - http:host.ip
+      - http:uri.host.ip
+      - http:referrer.host.ip
+      - http:headers.location.host.ip
+      - http:headers.origin.host.ip
+      - http:headers.proxied_client_ips.ip
+      - http:headers.refresh.uri.host.ip
+      - smtp:helo.ip
+      - smtp:x_originating_ip.ip
+      - smtp:path.ip
+      - software:host.ip
+      - ssl:server_name_indication.ip
+      - suricata:http.host.ip
+      - x509:san_dns.ip
+      - x509:san_ip.ip
+      description: List of event fields to check for impacted devices
+    description: Create a new detection rule.
+
+  dockerimage: demisto/python3:3.10.12.63474
+  isfetch: true
+  subtype: python3
+fromversion: 6.5.0
+defaultclassifier: Gigamon ThreatINSIGHT
+tests:
+- No tests (auto formatted)

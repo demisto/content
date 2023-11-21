@@ -1,4 +1,3 @@
-from __future__ import print_function
 
 import argparse
 import ast
@@ -8,38 +7,40 @@ import subprocess
 import sys
 import uuid
 import zipfile
-from abc import abstractmethod
+from abc import abstractmethod, ABC
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
-from packaging.version import Version
 from enum import IntEnum
 from pprint import pformat
-from threading import Thread
+from tempfile import mkdtemp
 from time import sleep
-from typing import List, Tuple, Union, Set
-
+from typing import Any
 from urllib.parse import quote_plus
-import demisto_client
 
+import demisto_client
 from demisto_sdk.commands.common.constants import FileType
-from demisto_sdk.commands.common.tools import run_threads_list, run_command, get_yaml, \
+from demisto_sdk.commands.common.tools import run_command, get_yaml, \
     str2bool, format_version, find_type, listdir_fullpath
+from demisto_sdk.commands.test_content.TestContentClasses import BuildContext
 from demisto_sdk.commands.test_content.constants import SSH_USER
 from demisto_sdk.commands.test_content.mock_server import MITMProxy, run_with_mock, RESULT
 from demisto_sdk.commands.test_content.tools import update_server_configuration, is_redhat_instance
-from demisto_sdk.commands.test_content.TestContentClasses import BuildContext
 from demisto_sdk.commands.validate.validate_manager import ValidateManager
+from packaging.version import Version
 from ruamel import yaml
 
+from Tests.Marketplace.marketplace_constants import Metadata
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies, \
     upload_zipped_packs, install_all_content_packs_for_nightly
-from Tests.Marketplace.marketplace_constants import Metadata
-from Tests.scripts.utils.log_util import install_logging
+from Tests.private_build.upload_packs_private import extract_packs_artifacts
 from Tests.scripts.utils import logging_wrapper as logging
+from Tests.scripts.utils.log_util import install_logging
 from Tests.test_content import get_server_numeric_version
 from Tests.test_integration import __get_integration_config, test_integration_instance, disable_all_integrations
 from Tests.tools import run_with_proxy_configured
 from Tests.update_content_data import update_content
 
+TEST_XDR_PREFIX = os.getenv("TEST_XDR_PREFIX", "")  # for testing
 MARKET_PLACE_MACHINES = ('master',)
 SKIPPED_PACKS = ['NonSupported', 'ApiModules']
 NO_PROXY = ','.join([
@@ -53,6 +54,10 @@ DOCKER_HARDENING_CONFIGURATION = {
     'limit.docker.cpu': 'true',
     'python.pass.extra.keys': f'--memory=1g##--memory-swap=-1##--pids-limit=256##--ulimit=nofile=1024:8192##--env##no_proxy={NO_PROXY}',  # noqa: E501
     'powershell.pass.extra.keys': f'--env##no_proxy={NO_PROXY}',
+    'monitoring.pprof': 'true',
+    'enable.pprof.memory.dump': 'true',
+    'limit.memory.dump.size': '14000',
+    'memdump.debug.level': '1',
 }
 DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN = {
     'docker.run.internal.asuser': 'true'
@@ -66,11 +71,20 @@ AVOID_DOCKER_IMAGE_VALIDATION = {
     'content.validate.docker.images': 'false'
 }
 ID_SET_PATH = './artifacts/id_set.json'
-XSOAR_BUILD_TYPE = "XSOAR"
-XSIAM_BUILD_TYPE = "XSIAM"
-MARKETPLACE_TEST_BUCKET = 'marketplace-ci-build/content/builds'
-MARKETPLACE_XSIAM_BUCKETS = 'marketplace-v2-dist-dev/upload-flow/builds-xsiam'
-ARTIFACTS_FOLDER_MPV2 = "/builds/xsoar/content/artifacts/marketplacev2"
+XSOAR_SERVER_TYPE = "XSOAR"
+XSOAR_SASS_SERVER_TYPE = "XSOAR SAAS"
+XSIAM_SERVER_TYPE = "XSIAM"
+SERVER_TYPES = [XSOAR_SERVER_TYPE, XSOAR_SASS_SERVER_TYPE, XSIAM_SERVER_TYPE]
+MARKETPLACE_TEST_BUCKET = (
+    f'{TEST_XDR_PREFIX}marketplace-ci-build/content/builds'
+)
+MARKETPLACE_XSIAM_BUCKETS = (
+    f'{TEST_XDR_PREFIX}marketplace-v2-dist-dev/upload-flow/builds-xsiam'
+)
+ARTIFACTS_FOLDER_MPV2 = os.getenv('ARTIFACTS_FOLDER_MPV2', '/builds/xsoar/content/artifacts/marketplacev2')
+ARTIFACTS_FOLDER = os.getenv('ARTIFACTS_FOLDER')
+ARTIFACTS_FOLDER_SERVER_TYPE = os.getenv('ARTIFACTS_FOLDER_SERVER_TYPE')
+ENV_RESULTS_PATH = os.getenv('ENV_RESULTS_PATH', f'{ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json')
 SET_SERVER_KEYS = True
 
 
@@ -80,25 +94,30 @@ class Running(IntEnum):
     WITH_LOCAL_SERVER = 2
 
 
+def get_custom_user_agent(build_number):
+    return f"demisto-py/dev (Build:{build_number})"
+
+
 class Server:
 
     def __init__(self):
         self.internal_ip = None
-        self.ssh_tunnel_port = None
         self.user_name = None
         self.password = None
         self.name = ''
+        self.build_number = 'unknown'
 
 
-class XSIAMServer(Server):
+class CloudServer(Server):
 
-    def __init__(self, api_key, server_numeric_version, base_url, xdr_auth_id, name):
+    def __init__(self, api_key, server_numeric_version, base_url, xdr_auth_id, name, build_number=''):
         super().__init__()
         self.name = name
         self.api_key = api_key
         self.server_numeric_version = server_numeric_version
         self.base_url = base_url
         self.xdr_auth_id = xdr_auth_id
+        self.build_number = build_number
         self.__client = None
         # we use client without demisto username
         os.environ.pop('DEMISTO_USERNAME', None)
@@ -118,22 +137,28 @@ class XSIAMServer(Server):
                                                  verify_ssl=False,
                                                  api_key=self.api_key,
                                                  auth_id=self.xdr_auth_id)
+        custom_user_agent = get_custom_user_agent(self.build_number)
+        logging.debug(f"Setting user-agent on client to '{custom_user_agent}'.")
+        self.__client.api_client.user_agent = custom_user_agent
         return self.__client
 
 
 class XSOARServer(Server):
 
-    def __init__(self, internal_ip, port, user_name, password):
+    def __init__(self, internal_ip, user_name, password, build_number=''):
         super().__init__()
-        self.__ssh_client = None
         self.__client = None
-        self.internal_ip = internal_ip
-        self.ssh_tunnel_port = port
+        self.internal_ip: str = internal_ip
         self.user_name = user_name
         self.password = password
+        self.build_number = build_number
 
     def __str__(self):
         return self.internal_ip
+
+    @property
+    def server_numeric_version(self) -> str:
+        return get_server_numeric_version(self.client)
 
     @property
     def client(self):
@@ -143,10 +168,13 @@ class XSOARServer(Server):
         return self.__client
 
     def reconnect_client(self):
-        self.__client = demisto_client.configure(f'https://localhost:{self.ssh_tunnel_port}',
+        self.__client = demisto_client.configure(f'https://{self.internal_ip}',
                                                  verify_ssl=False,
                                                  username=self.user_name,
                                                  password=self.password)
+        custom_user_agent = get_custom_user_agent(self.build_number)
+        logging.debug(f"Setting user-agent on client to '{custom_user_agent}'.")
+        self.__client.api_client.user_agent = custom_user_agent
         return self.__client
 
     def add_server_configuration(self, config_dict, error_msg, restart=False):
@@ -160,7 +188,7 @@ class XSOARServer(Server):
                                 stderr=subprocess.STDOUT)
 
 
-def get_id_set(id_set_path) -> Union[dict, None]:
+def get_id_set(id_set_path) -> dict | None:
     """
     Used to collect the ID set so it can be passed to the Build class on init.
 
@@ -171,22 +199,22 @@ def get_id_set(id_set_path) -> Union[dict, None]:
     return None
 
 
-class Build:
+class Build(ABC):
     # START CHANGE ON LOCAL RUN #
     content_path = f'{os.getenv("HOME")}/project' if os.getenv('CIRCLECI') else os.getenv('CI_PROJECT_DIR')
     test_pack_target = f'{os.getenv("HOME")}/project/Tests' if os.getenv(
         'CIRCLECI') else f'{os.getenv("CI_PROJECT_DIR")}/Tests'  # noqa
     key_file_path = 'Use in case of running with non local server'
     run_environment = Running.CI_RUN
-    env_results_path = f'{os.getenv("ARTIFACTS_FOLDER")}/env_results.json'
+    env_results_path = ENV_RESULTS_PATH
     DEFAULT_SERVER_VERSION = '99.99.98'
 
     #  END CHANGE ON LOCAL RUN  #
 
     def __init__(self, options):
         self._proxy = None
-        self.is_xsiam = False
-        self.xsiam_machine = None
+        self.is_cloud = False
+        self.cloud_machine = None
         self.servers = []
         self.server_numeric_version = ''
         self.git_sha1 = options.git_sha1
@@ -208,6 +236,14 @@ class Build:
         self.content_root = options.content_root
         self.pack_ids_to_install = self.fetch_pack_ids_to_install(options.pack_ids_to_install)
         self.service_account = options.service_account
+        self.marketplace_tag_name = None
+        self.artifacts_folder = None
+        self.marketplace_buckets = None
+
+    @property
+    @abstractmethod
+    def marketplace_name(self) -> str:
+        pass
 
     @staticmethod
     def fetch_tests_list(tests_to_run_path: str):
@@ -218,7 +254,7 @@ class Build:
         :return: List of tests if there are any, otherwise empty list.
         """
         tests_to_run = []
-        with open(tests_to_run_path, "r") as filter_file:
+        with open(tests_to_run_path) as filter_file:
             tests_from_file = filter_file.readlines()
             for test_from_file in tests_from_file:
                 test_clean = test_from_file.rstrip()
@@ -234,7 +270,7 @@ class Build:
         :return: List of Pack IDs if there are any, otherwise empty list.
         """
         tests_to_run = []
-        with open(packs_to_install_path, "r") as filter_file:
+        with open(packs_to_install_path) as filter_file:
             tests_from_file = filter_file.readlines()
             for test_from_file in tests_from_file:
                 test_clean = test_from_file.rstrip()
@@ -246,8 +282,8 @@ class Build:
         pass
 
     @abstractmethod
-    def install_nightly_pack(self):
-        pass
+    def install_nightly_pack(self) -> bool:
+        raise NotImplementedError
 
     @abstractmethod
     def test_integrations_post_update(self, new_module_instances: list,
@@ -263,14 +299,25 @@ class Build:
         pass
 
     @staticmethod
-    def set_marketplace_url(servers, branch_name, ci_build_number):
-        pass
+    def set_marketplace_url(servers, branch_name, ci_build_number, marketplace_name=None, artifacts_folder=None,
+                            marketplace_buckets=None) -> bool:
+        raise NotImplementedError
+
+    def check_if_new_to_marketplace(self, diff: str) -> bool:
+        """
+        Args:
+            diff: the git diff for pack_metadata file, between master and branch
+        Returns:
+            (bool): whether new (current) marketplace was added to the pack_metadata or not
+        """
+        spaced_diff = " ".join(diff.split())
+        return (f'+ "{self.marketplace_name}"' in spaced_diff) and f'- "{self.marketplace_name}"' not in spaced_diff
 
     def disable_instances(self):
         for server in self.servers:
             disable_all_integrations(server.client)
 
-    def get_changed_integrations(self, packs_not_to_install: Set[str] = None) -> Tuple[List[str], List[str]]:
+    def get_changed_integrations(self, packs_not_to_install: set[str] | None = None) -> tuple[list[str], list[str]]:
         """
         Return 2 lists - list of new integrations names and list of modified integrations names since the commit of the git_sha1.
         The modified list is exclude the packs_not_to_install and the new list is including it
@@ -295,26 +342,34 @@ class Build:
         return update_integration_lists(new_integrations_names, packs_not_to_install, modified_integrations_names)
 
     @abstractmethod
-    def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None):
-        pass
+    def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None) -> tuple[bool, list[Any]]:
+        raise NotImplementedError
 
-    def install_packs(self, pack_ids=None):
+    def install_packs(self, pack_ids: list | None = None, multithreading=True, production_bucket: bool = True) -> bool:
         """
-        Install pack_ids or packs from "$ARTIFACTS_FOLDER/content_packs_to_install.txt" file, and packs dependencies.
+        Install packs using 'pack_ids' or "$ARTIFACTS_FOLDER_SERVER_TYPE/content_packs_to_install.txt" file,
+        and their dependencies.
         Args:
-            pack_ids: Packs to install on the server. If no packs provided, installs packs that was provided
-            by previous step of the build.
+            pack_ids (list | None, optional): Packs to install on the server.
+                If no packs provided, installs packs that were provided by the previous step of the build.
+            multithreading (bool): Whether to install packs in parallel or not.
+            production_bucket (bool): Whether the installation is using production bucket for packs metadata. Defaults to True.
 
         Returns:
-            installed_content_packs_successfully: Whether packs installed successfully
+            bool: Whether packs installed successfully
         """
         pack_ids = self.pack_ids_to_install if pack_ids is None else pack_ids
-        logging.info(f"Packs ids to install: {pack_ids}")
+        logging.info(f"IDs of packs to install: {pack_ids}")
         installed_content_packs_successfully = True
         for server in self.servers:
             try:
-                hostname = self.xsiam_machine if self.is_xsiam else ''
-                _, flag = search_and_install_packs_and_their_dependencies(pack_ids, server.client, hostname)
+                hostname = self.cloud_machine if self.is_cloud else ''
+                multithreading = False if self.is_cloud else multithreading
+                _, flag = search_and_install_packs_and_their_dependencies(pack_ids=pack_ids,
+                                                                          client=server.client,
+                                                                          hostname=hostname,
+                                                                          multithreading=multithreading,
+                                                                          production_bucket=production_bucket)
                 if not flag:
                     raise Exception('Failed to search and install packs.')
             except Exception:
@@ -323,7 +378,7 @@ class Build:
 
         return installed_content_packs_successfully
 
-    def get_tests(self) -> List[dict]:
+    def get_tests(self) -> list[dict]:
         """
         Selects the tests from that should be run in this execution and filters those that cannot run in this server version
         Args:
@@ -334,6 +389,7 @@ class Build:
         """
         server_numeric_version: str = self.server_numeric_version
         tests: dict = self.tests
+        tests_for_iteration: list[dict]
         if Build.run_environment == Running.CI_RUN:
             filtered_tests = BuildContext._extract_filtered_tests()
             if self.is_nightly:
@@ -341,12 +397,11 @@ class Build:
                 logging.debug('Not running instance tests in nightly flow')
                 tests_for_iteration = []
             else:
-                # if not filtered_tests in XSIAM, we not running tests at all
-                if self.is_xsiam and not filtered_tests:
+                # if not filtered_tests in cloud, we not running tests at all
+                if self.is_cloud and not filtered_tests:
                     tests_for_iteration = []
                 else:
-                    tests_for_iteration = [test for test in tests
-                                           if not filtered_tests or test.get('playbookID', '') in filtered_tests]
+                    tests_for_iteration = list(filter(lambda test: test.get('playbookID', '') in filtered_tests, tests))
             tests_for_iteration = filter_tests_with_incompatible_version(tests_for_iteration, server_numeric_version)
             return tests_for_iteration
 
@@ -366,9 +421,6 @@ class Build:
         #  END CHANGE ON LOCAL RUN  #
 
     def configure_server_instances(self, tests_for_iteration, all_new_integrations, modified_integrations):
-        """
-
-        """
         modified_module_instances = []
         new_module_instances = []
         testing_client = self.servers[0].client
@@ -428,7 +480,7 @@ class Build:
             self: The build object
             modified_integrations_to_configure: Integrations to configure that are already exists
             new_integrations_to_configure: Integrations to configure that were created in this build
-            demisto_client: A demisto client
+            demisto_client_: A demisto client
 
         Returns:
             A tuple with two lists:
@@ -453,7 +505,7 @@ class Build:
                          all_module_instances: list,
                          pre_update: bool,
                          use_mock: bool = True,
-                         first_call: bool = True) -> Tuple[set, set]:
+                         first_call: bool = True) -> tuple[set, set]:
         """
         Runs 'test-module' command for the instances detailed in `all_module_instances`
         Args:
@@ -514,21 +566,39 @@ class Build:
             If the server version is higher or equal to 6.0 - will return True if the packs installation was successful
             both before that update and after the update.
         """
-        self.set_marketplace_url(self.servers, self.branch_name, self.ci_build_number)
-        installed_content_packs_successfully = self.install_packs()
+        installed_content_packs_successfully = self.set_marketplace_url(self.servers, self.branch_name, self.ci_build_number,
+                                                                        self.marketplace_tag_name, self.artifacts_folder,
+                                                                        self.marketplace_buckets)
+        installed_content_packs_successfully &= self.install_packs(production_bucket=False)
         return installed_content_packs_successfully
+
+    def create_and_upload_test_pack(self, packs_to_install: list = None):
+        """Creates and uploads a test pack that contains the test playbook of the specified packs to install list.
+
+        Args:
+            packs_to_install (list): The packs to install list from the artifacts.
+        """
+        packs_to_install = packs_to_install or []
+        create_test_pack(packs_to_install)
+
+        for server in self.servers:
+            upload_zipped_packs(client=server.client,
+                                host=server.name or server.internal_ip,
+                                pack_path=f'{Build.test_pack_target}/test_pack.zip')
 
 
 class XSOARBuild(Build):
+    DEFAULT_SERVER_VERSION = "6.99.99"
 
     def __init__(self, options):
         super().__init__(options)
         self.ami_env = options.ami_env
-        self.server_to_port_mapping, self.server_numeric_version = self.get_servers(options.ami_env)
         self.servers = [XSOARServer(internal_ip,
-                                    port,
                                     self.username,
-                                    self.password) for internal_ip, port in self.server_to_port_mapping.items()]
+                                    self.password,
+                                    self.ci_build_number) for internal_ip in self.get_servers(options.ami_env)]
+        self.server_numeric_version = self.servers[0].server_numeric_version if self.run_environment == Running.CI_RUN \
+            else self.DEFAULT_SERVER_VERSION
 
     @property
     def proxy(self) -> MITMProxy:
@@ -544,22 +614,24 @@ class XSOARBuild(Build):
                                     branch_name=self.branch_name)
         return self._proxy
 
+    @property
+    def marketplace_name(self) -> str:
+        return 'xsoar'
+
     def configure_servers_and_restart(self):
         manual_restart = Build.run_environment == Running.WITH_LOCAL_SERVER
         for server in self.servers:
-            configurations = dict()
-            configure_types = []
+            configurations = {}
             if is_redhat_instance(server.internal_ip):
                 configurations.update(DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN)
                 configurations.update(NO_PROXY_CONFIG)
                 configurations['python.pass.extra.keys'] += "##--network=slirp4netns:cidr=192.168.0.0/16"
             else:
                 configurations.update(DOCKER_HARDENING_CONFIGURATION)
-            configure_types.append('docker hardening')
-            configure_types.append('marketplace')
+            configure_types = ['docker hardening', 'marketplace']
             configurations.update(MARKET_PLACE_CONFIGURATION)
 
-            error_msg = 'failed to set {} configurations'.format(' and '.join(configure_types))
+            error_msg = f"failed to set {' and '.join(configure_types)} configurations"
             server.add_server_configuration(configurations, error_msg=error_msg, restart=not manual_restart)
 
         if manual_restart:
@@ -568,7 +640,7 @@ class XSOARBuild(Build):
             logging.info('Done restarting servers. Sleeping for 1 minute')
             sleep(60)
 
-    def install_nightly_pack(self):
+    def install_nightly_pack(self) -> bool:
         """
         Installs all existing packs in master
         Collects all existing test playbooks, saves them to test_pack.zip
@@ -577,16 +649,27 @@ class XSOARBuild(Build):
             self: A build object
         """
         # Install all existing packs with latest version
-        self.concurrently_run_function_on_servers(function=install_all_content_packs_for_nightly,
-                                                  service_account=self.service_account)
+        success, results = self.concurrently_run_function_on_servers(
+            function=install_all_content_packs_for_nightly,
+            service_account=self.service_account,
+            packs_to_install=self.pack_ids_to_install
+        )
+        success &= all(results)
         # creates zip file test_pack.zip witch contains all existing TestPlaybooks
-        create_nightly_test_pack()
+        create_test_pack()
         # uploads test_pack.zip to all servers
-        self.concurrently_run_function_on_servers(function=upload_zipped_packs,
-                                                  pack_path=f'{Build.test_pack_target}/test_pack.zip')
+        upload_success, upload_results = self.concurrently_run_function_on_servers(function=upload_zipped_packs,
+                                                                                   pack_path=f'{Build.test_pack_target}'
+                                                                                             '/test_pack.zip')
+        success &= upload_success and all(upload_results)
 
         logging.info('Sleeping for 45 seconds while installing nightly packs')
         sleep(45)
+        if success:
+            logging.success("Finished installing nightly packs")
+        else:
+            logging.error("Failed to install nightly packs")
+        return success
 
     @run_with_proxy_configured
     def test_integrations_post_update(self, new_module_instances: list,
@@ -636,7 +719,6 @@ class XSOARBuild(Build):
         Runs 'test-module' for given integration with mitmproxy
         In case the playback mode fails and this is a pre-update run - a record attempt will be executed.
         Args:
-            build: An object containing the current build info.
             instance: A dict containing the instance details
             pre_update: Whether this instance testing is before or after the content update on the server.
 
@@ -665,88 +747,129 @@ class XSOARBuild(Build):
         return success
 
     @staticmethod
-    def set_marketplace_url(servers, branch_name, ci_build_number):
+    def set_marketplace_url(servers, branch_name, ci_build_number, marketplace_name=None, artifacts_folder=None,
+                            marketplace_buckets=None):
         url_suffix = f'{quote_plus(branch_name)}/{ci_build_number}/xsoar'
         config_path = 'marketplace.bootstrap.bypass.url'
-        config = {config_path: f'https://storage.googleapis.com/marketplace-ci-build/content/builds/{url_suffix}'}
+        config = {config_path:
+                  f'https://storage.googleapis.com/{TEST_XDR_PREFIX}marketplace-ci-build/content/builds/{url_suffix}'}
         for server in servers:
             server.add_server_configuration(config, 'failed to configure marketplace custom url ', True)
         logging.success('Updated marketplace url and restarted servers')
         logging.info('sleeping for 120 seconds')
         sleep(120)
+        return True
 
     @staticmethod
     def get_servers(ami_env):
         env_conf = get_env_conf()
-        server_to_port_mapping = map_server_to_port(env_conf, ami_env)
-        if Build.run_environment == Running.CI_RUN:
-            server_numeric_version = get_server_numeric_version(ami_env)
-        else:
-            server_numeric_version = Build.DEFAULT_SERVER_VERSION
-        return server_to_port_mapping, server_numeric_version
+        return get_servers(env_conf, ami_env)
 
-    def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None):
-        threads_list = []
-
+    def concurrently_run_function_on_servers(
+        self, function=None, pack_path=None, service_account=None, packs_to_install=None
+    ) -> tuple[bool, list[Any]]:
         if not function:
             raise Exception('Install method was not provided.')
 
-        # For each server url we install pack/ packs
-        for server in self.servers:
-            kwargs = {'client': server.client, 'host': server.internal_ip}
+        with ThreadPoolExecutor(max_workers=len(self.servers)) as executor:
+            kwargs = {}
             if service_account:
                 kwargs['service_account'] = service_account
             if pack_path:
                 kwargs['pack_path'] = pack_path
-            threads_list.append(Thread(target=function, kwargs=kwargs))
-        run_threads_list(threads_list)
+            if packs_to_install:
+                kwargs["pack_ids_to_install"] = packs_to_install
+
+            futures = [
+                executor.submit(
+                    function,
+                    client=server.client,
+                    host=server.internal_ip,
+                    **kwargs
+                )
+                for server in self.servers
+            ]
+
+            # Wait for all tasks to complete
+            results: list[Any] = []
+            success = True
+            for future in as_completed(futures):
+                try:
+                    results.append(future.result())
+                except Exception as e:
+                    logging.exception(f'Failed to run function with error: {str(e)}')
+                    success = False
+            return success, results
 
 
-class XSIAMBuild(Build):
+class CloudBuild(Build):
 
     def __init__(self, options):
         global SET_SERVER_KEYS
         SET_SERVER_KEYS = False
         super().__init__(options)
-        self.is_xsiam = True
-        self.xsiam_machine = options.xsiam_machine
-        self.xsiam_servers = get_json_file(options.xsiam_servers_path)
+        self.is_cloud = True
+        self.cloud_machine = options.cloud_machine
         self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id =\
-            self.get_xsiam_configuration(options.xsiam_machine, self.xsiam_servers)
-
-        self.servers = [XSIAMServer(self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id,
-                                    self.xsiam_machine)]
+            self.get_cloud_configuration(options.cloud_machine, options.cloud_servers_path,
+                                         options.cloud_servers_api_keys)
+        self.servers = [CloudServer(self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id,
+                                    self.cloud_machine, self.ci_build_number)]
+        self.marketplace_tag_name: str = options.marketplace_name
+        self.artifacts_folder = options.artifacts_folder
+        self.marketplace_buckets = options.marketplace_buckets
 
     @staticmethod
-    def get_xsiam_configuration(xsiam_machine, xsiam_servers):
-        conf = xsiam_servers.get(xsiam_machine)
-        return conf.get('api_key'), conf.get('demisto_version'), conf.get('base_url'), conf.get('x-xdr-auth-id')
+    def get_cloud_configuration(cloud_machine, cloud_servers_path, cloud_servers_api_keys_path):
+        logging.info('getting cloud configuration')
+
+        cloud_servers = get_json_file(cloud_servers_path)
+        conf = cloud_servers.get(cloud_machine)
+        cloud_servers_api_keys = get_json_file(cloud_servers_api_keys_path)
+        api_key = cloud_servers_api_keys.get(cloud_machine)
+        return api_key, conf.get('demisto_version'), conf.get('base_url'), conf.get('x-xdr-auth-id')
+
+    @property
+    def marketplace_name(self) -> str:
+        return self.marketplace_tag_name
 
     def configure_servers_and_restart(self):
-        # No need of this step in XSIAM.
+        # No need of this step in cloud.
         pass
 
     def test_integration_with_mock(self, instance: dict, pre_update: bool):
-        # No need of this step in XSIAM.
+        # No need of this step in CLOUD.
         pass
 
-    def install_nightly_pack(self):
+    def install_nightly_pack(self) -> bool:
         """
         Installs packs from content_packs_to_install.txt file
         Collects all existing test playbooks, saves them to test_pack.zip
         Uploads test_pack.zip to server
         """
-        self.install_packs()
+        success = self.install_packs(multithreading=False, production_bucket=True)
+        if not success:
+            logging.error("Failed to install nightly packs")
+
         # creates zip file test_pack.zip witch contains all existing TestPlaybooks
-        create_nightly_test_pack()
-        # uploads test_pack.zip to all servers (we have only one xsiam server)
+        create_test_pack()
+        # uploads test_pack.zip to all servers (we have only one cloud server)
+        upload_success = True
         for server in self.servers:
-            upload_zipped_packs(client=server.client,
-                                host=server.name,
-                                pack_path=f'{Build.test_pack_target}/test_pack.zip')
+            upload_success &= upload_zipped_packs(client=server.client,
+                                                  host=server.name,
+                                                  pack_path=f'{Build.test_pack_target}/test_pack.zip')
+        if not upload_success:
+            logging.error("Failed to upload test pack to cloud servers")
+        success &= upload_success
 
         logging.info('Sleeping for 45 seconds while installing nightly packs')
         sleep(45)
+        if success:
+            logging.success("Finished installing nightly packs")
+        else:
+            logging.error("Failed to install nightly packs")
+        return success
 
     def test_integrations_post_update(self, new_module_instances: list,
                                       modified_module_instances: list) -> tuple:
@@ -793,26 +916,38 @@ class XSIAMBuild(Build):
         return modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre
 
     @staticmethod
-    def set_marketplace_url(servers, branch_name, ci_build_number):
-        logging.info('Copying custom build bucket to xsiam_instance_bucket.')
-        from_bucket = f'{MARKETPLACE_TEST_BUCKET}/{branch_name}/{ci_build_number}/marketplacev2/content'
-        output_file = f'{ARTIFACTS_FOLDER_MPV2}/Copy_custom_bucket_to_xsiam_machine.log'
+    def set_marketplace_url(servers, branch_name, ci_build_number, marketplace_name='marketplacev2',
+                            artifacts_folder=ARTIFACTS_FOLDER_MPV2,
+                            marketplace_buckets=MARKETPLACE_XSIAM_BUCKETS):
+        from Tests.Marketplace.search_and_uninstall_pack import sync_marketplace
+        logging.info('Copying custom build bucket to cloud_instance_bucket.')
+        marketplace_name = marketplace_name
+        from_bucket = f'{MARKETPLACE_TEST_BUCKET}/{branch_name}/{ci_build_number}/{marketplace_name}/content'
+        output_file = f'{artifacts_folder}/Copy_custom_bucket_to_cloud_machine.log'
+        success = True
         for server in servers:
-            to_bucket = f'{MARKETPLACE_XSIAM_BUCKETS}/{server.name}'
+            to_bucket = f'{marketplace_buckets}/{server.name}'
             cmd = f'gsutil -m cp -r gs://{from_bucket} gs://{to_bucket}/'
             with open(output_file, "w") as outfile:
-                subprocess.run(cmd.split(), stdout=outfile, stderr=outfile)
-            try:
-                # We are syncing marketplace since we are copying custom bucket to existing bucket and if new packs
-                # was added, they will not appear on XSIAM marketplace without sync.
-                _ = demisto_client.generic_request_func(
-                    self=server.client, method='POST',
-                    path='/contentpacks/marketplace/sync')
-            except Exception as e:
-                logging.error(f'Filed to sync marketplace. Error: {e}')
-        logging.info('Finished copying successfully.')
+                try:
+                    subprocess.run(cmd.split(), stdout=outfile, stderr=outfile, check=True)
+                    logging.info('Finished copying successfully.')
+                except subprocess.CalledProcessError as exc:
+                    logging.exception(f'Failed to copy custom build bucket to cloud_instance_bucket. {exc}')
+                    success = False
 
-    def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None):
+            success &= sync_marketplace(server.client)
+
+        if success:
+            logging.info('Finished copying successfully.')
+        else:
+            logging.error('Failed to copy or sync marketplace bucket.')
+        sleep_time = 120
+        logging.info(f'sleeping for {sleep_time} seconds')
+        sleep(sleep_time)
+        return success
+
+    def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None) -> tuple[bool, list[Any]]:
         # no need to run this concurrently since we have only one server
         pass
 
@@ -831,18 +966,21 @@ def options_handler(args=None):
     parser.add_argument('-pr', '--is_private', type=str2bool, help='Is private build')
     parser.add_argument('--branch', help='GitHub branch name', required=True)
     parser.add_argument('--build-number', help='CI job number where the instances were created', required=True)
-    parser.add_argument('--test_pack_path', help='Path to where the test pack will be saved.',
-                        default='/home/runner/work/content-private/content-private/content/artifacts/packs')
-    parser.add_argument('--content_root', help='Path to the content root.',
-                        default='/home/runner/work/content-private/content-private/content')
+    parser.add_argument('--test_pack_path', help='Path to where the test pack will be saved.', required=True)
+    parser.add_argument('--content_root', help='Path to the content root.', required=True)
     parser.add_argument('--id_set_path', help='Path to the ID set.')
     parser.add_argument('-l', '--tests_to_run', help='Path to the Test Filter.',
-                        default='./artifacts/filter_file.txt')
+                        default='./filter_file.txt')
     parser.add_argument('-pl', '--pack_ids_to_install', help='Path to the packs to install file.',
-                        default='./artifacts/content_packs_to_install.txt')
-    parser.add_argument('--build_object_type', help='Build type running: XSOAR or XSIAM')
-    parser.add_argument('--xsiam_machine', help='XSIAM machine to use, if it is XSIAM build.')
-    parser.add_argument('--xsiam_servers_path', help='Path to secret xsiam server metadata file.')
+                        default='./content_packs_to_install.txt')
+    parser.add_argument('--server-type', help=f'Server type running, choices: {",".join(SERVER_TYPES)}',
+                        default=Build.run_environment)
+    parser.add_argument('--cloud_machine', help='cloud machine to use, if it is cloud build.')
+    parser.add_argument('--cloud_servers_path', help='Path to secret cloud server metadata file.')
+    parser.add_argument('--cloud_servers_api_keys', help='Path to file with cloud Servers api keys.')
+    parser.add_argument('--marketplace_name', help='the name of the marketplace to use.')
+    parser.add_argument('--artifacts_folder', help='the artifacts folder to use.')
+    parser.add_argument('--marketplace_buckets', help='the path to the marketplace buckets.')
     # disable-secrets-detection-start
     parser.add_argument('-sa', '--service_account',
                         help=("Path to gcloud service account, is for circleCI usage. "
@@ -1091,6 +1229,18 @@ def set_integration_params(build,
     for integration in integrations:
         integration_params = [change_placeholders_to_values(placeholders_map, item) for item
                               in secret_params if item['name'] == integration['name']]
+        if integration['name'] == "Core REST API" and build.is_cloud:
+            integration_params[0]['params'] = {  # type: ignore
+                "url": build.base_url,
+                "creds_apikey": {
+                    "identifier": str(build.xdr_auth_id),
+                    "password": build.api_key,
+                },
+                "auth_method": "Standard",
+                "insecure": True,
+                "proxy": False,
+            }
+
         if integration_params:
             matched_integration_params = integration_params[0]
             # if there are more than one integration params, it means that there are configuration
@@ -1148,11 +1298,11 @@ def set_module_params(param_conf, integration_params):
     if param_conf['display'] in integration_params or param_conf['name'] in integration_params:
         # param defined in conf
         key = param_conf['display'] if param_conf['display'] in integration_params else param_conf['name']
-        if key == 'credentials':
+        if key == 'credentials' or key == "creds_apikey":
             credentials = integration_params[key]
             param_value = {
                 'credential': '',
-                'identifier': credentials['identifier'],
+                'identifier': credentials.get('identifier', ''),
                 'password': credentials['password'],
                 'passwordChanged': False
             }
@@ -1282,7 +1432,7 @@ def group_integrations(integrations, skipped_integrations_conf, new_integrations
     integration_to_status = {}
     for integration in integrations:
         integration_name = integration.get('name', '')
-        if integration_name in skipped_integrations_conf.keys():
+        if integration_name in skipped_integrations_conf:
             continue
 
         if integration_name in new_integrations_names:
@@ -1347,7 +1497,7 @@ def update_content_on_demisto_instance(client, server, ami_name):
         # verify the asset id matches the circleci build number / asset_id in the content-descriptor.json
         release, asset_id = get_content_version_details(client, ami_name)
         logging.info(f'Content Release Version: {release}')
-        with open('./artifacts/content-descriptor.json', 'r') as cd_file:
+        with open('./artifacts/content-descriptor.json') as cd_file:
             cd_json = json.loads(cd_file.read())
             cd_release = cd_json.get('release')
             cd_asset_id = cd_json.get('assetId')
@@ -1422,8 +1572,9 @@ def report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, po
             [f'Integration: "{integration_of_instance}", Instance: "{instance_name}"'
              for instance_name, integration_of_instance in failed_pre_and_post])
         logging.warning(f'Integration instances that had ("Test" Button) failures '
-                        f'both before and after the content update:\n{pformat(failed_pre_and_post_string)}')
-
+                        f'both before and after the content update'
+                        f'(No need to handle ERROR messages for these "test-module" failures):'
+                        f'\n{pformat(failed_pre_and_post_string)}.')
     # fail the step if there are instances that only failed after content was updated
     if failed_only_after_update:
         failed_only_after_update_string = "\n".join(
@@ -1437,7 +1588,7 @@ def report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, po
         # creating this file to indicates that this instance passed post update tests,
         # uses this file in XSOAR destroy instances
         if build and build.__class__ == XSOARBuild:
-            with open("./Tests/is_post_update_passed_{}.txt".format(build.ami_env.replace(' ', '')), 'a'):
+            with open(f"{ARTIFACTS_FOLDER}/is_post_update_passed_{build.ami_env.replace(' ', '')}.txt", 'a'):
                 pass
 
     return testing_status
@@ -1463,7 +1614,7 @@ def get_env_conf():
     return None
 
 
-def map_server_to_port(env_results, instance_role):
+def get_servers(env_results, instance_role):
     """
     Arguments:
         env_results: (dict)
@@ -1475,23 +1626,30 @@ def map_server_to_port(env_results, instance_role):
         (lst): The server url list to connect to
     """
 
-    ip_to_port_map = {env.get('InstanceDNS'): env.get('TunnelPort') for env in env_results if
-                      instance_role in env.get('Role', '')}
-    return ip_to_port_map
+    return [env.get('InstanceDNS') for env in env_results if instance_role in env.get('Role')]
 
 
 def get_json_file(path):
-    with open(path, 'r') as json_file:
+    with open(path) as json_file:
         return json.loads(json_file.read())
 
 
-def create_nightly_test_pack():
-    test_pack_zip(Build.content_path, Build.test_pack_target)
+def create_test_pack(packs: list = None):
+    packs = packs or []
+    test_pack_zip(Build.content_path, Build.test_pack_target, packs)
 
 
-def test_files(content_path):
+def test_files(content_path, packs_to_install: list = None):
     packs_root = f'{content_path}/Packs'
-    packs = filter(lambda x: x.is_dir(), os.scandir(packs_root))
+    packs_to_install = packs_to_install or []
+
+    # if is given a list of packs to install then collect the test playbook only for those packs (in commit/push build)
+    if packs_to_install:
+        packs = filter(lambda x: x.is_dir() and x.name in packs_to_install, os.scandir(packs_root))
+    else:
+        # else collect the test playbooks for all content packs (in nightly)
+        packs = filter(lambda x: x.is_dir(), os.scandir(packs_root))
+
     for pack_dir in packs:
         if pack_dir in SKIPPED_PACKS:
             continue
@@ -1514,9 +1672,9 @@ def test_pack_metadata():
     now = datetime.now().isoformat().split('.')[0]
     now = f'{now}Z'
     metadata = {
-        "name": "nightly test",
+        "name": "test pack",
         "id": str(uuid.uuid4()),
-        "description": "nightly test pack (all test playbooks and scripts).",
+        "description": "test pack (all test playbooks and scripts).",
         "created": now,
         "updated": now,
         "legacy": True,
@@ -1543,18 +1701,19 @@ def test_pack_metadata():
     return json.dumps(metadata, indent=4)
 
 
-def test_pack_zip(content_path, target):
+def test_pack_zip(content_path, target, packs: list = None):
     """
     Iterates over all TestPlaybooks folders and adds all files from there to test_pack.zip' file.
     """
+    packs = packs or []
     with zipfile.ZipFile(f'{target}/test_pack.zip', 'w', zipfile.ZIP_DEFLATED) as zip_file:
         zip_file.writestr('test_pack/metadata.json', test_pack_metadata())
-        for test_path, test in test_files(content_path):
+        for test_path, test in test_files(content_path, packs):
             if not test_path.endswith('.yml'):
                 continue
             test = test.name
-            with open(test_path, 'r') as test_file:
-                if not (test.startswith('playbook-') or test.startswith('script-')):
+            with open(test_path) as test_file:
+                if not (test.startswith(('playbook-', 'script-'))):
                     test_type = find_type(_dict=yaml.safe_load(test_file), file_type='yml').value
                     test_file.seek(0)
                     test_target = f'test_pack/TestPlaybooks/{test_type}-{test}'
@@ -1569,7 +1728,9 @@ def get_non_added_packs_ids(build: Build):
     :param build: the build object
     :return: all non added packs i.e. unchanged packs (dependencies) and modified packs
     """
-    compare_against = 'origin/master{}'.format('' if not build.branch_name == 'master' else '~1')
+    compare_against = (
+        'master~1' if build.branch_name == 'master' else 'origin/master'
+    )
     added_files = run_command(f'git diff --name-only --diff-filter=A '
                               f'{compare_against}..refs/heads/{build.branch_name} -- Packs/*/pack_metadata.json')
     if os.getenv('CONTRIB_BRANCH'):
@@ -1578,7 +1739,7 @@ def get_non_added_packs_ids(build: Build):
         added_files = added_files if not added_contrib_files else '\n'.join([added_files, added_contrib_files])
 
     added_files = filter(lambda x: x, added_files.split('\n'))
-    added_pack_ids = map(lambda x: x.split('/')[1], added_files)
+    added_pack_ids = (x.split('/')[1] for x in added_files)
     # build.pack_ids_to_install contains new packs and modified. added_pack_ids contains new packs only.
     return set(build.pack_ids_to_install) - set(added_pack_ids)
 
@@ -1592,7 +1753,9 @@ def run_git_diff(pack_name: str, build: Build) -> str:
     Returns:
         (str): The git diff output.
     """
-    compare_against = 'origin/master{}'.format('' if not build.branch_name == 'master' else '~1')
+    compare_against = (
+        f"origin/master{'' if build.branch_name != 'master' else '~1'}"
+    )
     return run_command(f'git diff {compare_against}..{build.branch_name} -- Packs/{pack_name}/pack_metadata.json')
 
 
@@ -1606,13 +1769,10 @@ def check_hidden_field_changed(pack_name: str, build: Build) -> bool:
         (bool): True if the pack transformed to non-hidden.
     """
     diff = run_git_diff(pack_name, build)
-    for diff_line in diff.splitlines():
-        if '"hidden": false' in diff_line and diff_line.split()[0].startswith('+'):
-            return True
-    return False
+    return any('"hidden": false' in diff_line and diff_line.split()[0].startswith('+') for diff_line in diff.splitlines())
 
 
-def get_turned_non_hidden_packs(modified_packs_names: Set[str], build: Build) -> Set[str]:
+def get_turned_non_hidden_packs(modified_packs_names: set[str], build: Build) -> set[str]:
     """
     Return a set of packs which turned from hidden to non-hidden.
     Args:
@@ -1631,16 +1791,16 @@ def get_turned_non_hidden_packs(modified_packs_names: Set[str], build: Build) ->
 
 def create_build_object() -> Build:
     options = options_handler()
-    logging.info(f'Build type: {options.build_object_type}')
-    if options.build_object_type == XSOAR_BUILD_TYPE:
+    logging.info(f'Server type: {options.server_type}')
+    if options.server_type == XSOAR_SERVER_TYPE:
         return XSOARBuild(options)
-    elif options.build_object_type == XSIAM_BUILD_TYPE:
-        return XSIAMBuild(options)
+    elif options.server_type in [XSIAM_SERVER_TYPE, XSOAR_SASS_SERVER_TYPE]:
+        return CloudBuild(options)
     else:
-        raise Exception(f"Wrong Build object type {options.build_object_type}.")
+        raise Exception(f"Wrong Server type {options.server_type}.")
 
 
-def packs_names_to_integrations_names(turned_non_hidden_packs_names: Set[str]) -> List[str]:
+def packs_names_to_integrations_names(turned_non_hidden_packs_names: set[str]) -> list[str]:
     """
     Convert packs names to the integrations names contained in it.
     Args:
@@ -1652,16 +1812,17 @@ def packs_names_to_integrations_names(turned_non_hidden_packs_names: Set[str]) -
     hidden_integrations_paths = [f'Packs/{pack_name}/Integrations' for pack_name in turned_non_hidden_packs_names]
     # extract integration names within the turned non-hidden packs.
     for hidden_integrations_path in hidden_integrations_paths:
-        pack_integrations_paths = listdir_fullpath(hidden_integrations_path)
-        for integration_path in pack_integrations_paths:
-            hidden_integrations.append(integration_path.split("/")[-1])
+        if os.path.exists(hidden_integrations_path):
+            pack_integrations_paths = listdir_fullpath(hidden_integrations_path)
+            for integration_path in pack_integrations_paths:
+                hidden_integrations.append(integration_path.split("/")[-1])
     hidden_integrations_names = [integration for integration in hidden_integrations if
                                  not str(integration).startswith('.')]
     return hidden_integrations_names
 
 
-def update_integration_lists(new_integrations_names: List[str], packs_not_to_install: Set[str],
-                             modified_integrations_names: List[str]) -> Tuple[List[str], List[str]]:
+def update_integration_lists(new_integrations_names: list[str], packs_not_to_install: set[str] | None,
+                             modified_integrations_names: list[str]) -> tuple[list[str], list[str]]:
     """
     Add the turned non-hidden integrations names to the new integrations names list and
      remove it from modified integrations names.
@@ -1684,41 +1845,74 @@ def update_integration_lists(new_integrations_names: List[str], packs_not_to_ins
     return list(set(new_integrations_names)), modified_integrations_names
 
 
-def get_packs_not_to_install(modified_packs_names: Set[str], build: Build) -> Tuple[Set[str], Set[str]]:
+def filter_new_to_marketplace_packs(build: Build, modified_pack_names: set[str]) -> set[str]:
     """
-    Return a set of packs to install only in the post-update.
+    Return a set of packs that is new to the marketplace.
     Args:
-        modified_packs_names (Set[str]): The set of packs to install.
+        build (Build): The build object.
+        modified_pack_names (Set[str]): The set of packs to install.
+    Returns:
+        (Set[str]): The set of the pack names that should not be installed.
+    """
+    first_added_to_marketplace = set()
+    for pack_name in modified_pack_names:
+        diff = run_git_diff(pack_name, build)
+        if build.check_if_new_to_marketplace(diff):
+            first_added_to_marketplace.add(pack_name)
+    return first_added_to_marketplace
+
+
+def get_packs_to_install(build: Build) -> tuple[set[str], set[str]]:
+    """
+    Return a set of packs to install only in the pre-update, and set to install in post-update.
+    Args:
         build (Build): The build object.
     Returns:
         (Set[str]): The set of the pack names that should not be installed.
-        (Set[str]): The set of the non-hidden pack names (should be installed only in post update).
+        (Set[str]): The set of the pack names that should be installed only in post update. (non-hidden packs or packs
+                                                that new to current marketplace)
     """
+    modified_packs_names = get_non_added_packs_ids(build)
+
     non_hidden_packs = get_turned_non_hidden_packs(modified_packs_names, build)
-    packs_with_higher_min_version = get_packs_with_higher_min_version(modified_packs_names - non_hidden_packs,
-                                                                      build.content_path, build.server_numeric_version)
+
+    packs_with_higher_min_version = get_packs_with_higher_min_version(set(build.pack_ids_to_install),
+                                                                      build.server_numeric_version)
+    # packs to install used in post update
     build.pack_ids_to_install = list(set(build.pack_ids_to_install) - packs_with_higher_min_version)
-    return packs_with_higher_min_version.union(non_hidden_packs), non_hidden_packs
+
+    first_added_to_marketplace = filter_new_to_marketplace_packs(
+        build, modified_packs_names - non_hidden_packs - packs_with_higher_min_version
+    )
+
+    packs_not_to_install_in_pre_update = set().union(*[packs_with_higher_min_version,
+                                                       non_hidden_packs, first_added_to_marketplace])
+    packs_to_install_in_pre_update = modified_packs_names - packs_not_to_install_in_pre_update
+    return packs_to_install_in_pre_update, non_hidden_packs
 
 
-def get_packs_with_higher_min_version(packs_names: Set[str], content_path: str, server_numeric_version: str) -> Set[str]:
+def get_packs_with_higher_min_version(packs_names: set[str],
+                                      server_numeric_version: str) -> set[str]:
     """
     Return a set of packs that have higher min version than the server version.
 
     Args:
         packs_names (Set[str]): A set of packs to install.
-        content_path (str): The content root path.
         server_numeric_version (str): The server version.
 
     Returns:
         (Set[str]): The set of the packs names that supposed to be not installed because
                     their min version is greater than the server version.
     """
+    extract_content_packs_path = mkdtemp()
+    packs_artifacts_path = f'{ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs.zip'
+    extract_packs_artifacts(packs_artifacts_path, extract_content_packs_path)
+
     packs_with_higher_version = set()
     for pack_name in packs_names:
-
-        pack_metadata = get_json_file(f"{content_path}/Packs/{pack_name}/pack_metadata.json")
-        server_min_version = pack_metadata.get(Metadata.SERVER_MIN_VERSION, Metadata.SERVER_DEFAULT_MIN_VERSION)
+        pack_metadata = get_json_file(f"{extract_content_packs_path}/{pack_name}/metadata.json")
+        server_min_version = pack_metadata.get(Metadata.SERVER_MIN_VERSION,
+                                               pack_metadata.get('server_min_version', Metadata.SERVER_DEFAULT_MIN_VERSION))
 
         if 'Master' not in server_numeric_version and Version(server_numeric_version) < Version(server_min_version):
             packs_with_higher_version.add(pack_name)
@@ -1736,10 +1930,11 @@ def main():
         2. Disable all enabled integrations.
         3. Finds only modified (not new) packs and install them, same version as in production.
             (before the update in this branch).
-        4. Finds all the packs that should not be intalled, like turned hidden -> non-hidden packs names
-           or packs with higher min version than the server version.
+        4. Finds all the packs that should not be installed, like turned hidden -> non-hidden packs names
+           or packs with higher min version than the server version,
+           or existing packs that were added to a new marketplace.
         5. Compares master to commit_sha and return two lists - new integrations and modified in the current branch.
-           Filter the lists, add the turned non-hidden to the new integrations list and remove it from the modified list.
+           Filter the lists, add the turned non-hidden to the new integrations list and remove it from the modified list
            This filter purpose is to ignore the turned-hidden integration tests in the pre-update step. (#CIAC-3009)
         6. Configures integration instances (same version as in production) for the modified packs
             and runs `test-module` (pre-update).
@@ -1747,12 +1942,13 @@ def main():
         8. Installs all (new and modified) packs from current branch.
         9. After updating packs from branch, runs `test-module` for both new and modified integrations,
             to check that modified integrations was not broken. (post-update).
-        10. Prints results.
+        10. Upload the test playbooks of packs from the packs to install list.
+        11. Prints results.
     The flow for nightly:
         1. Add server config and restart servers (only in xsoar).
         2. Disable all enabled integrations.
         3. Upload all test playbooks that currently in master.
-        4. In XSOAR:Install all existing packs, in XSIAM: install only requested packs.
+        4. In XSOAR:Install all existing packs, in cloud: install only requested packs.
     """
     install_logging('Install_Content_And_Configure_Integrations_On_Server.log', logger=logging)
     build = create_build_object()
@@ -1762,23 +1958,30 @@ def main():
     build.disable_instances()
 
     if build.is_nightly:
-        build.install_nightly_pack()
+        success = build.install_nightly_pack()
     else:
-        modified_packs_names = get_non_added_packs_ids(build)
-        packs_not_to_install, packs_to_install_in_post_update = get_packs_not_to_install(modified_packs_names, build)
-        packs_to_install = modified_packs_names - packs_not_to_install
-        build.install_packs(pack_ids=packs_to_install)
-        new_integrations_names, modified_integrations_names = build.get_changed_integrations(packs_to_install_in_post_update)
+        packs_to_install_in_pre_update, packs_to_install_in_post_update = get_packs_to_install(build)
+        logging.info("Installing packs in pre-update step")
+        build.install_packs(pack_ids=packs_to_install_in_pre_update)  # type: ignore[arg-type]
+        new_integrations_names, modified_integrations_names = build.get_changed_integrations(
+            packs_to_install_in_post_update)
         pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations_names,
                                                                                             modified_integrations_names)
         modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre = pre_update_configuration_results
-        installed_content_packs_successfully = build.update_content_on_servers()
+        logging.info("Installing packs in post-update step")
+        success = build.update_content_on_servers()
         successful_tests_post, failed_tests_post = build.test_integrations_post_update(new_module_instances,
                                                                                        modified_module_instances)
-        success = report_tests_status(failed_tests_pre, failed_tests_post, successful_tests_pre, successful_tests_post,
-                                      new_integrations_names, build)
-        if not success or not installed_content_packs_successfully:
-            sys.exit(2)
+        if not os.getenv('BUCKET_UPLOAD'):  # Don't need to upload test playbooks in upload flow
+            build.create_and_upload_test_pack(packs_to_install=build.pack_ids_to_install)
+        success &= report_tests_status(failed_tests_pre, failed_tests_post, successful_tests_pre, successful_tests_post,
+                                       new_integrations_names, build)
+
+    if not success:
+        logging.error('Failed to configure and test integration instances.')
+        sys.exit(2)
+
+    logging.success('Finished configuring and testing integration instances.')
 
 
 if __name__ == '__main__':

@@ -1,5 +1,5 @@
 [file:TaniumThreatResponse.yml]
-ignore=IN126,IN136
+ignore=IN126,IN136,PR101,MR108
 
 [file:README.md]
 ignore=RM104
@@ -9,3 +9,7 @@ ignore=IM111
 
 [file:TaniumThreatResponseV2_image.png]
 ignore=IM111
+
+[known_words]
+tanium
+tr

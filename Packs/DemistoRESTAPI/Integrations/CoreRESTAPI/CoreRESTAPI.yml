@@ -1,0 +1,275 @@
+commonfields:
+  id: Core REST API
+  version: -1
+name: Core REST API
+display: Core REST API
+category: Utilities
+description: Use Core REST APIs.
+configuration:
+- display: Core Server URL
+  name: url
+  defaultvalue: https://127.0.0.1
+  type: 0
+  required: true
+- display: API Key ID
+  displaypassword: API Key
+  name: creds_apikey
+  type: 9
+  additionalinfo: Please provide API Key ID when using Cortex XSIAM or Cortex XSOAR 8.0.0 and above.
+  required: false
+- display: Authentication method
+  name: auth_method
+  type: 15
+  defaultvalue: Advanced
+  additionalinfo: Whether authentication should be using "Standard" API key or "Advanced" API key. For XSOAR version < 8.0.0, choose "Standard".
+  options:
+  - Standard
+  - Advanced
+  required: false
+- display: Base marketplace url
+  name: marketplace_url
+  defaultvalue: https://marketplace.xsoar.paloaltonetworks.com/content/packs/
+  type: 0
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Use tenant
+  additionalinfo: Whether API calls should be made to the current tenant instead of the main tenant.
+  name: use_tenant
+  type: 8
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: demisto-api-post
+    arguments:
+    - name: uri
+      required: true
+      default: true
+      description: Request URI (i.e. /incident).
+    - name: body
+      description: Body of HTTP POST.
+    description: send HTTP POST request.
+    execution: true
+  - name: demisto-api-get
+    arguments:
+    - name: uri
+      required: true
+      default: true
+      description: Request URI (i.e. /user).
+    description: send HTTP GET requests.
+  - name: demisto-api-put
+    arguments:
+    - name: uri
+      required: true
+      default: true
+      description: Request URI (i.e. /user).
+    - name: body
+      description: Request body.
+    description: send HTTP PUT request.
+    execution: true
+  - name: demisto-api-delete
+    arguments:
+    - name: uri
+      required: true
+      default: true
+      description: Request URI (i.e. /user).
+    description: send HTTP DELETE request.
+    execution: true
+  - name: demisto-api-download
+    arguments:
+    - name: uri
+      required: true
+      description: Request URI.
+    - name: filename
+      description: File name of download.
+    - name: description
+      description: Description of file entry.
+    description: Download files from Demisto server.
+  - name: demisto-api-multipart
+    arguments:
+    - name: uri
+      required: true
+      description: Request URI.
+    - name: entryID
+      required: true
+      description: File entry ID.
+    - name: body
+      description: Request body.
+    description: Send HTTP Multipart request to upload files to Demisto server.
+  - name: demisto-delete-incidents
+    arguments:
+    - name: ids
+      required: true
+      description: IDs of the incidents to delete.
+      isArray: true
+    - name: fields
+      description: 'Comma separated list of fields to return, case sensitive. Set "all" for all fields. WARNING: Setting all fields may result in big results.'
+      isArray: true
+      defaultValue: id,name,type,severity,status
+    description: Delete Demisto incidents.
+    execution: true
+  - name: demisto-api-install-packs
+    arguments:
+    - name: packs_to_install
+      description: 'The packs to install in JSON format (e.g. [{"AutoFocus": "2.0.8"}] ).'
+      isArray: true
+    - name: file_url
+      description: 'The pack zip file url.'
+    - name: entry_id
+      description: 'The War Room entry ID of the pack zip file.'
+    - name: skip_verify
+      description: 'If true will skip pack signature validation, Available from 6.5.0 server version.'
+      defaultValue: 'true'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: skip_validation
+      description: 'If true will skip all pack validations, Available from 6.6.0 server version.'
+      defaultValue: 'true'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    description: Upload packs to Demisto server from url or the marketplace.
+  - name: core-api-post
+    arguments:
+    - name: uri
+      required: true
+      default: true
+      description: Request URI (i.e. /incident).
+    - name: body
+      description: Body of HTTP POST.
+    description: send HTTP POST request.
+    execution: true
+  - name: core-api-get
+    arguments:
+    - name: uri
+      required: true
+      default: true
+      description: Request URI (i.e. /user).
+    description: send HTTP GET requests.
+  - name: core-api-put
+    arguments:
+    - name: uri
+      required: true
+      default: true
+      description: Request URI (i.e. /user).
+    - name: body
+      description: Request body.
+    description: send HTTP PUT request.
+    execution: true
+  - name: core-api-delete
+    arguments:
+    - name: uri
+      required: true
+      default: true
+      description: Request URI (i.e. /user).
+    description: send HTTP DELETE request.
+    execution: true
+  - name: core-api-download
+    arguments:
+    - name: uri
+      required: true
+      description: Request URI.
+    - name: filename
+      description: File name of download.
+    - name: description
+      description: Description of file entry.
+    description: Download files from Core server.
+  - name: core-api-multipart
+    arguments:
+    - name: uri
+      required: true
+      description: Request URI.
+    - name: entryID
+      required: true
+      description: File entry ID.
+    - name: body
+      description: Request body.
+    description: Send HTTP Multipart request to upload files to Core server.
+  - name: core-delete-incidents
+    arguments:
+    - name: ids
+      required: true
+      description: IDs of the incidents to delete.
+      isArray: true
+    - name: fields
+      description: 'Comma separated list of fields to return, case sensitive. Set "all" for all fields. WARNING: Setting all fields may result in big results.'
+      isArray: true
+      defaultValue: id,name,type,severity,status
+    description: Delete Core incidents.
+    execution: true
+  - name: core-api-install-packs
+    arguments:
+    - name: packs_to_install
+      description: 'The packs to install in JSON format (e.g. [{"AutoFocus": "2.0.8"}] ).'
+      isArray: true
+    - name: file_url
+      description: 'The pack zip file url.'
+    - name: entry_id
+      description: 'The War Room entry ID of the pack zip file.'
+    - name: skip_verify
+      description: 'If true will skip pack signature validation, Available from 6.5.0 server version.'
+      defaultValue: 'true'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: skip_validation
+      description: 'If true will skip all pack validations, Available from 6.6.0 server version.'
+      defaultValue: 'true'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    description: Upload packs to the core server from the URL or marketplace.
+  - name: core-api-file-upload
+    arguments:
+    - name: incident_id
+      description: The incident's ID.
+    - name: file_name
+      description: "The new file's name."
+    - name: file_content
+      description: "The new file's content."
+    - name: entry_id
+      description: "The War Room entry ID of the pack zip file."
+    description: Upload to the incident a file that the user provided according to the entry_id or the content of the file.
+  - name: core-api-file-delete
+    arguments:
+    - name: entry_id
+      description: "The War Room entry ID of the file."
+      required: true
+    description: Delete a file from Cortex XSOAR by entry_id.
+  - name: core-api-file-attachment-delete
+    arguments:
+    - name: incident_id
+      required: true
+      description: The incident's ID.
+    - name: file_path
+      required: true
+      description: "The file's path."
+    - name: field_name
+      defaultValue: 'attachment'
+      description: "Name of the field (type attachment) from which to remove the attachment."
+    description: Delete the attachment from the incident and from the Cortex XSOAR server.
+  - name: core-api-file-check
+    arguments:
+    - name: entry_id
+      description: "The War Room entry ID of the file."
+      required: true
+    description: Check if the file exists in Cortex XSOAR by entry_id.
+    outputs:
+    - description: Dictionary with EntryID as the key and boolean if the file exists as a value.
+      contextPath: IsFileExists
+tests:
+- No tests
+fromversion: 5.0.0

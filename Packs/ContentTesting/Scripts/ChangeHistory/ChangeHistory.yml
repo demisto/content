@@ -1,0 +1,21 @@
+commonfields:
+  id: ChangeHistory
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.13.72123
+enabled: true
+name: ChangeHistory
+comment: ""
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
+timeout: 2.4µs
+runonce: false

@@ -1,0 +1,29 @@
+commonfields:
+  id: ExtractInbetween
+  version: -1
+name: ExtractInbetween
+script: ''
+type: python
+tags:
+- transformer
+- string
+- Utility
+comment: Extract a string from an existing string.
+enabled: true
+args:
+- name: value
+  default: true
+  description: The value from which to extract the data.
+- name: from
+  required: true
+  description: The starting value.
+- name: to
+  description: The ending value.
+  required: true
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.10.12.63474
+runas: DBotWeakRole
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

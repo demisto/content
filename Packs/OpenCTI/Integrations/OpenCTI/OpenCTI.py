@@ -1,10 +1,9 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import copy
-from typing import List, Optional
 from io import StringIO
 import sys
-import demistomock as demisto  # noqa: E402 lgtm [py/polluting-import]
 import urllib3
-from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from pycti import OpenCTIApiClient, Identity
 
 # Disable insecure warnings
@@ -49,7 +48,7 @@ FILE_TYPES = {
 }
 
 
-def label_create(client: OpenCTIApiClient, label_name: Optional[str]):
+def label_create(client: OpenCTIApiClient, label_name: str | None):
     """ Create label at opencti
 
         Args:
@@ -67,7 +66,7 @@ def label_create(client: OpenCTIApiClient, label_name: Optional[str]):
     return label
 
 
-def build_indicator_list(indicator_list: List[str]) -> List[str]:
+def build_indicator_list(indicator_list: list[str]) -> list[str]:
     """Builds an indicator list for the query
     Args:
         indicator_list: List of XSOAR indicators types to return..
@@ -92,9 +91,8 @@ def reset_last_run():
     return CommandResults(readable_output='Fetch history deleted successfully')
 
 
-def get_indicators(client: OpenCTIApiClient, indicator_types: List[str], score: List[str] = None,
-                   limit: Optional[int] = 500,
-                   last_run_id: Optional[str] = None) -> dict:
+def get_indicators(client: OpenCTIApiClient, indicator_types: list[str], score=None,
+                   limit: int | None = 500, last_run_id: str | None = None, search: str = "") -> dict:
     """ Retrieving indicators from the API
 
     Args:
@@ -103,6 +101,7 @@ def get_indicators(client: OpenCTIApiClient, indicator_types: List[str], score: 
         indicator_types: List of indicators types to return.
         last_run_id: The last id from the previous call to use pagination.
         limit: the max indicators to fetch
+        search: The indicator's value to filter by.
 
     Returns:
         indicators: dict of indicators
@@ -119,7 +118,8 @@ def get_indicators(client: OpenCTIApiClient, indicator_types: List[str], score: 
         })
 
     indicators = client.stix_cyber_observable.list(after=last_run_id, first=limit,
-                                                   withPagination=True, filters=filters)
+                                                   withPagination=True, filters=filters,
+                                                   search=search)
     return indicators
 
 
@@ -136,18 +136,29 @@ def get_indicators_command(client: OpenCTIApiClient, args: dict) -> CommandResul
     indicator_types = argToList(args.get("indicator_types"))
     last_run_id = args.get("last_run_id")
     limit = arg_to_number(args.get('limit', 50))
-    start = arg_to_number(args.get('score_start', 1))
-    end = arg_to_number(args.get('score_end', 100)) + 1  # type:ignore
-    score = None
-    if start or end:
-        score = [str(i) for i in range(start, end)]  # type:ignore
+    start = arg_to_number(args.get('score_start'))
+    end = arg_to_number(args.get('score_end'))  # type:ignore
+    score = args.get('score')
+    search = args.get("search", "")
+    scores = None
+    if score:
+        if score.lower() == "unknown":
+            scores = [None]
+        elif score.isdigit():
+            scores = [score]
+        else:
+            raise DemistoException("Invalid score was provided.")
+
+    elif start or end:
+        scores = [str(i) for i in range(start, end + 1)]  # type:ignore
 
     raw_response = get_indicators(
         client=client,
         indicator_types=indicator_types,
         limit=limit,
         last_run_id=last_run_id,
-        score=score
+        score=scores,
+        search=search
     )
 
     last_run = raw_response.get('pagination', {}).get('endCursor')  # type: ignore
@@ -241,6 +252,7 @@ def indicator_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> 
         Returns:
             readable_output, raw_response
         """
+    redirect_std_out = argToBoolean(demisto.params().get('redirect_std_out', 'false'))
     indicator_type = args.get("type")
     created_by = args.get("created_by")
     marking_id = args.get("marking_id")
@@ -263,8 +275,8 @@ def indicator_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> 
         simple_observable_value = value
     try:
         # cti code prints to stdout so we need to catch it.
-        old_stdout = sys.stdout
-        sys.stdout = StringIO()
+        if redirect_std_out:
+            sys.stdout = StringIO()
         result = client.stix_cyber_observable.create(
             simple_observable_key=simple_observable_key,
             simple_observable_value=simple_observable_value,
@@ -274,7 +286,8 @@ def indicator_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> 
             simple_observable_description=description,
             x_opencti_score=score, observableData=data
         )
-        sys.stdout = old_stdout
+        if redirect_std_out:
+            sys.stdout = sys.__stdout__
     except KeyError as e:
         raise DemistoException(f'Missing argument at data {e}')
 
@@ -297,7 +310,7 @@ def indicator_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> 
     )
 
 
-def indicator_add_marking(client: OpenCTIApiClient, id: Optional[str], value: Optional[str]):
+def indicator_add_marking(client: OpenCTIApiClient, id: str | None, value: str | None):
     """ Add indicator marking to opencti
         Args:
             client: OpenCTI Client object
@@ -315,7 +328,7 @@ def indicator_add_marking(client: OpenCTIApiClient, id: Optional[str], value: Op
     return result
 
 
-def indicator_add_label(client: OpenCTIApiClient, id: Optional[str], value: Optional[str]):
+def indicator_add_label(client: OpenCTIApiClient, id: str | None, value: str | None):
     """ Add indicator label to opencti
         Args:
             client: OpenCTI Client object
@@ -360,7 +373,7 @@ def indicator_field_add_command(client: OpenCTIApiClient, args: Dict[str, str]) 
         return CommandResults(readable_output=f'Cant add {key} to indicator.')
 
 
-def indicator_remove_label(client: OpenCTIApiClient, id: Optional[str], value: Optional[str]):
+def indicator_remove_label(client: OpenCTIApiClient, id: str | None, value: str | None):
     """ Remove indicator label from opencti
         Args:
             client: OpenCTI Client object
@@ -378,7 +391,7 @@ def indicator_remove_label(client: OpenCTIApiClient, id: Optional[str], value: O
     return result
 
 
-def indicator_remove_marking(client: OpenCTIApiClient, id: Optional[str], value: Optional[str]):
+def indicator_remove_marking(client: OpenCTIApiClient, id: str | None, value: str | None):
     """ Remove indicator marking from opencti
         Args:
             client: OpenCTI Client object
@@ -626,7 +639,8 @@ def main():
     base_url = params.get('base_url').strip('/')
 
     try:
-        client = OpenCTIApiClient(base_url, api_key, ssl_verify=params.get('insecure'), log_level='error')
+        client = OpenCTIApiClient(base_url, api_key, ssl_verify=params.get('insecure'), log_level='error',
+                                  proxies=handle_proxy())
         command = demisto.command()
         demisto.info(f"Command being called is {command}")
 

@@ -4,220 +4,289 @@
       "__type": {
         "states": [
           {
-            "name": "NAME"
+             "name":"NAME"
           },
           {
-            "name": "ASSIGNED_SLA_DOMAIN"
+             "name":"ASSIGNED_SLA_DOMAIN"
           },
           {
-            "name": "EFFECTIVE_SLA_DOMAIN"
+             "name":"EFFECTIVE_SLA_DOMAIN"
           },
           {
-            "name": "EC2_INSTANCE_ID"
+             "name":"EC2_INSTANCE_ID"
           },
           {
-            "name": "EC2_INSTANCE_NAME"
+             "name":"EC2_INSTANCE_NAME"
           },
           {
-            "name": "EBS_VOLUME_ID"
+             "name":"EBS_VOLUME_ID"
           },
           {
-            "name": "EBS_VOLUME_NAME"
+             "name":"EBS_VOLUME_NAME"
           },
           {
-            "name": "EC2_INSTANCE_TYPE"
+             "name":"EC2_INSTANCE_TYPE"
           },
           {
-            "name": "EBS_VOLUME_TYPE"
+             "name":"EBS_VOLUME_TYPE"
           },
           {
-            "name": "AWS_REGION"
+             "name":"AWS_REGION"
           },
           {
-            "name": "EMAIL_ADDRESS"
+             "name":"EMAIL_ADDRESS"
           },
           {
-            "name": "ID"
+             "name":"ID"
           },
           {
-            "name": "AZURE_REGION"
+             "name":"AZURE_REGION"
           },
           {
-            "name": "AWS_VPC_ID"
+             "name":"AWS_VPC_ID"
           },
           {
-            "name": "AWS_NATIVE_ACCOUNT_NAME"
+             "name":"AWS_NATIVE_ACCOUNT_NAME"
           },
           {
-            "name": "EC2_INSTANCE_COUNT"
+             "name":"EC2_INSTANCE_COUNT"
           },
           {
-            "name": "EBS_VOLUME_COUNT"
+             "name":"EBS_VOLUME_COUNT"
           },
           {
-            "name": "EBS_VOLUME_SIZE"
+             "name":"EBS_VOLUME_SIZE"
           },
           {
-            "name": "AZURE_TENANT_ID"
+             "name":"AZURE_TENANT_ID"
           },
           {
-            "name": "AZURE_VM_RG_SUBSCRIPTION_NAME"
+             "name":"AZURE_SUBSCRIPTION_VMCOUNT"
           },
           {
-            "name": "AZURE_DISK_RG_SUBSCRIPTION_NAME"
+             "name":"AZURE_SUBSCRIPTION_DISKCOUNT"
           },
           {
-            "name": "AZURE_VM_RG_VMCOUNT"
+             "name":"AZURE_VNET_NAME"
           },
           {
-            "name": "AZURE_DISK_RG_DISKCOUNT"
+             "name":"AZURE_SUBNET_NAME"
           },
           {
-            "name": "AZURE_SUBSCRIPTION_VMCOUNT"
+             "name":"AZURE_VM_SIZE"
           },
           {
-            "name": "AZURE_SUBSCRIPTION_DISKCOUNT"
+             "name":"AZURE_DISK_SIZE"
           },
           {
-            "name": "AZURE_VM_RG_NAME"
+             "name":"AZURE_DISK_ATTACHED_VM"
           },
           {
-            "name": "AZURE_VM_SUBSCRIPTION_NAME"
+             "name":"AZURE_DISK_TYPE"
           },
           {
-            "name": "AZURE_VNET_NAME"
+             "name":"PHYSICAL_HOST_OS_NAME"
           },
           {
-            "name": "AZURE_SUBNET_NAME"
+             "name":"FILESET_TEMPLATE_INCLUDES"
           },
           {
-            "name": "AZURE_VM_SIZE"
+             "name":"GCP_PROJECT_ORG_NAME"
           },
           {
-            "name": "AZURE_DISK_RG_NAME"
+             "name":"GCP_INSTANCE_NATIVE_ID"
           },
           {
-            "name": "AZURE_DISK_SUBSCRIPTION_NAME"
+             "name":"GCP_INSTANCE_NATIVE_NAME"
           },
           {
-            "name": "AZURE_DISK_SIZE"
+             "name":"GCP_INSTANCE_PROJECT_NAME"
           },
           {
-            "name": "AZURE_DISK_ATTACHED_VM"
+             "name":"GCP_INSTANCE_TYPE"
           },
           {
-            "name": "AZURE_DISK_TYPE"
+             "name":"AWS_NATIVE_RDS_DB_INSTANCE_CLASS"
           },
           {
-            "name": "PHYSICAL_HOST_OS_NAME"
+             "name":"AWS_NATIVE_RDS_DB_ENGINE"
           },
           {
-            "name": "FILESET_TEMPLATE_INCLUDES"
+             "name":"GCP_PROJECT_NUMBER"
           },
           {
-            "name": "GCP_PROJECT_ORG_NAME"
+             "name":"GCP_PROJECT_INSTANCE_COUNT"
           },
           {
-            "name": "GCP_INSTANCE_NATIVE_ID"
+             "name":"GCP_PROJECT_NATIVE_ID"
           },
           {
-            "name": "GCP_INSTANCE_NATIVE_NAME"
+             "name":"GCP_INSTANCE_REGION"
           },
           {
-            "name": "GCP_INSTANCE_PROJECT_NAME"
+             "name":"GCP_INSTANCE_NETWORK_NAME"
           },
           {
-            "name": "GCP_INSTANCE_TYPE"
+             "name":"FILESET_TEMPLATE_EXCLUDES"
           },
           {
-            "name": "AWS_NATIVE_RDS_DB_INSTANCE_CLASS"
+             "name":"FILESET_TEMPLATE_DOES_NOT_EXCLUDE"
           },
           {
-            "name": "AWS_NATIVE_RDS_DB_ENGINE"
+             "name":"PHYSICAL_HOST_CONNECTION_STATUS"
           },
           {
-            "name": "GCP_PROJECT_NUMBER"
+             "name":"SAP_HANA_SYSTEM_SID"
           },
           {
-            "name": "GCP_PROJECT_INSTANCE_COUNT"
+             "name":"SAP_HANA_SYSTEM_STATUS"
           },
           {
-            "name": "GCP_PROJECT_NATIVE_ID"
+             "name":"GCP_DISK_NATIVE_ID"
           },
           {
-            "name": "GCP_INSTANCE_REGION"
+             "name":"GCP_DISK_NATIVE_NAME"
           },
           {
-            "name": "GCP_INSTANCE_NETWORK_NAME"
+             "name":"GCP_DISK_PROJECT_NAME"
           },
           {
-            "name": "FILESET_TEMPLATE_EXCLUDES"
+             "name":"GCP_DISK_LOCATION"
           },
           {
-            "name": "FILESET_TEMPLATE_DOES_NOT_EXCLUDE"
+             "name":"GCP_DISK_SIZE"
           },
           {
-            "name": "PHYSICAL_HOST_CONNECTION_STATUS"
+             "name":"GCP_PROJECT_DISK_COUNT"
           },
           {
-            "name": "SAP_HANA_SYSTEM_SID"
+             "name":"AZURE_RG_SUBSCRIPTION_NAME"
           },
           {
-            "name": "SAP_HANA_SYSTEM_STATUS"
+             "name":"AZURE_RG_VMCOUNT"
           },
           {
-            "name": "GCP_DISK_NATIVE_ID"
+             "name":"AZURE_RG_DISKCOUNT"
           },
           {
-            "name": "GCP_DISK_NATIVE_NAME"
+             "name":"AZURE_DISK_CRG_NAME"
           },
           {
-            "name": "GCP_DISK_PROJECT_NAME"
+             "name":"AZURE_VM_CRG_NAME"
           },
           {
-            "name": "GCP_DISK_LOCATION"
+             "name":"AZURE_DISK_CRG_SUBSCRIPTION_NAME"
           },
           {
-            "name": "GCP_DISK_SIZE"
+             "name":"AZURE_VM_CRG_SUBSCRIPTION_NAME"
           },
           {
-            "name": "GCP_PROJECT_DISK_COUNT"
+             "name":"AZURE_RG_DISK_EFFECTIVE_SLA"
           },
           {
-            "name": "AZURE_RG_SUBSCRIPTION_NAME"
+             "name":"AZURE_RG_VM_EFFECTIVE_SLA"
           },
           {
-            "name": "AZURE_RG_VMCOUNT"
+             "name":"VSPHERE_DATASTORE_CAPACITY"
           },
           {
-            "name": "AZURE_RG_DISKCOUNT"
+             "name":"VSPHERE_DATASTORE_FREE_SPACE"
           },
           {
-            "name": "AZURE_DISK_CRG_NAME"
+             "name":"VSPHERE_DATASTORE_TYPE"
           },
           {
-            "name": "AZURE_VM_CRG_NAME"
+             "name":"AZURE_RG_SQL_DATABASE_DB_EFFECTIVE_SLA"
           },
           {
-            "name": "AZURE_DISK_CRG_SUBSCRIPTION_NAME"
+             "name":"AZURE_RG_SQL_MANAGED_INSTANCE_DB_EFFECTIVE_SLA"
           },
           {
-            "name": "AZURE_VM_CRG_SUBSCRIPTION_NAME"
+             "name":"DB2_INSTANCE_ID"
           },
           {
-            "name": "AZURE_RG_DISK_EFFECTIVE_SLA"
+             "name":"AZURE_SQL_DATABASE_DB_REGION"
           },
           {
-            "name": "AZURE_RG_VM_EFFECTIVE_SLA"
+             "name":"AZURE_SQL_DATABASE_SERVER_REGION"
           },
           {
-            "name": "VSPHERE_DATASTORE_CAPACITY"
+             "name":"AZURE_SQL_MANAGED_INSTANCE_DB_REGION"
           },
           {
-            "name": "VSPHERE_DATASTORE_FREE_SPACE"
+             "name":"AZURE_SQL_MANAGED_INSTANCE_SERVER_REGION"
           },
           {
-            "name": "VSPHERE_DATASTORE_TYPE"
+             "name":"AZURE_SQL_SERVER_RESOURCE_GROUP"
+          },
+          {
+             "name":"AZURE_SQL_DB_RESOURCE_GROUP"
+          },
+          {
+             "name":"MSSQL_DATABASE_COPY_ONLY"
+          },
+          {
+             "name":"MSSQL_AVAILABILITY_GROUP_COPY_ONLY"
+          },
+          {
+             "name":"MSSQL_HOST_INSTANCE_COUNT"
+          },
+          {
+             "name":"MSSQL_FAILOVER_DATABASE_COUNT"
+          },
+          {
+             "name":"MSSQL_HOST_DB_COUNT"
+          },
+          {
+             "name":"MSSQL_INSTANCE_DB_COUNT"
+          },
+          {
+             "name":"UNMANAGED_OBJECTS_UNEXPIRED_SNAPSHOT_COUNT"
+          },
+          {
+             "name":"UNMANAGED_OBJECTS_LOCAL_STORAGE_BYTES"
+          },
+          {
+             "name":"UNMANAGED_OBJECTS_ARCHIVAL_STORAGE_BYTES"
+          },
+          {
+             "name":"UNMANAGED_OBJECTS_STATUS"
+          },
+          {
+             "name":"UNMANAGED_OBJECTS_LOCATION"
+          },
+          {
+             "name":"CDP_VM_NAME"
+          },
+          {
+             "name":"CDP_VM_EFFECTIVE_SLA_NAME"
+          },
+          {
+             "name":"CDP_VM_CLUSTER_NAME"
+          },
+          {
+             "name":"CDP_REPLICATION_CLUSTER_NAME"
+          },
+          {
+             "name":"CDP_VM_VCENTER_LOCATION"
+          },
+          {
+             "name":"CDP_LOCAL_STATUS"
+          },
+          {
+             "name":"CDP_REPLICATION_STATUS"
+          },
+          {
+             "name":"CDP_IO_FILTER_STATUS"
+          },
+          {
+             "name":"CDP_LATEST_SNAPSHOT_TIME"
+          },
+          {
+             "name":"FAILOVER_CLUSTER_CONNECTION_STATUS"
+          },
+          {
+             "name":"FAILOVER_CLUSTER_APP_CONNECTION_STATUS"
           }
         ]
       }
@@ -284,6 +353,32 @@
           },
           {
             "name": "Quarter"
+          }
+        ]
+      }
+    }
+  },
+  "missed_snapshot_group_by_enum": {
+    "data": {
+      "__type": {
+        "states": [
+          {
+            "name": "MONTH"
+          },
+          {
+            "name": "DAY"
+          },
+          {
+            "name": "YEAR"
+          },
+          {
+            "name": "WEEK"
+          },
+          {
+            "name": "HOUR"
+          },
+          {
+            "name": "QUARTER"
           }
         ]
       }
@@ -361,31 +456,31 @@
       "__type": {
         "states": [
           {
-            "name": "LastUpdated"
+            "name": "LAST_UPDATED"
           },
           {
-            "name": "Location"
+            "name": "LOCATION"
           },
           {
-            "name": "ObjectType"
+            "name": "OBJECT_TYPE"
           },
           {
-            "name": "ClusterName"
+            "name": "CLUSTER_NAME"
           },
           {
-            "name": "ObjectName"
+            "name": "OBJECT_NAME"
           },
           {
-            "name": "StartTime"
+            "name": "START_TIME"
           },
           {
-            "name": "ActivityType"
+            "name": "ACTIVITY_TYPE"
           },
           {
-            "name": "Severity"
+            "name": "SEVERITY"
           },
           {
-            "name": "ActivityStatus"
+            "name": "ACTIVITY_STATUS"
           }
         ]
       }
@@ -396,10 +491,10 @@
       "__type": {
         "states": [
           {
-            "name": "Asc"
+            "name": "ASC"
           },
           {
-            "name": "Desc"
+            "name": "DESC"
           }
         ]
       }
@@ -410,139 +505,163 @@
       "__type": {
         "states": [
           {
-            "name": "Sync"
+            "name": "SYNC"
           },
           {
-            "name": "LocalRecovery"
+            "name": "LOCAL_RECOVERY"
           },
           {
-            "name": "TestFailover"
+            "name": "TEST_FAILOVER"
           },
           {
-            "name": "Anomaly"
+            "name": "ANOMALY"
           },
           {
             "name": "RadarAnalysis"
           },
           {
-            "name": "Archive"
+            "name": "ARCHIVE"
           },
           {
-            "name": "VolumeGroup"
+            "name": "VOLUME_GROUP"
           },
           {
-            "name": "VCenter"
+            "name": "VCENTER"
           },
           {
-            "name": "Index"
+            "name": "INDEX"
           },
           {
-            "name": "CloudNativeVirtualMachine"
+            "name": "CLOUD_NATIVE_VIRTUAL_MACHINE"
           },
           {
-            "name": "StormResource"
+            "name": "STORM_RESOURCE"
           },
           {
-            "name": "HostEvent"
+            "name": "HOST_EVENT"
           },
           {
-            "name": "Recovery"
+            "name": "RECOVERY"
           },
           {
-            "name": "Conversion"
+            "name": "CONVERSION"
           },
           {
-            "name": "CloudNativeVm"
+            "name": "CLOUD_NATIVE_VM"
           },
           {
-            "name": "EmbeddedEvent"
+            "name": "EMBEDDED_EVENT"
           },
           {
-            "name": "Maintenance"
+            "name": "MAINTENANCE"
           },
           {
-            "name": "Failover"
+            "name": "FAILOVER"
           },
           {
-            "name": "AuthDomain"
+            "name": "AUTH_DOMAIN"
           },
           {
-            "name": "LegalHold"
+            "name": "LEGAL_HOLD"
           },
           {
-            "name": "Vcd"
+            "name": "VCD"
           },
           {
-            "name": "Instantiate"
+            "name": "INSTANTIATE"
           },
           {
-            "name": "Configuration"
+            "name": "CONFIGURATION"
           },
           {
-            "name": "Fileset"
+            "name": "FILESET"
           },
           {
-            "name": "Discovery"
+            "name": "DISCOVERY"
           },
           {
-            "name": "System"
+            "name": "SYSTEM"
           },
           {
-            "name": "Hdfs"
+            "name": "HDFS"
           },
           {
-            "name": "Classification"
+            "name": "CLASSIFICATION"
           },
           {
-            "name": "StorageArray"
+            "name": "STORAGE_ARRAY"
           },
           {
-            "name": "Storage"
+            "name": "STORAGE"
           },
           {
-            "name": "Backup"
+            "name": "BACKUP"
           },
           {
-            "name": "Hardware"
+            "name": "HARDWARE"
           },
           {
-            "name": "HypervServer"
+            "name": "HYPERV_SERVER"
           },
           {
-            "name": "HypervScvmm"
+            "name": "HYPERV_SCVMM"
           },
           {
-            "name": "Diagnostic"
+            "name": "DIAGNOSTIC"
           },
           {
-            "name": "UnknownEventType"
+            "name": "UNKNOWN_EVENT_TYPE"
           },
           {
-            "name": "Upgrade"
+            "name": "UPGRADE"
           },
           {
-            "name": "NutanixCluster"
+            "name": "NUTANIX_CLUSTER"
           },
           {
-            "name": "Replication"
+            "name": "REPLICATION"
           },
           {
-            "name": "AwsEvent"
+            "name": "AWS_EVENT"
           },
           {
-            "name": "Support"
+            "name": "SUPPORT"
           },
           {
-            "name": "CloudNativeSource"
+            "name": "CLOUD_NATIVE_SOURCE"
           },
           {
-            "name": "Download"
+            "name": "DOWNLOAD"
           },
           {
-            "name": "Connection"
+            "name": "CONNECTION"
           },
           {
-            "name": "ResourceOperations"
+            "name": "RESOURCE_OPERATIONS"
+          },
+          {
+            "name": "RANSOMWARE_INVESTIGATION_ANALYSIS"
+          },
+          {
+            "name": "THREAT_HUNT"
+          },
+          {
+            "name": "TPR"
+          },
+          {
+            "name": "LOCK_SNAPSHOT"
+          },
+          {
+            "name": "ISOLATED_RECOVERY"
+          },
+          {
+            "name": "OWNERSHIP"
+          },
+          {
+            "name": "LOG_BACKUP"
+          },
+          {
+            "name": "K8S"
           }
         ]
       }
@@ -592,6 +711,356 @@
           {
             "name": "HASH_TYPE_SH_A256"
           }
+        ]
+      }
+    }
+  },
+  "hierarchy_object_type_enum": {
+    "data": {
+      "__type": {
+        "states": [
+           {
+              "name":"MONGODB_DATABASE"
+           },
+           {
+              "name":"FilesetTemplate"
+           },
+           {
+              "name":"VcdOrgVdc"
+           },
+           {
+              "name":"ShareFileset"
+           },
+           {
+              "name":"KuprNamespace"
+           },
+           {
+              "name":"O365Group"
+           },
+           {
+              "name":"AwsNativeEbsVolume"
+           },
+           {
+              "name":"OracleDatabase"
+           },
+           {
+              "name":"O365Mailbox"
+           },
+           {
+              "name":"MONGO_DB"
+           },
+           {
+              "name":"AzureNativeResourceGroup"
+           },
+           {
+              "name":"AZURE_SQL_MANAGED_INSTANCE_DB"
+           },
+           {
+              "name":"Db2Database"
+           },
+           {
+              "name":"HOST_FAILOVER_CLUSTER"
+           },
+           {
+              "name":"VolumeGroup"
+           },
+           {
+              "name":"AzureNativeVm"
+           },
+           {
+              "name":"VcdOrg"
+           },
+           {
+              "name":"Db2Instance"
+           },
+           {
+              "name":"PhysicalHost"
+           },
+           {
+              "name":"AwsNativeRdsInstance"
+           },
+           {
+              "name":"AzureSqlManagedInstanceServer"
+           },
+           {
+              "name":"O365Site"
+           },
+           {
+              "name":"VmwareVirtualMachine"
+           },
+           {
+              "name":"O365User"
+           },
+           {
+              "name":"ORACLE_DATA_GUARD_GROUP"
+           },
+           {
+              "name":"AwsNativeEc2Instance"
+           },
+           {
+              "name":"MssqlInstance"
+           },
+           {
+              "name":"NutanixVirtualMachine"
+           },
+           {
+              "name":"CASSANDRA_COLUMN_FAMILY"
+           },
+           {
+              "name":"MONGO_COLLECTION"
+           },
+           {
+              "name":"O365Org"
+           },
+           {
+              "name":"OracleHost"
+           },
+           {
+              "name":"NAS_FILESET"
+           },
+           {
+              "name":"SapHanaDatabase"
+           },
+           {
+              "name":"AllSubHierarchyType"
+           },
+           {
+              "name":"AWS_NATIVE_S3_BUCKET"
+           },
+           {
+              "name":"NasSystem"
+           },
+           {
+              "name":"O365Teams"
+           },
+           {
+              "name":"VSphereFolder"
+           },
+           {
+              "name":"VSphereResourcePool"
+           },
+           {
+              "name":"GcpNativeDisk"
+           },
+           {
+              "name":"AwsNativeAccount"
+           },
+           {
+              "name":"VSphereDatacenter"
+           },
+           {
+              "name":"AZURE_STORAGE_ACCOUNT"
+           },
+           {
+              "name":"VSphereComputeCluster"
+           },
+           {
+              "name":"HypervCluster"
+           },
+           {
+              "name":"CASSANDRA_SOURCE"
+           },
+           {
+              "name":"VSphereTag"
+           },
+           {
+              "name":"VcdVapp"
+           },
+           {
+              "name":"RubrikEbsVolume"
+           },
+           {
+              "name":"NasVolume"
+           },
+           {
+              "name":"NasNamespace"
+           },
+           {
+              "name":"Vcd"
+           },
+           {
+              "name":"VcdVimServer"
+           },
+           {
+              "name":"AZURE_SQL_DATABASE_DB"
+           },
+           {
+              "name":"VSPHERE_VIRTUAL_DISK"
+           },
+           {
+              "name":"MssqlDatabaseBatchMaintenance"
+           },
+           {
+              "name":"EXCHANGE_SERVER"
+           },
+           {
+              "name":"CLOUD_DIRECT_NAS_EXPORT"
+           },
+           {
+              "name":"VcdCatalog"
+           },
+           {
+              "name":"O365File"
+           },
+           {
+              "name":"HypervSCVMM"
+           },
+           {
+              "name":"Blueprint"
+           },
+           {
+              "name":"AzureSqlDatabaseServer"
+           },
+           {
+              "name":"FeldsparSite"
+           },
+           {
+              "name":"CloudNativeTagRule"
+           },
+           {
+              "name":"Mssql"
+           },
+           {
+              "name":"MONGO_SOURCE"
+           },
+           {
+              "name":"HostShare"
+           },
+           {
+              "name":"SnapMirrorCloud"
+           },
+           {
+              "name":"O365Calendar"
+           },
+           {
+              "name":"O365SharePointDrive"
+           },
+           {
+              "name":"VSphereNetwork"
+           },
+           {
+              "name":"Fileset"
+           },
+           {
+              "name":"SapHanaSystem"
+           },
+           {
+              "name":"O365Onedrive"
+           },
+           {
+              "name":"Hdfs"
+           },
+           {
+              "name":"Ec2Instance"
+           },
+           {
+              "name":"WindowsCluster"
+           },
+           {
+              "name":"GcpNativeProject"
+           },
+           {
+              "name":"MONGODB_COLLECTION"
+           },
+           {
+              "name":"MONGO_DATABASE"
+           },
+           {
+              "name":"VSphereDatastore"
+           },
+           {
+              "name":"AZURE_AD_TENANT"
+           },
+           {
+              "name":"HypervServer"
+           },
+           {
+              "name":"VSphereHost"
+           },
+           {
+              "name":"AppBlueprint"
+           },
+           {
+              "name":"MssqlAvailabilityGroup"
+           },
+           {
+              "name":"LinuxFileset"
+           },
+           {
+              "name":"MANAGED_VOLUME_EXPORT"
+           },
+           {
+              "name":"CASSANDRA_KEYSPACE"
+           },
+           {
+              "name":"HypervVirtualMachine"
+           },
+           {
+              "name":"GcpNativeGCEInstance"
+           },
+           {
+              "name":"StorageArrayVolumeGroup"
+           },
+           {
+              "name":"O365SharePointList"
+           },
+           {
+              "name":"ExchangeDatabase"
+           },
+           {
+              "name":"NutanixCluster"
+           },
+           {
+              "name":"AzureNativeManagedDisk"
+           },
+           {
+              "name":"AzureNativeSubscription"
+           },
+           {
+              "name":"VSPHERE_DATASTORE_CLUSTER"
+           },
+           {
+              "name":"ManagedVolume"
+           },
+           {
+              "name":"FAILOVER_CLUSTER_APP"
+           },
+           {
+              "name":"VSphereVCenter"
+           },
+           {
+              "name":"NasShare"
+           },
+           {
+              "name":"EXCHANGE_DAG"
+           },
+           {
+              "name":"KuprCluster"
+           },
+           {
+              "name":"OracleRac"
+           },
+           {
+              "name":"MONGODB_SOURCE"
+           },
+           {
+              "name":"ORCHESTRATED_APPLICATION_RECOVERY_BLUEPRINT"
+           },
+           {
+              "name":"VSphereTagCategory"
+           },
+           {
+              "name":"ORCHESTRATED_APPLICATION_RECOVERY_PLAN"
+           },
+           {
+              "name":"WindowsVolumeGroup"
+           },
+           {
+              "name":"RubrikEc2Instance"
+           },
+           {
+              "name":"WindowsFileset"
+           }
         ]
       }
     }

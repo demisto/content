@@ -1,0 +1,1374 @@
+category: Network Security
+commonfields:
+  id: checkpointdome9
+  version: -1
+configuration:
+- defaultvalue: https://api.CheckPointDome9.com/v2/
+  display: Server URL
+  name: base_url
+  required: true
+  type: 0
+- name: api_key_id
+  display: API key ID
+  type: 0
+  hidden: true
+  required: false
+- name: api_key_secret
+  display: API key secret
+  type: 0
+  hidden: true
+  required: false
+- name: api_key_id_cred
+  type: 9
+  displaypassword: API key ID
+  hiddenusername: true
+  required: false
+- name: api_key_secret_cred
+  type: 9
+  displaypassword: API key secret
+  hiddenusername: true
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- additionalinfo: Maximum number of incidents per fetch. Default is 50. The maximum is 100.
+  defaultvalue: '50'
+  display: Maximum incidents for one fetch.
+  name: max_fetch
+  type: 0
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Alert region (AWS) to fetch as incidents.
+  name: alert_region
+  type: 0
+  required: false
+- display: Alert severity to fetch as incidents.
+  name: alert_severity
+  options:
+  - Low
+  - Medium
+  - High
+  type: 16
+  required: false
+- defaultvalue: 3 days
+  display: First fetch time
+  additionalinfo: First alert created date to fetch. e.g., "1 min ago","2 weeks ago","3 months ago"
+  name: first_fetch
+  type: 0
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+description: Dome9 integration allows to easily manage the security and compliance of the public cloud.
+display: Check Point Dome9 (CloudGuard)
+name: checkpointdome9
+script:
+  commands:
+  - arguments:
+    - description: "Page number of paginated results. Minimum value: 1."
+      name: page
+    - description: Number of items per page.
+      name: page_size
+    - defaultValue: 50
+      description: The maximum number of records to retrieve.
+      name: limit
+    description: Get a list of all active Access Leases.
+    name: dome9-access-lease-list
+    outputs:
+    - contextPath: CheckPointDome9.AccessLease.cloudAccountId
+      description: The AWS Access Leases cloud account ID.
+      type: String
+    - contextPath: CheckPointDome9.AccessLease.region
+      description: The AWS Access Leases region.
+      type: String
+    - contextPath: CheckPointDome9.AccessLease.securityGroupId
+      description: The AWS Access Leases security group ID.
+      type: String
+    - contextPath: CheckPointDome9.AccessLease.created
+      description: The AWS Access Leases created date.
+      type: String
+    - contextPath: CheckPointDome9.AccessLease.user
+      description: The AWS Access Leases user.
+      type: String
+    - contextPath: CheckPointDome9.AccessLease.length
+      description: The AWS Access Leases length.
+      type: String
+    - contextPath: CheckPointDome9.AccessLease.protocol
+      description: The AWS Access Leases protocol.
+      type: String
+    - contextPath: CheckPointDome9.AccessLease.id
+      description: The AWS Access Leases ID.
+      type: String
+  - arguments:
+    - description: The Access Lease ID.
+      name: lease_id
+      required: true
+    description: Terminate an Access Lease.
+    name: dome9-access-lease-delete
+  - arguments:
+    - description: The Access Lease invitation ID.
+      name: invitation_id
+    description: Get a lease invitation.
+    name: dome9-access-lease-invitation-list
+    outputs:
+    - contextPath: CheckPointDome9.AccessLease.Invitation.length
+      description: The Access Lease invitation length.
+      type: String
+    - contextPath: CheckPointDome9.AccessLease.Invitation.id
+      description: The Access Lease invitation ID.
+      type: String
+    - contextPath: CheckPointDome9.AccessLease.Invitation.created
+      description: The Access Lease invitation created time.
+      type: String
+    - contextPath: CheckPointDome9.AccessLease.Invitation.recipientName
+      description: The Access Lease invitation recipient name.
+      type: String
+  - arguments:
+    - name: invitation_id
+      required: true
+      description: Access Lease invitation.
+    description: Delete an Access Lease invitation.
+    name: dome9-access-lease-invitation-delete
+  - arguments:
+    - description: "Page number of paginated results. Minimum value: 1."
+      name: page
+    - description: Number of items per page.
+      name: page_size
+    - defaultValue: 50
+      description: The maximum number of records to retrieve.
+      name: limit
+    - auto: PREDEFINED
+      description: The findings severities.
+      isArray: true
+      name: severity
+      predefined:
+      - High
+      - Medium
+      - Low
+    - auto: PREDEFINED
+      description: The findings regions.
+      isArray: true
+      name: region
+      predefined:
+      - N. Virginia
+      - Global
+      - Canada Central
+      - Frankfurt
+      - Ireland
+      - London
+      - Mumbai
+      - N. California
+      - Ohio
+      - Oregon
+      - Osaka
+      - Paris
+      - Seoul
+      - Singapore
+      - Stockholm
+      - Sydney
+      - São Paulo
+      - Tokyo
+    description: Search for findings in CloudGuard.
+    name: dome9-findings-search
+    outputs:
+    - contextPath: CheckPointDome9.Findings.id
+      description: The findings ID.
+      type: String
+    - contextPath: CheckPointDome9.Findings.severity
+      description: The severity of the findings.
+      type: String
+    - contextPath: CheckPointDome9.Findings.region
+      description: The findings region.
+      type: String
+    - contextPath: CheckPointDome9.Findings.status
+      description: The status of the findings.
+      type: Number
+    - contextPath: CheckPointDome9.Findings.action
+      description: The action of the findings.
+      type: String
+    - contextPath: CheckPointDome9.Findings.alertType
+      description: The alert type of the findings.
+      type: Number
+  - arguments:
+    - description: The IP list name.
+      name: name
+      required: true
+    - description: The IP list description.
+      name: description
+      required: true
+    - description: Comma-separated list of IP addresses.
+      isArray: true
+      name: ip
+    - description: Comma-separated list of comments for the IP addresses. One comment per IP address.
+      isArray: true
+      name: comment
+    description: Add a new IP list.
+    name: dome9-ip-list-create
+    outputs:
+    - contextPath: CheckPointDome9.IpList.id
+      description: The IP list ID.
+      type: String
+    - contextPath: CheckPointDome9.IpList.name
+      description: The IP list name.
+      type: String
+    - contextPath: CheckPointDome9.IpList.description
+      description: The IP list description.
+      type: String
+    - contextPath: CheckPointDome9.IpList.items
+      description: The IP list items (IP addresses).
+      type: String
+  - arguments:
+    - description: The IP list ID.
+      name: list_id
+      required: true
+    - description: The IP list description.
+      name: description
+    - description: Comma-separated list of IP addresses.
+      isArray: true
+      name: ip
+    - description: Comma-separated list of comments for the IP addresses. One comment per IP address.
+      isArray: true
+      name: comment
+    - description: The command mode. Default mode is add_new_items.
+      name: update_mode
+      auto: PREDEFINED
+      predefined:
+      - add_new_items
+      - replace_old_items
+    description: Update an IP list. This will override the existing IP list.
+    name: dome9-ip-list-update
+  - arguments:
+    - description: The IP list ID to fetch.
+      name: list_id
+    description: Get an IP List by ID.
+    name: dome9-ip-list-get
+    outputs:
+    - contextPath: CheckPointDome9.IpList.id
+      description: The IP list ID.
+      type: String
+    - contextPath: CheckPointDome9.IpList.name
+      description: The IP list name.
+      type: String
+    - contextPath: CheckPointDome9.IpList.description
+      description: The IP list description.
+      type: String
+    - contextPath: CheckPointDome9.IpList.items
+      description: The IP list items (IP addresses).
+      type: String
+  - arguments:
+    - description: The ID of the IP list to delete.
+      name: list_id
+      required: true
+    description: Delete an IP List by ID.
+    name: dome9-ip-list-delete
+  - arguments:
+    - description: "Page number of paginated results. Minimum value: 1."
+      name: page
+    - description: Number of items per page.
+      name: page_size
+    - defaultValue: 50
+      description: The maximum number of records to retrieve.
+      name: limit
+    description: Get all IP addresses metadata.
+    name: dome9-ip-list-metadata-list
+    outputs:
+    - contextPath: CheckPointDome9.IpList.Metadata.id
+      description: The IP address internal ID.
+      type: String
+    - contextPath: CheckPointDome9.IpList.Metadata.cidr
+      description: The IP address CIDR.
+      type: string
+    - contextPath: CheckPointDome9.IpList.Metadata.name
+      description: The IP address name.
+      type: String
+    - contextPath: CheckPointDome9.IpList.Metadata.classification
+      description: The IP address classification.
+      type: String
+  - arguments:
+    - description: The IP address CIDR.
+      name: cidr
+      required: true
+    - description: The IP address name.
+      name: name
+      required: true
+    - auto: PREDEFINED
+      description: The IP address classification.
+      name: classification
+      predefined:
+      - External
+      - Unsafe
+      - Dmz
+      - InternalVpc
+      - InternalDc
+      - NoClassification.
+      required: true
+    description: Add metadata for a new IP address. An IP address metadata must contain the CIDR, name, and classification. Classification can be External, Unsafe, Dmz, InternalVpc, InternalDc, or NoClassification.
+    name: dome9-ip-list-metadata-create
+    outputs:
+    - contextPath: CheckPointDome9.IpList.Metadata.id
+      description: The IP address internal ID.
+      type: String
+    - contextPath: CheckPointDome9.IpList.Metadata.cidr
+      description: The IP address CIDR.
+      type: string
+    - contextPath: CheckPointDome9.IpList.Metadata.name
+      description: The IP address name.
+      type: String
+    - contextPath: CheckPointDome9.IpList.Metadata.classification
+      description: The IP address classification.
+      type: String
+  - arguments:
+    - description: The IP address internal ID.
+      name: list_metadata_id
+      required: true
+    - description: The IP address nName.
+      name: name
+    - auto: PREDEFINED
+      description: The IP address classification.
+      name: classification
+      predefined:
+      - External
+      - Unsafe
+      - Dmz
+      - InternalVpc
+      - InternalDc
+      - NoClassification.
+      required: true
+    description: Update an existing IP address metadata. Classification can only be External, Unsafe, Dmz, InternalVpc, InternalDc, or NoClassification.
+    name: dome9-ip-list-metadata-update
+    outputs:
+    - contextPath: CheckPointDome9.IpList.Metadata.id
+      description: The IP address internal ID.
+      type: String
+    - contextPath: CheckPointDome9.IpList.Metadata.cidr
+      description: The IP address CIDR.
+      type: string
+    - contextPath: CheckPointDome9.IpList.Metadata.name
+      description: The IP address Name.
+      type: String
+    - contextPath: CheckPointDome9.IpList.Metadata.classification
+      description: The IP address classification.
+      type: String
+  - arguments:
+    - description: The account ID.
+      name: account_id
+      required: true
+    - description: The IP address to delete.
+      name: address
+      required: true
+    - description: The subnet mask.
+      name: mask
+      required: true
+    description: Delete an IP address metadata with a specific CIDR.
+    name: dome9-ip-list-metadata-delete
+  - arguments: []
+    description: Get a list of remediations for the account.
+    name: dome9-compliance-remediation-get
+    outputs:
+    - contextPath: CheckPointDome9.ComplianceRemediation.id
+      description: Remediation ID.
+      type: String
+    - contextPath: CheckPointDome9.ComplianceRemediation.ruleLogicHash
+      description: Hash for the rule logic.
+      type: String
+    - contextPath: CheckPointDome9.ComplianceRemediation.ruleName
+      description: Rule name.
+      type: String
+    - contextPath: CheckPointDome9.ComplianceRemediation.ruleId
+      type: String
+      description: Rule ID.
+    - contextPath: CheckPointDome9.ComplianceRemediation.logic
+      description: The GSL logic of the exclusion.
+      type: String
+    - contextPath: CheckPointDome9.ComplianceRemediation.rulesetId
+      description: Ruleset ID.
+      type: Number
+    - contextPath: CheckPointDome9.ComplianceRemediation.platform
+      description: Remediation platform.
+      type: String
+    - contextPath: CheckPointDome9.ComplianceRemediation.cloudBots
+      description: Cloud bots execution expressions.
+      type: String
+  - arguments:
+    - description: Ruleset ID to apply remediation on. Use the dome9-compliance-ruleset-list command to get the Ruleset ID list.
+      name: ruleset_id
+      required: true
+    - description: Comment text.
+      name: comment
+      required: true
+    - description: Cloud bots execution expressions.
+      name: cloudbots
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - ami_set_to_private
+      - acm_delete_certificate
+      - cloudtrail_enable
+      - cloudtrail_enable_log_file_validation
+      - cloudtrail_send_to_cloudwatch
+      - cloudwatch_create_metric_filter
+      - config_enable
+      - ec2_attach_sg
+      - ec2_attach_instance_role
+      - ec2_create_snapshot
+      - ec2_release_eips
+      - ec2_quarantine_instance
+      - ec2_stop_instance
+      - ec2_terminate_instance
+      - ec2_update_instance_role
+      - ec2_service_role_detach_inline_group
+      - iam_detach_policy
+      - iam_group_delete_inline_group
+      - iam_generate_credential_report
+      - iam_role_attach_policy
+      - iam_user_attach_policy
+      - iam_user_deactivate_unused_access_key
+      - iam_user_delete_inline_policies
+      - iam_user_disable_console_password
+      - iam_user_force_password_change
+      - iam_quarantine_role
+      - iam_quarantine_user
+      - iam_role_clone_with_non_enumerable_name
+      - iam_turn_on_password_policy
+      - igw_delete
+      - kms_cmk_enable_key
+      - kms_enable_rotation
+      - lambda_detach_blanket_permissions
+      - lambda_tag
+      - lambda_enable_active_tracing
+      - load_balancer_enable_access_logs
+      - mark_for_stop_ec2_resource
+    - description: Hash for the rule logic. Use the compliance-ruleset-rule-list command to fetch logic hash.
+      name: rule_logic_hash
+      required: true
+    description: Add a new remediation.
+    name: dome9-compliance-remediation-create
+  - arguments:
+    - description: Remediation ID.
+      name: remediation_id
+      required: true
+    - description: Ruleset ID.
+      name: ruleset_id
+      required: true
+    - description: Comment text.
+      name: comment
+      required: true
+    - description: Cloud bots execution expressions.
+      name: cloudbots
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - ami_set_to_private
+      - acm_delete_certificate
+      - cloudtrail_enable
+      - cloudtrail_enable_log_file_validation
+      - cloudtrail_send_to_cloudwatch
+      - cloudwatch_create_metric_filter
+      - config_enable
+      - ec2_attach_sg
+      - ec2_attach_instance_role
+      - ec2_create_snapshot
+      - ec2_release_eips
+      - ec2_quarantine_instance
+      - ec2_stop_instance
+      - ec2_terminate_instance
+      - ec2_update_instance_role
+      - ec2_service_role_detach_inline_group
+      - iam_detach_policy
+      - iam_group_delete_inline_group
+      - iam_generate_credential_report
+      - iam_role_attach_policy
+      - iam_user_attach_policy
+      - iam_user_deactivate_unused_access_key
+      - iam_user_delete_inline_policies
+      - iam_user_disable_console_password
+      - iam_user_force_password_change
+      - iam_quarantine_role
+      - iam_quarantine_user
+      - iam_role_clone_with_non_enumerable_name
+      - iam_turn_on_password_policy
+      - igw_delete
+      - kms_cmk_enable_key
+      - kms_enable_rotation
+      - lambda_detach_blanket_permissions
+      - lambda_tag
+      - lambda_enable_active_tracing
+      - load_balancer_enable_access_logs
+      - mark_for_stop_ec2_resource
+    - description: Hash for the rule logic. Use the compliance-ruleset-rule-list command to fetch logic hash.
+      name: rule_logic_hash
+      required: true
+    description: Update a remediation.
+    name: dome9-compliance-remediation-update
+  - arguments:
+    - description: Remediation ID.
+      name: remediation_id
+      required: true
+    description: Delete a remediation.
+    name: dome9-compliance-remediation-delete
+  - arguments:
+    - description: The Ruleset ID.
+      name: ruleset_id
+    - description: "Page number of paginated results. Minimum value: 1."
+      name: page
+    - description: Number of items per page.
+      name: page_size
+    - defaultValue: 50
+      description: The maximum number of records to retrieve.
+      name: limit
+    description: Get all Rulesets for the account.
+    name: dome9-compliance-ruleset-list
+    outputs:
+    - contextPath: CheckPointDome9.ComplianceRuleset.accountId
+      description: The account ID.
+      type: String
+    - contextPath: CheckPointDome9.ComplianceRuleset.id
+      description: The Ruleset ID.
+      type: Number
+    - contextPath: CheckPointDome9.ComplianceRuleset.name
+      description: The Ruleset name.
+      type: String
+    - contextPath: CheckPointDome9.ComplianceRuleset.description
+      description: The Ruleset description.
+      type: String
+  - arguments:
+    - description: The Ruleset ID.
+      name: rule_id
+      required: true
+    - description: "Page number of paginated results. Minimum value: 1."
+      name: page
+    - description: Number of items per page.
+      name: page_size
+    - defaultValue: 50
+      description: The maximum number of records to retrieve.
+      name: limit
+    description: Get rule details. Get the rule logic hash to create a new remediation.
+    name: dome9-compliance-ruleset-rule-list
+    outputs:
+    - contextPath: CheckPointDome9.ComplianceRuleset.Rule.name
+      description: The rule name.
+      type: String
+    - contextPath: CheckPointDome9.ComplianceRuleset.Rule.severity
+      description: The rule severity.
+      type: String
+    - contextPath: CheckPointDome9.ComplianceRuleset.Rule.logic
+      description: The rule logic.
+      type: Number
+    - contextPath: CheckPointDome9.ComplianceRuleset.Rule.logicHash
+      description: The rule logic hash.
+      type: String
+    - contextPath: CheckPointDome9.ComplianceRuleset.Rule.description
+      description: The rule description.
+      type: String
+  - name: dome9-security-group-instance-attach
+    description: Attach the security group to an AWS EC2 instance.
+    arguments:
+    - name: instance_id
+      description: AWS instance ID.
+      required: true
+    - name: sg_id
+      description: AWS security group internal ID.
+      required: true
+    - name: nic_name
+      description: The instance NIC name. Use the dome9-instance-list command to get this argument.
+      required: true
+  - name: dome9-security-group-service-delete
+    description: Delete a service from an AWS security group.
+    arguments:
+    - name: sg_id
+      description: Security group ID.
+      required: true
+    - name: service_id
+      description: Service ID.
+      required: true
+    outputs: []
+  - name: dome9-security-group-tags-update
+    description: Update the list of tags for an AWS security group.
+    arguments:
+    - name: sg_id
+      description: Security group ID.
+      required: true
+    - name: key
+      description: The key name.
+      required: true
+    - name: value
+      description: The value name.
+      required: true
+    outputs: []
+  - name: dome9-security-group-service-create
+    description: Create a new service (rule) for the security group.
+    arguments:
+    - name: sg_id
+      description: Security group ID.
+      required: true
+    - name: policy_type
+      auto: PREDEFINED
+      description: The service type.
+      required: true
+      predefined:
+      - Inbound
+      - Outbound
+    - name: name
+      description: The service name.
+      required: true
+    - name: protocol_type
+      description: Service protocol type.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - ALL
+      - HOPOPT
+      - ICMP
+      - IGMP
+      - GGP
+      - IPV4
+      - ST
+      - TCP
+      - CBT
+      - EGP
+      - IGP
+      - BBN_RCC_MON
+      - NVP2
+      - PUP
+      - ARGUS
+      - EMCON
+      - XNET
+      - CHAOS
+      - UDP
+      - MUX
+      - DCN_MEAS
+      - HMP
+      - PRM
+      - XNS_IDP
+      - TRUNK1
+      - TRUNK2
+      - LEAF1
+      - LEAF2
+      - RDP
+      - IRTP
+      - ISO_TP4
+      - NETBLT
+      - MFE_NSP
+      - MERIT_INP
+      - DCCP
+      - ThreePC
+      - IDPR
+      - XTP
+      - DDP
+      - IDPR_CMTP
+      - TPplusplus
+      - IL
+      - IPV6
+      - SDRP
+      - IPV6_ROUTE
+      - IPV6_FRAG
+      - IDRP
+      - RSVP
+      - GRE
+      - DSR
+      - BNA
+      - ESP
+      - AH
+      - I_NLSP
+      - SWIPE
+      - NARP
+      - MOBILE
+      - TLSP
+      - SKIP
+      - ICMPV6
+      - IPV6_NONXT
+      - IPV6_OPTS
+      - CFTP
+      - SAT_EXPAK
+      - KRYPTOLAN
+      - RVD
+      - IPPC
+      - SAT_MON
+      - VISA
+      - IPCV
+      - CPNX
+      - CPHB
+      - WSN
+      - PVP
+      - BR_SAT_MON
+      - SUN_ND
+      - WB_MON
+      - WB_EXPAK
+      - ISO_IP
+      - VMTP
+      - SECURE_VMTP
+      - VINES
+      - TTP
+      - NSFNET_IGP
+      - DGP
+      - TCF
+      - EIGRP
+      - OSPFIGP
+      - SPRITE_RPC
+      - LARP
+      - MTP
+      - AX25
+      - IPIP
+      - MICP
+      - SCC_SP
+      - ETHERIP
+      - ENCAP
+      - GMTP
+      - IFMP
+      - PNNI
+      - PIM
+      - ARIS
+      - SCPS
+      - QNX
+      - AN
+      - IPCOMP
+      - SNP
+      - COMPAQ_PEER
+      - IPX_IN_IP
+      - VRRP
+      - PGM
+      - L2TP
+      - DDX
+      - IATP
+      - STP
+      - SRP
+      - UTI
+      - SMP
+      - SM
+      - PTP
+      - ISIS
+      - FIRE
+      - CRTP
+      - CRUDP
+      - SSCOPMCE
+      - IPLT
+      - SPS
+      - PIPE
+      - SCTP
+      - FC
+      - RSVP_E2E_IGNORE
+      - MOBILITY_HEADER
+      - UDPLITE
+      - MPLS_IN_IP
+      - MANET
+      - HIP
+      - SHIM6
+      - WESP
+      - ROHC
+    - name: port
+      description: The service port (indicates a port range).
+      required: true
+    - name: open_for_all
+      description: Indicates if the service is open to all ports.
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+    - name: description
+      description: Service description.
+    - name: data_id
+      description: IP list ID to attach.
+    - name: data_name
+      description: IP list name to attach.
+    - name: scope_type
+      description: Scope type to attach.
+      auto: PREDEFINED
+      predefined:
+      - CIDR
+      - IPList
+    - name: is_valid
+      description: Whether the service is valid.
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+    - name: inbound
+      description: Whether the service is inbound.
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+    - name: icmptype
+      description: ICMP type (when protocol is ICMP).
+      auto: PREDEFINED
+      predefined:
+      - All
+      - EchoReply
+      - DestinationUnreachable
+      - SourceQuench
+      - Redirect
+      - AlternateHostAddress
+      - Echo
+      - RouterAdvertisement
+      - RouterSelection
+      - TimeExceeded
+      - ParameterProblem
+      - Timestamp
+      - TimestampReply
+      - InformationRequest
+      - InformationReply
+      - AddressMaskRequest
+      - AddressMaskReply
+      - Traceroute
+      - DatagramConversionError
+      - MobileHostRedirect
+      - IPv6WhereAreYou
+      - IPv6IAmHere
+      - MobileRegistrationRequest
+      - MobileRegistrationReply
+      - DomainNameRequest
+      - DomainNameReply
+      - SKIP
+      - Photuris
+    - name: icmpv6type
+      description: ICMP V6 type (when protocol is ICMPV6).
+    outputs:
+    - contextPath: CheckPointDome9.SecurityGroup.Service.id
+      description: The security group service ID.
+      type: String
+    - contextPath: CheckPointDome9.SecurityGroup.Service.name
+      description: The security group service name.
+      type: string
+    - contextPath: CheckPointDome9.SecurityGroup.Service.protocolType
+      description: The service protocol type.
+      type: String
+    - contextPath: CheckPointDome9.SecurityGroup.Service.port
+      description: The service port.
+      type: string
+    - contextPath: CheckPointDome9.SecurityGroup.Service.scope
+      description: The service scope type.
+      type: String
+    - contextPath: CheckPointDome9.SecurityGroup.Service.description
+      description: The service description.
+      type: string
+  - name: dome9-security-group-service-update
+    description: Update a service (rule) for an AWS security group. Can update only the port and name.
+    arguments:
+    - name: sg_id
+      description: Security group ID.
+      required: true
+    - name: policy_type
+      auto: PREDEFINED
+      description: The service type.
+      required: true
+      predefined:
+      - Inbound
+      - Outbound
+    - name: service_name
+      description: Service name.
+      required: true
+    - name: protocol_type
+      description: The service protocol type.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - ALL
+      - HOPOPT
+      - ICMP
+      - IGMP
+      - GGP
+      - IPV4
+      - ST
+      - TCP
+      - CBT
+      - EGP
+      - IGP
+      - BBN_RCC_MON
+      - NVP2
+      - PUP
+      - ARGUS
+      - EMCON
+      - XNET
+      - CHAOS
+      - UDP
+      - MUX
+      - DCN_MEAS
+      - HMP
+      - PRM
+      - XNS_IDP
+      - TRUNK1
+      - TRUNK2
+      - LEAF1
+      - LEAF2
+      - RDP
+      - IRTP
+      - ISO_TP4
+      - NETBLT
+      - MFE_NSP
+      - MERIT_INP
+      - DCCP
+      - ThreePC
+      - IDPR
+      - XTP
+      - DDP
+      - IDPR_CMTP
+      - TPplusplus
+      - IL
+      - IPV6
+      - SDRP
+      - IPV6_ROUTE
+      - IPV6_FRAG
+      - IDRP
+      - RSVP
+      - GRE
+      - DSR
+      - BNA
+      - ESP
+      - AH
+      - I_NLSP
+      - SWIPE
+      - NARP
+      - MOBILE
+      - TLSP
+      - SKIP
+      - ICMPV6
+      - IPV6_NONXT
+      - IPV6_OPTS
+      - CFTP
+      - SAT_EXPAK
+      - KRYPTOLAN
+      - RVD
+      - IPPC
+      - SAT_MON
+      - VISA
+      - IPCV
+      - CPNX
+      - CPHB
+      - WSN
+      - PVP
+      - BR_SAT_MON
+      - SUN_ND
+      - WB_MON
+      - WB_EXPAK
+      - ISO_IP
+      - VMTP
+      - SECURE_VMTP
+      - VINES
+      - TTP
+      - NSFNET_IGP
+      - DGP
+      - TCF
+      - EIGRP
+      - OSPFIGP
+      - SPRITE_RPC
+      - LARP
+      - MTP
+      - AX25
+      - IPIP
+      - MICP
+      - SCC_SP
+      - ETHERIP
+      - ENCAP
+      - GMTP
+      - IFMP
+      - PNNI
+      - PIM
+      - ARIS
+      - SCPS
+      - QNX
+      - AN
+      - IPCOMP
+      - SNP
+      - COMPAQ_PEER
+      - IPX_IN_IP
+      - VRRP
+      - PGM
+      - L2TP
+      - DDX
+      - IATP
+      - STP
+      - SRP
+      - UTI
+      - SMP
+      - SM
+      - PTP
+      - ISIS
+      - FIRE
+      - CRTP
+      - CRUDP
+      - SSCOPMCE
+      - IPLT
+      - SPS
+      - PIPE
+      - SCTP
+      - FC
+      - RSVP_E2E_IGNORE
+      - MOBILITY_HEADER
+      - UDPLITE
+      - MPLS_IN_IP
+      - MANET
+      - HIP
+      - SHIM6
+      - WESP
+      - ROHC
+    - name: port
+      description: Service port (indicates a port range).
+      required: true
+    - name: open_for_all
+      description: Whether the service is open to all ports.
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+    - name: description
+      description: Service description.
+    - name: data_id
+      description: IP list ID.
+    - name: data_name
+      description: IP list name.
+    - name: scope_type
+      description: Scope type.
+      auto: PREDEFINED
+      predefined:
+      - CIDR
+      - IPList
+    - name: is_valid
+      description: Whether the service is valid.
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+    - name: inbound
+      description: Whether the service is inbound.
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+    - name: icmptype
+      description: ICMP type (when protocol is ICMP).
+      auto: PREDEFINED
+      predefined:
+      - All
+      - EchoReply
+      - DestinationUnreachable
+      - SourceQuench
+      - Redirect
+      - AlternateHostAddress
+      - Echo
+      - RouterAdvertisement
+      - RouterSelection
+      - TimeExceeded
+      - ParameterProblem
+      - Timestamp
+      - TimestampReply
+      - InformationRequest
+      - InformationReply
+      - AddressMaskRequest
+      - AddressMaskReply
+      - Traceroute
+      - DatagramConversionError
+      - MobileHostRedirect
+      - IPv6WhereAreYou
+      - IPv6IAmHere
+      - MobileRegistrationRequest
+      - MobileRegistrationReply
+      - DomainNameRequest
+      - DomainNameReply
+      - SKIP
+      - Photuris
+    - name: icmpv6type
+      description: ICMP V6 type (when protocol is ICMPV6).
+    outputs:
+    - contextPath: CheckPointDome9.SecurityGroup.Service.id
+      description: The security group service ID.
+      type: String
+    - contextPath: CheckPointDome9.SecurityGroup.Service.name
+      description: The security group service name.
+      type: string
+    - contextPath: CheckPointDome9.SecurityGroup.Service.protocolType
+      description: The service protocol type.
+      type: String
+    - contextPath: CheckPointDome9.SecurityGroup.Service.port
+      description: The service port.
+      type: string
+    - contextPath: CheckPointDome9.SecurityGroup.Service.scopeType
+      description: The service scope type.
+      type: String
+    - contextPath: CheckPointDome9.SecurityGroup.Service.description
+      description: The service description.
+      type: string
+  - name: dome9-security-group-instance-detach
+    description: Detach the security group from an AWS EC2 Instance.
+    arguments:
+    - name: instance_id
+      description: AWS instance ID.
+      required: true
+    - name: sg_id
+      description: AWS security group internal ID.
+      required: true
+    - name: nic_name
+      description: The instance NIC name. Use the dome9-instance-list command to get this argument.
+      required: true
+    outputs: []
+  - name: dome9-instance-list
+    description: Fetch an AWS EC2 instance.
+    arguments:
+    - name: instance_id
+      description: AWS instance ID.
+    outputs:
+    - contextPath: CheckPointDome9.Instance.externalId
+      description: The instance external ID.
+      type: String
+    - contextPath: CheckPointDome9.Instance.region
+      description: The instance region.
+      type: string
+    - contextPath: CheckPointDome9.Instance.nics
+      description: The instance NIC names.
+      type: String
+    - contextPath: CheckPointDome9.Instance.name
+      description: The instance name.
+      type: string
+  - name: dome9-security-group-protection-mode-update
+    description: Change the protection mode for an AWS security group (FullManage or ReadOnly).
+    arguments:
+    - auto: PREDEFINED
+      name: protection_mode
+      description: The protection mode to update.
+      required: true
+      predefined:
+      - FullManage
+      - ReadOnly
+    - name: sg_id
+      description: Security group ID.
+      required: true
+    outputs: []
+  - name: dome9-cloud-accounts-list
+    description: Get the cloud account list.
+    arguments:
+    - name: account_id
+      description: account ID.
+    - description: "Page number of paginated results. Minimum value: 1."
+      name: page
+    - description: Number of items per page.
+      name: page_size
+    - defaultValue: 50
+      description: The maximum number of records to retrieve.
+      name: limit
+    - description: The cloud account ID.
+      type: String
+      name: cloud_account_od
+  - name: dome9-security-group-ip-list-details-get
+    description: Get AWS cloud accounts for a specific security group and region and check if there is an IP list to attach to a security group.
+    arguments:
+    - description: "Page number of paginated results. Minimum value: 1."
+      name: page
+    - description: Number of items per page.
+      name: page_size
+    - defaultValue: 50
+      description: The maximum number of records to retrieve.
+      name: limit
+    - name: sg_id
+      description: Security group ID.
+    outputs:
+    - contextPath: CheckPointDome9.SecurityGroup.security_group_id
+      description: The security group ID.
+      type: String
+  - name: dome9-security-group-list
+    description: Get all security group entities.
+    arguments:
+    - description: "Page number of paginated results. Minimum value: 1."
+      name: page
+    - description: Number of items per page.
+      name: page_size
+    - defaultValue: 50
+      description: The maximum number of records to retrieve.
+      name: limit
+    outputs:
+    - contextPath: CheckPointDome9.SecurityGroup.security_group_id
+      description: The security group ID.
+      type: String
+  - arguments:
+    - description: "Page number of paginated results. Minimum value: 1."
+      name: page
+    - description: Number of items per page.
+      name: page_size
+    - defaultValue: 50
+      description: The maximum number of records to retrieve.
+      name: limit
+    description: Get top results for each service.
+    name: dome9-global-search-get
+    outputs:
+    - contextPath: CheckPointDome9.GlobalSearch.Alert.id
+      description: The global search alert ID.
+      type: String
+    - contextPath: CheckPointDome9.GlobalSearch.Alert.type
+      description: The global search alert type.
+      type: String
+    - contextPath: CheckPointDome9.GlobalSearch.Alert.severity
+      description: The global search alert severity.
+      type: String
+  - arguments:
+    - description: "Page number of paginated results. Minimum value: 1."
+      name: page
+    - description: Number of items per page.
+      name: page_size
+    - defaultValue: 50
+      description: The maximum number of records to retrieve.
+      name: limit
+    description: Get CloudTrail events for a Dome9 user.
+    name: dome9-cloud-trail-get
+    outputs:
+    - contextPath: CheckPointDome9.CloudTrail.id
+      description: The CloudTrail ID.
+      type: String
+    - contextPath: CheckPointDome9.CloudTrail.name
+      description: The CloudTrail name.
+      type: String
+    - contextPath: CheckPointDome9.CloudTrail.trailArn
+      description: The CloudTrail ARN.
+      type: String
+    - contextPath: CheckPointDome9.CloudTrail.accountId
+      description: The CloudTrail account ID.
+      type: String
+  - arguments:
+    - description: "Page number of paginated results. Minimum value: 1."
+      name: page
+    - description: Number of items per page.
+      name: page_size
+    - defaultValue: 50
+      description: The maximum number of records to retrieve.
+      name: limit
+    description: Get organizational unit view entities.
+    name: dome9-organizational-unit-view-get
+    outputs:
+    - contextPath: CheckPointDome9.OrganizationalUnitView.id
+      description: The organizational unit ID.
+      type: String
+    - contextPath: CheckPointDome9.OrganizationalUnitView.name
+      description: The organizational unit name.
+      type: String
+    - contextPath: CheckPointDome9.OrganizationalUnitView.path
+      description: The organizational unit path.
+      type: String
+    - contextPath: CheckPointDome9.OrganizationalUnitView.children
+      description: The organizational unit children.
+      type: String
+  - arguments:
+    - description: "Page number of paginated results. Minimum value: 1."
+      name: page
+    - description: Number of items per page.
+      name: page_size
+    - defaultValue: 50
+      description: The maximum number of records to retrieve.
+      name: limit
+    description: Get flat organizational units.
+    name: dome9-organizational-unit-flat-get
+    outputs:
+    - contextPath: CheckPointDome9.OrganizationalUnitFlat.id
+      description: The organizational unit ID.
+      type: String
+    - contextPath: CheckPointDome9.OrganizationalUnitFlat.name
+      description: The organizational unit name.
+      type: String
+    - contextPath: CheckPointDome9.OrganizationalUnitFlat.path
+      description: The organizational unit path.
+      type: String
+    - contextPath: CheckPointDome9.OrganizationalUnitFlat.parentId
+      description: The organizational unit parent ID.
+      type: String
+  - arguments:
+    - description: "Page number of paginated results. Minimum value: 1."
+      name: page
+    - description: Number of items per page.
+      name: page_size
+    - defaultValue: 50
+      description: The maximum number of records to retrieve.
+      name: limit
+    - description: The organizational unit ID.
+      name: unit_id
+    description: Get an organizational unit by its ID.
+    name: dome9-organizational-unit-get
+    outputs:
+    - contextPath: CheckPointDome9.OrganizationalUnit.id
+      description: The organizational unit ID.
+      type: String
+    - contextPath: CheckPointDome9.OrganizationalUnit.name
+      description: The organizational unit name.
+      type: String
+    - contextPath: CheckPointDome9.OrganizationalUnit.path
+      description: The organizational unit path.
+      type: String
+    - contextPath: CheckPointDome9.OrganizationalUnit.parentId
+      description: The organizational unit parent ID.
+      type: String
+  - arguments:
+    - description: The findings ID.
+      name: finding_id
+      required: true
+    description: Get a findings by its ID.
+    name: dome9-findings-get
+    outputs:
+    - contextPath: CheckPointDome9.Finding.id
+      description: The findings ID.
+      type: String
+    - contextPath: CheckPointDome9.Finding.bundleId
+      description: The findings bundle ID.
+      type: String
+    - contextPath: CheckPointDome9.Finding.severity
+      description: The findings severity.
+      type: String
+    - contextPath: CheckPointDome9.Finding.description
+      description: The findings description.
+      type: String
+    - contextPath: CheckPointDome9.Finding.remediation
+      description: The findings remediation.
+      type: String
+    - contextPath: CheckPointDome9.Finding.region
+      description: The findings region.
+      type: String
+    - contextPath: CheckPointDome9.Finding.cloudAccountId
+      description: The findings cloud account ID.
+      type: String
+  - arguments:
+    - description: "Page number of paginated results. Minimum value: 1."
+      name: page
+    - description: Number of items per page.
+      name: page_size
+    - defaultValue: 50
+      description: The maximum number of records to retrieve.
+      name: limit
+    - description: The bundle ID. Use the dome9-compliance-ruleset-list command to get the bundle ID list.
+      name: bundle_id
+      required: true
+    - description: MD5 hash of the rule GSL string. Use the compliance-ruleset-rule-list command to fetch the logic hash.
+      name: rule_logic_hash
+      required: true
+    description: Get the findings for a specific rule in a bundle, for all of the user's accounts.
+    name: dome9-findings-bundle-get
+    outputs:
+    - contextPath: CheckPointDome9.FindingsBundle.id
+      description: The CloudTrail ID.
+      type: String
+    - contextPath: CheckPointDome9.FindingsBundle.severity
+      description: The CloudTrail name.
+      type: String
+    - contextPath: CheckPointDome9.FindingsBundle.remediation
+      description: The Cloud Trail ARN.
+      type: String
+    - contextPath: CheckPointDome9.FindingsBundle.accountId
+      description: The CloudTrail account ID.
+      type: String
+    - contextPath: CheckPointDome9.FindingsBundle.description
+      description: The CloudTrail ARN.
+      type: String
+    - contextPath: CheckPointDome9.FindingsBundle.region
+      description: The CloudTrail account ID.
+      type: String
+  dockerimage: demisto/python3:3.10.12.66339
+  isfetch: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 6.2.0
+tests:
+- Dome9

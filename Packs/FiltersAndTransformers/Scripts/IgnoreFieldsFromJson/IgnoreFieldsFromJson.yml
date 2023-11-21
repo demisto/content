@@ -1,0 +1,25 @@
+args:
+- description: The primary value of the JSON object.
+  name: value
+- description: The value of the JSON object.
+  name: json_object
+- description: Comma-separated list of fields/keys (without any whitespaces) that needs to be ignored from the JSON object.
+  name: fields
+comment: Removed selected fields from the JSON object.
+commonfields:
+  id: IgnoreFieldsFromJson
+  version: -1
+dockerimage: demisto/python3:3.10.12.63474
+enabled: true
+name: IgnoreFieldsFromJson
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- transformer
+- General
+type: python
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,69 @@
+commonfields:
+  id: RegexExtractAll
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+name: RegexExtractAll
+script: ''
+type: python
+tags:
+- transformer
+- string
+comment: |-
+  Extraction of all matches from a specified regular expression pattern from a provided string.  Returns an array of results.  This differs from RegexGroups in several ways:
+
+  * It returns all matches of the specified pattern, not just specific groups.  This is useful for extracting things using a pattern where the content of the source string is indeterminate, such as extracting all email addresses.
+  * Some "convenience" arguments have been added to enhance usability: multi-line, ignore_case, period_matches_newline
+  * Added a new argument, "error_if_no_match".  The script will not ordinarily throw an error if a match is not found but if not using as a transformer within a playbook, it may, in certain limited circumstances, be desirable to throw an error if the expression doesn't match.
+  * It uses the 'regex'  library, which supports more some more advanced regex functionality than the standard 're' library.  For more info, see https://pypi.org/project/regex/.
+enabled: true
+args:
+- name: value
+  required: true
+  description: Text to match against, e.g., The quick brown fox.
+- name: regex
+  required: true
+  description: Regex pattern to search (in Python), e.g., (The)\s(quick).*(fox).
+- name: multi_line
+  auto: PREDEFINED
+  predefined:
+  - "false"
+  - "true"
+  description: Process value in multiline mode.  See more information on re.MULTILINE, see https://docs.python.org/3/library/re.html.
+  defaultValue: "false"
+- name: ignore_case
+  auto: PREDEFINED
+  predefined:
+  - "false"
+  - "true"
+  description: Whether character matching will be case-insensitive. Default is "false".
+  defaultValue: "false"
+- name: period_matches_newline
+  auto: PREDEFINED
+  predefined:
+  - "false"
+  - "true"
+  description: Whether to make the '.' character also match a new line. Default is "false".
+  defaultValue: "false"
+- name: error_if_no_match
+  auto: PREDEFINED
+  predefined:
+  - "false"
+  - "true"
+  description: Only set to 'true' if used in a playbook task and you want that failure will return an error.
+  defaultValue: "false"
+- name: unpack_matches
+  auto: PREDEFINED
+  predefined:
+  - "false"
+  - "true"
+  description: Whether to unpack the tuple values of results. Default is "false".
+  defaultValue: "false"
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.10.12.63474
+runas: DBotWeakRole
+tests:
+- No test - unit test
+fromversion: 5.0.0

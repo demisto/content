@@ -1,0 +1,65 @@
+commonfields:
+  id: SetWithTemplate
+  version: -1
+name: SetWithTemplate
+script: ''
+type: python
+tags:
+- Utility
+comment: Set a value built by a template in context under the key you entered.
+enabled: true
+args:
+- name: key
+  description: The key to set. Can be a full path such as "Key.ID". If using append=true can also use a DT selector such as "Data(val.ID == obj.ID)".
+- name: template
+  description: The template text which can include DT expressions such as ${value}.
+- name: template_type
+  auto: PREDEFINED
+  predefined:
+  - raw
+  - json
+  description: The template type
+  defaultValue: raw
+- name: append
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: If false, the context key will be overwritten. If set to true, the script will be appended to the existing context key.
+  defaultValue: "false"
+- name: stringify
+  auto: PREDEFINED
+  predefined:
+  - "noop"
+  - "all"
+  - "true"
+  - "false"
+  description: Whether to save the argument as a string.
+  defaultValue: "noop"
+- name: force
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Whether to force the creation of the context.
+  defaultValue: "false"
+- name: context
+  description: The context data which overwrites the Demisto context.
+  type: unknown
+- name: variable_markers
+  description: The pair of start and end markers to bracket a variable name.
+  defaultValue: ${,}
+- name: keep_symbol_to_null
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Set to true to not replace a value if the variable is null, otherwise false.
+  defaultValue: "false"
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.10.12.63474
+runas: DBotWeakRole
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

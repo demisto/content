@@ -16,7 +16,7 @@ def test_fetch_indicators(requests_mock):
     from SecneurXThreatFeeds import Client, fetchThreatFeeds
 
     mock_response = util_load_json('test_data/fetch_indicators.json')
-    requests_mock.get(f'{BASE_URL}/getfeeds', json={'objects': [i['rawJson'] for i in mock_response]})
+    requests_mock.get(f'{BASE_URL}/getfeeds', json=mock_response)
     client = Client(
         base_url=BASE_URL,
         verify=False,
@@ -25,9 +25,9 @@ def test_fetch_indicators(requests_mock):
     )
 
     indicators = fetchThreatFeeds(client, None)
-    assert len(indicators) == len(mock_response)
-    assert indicators[4]['fields']['indicatoridentification'] == mock_response[4]['fields']['indicatoridentification']
-    assert indicators[4]['rawJson']['pattern'] == mock_response[4]['rawJson']['pattern']
+    assert len(indicators) == 4
+    assert indicators[1]['fields']['indicatoridentification'] == mock_response['objects'][1]['id']
+    assert indicators[1]['rawJson']['pattern'] == mock_response['objects'][1]['pattern']
 
 
 def test_get_list_days():
@@ -44,22 +44,17 @@ def test_get_list_days():
 def test_json_parse():
     from SecneurXThreatFeeds import parseIndicators
     mock_response = util_load_json('test_data/fetch_indicators.json')
-    feedList = []
-    feedList.append(mock_response[0]['rawJson'])
-    feedList.append(mock_response[1]['rawJson'])
-    feedJson = {}
-    feedJson['objects'] = feedList
-    indicatorJson = parseIndicators(feedJson)
-    assert len(indicatorJson) == 2
-    assert indicatorJson[0]['fields']['indicatoridentification'] == mock_response[0]['fields']['indicatoridentification']
-    assert indicatorJson[0]['rawJson']['pattern'] == mock_response[0]['rawJson']['pattern']
+    indicatorJson = parseIndicators(mock_response)
+    assert len(indicatorJson) == 4
+    assert indicatorJson[0]['fields']['indicatoridentification'] == mock_response['objects'][0]['id']
+    assert indicatorJson[0]['value'] == mock_response['objects'][0]['name']
 
 
 def test_module_connection(requests_mock):
     from SecneurXThreatFeeds import Client, test_module
 
     mock_response = util_load_json('test_data/fetch_indicators.json')
-    requests_mock.get(f'{BASE_URL}/getfeeds', json={'objects': [i['rawJson'] for i in mock_response[:2]]})
+    requests_mock.get(f'{BASE_URL}/getfeeds', json=mock_response)
     client = Client(
         base_url=BASE_URL,
         verify=False,
@@ -106,11 +101,3 @@ def test_create_indicators(requests_mock):
     dateList = [None]
     result = createIndicatorsInDemisto(client, dateList, True)
     assert result is False
-
-
-def test_indicators_json_format():
-    from SecneurXThreatFeeds import checkAllFieldsInList
-    mock_response = util_load_json('test_data/fetch_indicators.json')
-    feedList = [mock_response[0]]
-    keyList, valueList = checkAllFieldsInList(feedList)
-    assert len(keyList) == 4

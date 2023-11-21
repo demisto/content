@@ -1,11 +1,13 @@
 import copy
 from itertools import product
 from json import JSONDecodeError
-from typing import Tuple, List, Dict, Callable
+from typing import Any
+from collections.abc import Callable
 from CommonServerPython import *
 import urllib3
 from dateutil.parser import parse
 from requests import Response
+from MicrosoftApiModule import *  # noqa: E402
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -61,11 +63,18 @@ HEALTH_STATUS_TO_ENDPOINT_STATUS = {
     "Unknown": None,
 }
 
-SECURITY_GCC_RESOURCE = 'https://api-gcc-securitycenter.microsoft.us'
-SECURITY_CENTER_RESOURCE = 'https://api.securitycenter.microsoft.com'
-SECURITY_CENTER_INDICATOR_ENDPOINT = 'https://api.securitycenter.microsoft.com/api/indicators'
-SECURITY_CENTER_INDICATOR_ENDPOINT_BATCH = 'https://api.securitycenter.microsoft.com/api/indicators/import'
-GRAPH_INDICATOR_ENDPOINT = 'https://graph.microsoft.com/beta/security/tiIndicators'
+DETECTION_SOURCE_TO_API_VALUE = {  # https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/alerts-queue
+    "Third-party sensors": "ThirdPartySensors",
+    "Antivirus": "WindowsDefenderAv",
+    "Automated investigation": "AutomatedInvestigation",
+    "Custom detection": "CustomDetection",
+    "Custom TI": "CustomerTI",
+    "EDR": "WindowsDefenderAtp",
+    "Microsoft 365 Defender": "MTP",
+    "Microsoft Defender for Office 365": "OfficeATP",
+    "Microsoft Defender Experts": "ThreatExperts",
+    "SmartScreen": "WindowsDefenderSmartScreen",
+}
 
 INTEGRATION_NAME = 'Microsoft Defender ATP'
 
@@ -78,7 +87,7 @@ class HuntingQueryBuilder:
                    ' or "device_id".'
 
     @staticmethod
-    def get_time_range_query(time_range: Optional[str]) -> str:
+    def get_time_range_query(time_range: str | None) -> str:
         """
         Given a human readable time_range returns the time_range query
         """
@@ -103,7 +112,7 @@ class HuntingQueryBuilder:
         return f'{query[:insert_pos - 1]} | where {time_range_query} {query[insert_pos:]}'
 
     @staticmethod
-    def get_filter_values(list_values: Optional[Union[list, str]]) -> Optional[str]:
+    def get_filter_values(list_values: list | str | None) -> str | None:
         """
         creates a string of CSV values wrapped by parenthesis and brackets
         """
@@ -160,13 +169,13 @@ class HuntingQueryBuilder:
                      limit: str,
                      query_operation: str,
                      page: str,
-                     device_name: Optional[str] = None,
-                     file_name: Optional[str] = None,
-                     sha1: Optional[str] = None,
-                     sha256: Optional[str] = None,
-                     md5: Optional[str] = None,
-                     device_id: Optional[str] = None,
-                     remote_ip_count: Optional[str] = None,
+                     device_name: str | None = None,
+                     file_name: str | None = None,
+                     sha1: str | None = None,
+                     sha256: str | None = None,
+                     md5: str | None = None,
+                     device_id: str | None = None,
+                     remote_ip_count: str | None = None,
                      ):
             if not (device_name or file_name or sha1 or sha256 or md5 or device_id):
                 raise DemistoException(HuntingQueryBuilder.ANY_ARGS_ERR)
@@ -288,13 +297,13 @@ class HuntingQueryBuilder:
                      query_operation: str,
                      query_purpose: str,
                      page: str,
-                     device_name: Optional[str] = None,
-                     file_name: Optional[str] = None,
-                     sha1: Optional[str] = None,
-                     sha256: Optional[str] = None,
-                     md5: Optional[str] = None,
-                     device_id: Optional[str] = None,
-                     process_cmd: Optional[str] = None,
+                     device_name: str | None = None,
+                     file_name: str | None = None,
+                     sha1: str | None = None,
+                     sha256: str | None = None,
+                     md5: str | None = None,
+                     device_id: str | None = None,
+                     process_cmd: str | None = None,
                      ):
             if query_purpose == 'registry_entry' and not process_cmd:
                 raise DemistoException('Cannot initiate "registry_entry" query without "process_cmd" argument.')
@@ -514,12 +523,12 @@ class HuntingQueryBuilder:
                      limit: str,
                      query_operation: str,
                      page: str,
-                     device_name: Optional[str] = None,
-                     file_name: Optional[str] = None,
-                     sha1: Optional[str] = None,
-                     sha256: Optional[str] = None,
-                     md5: Optional[str] = None,
-                     device_id: Optional[str] = None,
+                     device_name: str | None = None,
+                     file_name: str | None = None,
+                     sha1: str | None = None,
+                     sha256: str | None = None,
+                     md5: str | None = None,
+                     device_id: str | None = None,
                      ):
             if not (device_name or file_name or sha1 or sha256 or md5 or device_id):
                 raise DemistoException(
@@ -571,13 +580,13 @@ class HuntingQueryBuilder:
                      limit: str,
                      query_operation: str,
                      page: str,
-                     device_name: Optional[str] = None,
-                     file_name: Optional[str] = None,
-                     sha1: Optional[str] = None,
-                     sha256: Optional[str] = None,
-                     md5: Optional[str] = None,
-                     device_id: Optional[str] = None,
-                     query_purpose: Optional[str] = None,
+                     device_name: str | None = None,
+                     file_name: str | None = None,
+                     sha1: str | None = None,
+                     sha256: str | None = None,
+                     md5: str | None = None,
+                     device_id: str | None = None,
+                     query_purpose: str | None = None,
                      ):
             if query_purpose == 'process_excecution_powershell':
                 if not (file_name or sha1 or sha256 or md5):
@@ -585,9 +594,9 @@ class HuntingQueryBuilder:
                 if not (device_id or device_name):
                     raise DemistoException(HuntingQueryBuilder.DEVICES_ARGS_ERR)
 
-            elif query_purpose != 'powershell_execution_unsigned_files':
-                if not (device_name or file_name or sha1 or sha256 or md5 or device_id):
-                    raise DemistoException(HuntingQueryBuilder.ANY_ARGS_ERR)
+            elif query_purpose != 'powershell_execution_unsigned_files' \
+                    and not (device_name or file_name or sha1 or sha256 or md5 or device_id):
+                raise DemistoException(HuntingQueryBuilder.ANY_ARGS_ERR)
 
             self._limit = limit * (int(page))
             self._query_operation = query_operation
@@ -719,12 +728,12 @@ class HuntingQueryBuilder:
                      query_operation: str,
                      query_purpose: str,
                      page: str,
-                     device_name: Optional[str] = None,
-                     file_name: Optional[str] = None,
-                     sha1: Optional[str] = None,
-                     sha256: Optional[str] = None,
-                     md5: Optional[str] = None,
-                     device_id: Optional[str] = None,
+                     device_name: str | None = None,
+                     file_name: str | None = None,
+                     sha1: str | None = None,
+                     sha256: str | None = None,
+                     md5: str | None = None,
+                     device_id: str | None = None,
                      ):
             if query_purpose == 'encoded_commands':
                 if not (device_id or device_name):
@@ -796,8 +805,8 @@ class HuntingQueryBuilder:
                      limit: str,
                      query_operation: str,
                      page: str,
-                     device_name: Optional[str] = None,
-                     device_id: Optional[str] = None,
+                     device_name: str | None = None,
+                     device_id: str | None = None,
                      ):
             if not (device_name or device_id):
                 raise DemistoException(HuntingQueryBuilder.DEVICES_ARGS_ERR)
@@ -827,8 +836,8 @@ class HuntingQueryBuilder:
                      limit: str,
                      query_operation: str,
                      page: str,
-                     device_name: Optional[str] = None,
-                     device_id: Optional[str] = None,
+                     device_name: str | None = None,
+                     device_id: str | None = None,
                      ):
             self._limit = limit * (int(page))
             self._query_operation = query_operation
@@ -870,13 +879,13 @@ class HuntingQueryBuilder:
                      query_operation: str,
                      query_purpose: str,
                      page: str,
-                     device_name: Optional[str] = None,
-                     file_name: Optional[str] = None,
-                     sha1: Optional[str] = None,
-                     sha256: Optional[str] = None,
-                     md5: Optional[str] = None,
-                     device_id: Optional[str] = None,
-                     username: Optional[str] = None,
+                     device_name: str | None = None,
+                     file_name: str | None = None,
+                     sha1: str | None = None,
+                     sha256: str | None = None,
+                     md5: str | None = None,
+                     device_id: str | None = None,
+                     username: str | None = None,
                      ):
             if query_purpose in ('compromised_information', 'connected_devices', 'action_types', 'common_files'):
                 if not username:
@@ -974,7 +983,7 @@ class HuntingQueryBuilder:
             return query
 
 
-def file_standard(observable: Dict) -> Common.File:
+def file_standard(observable: dict) -> Common.File:
     """Gets a file observable and returns a context key
 
     Args:
@@ -990,19 +999,18 @@ def file_standard(observable: Dict) -> Common.File:
         path=observable.get('filePath')
     )
     hash_type = observable.get('fileHashType', '').lower()
-    if hash_type:
-        if hash_type in INDICATOR_TYPE_TO_CONTEXT_KEY:
-            hash_value = observable.get('fileHashValue')
-            if hash_type == 'md5':
-                file_obj.md5 = hash_value
-            elif hash_type == 'sha256':
-                file_obj.sha256 = hash_value
-            elif hash_type == 'sha1':
-                file_obj.sha1 = hash_value
+    if hash_type and hash_type in INDICATOR_TYPE_TO_CONTEXT_KEY:
+        hash_value = observable.get('fileHashValue')
+        if hash_type == 'md5':
+            file_obj.md5 = hash_value
+        elif hash_type == 'sha256':
+            file_obj.sha256 = hash_value
+        elif hash_type == 'sha1':
+            file_obj.sha1 = hash_value
     return file_obj
 
 
-def network_standard(observable: Dict) -> Optional[Union[Common.Domain, Common.IP, Common.URL]]:
+def network_standard(observable: dict) -> Common.Domain | Common.IP | Common.URL | None:
     """Gets a network observable and returns a context key
 
     Args:
@@ -1023,19 +1031,19 @@ def network_standard(observable: Dict) -> Optional[Union[Common.Domain, Common.I
     return None
 
 
-def standard_output(observable: Dict) -> Optional[Union[Common.Domain, Common.IP, Common.URL, Common.File]]:
+def standard_output(observable: dict) -> Common.Domain | Common.IP | Common.URL | Common.File | None:
     """Gets an observable and returns a context standard object.
 
     Args:
         observable: File or network observable from API.
 
     Links:
-        File observable: https://docs.microsoft.com/en-us/graph/api/resources/tiindicator?view=graph-rest-beta#indicator-observables---file  # noqa: E501
-        Network observable: https://docs.microsoft.com/en-us/graph/api/resources/tiindicator?view=graph-rest-beta#indicator-observables---network  # noqa: E501
+        File observable: https://docs.microsoft.com/en-us/graph/api/resources/tiindicator?view=graph-rest-beta#indicator-observables---file
+        Network observable: https://docs.microsoft.com/en-us/graph/api/resources/tiindicator?view=graph-rest-beta#indicator-observables---network
 
     Returns:
         File, IP, URL or Domain object. If observable is not supported, will return None.
-    """
+    """  # noqa: E501
     file_keys = {
         'fileHashType', 'fileHashValue', 'fileName', 'filePath', 'fileSize', 'fileType'
     }
@@ -1046,7 +1054,7 @@ def standard_output(observable: Dict) -> Optional[Union[Common.Domain, Common.IP
     return network_standard(observable)
 
 
-def build_std_output(indicators: Union[Dict, List]) -> Dict:
+def build_std_output(indicators: dict | list) -> dict:
     """
 
     Args:
@@ -1057,7 +1065,7 @@ def build_std_output(indicators: Union[Dict, List]) -> Dict:
     """
     if isinstance(indicators, dict):
         indicators = [indicators]
-    outputs = dict()
+    outputs = {}
     for indicator in indicators:
         output = standard_output(indicator)
         if output:
@@ -1107,28 +1115,76 @@ class MsClient:
 
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
                  alert_severities_to_fetch, alert_status_to_fetch, alert_time_to_fetch, max_fetch,
-                 is_gcc: bool, certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None):
-        self.ms_client = MicrosoftClient(
-            tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
-            base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed,
-            scope=Scopes.security_center_apt_service, certificate_thumbprint=certificate_thumbprint,
-            private_key=private_key)
+                 auth_type, endpoint_type, redirect_uri, auth_code, certificate_thumbprint: str | None = None,
+                 private_key: str | None = None, managed_identities_client_id: str | None = None,
+                 alert_detectionsource_to_fetch: str | None = None):
+
+        self.endpoint_type = endpoint_type
+        if auth_type == 'Authorization Code':
+            token_retrieval_url = urljoin(MICROSOFT_DEFENDER_FOR_ENDPOINT_TOKEN_RETRIVAL_ENDPOINTS.get(endpoint_type),
+                                          '/organizations/oauth2/v2.0/token')
+            grant_type = AUTHORIZATION_CODE
+        else:
+            token_retrieval_url = None
+            grant_type = None
+
+        client_args = assign_params(
+            self_deployed=self_deployed,
+            auth_id=auth_id,
+            token_retrieval_url=token_retrieval_url,
+            grant_type=grant_type,
+            base_url=base_url,
+            verify=verify,
+            proxy=proxy,
+            scope=urljoin(MICROSOFT_DEFENDER_FOR_ENDPOINT_APT_SERVICE_ENDPOINTS[self.endpoint_type],
+                          "/windowsatpservice/.default"),
+            ok_codes=(200, 201, 202, 204),
+            redirect_uri=redirect_uri,
+            auth_code=auth_code,
+            tenant_id=tenant_id,
+            app_name=app_name,
+            enc_key=enc_key,
+            certificate_thumbprint=certificate_thumbprint,
+            private_key=private_key,
+            retry_on_rate_limit=True,
+            managed_identities_client_id=managed_identities_client_id,
+            managed_identities_resource_uri=MICROSOFT_DEFENDER_FOR_ENDPOINT_API[self.endpoint_type],
+            command_prefix="microsoft-atp"
+        )
+        self.ms_client = MicrosoftClient(**client_args)
+        self.alert_detectionsource_to_fetch = alert_detectionsource_to_fetch
         self.alert_severities_to_fetch = alert_severities_to_fetch
         self.alert_status_to_fetch = alert_status_to_fetch
         self.alert_time_to_fetch = alert_time_to_fetch
         self.max_alerts_to_fetch = max_fetch
-        self.is_gcc = is_gcc
 
     def indicators_http_request(self, *args, **kwargs):
         """ Wraps the ms_client.http_request with scope=Scopes.graph
             should_use_security_center (bool): whether to use the security center's scope and resource
         """
         if kwargs.pop('should_use_security_center', None):
-            kwargs['scope'] = Scopes.security_center_apt_service
-            kwargs['resource'] = {True: SECURITY_GCC_RESOURCE, False: SECURITY_CENTER_RESOURCE}[self.is_gcc]
+            kwargs['scope'] = urljoin(MICROSOFT_DEFENDER_FOR_ENDPOINT_APT_SERVICE_ENDPOINTS[self.endpoint_type],
+                                      "/windowsatpservice/.default")
+            kwargs['resource'] = MICROSOFT_DEFENDER_FOR_ENDPOINT_API[self.endpoint_type]
         else:
-            kwargs['scope'] = "graph" if self.ms_client.auth_type == OPROXY_AUTH_TYPE else Scopes.graph
+            kwargs['scope'] = self.get_graph_scope()
         return self.ms_client.http_request(*args, **kwargs)
+
+    def get_graph_scope(self):
+        return "graph" if self.ms_client.auth_type == OPROXY_AUTH_TYPE else \
+            urljoin(MICROSOFT_DEFENDER_FOR_ENDPOINT_GRAPH_ENDPOINTS[self.endpoint_type], "/.default")
+
+    def get_graph_indicator_endpoint(self):
+        return urljoin(MICROSOFT_DEFENDER_FOR_ENDPOINT_GRAPH_ENDPOINTS[self.endpoint_type],
+                       "/beta/security/tiIndicators")
+
+    def get_security_center_indicator_endpoint(self):
+        return urljoin(MICROSOFT_DEFENDER_FOR_ENDPOINT_API[self.endpoint_type],
+                       '/api/indicators')
+
+    def get_security_center_indicator_endpoint_batch(self):
+        return urljoin(MICROSOFT_DEFENDER_FOR_ENDPOINT_API[self.endpoint_type],
+                       '/api/indicators/import')
 
     def offboard_machine(self, machine_id, comment):
         """ Offboard machine from defender.
@@ -1187,14 +1243,24 @@ class MsClient:
         }
         return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data)
 
-    def get_machines(self, filter_req):
+    def get_machines(self, filter_req, page_size='', page_num=''):
         """Retrieves a collection of Machines that have communicated with Microsoft Defender ATP cloud on the last 30 days.
 
         Returns:
             dict. Machine's info
         """
         cmd_url = '/machines'
-        params = {'$filter': filter_req} if filter_req else None
+        params = {'$filter': filter_req} if filter_req else {}
+
+        if page_size and page_num:
+            page_size = arg_to_number(page_size)
+            page_size = min(page_size, 10000)
+            page_num = arg_to_number(page_num)
+            page_num = 0 if not page_num else (page_num - 1)
+            skip = page_num * page_size
+            params['$skip'] = str(skip)
+            params['$top'] = str(page_size)
+
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
 
     def get_file_related_machines(self, file):
@@ -1256,9 +1322,9 @@ class MsClient:
         }
         return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data)
 
-    def list_alerts_by_params(self, filter_req=None, params=None):
+    def list_alerts_by_params(self, filter_req=None, params=None, overwrite_rate_limit_retry=False):
         """Retrieves a collection of Alerts.
-
+            overwrite_rate_limit_retry - Skip retry mechanism, True for fetch incidents
         Returns:
             dict. Alerts info
         """
@@ -1266,7 +1332,8 @@ class MsClient:
         if not params:
             params = {'$filter': filter_req} if filter_req else None
 
-        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params,
+                                           overwrite_rate_limit_retry=overwrite_rate_limit_retry)
 
     def list_alerts(self, filter_req=None, limit=None, evidence=False, creation_time=None):
         """Retrieves a collection of Alerts.
@@ -1295,7 +1362,7 @@ class MsClient:
         cmd_url = f'/alerts/{alert_id}'
         return self.ms_client.http_request(method='PATCH', url_suffix=cmd_url, json_data=json_data)
 
-    def get_advanced_hunting(self, query: str, timeout: int, time_range: Optional[str] = None) -> dict:
+    def get_advanced_hunting(self, query: str, timeout: int, time_range: str | None = None) -> dict[str, Any]:
         """Retrieves results according to query.
 
         Args:
@@ -1391,7 +1458,7 @@ class MsClient:
         cmd_url = f'/alerts/{alert_id}/user'
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
 
-    def get_machine_action_by_id(self, action_id):
+    def get_machine_action_by_id(self, action_id, overwrite_rate_limit_retry=False):
         """Retrieves specific Machine Action by its ID.
 
         Args:
@@ -1405,7 +1472,8 @@ class MsClient:
             dict. Machine Action entity
         """
         cmd_url = f'/machineactions/{action_id}'
-        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url,
+                                           overwrite_rate_limit_retry=overwrite_rate_limit_retry)
 
     def get_machine_actions(self, filter_req, limit):
         """Retrieves all Machine Actions.
@@ -1423,7 +1491,7 @@ class MsClient:
             params['$filter'] = filter_req
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
 
-    def get_investigation_package(self, machine_id, comment):
+    def get_investigation_package(self, machine_id, comment, overwrite_rate_limit_retry=False):
         """Collect investigation package from a machine.
 
         Args:
@@ -1437,9 +1505,10 @@ class MsClient:
         json_data = {
             'Comment': comment
         }
-        return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data)
+        return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data,
+                                           overwrite_rate_limit_retry=overwrite_rate_limit_retry)
 
-    def get_investigation_package_sas_uri(self, action_id):
+    def get_investigation_package_sas_uri(self, action_id, overwrite_rate_limit_retry=False):
         """Get a URI that allows downloading of an Investigation package.
 
         Args:
@@ -1449,7 +1518,8 @@ class MsClient:
             dict. An object that holds the link for the package
         """
         cmd_url = f'/machineactions/{action_id}/getPackageUri'
-        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url,
+                                           overwrite_rate_limit_retry=overwrite_rate_limit_retry)
 
     def restrict_app_execution(self, machine_id, comment):
         """Restrict execution of all applications on the machine except a predefined set.
@@ -1702,19 +1772,32 @@ class MsClient:
         cmd_url = f'/files/{file_hash}'
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
 
-    def sc_list_indicators(self, indicator_id: Optional[str] = None, limit: Optional[int] = 50) -> List:
+    def sc_list_indicators(self, indicator_id: str | None = None, limit: int = 50, skip: int = 0, indicator_title:
+                           str | None = None, indicator_value: str | None = None, indicator_type: str | None = None) -> list:
         """Lists indicators. if indicator_id supplied, will get only that indicator.
 
                 Args:
                     indicator_id: if provided, will get only this specific id.
                     limit: Limit the returned results.
+                    skip: The number of indicators that are to be skipped and not included in the result.
+                    indicator_title: The title of the indicator to get.
+                    indicator_value: The value of the indicator to get.
+                    indicator_type: The type of the indicator to get.
 
                 Returns:
                     List of responses.
                 """
-        cmd_url = urljoin(SECURITY_CENTER_INDICATOR_ENDPOINT,
-                          indicator_id) if indicator_id else SECURITY_CENTER_INDICATOR_ENDPOINT
-        params = {'$top': limit}
+        cmd_url = urljoin(self.get_security_center_indicator_endpoint(),
+                          indicator_id) if indicator_id else self.get_security_center_indicator_endpoint()
+        params: dict = {'$top': limit, '$skip': skip}
+        if indicator_title:
+            params.setdefault("$filter", []).append(f"contains(title,'{indicator_title}')")
+        if indicator_value:
+            params.setdefault("$filter", []).append(f"contains(indicatorValue,'{indicator_value}')")
+        if indicator_type:
+            params.setdefault("$filter", []).append(f"indicatorType eq '{indicator_type}'")
+        if params.get("$filter"):
+            params["$filter"] = " and ".join(params["$filter"])
         resp = self.indicators_http_request(
             'GET', full_url=cmd_url, url_suffix=None, params=params, timeout=1000,
             ok_codes=(200, 204, 206, 404), resp_type='response', should_use_security_center=True)
@@ -1727,8 +1810,8 @@ class MsClient:
         return [assign_params(**item) for item in values_list] if values_list else [resp]
 
     def list_indicators(self,
-                        indicator_id: Optional[str] = None, page_size: str = '50', limit: int = 50,
-                        should_use_security_center: bool = False) -> List:
+                        indicator_id: str | None = None, page_size: str = '50', limit: int = 50,
+                        should_use_security_center: bool = False) -> list:
         """Lists indicators. if indicator_id supplied, will get only that indicator.
 
         Args:
@@ -1741,7 +1824,8 @@ class MsClient:
             List of responses.
         """
         results = {}
-        cmd_url = urljoin(GRAPH_INDICATOR_ENDPOINT, indicator_id) if indicator_id else GRAPH_INDICATOR_ENDPOINT
+        cmd_url = urljoin(self.get_graph_indicator_endpoint(), indicator_id) \
+            if indicator_id else self.get_graph_indicator_endpoint()
         # For getting one indicator
         # TODO: check in the future if the filter is working. Then remove the filter function.
         # params = {'$filter': 'targetProduct=\'Microsoft Defender ATP\''}
@@ -1775,7 +1859,7 @@ class MsClient:
             results = [results]  # type: ignore
         return [assign_params(values_to_ignore=[None], **item) for item in results]
 
-    def create_indicator(self, body: Dict) -> Dict:
+    def create_indicator(self, body: dict) -> dict:
         """Creates indicator from the given body.
 
         Args:
@@ -1784,7 +1868,7 @@ class MsClient:
         Returns:
             A response from the API.
         """
-        resp = self.indicators_http_request('POST', full_url=GRAPH_INDICATOR_ENDPOINT, json_data=body,
+        resp = self.indicators_http_request('POST', full_url=self.get_graph_indicator_endpoint(), json_data=body,
                                             url_suffix=None, should_use_security_center=False)
         # A single object - should remove the '@odata.context' key.
         resp.pop('@odata.context')
@@ -1795,12 +1879,13 @@ class MsClient:
                                                     action: str,
                                                     indicator_title: str,
                                                     description: str,
-                                                    expiration_date_time: Optional[str] = None,
-                                                    severity: Optional[str] = None,
-                                                    indicator_application: Optional[str] = None,
-                                                    recommended_actions: Optional[str] = None,
-                                                    rbac_group_names: Optional[list] = None
-                                                    ) -> Dict:
+                                                    expiration_date_time: str | None = None,
+                                                    severity: str | None = None,
+                                                    indicator_application: str | None = None,
+                                                    recommended_actions: str | None = None,
+                                                    rbac_group_names: list | None = None,
+                                                    generate_alert: bool | None = True
+                                                    ) -> dict:
         """creates or updates (if already exists) a given indicator
 
         Args:
@@ -1814,6 +1899,7 @@ class MsClient:
             indicator_application: The application associated with the indicator.
             recommended_actions: TI indicator alert recommended actions.
             rbac_group_names: Comma-separated list of RBAC group names the indicator would be.
+            generate_alert: Whether to generate an alert for the indicator.
 
         Returns:
             A response from the API.
@@ -1824,7 +1910,7 @@ class MsClient:
             'action': action,
             'title': indicator_title,
             'description': description,
-            'generateAlert': True,
+            'generateAlert': generate_alert,
         }
         body.update(assign_params(  # optional params
             severity=severity,
@@ -1833,22 +1919,22 @@ class MsClient:
             recommendedActions=recommended_actions,
             rbacGroupNames=rbac_group_names
         ))
-        resp = self.indicators_http_request('POST', full_url=SECURITY_CENTER_INDICATOR_ENDPOINT, json_data=body,
-                                            url_suffix=None, should_use_security_center=True)
+        resp = self.indicators_http_request('POST', full_url=self.get_security_center_indicator_endpoint(),
+                                            json_data=body, url_suffix=None, should_use_security_center=True)
         return assign_params(values_to_ignore=[None], **resp)
 
     def create_update_indicator_batch_security_center_api(self, body):
         """
         https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/import-ti-indicators?view=o365-worldwide
         """
-        resp = self.indicators_http_request('POST', full_url=SECURITY_CENTER_INDICATOR_ENDPOINT_BATCH, json_data=body,
-                                            url_suffix=None, should_use_security_center=True)
+        resp = self.indicators_http_request('POST', full_url=self.get_security_center_indicator_endpoint_batch(),
+                                            json_data=body, url_suffix=None, should_use_security_center=True)
         return resp
 
     def update_indicator(
             self, indicator_id: str, expiration_date_time: str,
-            description: Optional[str], severity: Optional[int]
-    ) -> Dict:
+            description: str | None, severity: int | None
+    ) -> dict:
         """Updates a given indicator
 
         Args:
@@ -1860,7 +1946,7 @@ class MsClient:
         Returns:
             A response from the API.
         """
-        cmd_url = urljoin(GRAPH_INDICATOR_ENDPOINT, indicator_id)
+        cmd_url = urljoin(self.get_graph_indicator_endpoint(), indicator_id)
         header = {'Prefer': 'return=representation'}
         body = {
             'targetProduct': 'Microsoft Defender ATP',
@@ -1893,14 +1979,16 @@ class MsClient:
         return self.indicators_http_request('DELETE', None, full_url=cmd_url, ok_codes=(204,),
                                             resp_type='response', should_use_security_center=use_security_center)
 
-    def get_live_response_result(self, machine_action_id, command_index=0):
+    def get_live_response_result(self, machine_action_id, command_index=0, overwrite_rate_limit_retry=False):
         cmd_url = f'machineactions/{machine_action_id}/GetLiveResponseResultDownloadLink(index={command_index})'
-        response = self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+        response = self.ms_client.http_request(method='GET', url_suffix=cmd_url,
+                                               overwrite_rate_limit_retry=overwrite_rate_limit_retry)
         return response
 
-    def create_action(self, machine_id, request_body):
+    def create_action(self, machine_id, request_body, overwrite_rate_limit_retry=False):
         cmd_url = f'machines/{machine_id}/runliveresponse'
-        response = self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=request_body)
+        response = self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=request_body,
+                                               overwrite_rate_limit_retry=overwrite_rate_limit_retry)
         return response
 
     def download_file(self, url_link):
@@ -1948,6 +2036,83 @@ class MsClient:
         except Exception:
             raise Exception(f"Machine {machine_id} not found")
         return response
+
+    def get_list_machines_by_software(self, software_id: str) -> dict:
+        """Retrieve a list of device references that has this software installed.
+            Args:
+                software_id (str): Software ID.
+            Returns:
+                dict: Machines list.
+        """
+        cmd_url = f'/Software/{software_id}/machineReferences'
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+
+    def get_list_software_version_distribution(self, software_id: str) -> dict:
+        """Retrieves a list of your organization's software version distribution.
+            Args:
+                software_id (str): Software ID.
+            Returns:
+                dict: Version distribution list.
+        """
+        cmd_url = f'/Software/{software_id}/distributions'
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+
+    def get_list_missing_kb_by_software(self, software_id: str) -> dict:
+        """Retrieves missing KBs (security updates) by software ID.
+            Args:
+                software_id (str): Software ID.
+            Returns:
+                dict:  Missing kb by software list.
+        """
+        cmd_url = f'/Software/{software_id}/getmissingkbs'
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+
+    def get_list_vulnerabilities_by_software(self, software_id: str) -> dict:
+        """Retrieve a list of vulnerabilities in the installed software.
+            Args:
+                software_id (str): Software ID.
+            Returns:
+                dict: list vulnerabilities by software.
+        """
+        cmd_url = f'/Software/{software_id}/vulnerabilities'
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+
+    def get_list_software(self, filter_req: str, limit: str, offset: str) -> dict:
+        """Retrieves the organization software inventory.
+
+        Returns:
+            dict. software inventory.
+        """
+        cmd_url = '/Software'
+        params = {'$top': limit, '$skip': offset}
+        if filter_req:
+            params['$filter'] = filter_req
+
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
+
+    def get_list_vulnerabilities_by_machine(self, filter_req: str, limit: str, offset: str) -> dict:
+        """Retrieves a list of all the vulnerabilities affecting the organization per machine.
+
+        Returns:
+            dict: list of all the vulnerabilities affecting the organization per machine.
+        """
+        cmd_url = '/vulnerabilities/machinesVulnerabilities'
+        params = {'$top': limit, '$skip': offset}
+        if filter_req:
+            params['$filter'] = filter_req
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
+
+    def get_list_vulnerabilities(self, filter_req: str, limit: str, offset: str) -> dict:
+        """Retrieves a list of all vulnerabilities.
+
+        Returns:
+            dict: list of all the vulnerabilities.
+        """
+        cmd_url = '/vulnerabilities'
+        params = {'$top': limit, '$skip': offset}
+        if filter_req:
+            params['$filter'] = filter_req
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
 
 
 ''' Commands '''
@@ -2130,6 +2295,8 @@ def get_machines_command(client: MsClient, args: dict):
     risk_score = args.get('risk_score', '')
     health_status = args.get('health_status', '')
     os_platform = args.get('os_platform', '')
+    page_num = args.get('page_num', '')
+    page_size = args.get('page_size', '')
 
     more_than_one_hostname = len(hostname) > 1
     more_than_one_ip = len(ip) > 1
@@ -2159,7 +2326,7 @@ def get_machines_command(client: MsClient, args: dict):
         filter_req = reformat_filter_with_list_arg(fields_to_filter_by, field_with_multiple_values)
     else:
         filter_req = reformat_filter(fields_to_filter_by)
-    machines_response = client.get_machines(filter_req)
+    machines_response = client.get_machines(filter_req, page_num=page_num, page_size=page_size)
     machines_list = get_machines_list(machines_response)
 
     entry_context = {
@@ -2195,6 +2362,7 @@ def get_machine_mac_address(machine):
     for ip_object in ip_addresses:
         if last_ip_address and ip_object.get('ipAddress') == last_ip_address:
             return ip_object.get('macAddress', '')
+    return None
 
 
 def reformat_filter(fields_to_filter_by):
@@ -2293,7 +2461,7 @@ def get_file_related_machines_command(client: MsClient, args: dict) -> CommandRe
                           raw_response=raw_response)
 
 
-def parse_ip_addresses(ip_addresses: List[Dict]) -> List[Dict]:
+def parse_ip_addresses(ip_addresses: list[dict]) -> list[dict]:
     """
     Creates new dict with readable keys and concat all the ip addresses with the same MAC address.
     Args:
@@ -2318,7 +2486,7 @@ def parse_ip_addresses(ip_addresses: List[Dict]) -> List[Dict]:
     return list(mac_addresses.values())  # type: ignore
 
 
-def print_ip_addresses(parsed_ip_addresses: List[Dict]) -> str:
+def print_ip_addresses(parsed_ip_addresses: list[dict]) -> str:
     """
     Converts the given list of ip addresses to ascii table.
     Args:
@@ -2328,7 +2496,7 @@ def print_ip_addresses(parsed_ip_addresses: List[Dict]) -> str:
         ascii table without headers
     """
 
-    rows = list()
+    rows = []
     for i, entry in enumerate(parsed_ip_addresses, start=1):
         rows.append([f"{i}.", f"MAC : {entry['MACAddress']}", f"IP Addresses : {','.join(entry['IPAddresses'])}",
                      f"Type : {entry['Type']}", f"Status : {entry['Status']}"])
@@ -2421,11 +2589,13 @@ def list_alerts_command(client: MsClient, args: dict):
                'ThreatFamilyName', 'MachineID']
     severity = args.get('severity')
     status = args.get('status')
+    category = args.get('category')
     limit = arg_to_number(args.get('limit', 50))
     creation_time = arg_to_datetime(args.get('creation_time'), required=False)
     fields_to_filter_by = {
         'severity': severity,
-        'status': status
+        'status': status,
+        'category': category,
     }
     filter_req = reformat_filter(fields_to_filter_by)
     alerts_response = client.list_alerts(filter_req, limit, creation_time=creation_time, evidence=True)
@@ -2519,19 +2689,54 @@ def get_advanced_hunting_command(client: MsClient, args: dict):
         (str, dict, dict). Human readable, context, raw response
     """
     query = args.get('query', '')
-    timeout = int(args.get('timeout', 10))
-    time_range = args.get('time_range')
-    response = client.get_advanced_hunting(query, timeout, time_range)
-    results = response.get('Results')
-    if isinstance(results, list) and len(results) == 1:
-        report_id = results[0].get('ReportId')
-        if report_id:
-            results[0]['ReportId'] = str(report_id)
-    entry_context = {
-        'MicrosoftATP.Hunt.Result': results
-    }
-    human_readable = tableToMarkdown('Hunt results', results, removeNull=True)
+    query_batch = args.get('query_batch', '')
+    if query and query_batch:
+        raise DemistoException('Both query and query_batch were given, please provide just one')
+    if not query and not query_batch:
+        raise DemistoException('Both query and query_batch were not given, please provide one')
 
+    queries: list[dict[str, str]] = []
+    if query:
+        queries.append({'timeout': args.get('timeout', '10'),
+                        'time_range': args.get('time_range', ''),
+                        'name': args.get('name', ''),
+                        'query': query
+                        })
+    else:
+        query = safe_load_json(query_batch)
+        queries.extend(query)
+
+    if len(queries) > 10:
+        raise DemistoException('Please provide only up to 10 queries.')
+
+    human_readable = ''
+    outputs = []
+    for query_details in queries:
+        query = query_details.get('query')
+        name = query_details.get('name')
+        timeout = int(query_details.get('timeout', '') or args.get('timeout', 10))
+        time_range = query_details.get('time_range') or args.get('time_range', '')
+
+        response = client.get_advanced_hunting(query, timeout, time_range)
+        results: dict[str, Any] = response.get('Results', {})
+        if isinstance(results, list) and len(results) == 1:
+            report_id = results[0].get('ReportId')
+            if report_id:
+                results[0]['ReportId'] = str(report_id)
+        if name:
+            outputs.append({name: results})
+        else:
+            outputs = [results]
+        human_readable += tableToMarkdown(f'Hunt results for {name} query:', results, removeNull=True)
+
+    if len(outputs) == 1:
+        entry_context: dict[str, Any] = {
+            'MicrosoftATP.Hunt.Result': outputs[0]
+        }
+    else:
+        entry_context = {
+            'MicrosoftATP.Hunt.Result': outputs
+        }
     return human_readable, entry_context, response
 
 
@@ -2618,26 +2823,26 @@ def get_file_data(file_response):
     Returns:
         dict. File's info
     """
-    file_data = assign_params(**{
-        'Sha1': file_response.get('sha1'),
-        'Size': file_response.get('size'),
-        'Sha256': file_response.get('sha256'),
-        'Md5': file_response.get('md5'),
-        'GlobalPrevalence': file_response.get('globalPrevalence'),
-        'GlobalFirstObserved': file_response.get('globalFirstObserved'),
-        'GlobalLastObserved': file_response.get('globalLastObserved'),
-        'SizeInBytes': file_response.get('size'),
-        'FileType': file_response.get('fileType'),
-        'IsPeFile': file_response.get('isPeFile'),
-        'FilePublisher': file_response.get('filePublisher'),
-        'FileProductName': file_response.get('fileProductName'),
-        'Signer': file_response.get('signer'),
-        'Issuer': file_response.get('issuer'),
-        'SignerHash': file_response.get('signerHash'),
-        'IsValidCertificate': file_response.get('isValidCertificate'),
-        'DeterminationType': file_response.get('determinationType'),
-        'DeterminationValue': file_response.get('determinationValue')
-    })
+    file_data = assign_params(
+        Sha1=file_response.get('sha1'),
+        Size=file_response.get('size'),
+        Sha256=file_response.get('sha256'),
+        Md5=file_response.get('md5'),
+        GlobalPrevalence=file_response.get('globalPrevalence'),
+        GlobalFirstObserved=file_response.get('globalFirstObserved'),
+        GlobalLastObserved=file_response.get('globalLastObserved'),
+        SizeInBytes=file_response.get('size'),
+        FileType=file_response.get('fileType'),
+        IsPeFile=file_response.get('isPeFile'),
+        FilePublisher=file_response.get('filePublisher'),
+        FileProductName=file_response.get('fileProductName'),
+        Signer=file_response.get('signer'),
+        Issuer=file_response.get('issuer'),
+        SignerHash=file_response.get('signerHash'),
+        IsValidCertificate=file_response.get('isValidCertificate'),
+        DeterminationType=file_response.get('determinationType'),
+        DeterminationValue=file_response.get('determinationValue'),
+    )
     return file_data
 
 
@@ -2713,6 +2918,7 @@ def get_machine_action_by_id_command(client: MsClient, args: dict):
     machine_id = remove_duplicates_from_list_arg(args, 'machine_id')
     type = args.get('type', '')
     requestor = args.get('requestor', '')
+    filters = args.get('filters', '')
     limit = arg_to_number(args.get('limit', 50))
     if action_id:
         for index in range(3):
@@ -2738,7 +2944,7 @@ def get_machine_action_by_id_command(client: MsClient, args: dict):
             'type': type,
             'requestor': requestor
         }
-        filter_req = reformat_filter_with_list_arg(fields_to_filter_by, "machineId")
+        filter_req = filters or reformat_filter_with_list_arg(fields_to_filter_by, "machineId")
         response = client.get_machine_actions(filter_req, limit)
         machine_actions_list = []
         for machine_action in response['value']:
@@ -2756,7 +2962,7 @@ def get_machine_investigation_package(client: MsClient, args: dict):
 
     machine_id = args.get('machine_id')
     comment = args.get('comment')
-    res = client.get_investigation_package(machine_id, comment)
+    res = client.get_investigation_package(machine_id, comment, overwrite_rate_limit_retry=True)
     human_readable = tableToMarkdown('Processing action. This may take a few minutes.', res['id'], headers=['id'])
 
     return CommandResults(outputs_prefix='MicrosoftATP.MachineAction',
@@ -2769,12 +2975,17 @@ def request_download_investigation_package_command(client: MsClient, args: dict)
                                get_machine_action_command, download_file_after_successful_status)
 
 
+def generate_login_url_command(client: MsClient):
+    return generate_login_url(client.ms_client,
+                              MICROSOFT_DEFENDER_FOR_ENDPOINT_TOKEN_RETRIVAL_ENDPOINTS[client.endpoint_type])
+
+
 def download_file_after_successful_status(client, res):
     demisto.debug("post polling - download file")
     machine_action_id = res['id']
 
     # get file uri from action:
-    file_uri = client.get_investigation_package_sas_uri(machine_action_id)['value']
+    file_uri = client.get_investigation_package_sas_uri(machine_action_id, overwrite_rate_limit_retry=True)['value']
     demisto.debug(f'Got file for downloading: {file_uri}')
 
     # download link, create file result. File comes back as compressed gz file.
@@ -3027,12 +3238,12 @@ def get_domain_statistics_context(domain_stat_response):
     Returns:
         (dict). domain statistics context
     """
-    domain_statistics = assign_params(**{
-        "Host": domain_stat_response.get('host'),
-        "OrgPrevalence": domain_stat_response.get('orgPrevalence'),
-        "OrgFirstSeen": domain_stat_response.get('orgFirstSeen'),
-        "OrgLastSeen": domain_stat_response.get('orgLastSeen')
-    })
+    domain_statistics = assign_params(
+        Host=domain_stat_response.get('host'),
+        OrgPrevalence=domain_stat_response.get('orgPrevalence'),
+        OrgFirstSeen=domain_stat_response.get('orgFirstSeen'),
+        OrgLastSeen=domain_stat_response.get('orgLastSeen'),
+    )
     return domain_statistics
 
 
@@ -3135,28 +3346,28 @@ def get_machine_data(machine):
     Returns:
         dict. Machine's info
     """
-    machine_data = assign_params(**{
-        'ID': machine.get('id'),
-        'ComputerDNSName': machine.get('computerDnsName'),
-        'FirstSeen': machine.get('firstSeen'),
-        'LastSeen': machine.get('lastSeen'),
-        'OSPlatform': machine.get('osPlatform'),
-        'OSVersion': machine.get('version'),
-        'OSProcessor': machine.get('osProcessor'),
-        'LastIPAddress': machine.get('lastIpAddress'),
-        'LastExternalIPAddress': machine.get('lastExternalIpAddress'),
-        'AgentVersion': machine.get('agentVersion'),
-        'OSBuild': machine.get('osBuild'),
-        'HealthStatus': machine.get('healthStatus'),
-        'RBACGroupID': machine.get('rbacGroupId'),
-        'RBACGroupName': machine.get('rbacGroupName'),
-        'RiskScore': machine.get('riskScore'),
-        'ExposureLevel': machine.get('exposureLevel'),
-        'AADDeviceID': machine.get('aadDeviceId'),
-        'IsAADJoined': machine.get('isAadJoined'),
-        'MachineTags': machine.get('machineTags'),
-        'IPAddresses': machine.get('ipAddresses'),
-    })
+    machine_data = assign_params(
+        ID=machine.get('id'),
+        ComputerDNSName=machine.get('computerDnsName'),
+        FirstSeen=machine.get('firstSeen'),
+        LastSeen=machine.get('lastSeen'),
+        OSPlatform=machine.get('osPlatform'),
+        OSVersion=machine.get('version'),
+        OSProcessor=machine.get('osProcessor'),
+        LastIPAddress=machine.get('lastIpAddress'),
+        LastExternalIPAddress=machine.get('lastExternalIpAddress'),
+        AgentVersion=machine.get('agentVersion'),
+        OSBuild=machine.get('osBuild'),
+        HealthStatus=machine.get('healthStatus'),
+        RBACGroupID=machine.get('rbacGroupId'),
+        RBACGroupName=machine.get('rbacGroupName'),
+        RiskScore=machine.get('riskScore'),
+        ExposureLevel=machine.get('exposureLevel'),
+        AADDeviceID=machine.get('aadDeviceId'),
+        IsAADJoined=machine.get('isAadJoined'),
+        MachineTags=machine.get('machineTags'),
+        IPAddresses=machine.get('ipAddresses'),
+    )
     return machine_data
 
 
@@ -3186,15 +3397,15 @@ def get_file_statistics_context(file_stat_response):
     Returns:
         (dict). File statistics context
     """
-    file_stat = assign_params(**{
-        "OrgPrevalence": file_stat_response.get('orgPrevalence'),
-        "OrgFirstSeen": file_stat_response.get('orgFirstSeen'),
-        "OrgLastSeen": file_stat_response.get('orgLastSeen'),
-        "GlobalPrevalence": file_stat_response.get('globalPrevalence'),
-        "GlobalFirstObserved": file_stat_response.get('globalFirstObserved'),
-        "GlobalLastObserved": file_stat_response.get('globalLastObserved'),
-        "TopFileNames": file_stat_response.get('topFileNames')
-    })
+    file_stat = assign_params(
+        OrgPrevalence=file_stat_response.get('orgPrevalence'),
+        OrgFirstSeen=file_stat_response.get('orgFirstSeen'),
+        OrgLastSeen=file_stat_response.get('orgLastSeen'),
+        GlobalPrevalence=file_stat_response.get('globalPrevalence'),
+        GlobalFirstObserved=file_stat_response.get('globalFirstObserved'),
+        GlobalLastObserved=file_stat_response.get('globalLastObserved'),
+        TopFileNames=file_stat_response.get('topFileNames'),
+    )
     return file_stat
 
 
@@ -3246,11 +3457,11 @@ def get_ip_statistics_context(ip_statistics_response):
     Returns:
         (dict). IP statistics context
     """
-    ip_statistics = assign_params(**{
-        "OrgPrevalence": ip_statistics_response.get('orgPrevalence'),
-        "OrgFirstSeen": ip_statistics_response.get('orgFirstSeen'),
-        "OrgLastSeen": ip_statistics_response.get('orgLastSeen')
-    })
+    ip_statistics = assign_params(
+        OrgPrevalence=ip_statistics_response.get('orgPrevalence'),
+        OrgFirstSeen=ip_statistics_response.get('orgFirstSeen'),
+        OrgLastSeen=ip_statistics_response.get('orgLastSeen')
+    )
     return ip_statistics
 
 
@@ -3379,27 +3590,35 @@ def add_remove_machine_tag_command(client: MsClient, args: dict):
 
 
 def fetch_incidents(client: MsClient, last_run, fetch_evidence):
+
+    demisto.debug("Microsoft-ATP - Start fetching")
+
     first_fetch_time = dateparser.parse(client.alert_time_to_fetch,
                                         settings={'RETURN_AS_TIMEZONE_AWARE': True, 'TIMEZONE': 'UTC'})
+    demisto.debug(f'First fetch time: {first_fetch_time}')
 
     if last_run:
+        demisto.debug(f"Microsoft-ATP - Last run: {json.dumps(last_run)}")
         last_fetch_time = last_run.get('last_alert_fetched_time')
+        last_fetch_time = datetime.strftime(parse_date_string(last_fetch_time) + timedelta(milliseconds=1), TIME_FORMAT)
         # handling old version of time format:
         if not last_fetch_time.endswith('Z'):
             last_fetch_time = last_fetch_time + "Z"
 
     else:
         last_fetch_time = datetime.strftime(first_fetch_time, TIME_FORMAT)  # type: ignore
+        demisto.debug(f"Microsoft-ATP - Last run: {last_fetch_time}")
 
     latest_created_time = dateparser.parse(last_fetch_time,
                                            settings={'RETURN_AS_TIMEZONE_AWARE': True, 'TIMEZONE': 'UTC'})
+    demisto.debug(f'latest_created_time: {latest_created_time}')
 
     params = _get_incidents_query_params(client, fetch_evidence, last_fetch_time)
-    demisto.debug(f'getting alerts using {params=}')
+    demisto.debug(f"Microsoft-ATP - Query sent to the server: {params}")
     incidents = []
     # get_alerts:
     try:
-        alerts = client.list_alerts_by_params(params=params)['value']
+        alerts = client.list_alerts_by_params(params=params, overwrite_rate_limit_retry=True)['value']
     except DemistoException as err:
         big_query_err_msg = 'Verify that the server URL parameter is correct and that you have access to the server' \
                             ' from your host.'
@@ -3410,6 +3629,7 @@ def fetch_incidents(client: MsClient, last_run, fetch_evidence):
                 f'Try using a lower limit.')
         demisto.debug(f'Query crashed API. Params sent to query: {params}')
         raise err
+    skipped_incidents = 0
 
     for alert in alerts:
         alert_time = dateparser.parse(alert['alertCreationTime'],
@@ -3417,40 +3637,53 @@ def fetch_incidents(client: MsClient, last_run, fetch_evidence):
         # to prevent duplicates, adding incidents with creation_time > last fetched incident
         if last_fetch_time:
             parsed = dateparser.parse(last_fetch_time, settings={'RETURN_AS_TIMEZONE_AWARE': True, 'TIMEZONE': 'UTC'})
+            demisto.debug(f'Checking alert {alert["id"]} with parsed time {parsed}. last alert time is {alert_time}')
             if alert_time <= parsed:  # type: ignore
-                demisto.debug(f"{INTEGRATION_NAME} - alert {str(alert)} was created at {alert['alertCreationTime']}."
-                              f' Skipping.')
+                skipped_incidents += 1
+                demisto.debug(f'Microsoft - ATP - Skipping incident with id={alert["id"]} with time {alert_time} because its'
+                              ' creation time is smaller than the last fetch.')
                 continue
-
+        demisto.debug(f'Adding alert {alert["id"]}')
         incidents.append({
             'rawJSON': json.dumps(alert),
             'name': f'{INTEGRATION_NAME} Alert {alert["id"]}',
-            'occurred': alert['alertCreationTime']
+            'occurred': alert['alertCreationTime'],
+            'dbotMirrorId': alert["id"]
         })
 
         # Update last run and add incident if the incident is newer than last fetch
         if alert_time > latest_created_time:  # type: ignore
+            demisto.debug(f'Updating last created time to {alert_time}')
             latest_created_time = alert_time  # type: ignore
 
     # last alert is the newest as we ordered by it ascending
-    demisto.debug(f'got {len(incidents)} incidents from the API.')
+    demisto.debug(f'Microsoft-ATP - Next run after incidents fetching: {latest_created_time}')
+    demisto.debug(f"Microsoft-ATP - Number of incidents before filtering: {len(alerts)}")
+    demisto.debug(f"Microsoft-ATP - Number of incidents after filtering: {len(incidents)}")
+    demisto.debug(f"Microsoft-ATP - Number of incidents skipped: {skipped_incidents}")
     last_run['last_alert_fetched_time'] = datetime.strftime(latest_created_time, TIME_FORMAT)  # type: ignore
     return incidents, last_run
 
 
 def _get_incidents_query_params(client, fetch_evidence, last_fetch_time):
     filter_query = f'alertCreationTime+gt+{last_fetch_time}'
+    if client.alert_detectionsource_to_fetch:
+        sources = argToList(client.alert_detectionsource_to_fetch)
+        source_filter_list = [f"detectionSource+eq+'{DETECTION_SOURCE_TO_API_VALUE[source]}'" for source in sources]
+        if len(source_filter_list) > 1:
+            source_filter_list = [f"({x})" for x in source_filter_list]
+        filter_query = filter_query + " and (" + " or ".join(source_filter_list) + ")"
     if client.alert_status_to_fetch:
         statuses = argToList(client.alert_status_to_fetch)
         status_filter_list = [f"status+eq+'{status}'" for status in statuses]
         if len(status_filter_list) > 1:
-            status_filter_list = list(map(lambda x: f'({x})', status_filter_list))
+            status_filter_list = [f'({x})' for x in status_filter_list]
         filter_query = filter_query + ' and (' + ' or '.join(status_filter_list) + ')'
     if client.alert_severities_to_fetch:
         severities = argToList(client.alert_severities_to_fetch)
         severities_filter_list = [f"severity+eq+'{severity}'" for severity in severities]
         if len(severities_filter_list) > 1:
-            severities_filter_list = list(map(lambda x: f'({x})', severities_filter_list))
+            severities_filter_list = [f'({x})' for x in severities_filter_list]
         filter_query = filter_query + ' and (' + ' or '.join(severities_filter_list) + ')'
     params = {'$filter': filter_query}
     params['$orderby'] = 'alertCreationTime asc'
@@ -3565,7 +3798,7 @@ def get_last_alert_fetched_time(last_run, alert_time_to_fetch):
     return last_alert_fetched_time
 
 
-def list_indicators_command(client: MsClient, args: Dict[str, str]) -> Tuple[str, Optional[Dict], Optional[List]]:
+def list_indicators_command(client: MsClient, args: dict[str, str]) -> tuple[str, dict | None, list | None]:
     """
 
     Args:
@@ -3579,7 +3812,7 @@ def list_indicators_command(client: MsClient, args: Dict[str, str]) -> Tuple[str
     raw_response = client.list_indicators(args.get('indicator_id'), args.get('page_size', '50'), limit)
     raw_response = raw_response[:limit]
     if raw_response:
-        indicators = list()
+        indicators = []
         for item in raw_response:
             item['severity'] = NUMBER_TO_SEVERITY.get(item['severity'])
             indicators.append(item)
@@ -3610,7 +3843,7 @@ def list_indicators_command(client: MsClient, args: Dict[str, str]) -> Tuple[str
         return 'No indicators found', None, None
 
 
-def create_indicator_command(client: MsClient, args: Dict, specific_args: Dict) -> Dict:
+def create_indicator_command(client: MsClient, args: dict, specific_args: dict) -> dict:
     """Adds required arguments to indicator (arguments that must be in every create call).
 
     Args:
@@ -3663,7 +3896,7 @@ def create_indicator_command(client: MsClient, args: Dict, specific_args: Dict) 
     return client.create_indicator(body)
 
 
-def create_file_indicator_command(client: MsClient, args: Dict) -> Tuple[str, Dict, Dict]:
+def create_file_indicator_command(client: MsClient, args: dict) -> tuple[str, dict, dict]:
     """Creates a file indicator
 
     Args:
@@ -3717,20 +3950,20 @@ def create_file_indicator_command(client: MsClient, args: Dict) -> Tuple[str, Di
     return human_readable, outputs, raw_response
 
 
-def create_network_indicator_command(client, args) -> Tuple[str, Dict, Dict]:
+def create_network_indicator_command(client, args) -> tuple[str, dict, dict]:
     """Creates a network indicator
 
     Args:
         client: MsClient
         args: arguments from CortexSOAR.
-            Should contain a a network observable:
-            - https://docs.microsoft.com/en-us/graph/api/resources/tiindicator?view=graph-rest-betaindicator-observables---network  # noqa: E501
+            Should contain a network observable:
+            - https://docs.microsoft.com/en-us/graph/api/resources/tiindicator?view=graph-rest-betaindicator-observables---network
     Returns:
         human readable, outputs, raw response
 
     Raises:
         AssertionError: If no file arguments.
-    """
+    """  # noqa: E501
     network_object = assign_params(
         domainName=args.get('domain_name'),
         networkCidrBlock=args.get('network_cidr_block'),
@@ -3778,7 +4011,7 @@ def create_network_indicator_command(client, args) -> Tuple[str, Dict, Dict]:
     return human_readable, outputs, raw_response
 
 
-def update_indicator_command(client: MsClient, args: dict) -> Tuple[str, Dict, Dict]:
+def update_indicator_command(client: MsClient, args: dict) -> tuple[str, dict, dict]:
     """Updates an indicator
 
     Args:
@@ -3822,11 +4055,11 @@ def delete_indicator_command(client: MsClient, args: dict) -> str:
         human readable
     """
     indicator_id = args.get('indicator_id', '')
-    client.delete_indicator(indicator_id, GRAPH_INDICATOR_ENDPOINT)
+    client.delete_indicator(indicator_id, client.get_graph_indicator_endpoint())
     return f'Indicator ID: {indicator_id} was successfully deleted'
 
 
-def sc_delete_indicator_command(client: MsClient, args: Dict[str, str]) -> CommandResults:
+def sc_delete_indicator_command(client: MsClient, args: dict[str, str]) -> CommandResults:
     """Deletes an indicator
     https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/delete-ti-indicator-by-id?view=o365-worldwide
     Args:
@@ -3837,11 +4070,11 @@ def sc_delete_indicator_command(client: MsClient, args: Dict[str, str]) -> Comma
           An indication of whether the indicator was deleted successfully.
     """
     indicator_id = args['indicator_id']
-    client.delete_indicator(indicator_id, SECURITY_CENTER_INDICATOR_ENDPOINT, use_security_center=True)
+    client.delete_indicator(indicator_id, client.get_security_center_indicator_endpoint(), use_security_center=True)
     return CommandResults(readable_output=f'Indicator ID: {indicator_id} was successfully deleted')
 
 
-def sc_create_update_indicator_command(client: MsClient, args: Dict[str, str]) -> CommandResults:
+def sc_create_update_indicator_command(client: MsClient, args: dict[str, str]) -> CommandResults:
     """Updates an indicator if exists, if does not exist, create new one
     Note: CIDR notation for IPs is not supported.
 
@@ -3861,12 +4094,13 @@ def sc_create_update_indicator_command(client: MsClient, args: Dict[str, str]) -
     indicator_application = args.get('indicator_application', '')
     recommended_actions = args.get('recommended_actions', '')
     rbac_group_names = argToList(args.get('rbac_group_names', []))
+    generate_alert = argToBoolean(args.get('generate_alert', True))
 
     indicator = client.create_update_indicator_security_center_api(
         indicator_value=indicator_value, expiration_date_time=expiration_time,
         description=indicator_description, severity=severity, indicator_type=indicator_type, action=action,
         indicator_title=indicator_title, indicator_application=indicator_application,
-        recommended_actions=recommended_actions, rbac_group_names=rbac_group_names
+        recommended_actions=recommended_actions, rbac_group_names=rbac_group_names, generate_alert=generate_alert
     )
     if indicator:
         indicator_value = indicator.get('indicatorValue')  # type:ignore
@@ -3880,7 +4114,7 @@ def sc_create_update_indicator_command(client: MsClient, args: Dict[str, str]) -
         return CommandResults(readable_output=f'Indicator {indicator_value} was NOT updated.')
 
 
-def sc_update_batch_indicators_command(client: MsClient, args: Dict[str, str]):  # -> CommandResults:
+def sc_update_batch_indicators_command(client: MsClient, args: dict[str, str]):  # -> CommandResults:
     """Updates batch of indicators. If an indicator exists it will be updated. Otherwise, will create new one
     Note: CIDR notation for IPs is not supported.
 
@@ -3920,7 +4154,7 @@ def parse_indicator_batch_response(indicators_response):
     return parsed_response
 
 
-def sc_list_indicators_command(client: MsClient, args: Dict[str, str]) -> Union[CommandResults, List[CommandResults]]:
+def sc_list_indicators_command(client: MsClient, args: dict[str, str]) -> CommandResults | list[CommandResults]:
     """
     https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-ti-indicators-collection?view=o365-worldwide
     Args:
@@ -3930,8 +4164,10 @@ def sc_list_indicators_command(client: MsClient, args: Dict[str, str]) -> Union[
     Returns:
         human_readable, outputs.
     """
-    limit = arg_to_number(args.get('limit', 50))
-    raw_response = client.sc_list_indicators(args.get('indicator_id'), limit)
+    limit = arg_to_number(args.get('limit', 50)) or 50
+    skip = arg_to_number(args.get('skip', 0)) or 0
+    raw_response = client.sc_list_indicators(args.get('indicator_id'), limit, skip, args.get('indicator_title'),
+                                             args.get('indicator_value'), args.get('indicator_type'))
     if raw_response:
         command_results = []
         for indicator in raw_response:
@@ -3955,7 +4191,18 @@ def lateral_movement_evidence_command(client, args):  # pragma: no cover
     page = int(args.get('page', 1))
     limit = int(args.get('limit', 50))
     show_query = argToBoolean(args.pop('show_query', False))
-    query_builder = HuntingQueryBuilder.LateralMovementEvidence(**args)
+    query_args = assign_params(
+        limit=args.get('limit'),
+        query_operation=args.get('query_operation'),
+        page=args.get('page'),
+        device_name=args.get('device_name'),
+        file_name=args.get('file_name'),
+        sha1=args.get('sha1'),
+        sha256=args.get('sha256'),
+        md5=args.get('md5'),
+        device_id=args.get('device_id'),
+        remote_ip_count=args.get('remote_ip_count'))
+    query_builder = HuntingQueryBuilder.LateralMovementEvidence(**query_args)
     query_options = {
         'network_connections': query_builder.build_network_connections_query,
         'smb_connections': query_builder.build_smb_connections_query,
@@ -3990,7 +4237,19 @@ def persistence_evidence_command(client, args):  # pragma: no cover
     time_range = args.pop('time_range', None)
     query_purpose = args.get('query_purpose')
     show_query = argToBoolean(args.pop('show_query', False))
-    query_builder = HuntingQueryBuilder.PersistenceEvidence(**args)
+    quey_args = assign_params(
+        limit=args.get('limit'),
+        query_operation=args.get('query_operation'),
+        query_purpose=args.get('query_purpose'),
+        page=args.get('page'),
+        device_name=args.get('device_name'),
+        file_name=args.get('file_name'),
+        sha1=args.get('sha1'),
+        sha256=args.get('sha256'),
+        md5=args.get('md5'),
+        device_id=args.get('device_id'),
+        process_cmd=args.get('process_cmd'))
+    query_builder = HuntingQueryBuilder.PersistenceEvidence(**quey_args)
     query_options = {
         'scheduled_job': query_builder.build_scheduled_job_query,
         'registry_entry': query_builder.build_registry_entry_query,
@@ -4028,7 +4287,17 @@ def file_origin_command(client, args):  # pragma: no cover
     page = int(args.get('page', 1))
     limit = int(args.get('limit', 50))
     show_query = argToBoolean(args.pop('show_query', False))
-    query_builder = HuntingQueryBuilder.FileOrigin(**args)
+    quey_params = assign_params(
+        limit=args.get('limit'),
+        query_operation=args.get('query_operation'),
+        page=args.get('page'),
+        device_name=args.get('device_name'),
+        file_name=args.get('file_name'),
+        sha1=args.get('sha1'),
+        sha256=args.get('sha256'),
+        md5=args.get('md5'),
+        device_id=args.get('device_id'))
+    query_builder = HuntingQueryBuilder.FileOrigin(**quey_params)
     query = query_builder.build_file_origin_query()
 
     # send request + handle result
@@ -4054,7 +4323,19 @@ def process_details_command(client, args):  # pragma: no cover
     page = int(args.get('page', 1))
     limit = int(args.get('limit', 50))
     show_query = argToBoolean(args.pop('show_query', False))
-    query_builder = HuntingQueryBuilder.ProcessDetails(**args)
+    query_params = assign_params(
+        limit=args.get('limit'),
+        query_operation=args.get('query_operation'),
+        page=args.get('page'),
+        device_name=args.get('device_name'),
+        file_name=args.get('file_name'),
+        sha1=args.get('sha1'),
+        sha256=args.get('sha256'),
+        md5=args.get('md5'),
+        device_id=args.get('device_id'),
+        query_purpose=args.get('query_purpose')
+    )
+    query_builder = HuntingQueryBuilder.ProcessDetails(**query_params)
     query_options = {
         'parent_process': query_builder.build_parent_process_query,
         'grandparent_process': query_builder.build_grandparent_process_query,
@@ -4090,7 +4371,19 @@ def network_connections_command(client, args):  # pragma: no cover
     page = int(args.get('page', 1))
     limit = int(args.get('limit', 50))
     show_query = argToBoolean(args.pop('show_query', False))
-    query_builder = HuntingQueryBuilder.NetworkConnections(**args)
+    query_params = assign_params(
+        limit=args.get('limit'),
+        query_operation=args.get('query_operation'),
+        query_purpose=args.get('query_purpose'),
+        page=args.get('page'),
+        device_name=args.get('device_name'),
+        file_name=args.get('file_name'),
+        sha1=args.get('sha1'),
+        sha256=args.get('sha256'),
+        md5=args.get('md5'),
+        device_id=args.get('device_id')
+    )
+    query_builder = HuntingQueryBuilder.NetworkConnections(**query_params)
     query_options = {
         'external_addresses': query_builder.build_external_addresses_query,
         'dns_query': query_builder.build_dns_query,
@@ -4122,7 +4415,13 @@ def privilege_escalation_command(client, args):  # pragma: no cover
     page = int(args.get('page', 1))
     limit = int(args.get('limit', 50))
     show_query = argToBoolean(args.pop('show_query', False))
-    query_builder = HuntingQueryBuilder.PrivilegeEscalation(**args)
+    quey_args = assign_params(
+        limit=args.get('limit'),
+        query_operation=args.get('query_operation'),
+        page=args.get('page'),
+        device_name=args.get('device_name'),
+        device_id=args.get('device_id'))
+    query_builder = HuntingQueryBuilder.PrivilegeEscalation(**quey_args)
     query = query_builder.build_query()
 
     # send request + handle result
@@ -4147,7 +4446,14 @@ def tampering_command(client, args):  # pragma: no cover
     page = int(args.get('page', 1))
     limit = int(args.get('limit', 50))
     show_query = argToBoolean(args.pop('show_query', False))
-    query_builder = HuntingQueryBuilder.Tampering(**args)
+    quey_args = assign_params(
+        limit=args.get('limit'),
+        query_operation=args.get('query_operation'),
+        page=args.get('page'),
+        device_name=args.get('device_name'),
+        device_id=args.get('device_id')
+    )
+    query_builder = HuntingQueryBuilder.Tampering(**quey_args)
     query = query_builder.build_query()
 
     # send request + handle result
@@ -4173,7 +4479,20 @@ def cover_up_command(client, args):  # pragma: no cover
     page = int(args.get('page', 1))
     limit = int(args.get('limit', 50))
     show_query = argToBoolean(args.pop('show_query', False))
-    query_builder = HuntingQueryBuilder.CoverUp(**args)
+    quey_args = assign_params(
+        limit=args.get('limit'),
+        query_operation=args.get('query_operation'),
+        query_purpose=args.get('query_purpose'),
+        page=args.get('page'),
+        device_name=args.get('device_name'),
+        file_name=args.get('file_name'),
+        sha1=args.get('sha1'),
+        sha256=args.get('sha256'),
+        md5=args.get('md5'),
+        device_id=args.get('device_id'),
+        username=args.get('username')
+    )
+    query_builder = HuntingQueryBuilder.CoverUp(**quey_args)
     query_options = {
         'file_deleted': query_builder.build_file_deleted_query,
         'event_log_cleared': query_builder.build_event_log_cleared_query,
@@ -4202,8 +4521,7 @@ def cover_up_command(client, args):  # pragma: no cover
 
 
 def test_module(client: MsClient):
-    client.ms_client.http_request(method='GET', url_suffix='/alerts', params={'$top': '1'})
-    demisto.results('ok')
+    client.ms_client.http_request(method='GET', url_suffix='/alerts', params={'$top': '1'}, overwrite_rate_limit_retry=True)
 
 
 def get_dbot_indicator(dbot_type, dbot_score, value):
@@ -4221,6 +4539,7 @@ def get_dbot_indicator(dbot_type, dbot_score, value):
         return Common.Domain(domain=value, dbot_score=dbot_score)
     if dbot_type == DBotScoreType.URL:
         return Common.URL(url=value, dbot_score=dbot_score)
+    return None
 
 
 def get_indicator_dbot_object(indicator):
@@ -4232,6 +4551,363 @@ def get_indicator_dbot_object(indicator):
         return get_dbot_indicator(indicator_type, dbot, indicator_value)
     else:
         return None
+
+
+def list_machines_by_software_command(client: MsClient, args: dict) -> CommandResults:
+    """ Retrieve a list of device references that has the given software installed.
+        Args:
+            client: MsClient.
+            args: dict - arguments from CortexSOAR.
+        Returns:
+            A CommandResults object with a list of machines by software.
+    """
+    software_id = str(args.get('id'))
+    headers = ['id', 'computerDnsName', 'osPlatform', 'rbacGroupName', 'rbacGroupId']
+    machines_response = client.get_list_machines_by_software(software_id)
+    machines_response_value = machines_response.get('value')
+    human_readable = tableToMarkdown(f'{INTEGRATION_NAME} list machines by software: {software_id}',
+                                     machines_response_value, headers=headers, removeNull=True)
+    return CommandResults(
+        outputs_prefix='MicrosoftATP.SoftwareMachine',
+        outputs_key_field='id',
+        outputs=machines_response_value,
+        readable_output=human_readable,
+        raw_response=machines_response)
+
+
+def list_software_version_distribution_command(client: MsClient, args: dict) -> CommandResults:
+    """ Retrieves a list of your organization's software version distribution.
+        Args:
+            client: MsClient.
+            args: dict - arguments from CortexSOAR.
+        Returns:
+            A CommandResults object with a list of software version distribution.
+    """
+    software_id = str(args.get('id'))
+    headers = ['version', 'installations', 'vulnerabilities']
+    software_version_distribution_response = client.get_list_software_version_distribution(software_id)
+    software_version_distribution_response_value = software_version_distribution_response.get('value')
+    human_readable = tableToMarkdown(f'{INTEGRATION_NAME} software version distribution:',
+                                     software_version_distribution_response_value, headers=headers, removeNull=True)
+    return CommandResults(
+        outputs_prefix='MicrosoftATP.SoftwareVersion',
+        outputs=software_version_distribution_response_value,
+        outputs_key_field=['version', 'installations', 'vulnerabilities'],
+        readable_output=human_readable,
+        raw_response=software_version_distribution_response)
+
+
+def list_missing_kb_by_software_command(client: MsClient, args: dict) -> CommandResults:
+    """ Retrieves missing KBs (security updates) by software ID
+        Args:
+            client: MsClient.
+            args: dict - arguments from CortexSOAR.
+        Returns:
+            A CommandResults object with a list of missing kb by software.
+    """
+    software_id = str(args.get('id'))
+    headers = ['id', 'name', 'osBuild', 'productsNames', 'url', 'machineMissedOn', 'cveAddressed']
+    missing_kb_by_software_response = client.get_list_missing_kb_by_software(software_id)
+    missing_kb_by_software_response_value = missing_kb_by_software_response.get('value')
+    mark_down_values = add_backslash_infront_of_underscore_list(missing_kb_by_software_response_value)
+    human_readable = tableToMarkdown(f'{INTEGRATION_NAME} missing kb by software: {software_id}',
+                                     mark_down_values, headers=headers, removeNull=True)
+    return CommandResults(
+        outputs_prefix='MicrosoftATP.SoftwareKB',
+        outputs_key_field='id',
+        outputs=missing_kb_by_software_response_value,
+        readable_output=human_readable,
+        raw_response=missing_kb_by_software_response)
+
+
+def list_vulnerabilities_by_software_command(client: MsClient, args: dict) -> list[CommandResults]:
+    """ Retrieves list of vulnerabilities by software.
+        Args:
+            client: MsClient.
+            args: dict - arguments from CortexSOAR.
+        Returns:
+            A CommandResult list with a list of vulnerabilities by software.
+    """
+    results_list = []
+    software_id = str(args.get('id'))
+    headers = ['id', 'name', 'description', 'severity', 'cvssV3', 'publishedOn', 'updatedOn',
+               'exposedMachines', 'exploitVerified',
+               'publicExploit']
+    vulnerabilities_response = client.get_list_vulnerabilities_by_software(software_id)
+    vulnerabilities_response_value = vulnerabilities_response.get('value')
+    demisto.debug(f'Vulnerabilities Response {vulnerabilities_response_value}')
+    if vulnerabilities_response_value:
+        for cve in vulnerabilities_response_value:
+            cve_id = cve.get('id')
+            cve_indicator = Common.CVE(id=cve_id,
+                                       cvss=cve.get('cvssV3'),
+                                       description=cve.get('description'),
+                                       published=cve.get('publishedOn'),
+                                       modified=cve.get('updatedOn')
+                                       )
+            human_readable = tableToMarkdown(f'{INTEGRATION_NAME} vulnerability {cve_id} by software: {software_id}',
+                                             add_backslash_infront_of_underscore_list([cve]), headers=headers,
+                                             removeNull=True)
+            results_list.append(CommandResults(outputs_prefix='MicrosoftATP.SoftwareCVE',
+                                               outputs_key_field='id',
+                                               outputs=cve,
+                                               readable_output=human_readable,
+                                               raw_response=cve,
+                                               indicator=cve_indicator))
+    else:
+        results_list.append(
+            CommandResults(readable_output=f'No vulnerabilities were found for software: {software_id}.'))
+    return results_list
+
+
+def create_filters_conjunction(filters_arg_list: list[str], name: str) -> str:
+    """ Create filter conjunction (added 'or' between args)
+        example output: id eq 'id1' or id eq 'id2'
+        Args:
+            filters_arg_list: list[str].
+            name: str.
+        Returns:
+            A str corresponding to the filter param in a qury.
+    """
+    query = ''
+    filters_arg_list = list(filter(None, filters_arg_list))
+    list_length = len(filters_arg_list)
+    if filters_arg_list:
+        for index, list_item in enumerate(filters_arg_list):
+            if index == list_length - 1 or list_length == 1:
+                query = f"{query}{name} eq '{list_item}'"
+            else:
+                query = f"{query}{name} eq '{list_item}' or "
+        demisto.debug(f'Filter conjunction query results: {query} ')
+    return query
+
+
+def add_backslash_infront_of_underscore_list(markdown_data: list[dict] | None) -> list[dict]:
+    """ Escape underscores with a backslash in order to show underscores after markdown parsing.
+        Args:
+            markdown_data: list[dict] - list of dicts.
+        Returns:
+            A list of dicts with a backslash before each underscore.
+    """
+    markdown_data_to_return = []
+    if markdown_data:
+        for dict_item in markdown_data:
+            dict = {}
+            for k, v in dict_item.items():
+                if isinstance(v, str):
+                    v = str(v.replace('_', '\_'))
+                dict[k] = v
+            markdown_data_to_return.append(dict)
+    return markdown_data_to_return
+
+
+def create_filters_disjunctions(filters_arg_list: list[str]) -> str:
+    """ Create filter disjunctions (added 'and' between args)
+        example output: id eq 'id1' and vendor eq 'vendor1'
+        Args:
+            filters_arg_list: list[str].
+        Returns:
+            A str corresponding to the filter param in a qury.
+    """
+    query = ''
+    filters_arg_list = list(filter(None, filters_arg_list))
+    list_length = len(filters_arg_list)
+    if filters_arg_list:
+        for index, list_item in enumerate(filters_arg_list):
+            if list_length == 1 and list_item == '':
+                continue
+            if list_length == 1:
+                query = f'{query}{list_item}'
+                continue
+            if index == list_length - 1:
+                query = f'{query}({list_item})'
+                continue
+            else:
+                query = f'{query}({list_item}) and '
+        demisto.debug(f'Filter disjunctions query results: {query} ')
+    return query
+
+
+def create_filter(args_and_name_list: list[tuple[list[str], str]]) -> str:
+    """ Create filter with disjunctions and conjunction according to the API requirements
+        example output: id eq 'id1' and vendor eq 'vendor1' or  vendor eq 'vendor2'
+        Args:
+            filters_arg_list: list[str].
+        Returns:
+            A str corresponding to the filter param in a qury.
+    """
+    list_for_disjunctions = []
+    for arg_and_name in args_and_name_list:
+        list_for_disjunctions.append(create_filters_conjunction(arg_and_name[0], arg_and_name[1]))
+    return create_filters_disjunctions(list_for_disjunctions)
+
+
+def list_software_command(client: MsClient, args: dict) -> CommandResults:
+    """ Retrieves the organization software inventory.
+        Args:
+            client: MsClient.
+            args: dict - arguments from CortexSOAR.
+        Returns:
+            A CommandResults object.
+    """
+    software_id = argToList(args.get('id', ''))
+    names = argToList(args.get('name', ''))
+    vendors = argToList(args.get('vendor', ''))
+    limit = args.get('limit', '50')
+    offset = args.get('offset', '0')
+    filter_req = create_filter([(software_id, 'id'), (names, 'name'), (vendors, 'vendor')])
+    headers = ['id', 'name', 'vendor', 'weaknesses', 'activeAlert', 'exposedMachines', 'installedMachines', 'publicExploit']
+    list_software_response = client.get_list_software(filter_req, limit, offset)
+    list_software_response_value = list_software_response.get('value')
+    mark_down_values = add_backslash_infront_of_underscore_list(list_software_response_value)
+    human_readable = tableToMarkdown(f'{INTEGRATION_NAME} list software:',
+                                     mark_down_values, headers=headers, removeNull=True)
+    return CommandResults(
+        outputs_prefix='MicrosoftATP.Software',
+        outputs_key_field='id',
+        outputs=list_software_response_value,
+        readable_output=human_readable,
+        raw_response=list_software_response)
+
+
+def list_vulnerabilities_by_machine_command(client: MsClient, args: dict) -> list[CommandResults]:
+    """ Retrieves a list of all the vulnerabilities affecting the organization per machine.
+        Args:
+            client: MsClient.
+            args: dict - arguments from CortexSOAR.
+        Returns:
+            A CommandResults object.
+    """
+    machine_id = argToList(args.get('machine_id'))
+    software_id = argToList(args.get('software_id', ''))
+    cve_id = argToList(args.get('cve_id', ''))
+    product_name = argToList(args.get('product_name', ''))
+    product_version = argToList(args.get('product_version', ''))
+    severity = argToList(args.get('severity', ''))
+    product_vendor = argToList(args.get('product_vendor', ''))
+    limit = args.get('limit', '25')
+    offset = args.get('offset', '0')
+    results_list = []
+    filter_req = create_filter([(machine_id, 'machineId'), (software_id, 'id'), (cve_id, 'cveId'),
+                                (product_name, 'productName'), (product_version, 'productVersion'), (severity, 'severity'),
+                                (product_vendor, 'productVendor')])
+    headers = ['id', 'cveId', 'machineId', 'productName', 'productVendor', 'productVersion', 'severity']
+    list_vulnerabilities_response = client.get_list_vulnerabilities_by_machine(filter_req, limit, offset)
+    list_vulnerabilities_response_value = list_vulnerabilities_response.get('value')
+    if list_vulnerabilities_response_value:
+        for cve in list_vulnerabilities_response_value:
+            cve_id = cve.get('cveId')
+            cve_indicator = Common.CVE(id=cve_id,
+                                       cvss='',
+                                       description='',
+                                       published='',
+                                       modified=''
+                                       )
+            human_readable = tableToMarkdown(f'{INTEGRATION_NAME} vulnerability {cve_id}:',
+                                             add_backslash_infront_of_underscore_list([cve]), headers=headers, removeNull=True)
+            results_list.append(CommandResults(outputs_prefix='MicrosoftATP.MachineCVE',
+                                               outputs_key_field='id',
+                                               outputs=cve,
+                                               readable_output=human_readable,
+                                               raw_response=cve,
+                                               indicator=cve_indicator))
+    else:
+        results_list.append(
+            CommandResults(readable_output=f'No vulnerabilities were found for machine: {machine_id}.'))
+    return results_list
+
+
+def create_filter_list_vulnerabilities(id_and_severity: str, name_equal: str, name_contains: str, description: str,
+                                       published_on: str, cvss: str, updated_on: str) -> str:
+    """ Create a string filter.
+        Args:
+            id_and_severity: str - Id and severity of the vulnerability.
+            name: str - Name of the vulnerability.
+            description: str - Description of the vulnerability.
+            published_on: str - Date when vulnerability was published.
+            cvss: str - CVSS v3 score.
+            updated_on: str - Date when vulnerability was updated.
+        Returns:
+            A string filter.
+    """
+    filter_query_list = []
+    if id_and_severity:
+        filter_query_list.append(id_and_severity)
+    if name_contains:
+        filter_query_list.append(f"contains(name, '{name_contains}')")
+    if name_equal:
+        filter_query_list.append(f"name eq '{name_equal}'")
+    if description:
+        filter_query_list.append(f"contains(description, '{description}')")
+    if cvss:
+        filter_query_list.append(f"cvssV3 ge {cvss}")
+    if updated_on:
+        filter_query_list.append(f"updatedOn ge {updated_on}")
+    if published_on:
+        filter_query_list.append(f"publishedOn ge {published_on}")
+
+    return create_filters_disjunctions(filter_query_list)
+
+
+def date_to_iso_format(date: str) -> str:
+    """ Retrieves date string or relational expression to iso format date.
+        Args:
+            date: str - date or relational expression.
+        Returns:
+            A str in ISO format.
+    """
+    date = dateparser.parse(date)
+    date = date.strftime("%Y-%m-%dT%H:%M:%SZ") if date else ''
+    return date
+
+
+def list_vulnerabilities_command(client: MsClient, args: dict) -> list[CommandResults]:
+    """ Retrieves a list of all vulnerabilities.
+        Args:
+            client: MsClient.
+            args: dict - arguments from CortexSOAR.
+        Returns:
+            A CommandResults object.
+    """
+    id = argToList(args.get('id', ''))
+    severity = argToList(args.get('severity', ''))
+    name_equal = args.get('name_equal', '')
+    name_contains = args.get('name_contains', '')
+    description = args.get('description_contains', '')
+    published_on = date_to_iso_format(args.get('published_on', ''))
+    updated_on = date_to_iso_format(args.get('updated_on', ''))
+    cvss = args.get('cvss', '')
+    limit = args.get('limit', '25')
+    offset = args.get('offset', '0')
+    filter_req_id_and_severity = create_filter([(id, 'id'), (severity, 'severity')])
+    filter_req = create_filter_list_vulnerabilities(filter_req_id_and_severity, name_equal, name_contains, description,
+                                                    published_on, cvss, updated_on)
+    headers = ['id', 'name', 'description', 'severity', 'publishedOn', 'updatedOn', 'exposedMachines',
+               'exploitVerified', 'publicExploit', 'cvssV3']
+    list_vulnerabilities_response = client.get_list_vulnerabilities(filter_req, limit, offset)
+    list_vulnerabilities_response_value = list_vulnerabilities_response.get('value')
+    results_list = []
+    if list_vulnerabilities_response_value:
+        for cve in list_vulnerabilities_response_value:
+            cve_id = cve.get('id')
+            cve_indicator = Common.CVE(id=cve_id,
+                                       cvss=cve.get('cvssV3'),
+                                       description=cve.get('description'),
+                                       published=cve.get('publishedOn'),
+                                       modified=cve.get('updatedOn')
+                                       )
+            human_readable = tableToMarkdown(f'{INTEGRATION_NAME} vulnerabilities:',
+                                             add_backslash_infront_of_underscore_list([cve]), headers=headers, removeNull=True)
+            results_list.append(CommandResults(outputs_prefix='MicrosoftATP.Vulnerability',
+                                               outputs_key_field='id',
+                                               outputs=cve,
+                                               readable_output=human_readable,
+                                               raw_response=cve,
+                                               indicator=cve_indicator))
+    else:
+        results_list.append(
+            CommandResults(readable_output='No vulnerabilities were found.'))
+    return results_list
 
 
 def list_machines_by_vulnerability_command(client: MsClient, args: dict) -> CommandResults:
@@ -4282,7 +4958,7 @@ def create_related_cve_list_for_machine(machines):
     and the output after remove duplicates will be:
     unique_machines = [{'ID': 1, 'CVE': ['CVE-1','CVE-2']},{'ID': 2, 'CVE': ['CVE-1']}]
     """
-    machine_id_to_cve_list: Dict[str, List[str]] = {}
+    machine_id_to_cve_list: dict[str, list[str]] = {}
     for machine in machines:
         machine_id = machine.get('ID')
         cve_id = machine.get('CVE')
@@ -4301,7 +4977,7 @@ def create_related_cve_list_for_machine(machines):
     return unique_machines
 
 
-def get_file_context(file_info_response: Dict[str, str], headers: list):
+def get_file_context(file_info_response: dict[str, str], headers: list):
     return {key.capitalize(): value for (key, value) in file_info_response.items() if key in headers}
 
 
@@ -4404,7 +5080,7 @@ def validate_args_endpoint_command(hostnames, ips, ids):
             f'{INTEGRATION_NAME} - In order to run this command, please provide valid id, ip or hostname')
 
 
-def endpoint_command(client: MsClient, args: dict) -> List[CommandResults]:
+def endpoint_command(client: MsClient, args: dict) -> list[CommandResults]:
     """Retrieves a collection of machines that have communicated with WDATP cloud on the last 30 days
 
     Returns:
@@ -4565,7 +5241,7 @@ def run_polling_command(client: MsClient, args: dict, cmd: str, action_func: Cal
             error_msg += f'{command_result.outputs.get("commands", [{}])[0].get("errors")}'
         raise Exception(error_msg)
 
-    elif command_status != 'Completed' or action_status == 'InProgress':
+    elif command_status != 'Completed' or action_status in ('InProgress', 'Pending'):
         demisto.debug("action status is not completed")
         # schedule next poll
         polling_args = {
@@ -4611,7 +5287,7 @@ def get_live_response_result_command(client, args):
 
 def get_machine_action_command(client, args):
     id = args['machine_action_id']
-    res = client.get_machine_action_by_id(id)
+    res = client.get_machine_action_by_id(id, overwrite_rate_limit_retry=True)
 
     return CommandResults(
         outputs_prefix='MicrosoftATP.MachineAction',
@@ -4673,7 +5349,7 @@ def run_live_response_script_action(client, args):
     }
 
     # create action:
-    res = client.create_action(machine_id, request_body)
+    res = client.create_action(machine_id, request_body, overwrite_rate_limit_retry=True)
 
     md = tableToMarkdown('Processing action. This may take a few minutes.', res['id'], headers=['id'])
     return CommandResults(
@@ -4685,7 +5361,7 @@ def run_live_response_script_action(client, args):
 
 def get_successfull_action_results_as_info(client, res):
     machine_action_id = res['id']
-    file_link = client.get_live_response_result(machine_action_id, 0)['value']
+    file_link = client.get_live_response_result(machine_action_id, 0, overwrite_rate_limit_retry=True)['value']
 
     f_data = client.download_file(file_link)
     try:
@@ -4728,7 +5404,7 @@ def get_live_response_file_action(client, args):
     }
 
     # create action:
-    res = client.create_action(machine_id, request_body)
+    res = client.create_action(machine_id, request_body, overwrite_rate_limit_retry=True)
     md = tableToMarkdown('Processing action. This may take a few minutes.', res['id'], headers=['id'])
 
     return CommandResults(
@@ -4741,7 +5417,7 @@ def get_file_get_successfull_action_results(client, res):
     machine_action_id = res['id']
 
     # get file link from action:
-    file_link = client.get_live_response_result(machine_action_id, 0)['value']
+    file_link = client.get_live_response_result(machine_action_id, 0, overwrite_rate_limit_retry=True)['value']
     demisto.debug(f'Got file for downloading: {file_link}')
 
     # download link, create file result. File comes back as compressed gz file.
@@ -4787,7 +5463,7 @@ def put_live_response_file_action(client, args):
     }
 
     # create action:
-    res = client.create_action(machine_id, request_body)
+    res = client.create_action(machine_id, request_body, overwrite_rate_limit_retry=True)
     md = tableToMarkdown('Processing action. This may take a few minutes.', res['id'], headers=['id'])
 
     return CommandResults(
@@ -4815,46 +5491,76 @@ def put_file_get_successful_action_results(client, res):
 
 def main():  # pragma: no cover
     params: dict = demisto.params()
-    base_url: str = params.get('url', '').rstrip('/') + '/api'
+    params_endpoint_type = params.get('endpoint_type') or 'Worldwide'
+    params_url = params.get('url')
+    is_gcc = params.get('is_gcc', False)
     tenant_id = params.get('tenant_id') or params.get('_tenant_id')
-    auth_id = params.get('auth_id') or params.get('_auth_id')
-    enc_key = params.get('enc_key') or (params.get('credentials') or {}).get('password')
+    auth_id = params.get('_auth_id') or params.get('auth_id')
+    enc_key = (params.get('credentials') or {}).get('password') or params.get('enc_key')
     use_ssl: bool = not params.get('insecure', False)
     proxy: bool = params.get('proxy', False)
     self_deployed: bool = params.get('self_deployed', False)
-    certificate_thumbprint = params.get('certificate_thumbprint')
-    private_key = params.get('private_key')
+    certificate_thumbprint = params.get('creds_certificate', {}).get('identifier') or params.get('certificate_thumbprint')
+    private_key = replace_spaces_in_credential(params.get('creds_certificate', {}).get('password')) or params.get('private_key')
+    alert_detectionsource_to_fetch = params.get("fetch_detectionsource")
     alert_severities_to_fetch = params.get('fetch_severity')
     alert_status_to_fetch = params.get('fetch_status')
     alert_time_to_fetch = params.get('first_fetch_timestamp', '3 days')
     max_alert_to_fetch = arg_to_number(params.get('max_fetch', 50))
     fetch_evidence = argToBoolean(params.get('fetch_evidence', False))
     last_run = demisto.getLastRun()
-    is_gcc = params.get('is_gcc', False)
+    auth_type = params.get('auth_type', 'Client Credentials')
+    auth_code = params.get('auth_code', {}).get('password', '')
+    redirect_uri = params.get('redirect_uri', '')
+    managed_identities_client_id = get_azure_managed_identities_client_id(params)
+    self_deployed = self_deployed or managed_identities_client_id is not None
 
-    if not self_deployed and not enc_key:
-        raise DemistoException('Key must be provided. For further information see '
-                               'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
-    elif not enc_key and not (certificate_thumbprint and private_key):
-        raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
-    if not auth_id:
-        raise Exception('Authentication ID must be provided.')
-    if not tenant_id:
-        raise Exception('Tenant ID must be provided.')
+    endpoint_type, params_url = microsoft_defender_for_endpoint_get_base_url(params_endpoint_type, params_url, is_gcc)
+
+    base_url: str = urljoin(params_url, '/api')
+
+    if not managed_identities_client_id:
+        if not self_deployed and not enc_key:
+            raise DemistoException('Key must be provided. For further information see '
+                                   'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+        elif not enc_key and (not certificate_thumbprint or not private_key):
+            raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
+        if not auth_id:
+            raise Exception('Authentication ID must be provided.')
+        if not tenant_id:
+            raise Exception('Tenant ID must be provided.')
+        if auth_code:
+            if redirect_uri and not self_deployed:
+                raise Exception('In order to use Authorization Code, set Self Deployed: True.')
+            if not redirect_uri:
+                raise Exception('In order to use Authorization Code auth flow, you should set: '
+                                '"Application redirect URI", "Authorization code" and "Self Deployed=True".')
 
     command = demisto.command()
     args = demisto.args()
     LOG(f'command is {command}')
     try:
+
         client = MsClient(
             base_url=base_url, tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=APP_NAME, verify=use_ssl,
             proxy=proxy, self_deployed=self_deployed, alert_severities_to_fetch=alert_severities_to_fetch,
             alert_status_to_fetch=alert_status_to_fetch, alert_time_to_fetch=alert_time_to_fetch,
             max_fetch=max_alert_to_fetch, certificate_thumbprint=certificate_thumbprint, private_key=private_key,
-            is_gcc=is_gcc,
+            auth_type=auth_type, endpoint_type=endpoint_type,
+            auth_code=auth_code, redirect_uri=redirect_uri,
+            managed_identities_client_id=managed_identities_client_id,
+            alert_detectionsource_to_fetch=alert_detectionsource_to_fetch
         )
         if command == 'test-module':
+            if auth_type == 'Authorization Code':
+                raise Exception('Test-module is not available when using Authentication-code auth flow. '
+                                'Please use `!microsoft-atp-test` command to test the connection')
             test_module(client)
+            demisto.results('ok')
+
+        elif command == 'microsoft-atp-test':
+            test_module(client)
+            return_results('✅ Success!')
 
         elif command == 'fetch-incidents':
             incidents, last_run = fetch_incidents(client, last_run, fetch_evidence)
@@ -4963,6 +5669,27 @@ def main():  # pragma: no cover
         elif command == 'microsoft-atp-list-machines-by-vulnerability':
             return_results(list_machines_by_vulnerability_command(client, args))
 
+        elif command == 'microsoft-atp-list-software-version-distribution':
+            return_results(list_software_version_distribution_command(client, args))
+
+        elif command == 'microsoft-atp-list-machines-by-software':
+            return_results(list_machines_by_software_command(client, args))
+
+        elif command == 'microsoft-atp-list-missing-kb-by-software':
+            return_results(list_missing_kb_by_software_command(client, args))
+
+        elif command == 'microsoft-atp-list-vulnerabilities-by-software':
+            return_results(list_vulnerabilities_by_software_command(client, args))
+
+        elif command == 'microsoft-atp-list-software':
+            return_results(list_software_command(client, args))
+
+        elif command == 'microsoft-atp-list-vulnerabilities-by-machine':
+            return_results(list_vulnerabilities_by_machine_command(client, args))
+
+        elif command == 'microsoft-atp-list-vulnerabilities':
+            return_results(list_vulnerabilities_command(client, args))
+
         elif command == 'microsoft-atp-get-file-info':
             demisto.results(get_file_info_command(client, args))
 
@@ -4979,7 +5706,6 @@ def main():  # pragma: no cover
             return_outputs(*update_indicator_command(client, args))
         elif command == 'microsoft-atp-indicator-delete':
             return_outputs(delete_indicator_command(client, args))
-        # using security-center api for indicators
         elif command in ('microsoft-atp-sc-indicator-list', 'microsoft-atp-sc-indicator-get-by-id'):
             return_results(sc_list_indicators_command(client, args))
         elif command in ('microsoft-atp-sc-indicator-update', 'microsoft-atp-sc-indicator-create'):
@@ -5022,11 +5748,14 @@ def main():  # pragma: no cover
             return_results(get_machine_alerts_command(client, args))
         elif command == 'microsoft-atp-request-and-download-investigation-package':
             return_results(request_download_investigation_package_command(client, args))
+        elif command == 'microsoft-atp-generate-login-url':
+            return_results(generate_login_url_command(client))
+        elif command == 'microsoft-atp-auth-reset':
+            return_results(reset_auth())
+
     except Exception as err:
         return_error(str(err))
 
-
-from MicrosoftApiModule import *  # noqa: E402
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

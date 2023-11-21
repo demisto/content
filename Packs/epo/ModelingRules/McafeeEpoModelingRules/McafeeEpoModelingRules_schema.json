@@ -1,7 +1,7 @@
 {
   "mcafee_epo_raw": {
     "_raw_log": {
-      "type": "timestamp",
+      "type": "datetime",
       "is_array": false
     },
     "ThreatEventID": {
@@ -13,22 +13,6 @@
       "is_array": false
     },
     "ThreatSeverity": {
-      "type": "number",
-      "is_array": false
-    },
-    "ThreatName": {
-      "type": "string",
-      "is_array": false
-    },
-    "NodeName": {
-      "type": "string",
-      "is_array": false
-    },
-    "ServerID": {
-      "type": "string",
-      "is_array": false
-    },
-    "AnalyzerVersion": {
       "type": "string",
       "is_array": false
     },

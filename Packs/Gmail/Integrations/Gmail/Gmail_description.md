@@ -1,6 +1,6 @@
-This API enables you to use the Google Admin API. In order to enable the API, you will need to create an account service private key JSON file and copy its content as the value for the **Password** parameter field.
+This API enables you to use the Google Admin API. In order to enable the API, you need to create an account service private key JSON file and copy its content as the value for the **Password** parameter field.
 
-Follow these steps to [create a private key and authorize the API](https://developers.google.com/admin-sdk/directory/v1/guides/delegation).
+Follow these steps to [create a Service Account file with a Private Key and authorize the API](https://developers.google.com/admin-sdk/directory/v1/guides/delegation).
 
 | Function | API to Authorize |
 | -------- | ---------------- |

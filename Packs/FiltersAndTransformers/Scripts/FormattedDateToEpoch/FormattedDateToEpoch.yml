@@ -1,0 +1,24 @@
+commonfields:
+  id: FormattedDateToEpoch
+  version: -1
+name: FormattedDateToEpoch
+script: '-'
+type: python
+subtype: python3
+tags:
+- transformer
+- date
+comment: 'Converts a custom-formatted timestamp to UNIX epoch time. Use it to convert custom time stamps to a XSOAR date field. If you pass formatter argument, we will use it to transform. If not, we will use dateparser.parse for transforming. For more info, see: https://docs.python.org/3.7/library/datetime.html#strftime-and-strptime-behavior'
+enabled: true
+args:
+- name: value
+  required: true
+  description: Time stamp to convert
+- name: formatter
+  description: Python 'strptime' formatter string
+scripttarget: 0
+dockerimage: demisto/python3:3.10.12.63474
+runas: DBotWeakRole
+tests:
+- FormattedDateToEpochTest
+fromversion: 5.0.0

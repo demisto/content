@@ -1,0 +1,27 @@
+commonfields:
+  id: SetMultipleValues
+  version: -1
+name: SetMultipleValues
+script: ''
+type: python
+subtype: python3
+tags:
+- Utility
+comment: Set multiple keys/values to the context.
+enabled: true
+args:
+- name: parent
+  required: true
+  default: true
+  description: The parent key to which we append all the other keys
+- name: keys
+  required: true
+  description: Comma separated list of keys
+- name: values
+  required: true
+  description: Comma separated list of values
+scripttarget: 0
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.10.12.63474
+tests:
+- No tests (auto formatted)

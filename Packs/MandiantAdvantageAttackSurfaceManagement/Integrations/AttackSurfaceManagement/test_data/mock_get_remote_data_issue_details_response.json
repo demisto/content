@@ -1,0 +1,70 @@
+{
+  "success": true,
+  "message": "successfully returned issue",
+  "result": {
+    "uuid": "9fc77fef-6362-4aef-a154-0ab4a058d5de",
+    "dynamic_id": 6437944,
+    "entity_uid": "a4cfa1f3c7864d343f8b9568248ad7550400598ddf10ea18959c860ca6253a01",
+    "alias_group": "1156748",
+    "category": "misconfiguration",
+    "confidence": "confirmed",
+    "description": "This server is configured to allow a deprecated ssl / tls protocol.",
+    "details": {
+      "name": "deprecated_ssl_protocol_detected",
+      "added": "2020-01-01",
+      "proof": {
+        "details": {
+          "type": "tls",
+          "enabled": "1",
+          "version": "1.1"
+        },
+        "description": "Target supports deprecated protocol tls with version 1.1"
+      },
+      "source": "tls:1.1",
+      "category": "misconfiguration",
+      "severity": "5",
+      "references": [
+      ],
+      "description": "This server is configured to allow a deprecated ssl / tls protocol.",
+      "pretty_name": "Deprecated SSL/TLS Protocol Detected",
+      "remediation": "Disable the weak protocol according the the instructions for your web server."
+    },
+    "first_seen": "2022-08-18T17:12:20.000Z",
+    "identifiers": null,
+    "last_seen": "2022-08-23T20:05:56.000Z",
+    "name": "deprecated_ssl_protocol_detected",
+    "pretty_name": "Deprecated SSL/TLS Protocol Detected",
+    "scoped": true,
+    "severity": 5,
+    "source": null,
+    "status": "open_triaged",
+    "ticket_list": null,
+    "type": "standard",
+    "uid": "8e02af6c136f297aa8fece36726a6d659bf59f512ca8a90350d93038215a19d7",
+    "upstream": "tls:1.1",
+    "created_at": "2022-09-25T05:21:20.000Z",
+    "updated_at": "2023-02-11T17:39:17.810Z",
+    "entity_id": 186794841,
+    "collection_id": 132956,
+    "elasticsearch_mappings_hash": null,
+    "collection": "collectionname_mw3tdwq",
+    "collection_type": "user_collection",
+    "collection_uuid": "cb502f1e-10a8-4520-a620-e02614526ee9",
+    "organization_uuid": "092c7588-fe6f-454e-a071-34a7342c16a3",
+    "entity_name": "https://domain.app:443",
+    "entity_type": "Intrigue::Entity::Uri",
+    "summary": {
+      "pretty_name": "Deprecated SSL/TLS Protocol Detected",
+      "severity": 5,
+      "scoped": true,
+      "confidence": "confirmed",
+      "status": "open_triaged",
+      "category": "misconfiguration",
+      "identifiers": null,
+      "status_new": "open",
+      "status_new_detailed": "triaged",
+      "ticket_list": null
+    },
+    "tags": []
+  }
+}

@@ -1,0 +1,42 @@
+commonfields:
+  id: UploadFile
+  version: -1
+enabled: true
+name: UploadFile
+fromversion: 6.5.0
+script: '-'
+args:
+- description: File entry ID
+  name: entryID
+  predefined:
+  - ''
+  required: true
+- description: Incident ID to upload the file to
+  name: incID
+  required: true
+- description: Request body
+  name: body
+- auto: PREDEFINED
+  defaultValue: 'war room entry'
+  description: |-
+    Where to upload the file
+    - Available options are:
+    - `war room entry`: the file will be uploaded as war room entry.
+    - `incident attachment`: the file will be uploaded as incident attachment.
+    - default are `war room entry`
+  name: target
+  predefined:
+  - 'war room entry'
+  - 'incident attachment'
+comment: Copies a file from this incident to the specified incident. The file is recorded as an entry in the specified incident’s War Room.
+subtype: python3
+dockerimage: demisto/python3:3.10.12.66339
+tags:
+- DemistoAPI
+timeout: '0'
+type: python
+dependson:
+  must:
+  - demisto-api-multipart
+tests:
+- No tests (auto formatted)

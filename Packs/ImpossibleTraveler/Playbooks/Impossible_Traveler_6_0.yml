@@ -1,0 +1,2384 @@
+id: Impossible Traveler
+version: -1
+name: Impossible Traveler
+description: |-
+  This playbook investigates an event whereby a user has multiple application login attempts from various locations in a short time period (impossible traveler). The playbook gathers user, timestamp and IP information
+  associated with the multiple application login attempts.
+
+  The playbook then measures the time difference between the multiple login attempts and computes the distance between the two locations to verify whether it is possible the user could traverse the distance
+  in the amount of time determined. Also, it takes steps to remediate the incident by blocking the offending IPs and disabling the user account, if chosen to do so.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 89164d19-18a8-41d4-8f40-cd6cde0b0135
+    type: start
+    task:
+      id: 89164d19-18a8-41d4-8f40-cd6cde0b0135
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "62"
+      - "61"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": -560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: fbd79de9-bdbb-4048-878b-f14aec5a8ef8
+    type: regular
+    task:
+      id: fbd79de9-bdbb-4048-878b-f14aec5a8ef8
+      version: -1
+      name: Calculate geographical distance between logins
+      description: Compute the distance between two sets of coordinates in miles.
+      tags:
+      - geodistance
+      scriptName: CalculateGeoDistance
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      dest_coords:
+        complex:
+          root: SourceIPGeo
+          transformers:
+          - operator: uniq
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ','
+              toReplace:
+                value:
+                  simple: ':'
+      src_coords:
+        complex:
+          root: PreviousSourceIPGeo
+          transformers:
+          - operator: uniq
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ','
+              toReplace:
+                value:
+                  simple: ':'
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -870,
+          "y": 1620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 7b361c68-abe6-4c83-88b4-ca2bc253e297
+    type: regular
+    task:
+      id: 7b361c68-abe6-4c83-88b4-ca2bc253e297
+      version: -1
+      name: Calculate time difference between logins
+      description: Calculate the time difference, in minutes.
+      tags:
+      - eventduration
+      scriptName: CalculateTimeDifference
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      end_time:
+        complex:
+          root: incident
+          accessor: signindatetime
+          transformers:
+          - operator: uniq
+      start_time:
+        complex:
+          root: incident
+          accessor: previoussignindatetime
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": 1620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: f2a7691c-df68-41af-8a05-825aed028836
+    type: title
+    task:
+      id: f2a7691c-df68-41af-8a05-825aed028836
+      version: -1
+      name: Containment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 3265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 3d27c29a-1136-4c00-89f6-ae243d901d7f
+    type: regular
+    task:
+      id: 3d27c29a-1136-4c00-89f6-ae243d901d7f
+      version: -1
+      name: Disable user account
+      description: Disables the account of the offending user, using Active Directory.
+      script: '|||ad-disable-account'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      username:
+        complex:
+          root: incident
+          accessor: username
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 4150
+        }
+      }
+    note: true
+    timertriggers:
+    - fieldname: remediationsla
+      action: start
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: a7114ae3-88f9-4ee9-8e1d-6760bec70749
+    type: regular
+    task:
+      id: a7114ae3-88f9-4ee9-8e1d-6760bec70749
+      version: -1
+      name: Update incident details and set severity
+      description: Updates the incident details to say that the user is an impossible traveler, and sets the incident severity to high.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "74"
+    scriptarguments:
+      coordinates:
+        complex:
+          root: SourceIPGeo
+          transformers:
+          - operator: uniq
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      details:
+        simple: A user has logged in from multiple geographical locations in too short an amount of time. The user is an impossible traveler according to the maximum miles per hour allowed.
+      phase:
+        simple: Containment
+      previouscoordinates:
+        complex:
+          root: PreviousSourceIPGeo
+          transformers:
+          - operator: uniq
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      severity:
+        simple: high
+      travelmaplink:
+        complex:
+          root: TravelMap
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 3410
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: detectionsla
+      action: stop
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 39db20af-3fdb-45dc-8905-a2042bb4c515
+    type: condition
+    task:
+      id: 39db20af-3fdb-45dc-8905-a2042bb4c515
+      version: -1
+      name: Should the source IPs be blocked automatically?
+      description: Checks whether the source IPs that the user used to login from can be blocked automatically, according to the playbook inputs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "79"
+      "yes":
+      - "97"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutomaticallyBlockIPs
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 4330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 9f5e52fe-9abb-4cbe-8a6d-3f1e09424888
+    type: playbook
+    task:
+      id: 9f5e52fe-9abb-4cbe-8a6d-3f1e09424888
+      version: -1
+      name: IP Enrichment - Generic v2
+      playbookName: IP Enrichment - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      IP:
+        complex:
+          root: IP
+          accessor: Address
+          transformers:
+          - operator: uniq
+      ResolveIP:
+        simple: "True"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 1680,
+          "y": -90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 06854db3-617e-4bb3-8772-2c2b3f3bfdd7
+    type: title
+    task:
+      id: 06854db3-617e-4bb3-8772-2c2b3f3bfdd7
+      version: -1
+      name: Travel Information Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "49"
+      - "80"
+      - "91"
+      - "90"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": -230
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: detectionsla
+      action: start
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: d7cd290c-80c0-476d-85e9-0b8777bd4d5a
+    type: title
+    task:
+      id: d7cd290c-80c0-476d-85e9-0b8777bd4d5a
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "52"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 805
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 651c4db4-919c-46fb-8b2a-c1bc4640e6e5
+    type: condition
+    task:
+      id: 651c4db4-919c-46fb-8b2a-c1bc4640e6e5
+      version: -1
+      name: Are there coordinates for the source IPs?
+      description: Checks whether coordinates were retrieved for the IPs that the user used to login.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "54"
+      "yes":
+      - "58"
+      - "59"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: IP
+                transformers:
+                - operator: WhereFieldEquals
+                  args:
+                    equalTo:
+                      value:
+                        simple: incident.sourceip
+                      iscontext: true
+                    field:
+                      value:
+                        simple: Address
+                    getField:
+                      value:
+                        simple: Geo
+                    stringify:
+                      value:
+                        simple: "false"
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: Location
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: IP
+                transformers:
+                - operator: WhereFieldEquals
+                  args:
+                    equalTo:
+                      value:
+                        simple: incident.previoussourceip
+                      iscontext: true
+                    field:
+                      value:
+                        simple: Address
+                    getField:
+                      value:
+                        simple: Geo
+                    stringify:
+                      value:
+                        simple: "false"
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: Location
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: f104955a-88f7-4cb8-87c7-34572cd5daf8
+    type: regular
+    task:
+      id: f104955a-88f7-4cb8-87c7-34572cd5daf8
+      version: -1
+      name: Manually investigate the incident
+      description: Manually investigate the incident. Try to understand the locations from which the user connected, and the time difference between the two logins. Contain the incident, if needed.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "70"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: ebac010f-b093-4500-828f-11a42f9cbc4d
+    type: regular
+    task:
+      id: ebac010f-b093-4500-828f-11a42f9cbc4d
+      version: -1
+      name: Save source IP geolocation data
+      description: Saves the geolocation of the IP associated with the user's login.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "73"
+    scriptarguments:
+      key:
+        simple: SourceIPGeo
+      value:
+        complex:
+          root: IP
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: Geo.Location
+                iscontext: true
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: incident.sourceip
+                iscontext: true
+              field:
+                value:
+                  simple: Address
+              getField:
+                value:
+                  simple: Geo
+              stringify:
+                value:
+                  simple: "false"
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: Location
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: 28eefc43-ae17-466c-8719-b0d9bc5efb2c
+    type: regular
+    task:
+      id: 28eefc43-ae17-466c-8719-b0d9bc5efb2c
+      version: -1
+      name: Save previous source IP geolocation data
+      description: Saves the geolocation of the IP associated with the previous user login.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "73"
+    scriptarguments:
+      key:
+        simple: PreviousSourceIPGeo
+      value:
+        complex:
+          root: IP
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: Geo.Location
+                iscontext: true
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: incident.previoussourceip
+                iscontext: true
+              field:
+                value:
+                  simple: Address
+              getField:
+                value:
+                  simple: Geo
+              stringify:
+                value:
+                  simple: "false"
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: Location
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -510,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 1964cbf7-a1b1-417e-81b3-6ffca7076405
+    type: regular
+    task:
+      id: 1964cbf7-a1b1-417e-81b3-6ffca7076405
+      version: -1
+      name: Get previous login IP location information
+      description: Gets geolocation information about the previous IP that the user logged in from.
+      script: '|||ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      ip:
+        complex:
+          root: incident
+          accessor: previoussourceip
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: 5b5ea973-d7d3-4110-8659-5de212e778de
+    type: regular
+    task:
+      id: 5b5ea973-d7d3-4110-8659-5de212e778de
+      version: -1
+      name: Get login IP location information
+      description: Gets geolocation information about the IP that the user logged in from.
+      script: '|||ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      ip:
+        complex:
+          root: incident
+          accessor: sourceip
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: b5f9fe73-ecaa-4f9a-8799-d51cc0591cbf
+    type: condition
+    task:
+      id: b5f9fe73-ecaa-4f9a-8799-d51cc0591cbf
+      version: -1
+      name: Did the user travel more than the allowed MPH?
+      description: Checks whether the user traveled faster than the allowed speed in MPH.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "66"
+      "yes":
+      - "84"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThan
+          left:
+            value:
+              complex:
+                root: Geo
+                accessor: Distance
+                transformers:
+                - operator: division
+                  args:
+                    by:
+                      value:
+                        simple: Time.Difference
+                      iscontext: true
+                - operator: multiply
+                  args:
+                    by:
+                      value:
+                        simple: "60"
+            iscontext: true
+          right:
+            value:
+              simple: inputs.MaxMilesPerHourAllowed
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 1980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: 62ef2221-0863-4e24-8a14-de995bf906cb
+    type: regular
+    task:
+      id: 62ef2221-0863-4e24-8a14-de995bf906cb
+      version: -1
+      name: Update incident details and set severity
+      description: Updates the incident details to say that the user is a legitimate traveler, and sets the incident severity to low.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      coordinates:
+        complex:
+          root: SourceIPGeo
+          transformers:
+          - operator: uniq
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      details:
+        simple: The user logged in from two different locations within a reasonable time period.
+      phase:
+        simple: No Response Needed (Legitimate Login)
+      previouscoordinates:
+        complex:
+          root: PreviousSourceIPGeo
+          transformers:
+          - operator: uniq
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      severity:
+        simple: low
+      travelmaplink:
+        complex:
+          root: TravelMap
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -940,
+          "y": 3265
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: detectionsla
+      action: stop
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: 5aff0009-233a-4263-825c-bb3c0540d3e9
+    type: condition
+    task:
+      id: 5aff0009-233a-4263-825c-bb3c0540d3e9
+      version: -1
+      name: Did the user login from IP addresses on allow list?
+      description: Checks whether both user login events originated from IP addresses on allow list.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "32"
+      "yes":
+      - "69"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: in
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: sourceip
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.WhitelistedIPs
+                transformers:
+                - operator: splitAndTrim
+                  args:
+                    delimiter:
+                      value:
+                        simple: ','
+            iscontext: true
+      - - operator: in
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: sourceip
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.WhitelistedIPs
+                transformers:
+                - operator: splitAndTrim
+                  args:
+                    delimiter:
+                      value:
+                        simple: ','
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 3010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: e6335721-25ca-4a6b-8173-d10b03b301a3
+    type: condition
+    task:
+      id: e6335721-25ca-4a6b-8173-d10b03b301a3
+      version: -1
+      name: Are there IPs configured on allow list?
+      description: Checks whether allow list IPs were configured.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "32"
+      "yes":
+      - "67"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.WhitelistedIPs
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 2800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: a3ac527f-81e5-476b-8537-ce081304e047
+    type: regular
+    task:
+      id: a3ac527f-81e5-476b-8537-ce081304e047
+      version: -1
+      name: Update incident details and set severity
+      description: Updates the incident details to say that the user is a legitimate traveler because the login events originated from IP addresses on allow list, and sets the incident severity to low.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      coordinates:
+        complex:
+          root: SourceIPGeo
+          transformers:
+          - operator: uniq
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      details:
+        simple: A user has logged in from multiple geographical locations in a short amount of time. However, they logged in from IP addresses on allow list, so the login was considered legitimate.
+      phase:
+        simple: No Response Needed (Whitelisted Login)
+      previouscoordinates:
+        complex:
+          root: PreviousSourceIPGeo
+          transformers:
+          - operator: uniq
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      severity:
+        simple: low
+      travelmaplink:
+        complex:
+          root: TravelMap
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 3265
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: detectionsla
+      action: stop
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: 51a959c2-f2f6-42ff-852c-781f4b88f3be
+    type: regular
+    task:
+      id: 51a959c2-f2f6-42ff-852c-781f4b88f3be
+      version: -1
+      name: Close investigation
+      description: Closes the investigation.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 4820
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: remediationsla
+      action: stop
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: e9ca09c0-257f-4b66-82f9-e23bff61c711
+    type: regular
+    task:
+      id: e9ca09c0-257f-4b66-82f9-e23bff61c711
+      version: -1
+      name: Generate travel map link
+      description: Creates a travel map link and saves it in the context.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "96"
+    scriptarguments:
+      key:
+        simple: TravelMap
+      value:
+        complex:
+          root: inputs.DefaultMapLink
+          transformers:
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: PreviousSourceIPGeo
+                iscontext: true
+              toReplace:
+                value:
+                  simple: SOURCE
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: SourceIPGeo
+                iscontext: true
+              toReplace:
+                value:
+                  simple: DESTINATION
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: _
+              toReplace:
+                value:
+                  simple: ','
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: 5dad711b-cb0e-44d6-8590-5c614f67f1ea
+    type: title
+    task:
+      id: 5dad711b-cb0e-44d6-8590-5c614f67f1ea
+      version: -1
+      name: Process Travel Data
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "30"
+      - "72"
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "74":
+    id: "74"
+    taskid: 7c3addd4-ff4e-4a28-81e5-1638ff78ac08
+    type: condition
+    task:
+      id: 7c3addd4-ff4e-4a28-81e5-1638ff78ac08
+      version: -1
+      name: Can the user be disabled automatically?
+      description: Checks whether the user can be disabled automatically, as configured in the playbook inputs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "75"
+      "yes":
+      - "95"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutomaticallyDisableUser
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 3580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: 34d2d123-14a3-4df9-86f1-7882efa15006
+    type: condition
+    task:
+      id: 34d2d123-14a3-4df9-86f1-7882efa15006
+      version: -1
+      name: Get approval for disabling user
+      description: You should now contain the incident of the offending user. Please get approval to automatically disable the user account in Active Directory.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Approved:
+      - "95"
+      Unapproved:
+      - "76"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 3760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: 15285aa7-279f-436a-8a41-46798ef04b6f
+    type: regular
+    task:
+      id: 15285aa7-279f-436a-8a41-46798ef04b6f
+      version: -1
+      name: Manually disable user account
+      description: Please take manual steps to disable the user account, or expire his or her password.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 4150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "79":
+    id: "79"
+    taskid: f0a8d131-1f51-4c25-8b94-9cad739b12a3
+    type: regular
+    task:
+      id: f0a8d131-1f51-4c25-8b94-9cad739b12a3
+      version: -1
+      name: Manually block IPs
+      description: Please take manual steps to block the offending IPs.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "70"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 4520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "80":
+    id: "80"
+    taskid: 154d7a46-5386-460e-8910-1950ff1f720d
+    type: condition
+    task:
+      id: 154d7a46-5386-460e-8910-1950ff1f720d
+      version: -1
+      name: Can the account be enriched?
+      description: Checks whether there is a username for the offending user in context, and whether Active Directory v2 is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "51"
+      "yes":
+      - "81"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active Directory Query v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: incident.username
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": -90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "81":
+    id: "81"
+    taskid: 37665c74-3bde-4e06-8e0a-a9af77d1cb53
+    type: regular
+    task:
+      id: 37665c74-3bde-4e06-8e0a-a9af77d1cb53
+      version: -1
+      name: Enrich offending user account
+      description: Gets details about the offending username from Active Directory.
+      tags:
+      - userinfo
+      script: '|||ad-get-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "94"
+    scriptarguments:
+      username:
+        complex:
+          root: incident
+          accessor: username
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "84":
+    id: "84"
+    taskid: b144d5df-6b2c-41d2-81f4-8de96a5259f9
+    type: condition
+    task:
+      id: b144d5df-6b2c-41d2-81f4-8de96a5259f9
+      version: -1
+      name: Can the manager be contacted for travel approval?
+      description: Checks whether an email address was retrieved for the manger of the offending user.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "68"
+      "yes":
+      - "86"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: UserManagerEmail
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.ContactUserManager
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 2150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "86":
+    id: "86"
+    taskid: 968c5886-7ee0-499c-8fd6-c656e6b6937f
+    type: regular
+    task:
+      id: 968c5886-7ee0-499c-8fd6-c656e6b6937f
+      version: -1
+      name: Ask manager if travel was expected
+      description: Ask a user a question via email and process the reply directly into the investigation.
+      scriptName: EmailAskUser
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "87"
+    scriptarguments:
+      email:
+        complex:
+          root: UserManagerEmail
+          transformers:
+          - operator: uniq
+      message:
+        simple: User ${incident.username} traveled ${Geo.Distance} miles in ${Time.Difference} minutes. Was this an expected event?
+      subject:
+        simple: User ${incident.username} is an impossible traveler!
+      task:
+        simple: TravelQuestion
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 2340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "87":
+    id: "87"
+    taskid: 994657de-7b7a-4897-874c-be24fddac9d8
+    type: condition
+    task:
+      id: 994657de-7b7a-4897-874c-be24fddac9d8
+      version: -1
+      name: Get manager response
+      description: Gets a response from the manager as to whether the travel done by the user was expected. The response is received from the email reply that the manager sends.
+      tags:
+      - TravelQuestion
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "68"
+      "yes":
+      - "88"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 2520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "88":
+    id: "88"
+    taskid: b9ea26ae-e772-4b55-8223-f6fbe74a5427
+    type: regular
+    task:
+      id: b9ea26ae-e772-4b55-8223-f6fbe74a5427
+      version: -1
+      name: Update incident details and set severity
+      description: Updates the incident details to say that the manager of the user approved the travel, and sets the incident severity to low.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      coordinates:
+        complex:
+          root: SourceIPGeo
+          transformers:
+          - operator: uniq
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      details:
+        simple: The user logged in from two different locations within a reasonable time period.
+      phase:
+        simple: No Response Needed (Legitimate Login)
+      previouscoordinates:
+        complex:
+          root: PreviousSourceIPGeo
+          transformers:
+          - operator: uniq
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      severity:
+        simple: low
+      travelmaplink:
+        complex:
+          root: TravelMap
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 2800
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: detectionsla
+      action: stop
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "89":
+    id: "89"
+    taskid: 354bc65e-950f-4ba9-8771-4953ae438540
+    type: regular
+    task:
+      id: 354bc65e-950f-4ba9-8771-4953ae438540
+      version: -1
+      name: Create travel map image
+      description: Converts the contents of a URL to an image file or a PDF file.
+      script: '|||rasterize'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      url:
+        complex:
+          root: TravelMap
+          transformers:
+          - operator: uniq
+      wait_time:
+        simple: "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -500,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "90":
+    id: "90"
+    taskid: 290f01c1-5e82-4d10-890e-250d669ab805
+    type: condition
+    task:
+      id: 290f01c1-5e82-4d10-890e-250d669ab805
+      version: -1
+      name: Is there a country for the source IP?
+      description: Checks if there is a country associated with the source IP address.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "51"
+      "yes":
+      - "92"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IP
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: IP.Geo.Country
+                      iscontext: true
+                transformers:
+                - operator: WhereFieldEquals
+                  args:
+                    equalTo:
+                      value:
+                        simple: incident.sourceip
+                      iscontext: true
+                    field:
+                      value:
+                        simple: Address
+                    getField:
+                      value:
+                        simple: Geo
+                    stringify:
+                      value:
+                        simple: "false"
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: Country
+                - operator: uniq
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "0"
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": -90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "91":
+    id: "91"
+    taskid: e5bac47f-93ef-4aae-89f0-3220a9b32ee2
+    type: condition
+    task:
+      id: e5bac47f-93ef-4aae-89f0-3220a9b32ee2
+      version: -1
+      name: Is there a country for the previous source IP?
+      description: Checks if there is a country associated with the previous source IP address.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "51"
+      "yes":
+      - "93"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IP
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: IP.Geo.Country
+                      iscontext: true
+                transformers:
+                - operator: WhereFieldEquals
+                  args:
+                    equalTo:
+                      value:
+                        simple: incident.previoussourceip
+                      iscontext: true
+                    field:
+                      value:
+                        simple: Address
+                    getField:
+                      value:
+                        simple: Geo
+                    stringify:
+                      value:
+                        simple: "false"
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: Country
+                - operator: uniq
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "0"
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": -90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "92":
+    id: "92"
+    taskid: 879713f5-f8e3-4a31-8704-0223c0764c1b
+    type: regular
+    task:
+      id: 879713f5-f8e3-4a31-8704-0223c0764c1b
+      version: -1
+      name: Update incident details with source country
+      description: Updates the incident details with the country from which the user logged in.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      country:
+        complex:
+          root: IP
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: IP.Geo.Country
+                iscontext: true
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: incident.sourceip
+                iscontext: true
+              field:
+                value:
+                  simple: Address
+              getField:
+                value:
+                  simple: Geo
+              stringify:
+                value:
+                  simple: "false"
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: Country
+          - operator: uniq
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "93":
+    id: "93"
+    taskid: 050e413d-74f0-46e7-8c07-502e88f1a5d1
+    type: regular
+    task:
+      id: 050e413d-74f0-46e7-8c07-502e88f1a5d1
+      version: -1
+      name: Update incident details with previous source country
+      description: Updates the incident details with the country from which the user previously logged in.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      previouscountry:
+        complex:
+          root: IP
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: IP.Geo.Country
+                iscontext: true
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: incident.previoussourceip
+                iscontext: true
+              field:
+                value:
+                  simple: Address
+              getField:
+                value:
+                  simple: Geo
+              stringify:
+                value:
+                  simple: "false"
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: Country
+          - operator: uniq
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "94":
+    id: "94"
+    taskid: b1de0ac1-d045-40f3-8def-512ad3c9be0d
+    type: playbook
+    task:
+      id: b1de0ac1-d045-40f3-8def-512ad3c9be0d
+      version: -1
+      name: Active Directory - Get User Manager Details
+      description: Takes an email address or a username of a user account in Active Directory, and returns the email address of the user's manager.
+      playbookName: Active Directory - Get User Manager Details
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      Username:
+        complex:
+          root: incident
+          accessor: username
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "95":
+    id: "95"
+    taskid: ca38e4df-48b7-40a9-8cc3-8248b7ca5743
+    type: condition
+    task:
+      id: ca38e4df-48b7-40a9-8cc3-8248b7ca5743
+      version: -1
+      name: Is Active Directory enabled?
+      description: Checks whether the Active Directory Query v2 integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "76"
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active Directory Query v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 3945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "96":
+    id: "96"
+    taskid: a4857973-adc0-4a7f-884d-271532c50b08
+    type: condition
+    task:
+      id: a4857973-adc0-4a7f-884d-271532c50b08
+      version: -1
+      name: Is Rasterize enabled?
+      description: "Checks whether the Rasterize integration is enabled."
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "63"
+      "yes":
+      - "89"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Rasterize
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 1620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "97":
+    id: "97"
+    taskid: afac8533-4fde-43a7-8ae7-362b7e1a429c
+    type: playbook
+    task:
+      id: afac8533-4fde-43a7-8ae7-362b7e1a429c
+      version: -1
+      name: Block IP - Generic v3
+      playbookName: Block IP - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      IP:
+        complex:
+          root: incident
+          accessor: sourceip
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ','
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: incident.previoussourceip
+                iscontext: true
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: ','
+      InputEnrichment:
+        simple: "False"
+      RuleDirection:
+        simple: outbound
+      RuleName:
+        simple: XSOAR - Block IP playbook - ${incident.id}
+      UserVerification:
+        simple: "False"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 4520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "52_54_#default#": 0.43,
+      "52_58_yes": 0.84,
+      "52_59_yes": 0.9,
+      "63_66_#default#": 0.18,
+      "67_32_#default#": 0.44,
+      "67_69_yes": 0.76,
+      "68_32_#default#": 0.25,
+      "68_67_yes": 0.42,
+      "74_75_#default#": 0.33,
+      "74_95_yes": 0.48,
+      "75_76_Unapproved": 0.42,
+      "80_51_#default#": 0.33,
+      "80_81_yes": 0.56,
+      "84_86_yes": 0.44,
+      "87_68_No": 0.29,
+      "90_51_#default#": 0.21,
+      "90_92_yes": 0.46,
+      "91_51_#default#": 0.1,
+      "91_93_yes": 0.51,
+      "95_34_yes": 0.46,
+      "96_63_#default#": 0.31,
+      "96_89_yes": 0.52
+    },
+    "paper": {
+      "dimensions": {
+        "height": 5475,
+        "width": 3000,
+        "x": -940,
+        "y": -560
+      }
+    }
+  }
+inputs:
+- key: MaxMilesPerHourAllowed
+  value:
+    simple: "600"
+  required: false
+  description: The maximum miles per hour that is still considered reasonable. If the geographical distance and difference in time between logins is greater than this value, the user will be considered an impossible traveler.
+  playbookInputQuery:
+- key: WhitelistedIPs
+  value: {}
+  required: false
+  description: CSV of IP addresses that are allowed to be used across long distances.
+  playbookInputQuery:
+- key: AutomaticallyBlockIPs
+  value:
+    simple: "False"
+  required: false
+  description: Whether to automatically block the source IPs that the login originated from. Can be False or True.
+  playbookInputQuery:
+- key: DefaultMapLink
+  value:
+    simple: https://bing.com/maps/default.aspx?rtp=pos.SOURCE~pos.DESTINATION
+  required: false
+  description: The default link from which to create a travel map. The "SOURCE" and "DESTINATION" words are replaced with the previous coordinates and current coordinates of the traveler, respectively.
+  playbookInputQuery:
+- key: AutomaticallyDisableUser
+  value:
+    simple: "False"
+  required: false
+  description: Whether to automatically disable the impossible traveler account using Active Directory.
+  playbookInputQuery:
+- key: ContactUserManager
+  value:
+    simple: "False"
+  required: false
+  description: Whether to ask the user manager for the legitimacy of the login events, in case of an alleged impossible traveler.
+  playbookInputQuery:
+outputs:
+- contextPath: Account.Email.Address
+  description: The email address object associated with the Account
+  type: string
+- contextPath: DBotScore
+  description: Indicator, Score, Type, Vendor
+  type: unknown
+- contextPath: Account.ID
+  description: The unique Account DN (Distinguished Name)
+  type: string
+- contextPath: Account.Username
+  description: The Account username
+  type: string
+- contextPath: Account.Email
+  description: The email address associated with the Account
+- contextPath: Account.Type
+  description: Type of the Account entity
+  type: string
+- contextPath: Account.Groups
+  description: The groups the Account is a part of
+- contextPath: Account
+  description: Account object
+  type: unknown
+- contextPath: Account.DisplayName
+  description: The Account display name
+  type: string
+- contextPath: Account.Manager
+  description: The Account's manager
+  type: string
+- contextPath: DBotScore.Indicator
+  description: The indicator value
+  type: string
+- contextPath: DBotScore.Type
+  description: The indicator's type
+  type: string
+- contextPath: DBotScore.Vendor
+  description: The indicator's vendor
+  type: string
+- contextPath: DBotScore.Score
+  description: The indicator's score
+  type: number
+- contextPath: IP
+  description: The IP objects
+  type: unknown
+- contextPath: Endpoint
+  description: The Endpoint's object
+  type: unknown
+- contextPath: Endpoint.Hostname
+  description: The hostname to enrich
+  type: string
+- contextPath: Endpoint.OS
+  description: Endpoint OS
+  type: string
+- contextPath: Endpoint.IP
+  description: List of endpoint IP addresses
+- contextPath: Endpoint.MAC
+  description: List of endpoint MAC addresses
+- contextPath: Endpoint.Domain
+  description: Endpoint domain name
+  type: string
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
+contentitemexportablefields:
+  contentitemfields: {}

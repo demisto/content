@@ -1,0 +1,253 @@
+{
+  "components": [
+    {
+      "name": "i-009febe3976d2e39b",
+      "coll": "Things",
+      "u": {
+        "_id": "Things/3342342",
+        "_key": "3342342",
+        "identity": {
+          "company": "forescout",
+          "type": "ec2",
+          "value": "i-009febe3976d2e39b",
+          "datacenter": "aws",
+          "domain": "global"
+        },
+        "lastSeen": 1660769051306,
+        "name": "i-009febe3976d2e39b",
+        "source": {
+          "forescout": {
+            "lastSeen": 1649168691839.3618
+          }
+        },
+        "userProperties": {
+          "forescout_id": 167838140,
+          "forescout_discoveryScore": 75,
+          "forescout_os": "Unknown",
+          "forescout_dexRiskScore": 0,
+          "forescout_awsInstanceType": "t2.micro",
+          "forescout_awsInstanceState": "stopped"
+        }
+      },
+      "connections": 2
+    },
+    {
+      "name": "i-0168be9037a2db5bf",
+      "coll": "Things",
+      "u": {
+        "_id": "Things/3341707",
+        "_key": "3341707",
+        "identity": {
+          "company": "forescout",
+          "type": "ec2",
+          "value": "i-0168be9037a2db5bf",
+          "datacenter": "aws",
+          "domain": "global"
+        },
+        "lastSeen": 1660769051306,
+        "name": "i-0168be9037a2db5bf",
+        "source": {
+          "forescout": {
+            "lastSeen": 1649168691685.107
+          }
+        },
+        "userProperties": {
+          "forescout_id": 2886755535,
+          "forescout_discoveryScore": 75,
+          "forescout_os": "Linux",
+          "forescout_dexRiskScore": 0,
+          "forescout_awsInstanceType": "t2.micro",
+          "forescout_awsInstanceState": "stopped"
+        }
+      },
+      "connections": 2
+    },
+    {
+      "name": "i-040ca970b26ccca66",
+      "coll": "Things",
+      "u": {
+        "_id": "Things/3342598",
+        "_key": "3342598",
+        "identity": {
+          "company": "forescout",
+          "type": "ec2",
+          "value": "i-040ca970b26ccca66",
+          "datacenter": "aws",
+          "domain": "global"
+        },
+        "lastSeen": 1660769051306,
+        "name": "i-040ca970b26ccca66",
+        "source": {
+          "forescout": {
+            "lastSeen": 1649168691901.34
+          }
+        },
+        "userProperties": {
+          "forescout_id": 2886755437,
+          "forescout_discoveryScore": 75,
+          "forescout_os": "Linux",
+          "forescout_dexRiskScore": 0,
+          "forescout_awsInstanceType": "t2.micro",
+          "forescout_awsInstanceState": "running"
+        }
+      },
+      "connections": 0
+    },
+    {
+      "name": "i-063e2e76f419ae008",
+      "coll": "Things",
+      "u": {
+        "_id": "Things/3342738",
+        "_key": "3342738",
+        "identity": {
+          "company": "forescout",
+          "type": "ec2",
+          "value": "i-063e2e76f419ae008",
+          "datacenter": "aws",
+          "domain": "global"
+        },
+        "lastSeen": 1660769051306,
+        "name": "i-063e2e76f419ae008",
+        "source": {
+          "forescout": {
+            "lastSeen": 1649168691935.0989
+          }
+        },
+        "userProperties": {
+          "forescout_id": 2886755357,
+          "forescout_discoveryScore": 75,
+          "forescout_os": "Linux",
+          "forescout_dexRiskScore": 0,
+          "forescout_awsInstanceType": "t2.micro",
+          "forescout_awsInstanceState": "running"
+        }
+      },
+      "connections": 0
+    },
+    {
+      "name": "i-08577588219cdf0ff",
+      "coll": "Things",
+      "u": {
+        "_id": "Things/3341270",
+        "_key": "3341270",
+        "identity": {
+          "company": "forescout",
+          "type": "ec2",
+          "value": "i-08577588219cdf0ff",
+          "datacenter": "aws",
+          "domain": "global"
+        },
+        "lastSeen": 1660769051306,
+        "name": "i-08577588219cdf0ff",
+        "source": {
+          "forescout": {
+            "lastSeen": 1649168691589.536
+          }
+        },
+        "userProperties": {
+          "forescout_id": 2886755471,
+          "forescout_discoveryScore": 75,
+          "forescout_os": "Linux",
+          "forescout_dexRiskScore": 0,
+          "forescout_awsInstanceType": "t2.micro",
+          "forescout_awsInstanceState": "running"
+        }
+      },
+      "connections": 2
+    },
+    {
+      "name": "i-08f81bee763625461",
+      "coll": "Things",
+      "u": {
+        "_id": "Things/3341893",
+        "_key": "3341893",
+        "identity": {
+          "company": "forescout",
+          "type": "ec2",
+          "value": "i-08f81bee763625461",
+          "datacenter": "aws",
+          "domain": "global"
+        },
+        "lastSeen": 1660769051306,
+        "name": "i-08f81bee763625461",
+        "source": {
+          "forescout": {
+            "lastSeen": 1649168691730.8801
+          }
+        },
+        "userProperties": {
+          "forescout_id": 2886755463,
+          "forescout_discoveryScore": 75,
+          "forescout_os": "Linux",
+          "forescout_dexRiskScore": 0,
+          "forescout_awsInstanceType": "t2.micro",
+          "forescout_awsInstanceState": "stopped"
+        }
+      },
+      "connections": 2
+    },
+    {
+      "name": "i-0bce2bf9b93c6fed9",
+      "coll": "Things",
+      "u": {
+        "_id": "Things/3341350",
+        "_key": "3341350",
+        "identity": {
+          "company": "forescout",
+          "type": "ec2",
+          "value": "i-0bce2bf9b93c6fed9",
+          "datacenter": "aws",
+          "domain": "global"
+        },
+        "lastSeen": 1660769051306,
+        "name": "i-0bce2bf9b93c6fed9",
+        "source": {
+          "forescout": {
+            "lastSeen": 1649168691605.826
+          }
+        },
+        "userProperties": {
+          "forescout_id": 2886755468,
+          "forescout_discoveryScore": 75,
+          "forescout_os": "Linux",
+          "forescout_dexRiskScore": 0,
+          "forescout_awsInstanceType": "t2.micro",
+          "forescout_awsInstanceState": "stopped"
+        }
+      },
+      "connections": 2
+    },
+    {
+      "name": "i-0d0594e6d25474638",
+      "coll": "Things",
+      "u": {
+        "_id": "Things/3341259",
+        "_key": "3341259",
+        "identity": {
+          "company": "forescout",
+          "type": "ec2",
+          "value": "i-0d0594e6d25474638",
+          "datacenter": "aws",
+          "domain": "global"
+        },
+        "lastSeen": 1660769051306,
+        "name": "i-0d0594e6d25474638",
+        "source": {
+          "forescout": {
+            "lastSeen": 1649168691587.1501
+          }
+        },
+        "userProperties": {
+          "forescout_id": 2886755426,
+          "forescout_discoveryScore": 75,
+          "forescout_os": "Linux",
+          "forescout_dexRiskScore": 0,
+          "forescout_awsInstanceType": "t2.micro",
+          "forescout_awsInstanceState": "stopped"
+        }
+      },
+      "connections": 3
+    }
+  ],
+  "time": 0.005991935729980469
+}

@@ -2,7 +2,8 @@
     "name": "Palo Alto Networks PAN-OS EDL Management (Deprecated)",
     "description": "Deprecated. Use the Generic Export Indicators Service instead.",
     "support": "xsoar",
-    "currentVersion": "1.1.5",
+    "hidden": true,
+    "currentVersion": "1.1.7",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -11,7 +12,9 @@
         "Utilities"
     ],
     "deprecated": "true",
-    "tags": [],
+    "tags": [
+        "Palo Alto Networks Products"
+    ],
     "useCases": [],
     "keywords": [],
     "marketplaces": [

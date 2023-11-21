@@ -1,0 +1,499 @@
+{
+    "dashboards_data": [
+        {
+            "name": "DropBox Dashboard",
+            "description": "This dashboard displays information about DropBox, which can assist the analysts with their day to day job.",
+            "status": "ENABLED",
+            "layout": [
+                {
+                    "id": "row-1624",
+                    "data": [
+                        {
+                            "key": "xql_1668004335717",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 324,
+                                "phrase": "config timeframe = 30d\n| datamodel \n| filter xdm.event.type = \"file_operations\" and xdm.event.operation_sub_type != \"apply_naming_convention\" and xdm.observer.vendor = \"dropbox\" and xdm.observer.product = \"dropbox\"\n| comp count() as Count by xdm.event.operation_sub_type \n| alter Operation_Type =  xdm.event.operation_sub_type \n| fields -xdm.event.operation_sub_type \n| sort desc Count\n| view graph type = pie subtype = full xaxis = Operation_Type yaxis = Count ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "pie",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "full"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "Operation_Type"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "Count"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1668355243914",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 324,
+                                "phrase": "config timeframe = 30d\n| dataset = incidents \n| filter description contains \"Dropbox\"\n| filter status contains \"New\" \n| comp count (severity) as Count by severity\n| view graph type = pie header = \"Open Incidents by Severity (Last 30 days)\" xaxis = severity yaxis = Count ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "pie",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Open Incidents by Severity (Last 30 days)\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "severity"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "Count"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1668077646616",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 324,
+                                "phrase": "dataset = dropbox_dropbox_raw \n| comp max(_time) as LastTimeEvent\n| alter nowTime = current_time()\n| alter TimeDiffMinutes = to_integer(timestamp_diff(nowTime, LastTimeEvent, \"MINUTE\"))\n| alter TimeDiffHours = to_string(divide(TimeDiffMinutes, 60))\n| alter TimeDiffHours = arrayindex(regextract(TimeDiffHours, \"(\\d*\\.?\\d{2})\"),0)\n| alter TimeDiffHours = to_float(TimeDiffHours)\n| fields TimeDiffHours\n| view graph type = single subtype = standard yaxis = TimeDiffHours scale_threshold(\"#25cf68\",\"#eac016\",\"1\",\"#f11126\",\"3\") seriestitle(\"TimeDiffHours\",\"Time From Last Event (Hours)\") ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "single",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "standard"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "TimeDiffHours"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "#25cf68",
+                                                    "#eac016",
+                                                    1,
+                                                    "#f11126",
+                                                    3
+                                                ],
+                                                "name": "scale_threshold"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "TimeDiffHours",
+                                                    "Time From Last Event (Hours)"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-8748",
+                    "data": [
+                        {
+                            "key": "xql_1668007118551",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 50,
+                                "height": 400,
+                                "phrase": "config timeframe = 7d\n| datamodel \n| filter xdm.event.type = \"team_policies\" and xdm.observer.vendor = \"dropbox\" and xdm.observer.product = \"dropbox\"\n| fields xdm.event.operation_sub_type as Policy_Name, xdm.source.user.username as UserName, xdm.target.resource.value as NewValue, xdm.target.resource_before.value as OldValue, xdm.event.type as EventType, xdm.event.description as Description, _time\n| sort desc _time ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                                    "columnWidth": null
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1667996951841",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 50,
+                                "height": 400,
+                                "phrase": "config timeframe = 7d\n| datamodel \n| filter xdm.event.type = \"logins\" and xdm.event.operation_sub_type = \"login_fail\" and xdm.observer.vendor = \"dropbox\" and xdm.observer.product = \"dropbox\"\n| comp count() as Count by xdm.source.user.username \n| sort desc Count\n| limit 10\n| alter User = xdm.source.user.username \n| fields -xdm.source.user.username  ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"stretch\",\"gridRowsHeight\":\"high-row\"}",
+                                    "columnWidth": null
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-6550",
+                    "data": [
+                        {
+                            "key": "xql_1668002137913",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 100,
+                                "height": 271,
+                                "phrase": "config timeframe = 30d\n| datamodel \n| filter xdm.event.type = \"file_operations\" and xdm.observer.vendor = \"dropbox\" and xdm.observer.product = \"dropbox\"\n| bin _time span=1h \n| alter _time = date_floor(_time, \"h\")\n| comp count() as Count by _time\n| view graph type = line xaxis = _time yaxis = Count xaxistitle = \"Time\" yaxistitle = \"File_Operations\" ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "line",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "_time"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "Count"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxistitle",
+                                                "value": "\"Time\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxistitle",
+                                                "value": "\"File_Operations\""
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            ],
+            "default_dashboard_id": 1,
+            "global_id": "8e39c026e23a40bc8985f306e4a6511d"
+        }
+    ],
+    "widgets_data": [
+        {
+            "widget_key": "xql_1667996951841",
+            "title": "DropBox Top 10 Failed Logins by User - Last 7 Days",
+            "creation_time": 1667996951841,
+            "description": "This dashboard display the top 10 count of failed logins made by users during the last 7 days. A high number of fails can be an indication for a misconfiguration or a malicious activity.",
+            "data": {
+                "phrase": "config timeframe = 7d\n| datamodel \n| filter xdm.event.type = \"logins\" and xdm.event.operation_sub_type = \"login_fail\" and xdm.observer.vendor = \"dropbox\" and xdm.observer.product = \"dropbox\"\n| comp count() as Count by xdm.source.user.username \n| sort desc Count\n| limit 10\n| alter User = xdm.source.user.username \n| fields -xdm.source.user.username  ",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"stretch\",\"gridRowsHeight\":\"high-row\"}",
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1668002137913",
+            "title": "DropBox File Operations Trend",
+            "creation_time": 1668002137913,
+            "description": "This panel display the trend of file operations over the last 30 days. This can help detect anomalies related to file operations in box.",
+            "data": {
+                "phrase": "config timeframe = 30d\n| datamodel \n| filter xdm.event.type = \"file_operations\" and xdm.observer.vendor = \"dropbox\" and xdm.observer.product = \"dropbox\"\n| bin _time span=1h \n| alter _time = date_floor(_time, \"h\")\n| comp count() as Count by _time\n| view graph type = line xaxis = _time yaxis = Count xaxistitle = \"Time\" yaxistitle = \"File_Operations\" ",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "line",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "_time"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "Count"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxistitle",
+                                "value": "\"Time\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxistitle",
+                                "value": "\"File_Operations\""
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1668004335717",
+            "title": "DropBox File Operations Trend by Type",
+            "creation_time": 1668004335717,
+            "description": "This panel displays the file operations by the differnt type of operations.",
+            "data": {
+                "phrase": "config timeframe = 30d\n| datamodel \n| filter xdm.event.type = \"file_operations\" and xdm.event.operation_sub_type != \"apply_naming_convention\" and xdm.observer.vendor = \"dropbox\" and xdm.observer.product = \"dropbox\"\n| comp count() as Count by xdm.event.operation_sub_type \n| alter Operation_Type =  xdm.event.operation_sub_type \n| fields -xdm.event.operation_sub_type \n| sort desc Count\n| view graph type = pie subtype = full xaxis = Operation_Type yaxis = Count ",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "full"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "Operation_Type"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "Count"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1668007118551",
+            "title": "DropBox Policies Changes - Last 7 days",
+            "creation_time": 1668007118551,
+            "description": "This panel displayes the policies changed during the last 7 days. Attackers often change policies in order to achieve persistence.",
+            "data": {
+                "phrase": "config timeframe = 7d\n| datamodel \n| filter xdm.event.type = \"team_policies\" and xdm.observer.vendor = \"dropbox\" and xdm.observer.product = \"dropbox\"\n| fields xdm.event.operation_sub_type as Policy_Name, xdm.source.user.username as UserName, xdm.target.resource.value as NewValue, xdm.target.resource_before.value as OldValue, xdm.event.type as EventType, xdm.event.description as Description, _time\n| sort desc _time ",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1668077646616",
+            "title": "DropBox Time Since Last Event",
+            "creation_time": 1668077646616,
+            "description": "This panel display the time in hours from the last event. Lower than 1 hour diff is green, between 1-3 is orange and higher than 3 is red.",
+            "data": {
+                "phrase": "dataset = dropbox_dropbox_raw \n| comp max(_time) as LastTimeEvent\n| alter nowTime = current_time()\n| alter TimeDiffMinutes = to_integer(timestamp_diff(nowTime, LastTimeEvent, \"MINUTE\"))\n| alter TimeDiffHours = to_string(divide(TimeDiffMinutes, 60))\n| alter TimeDiffHours = arrayindex(regextract(TimeDiffHours, \"(\\d*\\.?\\d{2})\"),0)\n| alter TimeDiffHours = to_float(TimeDiffHours)\n| fields TimeDiffHours\n| view graph type = single subtype = standard yaxis = TimeDiffHours scale_threshold(\"#25cf68\",\"#eac016\",\"1\",\"#f11126\",\"3\") seriestitle(\"TimeDiffHours\",\"Time From Last Event (Hours)\") ",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "single",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "standard"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "TimeDiffHours"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "#25cf68",
+                                    "#eac016",
+                                    1,
+                                    "#f11126",
+                                    3
+                                ],
+                                "name": "scale_threshold"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "TimeDiffHours",
+                                    "Time From Last Event (Hours)"
+                                ],
+                                "name": "seriestitle"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "dropbox_dropbox_raw"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1668355243914",
+            "title": "DropBox Open Incidents",
+            "creation_time": 1668355243914,
+            "description": "This panel contains the open incidents related to DropBox.",
+            "data": {
+                "phrase": "config timeframe = 30d\n| dataset = incidents \n| filter description contains \"Dropbox\"\n| filter status contains \"New\" \n| comp count (severity) as Count by severity\n| view graph type = pie header = \"Open Incidents by Severity (Last 30 days)\" xaxis = severity yaxis = Count ",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Open Incidents by Severity (Last 30 days)\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "severity"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "Count"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "incidents"
+                ],
+                "query_uses_library": false
+            }
+        }
+    ],
+    "fromVersion": "6.10.0"
+}

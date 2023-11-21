@@ -1,0 +1,237 @@
+id: URL Reputation - ReversingLabs TitaniumCloud
+version: -1
+name: URL Reputation - ReversingLabs TitaniumCloud
+description: |-
+  Get reputation data for the submitted URL.
+  Required TitaniumCloud API rights:
+
+  TCA-0403
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 68e9a7b6-9370-41f6-8e1f-bcf947f07b8b
+    type: start
+    task:
+      id: 68e9a7b6-9370-41f6-8e1f-bcf947f07b8b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: "Playbook triggered."
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 7b99867c-d88f-4b4f-842c-84f9785a3770
+    type: condition
+    task:
+      id: 7b99867c-d88f-4b4f-842c-84f9785a3770
+      version: -1
+      name: Is ReversingLabs TitaniumCloud v2 enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: "Checks if the required integration is enabled."
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ReversingLabs TitaniumCloud v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: ef39396f-93f3-4d26-8842-c65fe652cbe3
+    type: title
+    task:
+      id: ef39396f-93f3-4d26-8842-c65fe652cbe3
+      version: -1
+      name: done
+      type: title
+      iscommand: false
+      brand: ""
+      description: "Playbook finished."
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 120,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 12699ea9-0c5a-4855-8e7b-ff0ff1f22ea3
+    type: condition
+    task:
+      id: 12699ea9-0c5a-4855-8e7b-ff0ff1f22ea3
+      version: -1
+      name: Is there a URL?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: "Checks if there is a URL to analyze."
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.URL
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 8e3513c8-e809-4d7f-83dd-a6e6902577d4
+    type: regular
+    task:
+      id: 8e3513c8-e809-4d7f-83dd-a6e6902577d4
+      version: -1
+      name: reversinglabs-titaniumcloud-url-report
+      description: Return a URL analysis report.
+      script: ReversingLabs TitaniumCloud v2|||reversinglabs-titaniumcloud-url-report
+      type: regular
+      iscommand: true
+      brand: ReversingLabs TitaniumCloud v2
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      url:
+        simple: ${inputs.URL}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1485,
+        "width": 720,
+        "x": 120,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: URL
+  value:
+    complex:
+      root: URL.Data
+  required: false
+  description: URL to analyze
+  playbookInputQuery:
+outputs:
+- contextPath: URL.Data
+  description: The URL
+- contextPath: DBotScore.Score
+  description: The actual score.
+- contextPath: DBotScore.Type
+  description: The indicator type.
+- contextPath: DBotScore.Indicator
+  description: The indicator that was tested.
+- contextPath: DBotScore.Vendor
+  description: The vendor used to calculate the score.
+- contextPath: ReversingLabs.url_report
+  description: Report in JSON
+tests:
+- No tests
+fromversion: 6.0.0

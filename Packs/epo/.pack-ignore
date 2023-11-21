@@ -19,6 +19,19 @@ ignore=BA110
 [file:epoV2_image.png]
 ignore=IM111
 
+[file:Epo_image.png]
+ignore=IM111
+
 [known_words]
-ePO
-resetInheritance
+epo
+resetinheritance
+
+[file:McafeeEpoModelingRules_1_3.yml]
+ignore=MR108
+
+[file:McAfeeEpo.yml]
+ignore=PR101
+
+[file:McafeeEpoModelingRules.yml]
+ignore=MR108
+

@@ -1,12 +1,13 @@
-from typing import Union, Optional
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 
 from requests_oauthlib import OAuth1
 from dateparser import parse
 from datetime import timedelta
-from CommonServerPython import *
 
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+import urllib3
+urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 BASE_URL = demisto.getParam('url').rstrip('/') + '/'
@@ -35,6 +36,9 @@ BASIC_AUTH_ERROR_MSG = "For cloud users: As of June 2019, Basic authentication w
 JIRA_RESOLVE_REASON = 'Issue was marked as "Done"'
 USE_SSL = not demisto.params().get('insecure', False)
 
+SESSION = requests.Session()
+SESSION.mount(prefix='https://', adapter=SSLAdapter(verify=USE_SSL))
+
 
 def jira_req(
         method: str,
@@ -42,22 +46,25 @@ def jira_req(
         body: str = '',
         link: bool = False,
         resp_type: str = 'text',
-        headers: Optional[dict] = None,
-        files: Optional[dict] = None
+        headers: dict | None = None,
+        files: dict | None = None,
+        params: dict | None = None
 ):
     url = resource_url if link else (BASE_URL + resource_url)
     AUTH = get_auth()
     if headers and HEADERS.get('Authorization'):
         headers['Authorization'] = HEADERS.get('Authorization')
     try:
-        result = requests.request(
+
+        result = SESSION.request(
             method=method,
             url=url,
             data=body,
             auth=AUTH,
             headers=headers if headers else HEADERS,
             verify=USE_SSL,
-            files=files
+            files=files,
+            params=params
         )
     except ValueError:
         raise ValueError("Could not deserialize privateKey")
@@ -67,23 +74,29 @@ def jira_req(
         try:
             rj = result.json()
             if rj.get('errorMessages'):
-                return_error(f'Status code: {result.status_code}\nMessage: {",".join(rj["errorMessages"])}')
-            elif rj.get('errors'):
-                return_error(f'Status code: {result.status_code}\nMessage: {",".join(rj["errors"].values())}')
+                raise DemistoException(f'Status code: {result.status_code}\nMessages: {", ".join(rj["errorMessages"])}')
+            elif errors := rj.get('errors'):
+                error_messages = []
+                if isinstance(errors, list):
+                    for error in errors:
+                        error_messages.append(", ".join(error.values()))
+                else:
+                    error_messages.append(", ".join(errors.values()))
+                raise DemistoException(f'Status code: {result.status_code}\nMessages: {error_messages}')
             else:
-                return_error(f'Status code: {result.status_code}\nError text: {result.text}')
+                raise DemistoException(f'Status code: {result.status_code}\nError text: {result.text}')
         except ValueError as ve:
             demisto.debug(str(ve))
             if result.status_code == 401:
-                return_error('Unauthorized request, please check authentication related parameters.'
-                             f'{BASIC_AUTH_ERROR_MSG}')
+                raise DemistoException('Unauthorized request, please check authentication related parameters.'
+                                       f'{BASIC_AUTH_ERROR_MSG}')
             elif result.status_code == 404:
-                return_error("Could not connect to the Jira server. Verify that the server URL is correct.")
+                raise DemistoException("Could not connect to the Jira server. Verify that the server URL is correct.")
             elif result.status_code == 500 and files:
-                return_error(f"Failed to execute request, status code: 500\nBody: {result.text}"
-                             f"\nMake sure file name doesn't contain any special characters")
+                raise DemistoException(f"Failed to execute request, status code: 500\nBody: {result.text}"
+                                       f"\nMake sure file name doesn't contain any special characters")
             else:
-                return_error(
+                raise DemistoException(
                     f"Failed reaching the server. status code: {result.status_code}")
 
     if resp_type == 'json':
@@ -121,7 +134,7 @@ def get_auth():
     elif is_bearer:
         # Personal Access Token Authentication
         HEADERS.update({'Authorization': f'Bearer {access_token}'})
-        return
+        return None
 
     return_error(
         'Please provide the required Authorization information:'
@@ -129,6 +142,7 @@ def get_auth():
         '- OAuth 1.0 requires ConsumerKey, AccessToken and PrivateKey'
         '- Personal Access Tokens requires AccessToken'
     )
+    return None
 
 
 def get_custom_field_names():
@@ -139,13 +153,7 @@ def get_custom_field_names():
     custom_id_name_mapping = {}
     HEADERS['Accept'] = "application/json"
     try:
-        res = requests.request(
-            method='GET',
-            url=BASE_URL + 'rest/api/latest/field',
-            headers=HEADERS,
-            verify=USE_SSL,
-            auth=get_auth(),
-        )
+        res = jira_req(method='GET', resource_url='rest/api/latest/field', headers=HEADERS)
     except Exception as e:
         demisto.error(f'Could not get custom fields because got the next exception: {e}')
     else:
@@ -173,7 +181,7 @@ def run_query(query, start_at='', max_results=None, extra_fields=None, nofields=
     }
     """
     demisto.debug(f'querying with: {query}')
-    url = BASE_URL + 'rest/api/latest/search/'
+    url = 'rest/api/latest/search/'
     query_params = {
         'jql': query,
         "startAt": start_at,
@@ -191,13 +199,7 @@ def run_query(query, start_at='', max_results=None, extra_fields=None, nofields=
         else:
             return_warning(f'{",".join(nofields)} does not exist')
     try:
-        result = requests.get(
-            url=url,
-            headers=HEADERS,
-            verify=USE_SSL,
-            params=query_params,
-            auth=get_auth(),
-        )
+        result = jira_req(method='GET', resource_url=url, headers=HEADERS, params=query_params)
     except ValueError:
         raise ValueError("Could not deserialize privateKey")
 
@@ -237,13 +239,7 @@ def get_custom_fields():
     custom_id_description_mapping = {}
     HEADERS['Accept'] = "application/json"
     try:
-        res = requests.request(
-            method='GET',
-            url=BASE_URL + 'rest/api/latest/field',
-            headers=HEADERS,
-            verify=USE_SSL,
-            auth=get_auth(),
-        )
+        res = jira_req(method='GET', resource_url=BASE_URL + 'rest/api/latest/field', headers=HEADERS)
     except Exception as e:
         demisto.error(f'Could not get custom fields because got the next exception: {e}')
     else:
@@ -273,6 +269,8 @@ def expand_urls(data, depth=0):
             else:
                 if isinstance(value, dict):
                     return expand_urls(value, depth + 1)
+        return None
+    return None
 
 
 def search_user(query: str, max_results: str = '50', is_jirav2api: bool = False):
@@ -304,7 +302,7 @@ def search_user(query: str, max_results: str = '50', is_jirav2api: bool = False)
 def get_account_id_from_attribute(
         attribute: str,
         max_results: str = '50',
-        is_jirav2api: str = 'false') -> Union[CommandResults, str]:
+        is_jirav2api: str = 'false') -> CommandResults | str:
     """
     https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-user-search/#api-rest-api-3-user-search-get
 
@@ -376,6 +374,8 @@ def generate_md_context_get_issue(data, customfields=None, nofields=None, extra_
         context_obj['ProjectName'] = md_obj['project'] = demisto.get(element, 'fields.project.name')
         context_obj['DueDate'] = md_obj['duedate'] = demisto.get(element, 'fields.duedate')
         context_obj['Created'] = md_obj['created'] = demisto.get(element, 'fields.created')
+        context_obj['Description'] = md_obj['description'] = demisto.get(element, 'fields.description')
+        context_obj['Labels'] = md_obj['labels'] = demisto.get(element, 'fields.labels')
 
         # Parse custom fields into their original names
         custom_fields = [i for i in demisto.get(element, "fields") if "custom" in i]
@@ -552,12 +552,39 @@ def get_project_id(project_key='', project_name=''):
     if not project_key and not project_name:
         return_error('You must provide at least one of the following: project_key or project_name')
 
-    result = jira_req('GET', 'rest/api/latest/issue/createmeta', resp_type='json')
+    result: dict = {}
 
-    for project in result.get('projects'):
-        if project_key.lower() == project.get('key').lower() or project_name.lower() == project.get('name').lower():
-            return project.get('id')
+    try:
+        result = jira_req('GET', 'rest/api/latest/issue/createmeta', resp_type='json')
+    except DemistoException as de:
+
+        if 'Status code: 404' not in de.message:
+            raise de
+
+        demisto.debug('Exception after first api call: {de.message}')
+        demisto.debug(f'Could not find expected Jira endpoint: {BASE_URL}/api/latest/issue/createmeta.'
+                      f'Trying another endpoint: {BASE_URL}/api/latest/project.')
+
+        # a new endpoint for Jira version 9.0.0 and above, so we execute another api call
+        result = jira_req('GET', 'rest/api/latest/project', resp_type='json')
+
+        # Jira's response changed to a list of projects from version 9.0.0
+        projects_lst = list(filter(
+            lambda x: x.get('key').lower() == project_key.lower() or x.get('name').lower() == project_name.lower(),
+            result))
+
+        # Filtering should give us a list with one project, only one project should match the filter's conditions
+        if projects_lst:
+            return projects_lst[0].get('id')
+
+    # Jira used to respond with a dictionary with the 'projects' key until version 9.0.0
+    if isinstance(result, dict):
+        for project in result.get('projects', []):
+            if project_key.lower() == project.get('key').lower() or project_name.lower() == project.get('name').lower():
+                return project.get('id')
+
     return_error('Project not found')
+    return None
 
 
 def get_issue_fields(issue_creating=False, mirroring=False, **issue_args):
@@ -590,6 +617,13 @@ def get_issue_fields(issue_creating=False, mirroring=False, **issue_args):
 
     if not issue['fields'].get('issuetype') and issue_creating:
         issue['fields']['issuetype'] = {}
+
+    if issue_args.get('watchers'):
+        watchers = issue_args.get('watchers')
+        if isinstance(watchers, list):
+            issue['watchers'] = watchers
+        elif isinstance(watchers, str):
+            issue['watchers'] = argToList(watchers)
 
     if issue_args.get('summary'):
         issue['fields']['summary'] = issue_args['summary']
@@ -672,6 +706,7 @@ def get_issue_fields(issue_creating=False, mirroring=False, **issue_args):
             issue['fields']['reporter'] = {}
         issue['fields']['reporter']['name'] = issue_args['reporter']
 
+    demisto.debug(f'The issue after updating relevant fields: {issue}')
     return issue
 
 
@@ -701,6 +736,24 @@ def get_issue(issue_id, headers=None, expand_links=False, is_update=False, get_a
     outputs = {'Ticket(val.Id == obj.Id)': md_and_context['context']}
 
     return human_readable, outputs, contents
+
+
+def get_project_role_command(project_key, role_name):
+    j_res = get_project_roles(project_key)
+    url = j_res.get(role_name)
+    if not url:
+        return_error(f"Role '{role_name}' not found")
+
+    role_id = url.split('/')[-1]
+    url = f'rest/api/latest/project/{project_key}/role/{role_id}'
+    j_res = jira_req('GET', url, resp_type='json')
+    return j_res
+
+
+def get_project_roles(project_key):
+    url = f'rest/api/latest/project/{project_key}/role'
+    j_res = jira_req('GET', url, resp_type='json')
+    return j_res
 
 
 def issue_query_command(query, start_at='', max_results=None, headers='', extra_fields=None):
@@ -733,14 +786,28 @@ def create_issue_command():
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
 
 
-def edit_issue_command(issue_id, mirroring=False, headers=None, status=None, transition=None, **kwargs):
+def add_user_to_project_command(user_email, project_key, role_name):
+    result = get_account_id_from_attribute(user_email)
+
+    if isinstance(result, CommandResults) and isinstance(result.raw_response, dict):
+        user_id = result.raw_response.get('AccountID')
+    else:
+        return_error(f'{result}')
+
+    role_id = get_project_role_command(project_key, role_name).get('id')
+    url = f'rest/projectconfig/latest/roles/{project_key}/{role_id}'
+    json_data = {'users': [user_id], "groups": []}
+    return jira_req('POST', url, json.dumps(json_data)).text
+
+
+def edit_issue_command(issue_id, mirroring=False, headers=None, status=None, transition=None, resolution=None, **kwargs):
     issue = get_issue_fields(mirroring=mirroring, **kwargs)
     if status and transition:
         return_error("Please provide only status or transition, but not both.")
     elif status:
-        edit_status(issue_id, status, issue)
+        edit_status(issue_id, status, issue, resolution)
     elif transition:
-        edit_transition(issue_id, transition, issue)
+        edit_transition(issue_id, transition, issue, resolution)
     else:
         url = f'rest/api/latest/issue/{issue_id}/'
         jira_req('PUT', url, json.dumps(issue))
@@ -776,6 +843,30 @@ def _update_fields(issue_id, new_data):
         jira_req('PUT', url, json.dumps({'fields': new_data}))
 
 
+def get_organizations_command(project_key=None, start="0", limit="50", account_id=None):
+    if project_key:
+        url = f'/rest/servicedeskapi/servicedesk/{project_key}/organization'
+    else:
+        url = '/rest/servicedeskapi/organization'
+    body = {
+        'start': arg_to_number(start),
+        'limit': arg_to_number(limit),
+    }
+
+    if account_id:
+        body['accountId'] = account_id
+
+    if response := jira_req('GET', url, params=body, resp_type='json').get('values'):
+        [org.pop('_links') for org in response]
+
+        hr = tableToMarkdown(name='Organizations', t=response, headers=['name', 'id', 'created'],
+                             json_transform_mapping={'created': JsonTransformer(func=lambda x: x.get('friendly'))})
+
+        return CommandResults(outputs=response, outputs_prefix='Jira.Organizations', outputs_key_field='id', readable_output=hr)
+
+    return CommandResults(readable_output='No results found.')
+
+
 def get_field_command(issue_id, field):
     fields = argToList(field)
     return get_issue(issue_id, extra_fields=fields, is_update=False)
@@ -793,7 +884,7 @@ def __get_field_type(field_id):
 
 def __add_value_by_type(type, current_value, new_value):
     if type == 'string':
-        new_val = current_value + "," + new_value
+        new_val = current_value + " , " + new_value
     elif type == 'array':
         new_val = current_value + [new_value]
     else:
@@ -810,20 +901,27 @@ def __create_value_by_type(type, value):
         raise DemistoException(f"Command only support string or array-typed fields. Field given is typed {type}")
 
 
-def edit_status(issue_id, status, issue):
+def edit_status(issue_id, status, issue, resolution=None):
     # check for all authorized transitions available for this user
     # if the requested transition is available, execute it.
     if not issue:
         issue = {}
     j_res = list_transitions_data_for_issue(issue_id)
-    transitions = [transition.get('name') for transition in j_res.get('transitions')]
-    for i, transition in enumerate(transitions):
+    # When changing the status we search the transition that leads to this status
+    statuses = [transition.get('to', {}).get('name', '') for transition in j_res.get('transitions')]
+    for i, transition in enumerate(statuses):
         if transition.lower() == status.lower():
             url = f'rest/api/latest/issue/{issue_id}/transitions?expand=transitions.fields'
             issue['transition'] = {"id": str(j_res.get('transitions')[i].get('id'))}
+            if resolution:
+                if issue.get('fields'):
+                    issue['fields'].update({"resolution": {'name': resolution}})
+                else:
+                    issue['fields'] = {"resolution": {'name': resolution}}
             return jira_req('POST', url, json.dumps(issue))
 
-    return_error(f'Status "{status}" not found. \nValid transitions are: {transitions} \n')
+    return_error(f'Status "{status}" not found. \nValid statuses are: {statuses} \n')
+    return None
 
 
 def list_transitions_data_for_issue(issue_id):
@@ -836,7 +934,7 @@ def list_transitions_data_for_issue(issue_id):
     return jira_req('GET', url, resp_type='json')
 
 
-def edit_transition(issue_id, transition_name, issue):
+def edit_transition(issue_id, transition_name, issue, resolution=None):
     """
     This function changes a transition for a given issue.
     :param issue_id: The ID of the issue.
@@ -851,9 +949,15 @@ def edit_transition(issue_id, transition_name, issue):
         if transition.get('name') == transition_name:
             url = f'rest/api/latest/issue/{issue_id}/transitions?expand=transitions.fields'
             issue['transition'] = {"id": transition.get("id")}
+            if resolution:
+                if issue.get('fields'):
+                    issue['fields'].update({"resolution": {'name': resolution}})
+                else:
+                    issue['fields'] = {"resolution": {'name': resolution}}
             return jira_req('POST', url, json.dumps(issue))
 
     return_error(f'Transitions "{transition_name}" not found. \nValid transitions are: {transitions_data} \n')
+    return None
 
 
 def list_transitions_command(args):
@@ -1006,6 +1110,18 @@ def delete_issue_command(issue_id_or_key):
         demisto.results('Issue deleted successfully.')
     else:
         demisto.results('Failed to delete issue.')
+
+
+def update_issue_assignee_command(issue_id, assignee=None, assignee_id=None):
+    if assignee:  # for jira server
+        body = {"name": assignee}
+    elif assignee_id:  # for jira cloud
+        body = {"accountId": assignee_id}
+    else:
+        raise DemistoException('Please provide assignee for Jira Server or assignee_id for Jira Cloud')
+    url = f'rest/api/latest/issue/{issue_id}/assignee'
+    jira_req('PUT', url, json.dumps(body))
+    return get_issue(issue_id, is_update=True)
 
 
 def test_module() -> str:
@@ -1243,7 +1359,8 @@ def update_remote_system_command(args):
             demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update Jira '
                           f'incident {remote_id}')
             # take the val from data as it's the updated value
-            delta = {k: remote_args.data[k] for k in remote_args.delta.keys()}
+            delta = {k: remote_args.data.get(k) for k in remote_args.delta}
+            demisto.debug(f'sending the following data to edit the issue with: {delta}')
             edit_issue_command(remote_id, mirroring=True, **delta)
 
         else:
@@ -1274,8 +1391,7 @@ def get_user_info_data():
     :return: API response
     """
     HEADERS['Accept'] = "application/json"
-    return requests.request(method='GET', url=BASE_URL + 'rest/api/latest/myself', headers=HEADERS, verify=USE_SSL,
-                            auth=get_auth())
+    return jira_req(method='GET', resource_url='rest/api/latest/myself', headers=HEADERS)
 
 
 def get_modified_remote_data_command(args):
@@ -1426,9 +1542,13 @@ def main():
             incidents = fetch_incidents(fetch_query, id_offset, fetch_attachments, fetch_comments, incoming_mirror,
                                         outgoing_mirror, comment_tag, attachment_tag, fetch_by_created)
             demisto.incidents(incidents)
+
         elif demisto.command() == 'jira-get-issue':
             human_readable, outputs, raw_response = get_issue(**snakify(demisto.args()))
             return_outputs(human_readable, outputs, raw_response)
+
+        elif demisto.command() == 'jira-get-project-role':
+            return_results(get_project_role_command(**demisto.args()))
 
         elif demisto.command() == 'jira-issue-query':
             human_readable, outputs, raw_response = issue_query_command(**snakify(demisto.args()))
@@ -1436,6 +1556,9 @@ def main():
 
         elif demisto.command() == 'jira-create-issue':
             create_issue_command()
+
+        elif demisto.command() == 'jira-add-user-to-project':
+            return_results(add_user_to_project_command(**demisto.args()))
 
         elif demisto.command() == 'jira-edit-issue':
             human_readable, outputs, raw_response = edit_issue_command(**snakify(demisto.args()))
@@ -1480,10 +1603,18 @@ def main():
         elif demisto.command() == 'jira-get-id-by-attribute':
             return_results(get_account_id_from_attribute(**demisto.args()))
 
+        elif demisto.command() == 'jira-get-organizations':
+            return_results(get_organizations_command(**snakify(demisto.args())))
+
         elif demisto.command() == 'jira-list-transitions':
             return_results(list_transitions_command(demisto.args()))
+
         elif demisto.command() == 'get-modified-remote-data':
             return_results(get_modified_remote_data_command(demisto.args()))
+
+        elif demisto.command() == 'jira-issue-assign':
+            human_readable, outputs, raw_response = update_issue_assignee_command(**snakify(demisto.args()))
+            return_outputs(human_readable, outputs, raw_response)
         else:
             raise NotImplementedError(f'{COMMAND_NOT_IMPELEMENTED_MSG}: {demisto.command()}')
 

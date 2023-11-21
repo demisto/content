@@ -1,10 +1,8 @@
 args:
 - default: true
   description: CSV list of IP addresses to identify.
-  isArray: false
   name: ip
   required: true
-  secret: false
 comment: Search Carbon Black for connection to specified IP addresses.
 commonfields:
   id: CBFindIP
@@ -37,19 +35,17 @@ outputs:
   description: The endpoint of the process.
   type: String
 script: '-'
-system: false
 tags:
 - carbon-black
 - endpoint
 - enhancement
 timeout: '0'
 type: python
-subtype: python2
+subtype: python3
 runas: DBotWeakRole
-runonce: false
 tests:
 - CBFindIP - Test
 dependson:
   must: []
 fromversion: 5.0.0
-dockerimage: demisto/python:2.7.18.27799
+dockerimage: demisto/python3:3.10.12.63474

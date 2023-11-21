@@ -6,9 +6,10 @@ import json
 import time
 import re
 from xml.dom.minidom import Node, Document, parseString
+import urllib3
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 USERNAME = demisto.params()['credentials']['identifier']
 PASSWORD = demisto.params()['credentials']['password']
@@ -77,7 +78,7 @@ def login():
 
     # get the VIEW_STATE from the xml returned in the UI login page.
     p = re.compile('(value=".{1046}==")')
-    viewState = p.findall(response.text.encode('utf-8'))
+    viewState = p.findall(response.text.encode('utf-8'))  # type:ignore[arg-type]
     VIEW_STATE = viewState[0][len('value="'):][:-1]
 
     data = {
@@ -274,11 +275,11 @@ def GetIncidentsByOrg(queryId):
         mlist = p.findall(content)
         if mlist and mlist[0] != '':
             mm = mlist[0].replace('"', '')
-            m = mm.split("=")[-1]
+            m = int(mm.split("=")[-1])
             num = 0
-            if int(m) > 1000:
-                num = int(m) / 1000
-                if int(m) % 1000 > 0:
+            if m > 1000:
+                num = int(m / 1000)
+                if m % 1000 > 0:
                     num += 1
             if num > 0:
                 for i in range(num):

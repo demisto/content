@@ -1,0 +1,691 @@
+id: playbook-GoogleChronicleBackstoryRules-Test
+version: -1
+name: playbook-GoogleChronicleBackstoryRules-Test
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: e8b5133d-bc78-4742-83d2-cb60f8ea22e3
+    type: start
+    task:
+      id: e8b5133d-bc78-4742-83d2-cb60f8ea22e3
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: ac086184-1376-4d97-8738-8c882ade2fd0
+    type: regular
+    task:
+      id: ac086184-1376-4d97-8738-8c882ade2fd0
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: 7ddbdaae-fe30-4bdd-820c-f593f78e56b3
+    type: regular
+    task:
+      id: 7ddbdaae-fe30-4bdd-820c-f593f78e56b3
+      version: -1
+      name: gcb-create-rule
+      description: Creates a new rule. By default the live rule status will be set to disabled.
+      script: '|||gcb-create-rule'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      rule_text:
+        simple: |-
+          rule demoRuleCreatedFromAPI {
+                  meta:
+                  author = "securityuser"
+                  description = "single event rule that should generate detections"
+
+                  events:
+                  $e.metadata.event_type = "NETWORK_DNS"
+
+                  condition:
+                  $e
+              }
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
+    taskid: 165ad1da-e989-4711-82ca-3a773f9c5ec4
+    type: condition
+    task:
+      id: 165ad1da-e989-4711-82ca-3a773f9c5ec4
+      version: -1
+      name: Verify Outputs
+      description: Verify output of gcb-create-rule command.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Rules.ruleId
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Rules.versionId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Rules.ruleName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Rules.ruleText
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Rules.versionCreateTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Rules.compilationState
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '4':
+    id: '4'
+    taskid: bb9a355f-cee0-4e53-84bd-6b281f3ebe12
+    type: regular
+    task:
+      id: bb9a355f-cee0-4e53-84bd-6b281f3ebe12
+      version: -1
+      name: gcb-delete-rule
+      description: Deletes the rule specified by Rule ID.
+      script: '|||gcb-delete-rule'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      rule_id:
+        complex:
+          root: GoogleChronicleBackstory.Rules
+          accessor: ruleId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: ed13d1cf-5385-41dc-89a2-6407c17b9674
+    type: condition
+    task:
+      id: ed13d1cf-5385-41dc-89a2-6407c17b9674
+      version: -1
+      name: Verify Outputs
+      description: Verify output of gcb-delete-rule command.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '14'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.DeleteRule.ruleId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.DeleteRule.actionStatus
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: 0e3d58c1-e7fc-4633-85ef-6d67837a7b94
+    type: regular
+    task:
+      id: 0e3d58c1-e7fc-4633-85ef-6d67837a7b94
+      version: -1
+      name: gcb-get-rule
+      description: Retrieves the rule details of specified Rule ID or Version ID.
+      script: '|||gcb-get-rule'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      id:
+        complex:
+          root: GoogleChronicleBackstory.Rules
+          accessor: ruleId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '7':
+    id: '7'
+    taskid: 0d6c87a8-ecec-4c72-8376-919cc1d7eeb4
+    type: condition
+    task:
+      id: 0d6c87a8-ecec-4c72-8376-919cc1d7eeb4
+      version: -1
+      name: Verify Outputs
+      description: Verify output of gcb-get-rule command.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Rules.ruleId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Rules.versionId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Rules.ruleName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Rules.ruleText
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Rules.versionCreateTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Rules.compilationState
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '8':
+    id: '8'
+    taskid: ab9d5084-8f18-4a7b-8b1d-b12910fd0330
+    type: regular
+    task:
+      id: ab9d5084-8f18-4a7b-8b1d-b12910fd0330
+      version: -1
+      name: gcb-create-rule-version
+      description: Creates a new version of an existing rule.
+      script: '|||gcb-create-rule-version'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      rule_id:
+        complex:
+          root: GoogleChronicleBackstory.Rules
+          accessor: ruleId
+      rule_text:
+        simple: |
+          rule demoRuleCreatedFromAPI {
+                  meta:
+                  author = "securityuser_new_version"
+                  description = "single event rule that should generate detections"
+
+                  events:
+                  $e.metadata.event_type = "NETWORK_DNS"
+
+                  condition:
+                  $e
+              }
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '9':
+    id: '9'
+    taskid: 2108f49d-ab60-4b63-853a-b764315e9cba
+    type: condition
+    task:
+      id: 2108f49d-ab60-4b63-853a-b764315e9cba
+      version: -1
+      name: Verify Outputs
+      description: Verify output of gcb-create-rule-version command.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '10'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Rules.ruleId
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Rules.versionId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Rules.ruleName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Rules.ruleText
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Rules.versionCreateTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Rules.compilationState
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '10':
+    id: '10'
+    taskid: 43e9d5bb-2c8f-4db0-84de-1b7cc88028ae
+    type: regular
+    task:
+      id: 43e9d5bb-2c8f-4db0-84de-1b7cc88028ae
+      version: -1
+      name: gcb-change-rule-alerting-status
+      description: Updates the alerting status for a rule specified by Rule ID.
+      script: '|||gcb-change-rule-alerting-status'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments:
+      alerting_status:
+        simple: enable
+      rule_id:
+        complex:
+          root: GoogleChronicleBackstory.Rules
+          accessor: ruleId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '11':
+    id: '11'
+    taskid: a96805af-7f22-42fc-8d72-91da8ba61eff
+    type: condition
+    task:
+      id: a96805af-7f22-42fc-8d72-91da8ba61eff
+      version: -1
+      name: Verify Outputs
+      description: Verify output of gcb-change-rule-alerting-status command.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '12'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.RuleAlertingChange.ruleId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.RuleAlertingChange.actionStatus
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.RuleAlertingChange.alertingStatus
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '12':
+    id: '12'
+    taskid: fef6c43e-102e-460b-83e7-aacb543b314f
+    type: regular
+    task:
+      id: fef6c43e-102e-460b-83e7-aacb543b314f
+      version: -1
+      name: gcb-change-live-rule-status
+      description: Updates the live rule status for a rule specified by Rule ID.
+      script: '|||gcb-change-live-rule-status'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments:
+      live_rule_status:
+        simple: enable
+      rule_id:
+        complex:
+          root: GoogleChronicleBackstory.Rules
+          accessor: ruleId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '13':
+    id: '13'
+    taskid: 24828fc4-734a-4b44-81db-de0178bf1990
+    type: condition
+    task:
+      id: 24828fc4-734a-4b44-81db-de0178bf1990
+      version: -1
+      name: Verify Outputs
+      description: Verify output of gcb-change-live-rule-status command.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.LiveRuleStatusChange.ruleId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.LiveRuleStatusChange.actionStatus
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.LiveRuleStatusChange.liveRuleStatus
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '14':
+    id: '14'
+    taskid: d0477dee-fd4a-494c-872b-a476d773f874
+    type: title
+    task:
+      id: d0477dee-fd4a-494c-872b-a476d773f874
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2485,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: Playbook to test commands:- gcb-create-rule, gcb-get-rule, gcb-create-rule-version, gcb-change-rule-alerting-status, gcb-change-live-rule-status and gcb-delete-rule.
+

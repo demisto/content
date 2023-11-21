@@ -1,0 +1,770 @@
+id: playbook-EWS_O365_Extension_test
+version: -1
+name: playbook-EWS_O365_Extension_test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: deb9dd1f-c4d8-4517-8f44-175cecfe0f8d
+    type: start
+    task:
+      id: deb9dd1f-c4d8-4517-8f44-175cecfe0f8d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 98ce2ef3-087f-4b36-8723-028b011e5e98
+    type: regular
+    task:
+      id: 98ce2ef3-087f-4b36-8723-028b011e5e98
+      version: -1
+      name: Add junk rule
+      description: Set junk rules in mailbox.
+      script: '|||ews-junk-rules-set'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      add_blocked_senders_and_domains:
+        complex:
+          root: inputs.add_conf
+      add_trusted_senders_and_domains: {}
+      contacts_trusted: {}
+      enabled: {}
+      mailbox:
+        complex:
+          root: inputs.mailbox
+      remove_blocked_senders_and_domains: {}
+      remove_trusted_senders_and_domains: {}
+      retry-count:
+        simple: "4"
+      retry-interval:
+        simple: "20"
+      trusted_lists_only: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 78140002-6dde-4d9b-8c3b-edef3b288985
+    type: regular
+    task:
+      id: 78140002-6dde-4d9b-8c3b-edef3b288985
+      version: -1
+      name: Get junk rule in mailbox
+      description: Get junk rules in mailbox.
+      script: '|||ews-junk-rules-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      mailbox:
+        complex:
+          root: inputs.mailbox
+      retry-count:
+        simple: "4"
+      retry-interval:
+        simple: "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 441ec1b9-aa64-4f86-8676-3d2339e2eb8a
+    type: condition
+    task:
+      id: 441ec1b9-aa64-4f86-8676-3d2339e2eb8a
+      version: -1
+      name: Validate junk rule addition
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: EWS.Rule.Junk
+                accessor: BlockedSendersAndDomains
+            iscontext: true
+          right:
+            value:
+              simple: test@gmail.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: cd5349b6-37b4-4e29-8d9f-60e1b3b8371d
+    type: regular
+    task:
+      id: cd5349b6-37b4-4e29-8d9f-60e1b3b8371d
+      version: -1
+      name: Get message trace
+      description: |
+        You can use this cmdlet to search message data for the last 10 days. If you run this cmdlet without any parameters, only data from the last 48 hours is returned.
+        If you enter a start date that is older than 10 days, you will receive an error and the command will return no results.
+        This cmdlet returns a maximum of 1000000 results, and will timeout on very large queries. If your query returns too many results, consider splitting it up using smaller start_date and end_date intervals.
+      script: '|||ews-message-trace-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      end_date: {}
+      from_ip: {}
+      message_id: {}
+      message_trace_id: {}
+      page: {}
+      page_size: {}
+      recipient_address: {}
+      retry-count:
+        simple: "4"
+      retry-interval:
+        simple: "20"
+      sender_address: {}
+      start_date: {}
+      status: {}
+      to_ip: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 283369e0-d840-4553-8bf8-6f33adc11623
+    type: condition
+    task:
+      id: 283369e0-d840-4553-8bf8-6f33adc11623
+      version: -1
+      name: 'Validate message trace '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: EWS.MessageTrace
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: acbd1c3c-0ca2-4b87-89d5-1778c77b9eaf
+    type: title
+    task:
+      id: acbd1c3c-0ca2-4b87-89d5-1778c77b9eaf
+      version: -1
+      name: Finished successfully
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 9ad78dac-d5b7-4bd2-834c-ac71c15b850f
+    type: regular
+    task:
+      id: 9ad78dac-d5b7-4bd2-834c-ac71c15b850f
+      version: -1
+      name: Remove junk rule
+      description: Set junk rules in mailbox.
+      script: '|||ews-junk-rules-set'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      add_blocked_senders_and_domains: {}
+      add_trusted_senders_and_domains: {}
+      contacts_trusted: {}
+      enabled: {}
+      mailbox:
+        complex:
+          root: inputs.mailbox
+      remove_blocked_senders_and_domains:
+        complex:
+          root: inputs.add_conf
+      remove_trusted_senders_and_domains: {}
+      retry-count:
+        simple: "4"
+      retry-interval:
+        simple: "20"
+      trusted_lists_only: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: f9cf23ce-f8b6-447e-86d9-2c165b0f35a7
+    type: regular
+    task:
+      id: f9cf23ce-f8b6-447e-86d9-2c165b0f35a7
+      version: -1
+      name: Get junk rule in mailbox
+      description: Get junk rules in mailbox.
+      script: '|||ews-junk-rules-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      mailbox:
+        complex:
+          root: inputs.mailbox
+      retry-count:
+        simple: "4"
+      retry-interval:
+        simple: "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: e99cb8ea-d992-42e8-8c13-8fce77af1a52
+    type: condition
+    task:
+      id: e99cb8ea-d992-42e8-8c13-8fce77af1a52
+      version: -1
+      name: Validate junk rule removal
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: EWS.Rule.Junk
+                accessor: BlockedSendersAndDomains
+            iscontext: true
+          right:
+            value:
+              simple: test@gmail.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 8bb88cf6-c9fb-401c-89f0-411db79fa3fd
+    type: regular
+    task:
+      id: 8bb88cf6-c9fb-401c-89f0-411db79fa3fd
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: a25685b8-cf6a-4d58-85cc-ad870be1d0de
+    type: regular
+    task:
+      id: a25685b8-cf6a-4d58-85cc-ad870be1d0de
+      version: -1
+      name: ews-user-list
+      description: Use the ews-user-list command to view existing user objects in
+        your organization.
+      script: '|||ews-user-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      identity: {}
+      limit:
+        simple: "1"
+      organizational_unit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 06e0d26d-8cc0-4977-8eb9-567d1896081f
+    type: regular
+    task:
+      id: 06e0d26d-8cc0-4977-8eb9-567d1896081f
+      version: -1
+      name: ews-federation-configuration-get
+      description: Use the ews-federation-configuration-get command to retrieve the
+        Exchange organization's federated organization identifier and related details,
+        such as federated domains, organization contact and status.
+      script: EwsExtension|||ews-federation-configuration-get
+      type: regular
+      iscommand: true
+      brand: EwsExtension
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      domain_controller: {}
+      identity: {}
+      include_extended_domain_info: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 2b0f88fb-abd4-4c2e-87a7-59e757fccd34
+    type: regular
+    task:
+      id: 2b0f88fb-abd4-4c2e-87a7-59e757fccd34
+      version: -1
+      name: ews-federation-trust-get
+      description: Use the ews-federation-trust-get command to view the federation
+        trust configured for the Exchange organization.
+      script: EwsExtension|||ews-federation-trust-get
+      type: regular
+      iscommand: true
+      brand: EwsExtension
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      domain_controller: {}
+      identity: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 41474a6a-45d3-45f2-8c84-3f09f4758cc9
+    type: regular
+    task:
+      id: 41474a6a-45d3-45f2-8c84-3f09f4758cc9
+      version: -1
+      name: ews-mailbox-audit-bypass-association-list
+      description: Use the Get-User command to view existing user objects in your
+        organization.
+      script: EwsExtension|||ews-mailbox-audit-bypass-association-list
+      type: regular
+      iscommand: true
+      brand: EwsExtension
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      domain_controller: {}
+      identity:
+        complex:
+          root: EWS.User
+          accessor: Identity
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 8dbbadfd-04de-4c4c-872b-24b99b23d620
+    type: regular
+    task:
+      id: 8dbbadfd-04de-4c4c-872b-24b99b23d620
+      version: -1
+      name: ews-remote-domain-get
+      description: View the configuration information for the remote domains configured
+        in your organization. This command is available only in the Exchange Online
+        PowerShell V2 module.
+      script: EwsExtension|||ews-remote-domain-get
+      type: regular
+      iscommand: true
+      brand: EwsExtension
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      domain_controller: {}
+      identity: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 25b71132-afec-4142-84a7-dc58da94a00b
+    type: condition
+    task:
+      id: 25b71132-afec-4142-84a7-dc58da94a00b
+      version: -1
+      name: Validate Output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: EWS.MailboxAuditBypassAssociation
+                accessor: Identity
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: c999ea65-4307-4bf2-8412-8c0a5978b00d
+    type: condition
+    task:
+      id: c999ea65-4307-4bf2-8412-8c0a5978b00d
+      version: -1
+      name: Validate Output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: EWS.RemoteDomain
+                accessor: Id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 3f3c4702-d5f3-4505-8eaa-cb538f12d4ef
+    type: condition
+    task:
+      id: 3f3c4702-d5f3-4505-8eaa-cb538f12d4ef
+      version: -1
+      name: Validate Output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: EWS.FederationTrust
+                accessor: Id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 926aefe4-87ac-4589-8e62-be63a0c4496d
+    type: condition
+    task:
+      id: 926aefe4-87ac-4589-8e62-be63a0c4496d
+      version: -1
+      name: Validate Output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: EWS.FederationConfiguration
+                accessor: Id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3360,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: mailbox
+  value:
+    simple: avishai@demistodev.onmicrosoft.com
+  required: true
+  description: Mail box for testing
+  playbookInputQuery: null
+- key: add_conf
+  value:
+    simple: test@gmail.com
+  required: true
+  description: Configuration to add when verifying integration.
+  playbookInputQuery: null
+outputs: []
+fromversion: 5.5.0

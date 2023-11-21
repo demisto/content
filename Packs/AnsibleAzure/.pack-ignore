@@ -1,0 +1,6 @@
+[known_words]
+ansii
+
+[file:AnsibleAzure.yml]
+ignore=BA124
+

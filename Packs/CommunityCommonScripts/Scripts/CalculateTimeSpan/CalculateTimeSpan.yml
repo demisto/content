@@ -1,0 +1,59 @@
+args:
+- description: Specifies the start of a time span. Enter a string that represents the date and time, such as "3/15/09". If no value supplied the current date time will be used
+  name: start_time
+- description: Specifies the end of a time span. If no value supplied the current date and time will be used.
+  name: end_time
+comment: |-
+  Calculates the time span between two dates using Powershell's `New-TimeSpan` command.
+
+  A timespan with a start date of "2022-04-02T15:42:48" and end date of "2022-04-12T16:55:07" would return the following:
+
+  Days                          : 10
+  Hours                        : 1
+  Minutes                    : 12
+  Seconds                   : 19
+  Milliseconds           : 0
+  Ticks                          : 8683390000000
+  TotalDays                : 10.0502199074074
+  TotalHours              : 241.205277777778
+  TotalMinutes          : 14472.3166666667
+  TotalSeconds         : 868339
+  TotalMilliseconds : 868339000
+commonfields:
+  id: CalculateTimeSpan
+  version: -1
+dockerimage: demisto/powershell:7.2.1.26295
+enabled: true
+name: CalculateTimeSpan
+outputs:
+- contextPath: TimeSpan.Days
+  description: The number of whole days between the start and end time
+- contextPath: TimeSpan.Hours
+  description: The number of whole hours between the start and end time
+- contextPath: TimeSpan.Minutes
+  description: The number of whole minutes between the start and end time
+- contextPath: TimeSpan.Seconds
+  description: The number of whole seconds between the start and end time
+- contextPath: TimeSpan.Milliseconds
+  description: The number of whole milliseconds between the start and end time
+- contextPath: TimeSpan.Ticks
+  description: The number of whole ticks between the start and end time. 1 tick is equals to 100 nanoseconds or ten-millionth of a second
+- contextPath: TimeSpan.TotalDays
+  description: The number of whole and fractional days between the start and end time
+- contextPath: TimeSpan.TotalHours
+  description: The number of whole and fractional hours between the start and end time
+- contextPath: TimeSpan.TotalMinutes
+  description: The number of whole and fractional minutes between the start and end time
+- contextPath: TimeSpan.TotalSeconds
+  description: The number of whole and fractional seconds between the start and end time
+- contextPath: TimeSpan.TotalMilliseconds
+  description: The number of whole and fractional milliseconds between the start and end time
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+tags:
+- Utilities
+type: powershell
+fromversion: 6.1.0
+tests:
+- No tests (auto formatted)

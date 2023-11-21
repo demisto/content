@@ -2,7 +2,7 @@
     "name": "Ransomware",
     "description": "This pack is used to identify, investigate, and contain ransomware attacks.",
     "support": "xsoar",
-    "currentVersion": "1.0.9",
+    "currentVersion": "1.0.11",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -10,16 +10,14 @@
     "categories": [
         "Forensics & Malware Analysis"
     ],
-    "tags": [],
+    "tags": [
+        "Use Case"
+    ],
     "useCases": [
-        "Ransomware"
+        "Malware"
     ],
     "keywords": [],
     "dependencies": {
-        "EWSMailSender": {
-            "mandatory": false,
-            "display_name": "EWS Mail Sender"
-        },
         "rasterize": {
             "mandatory": true,
             "display_name": "Rasterize"
@@ -39,10 +37,6 @@
         "CommonTypes": {
             "mandatory": true,
             "display_name": "Common Types"
-        },
-        "EWS": {
-            "mandatory": false,
-            "display_name": "EWS"
         },
         "MicrosoftGraphMail": {
             "mandatory": false,

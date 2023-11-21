@@ -2,7 +2,7 @@
     "name": "Talos Feed",
     "description": "Talos Threat Intelligence IPv4 Feed",
     "support": "community",
-    "currentVersion": "1.0.5",
+    "currentVersion": "1.0.6",
     "author": "Guillermo Serrano",
     "url": "",
     "email": "",
@@ -10,7 +10,10 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
+    "tags": [
+        "Free Feed",
+        "Plug & Fetch"
+    ],
     "useCases": [],
     "keywords": [
         "Talos",

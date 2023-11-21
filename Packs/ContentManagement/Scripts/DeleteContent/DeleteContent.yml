@@ -1,0 +1,56 @@
+args:
+- description: The content items ids to delete, in a JSON format.
+  name: include_ids_dict
+- description: The content items IDs to preserve, in a JSON format.
+  name: exclude_ids_dict
+- auto: PREDEFINED
+  description: If set to true, the flow will work as usual except that no content items will be deleted from the system.
+  name: dry_run
+  required: true
+  predefined:
+  - 'true'
+  - 'false'
+- auto: PREDEFINED
+  defaultValue: 'true'
+  description: If true, verify certificates when accessing github.
+  name: verify_cert
+  required: true
+  predefined:
+  - 'true'
+  - 'false'
+- auto: PREDEFINED
+  defaultValue: 'false'
+  description: If true, skip system proxy settings.
+  name: skip_proxy
+  required: true
+  predefined:
+  - 'true'
+  - 'false'
+commonfields:
+  id: DeleteContent
+  version: -1
+name: DeleteContent
+comment: Delete content to keep XSOAR tidy.
+outputs:
+- contextPath: ConfigurationSetup.Deletion.successfully_deleted
+  description: Deleted ids
+  type: String
+- contextPath: ConfigurationSetup.Deletion.not_deleted
+  description: Not deleted ids
+  type: String
+- contextPath: ConfigurationSetup.Deletion.status
+  description: Deletion status
+  type: String
+script: '-'
+tags:
+- configuration
+- Content Management
+timeout: 3600
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.10.12.63474
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+marketplaces:
+- xsoar

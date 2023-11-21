@@ -1,0 +1,32 @@
+commonfields:
+  id: Base64Decode
+  version: -1
+name: Base64Decode
+script: ''
+type: python
+tags:
+- Utility
+- transformer
+- string
+- incident-action-button
+comment: Decodes an input in Base64 format.
+enabled: true
+args:
+- name: value
+  required: true
+  default: true
+  description: The value to decode in Base64 format.
+outputs:
+- contextPath: Base64.decoded
+  description: The decoded output in Base64 format.
+  type: string
+- contextPath: Base64.originalValue
+  description: The passed value that was decoded.
+  type: string
+scripttarget: 0
+subtype: python3
+runas: DBotWeakRole
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.10.12.63474
+tests:
+- Base64Decode - Test

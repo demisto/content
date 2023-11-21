@@ -1,0 +1,25 @@
+args:
+- default: true
+  description: A list for which to sum the list values.
+  isArray: true
+  name: value
+  required: true
+comment: "Sums a List\ne.g. [\"25\", \"10\", \"25\"] =>  \"60\"\n\nThis is an example for number transformer.\n "
+commonfields:
+  id: SumList
+  version: -1
+enabled: true
+name: SumList
+script: '-'
+tags:
+- transformer
+- number
+- entirelist
+timeout: '0'
+type: python
+runas: DBotWeakRole
+subtype: python3
+dockerimage: demisto/python3:3.10.12.63474
+tests:
+- sumList - Test
+fromversion: 5.0.0

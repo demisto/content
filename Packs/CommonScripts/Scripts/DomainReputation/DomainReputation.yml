@@ -1,0 +1,24 @@
+commonfields:
+  id: DomainReputation
+  version: -1
+name: DomainReputation
+script: ''
+type: python
+subtype: python3
+tags:
+- enhancement
+comment: A context script for Domain entities
+enabled: true
+args:
+- name: domain
+  required: true
+  default: true
+  description: Domain to look up
+scripttarget: 0
+fromversion: 5.0.0
+marketplaces:
+- xsoar
+- marketplacev2
+dockerimage: demisto/python3:3.10.12.63474
+tests:
+- No tests (auto formatted)

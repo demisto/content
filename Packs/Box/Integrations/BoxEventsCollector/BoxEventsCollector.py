@@ -18,7 +18,7 @@ urllib3.disable_warnings()
 class Claims(BaseModel):
     iss: str = Field(alias='client_id')
     sub: str = Field(alias='id', description='user id or enterprise id')
-    box_sub_type = 'enterprise'
+    box_sub_type: str = 'enterprise'
     aud: AnyUrl
     jti: str = secrets.token_hex(64)
     exp: int = round(time.time()) + 45
@@ -62,8 +62,8 @@ def get_box_events_timestamp_format(value):
 class BoxEventsParams(BaseModel):
     event_type: Optional[str] = None
     limit: int = Field(500, alias='page_size', gt=0, le=500)
-    stream_position: Optional[str]
-    stream_type = 'admin_logs'
+    stream_position: Optional[str] = None
+    stream_type: str = 'admin_logs'
     created_after: Optional[str]
     # validators
     _normalize_after = validator('created_after', pre=True, allow_reuse=True)(
@@ -89,9 +89,8 @@ def not_gate(v):
 
 class BoxEventsRequestConfig(IntegrationHTTPRequest):
     # Endpoint: https://developer.box.com/reference/get-events/
-    url = parse_obj_as(AnyUrl, 'https://api.box.com/2.0/events')
-    method = Method.GET
-    params: BoxEventsParams
+    method: Method = Method.GET
+    params: BoxEventsParams   # type: ignore[assignment]
     verify: Optional[bool] = Field(True, alias='insecure')  # type: ignore[assignment]
 
     # validators
@@ -99,25 +98,26 @@ class BoxEventsRequestConfig(IntegrationHTTPRequest):
 
 
 class BoxIntegrationOptions(IntegrationOptions):
-    product_name = 'box'
-    vendor_name = 'box'
+    product_name: str = 'box'
+    vendor_name: str = 'box'
     should_push_events: bool = False
 
 
 class BoxEventsClient(IntegrationEventsClient):
     request: BoxEventsRequestConfig
     options: IntegrationOptions
-    authorization_url = parse_obj_as(
-        AnyUrl, 'https://api.box.com/oauth2/token'
-    )
 
     def __init__(
         self,
         request: BoxEventsRequestConfig,
         options: IntegrationOptions,
         box_credentials: BoxCredentials,
+        api_url: str,
         session: Optional[requests.Session] = None,
     ) -> None:
+        self.api_url: str = api_url
+        self.authorization_url = parse_obj_as(AnyUrl, urljoin(str(self.api_url), '/oauth2/token'))
+
         if session is None:
             session = requests.Session()
         self.box_credentials = box_credentials
@@ -218,37 +218,43 @@ def _decrypt_private_key(app_auth: AppAuth):
 
 
 def main(command: str, demisto_params: dict):
-    box_credentials = BoxCredentials.parse_raw(
-        demisto_params['credentials_json']['password']
-    )
-    request = BoxEventsRequestConfig(
-        params=BoxEventsParams.parse_obj(demisto_params),
-        **demisto_params,
-    )
-    options = BoxIntegrationOptions.parse_obj(demisto_params)
-    client = BoxEventsClient(request, options, box_credentials)
-    get_events = BoxEventsGetter(client, options)
-    if command == 'test-module':
-        get_events.client.request.params.limit = 1
-        get_events.run()
-        demisto.results('ok')
-        return
-    demisto.debug('not in test module, running box-get-events')
-    events = get_events.run()
-    demisto.debug(f'got {len(events)=} from api')
-    if command == 'box-get-events':
-        demisto.debug('box-get-events, publishing events to incident')
-        return_results(CommandResults('BoxEvents', 'event_id', events))
-    if command == 'fetch-events':
-        last_run = get_events.get_last_run()
-        demisto.debug(
-            f'in fetch-events. settings should push events to true, setting {last_run=}'
+    try:
+        box_credentials = BoxCredentials.parse_raw(
+            demisto_params['credentials_json']['password']
         )
-        options.should_push_events = True
-        demisto.setLastRun(last_run)
-    demisto.debug(f'finished fetching events. {options.should_push_events=}')
-    if options.should_push_events:
-        send_events_to_xsiam(events, options.vendor_name, options.product_name)
+        events_request_params = demisto_params.copy()
+        events_request_params['url'] = urljoin(demisto_params.get('url', 'https://api.box.com'), '/2.0/events')
+        request = BoxEventsRequestConfig(
+            params=BoxEventsParams.parse_obj(events_request_params),
+            **events_request_params,
+        )
+        options = BoxIntegrationOptions.parse_obj(demisto_params)
+        client = BoxEventsClient(request, options, box_credentials,
+                                 api_url=demisto_params.get('url', 'https://api.box.com'))
+        get_events = BoxEventsGetter(client, options)
+        if command == 'test-module':
+            get_events.client.request.params.limit = 1
+            get_events.run()
+            demisto.results('ok')
+            return
+        demisto.debug('not in test module, running box-get-events')
+        events = get_events.run()
+        demisto.debug(f'got {len(events)=} from api')
+        if command == 'box-get-events':
+            demisto.debug('box-get-events, publishing events to incident')
+            return_results(CommandResults('BoxEvents', 'event_id', events))
+            if options.should_push_events:
+                send_events_to_xsiam(events, options.vendor_name, options.product_name)
+        if command == 'fetch-events':
+            last_run = get_events.get_last_run()
+            demisto.debug(
+                f'in fetch-events. settings should push events to true, setting {last_run=}'
+            )
+            send_events_to_xsiam(events, options.vendor_name, options.product_name)
+            demisto.setLastRun(last_run)
+        demisto.debug(f'finished fetching events. {options.should_push_events=}')
+    except Exception as e:
+        return_error(f'Failed to execute {command} command.\nError:\n{e}\nTraceback:{traceback.format_exc()}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

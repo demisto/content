@@ -1,0 +1,22 @@
+{
+    "agents": [],
+    "aws": [
+        {
+            "accountId": "accountId",
+            "cloudAccountId": "cloudAccountId",
+            "created": "created",
+            "id": "id",
+            "ip": "ip",
+            "length": "length",
+            "name": "name",
+            "note": null,
+            "portFrom": null,
+            "portTo": null,
+            "protocol": "protocol",
+            "region": "region",
+            "securityGroupId": "securityGroupId",
+            "srl": "srl",
+            "user": "user"
+        }
+    ]
+}

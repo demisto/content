@@ -1,0 +1,21 @@
+commonfields:
+  id: CBAlerts
+  version: -1
+name: CBAlerts
+script: ''
+type: python
+subtype: python3
+tags:
+- carbon-black
+comment: Get the list of Alerts from Carbon Black Enterprise Response. Supports the same arguments as the cb-alerts command.
+system: true
+scripttarget: 0
+dependson:
+  must:
+  - cb-alert
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.10.12.63474
+tests:
+- No tests (auto formatted)
+

@@ -1,0 +1,31 @@
+args:
+- description: The object value to check, if empty.
+  name: value
+- description: The new value to return if the original value was empty.
+  name: defaultValue
+- auto: PREDEFINED
+  default: true
+  defaultValue: 'true'
+  description: If set to true, empty strings, arrays and dictionaries and the strings "None" and "Null" are considered empty entities and the default value is returned.
+  name: applyIfEmpty
+  predefined:
+  - 'true'
+  - 'false'
+comment: Checks an object for an empty value and returns a pre-set default value.
+commonfields:
+  id: SetIfEmpty
+  version: -1
+enabled: true
+name: SetIfEmpty
+script: '-'
+subtype: python3
+tags:
+- transformer
+- general
+- entirelist
+timeout: '0'
+type: python
+fromversion: 5.0.0
+tests:
+- SetIfEmpty - non-ascii chars - Test
+dockerimage: demisto/python3:3.10.12.63474

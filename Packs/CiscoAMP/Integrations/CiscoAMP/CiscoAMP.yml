@@ -1,0 +1,1754 @@
+category: Endpoint
+commonfields:
+  id: CiscoAMP
+  version: -1
+deprecated: true
+configuration:
+- defaultvalue: https://api.amp.cisco.com
+  display: Server URL
+  name: server_url
+  required: true
+  type: 0
+- display: Third Party API Client ID
+  name: credentials
+  required: true
+  displaypassword: API Key
+  type: 9
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: C - Fairly reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- additionalinfo: Maximum number of incidents per fetch. The maximum is 200.
+  defaultvalue: 50
+  display: Maximum incidents to fetch.
+  name: max_fetch
+  type: 0
+  required: false
+- display: Incident severity to fetch.
+  name: incident_severities
+  options:
+  - Low
+  - Medium
+  - High
+  - Critical
+  type: 16
+  required: false
+- defaultvalue: 3 days
+  display: First fetch time
+  additionalinfo: First alert created date to fetch. e.g., "1 min ago","2 weeks ago","3 months ago"
+  name: first_fetch
+  type: 0
+  required: false
+- display: Event types
+  name: event_types
+  additionalinfo: Comma-separated list of event type IDs. The IDs can be retrieved from the cisco-amp-event-type-list command.
+  type: 0
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+description: Deprecated. Use Cisco AMP v2 instead.
+display: Cisco AMP (Deprecated)
+name: CiscoAMP
+script:
+  commands:
+  - arguments:
+    - description: Page number to return.
+      name: page
+    - description: Number of results in a page. Maximum is 500.
+      name: page_size
+    - description: Number of total results to return.
+      name: limit
+    - description: The connector GUID for a specific computer.
+      name: connector_guid
+    - description: Comma-separated list of host names to filter by (has auto complete capabilities).
+      isArray: true
+      name: hostname
+    - description: Internal IP to filter by.
+      name: internal_ip
+    - description: External IP to filter by.
+      name: external_ip
+    - description: Comma-separated list of group GUIDs to filter by.
+      isArray: true
+      name: group_guid
+    - description: Time range to filter by.
+      name: last_seen_within
+    - description: Time range to filter over by.
+      name: last_seen_over
+    description: Fetch computers to show information about them. Can be filtered by a variety of criteria.
+    name: cisco-amp-computer-list
+    outputs:
+    - type: String
+      contextPath: CiscoAMP.Computer.connector_guid
+      description: GUID of the connector.
+    - type: String
+      contextPath: CiscoAMP.Computer.hostname
+      description: Host's name.
+    - type: String
+      contextPath: CiscoAMP.Computer.windows_processor_id
+      description: Windows processor ID.
+    - type: Boolean
+      contextPath: CiscoAMP.Computer.active
+      description: Whether the computer is active.
+    - type: String
+      contextPath: CiscoAMP.Computer.connector_version
+      description: Version of the connector.
+    - type: String
+      contextPath: CiscoAMP.Computer.operating_system
+      description: Operating system of the computer.
+    - type: String
+      contextPath: CiscoAMP.Computer.os_version
+      description: Operating system version.
+    - type: String
+      contextPath: CiscoAMP.Computer.internal_ips
+      description: List of internal IPs.
+    - type: String
+      contextPath: CiscoAMP.Computer.external_ip
+      description: External IP.
+    - type: String
+      contextPath: CiscoAMP.Computer.group_guid
+      description: GUID of the group.
+    - type: Date
+      contextPath: CiscoAMP.Computer.install_date
+      description: Installation date.
+    - type: Boolean
+      contextPath: CiscoAMP.Computer.is_compromised
+      description: Whether the computer is compromised.
+    - type: Boolean
+      contextPath: CiscoAMP.Computer.demo
+      description: Whether the computer is a demo.
+    - type: String
+      contextPath: CiscoAMP.Computer.network_addresses.mac
+      description: List of MAC addresses.
+    - type: String
+      contextPath: CiscoAMP.Computer.network_addresses.ip
+      description: List of IP addresses.
+    - type: String
+      contextPath: CiscoAMP.Computer.policy.guid
+      description: GUID of the policy.
+    - type: String
+      contextPath: CiscoAMP.Computer.policy.name
+      description: Name of the policy.
+    - type: String
+      contextPath: CiscoAMP.Computer.groups.guid
+      description: GUID of the group.
+    - type: String
+      contextPath: CiscoAMP.Computer.groups.name
+      description: Name of the group.
+    - type: Date
+      contextPath: CiscoAMP.Computer.last_seen
+      description: Last date seen.
+    - type: String
+      contextPath: CiscoAMP.Computer.faults
+      description: Faults.
+    - type: Boolean
+      contextPath: CiscoAMP.Computer.isolation.available
+      description: Whether the isolation is available.
+    - type: String
+      contextPath: CiscoAMP.Computer.isolation.status
+      description: Status of the isolation.
+    - type: String
+      contextPath: CiscoAMP.Computer.orbital.status
+      description: Status of the orbital.
+    - contextPath: Endpoint.Hostname
+      description: The hostname of the endpoint.
+      type: String
+    - contextPath: Endpoint.ID
+      description: The endpoint's identifier.
+      type: String
+    - contextPath: Endpoint.IPAddress
+      description: The endpoint's IP address.
+      type: String
+    - contextPath: Endpoint.OS
+      description: The endpoint's operating system.
+      type: String
+    - contextPath: Endpoint.OSVersion
+      description: The endpoint's operating system's version.
+      type: String
+    - contextPath: Endpoint.Status
+      description: The status of the endpoint (online/offline).
+      type: String
+    - contextPath: Endpoint.MACAddress
+      description: The endpoint's MAC address.
+      type: String
+    - contextPath: Endpoint.Vendor
+      description: The integration name of the endpoint vendor.
+      type: String
+  - arguments:
+    - description: The connector GUID for a specific computer.
+      name: connector_guid
+      required: true
+    - description: 'Freeform query string that currently accepts an: IP address, SHA-256, or URL.'
+      name: query_string
+    - description: Page number to return.
+      name: page
+    - description: Number of results in a page. Maximum is 5000.
+      name: page_size
+    - description: Number of total results to return.
+      name: limit
+    description: Provides a list of all activities associated with a particular computer. This is analogous to the Device Trajectory on the FireAMP console.
+    name: cisco-amp-computer-trajectory-list
+    outputs:
+    - type: String
+      contextPath: CiscoAMP.ComputerTrajectory.connector_guid
+      description: GUID of the connector.
+    - type: String
+      contextPath: CiscoAMP.ComputerTrajectory.id
+      description: Event's ID.
+    - type: Number
+      contextPath: CiscoAMP.ComputerTrajectory.timestamp
+      description: Event's timestamp.
+    - type: Number
+      contextPath: CiscoAMP.ComputerTrajectory.timestamp_nanoseconds
+      description: Event's timestamp in nano seconds.
+    - type: Date
+      contextPath: CiscoAMP.ComputerTrajectory.date
+      description: Event's date.
+    - type: String
+      contextPath: CiscoAMP.ComputerTrajectory.event_type
+      description: Event's type.
+    - type: Number
+      contextPath: CiscoAMP.ComputerTrajectory.event_type_id
+      description: Event's type ID.
+    - type: String
+      contextPath: CiscoAMP.ComputerTrajectory.group_guids
+      description: Group GUID.
+    - type: String
+      contextPath: CiscoAMP.ComputerTrajectory.severity
+      description: Event's severity.
+    - type: String
+      contextPath: CiscoAMP.ComputerTrajectory.detection
+      description: Event's detection.
+    - type: String
+      contextPath: CiscoAMP.ComputerTrajectory.detection_id
+      description: Event's detection ID.
+    - type: String
+      contextPath: CiscoAMP.ComputerTrajectory.file.disposition
+      description: Disposition of the file.
+    - type: String
+      contextPath: CiscoAMP.ComputerTrajectory.file.file_name
+      description: Name of the file.
+    - type: String
+      contextPath: CiscoAMP.ComputerTrajectory.file.file_path
+      description: Path to the file.
+    - type: String
+      contextPath: CiscoAMP.ComputerTrajectory.file.file_type
+      description: Type of the file.
+    - type: String
+      contextPath: CiscoAMP.ComputerTrajectory.file.identity.sha256
+      description: File's SHA-256.
+    - type: String
+      contextPath: CiscoAMP.ComputerTrajectory.file.identity.sha1
+      description: File's SHA-1.
+    - type: String
+      contextPath: CiscoAMP.ComputerTrajectory.file.identity.md5
+      description: File's MD5.
+    - type: String
+      contextPath: CiscoAMP.ComputerTrajectory.file.parent.disposition
+      description: Disposition of parent.
+    - type: String
+      contextPath: CiscoAMP.ComputerTrajectory.file.parent.identity.sha256
+      description: SHA-256 of parent.
+    - type: String
+      contextPath: CiscoAMP.ComputerTrajectory.scan.description
+      description: Description of the scan.
+    - type: Boolean
+      contextPath: CiscoAMP.ComputerTrajectory.scan.clean
+      description: Whether the scan is clean.
+    - type: Number
+      contextPath: CiscoAMP.ComputerTrajectory.scan.scanned_files
+      description: Number of scanned files.
+    - type: Number
+      contextPath: CiscoAMP.ComputerTrajectory.scan.scanned_processes
+      description: Number of scanned processes.
+    - type: Number
+      contextPath: CiscoAMP.ComputerTrajectory.scan.scanned_paths
+      description: Number of scanned paths.
+    - type: Number
+      contextPath: CiscoAMP.ComputerTrajectory.scan.malicious_detections
+      description: Number of malicious detections.
+  - arguments:
+    - description: Username to filter by.
+      name: username
+      required: true
+    - description: Page number to return.
+      name: page
+    - description: Number of results in a page. Maximum is 500.
+      name: page_size
+    - description: Number of total results to return.
+      name: limit
+    description: Fetch a list of computers that have observed activity by the given username.
+    name: cisco-amp-computer-user-activity-list
+    outputs:
+    - contextPath: CiscoAMP.ComputerUserActivity.connector_guid
+      description: GUID of the connector.
+      type: String
+    - contextPath: CiscoAMP.ComputerUserActivity.hostname
+      description: Host's name.
+      type: String
+    - contextPath: CiscoAMP.ComputerUserActivity.active
+      description: Whether the computer is active.
+      type: Boolean
+  - arguments:
+    - description: The connector GUID for a specific computer.
+      name: connector_guid
+      required: true
+    - description: Username to filter by.
+      name: username
+    - description: Page number to return.
+      name: page
+    - description: Number of results in a page. Maximum is 5000.
+      name: page_size
+    - description: Number of total results to return.
+      name: limit
+    description: Fetch a specific computer's trajectory with a given connector GUID and filter for events with user name activity.
+    name: cisco-amp-computer-user-trajectory-list
+    outputs:
+    - type: String
+      contextPath: CiscoAMP.ComputerUserTrajectory.connector_guid
+      description: GUID of the connector.
+    - type: String
+      contextPath: CiscoAMP.ComputerUserTrajectory.id
+      description: Event's ID.
+    - type: Number
+      contextPath: CiscoAMP.ComputerUserTrajectory.timestamp
+      description: Event's timestamp.
+    - type: Number
+      contextPath: CiscoAMP.ComputerUserTrajectory.timestamp_nanoseconds
+      description: Event's timestamp in nano seconds.
+    - type: Date
+      contextPath: CiscoAMP.ComputerUserTrajectory.date
+      description: Event's date.
+    - type: String
+      contextPath: CiscoAMP.ComputerUserTrajectory.event_type
+      description: Event's type.
+    - type: Number
+      contextPath: CiscoAMP.ComputerUserTrajectory.event_type_id
+      description: Event's type ID.
+    - type: String
+      contextPath: CiscoAMP.ComputerUserTrajectory.group_guids
+      description: Group GUID.
+    - type: String
+      contextPath: CiscoAMP.ComputerUserTrajectory.severity
+      description: Event's severity.
+    - type: String
+      contextPath: CiscoAMP.ComputerUserTrajectory.detection
+      description: Event's detection.
+    - type: String
+      contextPath: CiscoAMP.ComputerUserTrajectory.detection_id
+      description: Event's detection ID.
+    - type: String
+      contextPath: CiscoAMP.ComputerUserTrajectory.file.disposition
+      description: Disposition of the file.
+    - type: String
+      contextPath: CiscoAMP.ComputerUserTrajectory.file.file_name
+      description: Name of the file.
+    - type: String
+      contextPath: CiscoAMP.ComputerUserTrajectory.file.file_path
+      description: Path to the file.
+    - type: String
+      contextPath: CiscoAMP.ComputerUserTrajectory.file.file_type
+      description: Type of the file.
+    - type: String
+      contextPath: CiscoAMP.ComputerUserTrajectory.file.identity.sha256
+      description: File's SHA-256.
+    - type: String
+      contextPath: CiscoAMP.ComputerUserTrajectory.file.identity.sha1
+      description: File's SHA-1.
+    - type: String
+      contextPath: CiscoAMP.ComputerUserTrajectory.file.identity.md5
+      description: File's MD5.
+    - type: String
+      contextPath: CiscoAMP.ComputerUserTrajectory.file.parent.disposition
+      description: Disposition of parent.
+    - type: String
+      contextPath: CiscoAMP.ComputerUserTrajectory.file.parent.identity.sha256
+      description: SHA-256 of parent.
+    - type: String
+      contextPath: CiscoAMP.ComputerUserTrajectory.scan.description
+      description: Description of the scan.
+    - type: Boolean
+      contextPath: CiscoAMP.ComputerUserTrajectory.scan.clean
+      description: Whether the scan is clean.
+    - type: Number
+      contextPath: CiscoAMP.ComputerUserTrajectory.scan.scanned_files
+      description: Number of scanned files.
+    - type: Number
+      contextPath: CiscoAMP.ComputerUserTrajectory.scan.scanned_processes
+      description: Number of scanned processes.
+    - type: Number
+      contextPath: CiscoAMP.ComputerUserTrajectory.scan.scanned_paths
+      description: Number of scanned paths.
+    - type: Number
+      contextPath: CiscoAMP.ComputerUserTrajectory.scan.malicious_detections
+      description: Number of malicious detections.
+  - arguments:
+    - description: The connector GUID for a specific computer.
+      name: connector_guid
+      required: true
+    - description: The start date and time expressed according to ISO 8601. The retrieved list will include vulnerable programs detected at start_time.
+      name: start_time
+    - description: The end date and/or time expressed according to ISO 8601. Exclusive - if end_time is a time, the list will only include vulnerable programs detected before end_time). Inclusive - if end_time is a date, the list will include vulnerable programs detected on the date.
+      name: end_time
+    - description: Page number to return.
+      name: page
+    - description: Number of results in a page. Maximum is 500.
+      name: page_size
+    - description: Number of total results to return.
+      name: limit
+    description: Provides a list of vulnerabilities observed on a specific computer. The vulnerabilities can be filtered to show only vulnerable applications observed for a specific time range.
+    name: cisco-amp-computer-vulnerabilities-list
+    outputs:
+    - type: String
+      contextPath: CiscoAMP.ComputerVulnerability.connector_guid
+      description: GUID of the connector.
+    - type: String
+      contextPath: CiscoAMP.ComputerVulnerability.application
+      description: Name of the application.
+    - type: String
+      contextPath: CiscoAMP.ComputerVulnerability.version
+      description: Version of the application.
+    - type: String
+      contextPath: CiscoAMP.ComputerVulnerability.file.filename
+      description: Name of the file.
+    - type: String
+      contextPath: CiscoAMP.ComputerVulnerability.file.identity.sha256
+      description: File's SHA-256.
+    - type: String
+      contextPath: CiscoAMP.ComputerVulnerability.file.identity.sha1
+      description: File's SHA-1.
+    - type: String
+      contextPath: CiscoAMP.ComputerVulnerability.file.identity.md5
+      description: File's MD5.
+    - type: String
+      contextPath: CiscoAMP.ComputerVulnerability.cves.id
+      description: Common vulnerability exposure ID.
+    - type: String
+      contextPath: CiscoAMP.ComputerVulnerability.cves.link
+      description: Common vulnerability exposure link.
+    - type: Number
+      contextPath: CiscoAMP.ComputerVulnerability.cves.cvss
+      description: Common vulnerability scoring system.
+    - type: Number
+      contextPath: CiscoAMP.ComputerVulnerability.latest_timestamp
+      description: Vulnerability latest timestamp.
+    - type: Date
+      contextPath: CiscoAMP.ComputerVulnerability.latest_date
+      description: Vulnerability latest date.
+  - arguments:
+    - description: The connector GUID for a specific computer.
+      name: connector_guid
+      required: true
+    - description: Group GUID to move the computer to.
+      name: group_guid
+      required: true
+    description: Moves a computer to a group with the given connector_guid and group_guid.
+    name: cisco-amp-computer-move
+    outputs:
+    - type: String
+      contextPath: CiscoAMP.Computer.connector_guid
+      description: GUID of the connector.
+    - type: String
+      contextPath: CiscoAMP.Computer.hostname
+      description: Host's name.
+    - type: String
+      contextPath: CiscoAMP.Computer.windows_processor_id
+      description: Windows processor ID.
+    - type: Boolean
+      contextPath: CiscoAMP.Computer.active
+      description: Whether the computer is active.
+    - type: String
+      contextPath: CiscoAMP.Computer.connector_version
+      description: Version of the connector.
+    - type: String
+      contextPath: CiscoAMP.Computer.operating_system
+      description: Operating system of the computer.
+    - type: String
+      contextPath: CiscoAMP.Computer.os_version
+      description: Operating system version.
+    - type: String
+      contextPath: CiscoAMP.Computer.internal_ips
+      description: List of internal IPs.
+    - type: String
+      contextPath: CiscoAMP.Computer.external_ip
+      description: External IP.
+    - type: String
+      contextPath: CiscoAMP.Computer.group_guid
+      description: GUID of the group.
+    - type: Date
+      contextPath: CiscoAMP.Computer.install_date
+      description: Installation date.
+    - type: Boolean
+      contextPath: CiscoAMP.Computer.is_compromised
+      description: Whether the computer is compromised.
+    - type: Boolean
+      contextPath: CiscoAMP.Computer.demo
+      description: Whether the computer is a demo.
+    - type: String
+      contextPath: CiscoAMP.Computer.network_addresses.mac
+      description: List of MAC addresses.
+    - type: String
+      contextPath: CiscoAMP.Computer.network_addresses.ip
+      description: List of IP addresses.
+    - type: String
+      contextPath: CiscoAMP.Computer.policy.guid
+      description: GUID of the policy.
+    - type: String
+      contextPath: CiscoAMP.Computer.policy.name
+      description: Name of the policy.
+    - type: String
+      contextPath: CiscoAMP.Computer.groups.guid
+      description: GUID of the group.
+    - type: String
+      contextPath: CiscoAMP.Computer.groups.name
+      description: Name of the group.
+    - type: Date
+      contextPath: CiscoAMP.Computer.last_seen
+      description: Last date seen.
+    - type: String
+      contextPath: CiscoAMP.Computer.faults
+      description: Faults.
+    - type: Boolean
+      contextPath: CiscoAMP.Computer.isolation.available
+      description: Whether the isolation is available.
+    - type: String
+      contextPath: CiscoAMP.Computer.isolation.status
+      description: Status of the isolation.
+    - type: String
+      contextPath: CiscoAMP.Computer.orbital.status
+      description: Status of the orbital.
+  - arguments:
+    - description: The connector GUID for a specific computer.
+      name: connector_guid
+      required: true
+    description: Deletes a specific computer with given connector_guid.
+    name: cisco-amp-computer-delete
+  - arguments:
+    - description: 'Freeform query string which currently accepts: IPv4 address (CIDR not supported), SHA-256, file name, and a URL fragment.'
+      name: query_string
+      required: true
+    - description: Page number to return.
+      name: page
+    - description: Number of results in a page. Maximum is 500.
+      name: page_size
+    - description: Number of total results to return.
+      name: limit
+    description: Fetch a list of computers that have observed files with a given file name. Provides the ability to search all computers across an organization for any events or activities associated with a file or network operation, and returns computers matching those criteria. There is a hard limit of 5000 historical entries searched.
+    name: cisco-amp-computer-activity-list
+    outputs:
+    - contextPath: CiscoAMP.ComputerActivity.connector_guid
+      description: GUID of the connector.
+      type: String
+    - contextPath: CiscoAMP.ComputerActivity.hostname
+      description: Host's name.
+      type: String
+    - contextPath: CiscoAMP.ComputerActivity.windows_processor_id
+      description: Windows processor ID.
+      type: String
+    - contextPath: CiscoAMP.ComputerActivity.active
+      description: Whether the computer is active.
+      type: Boolean
+  - arguments:
+    - description: The connector GUID for a specific computer.
+      name: connector_guid
+      required: true
+    description: Performs a feature availability request on a computer. Isolation must be enabled within the computer's policy. This can be done through the instance. Log in to your account -> Management -> Policies -> Choose the relevant policy -> Edit -> Advanced Settings -> Endpoint Isolation -> Allow Endpoint Isolation.
+    name: cisco-amp-computer-isolation-feature-availability-get
+  - arguments:
+    - description: The connector GUID for a specific computer.
+      name: connector_guid
+      required: true
+    description: Returns a fine-grained isolation status for a computer. The available flag is set to true if isolation can be performed on the computer. Status will be set to one of - not_isolated, pending_start, isolated and pending_stop. Isolation must be enabled within the computer's policy. This can be done through the instance. Log in to your account -> Management -> Policies -> Choose the relevant policy -> Edit -> Advanced Settings -> Endpoint Isolation -> Allow Endpoint Isolation.
+    name: cisco-amp-computer-isolation-get
+    outputs:
+    - contextPath: CiscoAMP.ComputerIsolation.connector_guid
+      description: ID of the connector.
+      type: String
+    - contextPath: CiscoAMP.ComputerIsolation.available
+      description: Set to true if isolation can be performed on the computer.
+      type: Boolean
+    - contextPath: CiscoAMP.ComputerIsolation.status
+      description: "Status of the computer isolation. Will be set to one of: not_isolated, pending_start, isolated and pending_stop."
+      type: String
+    - contextPath: CiscoAMP.ComputerIsolation.unlock_code
+      description: Isolation unlock code.
+      type: String
+    - contextPath: CiscoAMP.ComputerIsolation.comment
+      description: Isolation comment.
+      type: String
+    - contextPath: CiscoAMP.ComputerIsolation.ccms_message_guid
+      description: Cisco Cluster Management Suite message GUID.
+      type: String
+    - contextPath: CiscoAMP.ComputerIsolation.ccms_job_guid
+      description: Cisco Cluster Management Suite job GUID.
+      type: String
+  - arguments:
+    - description: The interval in seconds between each poll.
+      name: interval_in_seconds
+      defaultValue: '30'
+    - description: The timeout in seconds until polling ends.
+      name: timeout_in_seconds
+      defaultValue: '600'
+    - description: The connector GUID for a specific computer.
+      name: connector_guid
+      required: true
+    - description: Comment for isolation.
+      name: comment
+      required: true
+    - description: Isolation unlock code.
+      name: unlock_code
+      required: true
+    - description: Status of the current run.
+      name: status
+    description: Request isolation for a computer. Supports polling. Isolation must be enabled within the computer's policy. This can be done through the instance. Log in to your account -> Management -> Policies -> Choose the relevant policy -> Edit -> Advanced Settings -> Endpoint Isolation -> Allow Endpoint Isolation.
+    name: cisco-amp-computer-isolation-create
+    polling: true
+    outputs:
+    - contextPath: CiscoAMP.ComputerIsolation.connector_guid
+      description: ID of the connector.
+      type: String
+    - contextPath: CiscoAMP.ComputerIsolation.available
+      description: Set to true if isolation can be performed on the computer.
+      type: Boolean
+    - contextPath: CiscoAMP.ComputerIsolation.status
+      description: "Status of the computer isolation. Will be set to one of: not_isolated, pending_start, isolated and pending_stop."
+      type: String
+    - contextPath: CiscoAMP.ComputerIsolation.unlock_code
+      description: Isolation unlock code.
+      type: String
+    - contextPath: CiscoAMP.ComputerIsolation.comment
+      description: Isolation comment.
+      type: String
+    - contextPath: CiscoAMP.ComputerIsolation.isolated_by
+      description: Isolation initiator.
+      type: String
+  - arguments:
+    - description: The interval in seconds between each poll.
+      name: interval_in_seconds
+      defaultValue: '30'
+    - description: The timeout in seconds until polling ends.
+      name: timeout_in_seconds
+      defaultValue: '600'
+    - description: The connector GUID for a specific computer.
+      name: connector_guid
+      required: true
+    - description: Comment for isolation deletion.
+      name: comment
+    - description: Status of the current run.
+      name: status
+    description: Request isolation stop for a computer. Supports polling. Isolation must be enabled within the computer's policy. This can be done through the instance. Log in to your account -> Management -> Policies -> Choose the relevant policy -> Edit -> Advanced Settings -> Endpoint Isolation -> Allow Endpoint Isolation.
+    name: cisco-amp-computer-isolation-delete
+    polling: true
+    outputs:
+    - contextPath: CiscoAMP.ComputerIsolation.available
+      description: Set to true if isolation can be performed on the computer.
+      type: Boolean
+    - contextPath: CiscoAMP.ComputerIsolation.status
+      description: "Status of the computer isolation. Will be set to one of: not_isolated, pending_start, isolated and pending_stop."
+      type: String
+    - contextPath: CiscoAMP.ComputerIsolation.unlock_code
+      description: Isolation unlock code.
+      type: String
+    - contextPath: CiscoAMP.ComputerIsolation.comment
+      description: Isolation comment.
+      type: String
+    - contextPath: CiscoAMP.ComputerIsolation.isolated_by
+      description: Isolation initiator.
+      type: String
+  - arguments:
+    - description: Detection  SHA-256 to filter by.
+      name: detection_sha256
+    - description: Application SHA-256 to filter by.
+      name: application_sha256
+    - description: Comma-separated list for connector GUIDs to filter by.
+      isArray: true
+      name: connector_guid
+    - description: Comma-separated list for group GUIDs to filter by.
+      isArray: true
+      name: group_guid
+    - description: Fetch events that are newer than the given time.
+      name: start_date
+    - description: Comma-separated list for event types to filter by.
+      isArray: true
+      name: event_type
+    - description: Page number to return.
+      name: page
+    - description: Number of results in a page. Maximum is 500.
+      name: page_size
+    - description: Number of total results to return.
+      name: limit
+    description: Fetch a list of events that can be filtered by a variety of criteria. Each criteria type is logically ANDed with the other criteria, and each selection of a criteria is logically ORed. This is analogous to the Events view on the FireAMP Console.
+    name: cisco-amp-event-list
+    outputs:
+    - type: Number
+      contextPath: CiscoAMP.Event.id
+      description: Event's ID.
+    - type: Number
+      contextPath: CiscoAMP.Event.timestamp
+      description: Event's timestamp.
+    - type: Number
+      contextPath: CiscoAMP.Event.timestamp_nanoseconds
+      description: Event's timestamp in nano seconds.
+    - type: Date
+      contextPath: CiscoAMP.Event.date
+      description: Event's date.
+    - type: String
+      contextPath: CiscoAMP.Event.event_type
+      description: Event's type.
+    - type: Number
+      contextPath: CiscoAMP.Event.event_type_id
+      description: Event's type ID.
+    - type: String
+      contextPath: CiscoAMP.Event.detection
+      description: Event's detection.
+    - type: String
+      contextPath: CiscoAMP.Event.detection_id
+      description: Event's detection ID.
+    - type: String
+      contextPath: CiscoAMP.Event.connector_guid
+      description: GUID of the connector.
+    - type: String
+      contextPath: CiscoAMP.Event.group_guids
+      description: Event's group GUID.
+    - type: String
+      contextPath: CiscoAMP.Event.severity
+      description: Event's severity.
+    - type: String
+      contextPath: CiscoAMP.Event.computer.connector_guid
+      description: GUID of the connector.
+    - type: String
+      contextPath: CiscoAMP.Event.computer.hostname
+      description: Host's name.
+    - type: String
+      contextPath: CiscoAMP.Event.computer.external_ip
+      description: External IP.
+    - type: Boolean
+      contextPath: CiscoAMP.Event.computer.active
+      description: Whether the computer is active.
+    - type: String
+      contextPath: CiscoAMP.Event.computer.user
+      description: Computer user.
+    - type: String
+      contextPath: CiscoAMP.Event.computer.network_addresses.ip
+      description: List of IP addresses.
+    - type: String
+      contextPath: CiscoAMP.Event.computer.network_addresses.mac
+      description: List of MAC addresses.
+    - type: String
+      contextPath: CiscoAMP.Event.file.disposition
+      description: Disposition of the file.
+    - type: String
+      contextPath: CiscoAMP.Event.file.file_name
+      description: Name of the file.
+    - type: String
+      contextPath: CiscoAMP.Event.file.file_path
+      description: Path to the file.
+    - type: String
+      contextPath: CiscoAMP.Event.file.identity.sha256
+      description: File's SHA-256.
+    - type: String
+      contextPath: CiscoAMP.Event.file.identity.sha1
+      description: File's SHA-1.
+    - type: String
+      contextPath: CiscoAMP.Event.file.identity.md5
+      description: File's MD5
+    - type: Number
+      contextPath: CiscoAMP.Event.file.parent.process_id
+      description: Parent's process ID.
+    - type: String
+      contextPath: CiscoAMP.Event.file.parent.file_name
+      description: Parent's file name.
+    - type: String
+      contextPath: CiscoAMP.Event.file.parent.disposition
+      description: Parent's disposition.
+    - type: String
+      contextPath: CiscoAMP.Event.file.parent.identity.sha256
+      description: Parent's SHA-256.
+    - type: String
+      contextPath: CiscoAMP.Event.file.parent.identity.sha1
+      description: Parent's SHA-1.
+    - type: String
+      contextPath: CiscoAMP.Event.file.parent.identity.md5
+      description: Parent's MD5.
+    - type: String
+      contextPath: CiscoAMP.Event.scan.description
+      description: Description of the scan.
+    - type: Boolean
+      contextPath: CiscoAMP.Event.scan.clean
+      description: Whether the scan is clean.
+    - type: Number
+      contextPath: CiscoAMP.Event.scan.scanned_files
+      description: Number of scanned files.
+    - type: Number
+      contextPath: CiscoAMP.Event.scan.scanned_processes
+      description: Number of scanned processes.
+    - type: Number
+      contextPath: CiscoAMP.Event.scan.scanned_paths
+      description: Number of scanned paths.
+    - type: Number
+      contextPath: CiscoAMP.Event.scan.malicious_detections
+      description: Number of malicious detections.
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The full file name (including file extension).
+      type: String
+    - contextPath: File.Path
+      description: The path where the file is located.
+      type: String
+    - contextPath: File.Hostname
+      description: The name of the host where the file was found.
+      type: String
+    - contextPath: File.Malicious.Vendor
+      description: The vendor that reported the file as malicious.
+      type: String
+    - contextPath: File.Malicious.Description
+      description: A description explaining why the file was determined to be malicious.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+  - arguments:
+    - description: Page number to return.
+      name: page
+    - description: Number of results in a page. Maximum is 500.
+      name: page_size
+    - description: Number of total results to return.
+      name: limit
+    description: Fetches a list of event types. Events are identified and filtered by a unique ID.
+    name: cisco-amp-event-type-list
+    outputs:
+    - contextPath: CiscoAMP.EventType.id
+      description: Event type ID.
+      type: Number
+    - contextPath: CiscoAMP.EventType.name
+      description: Event type name.
+      type: String
+    - contextPath: CiscoAMP.EventType.description
+      description: Event type description.
+      type: String
+  - arguments:
+    - description: Fetch a list type to return.
+      name: file_list_type
+      defaultValue: Application Blocking
+      auto: PREDEFINED
+      predefined:
+      - Application Blocking
+      - Simple Custom Detection
+    - description: Comma-separated list of name to filter by (has auto complete capabilities).
+      isArray: true
+      name: name
+    - description: Page number to return.
+      name: page
+    - description: Number of results in a page. Maximum is 500.
+      name: page_size
+    - description: Number of total results to return.
+      name: limit
+    - description: GUID of the file list to return.
+      name: file_list_guid
+    description: Returns a particular file list for application blocking or simple custom detection. file_list_guid must be provided to retrieve information about a particular file_list. Can fetch an application_blocking or simple_custom_detection file list. Defaults to application_blocking.
+    name: cisco-amp-file-list-list
+    outputs:
+    - contextPath: CiscoAMP.FileList.name
+      description: Name of blocking.
+      type: String
+    - contextPath: CiscoAMP.FileList.guid
+      description: File list GUID.
+      type: String
+    - contextPath: CiscoAMP.FileList.type
+      description: Type of blocking.
+      type: String
+  - arguments:
+    - description: File list to return.
+      name: file_list_guid
+      required: true
+    - description: Page number to return.
+      name: page
+    - description: Number of results in a page. Maximum is 500.
+      name: page_size
+    - description: Number of total results to return.
+      name: limit
+    - description: File list item SHA-256 to search.
+      name: sha256
+    description: Returns a list of items for a particular file_list. file_list_guid must be provided to retrieve these items. A particular item can be returned by providing a SHA-256.
+    name: cisco-amp-file-list-item-list
+    outputs:
+    - contextPath: CiscoAMP.FileListItem.name
+      description: Name of file list.
+      type: String
+    - contextPath: CiscoAMP.FileListItem.guid
+      description: File list GUID.
+      type: String
+    - contextPath: CiscoAMP.FileListItem.policies.name
+      description: Name of the policy.
+      type: String
+    - contextPath: CiscoAMP.FileListItem.policies.guid
+      description: Policy GUID.
+      type: String
+    - contextPath: CiscoAMP.FileListItem.items.sha256
+      description: Item SHA-256.
+      type: String
+    - contextPath: CiscoAMP.FileListItem.items.source
+      description: Item source.
+      type: String
+  - arguments:
+    - description: File list to add to.
+      name: file_list_guid
+      required: true
+    - description: File list item's SHA-256 to add.
+      name: sha256
+      required: true
+    - description: Description for the created item.
+      name: description
+    description: Creates a file list item with a given SHA-256 for a specific file list with a given file_list_guid.
+    name: cisco-amp-file-list-item-create
+    outputs:
+    - contextPath: CiscoAMP.FileListItem.sha256
+      description: Item SHA-256.
+      type: String
+    - contextPath: CiscoAMP.FileListItem.description
+      description: File's description.
+      type: String
+    - contextPath: CiscoAMP.FileListItem.source
+      description: Item source.
+      type: String
+  - arguments:
+    - description: File list to delete from.
+      name: file_list_guid
+      required: true
+    - description: File list item SHA-256 to delete.
+      name: sha256
+      required: true
+    description: Deletes a file list item with a given SHA-256 and associated to a file list with a given file_list_guid.
+    name: cisco-amp-file-list-item-delete
+  - arguments:
+    - description: Name to filter by (has auto complete capabilities).
+      name: name
+    - description: Page number to return.
+      name: page
+    - description: Number of results in a page. Maximum is 500.
+      name: page_size
+    - description: Number of total results to return.
+      name: limit
+    - description: Group's GUID.
+      name: group_guid
+    description: Provides information about groups in an organization.
+    name: cisco-amp-group-list
+    outputs:
+    - type: String
+      contextPath: CiscoAMP.Group.name
+      description: Name of the group.
+    - type: String
+      contextPath: CiscoAMP.Group.description
+      description: Group's description.
+    - type: String
+      contextPath: CiscoAMP.Group.guid
+      description: Group GUID.
+    - type: String
+      contextPath: CiscoAMP.Group.source
+      description: Creation source.
+    - type: String
+      contextPath: CiscoAMP.Group.creator
+      description: Creator of the group.
+    - type: Date
+      contextPath: CiscoAMP.Group.created_at
+      description: Date of creation.
+    - type: Number
+      contextPath: CiscoAMP.Group.computers_count
+      description: Number of computers in the group.
+    - type: Number
+      contextPath: CiscoAMP.Group.descendant_computers_count
+      description: Number of computers from descendant groups.
+    - type: String
+      contextPath: CiscoAMP.Group.ancestry.name
+      description: Parent group name.
+    - type: String
+      contextPath: CiscoAMP.Group.ancestry.guid
+      description: Parent group GUID.
+    - type: String
+      contextPath: CiscoAMP.Group.child_groups.name
+      description: Child group name.
+    - type: String
+      contextPath: CiscoAMP.Group.child_groups.guid
+      description: Child group GUID.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.name
+      description: Policy name.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.description
+      description: Policy description.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.guid
+      description: Policy GUID.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.product
+      description: Policy operating system product.
+    - type: Boolean
+      contextPath: CiscoAMP.Group.policies.default
+      description: Whether the policy is the default policy.
+    - type: Number
+      contextPath: CiscoAMP.Group.policies.serial_number
+      description: Policy serial number.
+    - type: Boolean
+      contextPath: CiscoAMP.Group.policies.inherited
+      description: Whether the policy is inherited.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.file_lists.name
+      description: File list name.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.file_lists.guid
+      description: File list GUID.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.file_lists.type
+      description: File list type.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.ip_lists.name
+      description: IP list name.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.ip_lists.guid
+      description: IP list GUID.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.ip_lists.type
+      description: IP list type.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.exclusion_sets.name
+      description: Exclusion set name.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.exclusion_sets.guid
+      description: Exclusion set GUID.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.used_in_groups.name
+      description: Name of the group the policy is used in.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.used_in_groups.description
+      description: Description of the group the policy is used in.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.used_in_groups.guid
+      description: GUID of the group the policy is used in.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.used_in_groups.source
+      description: Creation source of the group the policy is used in.
+  - arguments:
+    - description: Group's GUID.
+      name: group_guid
+      required: true
+    - description: Policy GUID for Windows.
+      name: windows_policy_guid
+    - description: Policy GUID for MAC.
+      name: mac_policy_guid
+    - description: Policy GUID for Android.
+      name: android_policy_guid
+    - description: Policy GUID for Linux.
+      name: linux_policy_guid
+    description: Updates a group to a given policy and returns all the policies in that group.
+    name: cisco-amp-group-policy-update
+    outputs:
+    - type: String
+      contextPath: CiscoAMP.Group.name
+      description: Name of the group.
+    - type: String
+      contextPath: CiscoAMP.Group.description
+      description: Group's description.
+    - type: String
+      contextPath: CiscoAMP.Group.guid
+      description: Group GUID.
+    - type: String
+      contextPath: CiscoAMP.Group.source
+      description: Creation source.
+    - type: String
+      contextPath: CiscoAMP.Group.creator
+      description: Creator of the group.
+    - type: Date
+      contextPath: CiscoAMP.Group.created_at
+      description: Date of creation.
+    - type: Number
+      contextPath: CiscoAMP.Group.computers_count
+      description: Number of computers in the group.
+    - type: Number
+      contextPath: CiscoAMP.Group.descendant_computers_count
+      description: Number of computers from descendant groups.
+    - type: String
+      contextPath: CiscoAMP.Group.ancestry.name
+      description: Parent group name.
+    - type: String
+      contextPath: CiscoAMP.Group.ancestry.guid
+      description: Parent group GUID.
+    - type: String
+      contextPath: CiscoAMP.Group.child_groups.name
+      description: Child group name.
+    - type: String
+      contextPath: CiscoAMP.Group.child_groups.guid
+      description: Child group GUID.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.name
+      description: Policy name.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.description
+      description: Policy description.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.guid
+      description: Policy GUID.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.product
+      description: Policy operating system product.
+    - type: Boolean
+      contextPath: CiscoAMP.Group.policies.default
+      description: Whether the policy is the default policy.
+    - type: Number
+      contextPath: CiscoAMP.Group.policies.serial_number
+      description: Policy serial number.
+    - type: Boolean
+      contextPath: CiscoAMP.Group.policies.inherited
+      description: Whether the policy is inherited.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.file_lists.name
+      description: File list name.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.file_lists.guid
+      description: File list GUID.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.file_lists.type
+      description: File list type.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.ip_lists.name
+      description: IP list name.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.ip_lists.guid
+      description: IP list GUID.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.ip_lists.type
+      description: IP list type.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.exclusion_sets.name
+      description: Exclusion set name.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.exclusion_sets.guid
+      description: Exclusion set GUID.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.used_in_groups.name
+      description: Name of the group the policy is used in.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.used_in_groups.description
+      description: Description of the group the policy is used in.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.used_in_groups.guid
+      description: GUID of the group the policy is used in.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.used_in_groups.source
+      description: Creation source of the group the policy is used in.
+  - arguments:
+    - description: Group's GUID.
+      name: child_guid
+      required: true
+    - description: Group parent to set to child group.
+      name: parent_group_guid
+    description: Converts an existing group to a child of another group or an existing child group to a root group (that is, one with no parent groups).
+    name: cisco-amp-group-parent-update
+    outputs:
+    - type: String
+      contextPath: CiscoAMP.Group.name
+      description: Name of the group.
+    - type: String
+      contextPath: CiscoAMP.Group.description
+      description: Group's description.
+    - type: String
+      contextPath: CiscoAMP.Group.guid
+      description: Group GUID.
+    - type: String
+      contextPath: CiscoAMP.Group.source
+      description: Creation source.
+    - type: String
+      contextPath: CiscoAMP.Group.creator
+      description: Creator of the group.
+    - type: Date
+      contextPath: CiscoAMP.Group.created_at
+      description: Date of creation.
+    - type: Number
+      contextPath: CiscoAMP.Group.computers_count
+      description: Number of computers in the group.
+    - type: Number
+      contextPath: CiscoAMP.Group.descendant_computers_count
+      description: Number of computers from descendant groups.
+    - type: String
+      contextPath: CiscoAMP.Group.ancestry.name
+      description: Parent group name.
+    - type: String
+      contextPath: CiscoAMP.Group.ancestry.guid
+      description: Parent group GUID.
+    - type: String
+      contextPath: CiscoAMP.Group.child_groups.name
+      description: Child group name.
+    - type: String
+      contextPath: CiscoAMP.Group.child_groups.guid
+      description: Child group GUID.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.name
+      description: Policy name.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.description
+      description: Policy description.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.guid
+      description: Policy GUID.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.product
+      description: Policy operating system product.
+    - type: Boolean
+      contextPath: CiscoAMP.Group.policies.default
+      description: Whether the policy is the default policy.
+    - type: Number
+      contextPath: CiscoAMP.Group.policies.serial_number
+      description: Policy serial number.
+    - type: Boolean
+      contextPath: CiscoAMP.Group.policies.inherited
+      description: Whether the policy is inherited.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.file_lists.name
+      description: File list name.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.file_lists.guid
+      description: File list GUID.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.file_lists.type
+      description: File list type.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.ip_lists.name
+      description: IP list name.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.ip_lists.guid
+      description: IP list GUID.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.ip_lists.type
+      description: IP list type.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.exclusion_sets.name
+      description: Exclusion set name.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.exclusion_sets.guid
+      description: Exclusion set GUID.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.used_in_groups.name
+      description: Name of the group the policy is used in.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.used_in_groups.description
+      description: Description of the group the policy is used in.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.used_in_groups.guid
+      description: GUID of the group the policy is used in.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.used_in_groups.source
+      description: Creation source of the group the policy is used in.
+  - arguments:
+    - description: Group name.
+      name: name
+      required: true
+    - description: Group description.
+      name: description
+      required: true
+    description: Creates a new group along with a group name or description.
+    name: cisco-amp-group-create
+    outputs:
+    - type: String
+      contextPath: CiscoAMP.Group.name
+      description: Name of the group.
+    - type: String
+      contextPath: CiscoAMP.Group.description
+      description: Group's description.
+    - type: String
+      contextPath: CiscoAMP.Group.guid
+      description: Group GUID.
+    - type: String
+      contextPath: CiscoAMP.Group.source
+      description: Creation source.
+    - type: String
+      contextPath: CiscoAMP.Group.creator
+      description: Creator of the group.
+    - type: Date
+      contextPath: CiscoAMP.Group.created_at
+      description: Date of creation.
+    - type: Number
+      contextPath: CiscoAMP.Group.computers_count
+      description: Number of computers in the group.
+    - type: Number
+      contextPath: CiscoAMP.Group.descendant_computers_count
+      description: Number of computers from descendant groups.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.name
+      description: Policy name.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.description
+      description: Policy description.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.guid
+      description: Policy GUID.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.product
+      description: Policy operating system product.
+    - type: Boolean
+      contextPath: CiscoAMP.Group.policies.default
+      description: Whether the policy is the default policy.
+    - type: Number
+      contextPath: CiscoAMP.Group.policies.serial_number
+      description: Policy serial number.
+    - type: Boolean
+      contextPath: CiscoAMP.Group.policies.inherited
+      description: Whether the policy is inherited.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.file_lists.name
+      description: File list name.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.file_lists.guid
+      description: File list GUID.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.file_lists.type
+      description: File list type.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.ip_lists.name
+      description: IP list name.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.ip_lists.guid
+      description: IP list GUID.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.ip_lists.type
+      description: IP list type.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.exclusion_sets.name
+      description: Exclusion set name.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.exclusion_sets.guid
+      description: Exclusion set GUID.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.used_in_groups.name
+      description: Name of the group the policy is used in.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.used_in_groups.description
+      description: Description of the group the policy is used in.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.used_in_groups.guid
+      description: GUID of the group the policy is used in.
+    - type: String
+      contextPath: CiscoAMP.Group.policies.used_in_groups.source
+      description: Creation source of the group the policy is used in.
+  - arguments:
+    - description: Group's GUID.
+      name: group_guid
+      required: true
+    description: Destroys a group with a given GUID.
+    name: cisco-amp-group-delete
+  - arguments:
+    - description: Indicator GUID.
+      name: indicator_guid
+    - description: Page number to return.
+      name: page
+    - description: Number of results in a page. Maximum is 500.
+      name: page_size
+    - description: Number of total results to return.
+      name: limit
+    description: Show information about indicators.
+    name: cisco-amp-indicator-list
+    outputs:
+    - type: String
+      contextPath: CiscoAMP.Indicator.name
+      description: Indicator name.
+    - type: String
+      contextPath: CiscoAMP.Indicator.description
+      description: Indicator description.
+    - type: String
+      contextPath: CiscoAMP.Indicator.guid
+      description: Indicator GUID.
+    - type: String
+      contextPath: CiscoAMP.Indicator.severity
+      description: Indicator severity.
+    - type: String
+      contextPath: CiscoAMP.Indicator.mitre.tactics.external_id
+      description: Mitre tactic ID.
+    - type: String
+      contextPath: CiscoAMP.Indicator.mitre.tactics.name
+      description: Mitre tactic name.
+    - type: String
+      contextPath: CiscoAMP.Indicator.mitre.tactics.mitre_url
+      description: Mitre tactic URL.
+    - type: String
+      contextPath: CiscoAMP.Indicator.mitre.techniques.external_id
+      description: Mitre technique ID.
+    - type: String
+      contextPath: CiscoAMP.Indicator.mitre.techniques.name
+      description: Mitre technique name.
+    - type: String
+      contextPath: CiscoAMP.Indicator.mitre.techniques.mitre_url
+      description: Mitre technique URL.
+    - type: Number
+      contextPath: CiscoAMP.Indicator.observed_compromises
+      description: Total number of observed compromises.
+    - type: Number
+      contextPath: CiscoAMP.Indicator.observed_compromises.unresolved
+      description: Number of unresolved compromises.
+    - type: Number
+      contextPath: CiscoAMP.Indicator.observed_compromises.in_progress
+      description: Number of compromises in progress.
+    - type: Number
+      contextPath: CiscoAMP.Indicator.observed_compromises.resolved
+      description: Number of resolved compromises.
+  - arguments:
+    - description: Policy GUID.
+      name: policy_guid
+    - description: Comma-separated list for products to filter by.
+      isArray: true
+      name: product
+    - description: Comma-separated list for names to filter by (has auto complete capabilities).
+      isArray: true
+      name: name
+    - description: Page number to return.
+      name: page
+    - description: Number of results in a page. Maximum is 500.
+      name: page_size
+    - description: Number of total results to return.
+      name: limit
+    description: Gets information about policies by filtering with a product and name of a specific policy with a policy_guid.
+    name: cisco-amp-policy-list
+    outputs:
+    - type: String
+      contextPath: CiscoAMP.Policy.name
+      description: Policy name.
+    - type: String
+      contextPath: CiscoAMP.Policy.description
+      description: Policy description.
+    - type: String
+      contextPath: CiscoAMP.Policy.guid
+      description: Policy GUID.
+    - type: String
+      contextPath: CiscoAMP.Policy.product
+      description: Product used.
+    - type: Boolean
+      contextPath: CiscoAMP.Policy.default
+      description: Whether the policy is the default policy.
+    - type: Number
+      contextPath: CiscoAMP.Policy.serial_number
+      description: Policy serial number.
+    - type: String
+      contextPath: CiscoAMP.Policy.file_lists.name
+      description: File list name.
+    - type: String
+      contextPath: CiscoAMP.Policy.file_lists.guid
+      description: File list GUID.
+    - type: String
+      contextPath: CiscoAMP.Policy.file_lists.type
+      description: File list type.
+    - type: String
+      contextPath: CiscoAMP.Policy.ip_lists.name
+      description: IP list name.
+    - type: String
+      contextPath: CiscoAMP.Policy.ip_lists.guid
+      description: IP list GUID.
+    - type: String
+      contextPath: CiscoAMP.Policy.ip_lists.type
+      description: IP list type.
+    - type: String
+      contextPath: CiscoAMP.Policy.exclusion_sets.name
+      description: Exclusion set name.
+    - type: String
+      contextPath: CiscoAMP.Policy.exclusion_sets.guid
+      description: Exclusion set GUID.
+    - type: String
+      contextPath: CiscoAMP.Policy.used_in_groups.name
+      description: Group name.
+    - type: String
+      contextPath: CiscoAMP.Policy.used_in_groups.description
+      description: Group description.
+    - type: String
+      contextPath: CiscoAMP.Policy.used_in_groups.guid
+      description: Group GUID.
+  - arguments:
+    - description: IOS bundle ID for app trajectory.
+      name: ios_bid
+      required: true
+    - description: Page number to return.
+      name: page
+    - description: Number of results in a page. Maximum is 500.
+      name: page_size
+    - description: Number of total results to return.
+      name: limit
+    description: Retrieve app_trajectory queries for a given IOS bundle ID.
+    name: cisco-amp-app-trajectory-query-list
+    outputs:
+    - type: String
+      contextPath: CiscoAMP.AppTrajectoryQuery.connector_guid
+      description: GUID of the connector.
+    - type: String
+      contextPath: CiscoAMP.AppTrajectoryQuery.bundle_id
+      description: Bundle ID.
+    - type: String
+      contextPath: CiscoAMP.AppTrajectoryQuery.group_guids
+      description: List of group's GUIDs.
+    - type: String
+      contextPath: CiscoAMP.AppTrajectoryQuery.cdhash
+      description: CD hHash.
+    - type: Number
+      contextPath: CiscoAMP.AppTrajectoryQuery.timestamp
+      description: Observed timestamp.
+    - type: Number
+      contextPath: CiscoAMP.AppTrajectoryQuery.timestamp_nanoseconds
+      description: Observed timestamp in nano seconds.
+    - type: Date
+      contextPath: CiscoAMP.AppTrajectoryQuery.date
+      description: Observed date.
+    - type: String
+      contextPath: CiscoAMP.AppTrajectoryQuery.query_type
+      description: The type of the query.
+    - type: String
+      contextPath: CiscoAMP.AppTrajectoryQuery.network_info.dirty_url
+      description: Link to the observed URL.
+    - type: String
+      contextPath: CiscoAMP.AppTrajectoryQuery.network_info.remote_ip
+      description: Remote IP.
+    - type: Number
+      contextPath: CiscoAMP.AppTrajectoryQuery.network_info.remote_port
+      description: Remote port.
+    - type: String
+      contextPath: CiscoAMP.AppTrajectoryQuery.network_info.local_ip
+      description: Local IP.
+    - type: Number
+      contextPath: CiscoAMP.AppTrajectoryQuery.network_info.local_port
+      description: Local Port.
+    - type: String
+      contextPath: CiscoAMP.AppTrajectoryQuery.network_info.direction
+      description: Outgoing or incoming connection.
+    - type: String
+      contextPath: CiscoAMP.AppTrajectoryQuery.network_info.protocol
+      description: Communication protocol used.
+    - type: String
+      contextPath: CiscoAMP.AppTrajectoryQuery.ver
+      description: Version.
+  - description: Get API version.
+    name: cisco-amp-version-get
+    outputs:
+    - type: String
+      contextPath: CiscoAMP.Version.version
+      description: API version.
+  - arguments:
+    - description: SHA-256 that has been observed as a vulnerability.
+      name: sha256
+    - description: Comma-separated list for group GUIDs to filter by.
+      isArray: true
+      name: group_guid
+    - description: The start date and time expressed according to ISO 8601. The retrieved list will include vulnerable programs detected at start_time.
+      name: start_time
+    - description: The end date and/or time expressed according to ISO 8601. Exclusive - if end_time is a time, the list will only include vulnerable programs detected before end_time). Inclusive - if end_time is a date, the list will include vulnerable programs detected on the date.
+      name: end_time
+    - description: Page number to return.
+      name: page
+    - description: Number of results in a page. Maximum is 500.
+      name: page_size
+    - description: Number of total results to return.
+      name: limit
+    description: 'Fetch a list of vulnerabilities. This is analogous to the Vulnerable Software view on the AMP for Endpoints Console. The list can be filtered to show only the vulnerable programs detected for a specific time range. Provide a list of computers on which the vulnerability has been observed with given SHA-256. The list item contains a summary of information on the vulnerability, including: application name and version, SHA-256 value for the executable file, connectors on which the vulnerable application was observed and the most recent CVSS score. IMPORTANT: computers key returns information about the last 1000 Connectors on which the vulnerable application was observed.'
+    name: cisco-amp-vulnerability-list
+    outputs:
+    - type: String
+      contextPath: CiscoAMP.Vulnerability.application
+      description: Name of the application.
+    - type: String
+      contextPath: CiscoAMP.Vulnerability.version
+      description: Version of the application.
+    - type: String
+      contextPath: CiscoAMP.Vulnerability.file.filename
+      description: Name of the file.
+    - type: String
+      contextPath: CiscoAMP.Vulnerability.file.identity.sha256
+      description: File's SHA-256.
+    - type: Number
+      contextPath: CiscoAMP.Vulnerability.latest_timestamp
+      description: Vulnerability latest timestamp.
+    - type: Date
+      contextPath: CiscoAMP.Vulnerability.latest_date
+      description: Vulnerability latest date.
+    - type: Number
+      contextPath: CiscoAMP.Vulnerability.computers_total_count
+      description: Number of computers.
+    - type: String
+      contextPath: CiscoAMP.Vulnerability.connector_guid
+      description: GUID of the connector.
+    - type: String
+      contextPath: CiscoAMP.Vulnerability.hostname
+      description: Host's name.
+    - type: String
+      contextPath: CiscoAMP.Vulnerability.windows_processor_id
+      description: Windows processor ID.
+    - type: Boolean
+      contextPath: CiscoAMP.Vulnerability.active
+      description: Whether the computer is active.
+    - type: String
+      contextPath: CiscoAMP.Vulnerability.group_guid
+      description: Group's GUID.
+    - type: String
+      contextPath: CiscoAMP.Vulnerability.cves.id
+      description: Common vulnerability exposure ID.
+    - type: String
+      contextPath: CiscoAMP.Vulnerability.cves.link
+      description: Common vulnerability exposure link.
+    - type: Number
+      contextPath: CiscoAMP.Vulnerability.cves.cvss
+      description: Common vulnerability scoring system.
+    - type: String
+      contextPath: CiscoAMP.Vulnerability.groups.name
+      description: Group's name.
+    - type: String
+      contextPath: CiscoAMP.Vulnerability.groups.description
+      description: Group's description.
+    - type: String
+      contextPath: CiscoAMP.Vulnerability.groups.guid
+      description: Group's GUID.
+    - type: String
+      contextPath: CiscoAMP.Vulnerability.groups.source
+      description: Group's source of creation.
+    - type: String
+      contextPath: CiscoAMP.Vulnerability.computers.connector_guid
+      description: GUID of the connector.
+    - type: String
+      contextPath: CiscoAMP.Vulnerability.computers.hostname
+      description: Host's name.
+    - type: String
+      contextPath: CiscoAMP.Vulnerability.computers.windows_processor_id
+      description: Windows processor ID.
+    - type: Boolean
+      contextPath: CiscoAMP.Vulnerability.computers.active
+      description: Whether the computer is active.
+  - arguments:
+    - description: The endpoint ID. Takes priority over the IP and hostname arguments.
+      isArray: true
+      name: id
+    - default: true
+      description: The endpoint IP address. The IP argument has priority over the hostname argument.
+      isArray: true
+      name: ip
+    - description: The endpoint hostname.
+      isArray: true
+      name: hostname
+    description: Returns information about an endpoint.
+    name: endpoint
+    outputs:
+    - contextPath: Endpoint.Hostname
+      description: The hostname of the endpoint.
+      type: String
+    - contextPath: Endpoint.ID
+      description: The endpoint's identifier.
+      type: String
+    - contextPath: Endpoint.IPAddress
+      description: The endpoint's IP address.
+      type: String
+    - contextPath: Endpoint.OS
+      description: The endpoint's operating system.
+      type: String
+    - contextPath: Endpoint.OSVersion
+      description: The endpoint's operating system's version.
+      type: String
+    - contextPath: Endpoint.Status
+      description: The status of the endpoint (online/offline).
+      type: String
+    - contextPath: Endpoint.MACAddress
+      description: The endpoint's MAC address.
+      type: String
+    - contextPath: Endpoint.Vendor
+      description: The integration name of the endpoint vendor.
+      type: String
+  - name: file
+    description: Runs reputation on files.
+    arguments:
+    - name: file
+      required: true
+      default: true
+      description: Hash of the file to query. Supports MD5, SHA1, and SHA256.
+      isArray: true
+    outputs:
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The full file name (including file extension).
+      type: String
+    - contextPath: File.Path
+      description: The path where the file is located.
+      type: String
+    - contextPath: File.Hostname
+      description: The name of the host where the file was found.
+      type: String
+    - contextPath: File.Malicious.Vendor
+      description: The vendor that reported the file as malicious.
+      type: String
+    - contextPath: File.Malicious.Description
+      description: A description of why the file was determined to be malicious.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+  dockerimage: demisto/python3:3.10.9.42476
+  isfetch: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

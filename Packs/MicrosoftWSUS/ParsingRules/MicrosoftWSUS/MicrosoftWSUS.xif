@@ -1,0 +1,9 @@
+[INGEST:vendor="MSFT", product="WSUS", target_dataset="msft_wsus_raw" , no_hit=keep]
+filter _raw_log ~= "\d{4}\-\d{2}\-\d{2}\s+\d{2}:\d{2}:\d{2}\.\d{3}\s+UTC\s" 
+| alter 
+    tmp_event_time = arrayindex(regextract(_raw_log , "(\d{4}\-\d{2}\-\d{2}\s+\d{2}:\d{2}:\d{2}\.\d{3})\s+UTC\s"),0) 
+| alter 
+    tmp_parse_time = parse_timestamp("%Y-%m-%d %H:%M:%E3S", tmp_event_time )
+| alter 
+    _time = tmp_parse_time
+| fields -tmp_event_time, tmp_parse_time;

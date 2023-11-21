@@ -1,0 +1,37 @@
+args:
+- description: The name of the pack.
+  name: pack
+  required: true
+- auto: PREDEFINED
+  description: Which command to use.
+  name: use_command
+  predefined:
+  - gitlab-branch-list
+  - GitHub-get-branch
+  - bitbucket-branch-get
+comment: |
+  The script gets the pack name as input and suggests an available branch name, for example:
+  pack name is "MyPack" the branch name will be "MyPack".
+  If a branch with the name "MyPack" exists, the script return "MyPack_1".
+commonfields:
+  id: SuggestBranchName
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.10.12.68714
+enabled: true
+name: SuggestBranchName
+outputs:
+- contextPath: AvailableBranch
+  description: Available branch name based on the pack name.
+  type: string
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

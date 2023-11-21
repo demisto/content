@@ -1,0 +1,27 @@
+args:
+- description: The Entry ID of the JSON file to load into context.
+  name: entryID
+  required: true
+- defaultValue: JSON
+  description: The context key to put the loaded JSON under, default is JSON.
+  name: contextKey
+comment: Loads a JSON file from the war room to context.
+commonfields:
+  id: LoadJSONFileToContext
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.12.63474
+enabled: true
+name: LoadJSONFileToContext
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Utility
+type: python
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

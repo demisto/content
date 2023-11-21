@@ -1,24 +1,33 @@
 category: Data Enrichment & Threat Intelligence
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Whois
   version: -1
 configuration:
 - display: Return Errors
   name: with_error
-  required: false
   type: 8
-- display: Proxy URL
-  additionalinfo: "Supports socks4/socks5/http connect proxies (e.g. socks5h://host:1080).
-  Will effect all commands except for the `ip` command."
-  name: proxy_url
+  section: Connect
+  advanced: true
   required: false
+  additionalinfo: If set, failed command results will be returned as warnings instead of errors.
+- display: Proxy URL
+  additionalinfo: "Supports socks4/socks5/http connect proxies (e.g. socks5h://host:1080). Will effect all commands except for the `ip` command."
+  name: proxy_url
   type: 0
+  section: Connect
+  advanced: true
+  required: false
 - display: Use system proxy settings
   additionalinfo: "Effect the `ip` command and the other commands only if the Proxy URL is not set."
-  hidden: false
   name: proxy
-  required: false
   type: 8
+  section: Connect
+  advanced: true
+  required: false
+  hidden: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -33,21 +42,52 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+  section: Collect
+- additionalinfo: The number of times to try when getting a Rate Limit response.
+  defaultvalue: '0'
+  display: Rate Limit Retry Count
+  name: rate_limit_retry_count
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+- additionalinfo: The number of seconds to wait each iteration when getting a Rate Limit response.
+  defaultvalue: '120'
+  display: Rate Limit Wait Seconds
+  name: rate_limit_wait_seconds
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+- display: Suppress Rate Limit errors
+  additionalinfo: "Whether Rate Limit errors should be supressed or not."
+  defaultvalue: "false"
+  name: rate_limit_errors_suppressed
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
 description: Provides data enrichment for domains.
 display: Whois
 name: Whois
 script:
   commands:
   - arguments:
-    - default: false
-      description: The domain to enrich.
-      isArray: false
+    - description: The domain to enrich.
+      isArray: true
       name: query
       required: true
-      secret: false
-    deprecated: false
-    description: Provides data enrichment for domains.
-    execution: false
+    - name: recursive
+      description: Whether to get the raw response from the whois servers recursively. Default value is True.
+      defaultValue: true
+    - name: verbose
+      description: Whether to add the raw response as a dictionary to the context. Default value is False.
+      defaultValue: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    description: Provides data enrichment for domains using free resources. Availability of those services may be limited.
     name: whois
     outputs:
     - contextPath: DBotScore.Score
@@ -78,13 +118,13 @@ script:
       description: The name servers.
       type: string
     - contextPath: Domain.Whois.CreationDate
-      description: The date that the domain was created.
+      description: The date that the domain was created (UTC).
       type: date
     - contextPath: Domain.Whois.UpdatedDate
-      description: The date that the domain was last updated.
+      description: The date that the domain was last updated (UTC).
       type: date
     - contextPath: Domain.Whois.ExpirationDate
-      description: The date that the domain expires.
+      description: The date that the domain expires (UTC).
       type: date
     - contextPath: Domain.Whois.Registrar.Name
       description: The name of the registrar.
@@ -120,10 +160,10 @@ script:
       description: The organization of the domain administrator.
       type: string
     - contextPath: Domain.Whois.Administrator.postalcode
-      description: The postal code of the domain administrator
+      description: The postal code of the domain administrator.
       type: string
     - contextPath: Domain.Whois.Administrator.street
-      description: The street of the domain admin
+      description: The street of the domain admin.
       type: string
     - contextPath: Domain.Whois.Administrator.phone
       description: The phone number of the domain administrator.
@@ -197,10 +237,10 @@ script:
       isArray: true
       name: domain
       required: true
-      secret: false
-    deprecated: false
+    - name: recursive
+      description: Whether to get the raw response from the whois servers recursively. Default value is True.
+      defaultValue: true
     description: Provides data enrichment for domains.
-    execution: false
     name: domain
     outputs:
     - contextPath: DBotScore.Score
@@ -231,13 +271,13 @@ script:
       description: The name servers.
       type: string
     - contextPath: Domain.Whois.CreationDate
-      description: The date that the domain was created.
+      description: The date that the domain was created (UTC).
       type: date
     - contextPath: Domain.Whois.UpdatedDate
-      description: The date that the domain was last updated.
+      description: The date that the domain was last updated (UTC).
       type: date
     - contextPath: Domain.Whois.ExpirationDate
-      description: The date that the domain expires.
+      description: The date that the domain expires (UTC).
       type: date
     - contextPath: Domain.Whois.Registrar.Name
       description: The name of the registrar.
@@ -273,10 +313,10 @@ script:
       description: The organization of the domain administrator.
       type: string
     - contextPath: Domain.Whois.Administrator.postalcode
-      description: The postal code of the domain administrator
+      description: The postal code of the domain administrator.
       type: string
     - contextPath: Domain.Whois.Administrator.street
-      description: The street of the domain admin
+      description: The street of the domain admin.
       type: string
     - contextPath: Domain.Whois.Administrator.phone
       description: The phone number of the domain administrator.
@@ -360,13 +400,13 @@ script:
       description: The state of domain administrator.
       type: String
     - contextPath: Domain.CreationDate
-      description: The date that the domain was created.
+      description: The date that the domain was created (UTC).
       type: Date
     - contextPath: Domain.DomainStatus
       description: The domain status.
       type: String
     - contextPath: Domain.ExpirationDate
-      description: The date that the domain expires.
+      description: The date that the domain expires (UTC).
       type: Date
     - contextPath: Domain.FeedRelatedIndicators.type
       description: Indicators that are associated with the Domain.
@@ -411,7 +451,7 @@ script:
       description: The organization of the tech administrator.
       type: String
     - contextPath: Domain.UpdatedDate
-      description: The date that the domain was last updated.
+      description: The date that the domain was last updated (UTC).
       type: Date
   - arguments:
     - default: true
@@ -419,15 +459,20 @@ script:
       isArray: true
       name: ip
       required: true
-      secret: false
-    deprecated: false
+    - description: 'The number of times to try when getting a Rate Limit response.'
+      defaultValue: 0
+      name: rate_limit_retry_count
+    - description: 'The number of seconds to wait each iteration when getting a Rate Limit response.'
+      defaultValue: 120
+      name: rate_limit_wait_seconds
+    - description: 'Whether Rate Limit errors should be suppressed or not.'
+      defaultValue: 'false'
+      name: rate_limit_errors_suppressed
     description: Provides data enrichment for ips.
-    execution: false
     name: ip
     outputs:
     - contextPath: Whois.IP.asn
-      description: Globally unique identifier used for routing information exchange
-        with Autonomous Systems.
+      description: Globally unique identifier used for routing information exchange with Autonomous Systems.
       type: string
     - contextPath: Whois.IP.asn_cidr
       description: Network routing block assigned to an ASN.
@@ -439,14 +484,13 @@ script:
       description: ASN allocation date in ISO 8601 format.
       type: Date
     - contextPath: Whois.IP.asn_description
-      description: The ASN description
+      description: The ASN description.
       type: string
     - contextPath: Whois.IP.asn_registry
       description: ASN assigned regional internet registry.
       type: string
     - contextPath: Whois.IP.entities
-      description: list of object names referenced by an RIR network. Map these to
-        the objects dictionary keys.
+      description: list of object names referenced by an RIR network. Map these to the objects dictionary keys.
       type: string
     - contextPath: Whois.IP.network.cidr
       description: Network routing block an IP address belongs to.
@@ -503,10 +547,10 @@ script:
       description: The RIR classification of a registered network.
       type: string
     - contextPath: Whois.IP.query
-      description: The IP address
+      description: The IP address.
       type: string
     - contextPath: IP.Address
-      description: IP address
+      description: IP address.
       type: string
     - contextPath: IP.ASN
       description: 'The autonomous system name for the IP address, for example: "AS8948".'
@@ -521,7 +565,7 @@ script:
       description: Indicators that are associated with the IP.
       type: string
     - contextPath: IP.feed_related_indicators.type
-      description: The type of the indicators that are associated with the IP
+      description: The type of the indicators that are associated with the IP.
       type: string
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -538,16 +582,12 @@ script:
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
       type: String
-  dockerimage: demisto/ippysocks:1.0.0.24033
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/ippysocks-py3:1.0.0.78777
   runonce: false
   script: '-'
-  subtype: python2
+  subtype: python3
   type: python
-defaultEnabled: false
 tests:
 - whois_test
 fromversion: 5.0.0
+defaultEnabled: false

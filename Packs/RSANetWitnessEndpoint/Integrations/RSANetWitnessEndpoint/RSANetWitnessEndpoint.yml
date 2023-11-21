@@ -1,0 +1,396 @@
+commonfields:
+  id: RSA NetWitness Endpoint
+  version: -1
+name: RSA NetWitness Endpoint
+display: RSA NetWitness Endpoint
+category: Endpoint
+description: 'RSA NetWitness Endpoint provides deep visibility beyond basic endpoint security solutions by monitoring and collecting activity across all of your endpoints on and off your network. The RSA Demisto integration provides access to information about endpoints, modules and indicators. '
+configuration:
+- display: Server URL (e.g. https://192.168.0.1:30022)
+  name: server
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Username
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  subtype: python3
+  commands:
+  - name: netwitness-get-machines
+    arguments:
+    - name: machineName
+      description: Hostname to filter result. Case insensitive.
+    - name: iocScoreGreaterThan
+      description: Filter all machines whose IOC score is greater than or equal to this value. Default = 0.
+    - name: iocScoreLessThan
+      description: Filter all machines whose IOC score is less than or equal to this value. Default = 1024. Cant be zero.
+    - name: ipAddress
+      description: Filter all machines based on IP address.
+    - name: macAddress
+      description: Filter all machines based on MAC address.
+    - name: limit
+      description: Limit the results. Default 100.
+      defaultValue: "100"
+    - name: includeMachineData
+      auto: PREDEFINED
+      predefined:
+      - "no"
+      - "yes"
+      description: Include Full Machine Data
+      defaultValue: "no"
+    - name: includeMachineIOCs
+      auto: PREDEFINED
+      predefined:
+      - "yes"
+      - "no"
+      description: Include machine IOC's
+      defaultValue: "no"
+    - name: includeMachineModules
+      auto: PREDEFINED
+      predefined:
+      - "yes"
+      - "no"
+      description: Include machine moduls
+      defaultValue: "no"
+    outputs:
+    - contextPath: NetWitness.Machines.MachineGUID
+      description: Machine GUID
+    - contextPath: NetWitness.Machines.AgentID
+      description: Agent ID
+    - contextPath: NetWitness.Machines.MachineName
+      description: Machine Name
+    - contextPath: NetWitness.Machines.LocalIP
+      description: Local IP
+    - contextPath: NetWitness.Machines.RemoteIP
+      description: Remote IP
+    - contextPath: NetWitness.Machines.MAC
+      description: MAC
+    - contextPath: NetWitness.Machines.MachineStatus
+      description: Machine Status
+    - contextPath: NetWitness.Machines.IIOCScore
+      description: IIOC Score
+    - contextPath: NetWitness.Machines.IIOCLevel0
+      description: IIOC Level0
+    - contextPath: NetWitness.Machines.IIOCLevel1
+      description: IIOC Level1
+    - contextPath: NetWitness.Machines.IIOCLevel2
+      description: IIOC Level2
+    - contextPath: NetWitness.Machine.IIOCLevel3
+      description: IIOC Level3
+    - contextPath: NetWitness.Machines.AntiVirusDisabled
+      description: Anti Virus Disabled
+    - contextPath: NetWitness.Machines.Comment
+      description: Comment
+    - contextPath: NetWitness.Machines.ContainmentStatus
+      description: Containment Status
+    - contextPath: NetWitness.Machines.ContainmentSupported
+      description: Containment Supported
+    - contextPath: NetWitness.Machines.Country
+      description: Country
+    - contextPath: NetWitness.Machines.DNS
+      description: DNS
+    - contextPath: NetWitness.Machines.DomainName
+      description: Domain Name
+    - contextPath: NetWitness.Machines.FirewallDisabled
+      description: Firewall Disabled
+    - contextPath: NetWitness.Machines.Gateway
+      description: Gateway
+    - contextPath: NetWitness.Machines.Group
+      description: Group
+    - contextPath: NetWitness.Machines.Idle
+      description: Idle
+    - contextPath: NetWitness.Machines.InstallTime
+      description: Install Time
+    - contextPath: NetWitness.Machines.InstallationFailed
+      description: Installation Failed
+    - contextPath: NetWitness.Machines.LastScan
+      description: Last Scan
+    - contextPath: NetWitness.Machines.LastSeen
+      description: Last Seen
+    - contextPath: NetWitness.Machines.NetworkSegment
+      description: Network Segment
+    - contextPath: NetWitness.Machines.OperatingSystem
+      description: Operating System
+    - contextPath: NetWitness.Machines.OrganizationUnit
+      description: Organization Unit
+    - contextPath: NetWitness.Machines.Platform
+      description: Platform
+    - contextPath: NetWitness.Machines.Scanning
+      description: Scanning
+    - contextPath: NetWitness.Machines.UserName
+      description: User Name
+    - contextPath: NetWitness.Machine.VersionInfo
+      description: Version Info
+    - contextPath: NetWitness.IOCs.Description
+      description: Description
+    - contextPath: NetWitness.IOCs.Type
+      description: Type
+    - contextPath: NetWitness.IOCs.MachineCount
+      description: Machine Count
+    - contextPath: NetWitness.IOCs.ModuleCount
+      description: Module Count
+    - contextPath: NetWitness.IOCs.IOCLevel
+      description: IOC Level
+    - contextPath: NetWitness.IOCs.Priority
+      description: Priority
+    - contextPath: NetWitness.IOCs.Active
+      description: Active
+    - contextPath: NetWitness.IOCs.LastExecuted
+      description: Last Executed
+    - contextPath: NetWitness.IOCs.Alertable
+      description: Alertable
+    - contextPath: NetWitness.IOCs.IOCTriggeredOnMachine
+      description: IOC Triggered On Machine
+    - contextPath: NetWitness.Machines.MachineGUID
+      description: Machine GUID
+    - contextPath: NetWitness.Modules.ModuleName
+      description: Module Name
+    - contextPath: NetWitness.Modules.ModuleID
+      description: Module ID
+    - contextPath: NetWitness.Modules.Description
+      description: Description
+    - contextPath: NetWitness.Modules.IOCScore
+      description: IOC Score
+    - contextPath: NetWitness.Modules.AnalyticsScore
+      description: Analytics Score
+    - contextPath: NetWitness.Modules.GlobalMachineCount
+      description: Global Machine Count
+    - contextPath: NetWitness.Modules.MD5
+      description: MD5
+    - contextPath: NetWitness.Modules.SHA256
+      description: SHA256
+    description: Get machine GUID. Search by machine name and more.
+  - name: netwitness-get-machine
+    arguments:
+    - name: machineGUID
+      required: true
+      default: true
+      description: The machine GUID.
+    outputs:
+    - contextPath: NetWitness.Machines.AgentID
+      description: Agent ID
+    - contextPath: NetWitness.Machines.MachineName
+      description: Machine Name
+    - contextPath: NetWitness.Machines.LocalIP
+      description: Local IP
+    - contextPath: NetWitness.Machines.RemoteIP
+      description: Remote IP
+    - contextPath: NetWitness.Machines.MAC
+      description: MAC
+    - contextPath: NetWitness.Machines.MachineStatus
+      description: Machine Status
+    - contextPath: NetWitness.Machines.IIOCScore
+      description: IIOC Score
+    - contextPath: NetWitness.Machines.IIOCLevel0
+      description: IIOC Level0
+    - contextPath: NetWitness.Machines.IIOCLevel1
+      description: IIOC Level1
+    - contextPath: NetWitness.Machines.IIOCLevel2
+      description: IIOC Level2
+    - contextPath: NetWitness.Machine.IIOCLevel3
+      description: IIOC Level3
+    - contextPath: NetWitness.Machines.AntiVirusDisabled
+      description: Anti Virus Disabled
+    - contextPath: NetWitness.Machines.Comment
+      description: Comment
+    - contextPath: NetWitness.Machines.ContainmentStatus
+      description: Containment Status
+    - contextPath: NetWitness.Machines.ContainmentSupported
+      description: Containment Supported
+    - contextPath: NetWitness.Machines.Country
+      description: Country
+    - contextPath: NetWitness.Machines.DNS
+      description: DNS
+    - contextPath: NetWitness.Machines.DomainName
+      description: Domain Name
+    - contextPath: NetWitness.Machines.FirewallDisabled
+      description: Firewall Disabled
+    - contextPath: NetWitness.Machines.Gateway
+      description: Gateway
+    - contextPath: NetWitness.Machines.Group
+      description: Group
+    - contextPath: NetWitness.Machines.Idle
+      description: Idle
+    - contextPath: NetWitness.Machines.InstallTime
+      description: Install Time
+    - contextPath: NetWitness.Machines.InstallationFailed
+      description: Installation Failed
+    - contextPath: NetWitness.Machines.LastScan
+      description: Last Scan
+    - contextPath: NetWitness.Machines.LastSeen
+      description: Last Seen
+    - contextPath: NetWitness.Machines.NetworkSegment
+      description: Network Segment
+    - contextPath: NetWitness.Machines.OperatingSystem
+      description: Operating System
+    - contextPath: NetWitness.Machines.OrganizationUnit
+      description: Organization Unit
+    - contextPath: NetWitness.Machines.Platform
+      description: Platform
+    - contextPath: NetWitness.Machines.Scanning
+      description: Scanning
+    - contextPath: NetWitness.Machines.UserName
+      description: User Name
+    - contextPath: NetWitness.Machine.VersionInfo
+      description: Version Info
+    description: Get information on a specific machine.
+  - name: netwitness-get-machine-iocs
+    arguments:
+    - name: machineGUID
+      required: true
+      default: true
+      description: The machine GUID
+    - name: limit
+      description: Limit the results. Default 100.
+      defaultValue: "100"
+    outputs:
+    - contextPath: NetWitness.Machines.MachineGUID
+      description: Machine GUID
+    - contextPath: NetWitness.IOCs.Description
+      description: Description
+    - contextPath: NetWitness.IOCs.Type
+      description: Type
+    - contextPath: NetWitness.IOCs.MachineCount
+      description: Machine Count
+    - contextPath: NetWitness.IOCs.ModuleCount
+      description: Module Count
+    - contextPath: NetWitness.IOCs.IOCLevel
+      description: IOC Level
+    - contextPath: NetWitness.IOCs.Priority
+      description: Priority
+    - contextPath: NetWitness.IOCs.Active
+      description: Active
+    - contextPath: NetWitness.IOCs.LastExecuted
+      description: Last Executed
+    - contextPath: NetWitness.IOCs.Alertable
+      description: Alertable
+    - contextPath: NetWitness.IOCs.IOCTriggeredOnMachine
+      description: IOC Triggered On Machine
+    description: List IOC's for a specific machine.
+  - name: netwitness-get-machine-modules
+    arguments:
+    - name: machineGUID
+      required: true
+      description: The machine GUID
+    - name: moduleName
+      description: 'Module name to filter result. Case insesitive. Example: ModuleName=".exe "will match all machines which have the word ".exe" in their module name.'
+    - name: iocScoreGreaterThan
+      description: "\t Filter all modules whose IOC score is greater than or equal to this value. Default = 0."
+    - name: iocScoreLessThan
+      description: "\t Filter all modules whose IOC score is less than or equal to this value. Default = 1024. Cant be zero."
+    - name: limit
+      description: limit the results. Default 50.
+      defaultValue: "50"
+    outputs:
+    - contextPath: NetWitness.Machines.MachineGUID
+      description: Machine GUID
+    - contextPath: NetWitness.Modules.ModuleName
+      description: Module Name
+    - contextPath: NetWitness.Modules.ModuleID
+      description: Module ID
+    - contextPath: NetWitness.Modules.Description
+      description: Description
+    - contextPath: NetWitness.Modules.IOCScore
+      description: IOC Score
+    - contextPath: NetWitness.Modules.AnalyticsScore
+      description: Analytics Score
+    - contextPath: NetWitness.Modules.GlobalMachineCount
+      description: Global Machine Count
+    - contextPath: NetWitness.Modules.MD5
+      description: MD5
+    - contextPath: NetWitness.Modules.SHA256
+      description: SHA256
+    description: Get Names and ID's of modules of the machine. Filter by name or IOC score.
+  - name: netwitness-get-machine-module
+    arguments:
+    - name: machineGUID
+      required: true
+      description: The machine GUID.
+    - name: moduleID
+      required: true
+      description: The module ID.
+    outputs:
+    - contextPath: NetWitness.Modules.MachineGUID
+      description: Machine GUID
+    - contextPath: NetWitness.Modules.ModuleID
+      description: Module ID
+    - contextPath: NetWitness.Modules.FileName
+      description: File Name
+    - contextPath: NetWitness.Modules.FullPath
+      description: Full Path
+    - contextPath: NetWitness.Modules.MD5
+      description: MD5
+    - contextPath: NetWitness.Modules.RiskScore
+      description: Risk Score
+    - contextPath: NetWitness.Modules.SHA1
+      description: SHA1
+    - contextPath: NetWitness.Modules.SHA256
+      description: SHA256
+    - contextPath: NetWitness.Modules.IIOCScore
+      description: IIOC Score
+    - contextPath: NetWitness.Modules.Blacklisted
+      description: Blacklisted
+    - contextPath: NetWitness.Modules.Graylisted
+      description: Graylisted
+    - contextPath: NetWitness.Modules.Whitelisted
+      description: Whitelisted
+    - contextPath: NetWitness.Modules.MachineCount
+      description: Machine Count
+    - contextPath: NetWitness.Modules.IIOCLevel0
+      description: IIOC Level0
+    - contextPath: NetWitness.Modules.IIOCLevel1
+      description: IIOC Level1
+    - contextPath: NetWitness.Modules.IIOCLevel2
+      description: IIOC Level2
+    - contextPath: NetWitness.Modules.IIOCLevel3
+      description: IIOC Level3
+    - contextPath: NetWitness.Modules.FirstSeenName
+      description: First Seen Name
+    - contextPath: NetWitness.Modules.FirstSeenDate
+      description: First Seen Date
+    - contextPath: File.Name
+      description: The file name
+    - contextPath: File.MD5
+      description: File MD5
+    - contextPath: File.SHA1
+      description: File SHA1
+    - contextPath: File.Path
+      description: File full path
+    description: Get information on a specific machine module.
+  - name: netwitness-blacklist-ips
+    arguments:
+    - name: ips
+      required: true
+      default: true
+      description: 'Comma separated IP addresses '
+    outputs:
+    - contextPath: NetWitness.Blacklist.IPs
+      description: IPs block listed successfully
+    description: Add a list of IP addresses to block list
+  - name: netwitness-blacklist-domains
+    arguments:
+    - name: domains
+      required: true
+      default: true
+      description: Comma separated list of domains
+    outputs:
+    - contextPath: NetWitness.Blacklist.Domains
+      description: Domains block listed successfully
+    description: 'Add a list of domains to block list '
+  dockerimage: demisto/python3:3.10.13.72123
+tests:
+- NetWitness Endpoint Test
+fromversion: 5.0.0

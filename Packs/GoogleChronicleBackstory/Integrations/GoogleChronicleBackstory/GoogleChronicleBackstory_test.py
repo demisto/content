@@ -7,7 +7,8 @@ from httplib2 import Response
 
 import demistomock as demisto
 
-from GoogleChronicleBackstory import MESSAGES
+from GoogleChronicleBackstory import MESSAGES, ASSET_IDENTIFIER_NAME_DICT, USER_IDENTIFIER_NAME_DICT, \
+    CHRONICLE_OUTPUT_PATHS
 
 PROXY_MOCK = {
     "proxy": "0.0.0.0"
@@ -53,17 +54,20 @@ ASSET_ALERT_TYPE = 'Assets with alerts'
 START_TIME = "2020-01-29T14:13:20Z"
 DEFAULT_FIRST_FETCH = '3 days'
 DETECTION_ALERT_TYPE = 'Detection Alerts'
+CURATEDRULE_DETECTION_ALERT_TYPE = 'Curated Rule Detection alerts'
 USER_ALERT = 'User alerts'
 VERSION_ID = 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f@v_1602631093_146879000'
+CURATEDRULE_ID = 'ur_ttp_GCP__MassSecretDeletion'
 LAST_RUN_TIME = '2020-11-20T12:00:00Z'
 RETURN_ERROR_MOCK_PATH = 'GoogleChronicleBackstory.return_error'
 COMMON_RESP = {
     'PERM_DENIED_RESP': "{ \"error\": { \"code\": 403, \"message\": \"Permission denied\" \
                      , \"status\": \"PERMISSION_DENIED\", \"details\": [ {  } ] } } ",
     'PERM_DENIED_MSG': 'Status code: 403\nError: Permission denied',
-    'INVALID_PAGE_SIZE': "Page size must be a non-zero numeric value",
+    'INVALID_PAGE_SIZE': "Page size must be a non-zero and positive numeric value",
     'ERROR_RESPONSE': '{"error": {}}'
 }
+DUMMY_RULE_TEXT = "meta events condition"
 
 
 @pytest.fixture
@@ -326,45 +330,52 @@ def test_validate_parameter_failure_page_size():
     assert str(error.value) == "Incidents fetch limit must be a number"
 
 
-def test_validate_parameter_failure_wrong_fetch_days_format():
-    """When page size not in positive number then it should raise ValueError."""
+def test_validate_parameter_failure_wrong_first_fetch_format():
+    """When First fetch is not valid date it should raise ValueError."""
     from GoogleChronicleBackstory import validate_configuration_parameters
     wrong_fetch_days_format = {
         'service_account_credential': DUMMY_DICT,
         'max_fetch': '20',
-        'first_fetch': '10dad'
+        'first_fetch': '29 feb 2021'
     }
     with pytest.raises(ValueError) as error:
         validate_configuration_parameters(wrong_fetch_days_format)
-    assert str(error.value) == 'First fetch days must be "number time_unit", ' \
-                               'examples: (10 days, 6 months, 1 year, etc.)'
+    assert str(error.value) == 'Invalid date: "First fetch time"="29 feb 2021"'
 
 
-def test_validate_parameter_failure_wrong_fetch_days_number():
-    """When First fetch days field's number is invalid then it should raise ValueError."""
+def test_validate_parameter_failure_wrong_first_fetch_number():
+    """When First fetch field's number is invalid then it should raise ValueError."""
     from GoogleChronicleBackstory import validate_configuration_parameters
     wrong_fetch_days_number = {
         'service_account_credential': DUMMY_DICT,
         'max_fetch': '20',
-        'first_fetch': 'Ten day'
+        'first_fetch': '120000 months'
     }
     with pytest.raises(ValueError) as error:
         validate_configuration_parameters(wrong_fetch_days_number)
-    assert str(error.value) == 'First fetch days must be "number time_unit", ' \
-                               'examples: (10 days, 6 months, 1 year, etc.)'
+    assert str(error.value) == 'Invalid date: "First fetch time"="120000 months"'
 
 
-def test_validate_parameter_failure_wrong_fetch_days_unit():
-    """When First fetch days field's unit is invalid then it should raise ValueError."""
+def test_validate_parameter_failure_wrong_first_fetch_unit():
+    """When First fetch field's unit is invalid then it should raise ValueError."""
     from GoogleChronicleBackstory import validate_configuration_parameters
     wrong_fetch_days_unit = {
         'service_account_credential': DUMMY_DICT,
         'max_fetch': '20',
-        'first_fetch': '10 dad'
+        'first_fetch': '10 dais'
     }
     with pytest.raises(ValueError) as error:
         validate_configuration_parameters(wrong_fetch_days_unit)
-    assert str(error.value) == "First fetch days field's unit is invalid. Must be in day(s), month(s) or year(s)"
+    assert str(error.value) == 'Invalid date: "First fetch time"="10 dais"'
+
+
+def test_validate_parameter_failure_when_no_ruleid_provided_for_curated_detection():
+    """When no rule ID(s) is provided while fetching Curated Rule Detection alerts."""
+    from GoogleChronicleBackstory import validate_configuration_parameters
+    wrong_fetch_days_unit = {'backstory_alert_type': 'curated rule detection alerts'}
+    with pytest.raises(ValueError) as error:
+        validate_configuration_parameters(wrong_fetch_days_unit)
+    assert str(error.value) == MESSAGES['PROVIDE_CURATED_RULE_ID']
 
 
 def test_main_success(mocker, client):
@@ -467,25 +478,6 @@ def test_get_artifact_type():
 
     domain_name = get_artifact_type('255.256')
     assert domain_name == 'domain_name'
-
-
-def test_validate_date():
-    """When valid date pass in validate_date function then it should pass else raise ValueError."""
-    from GoogleChronicleBackstory import validate_start_end_date
-    from datetime import datetime, timedelta
-
-    next_date = (datetime.utcnow() + timedelta(days=1)).strftime('%Y-%m-%dT%H:%M:%SZ')
-    with pytest.raises(ValueError) as error:
-        validate_start_end_date('11111', next_date)
-    assert str(error.value) == "Invalid start time, supports ISO date format only. e.g. 2019-10-17T00:00:00Z"
-
-    with pytest.raises(ValueError) as error:
-        validate_start_end_date('11eee11', next_date)
-    assert str(error.value) == "Invalid start time, supports ISO date format only. e.g. 2019-10-17T00:00:00Z"
-
-    with pytest.raises(ValueError) as error:
-        validate_start_end_date(next_date, "december")
-    assert str(error.value) == "Invalid end time, supports ISO date format only. e.g. 2019-10-17T00:00:00Z"
 
 
 def test_fetch_incident_success_with_no_param_no_alerts(client):
@@ -1884,9 +1876,8 @@ def test_parse_error_message():
     """Test correct parsing for parse_error_message method."""
     from GoogleChronicleBackstory import parse_error_message
 
-    with pytest.raises(ValueError) as error:
-        parse_error_message('service unavailable')
-    assert str(error.value) == 'Invalid response received from Chronicle Search API. Response not in JSON format.'
+    error = parse_error_message('service unavailable', '')
+    assert error == 'Invalid response received from Chronicle API. Response not in JSON format.'
 
 
 def test_list_events_command(client):
@@ -1920,6 +1911,91 @@ def test_list_events_command(client):
     hr, ec, json_data = gcb_list_events_command(client, {})
     assert ec == {}
     assert hr == 'No Events Found'
+
+
+def test_gcb_udm_search_command(client):
+    """Test gcb_udm_search_command for non-empty and empty response."""
+    from GoogleChronicleBackstory import gcb_udm_search_command
+
+    with open("test_data/udm_search_response.json", "r") as f:
+        dummy_response = f.read()
+
+    with open("test_data/udm_search_ec.json", "r") as f:
+        dummy_ec = json.load(f)
+
+    with open("test_data/udm_search_hr.md", "r") as f:
+        dummy_hr = f.read()
+
+    mock_response = (
+        Response(dict(status=200)),
+        dummy_response
+    )
+
+    client.http_client.request.return_value = mock_response
+
+    hr, ec, _ = gcb_udm_search_command(client, {'query': 'ip!="8.8.8.8"'})
+
+    event = CHRONICLE_OUTPUT_PATHS['UDMEvents']
+
+    assert ec[event] == dummy_ec[event]
+    assert hr == dummy_hr
+
+    # Test command when no events found
+    client.http_client.request.return_value = (
+        Response(dict(status=200)),
+        '{}'
+    )
+
+    hr, ec, json_data = gcb_udm_search_command(client, {'query': 'ip!="8.8.8.8"'})
+    assert ec == {}
+    assert hr == 'No events were found for the specified UDM search query.'
+
+
+def test_gcb_udm_search_command_for_invalid_returned_date(capfd, client):
+    """Test gcb_udm_search_command for invalid returned date from response."""
+    from GoogleChronicleBackstory import gcb_udm_search_command
+
+    with open("test_data/udm_search_response_invalid_date.json", "r") as f:
+        dummy_response = f.read()
+
+    with open("test_data/udm_search_ec_invalid_date.json", "r") as f:
+        dummy_ec = json.load(f)
+
+    with open("test_data/udm_search_hr_invalid_date.md", "r") as f:
+        dummy_hr = f.read()
+
+    mock_response = (
+        Response(dict(status=200)),
+        dummy_response
+    )
+
+    client.http_client.request.return_value = mock_response
+
+    with capfd.disabled():
+        hr, ec, _ = gcb_udm_search_command(client, {'query': 'ip!="8.8.8.8"'})
+
+    event = CHRONICLE_OUTPUT_PATHS['UDMEvents']
+
+    assert ec[event] == dummy_ec[event]
+    assert hr == dummy_hr
+
+
+@pytest.mark.parametrize("args, error_msg", [
+    ({}, MESSAGES['QUERY_REQUIRED']),
+    ({'query': 'ip!="8.8.8.8"', 'start_time': '3 days', 'end_time': '0 days', 'limit': 'invalid_limit'},
+     MESSAGES['INVALID_LIMIT_TYPE']),
+    ({'query': 'ip!="8.8.8.8"', 'limit': '0'}, MESSAGES['INVALID_LIMIT_TYPE']),
+    ({'query': 'ip!="8.8.8.8"', 'limit': '-1'}, MESSAGES['INVALID_LIMIT_TYPE']),
+    ({'query': 'ip!="8.8.8.8"', 'limit': '1001'}, MESSAGES['INVALID_LIMIT_RANGE'].format(1000))
+])
+def test_gcb_udm_search_command_for_invalid_args(args, error_msg):
+    """Test gcb_udm_search_command for failing arguments."""
+    from GoogleChronicleBackstory import gcb_udm_search_command
+
+    with pytest.raises(ValueError) as e:
+        gcb_udm_search_command(client, args)
+
+    assert str(e.value) == error_msg
 
 
 def test_list_detections_command(client):
@@ -1962,42 +2038,24 @@ def test_list_detections_command(client):
 
 
 @pytest.mark.parametrize("args, error_msg", [
-    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'page_size': 'dummy'}, 'Page size must be a non-zero '
-                                                                                   'numeric value'),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'page_size': 'dummy'}, COMMON_RESP['INVALID_PAGE_SIZE']),
     ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'page_size': '100000'}, 'Page size should be in the range '
                                                                                     'from 1 to 1000.'),
-    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'detection_start_time': 'December 2019'},
-     invalid_start_time_error_message),
-    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'detection_start_time': '6'},
-     invalid_start_time_error_message),
-    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'detection_start_time': '-5'},
-     invalid_start_time_error_message),
     ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'detection_start_time': '645.08'},
-     invalid_start_time_error_message),
+     'Invalid date: "detection_start_time"="645.08"'),
     ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'detection_start_time': '-325.21'},
-     invalid_start_time_error_message),
-    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'detection_end_time': 'December 2019'},
-     invalid_end_time_error_message),
-    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'detection_end_time': '6'},
-     invalid_end_time_error_message),
-    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'detection_end_time': '-5'},
-     invalid_end_time_error_message),
+     'Invalid date: "detection_start_time"="-325.21"'),
     ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'detection_end_time': '645.08'},
-     invalid_end_time_error_message),
+     'Invalid date: "detection_end_time"="645.08"'),
     ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'detection_end_time': '-325.21'},
-     invalid_end_time_error_message),
-    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'start_time': 'December 2019'},
-     invalid_start_time_error_message),
-    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'start_time': '6'}, invalid_start_time_error_message),
-    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'start_time': '-5'}, invalid_start_time_error_message),
-    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'start_time': '645.08'}, invalid_start_time_error_message),
-    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'start_time': '-325.21'}, invalid_start_time_error_message),
-    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'end_time': 'December 2019'},
-     invalid_end_time_error_message),
-    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'end_time': '6'}, invalid_end_time_error_message),
-    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'end_time': '-5'}, invalid_end_time_error_message),
-    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'end_time': '645.08'}, invalid_end_time_error_message),
-    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'end_time': '-325.21'}, invalid_end_time_error_message),
+     'Invalid date: "detection_end_time"="-325.21"'),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'start_time': '645.08'},
+     'Invalid date: "start_time"="645.08"'),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'start_time': '-325.21'},
+     'Invalid date: "start_time"="-325.21"'),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'end_time': '645.08'}, 'Invalid date: "end_time"="645.08"'),
+    ({'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'end_time': '-325.21'},
+     'Invalid date: "end_time"="-325.21"'),
     ({'detection_for_all_versions': True}, "If \"detection_for_all_versions\" is true, rule id is required."),
     ({'list_basis': 'CREATED_TIME'}, "To sort detections by \"list_basis\", either \"start_time\" or \"end_time\" "
                                      "argument is required.")
@@ -2008,6 +2066,68 @@ def test_validate_and_parse_list_detections_args(args, error_msg):
 
     with pytest.raises(ValueError) as e:
         validate_and_parse_list_detections_args(args)
+
+    assert str(e.value) == error_msg
+
+
+def test_list_curatedrule_detections_command(client):
+    """Test gcb_list_curatedrule_detections_command for non-empty and empty response."""
+    from GoogleChronicleBackstory import gcb_list_curatedrule_detections_command
+
+    args = {'id': 'ur_ttp_GCP__GlobalSSHKeys_Added', 'detection_start_time': '2023-06-14T17:28:00Z',
+            'detection_end_time': '2 days ago'}
+
+    with open("test_data/list_curatedrule_detections_response.json", "r") as f:
+        dummy_response = f.read()
+
+    with open("test_data/list_curatedrule_detections_ec.json", "r") as f:
+        dummy_ec = json.load(f)
+
+    with open("test_data/list_curatedrule_detections_hr.md", "r") as f:
+        dummy_hr = f.read()
+
+    mock_response = (
+        Response(dict(status=200)),
+        dummy_response
+    )
+
+    client.http_client.request.return_value = mock_response
+
+    hr, ec, json_data = gcb_list_curatedrule_detections_command(client, args)
+
+    assert ec == dummy_ec
+    assert hr == dummy_hr
+
+    # Test command when no detections found
+    client.http_client.request.return_value = (
+        Response(dict(status=200)),
+        '{}'
+    )
+
+    hr, ec, json_data = gcb_list_curatedrule_detections_command(client, args)
+    assert ec == {}
+    assert hr == 'No Curated Detections Found'
+
+
+@pytest.mark.parametrize("args, error_msg", [
+    ({'id': 'ur_ttp_GCP__GlobalSSHKeys_Added', 'page_size': 'dummy'}, COMMON_RESP['INVALID_PAGE_SIZE']),
+    ({'id': 'ur_ttp_GCP__GlobalSSHKeys_Added', 'page_size': '100000'}, 'Page size should be in the range '
+                                                                       'from 1 to 1000.'),
+    ({'id': 'ur_ttp_GCP__GlobalSSHKeys_Added', 'start_time': '645.08'},
+     'Invalid date: "start_time"="645.08"'),
+    ({'id': 'ur_ttp_GCP__GlobalSSHKeys_Added', 'start_time': '-325.21'},
+     'Invalid date: "start_time"="-325.21"'),
+    ({'id': 'ur_ttp_GCP__GlobalSSHKeys_Added', 'end_time': '645.08'}, 'Invalid date: "end_time"="645.08"'),
+    ({'id': 'ur_ttp_GCP__GlobalSSHKeys_Added', 'end_time': '-325.21'},
+     'Invalid date: "end_time"="-325.21"'),
+    ({}, MESSAGES['CURATED_RULE_ID_REQUIRED']),
+])
+def test_validate_and_parse_list_curatedrule_detections_args(args, error_msg):
+    """Test validate_and_parse_list_curatedrule_detections_args for failing arguments."""
+    from GoogleChronicleBackstory import validate_and_parse_list_curatedrule_detections_args
+
+    with pytest.raises(ValueError) as e:
+        validate_and_parse_list_curatedrule_detections_args(args)
 
     assert str(e.value) == error_msg
 
@@ -2139,6 +2259,19 @@ def validate_last_run_whn_last_pull(last_run):
     assert not last_run.get("pending_rule_or_version_id")
 
 
+def validate_last_run_without_curatedrule_detection_to_pull(last_run):
+    """
+    Assert returned last run without curated rule detections to pull.
+
+    Internal method used in test_fetch_incident_success_with_param_alerts
+    """
+    assert last_run
+    assert not last_run.get("curatedrule_first_fetched_time")
+    assert not last_run.get("curatedrule_detection_to_process")
+    assert not last_run.get("curatedrule_detection_to_pull")
+    assert not last_run.get("pending_curatedrule")
+
+
 def validate_last_run_wth_dtc_to_pull(last_run):
     """
     Assert returned last run with detections to pull.
@@ -2150,6 +2283,19 @@ def validate_last_run_wth_dtc_to_pull(last_run):
     assert not last_run.get("detection_to_process")
     assert last_run.get("detection_to_pull")
     assert not last_run.get("pending_rule_or_version_id")
+
+
+def validate_last_run_with_curatedrule_detection_to_pull(last_run):
+    """
+    Assert returned last run with curated rule detections to pull.
+
+    Internal method used in test_fetch_incident_success_with_param_alerts
+    """
+    assert last_run
+    assert last_run.get("curatedrule_first_fetched_time")
+    assert not last_run.get("curatedrule_detection_to_process")
+    assert last_run.get("curatedrule_detection_to_pull")
+    assert not last_run.get("pending_curatedrule")
 
 
 def validate_detections_case_2_iteration_1(incidents):
@@ -2668,6 +2814,484 @@ def test_gcb_fetch_incident_success_with_detections_with_incident_identifiers(mo
     assert client.http_client.request.called
 
 
+def test_fetch_incident_curatedrule_detection_case_4(client, mocker):
+    """
+    Test fetch incidents with curated rule for case no. 4.
+
+    1Id return 3, with no NT
+    2Id return 5, with NT
+    2Id return 2, with no NT
+    3Id return 3, with no NT
+    """
+    from GoogleChronicleBackstory import fetch_incidents
+
+    param = {
+        'first_fetch': DEFAULT_FIRST_FETCH,
+        'max_fetch': 5,
+        'backstory_alert_type': CURATEDRULE_DETECTION_ALERT_TYPE,
+        'fetch_detection_by_alert_state': 'ALERTING',
+        'fetch_detection_by_ids': '123, 456, 789'
+    }
+
+    with open("test_data/fetch_curatedrule_detection_size_3.json") as f:
+        get_detection_json_size_3 = f.read()
+
+    mock_response_size_3 = (
+        Response(dict(status=200)),
+        get_detection_json_size_3
+    )
+
+    with open("test_data/fetch_curatedrule_detection_size_5_NT.json") as f:
+        get_detection_json_size_5 = f.read()
+
+    mock_response_size_5 = (
+        Response(dict(status=200)),
+        get_detection_json_size_5
+    )
+
+    with open("test_data/fetch_curatedrule_detection_size_2.json") as f:
+        get_detection_json = f.read()
+
+    mock_response_size_2 = (
+        Response(dict(status=200)),
+        get_detection_json
+    )
+
+    client.http_client.request.side_effect = [mock_response_size_3, mock_response_size_5, mock_response_size_2,
+                                              mock_response_size_3]
+    mocker.patch.object(demisto, 'incidents', new=validate_detections_case_4_iteration_1_and_2)
+
+    fetch_incidents(client, param)
+    mock_last_run = {
+        'start_time': LAST_RUN_TIME,
+        'curatedrule_first_fetched_time': '2023-01-01T12:00:01Z',
+        'curatedrule_detection_to_process': [
+            {'id': '123', 'detection': [{'ruleName': 'SampleRule'}]},
+            {'id': '1234', 'detection': [{'ruleName': 'SampleRule'}]},
+            {'id': '12345', 'detection': [{'ruleName': 'SampleRule'}]}],
+        'curatedrule_detection_to_pull': {'rule_id': '456', 'next_page_token': 'next_page_token'},
+        'pending_curatedrule_id_with_alert_state': {'rule_id': ['789'], 'alert_state': ''}
+    }
+    mocker.patch.object(demisto, 'getLastRun', return_value=mock_last_run)
+    mocker.patch.object(demisto, 'incidents', new=validate_detections_case_4_iteration_1_and_2)
+    fetch_incidents(client, param)
+    mocker.patch.object(demisto, 'incidents', new=validate_detections_case_4_iteration_3)
+    mock_last_run_2 = {
+        'start_time': LAST_RUN_TIME,
+        'curatedrule_first_fetched_time': '2023-01-01T12:00:01Z',
+        'curatedrule_detection_to_process': [],
+        'curatedrule_detection_to_pull': {},
+        'pending_curatedrule_id_with_alert_state': {'rule_id': ['789'], 'alert_state': ''}
+    }
+    mocker.patch.object(demisto, 'getLastRun', return_value=mock_last_run_2)
+    fetch_incidents(client, param)
+    assert client.http_client.request.called
+
+
+def test_fetch_incident_curatedrule_detection_when_1st_sync_n_data_less_thn_max_fetch_and_ids_is_1(client, mocker):
+    """Case when 2 curated rule detections with no-NT."""
+    from GoogleChronicleBackstory import fetch_incidents
+
+    param = {
+        'first_fetch': DEFAULT_FIRST_FETCH,
+        'max_fetch': 5,
+        'backstory_alert_type': CURATEDRULE_DETECTION_ALERT_TYPE,
+        'fetch_detection_by_ids': CURATEDRULE_ID
+    }
+
+    with open("test_data/fetch_curatedrule_detection_size_2.json") as f:
+        get_detection_json_size_2 = f.read()
+
+    mock_response = (
+        Response(dict(status=200)),
+        get_detection_json_size_2
+    )
+    client.http_client.request.return_value = mock_response
+    mocker.patch.object(demisto, 'incidents', new=validate_detection_incident)
+
+    fetch_incidents(client, param)
+    assert client.http_client.request.call_count == 1
+
+
+def test_fetch_incident_curatedrule_detection_case_2(client, mocker):
+    """
+    Test fetch incidents curated rule detection case 2.
+
+    max_fetch =5
+    1Id return 5, with NT
+    1Id on 2nd call return 2, with no NT
+    """
+    from GoogleChronicleBackstory import fetch_incidents
+
+    param = {
+        'first_fetch': DEFAULT_FIRST_FETCH,
+        'max_fetch': 5,
+        'backstory_alert_type': CURATEDRULE_DETECTION_ALERT_TYPE,
+        'fetch_detection_by_ids': CURATEDRULE_ID
+    }
+
+    with open("test_data/fetch_curatedrule_detection_size_5_NT.json") as f:
+        get_detection_json_size_5 = f.read()
+
+    with open("test_data/fetch_curatedrule_detection_size_2.json") as f:
+        get_detection_json_size_2 = f.read()
+
+    mock_response_5 = (
+        Response(dict(status=200)),
+        get_detection_json_size_5
+    )
+
+    mock_response_2 = (
+        Response(dict(status=200)),
+        get_detection_json_size_2
+    )
+
+    client.http_client.request.side_effect = [mock_response_5, mock_response_2]
+    mocker.patch.object(demisto, 'incidents', new=validate_detections_case_2_iteration_1)
+
+    mocker.patch.object(demisto, 'setLastRun', new=validate_last_run_with_curatedrule_detection_to_pull)
+
+    fetch_incidents(client, param)
+
+    mocker.patch.object(demisto, 'setLastRun', new=validate_last_run_without_curatedrule_detection_to_pull)
+    mocker.patch.object(demisto, 'incidents', new=validate_detections_case_2_iteration_2)
+    fetch_incidents(client, param)
+    assert client.http_client.request.called
+
+
+@mock.patch('GoogleChronicleBackstory.get_curatedrule_detections')
+@mock.patch('demistomock.error')
+def test_no_duplicate_curated_rule_id_on_detection_to_pull_exception(mock_error, mock_build, client):
+    """Demo test for get_max_fetch_curatedrule_detections."""
+    from GoogleChronicleBackstory import get_max_fetch_curatedrule_detections
+
+    mock_build.side_effect = ValueError('123')
+    z = ['123', '456']
+    mock_error.return_value = {}
+    for _ in range(5):
+        x, y, z, w = get_max_fetch_curatedrule_detections(client, '12', '23', 5,
+                                                          [{'id': '123',
+                                                            'detection': [{'ruleName': 'SampleRule'}]},
+                                                           {'id': '1234',
+                                                            'detection': [{'ruleName': 'SampleRule'}]},
+                                                           {'id': '12345',
+                                                            'detection': [{'ruleName': 'SampleRule'}]}],
+                                                          {'rule_id': '456',
+                                                           'next_page_token': 'next_page_token'},
+                                                          z, '', {}, "CREATED_TIME")
+
+    assert z == ['123', '456']
+
+
+def test_fetch_incident_curatedrule_detection_case_3(client, mocker):
+    """
+    Test fetch incidents for curated rule detection case 3.
+
+    1Id return 2, with no NT
+    2Id return 3, with no NT
+    """
+    from GoogleChronicleBackstory import fetch_incidents
+
+    param = {
+        'first_fetch': DEFAULT_FIRST_FETCH,
+        'max_fetch': 3,
+        'backstory_alert_type': CURATEDRULE_DETECTION_ALERT_TYPE,
+        'fetch_detection_by_ids': 'de_50fd0957-0959-0000-d556-c6f8000016b1, '
+                                  'de_662d8ff5-8eea-deb8-274e-f3410c7b935a'
+    }
+
+    with open("test_data/fetch_curatedrule_detection_size_3.json") as f:
+        get_detection_json_size_3 = f.read()
+
+    mock_response_size_3 = (
+        Response(dict(status=200)),
+        get_detection_json_size_3
+    )
+
+    with open("test_data/fetch_curatedrule_detection_size_2.json") as f:
+        get_detection_json_size_2 = f.read()
+
+    mock_response_size_2 = (
+        Response(dict(status=200)),
+        get_detection_json_size_2
+    )
+
+    client.http_client.request.side_effect = [mock_response_size_2, mock_response_size_3]
+    mocker.patch.object(demisto, 'incidents', new=validate_detections_case_3_iteration_1)
+
+    fetch_incidents(client, param)
+    mock_last_run = {
+        'start_time': LAST_RUN_TIME,
+        'curatedrule_detection_to_process': [{'id': '123', 'detection': [{'ruleName': 'SampleRule'}]},
+                                             {'id': '1234', 'detection': [{'ruleName': 'SampleRule'}]}],
+        'curatedrule_detection_to_pull': {},
+        'pending_curatedrule_with_alert_state': {'rule_id': [], 'alert_state': ''}
+    }
+    mocker.patch.object(demisto, 'getLastRun', return_value=mock_last_run)
+    mocker.patch.object(demisto, 'incidents', new=validate_detections_case_3_iteration_2)
+    fetch_incidents(client, param)
+    assert client.http_client.request.called
+
+
+@mock.patch('GoogleChronicleBackstory.get_curatedrule_detections')
+def test_curatedrule_detection_to_pull_is_empty_when_2nd_rule_returns_data_with_no_next_token(mock_build, client):
+    """
+    Test get_max_fetch_curatedrule_detections when detection to pull is empty and response contains no next page token.
+
+    case - rule_1 has 5 records, rule_2 has 2 records
+    max_fetch - 3
+    Assumption : On 1st call we pulled rule_1 - 3 indicators with curatedrule_detection_to_pull(next_token, rule_id)
+    On 2nd call we have next_token and rule_id for rule_1 that contains 2 records. This will pull 2 records
+    for rule_1 and 2 records for rule_2 and complete the fetch-incident cycle since we don't have any rule to process.
+    """
+    from GoogleChronicleBackstory import get_max_fetch_curatedrule_detections, get_curatedrule_detections
+    import io
+
+    with io.open("test_data/fetch_curatedrule_detection_size_2.json", mode='r', encoding='utf-8') as f:
+        get_detection_json_size_2 = json.loads(f.read())
+
+    mock_build.return_value = ('p', get_detection_json_size_2)
+    z = ['456']
+
+    x, y, z, w = get_max_fetch_curatedrule_detections(client, 'st_dummy', 'et_dummy', 3,
+                                                      [],
+                                                      {'rule_id': '123',
+                                                       'next_page_token': 'next_page_token'},
+                                                      z, '', {}, "CREATED_TIME")
+
+    assert len(x) == 4
+    assert y == {}
+    assert z == []
+    # Making sure that get_curatedrule_detections called 2 times.
+    assert get_curatedrule_detections.call_count == 2
+
+
+@mock.patch('GoogleChronicleBackstory.validate_response')
+def test_when_curatedrule_detection_to_pull_is_not_empty_and_return_empty_result(mock_validate_response, client):
+    """
+    Test get_max_fetch_curatedrule_detections when detection to pull is not empty and response is empty.
+
+    - case when curatedrule_detection_to_pull is not empty and api return empty response with 200 status
+      then logic should pop next rule and set curatedrule_detection_to_pull empty.
+    """
+    from GoogleChronicleBackstory import get_max_fetch_curatedrule_detections, validate_response
+
+    mock_validate_response.return_value = {}
+    z = ['rule_2', 'rule_3']
+    x, y, z, w = get_max_fetch_curatedrule_detections(client, 'st_dummy', 'et_dummy', 5,
+                                                      [],
+                                                      {'rule_id': 'rule_1',
+                                                       'next_page_token': 'next_page_token'},
+                                                      z, '', {}, "CREATED_TIME")
+
+    assert z == []
+    assert y == {}
+    assert len(x) == 0
+    # Making sure that validate_response called 3 times.
+    assert validate_response.call_count == 3
+
+
+@mock.patch('demistomock.error')
+def test_429_or_500_error_with_max_attempts_60_for_curatedrule_detection(mock_error, client):
+    """
+    Test behavior for 429 and 500 error codes with maximum attempts 60.
+
+    case :   rule_1 - 429 error 30 times, return 3 records
+             rule_2 - 500 error 60 times
+             rule_3 - 500 error 1 times, return 3 records
+    """
+    from GoogleChronicleBackstory import get_max_fetch_curatedrule_detections
+    mock_error.return_value = {}
+    mock_response_with_429_error = (Response(dict(status=429)),
+                                    COMMON_RESP['ERROR_RESPONSE'])
+
+    mock_response_with_500_error = (Response(dict(status=500)),
+                                    COMMON_RESP['ERROR_RESPONSE'])
+
+    with open("test_data/fetch_curatedrule_detection_size_3.json") as f:
+        get_detection_json_size_3 = f.read()
+
+    mock_response_size_3 = (
+        Response(dict(status=200)),
+        get_detection_json_size_3
+    )
+    client.http_client.request.side_effect = [mock_response_with_429_error] * 30 + [mock_response_size_3] + [
+        mock_response_with_500_error] * 61 + [mock_response_size_3]
+    pending_rule_or_version_id = ['rule_2', 'rule_3']
+    detection_to_pull = {'rule_id': 'rule_1', 'next_page_token': 'next_page_token'}
+    simple_backoff_rules = {}
+    for _ in range(93):
+        detection_incidents, detection_to_pull, pending_rule_or_version_id, \
+            simple_backoff_rules = get_max_fetch_curatedrule_detections(client, 'st_dummy', 'et_dummy', 5, [],
+                                                                        detection_to_pull, pending_rule_or_version_id,
+                                                                        '', simple_backoff_rules, "CREATED_TIME")
+
+    assert client.http_client.request.call_count == 93
+
+
+@mock.patch('demistomock.error')
+def test_400_and_404_error_for_curatedrule_detection(mock_error, client):
+    """
+    Test behavior on 400 and 404 response.
+
+    case : rule_1 ok, rule_2 throw 400, rule_3 ok, rule_5 throw 404, rule_5 ok
+    """
+    from GoogleChronicleBackstory import get_max_fetch_curatedrule_detections
+
+    mock_error.return_value = {}
+    mock_response_with_400_error = (Response(dict(status=400)),
+                                    COMMON_RESP['ERROR_RESPONSE'])
+
+    mock_response_with_404_error = (Response(dict(status=404)),
+                                    COMMON_RESP['ERROR_RESPONSE'])
+
+    with open("test_data/fetch_curatedrule_detection_size_3.json") as f:
+        get_detection_json_size_3 = f.read()
+
+    mock_response_size_3 = (
+        Response(dict(status=200)),
+        get_detection_json_size_3
+    )
+    client.http_client.request.side_effect = [mock_response_size_3, mock_response_with_400_error,
+                                              mock_response_size_3, mock_response_with_404_error,
+                                              mock_response_size_3]
+
+    pending_rule_or_version_id = ['rule_2', 'rule_3', 'rule_4', 'rule_5']
+    detection_to_pull = {'rule_id': 'rule_1', 'next_page_token': 'next_page_token'}
+
+    simple_backoff_rules = {}
+    for _ in range(5):
+        detection_incidents, detection_to_pull, pending_rule_or_version_id, \
+            simple_backoff_rules = get_max_fetch_curatedrule_detections(client, 'st_dummy', 'et_dummy', 15, [],
+                                                                        detection_to_pull, pending_rule_or_version_id,
+                                                                        '', simple_backoff_rules, "CREATED_TIME")
+
+
+def test_fetch_incident_curatedrule_detection_case_5(client, mocker):
+    """
+    Test fetch incidents with curated rule detection for case no. 5.
+
+    1Id return 3, with no NT
+    2Id return 5, with NT
+    2Id return 2, with no NT
+    3Id return 5, with NT
+
+    3 + 2
+    (3) + 2
+
+    """
+    from GoogleChronicleBackstory import fetch_incidents
+
+    param = {
+        'first_fetch': DEFAULT_FIRST_FETCH,
+        'max_fetch': 5,
+        'fetch_detection_by_ids': '123, 456, 789',
+        'backstory_alert_type': CURATEDRULE_DETECTION_ALERT_TYPE
+    }
+
+    with open("test_data/fetch_curatedrule_detection_size_3.json") as f:
+        get_detection_json_size_3 = f.read()
+
+    mock_response_size_3 = (
+        Response(dict(status=200)),
+        get_detection_json_size_3
+    )
+
+    with open("test_data/fetch_curatedrule_detection_size_5_NT.json") as f:
+        get_detection_json_size_5 = f.read()
+
+    mock_response_size_5 = (
+        Response(dict(status=200)),
+        get_detection_json_size_5
+    )
+
+    with open("test_data/fetch_curatedrule_detection_size_2.json") as f:
+        get_detection_json = f.read()
+
+    mock_response_size_2 = (
+        Response(dict(status=200)),
+        get_detection_json
+    )
+
+    client.http_client.request.side_effect = [mock_response_size_3, mock_response_size_5, mock_response_size_2,
+                                              mock_response_size_5]
+    mocker.patch.object(demisto, 'incidents', new=validate_detections_case_5_iteration_1_2_3)
+
+    fetch_incidents(client, param)
+    mock_last_run = {
+        'start_time': LAST_RUN_TIME,
+        'curatedrule_detection_to_process': [
+            {'id': '123', 'detection': [{'ruleName': 'SampleRule'}]},
+            {'id': '1234', 'detection': [{'ruleName': 'SampleRule'}]},
+            {'id': '12345', 'detection': [{'ruleName': 'SampleRule'}]}],
+        'curatedrule_detection_to_pull': {'rule_id': '456', 'next_page_token': 'next_page_token'},
+        'pending_curatedrule_id_with_alert_state': {'rule_id': ['789'], 'alert_state': ''}
+    }
+    mocker.patch.object(demisto, 'getLastRun', return_value=mock_last_run)
+    mocker.patch.object(demisto, 'incidents', new=validate_detections_case_5_iteration_1_2_3)
+    fetch_incidents(client, param)
+    mocker.patch.object(demisto, 'incidents', new=validate_detections_case_5_iteration_1_2_3)
+    mock_last_run_2 = {
+        'start_time': LAST_RUN_TIME,
+        'curatedrule_detection_to_process': [],
+        'curatedrule_detection_to_pull': {},
+        'pending_curatedrule_id_with_alert_state': {'rule_id': ['789'], 'alert_state': ''}
+    }
+    mocker.patch.object(demisto, 'getLastRun', return_value=mock_last_run_2)
+    fetch_incidents(client, param)
+    assert client.http_client.request.called
+
+
+def test_gcb_fetch_incident_success_for_curatedrule_detections_with_incident_identifiers(mocker, client):
+    """Check the fetched incident in case duplicate curated rule detections are fetched in next iteration."""
+    from GoogleChronicleBackstory import fetch_incidents
+
+    param = {
+        'first_fetch': DEFAULT_FIRST_FETCH,
+        'max_fetch': 5,
+        'backstory_alert_type': CURATEDRULE_DETECTION_ALERT_TYPE,
+        'fetch_detection_by_ids': CURATEDRULE_ID
+    }
+
+    with open("test_data/fetch_curatedrule_detection_size_5_NT.json") as f:
+        get_detection_json_size_5 = f.read()
+
+    mock_response = (
+        Response(dict(status=200)),
+        get_detection_json_size_5
+    )
+    client.http_client.request.return_value = mock_response
+    mocker.patch.object(demisto, 'incidents', new=validate_duplicate_detections)
+    mocker.patch.object(demisto, 'command', return_value='gcb-fetch-incidents')
+    mocker.patch.object(demisto, 'getLastRun',
+                        return_value={
+                            'start_time': START_TIME,
+                            'curatedrule_detection_identifiers': [{'id': 'de_50fd0957-0959-0000-d556-c6f8000016b1'},
+                                                                  {'id': 'de_662d8ff5-8eea-deb8-274e-f3410c7b935a'}]})
+    fetch_incidents(client, param)
+    assert client.http_client.request.called
+
+
+def test_gcb_fetch_incident_for_curatedrule_detections_with_empty_curatedrule_id(mocker, client):
+    """Check the fetched incident for curated rule detections where empty rule ID is provided."""
+    from GoogleChronicleBackstory import fetch_incidents
+
+    param = {
+        'first_fetch': DEFAULT_FIRST_FETCH,
+        'max_fetch': 5,
+        'backstory_alert_type': CURATEDRULE_DETECTION_ALERT_TYPE,
+        'fetch_detection_by_ids': ""
+    }
+
+    mocker.patch.object(demisto, 'command', return_value='gcb-fetch-incidents')
+    mocker.patch.object(demisto, 'getLastRun', return_value={})
+
+    with pytest.raises(ValueError) as err:
+        fetch_incidents(client, param)
+
+    assert str(err.value) == MESSAGES['PROVIDE_CURATED_RULE_ID']
+
+
 def validate_user_alert_incident(incidents):
     """
     Assert alert incidents.
@@ -2920,3 +3544,1284 @@ def test_gcb_list_rules_live_rule_argument_false(client):
     hr, ec, json_data = gcb_list_rules_command(client, args={'live_rule': 'false'})
 
     assert ec == dummy_ec
+
+
+def test_gcb_create_rule_command_with_valid_response(client):
+    """Test gcb_create_rule command when valid response is returned."""
+    from GoogleChronicleBackstory import gcb_create_rule_command
+
+    with open("test_data/create_rule_response.json", "r") as f:
+        response = f.read()
+
+    with open("test_data/create_rule_ec.json", "r") as f:
+        expected_ec = json.loads(f.read())
+
+    with open("test_data/create_rule_hr.md", "r") as f:
+        expected_hr = f.read()
+
+    mock_response = (
+        Response(dict(status=200)),
+        response
+    )
+
+    client.http_client.request.return_value = mock_response
+
+    args = {
+        "rule_text": """rule demoRuleCreatedFromAPI {
+        meta:
+        author = \"testuser\"
+        description = \"single event rule that should generate detections\"
+
+        events:
+        $e.metadata.event_type = \"NETWORK_DNS\"
+
+        condition:
+        $e
+    }"""
+    }
+
+    hr, ec, json_data = gcb_create_rule_command(client, args=args)
+
+    assert ec == expected_ec
+    assert hr == expected_hr
+
+
+def test_gcb_create_rule_command_with_invalid_arguments(client):
+    """Test gcb_create_rule command when invalid argument provided."""
+    from GoogleChronicleBackstory import gcb_create_rule_command
+
+    args = {
+        "rule_text": """rule demoRuleCreatedFromAPI {
+            meta:
+            author = \"testuser\"
+            description = \"single event rule that should generate detections\"
+
+            condition:
+            $e
+        }"""
+    }
+
+    with pytest.raises(ValueError) as err:
+        gcb_create_rule_command(client, args)
+
+    assert str(err.value) == MESSAGES['INVALID_RULE_TEXT']
+
+
+def test_gcb_create_rule_command_when_400_error_code_returned(client):
+    """Test gcb_create_rule command when 400 error code is returned."""
+    from GoogleChronicleBackstory import gcb_create_rule_command
+
+    args = {
+        "rule_text": DUMMY_RULE_TEXT
+    }
+
+    with open("test_data/create_rule_400_response.json", 'r') as f:
+        response = f.read()
+
+    mock_response = (
+        Response(dict(status=400)),
+        response
+    )
+    client.http_client.request.return_value = mock_response
+
+    with pytest.raises(ValueError) as err:
+        gcb_create_rule_command(client, args)
+
+    assert str(
+        err.value) == 'Status code: 400\nError: generic::invalid_argument: compiling rule: parsing: error ' \
+                      'with token: "events"\nexpected meta\nline: 2 \ncolumn: 9-15 '
+
+
+def test_gcb_get_rule_command_when_empty_args_given(client):
+    """Test gcb_get_rule_command when Rule ID is a string with space."""
+    from GoogleChronicleBackstory import gcb_get_rule_command
+    with pytest.raises(ValueError) as e:
+        gcb_get_rule_command(client, args={'id': ''})
+    assert str(e.value) == 'Missing argument id.'
+
+
+def test_gcb_get_rule_output_when_valid_args_provided(client):
+    """Test gcb_get_rule_command when valid args are provided and gives valid output."""
+    from GoogleChronicleBackstory import gcb_get_rule_command
+    args = {'id': 'dummy rule or version id'}
+
+    with open("test_data/gcb_get_rule_response.json", "r") as f:
+        dummy_response = f.read()
+
+    with open("test_data/gcb_get_rule_ec.json", "r") as f:
+        dummy_ec = json.loads(f.read())
+
+    with open("test_data/gcb_get_rule_hr.md", "r") as f:
+        dummy_hr = f.read()
+
+    mock_response = (
+        Response(dict(status=200)),
+        dummy_response
+    )
+
+    client.http_client.request.return_value = mock_response
+    hr, ec, json_data = gcb_get_rule_command(client, args)
+
+    assert ec == dummy_ec
+    assert hr == dummy_hr
+
+
+def test_gcb_get_rule_command_when_rule_id_provided_does_not_exist(client):
+    """Test gcb_get_rule_command when rule id provided does not exist."""
+    from GoogleChronicleBackstory import gcb_get_rule_command
+    with open('test_data/gcb_get_rule_invalid_id_400.json') as f:
+        raw_response = f.read()
+    mock_response = (
+        Response(dict(status=400)),
+        raw_response
+    )
+    client.http_client.request.return_value = mock_response
+    with pytest.raises(ValueError) as e:
+        gcb_get_rule_command(client, args={'id': '1234'})
+    assert str(e.value) == 'Status code: 400\nError: generic::invalid_argument: version ID must be in format ' \
+                           '{rule_id} or {rule_id}@v_{version_timestamp.seconds}_{version_timestamp.nanos}'
+
+
+def test_gcb_delete_rule_command_with_valid_response(client):
+    """Test gcb_delete_rule command when valid response is returned."""
+    from GoogleChronicleBackstory import gcb_delete_rule_command
+
+    with open("test_data/delete_rule_ec.json", "r") as f:
+        expected_ec = json.loads(f.read())
+
+    with open("test_data/delete_rule_hr.md", "r") as f:
+        expected_hr = f.read()
+
+    mock_response = (
+        Response(dict(status=200)),
+        '{}'
+    )
+
+    client.http_client.request.return_value = mock_response
+
+    args = {
+        'rule_id': 'test_rule_id'
+    }
+    hr, ec, json_data = gcb_delete_rule_command(client, args=args)
+
+    assert ec == expected_ec
+    assert hr == expected_hr
+
+
+def test_gcb_delete_rule_command_when_empty_rule_id_provided(client):
+    """Test gcb_delete_rule command when empty rule id provided."""
+    from GoogleChronicleBackstory import gcb_delete_rule_command
+
+    args = {
+        'rule_id': ""
+    }
+
+    with pytest.raises(ValueError) as err:
+        gcb_delete_rule_command(client, args)
+
+    assert str(err.value) == MESSAGES['REQUIRED_ARGUMENT'].format('rule_id')
+
+
+def test_gcb_delete_rule_command_when_400_error_code_returned(client):
+    """Test gcb_delete_rule command when 400 error code is returned."""
+    from GoogleChronicleBackstory import gcb_delete_rule_command
+
+    args = {
+        "rule_id": "12345"
+    }
+
+    with open("test_data/delete_rule_400_response.json", 'r') as f:
+        response = f.read()
+
+    mock_response = (
+        Response(dict(status=400)),
+        response
+    )
+    client.http_client.request.return_value = mock_response
+
+    with pytest.raises(ValueError) as err:
+        gcb_delete_rule_command(client, args)
+
+    assert str(err.value) == 'Status code: 400\nError: generic::invalid_argument: provided rule ID 12345 is not valid'
+
+
+@pytest.mark.parametrize('args,error_msg', [({"rule_id": "dummy", "rule_text": ""}, "Missing argument rule_text."),
+                                            ({"rule_id": "", "rule_text": "dummy"}, "Missing argument rule_id.")])
+def test_gcb_create_rule_version_command_when_empty_args_provided(client, args, error_msg):
+    """Test gcb_create_rule_version_command when empty arguments provided."""
+    from GoogleChronicleBackstory import gcb_create_rule_version_command
+    with pytest.raises(ValueError) as e:
+        gcb_create_rule_version_command(client, args)
+    assert str(e.value) == error_msg
+
+
+def test_gcb_create_rule_version_command_when_invalid_rule_text_provided(client):
+    """Test gcb_create_rule_version_command when rule text provided is not valid."""
+    from GoogleChronicleBackstory import gcb_create_rule_version_command
+    args = {
+        "rule_id": "dummy",
+        "rule_text": "1234"
+    }
+    with pytest.raises(ValueError) as e:
+        gcb_create_rule_version_command(client, args)
+    assert str(e.value) == 'Invalid rule text provided. Section "meta", "events" or "condition" is missing.'
+
+
+def test_gcb_create_rule_version_command_when_provided_rule_id_is_not_valid(client):
+    """Test gcb_create_rule_version_command when rule id provided does not exist."""
+    from GoogleChronicleBackstory import gcb_create_rule_version_command
+    with open('test_data/gcb_create_rule_version_command_invalid_id_400.json') as f:
+        raw_response = f.read()
+    args = {
+        "rule_id": "dummy",
+        "rule_text": DUMMY_RULE_TEXT
+    }
+    mock_response = (
+        Response(dict(status=400)),
+        raw_response
+    )
+    client.http_client.request.return_value = mock_response
+    with pytest.raises(ValueError) as e:
+        gcb_create_rule_version_command(client, args)
+    assert str(e.value) == 'Status code: 400\nError: generic::invalid_argument: provided rule ID dummy is not valid'
+
+
+def test_gcb_create_rule_version_command_when_valid_args_provided(client):
+    """Test gcb_create_rule_version_command for correct output when valid arguments are given."""
+    from GoogleChronicleBackstory import gcb_create_rule_version_command
+    with open("test_data/gcb_create_rule_version_command_response.json", "r") as f:
+        expected_response = f.read()
+    with open("test_data/gcb_create_rule_version_command_ec.json", "r") as f:
+        expected_ec = json.loads(f.read())
+    with open("test_data/gcb_create_rule_version_command_hr.md", "r") as f:
+        expected_hr = f.read()
+    mock_response = (
+        Response(dict(status=200)),
+        expected_response
+    )
+    client.http_client.request.return_value = mock_response
+    args = {
+        "rule_id": "dummy rule",
+        "rule_text": DUMMY_RULE_TEXT
+    }
+    hr, ec, json_data = gcb_create_rule_version_command(client, args)
+    assert ec == expected_ec
+    assert hr == expected_hr
+
+
+@pytest.mark.parametrize('args,error_msg',
+                         [({"rule_id": "dummy", "alerting_status": ""}, "Missing argument alerting_status."),
+                          ({"rule_id": "", "alerting_status": "dummy"}, "Missing argument rule_id.")])
+def test_gcb_change_rule_alerting_status_command_when_empty_args_provided(client, args, error_msg):
+    """Test gcb_change_rule_alerting_status_command when empty arguments are provided."""
+    from GoogleChronicleBackstory import gcb_change_rule_alerting_status_command
+    with pytest.raises(ValueError) as e:
+        gcb_change_rule_alerting_status_command(client, args)
+    assert str(e.value) == error_msg
+
+
+def test_gcb_change_rule_alerting_status_command_when_invalid_alerting_status_provided(client):
+    """Test gcb_change_rule_alerting_status_command when invalid argument value for alerting_status is provided."""
+    from GoogleChronicleBackstory import gcb_change_rule_alerting_status_command
+    args = {
+        "rule_id": "dummy",
+        "alerting_status": "status"
+    }
+    with pytest.raises(ValueError) as e:
+        gcb_change_rule_alerting_status_command(client, args)
+    assert str(e.value) == "alerting_status can have one of these values only enable, disable."
+
+
+def test_gcb_change_rule_alerting_status_command_when_provided_rule_id_does_not_exist(client):
+    """Test gcb_change_rule_alerting_status_command when rule id provided does not exist."""
+    from GoogleChronicleBackstory import gcb_change_rule_alerting_status_command
+    with open('test_data/gcb_change_rule_alerting_status_command_invalid_id_400.json') as f:
+        raw_response = f.read()
+    args = {
+        "rule_id": "dummy",
+        "alerting_status": "enable"
+    }
+    mock_response = (
+        Response(dict(status=400)),
+        raw_response
+    )
+    client.http_client.request.return_value = mock_response
+    with pytest.raises(ValueError) as e:
+        gcb_change_rule_alerting_status_command(client, args)
+    assert str(e.value) == 'Status code: 400\nError: generic::invalid_argument: provided rule ID dummy is not valid'
+
+
+def test_gcb_change_rule_alerting_status_command_when_valid_args_provided(client):
+    """Test gcb_change_rule_alerting_status_command for valid output when valid arguments are provided."""
+    from GoogleChronicleBackstory import gcb_change_rule_alerting_status_command
+
+    with open('test_data/gcb_change_rule_alerting_status_ec.json', 'r') as f:
+        expected_ec = json.loads(f.read())
+
+    with open('test_data/gcb_change_rule_alerting_status_hr.md', 'r') as f:
+        expected_hr = f.read()
+
+    mock_response = (
+        Response(dict(status=200)),
+        '{}'
+    )
+    args = {"rule_id": "ru_ab4d76c1-20d2-4cde-9825-3fb1c09a9b62", "alerting_status": "enable"}
+    client.http_client.request.return_value = mock_response
+    hr, ec, json_data = gcb_change_rule_alerting_status_command(client, args)
+
+    assert ec == expected_ec
+    assert hr == expected_hr
+
+
+@pytest.mark.parametrize('args,error_msg',
+                         [({"rule_id": "dummy", "live_rule_status": ""}, "Missing argument live_rule_status."),
+                          ({"rule_id": "", "live_rule_status": "dummy"}, "Missing argument rule_id.")])
+def test_gcb_change_live_rule_status_command_when_empty_args_provided(client, args, error_msg):
+    """Test gcb_change_live_rule_status_command when empty arguments are provided."""
+    from GoogleChronicleBackstory import gcb_change_live_rule_status_command
+    with pytest.raises(ValueError) as e:
+        gcb_change_live_rule_status_command(client, args)
+    assert str(e.value) == error_msg
+
+
+def test_gcb_change_live_rule_status_command_when_invalid_live_rule_status_provided(client):
+    """Test gcb_change_live_rule_status_command when invalid argument value for live_rule_status is provided."""
+    from GoogleChronicleBackstory import gcb_change_live_rule_status_command
+    args = {
+        "rule_id": "dummy",
+        "live_rule_status": "status"
+    }
+    with pytest.raises(ValueError) as e:
+        gcb_change_live_rule_status_command(client, args)
+    assert str(e.value) == "live_rule_status can have one of these values only enable, disable."
+
+
+def test_gcb_change_live_rule_status_command_when_provided_rule_id_does_not_exist(client):
+    """Test gcb_change_live_rule_status_command when rule id provided does not exist."""
+    from GoogleChronicleBackstory import gcb_change_live_rule_status_command
+    with open('test_data/gcb_change_live_rule_status_command_invalid_id_400.json') as f:
+        raw_response = f.read()
+    args = {
+        "rule_id": "dummy",
+        "live_rule_status": "enable"
+    }
+    mock_response = (
+        Response(dict(status=400)),
+        raw_response
+    )
+    client.http_client.request.return_value = mock_response
+    with pytest.raises(ValueError) as e:
+        gcb_change_live_rule_status_command(client, args)
+
+    assert str(e.value) == 'Status code: 400\nError: generic::invalid_argument: provided rule ID dummy is not valid'
+
+
+def test_gcb_change_live_rule_status_command_when_valid_args_provided(client):
+    """Test gcb_change_live_rule_status_command for valid output when valid arguments are provided."""
+    from GoogleChronicleBackstory import gcb_change_live_rule_status_command
+
+    with open('test_data/gcb_change_live_rule_status_command_ec.json', 'r') as f:
+        expected_ec = json.loads(f.read())
+
+    with open('test_data/gcb_change_live_rule_status_command_hr.md', 'r') as f:
+        expected_hr = f.read()
+
+    mock_response = (
+        Response(dict(status=200)),
+        '{}'
+    )
+    args = {"rule_id": "ru_abcd", "live_rule_status": "enable"}
+    client.http_client.request.return_value = mock_response
+    hr, ec, json_data = gcb_change_live_rule_status_command(client, args)
+
+    assert ec == expected_ec
+    assert hr == expected_hr
+
+
+@pytest.mark.parametrize('args,error_msg',
+                         [({"rule_id": "ru_ab4d76c1-20d2-4cde-9825-3fb1c09a9b62", "start_time": "dummy",
+                            "end_time": "today"},
+                           'Invalid date: "start_time"="dummy"'),
+                          ({"rule_id": "ru_ab4d76c1-20d2-4cde-9825-3fb1c09a9b62", "start_time": "1 day",
+                            "end_time": "dummy"},
+                           'Invalid date: "end_time"="dummy"'),
+                          ({"rule_id": "", "start_time": "1 day", "end_time": "today"}, "Missing argument rule_id.")])
+def test_gcb_start_retrohunt_when_invalid_arguments_provided(client, args, error_msg):
+    """Test gcb_start_retrohunt_command when invalid arguments are provided."""
+    from GoogleChronicleBackstory import gcb_start_retrohunt_command
+    with pytest.raises(ValueError) as e:
+        gcb_start_retrohunt_command(client, args)
+    assert str(e.value) == error_msg
+
+
+def test_gcb_start_retrohunt_command_when_invalid_rule_id_provided(client):
+    """Test gcb_start_retrohunt_command when rule id provided is invalid."""
+    from GoogleChronicleBackstory import gcb_start_retrohunt_command
+    with open('test_data/gcb_start_retrohunt_command_invalid_id_400.json') as f:
+        raw_response = f.read()
+    args = {
+        "rule_id": "dummy",
+        "start_time": "1 day",
+        "end_time": "today"
+    }
+    mock_response = (
+        Response(dict(status=400)),
+        raw_response
+    )
+    client.http_client.request.return_value = mock_response
+    with pytest.raises(ValueError) as e:
+        gcb_start_retrohunt_command(client, args)
+
+    assert str(e.value) == 'Status code: 400\nError: generic::invalid_argument: version ID must be in format {rule_id} ' \
+                           'or {rule_id}@v_{version_timestamp.seconds}_{version_timestamp.nanos}'
+
+
+def test_gcb_start_retrohunt_command_when_provided_rule_id_does_not_exist(client):
+    """Test gcb_start_retrohunt_command when rule id provided does not exist."""
+    from GoogleChronicleBackstory import gcb_start_retrohunt_command
+    with open('test_data/gcb_start_retrohunt_command_id_does_not_exist_404.json') as f:
+        raw_response = f.read()
+    args = {
+        "rule_id": "dummy",
+        "start_time": "1 day",
+        "end_time": "today"
+    }
+    mock_response = (
+        Response(dict(status=404)),
+        raw_response
+    )
+    client.http_client.request.return_value = mock_response
+    with pytest.raises(ValueError) as e:
+        gcb_start_retrohunt_command(client, args)
+
+    assert str(e.value) == 'Status code: 404\nError: generic::not_found: rule with ID ' \
+                           'ru_2c66ed52-2920-4f37-b8d2-a7c7787f357b could not be found'
+
+
+def test_gcb_start_retrohunt_command_when_valid_args_provided(client):
+    """Test gcb_start_retrohunt_command for valid output when valid arguments are provided."""
+    from GoogleChronicleBackstory import gcb_start_retrohunt_command
+
+    with open('test_data/gcb_start_retrohunt_command_ec.json', 'r') as f:
+        expected_ec = json.loads(f.read())
+
+    with open('test_data/gcb_start_retrohunt_command_hr.md', 'r') as f:
+        expected_hr = f.read()
+
+    with open('test_data/start_retrohunt_response.json', 'r') as f:
+        mocked_response = f.read()
+
+    mock_response = (
+        Response(dict(status=200)),
+        mocked_response
+    )
+    args = {"rule_id": "ru_abcd", "start_time": "1 day", "end_time": "today"}
+    client.http_client.request.return_value = mock_response
+    hr, ec, json_data = gcb_start_retrohunt_command(client, args)
+
+    assert ec == expected_ec
+    assert hr == expected_hr
+
+
+@pytest.mark.parametrize("args, err_msg", [({'id': ''}, "Missing argument id."),
+                                           ({'id': 'test', 'retrohunt_id': ''}, "Missing argument retrohunt_id.")])
+def test_gcb_get_retrohunt_command_when_empty_args_provided(client, args, err_msg):
+    """Test gcb_get_retrohunt command when empty args provided."""
+    from GoogleChronicleBackstory import gcb_get_retrohunt_command
+
+    with pytest.raises(ValueError) as e:
+        gcb_get_retrohunt_command(client, args=args)
+
+    assert str(e.value) == err_msg
+
+
+def test_gcb_get_retrohunt_command_when_valid_args_provided(client):
+    """Test gcb_get_retrohunt_command when valid args are provided and gives valid output."""
+    from GoogleChronicleBackstory import gcb_get_retrohunt_command
+    args = {'id': 'dummy_rule_or_version_id', 'retrohunt_id': 'dummy_retrohunt_id'}
+
+    with open("test_data/gcb_get_retrohunt_command_response.json", "r") as f:
+        dummy_response = f.read()
+
+    with open("test_data/gcb_get_retrohunt_command_ec.json", "r") as f:
+        dummy_ec = json.loads(f.read())
+
+    with open("test_data/gcb_get_retrohunt_hr.md", "r") as f:
+        dummy_hr = f.read()
+
+    mock_response = (
+        Response(dict(status=200)),
+        dummy_response
+    )
+
+    client.http_client.request.return_value = mock_response
+    hr, ec, json_data = gcb_get_retrohunt_command(client, args)
+
+    assert ec == dummy_ec
+    assert hr == dummy_hr
+
+
+def test_gcb_get_retrohunt_command_when_rule_id_provided_is_invalid(client):
+    """Test gcb_get_retrohunt_command when rule id provided is invalid."""
+    from GoogleChronicleBackstory import gcb_get_retrohunt_command
+
+    with open('test_data/gcb_get_retrohunt_command_invalid_id_400.json') as f:
+        raw_response = f.read()
+
+    mock_response = (
+        Response(dict(status=400)),
+        raw_response
+    )
+
+    client.http_client.request.return_value = mock_response
+
+    with pytest.raises(ValueError) as e:
+        gcb_get_retrohunt_command(client, args={'id': 'test', 'retrohunt_id': 'test'})
+    assert str(e.value) == 'Status code: 400\nError: generic::invalid_argument: version ID must be in format ' \
+                           '{rule_id} or {rule_id}@v_{version_timestamp.seconds}_{version_timestamp.nanos}'
+
+
+def test_gcb_get_retrohunt_command_when_retrohunt_id_provided_is_invalid(client):
+    """Test gcb_get_retrohunt_command when retrohunt id provided is invalid."""
+    from GoogleChronicleBackstory import gcb_get_retrohunt_command
+
+    with open('test_data/gcb_get_retrohunt_command_invalid_retrohunt_id_400.json') as f:
+        raw_response = f.read()
+
+    mock_response = (
+        Response(dict(status=400)),
+        raw_response
+    )
+
+    client.http_client.request.return_value = mock_response
+
+    with pytest.raises(ValueError) as e:
+        gcb_get_retrohunt_command(client, args={'id': 'test', 'retrohunt_id': 'test'})
+    assert str(e.value) == 'Status code: 400\nError: generic::invalid_argument: provided retrohunt ID test is not valid'
+
+
+def test_gcb_get_retrohunt_command_when_retrohunt_id_provided_does_not_exists(client):
+    """Test gcb_get_retrohunt_command when retrohunt id provided does not exists."""
+    from GoogleChronicleBackstory import gcb_get_retrohunt_command
+
+    with open('test_data/gcb_get_retrohunt_command_invalid_retrohunt_id_404.json') as f:
+        raw_response = f.read()
+
+    mock_response = (
+        Response(dict(status=404)),
+        raw_response
+    )
+
+    client.http_client.request.return_value = mock_response
+
+    with pytest.raises(ValueError) as e:
+        gcb_get_retrohunt_command(client, args={'id': 'test', 'retrohunt_id': 'oh_54c2f72b-7527-4f51-8d28-adb30d2d0'})
+    assert str(e.value) == 'Status code: 404\nError: generic::not_found: retrohunt not found with ID ' \
+                           'oh_54c2f72b-7527-4f51-8d28-adb30d2d0'
+
+
+arg_error = [({'page_size': '-20'}, COMMON_RESP['INVALID_PAGE_SIZE']),
+             ({'page_size': '20000'}, 'Page size should be in the range from 1 to 1000.'),
+             ({'retrohunts_for_all_versions': 'dummy'}, 'Argument does not contain a valid boolean-like value'),
+             ({'retrohunts_for_all_versions': 'True', 'id': 'abc@xyz'},
+              "Invalid value in argument 'id'. Expected rule_id.")]
+
+
+@pytest.mark.parametrize('args,error_msg', arg_error)
+def test_gcb_list_retrohunts_command_when_invalid_args_provided(client, args, error_msg):
+    """Test gcb_list_retrohunts_command when invalid arguments are provided."""
+    from GoogleChronicleBackstory import gcb_list_retrohunts_command
+    with pytest.raises(ValueError) as e:
+        gcb_list_retrohunts_command(client, args)
+    assert str(e.value) == error_msg
+
+
+def test_gcb_list_retrohunts_command_when_empty_response_is_obtained(client):
+    """Test gcb_list_retrohunts_command when empty response is obtained for a rule."""
+    from GoogleChronicleBackstory import gcb_list_retrohunts_command
+    args = {
+        "id": "dummy",
+    }
+    mock_response = (
+        Response(dict(status=200)),
+        '{}'
+    )
+    client.http_client.request.return_value = mock_response
+
+    hr, ec, json_data = gcb_list_retrohunts_command(client, args)
+    assert hr == '## RetroHunt Details\nNo Records Found.'
+    assert ec == {}
+
+
+def test_gcb_list_retrohunts_command_when_retrohunts_for_all_versions_is_set_true(client):
+    """Test gcb_list_retrohunts_command when retrohunts_for_all_versions is true and rule_id is provided."""
+    from GoogleChronicleBackstory import gcb_list_retrohunts_command
+    with open('test_data/gcb_list_retrohunts_all_versions_true.json', 'r') as f:
+        response_false = f.read()
+    with open('test_data/gcb_list_retrohunts_all_versions_true_ec.json', 'r') as f:
+        expected_ec = json.loads(f.read())
+    with open('test_data/gcb_list_retrohunts_all_versions_true_hr.md', 'r') as f:
+        expected_hr = f.read()
+    args = {
+        "id": "dummy",
+        "gcb_list_retrohunts_command": "true"
+    }
+    mock_response = (
+        Response(dict(status=200)),
+        response_false
+    )
+    client.http_client.request.return_value = mock_response
+
+    hr, ec, json_data = gcb_list_retrohunts_command(client, args)
+    assert hr == expected_hr
+    assert ec == expected_ec
+
+
+def test__gcb_list_retrohunts_command_when_retrohunts_for_all_versions_is_set_false(client):
+    """Test gcb_list_retrohunts_command when retrohunts_for_all_versions is false and rule_id is provided."""
+    from GoogleChronicleBackstory import gcb_list_retrohunts_command
+    with open('test_data/gcb_list_retrohunts_all_versions_false.json', 'r') as f:
+        response_true = f.read()
+    with open('test_data/gcb_list_retrohunts_all_versions_false_ec.json', 'r') as f:
+        expected_ec = json.loads(f.read())
+    with open('test_data/gcb_list_retrohunts_all_versions_false_hr.md', 'r') as f:
+        expected_hr = f.read()
+    args = {
+        "id": "dummy",
+        "gcb_list_retrohunts_command": "false"
+    }
+    mock_response = (
+        Response(dict(status=200)),
+        response_true
+    )
+    client.http_client.request.return_value = mock_response
+
+    hr, ec, json_data = gcb_list_retrohunts_command(client, args)
+    assert hr == expected_hr
+    assert ec == expected_ec
+
+
+def test_gcb_list_retrohunts_command_when_no_arg_supplied_success(client):
+    """Test gcb_list_retrohunts_command when no argumnets are provided."""
+    from GoogleChronicleBackstory import gcb_list_retrohunts_command
+    with open('test_data/gcb_list_retrohunts_no_arg.json', 'r') as f:
+        response = f.read()
+    with open('test_data/gcb_list_retrohunts_no_arg_ec.json', 'r') as f:
+        expected_ec = json.loads(f.read())
+    with open('test_data/gcb_list_retrohunts_no_arg_hr.md', 'r') as f:
+        expected_hr = f.read()
+    args = {}
+    mock_response = (
+        Response(dict(status=200)),
+        response
+    )
+    client.http_client.request.return_value = mock_response
+    hr, ec, json_data = gcb_list_retrohunts_command(client, args)
+    assert hr == expected_hr
+    assert ec == expected_ec
+
+
+def test_gcb_list_retrohunts_command_when_provided_rule_id_is_not_valid(client):
+    """Test gcb_list_retrohunts_command when rule id provided is not valid."""
+    from GoogleChronicleBackstory import gcb_list_retrohunts_command
+    with open('test_data/gcb_list_retrohunts_command_invalid_id_400.json') as f:
+        raw_response = f.read()
+    args = {
+        "rule_id": "dummy",
+    }
+    mock_response = (
+        Response(dict(status=400)),
+        raw_response
+    )
+    client.http_client.request.return_value = mock_response
+    with pytest.raises(ValueError) as e:
+        gcb_list_retrohunts_command(client, args)
+    assert str(
+        e.value) == 'Status code: 400\nError: generic::invalid_argument: invalid wildcard version ID: invalid ' \
+                    'rule_id: invalid rule_id ru_f04b9ef9-bd49, must be either a user rule_id or an uppercase rule_id'
+
+
+def test_gcb_list_retrohunts_command_when_provided_rule_id_does_not_exist(client):
+    """Test gcb_list_retrohunts_command when rule id provided does not exist."""
+    from GoogleChronicleBackstory import gcb_list_retrohunts_command
+    with open('test_data/gcb_list_retrohunts_command_id_does_not_exist_404.json') as f:
+        raw_response = f.read()
+    args = {
+        "rule_id": "ru_f04b9ef9-bd49-4431-ae07-eb77bd3d00c9",
+    }
+    mock_response = (
+        Response(dict(status=404)),
+        raw_response
+    )
+    client.http_client.request.return_value = mock_response
+    with pytest.raises(ValueError) as e:
+        gcb_list_retrohunts_command(client, args)
+    assert str(
+        e.value) == 'Status code: 404\nError: generic::not_found: rule with ' \
+                    'ID ru_f04b9ef9-bd49-4431-ae07-eb77bd3d00c9 could not be found'
+
+
+@pytest.mark.parametrize('args, error_msg', [({"id": "", "retrohunt_id": "dummy"}, 'Missing argument id.'),
+                                             ({"id": "dummy", "retrohunt_id": ""}, 'Missing argument retrohunt_id.')])
+def test_gcb_cancel_retrohunt_command_when_empty_args_provided(client, args, error_msg):
+    """Test gcb_cancel_retrohunt_command when arguments provided are empty."""
+    from GoogleChronicleBackstory import gcb_cancel_retrohunt_command
+    with pytest.raises(ValueError) as e:
+        gcb_cancel_retrohunt_command(client, args)
+    assert str(e.value) == error_msg
+
+
+def test_gcb_cancel_retrohunt_command_when_valid_args_are_provided(client):
+    """Test gcb_cancel_retrohunt_command for valid output when valid args are provided."""
+    from GoogleChronicleBackstory import gcb_cancel_retrohunt_command
+
+    with open('test_data/gcb_cancel_retrohunt_ec.json', 'r') as f:
+        expected_ec = json.loads(f.read())
+    with open('test_data/gcb_cancel_retrohunt_hr.md', 'r') as f:
+        expected_hr = f.read()
+    args = {"id": "dummy_id", "retrohunt_id": "dummy_retrohunt_id"}
+    mock_response = (
+        Response(dict(status=200)),
+        '{}'
+    )
+    client.http_client.request.return_value = mock_response
+    hr, ec, json_data = gcb_cancel_retrohunt_command(client, args)
+    assert hr == expected_hr
+    assert ec == expected_ec
+
+
+def test_gcb_cancel_retrohunt_command_when_provided_rule_id_does_not_exist(client):
+    """Test gcb_list_retrohunts_command when rule id provided does not exist."""
+    from GoogleChronicleBackstory import gcb_cancel_retrohunt_command
+    with open('test_data/gcb_cancel_retrohunt_id_does_not_exist_404.json') as f:
+        raw_response = f.read()
+    args = {
+        "id": "dummy",
+        "retrohunt_id": "dummy"
+    }
+    mock_response = (
+        Response(dict(status=404)),
+        raw_response
+    )
+    client.http_client.request.return_value = mock_response
+    with pytest.raises(ValueError) as e:
+        gcb_cancel_retrohunt_command(client, args)
+    assert str(e.value) == 'Status code: 404\nError: generic::not_found: retrohunt with ID ' \
+                           'oh_bd93f3a6-e832-48df-a343-59dd7231273b does not belong to ' \
+                           'rule ID ru_f04b9ef9-bd49-4431-ae07-eb77bd3d00c7. Provide the correct rule ID'
+
+
+def test_gcb_cancel_retrohunt_command_when_provided_retrohunt_id_is_not_in_running_state(client):
+    """Test gcb_list_retrohunts_command when retrohunt provided is already DONE or CANCELLED."""
+    from GoogleChronicleBackstory import gcb_cancel_retrohunt_command
+    with open('test_data/gcb_cancel_retrohunt_id_does_not_exist_400.json') as f:
+        raw_response = f.read()
+    args = {
+        "id": "dummy",
+        "retrohunt_id": "dummy"
+    }
+    mock_response = (
+        Response(dict(status=400)),
+        raw_response
+    )
+    client.http_client.request.return_value = mock_response
+    with pytest.raises(ValueError) as e:
+        gcb_cancel_retrohunt_command(client, args)
+    assert str(e.value) == 'Status code: 400\nError: generic::failed_precondition: cannot transition retrohunt status' \
+                           ' from CANCELLED to CANCELLED'
+
+
+arg_error = [
+    ({"name": "", "description": "dummy", "lines": "l1,l2"}, 'Missing argument name.'),
+    ({"name": "dummy_name", "description": "", "lines": "l1,l2"}, 'Missing argument description.'),
+    ({"name": "dummy_name", "description": "dummy", "lines": ""}, 'Missing argument lines.')
+]
+
+
+@pytest.mark.parametrize('args,error_msg', arg_error)
+def test_gcb_create_reference_list_command_when_empty_args_provided(client, args, error_msg):
+    """Test gcb_create_reference_list comamnd when empty arguments are provided."""
+    from GoogleChronicleBackstory import gcb_create_reference_list_command
+    with pytest.raises(ValueError) as e:
+        gcb_create_reference_list_command(client, args)
+    assert str(e.value) == error_msg
+
+
+def test_gcb_create_reference_list_command_when_valid_args_provided(client):
+    """Test gcb_create_reference_list command for valid output when valid arguments are provided."""
+    from GoogleChronicleBackstory import gcb_create_reference_list_command
+    args = {
+        "name": "dummy_name",
+        "description": "dummy_description",
+        "lines": "L1,L2,L3,L4"
+    }
+    with open('test_data/gcb_create_reference_list_response.json') as f:
+        response = f.read()
+    with open('test_data/gcb_create_reference_list_ec.json') as f:
+        expected_ec = json.loads(f.read())
+    with open('test_data/gcb_create_reference_list_hr.md') as f:
+        expected_hr = f.read()
+    mock_response = (
+        Response(dict(status=200)),
+        response
+    )
+    client.http_client.request.return_value = mock_response
+    hr, ec, json_data = gcb_create_reference_list_command(client, args)
+    assert hr == expected_hr
+    assert ec == expected_ec
+
+
+def test_gcb_create_reference_list_command_when_delimiter_provided(client):
+    """Test gcb_create_reference_list command for valid output when delimiter is provided."""
+    from GoogleChronicleBackstory import gcb_create_reference_list_command
+    args = {
+        "name": "dummy_name",
+        "description": "dummy_description",
+        "lines": "L1:L2:L3:L4",
+        "delimiter": ":"
+    }
+    with open('test_data/gcb_create_reference_list_response.json') as f:
+        response = f.read()
+    with open('test_data/gcb_create_reference_list_ec.json') as f:
+        expected_ec = json.loads(f.read())
+    with open('test_data/gcb_create_reference_list_hr.md') as f:
+        expected_hr = f.read()
+    mock_response = (
+        Response(dict(status=200)),
+        response
+    )
+    client.http_client.request.return_value = mock_response
+    hr, ec, json_data = gcb_create_reference_list_command(client, args)
+    assert hr == expected_hr
+    assert ec == expected_ec
+
+
+def test_gcb_create_reference_list_command_when_list_already_exists(client):
+    """Test gcb_create_reference_list command when a list with same name already exists."""
+    from GoogleChronicleBackstory import gcb_create_reference_list_command
+    args = {
+        "name": "dummy_name",
+        "description": "dummy_description",
+        "lines": "dummy"
+    }
+    with open('test_data/gcb_create_reference_list_400.json') as f:
+        response = f.read()
+    mock_response = (
+        Response(dict(status=409)),
+        response
+    )
+    client.http_client.request.return_value = mock_response
+    with pytest.raises(ValueError) as e:
+        gcb_create_reference_list_command(client, args)
+    assert str(e.value) == 'Status code: 409\nError: generic::already_exists: list with name' \
+                           ' demo_list14_created_from_api already exists'
+
+
+arg_error = [({'page_size': '-20'}, 'Page size must be a non-zero and positive numeric value'),
+             ({'page_size': '20000'}, 'Page size should be in the range from 1 to 1000.'),
+             ({'page_size': '10', 'view': 'dummy'}, 'view can have one of these values only BASIC, FULL.')]
+
+
+@pytest.mark.parametrize('args,error_msg', arg_error)
+def test_gcb_list_reference_list_command_when_invalid_args_provided(client, args, error_msg):
+    """Test gcb-list-reference-list-command when invalid arguments are provided."""
+    from GoogleChronicleBackstory import gcb_list_reference_list_command
+    with pytest.raises(ValueError) as e:
+        gcb_list_reference_list_command(client, args)
+    assert str(e.value) == error_msg
+
+
+def test_gcb_list_reference_list_command_when_invalid_page_token_provided(client):
+    """Test gcb-list-reference-list-command when invalid page-token is provided."""
+    from GoogleChronicleBackstory import gcb_list_reference_list_command
+    with open('test_data/gcb_list_reference_lists_command_invalid_token_400.json') as f:
+        raw_response = f.read()
+    args = {
+        "page_size": "3",
+        "page_token": "abcd"
+    }
+    mock_response = (
+        Response(dict(status=400)),
+        raw_response
+    )
+    client.http_client.request.return_value = mock_response
+    with pytest.raises(ValueError) as e:
+        gcb_list_reference_list_command(client, args)
+    assert str(
+        e.value) == 'Status code: 400\nError: generic::invalid_argument: page token is not valid'
+
+
+def test_gcb_list_reference_list_command_when_valid_args_provided(client):
+    """Test gcb-list-reference-list-command when valid arguments are provided."""
+    from GoogleChronicleBackstory import gcb_list_reference_list_command
+    with open('test_data/gcb_list_reference_list_valid_args.json', 'r') as f:
+        response = f.read()
+    with open('test_data/gcb_list_reference_list_ec.json', 'r') as f:
+        expected_ec = json.loads(f.read())
+    with open('test_data/gcb_list_reference_list_hr.md', 'r') as f:
+        expected_hr = f.read()
+    args = {
+        "page_size": "3",
+        "view": "BASIC"
+    }
+    mock_response = (
+        Response(dict(status=200)),
+        response
+    )
+    client.http_client.request.return_value = mock_response
+    hr, ec, json_data = gcb_list_reference_list_command(client, args)
+
+    assert hr == expected_hr
+    assert ec == expected_ec
+
+
+@pytest.mark.parametrize('args,error_msg', [({"name": "", "view": "FULL"}, 'Missing argument name.'),
+                                            ({"name": "dummy", "view": "dummy"},
+                                             'view can have one of these values only FULL, BASIC.')])
+def test_gcb_get_reference_list_command_when_invalid_args_are_provided(client, args, error_msg):
+    """Test gcb_get_reference_list_command when arguments provided are invalid."""
+    from GoogleChronicleBackstory import gcb_get_reference_list_command
+    with pytest.raises(ValueError) as e:
+        gcb_get_reference_list_command(client, args)
+    assert str(e.value) == error_msg
+
+
+def test_gcb_get_reference_list_command_when_provided_list_name_does_not_exist(client):
+    """Test gcb_get_reference_list_command when list name provided does not exists."""
+    from GoogleChronicleBackstory import gcb_get_reference_list_command
+    with open('test_data/gcb_get_reference_lists_command_list_name_not_found_404.json') as f:
+        raw_response = f.read()
+    args = {
+        "name": "dummy",
+    }
+    mock_response = (
+        Response(dict(status=404)),
+        raw_response
+    )
+    client.http_client.request.return_value = mock_response
+    with pytest.raises(ValueError) as e:
+        gcb_get_reference_list_command(client, args)
+    assert str(e.value) == 'Status code: 404\nError: generic::not_found: list with name dummy not found'
+
+
+def test_gcb_get_reference_list_command_when_valid_arguments_provided(client):
+    """Test gcb_get_reference_list_command for valid output when valid arguments are provided."""
+    from GoogleChronicleBackstory import gcb_get_reference_list_command
+    with open('test_data/gcb_get_reference_list_valid_args.json', 'r') as f:
+        response = f.read()
+    with open('test_data/gcb_get_reference_list_ec.json', 'r') as f:
+        expected_ec = json.loads(f.read())
+    with open('test_data/gcb_get_reference_list_hr.md', 'r') as f:
+        expected_hr = f.read()
+    args = {
+        "name": "dummy",
+        "view": "FULL"
+    }
+    mock_response = (
+        Response(dict(status=200)),
+        response
+    )
+    client.http_client.request.return_value = mock_response
+    hr, ec, json_data = gcb_get_reference_list_command(client, args)
+
+    assert hr == expected_hr
+    assert ec == expected_ec
+
+
+@pytest.mark.parametrize('args,error_msg', [({"name": "dummy", "lines": ""}, "Missing argument lines."),
+                                            ({"name": "", "lines": "dummy"}, "Missing argument name.")])
+def test_gcb_update_reference_list_command_when_empty_args_provided(client, args, error_msg):
+    """Test gcb_update_reference_list command when provided args are empty."""
+    from GoogleChronicleBackstory import gcb_update_reference_list_command
+    with pytest.raises(ValueError) as e:
+        gcb_update_reference_list_command(client, args)
+    assert str(e.value) == error_msg
+
+
+def test_gcb_update_reference_list_command_when_valid_args_provided(client):
+    """Test gcb_update_reference_list command for valid output when valid arguments are provided."""
+    from GoogleChronicleBackstory import gcb_update_reference_list_command
+    args = {"name": "dummy", "lines": "L1;L2;L3", "description": "dummy_description", "delimiter": ";"}
+    with open("test_data/gcb_update_reference_list_command_response.json") as f:
+        response = f.read()
+    with open("test_data/gcb_update_reference_list_command_ec.json") as f:
+        expected_ec = json.loads(f.read())
+    with open("test_data/gcb_update_reference_list_command_hr.md") as f:
+        expected_hr = f.read()
+    mock_response = (
+        Response(dict(status=200)),
+        response
+    )
+    client.http_client.request.return_value = mock_response
+    hr, ec, json_data = gcb_update_reference_list_command(client, args)
+
+    assert hr == expected_hr
+    assert ec == expected_ec
+
+
+def test_gcb_update_reference_list_command_when_name_prided_does_not_exists(client):
+    """Test gcb_update_reference_list command when name provided does not exist."""
+    from GoogleChronicleBackstory import gcb_update_reference_list_command
+    args = {"name": "dummy", "lines": "L1,L2,L3", "description": "dummy_description"}
+    with open("test_data/gcb_update_reference_list_command_response_404.json") as f:
+        response = f.read()
+    mock_response = (
+        Response(dict(status=404)),
+        response
+    )
+    client.http_client.request.return_value = mock_response
+    with pytest.raises(ValueError) as e:
+        gcb_update_reference_list_command(client, args)
+    assert str(e.value) == 'Status code: 404\nError: generic::not_found: expected list with name dummy to ' \
+                           'already exist, but it does not exist'
+
+
+@pytest.mark.parametrize('args,error_msg',
+                         [({"rule_text": "meta events condition", "start_time": "dummy"},
+                           'Invalid date: "start_time"="dummy"'),
+                          ({"rule_text": "meta events condition", "start_time": "1 day ago", "end_time": "dummy"},
+                           'Invalid date: "end_time"="dummy"'),
+                          ({"rule_text": "meta events condition", "start_time": "1 day ago", "end_time": "1 day ago",
+                            "max_results": 0}, 'Max Results should be in the range 1 to 10000.'),
+                          ({"rule_text": "meta events condition", "start_time": "1 day ago", "end_time": "1 day ago",
+                            "max_results": "asd"}, '"asd" is not a valid number'),
+                          ({"rule_text": "meta events", "start_time": "1 day ago", "end_time": "1 day ago",
+                            "max_results": "3"},
+                           'Invalid rule text provided. Section "meta", "events" or "condition" is missing.')])
+def test_gcb_test_rule_stream_command_invalid_args(client, args, error_msg):
+    """Test gcb_test_rule_stream_command when invalid args are provided."""
+    from GoogleChronicleBackstory import gcb_test_rule_stream_command
+    with pytest.raises(ValueError) as e:
+        gcb_test_rule_stream_command(client, args)
+    assert str(e.value) == error_msg
+
+
+def test_gcb_test_rule_stream_command_valid_args(client):
+    """Test gcb_test_rule_stream_command for valid response when valid args are provided."""
+    from GoogleChronicleBackstory import gcb_test_rule_stream_command
+
+    args = {
+        "rule_text": """rule demoRuleCreatedFromAPIVersion2 {
+                            meta:
+                            author = \"securityuser2\"
+                            description = \"double event rule that should generate detections\"
+
+                            events:
+                            $e.metadata.event_type = \"NETWORK_DNS\"
+
+                            condition:
+                            $e
+                        }""",
+        "start_time": "2 day ago",
+        "end_time": "1 day ago",
+        "max_results": "2"
+    }
+    with open("test_data/gcb_test_rule_stream_command_response.json") as f:
+        response = f.read()
+    with open("test_data/gcb_test_rule_stream_command_ec.json") as f:
+        expected_ec = json.loads(f.read())
+    with open("test_data/gcb_test_rule_stream_command_hr.md") as f:
+        expected_hr = f.read()
+    mock_response = (
+        Response(dict(status=200)),
+        response
+    )
+    client.http_client.request.return_value = mock_response
+    hr, ec, json_data = gcb_test_rule_stream_command(client, args)
+
+    assert hr == expected_hr
+    assert ec == expected_ec
+
+
+def test_gcb_test_rule_stream_command_invalid_rule_text_provided(client):
+    """Test gcb_test_rule_stream_command when invalid rule text is provided."""
+    from GoogleChronicleBackstory import gcb_test_rule_stream_command
+    args = {
+        "rule_text": """rule demoRuleCreatedFromAPIVersion2 {
+                                    meta:
+                                    author = \"Crest Data Systems\"
+                                    severity = \"Medium\"
+
+                                    events:
+                                    $event1.metadata.event_type = \"PROCESS_LAUNCH\"
+                                    $full_path = /.*cmd\.exe$/ nocase
+
+                                    $event1.principal.hostname = $hostname
+                                    $event2.principal.hostname = $hostname
+
+                                    not $event1.principal.process.file.full_path = /.*explorer\.exe$/ nocase
+                                    $event1.target.process.file.full_path = $full_path
+
+                                    $event2.principal.process.file.full_path = $full_path
+                                    $event2.target.process.file.full_path = /.*reg\.exe$/ nocase
+
+                                  match:
+                                    $full_path over 5m
+
+                                  condition:
+                                    $event1 and $event2 and $full_path
+                                }""",
+        "start_time": "2 day ago",
+        "end_time": "1 day ago",
+        "max_results": "2"
+    }
+    with open("test_data/gcb_test_rule_stream_command_400.json") as f:
+        response = f.read()
+    mock_response = (
+        Response(dict(status=400)),
+        response
+    )
+    client.http_client.request.return_value = mock_response
+    with pytest.raises(ValueError) as e:
+        gcb_test_rule_stream_command(client, args)
+    assert str(e.value) == 'Status code: 400\nError: generic::invalid_argument: compiling rule: : variable full_path' \
+                           ' used in both condition section and match section, should only be used in one\nline: 23 \n' \
+                           'column: 30-39 '
+
+
+@pytest.mark.parametrize('args,error_msg',
+                         [({"asset_identifier_type": "Host Name", "asset_identifier": ""},
+                           MESSAGES['REQUIRED_ARGUMENT'].format('asset_identifier')),
+                          ({"asset_identifier_type": "invalid_type", "asset_identifier": "example.com"},
+                           MESSAGES['VALIDATE_SINGLE_SELECT'].format(
+                               'asset_identifier_type', ASSET_IDENTIFIER_NAME_DICT.keys())),
+                          ({"asset_identifier_type": "Host Name", "asset_identifier": "example.com",
+                            "start_time": "invalid_time"}, 'Invalid date: "start_time"="invalid_time"'),
+                          ({"asset_identifier_type": "Host Name", "asset_identifier": "example.com",
+                            "end_time": "invalid_time"}, 'Invalid date: "end_time"="invalid_time"'),
+                          ({"asset_identifier_type": "Host Name", "asset_identifier": "example.com",
+                            "page_size": "invalid_size"}, "Page size must be a non-zero and positive numeric value"),
+                          ({"asset_identifier_type": "Host Name", "asset_identifier": "example.com",
+                            "page_size": "-1"}, "Page size must be a non-zero and positive numeric value")])
+def test_gcb_asset_aliases_list_command_invalid_args(client, args, error_msg):
+    """Test gcb_list_asset_aliases_command when invalid args are provided."""
+    from GoogleChronicleBackstory import gcb_list_asset_aliases_command
+    with pytest.raises(ValueError) as e:
+        gcb_list_asset_aliases_command(client, args)
+    assert str(e.value) == error_msg
+
+
+def test_gcb_asset_aliases_list_command_when_valid_arguments_provided(client):
+    """Test gcb_list_asset_aliases_command for valid output when valid arguments are provided."""
+    from GoogleChronicleBackstory import gcb_list_asset_aliases_command
+    with open('test_data/gcb_list_asset_aliases_response.json', 'r') as f:
+        response = f.read()
+    with open('test_data/gcb_list_asset_aliases_ec.json', 'r') as f:
+        expected_ec = json.loads(f.read())
+    with open('test_data/gcb_list_asset_aliases_hr.md', 'r') as f:
+        expected_hr = f.read()
+    args = {
+        "asset_identifier_type": "Host Name",
+        "asset_identifier": "example.com"
+    }
+    mock_response = (
+        Response(dict(status=200)),
+        response
+    )
+    client.http_client.request.return_value = mock_response
+    hr, ec, json_data = gcb_list_asset_aliases_command(client, args)
+    assert hr == expected_hr
+    assert ec == expected_ec
+
+
+def test_gcb_asset_aliases_list_command_when_response_contains_single_alias(client):
+    """Test gcb_list_asset_aliases_command when response contains single asset alias."""
+    from GoogleChronicleBackstory import gcb_list_asset_aliases_command
+    with open('test_data/gcb_list_asset_aliases_response_with_single_alias.json', 'r') as f:
+        response = f.read()
+
+    with open('test_data/gcb_list_asset_aliases_ec_with_single_alias.json', 'r') as f:
+        expected_ec = json.loads(f.read())
+
+    args = {
+        "asset_identifier_type": "Host Name",
+        "asset_identifier": "example.com"
+    }
+    mock_response = (
+        Response(dict(status=200)),
+        response
+    )
+    client.http_client.request.return_value = mock_response
+    hr, ec, json_data = gcb_list_asset_aliases_command(client, args)
+    assert hr == MESSAGES['EMPTY_ASSET_ALIASES'].format(args.get('asset_identifier'))
+    assert ec == expected_ec
+
+
+@pytest.mark.parametrize('args,error_msg',
+                         [({"page_size": "-1"}, "Page size must be a non-zero and positive numeric value"),
+                          ({"page_size": "1001"}, MESSAGES["INVALID_PAGE_SIZE"].format('1000'))])
+def test_gcb_curated_rules_list_command_invalid_args(client, args, error_msg):
+    """Test gcb_list_curated_rules_command when invalid args are provided."""
+    from GoogleChronicleBackstory import gcb_list_curated_rules_command
+    with pytest.raises(ValueError) as e:
+        gcb_list_curated_rules_command(client, args)
+    assert str(e.value) == error_msg
+
+
+def test_gcb_curated_rules_list_command_when_valid_arguments_provided(client):
+    """Test gcb_list_curated_rules_command for valid output when valid arguments are provided."""
+    from GoogleChronicleBackstory import gcb_list_curated_rules_command
+    with open('test_data/gcb_list_curated_rules_response.json', 'r') as f:
+        response = f.read()
+    with open('test_data/gcb_list_curated_rules_ec.json', 'r') as f:
+        expected_ec = json.loads(f.read())
+    with open('test_data/gcb_list_curated_rules_hr.md', 'r') as f:
+        expected_hr = f.read()
+    args = {
+        "page_size": '2'
+    }
+    mock_response = (
+        Response(dict(status=200)),
+        response
+    )
+    client.http_client.request.return_value = mock_response
+    hr, ec, json_data = gcb_list_curated_rules_command(client, args)
+
+    assert hr == expected_hr
+    assert ec == expected_ec
+
+
+@pytest.mark.parametrize('args,error_msg',
+                         [({"user_identifier_type": "Email", "user_identifier": ""},
+                           MESSAGES['REQUIRED_ARGUMENT'].format('user_identifier')),
+                          ({"user_identifier_type": "invalid_type", "user_identifier": "xyz@example.com"},
+                           MESSAGES['VALIDATE_SINGLE_SELECT'].format(
+                               'user_identifier_type', USER_IDENTIFIER_NAME_DICT.keys())),
+                          ({"user_identifier_type": "Email", "user_identifier": "xyz@example.com",
+                            "start_time": "invalid_time"}, 'Invalid date: "start_time"="invalid_time"'),
+                          ({"user_identifier_type": "Email", "user_identifier": "xyz@example.com",
+                            "end_time": "invalid_time"}, 'Invalid date: "end_time"="invalid_time"'),
+                          ({"user_identifier_type": "Email", "user_identifier": "xyz@example.com",
+                            "page_size": "invalid_size"}, "Page size must be a non-zero and positive numeric value"),
+                          ({"user_identifier_type": "Email", "user_identifier": "xyz@example.com",
+                            "page_size": "-1"}, "Page size must be a non-zero and positive numeric value")])
+def test_gcb_user_aliases_list_command_invalid_args(client, args, error_msg):
+    """Test gcb_list_user_aliases_command when invalid args are provided."""
+    from GoogleChronicleBackstory import gcb_list_user_aliases_command
+    with pytest.raises(ValueError) as e:
+        gcb_list_user_aliases_command(client, args)
+    assert str(e.value) == error_msg
+
+
+def test_gcb_user_aliases_list_command_when_valid_arguments_provided(client):
+    """Test gcb_list_user_aliases_command for valid output when valid arguments are provided."""
+    from GoogleChronicleBackstory import gcb_list_user_aliases_command
+    with open('test_data/gcb_list_user_aliases_response.json', 'r') as f:
+        response = f.read()
+    with open('test_data/gcb_list_user_aliases_ec.json', 'r') as f:
+        expected_ec = json.loads(f.read())
+    with open('test_data/gcb_list_user_aliases_hr.md', 'r') as f:
+        expected_hr = f.read()
+    args = {
+        "user_identifier_type": "Email",
+        "user_identifier": "xyz@example.com"
+    }
+    mock_response = (
+        Response(dict(status=200)),
+        response
+    )
+    client.http_client.request.return_value = mock_response
+    hr, ec, json_data = gcb_list_user_aliases_command(client, args)
+
+    assert hr == expected_hr
+    assert ec == expected_ec

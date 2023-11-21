@@ -4,16 +4,16 @@ from CommonServerPython import *  # noqa: F401
 ''' IMPORTS '''
 
 import json
-import requests
+import urllib3
 import time
 import traceback
 
-from typing import Any, Dict
+from typing import Any
 from datetime import datetime, timedelta, timezone
 import dateutil.parser
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 """Helper function"""
 
@@ -88,7 +88,8 @@ class Client(BaseClient):
         if kwargs.get('method', None) == 'GET' and len(kwargs.get('params', {})) > 0:
             params = kwargs.pop('params')
             suffix = kwargs.pop('url_suffix')
-            suffix += '?{}'.format('&'.join(['{}={}'.format(k, v) for (k, v) in params.items()]))
+            suffix += '?{}'.format('&'.join([f'{k}={v}'
+                                   for (k, v) in params.items()]))
             kwargs['url_suffix'] = suffix
 
         return super()._http_request(*args, **kwargs)
@@ -114,6 +115,7 @@ class Client(BaseClient):
                 method='GET',
                 url_suffix=f'/api/data/endpoint/Agent/{agent_id}/',
             )
+        return None
 
     def endpoint_search(self, hostname=None, offset=0):
 
@@ -233,7 +235,7 @@ class Client(BaseClient):
             'processes': '/api/data/telemetry/Processes/',
             'binary': '/api/data/telemetry/Binary/',
             'network': '/api/data/telemetry/Network/',
-            'eventlog': '/api/data/telemetry/EventLog/',
+            'eventlog': '/api/data/telemetry/FullEventLog/',
         }
 
         kwargs = {
@@ -367,6 +369,7 @@ class Client(BaseClient):
 
 def assign_policy_to_agent(client, args):
 
+    context = {}
     policy_name = args.get('policy', None)
 
     results = client.list_policies(policy_name)
@@ -377,6 +380,15 @@ def assign_policy_to_agent(client, args):
             break
     if policyid:
         client.assign_policy_to_agent(policyid, args['agentid'])
+        context['Message'] = f'Policy {policy_name} successfully assigned to agent {args["agentid"]}'
+    else:
+        context['Message'] = f'Unknown policy {policy_name}'
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': context,
+        'ContentsFormat': formats['json'],
+    })
 
 
 def test_module(client, args):
@@ -391,11 +403,9 @@ def fetch_incidents(client, args):
 
     last_run = demisto.getLastRun()
 
-    if 'first_fetch' in args and args['first_fetch']:
-        days = int(args['first_fetch'])
-    else:
-        days = 0
-    first_fetch_time = int(datetime.timestamp(datetime.now() - timedelta(days=days)) * 1000000)
+    days = int(args['first_fetch']) if 'first_fetch' in args and args['first_fetch'] else 0
+    first_fetch_time = int(datetime.timestamp(
+        datetime.now() - timedelta(days=days)) * 1000000)
     alert_status = args.get('alert_status', None)
     alert_type = args.get('alert_type', None)
     min_severity = args.get('min_severity', SEVERITIES[0])
@@ -411,12 +421,7 @@ def fetch_incidents(client, args):
         last_fetch = last_run.get('last_fetch', None)
         already_fetched_previous = last_run.get('already_fetched', [])
 
-    if last_fetch is None:
-        # if missing, use what provided via first_fetch_time
-        last_fetch = first_fetch_time
-    else:
-        # otherwise use the stored last fetch
-        last_fetch = int(last_fetch)
+    last_fetch = first_fetch_time if last_fetch is None else int(last_fetch)
 
     if alert_status == 'ACTIVE':
         status = ['new', 'probable_false_positive', 'investigating']
@@ -463,9 +468,8 @@ def fetch_incidents(client, args):
                     dateutil.parser.isoparse(alert.get('alert_time', '0'))) * 1000000)
 
                 # to prevent duplicates, we are only adding incidents with creation_time > last fetched incident
-                if last_fetch:
-                    if incident_created_time_us <= latest_created_time_us:
-                        continue
+                if last_fetch and incident_created_time_us <= latest_created_time_us:
+                    continue
 
                 tags = alert.get('tags', [])
                 tactic = []
@@ -503,7 +507,8 @@ def fetch_incidents(client, args):
         if results['count'] == 0 or not results['next'] or (max_results and total_number_of_alerts >= max_results):
             break
 
-    next_run = {'last_fetch': latest_created_time_us, 'already_fetched': already_fetched_current}
+    next_run = {'last_fetch': latest_created_time_us,
+                'already_fetched': already_fetched_current}
 
     demisto.setLastRun(next_run)
     demisto.incidents(incidents)
@@ -516,7 +521,8 @@ def get_endpoint_info(client, args):
 
     agent = client.get_endpoint_info(agent_id)
 
-    readable_output = tableToMarkdown(f'Endpoint information for agent_id : {agent_id}', agent, removeNull=True)
+    readable_output = tableToMarkdown(
+        f'Endpoint information for agent_id : {agent_id}', agent, removeNull=True)
 
     outputs = {
         'Harfanglab.Agent(val.agentid == obj.agentid)': agent
@@ -535,7 +541,8 @@ def endpoint_search(client, args):
 
     data = client.endpoint_search(hostname)
 
-    readable_output = tableToMarkdown(f'Endpoint information for Hostname : {hostname}', data['results'], removeNull=True)
+    readable_output = tableToMarkdown(
+        f'Endpoint information for Hostname : {hostname}', data['results'], removeNull=True)
 
     outputs = {
         'Harfanglab.Agent(val.agentid == obj.agentid)': data['results']
@@ -614,7 +621,8 @@ def job_info(client, args):
     ec = {
         'Harfanglab.Job.Info(val.ID && val.ID == obj.ID)': context,
     }
-    readable_output = tableToMarkdown('Jobs Info', context, headers=['ID', 'Status', 'Creation date'], removeNull=True)
+    readable_output = tableToMarkdown('Jobs Info', context, headers=[
+                                      'ID', 'Status', 'Creation date'], removeNull=True)
 
     entry = {
         'Type': entryTypes['note'],
@@ -630,7 +638,8 @@ def job_info(client, args):
 
 
 def find_previous_job(client, action, agent_id):
-    starttime = (datetime.now(timezone.utc) - timedelta(minutes=5)).strftime('%Y-%m-%d %H:%M')
+    starttime = (datetime.now(timezone.utc)
+                 - timedelta(minutes=5)).strftime('%Y-%m-%d %H:%M')
     args = {
         'agent_id': agent_id,
         'action': action,
@@ -689,7 +698,8 @@ def result_pipelist(client, args):
 
     data = client.job_data(job_id, 'pipe', ordering='name')
     pipes = [x['name'] for x in data['results']]
-    readable_output = tableToMarkdown('Pipe List', pipes, headers=['name'], removeNull=True)
+    readable_output = tableToMarkdown(
+        'Pipe List', pipes, headers=['name'], removeNull=True)
 
     ec = {
         'Harfanglab.Pipe(val.agent_id && val.agent_id === obj.agent_id)': {
@@ -734,7 +744,8 @@ def result_prefetchlist(client, args):
             'last executed': last_executed
         })
 
-    readable_output = tableToMarkdown('Prefetch List', prefetchs, headers=['executable name', 'last executed'], removeNull=True)
+    readable_output = tableToMarkdown('Prefetch List', prefetchs, headers=[
+                                      'executable name', 'last executed'], removeNull=True)
 
     ec = {
         'Harfanglab.Prefetch(val.agent_id && val.agent_id === obj.agent_id)': {
@@ -777,7 +788,8 @@ def result_runkeylist(client, args):
             'md5': x.get('binaryinfo', {}).get('binaryinfo', {}).get('md5', ''),
         })
 
-    readable_output = tableToMarkdown('RunKey List', output, headers=['name', 'fullpath', 'signed', 'md5'], removeNull=True)
+    readable_output = tableToMarkdown('RunKey List', output, headers=[
+                                      'name', 'fullpath', 'signed', 'md5'], removeNull=True)
 
     ec = {
         'Harfanglab.RunKey(val.agent_id && val.agent_id === obj.agent_id)': {
@@ -863,7 +875,8 @@ def result_linux_persistence_list(client, args):
             'fullpath': x.get('binaryinfo', {}).get('fullpath', None),
         })
 
-    readable_output = tableToMarkdown('Linux persistence list', output, headers=['type', 'filename', 'fullpath'], removeNull=True)
+    readable_output = tableToMarkdown('Linux persistence list', output, headers=[
+                                      'type', 'filename', 'fullpath'], removeNull=True)
 
     ec = {
         'Harfanglab.Persistence(val.agent_id && val.agent_id === obj.agent_id)': {
@@ -905,7 +918,8 @@ def result_driverlist(client, args):
             'md5': x.get('binaryinfo', {}).get('binaryinfo', {}).get('md5'),
         })
 
-    readable_output = tableToMarkdown('Driver List', output, headers=['fullpath', 'signed', 'md5'], removeNull=True)
+    readable_output = tableToMarkdown('Driver List', output, headers=[
+                                      'fullpath', 'signed', 'md5'], removeNull=True)
 
     ec = {
         'Harfanglab.Driver(val.agent_id && val.agent_id === obj.agent_id)': {
@@ -1145,7 +1159,8 @@ def result_networkconnectionlist(client, args):
     for x in data['results']:
         if 'connections' in x:
             fullpath = x.get('binaryinfo', {}).get('fullpath', '')
-            signed = x.get('binaryinfo', {}).get('binaryinfo', {}).get('signed', False)
+            signed = x.get('binaryinfo', {}).get(
+                'binaryinfo', {}).get('signed', False)
             md5 = x.get('binaryinfo', {}).get('binaryinfo', {}).get('md5')
 
             for connection in x['connections']:
@@ -1290,6 +1305,7 @@ def job_ioc(client, args):
     registry = args.get('registry', None)
     filehash = args.get('hash', None)
     filehash_size = args.get('hash_filesize', None)
+    filesize = args.get('filesize', None)
 
     # filepath_regex = args.get('filepath_regex', None)
     # registry = args.get('registry', None)
@@ -1297,13 +1313,14 @@ def job_ioc(client, args):
     job_parameters = {'values': []}  # type: Dict[str,List[Dict[str,Any]]]
     good = False
 
+    size = None
+
+    if filesize:
+        size = arg_to_number(filesize)
+    elif filehash_size:
+        size = arg_to_number(filehash_size)
+
     if filename is not None:
-        size = None
-        if filehash_size:
-            try:
-                size = int(filehash_size)
-            except Exception:
-                pass
         job_parameters['values'].append({
             'global': False,
             'size': size,
@@ -1321,6 +1338,7 @@ def job_ioc(client, args):
     if filehash is not None:
         job_parameters['values'].append({
             'global': False,
+            'size': size,
             'type': 'hash',
             'value': filehash
         })
@@ -1350,7 +1368,8 @@ def job_ioc(client, args):
     if not good:
         return False
 
-    ret, job_id = job_create(client, args, job_parameters, can_use_previous_job=False)
+    ret, job_id = job_create(
+        client, args, job_parameters, can_use_previous_job=False)
     if not ret:
         return False
 
@@ -1399,7 +1418,8 @@ def result_ioc(client, args):
 
 def global_job_artifact(client, args, parameters, artifact_type):
     args['action'] = 'collectRAWEvidences'
-    ret, job_id = job_create(client, args, parameters, can_use_previous_job=False)
+    ret, job_id = job_create(client, args, parameters,
+                             can_use_previous_job=False)
 
     if not ret:
         return False
@@ -1478,7 +1498,8 @@ def global_result_artifact(client, args, artifact_type):
 
 
 def job_artifact_mft(client, args):
-    parameters = {'hives': False, 'evt': False, 'mft': True, 'prefetch': False, 'usn': False, 'logs': False, 'fs': False}
+    parameters = {'hives': False, 'evt': False, 'mft': True,
+                  'prefetch': False, 'usn': False, 'logs': False, 'fs': False}
     return global_job_artifact(client, args, parameters, 'MFT')
 
 
@@ -1487,7 +1508,8 @@ def result_artifact_mft(client, args):
 
 
 def job_artifact_evtx(client, args):
-    parameters = {'hives': False, 'evt': True, 'mft': False, 'prefetch': False, 'usn': False, 'logs': False, 'fs': False}
+    parameters = {'hives': False, 'evt': True, 'mft': False,
+                  'prefetch': False, 'usn': False, 'logs': False, 'fs': False}
     return global_job_artifact(client, args, parameters, 'EVTX')
 
 
@@ -1496,7 +1518,8 @@ def result_artifact_evtx(client, args):
 
 
 def job_artifact_logs(client, args):
-    parameters = {'hives': False, 'evt': False, 'mft': False, 'prefetch': False, 'usn': False, 'logs': True, 'fs': False}
+    parameters = {'hives': False, 'evt': False, 'mft': False,
+                  'prefetch': False, 'usn': False, 'logs': True, 'fs': False}
     return global_job_artifact(client, args, parameters, 'LOGS')
 
 
@@ -1505,7 +1528,8 @@ def result_artifact_logs(client, args):
 
 
 def job_artifact_fs(client, args):
-    parameters = {'hives': False, 'evt': False, 'mft': False, 'prefetch': False, 'usn': False, 'logs': False, 'fs': True}
+    parameters = {'hives': False, 'evt': False, 'mft': False,
+                  'prefetch': False, 'usn': False, 'logs': False, 'fs': True}
     return global_job_artifact(client, args, parameters, 'FS')
 
 
@@ -1514,7 +1538,8 @@ def result_artifact_fs(client, args):
 
 
 def job_artifact_hives(client, args):
-    parameters = {'hives': True, 'evt': False, 'mft': False, 'prefetch': False, 'usn': False, 'logs': False, 'fs': False}
+    parameters = {'hives': True, 'evt': False, 'mft': False,
+                  'prefetch': False, 'usn': False, 'logs': False, 'fs': False}
     return global_job_artifact(client, args, parameters, 'HIVES')
 
 
@@ -1523,7 +1548,8 @@ def result_artifact_hives(client, args):
 
 
 def job_artifact_all(client, args):
-    parameters = {'hives': True, 'evt': True, 'mft': True, 'prefetch': True, 'usn': True, 'logs': True, 'fs': True}
+    parameters = {'hives': True, 'evt': True, 'mft': True,
+                  'prefetch': True, 'usn': True, 'logs': True, 'fs': True}
     return global_job_artifact(client, args, parameters, 'ALL')
 
 
@@ -1536,7 +1562,8 @@ def job_artifact_downloadfile(client, args):
     filename = args.get('filename', None)
     parameters = {'filename': filename}
 
-    ret, job_id = job_create(client, args, parameters, can_use_previous_job=False)
+    ret, job_id = job_create(client, args, parameters,
+                             can_use_previous_job=False)
     if not ret:
         return False
 
@@ -1654,6 +1681,7 @@ def hunt_search_hash(client, args):
         for i in filehash:
             args['hash'] = i
             hunt_search_hash(client, args)
+        return None
     else:
         data = client.data_hash_search(filehash=filehash)
         prefetchs = []
@@ -1662,7 +1690,8 @@ def hunt_search_hash(client, args):
 
         if len(data['data']) == 0:
             currently_running = str(curr_running) + " (0 are running)"
-            previously_executed = str(prev_runned) + " (0 were previously executed)"
+            previously_executed = str(prev_runned) + \
+                " (0 were previously executed)"
             prefetchs.append({
                 'process associated to hash currently running': currently_running,
                 'process associated to hash was previously executed': previously_executed
@@ -1677,7 +1706,8 @@ def hunt_search_hash(client, args):
                 outputs_prefix='Harfanglab.Hash',
                 outputs_key_field='hash',
                 outputs=outputs,
-                readable_output=tableToMarkdown('Hash search results', outputs, removeNull=True)
+                readable_output=tableToMarkdown(
+                    'Hash search results', outputs, removeNull=True)
             ))
 
         for x in data['data']:
@@ -1685,8 +1715,10 @@ def hunt_search_hash(client, args):
                 curr_running = True
             if x['telemetryProcessCount'] > 0:
                 prev_runned = True
-            currently_running = str(curr_running) + " (" + str(x['processCount']) + " are running)"
-            previously_executed = str(prev_runned) + " (" + str(x['telemetryProcessCount']) + " were previously executed)"
+            currently_running = str(
+                curr_running) + " (" + str(x['processCount']) + " are running)"
+            previously_executed = str(
+                prev_runned) + " (" + str(x['telemetryProcessCount']) + " were previously executed)"
             prefetchs.append({
                 'process associated to hash currently running': currently_running,
                 'process associated to hash was previously executed': previously_executed
@@ -1701,7 +1733,8 @@ def hunt_search_hash(client, args):
                 outputs_prefix='Harfanglab.Hash',
                 outputs_key_field='hash',
                 outputs=outputs,
-                readable_output=tableToMarkdown('Hash search results', outputs, removeNull=True)
+                readable_output=tableToMarkdown(
+                    'Hash search results', outputs, removeNull=True)
             ))
 
         return_results(results)
@@ -1717,6 +1750,7 @@ def hunt_search_running_process_hash(client, args):
         for i in filehash:
             args['hash'] = i
             hunt_search_running_process_hash(client, args)
+        return None
     else:
         data = client.invest_running_process(filehash=filehash)
         prefetchs = []
@@ -1778,6 +1812,7 @@ def hunt_search_runned_process_hash(client, args):
         for i in filehash:
             args['hash'] = i
             hunt_search_runned_process_hash(client, args)
+        return None
     else:
         data = client.invest_runned_process(filehash=filehash)
         prefetchs = []
@@ -1824,7 +1859,7 @@ def hunt_search_runned_process_hash(client, args):
         return data
 
 
-def isolate_endpoint(client, args) -> Dict[str, Any]:
+def isolate_endpoint(client, args) -> dict[str, Any]:
     agentid = args.get('agent_id', None)
     data = client.isolate_endpoint(agentid)
 
@@ -1849,7 +1884,7 @@ def isolate_endpoint(client, args) -> Dict[str, Any]:
     return context
 
 
-def deisolate_endpoint(client, args) -> Dict[str, Any]:
+def deisolate_endpoint(client, args) -> dict[str, Any]:
     agentid = args.get('agent_id', None)
     data = client.deisolate_endpoint(agentid)
 
@@ -1907,7 +1942,8 @@ def add_ioc_to_source(client, args):
     if results['count'] > 0:
         context['Message'] = f'IOC {ioc_value} already exists in source {source_name}'
     else:
-        client.add_ioc_to_source(ioc_value, ioc_type, ioc_comment, ioc_status, source_id)
+        client.add_ioc_to_source(
+            ioc_value, ioc_type, ioc_comment, ioc_status, source_id)
         context['Message'] = f'IOC {ioc_value} of type {ioc_type} added to source {source_name} with {ioc_status} status'
 
     demisto.results({
@@ -1960,6 +1996,7 @@ class Telemetry:
             ('to_date', '@event_create_date__lte'),
             ('from_date', '@event_create_date__gte'),
             ('hostname', 'agent.hostname'),
+            ('limit', 'limit'),
         ]
 
         # Output keys is an array of tuple with (output name `label`, data field)
@@ -1984,19 +2021,22 @@ class Telemetry:
         return _construct_output(results, self.output_keys)
 
     def telemetry(self, client, args):
-        self.params = _construct_request_parameters(args, self.keys, params=self.params)
+        self.params = _construct_request_parameters(
+            args, self.keys, params=self.params)
 
         # Execute request with params
         data = client.telemetry_data(self.telemetry_type, self.params)
         output = self._construct_output(data['results'], client)
 
         # Determines headers for readable output
-        headers = [label for label in output[0].keys()] if len(output) > 0 else []
-        readable_output = tableToMarkdown(self.title, output, headers=headers, removeNull=True)
+        headers = list(output[0].keys()) if len(
+            output) > 0 else []
+        readable_output = tableToMarkdown(
+            self.title, output, headers=headers, removeNull=True)
 
         ec = {
             f'Harfanglab.Telemetry{self.telemetry_type}(val.agent_id && val.agent_id === obj.agent_id)': {
-                self.telemetry_type: data['results'],
+                self.telemetry_type: output,
             }
         }
 
@@ -2022,6 +2062,7 @@ class TelemetryProcesses(Telemetry):
         ]
         self.output_keys = [
             ('create date', '@event_create_date'),
+            ('hostname', ['agent', 'hostname']),
             ('process name', 'process_name'),
             ('image name', 'image_name'),
             ('commandline', 'commandline'),
@@ -2055,6 +2096,8 @@ class TelemetryNetwork(Telemetry):
             ('destination_port', 'dport'),
         ]
         self.output_keys = [
+            ('create date', '@event_create_date'),
+            ('hostname', ['agent', 'hostname']),
             ('image name', 'image_name'),
             ('username', 'username'),
             ('source address', 'saddr'),
@@ -2077,12 +2120,14 @@ class TelemetryEventLog(Telemetry):
             ('event_id', 'event_id'),
         ]
         self.output_keys = [
-            ('computer name', 'computer_name'),
-            ('event date', 'event_date'),
+            ('create date', '@event_create_date'),
+            ('hostname', ['agent', 'hostname']),
             ('event id', 'event_id'),
+            ('source name', 'source_name'),
+            ('log name', 'log_name'),
             ('keywords', 'keywords'),
-            ('level', 'level'),
-            ('source name', 'source_name')
+            ('event data', 'event_data'),
+            ('level', 'level')
         ]
 
         self.title = 'Event Log list'
@@ -2119,24 +2164,19 @@ class TelemetryBinary(Telemetry):
 
     def _construct_output(self, results, client):
         """Download with an API token is not supported yet"""
-#        api_token = None
-#        token = client.get_api_token()
-#        if 'api_token' in token:
-#            api_token = token['api_token']
+        api_token = client.get_api_token().get('api_token')
 
         output = []
         for x in results:
             for i in range(0, len(x['names'])):
                 name = x['names'][i]
-                if len(x['paths']) > i:
-                    path = x['paths'][i]
-                else:
-                    path = None
+                path = x['paths'][i] if len(x['paths']) > i else None
 
                 link = None
                 if x['downloaded'] == 0:
                     link = f'{client._base_url}/api/data/telemetry/Binary/download/{x["hashes"]["sha256"]}/'
-#                    link += f'?hl_expiring_key={api_token}'
+                    if api_token:
+                        link += f'?hl_expiring_key={api_token}'
 
                 output.append({
                     'name': name,
@@ -2257,7 +2297,7 @@ def main():
     verify = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
     base_url = demisto.params().get('url').rstrip('/')
-    api_key = demisto.params().get('apikey')
+    api_key = demisto.params().get('credentials', {}).get('password', '') or demisto.params().get("apikey", '')
 
     try:
         headers = {
@@ -2275,21 +2315,23 @@ def main():
         target_function = get_function_from_command_name(command)
 
         if target_function is None:
-            raise Exception('unknown command : {}'.format(command))
+            raise Exception(f'unknown command : {command}')
 
         args = demisto.args()
         if command == 'fetch-incidents':
             args['first_fetch'] = demisto.params().get('first_fetch', None)
             args['alert_status'] = demisto.params().get('alert_status', None)
             args['alert_type'] = demisto.params().get('alert_type', None)
-            args['min_severity'] = demisto.params().get('min_severity', SEVERITIES[0])
+            args['min_severity'] = demisto.params().get(
+                'min_severity', SEVERITIES[0])
             args['max_fetch'] = demisto.params().get('max_fetch', None)
         target_function(client, args)
 
     # Log exceptions
     except Exception as e:
         demisto.error(traceback.format_exc())
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(
+            f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

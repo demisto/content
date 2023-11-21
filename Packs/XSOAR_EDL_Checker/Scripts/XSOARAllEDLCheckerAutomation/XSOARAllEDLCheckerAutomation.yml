@@ -1,0 +1,29 @@
+comment: Runs the xsoaredlchecker-get-edl command for all configured instances, and returns a consolidated output.
+commonfields:
+  id: XSOARAllEDLCheckerAutomation
+  version: -1
+dependson:
+  must:
+  - XSOAR EDL Checker|||xsoaredlchecker-get-edl
+dockerimage: demisto/python3:3.10.12.63474
+enabled: true
+name: XSOARAllEDLCheckerAutomation
+outputs:
+- contextPath: EDLChecker.Name
+  description: The Name of the EDL from the Generic Indicators Export Service instance
+- contextPath: EDLChecker.Status
+  description: The HTTP Status Code returned by the EDL
+- contextPath: EDLChecker.Response
+  description: The Response or Error from the check.
+- contextPath: EDLChecker.ItemsOnList
+  description: The number of indicators on the list, assuming a successful response!
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Utilities
+type: python
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

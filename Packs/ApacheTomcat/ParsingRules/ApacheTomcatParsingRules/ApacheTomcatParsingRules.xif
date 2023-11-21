@@ -1,0 +1,10 @@
+[INGEST:vendor="apache", product="tomcat", target_dataset="apache_tomcat_raw", no_hit=keep]
+filter _raw_log ~= "\[\d+\/\w{3}\/\d{4}\:\d+\:\d+\:\d+\s+[\+|\-]\d{4}\]"
+// 24/Feb/2015:14:06:41 +0530
+| alter tmp_get_date =  arrayindex(regextract(_raw_log, "\[(\d+\/\w{3}\/\d{4})\:"), 0),
+    tmp_get_time = arrayindex(regextract(_raw_log, "\:(\d{2}\:\d{2}\:\d{2})\s"), 0),
+    tmp_get_zone = arrayindex(regextract(_raw_log, "\[\d+\/\w{3}\/\d{4}\:\d{2}\:\d{2}\:\d{2}\s([\+|\-]\d{4})]"), 0)
+| alter tmp_date_time = arraystring(arraycreate(tmp_get_date, tmp_get_time), " ")
+| alter tmp_full_time = arraystring(arraycreate(tmp_date_time, tmp_get_zone), " ")
+| alter _time = parse_timestamp("%d/%b/%Y %H:%M:%S %z", tmp_full_time)
+| fields -tmp_get_date, tmp_get_time, tmp_get_zone, tmp_date_time, tmp_full_time;

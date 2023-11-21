@@ -1,7 +1,7 @@
 import functools
 
 import pytest
-from cbc_sdk.live_response_api import *
+from cbc_sdk.live_response_api import LiveResponseMemdump, LiveResponseSessionManager
 from CarbonBlackLiveResponseCloud import *
 import demistomock as demisto
 
@@ -427,7 +427,9 @@ class TestCommands:
         # prepare
         not_implemented_command = 'not_implemented'
         mocker.patch.object(demisto, 'command', return_value=not_implemented_command)
-
+        mocker.patch.object(demisto, 'params', return_value={'custom_key': 'unit test',
+                                                             'custom_id': 'unit test',
+                                                             'org_key': 'unit test'})
         # run
         with pytest.raises(NotImplementedError) as exc_info:
             main()

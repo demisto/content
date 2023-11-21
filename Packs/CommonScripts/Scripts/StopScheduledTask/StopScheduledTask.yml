@@ -1,0 +1,22 @@
+commonfields:
+  id: StopScheduledTask
+  version: -1
+name: StopScheduledTask
+script: ''
+type: python
+subtype: python3
+tags:
+- Utility
+comment: 'This stops the scheduled task whose ID is given in the taskID argument.'
+system: true
+args:
+- name: taskID
+  required: true
+  default: true
+  description: ID of the scheduled to stop
+scripttarget: 0
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.10.12.63474
+tests:
+- No tests (auto formatted)

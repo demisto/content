@@ -1,0 +1,349 @@
+category: Email
+commonfields:
+  id: CheckPointHEC
+  version: -1
+configuration:
+- section: Connect
+  display: Smart API URL (e.g. https://smart-api-dev-1-us.avanan-dev.net)
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- section: Collect
+  display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- section: Collect
+  display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- section: Collect
+  display: Maximum number of incidents per fetch
+  name: max_fetch
+  defaultvalue: "10"
+  type: 0
+  required: false
+- section: Connect
+  display: ""
+  displaypassword: Client ID
+  name: client_id
+  type: 9
+  required: true
+  hiddenusername: true
+- display: ""
+  displaypassword: Client Secret
+  name: client_secret
+  type: 9
+  required: true
+  hiddenusername: true
+- section: Collect
+  display: First fetch time
+  name: first_fetch
+  defaultvalue: 1 hour
+  type: 0
+  required: false
+- section: Connect
+  advanced: true
+  display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- section: Connect
+  advanced: true
+  display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: "1"
+  type: 19
+  required: false
+description: The Best Way to Protect Enterprise Email & Collaboration from phishing, malware, account takeover, data loss, etc.
+display: 'Check Point Harmony Email and Collaboration (HEC)'
+name: CheckPointHEC
+script:
+  commands:
+  - name: checkpointhec-get-entity
+    arguments:
+    - name: entity
+      description: Entity id to retrieve.
+      required: true
+    description: Retrieve specific entity.
+    outputs:
+    - contextPath: CheckPointHEC.Entity.internetMessageId
+      description: Email message id in internet.
+      type: String
+    - contextPath: CheckPointHEC.Entity.subject
+      description: Email subject.
+      type: String
+    - contextPath: CheckPointHEC.Entity.received
+      description: Datetime email was received in iso 8601 format.
+      type: String
+    - contextPath: CheckPointHEC.Entity.size
+      description: Email size.
+      type: String
+    - contextPath: CheckPointHEC.Entity.emailLinks
+      description: Links in email.
+    - contextPath: CheckPointHEC.Entity.attachmentCount
+      description: Number of attachments in email.
+      type: Number
+    - contextPath: CheckPointHEC.Entity.attachments
+      description: File attachments in email.
+    - contextPath: CheckPointHEC.Entity.mode
+      description: Internal policy rule.
+      type: String
+    - contextPath: CheckPointHEC.Entity.recipients
+      description: Recipient email addresses.
+    - contextPath: CheckPointHEC.Entity.subject
+      description: Email subject.
+      type: String
+    - contextPath: CheckPointHEC.Entity.fromEmail
+      description: Email sender.
+      type: String
+    - contextPath: CheckPointHEC.Entity.fromDomain
+      description: Domain where the email was sent from.
+      type: String
+    - contextPath: CheckPointHEC.Entity.fromUser
+      description: Sender user details.
+    - contextPath: CheckPointHEC.Entity.fromName
+      description: Sender name.
+      type: String
+    - contextPath: CheckPointHEC.Entity.to
+      description: Email main recipients.
+    - contextPath: CheckPointHEC.Entity.toUser
+      description: User details for main recipients.
+    - contextPath: CheckPointHEC.Entity.cc
+      description: Email carbon copy recipients.
+    - contextPath: CheckPointHEC.Entity.ccUser
+      description: User details for carbon copy recipients.
+    - contextPath: CheckPointHEC.Entity.bcc
+      description: Email blind carbon copy recipients.
+    - contextPath: CheckPointHEC.Entity.bccUser
+      description: User details for blind carbon copy recipients.
+    - contextPath: CheckPointHEC.Entity.replyToEmail
+      description: Email reply.
+      type: String
+    - contextPath: CheckPointHEC.Entity.replyToNickname
+      description: Email reply nickname.
+      type: String
+    - contextPath: CheckPointHEC.Entity.isRead
+      description: Email has been read.
+      type: Boolean
+    - contextPath: CheckPointHEC.Entity.isDeleted
+      description: Email has been deleted.
+      type: Boolean
+    - contextPath: CheckPointHEC.Entity.isIncoming
+      description: Email is from external organization.
+      type: Boolean
+    - contextPath: CheckPointHEC.Entity.isInternal
+      description: Email is from same organization.
+      type: Boolean
+    - contextPath: CheckPointHEC.Entity.isOutgoing
+      description: Email is to an external organization.
+      type: Boolean
+    - contextPath: CheckPointHEC.Entity.isQuarantined
+      description: Email has been quarantined.
+      type: Boolean
+    - contextPath: CheckPointHEC.Entity.isQuarantineNotification
+      description: Email is a notification of another quarantined email.
+      type: Boolean
+    - contextPath: CheckPointHEC.Entity.isRestored
+      description: Email is restored from quarantine.
+      type: Boolean
+    - contextPath: CheckPointHEC.Entity.isRestoreRequested
+      description: Email is a request to restore.
+      type: Boolean
+    - contextPath: CheckPointHEC.Entity.isRestoreDeclined
+      description: Email is a declined restore request.
+      type: Boolean
+    - contextPath: CheckPointHEC.Entity.saasSpamVerdict
+      description: Spam verdict.
+      type: String
+    - contextPath: CheckPointHEC.Entity.SpfResult
+      description: Sender Policy Framework check result.
+      type: String
+    - contextPath: CheckPointHEC.Entity.restoreRequestTime
+      description: Restore request datetime in iso 8601 format.
+      type: String
+  - name: checkpointhec-get-email-info
+    arguments:
+    - name: entity
+      description: Email entity id.
+      required: true
+    description: Retrieve specific email entity.
+    outputs:
+    - contextPath: CheckPointHEC.Email.fromEmail
+      description: Email sender.
+      type: String
+    - contextPath: CheckPointHEC.Email.to
+      description: Email main recipients.
+    - contextPath: CheckPointHEC.Email.replyToEmail
+      description: Email reply.
+      type: String
+    - contextPath: CheckPointHEC.Email.replyToNickname
+      description: Email reply nickname.
+      type: String
+    - contextPath: CheckPointHEC.Email.recipients
+      description: Recipient email addresses.
+    - contextPath: CheckPointHEC.Email.subject
+      description: Email subject.
+      type: String
+    - contextPath: CheckPointHEC.Email.cc
+      description: Email carbon copy recipients.
+    - contextPath: CheckPointHEC.Email.bcc
+      description: Email blind carbon copy recipients.
+    - contextPath: CheckPointHEC.Email.isRead
+      description: Email has been read.
+      type: Boolean
+    - contextPath: CheckPointHEC.Email.received
+      description: Datetime email was received in iso 8601 format.
+      type: String
+    - contextPath: CheckPointHEC.Email.isDeleted
+      description: Email has been deleted.
+      type: Boolean
+    - contextPath: CheckPointHEC.Email.isIncoming
+      description: Email is from external organization.
+      type: Boolean
+    - contextPath: CheckPointHEC.Email.isOutgoing
+      description: Email is to an external organization.
+      type: Boolean
+    - contextPath: CheckPointHEC.Email.internetMessageId
+      description: Email message id in internet.
+      type: String
+    - contextPath: CheckPointHEC.Email.isUserExposed
+      description: Email reached user inbox.
+      type: Boolean
+  - name: checkpointhec-get-scan-info
+    arguments:
+    - name: entity
+      description: Scanned entity id.
+      required: true
+    description: Retrieve specific email scan with positive threats.
+    outputs:
+    - contextPath: CheckPointHEC.ScanResult.ap
+      description: Anti-phishing scan results.
+    - contextPath: CheckPointHEC.ScanResult.dlp
+      description: Data Loss Prevention scan results.
+    - contextPath: CheckPointHEC.ScanResult.clicktimeProtection
+      description: Click Time Protection scan results.
+    - contextPath: CheckPointHEC.ScanResult.shadowIt
+      description: Shadow IT scan results.
+    - contextPath: CheckPointHEC.ScanResult.av
+      description: Antivirus scan results.
+  - name: checkpointhec-search-emails
+    description: Get email ids with same sender and/or subject.
+    arguments:
+    - name: date_range
+      description: Range to search for emails (1 day, 2 weeks, etc.).
+      required: true
+    - name: sender
+      description: Search emails with this sender.
+    - name: subject
+      description: Search emails with this subject.
+    outputs:
+    - contextPath: CheckPointHEC.SearchResult.ids
+      description: List of email ids returned by the search.
+  - name: checkpointhec-send-action
+    arguments:
+    - name: farm
+      description: Customer farm.
+      required: true
+    - name: customer
+      description: Customer portal name.
+      required: true
+    - name: entity
+      description: One or multiple Email ids to apply action over.
+      isArray: true
+      required: true
+    - name: action
+      description: Action to perform (quarantine or restore).
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - quarantine
+      - restore
+    description: Quarantine or restore an email.
+    outputs:
+    - contextPath: CheckPointHEC.Task.task
+      description: Task id of the sent action.
+      type: String
+  - name: checkpointhec-get-action-result
+    arguments:
+    - name: farm
+      description: Customer farm.
+      required: true
+    - name: customer
+      description: Customer portal name.
+      required: true
+    - name: task
+      description: Task id to retrieve.
+      required: true
+    description: Get task info related to a sent action.
+    outputs:
+    - contextPath: CheckPointHEC.ActionResult.actions
+      description: Action information for each sent entity.
+    - contextPath: CheckPointHEC.ActionResult.created
+      description: Date when action was created in iso 8601 format.
+      type: String
+    - contextPath: CheckPointHEC.ActionResult.customer
+      description: Customer portal name.
+      type: String
+    - contextPath: CheckPointHEC.ActionResult.failed
+      description: Number of failed actions.
+      type: Number
+    - contextPath: CheckPointHEC.ActionResult.id
+      description: Action task id.
+      type: Number
+    - contextPath: CheckPointHEC.ActionResult.name
+      description: Action name.
+      type: String
+    - contextPath: CheckPointHEC.ActionResult.owner
+      description: Action owner.
+      type: String
+    - contextPath: CheckPointHEC.ActionResult.progress
+      description: Number of actions in progress.
+      type: Number
+    - contextPath: CheckPointHEC.ActionResult.sequential
+      description: Actions are in sequence.
+      type: Boolean
+    - contextPath: CheckPointHEC.ActionResult.status
+      description: Action status.
+      type: String
+    - contextPath: CheckPointHEC.ActionResult.succeed
+      description: Number of succeed actions.
+      type: Number
+    - contextPath: CheckPointHEC.ActionResult.total
+      description: Total of actions.
+      type: Number
+    - contextPath: CheckPointHEC.ActionResult.type
+      description: Action internal name.
+      type: String
+    - contextPath: CheckPointHEC.ActionResult.updated
+      description: Date when action last updated in iso 8601 format.
+      type: String
+  - name: checkpointhec-send-notification
+    arguments:
+    - name: entity
+      description: Email entity id.
+      required: true
+    - name: emails
+      description: List of emails to send notification.
+      isArray: true
+      required: true
+    description: Send notification about user exposition for the specific entity to the list of emails.
+    outputs:
+    - contextPath: CheckPointHEC.Notification.ok
+      description: Result of the operation.
+      type: Boolean
+  isfetch: true
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.13.72123
+fromversion: 6.9.0
+tests:
+- No tests (auto formatted)

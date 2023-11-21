@@ -2,7 +2,7 @@
     "name": "Social Engineering Domain Analysis",
     "description": "Enrich and compare domains against your organizations registered domain.",
     "support": "community",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "Shawn Murphy & Nicholas Ericksen",
     "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
     "email": "",

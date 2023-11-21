@@ -1,0 +1,97 @@
+{
+   "response":{
+      "@status":"success",
+      "@code":"19",
+      "result":{
+         "@total-count":"1",
+         "@count":"1",
+         "entry":{
+            "@name":"test",
+            "@admin":"admin",
+            "@dirtyId":"801",
+            "@time":"2022/09/05 07:58:47",
+            "ecmp":{
+               "@admin":"admin",
+               "@dirtyId":"801",
+               "@time":"2022/09/05 07:58:47",
+               "algorithm":{
+                  "@admin":"admin",
+                  "@dirtyId":"801",
+                  "@time":"2022/09/05 07:58:47",
+                  "ip-modulo":{
+                     "@admin":"admin",
+                     "@dirtyId":"801",
+                     "@time":"2022/09/05 07:58:47",
+                     "#text": "None"
+                  }
+               }
+            },
+            "protocol":{
+               "@admin":"admin",
+               "@dirtyId":"801",
+               "@time":"2022/09/05 07:58:47",
+               "bgp":{
+                  "@admin":"admin",
+                  "@dirtyId":"801",
+                  "@time":"2022/09/05 07:58:47",
+                  "routing-options":{
+                     "@admin":"admin",
+                     "@dirtyId":"801",
+                     "@time":"2022/09/05 07:58:47",
+                     "graceful-restart":{
+                        "@admin":"admin",
+                        "@dirtyId":"801",
+                        "@time":"2022/09/05 07:58:47",
+                        "enable":{
+                           "@admin":"admin",
+                           "@dirtyId":"801",
+                           "@time":"2022/09/05 07:58:47",
+                           "#text":"yes"
+                        }
+                     }
+                  },
+                  "enable":{
+                     "@admin":"admin",
+                     "@dirtyId":"801",
+                     "@time":"2022/09/05 07:58:47",
+                     "#text":"no"
+                  }
+               },
+               "rip":{
+                  "@admin":"admin",
+                  "@dirtyId":"801",
+                  "@time":"2022/09/05 07:58:47",
+                  "enable":{
+                     "@admin":"admin",
+                     "@dirtyId":"801",
+                     "@time":"2022/09/05 07:58:47",
+                     "#text":"no"
+                  }
+               },
+               "ospf":{
+                  "@admin":"admin",
+                  "@dirtyId":"801",
+                  "@time":"2022/09/05 07:58:47",
+                  "enable":{
+                     "@admin":"admin",
+                     "@dirtyId":"801",
+                     "@time":"2022/09/05 07:58:47",
+                     "#text":"no"
+                  }
+               },
+               "ospfv3":{
+                  "@admin":"admin",
+                  "@dirtyId":"801",
+                  "@time":"2022/09/05 07:58:47",
+                  "enable":{
+                     "@admin":"admin",
+                     "@dirtyId":"801",
+                     "@time":"2022/09/05 07:58:47",
+                     "#text":"no"
+                  }
+               }
+            }
+         }
+      }
+   }
+}

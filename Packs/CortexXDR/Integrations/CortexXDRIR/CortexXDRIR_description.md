@@ -9,7 +9,7 @@
 5. From the ID column, copy the Key ID.
 
 ### URL
-1. In your Cortex XDR platform, go to **Settings**.
+1. In your Cortex XDR platform, go to **Settings** > **Configurations** > **API key** page.
 2. Click the **Copy URL** button in the top right corner.
 
 ---

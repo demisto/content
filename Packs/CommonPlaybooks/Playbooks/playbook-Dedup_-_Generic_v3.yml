@@ -1,9 +1,10 @@
+deprecated: true
 id: Dedup - Generic v3
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Dedup - Generic v3
-description: "This playbook identifies duplicate incidents using one of the supported\
+description: "Deprecated. Use the `Dedup - Generic v4` playbook instead. This playbook identifies duplicate incidents using one of the supported\
   \ methods.\nSelect one of the following methods to identify duplicate incidents\
   \ in Cortex XSOAR.\n- ml: Machine learning model, which is trained mostly on phishing\
   \ incidents.\n-rules: Rules help identify duplicate incidents when the logic is\

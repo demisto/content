@@ -1,0 +1,12 @@
+[INGEST:vendor="atlassian", product="jira", target_dataset="atlassian_jira_raw", no_hit=keep]
+// Support only date time of format: YYYY-MM-DDTHH:MM:SS.E3Z%z. For example: "2022-11-20T15:17:11.419+0000".
+filter created ~= "\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d{3}[\+|\-]\d{4}"
+|alter 
+    tmp_date_part = arraystring(regextract(created, "^(\d{4}\-\d{2}\-\d{2})T"), ""),
+    tmp_time_part = arraystring(regextract(created, "T(\d{2}\:\d{2}\:\d{2})\."), ""),
+    tmp_zone_part = arraystring(regextract(created, "\.[\d]+([+|-]\d+)"), "")
+| alter 
+    tmp_datetime = arraystring(arraycreate(tmp_date_part, tmp_time_part), " ")
+| alter
+    _time = parse_timestamp("%Y-%m-%d %H:%M:%S %z", arraystring(arraycreate(tmp_datetime, tmp_zone_part), " "))
+| fields -tmp_date_part, tmp_time_part, tmp_zone_part, tmp_datetime;

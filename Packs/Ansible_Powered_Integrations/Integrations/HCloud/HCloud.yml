@@ -78,7 +78,6 @@ script:
     - description: The label selector for the images you want to get.
       name: label_selector
     - auto: PREDEFINED
-      default: false
       defaultValue: system
       description: The label selector for the images you want to get.
       name: type
@@ -152,7 +151,6 @@ script:
       isArray: true
       name: labels
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: State of the Network.
       name: state
@@ -201,8 +199,7 @@ script:
     - contextPath: HCloud.hcloud_network_info.labels
       description: Labels of the network
   - arguments:
-    - description: The name of the Hetzner Cloud server you want to add the reverse
-        DNS entry to.
+    - description: The name of the Hetzner Cloud server you want to add the reverse DNS entry to.
       name: server
       required: true
     - description: The IP address that should point to `dns_ptr`.
@@ -213,7 +210,6 @@ script:
         Omit the param to reset the reverse DNS entry to the default value.
       name: dns_ptr
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: State of the reverse DNS entry.
       name: state
@@ -243,7 +239,6 @@ script:
       name: gateway
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: State of the route.
       name: state
@@ -280,8 +275,7 @@ script:
         The key names correspond to the SSH keys configured for your Hetzner Cloud account access.
       isArray: true
       name: ssh_keys
-    - description: List of Volumes IDs that should be attached to the server on server
-        creation.
+    - description: List of Volumes IDs that should be attached to the server on server creation.
       isArray: true
       name: volumes
     - description: |-
@@ -296,18 +290,15 @@ script:
         Datacenter of Server.
         Required of no `location` is given and server does not exists.
       name: datacenter
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Enable or disable Backups for the given Server.
       name: backups
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Resize the disk size, when resizing a server.
         If you want to downgrade the server later, this value should be False.
       name: upgrade_disk
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Force the upgrade of the server.
         Power off the server if it is running on upgrade.
@@ -316,14 +307,12 @@ script:
         User Data to be passed to the server on creation.
         Only used if server does not exists.
       name: user_data
-    - description: Add the Hetzner rescue system type you want the server to be booted
-        into.
+    - description: Add the Hetzner rescue system type you want the server to be booted into.
       name: rescue_mode
     - description: User-defined labels (key-value pairs).
       isArray: true
       name: labels
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: State of the server.
       name: state
@@ -362,12 +351,10 @@ script:
       description: Name of the datacenter of the server
       type: string
     - contextPath: HCloud.hcloud_server.rescue_enabled
-      description: True if rescue mode is enabled, Server will then boot into rescue
-        system on next reboot
+      description: True if rescue mode is enabled, Server will then boot into rescue system on next reboot
       type: boolean
     - contextPath: HCloud.hcloud_server.backup_window
-      description: Time window (UTC) in which the backup will run, or null if the
-        backups are not enabled
+      description: Time window (UTC) in which the backup will run, or null if the backups are not enabled
       type: boolean
     - contextPath: HCloud.hcloud_server.labels
       description: User-defined labels (key-value pairs)
@@ -406,12 +393,10 @@ script:
       description: Name of the datacenter of the server
       type: string
     - contextPath: HCloud.hcloud_server_info.rescue_enabled
-      description: True if rescue mode is enabled, Server will then boot into rescue
-        system on next reboot
+      description: True if rescue mode is enabled, Server will then boot into rescue system on next reboot
       type: boolean
     - contextPath: HCloud.hcloud_server_info.backup_window
-      description: Time window (UTC) in which the backup will run, or null if the
-        backups are not enabled
+      description: Time window (UTC) in which the backup will run, or null if the backups are not enabled
       type: boolean
     - contextPath: HCloud.hcloud_server_info.labels
       description: User-defined labels (key-value pairs)
@@ -428,7 +413,6 @@ script:
       isArray: true
       name: alias_ips
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: State of the server_network.
       name: state
@@ -503,7 +487,6 @@ script:
         Required if ssh_key does not exists.
       name: public_key
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: State of the ssh_key.
       name: state
@@ -567,7 +550,6 @@ script:
       name: network_zone
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: State of the subnetwork.
       name: state
@@ -627,7 +609,6 @@ script:
       isArray: true
       name: labels
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: State of the volume.
       name: state
@@ -682,7 +663,6 @@ script:
     - contextPath: HCloud.hcloud_volume_info.labels
       description: User-defined labels (key-value pairs)
   dockerimage: demisto/ansible-runner:1.0.0.21184
-  runonce: false
   script: ''
   subtype: python3
   type: python

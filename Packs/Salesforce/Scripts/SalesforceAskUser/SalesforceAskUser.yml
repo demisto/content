@@ -1,0 +1,47 @@
+commonfields:
+  id: SalesforceAskUser
+  version: -1
+name: SalesforceAskUser
+script: ''
+type: python
+subtype: python3
+tags: []
+comment: Ask a user a question via Salesforce Chatter and process the reply directly into the investigation.
+enabled: true
+args:
+- name: persistent
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Indicates whether to use one-time entitlement or a persistent one
+  defaultValue: "false"
+- name: replyEntriesTag
+  description: Tag to add on comment reply entries
+- name: retries
+  description: Indicates how many times to try and create an entitlement in case of failure
+  defaultValue: "10"
+- name: task
+  description: Which task should we close with the reply. If none then no playbook tasks will be closed.
+- name: option1
+  description: First option for a user reply.
+  defaultValue: "yes"
+- name: option2
+  description: Second option for the user reply.
+  defaultValue: "no"
+- name: oid
+  description: Object ID of Subject
+- name: additionalOptions
+  description: A comma delimited list of additional options (in case more than 2 options are needed)
+- name: text
+  description: Chatter comment text. If not given, a default post message will be generated based on option arguments.
+- name: link
+  description: Add a link to the message
+scripttarget: 0
+dependson:
+  must:
+  - salesforce-push-comment
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.10.12.63474
+tests:
+- No tests (auto formatted)

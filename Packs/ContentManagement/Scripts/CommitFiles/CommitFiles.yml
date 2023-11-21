@@ -1,0 +1,49 @@
+args:
+- description: The files to commit.
+  isArray: true
+  name: files
+  required: true
+- description: The branch name to commit.
+  name: branch
+  required: true
+- auto: PREDEFINED
+  description: Which version control integration to use.
+  name: git_integration
+  predefined:
+  - Gitlab
+  - GitHub
+  - Bitbucket
+  - AzureDevOps
+- description: The name of the pack.
+  name: pack
+  required: true
+- description: The current user details from the command "getUsers".
+  name: user
+  required: true
+- description: Short description to add to the pull request text.
+  name: comment
+- description: Pull request description template.
+  name: template
+comment: This script gets content files as input from the context, commits the files in the correct folder and creates the pull request text.
+commonfields:
+  id: CommitFiles
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/xsoar-tools:1.0.0.69232
+enabled: true
+name: CommitFiles
+outputs:
+- contextPath: PR_text
+  description: The pull request text.
+  type: string
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

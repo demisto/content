@@ -1,0 +1,8 @@
+{
+    "version": "0.0.0.2",
+    "platform": "ecm",
+    "hostname": "00000000000000000000000000000000",
+    "mgmt_ipaddr": "0.0.0.2",
+    "display_host": "abc.cloud.extrahop.com",
+    "external_hostname": "abc.cloud.extrahop.com"
+}

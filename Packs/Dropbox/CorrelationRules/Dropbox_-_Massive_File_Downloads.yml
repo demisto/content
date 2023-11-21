@@ -1,0 +1,49 @@
+alert_category: EXFILTRATION
+alert_description: This rule detects more than 100 downloaded files during an hour by the same user. This is a suspicious behavior which can be an indication of a data exfiltration.
+alert_fields:
+  actor_process_image_name: Files
+  actor_process_image_path:
+  actor_process_command_line:
+  agent_device_domain:
+  actor_process_image_sha256:
+  agent_hostname:
+  action_local_ip:
+  action_remote_ip: SourceIP
+  action_remote_port:
+  actor_effective_username: user
+alert_name: DropBox - Massive File Downloads
+crontab: 0 * * * *
+dataset: alerts
+description: This rule detects more than 100 downloaded files during an hour by the same user. This is a suspicious behavior which can be an indication of a data exfiltration.
+drilldown_query_timeframe: ALERT
+execution_mode: SCHEDULED
+global_rule_id: 205317b6-c494-4836-ac31-f80c8204cf4e
+investigation_query_link: 'datamodel
+
+  | filter xdm.event.type = "file_operations" and xdm.event.operation_sub_type = "file_download" and xdm.observer.product = "dropbox" and xdm.observer.vendor = "dropbox"
+
+  | alter user = coalesce(xdm.source.user.username, xdm.target.user.username)
+
+  | filter user = $user'
+mapping_strategy: CUSTOM
+mitre_defs:
+  TA0010 - Exfiltration:
+  - T1567 - Exfiltration Over Web Service
+name: DropBox - Massive File Downloads
+search_window: 4 hours
+severity: SEV_030_MEDIUM
+suppression_duration: 1 hours
+suppression_enabled: true
+suppression_fields:
+user_defined_category:
+user_defined_severity:
+xql_query: 'datamodel
+
+  | filter xdm.event.type = "file_operations" and xdm.event.operation_sub_type = "file_download" and xdm.observer.product = "dropbox" and xdm.observer.vendor = "dropbox"
+
+  | alter user = coalesce(xdm.source.user.username, xdm.target.user.username)
+
+  | comp values(xdm.source.ipv4) as SourceIP, values(xdm.source.location.country) as Countries, max(_time) as lastTime, values(xdm.target.resource.name) as Files, count() as NumberOfFiles by user
+
+  | filter NumberOfFiles > 100'
+fromversion: 6.10.0

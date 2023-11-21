@@ -1,0 +1,21 @@
+{
+    "name": "Neosec",
+    "description": "Utilize Neosec behavioral analytics to protect your API estate from OWSP top 10 vulnerabilities and suspicious user behavior.",
+    "support": "partner",
+    "currentVersion": "1.0.3",
+    "author": "Neosec",
+    "url": "",
+    "email": "support@neosec.com",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [],
+    "created": "2022-11-27T09:39:30Z"
+}

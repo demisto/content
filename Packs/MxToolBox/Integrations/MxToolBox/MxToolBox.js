@@ -1,12 +1,16 @@
 var doReq = function(cmd, data, p) {
     var url = 'https://api.mxtoolbox.com/api/v1/lookup/' + cmd + '/' + data;
+    var apiKey = (params.credentials_api_key !== undefined)? params.credentials_api_key.password : params.apiKey;
+    if (!apiKey){
+        throw ('API key must be provided.');
+    }
     if (p) {
         url += '?' + p;
     }
     var result = http(
         url,
         {
-            Headers: {'Accept': ['application/json'], 'Authorization': [params.apiKey]},
+            Headers: {'Accept': ['application/json'], 'Authorization': [apiKey]},
             Method: 'GET'
         },
         params.insecure,

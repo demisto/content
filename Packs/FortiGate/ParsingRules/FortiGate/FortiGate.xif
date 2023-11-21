@@ -1,0 +1,7 @@
+[INGEST:vendor="Fortinet", product="Fortigate", target_dataset="fortinet_fortigate_raw", no_hit=keep]
+filter FTNTFGTeventtime ~= "\d{9}$"
+| alter
+    tmp_remove_milli_secs = to_integer(replex(FTNTFGTeventtime, "\d{9}$", ""))
+| alter
+    _time = to_timestamp(tmp_remove_milli_secs)
+| fields -tmp_remove_milli_secs;

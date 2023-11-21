@@ -1,0 +1,20 @@
+[INGEST:vendor="juniper", product="srx", target_dataset="juniper_srx_raw", no_hit = keep]
+// Support only date time of format: yyyy-MM-ddThh:mm:%E3S or format: MMM dd hh:mm:ss. For example: "2021-12-08T10:00:00.665" or "Nov 10 10:00:00".
+filter _raw_log ~= "\w+\s+\d+\s+\d+\:\d+\:\d+" or _raw_log ~= "\>\d+\s+\d+\-\d+\-\d+T\d+\:\d+\:\d+\.\d+"
+// Parsing time format 1
+| alter tmp_time1 = arrayindex(regextract(_raw_log , "^(\w+\s+\d+\s+\d+\:\d+\:\d+)"),0),
+        tmp_Year = format_timestamp("%Y",_insert_time)
+| alter tmp_time1_1 = concat(tmp_Year, " ", tmp_time1)
+| alter tmp_time1_1 = parse_timestamp("%Y %b %e %H:%M:%S", tmp_time1_1)
+| alter tmp_timeDiff = timestamp_diff(tmp_time1_1, current_time(), "DAY")
+// Check if the date is a future date
+| alter tmp_Year2 = if(tmp_timeDiff > 0, to_string(subtract(to_integer(tmp_Year),1)),null)
+// Create timestamp minus 1 year if the timestamp is a future one
+| alter tmp_time1_2 = if(tmp_Year2 != null, concat(tmp_Year2, " ", tmp_time1), null)
+| alter tmp_time1_2 = if(tmp_time1_2 != null, parse_timestamp("%Y %b %e %H:%M:%S", tmp_time1_2), null)
+| alter tmp_time1 = coalesce(tmp_time1_2, tmp_time1_1)
+// Parsing time format 2
+| alter tmp_time2 = arrayindex(regextract(_raw_log , "\>\d+\s+(\d+\-\d+\-\d+T\d+\:\d+\:\d+\.\d+)"),0)
+| alter tmp_time2 = parse_timestamp("%Y-%m-%dT%H:%M:%E3S", tmp_time2)
+| alter _time = coalesce(tmp_time1, tmp_time2)
+| fields -tmp_time1, tmp_Year, tmp_time1_1, tmp_timeDiff, tmp_Year2, tmp_time1_2, tmp_time2;

@@ -1,8 +1,10 @@
-from pytz import utc
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from pytz import utc
+
 from CommonServerUserPython import *  # noqa
+
+import urllib3
 
 ''' CONSTANTS '''
 
@@ -795,7 +797,7 @@ def main():
     demisto.debug(f'Command being called is {command}')
 
     try:
-        requests.packages.urllib3.disable_warnings()
+        urllib3.disable_warnings()
         client = Client(urljoin(url, ''), verify_certificate, proxy, headers=HEADERS, auth=(username, password))
 
         commands = {

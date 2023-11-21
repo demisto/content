@@ -1,0 +1,206 @@
+commonfields:
+  id: Fortanix DSM
+  version: -1
+name: Fortanix DSM
+display: Fortanix DSM
+category: Identity and Access Management
+description: Manage Secrets and Protect Confidential Data using Fortanix Data Security Manager
+fromversion: 6.8.0
+configuration:
+- display: Fortanix DSM server endpoint
+  name: server
+  defaultvalue: https://amer.smartkey.io
+  type: 0
+  additionalinfo: URL
+  required: true
+- display: Username / App UUID / Certificate
+  displaypassword: Password / App Secret / Private Key
+  name: credentials
+  type: 9
+  additionalinfo: If Certificate, specify PEM
+  required: false
+- display: API Key
+  name: token
+  type: 4
+  additionalinfo: Private key cannot be encrypted
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  additionalinfo: Whether to use proxy settings from the Environment
+  required: false
+- display: Group UUID to list secrets from
+  name: group_ids
+  type: 0
+  additionalinfo: Filter the secrets accessible to a single DSM Group
+  required: false
+- display: Data protection key used for encryption and decryption
+  name: protection_key
+  type: 0
+  additionalinfo: Also configure the Cipher Mode
+  required: false
+- display: Encryption and decryption mode
+  name: protection_mode
+  type: 15
+  additionalinfo: e.g. FPE, GCM, CBC, None
+  options:
+  - FPE
+  - GCM
+  - CBC
+  - None
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: fortanix-list-secrets
+    arguments:
+    - name: group_id
+      description: Group UUID to list secrets from (overrides integration settings)
+    - name: state
+      auto: PREDEFINED
+      predefined:
+      - enabled
+      - disabled
+      - preactive
+      - active
+      - deactivated
+      - compromised
+      - deleted
+      - destroyed
+      description: Current state of the secret (default show all except deleted or destroyed)
+    - name: page
+      description: Page offset to return (100 results at a time)
+    outputs:
+    - contextPath: Fortanix.Secret.Name
+      description: Secret Name
+      type: string
+    - contextPath: Fortanix.Secret.ID
+      description: Secret ID (Key ID or kid)
+      type: string
+    - contextPath: Fortanix.Secret.Group
+      description: Group ID
+      type: string
+    description: List secrets from one or more specified group(s)
+  - name: fortanix-get-secret-metadata
+    arguments:
+    - name: name
+      description: Name of the secret (mandatory, unless kid is specified)
+    - name: kid
+      description: Secret UUID (unless name is unspecified. can be obtained from the list-secrets command)
+    outputs:
+    - contextPath: Fortanix.Secret
+      description: Secret metadata, if successful
+    description: Get the secret metadata without exposing its value
+  - name: fortanix-fetch-secret
+    arguments:
+    - name: kid
+      required: true
+      description: Secret UUID (obtained from the list-secrets command)
+    outputs:
+    - contextPath: Fortanix.Secret.Value
+      description: Sensitive value of the secret
+    description: Retrieve the secret value
+  - name: fortanix-new-secret
+    arguments:
+    - name: name
+      required: true
+      description: Name of the secret
+    - name: value
+      required: true
+      description: Sensitive value of the secret
+    - name: group_id
+      description: Group UUID to import the secret into
+    - name: metadata
+      description: List of key-value pairs
+      type: keyValue
+    outputs:
+    - contextPath: Fortanix.Secret
+      description: Secret metadata, if successful
+    description: Import a new secret
+  - name: fortanix-rotate-secret
+    arguments:
+    - name: name
+      required: true
+      description: Name of the secret
+    - name: value
+      required: true
+      description: Sensitive value of the secret
+    - name: metadata
+      description: List of key-value pairs
+      type: keyValue
+    outputs:
+    - contextPath: Fortanix.Secret
+      description: Secret metadata, if successful
+    description: Update an existing secret, which will be rotated
+  - name: fortanix-delete-secret
+    arguments:
+    - name: kid
+      description: Secret UUID (obtained from the list-secrets command)
+      required: true
+    outputs:
+    - contextPath: Fortanix.Secret.Result
+      description: Deletion status
+    description: Delete the secret
+  - name: fortanix-invoke-plugin
+    arguments:
+    - name: pid
+      required: true
+      description: Plugin UUID
+    - name: input
+      description: Arbitrary user input based on the plugin
+      type: keyValue
+    outputs:
+    - contextPath: Fortanix.Plugin.Output
+      description: Plugin invocation output
+    description: Invoke a Fortanix Plugin that is executed in a Confidential Computing enclave
+  - name: fortanix-encrypt
+    arguments:
+    - name: data
+      required: true
+      description: User data
+    - name: key
+      description: Key name used for protection (overrides configured)
+    - name: mode
+      auto: PREDEFINED
+      predefined:
+      - FPE
+      - GCM
+      - CBC
+      description: Encryption mode (overrides configured))
+    outputs:
+    - contextPath: Fortanix.Data.Cipher
+      description: Encryption output
+    description: Protects data using key configured in Fortanix DSM
+  - name: fortanix-decrypt
+    arguments:
+    - name: cipher
+      required: true
+      description: Protected ciphertext
+    - name: kid
+      description: Key UUID for decryption (overrides configured)
+    - name: mode
+      auto: PREDEFINED
+      predefined:
+      - FPE
+      - GCM
+      - CBC
+      description: Decryption mode (overrides configured))
+    - name: iv
+      description: Nonce or initialization vector (if any)
+    outputs:
+    - contextPath: Fortanix.Data.Plain
+      description: Decryption output
+    description: Reveal data using key configured in Fortanix DSM
+  dockerimage: demisto/python3:3.10.13.72123
+  runonce: true
+  subtype: python3
+tests:
+- No tests (auto formatted)

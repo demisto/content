@@ -1,0 +1,24 @@
+[MODEL: dataset="abnormal_security_email_protection_raw"]
+alter
+	attachmentNames = arraystring(json_extract_scalar_array(attachmentNames, "$"), ","),
+	ccEmails = json_extract_scalar_array(ccEmails, "$"),
+	summaryInsights = arraystring(json_extract_scalar_array(summaryInsights, "$"), ","),
+    toAddresses = arrayfilter(if(json_extract_array(toAddresses, "$")=null, split(toAddresses, ","), json_extract_scalar_array(toAddresses, "$")), "@element" != ""),
+    senderIpAddressipv4 = arrayindex(regextract(senderIpAddress, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+    senderIpAddressipv6 = arrayindex(regextract(senderIpAddress, "([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0)
+| alter
+    xdm.event.id = threatId,
+    xdm.event.outcome = if(remediationStatus = "Auto-Remediated", XDM_CONST.OUTCOME_SUCCESS, remediationStatus = "Post Remediated", XDM_CONST.OUTCOME_SUCCESS, remediationStatus = "Remediated", XDM_CONST.OUTCOME_SUCCESS, remediationStatus = "No Action Done", XDM_CONST.OUTCOME_FAILED, remediationStatus = "Would Remediate", XDM_CONST.OUTCOME_PARTIAL, remediationStatus = "Remediation Attempted", XDM_CONST.OUTCOME_PARTIAL, remediationStatus = null, null, to_string(remediationStatus)),
+    xdm.email.recipients = toAddresses,
+    xdm.email.attachment.filename = attachmentNames,
+    xdm.email.subject = subject,
+    xdm.email.cc = ccEmails,
+    xdm.email.sender = fromAddress,
+    xdm.email.return_path = returnPath,
+    xdm.email.message_id = internetMessageId,
+    xdm.alert.category = attackType,
+    xdm.alert.name = attackStrategy,
+    xdm.alert.description = summaryInsights,
+    xdm.observer.unique_identifier = to_string(abxMessageId),
+    xdm.source.ipv4 = senderIpAddressipv4,
+    xdm.source.ipv6 = senderIpAddressipv6;

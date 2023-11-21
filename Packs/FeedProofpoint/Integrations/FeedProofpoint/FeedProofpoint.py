@@ -262,9 +262,12 @@ def main():
     params = demisto.params()
     args = demisto.args()
     base_url = "https://rules.emergingthreats.net/"
+    auth_code = params.get('credentials_auth_code', {}).get('password') or params.get("auth_code")
+    if not auth_code:
+        raise DemistoException('Authorization code must be provided.')
     client = Client(
         base_url,
-        auth_code=params.get("auth_code"),
+        auth_code=auth_code,
         verify=not params.get("insecure", False),
         proxy=params.get("proxy"),
         tags=argToList(params.get("feedTags")),

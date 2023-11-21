@@ -1,0 +1,37 @@
+commonfields:
+  id: SecuronixCloseHistoricalXSOARIncidents
+  version: -1
+name: SecuronixCloseHistoricalXSOARIncidents
+script: ''
+type: python
+tags: []
+comment: |-
+  Close historical XSOAR incidents that are already closed on Securonix.
+
+  NOTE: This script will close all the XSOAR incidents which are created from Securonix integration and does not have incident type as "Securonix Incident" in the provided time frame.
+enabled: true
+args:
+- name: from
+  description: |-
+    Filter the incidents which are created after the specified UTC date/time in XSOAR. (Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, yyyy-MM-ddTHH:mm:ss.SSSZ. For example: 01 Jan 2023, 01 Feb 2023 04:45:33, 2023-01-26T14:05:44Z, 2023-01-26T14:05:44.000Z)
+- name: to
+  description: |-
+    Filter the incidents which are created before the specified UTC date/time in XSOAR. (Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, yyyy-MM-ddTHH:mm:ss.SSSZ. For example: 01 Jan 2023, 01 Feb 2023 04:45:33, 2023-01-26T14:05:44Z, 2023-01-26T14:05:44.000Z)
+- name: close_states
+  description: If the Securonix incident is in any one of the state mentioned here, then the incident will be Closed on XSOAR. Supports comma-separated values.
+  required: true
+outputs:
+- contextPath: Securonix.CloseHistoricalXSOARIncidents.IncidentIDs
+  description: List of XSOAR incident IDs that were closed.
+  type: Unknown
+scripttarget: 0
+subtype: python3
+timeout: 3.6µs
+dependson:
+  must:
+  - '|||securonix-incident-activity-history-get'
+dockerimage: demisto/python3:3.10.12.63474
+runas: DBotWeakRole
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

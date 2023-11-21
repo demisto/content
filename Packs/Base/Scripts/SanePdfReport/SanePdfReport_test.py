@@ -28,6 +28,9 @@ def test_find_zombie_processes(mocker):
 
 
 def test_sane_pdf_report(mocker):
+    import SanePdfReport
+    # changing the port number just to make sure it has no conflicts with other integrations/scripts
+    mocker.patch.object(SanePdfReport, 'MD_HTTP_PORT', 10889)
     mocker.patch.object(demisto, 'args', return_value={
         'sane_pdf_report_base64':
         'W3sidHlwZSI6Im1hcmtkb3duIiwiZGF0YSI6eyJ0ZXh0IjoiaGVsbG8gd29ybGQiLCJncm91cHMiOlt7Im5hbWUiOiIiLCJkYXRhIjpbMl0s'
@@ -35,7 +38,8 @@ def test_sane_pdf_report(mocker):
         'YzAzYTAtMTZhMi0xMWViLWFhNmUtOTMzMWU5NjVhYjA2Iiwicm93UG9zIjowLCJ3Ijo2fSwicXVlcnkiOnsidHlwZSI6ImluY2lkZW50Iiwi'
         'ZmlsdGVyIjp7InF1ZXJ5IjoiIiwicGVyaW9kIjp7ImJ5RnJvbSI6ImRheXMiLCJmcm9tVmFsdWUiOjd9fX0sImF1dG9tYXRpb24iOnsibmFt'
         'ZSI6IiIsImlkIjoiIiwiYXJncyI6bnVsbCwibm9FdmVudCI6ZmFsc2V9LCJmcm9tRGF0ZSI6IjIwMjAtMTAtMThUMTE6MTY6MzcrMDM6MDAi'
-        'LCJ0aXRsZSI6IlRleHQgV2lkZ2V0IiwiZW1wdHlOb3RpZmljYXRpb24iOiJObyByZXN1bHRzIGZvdW5kIiwidGl0bGVTdHlsZSI6bnVsbH1d'
+        'LCJ0aXRsZSI6IlRleHQgV2lkZ2V0IiwiZW1wdHlOb3RpZmljYXRpb24iOiJObyByZXN1bHRzIGZvdW5kIiwidGl0bGVTdHlsZSI6bnVsbH1d',
+        'resourceTimeout': "10000"
     })
     mocker.patch.object(demisto, 'results')
 
@@ -68,7 +72,11 @@ def test_markdown_image_server(mocker, capfd):
         assert res1.status == 400
 
         # correct markdown image pat
-        conn.request("GET", "/markdown/image/1234-5678-9012-3456.png")
+        conn.request("GET", "/xsoar/markdown/image/1234-5678-9012-3456.png")     # Test for XSOAR 8
+        res2 = conn.getresponse()
+        assert res2.status == 200
+        mocker.patch.object(SanePdfReport, 'is_demisto_version_ge', return_value=False)
+        conn.request("GET", "/markdown/image/1234-5678-9012-3456.png")      # Test for XSOAR 6
         res2 = conn.getresponse()
         assert res2.status == 200
 
@@ -78,4 +86,11 @@ def test_markdown_image_server(mocker, capfd):
         res3 = conn.getresponse()
         assert res3.status == 404
 
+        # correct image with file that is not accessible (simulates permission problems)
+        mocker.patch.object(demisto, 'getFilePath', return_value={'path': 'notfound.png', 'name': 'noutfound.png'})
+        conn.request("GET", "/markdown/image/dummyFile.png")
+        res3 = conn.getresponse()
+        assert res3.status == 404
+
         conn.close()
+        quit_driver_and_reap_children(True)

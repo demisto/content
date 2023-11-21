@@ -1,0 +1,75 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Sumo Logic Signal"
+    ],
+    "caseInsensitive": true,
+    "cliName": "sumologiccloudsiemrecordfields",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "Record Number",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "recordnumber",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "Extracted Fields",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "extractedfields",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "Value",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "value",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {},
+        {},
+        {},
+        {}
+    ],
+    "description": "Sumo Logic Cloud SIEM Record Fields",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_sumologiccloudsiemrecordfields",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Sumo Logic Cloud SIEM Record Fields",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.8.0"
+}

@@ -1,0 +1,23 @@
+args:
+- default: true
+  description: The array to encode
+  isArray: true
+  name: value
+  required: true
+comment: Return the string encoded with JSON from the whole array
+commonfields:
+  id: StringifyArray
+  version: -1
+enabled: true
+name: StringifyArray
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+tags:
+- entirelist
+- transformer
+- general
+type: javascript
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

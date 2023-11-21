@@ -1,0 +1,19 @@
+commonfields:
+  id: SetThreatVaultIncidentMarkdownRepresentation
+  version: -1
+name: SetThreatVaultIncidentMarkdownRepresentation
+script: ''
+type: python
+tags:
+- dynamic-section
+comment: This automation takes several Incident fields from the Threat Vault incident context and displays them as markdown in the layout.
+enabled: true
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.10.12.68714
+runas: DBotWeakRole
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)
+skipprepare:
+- script-name-incident-to-alert

@@ -1,0 +1,5 @@
+!ews-cas-mailbox-list limit=1
+!ews-mailbox-list limit=1
+!ews-mailbox-permission-list identity=<UserName>
+!ews-recipient-list identity=<ExternalDirectoryObjectId>
+!ews-recipient-permission-get identity=<Guid>>

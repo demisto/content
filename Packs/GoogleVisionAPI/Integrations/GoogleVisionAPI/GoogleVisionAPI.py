@@ -5,22 +5,23 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 
 
-import requests
 import json
 import base64
 import httplib2
 import urllib.parse
+import urllib3
 from apiclient import discovery
 from oauth2client import service_account
 from typing import Dict, List
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 
 '''GLOBAL VARS'''
 
-PRIVATE_KEY_CONTENT = demisto.params().get('auth_json', '').encode('utf-8')
+PRIVATE_KEY_CONTENT = (demisto.params().get('auth_json_creds', {}).get('password')
+                       or demisto.params().get('auth_json', '')).encode('utf-8')
 DISABLE_SSL = demisto.params().get('insecure', False)
 PROXY = demisto.params().get('proxy')
 SERVICE_NAME = 'vision'

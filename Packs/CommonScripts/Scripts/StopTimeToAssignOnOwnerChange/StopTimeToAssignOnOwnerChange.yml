@@ -5,7 +5,7 @@ commonfields:
 name: StopTimeToAssignOnOwnerChange
 script: ''
 type: python
-subtype: python2
+subtype: python3
 tags:
 - field-change-triggered
 - example
@@ -17,8 +17,9 @@ args:
 - name: new
   description: The new value of the changed field
 scripttarget: 0
-runonce: false
 runas: DBotWeakRole
+marketplaces:
+- xsoar
 tests:
 - SLA Scripts - Test
-dockerimage: demisto/python:2.7.18.27799
+dockerimage: demisto/python3:3.10.12.63474

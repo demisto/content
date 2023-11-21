@@ -1,0 +1,222 @@
+category: Forensics & Malware Analysis
+commonfields:
+  id: Secneurx Analysis
+  version: -1
+configuration:
+- display: Server URL
+  name: url
+  defaultvalue: "https://analysis.secneurx.com"
+  required: true
+  additionalinfo: Input the url of SecneurX Analysis server.
+  type: 0
+- display: API Key
+  name: apiKey
+  required: true
+  additionalinfo: Input the API key to access the sandbox.
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+description: Fully automated malware dynamic analysis sandboxing
+display: SecneurX Analysis
+name: Secneurx Analysis
+script:
+  commands:
+  - arguments:
+    - description: Input the Task UUID value obtained as response from submission
+      name: task_uuid
+      required: true
+    description: Get verdict summary report of the analyzed sample
+    name: snx-analysis-get-verdict
+    outputs:
+    - contextPath: SecneurXAnalysis.Verdict.task_uuid
+      description: Task UUID is unique id of analyzed sample
+      type: String
+    - contextPath: SecneurXAnalysis.Verdict.verdict
+      description: Verdict is summary result of analyzed sample
+      type: String
+    - contextPath: SecneurXAnalysis.Verdict.sha256
+      description: SHA256 value find from analyzed sample
+      type: String
+    - contextPath: SecneurXAnalysis.Verdict.file_name
+      description: File Name of analyzed sample
+      type: String
+    - contextPath: SecneurXAnalysis.Verdict.status
+      description: Analysis queued sample state
+      type: String
+    - contextPath: SecneurXAnalysis.Verdict.submission_time
+      description: Analysis queued sample submission time value.
+      type: String
+  - arguments:
+    - description: Optional. Allows you to specify the number of hours. The value should be as number of hours (e.g. 5) - Lists all the queued samples submitted in the last 5 hrs
+      name: last_hours
+    - description: Optional. Allows you to specify the max no.of queued samples to list. The value should be number type (e.g. 50) - Lists the last submitted 50 samples that are queued
+      name: last_count
+    description: Get the list of submitted samples whose status is marked as "Completed"
+    name: snx-analysis-get-completed
+  - arguments:
+    - description: Optional. Allows you to specify the number of hours. The value should be as number of hours (e.g. 5) - Lists all the queued samples submitted in the last 5 hrs
+      name: last_hours
+    - description: Optional. Allows you to specify the max no.of queued samples to list. The value should be number type (e.g. 50) - Lists the last submitted 50 samples that are queued
+      name: last_count
+    description: Get the list of submitted samples that are still in pending state
+    name: snx-analysis-get-pending
+  - arguments:
+    - description: Optional. Allows you to specify the number of hours. The value should be as number of hours (e.g. 5) - Lists all the queued samples submitted in the last 5 hrs
+      name: last_hours
+    - description: Optional. Allows you to specify the max no.of queued samples to list. The value should be number type (e.g. 50) - Lists the last submitted 50 samples that are queued
+      name: last_count
+    description: Get the status of all the submitted samples
+    name: snx-analysis-get-status
+  - arguments:
+    - description: Entry ID value of upload file.
+      name: EntryID
+      required: true
+    - description: Type the OS platform on which the file to be analysed. Default is set to Windows7. Possible values are Windows7, Windows10, Android, Ubuntu
+      name: Platform
+    - description: Type the priority of the sample for analysis. Default is set to Normal. Possible values are High, Normal
+      name: Priority
+    - description: Type the duration of the analysis in seconds. Not all malicious programs are active right after the launch. Some of them take time to fully reveal the attack vectors. Default is set to 120. Possible values are 120, 180, 240, 300
+      name: Duration
+    - description: If you want the file for submission to be treated and analysed as a specific file extension, mention it.
+      name: Extension
+    - description: Reboot the system during the analysis. Default is set to 'False'. Possible values are True, False
+      name: Reboot
+    - description: If the file for submission is protected with a user-defined password, please enter the password for our system to open and detonate it
+      name: File Password
+    description: Submit a file for Analysis
+    name: snx-analysis-submit-file
+    outputs:
+    - contextPath: SecneurXAnalysis.SubmitFile.task_uuid
+      description: Task UUID is unique ID for submitted file. Use this ID for get the report and verdict.
+      type: String
+    - contextPath: SecneurXAnalysis.SubmitFile.submission_time
+      description: Submission Time Created at the time the file was submitted
+      type: String
+  - arguments:
+    - description: Input the URL for analysis
+      name: URL
+      required: true
+    - description: Type the priority of the sample for analysis. Default is set to Normal. Possible values are High, Normal
+      name: Priority
+      auto: PREDEFINED
+      predefined:
+      - "High"
+      - "Normal"
+    - description: Type the duration of the analysis in seconds. Not all malicious programs are active right after the launch. Some of them take time to fully reveal the attack vectors. Default is set to 120. Possible values are 120, 180, 240, 300
+      name: Duration
+      auto: PREDEFINED
+      predefined:
+      - "120"
+      - "180"
+      - "240"
+      - "300"
+    - description: Reboot the system during the analysis. Default is set to 'False'. Possible values are True, False
+      name: Reboot
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+    description: Submit the URL for Analysis
+    name: snx-analysis-submit-url
+    outputs:
+    - contextPath: SecneurXAnalysis.SubmitURL.task_uuid
+      description: Task UUID is the unique ID for the submitted file. Use this ID to get the report.
+      type: String
+    - contextPath: SecneurXAnalysis.SubmitURL.submission_time
+      description: Submission Time Created at the time the file was submitted
+      type: String
+  - arguments:
+    - description: Input the Task UUID value obtained as response from submission
+      name: task_uuid
+      required: true
+    - description: Mention the output format of the report. The value should be "json" or "html". The default is set to "json"
+      defaultValue: "json"
+      name: report_format
+      auto: PREDEFINED
+      predefined:
+      - "html"
+      - "json"
+    description: Get the detailed report of the analyzed sample.
+    name: snx-analysis-get-report
+    outputs:
+    - contextPath: SecneurXAnalysis.Report.SHA256
+      description: SHA256 value of the analyzed sample
+      type: String
+    - contextPath: SecneurXAnalysis.Report.Platform
+      description: Platform of the analyzed sample
+      type: String
+    - contextPath: SecneurXAnalysis.Report.Verdict
+      description: Summary result of the analyzed sample
+      type: String
+    - contextPath: SecneurXAnalysis.Report.Tags
+      description: More details of the analyzed sample
+      type: String
+    - contextPath: SecneurXAnalysis.Report.DnsRequests
+      description: List of DNS data observed in the analyzed sample
+      type: String
+    - contextPath: SecneurXAnalysis.Report.HttpRequests
+      description: List of HTTP data observed in the analyzed sample
+      type: String
+    - contextPath: SecneurXAnalysis.Report.JA3Digests
+      description: List of JA3 data observed in the analyzed sample
+      type: String
+    - contextPath: SecneurXAnalysis.Report.ProcessCreated
+      description: Process behaviour data observed in the analyzed sample
+      type: String
+    - contextPath: SecneurXAnalysis.Report.RegistrySet
+      description: List of Registry creations observed in the analyzed sample
+      type: String
+    - contextPath: SecneurXAnalysis.Report.RegistryDeleted
+      description: List of Registry deletions observed in the analyzed sample
+      type: String
+    - contextPath: SecneurXAnalysis.Report.FileCreated
+      description: List of File creations observed in the analyzed sample
+      type: String
+    - contextPath: SecneurXAnalysis.Report.FileDropped
+      description: List of File drops observed in the analyzed sample
+      type: String
+    - contextPath: SecneurXAnalysis.Report.FileDeleted
+      description: List of File deletions observed in the analyzed sample
+      type: String
+    - contextPath: SecneurXAnalysis.Report.FileModified
+      description: List of File changes observed in the analyzed sample
+      type: String
+    - contextPath: SecneurXAnalysis.Report.IOC
+      description: List of IOC's observed in the analyzed sample
+      type: String
+    - contextPath: SecneurXAnalysis.Report.Status
+      description: Analysis queued sample state
+      type: String
+  - description: Get the API Key quota usage details.
+    name: snx-analysis-get-quota
+    outputs:
+    - contextPath: SecneurXAnalysis.Quota.start_time
+      description: Creation Time of the API Key
+      type: String
+    - contextPath: SecneurXAnalysis.Quota.used
+      description: Used count of API Key
+      type: Integer
+    - contextPath: SecneurXAnalysis.Quota.allowed
+      description: Limitation count of API Key
+      type: Integer
+    - contextPath: SecneurXAnalysis.Quota.scale
+      description: API Key expiration renew scale type
+      type: String
+    - contextPath: SecneurXAnalysis.Quota.unused
+      description: Unused count of API Key
+      type: String
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.12.68714
+fromversion: 6.5.0
+tests:
+- Detonate File - SecneurX Analysis - Test
+- Detonate URL - SecneurX Anlaysis - Test

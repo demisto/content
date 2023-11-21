@@ -1,15 +1,10 @@
 args:
-- default: false
-  description: The war room entry ID of the configuration file.
-  isArray: false
+- description: The war room entry ID of the configuration file.
   name: configuration_file_entry_id
-  required: false
-  secret: false
 comment: Configurtaion loader for the Content Management pack.
 commonfields:
   id: ConfigurationSetup
   version: -1
-enabled: false
 name: ConfigurationSetup
 outputs:
 - contextPath: ConfigurationSetup.Jobs.name
@@ -35,13 +30,12 @@ outputs:
   type: Unknown
 script: '-'
 subtype: python3
-system: false
 tags:
 - configuration
 - Content Management
 timeout: '0'
 type: python
-dockerimage: demisto/xsoar-tools:1.0.0.23423
+dockerimage: demisto/xsoar-tools:1.0.0.36076
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0

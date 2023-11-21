@@ -131,6 +131,7 @@ class IAMUserProfile:
     CREATE_INCIDENT_TYPE = 'User Profile - Create'
     UPDATE_INCIDENT_TYPE = 'User Profile - Update'
     DISABLE_INCIDENT_TYPE = 'User Profile - Disable'
+    ENABLE_INCIDENT_TYPE = 'User Profile - Enable'
 
     def __init__(self, user_profile, mapper: str, incident_type: str, user_profile_delta=None):
         self._user_profile = safe_load_json(user_profile)
@@ -241,7 +242,8 @@ class IAMUserProfile:
                 return {k: v for k, v in self.mapped_user_profile.items() if k != 'olduserdata'}
             return self.mapped_user_profile
         if incident_type not in [IAMUserProfile.CREATE_INCIDENT_TYPE, IAMUserProfile.UPDATE_INCIDENT_TYPE,
-                                 IAMUserProfile.DISABLE_INCIDENT_TYPE]:
+                                 IAMUserProfile.DISABLE_INCIDENT_TYPE,
+                                 IAMUserProfile.ENABLE_INCIDENT_TYPE]:
             raise DemistoException('You must provide a valid incident type to the map_object function.')
         if not self._user_profile:
             raise DemistoException('You must provide the user profile data.')
@@ -296,6 +298,14 @@ class IAMUserProfile:
             action=IAMActions.DISABLE_USER,
             skip=True,
             skip_reason='User is already disabled.',
+            details=details
+        )
+
+    def set_user_is_already_enabled(self, details):
+        self.set_result(
+            action=IAMActions.ENABLE_USER,
+            skip=True,
+            skip_reason='User is already enabled.',
             details=details
         )
 
@@ -445,6 +455,50 @@ class IAMCommand:
 
             except Exception as e:
                 client.handle_exception(user_profile, e, IAMActions.DISABLE_USER)
+
+        return user_profile
+
+    def enable_user(self, client, args):
+        """ Enables a user in the application and updates the user profile object with the updated data.
+            If not found, the command will be skipped.
+
+        :param client: (Client) The integration Client object that implements get_user(),
+                                enable_user() and handle_exception methods
+        :param args: (dict) The `iam-enable-user` command arguments
+        :return: (IAMUserProfile) The user profile object.
+        """
+        user_profile = IAMUserProfile(user_profile=args.get('user-profile'), mapper=self.mapper_out,
+                                      incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
+        if not self.is_enable_enabled:
+            user_profile.set_result(action=IAMActions.ENABLE_USER,
+                                    skip=True,
+                                    skip_reason='Command is disabled.')
+        else:
+            try:
+                iam_attribute, iam_attribute_val = user_profile.get_first_available_iam_user_attr(
+                    self.get_user_iam_attrs)
+                user_app_data = client.get_user(iam_attribute, iam_attribute_val)
+                if not user_app_data:
+                    _, error_message = IAMErrors.USER_DOES_NOT_EXIST
+                    user_profile.set_result(action=IAMActions.ENABLE_USER,
+                                            skip=True,
+                                            skip_reason=error_message)
+                else:
+                    if not user_app_data.is_active:
+                        enabled_user = client.enable_user(user_app_data.id)
+                        user_profile.set_result(
+                            action=IAMActions.ENABLE_USER,
+                            active=True,
+                            iden=enabled_user.id,
+                            email=user_profile.get_attribute('email') or user_app_data.email,
+                            username=enabled_user.username,
+                            details=enabled_user.full_data
+                        )
+                    else:
+                        user_profile.set_user_is_already_enabled(user_app_data.full_data)
+
+            except Exception as e:
+                client.handle_exception(user_profile, e, IAMActions.ENABLE_USER)
 
         return user_profile
 

@@ -22,18 +22,26 @@ class ObjectMocker(dict):
     __delattr__ = dict.__delitem__
 
 
-def run_command_test(command_func, args, response_path, expected_result_path, mocker):
+def run_command_test(command_func, args, response_path, expected_result_path, mocker, result_validator=None):
     with open(response_path, 'r') as response_f:
         response = ResponseMock(json.load(response_f))
     mocker.patch('Zscaler.http_request', return_value=response)
     if command_func.__name__ in ['url_lookup', 'get_users_command', 'set_user_command',
-                                 'get_departments_command', 'get_usergroups_command']:
+                                 'get_departments_command', 'get_usergroups_command',
+                                 'list_ip_destination_groups', 'create_ip_destination_group',
+                                 'edit_ip_destination_group', 'delete_ip_destination_groups']:
         res = command_func(args)
     else:
         res = command_func(**args)
-    with open(expected_result_path, 'r') as ex_f:
-        expected_result = json.load(ex_f)
-        assert expected_result == res
+    if result_validator:
+        assert result_validator(res)
+    else:
+        with open(expected_result_path, 'r') as ex_f:
+            expected_result = json.load(ex_f)
+            if isinstance(res, CommonServerPython.CommandResults):
+                assert expected_result == res.to_context()
+            else:
+                assert expected_result == res
 
 
 @pytest.fixture(autouse=True)
@@ -60,11 +68,23 @@ def test_validate_urls_invalid(mocker):
 def test_url_command(mocker):
     """url"""
     import Zscaler
+
+    def validator(res):
+        assert res
+        assert len(res) == 2
+        for command_res in res:
+            assert command_res.indicator.url
+            assert command_res.indicator.dbot_score
+            assert command_res.outputs['urlClassifications']
+            assert command_res.outputs_prefix == 'Zscaler.URL'
+
+        return True
+
     run_command_test(command_func=Zscaler.url_lookup,
                      args={'url': 'https://www.demisto-news.com,https://www.demisto-search.com'},
                      response_path='test_data/responses/url.json',
                      expected_result_path='test_data/results/url.json',
-                     mocker=mocker)
+                     mocker=mocker, result_validator=validator)
 
 
 def test_url_fails_unknown_error_code(mocker, requests_mock):
@@ -84,21 +104,41 @@ def test_url_fails_unknown_error_code(mocker, requests_mock):
 def test_url_command_with_urlClassificationsWithSecurityAlert(mocker):
     """url"""
     import Zscaler
+
+    def validator(res):
+        assert res
+        assert len(res) == 1
+        assert res[0].outputs['urlClassifications'] == 'MISCELLANEOUS_OR_UNKNOWN'
+        assert res[0].outputs['urlClassificationsWithSecurityAlert'] == 'MALWARE_SITE'
+        return True
+
     run_command_test(command_func=Zscaler.url_lookup,
                      args={'url': 'www.demisto22.com'},
                      response_path='test_data/responses/url_with_urlClassificationsWithSecurityAlert.json',
                      expected_result_path='test_data/results/url_with_urlClassificationsWithSecurityAlert.json',
-                     mocker=mocker)
+                     mocker=mocker, result_validator=validator)
 
 
 def test_ip_command(mocker):
     """ip"""
     import Zscaler
+
+    def validator(res):
+        assert res
+        assert len(res) == 2
+        for command_res in res:
+            assert command_res.indicator.ip
+            assert command_res.indicator.dbot_score
+            assert command_res.outputs['ipClassifications']
+            assert not command_res.outputs.get('urlClassifications')
+            assert command_res.outputs_prefix == 'Zscaler.IP'
+        return True
+
     run_command_test(command_func=Zscaler.ip_lookup,
                      args={'ip': '1.22.33.4'},
                      response_path='test_data/responses/ip.json',
                      expected_result_path='test_data/results/ip.json',
-                     mocker=mocker)
+                     mocker=mocker, result_validator=validator)
 
 
 def test_undo_blacklist_url_command(mocker):
@@ -529,4 +569,108 @@ def test_get_usergroups_command(mocker):
                      args={'pageSize': '100'},
                      response_path='test_data/responses/get_usergroups.json',
                      expected_result_path='test_data/results/get_usergroups.json',
+                     mocker=mocker)
+
+
+def test_list_ip_destination_groups__command_no_argument(mocker):
+    """zscaler-list-ip-destination-groups"""
+    import Zscaler
+    run_command_test(command_func=Zscaler.list_ip_destination_groups,
+                     args={},
+                     response_path='test_data/responses/'
+                                   + 'list_ip_destination_groups.json',
+                     expected_result_path='test_data/results/'
+                                          + 'list_ip_destination_groups.json',
+                     mocker=mocker)
+
+
+def test_list_ip_destination_groups__command_with_id_argument(mocker):
+    """zscaler-list-ip-destination-groups"""
+    import Zscaler
+    run_command_test(command_func=Zscaler.list_ip_destination_groups,
+                     args={
+                         'ip_group_id': '1964949'
+                     },
+                     response_path='test_data/responses/'
+                                   + 'list_ip_destination_groups_with_id.json',
+                     expected_result_path='test_data/results/'
+                                          + 'list_ip_destination_groups_with'
+                                          + '_id.json',
+                     mocker=mocker)
+
+
+def test_list_ip_destination_groups__command_with_exclude_argument(mocker):
+    """zscaler-list-ip-destination-groups"""
+    import Zscaler
+    run_command_test(command_func=Zscaler.list_ip_destination_groups,
+                     args={
+                         'exclude_type': 'DSTN_OTHER'
+                     },
+                     response_path='test_data/responses/'
+                                   + 'list_ip_destination_groups_with_exclude'
+                                   + '.json',
+                     expected_result_path='test_data/results/'
+                                          + 'list_ip_destination_groups_with'
+                                          + '_exclude.json',
+                     mocker=mocker)
+
+
+def test_list_ip_destination_groups_command_with_lite_argument(mocker):
+    """zscaler-list-ip-destination-groups-lite"""
+    import Zscaler
+    run_command_test(command_func=Zscaler.list_ip_destination_groups,
+                     args={
+                         'lite': 'True'
+                     },
+                     response_path='test_data/responses/list_ip_destination_groups_lite.json',
+                     expected_result_path='test_data/results/list_ip_destination_groups_lite.json',
+                     mocker=mocker)
+
+
+def test_create_ip_destination_group(mocker):
+    """zscaler-create-ip-destination-group"""
+    import Zscaler
+    run_command_test(command_func=Zscaler.create_ip_destination_group,
+                     args={
+                         'name': 'Test99',
+                         'type': 'DSTN_IP',
+                         'addresses': [
+                             '127.0.0.2',
+                             '127.0.0.1'
+                         ],
+                         'description': 'Localhost'},
+                     response_path='test_data/responses/'
+                                   + 'create_ip_destination_group.json',
+                     expected_result_path='test_data/results/'
+                                          + 'create_ip_destination_group.json',
+                     mocker=mocker)
+
+
+def test_edit_ip_destination_group(mocker):
+    """zscaler-edit-ip-destination-group"""
+    import Zscaler
+
+    run_command_test(command_func=Zscaler.edit_ip_destination_group,
+                     args={
+                         'ip_group_id': 2000359,
+                         'name': 'Test01',
+                         'addresses': [
+                             '127.0.0.2'
+                         ],
+                         'description': 'Localhost v2'},
+                     response_path='test_data/responses/'
+                                   + 'edit_ip_destination_group.json',
+                     expected_result_path='test_data/results/'
+                                          + 'edit_ip_destination_group.json',
+                     mocker=mocker)
+
+
+def test_delete_ip_destination_groups(mocker):
+    """zscaler-delete-ip-destination-group"""
+    import Zscaler
+
+    run_command_test(command_func=Zscaler.delete_ip_destination_groups,
+                     args={'ip_group_id': '1964949'},
+                     response_path='test_data/responses/delete_ip_destination_group.json',
+                     expected_result_path='test_data/results/delete_ip_destination_group.json',
                      mocker=mocker)

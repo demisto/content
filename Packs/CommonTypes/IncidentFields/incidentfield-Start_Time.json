@@ -6,7 +6,14 @@
         "Tanium TR Incident",
         "CrowdStrike Falcon Detection",
         "CrowdStrike Falcon Incident",
-        "Microsoft Defender For Endpoint"
+        "Microsoft Defender For Endpoint",
+        "Skyhigh Security Alert",
+        "Skyhigh Security Threat",
+        "Exabeam Incident",
+        "Microsoft Sentinel Incident",
+        "Graph Security Alert",
+        "CrowdStrike Falcon IDP Detection",
+        "Stamus Networks DoC"
     ],
     "breachScript": "",
     "caseInsensitive": true,

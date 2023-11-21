@@ -762,7 +762,7 @@ RESPONSE_FETCH_INCIDENTS = {
                 'name': 'Network',
                 'id': '123640000000006681'
             }
-        },
+    },
         {
             'requester': {
                 'name': 'First Last',
@@ -803,5 +803,5 @@ RESPONSE_FETCH_INCIDENTS = {
                 'name': 'Network',
                 'id': '123640000000006681'
             }
-        }]
+    }]
 }

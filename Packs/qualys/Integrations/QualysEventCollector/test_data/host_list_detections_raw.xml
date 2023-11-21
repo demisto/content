@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE HOST_LIST_VM_DETECTION_OUTPUT SYSTEM "https://qualysapi.qg2.apps.qualys.com/api/2.0/fo/asset/host/vm/detection/dtd/output.dtd">
+<!-- This report was generated with an evaluation version of  //-->
+<HOST_LIST_VM_DETECTION_OUTPUT>
+  <RESPONSE>
+    <DATETIME>2023-05-24T09:59:43Z</DATETIME>
+    <HOST_LIST>
+      <HOST>
+        <ID>143111841</ID>
+        <IP>1.1.1.1</IP>
+        <TRACKING_METHOD>DNS</TRACKING_METHOD>
+        <OS><![CDATA[Linux 3.13]]></OS>
+        <DNS><![CDATA[one.one.one.one]]></DNS>
+        <DNS_DATA>
+          <HOSTNAME><![CDATA[one]]></HOSTNAME>
+          <DOMAIN><![CDATA[one.one.one]]></DOMAIN>
+          <FQDN><![CDATA[one.one.one.one]]></FQDN>
+        </DNS_DATA>
+        <LAST_SCAN_DATETIME>2023-05-16T15:26:53Z</LAST_SCAN_DATETIME>
+        <LAST_VM_SCANNED_DATE>2023-05-16T15:26:01Z</LAST_VM_SCANNED_DATE>
+        <LAST_VM_SCANNED_DURATION>2130</LAST_VM_SCANNED_DURATION>
+        <LAST_PC_SCANNED_DATE>2022-12-06T12:03:46Z</LAST_PC_SCANNED_DATE>
+        <DETECTION_LIST>
+          <DETECTION>
+            <QID>11827</QID>
+            <TYPE>Confirmed</TYPE>
+            <SEVERITY>2</SEVERITY>
+            <PORT>443</PORT>
+            <PROTOCOL>tcp</PROTOCOL>
+            <SSL>0</SSL>
+            <RESULTS><![CDATA[X-Content-Type-Options HTTP Header missing on port 443.
+
+GET / HTTP/1.0
+Host: one.one.one.one
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:93.0) Gecko/20100101 Firefox/93.0
+
+
+
+HTTP/1.1 200 OK
+Date: Tue, 16 May 2023 15:11:34 GMT
+Content-Type: text/html
+Connection: close
+Report-To: {&quot;endpoints&quot;:[{&quot;url&quot;:&quot;https:\/\/a.nel.cloudflare.com\/report\/v3?s=G1K17EgKYghRTdBHT6zGm3yL3ZP77IDDLV8p7Fmtr91XH%2BgGy3XYHQNuNrzUYzJNLJU%2BWP%2BFuwUK5hsjkszWOANNxqfhvDvZcDcmhHZr%2B6lXteZc5HDO1JzXf%2FQWurVEng%3D%3D&quot;}],&quot;group&quot;:&quot;cf-nel&quot;,&quot;max_age&quot;:604800}
+NEL: {&quot;report_to&quot;:&quot;cf-nel&quot;,&quot;max_age&quot;:604800}
+Last-Modified: Thu, 04 Aug 2022 19:10:01 GMT
+Strict-Transport-Security: max-age=31536000
+Served-In-Seconds: 0.002
+Cache-Control: public, max-age=14400
+CF-Cache-Status: HIT
+Age: 570
+Expires: Tue, 16 May 2023 19:11:34 GMT
+Set-Cookie: __cf_bm=tqFXNaNgLM6gNYEdlFxhl7kZ8Tjd_6.dK_Kq1aHiFIo-1684249894-0-AU00kBYBvnBSdB6Um+4i7e1vw8ka/BoepE/c9CLgvQpKiPk3EhXPoXqsYTpbK4Jl+E5+bQH64thqJl5hDUGHOBM=; path=/; expires=Tue, 16-May-23 15:41:34 GMT; domain=.one.one.one; HttpOnly; Secure; SameSite=None
+Server: cloudflare
+CF-RAY: 7c848dcf2ef67fea-SAN
+alt-svc: h3=&quot;:443&quot;; ma=86400, h3-29=&quot;:443&quot;; ma=86400]]></RESULTS>
+            <STATUS>Active</STATUS>
+            <FIRST_FOUND_DATETIME>2023-05-16T15:26:53Z</FIRST_FOUND_DATETIME>
+            <LAST_FOUND_DATETIME>2023-05-16T15:26:01Z</LAST_FOUND_DATETIME>
+            <TIMES_FOUND>216</TIMES_FOUND>
+            <LAST_TEST_DATETIME>2023-05-16T15:26:01Z</LAST_TEST_DATETIME>
+            <LAST_UPDATE_DATETIME>2023-05-16T15:26:53Z</LAST_UPDATE_DATETIME>
+            <LAST_FIXED_DATETIME>2022-12-07T10:06:40Z</LAST_FIXED_DATETIME>
+            <IS_IGNORED>0</IS_IGNORED>
+            <IS_DISABLED>0</IS_DISABLED>
+            <LAST_PROCESSED_DATETIME>2023-05-16T15:26:53Z</LAST_PROCESSED_DATETIME>
+          </DETECTION>
+          <DETECTION>
+            <QID>15033</QID>
+            <TYPE>Confirmed</TYPE>
+            <SEVERITY>4</SEVERITY>
+            <PORT>53</PORT>
+            <PROTOCOL>udp</PROTOCOL>
+            <SSL>0</SSL>
+            <RESULTS><![CDATA[--- IPv4 ---
+;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, rcode: NOERROR, id: 33129
+;; flags: qr rd ra ; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 0
+;; QUESTION SECTION:
+;; one.one.one. IN SOA
+
+;; ANSWER SECTION:
+one.one.one. 3410 IN SOA fred.ns.cloudflare.com. dns.cloudflare.com. 2309232685 10000 2400 604800 3600
+
+;; AUTHORITY SECTION:
+
+;; ADDITIONAL SECTION:
+
+;; Query time: 8 msec
+;; SERVER: 1.1.1.1
+;; WHEN: Tue May 16 07:50:37 2023
+;; MSG SIZE  rcvd: 91
+
+--- IPv6 ---
+;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, rcode: NOERROR, id: 46710
+;; flags: qr rd ra ; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 0
+;; QUESTION SECTION:
+;; one.one.one. IN SOA
+
+;; ANSWER SECTION:
+one.one.one. 3410 IN SOA fred.ns.cloudflare.com. dns.cloudflare.com. 2309232685 10000 2400 604800 3600
+
+;; AUTHORITY SECTION:
+
+;; ADDITIONAL SECTION:
+
+;; Query time: 7 msec
+;; SERVER: 1.1.1.1
+;; WHEN: Tue May 16 07:50:37 2023
+;; MSG SIZE  rcvd: 91]]></RESULTS>
+            <STATUS>Active</STATUS>
+            <FIRST_FOUND_DATETIME>2023-05-16T15:26:53Z</FIRST_FOUND_DATETIME>
+            <LAST_FOUND_DATETIME>2023-05-16T15:26:01Z</LAST_FOUND_DATETIME>
+            <TIMES_FOUND>217</TIMES_FOUND>
+            <LAST_TEST_DATETIME>2023-05-16T15:26:01Z</LAST_TEST_DATETIME>
+            <LAST_UPDATE_DATETIME>2023-05-16T15:26:53Z</LAST_UPDATE_DATETIME>
+            <IS_IGNORED>0</IS_IGNORED>
+            <IS_DISABLED>0</IS_DISABLED>
+            <LAST_PROCESSED_DATETIME>2023-05-16T15:26:53Z</LAST_PROCESSED_DATETIME>
+          </DETECTION>
+          <DETECTION>
+            <QID>15034</QID>
+            <TYPE>Confirmed</TYPE>
+            <SEVERITY>2</SEVERITY>
+            <PORT>53</PORT>
+            <PROTOCOL>udp</PROTOCOL>
+            <SSL>0</SSL>
+            <RESULTS><![CDATA[Server supports recursive name resolution to IPv4 addresses.
+Server supports recursive name resolution to IPv6 addresses.]]></RESULTS>
+            <STATUS>Active</STATUS>
+            <FIRST_FOUND_DATETIME>2023-05-16T15:26:53Z</FIRST_FOUND_DATETIME>
+            <LAST_FOUND_DATETIME>2023-05-16T15:26:01Z</LAST_FOUND_DATETIME>
+            <TIMES_FOUND>217</TIMES_FOUND>
+            <LAST_TEST_DATETIME>2023-05-16T15:26:01Z</LAST_TEST_DATETIME>
+            <LAST_UPDATE_DATETIME>2023-05-16T15:26:53Z</LAST_UPDATE_DATETIME>
+            <IS_IGNORED>0</IS_IGNORED>
+            <IS_DISABLED>0</IS_DISABLED>
+            <LAST_PROCESSED_DATETIME>2023-05-16T15:26:53Z</LAST_PROCESSED_DATETIME>
+          </DETECTION>
+          <DETECTION>
+            <QID>15068</QID>
+            <TYPE>Confirmed</TYPE>
+            <SEVERITY>2</SEVERITY>
+            <PORT>53</PORT>
+            <PROTOCOL>udp</PROTOCOL>
+            <SSL>0</SSL>
+            <RESULTS><![CDATA[;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, rcode: NOERROR, id: 20411
+;; flags: qr aa rd ra ; QUERY: 1, ANSWER: 13, AUTHORITY: 0, ADDITIONAL: 26
+;; QUESTION SECTION:
+;; . IN NS
+
+;; ANSWER SECTION:
+. 515206 IN NS a.root-servers.net.
+. 515206 IN NS b.root-servers.net.
+. 515206 IN NS c.root-servers.net.
+. 515206 IN NS d.root-servers.net.
+. 515206 IN NS e.root-servers.net.
+. 515206 IN NS f.root-servers.net.
+. 515206 IN NS g.root-servers.net.
+. 515206 IN NS h.root-servers.net.
+. 515206 IN NS i.root-servers.net.
+. 515206 IN NS j.root-servers.net.
+. 515206 IN NS k.root-servers.net.
+. 515206 IN NS l.root-servers.net.
+. 515206 IN NS m.root-servers.net.
+
+;; AUTHORITY SECTION:
+
+;; ADDITIONAL SECTION:
+a.root-servers.net. 515206 IN A 198.41.0.4
+a.root-servers.net. 515206 IN AAAA 2001:503:ba3e::2:30
+b.root-servers.net. 515206 IN A 199.9.14.201
+b.root-servers.net. 515206 IN AAAA 2001:500:200::b
+c.root-servers.net. 515206 IN A 192.33.4.12
+c.root-servers.net. 515206 IN AAAA 2001:500:2::c
+d.root-servers.net. 515206 IN A 199.7.91.13
+d.root-servers.net. 515206 IN AAAA 2001:500:2d::d
+e.root-servers.net. 515206 IN A 192.203.230.10
+e.root-servers.net. 515206 IN AAAA 2001:500:a8::e
+f.root-servers.net. 515206 IN A 192.5.5.241
+f.root-servers.net. 515206 IN AAAA 2001:500:2f::f
+g.root-servers.net. 515206 IN A 192.112.36.4
+g.root-servers.net. 515206 IN AAAA 2001:500:12::d0d
+h.root-servers.net. 515206 IN A 198.97.190.53
+h.root-servers.net. 515206 IN AAAA 2001:500:1::53
+i.root-servers.net. 515206 IN A 192.36.148.17
+i.root-servers.net. 515206 IN AAAA 2001:7fe::53
+j.root-servers.net. 515206 IN A 192.58.128.30
+j.root-servers.net. 515206 IN AAAA 2001:503:c27::2:30
+k.root-servers.net. 515206 IN A 193.0.14.129
+k.root-servers.net. 515206 IN AAAA 2001:7fd::1
+l.root-servers.net. 515206 IN A 199.7.83.42
+l.root-servers.net. 515206 IN AAAA 2001:500:9f::42
+m.root-servers.net. 515206 IN A 202.12.27.33
+m.root-servers.net. 515206 IN AAAA 2001:dc3::35
+
+;; Query time: 7 msec
+;; EDNS: version 0; flags: ; udp: 1232
+;; SERVER: 1.1.1.1
+;; WHEN: Tue May 16 07:50:43 2023
+;; MSG SIZE  rcvd: 811]]></RESULTS>
+            <STATUS>Active</STATUS>
+            <FIRST_FOUND_DATETIME>2023-05-14T15:04:55Z</FIRST_FOUND_DATETIME>
+            <LAST_FOUND_DATETIME>2023-05-16T15:26:01Z</LAST_FOUND_DATETIME>
+            <TIMES_FOUND>216</TIMES_FOUND>
+            <LAST_TEST_DATETIME>2023-05-16T15:26:01Z</LAST_TEST_DATETIME>
+            <LAST_UPDATE_DATETIME>2023-05-16T15:26:53Z</LAST_UPDATE_DATETIME>
+            <LAST_FIXED_DATETIME>2022-06-19T18:31:48Z</LAST_FIXED_DATETIME>
+            <IS_IGNORED>0</IS_IGNORED>
+            <IS_DISABLED>0</IS_DISABLED>
+            <LAST_PROCESSED_DATETIME>2023-05-16T15:26:53Z</LAST_PROCESSED_DATETIME>
+          </DETECTION>
+          <DETECTION>
+            <QID>38628</QID>
+            <TYPE>Confirmed</TYPE>
+            <SEVERITY>3</SEVERITY>
+            <PORT>443</PORT>
+            <PROTOCOL>tcp</PROTOCOL>
+            <SSL>1</SSL>
+            <RESULTS><![CDATA[TLSv1.0 is supported]]></RESULTS>
+            <STATUS>Active</STATUS>
+            <FIRST_FOUND_DATETIME>2023-05-14T15:04:55Z</FIRST_FOUND_DATETIME>
+            <LAST_FOUND_DATETIME>2023-05-16T15:26:01Z</LAST_FOUND_DATETIME>
+            <TIMES_FOUND>217</TIMES_FOUND>
+            <LAST_TEST_DATETIME>2023-05-16T15:26:01Z</LAST_TEST_DATETIME>
+            <LAST_UPDATE_DATETIME>2023-05-16T15:26:53Z</LAST_UPDATE_DATETIME>
+            <IS_IGNORED>0</IS_IGNORED>
+            <IS_DISABLED>0</IS_DISABLED>
+            <LAST_PROCESSED_DATETIME>2023-05-16T15:26:53Z</LAST_PROCESSED_DATETIME>
+          </DETECTION>
+          <DETECTION>
+            <QID>38794</QID>
+            <TYPE>Confirmed</TYPE>
+            <SEVERITY>3</SEVERITY>
+            <PORT>443</PORT>
+            <PROTOCOL>tcp</PROTOCOL>
+            <SSL>1</SSL>
+            <RESULTS><![CDATA[TLSv1.1 is supported]]></RESULTS>
+            <STATUS>Active</STATUS>
+            <FIRST_FOUND_DATETIME>2023-05-14T15:04:55Z</FIRST_FOUND_DATETIME>
+            <LAST_FOUND_DATETIME>2023-05-16T15:26:01Z</LAST_FOUND_DATETIME>
+            <TIMES_FOUND>213</TIMES_FOUND>
+            <LAST_TEST_DATETIME>2023-05-16T15:26:01Z</LAST_TEST_DATETIME>
+            <LAST_UPDATE_DATETIME>2023-05-16T15:26:53Z</LAST_UPDATE_DATETIME>
+            <IS_IGNORED>0</IS_IGNORED>
+            <IS_DISABLED>0</IS_DISABLED>
+            <LAST_PROCESSED_DATETIME>2023-05-16T15:26:53Z</LAST_PROCESSED_DATETIME>
+          </DETECTION>
+        </DETECTION_LIST>
+      </HOST>
+      <HOST>
+        <ID>10112200</ID>
+        <IP>1.2.2.2</IP>
+        <TRACKING_METHOD>IP</TRACKING_METHOD>
+        <DNS><![CDATA[ec2-11-111-111-111.compute-1.amazonaws.com]]></DNS>
+        <DNS_DATA>
+          <HOSTNAME><![CDATA[ec2-11-111-111-111]]></HOSTNAME>
+          <DOMAIN><![CDATA[compute-1.amazonaws.com]]></DOMAIN>
+          <FQDN><![CDATA[ec2-11-111-111-111.compute-1.amazonaws.com]]></FQDN>
+        </DNS_DATA>
+        <LAST_SCAN_DATETIME>2023-03-21T03:43:11Z</LAST_SCAN_DATETIME>
+        <LAST_VM_SCANNED_DATE>2023-03-21T03:42:05Z</LAST_VM_SCANNED_DATE>
+        <LAST_VM_SCANNED_DURATION>404</LAST_VM_SCANNED_DURATION>
+        <DETECTION_LIST>
+          <DETECTION>
+            <QID>38726</QID>
+            <TYPE>Potential</TYPE>
+            <SEVERITY>3</SEVERITY>
+            <SSL>0</SSL>
+            <RESULTS><![CDATA[Vulnerable SSH-2.0-OpenSSH_7.4 detected on port 22 over TCP.]]></RESULTS>
+            <STATUS>New</STATUS>
+            <FIRST_FOUND_DATETIME>2023-05-16T15:26:53Z</FIRST_FOUND_DATETIME>
+            <LAST_FOUND_DATETIME>2023-03-21T03:42:05Z</LAST_FOUND_DATETIME>
+            <TIMES_FOUND>1</TIMES_FOUND>
+            <LAST_TEST_DATETIME>2023-03-21T03:42:05Z</LAST_TEST_DATETIME>
+            <LAST_UPDATE_DATETIME>2023-03-21T03:43:11Z</LAST_UPDATE_DATETIME>
+            <IS_IGNORED>0</IS_IGNORED>
+            <IS_DISABLED>0</IS_DISABLED>
+            <LAST_PROCESSED_DATETIME>2023-03-21T03:43:11Z</LAST_PROCESSED_DATETIME>
+          </DETECTION>
+          <DETECTION>
+            <QID>38739</QID>
+            <TYPE>Confirmed</TYPE>
+            <SEVERITY>3</SEVERITY>
+            <PORT>22</PORT>
+            <PROTOCOL>tcp</PROTOCOL>
+            <SSL>0</SSL>
+            <RESULTS><![CDATA[Type	Name
+key exchange	diffie-hellman-group1-sha1
+cipher	blowfish-cbc
+cipher	cast128-cbc
+cipher	3des-cbc]]></RESULTS>
+            <STATUS>New</STATUS>
+            <FIRST_FOUND_DATETIME>2023-03-21T03:42:05Z</FIRST_FOUND_DATETIME>
+            <LAST_FOUND_DATETIME>2023-03-21T03:42:05Z</LAST_FOUND_DATETIME>
+            <TIMES_FOUND>1</TIMES_FOUND>
+            <LAST_TEST_DATETIME>2023-03-21T03:42:05Z</LAST_TEST_DATETIME>
+            <LAST_UPDATE_DATETIME>2023-03-21T03:43:11Z</LAST_UPDATE_DATETIME>
+            <IS_IGNORED>0</IS_IGNORED>
+            <IS_DISABLED>0</IS_DISABLED>
+            <LAST_PROCESSED_DATETIME>2023-03-21T03:43:11Z</LAST_PROCESSED_DATETIME>
+          </DETECTION>
+        </DETECTION_LIST>
+      </HOST>
+    </HOST_LIST>
+  </RESPONSE>
+</HOST_LIST_VM_DETECTION_OUTPUT>
+<!-- This report was generated with an evaluation version of  //-->
+<!-- CONFIDENTIAL AND PROPRIETARY INFORMATION. Qualys provides the QualysGuard Service "As Is," without any warranty of any kind. Qualys makes no warranty that the information contained in this report is complete or error-free. Copyright 2023, Qualys, Inc. //-->

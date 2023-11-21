@@ -1,0 +1,104 @@
+commonfields:
+  id: TimeComponents
+  version: -1
+name: TimeComponents
+script: ''
+type: python
+tags:
+- transformer
+- date
+comment: |-
+  Takes a date or time input and get time components in a specific time zone.
+  Returns a dictionary with the following components.
+  - year
+  - year_4_digit
+  - month
+  - month_3_letter
+  - month_full_name
+  - month_2_digit
+  - day
+  - day_2_digit
+  - day_of_week (Sun:0, Sat:6)
+  - day_of_week_3_letter
+  - day_of_week_full_name
+  - day_of_year
+  - day_of_year_3_digit
+  - hour
+  - hour_12_clock
+  - hour_2_digit_24_clock
+  - hour_2_digit_12_clock
+  - hour_of_day
+  - minute
+  - minute_2_digit
+  - minute_of_day
+  - second
+  - second_2_digit
+  - second_of_day
+  - millisecond
+  - period_12_clock
+  - time_zone_hhmm
+  - time_zone_offset
+  - time_zone_abbreviations
+  - unix_epoch_time
+  - iso_8601
+  - y-m-d
+  - yyyy-mm-dd
+  - h:m:s
+  - H:m:s
+  - hh:mm:ss
+  - HH:mm:ss
+enabled: true
+args:
+- name: value
+  description: 'Input date or time in a format that is supported by the dateparser.parse() function as outlined here- https://dateparser.readthedocs.io/en/latest/#popular-formats. For example: ''2020-01-01'' or ''1999/02/03 12:01:59''. (Default is the current time)'
+- name: time_zone
+  description: The time zone (e.g. -0400, +09:00) or time string to extract a time zone
+- name: key
+  auto: PREDEFINED
+  predefined:
+  - year
+  - year_4_digit
+  - month
+  - month_3_letter
+  - month_full_name
+  - month_2_digit
+  - day
+  - day_2_digit
+  - day_of_week (Sun:0
+  - Sat:6)
+  - day_of_week_3_letter
+  - day_of_week_full_name
+  - day_of_year
+  - day_of_year_3_digit
+  - hour
+  - hour_12_clock
+  - hour_2_digit_24_clock
+  - hour_2_digit_12_clock
+  - hour_of_day
+  - minute
+  - minute_2_digit
+  - minute_of_day
+  - second
+  - second_2_digit
+  - second_of_day
+  - millisecond
+  - period_12_clock
+  - time_zone_hhmm
+  - time_zone_offset
+  - time_zone_abbreviations
+  - unix_epoch_time
+  - iso_8601
+  - y-m-d
+  - yyyy-mm-dd
+  - h:m:s
+  - H:m:s
+  - hh:mm:ss
+  - HH:mm:ss
+  description: The name of a key to choose which time component to return
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.10.12.63474
+runas: DBotWeakRole
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

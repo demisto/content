@@ -54,6 +54,8 @@ MOCK_TAG_LIST = [{
 
 @pytest.mark.parametrize('image', ['python', 'python-deb', 'python3', 'python3-deb'])
 def test_valid_docker_image(mocker, image):
+    import urllib3
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
     demisto_image = 'demisto/' + image
     args = {'docker_image': demisto_image, 'trust_any_certificate': 'yes'}
     mocker.patch.object(demisto, 'args', return_value=args)
@@ -70,6 +72,8 @@ def test_valid_docker_image(mocker, image):
 
 
 def test_invalid_docker_image(mocker):
+    import urllib3
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
     image_name = 'demisto/notrealdockerimage'
     mocker.patch.object(demisto, 'args', return_value={'docker_image': image_name, 'trust_any_certificate': 'yes'})
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)

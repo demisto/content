@@ -7,16 +7,20 @@ display: Koodous
 category: Forensics & Malware Analysis
 description: Check Android app samples (APK) against Koodous API
 configuration:
-- display: API Key
-  name: APIKey
-  defaultvalue:
-  type: 0
-  required: false
 - display: Server URL
   name: ServerURL
   defaultvalue: https://api.koodous.com/
   type: 0
   required: false
+- display: API Key
+  name: APIKey
+  defaultvalue:
+  type: 4
+  hidden: true
+- displaypassword: API Key
+  hiddenusername: true
+  name: apikey_creds
+  type: 9
 script:
   script: ''
   type: javascript

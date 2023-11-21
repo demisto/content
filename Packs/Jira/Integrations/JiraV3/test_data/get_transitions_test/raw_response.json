@@ -1,0 +1,53 @@
+{
+    "expand": "transitions",
+    "transitions": [
+        {
+            "id": "11",
+            "name": "Backlog",
+            "to": {
+                "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/status/10003",
+                "description": "",
+                "iconUrl": "https://api.atlassian.com/ex/jira/dummy_cloud_id/",
+                "name": "Backlog",
+                "id": "10003",
+                "statusCategory": {
+                    "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/statuscategory/2",
+                    "id": 2,
+                    "key": "new",
+                    "colorName": "blue-gray",
+                    "name": "To Do"
+                }
+            },
+            "hasScreen": false,
+            "isGlobal": true,
+            "isInitial": false,
+            "isAvailable": true,
+            "isConditional": false,
+            "isLooped": false
+        },
+        {
+            "id": "21",
+            "name": "In Development",
+            "to": {
+                "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/status/10004",
+                "description": "",
+                "iconUrl": "https://api.atlassian.com/ex/jira/dummy_cloud_id/",
+                "name": "Selected for Development",
+                "id": "10004",
+                "statusCategory": {
+                    "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/statuscategory/2",
+                    "id": 2,
+                    "key": "new",
+                    "colorName": "blue-gray",
+                    "name": "To Do"
+                }
+            },
+            "hasScreen": false,
+            "isGlobal": false,
+            "isInitial": false,
+            "isAvailable": true,
+            "isConditional": false,
+            "isLooped": false
+        }
+    ]
+}

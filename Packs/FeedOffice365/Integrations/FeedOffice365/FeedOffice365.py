@@ -8,22 +8,26 @@ from CommonServerPython import *
 # disable insecure warnings
 urllib3.disable_warnings()
 INTEGRATION_NAME = 'Office 365'
-ALL_REGIONS_LIST = ['Worldwide', 'China', 'Germany', 'USGovDoD', 'USGovGCCHigh']
+GERMANY = 'Germany'
+ALL_REGIONS_LIST = ['Worldwide', 'China', 'USGovDoD', 'USGovGCCHigh']
 ALL_CATEGORY_LIST = ['Optimize', 'Allow', 'Default']
 
 
-def build_region_or_category_list(param_list: list, all_config_list: list) -> list:
+def build_region_or_category_list(param_list: list, all_config_list: list, allow_germany: bool = False) -> list:
     """Builds the region or category list for the feed.
     If the param_list includes 'All',
     it will add all the items from the 'all_config_list' to the list, and remove the string all.
 
     Args:
+        allow_germany: In some cases, Germany endpoints can throw a 400 error, by default we exclude Germany from All
         param_list: list of regions or categories provided by integration configuration
         all_config_list: list of all the regions or categories, to be added if All is chosen
 
     Returns:
         list of regions or categories
     """
+    if allow_germany:
+        param_list.append(GERMANY)
     if 'All' in param_list:
         param_list.remove('All')
         return list(set(param_list + all_config_list))
@@ -119,6 +123,15 @@ class Client:
                                 f'Check your Server URL parameter.\n\n{err}')
             except requests.exceptions.HTTPError as err:
                 demisto.debug(f'Got an error from {feed_url} while fetching indicators {(str(err))} ')
+                if err.response.status_code == 503:
+                    raise Exception(f'The service located at {feed_url} is unavailable while fetching '
+                                    f'indicators {(str(err))} ')
+                elif err.response.status_code == 400 and region == GERMANY:
+                    raise Exception('The service returned a 400 status code, this could possibly be due to the Germany'
+                                    ' endpoint being unavailable. Please exclude Germany from All using the parameter'
+                                    ' Allow Germany.')
+                else:
+                    raise Exception(f'HTTP error in the API call to {INTEGRATION_NAME}.\n\n{err}')
             except ValueError as err:
                 demisto.debug(str(err))
                 raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {err}')
@@ -258,7 +271,8 @@ def main():
     """
     params = demisto.params()
     unique_id = str(uuid.uuid4())
-    regions_list = build_region_or_category_list(argToList(params.get('regions')), ALL_REGIONS_LIST)
+    regions_list = build_region_or_category_list(argToList(params.get('regions')), ALL_REGIONS_LIST,
+                                                 allow_germany=params.get('allow_germany'))
     services_list = argToList(params.get('services'))
     category_list = build_region_or_category_list(argToList(params.get('category', ['All'])), ALL_CATEGORY_LIST)
     urls_list = build_urls_dict(regions_list, services_list, unique_id)

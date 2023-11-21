@@ -1,20 +1,20 @@
 {
     "name": "Netmiko",
-    "description": "The Netmiko pack contains the Netmiko integration for executing commands supported by the Netmiko (Paramiko) Python library against hosts.",
-    "support": "community",
-    "currentVersion": "1.0.1",
-    "author": "Adam Burt",
+    "description": "The Netmiko pack uses the Netmiko/Paramiko libraries to execute commands via SSH on platforms supported by these python modules.",
+    "support": "xsoar",
+    "currentVersion": "1.0.12",
+    "author": "Josh Levine",
     "url": "",
     "email": "",
     "created": "2021-01-15T16:43:05Z",
     "categories": [
-        "Utilities"
+        "IT Services"
     ],
     "tags": [],
     "useCases": [],
     "keywords": [],
     "githubUser": [
-        "aburt-demisto"
+        "TerminalFin"
     ],
     "marketplaces": [
         "xsoar",

@@ -1,0 +1,35 @@
+{
+    "name": "CVE-2022-3786 & CVE-2022-3602 - OpenSSL X.509 Buffer Overflows",
+    "description": "This pack handles OpenSSL X.609 Buffer Overflows CVE-2022-3786 & RCE CVE-2022-3602 vulnerabilities.",
+    "support": "xsoar",
+    "currentVersion": "1.0.4",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Case Management"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "OpenSSL",
+        "CVE-2022-3786",
+        "CVE-2022-3602",
+        "3786",
+        "3602",
+        "RCE",
+        "Buffer Overflow",
+        "Buffer",
+        "Overflow"
+    ],
+    "dependencies": {
+        "MajorBreachesInvestigationandResponse": {
+            "mandatory": true,
+            "display_name": "Rapid Breach Response"
+        }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

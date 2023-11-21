@@ -153,22 +153,21 @@ def add_domain_command(client: Client, **args) -> str:
             destinations_limited = destinations_remaining[0:limit]
             payload = json.dumps([{'destination': destination, 'comment': comment} for destination in destinations_limited])
             r = client.add_domain(args.get('orgId'), args.get('destId'), data=payload)
-            # TODO: if one request fails, then return the successful, failed and remaining requests
             destinations_remaining = destinations_remaining[limit:]
     else:
         payload = json.dumps([{'destination': destination, 'comment': comment} for destination in destinations])
         r = client.add_domain(args.get('orgId'), args.get('destId'), data=payload)
 
-    return f'Domain {", ".join(destinations)} successfully added to list {r["data"]["name"]}'
+    return f'Domain(s) {", ".join(destinations)} successfully added to list {r["data"]["name"]}'
 
 
 def remove_domain_command(client: Client, **args) -> str:
     destinations = argToList(args.get('domainIds'))
     payload = "[" + ", ".join(destinations) + "]"
 
-    r = client.remove_domain(args.get('orgId'), args.get('destId'), data=payload)
+    client.remove_domain(args.get('orgId'), args.get('destId'), data=payload)
 
-    return f'Domain {", ".join(destinations)} successfully removed from list {r["data"]["name"]}'
+    return f'Domain(s) {", ".join(destinations)} successfully removed from list'
 
 
 def get_destination_domains_command(client: Client, **args) -> CommandResults:

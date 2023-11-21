@@ -21,7 +21,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| File | Entry ID of the file to detonate | File.None | Required |
+| File | Entry ID of the file to detonate | File | Required |
 
 ## Playbook Outputs
 ---

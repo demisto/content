@@ -1,0 +1,6 @@
+name: Cisco Meraki Parsing Rule
+id: Cisco_Meraki_ParsingRule
+fromversion: 6.10.0
+tags: []
+rules: ''
+samples: ''

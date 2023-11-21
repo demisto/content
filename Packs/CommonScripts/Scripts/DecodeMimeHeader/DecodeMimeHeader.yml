@@ -1,0 +1,20 @@
+commonfields:
+  id: DecodeMimeHeader
+  version: -1
+name: DecodeMimeHeader
+script: ''
+type: python
+subtype: python3
+tags: []
+comment: Decode MIME base64 headers.
+enabled: true
+args:
+- name: value
+  description: The header value to decode.
+outputs:
+- contextPath: DecodedMimeHeader
+  description: The result of decoded value.
+  type: string
+scripttarget: 0
+dockerimage: demisto/python3:3.10.12.63474
+fromversion: 5.0.0

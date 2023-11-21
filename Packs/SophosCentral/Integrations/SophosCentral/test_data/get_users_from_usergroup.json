@@ -1,0 +1,35 @@
+{
+    "items": [
+        {
+            "id": "55570a08-0a38-41e6-b075-e0a7eb96571d",
+            "name": "mock-first-name mock-last-name",
+            "firstName": "mock-first-name",
+            "lastName": "mock-last-name",
+            "email": "z7fgv3b2fayq1ntc7518@lightning.example.com",
+            "groups": {
+                "total": 1,
+                "itemsCount": 1,
+                "items": [
+                    {
+                        "id": "7a095ddc-bbac-4348-ab6d-fcc9754ede89",
+                        "name": "Sophos Central Group",
+                        "displayName": "Sophos Central Group"
+                    }
+                ]
+            },
+            "tenant": {
+                "id": "fb66cdd2-55ea-4927-ba59-529309e264f6"
+            },
+            "source": {
+                "type": "custom"
+            },
+            "createdAt": "2022-04-25T09:52:24.152Z",
+            "updatedAt": "2022-08-03T06:18:32.457Z"
+        }
+    ],
+    "pages": {
+        "current": 1,
+        "size": 50,
+        "maxSize": 100
+    }
+}

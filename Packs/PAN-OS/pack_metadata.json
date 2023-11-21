@@ -1,8 +1,8 @@
 {
-    "name": "PAN-OS",
-    "description": "Manage Palo Alto Networks Firewall and Panorama. For more information see Panorama documentation.",
+    "name": "PAN-OS by Palo Alto Networks",
+    "description": "Manage Palo Alto Networks Firewall and Panorama. Use this pack to manage Prisma Access through Panorama. For more information see Panorama documentation.",
     "support": "xsoar",
-    "currentVersion": "1.14.15",
+    "currentVersion": "2.1.14",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -10,9 +10,20 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Palo Alto Networks Products"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Panorama",
+        "Firewall",
+        "vsys",
+        "SASE",
+        "Access",
+        "Sinkhole",
+        "Sinkholing",
+        "DNS Sinkhole"
+    ],
     "dependencies": {
         "CommonPlaybooks": {
             "mandatory": true,
@@ -25,6 +36,7 @@
     },
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "xpanse"
     ]
 }

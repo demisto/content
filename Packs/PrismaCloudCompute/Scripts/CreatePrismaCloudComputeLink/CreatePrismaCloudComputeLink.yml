@@ -1,0 +1,26 @@
+args:
+- name: type
+  required: true
+  description: The type of WaaS alert.
+- name: imageName
+  required: true
+  description: The image name to investigate alerts for.
+- description: The base URL of the Prisma Cloud Compute Instance (https://<prisma-ip>:<prisma-port>).
+  name: baseUrl
+commonfields:
+  id: CreatePrismaCloudComputeLink
+  version: -1
+dockerimage: demisto/python3:3.10.11.56082
+enabled: true
+name: CreatePrismaCloudComputeLink
+runas: DBotWeakRole
+script: ''
+comment: This script creates a link back to the Prisma Cloud Compute instance.
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- PaloAltoNetworks_PrismaCloudCompute-Test
+

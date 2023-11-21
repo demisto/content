@@ -1,4 +1,6 @@
+import time
 import pytest
+import requests
 from unittest.mock import patch
 from freezegun import freeze_time
 
@@ -242,7 +244,7 @@ def test_service_record_create_command(mocker, sysaid_client):
     http_request = mocker.patch.object(sysaid_client, '_http_request')
     args = {'type': 'request', 'description': 'This is a test', 'title': 'Test SR from API', 'sr_type': '6', 'fields': 'all'}
     service_record_create_command(sysaid_client, args)
-    http_request.assert_called_with('GET', 'sr/template', params={'type': 'request'}, json_data={
+    http_request.assert_called_with('POST', 'sr', params={'type': 'request'}, json_data={
         'info': [{'key': 'description', 'value': 'This is a test'}, {'key': 'sr_type', 'value': '6'},
                  {'key': 'title', 'value': 'Test SR from API'}]}, cookies=COOKIES)
 
@@ -262,6 +264,118 @@ def test_service_record_delete_command(mocker, sysaid_client):
     service_record_delete_command(sysaid_client, args)
     http_request.assert_called_with('DELETE', 'sr', params={'ids': '2,32'}, json_data={'solution': None}, cookies=COOKIES,
                                     resp_type='response', ok_codes=(200, 400))
+
+
+def test_service_record_attach_file_command(mocker, sysaid_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - sysaid-service-record-attach-file command is executed
+    Then:
+        - The http request is called with the right arguments
+    """
+    from SysAid import service_record_attach_file_command
+    http_request = mocker.patch.object(sysaid_client, '_http_request')
+    file_name = 'file_name.png'
+    file_data = b'data'
+    mocker.patch('SysAid.read_file', return_value=(file_data, 4, file_name))
+
+    args = {'id': '37', 'file_id': '50@519fe085-179d-43f4-85c7-795eb4edd1a0'}
+    service_record_attach_file_command(sysaid_client, args)
+    http_request.assert_called_with('POST', 'sr/37/attachment', files={'file': (file_name, file_data, 'image/png')},
+                                    cookies=COOKIES, resp_type='response')
+
+
+def test_service_record_get_file_command(mocker, sysaid_client):
+    """
+    Given:
+        - sr_id = str(args.get('id'))
+        - file_id = str(args.get('file_id'))
+        - file_name = str(args.get('file_name'))
+    When:
+        - sysaid-service-record-get-file command is executed when the user wants to download files from a ticket
+    Then:
+        - The http request is called with the right arguments
+    """
+    from SysAid import service_record_get_file_command
+    mock_response = requests.Response
+    mock_response.status_code = 200
+    http_request = mocker.patch.object(sysaid_client, '_http_request', return_value=mock_response)
+    file_name = 'file_name.png'
+    file_data = b'data'
+    mocker.patch('SysAid.read_file', return_value=(file_data, 4, file_name))
+    mocker.patch('SysAid.fileResult', return_value='')
+
+    args = {'id': '37', 'file_id': '-80357423_-1872498142'}
+    service_record_get_file_command(sysaid_client, args)
+    http_request.assert_called_with('GET', 'sr/37/attachment/-80357423_-1872498142', cookies=COOKIES, resp_type='response')
+
+
+def test_service_record_delete_file_command(mocker, sysaid_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - sysaid-service-record-delete-file command is executed
+    Then:
+        - The http request is called with the right arguments
+    """
+    from SysAid import service_record_delete_file_command
+    http_request = mocker.patch.object(sysaid_client, '_http_request')
+    args = {'id': '2', 'file_id': '-1147906284_-769427333'}
+    service_record_delete_file_command(sysaid_client, args)
+    http_request.assert_called_with('DELETE', 'sr/2/attachment', json_data={'fileId': '-1147906284_-769427333'},
+                                    cookies=COOKIES, resp_type='response')
+
+
+def test_service_record_get_request(mocker, sysaid_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - sysaid-service-record-get command is executed
+    Then:
+        - The http request is called with the right arguments
+    """
+    from SysAid import service_record_get_command
+    http_request = mocker.patch.object(sysaid_client, '_http_request')
+    args = {'id': '37', 'fields': 'all'}
+    service_record_get_command(sysaid_client, args)
+    http_request.assert_called_with('GET', 'sr/37', params={}, cookies=COOKIES)
+
+
+@freeze_time(time.ctime(9999893300))
+def test_service_record_add_note_command(mocker, sysaid_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - sysaid-service-record-add-note command is executed
+    Then:
+        - The http request is called with the right arguments
+    """
+    from SysAid import service_record_add_note_command
+    http_request = mocker.patch.object(sysaid_client, '_http_request')
+    args = {'id': '29', 'note': 'this is a new note', 'username': 'xsoar_dev'}
+
+    service_record_add_note_command(sysaid_client, args)
+    data = {
+        "id": "29",
+        "info": [
+            {
+                "key": "notes",
+                "value": [
+                    {
+                        "userName": "xsoar_dev",
+                        "createDate": "9999893300000",
+                        "text": "this is a new note"
+                    }
+                ]
+            }
+        ]
+    }
+    http_request.assert_called_with('PUT', 'sr/29', json_data=data, cookies=COOKIES, resp_type='response')
 
 
 ''' HELPER FUNCTIONS TESTS '''
@@ -307,6 +421,20 @@ def test_create_readable_response_for_service_record():
     from SysAid import create_readable_response, service_record_handler
     assert create_readable_response(input_data.service_record_response,
                                     service_record_handler) == input_data.service_record_expected_output
+
+
+def test_create_response_for_service_record():
+    """
+    Given:
+        - Response to a command that retrieves service records
+    When:
+        - A command that retrieves service records is executed
+    Then:
+        - Returns the response for the command
+    """
+    from SysAid import create_readable_response, service_record_response_handler
+    assert create_readable_response(input_data.service_record_response,
+                                    service_record_response_handler) == input_data.service_record_expected_response_output
 
 
 @pytest.mark.parametrize('custom_fields_keys, custom_fields_values, expected_output', input_data.extract_filters_args)
@@ -455,7 +583,7 @@ def test_reduce_service_records_to_limit(service_records, limit, last_fetch, las
     """
     from SysAid import reduce_service_records_to_limit
     assert reduce_service_records_to_limit(service_records, limit, last_fetch, last_id_fetched) == \
-           (returned_last_fetch, returned_last_id_fetched, returned_service_records)
+        (returned_last_fetch, returned_last_id_fetched, returned_service_records)
 
 
 @pytest.mark.parametrize('service_records, limit, fetch_start_datetime, last_id_fetched, expected_last_fetch, '

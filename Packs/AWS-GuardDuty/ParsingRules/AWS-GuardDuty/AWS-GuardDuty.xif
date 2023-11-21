@@ -1,0 +1,3 @@
+[INGEST:vendor="aws", product="guardduty", target_dataset="aws_guardduty_raw", no_hit=keep]
+filter to_string(UpdatedAt) ~= ".*\d{2}:\d{2}:\d{2}.*"
+| alter _time = UpdatedAt;

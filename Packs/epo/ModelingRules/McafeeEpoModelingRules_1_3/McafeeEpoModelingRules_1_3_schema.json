@@ -1,0 +1,48 @@
+{
+  "mcafee_epo_raw": {
+    "ThreatEventID": {
+      "type": "string",
+      "is_array": false
+    },
+    "ThreatCategory": {
+      "type": "string",
+      "is_array": false
+    },
+    "TargetIPV4": {
+      "type": "int",
+      "is_array": false
+    },
+    "TargetIPV6": {
+      "type": "string",
+      "is_array": false
+    },
+    "TargetMAC": {
+      "type": "string",
+      "is_array": false
+    },                  
+    "ThreatSeverity": {
+      "type": "string",
+      "is_array": false
+    },
+    "ThreatName": {
+      "type": "string",
+      "is_array": false
+    },
+    "AnalyzerVersion": {
+      "type": "string",
+      "is_array": false
+    },
+    "NodeName": {
+      "type": "string",
+      "is_array": false
+    },
+    "ServerID": {
+      "type": "string",
+      "is_array": false
+    },
+    "AnalyzerName": {
+      "type": "string",
+      "is_array": false
+    }
+  }
+}

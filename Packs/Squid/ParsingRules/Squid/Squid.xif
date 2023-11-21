@@ -1,0 +1,7 @@
+[INGEST:vendor="squid", product="squid", target_dataset="squid_squid_raw", no_hit=keep]
+// Support only date time of epcoh format. For example: "1689081734.237"
+filter _raw_log ~= "^\d+\.\d+\s"
+| alter tmp_epcoh_time = to_float(arrayindex(regextract(_raw_log, "^(\d+\.\d+)\s"),0))
+| alter tmp_epcoh_time = to_integer(multiply(tmp_epcoh_time,1000))
+| alter _time = to_timestamp(to_integer(tmp_epcoh_time), "millis")
+| fields - tmp_epcoh_time;

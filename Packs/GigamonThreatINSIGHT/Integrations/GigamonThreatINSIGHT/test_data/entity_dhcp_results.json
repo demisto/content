@@ -1,0 +1,16 @@
+{
+  "query_type": "IP_ADDRESS",
+  "dhcp": [
+      {
+          "customer_id": "sen",
+          "hostnames": [
+              "Somebody-iPhone"
+          ],
+          "ip": "21.6.10.125",
+          "lease_end": "2018-01-11T22:29:48.526Z",
+          "lease_start": "2018-01-08T22:46:16.375Z",
+          "mac": "e8:80:2e:8c:57:e0",
+          "sensor_id": "sen2"
+      }
+  ]
+}

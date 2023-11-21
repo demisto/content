@@ -1,0 +1,31 @@
+{
+    "id": "indicator_irisdetectdiscovereddate",
+    "version": -1,
+    "modified": "2023-01-24T16:23:01.439260834+05:30",
+    "name": "Iris Detect Discovered Date",
+    "ownerOnly": false,
+    "cliName": "irisdetectdiscovereddate",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "DomainTools Iris Detect"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}

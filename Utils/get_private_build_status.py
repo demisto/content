@@ -12,7 +12,8 @@ from Utils.trigger_private_build import GET_WORKFLOW_URL, PRIVATE_REPO_WORKFLOW_
     GET_WORKFLOWS_TIMEOUT_THRESHOLD, WORKFLOW_HTML_URL
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+import urllib3
+urllib3.disable_warnings()
 
 
 def get_workflow_status(github_token: str, workflow_id: str) -> Tuple[str, str, str]:
@@ -65,8 +66,10 @@ def get_workflow_status(github_token: str, workflow_id: str) -> Tuple[str, str, 
         return 'completed', 'failure', failure_steps[0].get('name')
 
     # if the job is still in progress - get the current step
-    curr_step = next(step for step in jobs[0].get('steps') if step.get('status') == 'in_progress')
-
+    curr_step = next((step for step in jobs[0].get('steps') if step.get('status') == 'in_progress'), None)
+    if not curr_step:
+        logging.info('All the steps completed waiting for job to get updated, and finish')
+        return job_status, job_conclusion, 'unknown'
     return job_status, job_conclusion, curr_step.get('name')
 
 

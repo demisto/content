@@ -1,0 +1,33 @@
+alert_category: PRIVILEGE_ESCALATION
+alert_description: User''s permissions have changed from Guest to Owner
+alert_fields:
+  actor_process_image_name:
+  actor_process_image_path:
+  actor_process_command_line:
+  agent_device_domain:
+  actor_process_image_sha256:
+  agent_hostname:
+  action_local_ip:
+  action_remote_ip: xdm.source.ipv4
+  action_remote_port:
+  actor_effective_username: xdm.target.resource.name
+alert_name: Gitlab - User Permission Changed
+crontab: '*/10 * * * *'
+dataset: alerts
+description: Alert for change in user''s permissions change from Guest to Owner.
+drilldown_query_timeframe: ALERT
+execution_mode: SCHEDULED
+global_rule_id: 73ffe0c0-d4ef-498b-b740-e461cf4e498b
+investigation_query_link: "datamodel\r\n| filter xdm.observer.vendor = \"gitlab\" and xdm.observer.product = \"gitlab\"\r\n| fields _time\r\n,xdm.event.id \r\n,xdm.source.user.identifier \r\n,xdm.target.resource.id \r\n,xdm.target.resource.type \r\n,xdm.source.user.username \r\n,xdm.target.resource.sub_type \r\n,xdm.target.resource.name \r\n,xdm.event.description \r\n,xdm.source.ipv4 \r\n,xdm.target.resource_before.value \r\n,xdm.target.resource.value \r\n,xdm.event.operation \r\n,xdm.event.type \r\n,xdm.event.operation_sub_type \r\n| filter xdm.event.operation = \"change_access_level\" and xdm.target.resource_before.value = \"Guest\" and xdm.target.resource.value = \"Owner\""
+mapping_strategy: CUSTOM
+mitre_defs: {}
+name: Gitlab - User Permission Changed
+search_window: 10 minutes
+severity: SEV_030_MEDIUM
+suppression_duration: 10 minutes
+suppression_enabled: true
+suppression_fields: xdm.source.user.username
+user_defined_category:
+user_defined_severity:
+xql_query: "datamodel\r\n| filter xdm.observer.vendor = \"gitlab\" and xdm.observer.product = \"gitlab\"\r\n| fields _time\r\n,xdm.event.id \r\n,xdm.source.user.identifier \r\n,xdm.target.resource.id \r\n,xdm.target.resource.type \r\n,xdm.source.user.username \r\n,xdm.target.resource.sub_type \r\n,xdm.target.resource.name \r\n,xdm.event.description \r\n,xdm.source.ipv4 \r\n,xdm.target.resource_before.value \r\n,xdm.target.resource.value \r\n,xdm.event.operation \r\n,xdm.event.type \r\n,xdm.event.operation_sub_type \r\n| filter xdm.event.operation = \"change_access_level\" and xdm.target.resource_before.value = \"Guest\" and xdm.target.resource.value = \"Owner\""
+fromversion: 6.10.0

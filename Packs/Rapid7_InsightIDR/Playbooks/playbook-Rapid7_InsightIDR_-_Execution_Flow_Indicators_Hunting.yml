@@ -1,0 +1,2001 @@
+id: Rapid7 InsightIDR - Execution Flow Indicators Hunting
+version: -1
+name: Rapid7 InsightIDR - Execution Flow Indicators Hunting
+description: "This playbook queries Rapid7 InsightIDR SIEM for execution flow indicators, including registry values, registry keys, registry hives, commands, processes name, and applications. \n\nNote that multiple search values should be separated by commas only (without spaces or any special characters)."
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a52d8420-7a8c-4987-866d-15dd05511bae
+    type: start
+    task:
+      id: a52d8420-7a8c-4987-866d-15dd05511bae
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "56"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -6230,
+          "y": -2330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: d5e74867-89b4-403b-8892-a224d4d3dce1
+    type: title
+    task:
+      id: d5e74867-89b4-403b-8892-a224d4d3dce1
+      version: -1
+      name: Application Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "147"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3000,
+          "y": -2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 55463bf4-d0d5-4869-8c00-018e47aaed68
+    type: regular
+    task:
+      id: 55463bf4-d0d5-4869-8c00-018e47aaed68
+      version: -1
+      name: Rapid7 InsightIDR query - application
+      description: Queries within a log set for certain values.
+      script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
+      type: regular
+      iscommand: true
+      brand: Rapid7 InsightIDR
+    nexttasks:
+      '#none#':
+      - "131"
+    scriptarguments:
+      end_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: end_time
+      log_set_id:
+        complex:
+          root: inputs.LogSetId
+      logs_per_page:
+        complex:
+          root: inputs.logs_per_page
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+          - - operator: lessThanOrEqual
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+              right:
+                value:
+                  simple: "500"
+      query:
+        simple: where(${inputs.InsightIDRAppField} CONTAINS-ANY [${ApplicationParsed}])
+      sequence_number:
+        complex:
+          root: inputs.sequence_number
+      start_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: start_time
+      time_range:
+        complex:
+          root: inputs.time_range
+          filters:
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2780,
+          "y": -1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: fb5cd1e8-9f1f-4324-8ad1-20611359bdea
+    type: condition
+    task:
+      id: fb5cd1e8-9f1f-4324-8ad1-20611359bdea
+      version: -1
+      name: Is Rapid7 InsightIDR enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "175"
+      "yes":
+      - "89"
+      - "94"
+      - "95"
+      - "88"
+      - "87"
+      - "7"
+    scriptarguments:
+      brandname:
+        simple: Rapid7 InsightIDR
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -6230,
+          "y": -2200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "82":
+    id: "82"
+    taskid: 6e28f484-5d30-4498-8cc9-dbc2cf414564
+    type: regular
+    task:
+      id: 6e28f484-5d30-4498-8cc9-dbc2cf414564
+      version: -1
+      name: Rapid7 InsightIDR query - registry value
+      description: Queries within a log set for certain values.
+      script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
+      type: regular
+      iscommand: true
+      brand: Rapid7 InsightIDR
+    nexttasks:
+      '#none#':
+      - "132"
+    scriptarguments:
+      end_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: end_time
+      log_set_id:
+        complex:
+          root: inputs.LogSetId
+      logs_per_page:
+        complex:
+          root: inputs.logs_per_page
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+          - - operator: lessThanOrEqual
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+              right:
+                value:
+                  simple: "500"
+      query:
+        simple: where(${inputs.InsightIDRRegistryValueField} CONTAINS-ANY [${RegistryValueParsed}])
+      sequence_number:
+        complex:
+          root: inputs.sequence_number
+      start_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: start_time
+      time_range:
+        complex:
+          root: inputs.time_range
+          filters:
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3380,
+          "y": -1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "83":
+    id: "83"
+    taskid: c5be0c45-d500-4aac-8388-b6722b6c2980
+    type: regular
+    task:
+      id: c5be0c45-d500-4aac-8388-b6722b6c2980
+      version: -1
+      name: Rapid7 InsightIDR query - registry hives
+      description: Queries within a log set for certain values.
+      script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
+      type: regular
+      iscommand: true
+      brand: Rapid7 InsightIDR
+    nexttasks:
+      '#none#':
+      - "134"
+    scriptarguments:
+      end_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: end_time
+      log_set_id:
+        complex:
+          root: inputs.LogSetId
+      logs_per_page:
+        complex:
+          root: inputs.logs_per_page
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+          - - operator: lessThanOrEqual
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+              right:
+                value:
+                  simple: "500"
+      query:
+        simple: where(${inputs.InsightIDRRegistryHivesField} CONTAINS-ANY [${RegistryHivesParsed}])
+      sequence_number:
+        complex:
+          root: inputs.sequence_number
+      start_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: start_time
+      time_range:
+        complex:
+          root: inputs.time_range
+          filters:
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4570,
+          "y": -1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "84":
+    id: "84"
+    taskid: e7b3bd2f-08de-4985-81c1-e7dd7ee4fbcf
+    type: regular
+    task:
+      id: e7b3bd2f-08de-4985-81c1-e7dd7ee4fbcf
+      version: -1
+      name: Rapid7 InsightIDR query - registry key
+      description: Queries within a log set for certain values.
+      script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
+      type: regular
+      iscommand: true
+      brand: Rapid7 InsightIDR
+    nexttasks:
+      '#none#':
+      - "133"
+    scriptarguments:
+      end_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: end_time
+      log_set_id:
+        complex:
+          root: inputs.LogSetId
+      logs_per_page:
+        complex:
+          root: inputs.logs_per_page
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+          - - operator: lessThanOrEqual
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+              right:
+                value:
+                  simple: "500"
+      query:
+        simple: where(${inputs.InsightIDRRegistryKeyField} CONTAINS-ANY [${RegistryKeyParsed}])
+      sequence_number:
+        complex:
+          root: inputs.sequence_number
+      start_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: start_time
+      time_range:
+        complex:
+          root: inputs.time_range
+          filters:
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3970,
+          "y": -1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "87":
+    id: "87"
+    taskid: d5a28d92-d341-47d6-8529-edf529650cb1
+    type: title
+    task:
+      id: d5a28d92-d341-47d6-8529-edf529650cb1
+      version: -1
+      name: Registry Value Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "148"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3600,
+          "y": -2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "88":
+    id: "88"
+    taskid: f1c8be57-0360-46b9-8fe1-ced2761f05e1
+    type: title
+    task:
+      id: f1c8be57-0360-46b9-8fe1-ced2761f05e1
+      version: -1
+      name: Registry Key Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "149"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4190,
+          "y": -2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "89":
+    id: "89"
+    taskid: 59e1bf56-b676-4949-8821-46bfe2b48cf4
+    type: title
+    task:
+      id: 59e1bf56-b676-4949-8821-46bfe2b48cf4
+      version: -1
+      name: Registry Hives Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "150"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4790,
+          "y": -2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "90":
+    id: "90"
+    taskid: b9ec980d-e399-41f7-8f3b-205f933d814a
+    type: regular
+    task:
+      id: b9ec980d-e399-41f7-8f3b-205f933d814a
+      version: -1
+      name: Rapid7 InsightIDR query - command line
+      description: Queries within a log set for certain values.
+      script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
+      type: regular
+      iscommand: true
+      brand: Rapid7 InsightIDR
+    nexttasks:
+      '#none#':
+      - "136"
+    scriptarguments:
+      end_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: end_time
+      log_set_id:
+        complex:
+          root: inputs.LogSetId
+      logs_per_page:
+        complex:
+          root: inputs.logs_per_page
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+          - - operator: lessThanOrEqual
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+              right:
+                value:
+                  simple: "500"
+      query:
+        simple: where(${inputs.InsightIDRCommandLineField} CONTAINS-ANY [${CommandLineParsed}])
+      sequence_number:
+        complex:
+          root: inputs.sequence_number
+      start_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: start_time
+      time_range:
+        complex:
+          root: inputs.time_range
+          filters:
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -5770,
+          "y": -1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "91":
+    id: "91"
+    taskid: b8f3b282-a963-4ace-89e0-89b00fcda9d2
+    type: regular
+    task:
+      id: b8f3b282-a963-4ace-89e0-89b00fcda9d2
+      version: -1
+      name: Rapid7 InsightIDR query - process name
+      description: Queries within a log set for certain values.
+      script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
+      type: regular
+      iscommand: true
+      brand: Rapid7 InsightIDR
+    nexttasks:
+      '#none#':
+      - "135"
+    scriptarguments:
+      end_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: end_time
+      log_set_id:
+        complex:
+          root: inputs.LogSetId
+      logs_per_page:
+        complex:
+          root: inputs.logs_per_page
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+          - - operator: lessThanOrEqual
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+              right:
+                value:
+                  simple: "500"
+      query:
+        simple: where(${inputs.InsightIDRProcessNameField} CONTAINS-ANY [${ProcessNameParsed}])
+      sequence_number:
+        complex:
+          root: inputs.sequence_number
+      start_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: start_time
+      time_range:
+        complex:
+          root: inputs.time_range
+          filters:
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -5170,
+          "y": -1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "94":
+    id: "94"
+    taskid: 3b5e321a-479d-4ac7-85c1-15655fdd4513
+    type: title
+    task:
+      id: 3b5e321a-479d-4ac7-85c1-15655fdd4513
+      version: -1
+      name: Process Name Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "151"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -5390,
+          "y": -2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "95":
+    id: "95"
+    taskid: 7a575160-eddb-4980-8bd7-e36e64be7326
+    type: title
+    task:
+      id: 7a575160-eddb-4980-8bd7-e36e64be7326
+      version: -1
+      name: Command Line Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "152"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -5990,
+          "y": -2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "131":
+    id: "131"
+    taskid: aa6a8857-2fb0-42e8-84be-1e39458ad01f
+    type: title
+    task:
+      id: aa6a8857-2fb0-42e8-84be-1e39458ad01f
+      version: -1
+      name: Application Hunting Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "176"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3000,
+          "y": -1395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "132":
+    id: "132"
+    taskid: 98f92b56-2d4f-43ef-8631-ad14b6113f3e
+    type: title
+    task:
+      id: 98f92b56-2d4f-43ef-8631-ad14b6113f3e
+      version: -1
+      name: Registry Value Hunting Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "176"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3600,
+          "y": -1395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "133":
+    id: "133"
+    taskid: 7a296b4d-29b2-48d8-80ad-5514de8fa44a
+    type: title
+    task:
+      id: 7a296b4d-29b2-48d8-80ad-5514de8fa44a
+      version: -1
+      name: Registry Key Hunting Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "176"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4190,
+          "y": -1395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "134":
+    id: "134"
+    taskid: 9dc07cdf-e8eb-473f-8a2e-1441b044f4bd
+    type: title
+    task:
+      id: 9dc07cdf-e8eb-473f-8a2e-1441b044f4bd
+      version: -1
+      name: Registry Hives Hunting Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "176"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4790,
+          "y": -1395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "135":
+    id: "135"
+    taskid: 0ea07ce0-ad4d-460c-8ac2-526d1a440c18
+    type: title
+    task:
+      id: 0ea07ce0-ad4d-460c-8ac2-526d1a440c18
+      version: -1
+      name: Process Name Hunting Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "176"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -5390,
+          "y": -1395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "136":
+    id: "136"
+    taskid: 8f4267df-50cb-43bd-8bbe-73c6205ad9f0
+    type: title
+    task:
+      id: 8f4267df-50cb-43bd-8bbe-73c6205ad9f0
+      version: -1
+      name: Command Line Hunting Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "176"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -5990,
+          "y": -1395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "147":
+    id: "147"
+    taskid: aecf57c4-b0be-4108-8d63-b1082934b9f9
+    type: condition
+    task:
+      id: aecf57c4-b0be-4108-8d63-b1082934b9f9
+      version: -1
+      name: Any application to hunt for?
+      description: |
+        Checks whether any applications are available for threat hunting.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "131"
+      "yes":
+      - "153"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Application
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3000,
+          "y": -1900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "148":
+    id: "148"
+    taskid: 036b07b5-1444-49fb-84ea-f822cc3a4bdd
+    type: condition
+    task:
+      id: 036b07b5-1444-49fb-84ea-f822cc3a4bdd
+      version: -1
+      name: Any registry value to hunt for?
+      description: |
+        Checks whether any registry values are available for threat hunting.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "132"
+      "yes":
+      - "154"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.RegistryValue
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3600,
+          "y": -1900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "149":
+    id: "149"
+    taskid: 505ce6e7-7573-4644-8eca-501733502538
+    type: condition
+    task:
+      id: 505ce6e7-7573-4644-8eca-501733502538
+      version: -1
+      name: Any registry key to hunt for?
+      description: |
+        Checks whether any registry keys are available for threat hunting.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "133"
+      "yes":
+      - "155"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.RegistryKey
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4190,
+          "y": -1900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "150":
+    id: "150"
+    taskid: ca129bb1-acb0-49f2-8807-596758fe4cd8
+    type: condition
+    task:
+      id: ca129bb1-acb0-49f2-8807-596758fe4cd8
+      version: -1
+      name: Any registry hives to hunt for?
+      description: |
+        Checks whether any registry hives are available for threat hunting.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "134"
+      "yes":
+      - "156"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.RegistryHives
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4790,
+          "y": -1900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "151":
+    id: "151"
+    taskid: 421fd0bc-2f86-4f20-8660-9f8f6e8a7403
+    type: condition
+    task:
+      id: 421fd0bc-2f86-4f20-8660-9f8f6e8a7403
+      version: -1
+      name: Any process name to hunt for?
+      description: |
+        Checks whether any process names are available for threat hunting.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "135"
+      "yes":
+      - "157"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.ProcessName
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -5390,
+          "y": -1900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "152":
+    id: "152"
+    taskid: 8d9713de-7bdd-4634-87fa-b2a2f354afa0
+    type: condition
+    task:
+      id: 8d9713de-7bdd-4634-87fa-b2a2f354afa0
+      version: -1
+      name: Any command line to hunt for?
+      description: |
+        Checks whether any commands are available for threat hunting.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "136"
+      "yes":
+      - "158"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.CommandLine
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -5990,
+          "y": -1900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "153":
+    id: "153"
+    taskid: e32caedd-4a67-4d3d-89f6-1a789e3f2688
+    type: regular
+    task:
+      id: e32caedd-4a67-4d3d-89f6-1a789e3f2688
+      version: -1
+      name: Set application search argument
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      key:
+        simple: ApplicationParsed
+      value:
+        complex:
+          root: inputs.Application
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.Application
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2780,
+          "y": -1730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "154":
+    id: "154"
+    taskid: 29538faa-ca09-4cf8-83fe-3b7784360521
+    type: regular
+    task:
+      id: 29538faa-ca09-4cf8-83fe-3b7784360521
+      version: -1
+      name: Set registry value search argument
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "82"
+    scriptarguments:
+      key:
+        simple: RegistryValueParsed
+      value:
+        complex:
+          root: inputs.RegistryValue
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.RegistryValue
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3380,
+          "y": -1730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "155":
+    id: "155"
+    taskid: caabb1f8-43bb-49db-8086-95c06aa277b9
+    type: regular
+    task:
+      id: caabb1f8-43bb-49db-8086-95c06aa277b9
+      version: -1
+      name: Set registry key search argument
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "84"
+    scriptarguments:
+      key:
+        simple: RegistryKeyParsed
+      value:
+        complex:
+          root: inputs.RegistryKey
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.RegistryKey
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3970,
+          "y": -1730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "156":
+    id: "156"
+    taskid: e98dfd6b-acbf-4e9b-8628-2be4fb6f386e
+    type: regular
+    task:
+      id: e98dfd6b-acbf-4e9b-8628-2be4fb6f386e
+      version: -1
+      name: Set registry hives search argument
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "83"
+    scriptarguments:
+      key:
+        simple: RegistryHivesParsed
+      value:
+        complex:
+          root: inputs.RegistryHives
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.RegistryHives
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4570,
+          "y": -1730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "157":
+    id: "157"
+    taskid: c590c90b-9c94-4bf7-8cd7-8d25ec86bd6b
+    type: regular
+    task:
+      id: c590c90b-9c94-4bf7-8cd7-8d25ec86bd6b
+      version: -1
+      name: Set process name search argument
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "91"
+    scriptarguments:
+      key:
+        simple: ProcessNameParsed
+      value:
+        complex:
+          root: inputs.ProcessName
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.ProcessName
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -5170,
+          "y": -1730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "158":
+    id: "158"
+    taskid: 7ef701df-2ce2-4445-8f0f-174be38bc127
+    type: regular
+    task:
+      id: 7ef701df-2ce2-4445-8f0f-174be38bc127
+      version: -1
+      name: Set command line search argument
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "90"
+    scriptarguments:
+      key:
+        simple: CommandLineParsed
+      value:
+        complex:
+          root: inputs.CommandLine
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.CommandLine
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -5770,
+          "y": -1730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "175":
+    id: "175"
+    taskid: 426e4bed-833f-49fb-8f12-08453c5fc526
+    type: title
+    task:
+      id: 426e4bed-833f-49fb-8f12-08453c5fc526
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -6230,
+          "y": -1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "176":
+    id: "176"
+    taskid: ca9d2a88-b264-441e-8ea3-7da09a928b17
+    type: regular
+    task:
+      id: ca9d2a88-b264-441e-8ea3-7da09a928b17
+      version: -1
+      name: Save Queries Results
+      description: Loads a json from string input, and returns a json object result
+      scriptName: LoadJSON
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "175"
+    scriptarguments:
+      extend-context:
+        simple: Rapid7InsightIDR.HuntingResults=
+      ignore-outputs:
+        simple: "true"
+      input:
+        complex:
+          root: Rapid7InsightIDR.Event
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Event
+                iscontext: true
+          accessor: message
+          transformers:
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: \
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4490,
+          "y": -1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "56_175_#default#": 0.79,
+      "56_7_yes": 0.9,
+      "56_87_yes": 0.88,
+      "56_88_yes": 0.84,
+      "56_89_yes": 0.78,
+      "56_94_yes": 0.65,
+      "56_95_yes": 0.38
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1315,
+        "width": 3830,
+        "x": -6230,
+        "y": -2330
+      }
+    }
+  }
+inputs:
+- key: Application
+  value: {}
+  required: false
+  description: |-
+    A single or multiple application names to search for within Rapid7 InsightIDR logs.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: InsightIDRAppField
+  value: {}
+  required: false
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the application names.
+  playbookInputQuery:
+- key: RegistryValue
+  value: {}
+  required: false
+  description: |-
+    A single or multiple registry values to search for within Rapid7 InsightIDR logs.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: InsightIDRRegistryValueField
+  value: {}
+  required: false
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the registry values.
+  playbookInputQuery:
+- key: RegistryKey
+  value: {}
+  required: false
+  description: |-
+    A single or multiple registry keys to search for within Rapid7 InsightIDR logs.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: InsightIDRRegistryKeyField
+  value: {}
+  required: false
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the registry keys.
+  playbookInputQuery:
+- key: RegistryHives
+  value: {}
+  required: false
+  description: |-
+    Only relevant for hunting on Windows hosts.
+    A single or multiple registry hives to search for within Rapid7 InsightIDR logs.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: InsightIDRRegistryHivesField
+  value: {}
+  required: false
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the registry hives.
+  playbookInputQuery:
+- key: CommandLine
+  value: {}
+  required: false
+  description: |-
+    A single or multiple command to search for within Rapid7 InsightIDR logs.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: InsightIDRCommandLineField
+  value: {}
+  required: false
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the command's lines.
+  playbookInputQuery:
+- key: ProcessName
+  value: {}
+  required: false
+  description: |-
+    A single or multiple process names to search for within Rapid7 InsightIDR logs.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: InsightIDRProcessNameField
+  value: {}
+  required: false
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the process names.
+  playbookInputQuery:
+- key: LogSetId
+  value: {}
+  required: true
+  description: An identifier for a Rapid7 InsightIDR log set to query.
+  playbookInputQuery:
+- key: time_range
+  value: {}
+  required: false
+  description: |-
+    Specify the timeframe in which the Rapid7 InsightIDR logs will be searched. Most start with 'last' (e.g., last 2 months, last 10 minutes).
+    The 'start_time' and 'end_time' inputs should not be used if the time_range input is specified.
+
+    Supported time units (case insensitive):
+    min(s) or minute(s)
+    hr(s) or hour(s)
+    day(s)
+    week(s)
+    month(s)
+    year(s)
+  playbookInputQuery:
+- key: logs_per_page
+  value: {}
+  required: false
+  description: Specify the maximum number of log entries to return per page, up to 500 (the maximum allowed). By default, 50 is set.
+  playbookInputQuery:
+- key: sequence_number
+  value: {}
+  required: false
+  description: |-
+    The earliest sequence number of a log entry to start searching.
+
+    If this query parameter is included, the query results will additionally include all log entries received in the 'start_time' millisecond which have sequence numbers larger than the one specified.
+
+    Sequence numbers are identifiers used to distinguish between log entries received in the same millisecond. If a log entry was split up into several log entries during ingestion, then those chunks are ordered by sequence number.
+  playbookInputQuery:
+- key: start_time
+  value: {}
+  required: false
+  description: |-
+    Specify the query start time at which the Rapid7 InsightIDR logs will be searched, as a UNIX timestamp in milliseconds.
+
+    For example, if you wish to begin searching 1 week ago, the UNIX timestamp value is 604800.
+  playbookInputQuery:
+- key: end_time
+  value: {}
+  required: false
+  description: |-
+    Specify the query end time at which the Rapid7 InsightIDR logs will be searched, as a UNIX timestamp in milliseconds.
+
+    For example, to end searching a day ago, the UNIX timestamp value would be 86400.
+  playbookInputQuery:
+outputs:
+- contextPath: Rapid7InsightIDR.HuntingResults
+  description: Events log objects containing relevant fields.
+  type: string
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

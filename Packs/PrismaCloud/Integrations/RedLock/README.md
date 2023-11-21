@@ -133,26 +133,33 @@ Gets the details of an alert based on alert ID
 `redlock-get-alert-details`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| alert-id | The alert ID | Required |
-| detailed | Allows for retrieving entire / trimmed alert model | Optional |
+| **Argument Name** | **Description**                                                                                                                                                                                                                        | **Required** |
+|-------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| alert-id          | The alert ID                                                                                                                                                                                                                           | Required     |
+| detailed          | Allows for retrieving entire / trimmed alert model                                                                                                                                                                                     | Optional     |
+| resource_keys     | List of additional keys to return from the resource JSON, specified as a comma separated list (e.g. "key1,key2,key3").<br/>To preview all available resource JSON data, run redlock-get-alert-details with the "raw-response=true" option.  | Optional     |
+
 
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Redlock.Alert.ID | string | The alert ID |
-| Redlock.Alert.Status | string | The alert status |
-| Redlock.Alert.AlertTime | date | The time of the alert |
-| Redlock.Alert.Policy.ID | string | The policy ID |
-| Redlock.Alert.Policy.Name | string | The policy name |
-| Redlock.Alert.Policy.Type | string | The type of policy |
-| Redlock.Alert.Policy.Severity | string | The policy severity |
-| Redlock.Alert.Policy.Remediable | boolean | Whether or not the policy is remediable |
-| Redlock.Alert.RiskDetail.Rating | string | The risk rating |
-| Redlock.Alert.RiskDetail.Score | string | The risk score |
+| **Path**                         | **Type** | **Description**                                                                               |
+|----------------------------------|----------|-----------------------------------------------------------------------------------------------|
+| Redlock.Alert.ID                 | string   | The alert ID                                                                                  |
+| Redlock.Alert.Status             | string   | The alert status                                                                              |
+| Redlock.Alert.AlertTime          | date     | The time of the alert                                                                         |
+| Redlock.Alert.Policy.ID          | string   | The policy ID                                                                                 |
+| Redlock.Alert.Policy.Name        | string   | The policy name                                                                               |
+| Redlock.Alert.Policy.Type        | string   | The type of policy                                                                            |
+| Redlock.Alert.Policy.Severity    | string   | The policy severity                                                                           |
+| Redlock.Alert.Policy.Remediable  | boolean  | Whether or not the policy is remediable                                                       |
+| Redlock.Alert.RiskDetail.Rating  | string   | The risk rating                                                                               |
+| Redlock.Alert.RiskDetail.Score   | string   | The risk score                                                                                |
+| Redlock.Alert.Resource.ID        | string   | The Resource ID of the cloud resource                                                         |
+| Redlock.Alert.Resource.Name      | string   | The Resource Name of the cloud resource                                                       |
+| Redlock.Alert.Resource.Account   | string   | The cloud account name where the resource resides                                             |
+| Redlock.Alert.Resource.AccountID | string   | The cloud account ID where the resource resides                                               |
+| Redlock.Alert.Resource.Data      | json     | Additional keys from Resource.Data.  Only appears when *resource_keys* argument is specified. |
 
 
 #### Command Example
@@ -910,7 +917,7 @@ Search configuration inventory on the Prisma Cloud (RedLock) platform using RQL 
                     {
                         "association": {
                             "ipOwnerId": "amazon",
-                            "publicDnsName": "ec2-35-180-1-1.eu-west-3.compute.amazonaws.com",
+                            "publicDnsName": "ec2-x-x-x-x.eu-west-1.compute.amazonaws.com",
                             "publicIp": "35.180.1.1"
                         },
                         "attachment": {
@@ -938,7 +945,7 @@ Search configuration inventory on the Prisma Cloud (RedLock) platform using RQL 
                             {
                                 "association": {
                                     "ipOwnerId": "amazon",
-                                    "publicDnsName": "ec2-35-180-1-1.eu-west-3.compute.amazonaws.com",
+                                    "publicDnsName": "ec2-x-x-x-x.eu-west-1.compute.amazonaws.com",
                                     "publicIp": "35.180.1.1"
                                 },
                                 "primary": true,
@@ -960,7 +967,7 @@ Search configuration inventory on the Prisma Cloud (RedLock) platform using RQL 
                 "privateDnsName": "ip-172-31-34-235.eu-west-3.compute.internal",
                 "privateIpAddress": "172.31.34.235",
                 "productCodes": [],
-                "publicDnsName": "ec2-35-180-1-1.eu-west-3.compute.amazonaws.com",
+                "publicDnsName": "ec2-x-x-x-x.eu-west-1.compute.amazonaws.com",
                 "publicIpAddress": "35.180.1.1",
                 "rootDeviceName": "/dev/sda1",
                 "rootDeviceType": "ebs",

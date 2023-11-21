@@ -1,0 +1,460 @@
+{
+    "dashboards_data": [
+        {
+            "name": "CyberArk Posture Overview",
+            "description": "This dashboard displays security related information from the CyberArk account",
+            "status": "ENABLED",
+            "layout": [
+                {
+                    "id": "row-1321",
+                    "data": [
+                        {
+                            "key": "xql_1668684048672",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 50,
+                                "height": 466,
+                                "params": [],
+                                "phrase": "datamodel \r\n|filter xdm.observer.vendor=\"cyberark\" and  xdm.observer.product=\"identity\"\r\n|filter xdm.source.ipv4 != null \r\n|comp count(xdm.source.ipv4) as Count by xdm.source.ipv4 \r\n|iploc xdm.source.ipv4 loc_country as country\r\n| view graph type = map header = \"IP Locations\" xaxis = country yaxis = Count headerfontsize = 15 legendfontsize = 10 legend = `false` ",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "map",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"IP Locations\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "country"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "Count"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "headerfontsize",
+                                                "value": "15"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legendfontsize",
+                                                "value": "10"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legend",
+                                                "value": "`false`"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1668683909917",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 50,
+                                "height": 466,
+                                "params": [],
+                                "phrase": "datamodel \r\n|filter xdm.observer.vendor=\"cyberark\" and  xdm.observer.product=\"identity\"\r\n| filter xdm.target.resource.name  !=\"\"\r\n|filter xdm.event.type=\"Cloud.Saas.Application.App*\"\r\n|comp count(xdm.target.resource.name) as `Count` by xdm.target.resource.name\r\n|fields xdm.target.resource.name, Count\r\n|filter count!=0\r\n| view graph type = pie xaxis = xdm.target.resource.name yaxis = Count ",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "pie",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "xdm.target.resource.name"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "Count"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-8766",
+                    "data": [
+                        {
+                            "key": "xql_1668683958060",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 466,
+                                "params": [],
+                                "phrase": "datamodel \r\n|filter xdm.observer.vendor=\"cyberark\" and  xdm.observer.product=\"identity\"\r\n|filter xdm.auth.auth_method!=\"\"\r\n|filter xdm.auth.auth_method!=\"None\"\r\n|comp count(xdm.auth.auth_method) as `Count` by xdm.auth.auth_method\r\n|fields xdm.auth.auth_method, Count\r\n| view graph type = column subtype = grouped xaxis = xdm.auth.auth_method yaxis = Count ",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "column",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "grouped"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "xdm.auth.auth_method"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "Count"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1668683844352",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 466,
+                                "params": [],
+                                "phrase": "datamodel \r\n|filter xdm.observer.vendor=\"cyberark\" and  xdm.observer.product=\"identity\"\r\n| filter xdm.event.outcome!=null\r\n|comp count(xdm.event.outcome) as `Count` by xdm.event.outcome\r\n|fields xdm.event.outcome, Count\r\n| view graph type = pie xaxis = xdm.event.outcome yaxis = Count valuecolor(\"Success\",\"#51c062\") valuecolor(\"Failed\",\"#b67678\") ",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "pie",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "xdm.event.outcome"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "Count"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "\"Success\"",
+                                                    "\"#51c062\""
+                                                ],
+                                                "name": "valuecolor"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "\"Failed\"",
+                                                    "\"#b67678\""
+                                                ],
+                                                "name": "valuecolor"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1668684128957",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 466,
+                                "params": [],
+                                "phrase": "datamodel \r\n|filter xdm.observer.vendor=\"cyberark\" and  xdm.observer.product=\"identity\"\r\n| filter xdm.target.user.username!=null and xdm.target.user.username!=\"Portal\"\r\n|comp count_distinct(xdm.target.user.username) by xdm.target.user.username\r\n|alter Users=regextract(xdm.target.user.username,\"(\\w+)@\")\r\n|filter Users!=\"\"\r\n|fields Users",
+                                "entityType": "xql-widget-table-6a4cd14e-ba02-410c-82aa-863637b4c733",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"stretch\",\"gridRowsHeight\":\"high-row\"}",
+                                    "columnWidth": "\"stretch\""
+                                }
+                            }
+                        }
+                    ]
+                }
+            ],
+            "default_dashboard_id": 1,
+            "global_id": "b25555dbd9ca47d089adda9a96ae7883"
+        }
+    ],
+    "widgets_data": [
+        {
+            "widget_key": "xql_1668683844352",
+            "title": "CyberArk MFA Status",
+            "creation_time": 1668683844352,
+            "description": "This widget displays the MFA authentication status for users in the CyberArk account",
+            "data": {
+                "params": [],
+                "phrase": "datamodel \r\n|filter xdm.observer.vendor=\"cyberark\" and  xdm.observer.product=\"identity\"\r\n| filter xdm.event.outcome!=null\r\n|comp count(xdm.event.outcome) as `Count` by xdm.event.outcome\r\n|fields xdm.event.outcome, Count\r\n| view graph type = pie xaxis = xdm.event.outcome yaxis = Count valuecolor(\"Success\",\"#51c062\") valuecolor(\"Failed\",\"#b67678\") ",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "xdm.event.outcome"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "Count"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "\"Success\"",
+                                    "\"#51c062\""
+                                ],
+                                "name": "valuecolor"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "\"Failed\"",
+                                    "\"#b67678\""
+                                ],
+                                "name": "valuecolor"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1668683909917",
+            "title": "CyberArk Top Apps Usage",
+            "creation_time": 1668683909917,
+            "description": "This Widget displays the app usage within the CyberArk account",
+            "data": {
+                "params": [],
+                "phrase": "datamodel \r\n|filter xdm.observer.vendor=\"cyberark\" and  xdm.observer.product=\"identity\"\r\n| filter xdm.target.resource.name  !=\"\"\r\n|filter xdm.event.type=\"Cloud.Saas.Application.App*\"\r\n|comp count(xdm.target.resource.name) as `Count` by xdm.target.resource.name\r\n|fields xdm.target.resource.name, Count\r\n|filter count!=0\r\n| view graph type = pie xaxis = xdm.target.resource.name yaxis = Count ",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "xdm.target.resource.name"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "Count"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1668683958060",
+            "title": "CyberArk Top Authentication Methods",
+            "creation_time": 1668683958060,
+            "description": "This widget displays the authentication methods used in the CyberArk account",
+            "data": {
+                "params": [],
+                "phrase": "datamodel \r\n|filter xdm.observer.vendor=\"cyberark\" and  xdm.observer.product=\"identity\"\r\n|filter xdm.auth.auth_method!=\"\"\r\n|filter xdm.auth.auth_method!=\"None\"\r\n|comp count(xdm.auth.auth_method) as `Count` by xdm.auth.auth_method\r\n|fields xdm.auth.auth_method, Count\r\n| view graph type = column subtype = grouped xaxis = xdm.auth.auth_method yaxis = Count ",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "column",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "grouped"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "xdm.auth.auth_method"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "Count"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1668684048672",
+            "title": "CyberArk Top IP Locations",
+            "creation_time": 1668684048672,
+            "description": "This widget displays the IP's locations used to access the account",
+            "data": {
+                "params": [],
+                "phrase": "datamodel \r\n|filter xdm.observer.vendor=\"cyberark\" and  xdm.observer.product=\"identity\"\r\n|filter xdm.source.ipv4 != null \r\n|comp count(xdm.source.ipv4) as Count by xdm.source.ipv4 \r\n|iploc xdm.source.ipv4 loc_country as country\r\n| view graph type = map header = \"IP Locations\" xaxis = country yaxis = Count headerfontsize = 15 legendfontsize = 10 legend = `false` ",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "map",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"IP Locations\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "country"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "Count"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "headerfontsize",
+                                "value": "15"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legendfontsize",
+                                "value": "10"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legend",
+                                "value": "`false`"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1668684128957",
+            "title": "CyberArk Active Users",
+            "creation_time": 1668684128957,
+            "description": "This widget displays the users who are making actions in the CyberArk account",
+            "data": {
+                "params": [],
+                "phrase": "datamodel \r\n|filter xdm.observer.vendor=\"cyberark\" and  xdm.observer.product=\"identity\"\r\n| filter xdm.target.user.username!=null and xdm.target.user.username!=\"Portal\"\r\n|comp count_distinct(xdm.target.user.username) by xdm.target.user.username\r\n|alter Users=regextract(xdm.target.user.username,\"(\\w+)@\")\r\n|filter Users!=\"\"\r\n|fields Users",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"stretch\",\"gridRowsHeight\":\"high-row\"}",
+                    "columnWidth": "\"stretch\""
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        }
+    ],
+    "fromVersion": "6.10.0"
+}

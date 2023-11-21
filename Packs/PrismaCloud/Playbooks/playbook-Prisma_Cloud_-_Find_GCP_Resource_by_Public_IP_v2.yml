@@ -1,0 +1,513 @@
+id: Prisma Cloud - Find GCP Resource by Public IP v2
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Prisma Cloud - Find GCP Resource by Public IP v2
+description: |
+  Find GCP resources by Public IP using Prisma Cloud inventory.
+  Supported services: GCE, Load Balancing, GKE.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 40ae166d-0493-41d3-81e3-04b87913975e
+    type: start
+    task:
+      id: 40ae166d-0493-41d3-81e3-04b87913975e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1700,
+          "y": -490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 0cb94f5d-6592-46b9-8944-d690e893d4f0
+    type: title
+    task:
+      id: 0cb94f5d-6592-46b9-8944-d690e893d4f0
+      version: -1
+      name: Check Results
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: fc1bee60-2efe-45c8-8142-fac341a44269
+    type: regular
+    task:
+      id: fc1bee60-2efe-45c8-8142-fac341a44269
+      version: -1
+      name: Search in GCE
+      description: Search GCE instances in Prisma Cloud.
+      script: PrismaCloud v2|||prisma-cloud-config-search
+      type: regular
+      iscommand: true
+      brand: PrismaCloud v2
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      query:
+        complex:
+          root: inputs.PublicIPAddress
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'networkInterfaces[*].accessConfigs[*].natIP equals '
+              suffix: {}
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' OR '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'config from cloud.resource where cloud.type = ''gcp'' AND cloud.service = ''Google Compute Engine'' AND api.name = ''gcloud-compute-instances-list'' AND json.rule = ( '
+              suffix:
+                value:
+                  simple: ' )'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1230,
+          "y": 150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 4aa5d0c6-5377-44d3-8c4c-21a8fb48c98c
+    type: condition
+    task:
+      id: 4aa5d0c6-5377-44d3-8c4c-21a8fb48c98c
+      version: -1
+      name: Are Results Found?
+      description: Check whether results are found.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PrismaCloud
+                accessor: Config
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: c03a4b71-274f-4deb-8181-94b4f9a24fbc
+    type: regular
+    task:
+      id: c03a4b71-274f-4deb-8181-94b4f9a24fbc
+      version: -1
+      name: Transform Results
+      description: Prisma Cloud Attribution.
+      scriptName: PrismaCloudAttribution
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      assets:
+        complex:
+          root: PrismaCloud
+          accessor: Config
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: bba7b4a9-db1c-4c8f-8027-5e866a59a9e0
+    type: title
+    task:
+      id: bba7b4a9-db1c-4c8f-8027-5e866a59a9e0
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1700,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 4e860905-c7fb-4773-88d2-d5e9ad1fb69f
+    type: title
+    task:
+      id: 4e860905-c7fb-4773-88d2-d5e9ad1fb69f
+      version: -1
+      name: Search in Prisma Cloud
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+      - "17"
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: ac7c817e-0ce6-4ce7-84da-0d024490e54c
+    type: condition
+    task:
+      id: ac7c817e-0ce6-4ce7-84da-0d024490e54c
+      version: -1
+      name: Is Prisma Cloud enabled?
+      description: Check whether Prisma Cloud integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: PrismaCloud v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": -160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: ab1813c3-3d15-49f5-8260-d0382f60da8a
+    type: condition
+    task:
+      id: ab1813c3-3d15-49f5-8260-d0382f60da8a
+      version: -1
+      name: Are there IPs in input?
+      description: Check if there are any IPs in the input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.PublicIPAddress
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1700,
+          "y": -330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 1ef4f6a9-1e5b-410d-8d44-0fa35f15118f
+    type: regular
+    task:
+      id: 1ef4f6a9-1e5b-410d-8d44-0fa35f15118f
+      version: -1
+      name: Search in Google Cloud Load Balancing
+      description: Search GCE instances in Prisma Cloud.
+      script: PrismaCloud v2|||prisma-cloud-config-search
+      type: regular
+      iscommand: true
+      brand: PrismaCloud v2
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      query:
+        complex:
+          root: inputs.PublicIPAddress
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'globalForwardingRules[*].IPAddress equals '
+              suffix: {}
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' OR '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'config from cloud.resource where cloud.type = ''gcp'' AND cloud.service = ''Google Cloud Load Balancing'' AND api.name = ''gcloud-compute-global-forwarding-rule'' AND json.rule = ( '
+              suffix:
+                value:
+                  simple: ' )'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 2c5ee418-ee55-4f6c-84b5-a21227fa2110
+    type: regular
+    task:
+      id: 2c5ee418-ee55-4f6c-84b5-a21227fa2110
+      version: -1
+      name: Search in GKE
+      description: Search GCE instances in Prisma Cloud.
+      script: PrismaCloud v2|||prisma-cloud-config-search
+      type: regular
+      iscommand: true
+      brand: PrismaCloud v2
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      query:
+        complex:
+          root: inputs.PublicIPAddress
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'endpoint equals '
+              suffix: {}
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' OR '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'config from cloud.resource where cloud.type = ''gcp'' AND cloud.service = ''Google Kubernetes Engine'' AND api.name = ''gcloud-container-describe-clusters'' AND json.rule = ( '
+              suffix:
+                value:
+                  simple: ' )'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_13_#default#": 0.12,
+      "15_13_#default#": 0.23,
+      "16_13_#default#": 0.34
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1355,
+        "width": 1740,
+        "x": 340,
+        "y": -490
+      }
+    }
+  }
+inputs:
+- key: PublicIPAddress
+  value: {}
+  required: true
+  description: Public IP address to look up.
+  playbookInputQuery:
+outputs:
+- contextPath: PrismaCloud.Attribution
+  description: Prisma Cloud attributed asset information.
+  type: unknown
+- contextPath: PrismaCloud.Config.data.tags
+  description: Prisma Cloud Tags information.
+  type: unknown
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

@@ -1,0 +1,7 @@
+!gw-lis-get-by-minute Minute=10
+!gw-lis-get-by-value Value="58b525579968cba0c68e8f7ae12e51e0b5542acc2c14a2e75fa6df44556e373f"
+!gw-lis-leaked-email-by-domain Domain=foobar.comH
+!gw-lis-is-email-leaked Email=lucien@fr.foobar.com
+!file file=58b525579968cba0c68e8f7ae12e51e0b5542acc2c14a2e75fa6df44556e373f
+!url url=http://217.196.96.84/WatchDog.exe
+!domain domain=kopabayport.co.tz

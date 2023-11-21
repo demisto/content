@@ -20,7 +20,7 @@ def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_o
     if email_data is None:
         return 'No data extracted from email'
 
-    md = u"### Results:\n"
+    md = "### Results:\n"
     if email_file_name:
         md = f"### {email_file_name}\n"
 
@@ -30,18 +30,18 @@ def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_o
     if parent_email_file:
         md += f"### Containing email: {parent_email_file}\n"
 
-    md += u"* {0}:\t{1}\n".format('From', email_data.get('From') or "")
-    md += u"* {0}:\t{1}\n".format('To', email_data.get('To') or "")
-    md += u"* {0}:\t{1}\n".format('CC', email_data.get('CC') or "")
-    md += u"* {0}:\t{1}\n".format('Subject', email_data.get('Subject') or "")
+    md += f"""* From:\t{email_data.get('From') or ""}\n"""
+    md += f"""* To:\t{email_data.get('To') or ""}\n"""
+    md += f"""* CC:\t{email_data.get('CC') or ""}\n"""
+    md += f"""* Subject:\t{email_data.get('Subject') or ""}\n"""
     if email_data.get('Text'):
         text = email_data['Text'].replace('<', '[').replace('>', ']')
-        md += u"* {0}:\t{1}\n".format('Body/Text', text or "")
+        md += f'* Body/Text:\t{text or ""}\n'
     if email_data.get('HTML'):
-        md += u"* {0}:\t{1}\n".format('Body/HTML', email_data['HTML'] or "")
+        md += f"""* Body/HTML:\t{email_data['HTML'] or ""}\n"""
 
-    md += u"* {0}:\t{1}\n".format('Attachments', email_data.get('Attachments') or "")
-    md += u"\n\n" + tableToMarkdown('HeadersMap', email_data.get('HeadersMap'))
+    md += f"""* Attachments:\t{email_data.get('Attachments') or ""}\n"""
+    md += "\n\n" + tableToMarkdown('HeadersMap', email_data.get('HeadersMap'))
     return md
 
 
@@ -60,7 +60,7 @@ def save_file(file_name, file_content) -> str:
     created_file = fileResult(file_name, file_content)
     file_id = created_file.get('FileID')
     attachment_internal_path = demisto.investigation().get('id') + '_' + file_id
-    demisto.results(created_file)
+    return_results(created_file)
 
     return attachment_internal_path
 
@@ -87,12 +87,9 @@ def extract_file_info(entry_id: str) -> tuple:
 
         file_path = result[0]['Contents']['path']
         file_name = result[0]['Contents']['name']
-        result = demisto.executeCommand('getEntry', {'id': entry_id})
-        if is_error(result):
-            return_error(get_error(result))
 
-        file_metadata = result[0]['FileMetadata']
-        file_type = file_metadata.get('info', '') or file_metadata.get('type', '')
+        dt_file_type = demisto.dt(demisto.context(), f"File(val.EntryID=='{entry_id}').Type")
+        file_type = dt_file_type[0] if isinstance(dt_file_type, list) else dt_file_type
 
     except Exception as ex:
         return_error(
@@ -125,12 +122,14 @@ def main():
     nesting_level_to_return = args.get('nesting_level_to_return', 'All files')
 
     file_type, file_path, file_name = extract_file_info(entry_id)
+    demisto.debug(f'{file_type=}, {file_path=}, {file_name=}')
 
     try:
         email_parser = EmailParser(file_path=file_path, max_depth=max_depth, parse_only_headers=parse_only_headers,
                                    file_info=file_type, forced_encoding=forced_encoding,
-                                   default_encoding=default_encoding)
+                                   default_encoding=default_encoding, file_name=file_name)
         output = email_parser.parse()
+        demisto.debug(f'{output=}')
 
         results = []
         if isinstance(output, dict):
@@ -142,9 +141,20 @@ def main():
         for email in output:
             if email.get('AttachmentsData'):
                 for attachment in email.get('AttachmentsData'):
-                    if (name := attachment.get('Name')) and (content := attachment.get('FileData')):
-                        del attachment['FileData']
-                        attachment['FilePath'] = save_file(name, content)
+                    if name := attachment.get('Name'):
+                        if content := attachment.get('FileData'):
+                            attachment['FilePath'] = save_file(name, content)
+                            del attachment['FileData']
+                        else:
+                            attachment['FileData'] = None
+
+            # probably a wrapper and we can ignore the outer "email"
+            if email.get('Format') == 'multipart/signed' and all(not email.get(field) for field in ['To', 'From', 'Subject']):
+                continue
+
+            if isinstance(email.get("HTML"), bytes):
+                email['HTML'] = email.get("HTML").decode('utf-8')
+
             results.append(CommandResults(
                 outputs_prefix='Email',
                 outputs=email,

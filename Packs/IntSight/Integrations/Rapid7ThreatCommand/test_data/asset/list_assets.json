@@ -1,0 +1,47 @@
+{
+    "Domains": [
+        "google.com",
+        "moh.gov.il",
+        "qmasters.co"
+    ],
+    "IpAddresses": [],
+    "DlpIndicators": [],
+    "Applications": [],
+    "SocialMediaOfficialPages": [
+        "SocialMediaOfficialPages_0"
+    ],
+    "CompanyNames": [
+        "google",
+        "qmasters",
+        "test"
+    ],
+    "BrandNames": [],
+    "SecretProjects": [],
+    "Sectors": [
+        "Government",
+        "Industrial"
+    ],
+    "CountriesOfActivity": [
+        "israel",
+        "spain"
+    ],
+    "LoginPages": [],
+    "TechnologiesInUse": [
+        "Microsoft Office 2016"
+    ],
+    "SupplyChainCompanyNames": [],
+    "CustomQueries": [],
+    "BlackList": [],
+    "BIN": [],
+    "RoutingNumbers": [],
+    "SwiftCodes": [],
+    "GithubQueries": [],
+    "CodeMentions": [],
+    "GitPublicRepositories": [],
+    "PatentDrugs": [],
+    "BrandNameDrugs": [],
+    "VipNames": [
+        "gregori nazrovsky"
+    ],
+    "VipEmails": []
+}

@@ -1,0 +1,21 @@
+commonfields:
+  id: HighlightWords
+  version: -1
+name: HighlightWords
+script: ''
+type: python
+subtype: python3
+tags: []
+comment: Highlight words inside a given text.
+args:
+- name: text
+  required: true
+  description: The input text to hightlight the words in.
+- name: terms
+  required: true
+  description: Terms to hightlight in the text. Can be words or sentances (that does not includes comma). Notice that if you used a sentances and word, the word shouldn't be as part of a sentance, for example "thank,thank you" is invalid input. Comma-separated value.
+scripttarget: 0
+tests:
+- HighlightWords_Test
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.10.12.66339

@@ -13,10 +13,6 @@ args:
 - name: hostName
   required: true
   default: true
-  auto: PREDEFINED
-  predefined:
-  - ""
-  - ""
   description: A comma-separated list of hostnames to check.
   isArray: true
 - name: internalRegex
@@ -33,8 +29,7 @@ outputs:
   type: string
 scripttarget: 0
 subtype: python3
-runonce: false
 runas: DBotWeakRole
 tests:
 - IsInternalHostName Test
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.13.72123

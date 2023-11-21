@@ -1,0 +1,1018 @@
+id: SkyhighSecureWebGatewayOnPrem_Test
+version: 12
+vcShouldKeepItemLegacyProdMachine: false
+name: SkyhighSecureWebGatewayOnPrem_Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a928f6fe-626c-472b-8970-8b3a326d19ed
+    type: start
+    task:
+      id: a928f6fe-626c-472b-8970-8b3a326d19ed
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 61b19c13-e23e-43dd-8552-300f8fbb4bb5
+    type: regular
+    task:
+      id: 61b19c13-e23e-43dd-8552-300f8fbb4bb5
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 889e396a-47a0-4bcd-83f6-85ab4bd70a7c
+    type: regular
+    task:
+      id: 889e396a-47a0-4bcd-83f6-85ab4bd70a7c
+      version: -1
+      name: swg-get-available-lists
+      description: Get all available lists
+      script: Skyhigh Secure Web Gateway (On Prem)|||swg-get-available-lists
+      type: regular
+      iscommand: true
+      brand: Skyhigh Secure Web Gateway (On Prem)
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      type:
+        simple: regex
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 132e7456-5c5f-4d86-84ad-6cea69c3664d
+    type: condition
+    task:
+      id: 132e7456-5c5f-4d86-84ad-6cea69c3664d
+      version: -1
+      name: Assert swg-get-available-lists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SWG.List.Title
+            iscontext: true
+          right:
+            value:
+              simple: Demistotest
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 1fb9f530-fc45-4b70-840d-647b2e0c664b
+    type: regular
+    task:
+      id: 1fb9f530-fc45-4b70-840d-647b2e0c664b
+      version: -1
+      name: swg-get-list
+      description: Retrieve a specific list
+      script: Skyhigh Secure Web Gateway (On Prem)|||swg-get-list
+      type: regular
+      iscommand: true
+      brand: Skyhigh Secure Web Gateway (On Prem)
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      list_id:
+        complex:
+          root: Testdata
+          accessor: list_id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: d41b591d-a66f-4ce8-84e6-37975a558e49
+    type: regular
+    task:
+      id: d41b591d-a66f-4ce8-84e6-37975a558e49
+      version: -1
+      name: Store test list to context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Testdata.list_id
+      value:
+        simple: ${SWG.List.ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 408485c1-1186-4516-8c68-1da72bcb2ec5
+    type: regular
+    task:
+      id: 408485c1-1186-4516-8c68-1da72bcb2ec5
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      key:
+        simple: SWG
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: fa96b3e2-4514-4e15-88b7-733c3b69d1a6
+    type: regular
+    task:
+      id: fa96b3e2-4514-4e15-88b7-733c3b69d1a6
+      version: -1
+      name: swg-create-list
+      description: Create a new list
+      script: Skyhigh Secure Web Gateway (On Prem)|||swg-create-list
+      type: regular
+      iscommand: true
+      brand: Skyhigh Secure Web Gateway (On Prem)
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      name:
+        simple: Demistotest
+      type:
+        simple: regex
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: add7ec25-17b3-43f1-84dd-9110780fa798
+    type: condition
+    task:
+      id: add7ec25-17b3-43f1-84dd-9110780fa798
+      version: -1
+      name: Assert swg-create-list
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SWG.List.Title
+            iscontext: true
+          right:
+            value:
+              simple: Demistotest
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: a329299d-82e9-4bf4-8d08-208cac32e75c
+    type: regular
+    task:
+      id: a329299d-82e9-4bf4-8d08-208cac32e75c
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: SWG
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 347f8b86-9e30-4f45-8424-1cdb58c5fef0
+    type: regular
+    task:
+      id: 347f8b86-9e30-4f45-8424-1cdb58c5fef0
+      version: -1
+      name: closeInvestigation
+      description: Close the current alert
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      id:
+        simple: ${incident.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 30c96ecf-1227-4995-8a27-2d2f6b028c4e
+    type: regular
+    task:
+      id: 30c96ecf-1227-4995-8a27-2d2f6b028c4e
+      version: -1
+      name: swg-modify-list
+      description: Overwrites the complete XML config of a list.
+      script: Skyhigh Secure Web Gateway (On Prem)|||swg-modify-list
+      type: regular
+      iscommand: true
+      brand: Skyhigh Secure Web Gateway (On Prem)
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      config:
+        simple: '<list><description>blocklist test</description><content><listEntry><entry>http*://evil.corp/*</entry><description>ticket #1: This is an evil domain</description></listEntry></content></list>'
+      list_id:
+        simple: ${Testdata.list_id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: e50f1f37-59d0-4db3-8084-6b4ed8d69d52
+    type: condition
+    task:
+      id: e50f1f37-59d0-4db3-8084-6b4ed8d69d52
+      version: -1
+      name: Assert swg-modify-list
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${SWG.List.Title}
+            iscontext: true
+          right:
+            value:
+              simple: Demistotest
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${SWG.List.ListEntries.Name}
+            iscontext: true
+          right:
+            value:
+              simple: http*://evil.corp/*
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: db9aeae7-8d14-4a48-8bb0-be9b29eb3681
+    type: condition
+    task:
+      id: db9aeae7-8d14-4a48-8bb0-be9b29eb3681
+      version: -1
+      name: Assert swg-get-list
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${SWG.List.Title}
+            iscontext: true
+          right:
+            value:
+              simple: Demistotest
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${SWG.List.ListEntries.Name}
+            iscontext: true
+          right:
+            value:
+              simple: http*://evil.corp/*
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 7cf1fb6e-120f-460e-8911-de45e2c833f1
+    type: regular
+    task:
+      id: 7cf1fb6e-120f-460e-8911-de45e2c833f1
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      key:
+        simple: SWG
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 840a46a0-56db-425a-86d8-6b2c387d5b4c
+    type: regular
+    task:
+      id: 840a46a0-56db-425a-86d8-6b2c387d5b4c
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      key:
+        simple: SWG
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 86353299-5a27-4821-8ab7-b0032b2f55f6
+    type: regular
+    task:
+      id: 86353299-5a27-4821-8ab7-b0032b2f55f6
+      version: -1
+      name: swg-get-list-entry
+      description: Retrieve a specific entry from a list.
+      script: Skyhigh Secure Web Gateway (On Prem)|||swg-get-list-entry
+      type: regular
+      iscommand: true
+      brand: Skyhigh Secure Web Gateway (On Prem)
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      entry_pos:
+        simple: "0"
+      list_id:
+        simple: ${Testdata.list_id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 1dca4f96-9628-4eef-82d3-052d37931c39
+    type: regular
+    task:
+      id: 1dca4f96-9628-4eef-82d3-052d37931c39
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      key:
+        simple: SWG
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 4845c3d0-1370-440f-8691-e13884459721
+    type: condition
+    task:
+      id: 4845c3d0-1370-440f-8691-e13884459721
+      version: -1
+      name: Assert swg-get-list-entry
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${SWG.List.ID}
+            iscontext: true
+          right:
+            value:
+              simple: ${Testdata.list_id}
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${SWG.List.ListEntries.Name}
+            iscontext: true
+          right:
+            value:
+              simple: http*://evil.corp/*
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 4c090ee3-f7b4-4bd2-8830-59c80ae8e4aa
+    type: regular
+    task:
+      id: 4c090ee3-f7b4-4bd2-8830-59c80ae8e4aa
+      version: -1
+      name: swg-insert-entry
+      description: Insert a new entry to a list.
+      script: Skyhigh Secure Web Gateway (On Prem)|||swg-insert-entry
+      type: regular
+      iscommand: true
+      brand: Skyhigh Secure Web Gateway (On Prem)
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      description:
+        simple: this is really evil
+      entry_pos:
+        simple: "0"
+      list_id:
+        simple: ${Testdata.list_id}
+      name:
+        simple: http*://test.evil/*
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 503863bb-925d-4915-8826-c8da8e9d1c93
+    type: condition
+    task:
+      id: 503863bb-925d-4915-8826-c8da8e9d1c93
+      version: -1
+      name: Assert swg-insert-list-entry
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${SWG.List.ListEntries.Name}
+            iscontext: true
+          right:
+            value:
+              simple: http*://test.evil/*
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${SWG.List.ID}
+            iscontext: true
+          right:
+            value:
+              simple: ${Testdata.list_id}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 1fb8d909-b257-40ca-8e22-e5781979070e
+    type: regular
+    task:
+      id: 1fb8d909-b257-40ca-8e22-e5781979070e
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      key:
+        simple: SWG
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 246bbf22-eaad-4f2a-824b-93e9d8a1357c
+    type: regular
+    task:
+      id: 246bbf22-eaad-4f2a-824b-93e9d8a1357c
+      version: -1
+      name: swg-delete-entry
+      description: Insert a new entry to a list.
+      script: Skyhigh Secure Web Gateway (On Prem)|||swg-delete-entry
+      type: regular
+      iscommand: true
+      brand: Skyhigh Secure Web Gateway (On Prem)
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      entry_pos:
+        simple: "0"
+      list_id:
+        simple: ${Testdata.list_id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: d083dbf6-d898-4d9a-8112-4bba1f45eae6
+    type: regular
+    task:
+      id: d083dbf6-d898-4d9a-8112-4bba1f45eae6
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 32368dda-9ec9-49f7-8acb-1f4540ec01a1
+    type: regular
+    task:
+      id: 32368dda-9ec9-49f7-8acb-1f4540ec01a1
+      version: -1
+      name: swg-delete-list
+      description: Delete a list
+      script: Skyhigh Secure Web Gateway (On Prem)|||swg-delete-list
+      type: regular
+      iscommand: true
+      brand: Skyhigh Secure Web Gateway (On Prem)
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      list_id:
+        simple: ${Testdata.list_id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "13_15_yes": 0.83,
+      "3_6_yes": 0.79
+    },
+    "paper": {
+      "dimensions": {
+        "height": 4265,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.8.0

@@ -1,0 +1,32 @@
+commonfields:
+  id: FPDeleteRule
+  version: -1
+name: FPDeleteRule
+script: ''
+type: python
+subtype: python3
+tags:
+- forcepoint
+- triton
+comment: Deletes a rule in Forcepoint Triton.
+system: true
+args:
+- name: type
+  required: true
+  description: The Triton rule type - "dest_domain", "dest_ip", "dest_host" or "url_regex"
+- name: value
+  required: true
+  description: The value to match for this rule (domain, regex, etc. depending on the type)
+- name: remoteaccessname
+  description: If the Forcepoint Triton instance is configured as a RemoteAccess integration instance ‐ insert its name here. Replaces argument "tritonsystem".
+- name: tritonsystem
+  description: System name of the linux host on which Forcepoint Triton is installed. Only use if not working with Triton as a RemoteAccess integration instance ‐ if so, use the "remoteaccessname" argument instead.
+scripttarget: 0
+dependson:
+  must:
+  - ssh
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.10.12.68714
+tests:
+- No tests (auto formatted)

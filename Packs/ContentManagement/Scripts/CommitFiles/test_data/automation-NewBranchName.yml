@@ -1,0 +1,95 @@
+args:
+- description: The name of the pack.
+  name: pack
+  required: true
+- auto: PREDEFINED
+  description: The name of the pack.
+  name: command_get_branch
+  predefined:
+  - gitlab-branch-list
+  - GitHub-get-branch
+  - bitbucket-branch-get
+  required: true
+comment: |
+  The script gets the pack name as input and suggests an available branch name, for example:
+  pack name is "MyPack" the branch name will be "MyPack".
+  If a branch with the name "MyPack" exists, the script return "MyPack_1".
+commonfields:
+  id: SuggestBranchNameGeneric
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 1b6b25f7-5069-4855-83fd-8d80f75d9cd3
+    packName: BranchNameScript
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: demisto/python3:3.10.5.31928
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: NewBranchName
+outputs:
+- contextPath: AvailableBranch
+  description: Available branch name based on the pack name.
+  type: string
+pswd: ""
+runas: DBotWeakRole
+script: |
+  register_module_line('NewBranchName', 'start', __line__())
+
+
+
+
+  ATTEMPS = 10
+
+
+  def find_available_branch(pack_name, command_get_branch):
+
+      branch_name = pack_name
+      for i in range(ATTEMPS):
+          if i > 0:
+              branch_name = f'{pack_name}_{i}'
+          status, get_branch_res = execute_command(command_get_branch, {'branch_name': branch_name}, fail_on_error=False)
+          if not status:
+              if 'Bad Request' or 'Branch not found' or 'Not Found' in get_branch_res:
+                  return branch_name
+              else:
+                  raise DemistoException(get_branch_res)
+
+
+  ''' MAIN FUNCTION '''
+
+
+  def main():
+
+      try:
+          pack_name = demisto.getArg('pack')
+          command_get_branch = demisto.getArg('command_get_branch')
+          branch_name = find_available_branch(pack_name, command_get_branch)
+
+          return_results(CommandResults(
+              readable_output=branch_name,
+              outputs_prefix='AvailableBranch',
+              outputs=branch_name
+          ))
+
+      except Exception as ex:
+          demisto.error(str(ex))  # print the traceback
+          return_error(f'Failed to execute script. Error: {ex}', error=ex)
+
+
+  ''' ENTRY POINT '''
+
+
+  if __name__ in ('__main__', '__builtin__', 'builtins'):
+      main()
+
+  register_module_line('NewBranchName', 'end', __line__())
+scripttarget: 0
+subtype: python3
+tags: []
+type: python

@@ -136,7 +136,7 @@ function sendRequest(commandData) {
         {
             Method: commandData.method,
             Headers: {
-                'Authorization': ['Bearer ' + params.token],
+                'Authorization': ['Bearer ' + (params.token_creds ? params.token_creds.password : params.token)],
                 'Content-Type': ['application/json'],
             },
             Body: commandData.method !== 'GET' ? JSON.stringify(args || commandData.defaultArgs) : undefined

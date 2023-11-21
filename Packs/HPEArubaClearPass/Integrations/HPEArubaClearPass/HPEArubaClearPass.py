@@ -2,11 +2,11 @@ import json
 from datetime import datetime, timedelta
 from CommonServerPython import *
 
-import requests
+import urllib3
 from typing import Dict, Any
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR"
 
@@ -421,8 +421,8 @@ def disconnect_active_session_command(client: Client, args: Dict[str, Any]) -> C
 def main() -> None:
     params = demisto.params()
     base_url = urljoin(params.get('url'), '/api')
-    client_id = params.get('client_id')
-    client_secret = params.get('client_secret')
+    client_id = params.get('client_id_creds', {}).get('identifier') or params.get('client_id')
+    client_secret = params.get('client_id_creds', {}).get('password') or params.get('client_secret')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 

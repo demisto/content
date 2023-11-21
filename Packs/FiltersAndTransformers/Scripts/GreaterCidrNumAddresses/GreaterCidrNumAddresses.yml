@@ -1,0 +1,23 @@
+args:
+- description: IP/CIDR, e.g. 192.168.0.0/24
+  name: left
+  required: true
+- description: The number of addresses to be greater from.
+  name: right
+  required: true
+comment: Check if number of availble addresses in IPv4 or IPv6 CIDR is greater than given number.
+commonfields:
+  id: GreaterCidrNumAddresses
+  version: -1
+enabled: true
+name: GreaterCidrNumAddresses
+script: '-'
+subtype: python3
+tags:
+- filter
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.10.12.63474
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,998 @@
+id: Quick Start Remediation
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Quick Start Remediation
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c2c8a207-920e-4750-821d-7f78e329efd1
+    type: start
+    task:
+      id: c2c8a207-920e-4750-821d-7f78e329efd1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1717.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: fe891e39-6c49-4bf8-8bdd-ce552a8fafc6
+    type: collection
+    task:
+      id: fe891e39-6c49-4bf8-8bdd-ce552a8fafc6
+      version: -1
+      name: Select Remediation Steps
+      type: collection
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+      - "21"
+      - "22"
+      - "23"
+      - "24"
+      - "25"
+      - "26"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1717.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: bhmurali@paloaltonetworks.com
+      subject:
+        simple: Hey this is a test attachment data collection
+      body:
+        simple: Please select the remediation steps for incident ${incident.id}
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Remediation Options
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - simple: Block on the Firewall
+        - simple: Quarantine the device
+        - simple: Reset the user password
+        - simple: Disable the user account
+        - simple: Notify other teams
+        - simple: Block file hash
+        - simple: Block domain
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Comments
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Choose the remediation actions
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 04cbe27a-2e22-4972-8dcb-c3158f6779cf
+    type: playbook
+    task:
+      id: 04cbe27a-2e22-4972-8dcb-c3158f6779cf
+      version: -1
+      name: Block Account - Generic v2
+      description: |-
+        This playbook blocks malicious usernames using all integrations that you have enabled.
+
+        Supported integrations for this playbook:
+        * Active Directory
+        * PAN-OS - This requires PAN-OS 9.1 or higher.
+        * SailPoint
+        * PingOne
+        * AWS IAM
+        * Clarizen IAM
+        * Envoy IAM
+        * ExceedLMS IAM
+        * Okta
+      playbookName: Block Account - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 87905d36-7b1f-41b3-85c7-be49b2ec002b
+    type: title
+    task:
+      id: 87905d36-7b1f-41b3-85c7-be49b2ec002b
+      version: -1
+      name: Proceed to closure
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1605,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: fa16140b-76ed-440e-8f78-bc6fb1cd939d
+    type: playbook
+    task:
+      id: fa16140b-76ed-440e-8f78-bc6fb1cd939d
+      version: -1
+      name: Block IP - Generic v3
+      description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the XSOAR user (and set by default to outgoing)\nNote the following:\n-  some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
+      playbookName: Block IP - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 620cc3e6-1691-4980-828c-238e35dbf166
+    type: playbook
+    task:
+      id: 620cc3e6-1691-4980-828c-238e35dbf166
+      version: -1
+      name: Block URL - Generic v2
+      description: |-
+        This playbook blocks malicious URLs using all integrations that are enabled.
+
+        Supported integrations for this playbook:
+        * Palo Alto Networks PAN-OS
+        * Zscaler
+        * Sophos
+        * Forcepoint
+        * Checkpoint
+        * Netcraft
+      playbookName: Block URL - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 6f56f320-60f1-4732-853d-9556f39b3424
+    type: playbook
+    task:
+      id: 6f56f320-60f1-4732-853d-9556f39b3424
+      version: -1
+      name: Block File - Generic v2
+      description: "This playbook is used to block files from running on endpoints. \nThis playbook supports the following integrations:\n- Palo Alto Networks Traps\n- Palo Alto Networks Cortex XDR\n- Cybereason\n- Carbon Black Enterprise Response\n- Cylance Protect v2\n"
+      playbookName: Block File - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 56fe77df-6041-4104-8447-b4ee2de3ceed
+    type: playbook
+    task:
+      id: 56fe77df-6041-4104-8447-b4ee2de3ceed
+      version: -1
+      name: Isolate Endpoint - Generic V2
+      description: |-
+        This playbook isolates a given endpoint using various endpoint product integrations.
+        Make sure to provide valid playbook inputs for the integration you are using.
+      playbookName: Isolate Endpoint - Generic V2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3180,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 914be54f-84df-4766-8851-01d00ed6fe2e
+    type: regular
+    task:
+      id: 914be54f-84df-4766-8851-01d00ed6fe2e
+      version: -1
+      name: Reset Password
+      description: Sets a new password for an Active Directory user. This command requires a secure connection (SSL,TLS).
+      script: '|||ad-set-new-password'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2730,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 1b27a4de-1552-43f2-8097-c9289b1633a1
+    type: playbook
+    task:
+      id: 1b27a4de-1552-43f2-8097-c9289b1633a1
+      version: -1
+      name: Block Domain - Generic v2
+      playbookName: Block Domain - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2280,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 0fab768f-b3a4-4642-84f3-ffa2fa2e3ef9
+    type: regular
+    task:
+      id: 0fab768f-b3a4-4642-84f3-ffa2fa2e3ef9
+      version: -1
+      name: Send Email
+      description: Sends an email using Gmail.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      body:
+        simple: Customer added body
+      cc:
+        simple: anyone that needs to be included
+      subject:
+        simple: ${incident.id} remediation action required
+      to:
+        simple: Add your distribution list here
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1830,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 465a79be-3dab-4baa-8a79-f6958b491970
+    type: condition
+    task:
+      id: 465a79be-3dab-4baa-8a79-f6958b491970
+      version: -1
+      name: Block on Firewall
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: Choose the remediation actions.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: firewall
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 0748ea8c-376c-48bb-8773-10803c4eba63
+    type: condition
+    task:
+      id: 0748ea8c-376c-48bb-8773-10803c4eba63
+      version: -1
+      name: Block Account
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: Choose the remediation actions.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: account
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 384b6b9f-f97a-4ba2-8165-5cdc3b41ac04
+    type: condition
+    task:
+      id: 384b6b9f-f97a-4ba2-8165-5cdc3b41ac04
+      version: -1
+      name: Block File
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: Choose the remediation actions.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: File
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1267.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 8b4e14a9-30f4-47eb-872e-79b5d0e49e6a
+    type: condition
+    task:
+      id: 8b4e14a9-30f4-47eb-872e-79b5d0e49e6a
+      version: -1
+      name: Notify Teams
+      type: condition
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: Choose the remediation actions.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Notify
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1717.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 0493d36a-123b-47d4-8a85-424c6c85a5f8
+    type: condition
+    task:
+      id: 0493d36a-123b-47d4-8a85-424c6c85a5f8
+      version: -1
+      name: Block Domain
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: Choose the remediation actions.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Domain
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2167.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 7c22d0c8-0bfd-4f7d-869e-994b078b5a68
+    type: condition
+    task:
+      id: 7c22d0c8-0bfd-4f7d-869e-994b078b5a68
+      version: -1
+      name: Reset Password
+      type: condition
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: Choose the remediation actions.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Password
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2617.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: a34b7732-ab96-470c-876d-7a1d4bc21f0f
+    type: condition
+    task:
+      id: a34b7732-ab96-470c-876d-7a1d4bc21f0f
+      version: -1
+      name: Quarantine Device
+      type: condition
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: Choose the remediation actions.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Device
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3067.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 0d09e50a-e15f-4954-8d75-85144240be49
+    type: title
+    task:
+      id: 0d09e50a-e15f-4954-8d75-85144240be49
+      version: -1
+      name: Firewall Block
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 9574706b-7a99-485b-8ff6-4d69ec0f7192
+    type: title
+    task:
+      id: 9574706b-7a99-485b-8ff6-4d69ec0f7192
+      version: -1
+      name: Block Account
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: b26d4165-b72d-4a0a-8a1a-0597d4ba8c9b
+    type: title
+    task:
+      id: b26d4165-b72d-4a0a-8a1a-0597d4ba8c9b
+      version: -1
+      name: Block File
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: c4d015ef-c513-4240-8ba9-c54925ff345d
+    type: title
+    task:
+      id: c4d015ef-c513-4240-8ba9-c54925ff345d
+      version: -1
+      name: Notify Team
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1830,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 99aef1a6-365a-4bfe-86d4-08d99fc534be
+    type: title
+    task:
+      id: 99aef1a6-365a-4bfe-86d4-08d99fc534be
+      version: -1
+      name: Block Domain
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2280,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: ab6a0c55-f5e3-4561-8c6a-4cfdf12b89fa
+    type: title
+    task:
+      id: ab6a0c55-f5e3-4561-8c6a-4cfdf12b89fa
+      version: -1
+      name: Reset Password
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2730,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 52e91366-7f43-4184-8bd3-a9af3889ea0f
+    type: title
+    task:
+      id: 52e91366-7f43-4184-8bd3-a9af3889ea0f
+      version: -1
+      name: Quarantine Device
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3180,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 880,
+        "width": 3510,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.10.0
+tests:
+- Run all tests
+description: 'This contains the remediation and triage steps for the Quick Start Investigation'

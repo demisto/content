@@ -10,21 +10,35 @@ In order to connect to the Azure Firewall, follow these steps:
    2. Copy and save the Application (client) ID.
 4. In the *Client ID* parameter, enter your registered app Application (client) ID.
 
-## Self deployed Authentication
+### Self-Deployed Authentication
 
-In order to authenticate using the self deployed method, you have to provide the following parameters:
+To authenticate using the self-deployed method, provide the following parameters:
 
 - Token - Tenant ID
 - Key - Client Secret
-   - Alternatively, instead of providing the Client Secret, you can authenticate using certificate credentials by providing:
+   - Alternatively, instead of providing the Client Secret you can authenticate using certificate credentials by providing:
       - Certificate Thumbprint - The certificate thumbprint as appears when registering the certificate to the app.
       - Private Key - The private key of the registered certificate.  
 
-#### Get Subscription ID and the Resource Group values
+### Azure Managed Identities Authentication
+##### Note: This option is relevant only if the integration is running on Azure VM.
+Follow one of these steps for authentication based on Azure Managed Identities:
+
+- ##### To use System Assigned Managed Identity
+   - Select the **Use Azure Managed Identities** checkbox and leave the **Azure Managed Identities Client ID** field empty.
+
+- ##### To use User Assigned Managed Identity
+   1. Go to [Azure Portal](https://portal.azure.com/) -> **Managed Identities**
+   2. Select your User Assigned Managed Identity -> copy the Client ID -> put it in the **Azure Managed Identities Client ID** field in the instance settings.
+   3. Select the **Use Azure Managed Identities** checkbox.
+
+For information about Azure Managed Identities see [Managed identities for Azure resources](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview)
+
+## Get Subscription ID and the Resource Group Values
 
 1. In the Azure portal, select **Resource groups**.
 2. Select your resource group name.
-3. Copy the Subscription ID and enter it in the *Subscription ID* parameter.
+3. Copy the subscription ID and enter it in the *Subscription ID* parameter.
 4. Copy your resource group name and enter it in the *Resource Group Name* parameter.
 
 ### Testing authentication and connectivity

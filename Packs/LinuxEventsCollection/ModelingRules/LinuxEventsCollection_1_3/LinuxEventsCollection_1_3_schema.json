@@ -1,0 +1,13 @@
+{
+  "linux_linux_raw": {
+    "_raw_log": {
+        "type": "string",
+        "is_array": false
+    },
+    "_log_source_file_name": {
+        "type": "string",
+        "is_array": false
+    }
+
+  }
+}

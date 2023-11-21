@@ -428,6 +428,8 @@ inputs:
   playbookInputQuery:
 outputs: []
 quiet: true
+marketplaces:
+- xsoar
 tests:
 - No tests (auto formatted)
 fromversion: 5.5.0

@@ -1,0 +1,18 @@
+commonfields:
+  id: FeedCyCognitoGetAssetEndpoint
+  version: -1
+name: FeedCyCognitoGetAssetEndpoint
+type: python
+tags:
+- dynamic-indicator-section
+- field-change-triggered
+comment: Generates a deep link to the CyCognito platform using the indicator context.
+enabled: true
+script: ''
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.10.8.36650
+runas: DBotWeakRole
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,28 @@
+args:
+- default: true
+  description: Entries with the given tag will be marked as evidence
+  name: tag
+  required: true
+- description: Description for the Evidence item
+  name: description
+  required: true
+comment: Mark entries as evidence if they are tagged with given tag
+commonfields:
+  id: MarkAsEvidenceByTag
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+enabled: true
+name: MarkAsEvidenceByTag
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Utility
+type: python
+fromversion: 6.0.0
+dockerimage: demisto/python3:3.10.12.63474
+tests:
+- No tests (auto formatted)

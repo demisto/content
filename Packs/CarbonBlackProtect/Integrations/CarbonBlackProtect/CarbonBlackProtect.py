@@ -1,10 +1,10 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
+
 ''' IMPORTS '''
 
 import json
-import requests
 import urllib3
 
 # Disable insecure warnings
@@ -424,7 +424,8 @@ def search_computer_command():
     """
     args = demisto.args()
     raw_computers = search_computer(args.get('query'), args.get('limit'), args.get('offset'), args.get('sort'),
-                                    args.get('group'), args.get('name'), args.get('ipAddress'), args.get('macAddress'))
+                                    args.get('group'), args.get('name'), args.get('ipAddress'), args.get('macAddress'),
+                                    args.get('fields'))
     headers = args.get('headers', COMPUTER_HEADERS)
     computers = []
     for computer in raw_computers:
@@ -447,7 +448,7 @@ def search_computer_command():
 
 
 @logger
-def search_computer(q=None, limit=None, offset=None, sort=None, group=None, name=None, ip_address=None, mac=None):
+def search_computer(q=None, limit=None, offset=None, sort=None, group=None, name=None, ip_address=None, mac=None, fields=None):
     """
     Sends the request for file catalog, and returns the result json
     :param q: Query to be executed
@@ -458,6 +459,7 @@ def search_computer(q=None, limit=None, offset=None, sort=None, group=None, name
     :param name: Computer name
     :param ip_address: Last known IP address of this computer
     :param mac: MAC address of adapter used to connect to the CB Protection Server
+    :param fields: CSV list of fields to limit the fields returned from the console.
     :return: Computer response json
     """
     url_params = {
@@ -473,6 +475,14 @@ def search_computer(q=None, limit=None, offset=None, sort=None, group=None, name
         url_params['q'].append(f'ipAddress:{ip_address}')
     if mac:
         url_params['q'].append(f'macAddress:{mac}')
+    if fields:
+        # required fields for Endpoint context output
+        all_fields = [
+            'memorySize', 'processorCount', 'processorModel', 'osShortName', 'osName',
+            'macAddress', 'machineModel', 'ipAddress', 'name', 'id'
+        ]
+        all_fields.extend([field for field in fields.split(',') if field not in all_fields])  # add requested unique fields
+        url_params['fields'] = ",".join(all_fields)
 
     return http_request('GET', '/Computer', params=url_params)
 
@@ -544,26 +554,25 @@ def update_computer(id, name, computer_tag, description, policy_id, automatic_po
     :param template: True if computer is a template
     :return: Result json of the request
     """
-    body_params = {
-        'id': id,
-        'name': name,
-        'computerTag': computer_tag,
-        'description': description,
-        'policyId': policy_id,
-        'automaticPolicy': automatic_policy,
-        'localApproval': local_approval,
-        'refreshFlags': refresh_flags,
-        'prioritized': prioritized,
-        'debugLevel': debug_level,
-        'kernelDebugLevel': kernel_debug_level,
-        'debugFlags': debug_flags,
-        'debugDuration': debug_duration,
-        'cCLevel': cclevel,
-        'cCFlags': ccflags,
-        'forceUpgrade': force_upgrade,
-        'template': template,
-    }
-    body_params = remove_keys_with_empty_value(body_params)
+
+    body_params = get_computer(id)
+    body_params['id'] = id if id else body_params.get('id')
+    body_params['name'] = name if name else body_params.get('name')
+    body_params['computerTag'] = computer_tag if computer_tag else body_params.get('computerTag')
+    body_params['description'] = description if description else body_params.get('description')
+    body_params['policyId'] = policy_id if policy_id else body_params.get('policyId')
+    body_params['automaticPolicy'] = automatic_policy if automatic_policy else body_params.get('automaticPolicy')
+    body_params['localApproval'] = local_approval if local_approval else body_params.get('localApproval')
+    body_params['refreshFlags'] = refresh_flags if refresh_flags else body_params.get('refreshFlags')
+    body_params['prioritized'] = prioritized if prioritized else body_params.get('prioritized')
+    body_params['debugLevel'] = debug_level if debug_level else body_params.get('debugLevel')
+    body_params['kernelDebugLevel'] = kernel_debug_level if kernel_debug_level else body_params.get('kernelDebugLevel')
+    body_params['debugFlags'] = debug_flags if debug_flags else body_params.get('debugFlags')
+    body_params['debugDuration'] = debug_duration if debug_duration else body_params.get('debugDuration')
+    body_params['ccLevel'] = cclevel if cclevel else body_params.get('ccLevel')
+    body_params['ccFlags'] = ccflags if ccflags else body_params.get('ccFlags')
+    body_params['forceUpgrade'] = force_upgrade if force_upgrade else body_params.get('forceUpgrade')
+    body_params['template'] = template if template else body_params.get('template')
 
     return http_request('POST', '/computer', data=body_params)
 

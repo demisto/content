@@ -1,0 +1,23 @@
+{
+    "name": "Discord",
+    "description": "Send Messages to your Discord server",
+    "support": "community",
+    "currentVersion": "1.0.1",
+    "author": "BarHalifa",
+    "url": "",
+    "email": "",
+    "created": "2023-08-02T11:58:53Z",
+    "categories": [
+        "Messaging and Conferencing"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "BarHalifa"
+    ]
+}

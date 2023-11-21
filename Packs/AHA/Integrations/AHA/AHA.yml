@@ -1,0 +1,177 @@
+category: Utilities
+commonfields:
+  id: Aha
+  version: -1
+configuration:
+- name: url
+  display: Server URL
+  required: true
+  defaultvalue: https://example.com/
+  type: 0
+  additionalinfo:
+- name: project_name
+  display: Project Name
+  required: true
+  defaultvalue: DEMO
+  type: 0
+  additionalinfo: "Check the Aha! project name in the URL. Replace the <PROJECT_NAME> placeholder in the following : example.com.aha.io/products/<PROJECT_NAME>/features."
+- name: api_key
+  displaypassword: Api Key
+  required: true
+  defaultvalue:
+  type: 9
+  hiddenusername: true
+  additionalinfo: "API Key to access the service REST API."
+- name: insecure
+  display: Trust any certificate (not secure)
+  type: 8
+  additionalinfo:
+  required: false
+- name: proxy
+  display: Use system proxy settings
+  type: 8
+  additionalinfo:
+  required: false
+description: Use the Aha! integration to list and manage Cortex XSOAR features from Aha.
+display: Aha
+name: Aha
+script:
+  commands:
+  - name: aha-get-features
+    description: Lists all features from service, unless a specific feature is specified.
+    arguments:
+    - name: from_date
+      description: Show features created after this date.
+      defaultValue: "2020-01-01"
+    - name: feature_name
+      description: The name of a specific feature to retrieve.
+      defaultValue: ""
+    - name: fields
+      description: A comma-separated list of fields to include in the Aha! service response.
+      defaultValue: "name,reference_num,id,created_at"
+    - name: page
+      description: The specific results page to retrieve.
+      defaultValue: "1"
+    - name: per_page
+      description: The maximum number of results per page.
+      defaultValue: "30"
+    outputs:
+    - contextPath: AHA.Feature.id
+      description: The feature ID.
+      type: UUID
+    - contextPath: AHA.Feature.name
+      description: The feature name.
+      type: String
+    - contextPath: AHA.Feature.reference_num
+      description: The feature reference number.
+      type: String
+    - contextPath: AHA.Feature.workflow_status
+      description: The feature status description.
+      type: String
+    - contextPath: AHA.Feature.description
+      description: The feature description.
+      type: String
+    - contextPath: AHA.Feature.created_at
+      description: The feature creation date.
+      type: Date
+  - name: aha-edit-feature
+    description: "You can edit the following fields in a feature: Name and Status."
+    arguments:
+    - name: feature_name
+      description: The name of the feature to edit.
+      required: true
+      defaultValue: ""
+    - name: fields
+      description: 'Fields in JSON format to edit in a feature. Possible fields are name and status. Status should match Aha values under workflow_status. Example:" {"name": "name", "status" : "Closed"}.'
+      required: true
+      defaultValue: ""
+    outputs:
+    - contextPath: AHA.Feature.id
+      description: The feature ID.
+      type: UUID
+    - contextPath: AHA.Feature.name
+      description: The feature name.
+      type: String
+    - contextPath: AHA.Feature.reference_num
+      description: The feature reference number.
+      type: String
+    - contextPath: AHA.Feature.description
+      description: The feature description.
+      type: String
+    - contextPath: AHA.Feature.workflow_status
+      description: The feature status description.
+      type: String
+    - contextPath: AHA.Feature.created_at
+      description: The feature creation date.
+      type: Date
+  - name: aha-get-ideas
+    description: Lists all ideas from service, unless a specific idea is specified.
+    arguments:
+    - name: from_date
+      description: Show ideas created after this date.
+      defaultValue: "2020-01-01"
+    - name: idea_name
+      description: The name of a specific idea to retrieve.
+      defaultValue: ""
+    - name: fields
+      description: A comma-separated list of fields to include in the Aha! service response.
+      defaultValue: "name,reference_num,id,created_at"
+    - name: page
+      description: The specific results page to retrieve.
+      defaultValue: "1"
+    - name: per_page
+      description: The maximum number of results per page.
+      defaultValue: "30"
+    outputs:
+    - contextPath: AHA.Idea.id
+      description: The idea ID.
+      type: UUID
+    - contextPath: AHA.Idea.name
+      description: The idea name.
+      type: String
+    - contextPath: AHA.Idea.reference_num
+      description: The idea reference number.
+      type: String
+    - contextPath: AHA.Idea.workflow_status
+      description: The idea status description.
+      type: String
+    - contextPath: AHA.Idea.description
+      description: The idea description.
+      type: String
+    - contextPath: AHA.Idea.created_at
+      description: The idea creation date.
+      type: Date
+  - name: aha-edit-idea
+    description: "Edit an idea status to Shipped."
+    arguments:
+    - name: idea_name
+      description: The name of the idea to edit.
+      required: true
+      defaultValue: ""
+    outputs:
+    - contextPath: AHA.Idea.id
+      description: The idea ID.
+      type: UUID
+    - contextPath: AHA.Idea.name
+      description: The idea name.
+      type: String
+    - contextPath: AHA.Idea.reference_num
+      description: The idea reference number.
+      type: String
+    - contextPath: AHA.Idea.workflow_status
+      description: The idea status description.
+      type: String
+    - contextPath: AHA.Idea.description
+      description: The idea description.
+      type: String
+    - contextPath: AHA.Idea.created_at
+      description: The idea creation date.
+      type: Date
+  runonce: false
+  script: "-"
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.13.80014
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

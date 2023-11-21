@@ -1,10 +1,12 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import itertools
 
-import demistomock as demisto  # noqa: F401
 import geopy.distance
-from CommonServerPython import *  # noqa: F401
+import urllib3
 
-requests.packages.urllib3.disable_warnings()
+
+urllib3.disable_warnings()
 
 
 def get_distances_list(src_coords_list: list, events_dict: dict):

@@ -1,0 +1,46 @@
+commonfields:
+  id: FormatTemplate
+  version: -1
+name: FormatTemplate
+script: ''
+type: python
+tags:
+- transformer
+- general
+comment: Build text from a template that can include DT expressions.
+enabled: true
+args:
+- name: value
+  description: The context to refer a value with ${.xxx} if `template` is not empty, otherwise the template text.
+- name: template
+  description: The template text
+- name: template_type
+  auto: PREDEFINED
+  predefined:
+  - raw
+  - json
+  description: The template type
+  defaultValue: raw
+- name: ctx_data
+  description: 'Context Data: Input . (single dot) on `From previous tasks` to enable to extract the context data.'
+- name: ctx_inputs
+  description: '`inputs` context: Input ''inputs'' (no quotation) on `From previous tasks` to enable ${inputs.} expression in DT.'
+- name: ctx_inc
+  description: '`demisto` context: Input ''incident'' (no quotation) on `From previous tasks` to enable ${incident.} expression in DT.'
+- name: variable_markers
+  description: The pair of start and end markers to bracket a variable name.
+  defaultValue: ${,}
+- name: keep_symbol_to_null
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Set to true to not replace a value if the variable is null, otherwise false.
+  defaultValue: "false"
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.10.12.63474
+runas: DBotWeakRole
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

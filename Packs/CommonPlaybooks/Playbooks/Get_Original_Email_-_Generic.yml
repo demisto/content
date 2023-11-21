@@ -1,13 +1,7 @@
 id: get_original_email_-_generic
 version: -1
 name: Get Original Email - Generic
-description: |-
-  Use this playbook to retrieve the original email in the thread, including headers and attahcments, when the reporting user forwarded the original email not as an attachment.
-
-  You must have the necessary permissions in your email service to execute global search.
-
-  - EWS: eDiscovery
-  - Gmail: Google Apps Domain-Wide Delegation of Authority
+description: Deprecated. Use the "Get Original Email - Generic v2" playbook under the "Phishing" pack instead.
 starttaskid: "0"
 tasks:
   "0":
@@ -229,4 +223,5 @@ outputs:
   description: The headers of the email.
 fromversion: 5.0.0
 tests:
-- Phishing v2 - Test - Incident Starter
+- No tests (deprecated)
+deprecated: true

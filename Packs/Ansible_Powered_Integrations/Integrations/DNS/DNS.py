@@ -1,11 +1,11 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import json
 import traceback
 from typing import Dict, cast
 
 import ansible_runner
-import demistomock as demisto  # noqa: F401
 import ssh_agent_setup
-from CommonServerPython import *  # noqa: F401
 
 
 # Dict to Markdown Converter adapted from https://github.com/PolBaladas/torsimany/

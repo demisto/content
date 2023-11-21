@@ -1,10 +1,10 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from cbc_sdk.errors import ObjectNotFoundError
 
-import demistomock as demisto
-from CommonServerPython import *
 from cbc_sdk import platform, CBCloudAPI, errors
 import ntpath
-import requests
+import urllib3
 
 # Disable insecure warnings
 CONNECTION_ERROR_MSG = 'Connection Error - check your server URL'
@@ -12,7 +12,7 @@ AUTHORIZATION_ERROR_MSG = 'Authorization Error - check your API Credentials'
 ORG_ID_ERROR_MSG = 'Authorization Error - check your Organization Key'
 PROXY_ERROR_MSG = 'Proxy Error - if the \'Use system proxy\' checkbox in the integration configuration is' \
                   ' selected, try clearing the checkbox.'
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 
@@ -332,9 +332,11 @@ def main():
 
     params = demisto.params()
     url = params.get('url')
-    cb_custom_key = params.get('custom_key')
-    cb_custom_id = params.get('custom_id')
-    cb_org_key = params.get('org_key')
+    cb_custom_key = params.get('credentials_api_token_custom_key', {}).get('password') or params.get('custom_key')
+    cb_custom_id = params.get('credentials_api_token_custom_id', {}).get('password') or params.get('custom_id')
+    cb_org_key = params.get('credentials_api_token_org_key', {}).get('password') or params.get('org_key')
+    if not (cb_custom_key and cb_custom_id and cb_org_key):
+        raise DemistoException('Custom Key, Custom ID and Organization Key must be provided.')
     verify_certificate = not params.get('insecure', True)
     handle_proxy()
 

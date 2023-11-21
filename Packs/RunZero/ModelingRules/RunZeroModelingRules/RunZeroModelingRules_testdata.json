@@ -1,0 +1,37 @@
+{
+    "data": [
+        {
+            "test_data_event_id": "317eb8f1-6016-4593-bfdc-6024294552b9",
+            "vendor": "runzero",
+            "product": "runzero",
+            "dataset": "runzero_runzero_raw",
+            "event_data": {
+                "id": "f14bfa87-8aa8-402a-8f8f-cdff063d88a4",
+                "action": "agent-offline",
+                "success": true,
+                "target_type": "target_type",
+                "target_name": "target_name",
+                "target_id": "target_id",
+                "source_type": "user",
+                "source_name": "source_name",
+                "source_id": "source_id",
+                "created_at": 1675308687
+            },
+            "expected_values": {
+                "xdm.source.user.identifier": "source_id",
+                "xdm.source.agent.identifier": null,
+                "xdm.source.process.name": null,
+                "xdm.source.user.username": "source_name",
+                "xdm.source.process.identifier": null,
+                "xdm.event.outcome": "SUCCESS",
+                "xdm.source.host.hostname": null,
+                "xdm.target.resource.name": "target_name",
+                "xdm.event.type": "agent-offline",
+                "xdm.event.id": "f14bfa87-8aa8-402a-8f8f-cdff063d88a4",
+                "xdm.target.resource.id": "target_id",
+                "xdm.target.resource.type": "target_type"
+            }
+        }
+    ],
+    "ignored_validations": ["schema_test_data_types"]
+}

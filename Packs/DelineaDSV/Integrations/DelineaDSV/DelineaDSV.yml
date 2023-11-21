@@ -1,0 +1,48 @@
+category: Authentication & Identity Management
+commonfields:
+  id: DelineaDSV
+  version: -1
+configuration:
+- display: Server URL (e.g. https://example.com)
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: client_id
+  required: true
+  type: 0
+- display: Password
+  name: client_secret
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+description: Manage credentials for applications, databases, CI/CD tools, and services without causing friction in the development process.
+display: DelineaDSV
+name: DelineaDSV
+script:
+  commands:
+  - arguments:
+    - description: Secret name for DSV
+      name: name
+      required: true
+    description: Getting a secret fom DSV
+    name: dsv-secret-get
+    outputs:
+    - contextPath: secret
+      description: Received JSON object secret
+      type: String
+  dockerimage: demisto/python3:3.10.12.63474
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

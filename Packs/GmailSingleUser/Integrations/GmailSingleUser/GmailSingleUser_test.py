@@ -189,12 +189,26 @@ def test_no_date_mail():
     assert context_gmail.get('Date') == 'Mon, 21 Dec 2020 12:11:57 -0800'
 
 
-def test_generate_auth_link():
+def test_generate_auth_link_oob():
     client = Client()
-    link, challange = client.generate_auth_link()
+    link = client.generate_auth_link()
     assert link.startswith('https://accounts.google.com/o/oauth2/v2/auth?')
-    assert challange in link
+    assert 'code_challenge=' in link
     assert 'code_challenge_method=S256' in link
+
+
+def test_generate_auth_link_web(mocker):
+    mocker.patch('GmailSingleUser.CLIENT_SECRET', 'test')
+    mocker.patch('GmailSingleUser.CLIENT_ID', 'test_id')
+    mocker.patch('GmailSingleUser.REDIRECT_URI', 'http://localhost:9001')
+    client = Client()
+    link = client.generate_auth_link()
+    assert link.startswith('https://accounts.google.com/o/oauth2/v2/auth?')
+    assert 'code_challenge=' not in link
+    assert 'code_challenge_method=S256' not in link
+    assert 'access_type=offline' in link
+    assert 'redirect_uri=http' in link
+    assert 'client_id=test_id' in link
 
 
 SEND_EMAIL_ARGS = [
@@ -236,3 +250,41 @@ def test_send_mail(gmail_client, mocker, command_args):
     assert command_args.get('to') in markdown_table
     assert command_args.get('subject') in markdown_table
     assert 'SENT' in markdown_table
+
+
+def test_send_mail_with_reference(gmail_client: Client, mocker):
+    """
+    Given:
+        - The references argument as a list type
+        - The inReplyTo argument as a str type
+    When:
+        - run client.send_mail function
+    Then:
+        - Ensure the function expects to receive the type
+          of the reference argument and the inReplyTo argument
+    """
+    mocker.patch.object(
+        gmail_client, 'send_email_request', return_value=True
+    )
+    assert gmail_client.send_mail(
+        emailto=None,
+        emailfrom=None,
+        send_as=None,
+        cc=None,
+        bcc=None,
+        subject=None,
+        body=None,
+        htmlBody=None,
+        entry_ids=None,
+        replyTo=None,
+        file_names=None,
+        attach_cid=None,
+        manualAttachObj=None,
+        transientFile=None,
+        transientFileContent=None,
+        transientFileCID=None,
+        additional_headers=None,
+        templateParams=None,
+        references=['test', 'test1'],
+        inReplyTo='test test'
+    )

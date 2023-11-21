@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import asyncio
 import concurrent
 import json
@@ -15,8 +17,6 @@ import urllib3
 from slack.errors import SlackApiError
 from slack.web.slack_response import SlackResponse
 
-import demistomock as demisto
-from CommonServerPython import *
 
 # disable unsecure warnings
 urllib3.disable_warnings()
@@ -908,7 +908,8 @@ async def start_listening():
     Starts a Slack RTM client and checks for mirrored incidents.
     """
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
-    loop = asyncio.get_running_loop()
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
     loop.run_in_executor(executor, long_running_loop)
     await slack_loop()
 
@@ -2059,13 +2060,14 @@ def init_globals(command_name: str = ''):
         SSL_CONTEXT = None
 
     if command_name != 'long-running-execution':
-        loop = asyncio.get_event_loop()
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
         if not loop._default_executor:  # type: ignore[attr-defined]
             demisto.info(f'setting _default_executor on loop: {loop} id: {id(loop)}')
             loop.set_default_executor(concurrent.futures.ThreadPoolExecutor(max_workers=4))
 
-    BOT_TOKEN = demisto.params().get('bot_token', '')
-    ACCESS_TOKEN = demisto.params().get('access_token', '')
+    BOT_TOKEN = demisto.params().get('cred_bot_token', {}).get('password') or demisto.params().get('bot_token', '')
+    ACCESS_TOKEN = demisto.params().get('cred_access_token', {}).get('password') or demisto.params().get('access_token', '')
     PROXIES = handle_proxy()
     proxy_url = demisto.params().get('proxy_url')
     PROXY_URL = proxy_url or PROXIES.get('http')  # aiohttp only supports http proxy

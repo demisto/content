@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 #
 #
 #                 _____            _         _____      _
@@ -26,13 +28,11 @@
 # IMPORTS
 import json
 import dateparser
-import demistomock as demisto
-import requests
-from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
+import urllib3
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 # CONSTANTS
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'

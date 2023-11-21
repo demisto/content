@@ -1,0 +1,30 @@
+{
+    "id": "Prisma Cloud - VM Alert Prioritization",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Prisma Cloud - VM Alert Prioritization",
+    "prevName": "Prisma Cloud - VM Alert Prioritization",
+    "color": "#54CEC7",
+    "playbookId": "Prisma Cloud - VM Alert Prioritization",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 3,
+    "onChangeRepAlg": 0,
+    "layout": "Prisma Cloud - VM Alert Prioritization",
+    "detached": false,
+    "extractSettings": {
+        "mode": "All",
+        "fieldCliNameToExtractSettings": {}
+    },
+    "fromVersion": "6.8.0"
+}

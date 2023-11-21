@@ -11,3 +11,8 @@ Then, follow the steps below:
 
 **Note**: retain the API password for your records. You cannot request the API password again.
 Also, provide a meaningful name for the API key.
+
+Notice: Submitting indicators using the following commands of this integration might make the indicator data publicly available.
+- ***url***
+- ***domain***
+See the vendor’s documentation for more details.

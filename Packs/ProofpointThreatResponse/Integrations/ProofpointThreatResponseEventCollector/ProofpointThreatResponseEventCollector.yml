@@ -1,0 +1,140 @@
+category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: ProofpointThreatResponseEventCollector
+  version: -1
+configuration:
+- display: Server URL (e.g., https://192.168.0.1)
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- display: ""
+  displaypassword: API Key for the authentication.
+  name: credentials
+  type: 9
+  required: true
+  hiddenusername: true
+  section: Connect
+- additionalinfo: The time range for the initial data fetch. If timeout errors occur, consider changing this value.
+  defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  type: 0
+  section: Collect
+  required: false
+- defaultvalue: '100'
+  display: Fetch limit - maximum number of incidents per fetch
+  name: fetch_limit
+  type: 0
+  section: Collect
+  required: false
+- defaultvalue: '6 hours'
+  additionalinfo: The time range between create_after and created_before that is sent to the API when fetching older incidents. If timeout errors occur, consider changing this value.
+  display: Fetch delta - The delta time in each batch. e.g., 1 hour, 3 minutes.
+  name: fetch_delta
+  type: 0
+  section: Collect
+  required: false
+- display: Fetch incidents with specific event sources. Can be a list of comma-separated values.
+  name: event_sources
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+- display: Fetch incidents with specific 'Abuse Disposition' values. Can be a list of comma-separated values.
+  name: abuse_disposition
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+- display: Fetch incident with specific states.
+  name: states
+  options:
+  - new
+  - open
+  - assigned
+  - closed
+  - ignored
+  type: 16
+  section: Collect
+  advanced: true
+  required: false
+- additionalinfo: You can find this value by navigating to Sources > JSON event source > POST URL.
+  display: POST URL of the JSON alert source.
+  name: post_url_id
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+description: Use the Proofpoint Threat Response integration to orchestrate and automate incident response.
+display: Proofpoint Threat Response Event Collector
+name: ProofpointThreatResponseEventCollector
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: If true, the command will create events, otherwise it will only display them.
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    - auto: PREDEFINED
+      description: The state of the incidents to retrieve.
+      name: state
+      predefined:
+      - new
+      - open
+      - assigned
+      - closed
+      - ignored
+    - description: 'Retrieve incidents that were created after this date, in ISO 8601 format (UTC). Example: 2020-02-22 or 2020-02-22T00:00:00Z'
+      name: created_after
+      predefined:
+      - ''
+    - description: 'Retrieve incidents that were created before this date, in ISO 8601 format (UTC). Example: 2020-02-22 or 2020-02-22T00:00:00Z'
+      name: created_before
+    - description: 'Retrieve incidents that were closed after this date, in ISO 8601 format (UTC). Example: 2020-02-22 or 2020-02-22T00:00:00Z'
+      name: closed_after
+    - description: 'Retrieve incidents that were closed before this date, in ISO 8601 format (UTC). Example: 2020-02-22 or 2020-02-22T00:00:00Z.'
+      name: closed_before
+    - auto: PREDEFINED
+      description: If false, will return an array of event IDs instead of full event objects. This will significantly speed up the response time of the API for incidents with a large number of alerts.
+      name: expand_events
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: '100'
+      description: The maximum number of incidents to return.
+      name: limit
+      required: true
+    description: Retrieves all incident metadata from Threat Response by specifying filter criteria such as the state of the incident or time of closure.
+    name: proofpoint-trap-get-events
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+  isfetchevents: true
+  dockerimage: demisto/python3:3.10.12.63474
+marketplaces:
+- marketplacev2
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)

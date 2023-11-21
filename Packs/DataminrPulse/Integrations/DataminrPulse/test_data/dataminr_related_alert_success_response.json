@@ -1,0 +1,200 @@
+[
+  {
+    "alertId": "3250585601001658477221-1669637603987-1",
+    "parentAlertId": "4760825526842025301669363672399-1669363672458-1",
+    "eventTime": 1669637603987,
+    "eventVolume": 0,
+    "eventLocation": {
+      "coordinates": [
+        50.4501,
+        30.5234
+      ],
+      "name": "place name",
+      "places": [
+        "1d0963227a8d491bbaa2229ee4432977",
+        "7cdfff2bb8cdd014f65ec78c5aca4205"
+      ],
+      "radius": 18.354461701942267
+    },
+    "metadata": {
+      "cyber": {
+        "threats": [
+          "Anonymous"
+        ]
+      }
+    },
+    "source": {
+      "verified": false,
+      "channels": [
+        "chatter"
+      ]
+    },
+    "post": {
+      "timestamp": 1669636005196,
+      "text": "We Are Anonymous",
+      "translatedText": "We Are Anonymous",
+      "languages": [
+        {
+          "position": 0,
+          "lang": "fa"
+        }
+      ],
+      "media": [
+        {
+          "type": "photo",
+          "url": "dummy.photo.com",
+          "thumbnail": "dummy.photo.com"
+        }
+      ],
+      "link": "dummy.url.com"
+    },
+    "caption": "dummy-org IP 0.0.0.0 has exposed dummy-product: Local Source.",
+    "categories": [
+      {
+        "name": "Cybersecurity - Crime and Malicious Activity",
+        "topicType": "category",
+        "id": "124031",
+        "idStr": "124031",
+        "path": "/TOPIC/EXT/CS/124031",
+        "retired": false
+      },
+      {
+        "name": "Cybersecurity - Threats & Vulnerabilities",
+        "topicType": "category",
+        "id": "853086",
+        "idStr": "853086",
+        "path": "/TOPIC/EXT/CS/853086",
+        "retired": false
+      }
+    ],
+    "headerColor": "FFFFAD",
+    "headerLabel": "Urgent",
+    "alertType": {
+      "id": "urgent",
+      "name": "Urgent",
+      "color": "FFBB05"
+    },
+    "publisherCategory": {
+      "id": "chatter",
+      "name": "Chatter",
+      "color": "A24512",
+      "shortName": "CTR"
+    },
+    "eventMapSmallURL": "dummy.map.url.com",
+    "eventMapLargeURL": "dummy.map.url.com",
+    "expandAlertURL": "dummy.alert.url.com",
+    "expandMapURL": "dummy.map.url.com",
+    "relatedTerms": [
+      {
+        "text": "commenting",
+        "url": "dummy.url.com"
+      },
+      {
+        "text": "cyberattacks",
+        "url": "dummy.url.com"
+      }
+    ],
+    "relatedTermsQueryURL": "dummy.related.url.com"
+  },
+  {
+    "alertId": "4760825526842025301669363672399-1669363672458-1",
+    "eventTime": 1669363672537,
+    "eventVolume": 0,
+    "eventLocation": {
+      "coordinates": [
+        50.4501,
+        30.5234
+      ],
+      "name": "place name",
+      "places": [
+        "1d0963227a8d491bbaa2229ee4432977",
+        "7cdfff2bb8cdd014f65ec78c5aca4205"
+      ],
+      "radius": 18.354461701942267
+    },
+    "metadata": {
+      "cyber": {
+        "URLs": [
+          "url1.com",
+          "url2.com"
+        ],
+        "threats": [
+          "Anonymous"
+        ]
+      }
+    },
+    "source": {
+      "verified": false,
+      "channels": [
+        "chatter"
+      ]
+    },
+    "post": {
+      "timestamp": 1669363672399,
+      "text": "text.url.com",
+      "translatedText": "translatedtext.url.com",
+      "languages": [
+        {
+          "position": 0,
+          "lang": "UNK"
+        }
+      ],
+      "link": "text.url.com"
+    },
+    "caption": "Anonymous",
+    "subCaption": {
+      "bullets": {
+        "media": "",
+        "content": "URL: text.url.com",
+        "source": "According to local source:"
+      }
+    },
+    "categories": [
+      {
+        "name": "Cybersecurity - Crime and Malicious Activity",
+        "topicType": "category",
+        "id": "124031",
+        "idStr": "124031",
+        "path": "/TOPIC/EXT/CS/124031",
+        "retired": false
+      }
+    ],
+    "sectors": [
+      {
+        "name": "Retail",
+        "topicType": "sector",
+        "id": "84f41bce6078be5540e5ae9b2afaf6db",
+        "idStr": "84f41bce6078be5540e5ae9b2afaf6db",
+        "retired": false
+      }
+    ],
+    "headerColor": "FFFFAD",
+    "headerLabel": "Urgent",
+    "alertType": {
+      "id": "urgent",
+      "name": "Urgent",
+      "color": "FFBB05"
+    },
+    "publisherCategory": {
+      "id": "chatter",
+      "name": "Chatter",
+      "color": "A24512",
+      "shortName": "CTR"
+    },
+    "eventMapSmallURL": "map.url.com",
+    "eventMapLargeURL": "map.url.com",
+    "expandAlertURL": "alert.url.com",
+    "expandMapURL": "map.url.com",
+    "relatedTerms": [
+      {
+        "text": "compromised",
+        "url": "url.com"
+      },
+      {
+        "text": "defacements",
+        "url": "dummy.url.com"
+      }
+    ],
+    "relatedTermsQueryURL": "dummy.url.com"
+  }
+]

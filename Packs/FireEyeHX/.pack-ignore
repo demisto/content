@@ -1,8 +1,12 @@
 [file:FireEyeHX.yml]
-ignore=IN126
+ignore=IN126,PR101
 
 [file:README.md]
 ignore=RM104,RM106
 
 [known_words]
-README
+readme
+
+[file:FireEyeHXModelingRules.yml]
+ignore=MR108
+

@@ -46,6 +46,7 @@ divide according to CVE risk and mitigate accordingly (high will have different 
     * __Minimal severity to fetch by__
     * __Site ID to fetch by__
     * __Fetch by alert type__
+    * __Exclude resolved alerts__
 4. Click __Test__ to validate the URLs, token, and connection.
 ## Fetched Incidents Data
 ---
@@ -224,6 +225,7 @@ Admin user.
 | sort_order | The sorting order of the alerts - descending or ascending | Optional | 
 | alert_limit | The maximum number of alerts to query. | Optional | 
 | minimal_severity | Set minimal severity to query by. | Optional | 
+| exclude_resolved_alerts | Returns only unresloved alerts. | Optional |
 
 
 ##### Context Output

@@ -1,0 +1,35 @@
+{
+  "items": [
+    {
+      "context": "enrollment",
+      "credits": 1,
+      "phone": "+12125556707",
+      "telephony_id": "220f89ff-bff8-4466-b6cb-b7787940ce68",
+      "ts": "2023-03-21T22:34:49.466370+00:00",
+      "txid": "2f5d34d3-053f-422c-9dd4-77a5d58706b1",
+      "type": "sms"
+    },
+    {
+      "context": "authentication",
+      "credits": 2,
+      "phone": "+17345551311",
+      "telephony_id": "60799fee-f08f-4ba8-971f-4e53b3473e9a",
+      "ts": "2023-01-26T20:54:12.573580+00:00",
+      "txid": "373bd5f3-1e42-4a5d-aefa-b33ae278fac8",
+      "type": "phone"
+    },
+    {
+      "context": "administrator login",
+      "credits": 0,
+      "phone": "+13135559542",
+      "telephony_id": "5bf1a860-fe39-49e3-be29-217659663a74",
+      "ts": "2022-10-25T16:07:45.304526+00:00",
+      "txid": "fb0c129b-f994-4d3d-953b-c3e764272eb7",
+      "type": "sms"
+    }
+  ],
+  "metadata": {
+    "next_offset": "1666714065304,5bf1a860-fe39-49e3-be29-217659663a74",
+    "total_objects": 3
+  }
+}

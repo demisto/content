@@ -1,0 +1,26 @@
+commonfields:
+  id: CuckooTaskStatus
+  version: -1
+name: CuckooTaskStatus
+script: ''
+type: python
+subtype: python3
+tags:
+- cuckoo
+comment: Deprecated. Use the 'cuckoo-view-task' command instead.
+deprecated: true
+system: true
+args:
+- name: taskID
+  required: true
+  default: true
+  description: ID of the task to check.
+scripttarget: 0
+dependson:
+  must:
+  - cuckoo-view-task
+timeout: 0s
+tests:
+- No test
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.10.6.33415

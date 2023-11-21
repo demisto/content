@@ -1,7 +1,10 @@
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+import urllib3
+
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 URL = ''
 VERIFY = False
@@ -212,6 +215,7 @@ def alert_to_context(alert):
     """
     Transform a single alert to context struct
     """
+    args = demisto.args()
     ec = {
         'ID': alert.get('id'),
         'Status': alert.get('status'),
@@ -234,6 +238,16 @@ def alert_to_context(alert):
             'AccountID': demisto.get(alert, 'resource.accountId')
         }
     }
+    if 'resource_keys' in args:
+        # if resource_keys argument was given, include those items from resource.data
+        extra_keys = demisto.getArg('resource_keys')
+        resource_data = {}
+        keys = extra_keys.split(',')
+        for key in keys:
+            resource_data[key] = demisto.get(alert, f'resource.data.{key}')
+
+        ec['Resource']['Data'] = resource_data
+
     if alert.get('alertRules'):
         ec['AlertRules'] = [alert_rule.get('name') for alert_rule in alert.get('alertRules')]
 
@@ -799,22 +813,81 @@ def redlock_get_scan_results():
         })
 
 
+def expire_stored_ids(fetched_ids: Dict[int, List[str]]):
+    """
+    Expires stored ids after 2 hours.
+
+    Args:
+        fetched_ids: dict of fetched ids.
+
+    Returns:
+        dict: incidents that are in the last run for less than 2 hours.
+
+    """
+    if not fetched_ids:
+        return {}
+
+    two_hours = timedelta(hours=2).total_seconds() * 1000
+    now = int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
+
+    # remove incidents that are stored more than two hours in the last run object.
+    cleaned_cache = {}
+
+    for fetch_time, incidents_ids in fetched_ids.items():
+        fetch_time = int(fetch_time)
+        timediff = now - fetch_time
+        if timediff < two_hours:
+            cleaned_cache[fetch_time] = incidents_ids
+        else:
+            demisto.debug(f'incidents {incidents_ids} removed from fetched_ids')
+
+    return cleaned_cache
+
+
 def fetch_incidents():
     """
     Retrieve new incidents periodically based on pre-defined instance parameters
     """
-    now = int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
-    last_run = demisto.getLastRun().get('time')
-    if not last_run:  # first time fetch
-        last_run = parse_date_range(demisto.params().get('fetch_time', '3 days').strip(), to_timestamp=True)[0]
+    last_run = demisto.getLastRun()
+    last_run_time = last_run.get('time')  # This is purely to establish if a first fetch has occurred
+    fetched_ids = last_run.get('fetched_ids', {})
 
-    payload = {'timeRange': {
-        'type': 'absolute',
-        'value': {
-            'startTime': last_run,
-            'endTime': now
+    if isinstance(fetched_ids, list):
+        # this code section will only happen once on the old format where fetched_ids was saved as a list of dicts.
+        fetched_ids_copy = fetched_ids.copy()
+        fetched_ids.clear()
+        fetched_ids = {}
+        for record in fetched_ids_copy:
+            for incident_id, timestamp in record.items():
+                timestamp = int(timestamp)
+                if timestamp not in fetched_ids:
+                    fetched_ids[timestamp] = []
+                fetched_ids[timestamp].append(incident_id)
+        fetched_ids_copy.clear()
+
+    now = int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
+    if not last_run_time:
+        first_time_fetch = demisto.params().get('fetch_time', '3 days').strip().split(' ')
+        first_fetch_amount = int(first_time_fetch[0])
+        first_fetch_unit = first_time_fetch[1]
+        time_range = {
+            'type': 'relative',
+            'value': {
+                "amount": first_fetch_amount,
+                "unit": first_fetch_unit.replace("s", "")  # This is make the unit singular
+            }
         }
-    }, 'filters': [{'name': 'alert.status', 'operator': '=', 'value': 'open'}]}
+        last_run_time = now
+    else:
+        time_range = {
+            'type': 'relative',
+            'value': {
+                "amount": 1,
+                "unit": "hour"
+            }
+        }
+
+    payload = {"timeRange": time_range, 'filters': [{'name': 'alert.status', 'operator': '=', 'value': 'open'}]}
     if demisto.getParam('ruleName'):
         payload['filters'].append({'name': 'alertRule.name', 'operator': '=',  # type: ignore
                                    'value': demisto.getParam('ruleName')})
@@ -827,17 +900,28 @@ def fetch_incidents():
     demisto.info("Executing Prisma Cloud (RedLock) fetch_incidents with payload: {}".format(payload))
     response = req('POST', 'alert', payload, {'detailed': 'true'})
     incidents = []
+
+    fetched_ids[now] = []
+
     for alert in response:
-        if alert.get('firstSeen') < last_run:
+        alert_id = alert.get('id')
+        if any(alert_id in existing_fetched_ids for existing_fetched_ids in fetched_ids.values()):
+            demisto.debug(f"Fetched {alert_id} already. Skipping")
             continue
+
+        demisto.debug(f"Processing new fetched alert {alert_id}.")
         incidents.append({
-            'name': alert.get('policy.name', 'No policy') + ' - ' + alert.get('id'),
+            'name': alert.get('policy.name', 'No policy') + ' - ' + alert_id,
             'occurred': convert_unix_to_demisto(alert.get('alertTime')),
             'severity': translate_severity(alert),
             'rawJSON': json.dumps(alert)
         })
+        fetched_ids[now].append(alert_id)
 
-    return incidents, now
+    if not fetched_ids[now]:  # if no new incidents were added, no need to keep the date, saving space
+        fetched_ids.pop(now, None)
+
+    return incidents, fetched_ids, last_run_time
 
 
 def main():
@@ -880,9 +964,13 @@ def main():
         elif command == 'redlock-get-scan-results':
             redlock_get_scan_results()
         elif command == 'fetch-incidents':
-            incidents, new_run = fetch_incidents()
+            incidents, fetched_ids, last_run_time = fetch_incidents()
             demisto.incidents(incidents)
-            demisto.setLastRun({'time': new_run})
+            ids_to_insert = expire_stored_ids(fetched_ids)
+            demisto.setLastRun({
+                'fetched_ids': ids_to_insert,
+                'time': last_run_time
+            })
         else:
             raise Exception('Unrecognized command: ' + command)
     except Exception as err:

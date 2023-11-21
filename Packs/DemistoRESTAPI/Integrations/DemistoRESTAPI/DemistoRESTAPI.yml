@@ -2,9 +2,9 @@ commonfields:
   id: Demisto REST API
   version: -1
 name: Demisto REST API
-display: Demisto REST API
+display: Demisto REST API (Deprecated)
 category: Utilities
-description: Use Demisto REST APIs
+description: Deprecated. Use Core REST API instead.
 configuration:
 - display: Demisto Server URL
   name: url
@@ -14,8 +14,13 @@ configuration:
 - displaypassword: Demisto Server API Key
   name: creds_apikey
   type: 9
-  required: false
   hiddenusername: true
+  required: false
+- display: Base marketplace url
+  name: marketplace_url
+  defaultvalue: https://marketplace.xsoar.paloaltonetworks.com/content/packs/
+  type: 0
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -23,10 +28,15 @@ configuration:
 - display: Demisto Server API Key
   name: apikey
   type: 4
-  required: false
   hidden: true
+  required: false
 - display: Use system proxy settings
   name: proxy
+  type: 8
+  required: false
+- display: Use tenant
+  additionalinfo: Whether API calls should be made to the current tenant instead of the master tenant.
+  name: use_tenant
   type: 8
   required: false
 script:
@@ -96,14 +106,39 @@ script:
       description: IDs of the incidents to delete
       isArray: true
     - name: fields
-      description: 'Comma separated list of fields to return, case sensitive. Set
-        "all" for all fields. WARNING: Setting all fields may result in big results.'
-      required: false
+      description: 'Comma separated list of fields to return, case sensitive. Set "all" for all fields. WARNING: Setting all fields may result in big results.'
       isArray: true
       defaultValue: id,name,type,severity,status
     description: Delete Demisto incidents
     execution: true
-  runonce: false
+  - name: demisto-api-install-packs
+    arguments:
+    - name: packs_to_install
+      description: 'The packs to install in JSON format (e.g. [{"AutoFocus": "2.0.8"}] ).'
+      isArray: true
+    - name: file_url
+      description: 'The pack zip file url.'
+    - name: entry_id
+      description: 'The War Room entry ID of the pack zip file.'
+    - name: skip_verify
+      description: 'If true will skip pack signature validation, Available from 6.5.0 server version.'
+      defaultValue: 'true'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: skip_validation
+      description: 'If true will skip all pack validations, Available from 6.6.0 server version.'
+      defaultValue: 'true'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    description: Upload packs to Demisto server from url or the marketplace.
 tests:
 - DemistoUploadFileV2 Test
+marketplaces:
+- xsoar
 fromversion: 5.0.0
+toversion: 7.9.9
+deprecated: true

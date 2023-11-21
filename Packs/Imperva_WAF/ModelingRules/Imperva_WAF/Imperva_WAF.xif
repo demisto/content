@@ -1,0 +1,25 @@
+[MODEL: dataset="imperva_inc__securesphere_raw"]
+alter
+    src_ip_v4 = if(src ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src, null),
+    src_ip_v6 = if(src !~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src, null),
+    dst_ip_v4 = if(dst ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", dst, null),
+    dst_ip_v6 = if(dst !~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", dst, null)
+| alter
+    xdm.target.port = dpt,
+    xdm.source.port = spt,
+    xdm.observer.action = act,
+    xdm.event.type = cat,
+    xdm.alert.subcategory = cs1,
+    xdm.source.host.device_category = cs2,
+    xdm.observer.name = cs3,
+    xdm.source.application.name = cs4,
+    xdm.event.description = cs5,
+    xdm.source.ipv4 = src_ip_v4,
+    xdm.source.ipv6 = src_ip_v6,
+    xdm.target.ipv4 = dst_ip_v4,
+    xdm.target.ipv6 = dst_ip_v6,
+    xdm.target.user.username = duser,
+    xdm.network.ip_protocol = if(proto ="TCP", "TCP", proto="UDP", "UDP", proto~="lite|Lite|LITE", "UDPLITE", "UNKNOWN"),
+    xdm.alert.severity = cefSeverity,
+    xdm.observer.version = cefDeviceVersion,
+    xdm.event.operation_sub_type = cefDeviceEventClassId;

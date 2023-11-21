@@ -1,0 +1,300 @@
+id: Detonate URL - SecneurX Analysis - Test
+version: 2
+vcShouldKeepItemLegacyProdMachine: false
+name: Detonate URL - SecneurX Analysis - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f385c246-f00e-44cb-817b-0e70a8eeec4c
+    type: start
+    task:
+      id: f385c246-f00e-44cb-817b-0e70a8eeec4c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: aaad13c5-6b89-4365-880a-4b916abe731a
+    type: regular
+    task:
+      id: aaad13c5-6b89-4365-880a-4b916abe731a
+      version: -1
+      name: Start Fresh
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 45c7bbc7-da55-4978-8d81-afd866927e6d
+    type: regular
+    task:
+      id: 45c7bbc7-da55-4978-8d81-afd866927e6d
+      version: -1
+      name: Set URL for detonate
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      key:
+        simple: URL.Data
+      value:
+        simple: https://google.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: bcf774c0-8262-4a2f-84f3-aace88a5bfda
+    type: playbook
+    task:
+      id: bcf774c0-8262-4a2f-84f3-aace88a5bfda
+      version: -1
+      name: Detonate URL - SecneurX Analysis
+      description: Detonates a URL using the SecneurX Analysis integration. Returns
+        relevant reports to the War Room and file reputations to the context data.
+      playbookName: Detonate URL - SecneurX Analysis
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      Priority:
+        simple: High
+      Reboot:
+        simple: "False"
+      ReportFormat:
+        simple: json
+      URL:
+        complex:
+          root: URL
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: URL.Data
+                iscontext: true
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: d2f6708f-138e-480e-8d03-2b3943246a87
+    type: title
+    task:
+      id: d2f6708f-138e-480e-8d03-2b3943246a87
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 083b435a-c1b8-4ec6-8ac8-b5961963c21e
+    type: title
+    task:
+      id: 083b435a-c1b8-4ec6-8ac8-b5961963c21e
+      version: -1
+      name: Test without the detonate URL
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 3814f572-f4a8-4668-8df5-1b4edacdadb9
+    type: playbook
+    task:
+      id: 3814f572-f4a8-4668-8df5-1b4edacdadb9
+      version: -1
+      name: Detonate URL - SecneurX Analysis
+      playbookName: Detonate URL - SecneurX Analysis
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: df011f90-ca5b-4e2c-8ad3-83cd4e9c5cbe
+    type: title
+    task:
+      id: df011f90-ca5b-4e2c-8ad3-83cd4e9c5cbe
+      version: -1
+      name: Test with the detonate URL
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1255,
+        "width": 380,
+        "x": 460,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.2.0
+description: ''

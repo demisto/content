@@ -1,0 +1,25 @@
+comment: |
+  Check content pack upgrade impacts and display changes.  Packs argument is comma separated list of content pack names, or blank for all content packs to assess
+commonfields:
+  id: UpgradeCheck
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.13.72123
+enabled: true
+name: UpgradeCheck
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
+timeout: 1.2µs
+args:
+- description: Comma separated list of packs that should be analyzed
+  name: packs
+runonce: false

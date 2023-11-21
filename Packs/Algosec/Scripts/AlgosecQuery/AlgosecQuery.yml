@@ -1,0 +1,35 @@
+commonfields:
+  id: AlgosecQuery
+  version: -1
+name: AlgosecQuery
+script: ''
+type: python
+subtype: python3
+tags:
+- Algosec
+comment: Performs a batch traffic simulation query using Firewall Analyzer
+system: true
+args:
+- name: source
+  required: true
+  default: true
+  description: source(s) for the query. Multiple values are separated by commas (,)
+- name: destination
+  required: true
+  description: destination(s) for the query. Multiple values are separated by commas (,)
+- name: service
+  required: true
+  description: service(s) for the query. Multiple values are separated by commas (,)
+- name: user
+  description: user for the query
+- name: application
+  description: application for the query
+scripttarget: 0
+timeout: 0s
+dependson:
+  must:
+  - algosec-query
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.10.12.63474
+tests:
+- No tests (auto formatted)

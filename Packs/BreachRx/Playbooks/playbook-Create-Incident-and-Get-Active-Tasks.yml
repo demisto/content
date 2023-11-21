@@ -1,0 +1,120 @@
+id: BreachRx - Create Incident and get Active Tasks
+version: -1
+name: BreachRx - Create Incident and get Active Tasks
+description: This Playbook creates a privacy Incident on the BreachRx platform, and
+  pulls in all tasks from that created privacy Incident into the Cortex XSOAR Incident.
+starttaskid: "0"
+fromversion: 6.2.0
+tasks:
+  "0":
+    id: "0"
+    taskid: 6f988a81-bba5-4905-80dd-91b0cc0e870c
+    type: start
+    task:
+      id: 6f988a81-bba5-4905-80dd-91b0cc0e870c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: c8d01d45-27a9-43ea-8e3d-aeb390859fe5
+    type: regular
+    task:
+      id: c8d01d45-27a9-43ea-8e3d-aeb390859fe5
+      version: -1
+      name: breachrx-incident-create
+      description: Create a privacy Incident on the BreachRx platform.
+      script: BreachRx|||breachrx-incident-create
+      type: regular
+      iscommand: true
+      brand: BreachRx
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: a2f6f9d6-9bf7-41ed-85ee-d6b3134d4b8d
+    type: regular
+    task:
+      id: a2f6f9d6-9bf7-41ed-85ee-d6b3134d4b8d
+      version: -1
+      name: breachrx-incident-actions-get
+      script: BreachRx|||breachrx-incident-actions-get
+      type: regular
+      iscommand: true
+      brand: BreachRx
+      description: ''
+    scriptarguments:
+      incident-identifier:
+        simple: ${BreachRx.Incident.identifier}
+      incident_identifier:
+        simple: ${BreachRx.Incident.identifier}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 395,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs:
+- contextPath: BreachRx.Incident.Actions
+  description: The Actions on a BreachRx privacy Incident.
+  type: string
+tests:
+- No tests (auto formatted)

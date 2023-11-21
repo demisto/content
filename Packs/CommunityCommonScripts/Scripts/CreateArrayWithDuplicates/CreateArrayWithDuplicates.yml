@@ -1,0 +1,35 @@
+args:
+- default: true
+  defaultValue: array
+  description: 'This is the array data to create array from, should be in the format of comma separator by default: val1,val2,val3'
+  name: arrayData
+- defaultValue: ','
+  description: Separator to use to split arrayData, by default will be comma ',' .
+  name: separator
+- description: The key to place result array in context, by default will be "array".
+  name: contextKey
+comment: |-
+  Will create an array object in context from a given string input , allowing for duplicate values to be retained
+
+  Output is to ContextKey.array as JSON does not permit duplicate key names
+
+  e.g., ContextKey.array.value1, ContextKey.array.value2, ContextKey.array.value3, etc.
+commonfields:
+  id: CreateArrayWithDuplicates
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.12.63474
+enabled: true
+name: CreateArrayWithDuplicates
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Utility
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

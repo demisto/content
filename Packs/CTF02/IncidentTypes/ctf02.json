@@ -1,0 +1,29 @@
+{
+    "id": "CTF02",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "CTF02",
+    "prevName": "CTF02",
+    "color": "#B1EE95",
+    "playbookId": "CTF 2 - Classify an incident - RDP Brute force",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "detached": false,
+    "extractSettings": {
+        "mode": "All",
+        "fieldCliNameToExtractSettings": {}
+    },
+    "fromVersion": "8.2.0"
+}

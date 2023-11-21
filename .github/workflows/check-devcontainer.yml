@@ -1,0 +1,29 @@
+name: Check Devcontainer
+on:
+  pull_request:
+    paths:
+      - .devcontainer/**
+      - pyproject.toml
+      - poetry.lock
+      - .github/workflows/check-devcontainer.yml
+  push:
+    branches:
+      - master
+    paths:
+      - .devcontainer/**
+      - pyproject.toml
+      - poetry.lock
+      - .github/workflows/check-devcontainer.yml
+jobs:
+  Build-Devcontainer:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - name: Run demisto-sdk in devcontainer
+      uses: devcontainers/ci@v0.3  # disable-secrets-detection
+      with:    
+        push: never
+        runCmd: demisto-sdk --version

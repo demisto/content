@@ -1,0 +1,39 @@
+commonfields:
+  id: GetIndicatorDBotScoreFromContext
+  version: -1
+name: GetIndicatorDBotScoreFromContext
+script: ''
+type: python
+tags:
+- Utility
+comment: |-
+  Get the final verdict from the DBotScore of the context.
+  Provided that it has all of the latest source verdict, this script gives you the right final verdict.
+enabled: true
+args:
+- name: indicator_value
+  required: true
+  description: The indicator value
+outputs:
+- contextPath: FinalDBotScore.Indicator
+  description: The indicator value
+  type: string
+- contextPath: FinalDBotScore.Score
+  description: The indicator score
+  type: number
+- contextPath: FinalDBotScore.Type
+  description: The indicator type
+  type: string
+- contextPath: FinalDBotScore.Vendor
+  description: The source vendor of the verdict
+  type: string
+- contextPath: FinalDBotScore.Reliability
+  description: The reliability of the indicator verdict
+  type: string
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.10.12.63474
+runas: DBotWeakRole
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

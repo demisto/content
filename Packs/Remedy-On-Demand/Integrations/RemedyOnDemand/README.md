@@ -34,15 +34,16 @@ Note: according to Remedy AR API documentation it is recommended to provide all 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| first-name | costumer's first name (make sure costumer already exists). | Required | 
-| last-name | costumer's first name (make sure costumer already exists). | Required | 
+| first-name | customer's first name (make sure customer already exists). | Required | 
+| last-name | customer's first name (make sure customer already exists). | Required | 
 | description | Incident description. | Required | 
 | status | Incident status. Possible values are: New, Assigned, In Progress, Pending, Resolved, Closed, Cancelled. | Required | 
 | source | Incident source. Possible values are: Direct Input, Email, External Escalation, Fax, Self-Service, Systems Management, Phone, Voice Mail, Walk, Web, Other. | Required | 
 | service-type | Incident service-type. Possible values are: User Service Restoration, User Service Request, Infrastructure Event, Infrastructure Restoration. | Required | 
 | impact | Incident impact. Possible values are: 1-Extensive/Widespread, 2-Significant/Large, 3-Moderate/Limited, 4-Minor/Localized. | Required | 
 | urgency | Incident urgency. Possible values are: 1-Critical, 2-High, 3-Medium, 4-Low. | Required | 
-| custom-fields | Custom fields for incident creation. Should be comma separated query (i.e. field1=value1,field2=value2). | Optional | 
+| custom-fields | Custom fields for incident creation. Comma-separated query or custom-fields-seperator separated query. (e.g., field1=value1,field2=value2). | Optional |
+| custom-fields-separator | A custom delimiter to use for the custom-fields. Don't use '=' as a delimiter. Default value is ','. | Optional |
 
 
 #### Context Output
@@ -122,20 +123,29 @@ Fetch all incidents
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | Search query/qualification format of '&lt;field&gt; LIKE "&lt;values&gt;"' (e.g. 'Company LIKE "My company"', 'Submitter LIKE "%john%"'). | Optional | 
+| sort | Sort query results in descending or ascending order. Format:'&lt;field&gt;.asc' or '&lt;field&gt;.desc' (e.g. 'Assigned To.asc'). | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Ticket.ID | string | Ticket ID | 
-| Ticket.Submitter | string | Ticket submitter | 
-| Ticket.Status | string | Ticket status | 
-| Ticket.Description | string | Ticket description | 
-| Ticket.Source | string | Ticket reported source | 
-| Ticket.Impact | string | TicketiImpact | 
-| Ticket.Urgency | string | Ticket urgency | 
-| Ticket.Type | string | Ticket service type | 
+| Ticket.Assignee | string | Ticket assignee |
+| Ticket.Description | string | Ticket description |
+| Ticket.Email | string | Ticket email |
+| Ticket.EntryID | string | Ticket entry ID | 
+| Ticket.ID | string | Ticket request ID |
+| Ticket.Impact | string | Ticket impact |
+| Ticket.IncidentNumber | string | Ticket number |
+| Ticket.ModifiedDate | string | Ticket modified date |
+| Ticket.Priority | string | Ticket priority |
+| Ticket.RequestID | string | Ticket request ID |
+| Ticket.ServiceType | string | Ticket service type |
+| Ticket.Source | string | Ticket reported source |
+| Ticket.Status | string | Ticket reported status |
+| Ticket.Submitter | string | Ticket submitter |
+| Ticket.Type | string | Ticket service type |
+| Ticket.Urgency | string | Ticket urgency |
 
 
 #### Command Example

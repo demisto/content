@@ -1,0 +1,17 @@
+[
+    {
+        "id": "certificate-common-name-mismatch",
+        "instances": 1,
+        "results": [
+            {
+                "port": 443,
+                "proof": "<p><p>The subject common name found in the X.509 certificate does not seem to match the scan target:<ul><li>Subject CN *.wpengine.com does not match target name specified in the site.</li><li>Subject CN *.wpengine.com does not match DNS name specified in the site.</li><li>Subject CN *.wpengine.com could not be resolved to an IP address via DNS lookup</li><li>Subject Alternative Name *.wpengine.com does not match target name specified in the site.</li><li>Subject Alternative Name wpengine.com does not match target name specified in the site.</li><li>Subject Alternative Name *.wpengine.com does not match DNS name specified in the site.</li><li>Subject Alternative Name wpengine.com does not match DNS name specified in the site.</li></ul></p></p>",
+                "protocol": "tcp",
+                "since": "2020-10-01T22:40:41.396Z",
+                "status": "vulnerable"
+            }
+        ],
+        "since": "2020-10-01T22:40:41.396Z",
+        "status": "vulnerable"
+    }
+]

@@ -1,0 +1,7 @@
+fromversion: 6.8.0
+id: aws_guard_duty_modeling_rule
+name: AWSGuardDuty Modeling Rule
+rules: ''
+schema: ''
+tags: AWSGuardDuty
+toversion: 6.9.9

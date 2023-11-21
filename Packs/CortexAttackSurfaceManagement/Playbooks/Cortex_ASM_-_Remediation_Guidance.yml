@@ -1,0 +1,263 @@
+id: Cortex ASM - Remediation Guidance
+version: -1
+name: Cortex ASM - Remediation Guidance
+description: This playbook pulls remediation guidance off of a list based on ASM RuleID to be used in service owner notifications (email or ticketing system).
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c048592f-3edc-4540-8ca4-410163f33534
+    type: start
+    task:
+      id: c048592f-3edc-4540-8ca4-410163f33534
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 2fc1d553-2042-4c61-8c64-98175cf4ef97
+    type: condition
+    task:
+      id: 2fc1d553-2042-4c61-8c64-98175cf4ef97
+      version: -1
+      name: Was remediation information obtained?
+      description: Checks if guidance information was pulled from the list.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ASM.AttackSurfaceRule
+                accessor: remediation_guidance
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: fcdbfcbe-3e7b-42bd-841c-d39cdb54c044
+    type: regular
+    task:
+      id: fcdbfcbe-3e7b-42bd-841c-d39cdb54c044
+      version: -1
+      name: Set default guidance
+      description: Set default value for remediation guidance to be passed back to the parent playbook.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      key:
+        simple: RemediationGuidance
+      value:
+        simple: Get in touch with your Infosec team to define proper remediation access.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 63b76036-a5f5-4c2f-80f1-3f2cf3b696e0
+    type: regular
+    task:
+      id: 63b76036-a5f5-4c2f-80f1-3f2cf3b696e0
+      version: -1
+      name: Update guidance
+      description: Append information to remediation guidance to be passed back to the parent playbook.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      key:
+        simple: RemediationGuidance
+      value:
+        complex:
+          root: ASM.AttackSurfaceRule
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'Remediation guidance: '
+              suffix:
+                value:
+                  simple: |2-
+
+
+                    Get in touch with your Infosec team to define proper remediation access.
+          accessor: remediation_guidance
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: ac8f15e8-467f-4fc0-8212-2892353a0ed7
+    type: title
+    task:
+      id: ac8f15e8-467f-4fc0-8212-2892353a0ed7
+      version: -1
+      name: Complete
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: d1399467-2c9e-4c4a-87a7-309db103ef52
+    type: regular
+    task:
+      id: d1399467-2c9e-4c4a-87a7-309db103ef52
+      version: -1
+      name: Get Remediation Guidance
+      description: Get information of an attack surface rule id.
+      script: Cortex Attack Surface Management|||asm-get-attack-surface-rule
+      type: regular
+      iscommand: true
+      brand: Cortex Attack Surface Management
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      attack_surface_rule_id:
+        complex:
+          root: inputs.IssueTypeID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 35
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 925,
+        "width": 860,
+        "x": 450,
+        "y": -130
+      }
+    }
+  }
+inputs:
+- key: IssueTypeID
+  value:
+    complex:
+      root: alert
+      accessor: asmattacksurfaceruleid
+  required: true
+  description: Attack surface management issue rule ID.
+  playbookInputQuery:
+outputs:
+- contextPath: RemediationGuidance
+  description: Remediation guidance to be sent to the service owner via notification (email or ticketing system).
+  type: unknown
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
+contentitemexportablefields:
+  contentitemfields: {}

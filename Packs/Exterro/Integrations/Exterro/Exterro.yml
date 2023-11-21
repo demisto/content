@@ -1,0 +1,67 @@
+commonfields:
+  id: Exterro FTK
+  version: -1
+
+name: Exterro FTK
+display: Exterro FTK
+category: Forensics & Malware Analysis
+description: Use the Exterro FTK integration to protect against and provide additional visibility into phishing and other malicious email attacks.
+configuration:
+- display: Web Protocol
+  name: protocol
+  defaultvalue: http
+  type: 0
+  required: true
+- display: Service URL (FQDN or IP Address.)
+  name: server
+  defaultvalue: localhost
+  type: 0
+  required: true
+- display: Service Listening Port
+  name: port
+  defaultvalue: 4443
+  type: 0
+  required: true
+- display: "The API authentication key. http://support.accessdata.com/hc/en-us/articles/360053994573-Generating-API-Keys"
+  name: apikey
+  type: 4
+  required: true
+  additionalinfo: The API authentication key has the following format `00000000-abcd-1234-5678-000000000000`
+- display: "The path to the public certificate required to authenticate."
+  name: public_cert
+  type: 0
+  required: false
+script:
+  commands:
+  - name: exterro-ftk-trigger-workflow
+    arguments:
+    - name: automation_id
+      required: true
+      type: number
+      description: The Id of the automation workflow.
+    - name: case_name
+      description: The name of the case.
+    - name: case_ids
+      isArray: true
+      description: Value of caseids.
+    - name: evidence_path
+      description: The filepath of the evidence.
+    - name: target_ips
+      isArray: true
+      description: Targetips for the collection
+    - name: search_tag_path
+      description: The filepath of the search and tag .
+    - name: export_path
+      description: The path to export files.
+    outputs:
+    - contextPath: ExterroFTK.Workflow.Status
+      description: The Status of the of workflow trigger.
+      type: string
+    description: Returns a boolean value.
+  dockerimage: demisto/accessdata:1.1.0.33872
+  script: '-'
+  type: python
+  subtype: python3
+tests:
+- No test
+fromversion: 6.2.0

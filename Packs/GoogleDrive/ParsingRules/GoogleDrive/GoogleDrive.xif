@@ -1,0 +1,13 @@
+[INGEST:vendor="google_workspace", product="drive", target_dataset="google_workspace_drive_raw", no_hit = keep]
+filter id ~= "\"time\":[\"\s]+\d{4}-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}[\.\dZ]{1,5}\""
+| alter 
+    tmp_event_time_string = json_extract_scalar(id, "$.time"),
+    tmp_get_extensions = arraystring(regextract(id, "\"time\":[\"\s]+\d{4}-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}([\.\dZ]+)\""), "")
+| alter
+    tmp_check_z = if(tmp_get_extensions ~= "^Z$", parse_timestamp("%Y-%m-%dT%H:%M:%SZ", tmp_event_time_string), null),
+    tmp_check_3ms = if(tmp_get_extensions ~= "\.\d{3}Z", parse_timestamp("%Y-%m-%dT%H:%M:%E3SZ", tmp_event_time_string), null)
+| alter
+    tmp_pick_timestamp = coalesce(tmp_check_z, tmp_check_3ms)
+| alter
+    _time = tmp_pick_timestamp
+| fields -tmp_event_time_string, tmp_get_extensions, tmp_check_z, tmp_check_3ms, tmp_pick_timestamp;

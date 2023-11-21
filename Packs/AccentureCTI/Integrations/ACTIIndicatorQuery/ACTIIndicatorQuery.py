@@ -1,7 +1,7 @@
-from typing import Union
+import urllib3
 from CommonServerPython import *
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 '''CONSTANTS'''
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
@@ -172,7 +172,7 @@ def _extract_analysis_info(res: dict, dbot_score_type: str,
 
 def _check_returned_results(res: dict) -> List[str]:
     """
-    Checks which indicator value founded on iDefense database.
+    Checks which indicator values were found in the iDefense database.
     Args:
         res: api response
     Returns: list of indicator values that returned from api request
@@ -580,7 +580,7 @@ def _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client, 
         client: ACTI Document search contoller client
     Returns:
         analysis_result enriched with intelligence alert and intelligence report information if available for the indicator
-    """
+    """  # noqa: E501
 
     indicator = analysis_info['MD5'] if indicatorTypeHash else analysis_info['Name']
     demisto.debug(f"getting ia for indicator {indicator}")

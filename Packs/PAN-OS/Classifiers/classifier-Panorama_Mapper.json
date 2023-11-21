@@ -1,0 +1,556 @@
+{
+    "description": "Maps incoming PAN-OS Log incidents.",
+    "feed": false,
+    "id": "Panorama Mapper",
+    "mapping": {
+        "PAN-OS Correlation Log Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Additional Data": {
+                    "simple": "object_id"
+                },
+                "Appliance ID": {
+                    "simple": "serial"
+                },
+                "Category": {
+                    "simple": "category"
+                },
+                "Device Name": {
+                    "simple": "device_name"
+                },
+                "Log Source Type": {
+                    "simple": "type"
+                },
+                "Severity": {
+                    "simple": "severity"
+                },
+                "Source Create time": {
+                    "simple": "time_generated"
+                },
+                "Source IP": {
+                    "simple": "src"
+                },
+                "Source Username": {
+                    "simple": "srcuser"
+                },
+                "Subtype": {
+                    "simple": "subtype"
+                }
+            }
+        },
+        "PAN-OS Data Log Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Additional Data": {
+                    "simple": "misc"
+                },
+                "Appliance ID": {
+                    "simple": "serial"
+                },
+                "Category": {
+                    "simple": "category"
+                },
+                "Destination Geolocation": {
+                    "complex": {
+                        "accessor": "#text",
+                        "filters": [],
+                        "root": "dstloc",
+                        "transformers": []
+                    }
+                },
+                "Destination IP": {
+                    "simple": "dst"
+                },
+                "Destination Port": {
+                    "simple": "dport"
+                },
+                "Device Name": {
+                    "simple": "device_name"
+                },
+                "File Name": {
+                    "simple": "misc"
+                },
+                "Log Source Type": {
+                    "simple": "type"
+                },
+                "Post Nat Destination Port": {
+                    "simple": "natdport"
+                },
+                "Post Nat Source Port": {
+                    "simple": "natsport"
+                },
+                "Protocol": {
+                    "simple": "proto"
+                },
+                "Rule Name": {
+                    "simple": "rule"
+                },
+                "Severity": {
+                    "simple": "severity"
+                },
+                "Source Create time": {
+                    "simple": "time_generated"
+                },
+                "Source Geolocation": {
+                    "complex": {
+                        "accessor": "#text",
+                        "filters": [],
+                        "root": "srcloc",
+                        "transformers": []
+                    }
+                },
+                "Source IP": {
+                    "simple": "src"
+                },
+                "Source Port": {
+                    "simple": "sport"
+                },
+                "Subtype": {
+                    "simple": "subtype"
+                },
+                "Tags": {
+                    "simple": "action"
+                },
+                "Threat Name": {
+                    "simple": "threat_name"
+                }
+            }
+        },
+        "PAN-OS Decryption Log Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Appliance ID": {
+                    "simple": "serial"
+                },
+                "Application Name": {
+                    "simple": "app"
+                },
+                "Destination Geolocation": {
+                    "simple": "dstloc.#text"
+                },
+                "Destination IP": {
+                    "simple": "dst"
+                },
+                "Destination Port": {
+                    "simple": "dport"
+                },
+                "Device Name": {
+                    "simple": "device_name"
+                },
+                "Log Source Name": {
+                    "simple": "logset"
+                },
+                "Log Source Type": {
+                    "simple": "type"
+                },
+                "Policy ID": {
+                    "simple": "policy_name"
+                },
+                "Post Nat Destination IP": {
+                    "simple": "natdst"
+                },
+                "Post Nat Destination Port": {
+                    "simple": "natdport"
+                },
+                "Post Nat Source IP": {
+                    "simple": "natsrc"
+                },
+                "Post Nat Source Port": {
+                    "simple": "natsport"
+                },
+                "Protocol": {
+                    "simple": "proto"
+                },
+                "Rule Name": {
+                    "simple": "rule"
+                },
+                "Source Create time": {
+                    "simple": "time_generated"
+                },
+                "Source Geolocation": {
+                    "complex": {
+                        "accessor": "#text",
+                        "filters": [],
+                        "root": "srcloc",
+                        "transformers": []
+                    }
+                },
+                "Source IP": {
+                    "simple": "src"
+                },
+                "Source Port": {
+                    "simple": "sport"
+                },
+                "Source Username": {
+                    "simple": "srcuser"
+                },
+                "Subtype": {
+                    "simple": "subtype"
+                },
+                "Tags": {
+                    "simple": "action"
+                }
+            }
+        },
+        "PAN-OS System Log Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Appliance ID": {
+                    "simple": "serial"
+                },
+                "Description": {
+                    "simple": "opaque"
+                },
+                "Device Name": {
+                    "simple": "device_name"
+                },
+                "Event ID": {
+                    "simple": "eventid"
+                },
+                "Log Source Type": {
+                    "simple": "type"
+                },
+                "Severity": {
+                    "simple": "severity"
+                },
+                "Source Create time": {
+                    "simple": "time_generated"
+                },
+                "Subtype": {
+                    "simple": "subtype"
+                }
+            }
+        },
+        "PAN-OS Threat Log Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Appliance ID": {
+                    "simple": "serial"
+                },
+                "Application Name": {
+                    "simple": "app"
+                },
+                "Category": {
+                    "simple": "category"
+                },
+                "Destination Geolocation": {
+                    "complex": {
+                        "accessor": "#text",
+                        "filters": [],
+                        "root": "dstloc",
+                        "transformers": []
+                    }
+                },
+                "Destination IP": {
+                    "simple": "dst"
+                },
+                "Destination MAC Address": {
+                    "simple": "dst_mac"
+                },
+                "Destination Port": {
+                    "simple": "dport"
+                },
+                "Detection URL": {
+                    "simple": "misc"
+                },
+                "Device Name": {
+                    "simple": "device_name"
+                },
+                "Log Source Name": {
+                    "simple": "logset"
+                },
+                "Log Source Type": {
+                    "simple": "type"
+                },
+                "Post Nat Destination Port": {
+                    "simple": "natdport"
+                },
+                "Post Nat Source Port": {
+                    "simple": "natsport"
+                },
+                "Protocol": {
+                    "simple": "proto"
+                },
+                "Rule Name": {
+                    "simple": "rule"
+                },
+                "Severity": {
+                    "simple": "severity"
+                },
+                "Source Create time": {
+                    "simple": "time_generated"
+                },
+                "Source Geolocation": {
+                    "complex": {
+                        "accessor": "#text",
+                        "filters": [],
+                        "root": "srcloc",
+                        "transformers": []
+                    }
+                },
+                "Source Hostname": {
+                    "simple": "src_host"
+                },
+                "Source IP": {
+                    "simple": "src"
+                },
+                "Source MAC Address": {
+                    "simple": "src_mac"
+                },
+                "Source Port": {
+                    "simple": "sport"
+                },
+                "Source Username": {
+                    "simple": "srcuser"
+                },
+                "Subtype": {
+                    "simple": "subtype"
+                },
+                "Tags": {
+                    "simple": "action"
+                },
+                "Threat Name": {
+                    "simple": "threat_name"
+                }
+            }
+        },
+        "PAN-OS Traffic Log Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Appliance ID": {
+                    "simple": "serial"
+                },
+                "Application Name": {
+                    "simple": "app"
+                },
+                "Category": {
+                    "simple": "category"
+                },
+                "Destination IP": {
+                    "simple": "dst"
+                },
+                "Destination Port": {
+                    "simple": "dport"
+                },
+                "Device Name": {
+                    "simple": "device_name"
+                },
+                "Log Source Name": {
+                    "simple": "logset"
+                },
+                "Log Source Type": {
+                    "simple": "type"
+                },
+                "Post Nat Destination IP": {
+                    "simple": "natdst"
+                },
+                "Post Nat Destination Port": {
+                    "simple": "natdport"
+                },
+                "Post Nat Source IP": {
+                    "simple": "natsrc"
+                },
+                "Post Nat Source Port": {
+                    "simple": "natsport"
+                },
+                "Rule Name": {
+                    "simple": "rule"
+                },
+                "Source Create time": {
+                    "simple": "time_generated"
+                },
+                "Source IP": {
+                    "simple": "src"
+                },
+                "Source Port": {
+                    "simple": "sport"
+                },
+                "Source Username": {
+                    "simple": "srcuser"
+                },
+                "Start Time": {
+                    "simple": "start"
+                },
+                "Subtype": {
+                    "simple": "subtype"
+                },
+                "Tags": {
+                    "simple": "action"
+                }
+            }
+        },
+        "PAN-OS URL Log Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Additional Data": {
+                    "simple": "category"
+                },
+                "Appliance ID": {
+                    "simple": "serial"
+                },
+                "Application Name": {
+                    "simple": "app"
+                },
+                "Category": {
+                    "simple": "category"
+                },
+                "Destination Geolocation": {
+                    "complex": {
+                        "accessor": "#text",
+                        "filters": [],
+                        "root": "dstloc",
+                        "transformers": []
+                    }
+                },
+                "Destination IP": {
+                    "simple": "dst"
+                },
+                "Destination MAC Address": {
+                    "simple": "dst_mac"
+                },
+                "Destination Port": {
+                    "simple": "dport"
+                },
+                "Detection URL": {
+                    "simple": "misc"
+                },
+                "Device Name": {
+                    "simple": "device_name"
+                },
+                "Log Source Name": {
+                    "simple": "logset"
+                },
+                "Log Source Type": {
+                    "simple": "type"
+                },
+                "Post Nat Destination Port": {
+                    "simple": "natdport"
+                },
+                "Post Nat Source Port": {
+                    "simple": "natsport"
+                },
+                "Protocol": {
+                    "simple": "proto"
+                },
+                "Rule Name": {
+                    "simple": "rule"
+                },
+                "Severity": {
+                    "simple": "severity"
+                },
+                "Source Create time": {
+                    "simple": "time_generated"
+                },
+                "Source Geolocation": {
+                    "complex": {
+                        "accessor": "#text",
+                        "filters": [],
+                        "root": "srcloc",
+                        "transformers": []
+                    }
+                },
+                "Source Hostname": {
+                    "simple": "src_host"
+                },
+                "Source IP": {
+                    "simple": "src"
+                },
+                "Source MAC Address": {
+                    "simple": "src_mac"
+                },
+                "Source Port": {
+                    "simple": "sport"
+                },
+                "Source Username": {
+                    "simple": "srcuser"
+                },
+                "Subtype": {
+                    "simple": "subtype"
+                },
+                "Tags": {
+                    "simple": "action"
+                },
+                "Threat Name": {
+                    "simple": "threat_name"
+                }
+            }
+        },
+        "PAN-OS Wildfire Submissions Log Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Appliance ID": {
+                    "simple": "serial"
+                },
+                "Application Name": {
+                    "simple": "app"
+                },
+                "Destination Geolocation": {
+                    "complex": {
+                        "accessor": "#text",
+                        "filters": [],
+                        "root": "dstloc",
+                        "transformers": []
+                    }
+                },
+                "Destination IP": {
+                    "simple": "dst"
+                },
+                "Destination Port": {
+                    "simple": "dport"
+                },
+                "Device Name": {
+                    "simple": "category"
+                },
+                "File Name": {
+                    "simple": "misc"
+                },
+                "Log Source Type": {
+                    "simple": "type"
+                },
+                "Post Nat Destination Port": {
+                    "simple": "natdport"
+                },
+                "Post Nat Source Port": {
+                    "simple": "natsport"
+                },
+                "Protocol": {
+                    "simple": "proto"
+                },
+                "Risk Score": {
+                    "simple": "category"
+                },
+                "Rule Name": {
+                    "simple": "rule"
+                },
+                "Severity": {
+                    "simple": "severity"
+                },
+                "Source Create time": {
+                    "simple": "time_generated"
+                },
+                "Source Geolocation": {
+                    "simple": "srcloc.#text"
+                },
+                "Source IP": {
+                    "simple": "src"
+                },
+                "Source Port": {
+                    "simple": "sport"
+                },
+                "Subtype": {
+                    "simple": "subtype"
+                },
+                "Tags": {
+                    "simple": "action"
+                },
+                "Threat Name": {
+                    "simple": "threat_name"
+                }
+            }
+        }
+    },
+    "name": "Panorama Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

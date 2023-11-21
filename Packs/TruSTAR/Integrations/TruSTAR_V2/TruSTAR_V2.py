@@ -1,18 +1,19 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from typing import Tuple
 
-import demistomock as demisto
-from CommonServerPython import *
 
 ''' IMPORTS '''
 
 import dateparser
 import requests
 import trustar
+import urllib3
 from trustar.models.indicator import Indicator
 from trustar.models.report import Report
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 handle_proxy()
 

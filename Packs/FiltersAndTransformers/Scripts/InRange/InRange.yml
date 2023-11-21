@@ -1,0 +1,26 @@
+commonfields:
+  id: InRange
+  version: -1
+name: InRange
+script: ''
+type: python
+subtype: python3
+tags:
+- filter
+- number
+comment: |-
+  checks if left side is in range of right side (from,to anotation)
+  e.g. - InRange left=4right=1,8 will return true.
+enabled: true
+args:
+- name: left
+  required: true
+  description: Value to check if in range (e.g. 4).
+- name: right
+  required: true
+  description: Range to check against with the form of from,to (e.g. 2,8).
+scripttarget: 0
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
+dockerimage: demisto/python3:3.10.12.63474

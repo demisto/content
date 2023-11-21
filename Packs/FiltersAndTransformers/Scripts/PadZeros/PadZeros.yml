@@ -1,0 +1,28 @@
+args:
+- default: true
+  description: String to pad with zeros.
+  name: value
+  required: true
+- description: The desired length of the string. The value specified in the "value" argument will be padded with zeros until the string reaches this length.
+  name: length
+  required: true
+  defaultValue: "0"
+comment: Adds zeros (0) to the beginning of the string, until the string reaches the specified length.
+commonfields:
+  id: PadZeros
+  version: -1
+enabled: true
+name: PadZeros
+script: '-'
+tags:
+- transformer
+- string
+- number
+timeout: '0'
+type: python
+subtype: python3
+runas: DBotWeakRole
+dockerimage: demisto/python3:3.10.12.63474
+tests:
+- No test
+fromversion: 5.0.0

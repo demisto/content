@@ -1,0 +1,100 @@
+{
+    "description": "Zendesk - Incoming Mapper",
+    "feed": false,
+    "id": "Zendesk - Incoming Mapper",
+    "mapping": {
+        "Zendesk Ticket": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Assigned User": {
+                    "simple": "assignee"
+                },
+                "Child Process": {
+                    "simple": "followup_ids"
+                },
+                "Description": {
+                    "simple": "description"
+                },
+                "External System ID": {
+                    "simple": "external_id"
+                },
+                "Source Created By": {
+                    "simple": "submitter"
+                },
+                "Source Priority": {
+                    "simple": "priority"
+                },
+                "Source Status": {
+                    "simple": "status"
+                },
+                "Tags": {
+                    "simple": "tags"
+                },
+                "Ticket Number": {
+                    "simple": "id"
+                },
+                "Zendesk CC'd": {
+                    "simple": "email_cc"
+                },
+                "Zendesk Collaborators": {
+                    "simple": "collaborators"
+                },
+                "Zendesk Custom Fields": {
+                    "simple": "custom_fields"
+                },
+                "Zendesk Followers": {
+                    "simple": "followers"
+                },
+                "Zendesk Forum Id": {
+                    "simple": "forum_topic_id"
+                },
+                "Zendesk Organization": {
+                    "simple": "organization"
+                },
+                "Zendesk Problem Id": {
+                    "simple": "problem_id"
+                },
+                "Zendesk Recipient": {
+                    "simple": "recipient"
+                },
+                "Zendesk Requester": {
+                    "simple": "requester"
+                },
+                "Zendesk Ticket Type": {
+                    "simple": "type"
+                },
+                "name": {
+                    "simple": "subject"
+                },
+                "severity": {
+                    "simple": "severity"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "dbotMirrorId": {
+                    "simple": "mirror_id"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorLastSync": {
+                    "simple": "mirror_last_sync"
+                },
+                "dbotMirrorTags": {
+                    "simple": "mirror_tags"
+                },
+                "IncomingMirrorError": {
+                    "simple": "incomming_mirror_error"
+                },
+                "Assignment Group": {
+                    "simple": "group_id"
+                }
+            }
+        }
+    },
+    "name": "Zendesk - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.2.0"
+}

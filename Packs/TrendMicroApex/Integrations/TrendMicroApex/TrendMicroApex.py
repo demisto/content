@@ -186,7 +186,6 @@ class Client(BaseClient):
                    'iat': iat,
                    'version': version,
                    'checksum': checksum}
-
         token = jwt.encode(payload, self.api_key, algorithm=algorithm)
         return token
 
@@ -928,7 +927,9 @@ def main():
 
     params = demisto.params()
 
-    api_key = params.get('token')
+    api_key = params.get('credentials_api_token', {}).get('password') or params.get('token')
+    if not api_key:
+        return_error('API Key must be provided.')
     app_id = params.get('application_id')
 
     base_url = urljoin(params.get('url'), '')

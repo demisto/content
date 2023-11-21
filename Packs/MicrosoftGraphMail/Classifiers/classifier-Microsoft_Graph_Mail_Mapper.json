@@ -76,6 +76,24 @@
                     },
                     "simple": ""
                 },
+				"Categories": {
+					"complex": {
+						"filters": [],
+						"root": "Categories",
+						"transformers": [
+							{
+								"args": {
+									"separator": {
+										"value": {
+											"simple": ","
+										}
+									}
+								},
+								"operator": "join"
+							}
+						]
+					}
+				},
                 "Email Body Format": {
                     "complex": null,
                     "simple": "BodyType"

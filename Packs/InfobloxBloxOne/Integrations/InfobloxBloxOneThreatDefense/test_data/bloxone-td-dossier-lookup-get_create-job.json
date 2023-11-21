@@ -1,0 +1,68 @@
+{
+    "status": "pending",
+    "job_id": "c924d233-ddeb-8877-1234-fedd6a9bb070",
+    "job": {
+        "id": "c924d233-ddeb-8877-1234-fedd6a9bb070",
+        "state": "created",
+        "status": "pending",
+        "create_ts": 1676797257929,
+        "create_time": "2023-02-19T09:00:57.929488387Z",
+        "start_ts": 1676797257929,
+        "start_time": "2023-02-19T09:00:57.929488387Z",
+        "request_ttl": 0,
+        "result_ttl": 3600,
+        "pending_tasks": [
+            "d93f2af3-c08e-42fb-adfc-b5343c26e102",
+            "dbdcceb4-ad4c-4a0d-b082-b0b181f9c7f8",
+            "d4e24d99-1f98-4a1f-9383-cbf4c284c7d0"
+        ],
+        "org": "0014618001ADIRXCC5",
+        "user": "test@test.com",
+        "Authorization": "Bearer abcdefghijklmnopqrstuvwxyz",
+        "tasks_tbc": 0
+    },
+    "tasks": {
+        "d4e24d99-1f98-4a1f-9383-cbf4c284c7d0": {
+            "id": "d4e24d99-1f98-4a1f-9383-cbf4c284c7d0",
+            "state": "created",
+            "status": "pending",
+            "create_ts": 1676797257929,
+            "create_time": "2023-02-19T09:00:57.929488387Z",
+            "params": {
+                "type": "ip",
+                "target": "11.22.33.44",
+                "source": "urlhaus"
+            },
+            "results": null,
+            "rl": false
+        },
+        "d93f2af3-c08e-42fb-adfc-b5343c26e102": {
+            "id": "d93f2af3-c08e-42fb-adfc-b5343c26e102",
+            "state": "created",
+            "status": "pending",
+            "create_ts": 1676797257929,
+            "create_time": "2023-02-19T09:00:57.929488387Z",
+            "params": {
+                "type": "ip",
+                "target": "11.22.33.44",
+                "source": "atp"
+            },
+            "results": null,
+            "rl": false
+        },
+        "dbdcceb4-ad4c-4a0d-b082-b0b181f9c7f8": {
+            "id": "dbdcceb4-ad4c-4a0d-b082-b0b181f9c7f8",
+            "state": "created",
+            "status": "pending",
+            "create_ts": 1676797257929,
+            "create_time": "2023-02-19T09:00:57.929488387Z",
+            "params": {
+                "type": "ip",
+                "target": "11.22.33.44",
+                "source": "geo"
+            },
+            "results": null,
+            "rl": false
+        }
+    }
+}

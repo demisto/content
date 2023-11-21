@@ -7,9 +7,10 @@ from datetime import datetime
 import dateparser
 from typing import List, Dict
 from math import floor
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' CONSTANTS/GLOBALS '''
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
@@ -1047,7 +1048,7 @@ def fetch_incidents(rest_client, last_run):
     next_run = last_run
 
     max_fetch = int(demisto.params()['max_fetch'])
-    if(len(tenant_mappings) > max_fetch):
+    if (len(tenant_mappings) > max_fetch):
         demisto.error('Max Fetch may not be less than total number of tenants')
         raise Exception('Max Fetch may not be less than total number of tenants')
     max_fetch_per_tenant = floor(max_fetch / len(tenant_mappings))

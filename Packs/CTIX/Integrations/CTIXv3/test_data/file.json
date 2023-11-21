@@ -1,0 +1,58 @@
+{
+  "next": null,
+  "page_size": 10,
+  "previous": null,
+  "results": [
+    {
+      "analyst_score": null,
+      "analyst_tlp": null,
+      "confidence_score": 50,
+      "confidence_type": "ctix",
+      "country": null,
+      "created": 1667498174,
+      "ctix_created": 1667551462,
+      "ctix_modified": 1667551462,
+      "first_seen": null,
+      "id": "08f4e0c8-0000-4d90-b9e4-d141daef6239",
+      "indicator_type": "file",
+      "ioc_type": "MD5",
+      "is_actioned": false,
+      "is_deprecated": false,
+      "is_false_positive": false,
+      "is_reviewed": false,
+      "is_revoked": false,
+      "is_watchlist": false,
+      "is_whitelisted": false,
+      "last_seen": null,
+      "modified": 1667498174,
+      "name": "a6a91e61a729bb4c12cc3db3eb9ea746",
+      "null": [],
+      "primary_attribute": null,
+      "published_collections": [],
+      "risk_severity": "UNKNOWN",
+      "source_collections": [
+        {
+          "id": "2a5a9989-030d-466b-b676-223d2b1f4d1e",
+          "name": "Indicators v4"
+        }
+      ],
+      "source_confidence": "HIGH",
+      "sources": [
+        {
+          "id": "131392bb-ecdf-45ae-8f22-b1160cf03401",
+          "name": "Mandiant Threat Intelligence",
+          "source_type": "API_FEEDS"
+        }
+      ],
+      "sub_type": "MD5",
+      "subscriber_collections": [],
+      "subscribers": [],
+      "tags": [],
+      "tlp": "AMBER",
+      "type": "indicator",
+      "valid_from": 1667498060,
+      "valid_until": null
+    }
+  ],
+  "total": 1
+}

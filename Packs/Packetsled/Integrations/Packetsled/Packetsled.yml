@@ -1,0 +1,569 @@
+commonfields:
+  id: Packetsled
+  version: -1
+name: Packetsled
+display: Packetsled
+category: Network Security
+description: Packetsled Network Security API commands
+configuration:
+- display: The protocol and domain of the packetsled instance.
+  name: ApiServer
+  defaultvalue: https://www.packetsled.com
+  type: 0
+  required: true
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: "Username"
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- name: first_fetch
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days).
+  defaultvalue: 7 days
+  type: 0
+  additionalinfo: ""
+  required: false
+- additionalinfo: the maximum number of incidents to fetch
+  defaultvalue: '50'
+  display: Fetch Limit
+  name: max_fetch
+  type: 0
+  required: false
+script:
+  script: ''
+  type: python
+  subtype: python3
+  commands:
+  - name: packetsled-get-incidents
+    arguments:
+    - name: severity
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      - "2"
+      - "3"
+      - "4"
+      - "5"
+      - "6"
+      - "7"
+      - "8"
+      - "9"
+      - "10"
+      description: Return incidents with severity greater than or equal to this value.
+      defaultValue: "5"
+    - name: start_time
+      description: Start time to query for incidents.
+    - name: stop_time
+      description: Stop time to query for incidents.
+    - name: probe
+      description: The probe number
+    - name: envid
+      description: The environment id
+    outputs:
+    - contextPath: Packetsled.Incidents
+      description: The list of incidents
+    - contextPath: Packetsled.Incidents.id
+      description: The id of the incident
+    - contextPath: Packetsled.Incidents.entity
+      description: The entity of the incident
+    - contextPath: Packetsled.Incidents.log
+      description: The log types for the incident
+    - contextPath: Packetsled.Incidents.start_time
+      description: The beginning of the time range containing the incident
+    - contextPath: Packetsled.Incidents.stop_time
+      description: The end of the time range containing the incident
+    - contextPath: Packetsled.Incidents.envid
+      description: The environment id of the incident
+    - contextPath: Packetsled.Incidents.probe
+      description: The probe number of the incident
+    description: Query for incidents by time range and severity
+  - name: packetsled-sensors
+    arguments: []
+    outputs:
+    - contextPath: Packetsled.Sensors
+      description: The list of sensors
+    - contextPath: Packetsled.Sensors.label
+      description: The label of the sensor
+    - contextPath: Packetsled.Sensors.envid
+      description: The environment id of the sensor
+    - contextPath: Packetsled.Sensors.probe
+      description: The probe number of the sensor
+    description: List the sensors attached to the packetsled platform.
+  - name: packetsled-get-flows
+    arguments:
+    - name: entity
+      description: The ip of the entity to query flows for
+    - name: protocol
+      auto: PREDEFINED
+      predefined:
+      - tcp
+      - udp
+      - dns
+      - dhcp
+      - arp
+      - finger
+      - ncp
+      - rpc
+      - telnet
+      - rlogin
+      - citrix
+      - dhcpv6
+      - icmp
+      - ntp
+      - snmp
+      - bgp
+      - ripv1
+      - ripv2
+      - ipmi
+      - ssh
+      - ssl
+      - openvpn
+      - teredo
+      - tunnel
+      - ciscovpn_tcp
+      - ciscovpn_udp
+      - syslog
+      - dce-rpc
+      - xmpp
+      - amqp
+      - emp
+      - dce-rpc-lsa
+      - ident
+      - radius
+      - socks
+      - kerberos
+      - ntlm
+      - login
+      - rdp
+      - vnc
+      - pcanywhere
+      - ftp
+      - netbios
+      - smb
+      - ftp-data
+      - irc-dcc-data
+      - rsync
+      - tftp
+      - dropbox
+      - bittorrent
+      - gnutella
+      - dnp3
+      - modbus
+      - gtpv1
+      - gps
+      - wiu
+      - http
+      - smtp
+      - imap
+      - pop3
+      - mapi
+      - mysql
+      - irc
+      - sip
+      description: The protocol
+    - name: family
+      auto: PREDEFINED
+      predefined:
+      - network_services
+      - network_management
+      - encrypted
+      - tunnel
+      - logging
+      - application_service
+      - authentication
+      - remote_access
+      - file_transfer
+      - p2p
+      - scada
+      - mobile
+      - web
+      - mail
+      - database
+      - chat
+      - voice
+      description: The protocol family
+    - name: log
+      auto: PREDEFINED
+      predefined:
+      - app_stats
+      - arp
+      - bittorrent
+      - communication
+      - conn
+      - credit_card_exposure
+      - dce_rpc
+      - dce_rpc_lsa
+      - dhcp
+      - dhcpv6
+      - dnp3
+      - dns
+      - dpd
+      - files
+      - ftp
+      - gnutella
+      - http
+      - icmp
+      - imap
+      - intel
+      - irc
+      - kerberos
+      - known_certs
+      - known_hosts
+      - known_services
+      - loaded_scripts
+      - mqtt
+      - mysql
+      - notice
+      - ntlm
+      - ntp
+      - openvpn
+      - packet_filter
+      - pcr
+      - pe
+      - pop3
+      - ps_long_running_flows
+      - psanalytics
+      - psfile_analytics
+      - rdp
+      - reporter
+      - rfb
+      - sip
+      - smb_auth
+      - smb_cmd
+      - smb_files
+      - smb_mapping
+      - smtp
+      - snmp
+      - socks
+      - software
+      - ssh
+      - ssl
+      - stats
+      - syslog
+      - tcp
+      - telnet
+      - traceroute
+      - tunnel
+      - udp
+      - weird
+      - x509
+      description: The log name
+    - name: geo
+      description: The 2-digit geo code,' local', or 'private'
+    - name: port
+      description: The port number
+    - name: start_time
+      description: The beginning of the time range to query. Either an ISO time string or seconds since the epoch.
+    - name: stop_time
+      description: The end of the time range to query. Either an ISO time string or seconds since the epoch.
+    - name: envid
+      description: The environment id of the probe to search
+    - name: probe
+      description: The probe number of the probe to search
+    - name: limit
+      description: Limit the number of search results
+      defaultValue: "5000"
+    outputs:
+    - contextPath: Packetsled.Flows
+      description: Flow metadata
+    - contextPath: Packetsled.Flows._id
+      description: The unique id of the flow
+    - contextPath: Packetsled.Flows.src_ip
+      description: The originator of the flow
+    - contextPath: Packetsled.Flows.dest_ip
+      description: The respondant of the flow
+    description: Query packetsled sensor metadata
+  - name: packetsled-get-files
+    arguments:
+    - name: entity
+      description: The ip of the entity to query flows for
+    - name: protocol
+      auto: PREDEFINED
+      predefined:
+      - tcp
+      - udp
+      - dns
+      - dhcp
+      - arp
+      - finger
+      - ncp
+      - rpc
+      - telnet
+      - rlogin
+      - citrix
+      - dhcpv6
+      - icmp
+      - ntp
+      - snmp
+      - bgp
+      - ripv1
+      - ripv2
+      - ipmi
+      - ssh
+      - ssl
+      - openvpn
+      - teredo
+      - tunnel
+      - ciscovpn_tcp
+      - ciscovpn_udp
+      - syslog
+      - dce-rpc
+      - xmpp
+      - amqp
+      - emp
+      - dce-rpc-lsa
+      - ident
+      - radius
+      - socks
+      - kerberos
+      - ntlm
+      - login
+      - rdp
+      - vnc
+      - pcanywhere
+      - ftp
+      - netbios
+      - smb
+      - ftp-data
+      - irc-dcc-data
+      - rsync
+      - tftp
+      - dropbox
+      - bittorrent
+      - gnutella
+      - dnp3
+      - modbus
+      - gtpv1
+      - gps
+      - wiu
+      - http
+      - smtp
+      - imap
+      - pop3
+      - mapi
+      - mysql
+      - irc
+      - sip
+      description: The protocol
+    - name: family
+      auto: PREDEFINED
+      predefined:
+      - network_services
+      - network_management
+      - encrypted
+      - tunnel
+      - logging
+      - application_service
+      - authentication
+      - remote_access
+      - file_transfer
+      - p2p
+      - scada
+      - mobile
+      - web
+      - mail
+      - database
+      - chat
+      - voice
+      description: The protocol family
+    - name: log
+      auto: PREDEFINED
+      predefined:
+      - app_stats
+      - arp
+      - bittorrent
+      - communication
+      - conn
+      - credit_card_exposure
+      - dce_rpc
+      - dce_rpc_lsa
+      - dhcp
+      - dhcpv6
+      - dnp3
+      - dns
+      - dpd
+      - files
+      - ftp
+      - gnutella
+      - http
+      - icmp
+      - imap
+      - intel
+      - irc
+      - kerberos
+      - known_certs
+      - known_hosts
+      - known_services
+      - loaded_scripts
+      - mqtt
+      - mysql
+      - notice
+      - ntlm
+      - ntp
+      - openvpn
+      - packet_filter
+      - pcr
+      - pe
+      - pop3
+      - ps_long_running_flows
+      - psanalytics
+      - psfile_analytics
+      - rdp
+      - reporter
+      - rfb
+      - sip
+      - smb_auth
+      - smb_cmd
+      - smb_files
+      - smb_mapping
+      - smtp
+      - snmp
+      - socks
+      - software
+      - ssh
+      - ssl
+      - stats
+      - syslog
+      - tcp
+      - telnet
+      - traceroute
+      - tunnel
+      - udp
+      - weird
+      - x509
+      description: The log name
+    - name: geo
+      description: The 2-digit geo code,' local', or 'private'
+    - name: port
+      description: The port number
+    - name: start_time
+      description: The beginning of the time range to query. Either an ISO time string or seconds since the epoch.
+    - name: stop_time
+      description: The end of the time range to query. Either an ISO time string or seconds since the epoch.
+    - name: envid
+      description: The environment id of the probe to search
+    - name: probe
+      description: The probe number of the probe to search
+    - name: limit
+      description: Limit the number of search results
+      defaultValue: "5000"
+    description: Query packetsled extracted files
+  - name: packetsled-get-pcaps
+    arguments:
+    - name: entity
+      description: The ip of the entity to query flows for
+    - name: protocol
+      auto: PREDEFINED
+      predefined:
+      - tcp
+      - udp
+      - dns
+      - dhcp
+      - arp
+      - finger
+      - ncp
+      - rpc
+      - telnet
+      - rlogin
+      - citrix
+      - dhcpv6
+      - icmp
+      - ntp
+      - snmp
+      - bgp
+      - ripv1
+      - ripv2
+      - ipmi
+      - ssh
+      - ssl
+      - openvpn
+      - teredo
+      - tunnel
+      - ciscovpn_tcp
+      - ciscovpn_udp
+      - syslog
+      - dce-rpc
+      - xmpp
+      - amqp
+      - emp
+      - dce-rpc-lsa
+      - ident
+      - radius
+      - socks
+      - kerberos
+      - ntlm
+      - login
+      - rdp
+      - vnc
+      - pcanywhere
+      - ftp
+      - netbios
+      - smb
+      - ftp-data
+      - irc-dcc-data
+      - rsync
+      - tftp
+      - dropbox
+      - bittorrent
+      - gnutella
+      - dnp3
+      - modbus
+      - gtpv1
+      - gps
+      - wiu
+      - http
+      - smtp
+      - imap
+      - pop3
+      - mapi
+      - mysql
+      - irc
+      - sip
+      description: The protocol
+    - name: port
+      description: The port number
+    - name: start_time
+      description: The beginning of the time range to query. Either an ISO time string or seconds since the epoch.
+    - name: stop_time
+      description: The end of the time range to query. Either an ISO time string or seconds since the epoch.
+    - name: limitbytes
+      description: The upper bound on the number of bytes to return from the query
+    - name: limitpkts
+      description: The upper bound on the number of packets to process from the query
+    - name: envid
+      description: The environment id of the probe to search
+    - name: probe
+      description: The probe number of the probe to search
+    description: Query packetsled for full packet
+  - name: packetsled-get-events
+    arguments:
+    - name: uid
+      required: true
+      description: The uid to retrieve logs for. Use the _id attribute from a flow for this parameter value.
+    - name: envid
+      description: The environment id of the probe to search
+    - name: probe
+      description: The probe number of the probe to search
+    outputs:
+    - contextPath: Packetsled.Events
+      description: Retrieve all logs for a single flow
+    - contextPath: Packetsled.Events._id
+      description: The unique id of the Event
+    - contextPath: Packetsled.Events.src_ip
+      description: The originator of the Events
+    - contextPath: Packetsled.Events.dest_ip
+      description: The respondant of the Events
+    description: Get all of the events for a given uid
+  isfetch: true
+  dockerimage: demisto/python3:3.10.12.63474
+tests:
+- No test
+fromversion: 5.0.0

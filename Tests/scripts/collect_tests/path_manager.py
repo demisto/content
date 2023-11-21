@@ -1,9 +1,9 @@
 import logging
-from os import getenv
+import os
 from pathlib import Path
-from typing import Iterable, Union
+from collections.abc import Iterable
 
-from git import Repo
+from git import InvalidGitRepositoryError, Repo
 
 _SANITY_FILES_FOR_GLOB = (
     # if any of the files under this list (or descendants) is changed, and no other files are changed,
@@ -22,24 +22,38 @@ class PathManager:
     """
     Used for getting paths of various files and folders during the test collection process.
     """
-    ARTIFACTS_PATH = Path(getenv('ARTIFACTS_FOLDER', './artifacts'))
+    ARTIFACTS_FOLDER_SERVER_TYPE = Path(os.getenv('ARTIFACTS_FOLDER_SERVER_TYPE', './artifacts/server_type_XSOAR'))
 
     def __init__(self, content_path: Path):
         self.content_path = content_path
-        self.content_repo = Repo(content_path)
-        logging.debug(f'PathManager uses {self.content_path.resolve()=}, {PathManager.ARTIFACTS_PATH.resolve()=}')
+        try:
+            self.content_repo = Repo(content_path)
+        except InvalidGitRepositoryError:
+            if not os.getenv('UNIT_TESTING'):
+                raise
+            self.content_repo = None  # type: ignore[assignment]
+        logging.debug(f'PathManager uses {self.content_path.resolve()=}, {PathManager.ARTIFACTS_FOLDER_SERVER_TYPE.resolve()=} ')
 
         self.packs_path = self.content_path / 'Packs'
         self.files_triggering_sanity_tests = self._glob(_SANITY_FILES_FOR_GLOB)
 
-        non_content_paths = tuple(filter(lambda p: p.is_dir() and p.name != 'Packs', self.content_path.iterdir()))
-        self.files_to_ignore = self._glob(non_content_paths) - self.files_triggering_sanity_tests
+        content_root_files = set(filter(lambda f: f.is_file(), self.content_path.iterdir()))
+        non_content_files = self._glob(
+            filter(lambda p: p.is_dir() and p.name != 'Packs', self.content_path.iterdir()))  # type: ignore[arg-type, union-attr]
+        non_content = non_content_files | content_root_files
 
-        self.id_set_path = PathManager.ARTIFACTS_PATH / 'id_set.json'
-        self.conf_path = PathManager.ARTIFACTS_PATH / 'conf.json'
-        self.output_tests_file = PathManager.ARTIFACTS_PATH / 'filter_file_v2.txt'
-        self.output_packs_file = PathManager.ARTIFACTS_PATH / 'content_packs_to_install_v2.txt'
-        self.output_machines_file = PathManager.ARTIFACTS_PATH / 'filter_envs_v2.json'
+        infrastructure_test_data = self._glob(('Tests/scripts/infrastructure_tests/tests_data',))
+
+        self.files_to_ignore = (non_content | infrastructure_test_data) - self.files_triggering_sanity_tests
+
+        self.id_set_path = PathManager.ARTIFACTS_FOLDER_SERVER_TYPE / 'id_set.json'
+        self.conf_path = PathManager.ARTIFACTS_FOLDER_SERVER_TYPE / 'conf.json'
+        self.output_tests_file = PathManager.ARTIFACTS_FOLDER_SERVER_TYPE / 'filter_file.txt'
+        self.output_modeling_rules_to_test_file = PathManager.ARTIFACTS_FOLDER_SERVER_TYPE / 'modeling_rules_to_test.txt'
+        self.output_packs_file = PathManager.ARTIFACTS_FOLDER_SERVER_TYPE / 'content_packs_to_install.txt'
+        self.output_packs_to_upload_file = PathManager.ARTIFACTS_FOLDER_SERVER_TYPE / 'content_packs_to_upload.txt'
+        self.output_machines_file = PathManager.ARTIFACTS_FOLDER_SERVER_TYPE / 'filter_envs.json'
+        self.output_packs_to_reinstall_test_file = PathManager.ARTIFACTS_FOLDER_SERVER_TYPE / 'packs_reinstall_to_test.txt'
 
     def _glob_single(self, relative_path: str) -> set[Path]:
         """
@@ -54,16 +68,16 @@ class PathManager:
         if not path.exists():
             logging.error(f'could not find {path} for calculating excluded paths')
         elif path.is_dir():
-            result.update((_ for _ in path.rglob('*') if _.is_file()))
+            result.update(_ for _ in path.rglob('*') if _.is_file())
         elif '*' in path.name:
-            result.update((_ for _ in path.rglob(path.name) if _.is_file()))
+            result.update(_ for _ in path.rglob(path.name) if _.is_file())
         elif path.is_file() and '*' not in path.name:
             result.add(path)
         else:
             logging.error(f'could not glob {path} - unexpected case')
         return set(result)
 
-    def _glob(self, paths: Iterable[Union[str, Path]]) -> set[Path]:
+    def _glob(self, paths: Iterable[str | Path]) -> set[Path]:
         """
         :param paths: to glob
         :return: set of all results

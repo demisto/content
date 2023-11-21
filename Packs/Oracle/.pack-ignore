@@ -1,0 +1,9 @@
+[file:Oracle.yml]
+ignore=PR101
+
+[file:OracleDBEventCollector.yml]
+ignore=MR108
+
+[file:OracleDBEventCollector_1_3.yml]
+ignore=MR108
+

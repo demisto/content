@@ -5,11 +5,11 @@ from CommonServerUserPython import *
 
 import json
 import requests
-import os
+import urllib3
 import os.path
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 # remove proxy if not set to true in params
 if not demisto.params().get('proxy'):
@@ -94,7 +94,6 @@ def get_endpoints_request():
 
 
 def get_endpoints():
-
     """
     Returns the information on existing endpoints
     """
@@ -142,7 +141,6 @@ def get_endpoints():
 
 
 def get_endpoint_request(endpoint_id):
-
     """
     Request for a specific endpoint
     """
@@ -230,7 +228,6 @@ def endpoint_tags_request(endpoint_id):
 
 
 def get_endpoint_tags():
-
     """
     Get the tags for the specified endpoint
 
@@ -278,7 +275,6 @@ def add_tags_request(endpoint_id, body):
 
 
 def add_tags():
-
     """
     The command add tags for the specified endpoint.
 
@@ -315,7 +311,6 @@ def add_tags():
 
 
 def delete_tags_request(endpoint_id, body):
-
     """
     This request deletes specific tags from specified endpoint.
 
@@ -373,7 +368,6 @@ ENDPOINTS COMMANDS
 
 
 def endpoint_quarantine_request(endpoint_id, body):
-
     """
     Request to quarantine a specified endpoint
 
@@ -390,7 +384,6 @@ def endpoint_quarantine_request(endpoint_id, body):
 
 
 def endpoint_quarantine():
-
     """
     Prevents an endpoint(s) from any network communication, but maintains a connection to the Sentinel Cluster
     and addresses defined in the Global Whitelist.
@@ -437,7 +430,6 @@ def endpoint_quarantine():
 
 
 def disable_quarantine():
-
     """
     Allows a previously quarantined endpoint to communicate with the network.
 
@@ -485,7 +477,6 @@ def disable_quarantine():
 
 
 def file_extract_request(endpoint_id, body):
-
     """
     Request for extracting file from specified endpoint
     """
@@ -497,7 +488,6 @@ def file_extract_request(endpoint_id, body):
 
 
 def extract_file():
-
     """
     Enables an API consumer to extract the file in addition to some file metadata.
 
@@ -541,7 +531,6 @@ def extract_file():
 
 
 def delete_file_request(endpoint_id, body):
-
     """
     Deletes a file from the specified endpoint
     """
@@ -553,7 +542,6 @@ def delete_file_request(endpoint_id, body):
 
 
 def delete_file():
-
     """
     Deletes a file from the specified endpoint
 
@@ -699,7 +687,6 @@ def get_all_files():
 
 
 def endpoint_files_request(endpoint_id):
-
     """
     This request returns all extracted files from specified endpoint
     """
@@ -711,7 +698,6 @@ def endpoint_files_request(endpoint_id):
 
 
 def get_endpoint_files():
-
     """
     Returns extracted files from specific endpoint
 
@@ -769,7 +755,6 @@ def file_information_request(file_id):
 
 
 def get_file_information():
-
     """
     Get the information of a specific file
 
@@ -947,7 +932,6 @@ def behaviour_add_tags_request(behaviour_id, body):
 
 
 def add_behavior_tags():
-
     """
     Add specific tags to specified behavior
 
@@ -991,7 +975,6 @@ def delete_tags_behavior_request(behaviour_id, body):
 
 
 def delete_behavior_tags():
-
     """
     Delete specific tags from behavior
 
@@ -1428,5 +1411,5 @@ try:
     elif command == 'countertack-kill-process':
         kill_process()
 except Exception as e:
-    return_error(e.message)
+    return_error(e)
     LOG(e)

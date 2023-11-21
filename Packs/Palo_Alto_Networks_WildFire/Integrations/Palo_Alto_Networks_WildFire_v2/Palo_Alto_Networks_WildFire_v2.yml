@@ -1,4 +1,7 @@
 category: Forensics & Malware Analysis
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: WildFire-v2
   version: -1
@@ -8,15 +11,32 @@ configuration:
   name: server
   required: true
   type: 0
+  section: Connect
 - displaypassword: API Key
   name: credentials
-  required: false
   type: 9
   hiddenusername: true
-- additionalinfo: Reliability of the source providing the intelligence data.
-  defaultvalue: B - Usually reliable
-  display: Source Reliability
+  section: Connect
+  required: false
+- additionalinfo: Source of WildFire API Key - other = NGFW, WildFire API - pcc = Prisma Cloud Compute - prismaaccessapi = Prisma Access - xsoartim = XSOAR TIM API Key
+  defaultvalue: other
+  display: API Key Type
+  name: credentials_source
+  options:
+  - pcc
+  - prismaaccessapi
+  - xsoartim
+  - other
+  type: 15
+  section: Connect
+  advanced: true
+  required: false
+- display: Source Reliability
   name: integrationReliability
+  required: true
+  type: 15
+  additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
   options:
   - A+ - 3rd party enrichment
   - A - Completely reliable
@@ -25,32 +45,41 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: true
-  type: 15
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  section: Connect
+  advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  section: Connect
+  advanced: true
+  required: false
 - display: Return warning entry for unsupported file types
   name: suppress_file_type_error
-  required: false
   type: 8
+  section: Collect
+  advanced: true
+  required: false
 - display: API Key (Deprecated)
   name: token
-  required: false
   type: 4
   hidden: true
+  section: Connect
+  advanced: true
+  required: false
 - display: Create relationships
   defaultvalue: 'true'
   additionalinfo: Create relationships between indicators as part of enrichment.
   name: create_relationships
-  required: false
   type: 8
-description: Perform malware dynamic analysis
+  section: Collect
+  advanced: true
+  required: false
+description: Perform malware dynamic analysis.
 display: Palo Alto Networks WildFire v2
 name: WildFire-v2
 script:
@@ -60,23 +89,13 @@ script:
       description: File hash to check.
       isArray: true
       name: file
-      required: false
-      secret: false
-    - default: false
-      description: MD5 hash to check.
+    - description: MD5 hash to check.
       isArray: true
       name: md5
-      required: false
-      secret: false
-    - default: false
-      description: SHA256 hash to check.
+    - description: SHA256 hash to check.
       isArray: true
       name: sha256
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieve results for a file hash using WildFire.
-    execution: false
     name: file
     outputs:
     - contextPath: File.Name
@@ -155,75 +174,46 @@ script:
       description: File behavior action.
       type: String
   - arguments:
-    - default: false
-      description: ID of the entry containing the file to upload.
+    - description: ID of the entry containing the file to upload.
       isArray: true
       name: upload
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: Whether to use Cortex XSOAR's built-in polling to retrieve the
-        result, when ready.
-      isArray: false
+      description: Whether to use Cortex XSOAR's built-in polling to retrieve the result, when ready.
       name: polling
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '60'
+    - defaultValue: '60'
       description: Interval in seconds between each poll.
-      isArray: false
       name: interval_in_seconds
-      required: false
-      secret: false
-    - default: false
-      description: Used for the inner polling flow. For uploading a file, use the
-        'upload' argument instead.
-      isArray: true
+    - description: The timeout in seconds until polling ends.
+      name: timeout_in_seconds
+      defaultValue: '600'
+    - description: Used for the inner polling flow. For uploading a file, use the 'upload' argument instead.
       name: md5
-      required: false
-      secret: false
+      isArray: true
     - auto: PREDEFINED
-      default: false
-      defaultValue: pdf
-      description: The type of structured report (XML or PDF) to request. Only relevant
-        when polling=true.
-      isArray: false
+      defaultValue: 'pdf'
+      description: The type of structured report (XML or PDF) to request. Only relevant when polling=true.
       name: format
       predefined:
-      - xml
-      - pdf
-      required: false
-      secret: false
+      - 'xml'
+      - 'pdf'
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
-      description: Whether to receive extended information from WildFire. Only relevant
-        when polling=true.
-      isArray: false
+      description: Whether to receive extended information from WildFire. Only relevant when polling=true.
       name: verbose
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
       defaultValue: false
-      description: If set to “true”, the report returns extended data, which includes
-        additional outputs.
-      isArray: false
+      description: If set to “true”, the report returns extended data, which includes additional outputs.
       name: extended_data
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Uploads a file to WildFire for analysis.
-    execution: false
     name: wildfire-upload
     outputs:
     - contextPath: WildFire.Report.MD5
@@ -296,7 +286,7 @@ script:
       description: The report file type.
       type: string
     - contextPath: WildFire.Report.NetworkInfo.URL.Host
-      description: Submission related hosts. 
+      description: Submission related hosts.
       type: string
     - contextPath: WildFire.Report.NetworkInfo.URL.Method
       description: The submission related method.
@@ -413,7 +403,7 @@ script:
       description: The action the child process performed.
       type: string
     - contextPath: WildFire.Report.ExtractedURL.URL
-      description: The extracted URL. 
+      description: The extracted URL.
       type: string
     - contextPath: WildFire.Report.ExtractedURL.Verdict
       description: The extracted verdict.
@@ -432,75 +422,44 @@ script:
       type: string
     polling: true
   - arguments:
-    - default: false
-      description: URL of the remote file to upload.
-      isArray: false
+    - description: URL of the remote file to upload.
       name: upload
-      required: false
-      secret: false
-    - default: false
-      description: Used for the inner polling flow. For uploading a URL, use the 'upload'
-        argument instead.
-      isArray: false
+    - description: Used for the inner polling flow. For uploading a URL, use the 'upload' argument instead.
       name: url
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: Whether to use Cortex XSOAR's built-in polling to retrieve the
-        result, when ready.
-      isArray: false
+      description: Whether to use Cortex XSOAR's built-in polling to retrieve the result, when ready.
       name: polling
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '60'
+    - defaultValue: '60'
       description: Interval in seconds between each poll.
-      isArray: false
       name: interval_in_seconds
-      required: false
-      secret: false
+    - defaultValue: '600'
+      description: The timeout in seconds until polling ends.
+      name: timeout_in_seconds
     - auto: PREDEFINED
-      default: false
-      defaultValue: pdf
-      description: The type of structured report (XML or PDF) to request. Only relevant
-        when polling=true.
-      isArray: false
+      defaultValue: 'pdf'
+      description: The type of structured report (XML or PDF) to request. Only relevant when polling=true.
       name: format
       predefined:
-      - xml
-      - pdf
-      required: false
-      secret: false
+      - 'xml'
+      - 'pdf'
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
-      description: Whether to receive extended information from WildFire. Only relevant
-        when polling=true.
-      isArray: false
+      description: Whether to receive extended information from WildFire. Only relevant when polling=true.
       name: verbose
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
       defaultValue: false
-      description: If set to “true”, the report returns extended data, which includes
-        additional outputs.
-      isArray: false
+      description: If set to “true”, the report returns extended data, which includes additional outputs.
       name: extended_data
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Uploads the URL of a remote file to WildFire for analysis.
-    execution: false
     name: wildfire-upload-file-url
     outputs:
     - contextPath: WildFire.Report.MD5
@@ -687,7 +646,7 @@ script:
       description: The action the child process performed.
       type: string
     - contextPath: WildFire.Report.ExtractedURL.URL
-      description: The extracted URL. 
+      description: The extracted URL.
       type: string
     - contextPath: WildFire.Report.ExtractedURL.Verdict
       description: The extracted verdict.
@@ -706,67 +665,41 @@ script:
       type: string
     polling: true
   - arguments:
-    - default: false
-      description: MD5 hash to check.
+    - description: MD5 hash to check.
       isArray: true
       name: md5
-      required: false
-      secret: false
-    - default: false
-      description: SHA256 hash to check.
+    - description: SHA256 hash to check.
       isArray: true
       name: sha256
-      required: false
-      secret: false
-    - default: false
-      description: Deprecated. Use the sha256 argument instead.
+    - description: Deprecated. Use the sha256 argument instead.
       isArray: true
       name: hash
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: pdf
-      description: The type of structured report (XML or PDF) to request.
-      isArray: false
+      description: The type of structured report (XML ,PDF or MAEC) to request.
       name: format
       predefined:
       - xml
       - pdf
-      required: false
-      secret: false
+      - maec
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Whether to receive extended information from WildFire.
-      isArray: false
       name: verbose
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Retrieves results for a URL using WildFire. The report format is
-        in JSON.
+    - description: Retrieves results for a URL using WildFire. The report will be populated in the context as JSON format.
       isArray: true
       name: url
-      required: false
-      secret: false
     - auto: PREDEFINED
       defaultValue: false
-      description: If set to “true”, the report returns extended data, which includes
-        additional outputs.
-      isArray: false
+      description: If set to “true”, the report returns extended data, which includes additional outputs.
       name: extended_data
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves results for a file hash using WildFire.
-    execution: false
     name: wildfire-report
     outputs:
     - contextPath: File.Name
@@ -830,7 +763,7 @@ script:
       description: The report file type.
       type: string
     - contextPath: WildFire.Report.NetworkInfo.URL.Host
-      description: The submission related hosts. 
+      description: The submission related hosts.
       type: string
     - contextPath: WildFire.Report.NetworkInfo.URL.Method
       description: The submission related method.
@@ -839,7 +772,7 @@ script:
       description: The submission related URI.
       type: string
     - contextPath: WildFire.Report.NetworkInfo.URL.UserAgent
-      description: The submission related user agent
+      description: The submission related user agent.
       type: string
     - contextPath: WildFire.Report.NetworkInfo.UDP.IP
       description: The submission related IPs, in UDP protocol.
@@ -947,7 +880,7 @@ script:
       description: The action the child process performed.
       type: string
     - contextPath: WildFire.Report.ExtractedURL.URL
-      description: The extracted URL. 
+      description: The extracted URL.
       type: string
     - contextPath: WildFire.Report.ExtractedURL.Verdict
       description: The extracted verdict.
@@ -964,22 +897,16 @@ script:
     - contextPath: WildFire.Report.ELF.ShellCommands
       description: The shell commands.
       type: string
+    - contextPath: WildFire.Report.maec_report
+      description: MAEC report output.
+      type: string
   - arguments:
-    - default: false
-      description: Comma-separated list of hashes to get the verdict for.
+    - description: Comma-separated list of hashes to get the verdict for.
       isArray: true
       name: hash
-      required: false
-      secret: false
-    - default: false
-      description: The URL to get the verdict for.
-      isArray: false
+    - description: The URL to get the verdict for.
       name: url
-      required: false
-      secret: false
-    deprecated: false
     description: Returns a verdict for a hash.
-    execution: false
     name: wildfire-get-verdict
     outputs:
     - contextPath: WildFire.Verdicts.MD5
@@ -1016,23 +943,13 @@ script:
       description: Verdict of the file.
       type: Number
   - arguments:
-    - default: false
-      description: EntryID of the text file that contains multiple hashes. Limit is
-        500 hashes.
+    - description: EntryID of the text file that contains multiple hashes. Limit is 500 hashes.
       isArray: true
       name: EntryID
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of hashes to get verdicts for.
+    - description: A comma-separated list of hashes to get verdicts for.
       isArray: true
       name: hash_list
-      required: false
-      secret: false
-    deprecated: false
-    description: Returns a verdict regarding multiple hashes, stored in a TXT file
-      or given as a list.
-    execution: false
+    description: Returns a verdict regarding multiple hashes, stored in a TXT file or given as a list.
     name: wildfire-get-verdicts
     outputs:
     - contextPath: WildFire.Verdicts.MD5
@@ -1060,75 +977,46 @@ script:
       description: The actual score.
       type: number
   - arguments:
-    - default: false
-      description: URL to submit to WildFire.
+    - description: URL to submit to WildFire.
       isArray: true
       name: upload
-      required: false
-      secret: false
-    - default: false
-      description: Used for the inner polling flow. For uploading a URL, use the 'upload'
-        argument instead.
+    - description: Used for the inner polling flow. For uploading a URL, use the 'upload' argument instead.
       isArray: true
       name: url
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: Whether to use Cortex XSOAR's built-in polling to retrieve the
-        result, when ready.
-      isArray: false
+      description: Whether to use Cortex XSOAR's built-in polling to retrieve the result, when ready.
       name: polling
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '60'
+    - defaultValue: '60'
       description: Interval in seconds between each poll.
-      isArray: false
       name: interval_in_seconds
-      required: false
-      secret: false
+    - defaultValue: '600'
+      description: The timeout in seconds until polling ends.
+      name: timeout_in_seconds
     - auto: PREDEFINED
-      default: false
-      defaultValue: pdf
-      description: The type of structured report (XML or PDF) to request. Only relevant
-        when polling=true.
-      isArray: false
+      defaultValue: 'pdf'
+      description: The type of structured report (XML or PDF) to request. Only relevant when polling=true.
       name: format
       predefined:
-      - xml
-      - pdf
-      required: false
-      secret: false
+      - 'xml'
+      - 'pdf'
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
-      description: Whether to receive extended information from WildFire. Only relevant
-        when polling=true.
-      isArray: false
+      description: Whether to receive extended information from WildFire. Only relevant when polling=true.
       name: verbose
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
       defaultValue: false
-      description: If set to “true”, the report returns extended data, which includes
-        additional outputs.
-      isArray: false
+      description: If set to “true”, the report returns extended data, which includes additional outputs.
       name: extended_data
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Uploads a URL of a webpage to WildFire for analysis.
-    execution: false
     name: wildfire-upload-url
     outputs:
     - contextPath: WildFire.Report.MD5
@@ -1315,7 +1203,7 @@ script:
       description: The action the child process performed.
       type: string
     - contextPath: WildFire.Report.ExtractedURL.URL
-      description: The extracted URL. 
+      description: The extracted URL.
       type: string
     - contextPath: WildFire.Report.ExtractedURL.Verdict
       description: The extracted verdict.
@@ -1334,44 +1222,25 @@ script:
       type: string
     polling: true
   - arguments:
-    - default: false
-      description: MD5 hash of the sample.
+    - description: MD5 hash of the sample.
       isArray: true
       name: md5
-      required: false
-      secret: false
-    - default: false
-      description: SHA256 hash of the sample.
-      isArray: false
+    - description: SHA256 hash of the sample.
       name: sha256
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves a sample.
-    execution: false
     name: wildfire-get-sample
   - arguments:
-    - default: false
-      description: URL of the webpage.
+    - description: URL of the webpage.
       isArray: true
       name: url
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: Whether to download as screenshots or as downloadable files. if
-        not specified, both will be downloaded.
-      isArray: false
+      description: Whether to download as screenshots or as downloadable files. if not specified, both will be downloaded.
       name: types
       predefined:
       - download_files
       - screenshot
-      required: false
-      secret: false
-    deprecated: false
-    description: Get web artifacts for a URL webpage. An empty tgz will be returned,
-      no matter what the verdict is, or even if the URL is malformed.
-    execution: false
+    description: Get web artifacts for a URL webpage. An empty tgz will be returned, no matter what the verdict is, or even if the URL is malformed.
     name: wildfire-get-url-webartifacts
     outputs:
     - contextPath: InfoFile.EntryID
@@ -1392,11 +1261,7 @@ script:
     - contextPath: InfoFile.Type
       description: The web artifacts file type.
       type: string
-  dockerimage: demisto/python3:3.10.5.31928
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.10.13.75921
   runonce: false
   script: '-'
   subtype: python3

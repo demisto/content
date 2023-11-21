@@ -4,11 +4,15 @@ from CommonServerUserPython import *
 import re
 import socket
 import sys
-from codecs import encode, decode
 import socks
-import errno
+import ipwhois
+from typing import Dict, List, Optional, Type
+import urllib
 
-SHOULD_ERROR = demisto.params().get('with_error', False)
+
+RATE_LIMIT_RETRY_COUNT_DEFAULT: int = 0
+RATE_LIMIT_WAIT_SECONDS_DEFAULT: int = 120
+RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT: bool = False
 
 # flake8: noqa
 
@@ -429,7 +433,8 @@ tlds = {
     "aws": {
         "_group": "amazonregistry",
         "_type": "newgtld",
-        "adapter": "none"
+        "adapter": "none",
+        "host": "whois.nic.aws"
     },
     "ax": {
         "host": "whois.ax"
@@ -7125,9 +7130,89 @@ dble_ext_str = "chirurgiens-dentistes.fr,in-addr.arpa,uk.net,za.org,mod.uk,org.z
                "chambagri.fr,gb.net,in.ua,notaires.fr,se.com,british-library.uk "
 dble_ext = dble_ext_str.split(",")
 
+# ipwhois exceptions to execution metrics attributes mapping
+# https://ipwhois.readthedocs.io/en/latest/ipwhois.html
+ipwhois_exception_mapping: Dict[Type, str] = {
 
-def get_whois_raw(domain, server="", previous=None, rfc3490=True, never_cut=False, with_server_list=False,
-                  server_list=None, is_refer_server=False):
+    # General Errors
+    ipwhois.exceptions.WhoisLookupError: "general_error",
+    ipwhois.exceptions.ASNLookupError: "general_error",
+    ipwhois.exceptions.ASNOriginLookupError: "general_error",
+    ipwhois.exceptions.ASNRegistryError: "general_error",
+    ipwhois.exceptions.ASNParseError: "general_error",
+    ipwhois.exceptions.ASNRegistryError: "general_error",
+    ipwhois.exceptions.BaseIpwhoisException: "general_error",
+    urllib.error.HTTPError: "general_error",
+    ValueError: "general_error",
+    ipwhois.exceptions.IPDefinedError: "general_error",
+
+    # Service Errors
+    ipwhois.exceptions.BlacklistError: "service_error",
+    ipwhois.exceptions.HTTPLookupError: "connection_error",
+
+    # Connection Errors
+    ipwhois.exceptions.NetError: "connection_error",
+
+    # Rate Limit Errors
+    ipwhois.exceptions.HTTPRateLimitError: "quota_error",
+    ipwhois.exceptions.WhoisRateLimitError: "quota_error",
+}
+
+
+class WhoisInvalidDomain(Exception):
+    pass
+
+
+class WhoisEmptyResponse(Exception):
+    pass
+
+
+class WhoisException(Exception):
+    pass
+
+
+# whois domain exception to execution metrics attribute mapping
+whois_exception_mapping: Dict[Type, str] = {
+    socket.error: "connection_error",
+    OSError: "connection_error",
+    socket.timeout: "timeout_error",
+    socket.herror: "connection_error",
+    socket.gaierror: "connection_error",
+    WhoisInvalidDomain: "general_error",
+    WhoisEmptyResponse: "service_error",
+    TypeError: "general_error"
+}
+
+
+def increment_metric(execution_metrics: ExecutionMetrics, mapping: Dict[type, str], caught_exception: Type) -> ExecutionMetrics:
+    """
+    Helper method to increment the API execution metric according to the caught exception
+
+    Args:
+        - `execution_metrics` (``ExecutionMetrics``): The instance of the API execution metrics.
+        - `mapping` (``Dict[type, str]``): The exception type to execution metrics mapping.
+        - `caught_exception` (``Exception``): The exception caught.
+    """
+
+    demisto.debug(
+        f"Exception of type '{caught_exception}' caught. Trying to find the matching Execution Metric attribute to increment...")
+    try:
+        metric_attribute = mapping[caught_exception]
+        execution_metrics.__setattr__(metric_attribute, execution_metrics.__getattribute__(metric_attribute) + 1)
+
+    # Treat any other exception as a ErrorTypes.GENERAL_ERROR
+    except Exception as e:
+        demisto.debug(
+            f"Exception attempting to find and update execution metric attribute: {str(e)}. Defaulting to GENERAL_ERROR...")
+        execution_metrics.general_error += 1
+
+    finally:
+        demisto.debug(f"Returning updated execution_metrics")
+        return execution_metrics
+
+
+def get_whois_raw(domain, server="", previous=None, never_cut=False, with_server_list=False,
+                  server_list=None, is_recursive=True):
     previous = previous or []
     server_list = server_list or []
     # Sometimes IANA simply won't give us the right root WHOIS server
@@ -7141,16 +7226,10 @@ def get_whois_raw(domain, server="", previous=None, rfc3490=True, never_cut=Fals
         "example.com": "whois.verisign-grs.com"
     }
 
-    if rfc3490:
-        if sys.version_info < (3, 0):
-            domain = encode(domain if type(domain) is unicode else decode(domain, "utf8"), "idna")
-        else:
-            domain = encode(domain, "idna").decode("ascii")
-
     if len(previous) == 0 and server == "":
         # Root query
         is_exception = False
-        for exception, exc_serv in exceptions.items():
+        for exception, exc_serv in list(exceptions.items()):
             if domain.endswith(exception):
                 is_exception = True
                 target_server = exc_serv
@@ -7169,19 +7248,20 @@ def get_whois_raw(domain, server="", previous=None, rfc3490=True, never_cut=Fals
         request_domain = domain
     # The following loop handles errno 104 - "connection reset by peer" by retry whois_request with the same arguments.
     # If the request fails due to other cause - there will not be another try
-    for i in range(0, 3):
-        try:
-            response = whois_request(request_domain, target_server, is_refer_server=is_refer_server)
-        except socket.error as err:
-            if err.errno == errno.ECONNRESET:
-                continue
-            else:
-                raise
-        break
-    # Executed only if the for loop ran to the full
-    # (3 tries led to errno.ECONNRESET)
-    else:
-        raise WhoisException('(104) Connection Reset By Peer')
+    attempts = 3
+    for attempt in range(attempts):
+        demisto.debug(f"Attempt {attempt}/{attempts} to get response for whois '{domain}' from '{target_server}'...")
+        response = whois_request_get_response(request_domain, target_server)
+        response_size = len(response.encode('utf-8'))
+        demisto.debug(f"Response byte size: {response_size}")
+
+        if response_size > 0:
+            demisto.debug(f"Response received for domain '{domain}' after {attempt} attempt(s)")
+            break
+
+    if not response:
+        raise WhoisEmptyResponse(
+            f"Got an empty response for the requested domain '{request_domain}' from the server '{target_server}'.")
 
     if never_cut:
         # If the caller has requested to 'never cut' responses, he will get the original response from the server (
@@ -7202,18 +7282,17 @@ def get_whois_raw(domain, server="", previous=None, rfc3490=True, never_cut=Fals
     if never_cut == False:
         new_list = [response] + previous
     server_list.append(target_server)
-    for line in [x.strip() for x in response.splitlines()]:
-        match = re.match("(refer|whois server|referral url|registrar whois(?: server)?):\s*([^\s]+\.[^\s]+)", line,
-                         re.IGNORECASE)
-        if match is not None:
-            referral_server = match.group(2)
-            if referral_server != server and "://" not in referral_server:  # We want to ignore anything non-WHOIS (eg. HTTP) for now.
-                # Referral to another WHOIS server...
-                try:
+    if is_recursive:
+        for line in [x.strip() for x in response.splitlines()]:
+            match = re.match("(refer|whois server|referral url|registrar whois(?: server)?):\s*([^\s]+\.[^\s]+)", line,
+                             re.IGNORECASE)
+            if match is not None:
+                referral_server = match.group(2)
+                # We want to ignore anything non-WHOIS (eg. HTTP) for now.
+                if referral_server != server and "://" not in referral_server:
+                    # Referral to another WHOIS server...
                     return get_whois_raw(domain, referral_server, new_list, server_list=server_list,
-                                         with_server_list=with_server_list, is_refer_server=True)
-                except Exception as msg:
-                    demisto.info("Failed for querying a referral server {} : {}".format(referral_server, msg))
+                                         with_server_list=with_server_list)
 
     if with_server_list:
         return new_list, server_list
@@ -7222,87 +7301,55 @@ def get_whois_raw(domain, server="", previous=None, rfc3490=True, never_cut=Fals
 
 
 def get_root_server(domain):
-    ext = domain.split(".")[-1]
-    for dble in dble_ext:
-        if domain.endswith(dble):
-            ext = dble
 
-    if ext in tlds.keys():
-        entry = tlds[ext]
-        try:
+    demisto.debug(f"Attempting to get root server from domain '{domain}'...")
+    try:
+        (_, tld) = domain.rsplit(".", 1)
+        for dble in dble_ext:
+            if domain.endswith(dble):
+                tld = dble
+
+        if tld in list(tlds.keys()):
+            entry = tlds[tld]
             host = entry["host"]
-        except KeyError:
-            context = ({
-                outputPaths['domain']: {
-                    'Name': domain,
-                    'Whois': {
-                        'QueryStatus': 'Failed'
-                    }
-                },
-            })
-            if SHOULD_ERROR:
-                return_error('The domain - {} - is not supported by the Whois service'.format(domain),
-                             outputs=context)
-            else:
-                return_warning('The domain - {} - is not supported by the Whois service'.format(domain),
-                               exit=True, outputs=context)
+            demisto.debug(f"Found host '{host}' from domain '{domain}'")
+            return host
+        else:
+            raise WhoisInvalidDomain(f"Can't parse the root server from domain '{domain}'")
 
-        return host
-
-    else:
-        raise WhoisException("No root WHOIS server found for domain.")
+    except (KeyError, TypeError, ValueError) as e:
+        demisto.error(f"Could not get root server from domain '{domain}': {e.__class__.__name__} {e}")
+        raise WhoisInvalidDomain(f"Can't parse the root server from domain '{domain}'")
 
 
-def whois_request(domain, server, port=43, is_refer_server=False):
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    try:
-        sock.connect((server, port))
-    except Exception as msg:
-        context = ({
-            outputPaths['domain']: {
-                'Name': domain,
-                'Whois': {
-                    'QueryStatus': 'Failed'
-                }
-            },
-        })
+def whois_request_get_response(domain: str, server: str) -> str:
+    """
+    Helper function to create a socket connection to the Whois server and return the response.
 
-        if not is_refer_server:
+    Arguments:
+        - `domain` (``str``): The domain to do the lookup on.
+        - `server` (``str``): The Whois server to use in the lookup.
 
-            if SHOULD_ERROR:
-                return_error("Whois returned - Couldn't connect with the socket-server: {}".format(msg), outputs=context)
-            else:
-                return_warning("Whois returned - Couldn't connect with the socket-server: {}".format(msg),
-                               exit=True, outputs=context)
+    Returns:
+        - `str` with the raw response.
+    """
 
-        else:  # in a referral server call
-
-            demisto.info("Whois returned - Couldn't connect with the socket-server"
-                         " of the referral server {}: {}".format(server, msg))
-
-    else:
-        return whois_request_get_response(socket=sock, domain=domain)
-    finally:
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        sock.connect((server, 43))
+        sock.send(("%s\r\n" % domain).encode("utf-8"))
+        buff = b""
+        while True:
+            data = sock.recv(1024)
+            if len(data) == 0:
+                break
+            buff += data
         sock.close()
+        try:
+            d = buff.decode("utf-8")
+        except UnicodeDecodeError:
+            d = buff.decode("latin-1")
 
-
-def whois_request_get_response(socket, domain):
-    socket.send(("%s\r\n" % domain).encode("utf-8"))
-    buff = b""
-    while True:
-        data = socket.recv(1024)
-        if len(data) == 0:
-            break
-        buff += data
-    socket.close()
-    try:
-        d = buff.decode("utf-8")
-    except UnicodeDecodeError:
-        d = buff.decode("latin-1")
-
-    return d
-
-
+        return d
 
 
 airports = {}  # type: dict
@@ -7312,17 +7359,13 @@ states_us = {}  # type: dict
 states_ca = {}  # type: dict
 
 
-class WhoisException(Exception):
-    pass
-
-
 def precompile_regexes(source, flags=0):
     return [re.compile(regex, flags) for regex in source]
 
 
 def preprocess_regex(regex):
     # Fix for #2; prevents a ridiculous amount of varying size permutations.
-    regex = re.sub(r"\\s\*\(\?P<([^>]+)>\.\+\)", r"\s*(?P<\1>\S.*)", regex)
+    regex = re.sub(r"\\s\*\(\?P<([^>]+)>\.\+\)", r"\\s*(?P<\1>\\S.*)", regex)
     # Experimental fix for #18; removes unnecessary variable-size whitespace
     # matching, since we're stripping results anyway.
     regex = re.sub(r"\[ \]\*\(\?P<([^>]+)>\.\*\)", r"(?P<\1>.*)", regex)
@@ -7615,12 +7658,7 @@ nic_contact_regexes = [
     # nic.ir, individual  - this is a nasty one.
     "nic-hdl:\s+(?P<handle>.+)\norg:\s+(?P<organization>.+)\n(?:e-mail:\s+(?P<email>.+)\n)?(?:address:\s+(?P<street1>.+?)(?:,+ (?P<street2>.+?)(?:,+ (?P<street3>.+?)(?:,+ (?P<street4>.+?)(?:,+ (?P<street5>.+?)(?:,+ (?P<street6>.+?)(?:,+ (?P<street7>.+?))?)?)?)?)?)?, (?P<city>.+), (?P<state>.+), (?P<country>.+)\n)?(?:phone:\s+(?P<phone>.+)\n)?(?:fax-no:\s+(?P<fax>.+)\n)?",
     # nic.ir, organization
-    "nic-hdl:\s*(?P<handle>.+)\ntype:\s*(?P<type>.+)\ncontact:\s*(?P<name>.+)\n(?:.+\n)*?(?:address:\s*(?P<street1>.+)\naddress:\s*(?P<street2>.+)\naddress:\s*(?P<street3>.+)\naddress:\s*(?P<country>.+)\n)?(?:phone:\s*(?P<phone>.+)\n)?(?:fax-no:\s*(?P<fax>.+)\n)?(?:.+\n)*?(?:e-mail:\s*(?P<email>.+)\n)?(?:.+\n)*?changed:\s*(?P<changedate>[0-9]{2}\/[0-9]{2}\/[0-9]{4}).*\n",
-    # AFNIC madness without country field
-    "nic-hdl:\s*(?P<handle>.+)\ntype:\s*(?P<type>.+)\ncontact:\s*(?P<name>.+)\n(?:.+\n)*?(?:address:\s*(?P<street1>.+)\n)?(?:address:\s*(?P<street2>.+)\n)?(?:address:\s*(?P<street3>.+)\n)?(?:phone:\s*(?P<phone>.+)\n)?(?:fax-no:\s*(?P<fax>.+)\n)?(?:.+\n)*?(?:e-mail:\s*(?P<email>.+)\n)?(?:.+\n)*?changed:\s*(?P<changedate>[0-9]{2}\/[0-9]{2}\/[0-9]{4}).*\n",
-    # AFNIC madness any country -at all-
-    "nic-hdl:\s*(?P<handle>.+)\ntype:\s*(?P<type>.+)\ncontact:\s*(?P<name>.+)\n(?:.+\n)*?(?:address:\s*(?P<street1>.+)\n)?(?:address:\s*(?P<street2>.+)\n)?(?:address:\s*(?P<street3>.+)\n)?(?:address:\s*(?P<street4>.+)\n)?country:\s*(?P<country>.+)\n(?:phone:\s*(?P<phone>.+)\n)?(?:fax-no:\s*(?P<fax>.+)\n)?(?:.+\n)*?(?:e-mail:\s*(?P<email>.+)\n)?(?:.+\n)*?changed:\s*(?P<changedate>[0-9]{2}\/[0-9]{2}\/[0-9]{4}).*\n",
-    # AFNIC madness with country field
+    "nic-hdl:[ ]*(?P<handle>.*?)\ntype:[ ]*(?P<type>.*)\ncontact:[ ]*(?P<name>.*?)\n(?:.*\n)*?(?:(?:address:[ ]*(?P<street1>.*?)\n)(?:address:[ ]*(?P<street2>.*?)\n)?(?:address:[ ]*(?P<street3>.*)\n)?(?:address:[ ]*(?P<street4>.*)\n)?(?:country:[ ]*(?P<country>.*?)\n)?)(?:phone:[ ]*(?P<phone>.*?)\n)?(?:fax-no:[ ]*(?P<fax>.*?)\n)?(?:.*\n)*?(?:e-mail:[ ]*(?P<email>.*?)\n)?registrar:[ ]*(?P<registrar>.*?)\n(?:.*?\n)*?(?:changed:[ ]*(?P<changedate>.*?)\n)?"
 ]
 
 organization_regexes = (
@@ -7670,11 +7708,28 @@ nic_contact_references["billing"] = precompile_regexes(nic_contact_references["b
 if sys.version_info < (3, 0):
     def is_string(data):
         """Test for string with support for python 2."""
-        return isinstance(data, basestring)
+        return isinstance(data, str)
 else:
     def is_string(data):
         """Test for string with support for python 3."""
         return isinstance(data, str)
+
+
+class InvalidDateHandler:
+    """
+        A class to represent an anparseble date by the datetime module.
+        mainly for dates containing day, year, or month with an unvalid value of 0.
+        """
+
+    def __init__(self, year, month, day):
+        self.year = year
+        self.month = month
+        self.day = day
+
+    def strftime(self, *args):
+        if self.year == 2000:
+            return f'{self.day}-{self.month}-{0}'
+        return f'{self.day}-{self.month}-{self.year}'
 
 
 def parse_raw_whois(raw_data, normalized=None, never_query_handles=True, handle_server=""):
@@ -7684,7 +7739,7 @@ def parse_raw_whois(raw_data, normalized=None, never_query_handles=True, handle_
     raw_data = [segment.replace("\r", "") for segment in raw_data]  # Carriage returns are the devil
 
     for segment in raw_data:
-        for rule_key, rule_regexes in grammar['_data'].items():  # type: ignore
+        for rule_key, rule_regexes in list(grammar['_data'].items()):  # type: ignore
             if (rule_key in data) == False:
                 for line in segment.splitlines():
                     for regex in rule_regexes:
@@ -7887,7 +7942,7 @@ def normalize_data(data, normalized):
                     normalize_name(item, abbreviation_threshold=threshold, length_threshold=1, ignore_nic=ignore_nic)
                     for item in data[key]]
 
-    for contact_type, contact in data['contacts'].items():
+    for contact_type, contact in list(data['contacts'].items()):
         if contact is not None:
             if 'country' in contact and contact['country'] in countries:
                 contact['country'] = countries[contact['country']]
@@ -7966,7 +8021,7 @@ def normalize_name(value, abbreviation_threshold=4, length_threshold=8, lowercas
                     if len(words[0]) >= abbreviation_threshold and "." not in words[0]:
                         normalized_words.append(words[0].capitalize())
                     elif lowercase_domains and "." in words[0] and not words[0].endswith(".") and not words[
-                        0].startswith("."):
+                            0].startswith("."):
                         normalized_words.append(words[0].lower())
                     else:
                         # Probably an abbreviation or domain, leave it alone
@@ -7986,7 +8041,7 @@ def normalize_name(value, abbreviation_threshold=4, length_threshold=8, lowercas
                     if len(words[-1]) >= abbreviation_threshold and "." not in words[-1]:
                         normalized_words.append(words[-1].capitalize())
                     elif lowercase_domains and "." in words[-1] and not words[-1].endswith(".") and not words[
-                        -1].startswith("."):
+                            -1].startswith("."):
                         normalized_words.append(words[-1].lower())
                     else:
                         # Probably an abbreviation or domain, leave it alone
@@ -7998,7 +8053,7 @@ def normalize_name(value, abbreviation_threshold=4, length_threshold=8, lowercas
 
 def parse_dates(dates):
     global grammar
-    parsed_dates = []
+    parsed_dates: List[datetime | InvalidDateHandler] = []
 
     for date in dates:
         for rule in grammar['_dateformats']:  # type: ignore
@@ -8057,15 +8112,16 @@ def parse_dates(dates):
                     hour = 0
                     minute = 0
                     second = 0
-                    demisto.debug(e.message)
+                    demisto.debug(e)
         try:
             if year > 0:
-                try:
+                if month > 12:
+                    # We might have gotten the day and month the wrong way around, let's try it the other way around.
+                    month, day = day, month
+                if 0 in [year, month, day]:
+                    parsed_dates.append(InvalidDateHandler(year=year, month=month, day=day))
+                else:
                     parsed_dates.append(datetime(year, month, day, hour, minute, second))
-                except ValueError as e:
-                    # We might have gotten the day and month the wrong way around, let's try it the other way around
-                    # If you're not using an ISO-standard date format, you're an evil registrar!
-                    parsed_dates.append(datetime(year, day, month, hour, minute, second))
         except UnboundLocalError as e:
             pass
 
@@ -8134,7 +8190,6 @@ def parse_registrants(data, never_query_handles=True, handle_server=""):
     handle_contacts = parse_nic_contact(data)
 
     # Find NIC handle references and process them
-    missing_handle_contacts = []  # type: list
     for category in nic_contact_references:
         for regex in nic_contact_references[category]:
             for segment in data:
@@ -8227,7 +8282,7 @@ def parse_registrants(data, never_query_handles=True, handle_server=""):
                     elements.append(obj["lastname"])
                 obj["name"] = " ".join(elements)
             if 'country' in obj and 'city' in obj and (re.match("^R\.?O\.?C\.?$", obj["country"], re.IGNORECASE) or obj[
-                "country"].lower() == "republic of china") and obj["city"].lower() == "taiwan":
+                    "country"].lower() == "republic of china") and obj["city"].lower() == "taiwan":
                 # There's an edge case where some registrants append ", Republic of China" after "Taiwan", and this is mis-parsed
                 # as Taiwan being the city. This is meant to correct that.
                 obj["country"] = "%s, %s" % (obj["city"], obj["country"])
@@ -8265,28 +8320,36 @@ def parse_nic_contact(data):
     return handle_contacts
 
 
-def get_whois(domain, normalized=None):
-    if normalized is None:
-        normalized = []
-    raw_data, server_list = get_whois_raw(domain, with_server_list=True)
-    return parse_raw_whois(raw_data, normalized=normalized, never_query_handles=False,
+def get_whois(domain: str, is_recursive=True):
+
+    raw_data, server_list = get_whois_raw(domain, with_server_list=True, is_recursive=is_recursive)
+    return parse_raw_whois(raw_data, normalized=[], never_query_handles=False,
                            handle_server=server_list[-1])
 
 
 # Drops the mic disable-secrets-detection-end
 
 def get_domain_from_query(query):
-    # checks for largest matching suffix inside tlds dictionary
-    suffix_len = max([len(suffix) for suffix in tlds if query.endswith('.{}'.format(suffix))] or [0])
-    # if suffix(TLD) was found increase the length by one in order to add the dot before it. --> .com instead of com
-    if suffix_len != 0:
-        suffix_len += 1
-    suffixless_query = query[:-suffix_len]
-    domain = query
-    # checks if query includes subdomain
-    if suffixless_query.count(".") > 0:
-        domain = query[suffixless_query.rindex(".") + 1:]
-    return domain
+
+    demisto.debug(f"Attempting to get domain from query '{query}'...")
+
+    try:
+        # checks for largest matching suffix inside tlds dictionary
+        suffix_len = max([len(suffix) for suffix in tlds if query.endswith('.{}'.format(suffix))] or [0])
+        # if suffix(TLD) was found increase the length by one in order to add the dot before it. --> .com instead of com
+        if suffix_len != 0:
+            suffix_len += 1
+        suffixless_query = query[:-suffix_len]
+        domain = query
+        # checks if query includes subdomain
+        if suffixless_query.count(".") > 0:
+            domain = query[suffixless_query.rindex(".") + 1:]
+
+        demisto.debug(f"Found domain '{domain}' from query")
+        return domain
+    except Exception:
+        demisto.error(f"Error parsing domain from query '{query}'.")
+        raise WhoisInvalidDomain(f"Can't parse domain from query '{query}'")
 
 
 def is_good_query_result(raw_result):
@@ -8348,7 +8411,7 @@ def create_outputs(whois_result, domain, reliability, query=None):
         if 'registrant' in contacts and contacts['registrant'] is not None:
             md['Registrant'] = contacts['registrant']
             standard_ec['Registrant'] = contacts['registrant'].copy()
-            for key, val in contacts['registrant'].items():
+            for key, val in list(contacts['registrant'].items()):
                 standard_ec['Registrant'][key.capitalize()] = val
             ec['Registrant'] = contacts['registrant']
             if 'organization' in contacts['registrant']:
@@ -8357,7 +8420,7 @@ def create_outputs(whois_result, domain, reliability, query=None):
             md['Administrator'] = contacts['admin']
             ec['Administrator'] = contacts['admin']
             standard_ec['Admin'] = contacts['admin'].copy()
-            for key, val in contacts['admin'].items():
+            for key, val in list(contacts['admin'].items()):
                 standard_ec['Admin'][key.capitalize()] = val
             standard_ec['WHOIS']['Admin'] = contacts['admin']
         if 'tech' in contacts and contacts['tech'] is not None:
@@ -8406,100 +8469,323 @@ def prepare_readable_ip_data(response):
 '''COMMANDS'''
 
 
-def domain_command(reliability):
-    domains = demisto.args().get('domain', [])
-    for domain in argToList(domains):
-        whois_result = get_whois(domain)
-        md, standard_ec, dbot_score = create_outputs(whois_result, domain, reliability)
-        dbot_score.update({Common.Domain.CONTEXT_PATH: standard_ec})
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['markdown'],
-            'Contents': str(whois_result),
-            'HumanReadable': tableToMarkdown('Whois results for {}'.format(domain), md),
-            'EntryContext': dbot_score,
-        })
+def get_whois_ip(ip: str,
+                 retry_count: int = RATE_LIMIT_RETRY_COUNT_DEFAULT,
+                 rate_limit_timeout: int = RATE_LIMIT_WAIT_SECONDS_DEFAULT,
+                 rate_limit_errors_suppressed: bool = RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT
+                 ) -> Optional[Dict[str, Any]]:
+    """
+    Performs an Registration Data Access Protocol (RDAP) lookup for an IP.
 
+    See https://ipwhois.readthedocs.io/en/latest/RDAP.html
 
-def get_whois_ip(ip):
-    from urllib2 import build_opener, ProxyHandler
-    from ipwhois import IPWhois
+    Arguments:
+        - `ip` (``str``): The IP to perform the lookup for.
+        - `retry_count` (``int``): The number of times to retry the lookup in case of rate limiting error.
+        - `rate_limit_timeout` (``int``): How long in seconds to wait before retrying the lookup in case of rate limiting error.
+
+    Returns:
+        - `Dict[str, None]` with the result of the lookup.
+    """
+
+    from urllib.request import build_opener, ProxyHandler
+
     proxy_opener = None
     if demisto.params().get('proxy'):
         proxies = assign_params(http=handle_proxy().get('http'), https=handle_proxy().get('https'))
         handler = ProxyHandler(proxies)
         proxy_opener = build_opener(handler)
-        ip_obj = IPWhois(ip, proxy_opener=proxy_opener)
+        ip_obj = ipwhois.IPWhois(ip, proxy_opener=proxy_opener)
     else:
-        ip_obj = IPWhois(ip)
+        ip_obj = ipwhois.IPWhois(ip)
 
-    return ip_obj.lookup_rdap(depth=1)
+    try:
+        return ip_obj.lookup_rdap(depth=1, retry_count=retry_count, rate_limit_timeout=rate_limit_timeout)
+    except urllib.error.HTTPError as e:
+        if rate_limit_errors_suppressed:
+            demisto.debug(f'Suppressed HTTPError when trying to lookup rdap info. Error: {e}')
+            return None
+
+        demisto.error(f'HTTPError when trying to lookup rdap info. Error: {e}')
+        raise e
 
 
-def ip_command(ips, reliability):
-    results = []
+def get_param_or_arg(param_key: str, arg_key: str):
+    return demisto.params().get(param_key) or demisto.args().get(arg_key)
+
+
+def ip_command(reliability: str, should_error: bool) -> List[CommandResults]:
+    """
+    Performs RDAP lookup for the IP(s) and returns a list of CommandResults.
+    Sets API execution metrics functionality (if supported) and adds them to the list of CommandResults.
+
+    Args:
+        - `reliability` (``str``): RDAP lookup source reliability.
+        - `should_error` (``bool``): Whether to return an error entry if the lookup fails.
+    Returns:
+        - `List[CommandResults]` with the command results and API execution metrics (if supported).
+    """
+
+    ips = demisto.args().get('ip', '1.1.1.1')
+    rate_limit_retry_count: int = int(get_param_or_arg('rate_limit_retry_count',
+                                      'rate_limit_retry_count') or RATE_LIMIT_RETRY_COUNT_DEFAULT)
+    rate_limit_wait_seconds: int = int(get_param_or_arg('rate_limit_wait_seconds',
+                                       'rate_limit_wait_seconds') or RATE_LIMIT_WAIT_SECONDS_DEFAULT)
+    rate_limit_errors_suppressed: bool = bool(get_param_or_arg(
+        'rate_limit_errors_suppressed', 'rate_limit_errors_suppressed') or RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT)
+
+    execution = ExecutionMetrics()
+    results: List[CommandResults] = []
     for ip in argToList(ips):
-        response = get_whois_ip(ip)
 
-        dbot_score = Common.DBotScore(
-            indicator=ip,
-            indicator_type=DBotScoreType.IP,
-            integration_name='Whois',
-            score=Common.DBotScore.NONE,
-            reliability=reliability
-        )
-        related_feed = Common.FeedRelatedIndicators(
-            value=response.get('network', {}).get('cidr'),
-            indicator_type='CIDR'
-        )
-        network_data = response.get('network', {})
-        ip_output = Common.IP(
-            ip=ip,
-            asn=response.get('asn'),
-            geo_country=network_data.get('country'),
-            organization_name=network_data.get('name'),
-            dbot_score=dbot_score,
-            feed_related_indicators=[related_feed]
-        )
-        readable_data = prepare_readable_ip_data(response)
-        result = CommandResults(
-            outputs_prefix='Whois.IP',
-            outputs_key_field='query',
-            outputs=response,
-            readable_output=tableToMarkdown('Whois results:', readable_data),
-            raw_response=response,
-            indicator=ip_output
-        )
+        try:
+            response = get_whois_ip(ip, retry_count=rate_limit_retry_count, rate_limit_timeout=rate_limit_wait_seconds,
+                                    rate_limit_errors_suppressed=rate_limit_errors_suppressed)
+            if response:
+                execution.success += 1
+                dbot_score = Common.DBotScore(
+                    indicator=ip,
+                    indicator_type=DBotScoreType.IP,
+                    integration_name='Whois',
+                    score=Common.DBotScore.NONE,
+                    reliability=reliability
+                )
+                related_feed = Common.FeedRelatedIndicators(
+                    value=response.get('network', {}).get('cidr'),
+                    indicator_type='CIDR'
+                )
+                network_data: Dict[str, Any] = response.get('network', {})
+                ip_output = Common.IP(
+                    ip=ip,
+                    asn=response.get('asn'),
+                    geo_country=network_data.get('country'),
+                    organization_name=network_data.get('name'),
+                    dbot_score=dbot_score,
+                    feed_related_indicators=[related_feed]
+                )
+                readable_data = prepare_readable_ip_data(response)
+                result = CommandResults(
+                    outputs_prefix='Whois.IP',
+                    outputs_key_field='query',
+                    outputs=response,
+                    readable_output=tableToMarkdown('Whois results:', readable_data),
+                    raw_response=response,
+                    indicator=ip_output
+                )
+            else:
+                execution.general_error += 1
 
-        results.append(result)
-    return results
+                if should_error:
+                    result = CommandResults(readable_output=f"No results returned for IP {ip}", entry_type=EntryType.ERROR)
+                else:
+                    result = CommandResults(readable_output=f"No results returned for IP {ip}", entry_type=EntryType.WARNING)
+
+            results.append(result)
+
+        except Exception as e:
+            demisto.error(f"Exception type {e.__class__.__name__} caught performing RDAP lookup for IP {ip}: {e}")
+
+            output = {
+                'query': ip,
+                'raw': f"Query failed for {ip}: {e.__class__.__name__}, {e}"
+            }
+
+            execution = increment_metric(
+                execution_metrics=execution,
+                mapping=ipwhois_exception_mapping,
+                caught_exception=type(e)
+            )
+
+            if should_error:
+                results.append(
+                    CommandResults(
+                        outputs_prefix="Whois.IP",
+                        outputs_key_field="query",
+                        outputs=output,
+                        entry_type=EntryType.ERROR,
+                        readable_output=f"Error performing RDAP lookup for IP {ip}: {e.__class__.__name__} {e}"
+                    ))
+            else:
+                results.append(
+                    CommandResults(
+                        outputs_prefix="Whois.IP",
+                        outputs_key_field="query",
+                        outputs=output,
+                        entry_type=EntryType.WARNING,
+                        readable_output=f"Error performing RDAP lookup for IP {ip}: {e.__class__.__name__} {e}"
+                    ))
+
+    return append_metrics(execution_metrics=execution, results=results)
 
 
-def whois_command(reliability):
-    query = demisto.args().get('query')
-    domain = get_domain_from_query(query)
-    whois_result = get_whois(domain)
-    md, standard_ec, dbot_score = create_outputs(whois_result, domain, reliability, query)
-    dbot_score.update({Common.Domain.CONTEXT_PATH: standard_ec})
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['markdown'],
-        'Contents': str(whois_result),
-        'HumanReadable': tableToMarkdown('Whois results for {}'.format(domain), md),
-        'EntryContext': dbot_score,
-    })
+def whois_command(reliability: str) -> List[CommandResults]:
+    """
+    Runs Whois domain query.
+
+    Arguments:
+        - `reliability` (``str``): The source reliability. Set in the integration instance settings.
+    Returns:
+        - `List[CommandResults]` with the command results and API execution metrics (if supported).
+    """
+
+    args = demisto.args()
+    query = args.get("query", "paloaltonetworks.com")
+    is_recursive = argToBoolean(args.get("recursive", 'false'))
+    verbose = argToBoolean(args.get("verbose", "false"))
+    should_error = argToBoolean(demisto.params().get('with_error', False))
+
+    demisto.info(f"whois command is called with the query '{query}'")
+
+    execution_metrics = ExecutionMetrics()
+    results: List[CommandResults] = []
+    for query in argToList(query):
+        domain = get_domain_from_query(query)
+
+        try:
+            whois_result = get_whois(domain, is_recursive=is_recursive)
+            execution_metrics.success += 1
+            md, standard_ec, dbot_score = create_outputs(whois_result, domain, reliability, query)
+            context_res = {}
+            context_res.update(dbot_score)
+            context_res.update({Common.Domain.CONTEXT_PATH: standard_ec})
+
+            if verbose:
+                demisto.info('Verbose response')
+                whois_result['query'] = query
+                json_res = json.dumps(whois_result, indent=4, sort_keys=True, default=str)
+                context_res.update({'Whois(val.query==obj.query)': json.loads(json_res)})
+
+            result = CommandResults(
+                outputs=context_res,
+                entry_type=EntryType.NOTE,
+                content_format=EntryFormat.MARKDOWN,
+                readable_output=tableToMarkdown('Whois results for {}'.format(domain), md),
+                raw_response=str(whois_result)
+            )
+
+            results.append(result)
+
+        except Exception as e:
+            demisto.error(
+                f"Exception of type {e.__class__.__name__} was caught while performing whois lookup with the domain '{domain}'")
+            execution_metrics = increment_metric(
+                execution_metrics=execution_metrics,
+                mapping=whois_exception_mapping,
+                caught_exception=type(e)
+            )
+
+            output = ({
+                outputPaths['domain']: {
+                    'Name': domain,
+                    'Whois': {
+                        'QueryStatus': f"Failed whois lookup: {e}"
+                    }
+                },
+            })
+
+            if should_error:
+                results.append(CommandResults(
+                    outputs=output,
+                    readable_output=f"Exception of type {e.__class__.__name__} was caught while performing whois lookup with the domain '{domain}': {e}",
+                    entry_type=EntryType.ERROR,
+                    raw_response=str(e)
+                ))
+            else:
+                results.append(CommandResults(
+                    outputs=output,
+                    readable_output=f"Exception of type {e.__class__.__name__} was caught while performing whois lookup with the domain '{domain}': {e}",
+                    entry_type=EntryType.WARNING,
+                    raw_response=str(e)
+                ))
+
+    return append_metrics(execution_metrics=execution_metrics, results=results)
+
+
+def domain_command(reliability: str) -> List[CommandResults]:
+    """
+    Runs Whois domain query.
+
+    Arguments:
+        - `reliability` (``str``): The source reliability. Set in the integration instance settings.
+    Returns:
+        - `List[CommandResults]` with the command results and API execution metrics (if supported).
+    """
+
+    args = demisto.args()
+    domains = args.get("domain", [])
+    is_recursive = argToBoolean(args.get("recursive", 'false'))
+    should_error = argToBoolean(demisto.params().get('with_error', False))
+
+    demisto.info(f"whois command is called with the query '{domains}'")
+
+    execution_metrics = ExecutionMetrics()
+    results: List[CommandResults] = []
+    for domain in argToList(domains):
+
+        try:
+            whois_result = get_whois(domain, is_recursive=is_recursive)
+            execution_metrics.success += 1
+            md, standard_ec, dbot_score = create_outputs(whois_result, domain, reliability)
+            context_res = {}
+            context_res.update(dbot_score)
+            context_res.update({Common.Domain.CONTEXT_PATH: standard_ec})
+
+            result = CommandResults(
+                outputs=context_res,
+                entry_type=EntryType.NOTE,
+                content_format=EntryFormat.MARKDOWN,
+                readable_output=tableToMarkdown('Whois results for {}'.format(domain), md),
+                raw_response=str(whois_result)
+            )
+
+            results.append(result)
+
+        except Exception as e:
+            demisto.error(
+                f"Exception of type {e.__class__.__name__} was caught while performing whois lookup with the domain '{domain}'")
+            execution_metrics = increment_metric(
+                execution_metrics=execution_metrics,
+                mapping=whois_exception_mapping,
+                caught_exception=type(e)
+            )
+
+            output = ({
+                outputPaths['domain']: {
+                    'Name': domain,
+                    'Whois': {
+                        'QueryStatus': f"Failed domain lookup: {e}"
+                    }
+                },
+            })
+
+            if should_error:
+                results.append(CommandResults(
+                    outputs=output,
+                    readable_output=f"Exception of type {e.__class__.__name__} was caught while performing whois lookup with the domain '{domain}': {e}",
+                    entry_type=EntryType.ERROR,
+                    raw_response=str(e)
+                ))
+            else:
+                results.append(CommandResults(
+                    outputs=output,
+                    readable_output=f"Exception of type {e.__class__.__name__} was caught while performing whois lookup with the domain '{domain}': {e}",
+                    entry_type=EntryType.WARNING,
+                    raw_response=str(e)
+                ))
+
+    return append_metrics(execution_metrics=execution_metrics, results=results)
 
 
 def test_command():
-    whois_result = get_whois('google.co.uk')
+    test_domain = 'google.co.uk'
+    demisto.debug(f"Testing module using domain '{test_domain}'...")
+    whois_result = get_whois(test_domain)
 
     try:
-        domain_test = whois_result['nameservers'][0]
-    except ValueError as e:
-        return_error('Whois did not return the correct result: {}'.format(str(e)))
-
-    if domain_test == 'ns1.google.com':
-        demisto.results('ok')
+        if whois_result['nameservers'][0] == 'ns1.google.com':
+            return 'ok'
+    except Exception as e:
+        raise WhoisException(f"Failed testing module using domain '{test_domain}': {e.__class__.__name__} {e}")
 
 
 def setup_proxy():
@@ -8533,33 +8819,44 @@ def setup_proxy():
 ''' EXECUTION CODE '''
 
 
-def main():
-    LOG('command is {}'.format(str(demisto.command())))
+def main():  # pragma: no cover
+    demisto.debug(f"command is {demisto.command()}")
     command = demisto.command()
+    should_error = argToBoolean(demisto.params().get('with_error', False))
 
     reliability = demisto.params().get('integrationReliability')
     reliability = reliability if reliability else DBotScoreReliability.B
 
+    org_socket = None
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
     else:
         raise Exception("Please provide a valid value for the Source Reliability parameter.")
-
     try:
+        results: List[CommandResults] = []
         if command == 'ip':
-            return_results(ip_command(demisto.args().get('ip'), reliability))
+            results = ip_command(reliability=reliability, should_error=should_error)
+
         else:
             org_socket = socket.socket
             setup_proxy()
             if command == 'test-module':
-                test_command()
+                results = test_command()
+
             elif command == 'whois':
-                whois_command(reliability)
-            elif command == 'domain':
-                domain_command(reliability)
+                results = whois_command(reliability=reliability)
+
+            elif command == "domain":
+                results = domain_command(reliability=reliability)
+
+            else:
+                raise NotImplementedError()
+
+        return_results(results)
     except Exception as e:
-        LOG(e)
-        return_error(str(e))
+        msg = f"Exception thrown calling command '{demisto.command()}' {e.__class__.__name__}: {e}"
+        demisto.error(msg)
+        return_error(message=msg, error=e)
     finally:
         if command != 'ip':
             socks.set_default_proxy()  # clear proxy settings

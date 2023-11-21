@@ -1,0 +1,24 @@
+commonfields:
+  id: DT
+  version: -1
+name: DT
+script: ''
+type: python
+subtype: python3
+tags:
+- transformer
+- general
+comment: This automation allows the usage of DT scripts within playbooks transformers
+enabled: true
+args:
+- name: value
+  required: true
+  description: Value to perform the transformation on.
+- name: dt
+  required: true
+  description: DT expression.
+scripttarget: 0
+tests:
+- No tests - script used for testing
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.10.12.63474

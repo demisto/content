@@ -1,0 +1,26 @@
+{
+    "defaultIncidentType": "Vectra Detection",
+    "description": "Classifies Vectra Detect incidents.",
+    "feed": false,
+    "fromVersion": "6.2.0",
+    "id": "Vectra Detect",
+    "keyTypeMap": {
+        "COMMAND & CONTROL": "C2Communication",
+        "EXFILTRATION": "Exfiltration",
+        "INFO": "Indicator Feed",
+        "LATERAL MOVEMENT": "Lateral Movement",
+        "RECONNAISSANCE": "Reconnaissance",
+        "account": "Vectra Account",
+        "host": "Vectra Host"
+    },
+    "name": "Vectra Detect",
+    "transformer": {
+        "complex": {
+            "filters": [],
+            "root": "_vectra_specific.entity_type",
+            "transformers": []
+        }
+    },
+    "type": "classification",
+    "version": -1
+}

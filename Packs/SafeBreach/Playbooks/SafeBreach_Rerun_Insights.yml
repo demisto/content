@@ -1,10 +1,7 @@
 id: SafeBreach - Rerun Insights
 version: -1
 name: SafeBreach - Rerun Insights
-description: This is a sub-playbook reruns a list of SafeBreach insights based on
-  Insight Id and waits until they complete. Used in main SafeBreach playbooks, such
-  as "SafeBreach - Handle Insight Incident" and "SafeBreach - Process Non-Behavioral
-  Insights Feed".
+description: Deprecated. No available replacement.
 starttaskid: "0"
 tasks:
   "0":
@@ -157,9 +154,7 @@ tasks:
       id: cdefcbe4-b1f9-4b59-848a-e2805964e625
       version: -1
       name: SafeBreach - Rerun Single Insight
-      description: This is a sub-playbook that reruns a single insight using a specified
-        Insight Id as input. It is used to run insights one by one iteratively as
-        part of the main rerun playbook - "SafeBreach Rerun Insights".
+      description: This is a sub-playbook that reruns a single insight using a specified Insight Id as input. It is used to run insights one by one iteratively as part of the main rerun playbook - "SafeBreach Rerun Insights".
       playbookName: SafeBreach - Rerun Single Insight
       type: playbook
       iscommand: false
@@ -198,8 +193,7 @@ tasks:
       id: 1a7c8892-f3b2-4151-80c5-0eca0ac57930
       version: -1
       name: Is there a test for polling?
-      description: Checks "SafeBreach.Test.Id" for existence to decide whether to
-        proceed to the polling task or not.
+      description: Checks "SafeBreach.Test.Id" for existence to decide whether to proceed to the polling task or not.
       type: condition
       iscommand: false
       brand: ""
@@ -356,4 +350,5 @@ outputs:
 quiet: true
 fromversion: 5.5.0
 tests:
-- No Test
+- No tests (deprecated)
+deprecated: true

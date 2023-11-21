@@ -1,0 +1,33 @@
+commonfields:
+  id: ImpSfScheduleTask
+  version: -1
+name: ImpSfScheduleTask
+script: ''
+type: python
+subtype: python2
+tags:
+- Imperva Skyfence
+comment: |-
+  Creating a schedule task that's call ImpSfRevokeUnaccessedDevices:
+  Getting all devices data from server, if a device haven't been accessed to in over two months (and is still managed), the script will send the corresponding user a warning mail.
+  If it's haven't been accessed to in over three months, the script will revoke the device credentials and notify the user by mail
+system: true
+args:
+- name: cron
+  required: true
+  default: true
+  description: The interval between each check (in cron format)
+- name: times
+  description: Number of times to execute the check
+scripttarget: 0
+dependson:
+  must:
+  - scheduleEntry
+  - ImpSfRevokeUnaccessedDevices
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.10.12.68714
+tests:
+- No tests (auto formatted)
+marketplaces:
+- xsoar

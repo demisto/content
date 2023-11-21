@@ -141,7 +141,6 @@ script:
     arguments:
     - name: uuid
       required: true
-      default: false
       description: Unique User ID.
     outputs:
     - contextPath: IP.Address
@@ -189,10 +188,6 @@ script:
     description: Get specific indicator reputation
 
   dockerimage: demisto/python3:3.10.1.25933
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

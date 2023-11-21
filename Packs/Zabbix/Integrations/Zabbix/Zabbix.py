@@ -5,10 +5,10 @@ from CommonServerUserPython import *
 
 import json
 from pyzabbix import ZabbixAPI
-import requests
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 
 class ZabbixIntegration:

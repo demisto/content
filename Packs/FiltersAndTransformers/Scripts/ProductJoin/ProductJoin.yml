@@ -1,0 +1,33 @@
+commonfields:
+  id: ProductJoin
+  version: -1
+name: ProductJoin
+script: ''
+type: python
+tags:
+- transformer
+- general
+- entirelist
+comment: Returns the product of two lists, joined by a separator, as a list of strings.
+enabled: true
+args:
+- name: value
+  required: true
+  default: true
+  description: The first list (or CSV string).
+  isArray: true
+- name: list2
+  required: true
+  description: The second list (or CSV string).
+  isArray: true
+- name: join
+  required: true
+  description: Separator
+  defaultValue: '='
+scripttarget: 0
+subtype: python3
+runas: DBotWeakRole
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.10.12.63474
+tests:
+- No tests (auto formatted)

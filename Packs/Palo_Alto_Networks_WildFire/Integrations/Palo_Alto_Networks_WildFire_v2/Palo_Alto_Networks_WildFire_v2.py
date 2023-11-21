@@ -1,15 +1,25 @@
-import shutil
-from typing import Callable, Tuple, Optional, List
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import shutil
+from collections.abc import Callable
+
+import tarfile
+import io
+import urllib3
+
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
+BRAND = 'WildFire-v2'
+INTEGRATION_NAME = 'Wildfire'
+
 PARAMS = demisto.params()
 URL = PARAMS.get('server')
 TOKEN = PARAMS.get('token') or (PARAMS.get('credentials') or {}).get('password')
+# get the source of the credentials to ensure the correct agent is set for all API calls
+# other = ngfw or wf api based keys that are 32char long and require no agent
+# pcc and prismaaccessapi are 64 char long and require the correct agent= value in the api call
 current_platform = demisto.demistoVersion().get('platform')
 if not TOKEN and current_platform == 'x2':
     """
@@ -31,6 +41,23 @@ DEFAULT_HEADERS = {'Content-Type': 'application/x-www-form-urlencoded'}
 MULTIPART_HEADERS = {'Content-Type': "multipart/form-data; boundary=upload_boundry"}
 WILDFIRE_REPORT_DT_FILE = "WildFire.Report(val.SHA256 && val.SHA256 == obj.SHA256 || val.MD5 && val.MD5 == obj.MD5 ||" \
                           " val.URL && val.URL == obj.URL)"
+
+# update the default headers with the correct agent version based on the selection in the instance config
+API_KEY_SOURCE = PARAMS.get('credentials_source')
+
+AGENT_VALUE = ''
+ADDITIONAL_FORM_BOUNDARY = ''
+BODY_DICT = {'apikey': TOKEN}
+PARAMS_DICT = {'apikey': TOKEN}
+
+if API_KEY_SOURCE in ['pcc', 'prismaaccessapi', 'xsoartim']:
+    BODY_DICT['agent'] = API_KEY_SOURCE
+    PARAMS_DICT['agent'] = API_KEY_SOURCE
+
+    ADDITIONAL_FORM_BOUNDARY = 'add'
+else:
+    # we have an 'other' api key that requires no additional api key headers for agent
+    AGENT_VALUE = ''
 
 if URL and not URL.endswith('/publicapi'):
     if URL[-1] != '/':
@@ -61,7 +88,7 @@ ERROR_DICT = {
     '421': 'Invalid arguments',
     '500': 'Internal error',
     '502': 'Bad Gateway',
-    '513': 'File upload failed'
+    '513': 'File upload failed. This may happen for unsupported files such as empty files.'
 }
 
 VERDICTS_DICT = {
@@ -69,6 +96,7 @@ VERDICTS_DICT = {
     '1': 'malware',
     '2': 'grayware',
     '4': 'phishing',
+    '5': 'c2',
     '-100': 'pending, the sample exists, but there is currently no verdict',
     '-101': 'error',
     '-102': 'unknown, cannot find sample record in the database',
@@ -81,6 +109,7 @@ VERDICTS_TO_DBOTSCORE = {
     '1': 3,
     '2': 2,
     '4': 3,
+    '5': 3,
     '-100': 0,
     '-101': 0,
     '-102': 0,
@@ -126,6 +155,20 @@ def http_request(url: str, method: str, headers: dict = None, body=None, params=
     )
     if str(result.reason) == 'Not Found':
         raise NotFoundError('Not Found.')
+
+    # invalid argument
+    if result.status_code == 421:
+        try:
+            error_message = json.loads(xml2json(result.text))
+            error_message = error_message.get('error', {}).get('error-message')
+        except Exception:
+            raise Exception(f'Failed to parse response to json. response: {result.text}')
+
+        demisto.results({
+            'Type': entryTypes["error"],
+            'Contents': error_message,
+            'ContentsFormat': formats['text']
+        })
 
     if result.status_code < 200 or result.status_code >= 300:
         if str(result.status_code) in ERROR_DICT:
@@ -241,7 +284,7 @@ def create_dbot_score_from_verdict(pretty_verdict):
     return dbot_score
 
 
-def create_dbot_score_from_url_verdict(pretty_verdict: Dict) -> List:
+def create_dbot_score_from_url_verdict(pretty_verdict: Dict) -> list:
     if pretty_verdict.get('Verdict') not in VERDICTS_TO_DBOTSCORE:
         dbot_score = [
             {'Indicator': pretty_verdict.get('URL'),
@@ -350,8 +393,7 @@ def hash_list_to_file(hash_list):
     return [file_path]
 
 
-def create_relationship(name: str, entities: Tuple, types: Tuple) -> List[Optional[EntityRelationship]]:
-
+def create_relationship(name: str, entities: tuple, types: tuple) -> list[EntityRelationship | None]:
     if CREATE_RELATIONSHIPS:
         return [EntityRelationship(
             name=name,
@@ -378,7 +420,10 @@ def test_module():
 @logger
 def wildfire_upload_file(upload):
     upload_file_uri = URL + URL_DICT["upload_file"]
-    body = {'apikey': TOKEN}
+
+    # update the body with
+    # body = {'apikey': TOKEN}
+    body = BODY_DICT
 
     file_path = demisto.getFilePath(upload)['path']
     file_name = demisto.getFilePath(upload)['name']
@@ -428,6 +473,7 @@ def wildfire_upload_file_command(args) -> list:
 @logger
 def wildfire_upload_file_url(upload):
     upload_file_url_uri = URL + URL_DICT["upload_file_url"]
+
     body = f'''--upload_boundry
 Content-Disposition: form-data; name="apikey"
 
@@ -437,6 +483,27 @@ Content-Disposition: form-data; name="url"
 
 {upload}
 --upload_boundry--'''
+
+    body2 = f'''--upload_boundry
+Content-Disposition: form-data; name="apikey"
+
+{TOKEN}
+--upload_boundry
+Content-Disposition: form-data; name="url"
+
+{upload}
+--upload_boundry
+Content-Disposition: form-data; name="agent"
+
+{API_KEY_SOURCE}
+--upload_boundry--'''
+
+    # check upload value
+    # body2 = 'apikey=' + TOKEN + '&url=' + upload + AGENT_VALUE
+
+    if ADDITIONAL_FORM_BOUNDARY != '':
+        # we need to attach another form element of agent for this APIKEY
+        body = body2
 
     result = http_request(
         upload_file_url_uri,
@@ -472,15 +539,35 @@ def wildfire_upload_file_url_command(args) -> list:
 @logger
 def wildfire_upload_url(upload):
     upload_url_uri = URL + URL_DICT["upload_url"]
-    body = '''--upload_boundry
+
+    body = f'''--upload_boundry
 Content-Disposition: form-data; name="apikey"
 
-{apikey}
+{TOKEN}
 --upload_boundry
 Content-Disposition: form-data; name="link"
 
-{link}
---upload_boundry--'''.format(apikey=TOKEN, link=upload)
+{upload}
+--upload_boundry--'''
+
+    body2 = f'''--upload_boundry
+Content-Disposition: form-data; name="apikey"
+
+{TOKEN}
+--upload_boundry
+Content-Disposition: form-data; name="link"
+
+{upload}
+--upload_boundry
+Content-Disposition: form-data; name="agent"
+
+{API_KEY_SOURCE}
+--upload_boundry--'''
+
+    # body2 = 'apikey=' + TOKEN + '&url=' + upload + AGENT_VALUE
+
+    if ADDITIONAL_FORM_BOUNDARY != '':
+        body = body2
 
     result = http_request(
         upload_url_uri,
@@ -560,6 +647,7 @@ def run_polling_command(args: dict, cmd: str, upload_function: Callable, results
     """
     ScheduledCommand.raise_error_if_not_supported()
     command_results_list = []
+    timeout_in_seconds = arg_to_number(args.pop('timeout_in_seconds', 600))
     interval_in_secs = int(args.get('interval_in_seconds', 60))
     # distinguish between the initial run, which is the upload run, and the results run
     is_new_search = 'url' not in args and 'md5' not in args and 'sha256' not in args and 'hash' not in args
@@ -582,7 +670,7 @@ def run_polling_command(args: dict, cmd: str, upload_function: Callable, results
                 command=cmd,
                 next_run_in_seconds=interval_in_secs,
                 args=polling_args,
-                timeout_in_seconds=600)
+                timeout_in_seconds=timeout_in_seconds)
             command_results.scheduled_command = scheduled_command
             command_results_list.append(command_results)
         return command_results_list
@@ -599,21 +687,30 @@ def run_polling_command(args: dict, cmd: str, upload_function: Callable, results
             command=cmd,
             next_run_in_seconds=interval_in_secs,
             args=polling_args,
-            timeout_in_seconds=600)
+            timeout_in_seconds=timeout_in_seconds)
 
         command_results_list = [CommandResults(scheduled_command=scheduled_command)]
     return command_results_list
 
 
 @logger
-def wildfire_get_verdict(file_hash: Optional[str] = None, url: Optional[str] = None) -> Tuple[dict, dict]:
+def wildfire_get_verdict(file_hash: str | None = None, url: str | None = None) -> tuple[dict, dict]:
     get_verdict_uri = URL + URL_DICT["verdict"]
-    if file_hash:
-        body = 'apikey=' + TOKEN + '&hash=' + file_hash  # type: ignore[operator]
-    else:
-        body = 'apikey=' + TOKEN + '&url=' + url  # type: ignore[operator]
 
-    result = http_request(get_verdict_uri, 'POST', headers=DEFAULT_HEADERS, body=body)
+    if file_hash:
+        BODY_DICT['hash'] = file_hash
+
+    else:
+        BODY_DICT['url'] = url
+
+    body = BODY_DICT
+
+    result = http_request(
+        get_verdict_uri,
+        'POST',
+        headers=DEFAULT_HEADERS,
+        body=body
+    )
     verdict_data = result["wildfire"]["get-verdict-info"]
 
     return result, verdict_data
@@ -671,7 +768,8 @@ def wildfire_get_verdict_command():
 @logger
 def wildfire_get_verdicts(file_path):
     get_verdicts_uri = URL + URL_DICT["verdicts"]
-    body = {'apikey': TOKEN}
+
+    body = BODY_DICT
 
     try:
         with open(file_path, 'rb') as file:
@@ -729,18 +827,17 @@ def wildfire_get_verdicts_command():
 @logger
 def wildfire_get_webartifacts(url: str, types: str) -> dict:
     get_webartifacts_uri = f'{URL}{URL_DICT["webartifacts"]}'
-    params = {
-        'apikey': TOKEN,
-        'url': url,
-    }
+
+    PARAMS_DICT['url'] = url
+
     if types:
-        params['types'] = types
+        PARAMS_DICT['types'] = types
 
     result = http_request(
         get_webartifacts_uri,
         'POST',
         headers=DEFAULT_HEADERS,
-        params=params,
+        params=PARAMS_DICT,
         return_raw=True
     )
     return result
@@ -748,20 +845,72 @@ def wildfire_get_webartifacts(url: str, types: str) -> dict:
 
 @logger
 def wildfire_get_url_webartifacts_command():
+    '''
+    This function get the parameters for the call to webartifacts and returns the tgz of the results to download
+    Also extracts inline the screenshot image if it exists as the type query, extracting the files that were downloaded
+    exposes security risk for droppers from bad sites
+    '''
     urls = argToList(demisto.args().get('url'))
     types = demisto.args().get('types', '')
+    # added ability to extract inline screenshot image only
+    screenshot_inline = demisto.args().get('screenshot_inline', '')
 
     for url in urls:
         try:
             result = wildfire_get_webartifacts(url, types)
-            file_entry = fileResult(f'{url}_webartifacts.tgz', result.content, entryTypes['entryInfoFile'])
+
+            empty_screenshot_tar = False
+            # add check for inline screenshot extraction
+            if types in ['screenshot'] and screenshot_inline in ['true']:
+                # we have a screenshot found - only a screenshot,
+                # this will not extract a screenshot from a tgz with files for security reasons
+                # we have a screenshot returned and we have inline extaction requested
+
+                files = []
+                exported_files = []
+
+                # test for 0 byte tgz returned
+                try:
+                    image_content = result.content
+                    file_like_object = io.BytesIO(image_content)
+                    tar = tarfile.open(fileobj=file_like_object)
+                    # get the names of the files in the TAR
+                    files = tar.getnames()
+                    # we have a TAR file with entries to extract
+                    # this assumes there is only one screenshot per tgz
+                    if files[0] in ['screenshot']:
+                        # first element is the folder name screenshot
+
+                        members = tar.getmembers()
+                        data = tar.extractfile(members[1])  # type:ignore
+                        fdata = data.read()  # type:ignore
+                        exported_files.append(members[1].name)
+                        stored_img = fileResult(f'screenshot_{url}.png', fdata)
+
+                        demisto.results({
+                            'Type': entryTypes['image'],
+                            'ContentsFormat': formats['text'],
+                            'File': stored_img['File'],
+                            'FileID': stored_img['FileID'],
+                            'Contents': ''
+                        })
+
+                except Exception:
+                    # the tgz for screenshot is empty, no screenshot provided
+                    empty_screenshot_tar = True
+
+            if empty_screenshot_tar is True:
+                file_entry = fileResult(f'empty_{url}_webartifacts.tgz', result.content, entryTypes['entryInfoFile'])
+            else:
+                file_entry = fileResult(f'{url}_webartifacts.tgz', result.content, entryTypes['entryInfoFile'])
             demisto.results(file_entry)
+
         except NotFoundError as exc:
-            demisto.error(f'Webartifacts were not found. Error: {exc}')
-            return_results('Webartifacts were not found. For more info contact your WildFire representative.')
+            demisto.error(f'WildFire Webartifacts were not found. Error: {exc}')
+            return_results('WildFire Webartifacts were not found.')
 
 
-def parse_wildfire_object(report: dict, keys: List[tuple]) -> Union[dict, None]:
+def parse_wildfire_object(report: dict, keys: list[tuple]) -> Union[dict, None]:
     '''
     This function changes the key names of the json object that came from the API response,
     for the context path.
@@ -812,15 +961,16 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
                     if '@ip' in udp_obj and udp_obj['@ip']:
                         udp_ip.append(udp_obj["@ip"])
                         feed_related_indicators.append({'value': udp_obj["@ip"], 'type': 'IP'})
-                        relationships.extend(create_relationship('related-to', (file_hash, udp_obj["@ip"]), ('file', 'ip')))
+                        relationships.extend(
+                            create_relationship('related-to', (file_hash, udp_obj["@ip"]), ('file', 'ip')))
                     if '@port' in udp_obj:
                         udp_port.append(udp_obj["@port"])
-                    if extended_data:
-                        if network_udp_dict := parse_wildfire_object(report=udp_obj,
-                                                                     keys=[('@ip', 'IP'), ('@port', 'Port'),
-                                                                           ('@country', 'Country'), ('@ja3', 'JA3'),
-                                                                           ('@ja3s', 'JA3S')]):
-                            network_udp.append(network_udp_dict)
+                    if extended_data and (network_udp_dict := parse_wildfire_object(report=udp_obj,
+                                                                                    keys=[('@ip', 'IP'), ('@port', 'Port'),
+                                                                                          ('@country', 'Country'),
+                                                                                          ('@ja3', 'JA3'),
+                                                                                          ('@ja3s', 'JA3S')])):
+                        network_udp.append(network_udp_dict)
 
             if 'TCP' in report["network"]:
                 tcp_objects = report["network"]["TCP"]
@@ -830,15 +980,16 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
                     if '@ip' in tcp_obj and tcp_obj['@ip']:
                         tcp_ip.append(tcp_obj["@ip"])
                         feed_related_indicators.append({'value': tcp_obj["@ip"], 'type': 'IP'})
-                        relationships.extend(create_relationship('related-to', (file_hash, tcp_obj["@ip"]), ('file', 'ip')))
+                        relationships.extend(
+                            create_relationship('related-to', (file_hash, tcp_obj["@ip"]), ('file', 'ip')))
                     if '@port' in tcp_obj:
                         tcp_port.append(tcp_obj['@port'])
-                    if extended_data:
-                        if network_tcp_dict := parse_wildfire_object(report=tcp_obj,
-                                                                     keys=[('@ip', 'IP'), ('@port', 'Port'),
-                                                                           ('@country', 'Country'), ('@ja3', 'JA3'),
-                                                                           ('@ja3s', 'JA3S')]):
-                            network_tcp.append(network_tcp_dict)
+                    if extended_data and (network_tcp_dict := parse_wildfire_object(report=tcp_obj,
+                                                                                    keys=[('@ip', 'IP'), ('@port', 'Port'),
+                                                                                          ('@country', 'Country'),
+                                                                                          ('@ja3', 'JA3'),
+                                                                                          ('@ja3s', 'JA3S')])):
+                        network_tcp.append(network_tcp_dict)
 
             if 'dns' in report["network"]:
                 dns_objects = report["network"]["dns"]
@@ -849,11 +1000,11 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
                         dns_query.append(dns_obj['@query'])
                     if '@response' in dns_obj and dns_obj['@response']:
                         dns_response.append(dns_obj['@response'])
-                    if extended_data:
-                        if network_dns_dict := parse_wildfire_object(report=dns_obj,
-                                                                     keys=[('@query', 'Query'), ('@response', 'Response'),
-                                                                           ('@type', 'Type')]):
-                            network_dns.append(network_dns_dict)
+                    if extended_data and (network_dns_dict := parse_wildfire_object(report=dns_obj,
+                                                                                    keys=[('@query', 'Query'),
+                                                                                          ('@response', 'Response'),
+                                                                                          ('@type', 'Type')])):
+                        network_dns.append(network_dns_dict)
 
             if 'url' in report["network"]:
                 url_objects = report['network']['url']
@@ -867,62 +1018,60 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
                         url += url_obj['@uri']
                     if url:
                         feed_related_indicators.append({'value': url, 'type': 'URL'})
-                        relationships.extend(create_relationship('related-to', (file_hash, url.rstrip('/')), ('file', 'url')))
-                    if extended_data:
-                        if network_url_dict := parse_wildfire_object(report=url_obj,
-                                                                     keys=[('@host', 'Host'), ('@uri', 'URI'),
-                                                                           ('@method', 'Method'), ('@user_agent', 'UserAgent')]):
-                            network_url.append(network_url_dict)
+                        relationships.extend(
+                            create_relationship('related-to', (file_hash, url.rstrip('/')), ('file', 'url')))
+                    if extended_data and (network_url_dict := parse_wildfire_object(report=url_obj,
+                                                                                    keys=[('@host', 'Host'), ('@uri', 'URI'),
+                                                                                          ('@method', 'Method'),
+                                                                                          ('@user_agent', 'UserAgent')])):
+                        network_url.append(network_url_dict)
 
-        if 'evidence' in report and report["evidence"]:
-            if 'file' in report["evidence"]:
-                if isinstance(report["evidence"]["file"], dict) and 'entry' in report["evidence"]["file"]:
-                    if '@md5' in report["evidence"]["file"]["entry"]:
-                        evidence_md5.append(report["evidence"]["file"]["entry"]["@md5"])
-                    if '@text' in report["evidence"]["file"]["entry"]:
-                        evidence_text.append(report["evidence"]["file"]["entry"]["@text"])
+        if 'evidence' in report and report["evidence"] and 'file' in report["evidence"] \
+                and isinstance(report["evidence"]["file"], dict) and 'entry' in report["evidence"]["file"]:
+            if '@md5' in report["evidence"]["file"]["entry"]:
+                evidence_md5.append(report["evidence"]["file"]["entry"]["@md5"])
+            if '@text' in report["evidence"]["file"]["entry"]:
+                evidence_text.append(report["evidence"]["file"]["entry"]["@text"])
 
         if 'elf_info' in report and report["elf_info"]:
-            if 'Domains' in report["elf_info"]:
-                if isinstance(report["elf_info"]["Domains"], dict) and 'entry' in report["elf_info"]["Domains"]:
-                    entry = report["elf_info"]["Domains"]["entry"]
-                    # when there is only one entry, it is returned as a single string not a list
-                    if not isinstance(entry, list):
-                        entry = [entry]
-                    for domain in entry:
-                        feed_related_indicators.append({'value': domain, 'type': 'Domain'})
-                        relationships.extend(create_relationship('related-to', (file_hash, domain), ('file', 'domain')))
-            if 'IP_Addresses' in report["elf_info"]:
-                if isinstance(report["elf_info"]["IP_Addresses"], dict) and 'entry' in \
-                        report["elf_info"]["IP_Addresses"]:
-                    entry = report["elf_info"]["IP_Addresses"]["entry"]
-                    # when there is only one entry, it is returned as a single string not a list
-                    if not isinstance(entry, list):
-                        entry = [entry]
-                    for ip in entry:
-                        feed_related_indicators.append({'value': ip, 'type': 'IP'})
-                        relationships.extend(create_relationship('related-to', (file_hash, ip), ('file', 'ip')))
-            if 'suspicious' in report["elf_info"]:
-                if isinstance(report["elf_info"]["suspicious"], dict) and 'entry' in report["elf_info"]['suspicious']:
-                    entry = report["elf_info"]["suspicious"]["entry"]
-                    # when there is only one entry, it is returned as a single json not a list
-                    if not isinstance(entry, list):
-                        entry = [entry]
-                    for entry_obj in entry:
-                        if '#text' in entry_obj and '@description' in entry_obj:
-                            behavior.append({'details': entry_obj['#text'], 'action': entry_obj['@description']})
-            if 'URLs' in report["elf_info"]:
-                if isinstance(report["elf_info"]["URLs"], dict) and 'entry' in report["elf_info"]['URLs']:
-                    entry = report["elf_info"]["URLs"]["entry"]
-                    # when there is only one entry, it is returned as a single string not a list
-                    if not isinstance(entry, list):
-                        entry = [entry]
-                    for url in entry:
-                        feed_related_indicators.append({'value': url, 'type': 'URL'})
-                        relationships.extend(create_relationship('related-to', (file_hash, url), ('file', 'url')))
-            if extended_data:
-                if shell_commands := demisto.get(report, 'elf_info.Shell_Commands.entry'):
-                    elf_shell_commands.append(shell_commands)
+            if 'Domains' in report["elf_info"] and isinstance(report["elf_info"]["Domains"], dict) and 'entry' in \
+                    report["elf_info"]["Domains"]:
+                entry = report["elf_info"]["Domains"]["entry"]
+                # when there is only one entry, it is returned as a single string not a list
+                if not isinstance(entry, list):
+                    entry = [entry]
+                for domain in entry:
+                    feed_related_indicators.append({'value': domain, 'type': 'Domain'})
+                    relationships.extend(create_relationship('related-to', (file_hash, domain), ('file', 'domain')))
+            if 'IP_Addresses' in report["elf_info"] and isinstance(report["elf_info"]["IP_Addresses"], dict) and 'entry' in \
+                    report["elf_info"]["IP_Addresses"]:
+                entry = report["elf_info"]["IP_Addresses"]["entry"]
+                # when there is only one entry, it is returned as a single string not a list
+                if not isinstance(entry, list):
+                    entry = [entry]
+                for ip in entry:
+                    feed_related_indicators.append({'value': ip, 'type': 'IP'})
+                    relationships.extend(create_relationship('related-to', (file_hash, ip), ('file', 'ip')))
+            if 'suspicious' in report["elf_info"] and isinstance(report["elf_info"]["suspicious"], dict) and 'entry' in \
+                    report["elf_info"]['suspicious']:
+                entry = report["elf_info"]["suspicious"]["entry"]
+                # when there is only one entry, it is returned as a single json not a list
+                if not isinstance(entry, list):
+                    entry = [entry]
+                for entry_obj in entry:
+                    if '#text' in entry_obj and '@description' in entry_obj:
+                        behavior.append({'details': entry_obj['#text'], 'action': entry_obj['@description']})
+            if 'URLs' in report["elf_info"] and isinstance(report["elf_info"]["URLs"], dict) and 'entry' \
+                    in report["elf_info"]['URLs']:
+                entry = report["elf_info"]["URLs"]["entry"]
+                # when there is only one entry, it is returned as a single string not a list
+                if not isinstance(entry, list):
+                    entry = [entry]
+                for url in entry:
+                    feed_related_indicators.append({'value': url, 'type': 'URL'})
+                    relationships.extend(create_relationship('related-to', (file_hash, url), ('file', 'url')))
+            if extended_data and (shell_commands := demisto.get(report, 'elf_info.Shell_Commands.entry')):
+                elf_shell_commands.append(shell_commands)
 
         if extended_data:
             if process_list := demisto.get(report, 'process_list.process'):
@@ -1085,7 +1234,6 @@ def create_behaviors_object(behaviors):
 
 def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
                        verbose: bool = False, extended_data: bool = False):
-
     outputs, feed_related_indicators, behavior, relationships = parse_file_report(file_hash, reports,
                                                                                   file_info, extended_data)
 
@@ -1097,22 +1245,27 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
         tags = []
 
     dbot_score_object = Common.DBotScore(indicator=file_hash, indicator_type=DBotScoreType.FILE,
-                                         integration_name='WildFire', score=dbot_score, reliability=RELIABILITY)
+                                         integration_name=INTEGRATION_NAME, score=dbot_score, reliability=RELIABILITY)
     file = Common.File(dbot_score=dbot_score_object, name=file_info.get('filename'),
                        file_type=file_info.get('filetype'), md5=file_info.get('md5'), sha1=file_info.get('sha1'),
                        sha256=file_info.get('sha256'), size=file_info.get('size'),
                        feed_related_indicators=feed_related_indicators, tags=tags,
-                       digital_signature__publisher=file_info.get('file_signer'), behaviors=behavior, relationships=relationships)
+                       digital_signature__publisher=file_info.get('file_signer'), behaviors=behavior,
+                       relationships=relationships)
 
     if format_ == 'pdf':
         get_report_uri = URL + URL_DICT["report"]
-        params = {
-            'apikey': TOKEN,
-            'format': 'pdf',
-            'hash': file_hash
-        }
 
-        res_pdf = http_request(get_report_uri, 'POST', headers=DEFAULT_HEADERS, params=params, return_raw=True)
+        PARAMS_DICT['format'] = 'pdf'
+        PARAMS_DICT['hash'] = file_hash
+
+        res_pdf = http_request(
+            get_report_uri,
+            'POST',
+            headers=DEFAULT_HEADERS,
+            params=PARAMS_DICT,
+            return_raw=True
+        )
 
         file_name = 'wildfire_report_' + file_hash + '.pdf'
         file_type = entryTypes['entryInfoFile']
@@ -1120,6 +1273,40 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
         demisto.results(result)
         human_readable = tableToMarkdown('WildFire File Report - PDF format', prettify_report_entry(file_info))
 
+    # new format for wildfire reports to output in MAEC format
+    elif format_ == 'maec':
+
+        get_report_uri = URL + URL_DICT["report"]
+
+        PARAMS_DICT['format'] = 'maec'
+        PARAMS_DICT['hash'] = file_hash
+
+        try:
+            res_maec = http_request(
+                get_report_uri,
+                'POST',
+                headers=DEFAULT_HEADERS,
+                params=PARAMS_DICT,
+                resp_type='json'
+            )
+
+            report_json = res_maec.get('result')
+
+            file_name = 'wildfire_report_maec_' + file_hash + '.json'
+            file_type = entryTypes['entryInfoFile']
+
+            result = fileResult(file_name, report_json, file_type)  # will be saved under 'InfoFile' in the context.
+            demisto.results(result)
+            human_readable = tableToMarkdown('WildFire File Report - MAEC format', prettify_report_entry(file_info))
+            outputs['maec_report'] = json.loads(report_json)
+
+        except Exception as exc:
+            demisto.error(f'Report MAEC Exception. Error: {exc}')
+            human_readable = None
+            outputs = None
+            relationships = None
+
+    # catch all report type for those not specified
     else:
         human_readable = tableToMarkdown('WildFire File Report', prettify_report_entry(file_info))
         if verbose:
@@ -1139,7 +1326,7 @@ def get_sha256_of_file_from_report(report):
 
 
 @logger
-def wildfire_get_url_report(url: str) -> Tuple:
+def wildfire_get_url_report(url: str) -> tuple:
     """
     This functions is used for retrieving the results of a previously uploaded url.
     Args:
@@ -1151,11 +1338,20 @@ def wildfire_get_url_report(url: str) -> Tuple:
     """
 
     get_report_uri = f"{URL}{URL_DICT['report']}"
-    params = {'apikey': TOKEN, 'url': url}
+
+    PARAMS_DICT['url'] = url
+
     entry_context = {'URL': url}
     human_readable = None
+
     try:
-        response = http_request(get_report_uri, 'POST', headers=DEFAULT_HEADERS, params=params, resp_type='json')
+        response = http_request(
+            get_report_uri,
+            'POST',
+            headers=DEFAULT_HEADERS,
+            params=PARAMS_DICT,
+            resp_type='json'
+        )
         report = response.get('result').get('report')
 
         if not report:
@@ -1189,7 +1385,10 @@ def wildfire_get_url_report(url: str) -> Tuple:
 @logger
 def wildfire_get_file_report(file_hash: str, args: dict):
     get_report_uri = URL + URL_DICT["report"]
-    params = {'apikey': TOKEN, 'format': 'xml', 'hash': file_hash}
+
+    # we get the xml report first for all cases to parse data for reporting
+    PARAMS_DICT['format'] = 'xml'
+    PARAMS_DICT['hash'] = file_hash
 
     # necessarily one of them as passed the hash_args_handler
     sha256 = file_hash if sha256Regex.match(file_hash) else None
@@ -1197,10 +1396,17 @@ def wildfire_get_file_report(file_hash: str, args: dict):
     entry_context = {key: value for key, value in (['MD5', md5], ['SHA256', sha256]) if value}
     human_readable, relationships, indicator = None, None, None
     try:
-        json_res = http_request(get_report_uri, 'POST', headers=DEFAULT_HEADERS, params=params)
-        reports = json_res.get('wildfire', {}).get('task_info', {}).get('report')
-        file_info = json_res.get('wildfire').get('file_info')
+        json_res = http_request(
+            get_report_uri,
+            'POST',
+            headers=DEFAULT_HEADERS,
+            params=PARAMS_DICT
+        )
+        # we get the report and file info from the XML object
+        reports = ((json_res.get('wildfire') or {}).get('task_info') or {}).get('report')
+        file_info = json_res.get('wildfire', {}).get('file_info')
 
+        # extra options to provide in the query
         verbose = args.get('verbose', 'false').lower() == 'true'
         format_ = args.get('format', 'xml')
         extended_data = argToBoolean(args.get('extended_data', False))
@@ -1209,7 +1415,6 @@ def wildfire_get_file_report(file_hash: str, args: dict):
             human_readable, entry_context, indicator, relationships = create_file_report(file_hash, reports,
                                                                                          file_info, format_,
                                                                                          verbose, extended_data)
-
         else:
             entry_context['Status'] = 'Pending'
             human_readable = 'The sample is still being analyzed. Please wait to download the report.'
@@ -1224,7 +1429,7 @@ def wildfire_get_file_report(file_hash: str, args: dict):
         dbot_score_object = Common.DBotScore(
             indicator=file_hash,
             indicator_type=DBotScoreType.FILE,
-            integration_name='WildFire',
+            integration_name=INTEGRATION_NAME,
             score=dbot_score_file,
             reliability=RELIABILITY)
         indicator = Common.File(dbot_score=dbot_score_object, md5=md5, sha256=sha256)
@@ -1236,12 +1441,12 @@ def wildfire_get_file_report(file_hash: str, args: dict):
                                              outputs=remove_empty_elements(entry_context),
                                              readable_output=human_readable, indicator=indicator, raw_response=json_res,
                                              relationships=relationships)
-            return command_results, entry_context['Status']
+            return command_results, entry_context.get('Status')
         except Exception:
             raise DemistoException('Error while trying to get the report from the API.')
 
 
-def wildfire_get_report_command(args):
+def wildfire_get_report_command(args: dict):
     """
     Args:
         args: the command arguments from demisto.args(), including url or file hash (sha256 or md5) to query on
@@ -1272,7 +1477,7 @@ def wildfire_get_report_command(args):
     return command_results_list, status
 
 
-def wildfire_file_command(args):
+def wildfire_file_command(args: dict):
     inputs = file_args_handler(args.get('file'), args.get('md5'), args.get('sha256'))
     command_results_list = []
     for element in inputs:
@@ -1285,16 +1490,21 @@ def wildfire_file_command(args):
         else:
             command_results = wildfire_get_file_report(element, args)[0]
             command_results_list.append(command_results)
-            return command_results
+    return command_results_list
 
 
 def wildfire_get_sample(file_hash):
     get_report_uri = URL + URL_DICT["sample"]
-    params = {
-        'apikey': TOKEN,
-        'hash': file_hash
-    }
-    result = http_request(get_report_uri, 'POST', headers=DEFAULT_HEADERS, params=params, return_raw=True)
+
+    PARAMS_DICT['hash'] = file_hash
+
+    result = http_request(
+        get_report_uri,
+        'POST',
+        headers=DEFAULT_HEADERS,
+        params=PARAMS_DICT,
+        return_raw=True
+    )
     return result
 
 
@@ -1327,7 +1537,7 @@ def wildfire_get_sample_command():
                 'For more info contact your WildFire representative.')
 
 
-def assert_upload_argument(args):
+def assert_upload_argument(args: dict):
     """
     Assert the upload argument is inserted when running the command without the builtin polling flow.
     The upload argument is only required when polling is false.
@@ -1336,7 +1546,7 @@ def assert_upload_argument(args):
         raise ValueError('Please specify the item you wish to upload using the \'upload\' argument.')
 
 
-def main():
+def main():  # pragma: no cover
     command = demisto.command()
     args = demisto.args()
     LOG(f'command is {command}')
@@ -1346,6 +1556,14 @@ def main():
             raise DemistoException('API Key must be provided.')
         # Remove proxy if not set to true in params
         handle_proxy()
+
+        # if the apikey is longer than 32 characters agent is not set,
+        # send exception othewise API calls will fail
+        if len(TOKEN) > 32 and API_KEY_SOURCE not in ['pcc', 'prismaaccessapi', 'xsoartim']:
+            # the token is longer than 32 so either PPC or Prismaaccessapi needs to be set
+            raise DemistoException(
+                'API Key is longer than 32 characters.\
+Select an "API Key Type" in the integration\'s instance configuration.')
 
         if command == 'test-module':
             test_module()
@@ -1385,6 +1603,9 @@ def main():
 
         elif command == 'wildfire-get-url-webartifacts':
             wildfire_get_url_webartifacts_command()
+
+        else:
+            raise NotImplementedError(f"command {command} is not implemented.")
 
     except Exception as err:
         return_error(str(err))

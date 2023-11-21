@@ -1,0 +1,1113 @@
+id: Detect & Manage Phishing Campaigns - Test
+version: -1
+name: Detect & Manage Phishing Campaigns - Test
+description: |-
+  Tests the scenario where similar phishing incidents should create a phishing campaign incident.
+  It does that by creating fake phishing incidents which should run the Phishing - Generic v3 playbook, and in the process run the Detect & Manage Phishing Campaigns playbook.
+
+  The campaign incident should have 9 incidents when all incidents  have finished running.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2e5eefef-53d0-4427-849b-8dae39e091e5
+    type: start
+    task:
+      id: 2e5eefef-53d0-4427-849b-8dae39e091e5
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 702e0955-8474-439a-8447-866fcc326837
+    type: regular
+    task:
+      id: 702e0955-8474-439a-8447-866fcc326837
+      version: -1
+      name: Delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "59"
+      - "60"
+      - "66"
+      - "67"
+      - "57"
+      - "58"
+      - "61"
+    scriptarguments:
+      all:
+        simple: "yes"
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: f1eb29a7-e2e6-4d31-8681-dd2dc302fa07
+    type: regular
+    task:
+      id: f1eb29a7-e2e6-4d31-8681-dd2dc302fa07
+      version: -1
+      name: Create new low similarity incident victim 9
+      description: commands.local.cmd.create.inc
+      script: Builtin|||createNewIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      emailbody:
+        simple: |-
+          Dear user,
+          We've detected suspicious activity originating from your PayPal account. You must take action to unlock your account: www.paypal.com/account/verify
+      emailfrom:
+        simple: paypalsupport@paypaI.com
+      emailhtml:
+        simple: |-
+          <p>Dear user,
+          We've detected suspicious activity originating from your PayPal account. You must take action to unlock your account: </p><p><a href="http://www.lizsol.com">www.paypal.com/account/verify</a></p>
+      emailsubject:
+        simple: Verify your PayPal account
+      emailto:
+        simple: victim-test9@demistodev.onmicrosoft.com
+      ignore-outputs:
+        simple: "false"
+      labels:
+        simple: '[{"Email/from":"testusercampaign@demistodev.onmicrosoft.com"}]'
+      name:
+        complex:
+          root: nothing
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: '9 - '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: 'Verify your PayPal account '
+      type:
+        simple: Phishing
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 1825
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 4faad9e7-c899-4448-8111-6bdca9964d65
+    type: regular
+    task:
+      id: 4faad9e7-c899-4448-8111-6bdca9964d65
+      version: -1
+      name: Sleep to let incidents settle down
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 6c0124f6-9473-48ba-88c6-4c4dcf75ad57
+    type: regular
+    task:
+      id: 6c0124f6-9473-48ba-88c6-4c4dcf75ad57
+      version: -1
+      name: Create new low similarity incident victim 8
+      description: commands.local.cmd.create.inc
+      script: Builtin|||createNewIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      emailbody:
+        simple: |-
+          Dear user,
+          We've detected suspicious activity originating from your PayPal account. You must take action and verify your account immediately: www.paypal.com/account/verify
+      emailfrom:
+        simple: paypalsupport@paypaI.com
+      emailhtml:
+        simple: |-
+          <p>Dear user,
+          We've detected suspicious activity originating from your PayPal account. You must take action and verify your account immediately: </p><p><a href="http://www.lizsol.com">www.paypal.com/account/verify</a></p>
+      emailsubject:
+        simple: Verify your PayPal account
+      emailto:
+        simple: victim-test9@demistodev.onmicrosoft.com
+      ignore-outputs:
+        simple: "false"
+      labels:
+        simple: '[{"Email/from":"testusercampaign@demistodev.onmicrosoft.com"}]'
+      name:
+        complex:
+          root: nothing
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: '8 - '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: 'Verify your PayPal account '
+      type:
+        simple: Phishing
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 1825
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 4c847e2a-fb0c-4d23-8265-c8c87c7241bf
+    type: regular
+    task:
+      id: 4c847e2a-fb0c-4d23-8265-c8c87c7241bf
+      version: -1
+      name: Create new incident victim 2
+      description: commands.local.cmd.create.inc
+      script: Builtin|||createNewIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      emailbody:
+        simple: |-
+          You should verify your paypal account immediately
+          Dear user,
+          We've detected suspicious activity originating from your PayPal account. Please take action and verify your account immediately: www.paypal.com/account/verify
+      emailfrom:
+        simple: paypalsupport@paypaI.com
+      emailhtml:
+        simple: '<div><h2 style="color: #2e6c80;">You should verify your paypal account immediately</h2></div><div><p> Dear user,<br>We''ve detected suspicious activity originating from your PayPal account. Please take action and verify your account immediately:</p><p><a href="http://www.lizsol.com">www.paypal.com/account/verify</a></p></div>'
+      emailsubject:
+        simple: Verify your PayPal account now!
+      emailto:
+        simple: victim-test2@demistodev.onmicrosoft.com
+      name:
+        complex:
+          root: nothing
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: '2 - '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: 'Verify your PayPal account '
+      type:
+        simple: Phishing
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1270,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: fb65fa25-d893-4336-8995-350906a42a4e
+    type: regular
+    task:
+      id: fb65fa25-d893-4336-8995-350906a42a4e
+      version: -1
+      name: Create new incident victim 5
+      description: commands.local.cmd.create.inc
+      script: Builtin|||createNewIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      emailbody:
+        simple: |-
+          You should verify your paypal account immediately
+          Dear user,
+          We've detected suspicious activity originating from your PayPal account. Please take action and verify your account immediately: www.paypal.com/account/verify
+      emailfrom:
+        simple: paypalsupport@paypaI.com
+      emailhtml:
+        simple: '<div><h2 style="color: #2e6c80;">You should verify your paypal account immediately</h2></div><div><p> Dear user,<br>We''ve detected suspicious activity originating from your PayPal account. Please take action and verify your account immediately:</p><p><a href="http://www.lizsol.com">www.paypal.com/account/verify</a></p></div>'
+      emailsubject:
+        simple: Verify your PayPal account now!
+      emailto:
+        simple: victim-test5@demistodev.onmicrosoft.com
+      name:
+        complex:
+          root: nothing
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: '5 - '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: 'Verify your PayPal account '
+      type:
+        simple: Phishing
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: 4ebd8220-7050-4088-8c2b-16cd83563cd3
+    type: regular
+    task:
+      id: 4ebd8220-7050-4088-8c2b-16cd83563cd3
+      version: -1
+      name: Create new incident victim 6 (different sender)
+      description: commands.local.cmd.create.inc
+      script: Builtin|||createNewIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      emailbody:
+        simple: |-
+          You should verify your paypal account immediately
+          Dear user,
+          We've detected suspicious activity originating from your PayPal account. Please take action and verify your account immediately: www.paypal.com/account/verify
+      emailfrom:
+        simple: paypal-support@paypaI.com
+      emailhtml:
+        simple: '<div><h2 style="color: #2e6c80;">You should verify your paypal account immediately</h2></div><div><p> Dear user,<br>We''ve detected suspicious activity originating from your PayPal account. Please take action and verify your account immediately:</p><p><a href="http://www.lizsol.com">www.paypal.com/account/verify</a></p></div>'
+      emailsubject:
+        simple: Verify your PayPal account now!
+      emailto:
+        simple: victim-test6@demistodev.onmicrosoft.com
+      name:
+        complex:
+          root: nothing
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: '6 - '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: 'Verify your PayPal account '
+      type:
+        simple: Phishing
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -690,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 50bbe226-33d7-4c54-8206-a30d9ac49b44
+    type: regular
+    task:
+      id: 50bbe226-33d7-4c54-8206-a30d9ac49b44
+      version: -1
+      name: Create new incident victim 7 (different sender)
+      description: commands.local.cmd.create.inc
+      script: Builtin|||createNewIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      emailbody:
+        simple: |-
+          You should verify your paypal account immediately
+          Dear user,
+          We've detected suspicious activity originating from your PayPal account. Please take action and verify your account immediately: www.paypal.com/account/verify
+      emailfrom:
+        simple: support@paypaI.com
+      emailhtml:
+        simple: '<div><h2 style="color: #2e6c80;">You should verify your paypal account immediately</h2></div><div><p> Dear user,<br>We''ve detected suspicious activity originating from your PayPal account. Please take action and verify your account immediately:</p><p><a href="http://www.lizsol.com">www.paypal.com/account/verify</a></p></div>'
+      emailsubject:
+        simple: Verify your PayPal account now!
+      emailto:
+        simple: victim-test7@demistodev.onmicrosoft.com
+      name:
+        complex:
+          root: nothing
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: '7 - '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: 'Verify your PayPal account '
+      type:
+        simple: Phishing
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1120,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: e926aff7-ede8-42cc-8f8e-229bc5e163a5
+    type: regular
+    task:
+      id: e926aff7-ede8-42cc-8f8e-229bc5e163a5
+      version: -1
+      name: Create new incident victim 1
+      description: commands.local.cmd.create.inc
+      script: Builtin|||createNewIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      emailbody:
+        simple: |-
+          You should verify your paypal account immediately
+          Dear user,
+          We've detected suspicious activity originating from your PayPal account. Please take action and verify your account immediately: www.paypal.com/account/verify
+      emailfrom:
+        simple: paypalsupport@paypaI.com
+      emailhtml:
+        simple: '<div><h2 style="color: #2e6c80;">You should verify your paypal account immediately</h2></div><div><p> Dear user,<br>We''ve detected suspicious activity originating from your PayPal account. Please take action and verify your account immediately:</p><p><a href="http://www.lizsol.com">www.paypal.com/account/verify</a></p></div>'
+      emailsubject:
+        simple: Verify your PayPal account now!
+      emailto:
+        simple: victim-test1@demistodev.onmicrosoft.com
+      name:
+        complex:
+          root: nothing
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: '1 - '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: 'Verify your PayPal account '
+      type:
+        simple: Phishing
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1750,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: ce8961fa-0af4-4363-8348-1ede79e1e5e2
+    type: regular
+    task:
+      id: ce8961fa-0af4-4363-8348-1ede79e1e5e2
+      version: -1
+      name: Sleep 30 sec
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "68"
+    scriptarguments:
+      seconds:
+        simple: "30"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: f77a6046-dfa2-4229-8b1f-bb8592ab9ac8
+    type: regular
+    task:
+      id: f77a6046-dfa2-4229-8b1f-bb8592ab9ac8
+      version: -1
+      name: Create new incident victim 4
+      description: commands.local.cmd.create.inc
+      script: Builtin|||createNewIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      emailbody:
+        simple: |-
+          Dear user,
+          We've detected suspicious activity originating from your PayPal account. Please take action and verify your account immediately: www.paypal.com/account/verify
+      emailfrom:
+        simple: paypalsupport@paypaI.com
+      emailhtml:
+        simple: <div></div><div><p> Dear user,<br>We've detected suspicious activity originating from your PayPal account. Please take action and verify your account immediately:</p><p><a href="http://www.lizsol.com">www.paypal.com/account/verify</a></p></div>
+      emailsubject:
+        simple: Verify your PayPal account now!
+      emailto:
+        simple: victim-test4@demistodev.onmicrosoft.com
+      name:
+        complex:
+          root: nothing
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: '4 - '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: 'Verify your PayPal account '
+      type:
+        simple: Phishing
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: 1f5b85d2-31c3-46ad-8f80-c4be24bb1e03
+    type: regular
+    task:
+      id: 1f5b85d2-31c3-46ad-8f80-c4be24bb1e03
+      version: -1
+      name: Create new incident victim 3
+      description: commands.local.cmd.create.inc
+      script: Builtin|||createNewIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      emailbody:
+        simple: |-
+          Dear user,
+          We've detected suspicious activity originating from your PayPal account. Please take action and verify your account immediately: www.paypal.com/account/verify
+      emailfrom:
+        simple: paypalsupport@paypaI.com
+      emailhtml:
+        simple: '<div><h2 style="color: #2e6c80;">You should verify your paypal account immediately</h2></div><div><p> Dear user,<br>We''ve detected suspicious activity originating from your PayPal account. Please take action and verify your account immediately:</p><p><a href="http://www.lizsol.com">www.paypal.com/account/verify</a></p></div>'
+      emailsubject:
+        simple: Verify your PayPal account now!
+      emailto:
+        simple: victim-test3@demistodev.onmicrosoft.com
+      name:
+        complex:
+          root: nothing
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: '3 - '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: 'Verify your PayPal account '
+      type:
+        simple: Phishing
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 5597b01e-62a4-47bf-8d42-01b6d937fb17
+    type: regular
+    task:
+      id: 5597b01e-62a4-47bf-8d42-01b6d937fb17
+      version: -1
+      name: Delete previously created IDs
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+      - "45"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: CreatedIncidentID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: 22e69308-98de-4850-80e0-30fea18ad569
+    type: regular
+    task:
+      id: 22e69308-98de-4850-80e0-30fea18ad569
+      version: -1
+      name: Wait for a 5 minutes
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      execution-timeout:
+        simple: "1000"
+      seconds:
+        simple: "300"
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 2390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: 84b6898d-39cd-4f52-8a95-ebac878d1c3c
+    type: regular
+    task:
+      id: 84b6898d-39cd-4f52-8a95-ebac878d1c3c
+      version: -1
+      name: Search for a campaign incident
+      description: Searches Demisto incidents
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "71"
+    scriptarguments:
+      fromdate:
+        complex:
+          root: incident
+          accessor: occurred
+          transformers:
+          - operator: ModifyDateTime
+            args:
+              variation:
+                value:
+                  simple: 1 day ago
+      type:
+        simple: Phishing Campaign
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 2590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: 7256320e-8949-4a05-8bc3-e3cd6a2043ac
+    type: condition
+    task:
+      id: 7256320e-8949-4a05-8bc3-e3cd6a2043ac
+      version: -1
+      name: Was a campaign incident created?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "73"
+      "yes":
+      - "74"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: foundIncidents
+                accessor: id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 2760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: 4de06f44-cf70-4b6e-879b-058f846dd3d2
+    type: title
+    task:
+      id: 4de06f44-cf70-4b6e-879b-058f846dd3d2
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 3700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: d97c5445-33bd-4e2c-873a-0b6e5ef317a2
+    type: regular
+    task:
+      id: d97c5445-33bd-4e2c-873a-0b6e5ef317a2
+      version: -1
+      name: Error - a campaign was not created
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          An incident of type "Phishing Campaign" was not created. This could be, but is not limited to, a problem with the FindEmailCampaign script.
+          First check if similar phishing incidents were found, then check if one of the recent ones found a campaign and created a campaign incident.
+          Also - it's possible that the phishing playbook took more than the time we waited until it found and created a campaign. If a Phishing Campaign incident exists on the server now, this can be ignored, and you can consider increasing the sleep time in this test before searching for campaigns.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": 3260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "74":
+    id: "74"
+    taskid: cf1f9d14-03e1-4ec4-8acc-49a4f1fc0fc9
+    type: regular
+    task:
+      id: cf1f9d14-03e1-4ec4-8acc-49a4f1fc0fc9
+      version: -1
+      name: Get campaign context
+      description: Gets a value from the specified incident's context.
+      scriptName: GetByIncidentId
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "75"
+    scriptarguments:
+      get_key:
+        simple: EmailCampaign
+      incident_id:
+        complex:
+          root: foundIncidents
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: foundIncidents.type
+                iscontext: true
+              right:
+                value:
+                  simple: Phishing Campaign
+          accessor: id
+          transformers:
+          - operator: LastArrayElement
+          - operator: sort
+            args:
+              descending: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 2950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: d2772ae2-b953-41c7-80c0-e621fc0ffef0
+    type: condition
+    task:
+      id: d2772ae2-b953-41c7-80c0-e621fc0ffef0
+      version: -1
+      name: Does the campaign context not empty?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "76"
+      "yes":
+      - "72"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: EmailCampaign
+                accessor: incidents
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 3130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: 373a7182-e756-4466-8353-a0f2b37e7f1a
+    type: regular
+    task:
+      id: 373a7182-e756-4466-8353-a0f2b37e7f1a
+      version: -1
+      name: Campaign lacks data
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The phishing campaign incidents lacks the EmailCampaign context key, or the key is empty. This points to an issue with something in the Detect & Manage Phishing Campaigns playbook.
+          The playbook was able to create a campaign incident, but was not able to set it with context data. This may mean that there is a permission issue, or that something broke in the SetPhishingCampaignDetails script which the playbook should run.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 3300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "75_72_yes": 0.19
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3715,
+        "width": 3250,
+        "x": -1120,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: df6fda52-1f59-41ba-85f9-8b036d23d695
+fromversion: 6.0.0

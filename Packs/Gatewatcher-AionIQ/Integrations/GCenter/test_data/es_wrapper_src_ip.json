@@ -1,0 +1,34 @@
+{
+    "took": 14,
+    "timed_out": false,
+    "_shards": {
+        "total": 2,
+        "successful": 2,
+        "skipped": 0,
+        "failed": 0
+    },
+    "hits": {
+        "total": {
+            "value": 3279,
+            "relation": "eq"
+        },
+        "max_score": null,
+        "hits": []
+    },
+    "aggregations": {
+        "src_ip": {
+            "doc_count_error_upper_bound": 6,
+            "sum_other_doc_count": 1487,
+            "buckets": [
+                {
+                    "key": "10.10.10.10",
+                    "doc_count": 30
+                },
+                {
+                    "key": "20.20.20.20",
+                    "doc_count": 15
+                }
+            ]
+        }
+    }
+}

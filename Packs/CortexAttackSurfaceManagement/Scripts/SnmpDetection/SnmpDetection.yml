@@ -1,0 +1,28 @@
+args:
+- description: IP address.
+  name: ip_address
+  required: true
+- default: true
+  defaultValue: "3"
+  description: Request timeout value, in seconds. Default value is 3 seconds.
+  name: time_out
+comment: Deprecated. No available replacement.
+commonfields:
+  id: SnmpDetection
+  version: -1
+dockerimage: demisto/python3:3.10.10.48392
+enabled: true
+deprecated: true 
+name: SnmpDetection
+outputs:
+- contextPath: SnmpDetection
+  description: Checks if SNMP version is enabled and gets the versions running
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

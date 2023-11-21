@@ -1,0 +1,43 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "rsametasevents",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "Column Header 1",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "columnheader1",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        }
+    ],
+    "content": true,
+    "defaultRows": [],
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_rsametasevents",
+    "isReadOnly": true,
+    "locked": false,
+    "name": "RSA Metas Events",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.9.0"
+}

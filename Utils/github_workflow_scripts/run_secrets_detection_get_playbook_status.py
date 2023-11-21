@@ -15,7 +15,6 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 # ----- Constants ----- #
 DEFAULT_TIMEOUT = 60 * 12
 SLEEP_WAIT_SECONDS = 10
-GOLD_SERVER_URL = "https://content-gold.paloaltonetworks.com"
 
 
 def get_playbook_state(client: demisto_client, inv_id: str):
@@ -32,7 +31,7 @@ def get_playbook_state(client: demisto_client, inv_id: str):
 
 
 def wait_for_playbook_to_complete(investigation_id, client):
-    investigation_url = f'{GOLD_SERVER_URL}/#/Custom/caseinfoid/{investigation_id}'
+    investigation_url = f'<Content Gold URL>/WorkPlan/{investigation_id}'
     print(f'Investigation URL: {investigation_url}')
 
     timeout = time.time() + DEFAULT_TIMEOUT
@@ -46,7 +45,9 @@ def wait_for_playbook_to_complete(investigation_id, client):
         except demisto_client.demisto_api.rest.ApiException:
             playbook_state = 'Pending'
             client = demisto_client.configure(base_url=client.api_client.configuration.host,
-                                              api_key=client.api_client.configuration.api_key, verify_ssl=False)
+                                              api_key=client.api_client.configuration.api_key,
+                                              auth_id=client.api_client.configuration.auth_id,
+                                              verify_ssl=False)
 
         if playbook_state == PB_Status.COMPLETED:
             print("Secrets playbook finished successfully, no secrets were found.")
@@ -71,6 +72,8 @@ def arguments_handler():
     parser = argparse.ArgumentParser(description='Get playbook status.')
     parser.add_argument('-i', '--investigation_id', help='The investigation id of the secrets detection playbook.')
     parser.add_argument('-k', '--api_key', help='Gold Api key')
+    parser.add_argument('-gs', '--gold_server_url', help='The content gold instance url.')
+    parser.add_argument('-ai', '--auth_id', help='Gold Auth Id.')
     return parser.parse_args()
 
 
@@ -78,8 +81,10 @@ def main():
     options = arguments_handler()
     investigation_id = options.investigation_id
     api_key = options.api_key
+    gold_server_url = options.gold_server_url
+    auth_id = options.auth_id
     if investigation_id and api_key:
-        client = demisto_client.configure(base_url=GOLD_SERVER_URL, api_key=api_key, verify_ssl=False)
+        client = demisto_client.configure(base_url=gold_server_url, api_key=api_key, auth_id=auth_id, verify_ssl=False)
         wait_for_playbook_to_complete(investigation_id, client)
     else:
         print("Secrets detection step failed - API key or investigation ID were not supplied.")

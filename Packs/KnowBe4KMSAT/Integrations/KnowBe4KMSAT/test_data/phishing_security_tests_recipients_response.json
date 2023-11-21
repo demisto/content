@@ -1,0 +1,33 @@
+[
+    {
+        "recipient_id": 3077742,
+        "pst_id": 14240,
+        "user": {
+            "id": 264215,
+            "provisioning_guid": null,
+            "first_name": "Bob",
+            "last_name": "Ross",
+            "email": "example4@kb4-demo.com"
+        },
+        "template": {
+            "id": 2,
+            "name": "Your Amazon Order"
+        },
+        "scheduled_at": "2019-04-02T15:02:38.000Z",
+        "delivered_at": "2019-04-02T15:02:38.000Z",
+        "opened_at": "2019-04-02T15:02:38.000Z",
+        "clicked_at": "2019-04-02T15:02:38.000Z",
+        "replied_at": null,
+        "attachment_opened_at": null,
+        "macro_enabled_at": null,
+        "data_entered_at": "2019-04-02T15:02:38.000Z",
+        "qr_code_scanned": "2022-05-12T15:29:54.000Z",
+        "reported_at": null,
+        "bounced_at": null,
+        "ip": "XX.XX.XXX.XXX",
+        "ip_location": "St.Petersburg, FL",
+        "browser": "Chrome",
+        "browser_version": "48.0",
+        "os": "MacOSX"
+    }
+]

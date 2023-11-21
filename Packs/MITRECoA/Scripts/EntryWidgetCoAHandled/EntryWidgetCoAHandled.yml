@@ -1,0 +1,17 @@
+commonfields:
+  id: EntryWidgetCoAHandled
+  version: -1
+name: EntryWidgetCoAHandled
+script: ''
+type: python
+tags:
+- dynamic-section
+comment: Entry widget that shows the number of techniques that were already handled by the CoA playbooks.
+enabled: true
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.10.8.37233
+runas: DBotWeakRole
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

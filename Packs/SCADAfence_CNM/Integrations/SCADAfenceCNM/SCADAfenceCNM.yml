@@ -1,0 +1,261 @@
+commonfields:
+  id: SCADAfence CNM
+  version: -1
+name: SCADAfence CNM
+display: SCADAfence CNM
+category: Network Security
+description: fetching data from CNM
+configuration:
+- display: API auth secret
+  name: APISecret
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: API auth key
+  name: APIKey
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: API url
+  name: APIUrl
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: 'Required severity levels for alerts separated by comma, from [Information,Warning,Threat,Severe,Critical]. For ex.: Warning, Threat'
+  name: AlertSeverity
+  defaultvalue: Information,Warning,Threat,Severe,Critical
+  type: 12
+  required: true
+script:
+  script: ''
+  type: python
+  subtype: python3
+  commands:
+  - name: scadafence-getAlerts
+    arguments:
+    - name: severity
+      auto: PREDEFINED
+      predefined:
+      - Information
+      - Warning
+      - Threat
+      - Critical
+      - Severe
+      description: Required severity level of alert
+    - name: ipAddress
+      description: get alerts for specified IP
+    outputs:
+    - contextPath: SCADAfence.Alert.id
+      description: alert ID
+      type: string
+    - contextPath: SCADAfence.Alert.ip
+      description: asset IP
+      type: string
+    - contextPath: SCADAfence.Alert.severity
+      description: alert severity level
+      type: string
+    - contextPath: SCADAfence.Alert.type
+      description: short alert description
+      type: string
+    - contextPath: SCADAfence.Alert.details
+      description: extended alert description
+      type: string
+    description: query alerts data from SCADAfence CNM
+  - name: scadafence-getAsset
+    arguments:
+    - name: ipAddress
+      description: asset IP address
+    - name: hostName
+      description: Hostname
+    - name: assetType
+      auto: PREDEFINED
+      predefined:
+      - server
+      - dns
+      - sql
+      - print
+      - domain
+      - domain
+      - workstation
+      - plc
+      - hmi
+      - IO
+      - terminal
+      - ftp
+      - Telnet
+      description: type of the asset (one from list of options)
+    outputs:
+    - contextPath: SCADAfence.Asset.ip
+      description: IP address of the asset
+      type: string
+    - contextPath: SCADAfence.Asset.assetTypes
+      description: types of the asset (if detected)
+      type: string
+    - contextPath: operatingSystem
+      description: OS of the asset (if available)
+      type: string
+    - contextPath: vendor
+      description: asset vendor
+      type: string
+    description: fetch asset data from SCADAfence CNM
+  - name: scadafence-setAlertStatus
+    arguments:
+    - name: alertId
+      required: true
+      description: Alert ID
+    - name: alertStatus
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - InProgress
+      - Resolved
+      description: Alert status
+    outputs:
+    - contextPath: SCADAfence.Alert.status
+      description: new status for the alert
+      type: string
+    description: setting alert status
+  - name: scadafence-getAssetConnections
+    arguments:
+    - name: ipAddress
+      description: optional - ip address of the asset
+    - name: hostName
+      description: hostname  that corresponds to the asset of interest
+    - name: macAddress
+      description: MAC address of the asset
+    outputs:
+    - contextPath: SCADAfence.Asset.Conn.ip
+      description: another endpoint's IP address
+      type: string
+    - contextPath: SCADAfence.Asset.Conn.port
+      description: another endpoint's port
+      type: number
+    - contextPath: SCADAfence.Asset.Conn.proto
+      description: L4 protocol used for the connection
+      type: string
+    - contextPath: SCADAfence.Asset.Conn.traffic
+      description: total bytes sent (both directions)
+      type: number
+    - contextPath: SCADAfence.Asset.Conn.hostname
+      description: another endpoint's hostname
+      type: string
+    - contextPath: SCADAfence.Asset.Conn.mac
+      description: another endpoint's MAC address
+      type: string
+    description: fetches asset connections data by one or more (combined) parameters
+  - name: scadafence-getAssetTraffic
+    arguments:
+    - name: ipAddress
+      description: optional - ip address of the asset
+    - name: macAddress
+      description: optional - MAC address of the asset
+    - name: hostName
+      description: optional - hostname of the asset
+    outputs:
+    - contextPath: SCADAfence.AssetTraffic.TCP_tx_bytes
+      description: bytes sent by the asset via TCP
+      type: number
+    - contextPath: SCADAfence.AssetTraffic.TCP_rx_bytes
+      description: bytes received by the asset via TCP
+      type: number
+    - contextPath: SCADAfence.AssetTraffic.UDP_tx_bytes
+      description: bytes sent by the asset via UDP
+      type: number
+    - contextPath: SCADAfence.AssetTraffic.UDP_rx_bytes
+      description: bytes received by the asset via UDP
+      type: number
+    description: fetch asset network activity data  by one or more (combined) parameters
+  - name: scadafence-createAlert
+    arguments:
+    - name: ipAddress
+      required: true
+      description: IP address of the asset that alert's related to
+    - name: severity
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Information
+      - Warning
+      - Threat
+      - Severe
+      - Critical
+      description: desired alert severity level
+      defaultValue: Information
+    - name: description
+      required: true
+      description: human readable alert description
+    - name: remediationText
+      description: instructions on issue remediation
+      defaultValue: not provided
+    - name: alertIsActive
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: set active=True to make the alert appear on SCADAfence UI
+      defaultValue: "True"
+    outputs:
+    - contextPath: SCADAfence.Alert.alertCreated
+      description: flag defining alert creation status
+      type: boolean
+    - contextPath: SCADAfence.Alert.id
+      description: unique ID set to a new alert
+      type: string
+    description: create alert in SCADAfence CNM
+  - name: scadafence-getAllConnections
+    arguments: []
+    outputs:
+    - contextPath: SCADAfence.Connection.src_ip
+      description: IP address of endpoint A
+      type: string
+    - contextPath: SCADAfence.Connection.dest_ip
+      description: IP address of endpoint B
+      type: string
+    - contextPath: SCADAfence.Connection.src_port
+      description: port of endpoint A
+      type: number
+    - contextPath: SCADAfence.Connection.dest_port
+      description: port of endpoint B
+      type: number
+    - contextPath: SCADAfence.Connection.src_mac
+      description: endpoint A MAC address
+      type: string
+    - contextPath: SCADAfence.Connection.dest_mac
+      description: endpoint B MAC address
+      type: string
+    - contextPath: SCADAfence.Connection.src_cname
+      description: endpoint A hostname
+      type: string
+    - contextPath: SCADAfence.Connection.dest_cname
+      description: endpoint B hostname
+      type: string
+    - contextPath: SCADAfence.Connection.proto
+      description: L4 protocol
+      type: string
+    - contextPath: SCADAfence.Connection.traffic
+      description: total number of bytes sent in both directions
+      type: number
+    description: Fetches all connections from the CNM
+  isfetch: true
+  runonce: false
+  dockerimage: demisto/python3:3.10.12.63474
+tests:
+- SCADAfence_test
+fromversion: 5.0.0

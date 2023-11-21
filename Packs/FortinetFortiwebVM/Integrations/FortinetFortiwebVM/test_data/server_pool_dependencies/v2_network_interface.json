@@ -1,0 +1,28 @@
+{
+    "results": [
+        {
+            "_id": "port1",
+            "name": "port1",
+            "can_view": false,
+            "can_delete": false,
+            "editName": "port1 (test)",
+            "column_name": "",
+            "ipv4Netmask": "test",
+            "addressingMode": "0",
+            "addressing6Mode": "0",
+            "ipv4Access": "HTTPS",
+            "ipv4AdministrativeAccess": [
+                "https"
+            ],
+            "ipv6Netmask": "::/0",
+            "ipv6Access": "",
+            "ipv6AdministrativeAccess": [],
+            "status": "up",
+            "linkStatus": "up",
+            "type": "Physical",
+            "q_ref": 2,
+            "de": "",
+            "portId": 0
+        }
+    ]
+}

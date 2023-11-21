@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "MITRE ATT\u0026CK CoA"
+    ],
+    "caseInsensitive": true,
+    "cliName": "techniqueslist",
+    "closeForm": false,
+    "content": true,
+    "description": "The list of MITRE ATT\u0026CK techniques.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_techniqueslist",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Techniques List",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "longText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

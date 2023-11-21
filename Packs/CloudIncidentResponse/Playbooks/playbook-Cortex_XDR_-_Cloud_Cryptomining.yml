@@ -1,0 +1,1170 @@
+id: Cortex XDR - Cloud Cryptomining
+version: -1
+name: Cortex XDR - XCloud Cryptojacking
+description: "Investigates a Cortex XDR incident containing a Cloud Cryptojacking related alert. \nThe playbook supports AWS, Azure, and GCP and executes the following:\n\n- Cloud enrichment:\n   - Collects info about the involved resources\n   - Collects info about the involved identities\n   - Collects info about the involved IPs\n- Verdict decision tree\n- Verdict handling:\n   - Handle False Positives\n   - Handle True Positives\n      - Cloud Response - Generic sub-playbook.\n- Notifies the SOC if a malicious verdict was found"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e917c12f-a6c9-445c-8312-e00aa6e48b44
+    type: start
+    task:
+      id: e917c12f-a6c9-445c-8312-e00aa6e48b44
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "50"
+      - "39"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: b198bbaf-222f-43fd-8418-3f2a2b887d16
+    type: title
+    task:
+      id: b198bbaf-222f-43fd-8418-3f2a2b887d16
+      version: -1
+      name: Set verdict
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "48"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: b188e2b1-e69f-4c7f-8694-e294b35a29d7
+    type: regular
+    task:
+      id: b188e2b1-e69f-4c7f-8694-e294b35a29d7
+      version: -1
+      name: Set the incident severity
+      description: Optionally increases the incident severity to the new value if it is greater than the existing severity.
+      scriptName: IncreaseIncidentSeverity
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      severity:
+        simple: High
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1310,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: a1b6c2b4-a0b5-4d86-826e-ccb60dd05cbf
+    type: regular
+    task:
+      id: a1b6c2b4-a0b5-4d86-826e-ccb60dd05cbf
+      version: -1
+      name: Set the incident severity
+      description: Optionally increases the incident severity to the new value if it is greater than the existing severity.
+      scriptName: IncreaseIncidentSeverity
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      severity:
+        simple: Low
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 1370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 33902d51-7869-4df3-8a19-41cf4fce8e97
+    type: condition
+    task:
+      id: 33902d51-7869-4df3-8a19-41cf4fce8e97
+      version: -1
+      name: Manual verdict verification
+      description: Manual verdict decision.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      APPROVED:
+      - "28"
+      UNAPPROVED:
+      - "27"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 758a229a-adc4-45bb-8a50-e3e115d05a09
+    type: regular
+    task:
+      id: 758a229a-adc4-45bb-8a50-e3e115d05a09
+      version: -1
+      name: Set SOC message for malicious activity
+      description: Sends an email using EWS.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      body:
+        simple: |-
+          Cortex XSOAR Notification
+
+          Cortex XSOAR has detected activity related to Cryptojacking.
+          After careful analysis, Cortex XSOAR found the activity malicious.
+
+          Please enter Cortex XSOAR incident ID ${incident.id} for further investigation and response.
+      subject:
+        simple: Cryptojacking activity detected by Cortex XSOAR
+      to:
+        complex:
+          root: inputs.SOCEmailAddress
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1310,
+          "y": 1370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 7750a275-1ce8-4d59-8cff-bb6ff0b3855b
+    type: playbook
+    task:
+      id: 7750a275-1ce8-4d59-8cff-bb6ff0b3855b
+      version: -1
+      name: Cortex XDR - Cloud Enrichment
+      description: |-
+        This playbook is responsible for collecting data from Cortex XDR detector and enriching data for further usage and building the layout.
+
+        The playbook collects or enriches the following data:
+        - Resource enrichment
+           - Previous activity seen in the specified region or project
+        - Account enrichment
+        - Network enrichment
+           - Attacker IP
+           - Geolocation
+           - ASN
+      playbookName: Cortex XDR - Cloud Enrichment
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      InternalRange:
+        complex:
+          root: inputs.InternalRange
+      ResolveIP:
+        complex:
+          root: inputs.ResolveIP
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: eedfe080-7857-4ecb-8ce0-666de083d2c5
+    type: title
+    task:
+      id: eedfe080-7857-4ecb-8ce0-666de083d2c5
+      version: -1
+      name: Enrichment & Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "37"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 4aeb92ab-1bc1-479d-887c-a0551126fcab
+    type: regular
+    task:
+      id: 4aeb92ab-1bc1-479d-887c-a0551126fcab
+      version: -1
+      name: Fetch alert extra data
+      description: Returns information about each alert ID.
+      script: '|||xdr-get-cloud-original-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      alert_ids:
+        complex:
+          root: inputs.alert_id
+      extend-context:
+        simple: alertData=
+      ignore-outputs:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": -260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 2024faa0-d3c5-4f42-8afe-9f2b41e849c6
+    type: condition
+    task:
+      id: 2024faa0-d3c5-4f42-8afe-9f2b41e849c6
+      version: -1
+      name: Should wait for the analyst's review?
+      description: Checks if the analyst chose to wait for a manual review.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "54"
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.requireAnalystReview
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1310,
+          "y": 1720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: e2651306-89d2-4e28-840b-00c03776c09e
+    type: condition
+    task:
+      id: e2651306-89d2-4e28-840b-00c03776c09e
+      version: -1
+      name: Analyst review - Should close as True Positive?
+      description: Checks manually with the user if the alert should be closed as True Positive.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "43"
+      "Yes":
+      - "54"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 1905
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 240de0f3-cc5d-4664-8f33-82915e7cf13b
+    type: title
+    task:
+      id: 240de0f3-cc5d-4664-8f33-82915e7cf13b
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 2430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 51df4d8f-7064-41be-837d-890b48eac4d0
+    type: regular
+    task:
+      id: 51df4d8f-7064-41be-837d-890b48eac4d0
+      version: -1
+      name: Load alert JSON
+      description: Loads a JSON from the string input, and returns a JSON object result.
+      scriptName: LoadJSON
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      extend-context:
+        simple: alertJson=
+      ignore-outputs:
+        simple: "true"
+      input:
+        complex:
+          root: alertData.alerts.[0]
+          accessor: original_alert_json
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": -80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 7b42c9f5-0154-4859-8581-eb2e74e97026
+    type: playbook
+    task:
+      id: 7b42c9f5-0154-4859-8581-eb2e74e97026
+      version: -1
+      name: Cortex XDR - XCloud Cryptojacking - Set Verdict
+      playbookName: Cortex XDR - XCloud Cryptojacking - Set Verdict
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "49"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: d063ebe3-900f-4192-8655-c564405a4bf8
+    type: condition
+    task:
+      id: d063ebe3-900f-4192-8655-c564405a4bf8
+      version: -1
+      name: Check alert verdict
+      description: Checks the outcome of the alert Cryptojacking - Set Verdict playbook.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Malicious:
+      - "27"
+      User Verification:
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: Malicious
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: alertVerdict
+            iscontext: true
+          right:
+            value:
+              simple: Malicious
+          ignorecase: true
+    - label: User Verification
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: alertVerdict
+            iscontext: true
+          right:
+            value:
+              simple: userVerification
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: e5effc52-c845-429e-885c-9d6b67cb31c9
+    type: regular
+    task:
+      id: e5effc52-c845-429e-885c-9d6b67cb31c9
+      version: -1
+      name: Fetch all of the incident alerts
+      description: Returns additional data for the specified incident, for example, related alerts, file artifacts, network artifacts, and so on.
+      script: '|||xdr-get-incident-extra-data'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      incident_id:
+        complex:
+          root: inputs.incident_id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": -260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: fabacd91-66c2-4a93-8123-53c762fc9526
+    type: regular
+    task:
+      id: fabacd91-66c2-4a93-8123-53c762fc9526
+      version: -1
+      name: Closer XDR incident as False Positive
+      description: Updates one or more fields of a specified incident. Missing fields will be ignored. To remove the assignment for an incident, pass a null value in the assignee email argument.
+      script: '|||xdr-update-incident'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      incident_id:
+        complex:
+          root: inputs.incident_id
+      resolve_comment:
+        simple: Resolved using Cortex XSOAR in incident id ${incident.investigationId}
+      status:
+        simple: RESOLVED_FALSE_POSITIVE
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 1730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 48b61f79-aec3-4b6d-8a0c-c96fac529a5a
+    type: condition
+    task:
+      id: 48b61f79-aec3-4b6d-8a0c-c96fac529a5a
+      version: -1
+      name: Should close as False Positive?
+      description: Checks manually with the user if the alert should be closed as False Positive.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "41"
+      "Yes":
+      - "51"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 1550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 868c69c2-a02a-43d8-81ae-a5683d2a69c7
+    type: regular
+    task:
+      id: 868c69c2-a02a-43d8-81ae-a5683d2a69c7
+      version: -1
+      name: Set incident type
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      type:
+        simple: Cortex XDR - XCLOUD Cryptomining
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: 90b9d856-6168-44a6-86e7-17d739eb3a47
+    type: regular
+    task:
+      id: 90b9d856-6168-44a6-86e7-17d739eb3a47
+      version: -1
+      name: Closer XDR incident as True Positive
+      description: Updates one or more fields of a specified incident. Missing fields will be ignored. To remove the assignment for an incident, pass a null value in the assignee email argument.
+      script: '|||xdr-update-incident'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      incident_id:
+        complex:
+          root: inputs.incident_id
+      resolve_comment:
+        simple: Resolved using Cortex XSOAR in incident id ${incident.investigationId}
+      status:
+        simple: RESOLVED_TRUE_POSITIVE
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: f1225f6e-dec8-471d-8db2-b8046815cdc0
+    type: regular
+    task:
+      id: f1225f6e-dec8-471d-8db2-b8046815cdc0
+      version: -1
+      name: Close XSOAR incident as False Positive
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      closeReason:
+        simple: False Positive
+      id:
+        complex:
+          root: incident
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 1905
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 2cf86532-246e-40f3-8ba5-a272bde6a82d
+    type: regular
+    task:
+      id: 2cf86532-246e-40f3-8ba5-a272bde6a82d
+      version: -1
+      name: Close XSOAR incident as False Positive
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      closeReason:
+        simple: True Positive
+      id:
+        complex:
+          root: incident
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 2250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 3e703855-68ed-4cc4-8b7a-3eb8a90e18dc
+    type: playbook
+    task:
+      id: 3e703855-68ed-4cc4-8b7a-3eb8a90e18dc
+      version: -1
+      name: Cloud Response - Generic
+      description: |-
+        This playbook provides response playbooks for:
+        - AWS
+        - Azure
+        - GCP
+
+        The response actions available are:
+        - Terminate/Shut down/Power off an instance
+        - Delete/Disable a user
+        - Delete/Revoke/Disable credentials
+        - Block indicators
+      playbookName: Cloud Response - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      AWS-accessKeyRemediationType:
+        complex:
+          root: inputs.AWS-accessKeyRemediationType
+      AWS-resourceRemediationType:
+        complex:
+          root: inputs.AWS-resourceRemediationType
+      AWS-userRemediationType:
+        complex:
+          root: inputs.AWS-userRemediationType
+      Azure-resourceRemediationType:
+        complex:
+          root: inputs.Azure-resourceRemediationType
+      Azure-userRemediationType:
+        complex:
+          root: inputs.Azure-userRemediationType
+      GCP-accessKeyRemediationType:
+        complex:
+          root: inputs.GCP-accessKeyRemediationType
+      GCP-resourceRemediationType:
+        complex:
+          root: inputs.GCP-resourceRemediationType
+      GCP-userRemediationType:
+        complex:
+          root: inputs.GCP-userRemediationType
+      accessKeyId:
+        complex:
+          root: alertJson._all_events._aws_specific_fields
+          accessor: access_key_id
+      autoAccessKeyRemediation:
+        complex:
+          root: inputs.autoAccessKeyRemediation
+      autoBlockIndicators:
+        complex:
+          root: inputs.autoBlockIndicators
+      autoResourceRemediation:
+        complex:
+          root: inputs.autoResourceRemediation
+      autoUserRemediation:
+        complex:
+          root: inputs.autoUserRemediation
+      cloudProvider:
+        complex:
+          root: inputs.cloudProvider
+      region:
+        complex:
+          root: alertJson._all_events
+          accessor: region
+      resourceGroup:
+        complex:
+          root: |2-
+
+            alertJson._all_events
+          accessor: referenced_resource
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: /
+              fields:
+                value:
+                  simple: "5"
+      resourceName:
+        complex:
+          root: alertJson._all_events
+          accessor: referenced_resource_name
+      resourceZone:
+        complex:
+          root: alertJson._all_events
+          accessor: zone
+      username:
+        complex:
+          root: alertJson._all_events
+          accessor: actor_effective_username
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              else:
+                value:
+                  simple: alertJson._all_events.actor_effective_username
+                iscontext: true
+              equals: {}
+              lhs:
+                value:
+                  simple: PaloAltoNetworksXDR.OriginalAlert.event.cloud_provider
+                iscontext: true
+              options:
+                value:
+                  simple: case_insensitive
+              rhs:
+                value:
+                  simple: GCP
+              then:
+                value:
+                  simple: alertJson._all_events.identity_name
+                iscontext: true
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1310,
+          "y": 1540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "40_41_yes": 0.52,
+      "40_54_#default#": 0.57,
+      "41_43_#default#": 0.42,
+      "41_54_Yes": 0.42,
+      "49_27_Malicious": 0.62,
+      "49_29_User Verification": 0.61,
+      "52_41_#default#": 0.8,
+      "52_51_Yes": 0.37
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2895,
+        "width": 1520,
+        "x": 170,
+        "y": -400
+      }
+    }
+  }
+inputs:
+- key: incident_id
+  value: {}
+  required: false
+  description: The incident ID.
+  playbookInputQuery:
+- key: alert_id
+  value: {}
+  required: false
+  description: The alert ID.
+  playbookInputQuery:
+- key: SOCEmailAddress
+  value:
+    simple:
+  required: false
+  description: The SOC email address to use for the alert status notification.
+  playbookInputQuery:
+- key: requireAnalystReview
+  value:
+    simple: "True"
+  required: false
+  description: Whether to require an analyst review after the alert remediation.
+  playbookInputQuery:
+- key: cloudProvider
+  value:
+    complex:
+      root: PaloAltoNetworksXDR.OriginalAlert.event
+      accessor: cloud_provider
+  required: false
+  description: The cloud service provider involved.
+  playbookInputQuery:
+- key: autoResourceRemediation
+  value:
+    simple: "False"
+  required: false
+  description: Whether to execute the resource remediation flow automatically.
+  playbookInputQuery:
+- key: AWS-resourceRemediationType
+  value:
+    simple: Stop
+  required: false
+  description: |-
+    Choose the remediation type for the instances created.
+
+    AWS available types:
+    Stop - for stopping the instances.
+    Terminate - for terminating the instances.
+  playbookInputQuery:
+- key: Azure-resourceRemediationType
+  value:
+    simple: Poweroff
+  required: false
+  description: |-
+    Choose the remediation type for the instances created.
+
+    Azure available types:
+    Poweroff - for shutting down the instances.
+    Delete - for deleting the instances.
+  playbookInputQuery:
+- key: GCP-resourceRemediationType
+  value:
+    simple: Stop
+  required: false
+  description: |-
+    Choose the remediation type for the instances created.
+
+    GCP available types:
+    Stop - For stopping the instances.
+    Delete - For deleting the instances.
+  playbookInputQuery:
+- key: autoAccessKeyRemediation
+  value:
+    simple: "False"
+  required: false
+  description: Whether to execute the user remediation flow automatically.
+  playbookInputQuery:
+- key: AWS-accessKeyRemediationType
+  value:
+    simple: Disable
+  required: false
+  description: |-
+    Choose the remediation type for the user's access key.
+
+    AWS available types:
+    Disable - for disabling the user's access key.
+    Delete - for the user's access key deletion.
+  playbookInputQuery:
+- key: GCP-accessKeyRemediationType
+  value:
+    simple: Disable
+  required: false
+  description: |-
+    Choose the remediation type for the user's access key.
+
+    GCP available types:
+    Disable - For disabling the user's access key.
+    Delete - For the deleting user's access key.
+  playbookInputQuery:
+- key: autoUserRemediation
+  value:
+    simple: "False"
+  required: false
+  description: Whether to execute the user remediation flow automatically.
+  playbookInputQuery:
+- key: AWS-userRemediationType
+  value:
+    simple: Revoke
+  required: false
+  description: |-
+    Choose the remediation type for the user involved.
+
+    AWS available types:
+    Delete - for the user deletion.
+    Revoke - for revoking the user's credentials.
+  playbookInputQuery:
+- key: Azure-userRemediationType
+  value:
+    simple: Disable
+  required: false
+  description: |-
+    Choose the remediation type for the user involved.
+
+    Azure available types:
+    Disable - for disabling the user.
+    Delete - for deleting the user.
+  playbookInputQuery:
+- key: GCP-userRemediationType
+  value:
+    simple: Disable
+  required: false
+  description: |-
+    Choose the remediation type for the user involved.
+
+    GCP available types:
+    Delete - For deleting the user.
+    Disable - For disabling the user.
+  playbookInputQuery:
+- key: autoBlockIndicators
+  value:
+    simple: "False"
+  required: false
+  description: Whether to block the indicators automatically.
+  playbookInputQuery:
+- key: InternalRange
+  value: {}
+  required: false
+  description: "A list of internal IP ranges to check IP addresses against. \nFor IP Enrichment - Generic v2 playbook."
+  playbookInputQuery:
+- key: ResolveIP
+  value:
+    simple: "True"
+  required: false
+  description: Determines whether to convert the IP address to a hostname using a DNS query (True/ False).
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+marketplaces: ["xsoar"]
+fromversion: 6.5.0

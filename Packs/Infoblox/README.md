@@ -2,8 +2,10 @@ This pack includes XSIAM content.
 
 ## Collect Events from Vendor
 
+* Pay attention: Timestamp Parsing is only available in **%Y %b %e %H:%M:%S** format, in UTC (00:00) time zone.
+
 ### Broker VM
-You will need to use the information described [here](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/broker-vm/set-up-broker-vm/configure-your-broker-vm).\
+You will need to use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).\
 You can configure the specific vendor and product for this instance.
 1. Navigate to **Settings** -> **Configuration** -> **Data Broker** -> **Broker VMs**. 
 2. Right-click, and select **Syslog Collector** -> **Configure**.

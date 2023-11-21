@@ -1,0 +1,2334 @@
+category: Utilities
+commonfields:
+  id: Bitbucket
+  version: -1
+name: Bitbucket
+display: Bitbucket
+fromversion: 6.5.0
+description: Bitbucket Cloud is a Git-based code and CI/CD tool optimized for teams using Jira.
+configuration:
+- name: workspace
+  display: Workspace
+  required: true
+  defaultvalue:
+  type: 0
+  additionalinfo:
+- name: server_url
+  display: Server URL
+  required: true
+  defaultvalue: https://api.bitbucket.org/2.0
+  type: 0
+  additionalinfo:
+- display: User Name
+  name: credentials
+  required: true
+  type: 9
+  displaypassword: App Password
+- name: repository
+  display: Repository
+  defaultvalue:
+  type: 0
+  additionalinfo:
+  required: false
+- name: insecure
+  display: Trust any certificate (not secure)
+  type: 8
+  additionalinfo:
+  required: false
+- name: proxy
+  display: Use system proxy settings
+  type: 8
+  additionalinfo:
+  required: false
+script:
+  commands:
+  - name: bitbucket-project-list
+    description: If a project_key is given, returns the requested project. Else, returns a list of the projects in the workspace.
+    arguments:
+    - name: project_key
+      description: The "id" of the project. Must be uppercase.
+    - name: limit
+      description: The maximum number of projects to return. The default value is 50.
+    - name: page
+      description: The specific result page to display.
+    - name: partial_response
+      auto: PREDEFINED
+      defaultValue: true
+      description: Return a partial response if true, else return the full API response.
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: Bitbucket.Project.type
+      description: The type of the object.
+      type: String
+    - contextPath: Bitbucket.Project.owner.display_name
+      description: The project owner name.
+      type: String
+    - contextPath: Bitbucket.Project.owner.links
+      description: Links with information about the project owner.
+      type: String
+    - contextPath: Bitbucket.Project.owner.type
+      description: The type of the project owner.
+      type: String
+    - contextPath: Bitbucket.Project.owner.uuid
+      description: The project owner universal unique ID.
+      type: String
+    - contextPath: Bitbucket.Project.owner.account_id
+      description: The project owner account ID.
+      type: String
+    - contextPath: Bitbucket.Project.owner.nickname
+      description: The project owner nickname.
+      type: String
+    - contextPath: Bitbucket.Project.workspace.type
+      description: The type of the workspace.
+      type: String
+    - contextPath: Bitbucket.Project.workspace.uuid
+      description: The project workspace universal unique ID.
+      type: String
+    - contextPath: Bitbucket.Project.workspace.name
+      description: The name of the project workspace.
+      type: String
+    - contextPath: Bitbucket.Project.workspace.slug
+      description: The slug of the project workspace.
+      type: String
+    - contextPath: Bitbucket.Project.workspace.links
+      description: Links to information about the workspace.
+      type: String
+    - contextPath: Bitbucket.Project.key
+      description: The project key.
+      type: String
+    - contextPath: Bitbucket.Project.uuid
+      description: The project universal unique ID.
+      type: String
+    - contextPath: Bitbucket.Project.is_private
+      description: Whether the project is private.
+      type: Boolean
+    - contextPath: Bitbucket.Project.name
+      description: The project name.
+      type: String
+    - contextPath: Bitbucket.Project.description
+      description: The project description.
+      type: String
+    - contextPath: Bitbucket.Project.links
+      description: Links to information about the project.
+      type: String
+    - contextPath: Bitbucket.Project.created_on
+      description: The date the project was created.
+      type: String
+    - contextPath: Bitbucket.Project.updated_on
+      description: The date the project was updated.
+      type: String
+    - contextPath: Bitbucket.Project.has_publicly_visible_repos
+      description: Whether the project has publicly visible repositories.
+      type: Boolean
+  - name: bitbucket-open-branch-list
+    description: Returns a list of the open branches.
+    arguments:
+    - name: repo
+      description: The repository name or slug.
+    - name: limit
+      description: The maximum number of items in the list. The default value is 50.
+    - name: page
+      description: The specific result page to display.
+    - name: partial_response
+      auto: PREDEFINED
+      defaultValue: true
+      description: Return a partial response if true, else return the full API response.
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: Bitbucket.Branch.name
+      description: The branch name.
+      type: String
+    - contextPath: Bitbucket.Branch.target.type
+      description: The type of the last action in the branch.
+      type: String
+    - contextPath: Bitbucket.Branch.target.hash
+      description: The hash of the last action in the branch.
+      type: String
+    - contextPath: Bitbucket.Branch.target.date
+      description: The creation date of the last action in the branch.
+      type: Date
+    - contextPath: Bitbucket.Branch.target.author.type
+      description: The type of the author of the last action.
+      type: String
+    - contextPath: Bitbucket.Branch.target.author.raw
+      description: The raw information about the author of the last action.
+      type: String
+    - contextPath: Bitbucket.Branch.target.author.user.display_name
+      description: The display name of the author of the last action.
+      type: String
+    - contextPath: Bitbucket.Branch.target.author.user.links
+      description: Links to information about the user.
+      type: String
+    - contextPath: Bitbucket.Branch.target.author.user.type
+      description: The user type of the user who made the last action in the branch.
+      type: String
+    - contextPath: Bitbucket.Branch.target.author.user.uuid
+      description: The unique user ID of the user who made the last action in the branch.
+      type: String
+    - contextPath: Bitbucket.Branch.target.author.user.account_id
+      description: The account ID of the user who made the last action in the branch.
+      type: String
+    - contextPath: Bitbucket.Branch.target.author.user.nickname
+      description: The nickname of the user who made the last action in the branch.
+      type: String
+    - contextPath: Bitbucket.Branch.target.message
+      description: The message assigned to the last action in the branch.
+      type: String
+    - contextPath: Bitbucket.Branch.target.links
+      description: The links associated with this command.
+      type: String
+    - contextPath: Bitbucket.Branch.target.parents.type
+      description: The type of the parent who created the branch.
+      type: String
+    - contextPath: Bitbucket.Branch.target.parents.hash
+      description: The hash of the parent who created the branch.
+      type: String
+    - contextPath: Bitbucket.Branch.target.parents.links
+      description: The links associated with the parents of the command.
+      type: String
+    - contextPath: Bitbucket.Branch.target.repository.type
+      description: The repository type.
+      type: String
+    - contextPath: Bitbucket.Branch.target.repository.full_name
+      description: The full name of the repository.
+      type: String
+    - contextPath: Bitbucket.Branch.target.repository.links
+      description: Links with information about the relevant repository.
+      type: String
+    - contextPath: Bitbucket.Branch.target.repository.name
+      description: The name of the repository
+      type: String
+    - contextPath: Bitbucket.Branch.target.repository.uuid
+      description: The repository unique ID.
+      type: String
+    - contextPath: Bitbucket.Branch.links
+      description: Links with information about the branch.
+      type: String
+    - contextPath: Bitbucket.Branch.type
+      description: The type of the branch.
+      type: String
+    - contextPath: Bitbucket.Branch.merge_strategies
+      description: The merge strategy of the branch.
+      type: String
+    - contextPath: Bitbucket.Branch.default_merge_strategy
+      description: The default merge strategy in the branch.
+      type: String
+  - name: bitbucket-branch-get
+    description: Returns the information of the requested branch.
+    arguments:
+    - name: repo
+      description: The repository name. Should be given here or in the instance arguments.
+    - name: branch_name
+      required: true
+      description: The name of the branch for which to retrieve the information.
+    - name: partial_response
+      auto: PREDEFINED
+      defaultValue: true
+      description: Return a partial response if true, else return the full API response.
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: Bitbucket.Branch.name
+      description: The name of the branch.
+      type: String
+    - contextPath: Bitbucket.Branch.target.type
+      description: The last action type.
+      type: String
+    - contextPath: Bitbucket.Branch.target.hash
+      description: The hash of the last action in the branch.
+      type: String
+    - contextPath: Bitbucket.Branch.target.date
+      description: The date of the last action in the branch.
+      type: Date
+    - contextPath: Bitbucket.Branch.target.author.type
+      description: The type of the author.
+      type: String
+    - contextPath: Bitbucket.Branch.target.author.raw
+      description: The raw information about the author of the last action in the branch.
+      type: String
+    - contextPath: Bitbucket.Branch.target.author.user.display_name
+      description: The display name of the author of the last action in the branch.
+      type: String
+    - contextPath: Bitbucket.Branch.target.author.user.links
+      description: Links about the author of the last action in the branch.
+      type: String
+    - contextPath: Bitbucket.Branch.target.author.user.type
+      description: The user type of the author of the last action in the branch.
+      type: String
+    - contextPath: Bitbucket.Branch.target.author.user.uuid
+      description: The unique universal ID of the author of the last action in the branch.
+      type: String
+    - contextPath: Bitbucket.Branch.target.author.user.account_id
+      description: The account ID of the author of the last action in the branch.
+      type: String
+    - contextPath: Bitbucket.Branch.target.author.user.nickname
+      description: The nickname of the author of the last action in the branch.
+      type: String
+    - contextPath: Bitbucket.Branch.target.message
+      description: The message associated with the last action in the branch.
+      type: String
+    - contextPath: Bitbucket.Branch.target.links
+      description: The links of the last action in the branch.
+      type: String
+    - contextPath: Bitbucket.Branch.target.parents.type
+      description: The type of the parents of the last action in the branch.
+      type: String
+    - contextPath: Bitbucket.Branch.target.parents.hash
+      description: The hash of the parents of the last action in the branch.
+      type: String
+    - contextPath: Bitbucket.Branch.target.parents.links
+      description: The link associated with the parents of the last action in the branch.
+      type: String
+    - contextPath: Bitbucket.Branch.target.repository.type
+      description: The type of the branch repository.
+      type: String
+    - contextPath: Bitbucket.Branch.target.repository.full_name
+      description: The name of the branch repository.
+      type: String
+    - contextPath: Bitbucket.Branch.target.repository.links
+      description: Links with information about the branch repository.
+      type: String
+    - contextPath: Bitbucket.Branch.target.repository.name
+      description: The name of the repository.
+      type: String
+    - contextPath: Bitbucket.Branch.target.repository.uuid
+      description: The unique ID of the repository.
+      type: String
+    - contextPath: Bitbucket.Branch.links
+      description: Links with information about the branch.
+      type: String
+    - contextPath: Bitbucket.Branch.type
+      description: The type of the branch.
+      type: String
+    - contextPath: Bitbucket.Branch.merge_strategies
+      description: The merge strategy of the branch.
+      type: String
+    - contextPath: Bitbucket.Branch.default_merge_strategy
+      description: The default merge strategy.
+      type: String
+  - name: bitbucket-branch-create
+    description: Creates a new branch in Bitbucket.
+    arguments:
+    - name: repo
+      description: The repository name or slug.
+    - name: name
+      required: true
+      description: The name of the new branch.
+    - name: target_branch
+      required: true
+      description: The name of the branch from which the new branch will be created.
+    - name: partial_response
+      auto: PREDEFINED
+      defaultValue: true
+      description: Return a partial response if true, else return the full API response.
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: Bitbucket.Branch.name
+      description: The name of the new branch.
+      type: String
+    - contextPath: Bitbucket.Branch.target.type
+      description: The type of the last action in the target branch.
+      type: String
+    - contextPath: Bitbucket.Branch.target.hash
+      description: The hash of the last action in the target branch.
+      type: String
+    - contextPath: Bitbucket.Branch.target.date
+      description: The date of the last action in the target branch.
+      type: Date
+    - contextPath: Bitbucket.Branch.target.author.type
+      description: The type of the author of the last action in the target branch.
+      type: String
+    - contextPath: Bitbucket.Branch.target.author.raw
+      description: The raw information about the author of the last action in the target branch.
+      type: String
+    - contextPath: Bitbucket.Branch.target.author.user.display_name
+      description: The display name of the author of the last action in the target branch.
+      type: String
+    - contextPath: Bitbucket.Branch.target.author.user.links
+      description: The links with the information about the author of the last action in the target branch.
+      type: String
+    - contextPath: Bitbucket.Branch.target.author.user.type
+      description: The user type of the author of the last action in the target branch.
+      type: String
+    - contextPath: Bitbucket.Branch.target.author.user.uuid
+      description: The unique ID of the author of the last action in the target branch.
+      type: String
+    - contextPath: Bitbucket.Branch.target.author.user.account_id
+      description: The account ID of the author of the last action in the target branch.
+      type: String
+    - contextPath: Bitbucket.Branch.target.author.user.nickname
+      description: The nickname of the author of the last action in the target branch.
+      type: String
+    - contextPath: Bitbucket.Branch.target.message
+      description: The message in the last action in the target branch.
+      type: String
+    - contextPath: Bitbucket.Branch.target.links
+      description: The links with the information about the target branch.
+      type: String
+    - contextPath: Bitbucket.Branch.target.parents.type
+      description: The type of the parent action of the last action in the target branch.
+      type: String
+    - contextPath: Bitbucket.Branch.target.parents.hash
+      description: The hash of the parent action of the last action in the target branch.
+      type: String
+    - contextPath: Bitbucket.Branch.target.parents.links
+      description: The links associated with the parents of the command.
+      type: String
+    - contextPath: Bitbucket.Branch.target.repository.type
+      description: The type of the repository of the target branch.
+      type: String
+    - contextPath: Bitbucket.Branch.target.repository.full_name
+      description: The full name of the repository of the target branch.
+      type: String
+    - contextPath: Bitbucket.Branch.target.repository.links
+      description: The links with the information about the repository of the target branch.
+      type: String
+    - contextPath: Bitbucket.Branch.target.repository.name
+      description: The name of the repository of the target branch.
+      type: String
+    - contextPath: Bitbucket.Branch.target.repository.uuid
+      description: The unique ID of the repository of the target branch.
+      type: String
+    - contextPath: Bitbucket.Branch.links
+      description: The links with the information about the new branch.
+      type: String
+    - contextPath: Bitbucket.Branch.type
+      description: The type of the new branch.
+      type: String
+    - contextPath: Bitbucket.Branch.merge_strategies
+      description: The merge strategies of the new branch.
+      type: String
+    - contextPath: Bitbucket.Branch.default_merge_strategy
+      description: The default merge strategy in the new branch.
+      type: String
+  - name: bitbucket-branch-delete
+    description: Deletes the given branch from Bitbucket.
+    arguments:
+    - name: repo
+      description: The repository name or slug.
+    - name: branch_name
+      required: true
+      description: The name of the branch to delete.
+  - name: bitbucket-commit-create
+    description: Creates a new commit in Bitbucket.
+    arguments:
+    - name: repo
+      description: The repository name or slug.
+    - name: message
+      required: true
+      description: Commit a message with the file.
+    - name: branch
+      required: true
+      description: This branch will be associated with the committed file.
+    - name: file_name
+      description: The name of the file to commit.
+    - name: file_content
+      description: The content of the file to commit.
+    - name: entry_id
+      description: The entry_id of the file to commit. This is the EntryId from uploading a file to the War Room.
+    - name: author_name
+      description: The name of the author of the file.
+    - name: author_email
+      description: The email of the author of the file.
+  - name: bitbucket-commit-list
+    description: Returns a list of the commit in accordance with the included and excluded branches.
+    arguments:
+    - name: repo
+      description: The repository name or slug.
+    - name: file_path
+      description: Will limit the results to commits that affect that path.
+    - name: excluded_branches
+      description: A comma-separated list of branches to exclude from the commits that are returned.
+    - name: included_branches
+      description: A comma-separated list of branches to include in the commits that are returned.
+    - name: limit
+      description: The maximum number of items in the list. The default value is 50.
+    - name: page
+      description: The specific result page to display.
+    - name: partial_response
+      auto: PREDEFINED
+      defaultValue: true
+      description: Return a partial response if true, else return the full API response.
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: Bitbucket.Commit.type
+      description: The type of the commit.
+      type: String
+    - contextPath: Bitbucket.Commit.hash
+      description: The commit hash.
+      type: String
+    - contextPath: Bitbucket.Commit.date
+      description: The creation date of the commit.
+      type: Date
+    - contextPath: Bitbucket.Commit.author.type
+      description: The type of the author.
+      type: String
+    - contextPath: Bitbucket.Commit.author.raw
+      description: The raw information about the author, including the display name and user email.
+      type: String
+    - contextPath: Bitbucket.Commit.author.user.display_name
+      description: The display name of the author.
+      type: String
+    - contextPath: Bitbucket.Commit.author.user.links
+      description: Links with information about the author.
+      type: String
+    - contextPath: Bitbucket.Commit.author.user.type
+      description: The user type of the author.
+      type: String
+    - contextPath: Bitbucket.Commit.author.user.uuid
+      description: The user unique key of the author.
+      type: String
+    - contextPath: Bitbucket.Commit.author.user.account_id
+      description: The user account ID of the author.
+      type: String
+    - contextPath: Bitbucket.Commit.author.user.nickname
+      description: The user nickname of the author.
+      type: String
+    - contextPath: Bitbucket.Commit.message
+      description: The commit message.
+      type: String
+    - contextPath: Bitbucket.Commit.summary.type
+      description: The type of the summary.
+      type: String
+    - contextPath: Bitbucket.Commit.summary.raw
+      description: The raw summary of the commit.
+      type: String
+    - contextPath: Bitbucket.Commit.summary.markup
+      description: The text styling type, such as markdown.
+      type: String
+    - contextPath: Bitbucket.Commit.summary.html
+      description: The summary in HTML format.
+      type: String
+    - contextPath: Bitbucket.Commit.links
+      description: Links with information about the commit.
+      type: String
+    - contextPath: Bitbucket.Commit.parents.type
+      description: The type of the commit parents.
+      type: String
+    - contextPath: Bitbucket.Commit.parents.hash
+      description: The hash of the commit parents.
+      type: String
+    - contextPath: Bitbucket.Commit.parents.links
+      description: Links with information about the parents.
+      type: String
+    - contextPath: Bitbucket.Commit.repository.type
+      description: The type of the repository.
+      type: String
+    - contextPath: Bitbucket.Commit.repository.full_name
+      description: The full name of the repository.
+      type: String
+    - contextPath: Bitbucket.Commit.repository.links.self.href
+      description: Links with information about the repository.
+      type: String
+    - contextPath: Bitbucket.Commit.repository.name
+      description: The name of the repository.
+      type: String
+    - contextPath: Bitbucket.Commit.repository.uuid
+      description: The unique ID of the repository.
+      type: String
+  - name: bitbucket-file-delete
+    description: Deletes the given file from Bitbucket.
+    arguments:
+    - name: repo
+      description: The repository name or slug.
+    - name: message
+      required: true
+      description: Commit a message with the file.
+    - name: branch
+      required: true
+      description: The branch of the file to delete.
+    - name: file_name
+      required: true
+      description: The name of the file to delete.
+    - name: author_name
+      description: The name of the author of the file.
+    - name: author_email
+      description: The email of the author of the file.
+  - name: bitbucket-raw-file-get
+    description: Returns the content of the given file, along with the option to download it.
+    arguments:
+    - name: repo
+      description: The repository name or slug.
+    - name: file_path
+      required: true
+      description: The path of the needed file.
+    - name: branch
+      description: The branch of the file. If a branch isn't given, by default the command will return the content of the last edited file with the same file_path.
+    outputs:
+    - contextPath: Bitbucket.RawFile.file_path
+      description: The path of the file.
+      type: String
+    - contextPath: Bitbucket.RawFile.file_content
+      description: The content of the file.
+      type: String
+    - contextPath: InfoFile.Size
+      description: The size of the file.
+      type: Number
+    - contextPath: InfoFile.Name
+      description: The name of the file.
+      type: String
+    - contextPath: InfoFile.EntryID
+      description: The entry ID of the file.
+      type: String
+    - contextPath: InfoFile.Info
+      description: File information.
+      type: String
+    - contextPath: InfoFile.Type
+      description: The file type.
+      type: String
+  - name: bitbucket-issue-create
+    description: Creates an issue in Bitbucket. To perform this command, create an issue tracker by clicking on the relevant repo > Repository settings > Issue tracker.
+    arguments:
+    - name: repo
+      description: The repository name or slug.
+    - name: title
+      required: true
+      description: The title of the new issue.
+    - name: state
+      auto: PREDEFINED
+      defaultValue: new
+      description: The state of the issues to create.
+      predefined:
+      - new
+      - open
+      - resolved
+      - on hold
+      - invalid
+      - duplicate
+      - wontfix
+      - closed
+    - name: type
+      auto: PREDEFINED
+      defaultValue: bug
+      description: The type of the issues to create.
+      predefined:
+      - bug
+      - enhancement
+      - proposal
+      - task
+    - name: priority
+      auto: PREDEFINED
+      defaultValue: major
+      description: The priority of the issues to create.
+      predefined:
+      - trivial
+      - minor
+      - major
+      - critical
+      - blocker
+    - name: content
+      description: The content of the issue to create.
+    - name: assignee_id
+      description: The ID of the assignee of the issue to create. To get the assignee_id, use the !bitbucket-workspace-member-list command, and use the field AccountId.
+    - name: assignee_user_name
+      description: The user name of the assignee of the issue to create.
+    - name: partial_response
+      auto: PREDEFINED
+      defaultValue: true
+      description: Return a partial response if true, else return the full API response.
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: Bitbucket.Issue.type
+      description: The action type.
+      type: String
+    - contextPath: Bitbucket.Issue.id
+      description: The ID of the issue.
+      type: Number
+    - contextPath: Bitbucket.Issue.repository.type
+      description: The type of the repository.
+      type: String
+    - contextPath: Bitbucket.Issue.repository.full_name
+      description: The full name of the repository.
+      type: String
+    - contextPath: Bitbucket.Issue.repository.links
+      description: Links with information about the repository related to the issue.
+      type: String
+    - contextPath: Bitbucket.Issue.repository.name
+      description: The name of the repository.
+      type: String
+    - contextPath: Bitbucket.Issue.repository.uuid
+      description: The unique ID of the repository.
+      type: String
+    - contextPath: Bitbucket.Issue.links.self.href
+      description: An API link to the issue.
+      type: String
+    - contextPath: Bitbucket.Issue.title
+      description: The title of the issue
+      type: String
+    - contextPath: Bitbucket.Issue.content.type
+      description: The type of the content.
+      type: String
+    - contextPath: Bitbucket.Issue.content.raw
+      description: The content of the issue.
+      type: String
+    - contextPath: Bitbucket.Issue.content.markup
+      description: The type of markup (like markdown).
+      type: String
+    - contextPath: Bitbucket.Issue.content.html
+      description: The content of the issue in HTML format.
+      type: String
+    - contextPath: Bitbucket.Issue.reporter.display_name
+      description: The display name of the reporter of the issue.
+      type: String
+    - contextPath: Bitbucket.Issue.reporter.links
+      description: Links with information about the reporter.
+      type: String
+    - contextPath: Bitbucket.Issue.reporter.type
+      description: The type of the reporter.
+      type: String
+    - contextPath: Bitbucket.Issue.reporter.uuid
+      description: The unique ID of the reporter
+      type: String
+    - contextPath: Bitbucket.Issue.reporter.account_id
+      description: The account ID of the reporter.
+      type: String
+    - contextPath: Bitbucket.Issue.reporter.nickname
+      description: The nickname of the reporter.
+      type: String
+    - contextPath: Bitbucket.Issue.assignee.display_name
+      description: The display name of the assignee to the issue.
+      type: String
+    - contextPath: Bitbucket.Issue.assignee.links
+      description: Links with information about the assignee.
+      type: String
+    - contextPath: Bitbucket.Issue.assignee.type
+      description: The type of the assignee.
+      type: String
+    - contextPath: Bitbucket.Issue.assignee.uuid
+      description: The unique ID of the assignee.
+      type: String
+    - contextPath: Bitbucket.Issue.assignee.account_id
+      description: The account ID of the assignee.
+      type: String
+    - contextPath: Bitbucket.Issue.assignee.nickname
+      description: The nickname of the assignee.
+      type: String
+    - contextPath: Bitbucket.Issue.created_on
+      description: The creation date of the issue.
+      type: String
+    - contextPath: Bitbucket.Issue.edited_on
+      description: The edit date of the issue.
+      type: Unknown
+    - contextPath: Bitbucket.Issue.updated_on
+      description: The update date of the issue.
+      type: String
+    - contextPath: Bitbucket.Issue.state
+      description: The state of the issue.
+      type: String
+    - contextPath: Bitbucket.Issue.kind
+      description: The kind of the issue.
+      type: String
+    - contextPath: Bitbucket.Issue.milestone
+      description: The milestones in the issue.
+      type: Unknown
+    - contextPath: Bitbucket.Issue.component
+      description: The different components of the issue.
+      type: Unknown
+    - contextPath: Bitbucket.Issue.priority
+      description: The priority of the issue.
+      type: String
+    - contextPath: Bitbucket.Issue.version
+      description: The version of the issue.
+      type: Unknown
+    - contextPath: Bitbucket.Issue.votes
+      description: The votes of approval of the issue.
+      type: Number
+    - contextPath: Bitbucket.Issue.watches
+      description: The watchers of the issue.
+      type: Unknown
+  - name: bitbucket-issue-list
+    description: If an issue_id is given, returns the information about it. Otherwise, returns a list of all the issues, according to the limit parameter.
+    arguments:
+    - name: repo
+      description: The repository name or slug.
+    - name: issue_id
+      description: The ID of the requested issue. To get the issue_id, use the !bitbucket-issue-list command.
+    - name: limit
+      description: The maximum number of items in the list. The default value is 50.
+    - name: page
+      description: The specific result page to display.
+    - name: partial_response
+      auto: PREDEFINED
+      defaultValue: true
+      description: Return a partial response if true, else return the full API response.
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: Bitbucket.Issue.type
+      description: The action type.
+      type: String
+    - contextPath: Bitbucket.Issue.id
+      description: The ID of the issue.
+      type: Number
+    - contextPath: Bitbucket.Issue.repository.type
+      description: The type of the repository.
+      type: String
+    - contextPath: Bitbucket.Issue.repository.full_name
+      description: The full name of the repository.
+      type: String
+    - contextPath: Bitbucket.Issue.repository.links
+      description: Links with information about the repository related to the issue.
+      type: String
+    - contextPath: Bitbucket.Issue.repository.name
+      description: The name of the repository.
+      type: String
+    - contextPath: Bitbucket.Issue.repository.uuid
+      description: The unique ID of the repository.
+      type: String
+    - contextPath: Bitbucket.Issue.links
+      description: Links with information about the issue.
+      type: String
+    - contextPath: Bitbucket.Issue.title
+      description: The title of the issue.
+      type: String
+    - contextPath: Bitbucket.Issue.content.type
+      description: The type of the content.
+      type: String
+    - contextPath: Bitbucket.Issue.content.raw
+      description: The content of the issue.
+      type: String
+    - contextPath: Bitbucket.Issue.content.markup
+      description: The type of markup (like markdown).
+      type: String
+    - contextPath: Bitbucket.Issue.content.html
+      description: The content of the issue in HTML format.
+      type: String
+    - contextPath: Bitbucket.Issue.reporter.display_name
+      description: The display name of the reporter of the issue.
+      type: String
+    - contextPath: Bitbucket.Issue.reporter.links
+      description: Links with information about the reporter.
+      type: String
+    - contextPath: Bitbucket.Issue.reporter.type
+      description: The type of the reporter.
+      type: String
+    - contextPath: Bitbucket.Issue.reporter.uuid
+      description: The unique ID of the reporter
+      type: String
+    - contextPath: Bitbucket.Issue.reporter.account_id
+      description: The account ID of the reporter.
+      type: String
+    - contextPath: Bitbucket.Issue.reporter.nickname
+      description: The nickname of the reporter.
+      type: String
+    - contextPath: Bitbucket.Issue.assignee.display_name
+      description: The display name of the assignee to the issue.
+      type: String
+    - contextPath: Bitbucket.Issue.assignee.links
+      description: Links with information about the assignee.
+      type: String
+    - contextPath: Bitbucket.Issue.assignee.type
+      description: The type of the assignee.
+      type: String
+    - contextPath: Bitbucket.Issue.assignee.uuid
+      description: The unique ID of the assignee.
+      type: String
+    - contextPath: Bitbucket.Issue.assignee.account_id
+      description: The account ID of the assignee.
+      type: String
+    - contextPath: Bitbucket.Issue.assignee.nickname
+      description: The nickname of the assignee.
+      type: String
+    - contextPath: Bitbucket.Issue.created_on
+      description: The creation date of the issue.
+      type: String
+    - contextPath: Bitbucket.Issue.edited_on
+      description: The edit date of the issue.
+      type: Unknown
+    - contextPath: Bitbucket.Issue.updated_on
+      description: The update date of the issue.
+      type: String
+    - contextPath: Bitbucket.Issue.state
+      description: The state ID of the issue.
+      type: String
+    - contextPath: Bitbucket.Issue.kind
+      description: The kind of the issue.
+      type: String
+    - contextPath: Bitbucket.Issue.milestone
+      description: The milestones in the issue.
+      type: Unknown
+    - contextPath: Bitbucket.Issue.component
+      description: The different components of the issue.
+      type: Unknown
+    - contextPath: Bitbucket.Issue.priority
+      description: The priority of the issue.
+      type: String
+    - contextPath: Bitbucket.Issue.version
+      description: The version of the issue.
+      type: Unknown
+    - contextPath: Bitbucket.Issue.votes
+      description: The votes of approval of the issue.
+      type: Number
+    - contextPath: Bitbucket.Issue.watches
+      description: The watchers of the issue.
+      type: Number
+  - name: bitbucket-issue-update
+    description: Updates an issue in Bitbucket. To perform this command, create an issue tracker by clicking on the relevant repo > Repository settings > Issue tracker.
+    arguments:
+    - name: repo
+      description: The repository name or slug.
+    - name: title
+      required: true
+      description: The title of the new issue.
+    - name: issue_id
+      required: true
+      description: The ID of the issue to update. To get the issue_id, use the !bitbucket-issue-list command.
+    - name: state
+      auto: PREDEFINED
+      description: The state of the issues to create.
+      predefined:
+      - new
+      - open
+      - resolved
+      - on hold
+      - invalid
+      - duplicate
+      - wontfix
+      - closed
+    - name: type
+      auto: PREDEFINED
+      description: The type of the issues to create.
+      predefined:
+      - bug
+      - enhancement
+      - proposal
+      - task
+    - name: priority
+      auto: PREDEFINED
+      description: The priority of the issues to create.
+      predefined:
+      - trivial
+      - minor
+      - major
+      - critical
+      - blocker
+    - name: content
+      description: The content of the issue to create.
+    - name: assignee_id
+      description: The ID of the assignee of the issue to create. To get the assignee_id, use the !bitbucket-workspace-member-list command, and use the field AccountId.
+    - name: assignee_user_name
+      description: The user name of the assignee of the issue to create.
+    - name: partial_response
+      auto: PREDEFINED
+      defaultValue: true
+      description: Return a partial response if true, else return the full API response.
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: Bitbucket.Issue.type
+      description: The action type.
+      type: String
+    - contextPath: Bitbucket.Issue.id
+      description: The ID of the issue.
+      type: Number
+    - contextPath: Bitbucket.Issue.repository.type
+      description: The type of the repository.
+      type: String
+    - contextPath: Bitbucket.Issue.repository.full_name
+      description: The full name of the repository.
+      type: String
+    - contextPath: Bitbucket.Issue.repository.links
+      description: Links with information about the repository related to the issue.
+      type: String
+    - contextPath: Bitbucket.Issue.repository.name
+      description: The name of the repository.
+      type: String
+    - contextPath: Bitbucket.Issue.repository.uuid
+      description: The unique ID of the repository.
+      type: String
+    - contextPath: Bitbucket.Issue.links
+      description: Links with information about the issue.
+      type: String
+    - contextPath: Bitbucket.Issue.title
+      description: The title of the issue.
+      type: String
+    - contextPath: Bitbucket.Issue.content.type
+      description: The type of the content.
+      type: String
+    - contextPath: Bitbucket.Issue.content.raw
+      description: The content of the issue.
+      type: String
+    - contextPath: Bitbucket.Issue.content.markup
+      description: The type of markup (like markdown).
+      type: String
+    - contextPath: Bitbucket.Issue.content.html
+      description: The content of the issue in HTML format.
+      type: String
+    - contextPath: Bitbucket.Issue.reporter.display_name
+      description: The display name of the reporter of the issue.
+      type: String
+    - contextPath: Bitbucket.Issue.reporter.links
+      description: Links with information about the reporter.
+      type: String
+    - contextPath: Bitbucket.Issue.reporter.type
+      description: The type of the reporter.
+      type: String
+    - contextPath: Bitbucket.Issue.reporter.uuid
+      description: The unique ID of the reporter.
+      type: String
+    - contextPath: Bitbucket.Issue.reporter.account_id
+      description: The account ID of the reporter.
+      type: String
+    - contextPath: Bitbucket.Issue.reporter.nickname
+      description: The nickname of the reporter.
+      type: String
+    - contextPath: Bitbucket.Issue.assignee.display_name
+      description: The display name of the assignee to the issue.
+      type: String
+    - contextPath: Bitbucket.Issue.assignee.links
+      description: Links with information about the assignee.
+      type: String
+    - contextPath: Bitbucket.Issue.assignee.type
+      description: The type of the assignee.
+      type: String
+    - contextPath: Bitbucket.Issue.assignee.uuid
+      description: The unique ID of the assignee.
+      type: String
+    - contextPath: Bitbucket.Issue.assignee.account_id
+      description: The account ID of the assignee.
+      type: String
+    - contextPath: Bitbucket.Issue.assignee.nickname
+      description: The nickname of the assignee.
+      type: String
+    - contextPath: Bitbucket.Issue.created_on
+      description: The creation date of the issue.
+      type: String
+    - contextPath: Bitbucket.Issue.edited_on
+      description: The edit date of the issue.
+      type: Unknown
+    - contextPath: Bitbucket.Issue.updated_on
+      description: The update date of the issue.
+      type: String
+    - contextPath: Bitbucket.Issue.state
+      description: The state ID of the issue.
+      type: String
+    - contextPath: Bitbucket.Issue.kind
+      description: The kind of the issue.
+      type: String
+    - contextPath: Bitbucket.Issue.milestone
+      description: The milestones in the issue.
+      type: Unknown
+    - contextPath: Bitbucket.Issue.component
+      description: The different components of the issue.
+      type: Unknown
+    - contextPath: Bitbucket.Issue.priority
+      description: The priority of the issue.
+      type: String
+    - contextPath: Bitbucket.Issue.version
+      description: The version of the issue.
+      type: Unknown
+    - contextPath: Bitbucket.Issue.votes
+      description: The votes of approval of the issue.
+      type: Number
+    - contextPath: Bitbucket.Issue.watches
+      description: The watchers of the issue.
+      type: Number
+  - name: bitbucket-pull-request-create
+    description: Creates a pull request in Bitbucket.
+    arguments:
+    - name: repo
+      description: The repository name or slug.
+    - name: title
+      required: true
+      description: The title of the new pull request.
+    - name: source_branch
+      required: true
+      description: The branch that contains the proposed changes.
+    - name: destination_branch
+      description: The branch that will contain the changes after the merge process.
+    - name: reviewer_id
+      description: A comma-separated list of account_ids of the person to review the pull request. To get the reviewer_id, use the !bitbucket-workspace-member-list command, and use the field AccountId.
+    - name: description
+      description: A description of the pull request.
+    - name: close_source_branch
+      auto: PREDEFINED
+      description: Whether the source branch should be closed after the pull request.
+      predefined:
+      - yes
+      - no
+    - name: partial_response
+      auto: PREDEFINED
+      defaultValue: true
+      description: Return a partial response if true, else return the full API response.
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: Bitbucket.PullRequest.comment_count
+      description: The number of comments there are in the pull request.
+      type: Number
+    - contextPath: Bitbucket.PullRequest.task_count
+      description: The number of tasks there are in the pull request.
+      type: Number
+    - contextPath: Bitbucket.PullRequest.type
+      description: The type of the request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.id
+      description: The pull request ID.
+      type: Number
+    - contextPath: Bitbucket.PullRequest.title
+      description: The title of the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.description
+      description: The description of the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.rendered.title.type
+      description: The type of the title of the request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.rendered.title.raw
+      description: The content of the rendered title.
+      type: String
+    - contextPath: Bitbucket.PullRequest.rendered.title.markup
+      description: The text styling type, such as markdown.
+      type: String
+    - contextPath: Bitbucket.PullRequest.rendered.title.html
+      description: The HTML format of the pull request title.
+      type: String
+    - contextPath: Bitbucket.PullRequest.rendered.description.type
+      description: The type of the pull request description
+      type: String
+    - contextPath: Bitbucket.PullRequest.rendered.description.raw
+      description: The content of the description of the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.rendered.description.markup
+      description: The text styling type, such as markdown.
+      type: String
+    - contextPath: Bitbucket.PullRequest.rendered.description.html
+      description: HTML format of the description content.
+      type: String
+    - contextPath: Bitbucket.PullRequest.state
+      description: The status of the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.merge_commit
+      description: Whether it is a merge commit.
+      type: Unknown
+    - contextPath: Bitbucket.PullRequest.close_source_branch
+      description: Whether the branch should be closed after the merge.
+      type: Boolean
+    - contextPath: Bitbucket.PullRequest.closed_by
+      description: The user who closed the pull request.
+      type: Unknown
+    - contextPath: Bitbucket.PullRequest.author.display_name
+      description: The display name of the author of the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.author.links
+      description: Links with information about the author of the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.author.type
+      description: The type of the author
+      type: String
+    - contextPath: Bitbucket.PullRequest.author.uuid
+      description: The unique universal ID of the author.
+      type: String
+    - contextPath: Bitbucket.PullRequest.author.account_id
+      description: The account ID of the author of the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.author.nickname
+      description: The nickname of the author.
+      type: String
+    - contextPath: Bitbucket.PullRequest.reason
+      description: The reason to create the request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.created_on
+      description: The creation date of the request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.updated_on
+      description: The date of the last update of the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.destination.branch.name
+      description: The name of the destination branch. This is the branch to merge to.
+      type: String
+    - contextPath: Bitbucket.PullRequest.destination.commit.type
+      description: The type of the commit.
+      type: String
+    - contextPath: Bitbucket.PullRequest.destination.commit.hash
+      description: The hash of the commit.
+      type: String
+    - contextPath: Bitbucket.PullRequest.destination.commit.links
+      description: Links with information about the commit.
+      type: String
+    - contextPath: Bitbucket.PullRequest.destination.repository.type
+      description: The type of the repository.
+      type: String
+    - contextPath: Bitbucket.PullRequest.destination.repository.full_name
+      description: The full name of the repository of the destination branch.
+      type: String
+    - contextPath: Bitbucket.PullRequest.destination.repository.links
+      description: Links with information about the repository of the destination branch.
+      type: String
+    - contextPath: Bitbucket.PullRequest.destination.repository.name
+      description: The name of the repository.
+      type: String
+    - contextPath: Bitbucket.PullRequest.destination.repository.uuid
+      description: The unique ID of the repository.
+      type: String
+    - contextPath: Bitbucket.PullRequest.source.branch.name
+      description: The name of the source branch. This is the branch with the changes that will be merged.
+      type: String
+    - contextPath: Bitbucket.PullRequest.source.commit.type
+      description: The type of the commit in the source branch.
+      type: String
+    - contextPath: Bitbucket.PullRequest.source.commit.hash
+      description: The hash of the commit in the source branch
+      type: String
+    - contextPath: Bitbucket.PullRequest.source.commit.links
+      description: Links with information about the commit in the source branch.
+      type: String
+    - contextPath: Bitbucket.PullRequest.source.repository.type
+      description: The type of the repository of the source branch.
+      type: String
+    - contextPath: Bitbucket.PullRequest.source.repository.full_name
+      description: The full name of the repository of the source branch.
+      type: String
+    - contextPath: Bitbucket.PullRequest.source.repository.links.self.href
+      description: Links with information about the repository of the source branch.
+      type: String
+    - contextPath: Bitbucket.PullRequest.source.repository.links
+      description: Links with information about the repository of the source branch.
+      type: String
+    - contextPath: Bitbucket.PullRequest.source.repository.name
+      description: The name of the repository of the source branch.
+      type: String
+    - contextPath: Bitbucket.PullRequest.source.repository.uuid
+      description: The unique ID of the repository of the source branch.
+      type: String
+    - contextPath: Bitbucket.PullRequest.reviewers.display_name
+      description: The display name of the reviewer.
+      type: String
+    - contextPath: Bitbucket.PullRequest.reviewers.links
+      description: Links with information about the reviewer.
+      type: String
+    - contextPath: Bitbucket.PullRequest.reviewers.type
+      description: The type of the reviewer
+      type: String
+    - contextPath: Bitbucket.PullRequest.reviewers.uuid
+      description: The unique id of the reviewer.
+      type: String
+    - contextPath: Bitbucket.PullRequest.reviewers.account_id
+      description: The account_id of the reviewer.
+      type: String
+    - contextPath: Bitbucket.PullRequest.reviewers.nickname
+      description: The nickname of the reviewer.
+      type: String
+    - contextPath: Bitbucket.PullRequest.participants.type
+      description: The type of the participant.
+      type: String
+    - contextPath: Bitbucket.PullRequest.participants.user.display_name
+      description: The display name of the participant.
+      type: String
+    - contextPath: Bitbucket.PullRequest.participants.user.links
+      description: Links with information about the user.
+      type: String
+    - contextPath: Bitbucket.PullRequest.participants.user.type
+      description: The type of the participant.
+      type: String
+    - contextPath: Bitbucket.PullRequest.participants.user.uuid
+      description: The unique id of the participant.
+      type: String
+    - contextPath: Bitbucket.PullRequest.participants.user.account_id
+      description: The account id of the participant.
+      type: String
+    - contextPath: Bitbucket.PullRequest.participants.user.nickname
+      description: The nickname of the participant.
+      type: String
+    - contextPath: Bitbucket.PullRequest.participants.role
+      description: The role of the participant.
+      type: String
+    - contextPath: Bitbucket.PullRequest.participants.approved
+      description: The approval status of the pull request.
+      type: Boolean
+    - contextPath: Bitbucket.PullRequest.participants.state
+      description: The state of the participant.
+      type: String
+    - contextPath: Bitbucket.PullRequest.participants.participated_on
+      description: The date of participation.
+      type: String
+    - contextPath: Bitbucket.PullRequest.links
+      description: Links to information about the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.summary.type
+      description: The type of the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.summary.raw
+      description: The description of the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.summary.markup
+      description: The text styling type, such as markdown.
+      type: String
+    - contextPath: Bitbucket.PullRequest.summary.html
+      description: The description of the pull request in HTML format.
+      type: String
+  - name: bitbucket-pull-request-update
+    description: Updates a pull request in Bitbucket.
+    arguments:
+    - name: repo
+      description: The repository name or slug.
+    - name: pull_request_id
+      required: true
+      description: The ID of the pull request to update. To get the pull_request_id, use the !bitbucket-pull-request-list command.
+    - name: title
+      description: The title of the new pull request.
+    - name: source_branch
+      description: The branch that contains the proposed changes.
+    - name: destination_branch
+      description: The branch that will contain the changes after the merge process.
+    - name: reviewer_id
+      description: The ID of the account of the person to review the pull request. To get the reviewer_id, use the bitbucket-workspace-member-list command, and use the field AccountId.
+    - name: description
+      description: A description of the pull request.
+    - name: close_source_branch
+      auto: PREDEFINED
+      description: Whether the source branch should be closed after the pull request.
+      predefined:
+      - yes
+      - no
+    - name: partial_response
+      auto: PREDEFINED
+      defaultValue: true
+      description: Return a partial response if true, else return the full API response.
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: Bitbucket.PullRequest.comment_count
+      description: The number of comments in the pull request.
+      type: Number
+    - contextPath: Bitbucket.PullRequest.task_count
+      description: The number of tasks in the pull request.
+      type: Number
+    - contextPath: Bitbucket.PullRequest.type
+      description: The type of the request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.id
+      description: The pull request ID.
+      type: Number
+    - contextPath: Bitbucket.PullRequest.title
+      description: The title of the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.description
+      description: The description of the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.rendered.title.type
+      description: The type of the title of the request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.rendered.title.raw
+      description: The content of the rendered title.
+      type: String
+    - contextPath: Bitbucket.PullRequest.rendered.title.markup
+      description: The text styling type, such as markdown.
+      type: String
+    - contextPath: Bitbucket.PullRequest.rendered.title.html
+      description: The HTML format of the pull request title.
+      type: String
+    - contextPath: Bitbucket.PullRequest.rendered.description.type
+      description: The type of the pull request description.
+      type: String
+    - contextPath: Bitbucket.PullRequest.rendered.description.raw
+      description: The content of the description of the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.rendered.description.markup
+      description: The text styling type, such as markdown.
+      type: String
+    - contextPath: Bitbucket.PullRequest.rendered.description.html
+      description: HTML format of the description content.
+      type: String
+    - contextPath: Bitbucket.PullRequest.state
+      description: The status of the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.merge_commit
+      description: Whether it is a merge commit.
+      type: Unknown
+    - contextPath: Bitbucket.PullRequest.close_source_branch
+      description: Whether the branch should be closed after the merge.
+      type: Boolean
+    - contextPath: Bitbucket.PullRequest.closed_by
+      description: The user who closed the pull request.
+      type: Unknown
+    - contextPath: Bitbucket.PullRequest.author.display_name
+      description: The display name of the author of the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.author.links
+      description: Links with information about the author of the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.author.type
+      description: The type of the author.
+      type: String
+    - contextPath: Bitbucket.PullRequest.author.uuid
+      description: The unique universal ID of the author.
+      type: String
+    - contextPath: Bitbucket.PullRequest.author.account_id
+      description: The account ID of the author of the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.author.nickname
+      description: The nickname of the author.
+      type: String
+    - contextPath: Bitbucket.PullRequest.reason
+      description: The reason to create the request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.created_on
+      description: The creation date of the request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.updated_on
+      description: The date of the last update of the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.destination.branch.name
+      description: The name of the destination branch. This is the branch to merge to.
+      type: String
+    - contextPath: Bitbucket.PullRequest.destination.commit.type
+      description: The type of the commit.
+      type: String
+    - contextPath: Bitbucket.PullRequest.destination.commit.hash
+      description: The hash of the commit.
+      type: String
+    - contextPath: Bitbucket.PullRequest.destination.commit.links
+      description: Links with information about the commit.
+      type: String
+    - contextPath: Bitbucket.PullRequest.destination.repository.type
+      description: The type of the repository of the destination branch.
+      type: String
+    - contextPath: Bitbucket.PullRequest.destination.repository.full_name
+      description: The full name of the repository of the destination branch.
+      type: String
+    - contextPath: Bitbucket.PullRequest.destination.repository.links
+      description: Links with information about the repository of the destination branch.
+      type: String
+    - contextPath: Bitbucket.PullRequest.destination.repository.name
+      description: The name of the repository of the destination branch.
+      type: String
+    - contextPath: Bitbucket.PullRequest.destination.repository.uuid
+      description: The unique ID of the repository of the destination branch.
+      type: String
+    - contextPath: Bitbucket.PullRequest.source.branch.name
+      description: The name of the source branch. That is the branch with the changes that will be merged.
+      type: String
+    - contextPath: Bitbucket.PullRequest.source.commit.type
+      description: The type of the commit in the source branch.
+      type: String
+    - contextPath: Bitbucket.PullRequest.source.commit.hash
+      description: The hash of the commit in the source branch.
+      type: String
+    - contextPath: Bitbucket.PullRequest.source.commit.links
+      description: Links with information about the commit in the source branch.
+      type: String
+    - contextPath: Bitbucket.PullRequest.source.repository.type
+      description: The type of the repository of the source branch.
+      type: String
+    - contextPath: Bitbucket.PullRequest.source.repository.full_name
+      description: The full name of the repository of the source branch.
+      type: String
+    - contextPath: Bitbucket.PullRequest.source.repository.links
+      description: Links with information about the repository of the source branch.
+      type: String
+    - contextPath: Bitbucket.PullRequest.source.repository.name
+      description: The name of the repository of the source branch.
+      type: String
+    - contextPath: Bitbucket.PullRequest.source.repository.uuid
+      description: The unique ID of the repository of the source branch.
+      type: String
+    - contextPath: Bitbucket.PullRequest.reviewers.display_name
+      description: The display name of the reviewer.
+      type: String
+    - contextPath: Bitbucket.PullRequest.reviewers.links
+      description: Links with information about the reviewer.
+      type: String
+    - contextPath: Bitbucket.PullRequest.reviewers.type
+      description: The type of the reviewer
+      type: String
+    - contextPath: Bitbucket.PullRequest.reviewers.uuid
+      description: The unique id of the reviewer.
+      type: String
+    - contextPath: Bitbucket.PullRequest.reviewers.account_id
+      description: The account_id of the reviewer.
+      type: String
+    - contextPath: Bitbucket.PullRequest.reviewers.nickname
+      description: The nickname of the reviewer.
+      type: String
+    - contextPath: Bitbucket.PullRequest.participants.type
+      description: The type of the participant.
+      type: String
+    - contextPath: Bitbucket.PullRequest.participants.user.display_name
+      description: The display name of the participant.
+      type: String
+    - contextPath: Bitbucket.PullRequest.participants.user.links
+      description: Links with information about the user.
+      type: String
+    - contextPath: Bitbucket.PullRequest.participants.user.type
+      description: The type of the participant.
+      type: String
+    - contextPath: Bitbucket.PullRequest.participants.user.uuid
+      description: The unique id of the participant.
+      type: String
+    - contextPath: Bitbucket.PullRequest.participants.user.account_id
+      description: The account id of the participant.
+      type: String
+    - contextPath: Bitbucket.PullRequest.participants.user.nickname
+      description: The nickname of the participant.
+      type: String
+    - contextPath: Bitbucket.PullRequest.participants.role
+      description: The role of the participant.
+      type: String
+    - contextPath: Bitbucket.PullRequest.participants.approved
+      description: The approval status of the pull request.
+      type: Boolean
+    - contextPath: Bitbucket.PullRequest.participants.state
+      description: The state of the participant.
+      type: Unknown
+    - contextPath: Bitbucket.PullRequest.participants.participated_on
+      description: The date of participation.
+      type: String
+    - contextPath: Bitbucket.PullRequest.links
+      description: Links to information about the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.summary.type
+      description: The type of the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.summary.raw
+      description: The description of the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.summary.markup
+      description: The text styling type, such as markdown.
+      type: String
+    - contextPath: Bitbucket.PullRequest.summary.html
+      description: The description of the pull request in HTML format.
+      type: String
+  - name: bitbucket-pull-request-list
+    description: Returns a list of the pull requests. If a state is provided than the list will contain only PRs with the wanted status. If a state is not provided, by default a list of the open pull requests will return.
+    arguments:
+    - name: repo
+      description: The repository name or slug.
+    - name: pull_request_id
+      description: The ID of the pull request to update. To get the pull_request_id, use the !bitbucket-pull-request-list command.
+    - name: state
+      auto: PREDEFINED
+      description: The state of the pull requests to see.
+      predefined:
+      - OPEN
+      - MERGED
+      - DECLINED
+      - SUPERSEDED
+      - ALL
+    - name: limit
+      description: The maximum number of items in the list. The default value is 50.
+    - name: page
+      description: The specific result page to display.
+    - name: partial_response
+      auto: PREDEFINED
+      defaultValue: true
+      description: Return a partial response if true, else return the full API response.
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: Bitbucket.PullRequest.comment_count
+      description: The number of comments in the pull request.
+      type: Number
+    - contextPath: Bitbucket.PullRequest.task_count
+      description: The number of tasks in the pull request.
+      type: Number
+    - contextPath: Bitbucket.PullRequest.type
+      description: The type of the request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.id
+      description: The pull request ID.
+      type: Number
+    - contextPath: Bitbucket.PullRequest.title
+      description: The title of the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.description
+      description: The description of the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.state
+      description: The status of the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.merge_commit.type
+      description: The type of the merge commit.
+      type: String
+    - contextPath: Bitbucket.PullRequest.merge_commit.hash
+      description: The hash of the merged commit.
+      type: String
+    - contextPath: Bitbucket.PullRequest.merge_commit.links
+      description: Links with information about the merged commit.
+      type: String
+    - contextPath: Bitbucket.PullRequest.close_source_branch
+      description: Whether the branch should be closed after the merge.
+      type: Boolean
+    - contextPath: Bitbucket.PullRequest.closed_by.display_name
+      description: The display name of the user who closed the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.closed_by.links
+      description: Links with information about the user who closed the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.closed_by.type
+      description: The type of user who closed the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.closed_by.uuid
+      description: The unique ID of the user who closed the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.closed_by.account_id
+      description: The account ID of the user who closed the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.closed_by.nickname
+      description: The nickname of the user who closed the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.author.display_name
+      description: The display name of the author of the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.author.links.self.href
+      description: Links with information about the author of the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.author.type
+      description: The type of the author.
+      type: String
+    - contextPath: Bitbucket.PullRequest.author.uuid
+      description: The unique universal ID of the author.
+      type: String
+    - contextPath: Bitbucket.PullRequest.author.account_id
+      description: The account ID of the author of the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.author.nickname
+      description: The nickname of the author.
+      type: String
+    - contextPath: Bitbucket.PullRequest.reason
+      description: The reason to create the request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.created_on
+      description: The creation date of the request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.updated_on
+      description: The date of the last update of the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.destination.branch.name
+      description: The name of the destination branch. That is the branch to merge to.
+      type: String
+    - contextPath: Bitbucket.PullRequest.destination.commit.type
+      description: The type of the commit.
+      type: String
+    - contextPath: Bitbucket.PullRequest.destination.commit.hash
+      description: The hash of the commit.
+      type: String
+    - contextPath: Bitbucket.PullRequest.destination.commit.links
+      description: Links with information about the commit.
+      type: String
+    - contextPath: Bitbucket.PullRequest.destination.repository.type
+      description: The type of the repository of the destination branch.
+      type: String
+    - contextPath: Bitbucket.PullRequest.destination.repository.full_name
+      description: The full name of the repository of the destination branch.
+      type: String
+    - contextPath: Bitbucket.PullRequest.destination.repository.links
+      description: Links with information about the repository of the destination branch.
+      type: String
+    - contextPath: Bitbucket.PullRequest.destination.repository.name
+      description: The name of the repository of the destination branch.
+      type: String
+    - contextPath: Bitbucket.PullRequest.destination.repository.uuid
+      description: The unique ID of the repository of the destination branch.
+      type: String
+    - contextPath: Bitbucket.PullRequest.source.branch.name
+      description: The name of the source branch. The branch with the changes that will be merged.
+      type: String
+    - contextPath: Bitbucket.PullRequest.source.commit.type
+      description: The type of the commit in the source branch.
+      type: String
+    - contextPath: Bitbucket.PullRequest.source.commit.hash
+      description: The hash of the commit in the source branch.
+      type: String
+    - contextPath: Bitbucket.PullRequest.source.commit.links
+      description: Links with information about the commit in the source branch.
+      type: String
+    - contextPath: Bitbucket.PullRequest.source.repository.type
+      description: The type of the repository of the source branch.
+      type: String
+    - contextPath: Bitbucket.PullRequest.source.repository.full_name
+      description: The full name of the repository of the source branch.
+      type: String
+    - contextPath: Bitbucket.PullRequest.source.repository.links
+      description: Links with information about the repository of the source branch.
+      type: String
+    - contextPath: Bitbucket.PullRequest.source.repository.name
+      description: The name of the repository of the source branch.
+      type: String
+    - contextPath: Bitbucket.PullRequest.source.repository.uuid
+      description: The unique ID of the repository of the source branch.
+      type: String
+    - contextPath: Bitbucket.PullRequest.reviewers.display_name
+      description: The display name of the reviewer.
+      type: String
+    - contextPath: Bitbucket.PullRequest.reviewers.links
+      description: Links with information about the reviewer.
+      type: String
+    - contextPath: Bitbucket.PullRequest.reviewers.type
+      description: The type of the reviewer.
+      type: String
+    - contextPath: Bitbucket.PullRequest.reviewers.uuid
+      description: The unique id of the reviewer.
+      type: String
+    - contextPath: Bitbucket.PullRequest.reviewers.account_id
+      description: The account id of the reviewer.
+      type: String
+    - contextPath: Bitbucket.PullRequest.reviewers.nickname
+      description: The nickname of the reviewer.
+      type: String
+    - contextPath: Bitbucket.PullRequest.participants.type
+      description: The type of the participant.
+      type: String
+    - contextPath: Bitbucket.PullRequest.participants.user.display_name
+      description: The display name of the participant.
+      type: String
+    - contextPath: Bitbucket.PullRequest.participants.user.links
+      description: Links with information about the user.
+      type: String
+    - contextPath: Bitbucket.PullRequest.participants.user.type
+      description: The type of the participant.
+      type: String
+    - contextPath: Bitbucket.PullRequest.participants.user.uuid
+      description: The unique id of the participant.
+      type: String
+    - contextPath: Bitbucket.PullRequest.participants.user.account_id
+      description: The account id of the participant.
+      type: String
+    - contextPath: Bitbucket.PullRequest.participants.user.nickname
+      description: The nickname of the participant.
+      type: String
+    - contextPath: Bitbucket.PullRequest.participants.role
+      description: The role of the participant.
+      type: String
+    - contextPath: Bitbucket.PullRequest.participants.approved
+      description: The approval status of the pull request.
+      type: Boolean
+    - contextPath: Bitbucket.PullRequest.participants.state
+      description: The state of the participant.
+      type: Unknown
+    - contextPath: Bitbucket.PullRequest.participants.participated_on
+      description: The date of participation.
+      type: String
+    - contextPath: Bitbucket.PullRequest.links
+      description: Links to information about the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.summary.type
+      description: The type of the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.summary.raw
+      description: The description of the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequest.summary.markup
+      description: The text styling type, such as markdown.
+      type: String
+    - contextPath: Bitbucket.PullRequest.summary.html
+      description: The description of the pull request in HTML format.
+      type: String
+  - name: bitbucket-issue-comment-create
+    description: Creates a comment on an issue in Bitbucket.
+    arguments:
+    - name: repo
+      description: The repository name or slug.
+    - name: issue_id
+      required: true
+      description: The ID of the issue to comment on. To get the issue_id, use the !bitbucket-issue-list command.
+    - name: content
+      required: true
+      description: The content of the comment.
+    - name: partial_response
+      auto: PREDEFINED
+      defaultValue: true
+      description: Return a partial response if true, else return the full API response.
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: Bitbucket.IssueComment.type
+      description: The action type.
+      type: String
+    - contextPath: Bitbucket.IssueComment.id
+      description: The ID of the comment on the issue.
+      type: Number
+    - contextPath: Bitbucket.IssueComment.created_on
+      description: The creation date of the comment.
+      type: String
+    - contextPath: Bitbucket.IssueComment.updated_on
+      description: When the comment was updated.
+      type: Unknown
+    - contextPath: Bitbucket.IssueComment.content.type
+      description: The type of the content.
+      type: String
+    - contextPath: Bitbucket.IssueComment.content.raw
+      description: The content of the comment.
+      type: String
+    - contextPath: Bitbucket.IssueComment.content.markup
+      description: The text styling type, such as markdown.
+      type: String
+    - contextPath: Bitbucket.IssueComment.content.html
+      description: The content of the comment in HTML format.
+      type: String
+    - contextPath: Bitbucket.IssueComment.user.display_name
+      description: The display name of the user who created the comment.
+      type: String
+    - contextPath: Bitbucket.IssueComment.user.links
+      description: Links with information about the user who created the comment.
+      type: String
+    - contextPath: Bitbucket.IssueComment.user.type
+      description: The type of the user who created the comment.
+      type: String
+    - contextPath: Bitbucket.IssueComment.user.uuid
+      description: The unique ID of the user who created the comment.
+      type: String
+    - contextPath: Bitbucket.IssueComment.user.account_id
+      description: The account ID of the user who created the comment.
+      type: String
+    - contextPath: Bitbucket.IssueComment.user.nickname
+      description: The nickname of the user who created the comment.
+      type: String
+    - contextPath: Bitbucket.IssueComment.issue.type
+      description: The type of the issue.
+      type: String
+    - contextPath: Bitbucket.IssueComment.issue.id
+      description: The ID of the issue.
+      type: Number
+    - contextPath: Bitbucket.IssueComment.issue.repository.type
+      description: The type of the repository connected to the relevant issue.
+      type: String
+    - contextPath: Bitbucket.IssueComment.issue.repository.full_name
+      description: The full name of the repository connected to the relevant issue.
+      type: String
+    - contextPath: Bitbucket.IssueComment.issue.repository.links
+      description: Links to information about the relevant repository.
+      type: String
+    - contextPath: Bitbucket.IssueComment.issue.repository.name
+      description: The name of the relevant repository.
+      type: String
+    - contextPath: Bitbucket.IssueComment.issue.repository.uuid
+      description: The unique ID of the relevant repository.
+      type: String
+    - contextPath: Bitbucket.IssueComment.issue.links
+      description: Links with information about the issue.
+      type: String
+    - contextPath: Bitbucket.IssueComment.issue.title
+      description: The title of the issue.
+      type: String
+    - contextPath: Bitbucket.IssueComment.links
+      description: Links to information about the comment.
+      type: String
+  - name: bitbucket-issue-comment-delete
+    description: Deletes a comment on an issue in Bitbucket.
+    arguments:
+    - name: repo
+      description: The repository name or slug.
+    - name: issue_id
+      required: true
+      description: The ID of the issue to comment on. To get the issue_id, use the !bitbucket-issue-list command.
+    - name: comment_id
+      required: true
+      description: The ID of the comment to delete. To get the comment_id, use the !bitbucket-issue-comment-list command.
+  - name: bitbucket-issue-comment-list
+    description: Returns a list of comments on a specific issue. If a comment_id is given it will return information only about the specific comment.
+    arguments:
+    - name: repo
+      description: The repository name or slug.
+    - name: issue_id
+      required: true
+      description: The ID of the issue to comment on. To get the issue_id, use the bitbucket-issue-list command.
+    - name: comment_id
+      description: The ID of the comment to delete. To get the comment_id, use the !bitbucket-issue-comment-list command without any parameters.
+    - name: limit
+      description: The maximum number of items in the list. The default value is 50.
+    - name: page
+      description: The specific result page to display.
+    - name: partial_response
+      auto: PREDEFINED
+      defaultValue: true
+      description: Return a partial response if true, else return the full API response.
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: Bitbucket.IssueComment.type
+      description: The action type.
+      type: String
+    - contextPath: Bitbucket.IssueComment.id
+      description: The ID of comment on the issue.
+      type: Number
+    - contextPath: Bitbucket.IssueComment.created_on
+      description: The creation date of the comment.
+      type: String
+    - contextPath: Bitbucket.IssueComment.updated_on
+      description: When the comment was updated.
+      type: Unknown
+    - contextPath: Bitbucket.IssueComment.content.type
+      description: The type of the content.
+      type: String
+    - contextPath: Bitbucket.IssueComment.content.raw
+      description: The content of the comment.
+      type: String
+    - contextPath: Bitbucket.IssueComment.content.markup
+      description: The text styling type, such as markdown.
+      type: String
+    - contextPath: Bitbucket.IssueComment.content.html
+      description: The content of the comment in HTML format.
+      type: String
+    - contextPath: Bitbucket.IssueComment.user.display_name
+      description: The display name of the user who created the comment.
+      type: String
+    - contextPath: Bitbucket.IssueComment.user.links
+      description: Links with information about the user who created the comment.
+      type: String
+    - contextPath: Bitbucket.IssueComment.user.type
+      description: The type of the user who created the comment.
+      type: String
+    - contextPath: Bitbucket.IssueComment.user.uuid
+      description: The unique ID of the user who created the comment.
+      type: String
+    - contextPath: Bitbucket.IssueComment.user.account_id
+      description: The account ID of the user who created the comment.
+      type: String
+    - contextPath: Bitbucket.IssueComment.user.nickname
+      description: The nickname of the user who created the comment.
+      type: String
+    - contextPath: Bitbucket.IssueComment.issue.type
+      description: The type of the issue.
+      type: String
+    - contextPath: Bitbucket.IssueComment.issue.id
+      description: The ID of the issue.
+      type: Number
+    - contextPath: Bitbucket.IssueComment.issue.repository.type
+      description: The type of the repository connected to the relevant issue.
+      type: String
+    - contextPath: Bitbucket.IssueComment.issue.repository.full_name
+      description: The full name of the repository connected to the relevant issue.
+      type: String
+    - contextPath: Bitbucket.IssueComment.issue.repository.links
+      description: Links to information about the relevant repository.
+      type: String
+    - contextPath: Bitbucket.IssueComment.issue.repository.name
+      description: The name of the relevant repository.
+      type: String
+    - contextPath: Bitbucket.IssueComment.issue.repository.uuid
+      description: The unique ID of the relevant repository.
+      type: String
+    - contextPath: Bitbucket.IssueComment.issue.links
+      description: Links with information about the issue.
+      type: String
+    - contextPath: Bitbucket.IssueComment.issue.title
+      description: The title of the issue.
+      type: String
+    - contextPath: Bitbucket.IssueComment.links
+      description: Links to information about the comment.
+      type: String
+  - name: bitbucket-issue-comment-update
+    description: Updates a specific comment on a given issue.
+    arguments:
+    - name: repo
+      description: The repository name or slug.
+    - name: issue_id
+      required: true
+      description: The ID of the issue to comment on. To get the issue_id, use the !bitbucket-issue-list command.
+    - name: comment_id
+      required: true
+      description: The ID of the comment to delete. To get the issue_id, use the !bitbucket-issue-comment-list command.
+    - name: content
+      required: true
+      description: The new content of the comment.
+    - name: partial_response
+      auto: PREDEFINED
+      defaultValue: true
+      description: Return a partial response if true, else return the full API response.
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: Bitbucket.IssueComment.type
+      description: The action type.
+      type: String
+    - contextPath: Bitbucket.IssueComment.id
+      description: The ID of the comment on the issue.
+      type: Number
+    - contextPath: Bitbucket.IssueComment.created_on
+      description: The creation date of the comment.
+      type: String
+    - contextPath: Bitbucket.IssueComment.updated_on
+      description: When the comment was updated.
+      type: Unknown
+    - contextPath: Bitbucket.IssueComment.content.type
+      description: The type of the content.
+      type: String
+    - contextPath: Bitbucket.IssueComment.content.raw
+      description: The content of the comment.
+      type: String
+    - contextPath: Bitbucket.IssueComment.content.markup
+      description: The text styling type, such as markdown.
+      type: String
+    - contextPath: Bitbucket.IssueComment.content.html
+      description: The content of the comment in HTML format.
+      type: String
+    - contextPath: Bitbucket.IssueComment.user.display_name
+      description: The display name of the user who created the comment.
+      type: String
+    - contextPath: Bitbucket.IssueComment.user.links
+      description: Links with information about the user who created the comment.
+      type: String
+    - contextPath: Bitbucket.IssueComment.user.type
+      description: The type of the user who created the comment.
+      type: String
+    - contextPath: Bitbucket.IssueComment.user.uuid
+      description: The unique ID of the user who created the comment.
+      type: String
+    - contextPath: Bitbucket.IssueComment.user.account_id
+      description: The account ID of the user who created the comment.
+      type: String
+    - contextPath: Bitbucket.IssueComment.user.nickname
+      description: The nickname of the user who created the comment.
+      type: String
+    - contextPath: Bitbucket.IssueComment.issue.type
+      description: The type of the issue.
+      type: String
+    - contextPath: Bitbucket.IssueComment.issue.id
+      description: The ID of the issue.
+      type: Number
+    - contextPath: Bitbucket.IssueComment.issue.repository.type
+      description: The type of the repository connected to the relevant issue.
+      type: String
+    - contextPath: Bitbucket.IssueComment.issue.repository.full_name
+      description: The full name of the repository connected to the relevant issue.
+      type: String
+    - contextPath: Bitbucket.IssueComment.issue.repository.links
+      description: Links to information about the relevant repository.
+      type: String
+    - contextPath: Bitbucket.IssueComment.issue.repository.name
+      description: The name of the relevant repository.
+      type: String
+    - contextPath: Bitbucket.IssueComment.issue.repository.uuid
+      description: The unique ID of the relevant repository.
+      type: String
+    - contextPath: Bitbucket.IssueComment.issue.links
+      description: Links with information about the issue.
+      type: String
+    - contextPath: Bitbucket.IssueComment.issue.title
+      description: The title of the issue.
+      type: String
+    - contextPath: Bitbucket.IssueComment.links
+      description: Links to information about the comment.
+      type: String
+  - name: bitbucket-pull-request-comment-create
+    description: Creates a new comment on a pull request.
+    arguments:
+    - name: repo
+      description: The repository name or slug.
+    - name: pull_request_id
+      required: true
+      description: The ID of the pull request to comment on. To get the pull request ID, use the  !bitbucket-pull-request-list command.
+    - name: content
+      required: true
+      description: The content of the comment.
+    - name: partial_response
+      auto: PREDEFINED
+      defaultValue: true
+      description: Return a partial response if true, else return the full API response.
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: Bitbucket.PullRequestComment.id
+      description: The ID of the comment in the pull request.
+      type: Number
+    - contextPath: Bitbucket.PullRequestComment.created_on
+      description: The creation date of the pull request comment.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.updated_on
+      description: The update date of the pull request comment.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.content.type
+      description: The type of the content, such as rendered.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.content.raw
+      description: The actual content of the comment.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.content.markup
+      description: The text styling type, such as markdown.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.content.html
+      description: The content of the comment in HTML format.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.user.display_name
+      description: The display name of the user who created the comment.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.user.links
+      description: Links to information about the user
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.user.type
+      description: The type of the user.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.user.uuid
+      description: The unique ID of the user.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.user.account_id
+      description: The account ID of the user.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.user.nickname
+      description: The nickname of the user.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.deleted
+      description: Whether the comment was deleted.
+      type: Boolean
+    - contextPath: Bitbucket.PullRequestComment.type
+      description: The type of the action.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.links
+      description: Links to information about the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.pullrequest.type
+      description: The type of the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.pullrequest.id
+      description: The ID of the pull request.
+      type: Number
+    - contextPath: Bitbucket.PullRequestComment.pullrequest.title
+      description: The title of the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.pullrequest.links
+      description: Links to information about the pull request.
+      type: String
+  - name: bitbucket-pull-request-comment-list
+    description: Returns a list of comments of a specific pull request.
+    arguments:
+    - name: repo
+      description: The repository name or slug.
+    - name: pull_request_id
+      required: true
+      description: The ID of the pull request. To get the pull_request_id, use the !bitbucket-pull-request-list command.
+    - name: comment_id
+      description: The ID of the comment. To get the comment_id, use the !bitbucket-pull-request-comment-list command.
+    - name: limit
+      description: The maximum number of items in the list. The default value is 50.
+    - name: page
+      description: The specific result page to display.
+    - name: partial_response
+      auto: PREDEFINED
+      defaultValue: true
+      description: Return a partial response if true, else return the full API response.
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: Bitbucket.PullRequestComment.id
+      description: The ID of the comment in the pull request.
+      type: Number
+    - contextPath: Bitbucket.PullRequestComment.created_on
+      description: The creation date of the pull request comment.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.updated_on
+      description: The update date of the pull request comment.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.content.type
+      description: The type of the content, such as rendered.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.content.raw
+      description: The actual content of the comment.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.content.markup
+      description: The text styling type, such as markdown.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.content.html
+      description: The content of the comment in HTML format.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.user.display_name
+      description: The display name of the user who created the comment.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.user.links
+      description: Links to information about the user.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.user.type
+      description: The type of the user.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.user.uuid
+      description: The unique ID of the user.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.user.account_id
+      description: The account ID of the user.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.user.nickname
+      description: The nickname of the user.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.deleted
+      description: Whether the comment was deleted.
+      type: Boolean
+    - contextPath: Bitbucket.PullRequestComment.type
+      description: The type of the action.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.links
+      description: Links to information about the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.pullrequest.type
+      description: The type of the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.pullrequest.id
+      description: The ID of the pull request.
+      type: Number
+    - contextPath: Bitbucket.PullRequestComment.pullrequest.title
+      description: The title of the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.pullrequest.links
+      description: Links to information about the pull request.
+      type: String
+  - name: bitbucket-pull-request-comment-update
+    description: Updates a specific comment in a specific pull request.
+    arguments:
+    - name: repo
+      description: The repository name or slug.
+    - name: pull_request_id
+      required: true
+      description: The ID of the pull request. To get the pull request_id use, the !bitbucket-pull-request-list command.
+    - name: comment_id
+      required: true
+      description: The ID of the comment. To get the comment_id, use the !bitbucket-pull-request-comment-list command.
+    - name: content
+      required: true
+      description: The ID of the comment.
+    - name: partial_response
+      auto: PREDEFINED
+      defaultValue: true
+      description: Return a partial response if true, else return the full API response.
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: Bitbucket.PullRequestComment.id
+      description: The ID of the comment in the pull request.
+      type: Number
+    - contextPath: Bitbucket.PullRequestComment.created_on
+      description: The creation date of the pull request comment.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.updated_on
+      description: The update date of the pull request comment.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.content.type
+      description: The type of the content, such as rendered.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.content.raw
+      description: The actual content of the comment.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.content.markup
+      description: The text styling type, such as markdown.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.content.html
+      description: The content of the comment in HTML format.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.user.display_name
+      description: The display name of the user who created the comment.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.user.links
+      description: Links to information about the user.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.user.type
+      description: The type of the user.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.user.uuid
+      description: The unique ID of the user.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.user.account_id
+      description: The account ID of the user.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.user.nickname
+      description: The nickname of the user.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.deleted
+      description: Whether the comment was deleted.
+      type: Boolean
+    - contextPath: Bitbucket.PullRequestComment.type
+      description: The type of the action.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.links
+      description: Links to information about the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.pullrequest.type
+      description: The type of the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.pullrequest.id
+      description: The ID of the pull request.
+      type: Number
+    - contextPath: Bitbucket.PullRequestComment.pullrequest.title
+      description: The title of the pull request.
+      type: String
+    - contextPath: Bitbucket.PullRequestComment.pullrequest.links
+      description: Links to information about the pull request.
+      type: String
+  - name: bitbucket-pull-request-comment-delete
+    description: Deletes a specific comment in a specific pull request.
+    arguments:
+    - name: repo
+      description: The repository name or slug.
+    - name: pull_request_id
+      required: true
+      description: The ID of the pull request. To get the pull_request_id, use the !bitbucket-pull-request-list command.
+    - name: comment_id
+      required: true
+      description: The ID of the comment. To get the comment_id, use the !bitbucket-pull-request-comment-list command.
+  - name: bitbucket-workspace-member-list
+    description: Returns a list of all the members in the workspace.
+    arguments:
+    - name: limit
+      description: The maximum number of items in the list. The default value is 50.
+    - name: page
+      description: The specific result page to display.
+    - name: partial_response
+      auto: PREDEFINED
+      defaultValue: true
+      description: Return a partial response if true, else return the full API response.
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: Bitbucket.WorkspaceMember.type
+      description: The action type.
+      type: String
+    - contextPath: Bitbucket.WorkspaceMember.user.display_name
+      description: The display name of the user.
+      type: String
+    - contextPath: Bitbucket.WorkspaceMember.user.links
+      description: Links with information about the user.
+      type: String
+    - contextPath: Bitbucket.WorkspaceMember.user.type
+      description: The type of the user.
+      type: String
+    - contextPath: Bitbucket.WorkspaceMember.user.uuid
+      description: The unique ID of the user.
+      type: String
+    - contextPath: Bitbucket.WorkspaceMember.user.account_id
+      description: The account ID of the user.
+      type: String
+    - contextPath: Bitbucket.WorkspaceMember.user.nickname
+      description: The nickname of the user.
+      type: String
+    - contextPath: Bitbucket.WorkspaceMember.workspace.type
+      description: The type of the workspace.
+      type: String
+    - contextPath: Bitbucket.WorkspaceMember.workspace.uuid
+      description: The unique ID of the workspace.
+      type: String
+    - contextPath: Bitbucket.WorkspaceMember.workspace.name
+      description: The name of the workspace.
+      type: String
+    - contextPath: Bitbucket.WorkspaceMember.workspace.slug
+      description: The slug of the workspace.
+      type: String
+    - contextPath: Bitbucket.WorkspaceMember.workspace.links
+      description: Links to information about the workspace.
+      type: String
+  runonce: false
+  script: "-"
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.12.63474
+tests:
+- Test_Bitbucket

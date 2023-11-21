@@ -1,0 +1,21 @@
+commonfields:
+  id: hideFieldsOnNewIncident
+  version: -1
+name: hideFieldsOnNewIncident
+fromversion: 5.0.0
+script: ''
+type: python
+subtype: python3
+tags:
+- field-display
+comment: When you apply this script to an incident field, that incident field is hidden for new incidents, and it displays in edit mode.
+enabled: true
+args:
+- name: incident
+  description: Incident object
+- name: field
+  description: Field definition object
+scripttarget: 0
+dockerimage: demisto/python3:3.10.12.63474
+tests:
+- No tests (auto formatted)

@@ -20,5 +20,4 @@ outputs:
 - contextPath: "no"
   description: The list does not contain the value
 scripttarget: 0
-runonce: false
 fromversion: 5.0.0

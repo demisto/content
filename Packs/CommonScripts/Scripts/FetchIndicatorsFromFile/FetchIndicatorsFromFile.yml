@@ -1,0 +1,70 @@
+args:
+- description: The file entry_id from which to fetch the indicators.
+  name: entry_id
+  required: true
+- auto: PREDEFINED
+  defaultValue: 'True'
+  description: Whether to auto-detect the indicator type from the file.
+  name: auto_detect
+  predefined:
+  - 'True'
+  - 'False'
+  required: true
+- auto: PREDEFINED
+  description: Sets a default indicator type.
+  name: default_type
+  predefined:
+  - CVE
+  - Domain
+  - Email
+  - File
+  - FQDN
+  - File MD5
+  - File SHA-1
+  - File SHA-256
+  - Host
+  - IP
+  - CIDR
+  - IPv6
+  - IPv6CIDR
+  - Registry Key
+  - ssdeep
+  - URL
+  - Account
+- description: The maximum number of indicators to fetch. If this argument is not specified, will parse the entire file.
+  name: limit
+- defaultValue: '0'
+  description: The index for the first indicator to fetch.
+  name: offset
+- defaultValue: '1'
+  description: Only for spreadsheet files. The column number in the spreadsheet that contains the indicators. The first column number is 1. If this argument is not specified, will use at the first column.
+  name: indicator_column_number
+- description: Only for spreadsheet files. The name of the Excel sheet to fetch indicators from. If this argument is not specified, will fetch from the first sheet of the workbook.
+  name: sheet_name
+- description: Only for spreadsheet files. The column number in the spreadsheet that contains the indicator types. The first column number is 1.
+  name: indicator_type_column_number
+- defaultValue: '1'
+  description: Only for spreadsheet files. The starting row of the spreadsheet to fetch from. The first row is 1.
+  name: starting_row
+comment: Fetches indicators from a file. Supports TXT, XLS, XLSX, CSV, DOC and DOCX file types.
+commonfields:
+  id: FetchIndicatorsFromFile
+  version: -1
+name: FetchIndicatorsFromFile
+outputs:
+- contextPath: Indicator.value
+  description: The value of the indicator.
+  type: String
+- contextPath: Indicator.type
+  description: The indicator type.
+  type: String
+script: '-'
+subtype: python3
+tags:
+- indicators
+timeout: '0'
+type: python
+dockerimage: demisto/py3-tools:1.0.0.46591
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

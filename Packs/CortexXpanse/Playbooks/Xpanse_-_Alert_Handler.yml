@@ -1,0 +1,265 @@
+id: Xpanse - Alert Handler
+version: -1
+name: Xpanse - Alert Handler
+description: Default alert handling for Cortex Xpanse alerts.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 214bf91b-ba2c-4bc0-8f79-b8fa030361a1
+    type: start
+    task:
+      id: 214bf91b-ba2c-4bc0-8f79-b8fa030361a1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: ae2ce6f3-734a-47ff-84f6-61606557ffea
+    type: playbook
+    task:
+      id: ae2ce6f3-734a-47ff-84f6-61606557ffea
+      version: -1
+      name: Xpanse - NMap - Detect Service
+      description: Looks at what ASM sub-type the alert is and uses NMap to do a validation scan.
+      playbookName: Xpanse - NMap - Detect Service
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      RemoteIP:
+        complex:
+          root: incident
+          accessor: xpanseip
+      RemotePort:
+        complex:
+          root: incident
+          accessor: xpanseport
+      ScanNumber:
+        simple: "1"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: b216af93-2946-42a9-87b8-be99ddc48659
+    type: title
+    task:
+      id: b216af93-2946-42a9-87b8-be99ddc48659
+      version: -1
+      name: Complete
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 0a1ed7f5-fc19-4362-87c5-686806c40cbd
+    type: playbook
+    task:
+      id: 0a1ed7f5-fc19-4362-87c5-686806c40cbd
+      version: -1
+      name: Xpanse - Alert Self-Enrichment
+      description: Enrichment on the alert itself using Cortex Xpanse APIs.
+      playbookName: Xpanse - Alert Self-Enrichment
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      RemoteIP:
+        complex:
+          root: incident
+          accessor: xpanseip
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: eb478d2a-e73f-4840-8682-b02f063b587a
+    type: playbook
+    task:
+      id: eb478d2a-e73f-4840-8682-b02f063b587a
+      version: -1
+      name: Xpanse - Alert Enrichment
+      playbookName: Xpanse - Alert Enrichment
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 6f78d9b9-f90e-4c99-833d-742e6697d336
+    type: title
+    task:
+      id: 6f78d9b9-f90e-4c99-833d-742e6697d336
+      version: -1
+      name: Is the service still exposed?
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 9d7740e1-a0b5-4fc5-8c01-e5e0b876bee4
+    type: title
+    task:
+      id: 9d7740e1-a0b5-4fc5-8c01-e5e0b876bee4
+      version: -1
+      name: Asset and Alert Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1125,
+        "width": 380,
+        "x": 450,
+        "y": -80
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

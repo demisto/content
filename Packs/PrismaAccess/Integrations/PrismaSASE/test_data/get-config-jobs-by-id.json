@@ -1,0 +1,29 @@
+{
+    "data": [
+        {
+            "details": "{\"info\":[],\"errors\":[],\"warnings\":[]}",
+            "end_ts": "2022-07-13 20:44:44",
+            "id": "1",
+            "insert_ts": "2022-07-13 20:43:08",
+            "job_result": "0",
+            "job_status": "1",
+            "job_type": "53",
+            "last_update": "2022-07-13 20:44:44",
+            "opaque_int": "0",
+            "opaque_str": "",
+            "owner": "owner",
+            "parent_id": "0",
+            "percent": "99",
+            "result_i": "0",
+            "result_str": "PEND",
+            "session_id": "",
+            "start_ts": "2022-07-13 20:43:08",
+            "status_i": "1",
+            "status_str": "ACT",
+            "summary": "",
+            "type_i": "53",
+            "type_str": "CommitAndPush",
+            "uname": "user@example.com"
+        }
+    ]
+}

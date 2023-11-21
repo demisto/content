@@ -1,0 +1,13 @@
+{
+  "integration_agents": [
+    {
+      "id": 35,
+      "created_at": 1671156452147,
+      "updated_at": 1671156642554,
+      "name": "testcortex",
+      "status": "Alive",
+      "installed": true,
+      "token_expired": false
+    }
+  ]
+}

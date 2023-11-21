@@ -1,0 +1,2109 @@
+id: DLP Incident Feedback Loop
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: DLP Incident Feedback Loop
+description: This playbook handles Palo Alto Networks Enterprise DLP incidents. It Collects feedback from the user about blocked activities and automates the approval process, if required. Supported communication methods are Slack, Microsoft Teams and Email.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e30f57ca-15b6-48f0-84aa-f0577c21d95e
+    type: start
+    task:
+      id: e30f57ca-15b6-48f0-84aa-f0577c21d95e
+      version: -1
+      name: start_task
+      type: start
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "84"
+      - "54"
+      - "75"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 815,
+          "y": -430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 04f42348-9370-46d9-8d26-947a028f312a
+    type: title
+    task:
+      id: 04f42348-9370-46d9-8d26-947a028f312a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 4240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 3bf112c2-5c6a-48ab-8601-a3c80d565aa2
+    type: regular
+    task:
+      id: 3bf112c2-5c6a-48ab-8601-a3c80d565aa2
+      version: -1
+      name: Call API to save status
+      description: Call DLP API to save user feedback for the incident.
+      script: '|||pan-dlp-update-incident'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "99"
+    scriptarguments:
+      dlp_channel:
+        simple: ${incident.pandlpchannel}
+      feedback:
+        simple: ${incident.pandlpincidentfeedback}
+      incident_id:
+        simple: ${incident.pandlpincidentid}
+      region:
+        simple: ${incident.pandlpincidentregion}
+      report_id:
+        simple: ${incident.pandlpreportid}
+      user_id:
+        simple: ${incident.sourceusername}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 625,
+          "y": 3190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 8444a46b-5234-4bb0-8bd0-1e3c209c8578
+    type: regular
+    task:
+      id: 8444a46b-5234-4bb0-8bd0-1e3c209c8578
+      version: -1
+      name: Send Slack notice about exemption approval
+      description: Send the user a Slack message about the temporary exemption on the file.
+      script: SlackV3|||send-notification
+      type: regular
+      iscommand: true
+      brand: SlackV3
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      blocks:
+        simple: "[\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"text\": {\n\t\t\t\t\"type\": \"mrkdwn\",\n\t\t\t\t\"text\": \"Thank you for the request. Your temporary exemption for ${incident.filename} was approved by ${incident.approver} and is enabled now for ${Exemption.duration}.\"\n\t\t\t}\n\t\t}\n\t]"
+      to:
+        simple: ${Slack.User.Email}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 3970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 41fa4cc1-14f8-444d-84bb-10c4202df7c9
+    type: regular
+    task:
+      id: 41fa4cc1-14f8-444d-84bb-10c4202df7c9
+      version: -1
+      name: Set feedback to "Exception Granted"
+      description: Set feedback to "Exception Granted".
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      pandlpincidentfeedback:
+        simple: EXCEPTION_GRANTED
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1930,
+          "y": 2840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: c06cf63e-0b10-4efa-815f-54394f0e54db
+    type: regular
+    task:
+      id: c06cf63e-0b10-4efa-815f-54394f0e54db
+      version: -1
+      name: Set feedback to "Exception not requested"
+      description: Set feedback to "Exception not requested".
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      pandlpincidentfeedback:
+        simple: EXCEPTION_NOT_REQUESTED
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 815,
+          "y": 1580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 0d8eb032-dc3c-4fa3-8775-6d5e2ece20cc
+    type: condition
+    task:
+      id: 0d8eb032-dc3c-4fa3-8775-6d5e2ece20cc
+      description: ""
+      version: -1
+      name: Was exception request approved?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "No":
+      - "103"
+      "yes":
+      - "97"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.pandlpincidentfeedback
+            iscontext: true
+          right:
+            value:
+              simple: EXCEPTION_GRANTED
+    - label: "No"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.pandlpincidentfeedback
+            iscontext: true
+          right:
+            value:
+              simple: EXCEPTION_DENIED
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 625,
+          "y": 3550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: f21719d2-f14d-4323-8097-70b5408a7a70
+    type: condition
+    task:
+      id: f21719d2-f14d-4323-8097-70b5408a7a70
+      description: ""
+      version: -1
+      name: Is action "block"?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "85"
+      "yes":
+      - "84"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.pandlpaction
+            iscontext: true
+          right:
+            value:
+              simple: block
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: aa9e011e-decb-4f4b-8efd-47543cef9927
+    type: regular
+    task:
+      id: aa9e011e-decb-4f4b-8efd-47543cef9927
+      version: -1
+      name: Send Teams notice about exemption approval
+      description: |-
+        Sends a message to the specified teams.
+        To mention a user in the message, add a semicolon ";" at the end of the user mentioned. For example: @Bruce Willis;
+      script: Microsoft Teams|||send-notification
+      type: regular
+      iscommand: true
+      brand: Microsoft Teams
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      adaptive_card:
+        simple: "{\n\t\"contentType\": \"application/vnd.microsoft.card.adaptive\",\n\t\"content\": {\n\t\t\"$schema\": \"http://adaptivecards.io/schemas/adaptive-card.json\",\n\t\t\"version\": \"1.0\",\n\t\t\"type\": \"AdaptiveCard\",\n\t\t\"msteams\": {\n\t\t\t\"width\": \"Full\"\n\t\t},\n\t\t\"body\": [{\n\t\t\t\"type\": \"TextBlock\",\n\t\t\t\"text\": \"Thank you for the request. Your temporary exemption for ${incident.filename} was approved by ${incident.approver} and is enabled now for ${Exemption.duration}.\",\n\t\t\t\"wrap\": true\n\t\t}]\n\t}\n}"
+      team_member:
+        complex:
+          root: Account
+          accessor: Email
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 3970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: 0ba6af1c-840b-47a4-8d1b-2ed2e8b7d5e2
+    type: title
+    task:
+      id: 0ba6af1c-840b-47a4-8d1b-2ed2e8b7d5e2
+      version: -1
+      name: Get approval
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "96"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1650,
+          "y": 1530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: e72f5c68-80d1-4b8f-8599-4799c41d450f
+    type: condition
+    task:
+      id: e72f5c68-80d1-4b8f-8599-4799c41d450f
+      description: ""
+      version: -1
+      name: Manager email found?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "95"
+      "yes":
+      - "77"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: UserManagerEmail
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1650,
+          "y": 1900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: 8d9db002-e04e-4e72-89e8-07d299e072ba
+    type: title
+    task:
+      id: 8d9db002-e04e-4e72-89e8-07d299e072ba
+      version: -1
+      name: Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "76"
+      - "89"
+      - "111"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1550,
+          "y": -230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: afe484bf-ad9d-4456-8bb6-65062c75b54a
+    type: playbook
+    task:
+      id: afe484bf-ad9d-4456-8bb6-65062c75b54a
+      version: -1
+      name: Account Enrichment - Generic v2.1
+      description: |-
+        Enrich accounts using one or more integrations.
+        Supported integrations:
+        - Active Directory
+        - SailPoint IdentityNow
+        - SailPoint IdentityIQ
+        - PingOne
+        - Okta
+        - AWS IAM
+
+        Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations). For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
+      playbookName: Account Enrichment - Generic v2.1
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "90"
+    scriptarguments:
+      Username:
+        complex:
+          root: incident
+          accessor: sourceusername
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1055,
+          "y": -90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: 80bf32db-d5e2-447d-85ba-8945e6785b7b
+    type: playbook
+    task:
+      id: 80bf32db-d5e2-447d-85ba-8945e6785b7b
+      version: -1
+      name: DLP - Get Approval
+      description: Get an approver response for an exemption request from a user.
+      playbookName: DLP - Get Approval
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "107"
+    scriptarguments:
+      Approver:
+        complex:
+          root: UserManagerEmail
+      ApproverMessageApp:
+        complex:
+          root: inputs.ApproverMessageApp
+      Detections:
+        complex:
+          root: DLP.Report.DataPatternMatches.Detections
+          accessor: detection
+          transformers:
+          - operator: StringifyArray
+      SendMailInstance:
+        complex:
+          root: inputs.SendMailInstance
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1650,
+          "y": 2100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: 87083a52-82ef-4449-89ea-7d492e2698bf
+    type: playbook
+    task:
+      id: 87083a52-82ef-4449-89ea-7d492e2698bf
+      version: -1
+      name: DLP - Get Approval
+      description: Get an approver response for an exemption request from a user.
+      playbookName: DLP - Get Approval
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "108"
+    scriptarguments:
+      Approver:
+        complex:
+          root: inputs.ApprovalTarget
+      ApproverMessageApp:
+        complex:
+          root: inputs.ApproverMessageApp
+      Detections:
+        complex:
+          root: DLP.Report.DataPatternMatches.Detections
+          accessor: detection
+          transformers:
+          - operator: StringifyArray
+      SendMailInstance:
+        complex:
+          root: inputs.SendMailInstance
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 980,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "80":
+    id: "80"
+    taskid: 10b38d4a-5611-468b-8085-665b0314e5f9
+    type: condition
+    task:
+      id: 10b38d4a-5611-468b-8085-665b0314e5f9
+      description: ""
+      version: -1
+      name: What should be next action?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "82"
+      Approve:
+      - "41"
+      Deny:
+      - "81"
+    separatecontext: false
+    conditions:
+    - label: Deny
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.ActionOnApproverNotFound
+            iscontext: true
+          right:
+            value:
+              simple: Deny
+          ignorecase: true
+    - label: Approve
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.ActionOnApproverNotFound
+            iscontext: true
+          right:
+            value:
+              simple: Approve
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1510,
+          "y": 2630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "81":
+    id: "81"
+    taskid: 1ce8289e-22cc-43ea-8107-0c06b4a96b06
+    type: regular
+    task:
+      id: 1ce8289e-22cc-43ea-8107-0c06b4a96b06
+      version: -1
+      name: Set feedback to "Exception denied"
+      description: Set feedback to "Exception denied".
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      pandlpincidentfeedback:
+        simple: EXCEPTION_DENIED
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1510,
+          "y": 2840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "82":
+    id: "82"
+    taskid: de00da84-ee83-4ac4-855a-46df114e3229
+    type: collection
+    task:
+      id: de00da84-ee83-4ac4-855a-46df114e3229
+      description: ""
+      version: -1
+      name: Manual review of the exemption request
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "83"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1080,
+          "y": 2840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: {}
+      subject:
+      body: {}
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: |-
+            What should be the value of the feedback? The current feedback is:
+            ${incident.pandlpincidentfeedback}
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - {}
+        - simple: PENDING_RESPONSE
+        - simple: CONFIRMED_SENSITIVE
+        - simple: CONFIRMED_FALSE_POSITIVE
+        - simple: EXCEPTION_REQUESTED
+        - simple: EXCEPTION_GRANTED
+        - simple: EXCEPTION_DENIED
+        - simple: EXCEPTION_NOT_REQUESTED
+        - simple: SEND_NOTIFICATION_FAILURE
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: DLP Feedback
+      description: ""
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "83":
+    id: "83"
+    taskid: 19d67ecc-65cf-4e42-8458-9640360e3b04
+    type: regular
+    task:
+      id: 19d67ecc-65cf-4e42-8458-9640360e3b04
+      version: -1
+      name: Set feedback
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      pandlpincidentfeedback:
+        complex:
+          root: DLP Feedback.Answers
+          accessor: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1080,
+          "y": 3020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "84":
+    id: "84"
+    taskid: 2e2cdd4a-a16c-4ab5-8f78-062ccfb5d0b6
+    type: title
+    task:
+      id: 2e2cdd4a-a16c-4ab5-8f78-062ccfb5d0b6
+      version: -1
+      name: Set messaging app
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "91"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 815,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "85":
+    id: "85"
+    taskid: 3a8b42ee-1d89-4a4a-8e30-4d8bf00f3f3c
+    type: title
+    task:
+      id: 3a8b42ee-1d89-4a4a-8e30-4d8bf00f3f3c
+      version: -1
+      name: File wasn't blockes
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "88":
+    id: "88"
+    taskid: 4875253f-3fc0-43db-80c4-7a617507787f
+    type: regular
+    task:
+      id: 4875253f-3fc0-43db-80c4-7a617507787f
+      version: -1
+      name: Set incident fields in layout
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "84"
+    scriptarguments:
+      dlpdetections:
+        complex:
+          root: DLP.Report.DataPatternMatches.Detections
+          accessor: detection
+          transformers:
+          - operator: StringifyArray
+      employeedisplayname:
+        complex:
+          root: Account
+          accessor: DisplayName
+      employeeemail:
+        complex:
+          root: Account
+          accessor: Email
+      employeemanageremail:
+        complex:
+          root: UserManagerEmail
+      failedlogonevents:
+        complex:
+          root: NumOfFailedLogon
+      failedlogoneventstimeframe:
+        simple: 1d
+      managername:
+        complex:
+          root: UserManagerDisplayName
+      usergroups:
+        complex:
+          root: Account
+          accessor: Groups
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1550,
+          "y": 280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "89":
+    id: "89"
+    taskid: 7fff0c85-ed9f-4b29-82af-8818155f1e89
+    type: playbook
+    task:
+      id: 7fff0c85-ed9f-4b29-82af-8818155f1e89
+      version: -1
+      name: User Investigation - Generic
+      playbookName: User Investigation - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "90"
+    scriptarguments:
+      AzureSearchTime:
+        simple: ago(1d)
+      OktaSearch:
+        simple: "True"
+      QRadarSearchTime:
+        simple: Last 1 days
+      SIEMFailedLogonSearch:
+        simple: "True"
+      SplunkEarliestTime:
+        simple: -1d
+      SplunkIndex:
+        simple: '*'
+      SplunkLatestTime:
+        simple: now
+      ThreatLogSearch:
+        simple: "True"
+      Username:
+        complex:
+          root: incident
+          accessor: sourceusername
+      XDRAlertSearch:
+        simple: "True"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1550,
+          "y": -90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "90":
+    id: "90"
+    taskid: a3ad19e3-4ec1-428c-81f9-c924664b5519
+    type: condition
+    task:
+      id: a3ad19e3-4ec1-428c-81f9-c924664b5519
+      description: ""
+      version: -1
+      name: Any results?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "84"
+      "yes":
+      - "88"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: NumOfFailedLogon
+                filters:
+                - - operator: greaterThan
+                    left:
+                      value:
+                        simple: NumOfFailedLogon
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "0"
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Account
+                accessor: DisplayName
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: DLP.Report.DataPatternMatches.Detections
+                accessor: detection
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Account
+                accessor: Email
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: UserManagerEmail
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: UserManagerDisplayName
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Account
+                accessor: Groups
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1550,
+          "y": 90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "91":
+    id: "91"
+    taskid: d7e176ab-c665-4409-88c1-679f46e26d26
+    type: playbook
+    task:
+      id: d7e176ab-c665-4409-88c1-679f46e26d26
+      version: -1
+      name: DLP - User Message App Check
+      description: Check if the given message app exists and is configured and retrieve the user details from it.
+      playbookName: DLP - User Message App Check
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "98"
+    scriptarguments:
+      UserDisplayName:
+        complex:
+          root: ActiveDirectory.Users
+          accessor: displayName
+      UserEmail:
+        complex:
+          root: Account
+          accessor: Email
+      UserMessageApp:
+        complex:
+          root: inputs.UserMessageApp
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 815,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "92":
+    id: "92"
+    taskid: b08c2ac0-7bd5-4296-85ba-2f7e8ff676fa
+    type: playbook
+    task:
+      id: b08c2ac0-7bd5-4296-85ba-2f7e8ff676fa
+      version: -1
+      name: DLP - Get User Feedback
+      description: Get the user feedback on a blocked file, whether it is false or true positive and if an exemption is needed.
+      playbookName: DLP - Get User Feedback
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "93"
+    scriptarguments:
+      Detections:
+        complex:
+          root: DLP.Report.DataPatternMatches.Detections
+          accessor: detection
+          transformers:
+          - operator: StringifyArray
+      MessageApp:
+        complex:
+          root: inputs.UserMessageApp
+      SendMailInstance:
+        complex:
+          root: inputs.SendMailInstance
+      UserDisplayName:
+        complex:
+          root: user_display_name
+      UserEmail:
+        complex:
+          root: Account
+          accessor: Email
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 815,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "93":
+    id: "93"
+    taskid: 1d74afde-9d09-49a9-8438-13e2d52d0781
+    type: condition
+    task:
+      id: 1d74afde-9d09-49a9-8438-13e2d52d0781
+      description: ""
+      version: -1
+      name: Did the user request exemption?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "No":
+      - "45"
+      "Yes":
+      - "67"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: UserRequestedExemption
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    - label: "No"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: UserRequestedExemption
+            iscontext: true
+          right:
+            value:
+              simple: "False"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 815,
+          "y": 1310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "94":
+    id: "94"
+    taskid: 8cb8c50e-1a17-4e65-8de1-d324ad4dd1c6
+    type: title
+    task:
+      id: 8cb8c50e-1a17-4e65-8de1-d324ad4dd1c6
+      version: -1
+      name: Get user feedback
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "92"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 815,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "95":
+    id: "95"
+    taskid: 1e49ea27-3b6e-481a-84ed-2d38f6fbae57
+    type: title
+    task:
+      id: 1e49ea27-3b6e-481a-84ed-2d38f6fbae57
+      version: -1
+      name: Approver not found
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "80"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1510,
+          "y": 2480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "96":
+    id: "96"
+    taskid: 9dcf575d-122e-4f28-8ed6-351e87b40dff
+    type: condition
+    task:
+      id: 9dcf575d-122e-4f28-8ed6-351e87b40dff
+      description: ""
+      version: -1
+      name: Approval needed?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "112"
+      Email/Manual:
+      - "78"
+      Manager:
+      - "70"
+    separatecontext: false
+    conditions:
+    - label: Manager
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.ApprovalTarget
+            iscontext: true
+          right:
+            value:
+              simple: Manager
+          ignorecase: true
+    - label: Email/Manual
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.ApprovalTarget
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1650,
+          "y": 1660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "97":
+    id: "97"
+    taskid: fed24834-4fea-447f-8105-1fba54b62a85
+    type: condition
+    task:
+      id: fed24834-4fea-447f-8105-1fba54b62a85
+      description: ""
+      version: -1
+      name: Which messenger app should be used?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      Email:
+      - "105"
+      Slack:
+      - "40"
+      Teams:
+      - "62"
+    separatecontext: false
+    conditions:
+    - label: Slack
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.UserMessageApp
+            iscontext: true
+          right:
+            value:
+              simple: Slack
+          ignorecase: true
+    - label: Teams
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.UserMessageApp
+            iscontext: true
+          right:
+            value:
+              simple: Microsoft Teams
+          ignorecase: true
+    - label: Email
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.UserMessageApp
+            iscontext: true
+          right:
+            value:
+              simple: Email
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 3760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "98":
+    id: "98"
+    taskid: 5ff59dbc-374e-417e-858b-9f1965a2428c
+    type: condition
+    task:
+      id: 5ff59dbc-374e-417e-858b-9f1965a2428c
+      description: ""
+      version: -1
+      name: Does feedback status equal "Send notification failure"?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "94"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: pandlpincidentfeedback
+            iscontext: true
+          right:
+            value:
+              simple: Send notification failure
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 815,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "99":
+    id: "99"
+    taskid: 4145e6ff-3c5a-4386-85ef-42a5d7be078d
+    type: title
+    task:
+      id: 4145e6ff-3c5a-4386-85ef-42a5d7be078d
+      version: -1
+      name: Update user with the result
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "46"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 625,
+          "y": 3370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "100":
+    id: "100"
+    taskid: 374f6cc0-27a0-4607-8d1a-33297213ef89
+    type: regular
+    task:
+      id: 374f6cc0-27a0-4607-8d1a-33297213ef89
+      version: -1
+      name: Send Slack notice about exemption denial
+      description: Send the user a Slack message about the temporary exemption on the file.
+      script: SlackV3|||send-notification
+      type: regular
+      iscommand: true
+      brand: SlackV3
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      blocks:
+        simple: "[\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"text\": {\n\t\t\t\t\"type\": \"mrkdwn\",\n\t\t\t\t\"text\": \"${inputs.DenyMessage}\"\n\t\t\t}\n\t\t}\n\t]"
+      to:
+        simple: ${Slack.User.Email}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1415,
+          "y": 3970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "101":
+    id: "101"
+    taskid: be93ea31-3882-4b6b-882d-1b1edb8be1a3
+    type: regular
+    task:
+      id: be93ea31-3882-4b6b-882d-1b1edb8be1a3
+      version: -1
+      name: Send Teams notice about exemption denial
+      description: |-
+        Sends a message to the specified teams.
+        To mention a user in the message, add a semicolon ";" at the end of the user mentioned. For example: @Bruce Willis;
+      script: Microsoft Teams|||send-notification
+      type: regular
+      iscommand: true
+      brand: Microsoft Teams
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      adaptive_card:
+        simple: "{\n\t\"contentType\": \"application/vnd.microsoft.card.adaptive\",\n\t\"content\": {\n\t\t\"$schema\": \"http://adaptivecards.io/schemas/adaptive-card.json\",\n\t\t\"version\": \"1.0\",\n\t\t\"type\": \"AdaptiveCard\",\n\t\t\"msteams\": {\n\t\t\t\"width\": \"Full\"\n\t\t},\n\t\t\"body\": [{\n\t\t\t\"type\": \"TextBlock\",\n\t\t\t\"text\": \"${inputs.DenyMessage}\",\n\t\t\t\"wrap\": true\n\t\t}]\n\t}\n}"
+      team_member:
+        complex:
+          root: Account
+          accessor: Email
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1005,
+          "y": 3970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "103":
+    id: "103"
+    taskid: 9c769ed8-e435-452a-8d02-66b474c9d5f0
+    type: condition
+    task:
+      id: 9c769ed8-e435-452a-8d02-66b474c9d5f0
+      description: ""
+      version: -1
+      name: Which messenger app should be used?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      Email:
+      - "106"
+      Slack:
+      - "100"
+      Teams:
+      - "101"
+    separatecontext: false
+    conditions:
+    - label: Slack
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.UserMessageApp
+            iscontext: true
+          right:
+            value:
+              simple: Slack
+          ignorecase: true
+    - label: Teams
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.UserMessageApp
+            iscontext: true
+          right:
+            value:
+              simple: Microsoft Teams
+          ignorecase: true
+    - label: Email
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.UserMessageApp
+            iscontext: true
+          right:
+            value:
+              simple: Email
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1005,
+          "y": 3760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "104":
+    id: "104"
+    taskid: 5a8e8974-13b1-4577-8575-b6669735d4ce
+    type: title
+    task:
+      id: 5a8e8974-13b1-4577-8575-b6669735d4ce
+      version: -1
+      name: Approver contacted
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "35"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 980,
+          "y": 2480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "105":
+    id: "105"
+    taskid: a15f305f-03b3-4a2d-865b-ff6e1380b06c
+    type: regular
+    task:
+      id: a15f305f-03b3-4a2d-865b-ff6e1380b06c
+      version: -1
+      name: Send email notice about exemption approval
+      description: Ask a user a question via email and process the reply directly into the investigation.
+      scriptName: EmailAskUser
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      email:
+        complex:
+          root: ActiveDirectory.Users
+          accessor: mail
+          transformers:
+          - operator: FirstArrayElement
+      message:
+        simple: Thank you for the request. Your temporary exemption for ${incident.filename} was approved by ${incident.approver} and is enabled now for ${Exemption.duration}.
+      subject:
+        simple: DLP - Exemption approved.
+      task:
+        simple: "230"
+      using:
+        simple: ${inputs.SendMailInstance}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -640,
+          "y": 3970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "106":
+    id: "106"
+    taskid: 3d1cbcdc-5733-4948-87f3-9edc55342727
+    type: regular
+    task:
+      id: 3d1cbcdc-5733-4948-87f3-9edc55342727
+      version: -1
+      name: Send email notice about exemption denial
+      description: Ask a user a question via email and process the reply directly into the investigation.
+      scriptName: EmailAskUser
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      email:
+        complex:
+          root: ActiveDirectory.Users
+          accessor: mail
+          transformers:
+          - operator: FirstArrayElement
+      message:
+        complex:
+          root: inputs.DenyMessage
+      subject:
+        simple: DLP - Exemption denied.
+      task:
+        simple: "230"
+      using:
+        simple: ${inputs.SendMailInstance}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 3970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "107":
+    id: "107"
+    taskid: e9b30ae4-95ee-465d-8758-1907a6828f4d
+    type: regular
+    task:
+      id: e9b30ae4-95ee-465d-8758-1907a6828f4d
+      version: -1
+      name: Set Approver (Manager)
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "104"
+    scriptarguments:
+      approver:
+        complex:
+          root: UserManagerEmail
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1650,
+          "y": 2280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "108":
+    id: "108"
+    taskid: 20ec92f7-1495-4004-8779-45064e0a22d7
+    type: regular
+    task:
+      id: 20ec92f7-1495-4004-8779-45064e0a22d7
+      version: -1
+      name: Set Approver (Approver)
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "104"
+    scriptarguments:
+      approver:
+        complex:
+          root: .
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else:
+                value:
+                  simple: inputs.ApprovalTarget
+                iscontext: true
+              equals: {}
+              lhs:
+                value:
+                  simple: inputs.ApprovalTarget
+                iscontext: true
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs:
+                value:
+                  simple: Manual
+              rhsB: {}
+              then:
+                value:
+                  simple: Manual review
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 980,
+          "y": 2280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "111":
+    id: "111"
+    taskid: 3579d335-de3c-429b-8904-445f8e3b2c21
+    type: regular
+    task:
+      id: 3579d335-de3c-429b-8904-445f8e3b2c21
+      version: -1
+      name: Get file report
+      description: Fetches DLP reports associated with a report ID.
+      script: '|||pan-dlp-get-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "90"
+    scriptarguments:
+      fetch_snippets:
+        simple: "true"
+      report_id:
+        complex:
+          root: incident
+          accessor: pandlpreportid
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2040,
+          "y": -90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "112":
+    id: "112"
+    taskid: c6b6106e-cb4f-40d7-8c39-48e70587ff44
+    type: regular
+    task:
+      id: c6b6106e-cb4f-40d7-8c39-48e70587ff44
+      version: -1
+      name: Set Approver (Not Required)
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      approver:
+        simple: Not Required
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2100,
+          "y": 2280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {
+      "103_11_#default#": 0.25,
+      "46_11_#default#": 0.1,
+      "54_85_#default#": 0.43,
+      "70_77_yes": 0.54,
+      "70_95_#default#": 0.32,
+      "80_41_Approve": 0.64,
+      "80_81_Deny": 0.58,
+      "80_82_#default#": 0.49,
+      "90_84_#default#": 0.1,
+      "90_88_yes": 0.43,
+      "93_11_#default#": 0.1,
+      "96_70_Manager": 0.57,
+      "96_78_Email/Manual": 0.48,
+      "97_11_#default#": 0.15,
+      "97_62_Teams": 0.61,
+      "98_11_yes": 0.1,
+      "98_94_#default#": 0.51
+    },
+    "paper": {
+      "dimensions": {
+        "height": 4735,
+        "width": 3120,
+        "x": -640,
+        "y": -430
+      }
+    }
+  }
+inputs:
+- key: ApprovalTarget
+  value: {}
+  required: false
+  description: |-
+    Can be either empty or one of the following:
+    - Manager
+    - <email_address>
+    - Manual
+
+    "Manager" - the user's manager details will be retrieved using Active Directory enrichment and will be used for approving the exemption, if requested.
+    <email_address> - the configured email address will be used for the approval process.
+    "Manual" - Approval will be a manual task for a further review.
+
+    Leaving this input empty will skip the approval process.
+  playbookInputQuery:
+- key: ActionOnApproverNotFound
+  value:
+    simple: Manual
+  required: false
+  description: |-
+    If the approver cannot be contacted via Slack or MS Teams, what should be the next action:
+    - Deny
+    - Approve
+    - Manual
+  playbookInputQuery:
+- key: SendMailInstance
+  value: {}
+  required: false
+  description: |-
+    This input is only relevant when the "UserMessageApp" or "ApproverMessageApp" are set to "Email".
+    The name of the instance to be used when executing the "send-mail" command in the playbook. In case it will be empty, all available instances will be used (default).
+  playbookInputQuery:
+- key: UserMessageApp
+  value:
+    simple: Slack
+  required: false
+  description: |-
+    The communication method with the user.
+    Can be one of the following:
+
+    - Slack
+    - Microsoft Teams
+    - Email
+
+    If you choose to set "Email", it's also possible to set the relevant email integration instance with the "SendEmailInstance" input.
+  playbookInputQuery:
+- key: ApproverMessageApp
+  value:
+    simple: Slack
+  required: false
+  description: |-
+    The communication method with the approver.
+    Can be one of the following:
+
+    - Slack
+    - Microsoft Teams
+    - Email
+    - Manual
+
+    If you choose to set "Email", it's also possible to set the relevant email integration instance with the "SendEmailInstance" input.
+  playbookInputQuery:
+- key: DenyMessage
+  value:
+    simple: Thank you for the request. Your request was reviewed and denied.
+  required: false
+  description: The message that users will receive when they are denied.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

@@ -1,0 +1,12 @@
+{
+    "error": {
+        "category": "VALIDATION",
+        "messages": [
+            {
+                "description": "ERROR: Line:1 unknown rule keyword: mg.",
+                "code": "ERROR"
+            }
+        ],
+        "severity": "ERROR"
+    }
+}

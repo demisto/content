@@ -1,0 +1,6 @@
+[INGEST:vendor="microsoft", product="DHCP", target_dataset="microsoft_dhcp_raw", no_hit=keep]
+// Support only date time of format: MM/dd/yy hh:mm:ss [+|-]nn:nn. For example: "01/10/21 10:00:00 +03:00".
+filter date ~= "\d{2}\/\d{2}\/\d{2}" and time ~= "\d{2}:\d{2}:\d{2}.*" and `timezone` ~= "[\+|-]\d{2}\:?\d{2}"
+| alter tmp_time = concat(date, " ", time," ", `timezone`)
+| alter _time = parse_timestamp("%D %X %Ez", tmp_time)
+| fields -tmp_time;

@@ -1,6 +1,7 @@
-name: VMware ESXi
-id: VMwareESXi
 fromversion: 6.8.0
-tags: VMwareESXi
+id: VMwareESXi
+name: VMware ESXi
 rules: ''
 schema: ''
+tags: VMwareESXi
+toversion: 6.9.9

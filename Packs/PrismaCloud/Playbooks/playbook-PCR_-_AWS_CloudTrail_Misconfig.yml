@@ -3,7 +3,8 @@ version: -1
 fromversion: 5.0.0
 name: Prisma Cloud Remediation - AWS CloudTrail Misconfiguration
 description: |-
-  This playbook remediates Prisma Cloud AWS CloudTrail alerts.  It calls sub-playbooks that perform the actual remediation steps.
+  Deprecated. Use Prisma Cloud Remediation - AWS CloudTrail Misconfiguration v2 instead.
+  This playbook remediates Prisma Cloud AWS CloudTrail alerts. It calls sub-playbooks that perform the actual remediation steps.
 
   Remediation:
    - AWS CloudTrail Trail Log Validation Is Not Enabled In All Regions
@@ -166,14 +167,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
+      to:
+      subject:
       body:
         simple: ${incident.id} Autoremediate?
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -275,11 +276,11 @@ tasks:
     task:
       id: 74f7bb07-9a7c-4ac1-8e00-e7182e57208f
       version: -1
-      name: Is Prisma Cloud (RedLock) integration enabled?
-      description: Is Prisma Cloud (RedLock) integration enabled?
+      name: Is Prisma Cloud v2 integration enabled?
+      description: Is Prisma Cloud v2 integration enabled?
       type: condition
       iscommand: false
-      brand: RedLock
+      brand: PrismaCloud v2
     nexttasks:
       '#default#':
       - "7"
@@ -303,7 +304,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: RedLock
+                        simple: PrismaCloud v2
                 - - operator: isEqualString
                     left:
                       value:
@@ -555,9 +556,10 @@ tasks:
       name: Dismiss Prisma Cloud alert
       description: Dismiss the alerts matching the given filter. Must provide either
         policy IDs or alert IDs.
+      script: PrismaCloud v2|||redlock-dismiss-alerts
       type: regular
-      iscommand: false
-      brand: RedLock
+      iscommand: true
+      brand: PrismaCloud v2
     nexttasks:
       '#none#':
       - "7"
@@ -664,4 +666,6 @@ inputs:
   description: Get the Prisma Cloud policy ID.
 outputs: []
 tests:
-- No Test
+- No Test (deprecated)
+deprecated: true
+hidden: true

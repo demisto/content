@@ -1,0 +1,32 @@
+{
+    "aws_waf_raw": {
+      "httpRequest": {
+        "type": "string",
+        "is_array": false
+      },
+      "action": {
+        "type": "string",
+        "is_array": false
+      },
+      "httpsourceid": {
+        "type": "string",
+        "is_array": false
+      },
+      "httpsourcename": {
+        "type": "string",
+        "is_array": false
+      },
+      "terminatingruleid": {
+        "type": "string",
+        "is_array": false
+      },
+      "parameters": {
+        "type": "string",
+        "is_array": false
+      },
+      "timestamp": {
+        "type": "string",
+        "is_array": false
+      }              
+    }
+  }

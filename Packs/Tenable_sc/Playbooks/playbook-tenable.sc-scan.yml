@@ -1,7 +1,8 @@
 id: tenable-sc-scan
 version: -1
 name: Launch Scan - Tenable.sc
-description: Launches an existing Tenable.sc scan by scan ID and waits for the scan to finish by polling its status in pre-defined intervals.
+description: Deprecated. Use tenable-sc-launch-scan-report command instead.
+deprecated: true
 fromversion: 5.0.0
 starttaskid: "0"
 tasks:
@@ -158,7 +159,7 @@ tasks:
       Timeout:
         simple: "60"
       dt:
-        simple: TenableSC.ScanResults(val.Status == 'Running' || val.Status == 'Pending' || val.Status == 'Resuming' || val.Status == 'Pausing' || val.Status == 'Paused' || val.Status == 'Queued' || val.Status == 'Verifying targets' || val.Status == 'Initializing Scanners').ID
+        simple: TenableSC.ScanResults(val.Status == 'Running' || val.Status == 'Pending' || val.Status == 'Resuming' || val.Status == 'Pausing' || val.Status == 'Paused' || val.Status == 'Queued' || val.Status == 'Verifying targets' || val.Status == 'Initializing Scanners' || val.Status == 'Preparing').ID
     separatecontext: true
     loop:
       iscommand: false

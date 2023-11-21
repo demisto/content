@@ -1,0 +1,4 @@
+[INGEST:vendor="mimecast", product="mimecast", target_dataset="mimecast_mimecast_raw", no_hit=keep]
+// Support only date time of format: yyyy-MM-ddThh:mm:ss[+|-]nnnn. For example: "2021-12-08T10:00:00-0400".
+filter to_string(datetime) ~= "\d{2}:\d{2}:\d{2}.*" or to_string(eventTime) ~= "\d{2}:\d{2}:\d{2}.*"
+| alter _time = parse_timestamp("%Y-%m-%dT%H:%M:%S%z", to_string(if(xsiem_classifier = "siem_log", datetime, eventTime)));

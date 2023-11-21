@@ -2,11 +2,11 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
-import requests
 from typing import Dict, Tuple, List, Union
 
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+import urllib3
+
+urllib3.disable_warnings()
 
 # List processes
 LIST_PROCESSES_WINDOWS = '2d32a530-0716-4542-afdc-8da3bd47d8bf'  # disable-secrets-detection
@@ -34,6 +34,7 @@ class Client(BaseClient):
     """
     Client to use in the Fidelis Endpoint integration. Overrides BaseClient
     """
+
     def __init__(self, server_url: str, username: str, password: str, verify: bool, proxy: bool):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy)
         token = self._generate_token(username, password)

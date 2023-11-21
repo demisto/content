@@ -1,8 +1,7 @@
 id: Recorded Future Workforce Usecase
 version: -1
 name: Recorded Future Workforce Usecase
-description: Implements an workforce usecase for Recorded Future
-  Identity Data
+description: Implements an workforce usecase for Recorded Future Identity Data
 starttaskid: "0"
 tasks:
   "0":

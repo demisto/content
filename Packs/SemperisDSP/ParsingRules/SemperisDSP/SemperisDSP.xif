@@ -1,0 +1,10 @@
+[INGEST:vendor="semperis", product="dsp", target_dataset="semperis_dsp_raw", no_hit=keep]
+filter _raw_log ~= "\[OriginatingTime\]\s+\d{4}|\[OperationTime\]\s+\d{4}"
+| alter
+    tmp_get_OriginatingTime = if(_raw_log ~= "\[OriginatingTime\]\s+\d{4}", arraystring(regextract(_raw_log, "\[OriginatingTime\]\s+([^\s]+)"), ""), null),
+    tmp_get_OperationTime = if(_raw_log ~= "\[OperationTime\]\s+\d{4}", arraystring(regextract(_raw_log, "\[OperationTime\]\s+([^\s]+)"), ""), null)
+| alter
+    tmp_check_exist_time = coalesce(tmp_get_OriginatingTime, tmp_get_OperationTime)
+| alter
+    _time = parse_timestamp("%Y-%m-%dT%H:%M:%E3SZ", tmp_check_exist_time)
+| fields -tmp_get_OriginatingTime, tmp_get_OperationTime, tmp_check_exist_time;

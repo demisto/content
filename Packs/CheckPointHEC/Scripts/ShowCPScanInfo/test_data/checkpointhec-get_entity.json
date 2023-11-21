@@ -1,0 +1,185 @@
+{
+    "responseEnvelope": {
+        "requestId": "8854aa3a-ef63-49d5-ba63-ec8b667b1a75",
+        "responseCode": 200,
+        "responseText": "",
+        "additionalText": "",
+        "recordsNumber": 1,
+        "scrollId": ""
+    },
+    "responseData": [
+        {
+            "entityInfo": {
+                "entityId": "0ab5b49860cdaa57506769821ddea425",
+                "customerId": "prod-3-con-lab44",
+                "saas": "office365_emails",
+                "saasEntityType": "office365_emails_email",
+                "entityCreated": "2023-06-30T15:15:06.759583Z",
+                "entityUpdated": "2023-06-30T15:15:14.074234",
+                "entityActionState": null
+            },
+            "entityPayload": {
+                "internetMessageId": "<010001890cdf0d62-8195ad70-a237-4fbc-bbbf-4aaed7a55aa8-000000@email.amazonses.com>",
+                "subject": "aut_quar_prod3_17__300623_15_14_51_445699",
+                "received": "2023-06-30T15:14:53Z",
+                "size": null,
+                "emailLinks": [],
+                "attachmentCount": 2,
+                "attachments": [
+                    {
+                        "name": "avanan_malicious_33_300623_15_14_51_1688138091.pdf",
+                        "mimetype": "application/pdf",
+                        "size": 2071,
+                        "MD5": "d5e719c11cb2a209c306b06ffff4cd39"
+                    },
+                    {
+                        "name": "avanan_malicious_1.pdf",
+                        "mimetype": "application/pdf",
+                        "size": 3028,
+                        "MD5": "4b41a3475132bd861b30a878e30aa56a"
+                    }
+                ],
+                "mode": "monitor",
+                "recipients": [
+                    "user3@avananlab44.onmicrosoft.com"
+                ],
+                "fromEmail": "Automation@avtestqa.com",
+                "fromDomain": "avtestqa.com",
+                "fromUser": {},
+                "fromName": "",
+                "to": [
+                    "user3@avananlab44.onmicrosoft.com"
+                ],
+                "toUser": [
+                    {
+                        "entity_id": "1ec5d519-54a5-40fa-9651-19d7286710df",
+                        "entity_type": "office365_emails_user",
+                        "mail": null
+                    }
+                ],
+                "cc": [],
+                "ccUser": [],
+                "bcc": [],
+                "bccUser": [],
+                "replyToEmail": null,
+                "replyToNickname": null,
+                "isRead": null,
+                "isDeleted": false,
+                "isIncoming": true,
+                "isInternal": false,
+                "isOutgoing": false,
+                "isQuarantined": false,
+                "isQuarantineNotification": false,
+                "isRestored": false,
+                "isRestoreRequested": false,
+                "isRestoreDeclined": false,
+                "saasSpamVerdict": "-1",
+                "SpfResult": "pass",
+                "restoreRequestTime": null
+            },
+            "entitySecurityResult": {
+                "combinedVerdict": {
+                    "ap": "clean",
+                    "dlp": null,
+                    "clicktimeProtection": null,
+                    "shadowIt": "clean",
+                    "av": "malicious"
+                },
+                "ap": [
+                    {
+                        "entityId": "0ab5b49860cdaa57506769821ddea425",
+                        "entityType": "office365_emails_email",
+                        "payload": {
+                            "reasons_by_category": {
+                                "Email Headers": [
+                                    {
+                                        "short_text": "Missing DMARC",
+                                        "full_text": "The email's header suggest that DMARC signature is missing/invalid"
+                                    }
+                                ],
+                                "Domain Impersonation": [
+                                    {
+                                        "short_text": "SPF check failed when checking sending IP: 10.10.10.10 for domain avtestqa.com",
+                                        "full_text": "The email 'from' address doesn't pass the SPF-check"
+                                    }
+                                ],
+                                "Sender Reputation": [
+                                    {
+                                        "short_text": "Insignificant historical reputation with sender",
+                                        "full_text": "The sending email address hasn't established significant historical reputation with your domain"
+                                    },
+                                    {
+                                        "short_text": "Low-traffic 'From'-domain",
+                                        "full_text": "The sender's domain has very low traffic - often indicating low-trust domains"
+                                    }
+                                ]
+                            },
+                            "reasons": [
+                                "First Time Sender"
+                            ]
+                        },
+                        "score": "22.119542",
+                        "securityResultEntityId": "0ab5b49860cdaa57506769821ddea425",
+                        "securityResultEntityType": "avanan_ap_scan",
+                        "statusCode": "0",
+                        "statusDescription": null,
+                        "verdict": "clean"
+                    }
+                ],
+                "dlp": null,
+                "clicktimeProtection": null,
+                "shadowIt": [
+                    {
+                        "entityId": "0ab5b49860cdaa57506769821ddea425",
+                        "entityType": "office365_emails_email",
+                        "payload": {
+                            "from": "Automation@avtestqa.com",
+                            "subject": "aut_quar_prod3_17__300623_15_14_51_445699",
+                            "domain": ""
+                        },
+                        "score": "0",
+                        "securityResultEntityId": "0ab5b49860cdaa57506769821ddea425",
+                        "securityResultEntityType": "shadow_it_emails_scan",
+                        "statusCode": "clean",
+                        "statusDescription": "Clean",
+                        "verdict": "clean"
+                    }
+                ],
+                "av": [
+                    {
+                        "entityId": "abc11b586de3efca8e5bf22fe5193edd2b729ba8",
+                        "entityType": "office365_emails_attachment",
+                        "payload": {
+                            "scan_details": [
+                                "Dummy Core Detection"
+                            ]
+                        },
+                        "score": "100",
+                        "securityResultEntityId": "abc11b586de3efca8e5bf22fe5193edd2b729ba8",
+                        "securityResultEntityType": "checkpoint2",
+                        "statusCode": "0",
+                        "statusDescription": "Dummy Core Detection",
+                        "verdict": "malicious"
+                    },
+                    {
+                        "entityId": "3aad8378b7edd5a69f6f063280037c2f7379faa8",
+                        "entityType": "office365_emails_attachment",
+                        "payload": {
+                            "scan_details": [
+                                "Dummy Core Detection"
+                            ]
+                        },
+                        "score": "100",
+                        "securityResultEntityId": "3aad8378b7edd5a69f6f063280037c2f7379faa8",
+                        "securityResultEntityType": "checkpoint2",
+                        "statusCode": "0",
+                        "statusDescription": "Dummy Core Detection",
+                        "verdict": "malicious"
+                    }
+                ]
+            },
+            "entityActions": [],
+            "entityAvailableActions": []
+        }
+    ]
+}

@@ -1,0 +1,61 @@
+{
+    "id": "Gigamon ThreatINSIGHT",
+    "name": "Gigamon ThreatINSIGHT",
+    "type": "classification",
+    "description": "Classifies Gigamon ThreatINSIGHT detections.",
+    "fromVersion": "6.5.0",
+    "keyTypeMap": {
+        "Gigamon ThreatINSIGHT Detection": "Gigamon ThreatINSIGHT Detection"
+    },
+    "transformer": {
+        "complex": {
+            "accessor": "",
+            "filters": [
+                [
+                    {
+                        "ignoreCase": false,
+                        "left": {
+                            "isContext": true,
+                            "value": {
+                                "complex": null,
+                                "simple": "name"
+                            }
+                        },
+                        "operator": "startWith",
+                        "right": {
+                            "isContext": false,
+                            "value": {
+                                "complex": null,
+                                "simple": "Gigamon ThreatINSIGHT Detection"
+                            }
+                        }
+                    }
+                ]
+            ],
+            "root": "name",
+            "transformers": [
+                {
+                    "args": {
+                        "from": {
+                            "isContext": false,
+                            "value": {
+                                "complex": null,
+                                "simple": "0"
+                            }
+                        },
+                        "to": {
+                            "isContext": false,
+                            "value": {
+                                "complex": null,
+                                "simple": "17"
+                            }
+                        }
+                    },
+                    "operator": "substring"
+                }
+            ]
+        },
+        "simple": ""
+    },
+    "version": -1
+}

@@ -1,0 +1,33 @@
+{
+  "aws_guardduty_raw": {
+    "Resource": {
+      "type": "string",
+      "is_array": false
+    },
+    "Type": {
+      "type": "string",
+      "is_array": false
+    },
+    "UpdatedAt": {
+      "type": "datetime",
+      "is_array": false
+    },
+    "Description": {
+      "type": "string",
+      "is_array": false
+    },
+    "Title": {
+      "type": "string",
+      "is_array": false
+    },
+    "Severity": {
+      "type": "int",
+      "is_array": false
+    },
+    "Service": {
+      "type": "string",
+      "is_array": false
+    }
+  }
+
+}

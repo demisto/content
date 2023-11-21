@@ -1,10 +1,11 @@
 commonfields:
   id: McAfee NSM
   version: -1
+deprecated: true
 name: McAfee NSM
-display: McAfee NSM
+display: McAfee NSM (Deprecated)
 category: Network Security
-description: McAfee Network Security Manager
+description: Deprecated. Use McAfee NSM v2 integration instead.
 configuration:
 - display: 'URL (for example: https://192.168.0.1:5000)'
   name: url
@@ -72,11 +73,9 @@ script:
       - CUSTOM
       description: Time Period
     - name: start_time
-      description: Start Time in "mm/dd/yyyy HH:MM" format only. used for custom time
-        only
+      description: Start Time in "mm/dd/yyyy HH:MM" format only. used for custom time only
     - name: end_time
-      description: End Time in "mm/dd/yyyy HH:MM" format only. used for custom time
-        only
+      description: End Time in "mm/dd/yyyy HH:MM" format only. used for custom time only
     - name: state
       auto: PREDEFINED
       predefined:
@@ -147,11 +146,9 @@ script:
       - CUSTOM
       description: Time Period
     - name: start_time
-      description: Start Time in "mm/dd/yyyy HH:MM" format only. used for custom time
-        only
+      description: Start Time in "mm/dd/yyyy HH:MM" format only. used for custom time only
     - name: end_time
-      description: End Time in "mm/dd/yyyy HH:MM" format only. used for custom time
-        only
+      description: End Time in "mm/dd/yyyy HH:MM" format only. used for custom time only
     - name: new_state
       auto: PREDEFINED
       predefined:
@@ -323,5 +320,4 @@ script:
       description: Attack Category
       type: string
     description: Get all available attack definitions in NSM
-  runonce: false
 fromversion: 5.0.0

@@ -20,5 +20,7 @@ dependson:
   must:
   - demisto-api-post
 fromversion: 5.0.0
+marketplaces:
+- xsoar
 tests:
 - no test

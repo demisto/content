@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
-import requests
+import urllib3
 import pytz
 from cabby import create_client
 from urllib.parse import urlparse
@@ -14,7 +14,7 @@ from dateutil import parser
 from typing import *
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S.%f+00:00"
@@ -90,23 +90,30 @@ class Client(object):
                 if eachtype.lower() in args.get('collection').lower():      # type: ignore
                     indicator_obj['type'] = eachtype
                     break
+            multi_data = True
+            try:
+                data = self.get_recursively(eachres['indicators'][0]['observable'], 'value')
+                if not data:
+                    data = self.get_recursively(eachres['indicators'][0]['observable'], 'address_value')
+            except Exception:
+                data = self.get_recursively(eachres['observables']['observables'][0], 'value')
 
-            data = self.get_recursively(eachres, 'value')
+            if multi_data:
+                ind_val = {}
+                for eachindicator in data:
+                    typeval = auto_detect_indicator_type(eachindicator)
+                    indicator_obj['type'] = typeval
+                    if typeval:
+                        ind_val[typeval] = eachindicator
 
-            ind_val = {}
-            for eachindicator in data:
-                typeval = auto_detect_indicator_type(eachindicator)
-                if typeval:
-                    ind_val[typeval] = eachindicator
-
-            if len(data) == 1:
-                indicator_obj['value'] = str(data[0])
-            elif indicator_obj['type'] in list(ind_val.keys()):
-                indicator_obj['value'] = str(ind_val[indicator_obj['type']])
-            elif len(ind_val) != 0:
-                indicator_obj['type'] = list(ind_val.keys())[0]
-                indicator_obj['value'] = ind_val[list(ind_val.keys())[0]]
-
+                if len(data) == 1:
+                    indicator_obj['value'] = str(data[0])
+                elif indicator_obj['type'] in list(ind_val.keys()):
+                    indicator_obj['value'] = str(ind_val[indicator_obj['type']])
+                elif len(ind_val) != 0:
+                    indicator_obj['type'] = list(ind_val.keys())[0]
+                    indicator_obj['value'] = ind_val[list(ind_val.keys())[0]]
+            #
             if eachres.get('indicators'):
                 for eachindicator in eachres.get('indicators'):
                     indicator_obj['title'] = eachindicator.get('title')
@@ -238,8 +245,8 @@ def cyble_fetch_taxii(client: Client, args: Dict[str, Any]):
     :return: TAXII feed details
     '''
     try:
-        args['begin'] = str(parser.parse(args.get('begin')).replace(tzinfo=pytz.UTC)) if args.get('begin', None) else None
-        args['end'] = str(parser.parse(args.get('end')).replace(tzinfo=pytz.UTC)) if args.get('end', None) else None
+        args['begin'] = str(parser.parse(args.get('begin', '')).replace(tzinfo=pytz.UTC)) if args.get('begin', None) else None
+        args['end'] = str(parser.parse(args.get('end', '')).replace(tzinfo=pytz.UTC)) if args.get('end', None) else None
     except Exception as e:
         raise ValueError("Invalid date format received, [{}]".format(e))
 
@@ -300,9 +307,9 @@ def validate_input(args: Dict[str, Any]):
 
         try:
             if args.get('begin', None):
-                _start_date = parser.parse(args.get('begin')).replace(tzinfo=pytz.UTC)
+                _start_date = parser.parse(args.get('begin', '')).replace(tzinfo=pytz.UTC)
             if args.get('end', None):
-                _end_date = parser.parse(args.get('end')).replace(tzinfo=pytz.UTC)
+                _end_date = parser.parse(args.get('end', '')).replace(tzinfo=pytz.UTC)
         except Exception as e:
             raise ValueError("Invalid date format received, [{}]".format(e))
 

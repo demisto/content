@@ -1,0 +1,6 @@
+fromversion: 6.10.0
+id: Linux_Events_Collection_ModelingRule
+name: Linux Events Collection Modeling Rule
+rules: ''
+schema: ''
+tags: Linux Events Collection Redhat Ubuntu

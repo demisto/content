@@ -1,0 +1,49 @@
+{
+    "DocumentIdentifiers": [
+        {
+            "Name": "AWS-AS",
+            "CreatedDate": "2018-02-15T05:03:20.597000+02:00",
+            "Owner": "Amazon",
+            "PlatformTypes": [
+                "Windows",
+                "Linux",
+                "MacOS"
+            ],
+            "DocumentVersion": "1",
+            "DocumentType": "Automation",
+            "SchemaVersion": "0.3",
+            "DocumentFormat": "JSON",
+            "TargetType": "/AWS",
+            "Tags": []
+        },
+        {
+            "Name": "AWS-A",
+            "CreatedDate": "2018-02-15T05:03:23.277000+02:00",
+            "Owner": "Amazon",
+            "PlatformTypes": [
+                "Windows",
+                "Linux",
+                "MacOS"
+            ],
+            "DocumentVersion": "1",
+            "DocumentType": "Automation",
+            "SchemaVersion": "0.3",
+            "DocumentFormat": "JSON",
+            "TargetType": "/AWS",
+            "Tags": []
+        }
+    ],
+    "ResponseMetadata": {
+        "RequestId": "",
+        "HTTPStatusCode": 200,
+        "HTTPHeaders": {
+            "server": "Server",
+            "date": "Mon, 21 Aug 2023 09:29:45 GMT",
+            "content-type": "application1",
+            "content-length": "13",
+            "connection": "keep-alive",
+            "x-amzn-requestid": ""
+        },
+        "RetryAttempts": 0
+    }
+}

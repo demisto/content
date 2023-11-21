@@ -253,6 +253,14 @@ EXPECTED_GET_TICKET_NOTES = {
              'CreatedOn': '2020-04-07 07:26:01', 'CreatedBy': 'admin', 'Type': 'Work Note'}]
     }
 }
+EXPECTED_GET_TICKET_NOTES_DISPLAY_VALUE = {
+    'ServiceNow.Ticket(val.ID===obj.ID)': {
+        'ID': 'sys_id', 'Note': [
+            {'Value': 'Second comment\n\n Mirrored from Cortex XSOAR', 'CreatedOn': '2022-11-21 21:50:34',
+             'CreatedBy': 'System Administrator', 'Type': 'Comment'},
+            {'Value': 'First comment', 'CreatedOn': '2022-11-21 20:45:37', 'CreatedBy': 'Test User', 'Type': 'Comment'}]
+    }
+}
 EXPECTED_GET_RECORD = {
     'ServiceNow.Record(val.ID===obj.ID)': {
         'asset_tag': 'P1000479', 'display_name': 'P1000479 - Apple MacBook Pro 15"', 'ID': 'sys_id'

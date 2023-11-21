@@ -5,10 +5,11 @@ from CommonServerUserPython import *
 
 ''' IMPORTS '''
 import copy
+import urllib3
 from base64 import b64decode
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -24,6 +25,7 @@ class Client(BaseClient):
     Client will implement the service API, and should not contain any Demisto logic.
     Should only do requests and return data.
     """
+
     def __init__(self, base_url, apikey, verify, proxy):
         self.apikey = apikey
         super().__init__(base_url, verify=verify, proxy=proxy)
@@ -548,7 +550,7 @@ def main():
     # get the service API url (This is static for this service)
     base_url = API_ENDPOINT
 
-    apikey = params.get('apikey', None)
+    apikey = params.get('credentials', {}).get('password') or params.get('apikey', None)
 
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)

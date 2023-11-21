@@ -1,0 +1,23 @@
+commonfields:
+  id: SendEmailOnSLABreach
+  version: -1
+name: SendEmailOnSLABreach
+script: ''
+type: python
+subtype: python3
+tags:
+- sla
+- example
+comment: |-
+  Sends an email informing the user of an SLA breach. The email is sent to the user who is assigned to the incident. It includes the incident name, ID, name of the SLA field that was breached, duration of that SLA field, and the date and time when that SLA was started.
+  In order to run successfully, the script should be configured to trigger on SLA breach, through field edit mode.
+enabled: true
+scripttarget: 0
+runas: DBotWeakRole
+tests:
+- No test - Can't test script that triggers on SLA breach. Need a field to trigger it and need a configured mail sender. Also errors aren't accounted.
+fromversion: 6.5.0
+marketplaces:
+- xsoar
+- marketplacev2
+dockerimage: demisto/python3:3.10.12.63474

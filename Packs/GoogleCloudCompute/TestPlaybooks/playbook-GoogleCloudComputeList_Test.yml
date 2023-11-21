@@ -1,0 +1,1056 @@
+id: GoogleCloudComputeListTest
+name: GoogleCloudComputeListTest
+version: -1
+fromversion: 6.5.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: '159ace9e-d0d3-474a-a99e-572e5a1f89d5'
+    type: start
+    task:
+      id: '159ace9e-d0d3-474a-a99e-572e5a1f89d5'
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: '697f0ad7-e8d0-4da7-b61b-0f82cc30bc28'
+    type: regular
+    task:
+      id: '697f0ad7-e8d0-4da7-b61b-0f82cc30bc28'
+      version: -1
+      name: DeleteContext
+      description: ''
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position":{"x":50,"y":200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: '18728e54-1901-44b0-8de7-7ff2bdd64949'
+    type: regular
+    task:
+      id: '18728e54-1901-44b0-8de7-7ff2bdd64949'
+      version: -1
+      name: gcp-compute-list-instances
+      description: ''
+      script: Google Cloud Compute|||gcp-compute-list-instances
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      zone:
+        simple: us-west1-a
+    separatecontext: false
+    view: '{"position":{"x":50,"y":400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: '3'
+    taskid: '1edaf2ae-12cc-400b-a251-639b3fc54fa4'
+    type: title
+    task:
+      id: '1edaf2ae-12cc-400b-a251-639b3fc54fa4'
+      version: -1
+      name: Add Verify Outputs Here
+      type: title
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    separatecontext: false
+    conditions: []
+    view: '{"position":{"x":50,"y":600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: 4
+    taskid: 'ffec4ecc-2d8e-4c86-8601-78de8e283381'
+    type: regular
+    task:
+      id: 'ffec4ecc-2d8e-4c86-8601-78de8e283381'
+      version: -1
+      name: gcp-compute-aggregated-list-instances
+      description: ''
+      script: Google Cloud Compute|||gcp-compute-aggregated-list-instances
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '5':
+    id: '5'
+    taskid: '38c3bfb1-2273-4a4d-b0a5-0fc4cefb9284'
+    type: title
+    task:
+      id: '38c3bfb1-2273-4a4d-b0a5-0fc4cefb9284'
+      version: -1
+      name: Add Verify Outputs Here
+      type: title
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '6'
+    separatecontext: false
+    conditions: []
+    view: '{"position":{"x":50,"y":1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '6':
+    id: 6
+    taskid: '75cbad0e-36a9-45b5-a582-877ce7e2dc97'
+    type: regular
+    task:
+      id: '75cbad0e-36a9-45b5-a582-877ce7e2dc97'
+      version: -1
+      name: gcp-compute-list-zone-operation
+      description: ''
+      script: Google Cloud Compute|||gcp-compute-list-zone-operation
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      zone:
+        simple: us-west1-a
+    separatecontext: false
+    view: '{"position":{"x":50,"y":1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '7':
+    id: '7'
+    taskid: 'ddf7dbad-94b4-4c7a-a20d-942fe53dd40d'
+    type: title
+    task:
+      id: 'ddf7dbad-94b4-4c7a-a20d-942fe53dd40d'
+      version: -1
+      name: Add Verify Outputs Here
+      type: title
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    separatecontext: false
+    conditions: []
+    view: '{"position":{"x":50,"y":1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '8':
+    id: 8
+    taskid: 'e150581f-e8a8-48e8-b632-c89bcf1f9e0d'
+    type: regular
+    task:
+      id: 'e150581f-e8a8-48e8-b632-c89bcf1f9e0d'
+      version: -1
+      name: gcp-compute-list-region-operation
+      description: ''
+      script: Google Cloud Compute|||gcp-compute-list-region-operation
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      region:
+        simple: us-west1
+    separatecontext: false
+    view: '{"position":{"x":50,"y":1600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '9':
+    id: '9'
+    taskid: '44f8f3a7-b43d-49ee-9b82-ca3f0ea4d5e6'
+    type: title
+    task:
+      id: '44f8f3a7-b43d-49ee-9b82-ca3f0ea4d5e6'
+      version: -1
+      name: Add Verify Outputs Here
+      type: title
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '10'
+    separatecontext: false
+    conditions: []
+    view: '{"position":{"x":50,"y":1800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '10':
+    id: 10
+    taskid: '50f466ad-4424-48b7-ae43-4768706d6a45'
+    type: regular
+    task:
+      id: '50f466ad-4424-48b7-ae43-4768706d6a45'
+      version: -1
+      name: gcp-compute-list-global-operation
+      description: ''
+      script: Google Cloud Compute|||gcp-compute-list-global-operation
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '11':
+    id: '11'
+    taskid: '486fef0f-e14e-49b6-a1d1-16889f70ae1a'
+    type: title
+    task:
+      id: '486fef0f-e14e-49b6-a1d1-16889f70ae1a'
+      version: -1
+      name: Add Verify Outputs Here
+      type: title
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '12'
+    separatecontext: false
+    conditions: []
+    view: '{"position":{"x":50,"y":2200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '12':
+    id: 12
+    taskid: '926a2cf5-5857-47ab-a009-3ad8f14335eb'
+    type: regular
+    task:
+      id: '926a2cf5-5857-47ab-a009-3ad8f14335eb'
+      version: -1
+      name: gcp-compute-list-addresses
+      description: ''
+      script: Google Cloud Compute|||gcp-compute-list-addresses
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments:
+      region:
+        simple: us-west1
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '13':
+    id: '13'
+    taskid: '6391f9da-a3a1-499e-abf9-2b0fce589f9c'
+    type: title
+    task:
+      id: '6391f9da-a3a1-499e-abf9-2b0fce589f9c'
+      version: -1
+      name: Add Verify Outputs Here
+      type: title
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '14'
+    separatecontext: false
+    conditions: []
+    view: '{"position":{"x":50,"y":2600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '14':
+    id: 14
+    taskid: 'd58fd4b2-7dfe-41ca-a25e-bedc24b20932'
+    type: regular
+    task:
+      id: 'd58fd4b2-7dfe-41ca-a25e-bedc24b20932'
+      version: -1
+      name: gcp-compute-aggregated-list-addresses
+      description: ''
+      script: Google Cloud Compute|||gcp-compute-aggregated-list-addresses
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '15':
+    id: '15'
+    taskid: 'aa1630ec-c8a5-4e40-9abd-276785a0ec6b'
+    type: title
+    task:
+      id: 'aa1630ec-c8a5-4e40-9abd-276785a0ec6b'
+      version: -1
+      name: Add Verify Outputs Here
+      type: title
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '16'
+    separatecontext: false
+    conditions: []
+    view: '{"position":{"x":50,"y":3000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '16':
+    id: 16
+    taskid: '64e6a941-5ba3-498f-9958-9b409daf9acf'
+    type: regular
+    task:
+      id: '64e6a941-5ba3-498f-9958-9b409daf9acf'
+      version: -1
+      name: gcp-compute-list-global-addresses
+      description: ''
+      script: Google Cloud Compute|||gcp-compute-list-global-addresses
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":3200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '17':
+    id: '17'
+    taskid: 'b594b3be-b53c-479e-bfc0-c6c4b49afb5a'
+    type: title
+    task:
+      id: 'b594b3be-b53c-479e-bfc0-c6c4b49afb5a'
+      version: -1
+      name: Add Verify Outputs Here
+      type: title
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '18'
+    separatecontext: false
+    conditions: []
+    view: '{"position":{"x":50,"y":3400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '18':
+    id: 18
+    taskid: 'd6763001-d89e-4805-b630-c22c516f8faf'
+    type: regular
+    task:
+      id: 'd6763001-d89e-4805-b630-c22c516f8faf'
+      version: -1
+      name: gcp-compute-aggregated-list-disks
+      description: ''
+      script: Google Cloud Compute|||gcp-compute-aggregated-list-disks
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '19'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":3600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '19':
+    id: '19'
+    taskid: '674d2e06-9054-49db-afe8-778d24d567c4'
+    type: title
+    task:
+      id: '674d2e06-9054-49db-afe8-778d24d567c4'
+      version: -1
+      name: Add Verify Outputs Here
+      type: title
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '20'
+    separatecontext: false
+    conditions: []
+    view: '{"position":{"x":50,"y":3800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '20':
+    id: 20
+    taskid: '5732d5c7-1be9-461d-a7cf-9bb7aed57bc5'
+    type: regular
+    task:
+      id: '5732d5c7-1be9-461d-a7cf-9bb7aed57bc5'
+      version: -1
+      name: gcp-compute-list-disks
+      description: ''
+      script: Google Cloud Compute|||gcp-compute-list-disks
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '21'
+    scriptarguments:
+      zone:
+        simple: us-west1-a
+    separatecontext: false
+    view: '{"position":{"x":50,"y":4000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '21':
+    id: '21'
+    taskid: '28fa529d-45f8-4ff3-8404-5095cdc7a9fa'
+    type: title
+    task:
+      id: '28fa529d-45f8-4ff3-8404-5095cdc7a9fa'
+      version: -1
+      name: Add Verify Outputs Here
+      type: title
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '22'
+    separatecontext: false
+    conditions: []
+    view: '{"position":{"x":50,"y":4200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '22':
+    id: 22
+    taskid: 'e605cd4e-2677-4d72-ac35-9f6f3be9d4b4'
+    type: regular
+    task:
+      id: 'e605cd4e-2677-4d72-ac35-9f6f3be9d4b4'
+      version: -1
+      name: gcp-compute-aggregated-list-disk-types
+      description: ''
+      script: Google Cloud Compute|||gcp-compute-aggregated-list-disk-types
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '23'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":4400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '23':
+    id: '23'
+    taskid: '4055852a-1a8f-49f2-9f27-77194775f350'
+    type: title
+    task:
+      id: '4055852a-1a8f-49f2-9f27-77194775f350'
+      version: -1
+      name: Add Verify Outputs Here
+      type: title
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '24'
+    separatecontext: false
+    conditions: []
+    view: '{"position":{"x":50,"y":4600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '24':
+    id: 24
+    taskid: '7d9ab4f3-3c8e-4106-9b78-b98d81b2e46c'
+    type: regular
+    task:
+      id: '7d9ab4f3-3c8e-4106-9b78-b98d81b2e46c'
+      version: -1
+      name: gcp-compute-list-disk-types
+      description: ''
+      script: Google Cloud Compute|||gcp-compute-list-disk-types
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '25'
+    scriptarguments:
+      zone:
+        simple: us-west1-a
+    separatecontext: false
+    view: '{"position":{"x":50,"y":4800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '25':
+    id: '25'
+    taskid: '3b2a00d6-9aa8-44c0-8a2b-36c51afa2162'
+    type: title
+    task:
+      id: '3b2a00d6-9aa8-44c0-8a2b-36c51afa2162'
+      version: -1
+      name: Add Verify Outputs Here
+      type: title
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '26'
+    separatecontext: false
+    conditions: []
+    view: '{"position":{"x":50,"y":5000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '26':
+    id: 26
+    taskid: '2f12e609-da11-4133-bcfd-8720beda9a87'
+    type: regular
+    task:
+      id: '2f12e609-da11-4133-bcfd-8720beda9a87'
+      version: -1
+      name: gcp-compute-list-images
+      description: ''
+      script: Google Cloud Compute|||gcp-compute-list-images
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '27'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":5200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '27':
+    id: '27'
+    taskid: '2359cd52-a1ae-44f6-acf8-1d61ee507f8c'
+    type: title
+    task:
+      id: '2359cd52-a1ae-44f6-acf8-1d61ee507f8c'
+      version: -1
+      name: Add Verify Outputs Here
+      type: title
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '28'
+    separatecontext: false
+    conditions: []
+    view: '{"position":{"x":50,"y":5400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '28':
+    id: 28
+    taskid: 'dff351bd-7a46-49e6-b1c1-ac571aa63a3d'
+    type: regular
+    task:
+      id: 'dff351bd-7a46-49e6-b1c1-ac571aa63a3d'
+      version: -1
+      name: gcp-compute-aggregated-list-instance-groups
+      description: ''
+      script: Google Cloud Compute|||gcp-compute-aggregated-list-instance-groups
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '29'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":5600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '29':
+    id: 29
+    taskid: 'c5385f98-12bb-4c73-97f7-531dcf252bc2'
+    type: regular
+    task:
+      id: 'c5385f98-12bb-4c73-97f7-531dcf252bc2'
+      version: -1
+      name: gcp-compute-list-instance-groups
+      description: ''
+      script: Google Cloud Compute|||gcp-compute-list-instance-groups
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '30'
+    scriptarguments:
+      zone:
+        simple: us-west1-a
+    separatecontext: false
+    view: '{"position":{"x":50,"y":5800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '30':
+    id: '30'
+    taskid: '49df6219-389a-454f-a996-14ad7a6236d5'
+    type: title
+    task:
+      id: '49df6219-389a-454f-a996-14ad7a6236d5'
+      version: -1
+      name: Add Verify Outputs Here
+      type: title
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '33'
+    separatecontext: false
+    conditions: []
+    view: '{"position":{"x":50,"y":6000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '33':
+    id: 33
+    taskid: '02c1f56c-7f8e-4e14-8a9b-5b871fadfa8d'
+    type: regular
+    task:
+      id: '02c1f56c-7f8e-4e14-8a9b-5b871fadfa8d'
+      version: -1
+      name: gcp-compute-list-regions
+      description: ''
+      script: Google Cloud Compute|||gcp-compute-list-regions
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '34'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":6600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '34':
+    id: '34'
+    taskid: '3001e90c-c076-45b3-bf25-8752b4155ace'
+    type: title
+    task:
+      id: '3001e90c-c076-45b3-bf25-8752b4155ace'
+      version: -1
+      name: Add Verify Outputs Here
+      type: title
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '35'
+    separatecontext: false
+    conditions: []
+    view: '{"position":{"x":50,"y":6800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '35':
+    id: 35
+    taskid: '9f72ed98-85a2-4dba-880c-8802553582ca'
+    type: regular
+    task:
+      id: '9f72ed98-85a2-4dba-880c-8802553582ca'
+      version: -1
+      name: gcp-compute-list-zones
+      description: ''
+      script: Google Cloud Compute|||gcp-compute-list-zones
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '36'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":7000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '36':
+    id: '36'
+    taskid: '9601e801-d808-48cd-9299-342668876086'
+    type: title
+    task:
+      id: '9601e801-d808-48cd-9299-342668876086'
+      version: -1
+      name: Add Verify Outputs Here
+      type: title
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '37'
+    separatecontext: false
+    conditions: []
+    view: '{"position":{"x":50,"y":7200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '37':
+    id: 37
+    taskid: '15e60f0f-479d-4055-b369-d69d17d67847'
+    type: regular
+    task:
+      id: '15e60f0f-479d-4055-b369-d69d17d67847'
+      version: -1
+      name: gcp-compute-aggregated-list-machine-types
+      description: ''
+      script: Google Cloud Compute|||gcp-compute-aggregated-list-machine-types
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '38'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":7400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '38':
+    id: '38'
+    taskid: '31c0fe56-4786-4bc8-ac75-d84e5732806e'
+    type: title
+    task:
+      id: '31c0fe56-4786-4bc8-ac75-d84e5732806e'
+      version: -1
+      name: Add Verify Outputs Here
+      type: title
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '39'
+    separatecontext: false
+    conditions: []
+    view: '{"position":{"x":50,"y":7600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '39':
+    id: 39
+    taskid: '525bc033-6861-4d2c-8e8d-7fe3369e20d9'
+    type: regular
+    task:
+      id: '525bc033-6861-4d2c-8e8d-7fe3369e20d9'
+      version: -1
+      name: gcp-compute-list-machine-types
+      description: ''
+      script: Google Cloud Compute|||gcp-compute-list-machine-types
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '40'
+    scriptarguments:
+      zone:
+        simple: us-west1-a
+    separatecontext: false
+    view: '{"position":{"x":50,"y":7800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '40':
+    id: '40'
+    taskid: '6583c140-fe07-436d-ab7e-fa86924249db'
+    type: title
+    task:
+      id: '6583c140-fe07-436d-ab7e-fa86924249db'
+      version: -1
+      name: Add Verify Outputs Here
+      type: title
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '41'
+    separatecontext: false
+    conditions: []
+    view: '{"position":{"x":50,"y":8000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '41':
+    id: 41
+    taskid: 'deefa154-be9d-48b4-a1ff-0b1e99db3d00'
+    type: regular
+    task:
+      id: 'deefa154-be9d-48b4-a1ff-0b1e99db3d00'
+      version: -1
+      name: gcp-compute-list-networks
+      description: ''
+      script: Google Cloud Compute|||gcp-compute-list-networks
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '42'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":8200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '42':
+    id: '42'
+    taskid: '69b23b7d-cfc8-4dc3-aff9-2eb618af8757'
+    type: title
+    task:
+      id: '69b23b7d-cfc8-4dc3-aff9-2eb618af8757'
+      version: -1
+      name: Add Verify Outputs Here
+      type: title
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '43'
+    separatecontext: false
+    conditions: []
+    view: '{"position":{"x":50,"y":8400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '43':
+    id: 43
+    taskid: '54434e2d-2d95-4e17-b030-f09e9d5bb458'
+    type: regular
+    task:
+      id: '54434e2d-2d95-4e17-b030-f09e9d5bb458'
+      version: -1
+      name: gcp-compute-list-firewall
+      description: ''
+      script: Google Cloud Compute|||gcp-compute-list-firewall
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '44'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":8600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '44':
+    id: '44'
+    taskid: 'ee87dc68-7c32-4141-9704-e712665d4000'
+    type: title
+    task:
+      id: 'ee87dc68-7c32-4141-9704-e712665d4000'
+      version: -1
+      name: Add Verify Outputs Here
+      type: title
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '45'
+    separatecontext: false
+    conditions: []
+    view: '{"position":{"x":50,"y":8800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '45':
+    id: 45
+    taskid: '0d70b984-b67f-4963-8eca-d41a1cd0ac5f'
+    type: regular
+    task:
+      id: '0d70b984-b67f-4963-8eca-d41a1cd0ac5f'
+      version: -1
+      name: gcp-compute-list-snapshots
+      description: ''
+      script: Google Cloud Compute|||gcp-compute-list-snapshots
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '46'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":9000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '46':
+    id: '46'
+    taskid: '3ea4cb16-23c5-4ba5-9474-49b2aeaf3ec1'
+    type: title
+    task:
+      id: '3ea4cb16-23c5-4ba5-9474-49b2aeaf3ec1'
+      version: -1
+      name: Add Verify Outputs Here
+      type: title
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '47'
+    separatecontext: false
+    conditions: []
+    view: '{"position":{"x":50,"y":9200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '47':
+    id: '47'
+    taskid: '9e06f2aa-f046-49ca-b876-2dfbb92df079'
+    type: title
+    task:
+      id: '9e06f2aa-f046-49ca-b876-2dfbb92df079'
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position":{"x":50,"y":9400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition":{},"paper":{"dimensions":{"height":200,"width":380,"x":50,"y":50}}}'
+inputs: []
+outputs: []
+description: Test Playbook for listing commands of compute

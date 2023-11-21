@@ -1,0 +1,21 @@
+comment: |
+  Check Upgrade and Display Changes
+commonfields:
+  id: ListPlaybookAutomationsCommands
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.12.68300
+enabled: true
+name: ListPlaybookAutomationsCommands
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
+timeout: 600ns

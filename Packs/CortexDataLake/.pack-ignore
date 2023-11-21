@@ -1,5 +1,10 @@
 [file:CortexDataLake.yml]
-ignore=IN126,IN136,IN145
+ignore=IN126,IN136,IN124
 
 [file:README.md]
 ignore=RM102,RM106
+
+[known_words]
+CDL
+geolocations
+URLDomain

@@ -1,0 +1,43 @@
+{
+ "id": "incident_detectionupdatetime",
+ "version": -1,
+ "modified": "2019-04-22T17:15:50.044491837-07:00",
+ "name": "Detection Update Time",
+ "ownerOnly": false,
+ "placeholder": "",
+ "cliName": "detectionupdatetime",
+ "type": "date",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "script": "",
+ "fieldCalcScript": "",
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "selectValues": null,
+ "validationRegex": "",
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "ExtraHop Detection",
+  "AWS Security Hub Finding"
+ ],
+ "systemAssociatedTypes": null,
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "columns": null,
+ "defaultRows": null,
+ "sla": 0,
+ "threshold": 72,
+ "breachScript": "",
+ "fromVersion": "5.0.0",
+ "marketplaces": [
+    "xsoar"
+]
+}

@@ -91,7 +91,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 610,
+          "x": 800,
           "y": 410
         }
       }
@@ -163,11 +163,14 @@ tasks:
                     right:
                       value:
                         simple: active
+                    ignorecase: true
                 accessor: brand
             iscontext: true
           right:
             value:
               simple: Rapid7 Nexpose
+          ignorecase: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -188,26 +191,17 @@ tasks:
       id: 14333e5c-cb15-4a68-8445-2b05472229e1
       version: -1
       name: 'Search CVE with Rapid7 Nexpose '
-      description: Returns all assets for which you have access that match the given
-        search criteria.
+      description: Search and return all assets matching specific filters. Returns only assets the user has access to.
       tags:
       - autoCVEsearch
-      script: Rapid7 Nexpose|||nexpose-search-assets
+      script: '|||nexpose-search-assets'
       type: regular
       iscommand: true
-      brand: Rapid7 Nexpose
+      brand: ""
     nexttasks:
       '#none#':
       - "9"
     scriptarguments:
-      hostNameIs: {}
-      ipAddressIs: {}
-      limit: {}
-      match: {}
-      query: {}
-      riskScoreHigherThan: {}
-      siteIdIn: {}
-      sort: {}
       vulnerabilityTitleContains:
         complex:
           root: inputs.CVE_ID
@@ -273,11 +267,14 @@ tasks:
                     right:
                       value:
                         simple: active
+                    ignorecase: true
                 accessor: brand
             iscontext: true
           right:
             value:
               simple: Kennav2
+          ignorecase: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -350,7 +347,7 @@ tasks:
       {
         "position": {
           "x": 1410,
-          "y": 930
+          "y": 910
         }
       }
     note: false
@@ -404,7 +401,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               complex:
@@ -517,7 +514,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: isEqualString
           left:
             value:
               complex:
@@ -531,16 +528,14 @@ tasks:
                     right:
                       value:
                         simple: active
-                  - operator: containsString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: RiskSense
+                    ignorecase: true
                 accessor: brand
             iscontext: true
+          right:
+            value:
+              simple: RiskSense
+          ignorecase: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -703,7 +698,7 @@ inputs:
 - key: CVE_ID
   value: {}
   required: false
-  description: ""
+  description: The CVE ID
   playbookInputQuery:
 outputs:
 - contextPath: Kenna.Assets
@@ -718,3 +713,6 @@ outputs:
 tests:
 - No tests
 fromversion: 5.5.0
+marketplaces:
+  - xsoar
+  - marketplacev2

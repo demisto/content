@@ -1,14 +1,14 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import dateparser
+import urllib3
 
-import demistomock as demisto
-from CommonServerPython import *
 
 import json
-import requests
 from typing import Any, Dict, Tuple, List
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 MAX_INCIDENTS_TO_FETCH = 500
@@ -605,7 +605,9 @@ def main() -> None:
         'Canada': 'https://api-ca.tmcas.trendmicro.com/v1/'
     }
     params = demisto.params()
-    token = params.get('token')
+    token = params.get('credentials_token', {}).get('password') or params.get('token')
+    if not token:
+        raise DemistoException('Token must be provided.')
     # get the service API url
     base_url = URLS.get(params.get("serviceURL"))
     verify_certificate = not params.get('insecure', False)

@@ -1,10 +1,11 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import hashlib
 import secrets
 import string
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-from CoreIRApiModule import *
 from itertools import zip_longest
+
+from CoreIRApiModule import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -32,23 +33,6 @@ XDR_INCIDENT_FIELDS = {
     "manual_severity": {"description": "Incident severity assigned by the user. "
                                        "This does not affect the calculated severity low medium high",
                         "xsoar_field_name": "severity"},
-}
-
-XDR_RESOLVED_STATUS_TO_XSOAR = {
-    'resolved_known_issue': 'Other',
-    'resolved_duplicate': 'Duplicate',
-    'resolved_false_positive': 'False Positive',
-    'resolved_true_positive': 'Resolved',
-    'resolved_security_testing': 'Other',
-    'resolved_other': 'Other',
-    'resolved_auto': 'Resolved'
-}
-
-XSOAR_RESOLVED_STATUS_TO_XDR = {
-    'Other': 'resolved_other',
-    'Duplicate': 'resolved_duplicate',
-    'False Positive': 'resolved_false_positive',
-    'Resolved': 'resolved_true_positive',
 }
 
 MIRROR_DIRECTION = {
@@ -137,6 +121,16 @@ def filter_and_save_unseen_incident(incidents: List, limit: int, number_of_alrea
 
 class Client(CoreClient):
 
+    def __init__(self, base_url, proxy, verify, timeout, params=None):
+        if not params:
+            params = {}
+        self._params = params
+        super().__init__(base_url=base_url, proxy=proxy, verify=verify, headers=self.headers, timeout=timeout)
+
+    @property
+    def headers(self):
+        return get_headers(self._params)
+
     def test_module(self, first_fetch_time):
         """
             Performs basic get request to get item samples
@@ -164,6 +158,7 @@ class Client(CoreClient):
             method='POST',
             url_suffix='/incidents/get_incidents/',
             json_data={'request_data': request_data},
+            headers=self.headers,
             timeout=self.timeout
         )
         raw_incidents = res.get('reply', {}).get('incidents', [])
@@ -184,6 +179,7 @@ class Client(CoreClient):
                 method='POST',
                 url_suffix='/incidents/get_incidents/',
                 json_data={'request_data': request_data},
+                headers=self.headers,
                 timeout=self.timeout
             )
             raw_incidents = res.get('reply', {}).get('incidents', [])
@@ -312,11 +308,52 @@ class Client(CoreClient):
             method='POST',
             url_suffix='/incidents/get_incidents/',
             json_data={'request_data': request_data},
+            headers=self.headers,
             timeout=self.timeout
         )
         incidents = res.get('reply', {}).get('incidents', [])
 
         return incidents
+
+    def update_incident(self, incident_id, status=None, assigned_user_mail=None, assigned_user_pretty_name=None, severity=None,
+                        resolve_comment=None, unassign_user=None, add_comment=None):
+        update_data: dict[str, Any] = {}
+
+        if unassign_user and (assigned_user_mail or assigned_user_pretty_name):
+            raise ValueError("Can't provide both assignee_email/assignee_name and unassign_user")
+        if unassign_user:
+            update_data['assigned_user_mail'] = 'none'
+
+        if assigned_user_mail:
+            update_data['assigned_user_mail'] = assigned_user_mail
+
+        if assigned_user_pretty_name:
+            update_data['assigned_user_pretty_name'] = assigned_user_pretty_name
+
+        if status:
+            update_data['status'] = status
+
+        if severity:
+            update_data['manual_severity'] = severity
+
+        if resolve_comment:
+            update_data['resolve_comment'] = resolve_comment
+
+        if add_comment:
+            update_data['comment'] = {'comment_action': 'add', 'value': add_comment}
+
+        request_data = {
+            'incident_id': incident_id,
+            'update_data': update_data,
+        }
+
+        self._http_request(
+            method='POST',
+            url_suffix='/incidents/update_incident/',
+            json_data={'request_data': request_data},
+            headers=self.headers,
+            timeout=self.timeout
+        )
 
     def get_incident_extra_data(self, incident_id, alerts_limit=1000):
         """
@@ -335,6 +372,7 @@ class Client(CoreClient):
             method='POST',
             url_suffix='/incidents/get_incident_extra_data/',
             json_data={'request_data': request_data},
+            headers=self.headers,
             timeout=self.timeout
         )
 
@@ -362,6 +400,7 @@ class Client(CoreClient):
             method='POST',
             url_suffix='/alerts/get_correlation_alert_data/',
             json_data=request_data,
+            headers=self.headers,
             timeout=self.timeout,
         )
 
@@ -379,10 +418,56 @@ class Client(CoreClient):
             url_suffix=f'/featured_fields/replace_{field_type}',
             json_data=request_data,
             timeout=self.timeout,
+            headers=self.headers,
             raise_on_status=True
         )
 
         return reply.get('reply')
+
+    def get_tenant_info(self):
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/system/get_tenant_info/',
+            json_data={'request_data': {}},
+            headers=self.headers,
+            timeout=self.timeout
+        )
+        return reply.get('reply', {})
+
+
+def get_headers(params: dict) -> dict:
+    api_key = params.get('apikey') or params.get('apikey_creds', {}).get('password', '')
+    api_key_id = params.get('apikey_id') or params.get('apikey_id_creds', {}).get('password', '')
+    nonce: str = "".join([secrets.choice(string.ascii_letters + string.digits) for _ in range(64)])
+    timestamp: str = str(int(datetime.now(timezone.utc).timestamp()) * 1000)
+    auth_key = f"{api_key}{nonce}{timestamp}"
+    auth_key = auth_key.encode("utf-8")
+    api_key_hash: str = hashlib.sha256(auth_key).hexdigest()
+
+    if argToBoolean(params.get("prevent_only", False)):
+        api_key_hash = api_key
+
+    headers: dict = {
+        "x-xdr-timestamp": timestamp,
+        "x-xdr-nonce": nonce,
+        "x-xdr-auth-id": str(api_key_id),
+        "Authorization": api_key_hash,
+    }
+
+    return headers
+
+
+def get_tenant_info_command(client: Client):
+    tenant_info = client.get_tenant_info()
+    readable_output = tableToMarkdown(
+        'Tenant Information', tenant_info, headerTransform=pascalToSpace, removeNull=True, is_auto_json_transform=True
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.TenantInformation',
+        outputs=tenant_info,
+        raw_response=tenant_info
+    )
 
 
 def get_incidents_command(client, args):
@@ -398,7 +483,7 @@ def get_incidents_command(client, args):
     incident_id_list = argToList(incident_id_list)
     # make sure all the ids passed are strings and not integers
     for index, id_ in enumerate(incident_id_list):
-        if isinstance(id_, (int, float)):
+        if isinstance(id_, int | float):
             incident_id_list[index] = str(id_)
 
     lte_modification_time = args.get('lte_modification_time')
@@ -483,6 +568,30 @@ def get_incidents_command(client, args):
     )
 
 
+def update_incident_command(client, args):
+    incident_id = args.get('incident_id')
+    assigned_user_mail = args.get('assigned_user_mail')
+    assigned_user_pretty_name = args.get('assigned_user_pretty_name')
+    status = args.get('status')
+    severity = args.get('manual_severity')
+    unassign_user = args.get('unassign_user') == 'true'
+    resolve_comment = args.get('resolve_comment')
+    add_comment = args.get('add_comment')
+
+    client.update_incident(
+        incident_id=incident_id,
+        assigned_user_mail=assigned_user_mail,
+        assigned_user_pretty_name=assigned_user_pretty_name,
+        unassign_user=unassign_user,
+        status=status,
+        severity=severity,
+        resolve_comment=resolve_comment,
+        add_comment=add_comment,
+    )
+
+    return f'Incident {incident_id} has been updated', None, None
+
+
 def check_if_incident_was_modified_in_xdr(incident_id, last_mirrored_in_time_timestamp, last_modified_incidents_dict):
     if incident_id in last_modified_incidents_dict:  # search the incident in the dict of modified incidents
         incident_modification_time_in_xdr = int(str(last_modified_incidents_dict[incident_id]))
@@ -494,7 +603,7 @@ def check_if_incident_was_modified_in_xdr(incident_id, last_mirrored_in_time_tim
         if incident_modification_time_in_xdr > last_mirrored_in_time_timestamp:  # need to update this incident
             demisto.info(f"Incident '{incident_id}' was modified. performing extra-data request.")
             return True
-    # the incident was not modified
+        # the incident was not modified
     return False
 
 
@@ -542,7 +651,7 @@ def get_incident_extra_data_command(client, args):
     file_artifacts = raw_incident.get('file_artifacts').get('data')
     network_artifacts = raw_incident.get('network_artifacts').get('data')
 
-    readable_output = [tableToMarkdown('Incident {}'.format(incident_id), incident)]
+    readable_output = [tableToMarkdown(f'Incident {incident_id}', incident)]
 
     if len(context_alerts) > 0:
         readable_output.append(tableToMarkdown('Alerts', context_alerts,
@@ -565,12 +674,19 @@ def get_incident_extra_data_command(client, args):
         'file_artifacts': file_artifacts,
         'network_artifacts': network_artifacts
     })
-    account_context_output = assign_params(**{
-        'Username': incident.get('users', '')
-    })
-    endpoint_context_output = assign_params(**{
-        'Hostname': incident.get('hosts', '')
-    })
+    account_context_output = assign_params(
+        Username=incident.get('users', '')
+    )
+    endpoint_context_output = []
+
+    for alert in incident.get('alerts') or []:
+        alert_context = {}
+        if hostname := alert.get('host_name'):
+            alert_context['Hostname'] = hostname
+        if endpoint_id := alert.get('endpoint_id'):
+            alert_context['ID'] = endpoint_id
+        if alert_context:
+            endpoint_context_output.append(alert_context)
 
     context_output = {f'{INTEGRATION_CONTEXT_BRAND}.Incident(val.incident_id==obj.incident_id)': incident}
     if account_context_output:
@@ -632,11 +748,7 @@ def insert_parsed_alert_command(client, args):
     alert_name = args.get('alert_name')
     alert_description = args.get('alert_description', '')
 
-    if args.get('event_timestamp') is None:
-        # get timestamp now if not provided
-        event_timestamp = int(round(time.time() * 1000))
-    else:
-        event_timestamp = int(args.get('event_timestamp'))
+    event_timestamp = int(round(time.time() * 1000)) if args.get("event_timestamp") is None else int(args.get("event_timestamp"))
 
     alert = create_parsed_alert(
         product=product,
@@ -667,12 +779,7 @@ def insert_cef_alerts_command(client, args):
     if isinstance(alerts, list):
         pass
     elif isinstance(alerts, str):
-        if alerts[0] == '[' and alerts[-1] == ']':
-            # if the string contains [] it means it is a list and must be parsed
-            alerts = json.loads(alerts)
-        else:
-            # otherwise it is a single alert
-            alerts = [alerts]
+        alerts = json.loads(alerts) if alerts[0] == "[" and alerts[-1] == "]" else [alerts]
     else:
         raise ValueError('Invalid argument "cef_alerts". It should be either list of strings (cef alerts), '
                          'or single string')
@@ -700,19 +807,23 @@ def sort_all_list_incident_fields(incident_data):
     if incident_data.get('incident_sources', []):
         incident_data['incident_sources'] = sorted(incident_data.get('incident_sources', []))
 
+    format_sublists = not argToBoolean(demisto.params().get('dont_format_sublists', False))
     if incident_data.get('alerts', []):
         incident_data['alerts'] = sort_by_key(incident_data.get('alerts', []), main_key='alert_id', fallback_key='name')
-        reformat_sublist_fields(incident_data['alerts'])
+        if format_sublists:
+            reformat_sublist_fields(incident_data['alerts'])
 
     if incident_data.get('file_artifacts', []):
         incident_data['file_artifacts'] = sort_by_key(incident_data.get('file_artifacts', []), main_key='file_name',
                                                       fallback_key='file_sha256')
-        reformat_sublist_fields(incident_data['file_artifacts'])
+        if format_sublists:
+            reformat_sublist_fields(incident_data['file_artifacts'])
 
     if incident_data.get('network_artifacts', []):
         incident_data['network_artifacts'] = sort_by_key(incident_data.get('network_artifacts', []),
                                                          main_key='network_domain', fallback_key='network_remote_ip')
-        reformat_sublist_fields(incident_data['network_artifacts'])
+        if format_sublists:
+            reformat_sublist_fields(incident_data['network_artifacts'])
 
 
 def sync_incoming_incident_owners(incident_data):
@@ -745,12 +856,12 @@ def handle_incoming_closing_incident(incident_data):
             'Contents': {
                 'dbotIncidentClose': True,
                 'closeReason': XDR_RESOLVED_STATUS_TO_XSOAR.get(incident_data.get("status")),
-                'closeNotes': incident_data.get('resolve_comment')
+                'closeNotes': incident_data.get('resolve_comment', '')
             },
             'ContentsFormat': EntryFormat.JSON
         }
-        incident_data['closeReason'] = XDR_RESOLVED_STATUS_TO_XSOAR.get(incident_data.get("status"))
-        incident_data['closeNotes'] = f'{MIRROR_IN_CLOSE_REASON}\n{incident_data.get("resolve_comment")}'
+        incident_data['closeReason'] = closing_entry['Contents']['closeReason']
+        incident_data['closeNotes'] = closing_entry['Contents']['closeNotes']
 
         if incident_data.get('status') == 'resolved_known_issue':
             close_notes = f'Known Issue.\n{incident_data.get("closeNotes", "")}'
@@ -783,7 +894,7 @@ def get_modified_remote_data_command(client, args):
 
     raw_incidents = client.get_incidents(gte_modification_time=last_update_without_ms, limit=100)
 
-    modified_incident_ids = list()
+    modified_incident_ids = []
     for raw_incident in raw_incidents:
         incident_id = raw_incident.get('incident_id')
         modified_incident_ids.append(incident_id)
@@ -876,6 +987,33 @@ def get_remote_data_command(client, args):
         )
 
 
+def update_remote_system_command(client, args):
+    remote_args = UpdateRemoteSystemArgs(args)
+
+    if remote_args.delta:
+        demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update'
+                      f'incident {remote_args.remote_incident_id}')
+    try:
+        if remote_args.incident_changed:
+            update_args = get_update_args(remote_args)
+
+            update_args['incident_id'] = remote_args.remote_incident_id
+            demisto.debug(f'Sending incident with remote ID [{remote_args.remote_incident_id}]\n')
+            update_incident_command(client, update_args)
+
+        else:
+            demisto.debug(f'Skipping updating remote incident fields [{remote_args.remote_incident_id}] '
+                          f'as it is not new nor changed')
+
+        return remote_args.remote_incident_id
+
+    except Exception as e:
+        demisto.debug(f"Error in outgoing mirror for incident {remote_args.remote_incident_id} \n"
+                      f"Error message: {str(e)}")
+
+        return remote_args.remote_incident_id
+
+
 def fetch_incidents(client, first_fetch_time, integration_instance, last_run: dict = None, max_fetch: int = 10,
                     statuses: List = [], starred: Optional[bool] = None, starred_incidents_fetch_window: str = None):
     # Get the last fetch time, if exists
@@ -911,7 +1049,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
 
     # maintain a list of non created incidents in a case of a rate limit exception
     non_created_incidents: list = raw_incidents.copy()
-    next_run = dict()
+    next_run = {}
     try:
         # The count of incidents, so as not to pass the limit
         count_incidents = 0
@@ -971,6 +1109,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
 def get_endpoints_by_status_command(client: Client, args: Dict) -> CommandResults:
     status = args.get('status')
 
+    status = argToList(status)
     last_seen_gte = arg_to_timestamp(
         arg=args.get('last_seen_gte'),
         arg_name='last_seen_gte'
@@ -1078,8 +1217,6 @@ def main():  # pragma: no cover
     LOG(f'Command being called is {command}')
 
     # using two different credentials object as they both fields need to be encrypted
-    api_key = params.get('apikey') or params.get('apikey_creds').get('password', '')
-    api_key_id = params.get('apikey_id') or params.get('apikey_id_creds').get('password', '')
     first_fetch_time = params.get('fetch_time', '3 days')
     base_url = urljoin(params.get('url'), '/public_api/v1')
     proxy = params.get('proxy')
@@ -1099,28 +1236,12 @@ def main():  # pragma: no cover
         demisto.debug(f'Failed casting max fetch parameter to int, falling back to 10 - {e}')
         max_fetch = 10
 
-    nonce = "".join([secrets.choice(string.ascii_letters + string.digits) for _ in range(64)])
-    timestamp = str(int(datetime.now(timezone.utc).timestamp()) * 1000)
-    auth_key = "%s%s%s" % (api_key, nonce, timestamp)
-    auth_key = auth_key.encode("utf-8")
-    api_key_hash = hashlib.sha256(auth_key).hexdigest()
-
-    if argToBoolean(params.get("prevent_only", False)):
-        api_key_hash = api_key
-
-    headers = {
-        "x-xdr-timestamp": timestamp,
-        "x-xdr-nonce": nonce,
-        "x-xdr-auth-id": str(api_key_id),
-        "Authorization": api_key_hash
-    }
-
     client = Client(
         base_url=base_url,
         proxy=proxy,
         verify=verify_cert,
-        headers=headers,
-        timeout=timeout
+        timeout=timeout,
+        params=params
     )
 
     args = demisto.args()
@@ -1153,6 +1274,9 @@ def main():  # pragma: no cover
 
         elif command == 'xdr-get-endpoints':
             return_results(get_endpoints_command(client, args))
+
+        elif command == 'xdr-endpoint-alias-change':
+            return_results(endpoint_alias_change_command(client, **args))
 
         elif command == 'xdr-insert-parsed-alert':
             return_outputs(*insert_parsed_alert_command(client, args))
@@ -1224,6 +1348,18 @@ def main():  # pragma: no cover
 
         elif command == 'xdr-quarantine-files':
             return_results(quarantine_files_command(client, args))
+
+        elif command == 'xdr-file-quarantine':
+            return_results(run_polling_command(client=client,
+                                               args=args,
+                                               cmd="xdr-file-quarantine",
+                                               command_function=quarantine_files_command,
+                                               command_decision_field="action_id",
+                                               results_function=action_status_get_command,
+                                               polling_field="status",
+                                               polling_value=["PENDING",
+                                                              "IN_PROGRESS",
+                                                              "PENDING_ABORT"]))
 
         elif command == 'core-quarantine-files':
             polling_args = {
@@ -1445,7 +1581,15 @@ def main():  # pragma: no cover
         elif command == 'xdr-blocklist-files':
             return_results(blocklist_files_command(client, args))
 
+        elif command == 'xdr-blacklist-files':
+            args['prefix'] = 'blacklist'
+            return_results(blocklist_files_command(client, args))
+
         elif command == 'xdr-allowlist-files':
+            return_results(allowlist_files_command(client, args))
+
+        elif command == 'xdr-whitelist-files':
+            args['prefix'] = 'whitelist'
             return_results(allowlist_files_command(client, args))
 
         elif command == 'xdr-remove-blocklist-files':
@@ -1459,6 +1603,33 @@ def main():  # pragma: no cover
 
         elif command == 'xdr-replace-featured-field':
             return_results(replace_featured_field_command(client, args))
+
+        elif command == 'xdr-endpoint-tag-add':
+            return_results(add_tag_to_endpoints_command(client, args))
+
+        elif command == 'xdr-endpoint-tag-remove':
+            return_results(remove_tag_from_endpoints_command(client, args))
+
+        elif command == 'xdr-get-tenant-info':
+            return_results(get_tenant_info_command(client))
+
+        elif command == 'xdr-list-users':
+            return_results(list_users_command(client, args))
+
+        elif command == 'xdr-list-risky-users':
+            return_results(list_risky_users_or_host_command(client, "user", args))
+
+        elif command == 'xdr-list-risky-hosts':
+            return_results(list_risky_users_or_host_command(client, "host", args))
+
+        elif command == 'xdr-list-user-groups':
+            return_results(list_user_groups_command(client, args))
+
+        elif command == 'xdr-list-roles':
+            return_results(list_roles_command(client, args))
+
+        elif command in ('xdr-set-user-role', 'xdr-remove-user-role'):
+            return_results(change_user_role_command(client, args))
 
     except Exception as err:
         return_error(str(err))

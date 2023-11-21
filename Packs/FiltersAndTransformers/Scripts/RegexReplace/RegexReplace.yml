@@ -1,0 +1,66 @@
+args:
+- description: Text to match against
+  name: value
+  required: true
+- description: Regex pattern to search
+  name: regex
+  required: true
+- description: Template string to format patterns matched with regex
+  name: output_format
+- auto: PREDEFINED
+  defaultValue: 'false'
+  description: Whether character matching will be case-insensitive. Default is "false".
+  name: ignore_case
+  predefined:
+  - 'true'
+  - 'false'
+- name: multi_line
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  description: Process value in multiline mode.  See more information on re.MULTILINE, see https://docs.python.org/3/library/re.html.
+  defaultValue: 'false'
+- name: period_matches_newline
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  description: Whether to make the '.' character also match a new line. Default is "false".
+  defaultValue: 'false'
+- name: action_dt
+  description: The last action for each matched value to transform
+comment: |-
+  Format patterns matched with regex. If the regex does not match any pattern, the original value is returned.
+
+  Example 1:
+   value: user=john
+   regex: user=(.*)
+   output_format: name=\1
+   -> output value: name=john
+
+  Example 2:
+   value: xxx=yyy
+   regex: user=(.*)
+   output_format: name=\1
+   -> output value: xxx=yyy
+commonfields:
+  id: RegexReplace
+  version: -1
+dockerimage: demisto/python3:3.10.12.63474
+enabled: true
+name: RegexReplace
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- transformer
+- string
+type: python
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''

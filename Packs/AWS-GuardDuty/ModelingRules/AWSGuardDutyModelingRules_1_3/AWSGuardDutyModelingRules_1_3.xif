@@ -1,0 +1,22 @@
+[MODEL: dataset="aws_guardduty_raw"]
+alter 
+    targetIP1 = json_extract_scalar(Service, "$.Action.NetworkConnectionAction.RemoteIpDetails.IpAddressV4"),
+    targetIP2 = json_extract_scalar(Service, "$.Action.KubernetesApiCallAction.RemoteIpDetails.IpAddressV4"),
+    username1 = trim(json_extract_scalar(Resource,"$.AccessKeyDetails.UserName"), "\""),
+    username2 = json_extract_scalar(Resource, "$.KubernetesDetails.KubernetesUserDetails.Username"),
+    userType = json_extract_scalar(Resource, "$.AccessKeyDetails.UserType")
+| alter
+    xdm.alert.category = json_extract_scalar(Resource, "$.ResourceType"),
+    xdm.alert.subcategory = Type,
+    xdm.alert.description = Description,
+    xdm.event.outcome_reason = Title,
+    xdm.alert.severity = to_string(Severity),
+    xdm.target.resource.id = AccountId,
+    xdm.target.host.hostname = json_extract_scalar(Resource, "$.EksClusterDetails.Name"),
+    xdm.source.user.user_type = if(userType in("Root","IAMUser","Role","FederatedUser","AWSAccount"),XDM_CONST.USER_TYPE_REGULAR , userType in("Directory","AWSService") ,XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,userType in("AssumedRole") ,XDM_CONST.USER_TYPE_MACHINE_ACCOUNT ,to_string(userType)),
+    xdm.target.process.name = json_extract_scalar(Service, "$.ServiceName"),
+    xdm.source.host.ipv4_addresses = arraycreate(coalesce(json_extract_scalar(Service,  "$.Action.AwsApiCallAction.RemoteIpDetails.IpAddressV4"), "")),
+    xdm.source.ipv4 = json_extract_scalar(Service, "$.Action.NetworkConnectionAction.LocalIpDetails.IpAddressV4"),
+    xdm.target.ipv4 = coalesce(targetIP1, targetIP2),
+    xdm.source.user.username = coalesce(username1, username2),
+    xdm.target.cloud.region = Region;

@@ -1,0 +1,3 @@
+[INGEST:vendor="Proofpoint", product="Tap", target_dataset="proofpoint_tap_raw" , no_hit=keep]
+filter clickTime != null or messageTime != null
+| alter _time = coalesce(messageTime, clickTime);

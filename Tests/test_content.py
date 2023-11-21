@@ -1,25 +1,24 @@
-from __future__ import print_function
 
 import datetime
 import json
 import logging
 import os
-import re
 import sys
 from contextlib import contextmanager
 from queue import Queue
-from typing import Union, Any, Generator
+from typing import Any
+from collections.abc import Generator
+import demisto_client
 
-import demisto_client.demisto_api
 import pytz
 import requests
 import urllib3
 from google.api_core.exceptions import PreconditionFailed
 from google.cloud import storage
-
 from Tests.test_dependencies import get_used_integrations
 from demisto_sdk.commands.common.constants import FILTER_CONF
 from demisto_sdk.commands.test_content.ParallelLoggingManager import ParallelLoggingManager
+from demisto_sdk.commands.common.tools import get_demisto_version
 
 logging_manager: ParallelLoggingManager = None
 
@@ -37,6 +36,10 @@ BUCKET_NAME = os.environ.get('GCS_ARTIFACTS_BUCKET')
 BUILD_NUM = os.environ.get('CI_BUILD_ID')
 WORKFLOW_ID = os.environ.get('CI_PIPELINE_ID')
 CIRCLE_STATUS_TOKEN = os.environ.get('CIRCLECI_STATUS_TOKEN')
+ARTIFACTS_FOLDER_SERVER_TYPE = os.getenv('ARTIFACTS_FOLDER_SERVER_TYPE')
+ENV_RESULTS_PATH = os.getenv('ENV_RESULTS_PATH', f'{ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json')
+
+MAX_ON_PREM_SERVER_VERSION = "6.99.99"
 
 
 class SettingsTester:
@@ -53,7 +56,6 @@ class SettingsTester:
         self.isAMI = options.isAMI
         self.memCheck = options.memCheck
         self.serverVersion = options.serverVersion
-        self.serverNumericVersion = None
         self.specific_tests_to_run = self.parse_tests_list_arg(options.testsList)
         self.is_local_run = (self.server is not None)
 
@@ -104,7 +106,7 @@ class DataKeeperTester:
 
 def print_test_summary(tests_data_keeper: DataKeeperTester,
                        is_ami: bool = True,
-                       logging_module: Union[Any, ParallelLoggingManager] = logging) -> None:
+                       logging_module: Any | ParallelLoggingManager = logging) -> None:
     """
     Takes the information stored in the tests_data_keeper and prints it in a human readable way.
     Args:
@@ -264,17 +266,13 @@ def set_integration_params(demisto_api_key, integrations, secret_params, instanc
     return True
 
 
-def collect_integrations(integrations_conf, skipped_integration, skipped_integrations_conf, nightly_integrations):
+def collect_integrations(integrations_conf, skipped_integration, skipped_integrations_conf):
     integrations = []
-    is_nightly_integration = False
     test_skipped_integration = []
     for integration in integrations_conf:
-        if integration in skipped_integrations_conf.keys():
-            skipped_integration.add("{0} - reason: {1}".format(integration, skipped_integrations_conf[integration]))
+        if integration in skipped_integrations_conf:
+            skipped_integration.add(f"{integration} - reason: {skipped_integrations_conf[integration]}")
             test_skipped_integration.append(integration)
-
-        if integration in nightly_integrations:
-            is_nightly_integration = True
 
         # string description
         integrations.append({
@@ -282,11 +280,11 @@ def collect_integrations(integrations_conf, skipped_integration, skipped_integra
             'params': {}
         })
 
-    return test_skipped_integration, integrations, is_nightly_integration
+    return test_skipped_integration, integrations
 
 
 def extract_filtered_tests():
-    with open(FILTER_CONF, 'r') as filter_file:
+    with open(FILTER_CONF) as filter_file:
         filtered_tests = [line.strip('\n') for line in filter_file.readlines()]
 
     return filtered_tests
@@ -305,78 +303,37 @@ def load_conf_files(conf_path, secret_conf_path):
 
 
 def load_env_results_json():
-    env_results_path = os.getenv('ENV_RESULTS_PATH', os.path.join(os.getenv('ARTIFACTS_FOLDER', './artifacts'),
-                                                                  'env_results.json'))
-
-    if not os.path.isfile(env_results_path):
-        logging.warning(f"Did not find {env_results_path} file ")
+    if not os.path.isfile(ENV_RESULTS_PATH):
+        logging.warning(f"Did not find {ENV_RESULTS_PATH} file ")
         return {}
 
-    with open(env_results_path, 'r') as json_file:
+    with open(ENV_RESULTS_PATH) as json_file:
         return json.load(json_file)
 
 
-def get_server_numeric_version(ami_env, is_local_run=False):
+def get_server_numeric_version(client: demisto_client, is_local_run=False) -> str:
     """
     Gets the current server version
     Arguments:
-        ami_env: (str)
-            AMI version name.
-        is_local_run: (bool)
-            when running locally, assume latest version.
+        client: (demisto_client): the demisto client
+        is_local_run: (bool) when running locally, assume latest version.
 
     Returns:
         (str) Server numeric version
     """
-    default_version = '99.99.98'
+    default_version = MAX_ON_PREM_SERVER_VERSION
     if is_local_run:
         logging.info(f'Local run, assuming server version is {default_version}')
         return default_version
 
-    env_json = load_env_results_json()
-    if not env_json:
-        logging.warning(f"assuming server version is {default_version}.")
-        return default_version
-
-    instances_ami_names = {env.get('AmiName') for env in env_json if ami_env in env.get('Role', '')}
-    if len(instances_ami_names) != 1:
-        logging.warning(f'Did not get one AMI Name, got {instances_ami_names}.'
-                        f' Assuming server version is {default_version}')
-        return default_version
-
-    instances_ami_name = list(instances_ami_names)[0]
-
-    return extract_server_numeric_version(instances_ami_name, default_version)
-
-
-def extract_server_numeric_version(instances_ami_name, default_version):
-    # regex doesn't catch Server Master execution
-    extracted_version = re.findall(r'Demisto-(?:Circle-CI|Marketplace)-Content-AMI-[A-Za-z]*[-_](\d[._]\d)-[\d]{5}',
-                                   instances_ami_name)
-    extracted_version = [match.replace('_', '.') for match in extracted_version]
-
-    if extracted_version:
-        server_numeric_version = extracted_version[0]
-    else:
-        if 'Master' in instances_ami_name:
-            logging.info('Server version: Master')
-            return default_version
-        else:
-            server_numeric_version = default_version
-
-    # make sure version is three-part version
-    if server_numeric_version.count('.') == 1:
-        server_numeric_version += ".0"
-
-    logging.info(f'Server version: {server_numeric_version}')
-    return server_numeric_version
+    return str(get_demisto_version(client))
 
 
 def get_instances_ips_and_names(tests_settings):
     if tests_settings.server:
         return [tests_settings.server]
     env_json = load_env_results_json()
-    instances_ips = [(env.get('Role'), f"localhost:{env.get('TunnelPort')}") for env in env_json]
+    instances_ips = [(env.get('Role'), env.get('InstanceDNS', '')) for env in env_json]
     return instances_ips
 
 
@@ -392,7 +349,7 @@ def get_test_records_of_given_test_names(tests_settings, tests_names_to_search):
 
 
 def get_json_file(path):
-    with open(path, 'r') as json_file:
+    with open(path) as json_file:
         return json.loads(json_file.read())
 
 
@@ -435,7 +392,7 @@ def add_pr_comment(comment):
     branch_name = os.environ['CI_COMMIT_BRANCH']
     sha1 = os.environ['CI_COMMIT_SHA']
 
-    query = '?q={}+repo:demisto/content+org:demisto+is:pr+is:open+head:{}+is:open'.format(sha1, branch_name)
+    query = f'?q={sha1}+repo:demisto/content+org:demisto+is:pr+is:open+head:{branch_name}+is:open'
     url = 'https://api.github.com/search/issues'
     headers = {'Authorization': 'Bearer ' + token}
     try:
@@ -557,7 +514,7 @@ def workflow_still_running(workflow_id: str) -> bool:
         try:
             workflow_details_response = requests.get(f'https://circleci.com/api/v2/workflow/{workflow_id}',
                                                      headers={'Accept': 'application/json'},
-                                                     auth=(CIRCLE_STATUS_TOKEN, ''))
+                                                     auth=(CIRCLE_STATUS_TOKEN, ''))  # type: ignore[arg-type]
             workflow_details_response.raise_for_status()
         except Exception:
             logging_manager.exception(f'Failed to get circleci response about workflow with id {workflow_id}.')

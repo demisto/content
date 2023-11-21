@@ -1,43 +1,48 @@
 from requests import RequestException
 
-import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
 ''' IMPORTS '''
 
 import sys
 import requests
+import urllib3
 import json
 import time
 import re
-import urllib
-from urlparse import urlparse
+import urllib.request
+import urllib.parse
+import urllib.error
+from urllib.parse import urlparse
 from distutils.util import strtobool
 from datetime import datetime, timedelta
+from requests.exceptions import HTTPError
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
-API_TOKEN = demisto.params().get('APIToken')
-BASE_URL = demisto.params().get('baseURL')
-USE_SSL = not demisto.params().get('insecure', False)
+PARAMS = demisto.params()
+API_TOKEN = PARAMS.get('apitoken_creds', {}).get('password') or PARAMS.get('APIToken')
+BASE_URL = PARAMS.get('baseURL')
+USE_SSL = not PARAMS.get('insecure', False)
 DEFAULT_HEADERS = {
     'Authorization': 'Bearer {}'.format(API_TOKEN),
     'Accept': 'application/json'
 }
-MALICIOUS_THRESHOLD = int(demisto.params().get('dboscore_threshold', -100))
+SUSPICIOUS_THRESHOLD = arg_to_number(PARAMS.get('suspicious_threshold', 0)) or 0
+MALICIOUS_THRESHOLD = arg_to_number(PARAMS.get('dboscore_threshold', -100))
+MAX_THRESHOLD_VALUE = 100
+MIN_THRESHOLD_VALUE = -100
 
-reliability = demisto.params().get('integrationReliability')
+reliability = PARAMS.get('integrationReliability')
 reliability = reliability if reliability else DBotScoreReliability.B
 
 if DBotScoreReliability.is_valid_type(reliability):
     reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
 else:
     Exception("Please provide a valid value for the Source Reliability parameter.")
-
 
 ''' MAPS '''
 
@@ -103,6 +108,14 @@ IP_DNS_FEATURE_INFO = {
 }
 
 ''' HELPER FUNCTIONS '''
+
+
+def verify_threshold_params(suspicious_threshold, malicious_threshold):
+    if not (MAX_THRESHOLD_VALUE >= suspicious_threshold > malicious_threshold >= MIN_THRESHOLD_VALUE):  # type: ignore
+        return_error(
+            "Please provide valid threshold values for the Suspicious and Malicious thresholds when Suspicious is greater than "
+            f"Malicious and both are within a range of {MIN_THRESHOLD_VALUE} to {MAX_THRESHOLD_VALUE}"
+        )
 
 
 def extract_domain_name(url):
@@ -180,16 +193,31 @@ def timestamp_to_date(ts):
     return ts
 
 
-def securerank_to_dbotscore(sr):
-    # converts cisco umbrella score to dbotscore
-    DBotScore = 0
-    if sr > 0 and sr <= 100:
-        DBotScore = 1
-    elif sr < 0 and sr > MALICIOUS_THRESHOLD:
-        DBotScore = 2
-    elif sr <= MALICIOUS_THRESHOLD:
-        DBotScore = 3
-    return DBotScore
+def calculate_domain_dbot_score(status: int | None, securerank2: int | None) -> int:
+    match status:
+        case -1:
+            return Common.DBotScore.BAD
+        case 1:
+            return Common.DBotScore.GOOD
+        case 0 | None:
+            # in these cases, security_rank2 is used
+            if securerank2 is None:
+                return Common.DBotScore.NONE
+
+            if (threshold := demisto.args().get('threshold', MALICIOUS_THRESHOLD)) is None  \
+                    or (malicious_threshold := arg_to_number(threshold)) is None:
+                raise RuntimeError(f"Cannot convert {threshold=} to number")
+
+            if securerank2 < malicious_threshold:
+                return Common.DBotScore.BAD
+
+            if securerank2 < SUSPICIOUS_THRESHOLD:
+                return Common.DBotScore.SUSPICIOUS
+
+            return Common.DBotScore.GOOD
+
+        case _:
+            raise ValueError(f"unexpected {status=}, expected 0,1 or -1")
 
 
 ''' INTERNAL FUNCTIONS '''
@@ -472,7 +500,6 @@ def get_domain_security_command():
     results = []
     # Get vars
     domain = extract_domain_name(demisto.args()['domain'])
-    threshold = int(demisto.args().get('threshold', MALICIOUS_THRESHOLD))
     # Fetch data
     res = get_domain_security(domain)
     if res:
@@ -495,27 +522,22 @@ def get_domain_security_command():
             domain_security_context[context_key] = res[key]
 
         if domain_security_context:
-            secure_rank = res.get('securerank2', False)
-            DBotScore = 0
-            if secure_rank:
-                if secure_rank < threshold:
-                    DBotScore = 3
-                else:
-                    DBotScore = securerank_to_dbotscore(secure_rank)
-                context[outputPaths['dbotscore']] = {
-                    'Indicator': domain,
-                    'Type': 'domain',
-                    'Vendor': 'Cisco Umbrella Investigate',
-                    'Score': DBotScore,
-                    'Reliability': reliability
-                }
+            dbot_score = calculate_domain_dbot_score(status=(get_domain_categorization(domain) or {}).get('status'),
+                                                     securerank2=(get_domain_details(domain) or {}).get('securerank2'))
+            context[outputPaths['dbotscore']] = {
+                'Indicator': domain,
+                'Type': 'domain',
+                'Vendor': 'Cisco Umbrella Investigate',
+                'Score': dbot_score,
+                'Reliability': reliability
+            }
 
             context[outputPaths['domain']] = {
                 'Name': domain,
                 'Security': domain_security_context
             }
 
-            if DBotScore == 3:
+            if dbot_score == Common.DBotScore.BAD:
                 context[outputPaths['domain']]['Malicious'] = {
                     'Vendor': 'Cisco Umbrella Investigate',
                     'Description': 'Malicious domain found via umbrella-domain-security'
@@ -525,7 +547,7 @@ def get_domain_security_command():
             'Indicator': domain,
             'Type': 'domain',
             'Vendor': 'Cisco Umbrella Investigate',
-            'Score': 0,
+            'Score': Common.DBotScore.NONE,
             'Reliability': reliability
 
         }
@@ -607,7 +629,7 @@ def get_domain_dns_history(domain):
 
     # Validate and assign response
     features = res.get('features', {})
-    if not features or not features.viewkeys() > {"base_domain", "is_subdomain"}:
+    if not features or not features.keys() > {"base_domain", "is_subdomain"}:
         return False
     # this is the actual path for ip address
     address = res.get('rrs_tf')[0].get('rrs')[0].get('rr')
@@ -744,6 +766,7 @@ def get_ip_malicious_domains(ip):
 
 def get_domain_command():
     results = []
+    execution_metrics = ExecutionMetrics()
     domains_list = argToList(demisto.args()['domain'])
     for domain in domains_list:
         contents = []
@@ -794,12 +817,11 @@ def get_domain_command():
                 'Malware Categories': malware_categories
             }
 
-            domain_details = []  # type: ignore
-            domain_details = get_domain_details(domain)
+            domain_details = get_domain_details(domain) or {}
             popularity = domain_details.get('popularity')  # type: ignore
             secure_rank = domain_details.get('securerank2')  # type: ignore
-            dbotscore = securerank_to_dbotscore(secure_rank)
-
+            dbot_score = calculate_domain_dbot_score(status=risk_score,
+                                                     securerank2=secure_rank)
             context[outputPaths['domain']] = {
                 'Name': domain,
                 'Admin': admin,
@@ -819,18 +841,17 @@ def get_domain_command():
             }
 
             # Add malicious if needed
-            if risk_score == -1 or secure_rank < MALICIOUS_THRESHOLD:
+            if dbot_score == Common.DBotScore.BAD:
                 context[outputPaths['domain']]['Malicious'] = {
                     'Vendor': 'Cisco Umbrella Investigate',
                     'Description': 'Malicious domain found with risk score -1'
                 }
-                dbotscore = 3
 
             context[outputPaths['dbotscore']] = {
                 'Indicator': domain,
                 'Type': 'domain',
                 'Vendor': 'Cisco Umbrella Investigate',
-                'Score': dbotscore,
+                'Score': dbot_score,
                 'Reliability': reliability
             }
 
@@ -838,26 +859,39 @@ def get_domain_command():
                 'Risk Score': risk_score,
                 'Secure Rank': secure_rank,
                 'Populairty': popularity,
-                'Demisto Reputation': scoreToReputation(dbotscore),
+                'Demisto Reputation': scoreToReputation(dbot_score),
                 'First Queried time': first_queried,
             })
 
             # Domain reputation + [whois -> whois nameservers -> whois emails] + domain categorization
-            results.append({
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['json'],
-                'Contents': [contents, whois, name_servers, emails, domain_categorization_table],
-                'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable':
-                    tableToMarkdown('"Umbrella Investigate" Domain Reputation for: ' + domain, contents, headers)
-                    + tableToMarkdown('"Umbrella Investigate" WHOIS Record Data for: ' + domain, whois, headers,
-                                      date_fields=["Last Retrieved"])
-                    + tableToMarkdown('Name Servers:', {'Name Servers': name_servers}, headers)
-                    + tableToMarkdown('Emails:', emails, ['Emails'])
-                    + tableToMarkdown('Domain Categorization:', domain_categorization_table, headers),
-                'EntryContext': context
-            })
+            readable_domain_reputation = tableToMarkdown('"Umbrella Investigate" Domain Reputation for: ' + domain,
+                                                         contents, headers)
+            readable_whois = tableToMarkdown('"Umbrella Investigate" WHOIS Record Data for: ' + domain, whois, headers,
+                                             date_fields=["Last Retrieved"])
+            readable_name_servers = tableToMarkdown('Name Servers:', {'Name Servers': name_servers}, headers)
+            readable_emails = tableToMarkdown('Emails:', emails, ['Emails'])
+            readable_domain = tableToMarkdown('Domain Categorization:', domain_categorization_table, headers)
+            readable = readable_domain_reputation + readable_whois + readable_name_servers + readable_emails + readable_domain
+
+            results.append(CommandResults(
+                readable_output=readable,
+                outputs=context,
+                raw_response=[contents, whois, name_servers, emails, domain_categorization_table]
+            ))
+            execution_metrics.success += 1
         except RequestException as r:
+            if r.response.status_code == 429:
+                execution_metrics.quota_error += 1
+                results.append(
+                    CommandResults(
+                        readable_output="Quota exceeded.",
+                        outputs=context,
+                        raw_response=contents
+
+                    ))
+                continue
+
+            execution_metrics.general_error += 1
             if r.response.status_code == 404:
                 human_readable = tableToMarkdown(name='Cisco Umbrella Investigate:',
                                                  t={'DOMAIN': domain, 'Result': 'Not found'},
@@ -871,16 +905,18 @@ def get_domain_command():
                                                      'Message': 'No results found',
                                                      'Reliability': reliability}
 
-                results.append({
-                    'Type': entryTypes['note'],
-                    'ContentsFormat': formats['json'],
-                    'Contents': contents,
-                    'HumanReadable': human_readable,
-                    'HumanReadableFormat': formats['markdown'],
-                    'EntryContext': context
-                })
+                results.append(
+                    CommandResults(
+                        readable_output=human_readable,
+                        outputs=context,
+                        raw_response=contents
+                    ))
             else:
-                raise r
+                results = append_metrics(execution_metrics, results)
+                return_results(results)
+                return_error(r.response.text)
+
+    results = append_metrics(execution_metrics, results)
     return results
 
 
@@ -1102,7 +1138,6 @@ def get_domain_details_command():
     results = []
     # Get vars
     domain = extract_domain_name(demisto.args()['domain'])
-    threshold = int(demisto.args().get('threshold', MALICIOUS_THRESHOLD))
     # Fetch data
     res = get_domain_details(domain)
     if res:
@@ -1129,25 +1164,21 @@ def get_domain_details_command():
                 'Domain': domain,
                 'Data': domain_security_context
             }
-            secure_rank = res.get('securerank2', False)
-            if secure_rank:
-                if secure_rank < threshold:
-                    dbotscore = 3
-                else:
-                    dbotscore = securerank_to_dbotscore(secure_rank)
-                context[outputPaths['dbotscore']] = {
-                    'Indicator': domain,
-                    'Type': 'domain',
+            dbot_score = calculate_domain_dbot_score(status=(get_domain_categorization(domain) or {}).get('status'),
+                                                     securerank2=res.get('securerank2'))
+            context[outputPaths['dbotscore']] = {
+                'Indicator': domain,
+                'Type': 'domain',
+                'Vendor': 'Cisco Umbrella Investigate',
+                'Score': dbot_score,
+                'Reliability': reliability
+            }
+            if dbot_score == Common.DBotScore.BAD:
+                context[outputPaths['domain']] = {}
+                context[outputPaths['domain']]['Malicious'] = {
                     'Vendor': 'Cisco Umbrella Investigate',
-                    'Score': dbotscore,
-                    'Reliability': reliability
+                    'Description': 'Malicious domain found via get-domain-details'
                 }
-                if dbotscore == 3:
-                    context[outputPaths['domain']] = {}
-                    context[outputPaths['domain']]['Malicious'] = {
-                        'Vendor': 'Cisco Umbrella Investigate',
-                        'Description': 'Malicious domain found via get-domain-details'
-                    }
 
     results.append({
         'Type': entryTypes['note'],
@@ -1411,86 +1442,99 @@ def get_whois_for_domain_command():
     results = []
     contents_nameserver = {}  # type: ignore
     contents_email = {}  # type: ignore
+    table_whois = {}
+    whois = {}
+    execution_metrics = ExecutionMetrics()
 
     original_domain = demisto.args()['domain']
     domain = extract_domain_name(original_domain)
 
-    res = get_whois_for_domain(domain)
-    if res:
-        # Process response - build context and markdown table
-        nameservers = res.get('nameServers')
-        emails = res.get('emails')
-        whois = {
-            'Name': res.get('domainName'),
-            'RegistrarName': res.get('registrarName'),
-            'LastRetrieved': res.get('timeOfLatestRealtimeCheck'),
-            'Created': res.get('created'),
-            'Updated': res.get('updated'),
-            'Expires': res.get('expires'),
-            'IANAID': res.get('registrarIANAID'),
-            'LastObserved': res.get('auditUpdatedDate')
-        }
+    try:
+        res = get_whois_for_domain(domain)
+        if res:
+            # Process response - build context and markdown table
+            nameservers = res.get('nameServers')
+            emails = res.get('emails')
+            whois = {
+                'Name': res.get('domainName'),
+                'RegistrarName': res.get('registrarName'),
+                'LastRetrieved': res.get('timeOfLatestRealtimeCheck'),
+                'Created': res.get('created'),
+                'Updated': res.get('updated'),
+                'Expires': res.get('expires'),
+                'IANAID': res.get('registrarIANAID'),
+                'LastObserved': res.get('auditUpdatedDate')
+            }
 
-        table_whois = {
-            'Name': whois.get('Name'),
-            'Registrar Name': whois.get('RegistrarName'),
-            'Last Retrieved': whois.get('LastRetrieved'),
-            'Created': whois.get('Created'),
-            'Updated': whois.get('Updated'),
-            'Expires': whois.get('Expires'),
-            'IANAID': whois.get('IANAID'),
-            'Last Observed': whois.get('LastObserved')
-        }
+            table_whois = {
+                'Name': whois.get('Name'),
+                'Registrar Name': whois.get('RegistrarName'),
+                'Last Retrieved': whois.get('LastRetrieved'),
+                'Created': whois.get('Created'),
+                'Updated': whois.get('Updated'),
+                'Expires': whois.get('Expires'),
+                'IANAID': whois.get('IANAID'),
+                'Last Observed': whois.get('LastObserved')
+            }
 
-        admin = {
-            'Country': res.get('administrativeContactCountry', ),
-            'Email': res.get('administrativeContactEmail', ),
-            'Name': res.get('administrativeContactName'),
-            'Phone': res.get('administrativeContactTelephone')
-        }
-        registrant = {
-            'Country': res.get('registrantCountry'),
-            'Email': res.get('registrantEmail'),
-            'Name': res.get('registrantName'),
-            'Phone': res.get('registrantTelephone'),
-        }
-        creation_date = res.get('created')
-        registrar = {'Name': res.get('registrarName')}
-        domain_status = res.get('status')
-        updated_date = res.get('updated')
-        expiration_date = res.get('expires')
+            admin = {
+                'Country': res.get('administrativeContactCountry', ),
+                'Email': res.get('administrativeContactEmail', ),
+                'Name': res.get('administrativeContactName'),
+                'Phone': res.get('administrativeContactTelephone')
+            }
+            registrant = {
+                'Country': res.get('registrantCountry'),
+                'Email': res.get('registrantEmail'),
+                'Name': res.get('registrantName'),
+                'Phone': res.get('registrantTelephone'),
+            }
+            creation_date = res.get('created')
+            registrar = {'Name': res.get('registrarName')}
+            domain_status = res.get('status')
+            updated_date = res.get('updated')
+            expiration_date = res.get('expires')
 
-        context[outputPaths['domain']] = {
-            'Name': domain,
-            'Admin': admin,
-            'Registrant': registrant,
-            'Registrar': registrar,
-            'CreationDate': creation_date,
-            'DomainStatus': domain_status,
-            'UpdatedDate': updated_date,
-            'ExpirationDate': expiration_date,
-        }
+            context[outputPaths['domain']] = {
+                'Name': domain,
+                'Admin': admin,
+                'Registrant': registrant,
+                'Registrar': registrar,
+                'CreationDate': creation_date,
+                'DomainStatus': domain_status,
+                'UpdatedDate': updated_date,
+                'ExpirationDate': expiration_date,
+            }
 
-        contents_nameserver = {'Nameservers': nameservers}
-        contents_email = {'Emails': emails}
+            contents_nameserver = {'Nameservers': nameservers}
+            contents_email = {'Emails': emails}
 
-        whois.update({
-            'Nameservers': nameservers,
-            'Emails': emails
-        })
-        context['Domain.Umbrella.Whois(val.Name && val.Name == obj.Name)'] = whois
+            whois.update({
+                'Nameservers': nameservers,
+                'Emails': emails
+            })
+            context['Domain.Umbrella.Whois(val.Name && val.Name == obj.Name)'] = whois
+            execution_metrics.success += 1
+    except RequestException as r:
+        if r.response.status_code == 429:
+            execution_metrics.quota_error += 1
+        else:
+            execution_metrics.general_error += 1
+        return_results(execution_metrics.metrics)
+        return_error(r.response.text)
 
-    results.append({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': [table_whois, contents_nameserver, contents_email],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('"Umbrella Investigate" WHOIS Record Data for: ' + whois['Name'], table_whois,
-                                         headers, date_fields=["Last Retrieved"])  # noqa: W504
-        + tableToMarkdown('Nameservers: ', contents_nameserver, headers)  # noqa: W504
-        + tableToMarkdown('Email Addresses: ', contents_email, headers),
-        'EntryContext': context
-    })
+    readable_whois = tableToMarkdown('"Umbrella Investigate" WHOIS Record Data for: ' + whois['Name'],
+                                     table_whois, headers, date_fields=["Last Retrieved"])  # noqa: W504
+    readable_name_servers = tableToMarkdown('Nameservers: ', contents_nameserver, headers)  # noqa: W504
+    readable_email = tableToMarkdown('Email Addresses: ', contents_email, headers)
+
+    results.append(
+        CommandResults(
+            raw_response=[table_whois, contents_nameserver, contents_email],
+            outputs=context,
+            readable_output=readable_whois + readable_name_servers + readable_email
+        ))
+    results = append_metrics(execution_metrics, results)
 
     return results
 
@@ -1823,7 +1867,7 @@ def get_url_timeline_command():
 
 def get_url_timeline(url):
     # percent encoding the url or else the API does not give response 200
-    encoded_url = urllib.quote_plus(url.encode('utf-8'))
+    encoded_url = urllib.parse.quote_plus(url.encode('utf-8'))
 
     # Build & Send request
     endpoint_url = '/timeline/' + encoded_url
@@ -1837,64 +1881,74 @@ def get_url_timeline(url):
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
-LOG('command is %s' % (demisto.command(),))
-try:
 
-    handle_proxy()
-    if demisto.command() == 'test-module':
-        # This is the call made when pressing the integration test button.
-        http_request('/domains/categorization/google.com?showLabels')
-        demisto.results('ok')
-        sys.exit(0)
-    elif demisto.command() == 'investigate-umbrella-domain-categorization' or demisto.command() == \
-            'umbrella-domain-categorization':
-        demisto.results(get_domain_categorization_command())
-    elif demisto.command() == 'investigate-umbrella-domain-search' or demisto.command() == 'umbrella-domain-search':
-        demisto.results(get_domain_search_command())
-    elif demisto.command() == 'investigate-umbrella-domain-co-occurrences' or demisto.command() == \
-            'umbrella-domain-co-occurrences':
-        demisto.results(get_domain_co_occurrences_command())
-    elif demisto.command() == 'investigate-umbrella-domain-related' or demisto.command() == 'umbrella-domain-related':
-        demisto.results(get_domain_related_command())
-    elif demisto.command() == 'investigate-umbrella-domain-security' or demisto.command() == 'umbrella-domain-security':
-        demisto.results(get_domain_security_command())
-    elif demisto.command() == 'investigate-umbrella-domain-dns-history' or demisto.command() == \
-            'umbrella-domain-dns-history':
-        demisto.results(get_domain_dns_history_command())
-    elif demisto.command() == 'investigate-umbrella-ip-dns-history' or demisto.command() == 'umbrella-ip-dns-history':
-        demisto.results(get_ip_dns_history_command())
-    elif demisto.command() == 'investigate-umbrella-ip-malicious-domains' or demisto.command() == \
-            'umbrella-ip-malicious-domains':
-        demisto.results(get_ip_malicious_domains_command())
-    # new-commands:
-    elif demisto.command() == 'domain':
-        demisto.results(get_domain_command())
-    elif demisto.command() == 'umbrella-get-related-domains':
-        demisto.results(get_related_domains_command())
-    elif demisto.command() == 'umbrella-get-domain-classifiers':
-        demisto.results(get_domain_classifiers_command())
-    elif demisto.command() == 'umbrella-get-domain-queryvolume':
-        demisto.results(get_domain_query_volume_command())
-    elif demisto.command() == 'umbrella-get-domain-details':
-        demisto.results(get_domain_details_command())
-    elif demisto.command() == 'umbrella-get-domains-for-email-registrar':
-        demisto.results(get_domains_for_email_registrar_command())
-    elif demisto.command() == 'umbrella-get-domains-for-nameserver':
-        demisto.results(get_domains_for_nameserver_command())
-    elif demisto.command() == 'umbrella-get-whois-for-domain':
-        demisto.results(get_whois_for_domain_command())
-    elif demisto.command() == 'umbrella-get-malicious-domains-for-ip':
-        demisto.results(get_malicious_domains_for_ip_command())
-    elif demisto.command() == 'umbrella-get-domains-using-regex':
-        demisto.results(get_domain_using_regex_command())
-    elif demisto.command() == 'umbrella-get-domain-timeline':
-        demisto.results(get_domain_timeline_command())
-    elif demisto.command() == 'umbrella-get-ip-timeline':
-        demisto.results(get_ip_timeline_command())
-    elif demisto.command() == 'umbrella-get-url-timeline':
-        demisto.results(get_url_timeline_command())
+def main() -> None:
+    demisto.debug(f'Command being called is {demisto.command()}')
+    try:
+        handle_proxy()
+        verify_threshold_params(SUSPICIOUS_THRESHOLD, MALICIOUS_THRESHOLD)
+        if demisto.command() == 'test-module':
+            # This is the call made when pressing the integration test button.
+            http_request('/domains/categorization/google.com?showLabels')
+            demisto.results('ok')
+            sys.exit(0)
+        elif demisto.command() == 'investigate-umbrella-domain-categorization' or demisto.command() == \
+                'umbrella-domain-categorization':
+            demisto.results(get_domain_categorization_command())
+        elif demisto.command() == 'investigate-umbrella-domain-search' or demisto.command() == 'umbrella-domain-search':
+            demisto.results(get_domain_search_command())
+        elif demisto.command() == 'investigate-umbrella-domain-co-occurrences' or demisto.command() == \
+                'umbrella-domain-co-occurrences':
+            demisto.results(get_domain_co_occurrences_command())
+        elif demisto.command() == 'investigate-umbrella-domain-related' or demisto.command() == 'umbrella-domain-related':
+            demisto.results(get_domain_related_command())
+        elif demisto.command() == 'investigate-umbrella-domain-security' or demisto.command() == 'umbrella-domain-security':
+            demisto.results(get_domain_security_command())
+        elif demisto.command() == 'investigate-umbrella-domain-dns-history' or demisto.command() == \
+                'umbrella-domain-dns-history':
+            demisto.results(get_domain_dns_history_command())
+        elif demisto.command() == 'investigate-umbrella-ip-dns-history' or demisto.command() == 'umbrella-ip-dns-history':
+            demisto.results(get_ip_dns_history_command())
+        elif demisto.command() == 'investigate-umbrella-ip-malicious-domains' or demisto.command() == \
+                'umbrella-ip-malicious-domains':
+            demisto.results(get_ip_malicious_domains_command())
+        # new-commands:
+        elif demisto.command() == 'domain':
+            return_results(get_domain_command())
+        elif demisto.command() == 'umbrella-get-related-domains':
+            demisto.results(get_related_domains_command())
+        elif demisto.command() == 'umbrella-get-domain-classifiers':
+            demisto.results(get_domain_classifiers_command())
+        elif demisto.command() == 'umbrella-get-domain-queryvolume':
+            demisto.results(get_domain_query_volume_command())
+        elif demisto.command() == 'umbrella-get-domain-details':
+            demisto.results(get_domain_details_command())
+        elif demisto.command() == 'umbrella-get-domains-for-email-registrar':
+            demisto.results(get_domains_for_email_registrar_command())
+        elif demisto.command() == 'umbrella-get-domains-for-nameserver':
+            demisto.results(get_domains_for_nameserver_command())
+        elif demisto.command() == 'umbrella-get-whois-for-domain':
+            return_results(get_whois_for_domain_command())
+        elif demisto.command() == 'umbrella-get-malicious-domains-for-ip':
+            demisto.results(get_malicious_domains_for_ip_command())
+        elif demisto.command() == 'umbrella-get-domains-using-regex':
+            demisto.results(get_domain_using_regex_command())
+        elif demisto.command() == 'umbrella-get-domain-timeline':
+            demisto.results(get_domain_timeline_command())
+        elif demisto.command() == 'umbrella-get-ip-timeline':
+            demisto.results(get_ip_timeline_command())
+        elif demisto.command() == 'umbrella-get-url-timeline':
+            demisto.results(get_url_timeline_command())
 
-except Exception as e:
-    LOG(e.message)
-    LOG.print_log()
-    return_error(e.message)
+    except HTTPError as e:
+        if e.args[0]:
+            return_error(e.args[0])
+        else:
+            return_error(f"HTTP error with code {e.response.status_code}")
+
+    except Exception as e:
+        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+
+
+if __name__ in ['__main__', 'builtin', 'builtins']:
+    main()

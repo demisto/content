@@ -10,14 +10,13 @@ comment: Present or analyze workers usage
 commonfields:
   id: HealthCheckWorkers
   version: -1
-dockerimage: demisto/python3:3.10.4.29342
+dockerimage: demisto/python3:3.10.8.37753
 enabled: true
 name: HealthCheckWorkers
 outputs:
 - contextPath: workers
   description: Workers status table
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

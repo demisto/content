@@ -1,0 +1,104 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Slack Classifier",
+    "keyTypeMap": {
+        "1": "Password Reset via Chatbot"
+    },
+    "name": "Slack Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": {
+            "filters": [
+                [
+                    {
+                        "ignoreCase": true,
+                        "left": {
+                            "isContext": true,
+                            "value": {
+                                "simple": "Message"
+                            }
+                        },
+                        "operator": "containsString",
+                        "right": {
+                            "value": {
+                                "simple": "reset password"
+                            }
+                        }
+                    },
+                    {
+                        "ignoreCase": true,
+                        "left": {
+                            "isContext": true,
+                            "value": {
+                                "simple": "Message"
+                            }
+                        },
+                        "operator": "containsString",
+                        "right": {
+                            "value": {
+                                "simple": "reset my password"
+                            }
+                        }
+                    },
+                    {
+                        "ignoreCase": true,
+                        "left": {
+                            "isContext": true,
+                            "value": {
+                                "simple": "Message"
+                            }
+                        },
+                        "operator": "containsString",
+                        "right": {
+                            "value": {
+                                "simple": "forgot password"
+                            }
+                        }
+                    },
+                    {
+                        "ignoreCase": true,
+                        "left": {
+                            "isContext": true,
+                            "value": {
+                                "simple": "Message"
+                            }
+                        },
+                        "operator": "containsString",
+                        "right": {
+                            "value": {
+                                "simple": "forgot my password"
+                            }
+                        }
+                    },
+                    {
+                        "ignoreCase": true,
+                        "left": {
+                            "isContext": true,
+                            "value": {
+                                "simple": "Message"
+                            }
+                        },
+                        "operator": "containsString",
+                        "right": {
+                            "value": {
+                                "simple": "password reset"
+                            }
+                        }
+                    }
+                ]
+            ],
+            "root": "Message",
+            "transformers": [
+                {
+                    "operator": "count"
+                }
+            ]
+        }
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.8.0"
+}

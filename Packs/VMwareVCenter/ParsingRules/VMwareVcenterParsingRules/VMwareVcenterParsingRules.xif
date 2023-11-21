@@ -1,0 +1,18 @@
+[INGEST:vendor="vmware", product="vcenter", target_dataset="vmware_vcenter_raw", no_hit=keep]
+// Support only date time of format: yyyy-MM-ddThh:mm:ss.nnnnnn[+|-]nn:nn. For example: 2022-01-01T10:00:00.012345+00:00
+filter _raw_log ~= "^[a-zA-Z0-9\W]{0,10}\s\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d+[+|-]\d+:\d+"
+| alter
+    tmp_date_part = arraystring(regextract(_raw_log, "^[a-zA-Z0-9\W]{0,10}\s(\d{4}\-\d{2}\-\d{2})T"), ""),
+    tmp_time_part = arraystring(regextract(_raw_log, "^[a-zA-Z0-9\W]{0,10}\s\d{4}\-\d{2}\-\d{2}T(\d{2}\:\d{2}\:\d{2}\.)"), ""),
+    tmp_mili_part = arraystring(regextract(_raw_log, "^[a-zA-Z0-9\W]{0,10}\s\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.(\d+)"), ""),
+    tmp_zone_part = arraystring(regextract(_raw_log, "^[a-zA-Z0-9\W]{0,10}\s\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d+([+|-]\d+:\d+)"), "")
+| alter 
+    tmp_time_format = arraystring(arraycreate(tmp_date_part, tmp_time_part), " "),
+    tmp_milli_zone = arraystring(arraycreate(tmp_mili_part, tmp_zone_part), "")
+| alter
+    tmp_adjust_tmp_milli_zone = replex(tmp_milli_zone, ":", "")
+| alter
+    tmp_timestamp = arraystring(arraycreate(tmp_time_format, tmp_adjust_tmp_milli_zone), "")
+| alter
+    _time = parse_timestamp("%Y-%m-%d %H:%M:%E*S%z", tmp_timestamp)
+| fields -tmp_date_part, tmp_time_part, tmp_mili_part, tmp_zone_part, tmp_time_format, tmp_milli_zone, tmp_adjust_tmp_milli_zone, tmp_timestamp;

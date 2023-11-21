@@ -1,0 +1,9 @@
+{
+  "data": {
+    "author": {"username": "obfuscated@email.com"},
+    "body": "Test adding comment via API",
+    "id": "32",
+    "timestamp": "2023-03-28T00:38:52.210808"
+  },
+  "errors": []
+}

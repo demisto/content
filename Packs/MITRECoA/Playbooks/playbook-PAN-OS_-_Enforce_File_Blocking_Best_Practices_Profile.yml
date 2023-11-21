@@ -1,0 +1,1033 @@
+id: PAN-OS - Enforce File Blocking Best Practices Profile
+name: PAN-OS - Enforce File Blocking Best Practices Profile
+description: |
+  This playbook enforces the File Blocking Best Practices Profile as defined by Palo Alto Networks BPA.
+  The playbook performs the following tasks:
+  - Get the existing profile information.
+  - Get the best practices profile information.
+  - Check if the best practices profile set by Cortex XSOAR is enforced. (If not, the playbook allows the user to compare the existing profile with the best practices and decide on the action to take).
+  - Create best practices profile.
+  - Apply profile to policy rules on PAN-OS firewall or Panorama.
+inputs:
+- description: The device group to work on. Exists only in panorama!
+  key: device-group
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Tag for which to filter the results.
+  key: tag
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Determines whether the rule is a pre-rulebase or post-rulebase rule, according to the rule structure. Exists only in panorama!
+  key: pre-post-rulebase
+  playbookInputQuery:
+  required: false
+  value: {}
+outputs: []
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a97a377f-834f-4763-85fd-481dfbedf6c9
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: a97a377f-834f-4763-85fd-481dfbedf6c9
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 70
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "21"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      brandname:
+        simple: Panorama
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      id: 5fe876ca-a681-49c4-8ea4-4e6240bf2c11
+      iscommand: false
+      name: Is PAN-OS integration enabled?
+      script: IsIntegrationAvailable
+      type: condition
+      version: -1
+    taskid: 5fe876ca-a681-49c4-8ea4-4e6240bf2c11
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 220
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8f0a8764-4141-435b-8cb2-5a66d64e39e1
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 8f0a8764-4141-435b-8cb2-5a66d64e39e1
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 4220
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Get file-blocking best practices.
+      id: 3d0f60f0-b789-4fa4-85ad-7baeec5e6529
+      iscommand: true
+      name: PAN-OS - Get file blocking best practice
+      script: '|||pan-os-get-file-blocking-best-practice'
+      type: regular
+      version: -1
+    taskid: 3d0f60f0-b789-4fa4-85ad-7baeec5e6529
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1520,
+          "y": 1070
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      security_profile:
+        simple: file-blocking
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets information for the specified security profile.
+      id: d5bc10c3-d0a4-44d5-885a-724390af7f4c
+      iscommand: true
+      name: PAN-OS - Get file blocking profile
+      script: '|||pan-os-get-security-profiles'
+      type: regular
+      version: -1
+    taskid: d5bc10c3-d0a4-44d5-885a-724390af7f4c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1520,
+          "y": 530
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: FileBlocking.ExistingProfile
+      value:
+        complex:
+          accessor: FileBlocking
+          root: Panorama
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      id: 9c2832f0-7495-4a39-8d39-e6fc35f603b0
+      iscommand: false
+      name: Set existing file blocking profile
+      script: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: 9c2832f0-7495-4a39-8d39-e6fc35f603b0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1520,
+          "y": 710
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: Panorama.FileBlocking
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Delete field from context
+      id: b31ff7f5-bb26-449a-89e7-2f6704b8260c
+      iscommand: false
+      name: Delete Context
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: b31ff7f5-bb26-449a-89e7-2f6704b8260c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1520,
+          "y": 880
+        }
+      }
+  "9":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: FileBlocking.ExistingProfile.Name
+          operator: isEqualString
+          right:
+            value:
+              simple: FB Best Practices - XSOAR
+      label: "yes"
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "18"
+      - "19"
+      "yes":
+      - "23"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Is file blocking best practice profile by XSOAR enforced?
+      id: 0488867b-b92e-4d0e-87cc-b9375f184fb7
+      iscommand: false
+      name: Is file blocking best practice profile by XSOAR enforced?
+      type: condition
+      version: -1
+    taskid: 0488867b-b92e-4d0e-87cc-b9375f184fb7
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1520,
+          "y": 1240
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "44"
+      "yes":
+      - "16"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Apply profile to policy rule in PAN-OS?
+      id: aa3ccf30-b903-4652-87f1-249d60e91496
+      iscommand: false
+      name: Apply profile to policy rule?
+      type: condition
+      version: -1
+    taskid: aa3ccf30-b903-4652-87f1-249d60e91496
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 2920
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      profile_name:
+        simple: FB Best Practices - XSOAR
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a file blocking best practice profile.
+      id: 07fbf179-2799-4da2-8b76-e8259d7e8edc
+      iscommand: true
+      name: PAN-OS - Create best practice profile
+      script: '|||pan-os-create-file-blocking-best-practice-profile'
+      type: regular
+      version: -1
+    taskid: 07fbf179-2799-4da2-8b76-e8259d7e8edc
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 3180,
+          "y": 1920
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "32"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre-post-rulebase:
+        complex:
+          root: inputs.pre-post-rulebase
+      profile_name:
+        simple: FB Best Practices - XSOAR
+      profile_type:
+        simple: file-blocking
+      tag:
+        complex:
+          root: inputs.tag
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: cb95f24d-98f3-481e-8650-2b08d98d4d71
+      iscommand: false
+      name: PAN-OS - Apply Security Profile to Policy Rule
+      playbookId: PAN-OS - Apply Security Profile to Policy Rule
+      type: playbook
+      version: -1
+      description: ''
+    taskid: cb95f24d-98f3-481e-8650-2b08d98d4d71
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 3240
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: fc86bff8-36f6-4bbd-89ea-f65587a8469f
+      iscommand: false
+      name: PAN-OS Apply profile to a rule
+      type: title
+      version: -1
+      description: ''
+    taskid: fc86bff8-36f6-4bbd-89ea-f65587a8469f
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 3100
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "43"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1b1064f2-e5a0-4b1f-8298-f9146ec8e3ae
+      iscommand: false
+      name: PAN-OS Commit Configuration
+      playbookId: PAN-OS Commit Configuration
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 1b1064f2-e5a0-4b1f-8298-f9146ec8e3ae
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 3180,
+          "y": 2100
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      csvArray:
+        complex:
+          accessor: ExistingProfile
+          root: FileBlocking
+      fileName:
+        simple: File Blocking Existing Profiles
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Export given array to csv file
+      id: 2ceac369-8eb3-4f00-8831-575d4e286ed4
+      iscommand: false
+      name: Export File Blocking existing profiles to CSV
+      script: ExportToCSV
+      type: regular
+      version: -1
+    taskid: 2ceac369-8eb3-4f00-8831-575d4e286ed4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2370,
+          "y": 1410
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      csvArray:
+        complex:
+          accessor: FileBlocking
+          root: Panorama
+      fileName:
+        simple: File Blocking Best Practices
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Export given array to csv file
+      id: 1b3d517b-6123-4289-8d14-5dcddd3928ab
+      iscommand: false
+      name: Export File Blocking best practices to CSV
+      script: ExportToCSV
+      type: regular
+      version: -1
+    taskid: 1b3d517b-6123-4289-8d14-5dcddd3928ab
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2790,
+          "y": 1410
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "35"
+      "yes":
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        To understand the difference between the existing policies and the best practices, please compare between the policies by:
+
+        1) Comparing the context data under "FileBlocking.ExistingProfile" key to the data under "Panorama.FileBlocking" key.
+        2) Comparing between the exported CSV files - "File Blocking Best Practices" and "File Blocking Existing Profiles".
+
+        If you have differences between your profiles and the best practices profiles recommended, you are not following the best practices Courses of Action.
+      id: 3b484c4c-f38d-4a4f-8799-af2cd45385b0
+      iscommand: false
+      name: Create File Blocking best practice profile?
+      type: condition
+      version: -1
+    taskid: 3b484c4c-f38d-4a4f-8799-af2cd45385b0
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 2590,
+          "y": 1750
+        }
+      }
+  "21":
+    id: "21"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ce5a89a0-356b-40c3-80e4-9b2f5f35dc6b
+      iscommand: false
+      name: Gather Profiles Information
+      type: title
+      version: -1
+      description: ''
+    taskid: ce5a89a0-356b-40c3-80e4-9b2f5f35dc6b
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1520,
+          "y": 390
+        }
+      }
+  "22":
+    id: "22"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: cd8db069-7234-4ac3-80ad-e731fa0209ce
+      iscommand: false
+      name: Remediation and Policy Updates
+      type: title
+      version: -1
+      description: ''
+    taskid: cd8db069-7234-4ac3-80ad-e731fa0209ce
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 2590,
+          "y": 1580
+        }
+      }
+  "23":
+    id: "23"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: aec20a3f-180a-487c-8aa5-c2f2e4216883
+      iscommand: false
+      name: BPA profile exists
+      type: title
+      version: -1
+      description: ''
+    taskid: aec20a3f-180a-487c-8aa5-c2f2e4216883
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 1410
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      fileblockingprofilename:
+        simple: FB Best Practices - XSOAR
+      fileblockingprofilestatus:
+        simple: The best practices profile by XSOAR already exists.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: dcaf8f96-8628-4f9c-8b2d-410a134e3494
+      iscommand: true
+      name: Set best practices profile information to the layout
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: dcaf8f96-8628-4f9c-8b2d-410a134e3494
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 1565
+        }
+      }
+  "28":
+    id: "28"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      fileblockingprofilename:
+        simple: FB Best Practices - XSOAR
+      fileblockingprofilestatus:
+        simple: The best practices profile has been created by XSOAR.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 45cf4418-6078-470a-8011-172c62ddd765
+      iscommand: true
+      name: Set best practices profile information to the layout
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 45cf4418-6078-470a-8011-172c62ddd765
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 3180,
+          "y": 2430
+        }
+      }
+  "32":
+    id: "32"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "34"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 67824df7-30e4-4a78-87b2-ac5b90eed064
+      iscommand: false
+      name: Set Profile information to layout
+      type: title
+      version: -1
+      description: ''
+    taskid: 67824df7-30e4-4a78-87b2-ac5b90eed064
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 3410
+        }
+      }
+  "34":
+    id: "34"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "40"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      fileblockingrules:
+        complex:
+          accessor: Name
+          root: Rule
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: e2796bf8-493e-4881-82ba-99eb47cfbcc8
+      iscommand: true
+      name: Set best practices profile rules to the layout
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: e2796bf8-493e-4881-82ba-99eb47cfbcc8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 3560
+        }
+      }
+  "35":
+    id: "35"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "36"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d7c1a49a-474f-4b12-8160-6570fbbee482
+      iscommand: false
+      name: Not according to BPA
+      type: title
+      version: -1
+      description: ''
+    taskid: d7c1a49a-474f-4b12-8160-6570fbbee482
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 2310,
+          "y": 1920
+        }
+      }
+  "36":
+    id: "36"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      fileblockingprofilename:
+        simple: FB Best Practices - XSOAR
+      fileblockingprofilestatus:
+        simple: The best practices profile was not created by XSOAR.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: e96aa45d-9ea8-426a-8c16-31b12e23a91c
+      iscommand: true
+      name: Set best practices profile information to the layout
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: e96aa45d-9ea8-426a-8c16-31b12e23a91c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2310,
+          "y": 2070
+        }
+      }
+  "40":
+    id: "40"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "41"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e9a57282-1741-416b-8222-a4089ff5a4f5
+      iscommand: false
+      name: Trigger BPA Scan
+      type: title
+      version: -1
+      description: ''
+    taskid: e9a57282-1741-416b-8222-a4089ff5a4f5
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 3730
+        }
+      }
+  "41":
+    id: "41"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "45"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      check_id:
+        simple: "45"
+      failed_grid_id:
+        simple: bpafailedchecksfileblocking
+      passed_grid_id:
+        simple: bpapassedchecksfileblocking
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 117ebd0e-b5f6-43e0-88f8-b57c483b3914
+      iscommand: false
+      name: Palo Alto Networks BPA - Submit Scan
+      playbookId: 629bfb7f-d719-4b74-8f1b-7f5a97b816db
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 117ebd0e-b5f6-43e0-88f8-b57c483b3914
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 3890
+        }
+      }
+  "43":
+    id: "43"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "28"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 496908b9-0ffc-4057-87c3-64e1ff088f06
+      iscommand: false
+      name: BPA profile created
+      type: title
+      version: -1
+      description: ''
+    taskid: 496908b9-0ffc-4057-87c3-64e1ff088f06
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 3180,
+          "y": 2280
+        }
+      }
+  "44":
+    id: "44"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "40"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      fileblockingrules:
+        simple: The best practices profile was not applied to rules by XSOAR.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 24ae0cbc-d6e5-4ec8-8a67-c6b5ab4eb3c6
+      iscommand: true
+      name: Set rules information to the layout
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 24ae0cbc-d6e5-4ec8-8a67-c6b5ab4eb3c6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 3120
+        }
+      }
+  "45":
+    id: "45"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      bpafailedchecksfileblocking:
+        complex:
+          accessor: Failed
+          root: BPA
+          transformers:
+          - operator: uniq
+      bpapassedchecksfileblocking:
+        complex:
+          accessor: Passed
+          root: BPA
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 9378d8f5-5c97-42d5-8fae-4e8f9a2590c1
+      iscommand: true
+      name: Set BPA scan results to the layout
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 9378d8f5-5c97-42d5-8fae-4e8f9a2590c1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 4050
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_21_yes": 0.46,
+      "1_2_#default#": 0.49
+    },
+    "paper": {
+      "dimensions": {
+        "height": 4215,
+        "width": 3180,
+        "x": 380,
+        "y": 70
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
+marketplaces:
+  - xsoar
+  - marketplacev2

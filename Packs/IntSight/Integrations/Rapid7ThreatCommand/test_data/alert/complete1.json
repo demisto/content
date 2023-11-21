@@ -1,0 +1,34 @@
+{
+    "_id": "641cbbdfb6a71e6aa08b8e53",
+    "FoundDate": "FoundDate",
+    "Details": {
+        "Title": "Dark Web - Test Alert from Support - API Test",
+        "Type": "DataLeakage",
+        "SubType": "CredentialsLeakage",
+        "Severity": "Medium",
+        "Tags": [],
+        "Source": {
+            "Type": "Leaked Database",
+            "NetworkType": "DarkWeb",
+            "URL": "Details_Source_URL",
+            "Date": "Details_Source_Date"
+        },
+        "Images": [],
+        "Description": "Dark Web - Dark Web - Test | Recommendations:  TEST"
+    },
+    "Assignees": [],
+    "Assets": [
+        {
+            "Type": "Domains",
+            "Value": "test.comd"
+        }
+    ],
+    "TakedownStatus": "NotSent",
+    "IsFlagged": false,
+    "UpdateDate": "UpdateDate",
+    "RelatedIocs": [],
+    "RelatedThreatIDs": [],
+    "Closed": {
+        "IsClosed": false
+    }
+}

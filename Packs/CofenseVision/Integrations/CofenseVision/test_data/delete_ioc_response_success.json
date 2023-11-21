@@ -1,0 +1,32 @@
+{
+  "data": {
+    "id": "a2fc0f",
+    "type": "ioc",
+    "attributes": {
+      "threat_type": "SUBJECT",
+      "threat_value": "TEST"
+    },
+    "metadata": {
+      "source": {
+        "threat_level": "High",
+        "id": " ",
+        "created_at": "2022-07-25T12:53:42.285+00:00",
+        "updated_at": "2022-07-25T12:53:42.285+00:00",
+        "requested_expiration": "2022-08-08T18:29:59.999+00:00"
+      },
+      "quarantine": {
+        "source_names": [
+          "Vision-UI"
+        ],
+        "expires_at": "2022-08-08T18:29:59.999+00:00",
+        "created_at": "2022-07-25T12:45:18.344+00:00",
+        "first_quarantined_at": null,
+        "last_quarantined_at": null,
+        "match_count": 0,
+        "quarantine_count": 0,
+        "expired": false,
+        "wildcard": false
+      }
+    }
+  }
+}

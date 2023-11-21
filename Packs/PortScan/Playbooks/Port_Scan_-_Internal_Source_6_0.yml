@@ -1,0 +1,2040 @@
+id: Port Scan - Internal Source
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Port Scan - Internal Source
+description: Remediates port scans originating within the network.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 77c4b934-4180-4205-829e-18c6d286a05b
+    type: start
+    task:
+      id: 77c4b934-4180-4205-829e-18c6d286a05b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "97"
+      - "115"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1247.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: d288ccfe-265f-4f36-8f20-ae207034471d
+    type: regular
+    task:
+      id: d288ccfe-265f-4f36-8f20-ae207034471d
+      version: -1
+      name: Save whitelisted hostnames
+      description: Saves the whitelisted hostnames, if any were configured in the playbook inputs.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "100"
+    scriptarguments:
+      key:
+        simple: WhitelistedHostnames
+      value:
+        complex:
+          root: inputs.WhitelistedHostnames
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1012.5,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: d697ded7-0e91-4eef-8e6a-fa7e807d2a8a
+    type: regular
+    task:
+      id: d697ded7-0e91-4eef-8e6a-fa7e807d2a8a
+      version: -1
+      name: Save source IPs
+      description: Saves the IP addresses from which the port scan originated.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "100"
+    scriptarguments:
+      key:
+        simple: SourceIPs
+      value:
+        complex:
+          root: inputs.InternalSourceIPs
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Scan Source Type
+      output:
+        simple: Internal
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: a8210c90-7636-4d3f-81cb-22cbaefa35fd
+    type: regular
+    task:
+      id: a8210c90-7636-4d3f-81cb-22cbaefa35fd
+      version: -1
+      name: Save source hostnames
+      description: Saves the hostnames that performed the port scan.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "122"
+    scriptarguments:
+      key:
+        simple: SourceHostnames
+      value:
+        complex:
+          root: inputs.SourceHostnames
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 9c8be51a-4894-4899-815f-63d4e312dd8e
+    type: regular
+    task:
+      id: 9c8be51a-4894-4899-815f-63d4e312dd8e
+      version: -1
+      name: Investigate affected endpoints
+      description: Manually investigate endpoints infected with the malware. Check how the file made it into those endpoints and whether any data was stolen, or any damage was done.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "102"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1100,
+          "y": 2555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: d83b916f-0b38-454d-8ea8-ee4530977c46
+    type: condition
+    task:
+      id: d83b916f-0b38-454d-8ea8-ee4530977c46
+      version: -1
+      name: Were internal hosts infected with malware?
+      description: Checks whether internal hosts were related in any way to the hash of the malware associated with this incident.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "102"
+      "yes":
+      - "126"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PANWHunting
+                accessor: DetectedInternalHosts
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Splunk
+                accessor: DetectedInternalHosts
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: QRadar
+                accessor: DetectedInternalHosts
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 1730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: c5bef220-05dd-4981-8b80-8c3077e2dafd
+    type: condition
+    task:
+      id: c5bef220-05dd-4981-8b80-8c3077e2dafd
+      version: -1
+      name: Is the file associated with malicious IPs?
+      description: Checks whether the hash of the malware associated with this incident was found related to any malicious external IP addresses.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "102"
+      "yes":
+      - "68"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: IP
+                    ignorecase: true
+                - - operator: isEqualNumber
+                    left:
+                      value:
+                        simple: DBotScore.Score
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "3"
+                - - operator: in
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: PANWHunting.DetectedExternalIPs
+                      iscontext: true
+                  - operator: in
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: QRadar.DetectedExternalIPs
+                  - operator: in
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Splunk.DetectedExternalIPs
+                accessor: Indicator
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 132.5,
+          "y": 1730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: e2e787d9-dd75-4f02-868b-dce4b915965e
+    type: condition
+    task:
+      id: e2e787d9-dd75-4f02-868b-dce4b915965e
+      version: -1
+      name: Can the external IPs be blocked automatically?
+      description: Checks whether the external IPs associated with the malware's hash can be blocked automatically.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "69"
+      "yes":
+      - "128"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.BlockAttackerIP
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -70,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: f2384ffb-a349-4fed-8d17-064da7fcda74
+    type: regular
+    task:
+      id: f2384ffb-a349-4fed-8d17-064da7fcda74
+      version: -1
+      name: Manually block IPs associated with the malware
+      description: Manually block external IPs associated with the malware infection.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "102"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -70,
+          "y": 2555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: 20b67603-22b5-4777-82b0-375c8344b312
+    type: playbook
+    task:
+      id: 20b67603-22b5-4777-82b0-375c8344b312
+      version: -1
+      name: Block File - Generic v2
+      description: "This playbook is used to block files from running on endpoints. \nThis playbook supports the following integrations:\n- Palo Alto Networks Traps\n- Cybereason\n- Carbon Black Enterprise Response\n- Cylance Protect v2\n"
+      playbookName: Block File - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "124"
+    scriptarguments:
+      MD5:
+        complex:
+          root: inputs.InvolvedFileMD5
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: inputs.InvolvedFileSHA256
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 1882.5,
+          "y": 2380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: 4d16d421-ec93-4090-8237-1a6082382c0c
+    type: condition
+    task:
+      id: 4d16d421-ec93-4090-8237-1a6082382c0c
+      version: -1
+      name: Can the file be automatically blocked on endpoints?
+      description: Checks whether malicious files associated with the incident can be blocked automatically using various EDR integrations.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "73"
+      "yes":
+      - "71"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.BlockMaliciousFiles
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.InvolvedFileMD5
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.InvolvedFileSHA256
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1725,
+          "y": 2205
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: b854e7d0-2031-4c96-8645-3c419b5de73a
+    type: regular
+    task:
+      id: b854e7d0-2031-4c96-8645-3c419b5de73a
+      version: -1
+      name: Manually block the file on all endpoints
+      description: Manually block malicious files associated with the incident using EDR integrations.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "102"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1452.5,
+          "y": 2380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: 94a926e1-2aac-4682-863b-869dfb60257f
+    type: condition
+    task:
+      id: 94a926e1-2aac-4682-863b-869dfb60257f
+      version: -1
+      name: Can the host that initiated the scan be isolated?
+      description: Checks whether attacker hostnames exist in context, are not on allow list, and the IsolateEndpointAutomatically input is set to True.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "78"
+      "yes":
+      - "104"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AttackerHostnames
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.IsolateEndpointIfCriticalIncident
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: AttackerHostnames
+                filters:
+                - - operator: notIn
+                    left:
+                      value:
+                        simple: AttackerHostnames
+                      iscontext: true
+                    right:
+                      value:
+                        simple: WhitelistedHostnames
+                      iscontext: true
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2335,
+          "y": 1680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: d9de96b3-9be4-4b9b-813c-90463f882bcc
+    type: regular
+    task:
+      id: d9de96b3-9be4-4b9b-813c-90463f882bcc
+      version: -1
+      name: Manually isolate attacker endpoint
+      description: Manually isolate the endpoint that performed the port scan, if the endpoint was not specified in the WhitelistedHostnames playbook input.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "102"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2335,
+          "y": 2545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "84":
+    id: "84"
+    taskid: 6a269bc0-311b-4d30-8329-9bd4ee39d616
+    type: regular
+    task:
+      id: 6a269bc0-311b-4d30-8329-9bd4ee39d616
+      version: -1
+      name: Get Cortex XDR endpoints
+      description: Gets a list of endpoints, according to the passed filters. Filtering by multiple fields will be concatenated using the AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
+      script: '|||xdr-get-endpoints'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "95"
+    scriptarguments:
+      hostname:
+        complex:
+          root: AttackerHostnames
+          filters:
+          - - operator: notIn
+              left:
+                value:
+                  simple: AttackerHostnames
+                iscontext: true
+              right:
+                value:
+                  simple: WhitelistedHostnames
+                iscontext: true
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3570,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "89":
+    id: "89"
+    taskid: 3a8824ae-1ce8-4fe9-8b20-f0f2bbdbf650
+    type: title
+    task:
+      id: 3a8824ae-1ce8-4fe9-8b20-f0f2bbdbf650
+      version: -1
+      name: Potential Malware Hunting
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "98"
+      - "111"
+      - "130"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1707.5,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "90":
+    id: "90"
+    taskid: ab96c4ba-94e4-4eaf-843a-49f2cf35dc59
+    type: title
+    task:
+      id: ab96c4ba-94e4-4eaf-843a-49f2cf35dc59
+      version: -1
+      name: Host Isolation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "77"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2335,
+          "y": 1545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "95":
+    id: "95"
+    taskid: 7f365945-0399-4ca8-823e-e3e969255841
+    type: regular
+    task:
+      id: 7f365945-0399-4ca8-823e-e3e969255841
+      version: -1
+      name: Save XDR endpoints
+      description: Saves the XDR endpoints under the PaloAltoNetworksXDREndpoint context key.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "129"
+    scriptarguments:
+      key:
+        simple: PaloAltoNetworksXDREndpoint
+      value:
+        complex:
+          root: PaloAltoNetworksXDR
+          accessor: Endpoint
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3570,
+          "y": 2185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "97":
+    id: "97"
+    taskid: 84f8630b-d781-46e9-873b-730ceadfe090
+    type: title
+    task:
+      id: 84f8630b-d781-46e9-873b-730ceadfe090
+      version: -1
+      name: Saving Data
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "46"
+      - "37"
+      - "15"
+      - "127"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "98":
+    id: "98"
+    taskid: c7d9f442-2f62-4ec3-88fe-4a955f299c3b
+    type: playbook
+    task:
+      id: c7d9f442-2f62-4ec3-88fe-4a955f299c3b
+      version: -1
+      name: Splunk Indicator Hunting
+      description: This playbook queries Splunk for indicators such as file hashes, IP addresses, domains, or urls. It outputs detected users, ip addresses, and hostnames related to the indicators.
+      playbookName: Splunk Indicator Hunting
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "121"
+    scriptarguments:
+      IndexName:
+        simple: '*'
+      MD5:
+        complex:
+          root: inputs.InvolvedFileMD5
+          transformers:
+          - operator: uniq
+      SHA1:
+        complex:
+          root: inputs.InvolvedFileSHA1
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: inputs.InvolvedFileSHA256
+          transformers:
+          - operator: uniq
+      SelectFields:
+        simple: source,timestamp
+      earliest_time:
+        simple: -1d
+      event_limit:
+        simple: "100"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 1707.5,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "99":
+    id: "99"
+    taskid: bc153f47-1046-42f7-814b-81d23301b62b
+    type: regular
+    task:
+      id: bc153f47-1046-42f7-814b-81d23301b62b
+      version: -1
+      name: Update NIST stage - Containment
+      description: Updates the NIST stage to Containment.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "120"
+      - "119"
+      - "90"
+    scriptarguments:
+      niststage:
+        simple: Containment
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Infected Hostnames
+      output:
+        complex:
+          root: QRadar
+          accessor: DetectedInternalHosts
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Splunk.DetectedInternalHosts
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: PANWHunting.DetectedInternalHosts
+                iscontext: true
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ', '
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "100":
+    id: "100"
+    taskid: 38da39e8-5233-4050-84e3-95689fc0133a
+    type: condition
+    task:
+      id: 38da39e8-5233-4050-84e3-95689fc0133a
+      version: -1
+      name: Were file hashes involved with the scan?
+      description: Checks whether any file hashes were involved with the port scan.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "121"
+      "yes":
+      - "89"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.InvolvedFileMD5
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.InvolvedFileSHA1
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.InvolvedFileSHA256
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1032.5,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "102":
+    id: "102"
+    taskid: 896b656f-0980-4255-832f-8fec5be7dd29
+    type: title
+    task:
+      id: 896b656f-0980-4255-832f-8fec5be7dd29
+      version: -1
+      name: Continue
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 2730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "104":
+    id: "104"
+    taskid: 2a1619c7-c2ee-4115-8058-30c1f0f20e1c
+    type: condition
+    task:
+      id: 2a1619c7-c2ee-4115-8058-30c1f0f20e1c
+      version: -1
+      name: Is Cortex XDR enabled?
+      description: Checks whether the Palo Alto Networks Cortex XDR - Investigation and Response integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "129"
+      "yes":
+      - "84"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Cortex XDR - IR
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2760,
+          "y": 1850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "111":
+    id: "111"
+    taskid: d30f54f2-fc4d-4660-89bc-730394003260
+    type: playbook
+    task:
+      id: d30f54f2-fc4d-4660-89bc-730394003260
+      version: -1
+      name: QRadar Indicator Hunting V2
+      description: 'The Playbook queries QRadar SIEM for indicators such as file hashes, IP addresses, domains, or urls. '
+      playbookName: QRadar Indicator Hunting V2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "121"
+    scriptarguments:
+      InvestigationIPFields:
+        simple: sourceip,destinationip
+      InvestigationUserFields:
+        simple: username
+      MD5:
+        complex:
+          root: inputs.InvolvedFileMD5
+          transformers:
+          - operator: uniq
+      QradarIPfield:
+        simple: sourceip,destinationip
+      SHA1:
+        complex:
+          root: inputs.InvolvedFileSHA1
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: inputs.InvolvedFileSHA256
+          transformers:
+          - operator: uniq
+      TimeFrame:
+        simple: LAST 7 DAYS
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 2137.5,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "115":
+    id: "115"
+    taskid: 8697458d-3c22-4bda-8e8c-a6ba6d5e87da
+    type: title
+    task:
+      id: 8697458d-3c22-4bda-8e8c-a6ba6d5e87da
+      version: -1
+      name: User Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "116"
+      - "117"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1892.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "116":
+    id: "116"
+    taskid: 2aa7ad12-05cb-4038-89de-604440346bdd
+    type: playbook
+    task:
+      id: 2aa7ad12-05cb-4038-89de-604440346bdd
+      version: -1
+      name: Account Enrichment - Generic v2.1
+      description: |-
+        Enrich accounts using one or more integrations.
+        Supported integrations:
+        - Active Directory
+      playbookName: Account Enrichment - Generic v2.1
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "118"
+    scriptarguments:
+      Username:
+        complex:
+          root: inputs.SourceUsernames
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 1892.5,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "117":
+    id: "117"
+    taskid: e3a93427-e0fe-4833-8bb0-1dc4e42117e0
+    type: playbook
+    task:
+      id: e3a93427-e0fe-4833-8bb0-1dc4e42117e0
+      version: -1
+      name: Active Directory - Get User Manager Details
+      description: Takes an email address or a username of a user account in Active Directory, and returns the email address of the user's manager.
+      playbookName: Active Directory - Get User Manager Details
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "118"
+    scriptarguments:
+      Username:
+        complex:
+          root: incident
+          accessor: sourceusername
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 2302.5,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "118":
+    id: "118"
+    taskid: 000024f0-d54b-4c30-8f40-b2646843edcd
+    type: regular
+    task:
+      id: 000024f0-d54b-4c30-8f40-b2646843edcd
+      version: -1
+      name: Save user info and manager email in incident fields
+      description: "Saves the user's email address and display name to the Employee Email and Employee Display Name fields, respectively,\and the user's manager email is saved to the Employee Manager Email field."
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "100"
+    scriptarguments:
+      employeedisplayname:
+        complex:
+          root: Account
+          accessor: DisplayName
+      employeeemail:
+        complex:
+          root: Account
+          accessor: Email
+      employeemanageremail:
+        complex:
+          root: UserManagerEmail
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1892.5,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "119":
+    id: "119"
+    taskid: 68a52b87-f66f-49fc-8c61-7811edf7dfe8
+    type: title
+    task:
+      id: 68a52b87-f66f-49fc-8c61-7811edf7dfe8
+      version: -1
+      name: File Blocking
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "54"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 1535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "120":
+    id: "120"
+    taskid: 424933e4-3fc8-41a3-8f4a-6078b1dc5f03
+    type: title
+    task:
+      id: 424933e4-3fc8-41a3-8f4a-6078b1dc5f03
+      version: -1
+      name: IP Blocking
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "67"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 132.5,
+          "y": 1535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "121":
+    id: "121"
+    taskid: a0c01f3a-dd76-41b8-8d41-256c2ef971d3
+    type: playbook
+    task:
+      id: a0c01f3a-dd76-41b8-8d41-256c2ef971d3
+      version: -1
+      name: Calculate Severity - Generic v2
+      description: |-
+        Calculate and assign the incident severity based on the highest returned severity level from the following calculations:
+
+        - DBotScores of indicators
+        - Critical assets
+        - Email authenticity
+        - Current incident severity
+      playbookName: Calculate Severity - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "99"
+    scriptarguments:
+      Account:
+        complex:
+          root: Account
+          transformers:
+          - operator: uniq
+      CriticalEndpoints:
+        simple: admin
+      CriticalGroups:
+        simple: admins,administrators
+      CriticalUsers:
+        simple: admin,administrator
+      DBotScore:
+        complex:
+          root: inputs.DBotScore
+      Endpoint:
+        complex:
+          root: Endpoint
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 1185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "122":
+    id: "122"
+    taskid: c9df35cb-0d28-4594-8578-be45ee97ad39
+    type: regular
+    task:
+      id: c9df35cb-0d28-4594-8578-be45ee97ad39
+      version: -1
+      name: Save hostnames as endpoint objects
+      description: Creates an Endpoint object from the hostname that was performing the scan.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "100"
+    scriptarguments:
+      key:
+        simple: Endpoint.Hostname
+      value:
+        complex:
+          root: SourceHostnames
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "123":
+    id: "123"
+    taskid: c5d4422b-d7f8-456f-8b9d-e4b63c4980ad
+    type: regular
+    task:
+      id: c5d4422b-d7f8-456f-8b9d-e4b63c4980ad
+      version: -1
+      name: Update isolation incident field
+      description: Updates the Attacker Host Isolated incident field to True.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "102"
+    reputationcalc: 1
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2760,
+          "y": 2545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Attacker Host Isolated
+      output:
+        simple: "True"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "124":
+    id: "124"
+    taskid: 435f656e-f113-4a08-828a-bd91b71108aa
+    type: regular
+    task:
+      id: 435f656e-f113-4a08-828a-bd91b71108aa
+      version: -1
+      name: Update file block incident field
+      description: Updates the File Hash Blocked incident field to True.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "102"
+    reputationcalc: 1
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1882.5,
+          "y": 2545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: File Hash Blocked
+      output:
+        simple: "True"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "125":
+    id: "125"
+    taskid: 99b06fda-91c3-4280-8ec2-a5624e7c937b
+    type: regular
+    task:
+      id: 99b06fda-91c3-4280-8ec2-a5624e7c937b
+      version: -1
+      name: Update IP incident field
+      description: Updates the Attacker IP Blocked incident field to True.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "102"
+    reputationcalc: 1
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 427.5,
+          "y": 2555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Attacker IP Blocked
+      output:
+        simple: "True"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "126":
+    id: "126"
+    taskid: 66fd388f-d6a8-426e-892a-f116d1024739
+    type: regular
+    task:
+      id: 66fd388f-d6a8-426e-892a-f116d1024739
+      version: -1
+      name: Update infected hostnames incident field
+      description: Updates the Infected Hostnames field with hostnames that were found in relation to the hash.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "52"
+      - "72"
+    reputationcalc: 1
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1392.5,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Infected Hostnames
+      output:
+        complex:
+          root: Splunk
+          accessor: DetectedInternalHosts
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Qradar.DetectedInternalHosts
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: PANWHunting.DetectedInternalHosts
+                iscontext: true
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ', '
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "127":
+    id: "127"
+    taskid: 24294a61-fafc-48b3-8051-4d448dd0623c
+    type: regular
+    task:
+      id: 24294a61-fafc-48b3-8051-4d448dd0623c
+      version: -1
+      name: Update scan source type
+      description: Sets the Scan Source Type field to Internal.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "100"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1442.5,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Scan Source Type
+      output:
+        simple: Internal
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "128":
+    id: "128"
+    taskid: f1efef37-907e-4965-886e-d51359a73f9f
+    type: playbook
+    task:
+      id: f1efef37-907e-4965-886e-d51359a73f9f
+      version: -1
+      name: Block IP - Generic v3
+      description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the XSOAR user (and set by default to outgoing)\nNote the following:\n-  some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
+      playbookName: Block IP - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "125"
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      IP:
+        complex:
+          root: DBotScore.Indicator
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: IP
+          - - operator: isEqualNumber
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          - - operator: in
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: PANWHunting.DetectedExternalIPs
+                iscontext: true
+            - operator: in
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: QRadar.DetectedExternalIPs
+                iscontext: true
+            - operator: in
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: Splunk.DetectedExternalIPs
+                iscontext: true
+          transformers:
+          - operator: uniq
+      InputEnrichment:
+        simple: "False"
+      RuleDirection:
+        simple: outbound
+      RuleName:
+        simple: XSOAR - Block IP playbook - ${incident.id}
+      UserVerification:
+        simple: "False"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 427.5,
+          "y": 2370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "129":
+    id: "129"
+    taskid: 99ee386f-e101-43ac-85c5-1c58253679cb
+    type: playbook
+    task:
+      id: 99ee386f-e101-43ac-85c5-1c58253679cb
+      version: -1
+      name: Isolate Endpoint - Generic V2
+      description: |-
+        This playbook isolates a given endpoint using various endpoint product integrations.
+        Make sure to provide valid playbook inputs for the integration you are using.
+      playbookName: Isolate Endpoint - Generic V2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "123"
+    scriptarguments:
+      Endpoint_hostname:
+        complex:
+          root: AttackerHostnames
+          filters:
+          - - operator: notIn
+              left:
+                value:
+                  simple: AttackerHostnames
+                iscontext: true
+              right:
+                value:
+                  simple: WhitelistedHostnames
+                iscontext: true
+          transformers:
+          - operator: uniq
+      Endpoint_id:
+        complex:
+          root: PaloAltoNetworksXDREndpoint
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: PaloAltoNetworksXDREndpoint.endpoint_name
+                iscontext: true
+              right:
+                value:
+                  simple: AttackerHostnames
+                iscontext: true
+          accessor: endpoint_id
+          transformers:
+          - operator: uniq
+      Endpoint_ip:
+        complex:
+          root: PaloAltoNetworksXDR.Endpoint
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_name
+                iscontext: true
+              right:
+                value:
+                  simple: AttackerHostnames
+                iscontext: true
+          accessor: ip
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 2760,
+          "y": 2360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "130":
+    id: "130"
+    taskid: 0fc3d2b6-8959-4759-8c88-83d39d1dbb7c
+    type: playbook
+    task:
+      id: 0fc3d2b6-8959-4759-8c88-83d39d1dbb7c
+      version: -1
+      name: Palo Alto Networks - Hunting And Threat Detection
+      playbookName: Palo Alto Networks - Hunting And Threat Detection
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "121"
+    scriptarguments:
+      MD5:
+        complex:
+          root: inputs.InvolvedFileMD5
+          transformers:
+          - operator: uniq
+      SHA1:
+        complex:
+          root: inputs.InvolvedFileSHA1
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: inputs.InvolvedFileSHA256
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1247.5,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {
+      "100_121_#default#": 0.45,
+      "100_89_yes": 0.39,
+      "104_129_#default#": 0.51,
+      "104_84_yes": 0.51,
+      "54_102_#default#": 0.25,
+      "67_102_#default#": 0.24,
+      "68_69_#default#": 0.47,
+      "72_71_yes": 0.4,
+      "72_73_#default#": 0.76,
+      "77_104_yes": 0.5,
+      "77_78_#default#": 0.54
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2745,
+        "width": 4020,
+        "x": -70,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: BlockAttackerIP
+  value:
+    simple: "False"
+  required: true
+  description: Whether attacking IPs should be automatically blocked using firewalls.
+  playbookInputQuery:
+- key: WhitelistedHostnames
+  value: {}
+  required: false
+  description: A list of hostnames that should not be isolated even if used in an attack.
+  playbookInputQuery:
+- key: IsolateEndpointIfCriticalIncident
+  value:
+    simple: "False"
+  required: true
+  description: Whether to automatically isolate endpoints if the severity is critical and the endpoint is not on the WhitelistedHostnames input, or opt for manual user approval. True means isolation will be done automatically if the conditions are met.
+  playbookInputQuery:
+- key: RoleForEscalation
+  value: {}
+  required: false
+  description: The name of the Cortex XSOAR role of the users that the incident can be escalated to, in case of developments like lateral movement.
+  playbookInputQuery:
+- key: BlockMaliciousFiles
+  value:
+    simple: "False"
+  required: true
+  description: Whether to automatically block malicious files involved with the incident across all endpoints in the organization.
+  playbookInputQuery:
+- key: InternalSourceIPs
+  value: {}
+  required: false
+  description: The internal IP address(es) that performed the port scan. In order to properly respond to internal scans, either this or the SourceHostnames input has to be filled with data.
+  playbookInputQuery:
+- key: SourceHostnames
+  value: {}
+  required: false
+  description: The source hostname(s) that performed the port scan. In order to properly respond to internal scans, either this or the InternalSourceIPs input has to be filled with data.
+  playbookInputQuery:
+- key: SourceUsernames
+  value: {}
+  required: false
+  description: The Active Directory username(s) that were used in the port scan attack.
+  playbookInputQuery:
+- key: InvolvedFileMD5
+  value: {}
+  required: false
+  description: MD5 hashes of files that were involved in the port scan incident.
+  playbookInputQuery:
+- key: InvolvedFileSHA1
+  value: {}
+  required: false
+  description: SHA1 hashes of files that were involved in the port scan incident.
+  playbookInputQuery:
+- key: InvolvedFileSHA256
+  value: {}
+  required: false
+  description: SHA256 hashes of files that were involved in the port scan incident.
+  playbookInputQuery:
+- key: DBotScore
+  value:
+    complex:
+      root: DBotScore
+  required: false
+  description: All the DBotScores that were calculated either automatically by auto-reputation, or using specific tasks, when the incident was ingested. This is used to calculate the incident severity at a later stage.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

@@ -1,0 +1,41 @@
+commonfields:
+  id: BetweenHours
+  version: -1
+name: BetweenHours
+fromversion: 5.0.0
+comment: Checks whether the given value is within the specified time (hour) range.
+script: ''
+type: python
+tags:
+- transformer
+- date
+enabled: true
+args:
+- name: value
+  required: true
+  description: The value to check.
+- name: begin_time
+  required: true
+  description: The start time range in the format HH:MM:SS.
+- name: end_time
+  required: true
+  description: The end time range in the format HH:MM:SS.
+outputs:
+- contextPath: BetweenHours.result
+  description: Whether the input hour is between the given hours.
+  type: boolean
+- contextPath: BetweenHours.value
+  description: The value to check.
+  type: string
+- contextPath: BetweenHours.begin_time
+  description: The start time range in the format HH:MM:SS.
+  type: string
+- contextPath: BetweenHours.end_time
+  description: The end time range in the format HH:MM:SS.
+  type: string
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.10.12.63474
+runas: DBotWeakRole
+tests:
+- No test

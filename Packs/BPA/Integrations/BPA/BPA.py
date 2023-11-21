@@ -1,12 +1,10 @@
 from typing import Dict, Tuple, List
-
-import requests
-from CommonServerUserPython import *
-
+import urllib3
 from CommonServerPython import *
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
+
 
 ''' GLOBALS/PARAMS '''
 BPA_HOST = 'https://bpa.paloaltonetworks.com'
@@ -88,7 +86,7 @@ class Client(BaseClient):
 
     def __init__(self, bpa_token: str, verify: bool, proxy: bool):
         headers = {'Authorization': f'Token {bpa_token}'}
-        super().__init__(base_url=BPA_URL, verify=verify, headers=headers)
+        super().__init__(base_url=BPA_URL, verify=verify, headers=headers, proxy=proxy)
         self.token = bpa_token
         if proxy:
             self.proxies = handle_proxy()
@@ -236,15 +234,16 @@ def get_results_command(client: Client, args: Dict):
         'Checks': job_checks,
         'Status': status
     }}
-    human_readable = tableToMarkdown('BPA Results', job_checks)
+    headers = ['check_id', 'check_category', 'check_feature', 'check_message', 'check_name', 'check_passed',
+               'check_type', 'check_severity']
+    human_readable = tableToMarkdown('BPA Results', job_checks, headers=headers, headerTransform=string_to_table_header)
 
     return human_readable, context, results
 
 
 def download_report_handler(client: Client, task_id):
     downloaded_report = client.get_download_results_request(task_id)
-    demisto.results(
-        fileResult(task_id + DOWNLOADED_REPORT_NAME_SUFFIX, downloaded_report, entryTypes['entryInfoFile']))
+    demisto.results(fileResult(task_id + DOWNLOADED_REPORT_NAME_SUFFIX, downloaded_report, entryTypes['entryInfoFile']))
 
 
 def test_module(client, panorama):
@@ -259,12 +258,13 @@ def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    panorama_server = demisto.params().get('server')
-    panorama_port = demisto.params().get('port', None)
-    panorama_api_key = demisto.params().get('key')
-    bpa_token = demisto.params().get('token')
-    verify = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy')
+    params = demisto.params()
+    panorama_server = params.get('server')
+    panorama_port = params.get('port', None)
+    panorama_api_key = params.get('key_creds', {}).get('password') or params.get('key')
+    bpa_token = params.get('token_creds', {}).get('password') or params.get('token')
+    verify = not params.get('insecure', False)
+    proxy = params.get('proxy')
 
     try:
         client = Client(bpa_token, verify, proxy)

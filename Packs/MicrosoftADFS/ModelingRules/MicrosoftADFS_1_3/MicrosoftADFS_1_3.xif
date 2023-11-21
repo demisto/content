@@ -1,0 +1,84 @@
+[MODEL: dataset = microsoft_adfs_raw]
+// filter event ids based on XDRC configuration.
+filter to_string(event_id) in ("510", "1200", "1201", "1202", "1203", "1204", "1205", "1206", "1207") OR _collector_type = "WEC"
+// xml part
+| alter 
+    accountName = arrayindex(regextract(message ,"Account\sName\:\s+(\S+)"),0),
+    userName = to_string(json_extract_scalar(user, "$.name")),
+    audit_type = arrayindex(regextract(if(json_extract_scalar(event_data ,"$.param2") ~= "^\<\?xml\s.*", json_extract_scalar(event_data ,"$.param2") , null) , "<AuditType>([^<]+)"),0),
+    user_id = arrayindex(regextract(if(json_extract_scalar(event_data ,"$.param2") ~= "^\<\?xml\s.*", json_extract_scalar(event_data ,"$.param2") , null) ,"\<UserId\>([^\<]*)"),0),
+    mfa_method = arrayindex(regextract(if(json_extract_scalar(event_data ,"$.param2") ~= "^\<\?xml\s.*", json_extract_scalar(event_data ,"$.param2") , null) ,"\<MfaMethod\>([^\<]*)"),0),
+    device_id = arrayindex(regextract(if(json_extract_scalar(event_data ,"$.param2") ~= "^\<\?xml\s.*", json_extract_scalar(event_data ,"$.param2") , null) ,"\<DeviceId\>([^\<]*)"),0),
+    server  = arrayindex(regextract(if(json_extract_scalar(event_data ,"$.param2") ~= "^\<\?xml\s.*", json_extract_scalar(event_data ,"$.param2") , null) ,"\<Server\>([^\<]*)"),0),
+    auth_protocol  = arrayindex(regextract(if(json_extract_scalar(event_data ,"$.param2") ~= "^\<\?xml\s.*", json_extract_scalar(event_data ,"$.param2") , null) ,"\<AuthProtocol\>([^\<]*)"),0),
+    ip_address  = arrayindex(regextract(if(json_extract_scalar(event_data ,"$.param2") ~= "^\<\?xml\s.*", json_extract_scalar(event_data ,"$.param2") , null) ,"\<IpAddress\>([^\<]*)"),0),
+    user_agent  = arrayindex(regextract(if(json_extract_scalar(event_data ,"$.param2") ~= "^\<\?xml\s.*", json_extract_scalar(event_data ,"$.param2") , null) ,"\<UserAgentString\>([^\<]*)"),0)
+// json part
+| alter 
+    raw_param_2 = to_string(json_extract_scalar(event_data , "$.param2")),
+    raw_param_3 = to_string(json_extract_scalar(event_data , "$.param3")),
+    raw_param_4 = to_string(json_extract_scalar(event_data , "$.param4")),
+    raw_param_5 = to_string(json_extract_scalar(event_data , "$.param5")),
+    raw_param_6 = to_string(json_extract_scalar(event_data , "$.param6")),
+    raw_param_7 = to_string(json_extract_scalar(event_data , "$.param7")),
+    raw_param_8 = to_string(json_extract_scalar(event_data , "$.param8")),
+    raw_param_9 = to_string(json_extract_scalar(event_data , "$.param9")),
+    raw_param_10 = to_string(json_extract_scalar(event_data , "$.param10")),
+    raw_param_11 = to_string(json_extract_scalar(event_data , "$.param11")),
+    raw_param_12 = to_string(json_extract_scalar(event_data , "$.param12")),
+    raw_param_13 = to_string(json_extract_scalar(event_data , "$.param13")),
+    raw_param_14 = to_string(json_extract_scalar(event_data , "$.param14")),
+    raw_param_15 = to_string(json_extract_scalar(event_data , "$.param15"))
+| alter 
+    raw_param_2 = if(raw_param_2 = "-", replace(raw_param_2,"-",""),raw_param_2),
+    raw_param_3 = if(raw_param_3 = "-", replace(raw_param_3,"-",""),raw_param_3),
+    raw_param_4 = if(raw_param_4 = "-", replace(raw_param_4,"-",""),raw_param_4),
+    raw_param_5 = if(raw_param_5 = "-", replace(raw_param_5,"-",""),raw_param_5),
+    raw_param_6 = if(raw_param_6 = "-", replace(raw_param_6,"-",""),raw_param_6),
+    raw_param_7 = if(raw_param_7 = "-", replace(raw_param_7,"-",""),raw_param_7),
+    raw_param_8 = if(raw_param_8 = "-", replace(raw_param_8,"-",""),raw_param_8),
+    raw_param_9 = if(raw_param_9 = "-", replace(raw_param_9,"-",""),raw_param_9),
+    raw_param_10 = if(raw_param_10 = "-", replace(raw_param_10,"-",""),raw_param_10),
+    raw_param_11 = if(raw_param_11 = "-", replace(raw_param_11,"-",""),raw_param_11),
+    raw_param_12 = if(raw_param_12 = "-", replace(raw_param_12,"-",""),raw_param_12),
+    raw_param_13 = if(raw_param_13 = "-", replace(raw_param_13,"-",""),raw_param_13),
+    raw_param_14 = if(raw_param_14 = "-", replace(raw_param_14,"-",""),raw_param_14),
+    raw_param_15 = if(raw_param_15 = "-", replace(raw_param_15,"-",""),raw_param_15)
+| alter 
+    raw_data_json = raw_param_2 + raw_param_3 +raw_param_4 + raw_param_5 +raw_param_6 + raw_param_7 + raw_param_8 + raw_param_9 + raw_param_10 + raw_param_11 + raw_param_12 + raw_param_13 + raw_param_14 + raw_param_15
+| alter 
+    event_type_connection = json_extract_scalar(raw_data_json ,"$.Connection"),
+    referer = json_extract_scalar(raw_data_json ,"$.Referer"),
+    user_agent2 = json_extract_scalar(raw_data_json ,"$.User-Agent"),
+    Host = json_extract_scalar(raw_data_json ,"$.Host"),
+    Content_Type = json_extract_scalar(raw_data_json ,"$.Content-Type"),
+    X_Frame_Options = json_extract_scalar(raw_data_json ,"$.X-Frame-Options")
+//
+| alter 
+    xdm.alert.original_alert_id = activity_id,
+    xdm.event.original_event_type = coalesce(task, event_action),
+    xdm.source.process.thread_id = to_integer(process_thread_id),
+    xdm.source.process.pid = to_integer(process_pid),
+    xdm.source.user.identifier = json_extract_scalar(user, "$.identifier"),
+    xdm.source.user.domain = json_extract_scalar(user, "$.domain"),
+    xdm.source.user.user_type = json_extract_scalar(user, "$.type"),
+    xdm.event.description = replex(message, "\-", ""),
+    xdm.event.operation_sub_type = audit_type,
+    xdm.source.user.employee_id = user_id,
+    xdm.auth.auth_method = mfa_method,
+    xdm.source.host.device_id = device_id,
+    xdm.target.url = server,
+    xdm.network.application_protocol = auth_protocol,
+    xdm.source.ipv4 = ip_address,
+    xdm.source.user_agent = coalesce(user_agent,user_agent2),
+    xdm.event.id = to_string(event_id),
+    xdm.event.type = coalesce(event_type_connection, channel),
+    xdm.session_context_id = to_string(record_id),
+    xdm.source.user.username = coalesce(userName ,accountName),
+    xdm.source.host.hostname = coalesce(host_name,Host, computer_name),
+    xdm.event.log_level = if(log_level ~= "info", XDM_CONST.LOG_LEVEL_INFORMATIONAL, log_level ~= "err", XDM_CONST.LOG_LEVEL_ERROR, log_level ~= "warn", XDM_CONST.LOG_LEVEL_WARNING, log_level="crit", XDM_CONST.LOG_LEVEL_CRITICAL, to_string(coalesce(opcode,log_level))),
+    xdm.event.outcome = if(event_result = "failure", XDM_CONST.OUTCOME_FAILED, event_result = "success", XDM_CONST.OUTCOME_SUCCESS, event_result = null, null, to_string(event_result)),
+    xdm.network.http.content_type = Content_Type,
+    xdm.observer.type = provider_name,
+    xdm.event.outcome_reason = X_Frame_Options,
+    xdm.network.http.referrer = referer;

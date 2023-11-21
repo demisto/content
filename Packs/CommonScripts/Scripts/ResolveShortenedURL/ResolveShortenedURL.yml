@@ -1,0 +1,66 @@
+commonfields:
+  id: ResolveShortenedURL
+  version: -1
+name: ResolveShortenedURL
+script: ''
+type: python
+subtype: python3
+tags:
+- Utility
+comment: This script resolves the original URL from a given shortened URL and places the resolved URL in the playbook context and output.
+enabled: true
+args:
+- name: service
+  description: The service to use for resolving the URL. If not set, a default service is used.
+  auto: PREDEFINED
+  predefined:
+  - "longurl.in"
+  - "unshorten.me"
+  - "Built-In"
+- name: url
+  required: true
+  description: The URL to resolve.
+  default: true
+- name: redirect_limit
+  defaultValue: "5"
+  description: A maximum number of recursions to run in case of nested shortened-URLs. Use 0 for unlimited (not recommended).
+- name: use_system_proxy
+  predefined:
+  - 'True'
+  - 'False'
+  description: Use system proxy settings
+  auto: PREDEFINED
+  defaultValue: 'False'
+- name: insecure
+  type: Boolean
+  predefined:
+  - "False"
+  - "True"
+  description: Trust any certificate (not secure).
+outputs:
+- contextPath: URL.Data
+  description: The resolved URL data.
+  type: string
+- contextPath: ResolveShortenedURL.OriginalURL
+  description: The original shortened URL.
+  type: string
+- contextPath: ResolveShortenedURL.ResolvedURL
+  description: The resolved URL.
+  type: string
+- contextPath: ResolveShortenedURL.ServiceName
+  description: The name of the service used to resolve the URL.
+  type: string
+- contextPath: ResolveShortenedURL.UsageCount
+  description: The usage count for the current IP. If the count exceeds 10 in an hour, an error is returned. Relevant only if the unshorten.me service is used.
+  type: int
+- contextPath: ResolveShortenedURL.RedirectCount
+  description: The number of redirects followed to resolve the URL.
+  type: int
+- contextPath: ResolveShortenedURL.RedirectHistory
+  description: The history of redirects followed to resolve the URL.
+  type: list
+scripttarget: 0
+tests:
+- "No test"
+fromversion: 6.5.0
+dockerimage: demisto/python3:3.10.12.63474

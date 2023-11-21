@@ -10,18 +10,16 @@ comment: Get the error(s) associated with a given entry/entries. Use ${lastCompl
 enabled: true
 args:
 - name: entry_id
-  required: false
   default: true
-  description: Entry to check
+  description: Entry to check.
   isArray: true
 outputs:
 - contextPath: ErrorEntries
-  description: Contents of the errors associated with the entry/entries
+  description: Contents of the errors associated with the entry/entries.
 scripttarget: 0
 subtype: python3
-runonce: false
-dockerimage: demisto/python3:3.10.4.29342
+dockerimage: demisto/python3:3.10.13.80014
 runas: DBotWeakRole
 fromversion: 6.2.0
 tests:
-- No tests (auto formatted)
+- TestGetErrorsFromEntry

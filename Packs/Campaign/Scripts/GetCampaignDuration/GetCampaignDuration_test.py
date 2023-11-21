@@ -8,7 +8,7 @@ import pytest
 import demistomock as demisto
 
 CAMPAIGN_WITH_DURATION_RESULT = """
-                <table>
+                <table style="margin-left:auto;margin-right:auto;">
                 <tr>
                 <th style="font-size: 25px;">&#128345;</th>
                 <th style="font-size: 30px;">30</th>

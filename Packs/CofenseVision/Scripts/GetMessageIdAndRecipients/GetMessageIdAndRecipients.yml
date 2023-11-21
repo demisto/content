@@ -1,0 +1,25 @@
+commonfields:
+  id: GetMessageIdAndRecipients
+  version: -1
+name: GetMessageIdAndRecipients
+script: ''
+type: python
+tags:
+- transformer
+comment: Get the Internet Message Id and Recipient's address of Messages in a format of `internet_message_id:recipients_address.`
+enabled: true
+args:
+- name: key
+  required: true
+  description: Object Key.
+outputs:
+- contextPath: Cofense.Message
+  description: ID and Recipient's address of emails in specific format.
+  type: Unknown
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.10.8.36650
+runas: DBotWeakRole
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)

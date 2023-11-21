@@ -9,26 +9,26 @@ configuration:
   type: 0
 - display: Username
   name: credentials
-  required: false
   type: 9
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 - defaultvalue: 24 hours
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
-  required: false
   type: 0
+  required: false
 - defaultvalue: '50'
   display: Maximum number of incidents to fetch each time
   name: max_fetch
-  required: false
   type: 0
+  required: false
 - defaultvalue: unresolved
   display: Alert states to filter by in fetch incidents command. Empty list won't filter the incidents by state.
   name: filter_alerts_by_state
@@ -37,27 +37,35 @@ configuration:
   - inprogress
   - resolved
   - suppressed
-  required: false
   type: 16
-- display: Label names to filter by in fetch incidents command. Empty list won't filter the incidents by label name.
-  name: filter_by_label_name
   required: false
+- display: Label name to filter by in fetch incidents command. Leave empty to not filter the incidents by label name.
+  name: filter_by_label_name
   type: 0
-  additionalinfo: A comma-separated list of label names
   defaultvalue: ''
+  required: false
+- defaultvalue: 3.x
+  display: API Version
+  additionalinfo: the version of Tanium Threat Response your instance supports.
+  name: api_version
+  options:
+  - 3.x
+  - 4.x
+  type: 15
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
-  required: false
   type: 19
+  required: false
 description: Use the Tanium Threat Response integration to manage endpoint processes, evidence, alerts, files, snapshots, and connections. This integration works with Tanium Threat Response version 3.0.159 and above.
 display: Tanium Threat Response v2
 name: Tanium Threat Response v2
@@ -1534,7 +1542,7 @@ script:
       name: entry_id
       required: true
     - auto: PREDEFINED
-      description: The suffix at the end of a filename. (Available file types - yara, stix, ioc)
+      description: The suffix at the end of a filename. (Available file types - yara, stix, ioc).
       name: file_extension
       predefined:
       - ioc
@@ -1595,7 +1603,7 @@ script:
       name: entry_id
       required: true
     - auto: PREDEFINED
-      description: The suffix at the end of a filename. (Available file types - yara, stix, ioc)
+      description: The suffix at the end of a filename. (Available file types - yara, stix, ioc).
       name: file_extension
       predefined:
       - ioc
@@ -1659,7 +1667,7 @@ script:
       description: The modification date of the last intel deployment.
       type: Date
     - contextPath: Tanium.IntelDeployStatus.CurrentRevision
-      description: Revision number, incremented each time the intel is modified
+      description: Revision number, incremented each time the intel is modified.
       type: Number
     - contextPath: Tanium.IntelDeployStatus.CurrentSize
       description: The size of the intel document contents, in bytes.
@@ -1767,7 +1775,7 @@ script:
     - description: The intel document ID.
       name: intel_doc_id
       required: true
-    description: Remove an intel document from the system by providing its ID
+    description: Remove an intel document from the system by providing its ID.
   - name: tanium-tr-start-quick-scan
     arguments:
     - description: The intel document ID.
@@ -1784,24 +1792,131 @@ script:
       description: The ID of a Tanium computer group.
       type: Number
     - contextPath: Tanium.QuickScan.ID
-      description: The ID of the quick scan
+      description: The ID of the quick scan.
       type: Number
     - contextPath: Tanium.QuickScan.AlertCount
-      description: The number of alerts returned from the quick scan
+      description: The number of alerts returned from the quick scan.
       type: Number
     - contextPath: Tanium.QuickScan.CreatedAt
-      description: The date the quick scan was created
+      description: The date the quick scan was created.
       type: Date
     - contextPath: Tanium.QuickScan.UserId
-      description: The user ID which initiated the quick scan
+      description: The user ID which initiated the quick scan.
       type: Number
     - contextPath: Tanium.QuickScan.QuestionId
-      description: The ID of the quick scan question
+      description: The ID of the quick scan question.
       type: Number
     description: Scan a computer group for hashes in intel document. Computer groups can be viewed by navigating to `Administration -> Computer Groups` in the Threat-Response product console. Computer group names and IDs can also be retrieved by using the `tn-list-groups` command in the `Tanium` integration.
-  dockerimage: demisto/lxml:1.0.0.31639
+  - arguments:
+    - description: Offset to start getting response actions (default is '0').
+      name: offset
+    - description: Max number of response actions to return (default is '50').
+      name: limit
+    - auto: PREDEFINED
+      defaultValue: desc
+      description: Specify whether to sort by column in ascending or descending order (default is 'desc').
+      name: sort_order
+      predefined:
+      - asc
+      - desc
+    - description: Filter on a partial computer name.
+      name: partial_computer_name
+    - description: Filter on status.
+      name: status
+    - description: Filter on type.
+      name: type
+    description: Returns the Response Actions matching the specified filters.
+    name: tanium-tr-get-response-actions
+    outputs:
+    - contextPath: Tanium.ResponseActions.id
+      description: ''
+      type: String
+    - contextPath: Tanium.ResponseActions.type
+      description: ''
+      type: String
+    - contextPath: Tanium.ResponseActions.status
+      description: ''
+      type: String
+    - contextPath: Tanium.ResponseActions.computerName
+      description: ''
+      type: String
+    - contextPath: Tanium.ResponseActions.userId
+      description: ''
+      type: String
+    - contextPath: Tanium.ResponseActions.userName
+      description: ''
+      type: String
+    - contextPath: Tanium.ResponseActions.results.taskIds
+      description: ''
+      type: String
+    - contextPath: Tanium.ResponseActions.results.actionIds
+      description: ''
+      type: String
+    - contextPath: Tanium.ResponseActions.results.snapshotName
+      description: ''
+      type: String
+    - contextPath: Tanium.ResponseActions.results.uuid
+      description: ''
+      type: String
+    - contextPath: Tanium.ResponseActions.expirationTime
+      description: ''
+      type: Date
+    - contextPath: Tanium.ResponseActions.createdAt
+      description: ''
+      type: Date
+    - contextPath: Tanium.ResponseActions.updatedAt
+      description: ''
+      type: Date
+    - contextPath: Tanium.ResponseActions.eid
+      description: ''
+      type: String
+  - arguments:
+    - description: Target computer name.
+      name: computer_name
+      required: true
+    - description: Time unit to specify how long a snapshot should persist (i.e. "7 days", "1 month". Default is "7 days").
+      name: expiration_time
+    description: Creates a "gatherSnapshot" Response Action for the specified host.
+    name: tanium-tr-response-action-gather-snapshot
+    outputs:
+    - contextPath: Tanium.ResponseActions.type
+      description: ''
+      type: String
+    - contextPath: Tanium.ResponseActions.computerName
+      description: ''
+      type: String
+    - contextPath: Tanium.ResponseActions.options
+      description: ''
+      type: String
+    - contextPath: Tanium.ResponseActions.status
+      description: ''
+      type: String
+    - contextPath: Tanium.ResponseActions.userId
+      description: ''
+      type: String
+    - contextPath: Tanium.ResponseActions.userName
+      description: ''
+      type: String
+    - contextPath: Tanium.ResponseActions.results
+      description: ''
+      type: String
+    - contextPath: Tanium.ResponseActions.expirationTime
+      description: ''
+      type: Date
+    - contextPath: Tanium.ResponseActions.createdAt
+      description: ''
+      type: Date
+    - contextPath: Tanium.ResponseActions.updatedAt
+      description: ''
+      type: Date
+    - contextPath: Tanium.ResponseActions.id
+      description: ''
+      type: String
+    - contextPath: Tanium.ResponseActions.eid
+      description: ''
+      type: String
+  dockerimage: demisto/lxml:1.0.0.80144
   isfetch: true
-  runonce: false
   script: ''
   subtype: python3
   type: python

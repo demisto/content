@@ -4,15 +4,13 @@ commonfields:
 name: ReversingLabs Ransomware and Related Tools Feed
 display: ReversingLabs Ransomware and Related Tools Feed
 category: Data Enrichment & Threat Intelligence
-description: A timely and curated threat intel list containing recent indicators extracted
-  from ransomware and the tools used to deploy ransomware which are suitable for threat
-  hunting or deployment to security controls.
+description: A timely and curated threat intel list containing recent indicators extracted from ransomware and the tools used to deploy ransomware which are suitable for threat hunting or deployment to security controls.
 configuration:
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
-  required: false
   type: 8
+  required: false
 - display: ReversingLabs TitaniumCloud URL
   name: host
   defaultvalue: "https://data.reversinglabs.com"
@@ -22,8 +20,7 @@ configuration:
   name: credentials
   required: true
   type: 9
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
   display: Indicator Reputation
   name: feedReputation
   options:
@@ -31,8 +28,8 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  required: false
   type: 18
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data
   display: Source Reliability
   name: feedReliability
@@ -49,12 +46,12 @@ configuration:
   name: feedExpirationPolicy
   defaultvalue: indicatorType
   type: 17
-  required: false
   options:
   - never
   - interval
   - indicatorType
   - suddenDeath
+  required: false
 - display: ""
   name: feedExpirationInterval
   defaultvalue: "20160"
@@ -62,36 +59,30 @@ configuration:
   required: false
 - display: Feed Fetch Interval
   name: feedFetchInterval
-  required: false
   type: 19
+  required: false
 - display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
+  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   required: false
-  additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
 - display: First fetch time
   defaultvalue: 2
-  hidden: false
   name: hours
-  required: false
   type: 0
-  additionalinfo: Defines how many hours back in time should the indicators be fetched
-    from during the first run. Value should be between 1 and 4. Recommended value
-    is 2.
+  additionalinfo: Defines how many hours back in time should the indicators be fetched from during the first run. Value should be between 1 and 4. Recommended value is 2.
+  required: false
 - display: Indicator types
   name: indicatorTypes
   defaultvalue: ipv4,domain,hash,uri
-  additionalinfo: Which types of indicators should be fetched from the feed. Possible
-    values are 'ipv4', 'domain', 'hash', 'uri'.
-  required: false
+  additionalinfo: Which types of indicators should be fetched from the feed. Possible values are 'ipv4', 'domain', 'hash', 'uri'.
   type: 16
   options:
   - ipv4
   - domain
   - hash
   - uri
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -103,8 +94,8 @@ configuration:
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
-  required: false
   type: 0
+  required: false
 - name: tlp_color
   display: Traffic Light Protocol Color
   options:
@@ -112,10 +103,9 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  required: false
   type: 15
-  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed
+  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  required: false
 script:
   script: ''
   type: python
@@ -123,32 +113,17 @@ script:
   - name: reversinglabs-get-indicators
     arguments:
     - name: limit
-      default: false
       defaultValue: 50
-      description: The maximum number of indicators to return. The default value is
-        50.
-      isArray: false
-      required: false
-      secret: false
+      description: The maximum number of indicators to return. The default value is 50.
     - name: indicator_types
-      default: false
       defaultValue: 'ipv4,domain,hash,uri'
-      description: Which indicator types should be fetched from the feed. Possible
-        values are 'ipv4', 'domain', 'hash', 'uri'.
-      required: false
-      secret: false
+      description: Which indicator types should be fetched from the feed. Possible values are 'ipv4', 'domain', 'hash', 'uri'.
     - name: hours_back
-      default: false
       defaultValue: 1
-      description: Defines how many hours back in time should the indicators
-        be fetched from. Value should be between 1 and 4. Recommended value is 1.
-      isArray: false
-      required: false
-      secret: false
+      description: Defines how many hours back in time should the indicators be fetched from. Value should be between 1 and 4. Recommended value is 1.
     description: Gets indicators from the feed.
-  dockerimage: demisto/python3:3.10.1.25933
+  dockerimage: demisto/python3:3.10.12.63474
   feed: true
-  runonce: false
   subtype: python3
 fromversion: 6.0.0
 tests:

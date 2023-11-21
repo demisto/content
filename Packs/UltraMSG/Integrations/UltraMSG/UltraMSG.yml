@@ -1,0 +1,37 @@
+category: Utilities
+commonfields:
+  id: UltraMSG
+  version: -1
+configuration:
+- additionalinfo: "When creating an instance, you'll get a token Example: ty37deadbeef37xx"
+  display: Token
+  name: token
+  required: true
+  type: 4
+- additionalinfo: "When creating an instance, you'll get an instance id. Example: instance12345"
+  display: Instance
+  name: instance
+  required: true
+  type: 0
+description: This is the UltraMSG integration for getting started made by Trustnet
+display: UltraMSG
+name: UltraMSG
+script:
+  commands:
+  - arguments:
+    - description: 'Phone Number or Group ID. Example: +972501234567'
+      name: id
+      required: true
+    - description: Message Body
+      name: text
+      required: true
+    description: Send WhatsApp Message
+    name: send-whatsapp
+  dockerimage: demisto/python3:3.10.12.63474
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

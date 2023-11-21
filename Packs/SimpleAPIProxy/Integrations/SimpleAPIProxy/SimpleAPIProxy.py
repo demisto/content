@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 from copy import copy
 from secrets import compare_digest
@@ -5,9 +7,7 @@ from tempfile import NamedTemporaryFile
 from traceback import format_exc
 from typing import Dict, Optional
 
-import demistomock as demisto  # noqa: F401
 import uvicorn
-from CommonServerPython import *  # noqa: F401
 from fastapi import Depends, FastAPI, Request, Response
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.security.api_key import APIKey, APIKeyHeader

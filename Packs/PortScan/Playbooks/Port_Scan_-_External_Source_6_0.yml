@@ -1,0 +1,1024 @@
+id: Port Scan - External Source
+version: -1
+name: Port Scan - External Source
+description: This playbook remediates port scans originating outside of the organization's network.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: aa3086ed-71d4-4908-80f6-eefbd8e92174
+    type: start
+    task:
+      id: aa3086ed-71d4-4908-80f6-eefbd8e92174
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "54"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "7":
+    id: "7"
+    taskid: e873e121-9778-4d99-8160-c557b7131452
+    type: condition
+    task:
+      id: e873e121-9778-4d99-8160-c557b7131452
+      version: -1
+      name: Is there a geo-location for the attacker IP?
+      description: Checks whether geo-location exists for the attacker's IP address.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "56"
+      "yes":
+      - "55"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: IP
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Address
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.SourceExternalIPs
+                      iscontext: true
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: Geo.Country
+                      iscontext: true
+                transformers:
+                - operator: uniq
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "0"
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 297.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "8":
+    id: "8"
+    taskid: db51876c-7ed5-4164-83bd-a0727018311b
+    type: regular
+    task:
+      id: db51876c-7ed5-4164-83bd-a0727018311b
+      version: -1
+      name: Save originating country of attacker to incident field
+      description: Saves the country of the attacker's IP address in the Country incident field.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      country:
+        complex:
+          root: IP
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: IP.Geo.Country
+                iscontext: true
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: Address
+              field:
+                value:
+                  simple: SourceExternalIPs
+              getField:
+                value:
+                  simple: Geo
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: Country
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ', '
+    reputationcalc: 1
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "9":
+    id: "9"
+    taskid: 4c46d46a-e049-43d3-841b-0af3fc15ffb0
+    type: regular
+    task:
+      id: 4c46d46a-e049-43d3-841b-0af3fc15ffb0
+      version: -1
+      name: Update NIST stage - Containment
+      description: Updates the NIST Stage field to Containment.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "12"
+      - "50"
+    scriptarguments:
+      niststage:
+        simple: Containment
+    reputationcalc: 1
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "10":
+    id: "10"
+    taskid: dfec07cc-9f73-4202-86bb-988170e78c51
+    type: condition
+    task:
+      id: dfec07cc-9f73-4202-86bb-988170e78c51
+      version: -1
+      name: Is DomainTools enabled?
+      description: Checks whether the DomainTools integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "56"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: DomainTools
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 797.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "11":
+    id: "11"
+    taskid: a7976f80-f38c-4889-8aa7-09afd19458e9
+    type: regular
+    task:
+      id: a7976f80-f38c-4889-8aa7-09afd19458e9
+      version: -1
+      name: Reverse IP lookup
+      description: Gets domain names associated with the attacker's IP address.
+      script: DomainTools|||reverseIP
+      type: regular
+      iscommand: true
+      brand: DomainTools
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      ip:
+        complex:
+          root: inputs.SourceExternalIPs
+          transformers:
+          - operator: uniq
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "12":
+    id: "12"
+    taskid: bd0e1f26-dd7b-4ebc-8307-c7db4d0b3472
+    type: condition
+    task:
+      id: bd0e1f26-dd7b-4ebc-8307-c7db4d0b3472
+      version: -1
+      name: Should the attacker IP be blocked automatically?
+      description: Checks whether the BlockAttackerIP input is set to True.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "38"
+      "yes":
+      - "60"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.BlockAttackerIP
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "38":
+    id: "38"
+    taskid: 08deeee7-bb9d-41bf-80dd-ffec3086610a
+    type: regular
+    task:
+      id: 08deeee7-bb9d-41bf-80dd-ffec3086610a
+      version: -1
+      name: Manually block IPs
+      description: Manually block the attacker IPs in the firewall.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "41":
+    id: "41"
+    taskid: 92fbbea3-4d48-48c0-899b-16d1baa8c98e
+    type: title
+    task:
+      id: 92fbbea3-4d48-48c0-899b-16d1baa8c98e
+      version: -1
+      name: Continue
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "48":
+    id: "48"
+    taskid: da99b6da-01fb-463b-8a04-1e13a04b26af
+    type: playbook
+    task:
+      id: da99b6da-01fb-463b-8a04-1e13a04b26af
+      version: -1
+      name: Indicator Pivoting - DomainTools Iris
+      description: Pivots are used to gather data that share a common attribute with a domain. For instance, pivoting on an IP Address will give you back all domains related to that IP address.
+      playbookName: Indicator Pivoting - DomainTools Iris
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      EmailAddress:
+        complex:
+          root: Account
+          accessor: Email.Address
+          transformers:
+          - operator: uniq
+      IPAddress:
+        complex:
+          root: inputs.SourceExternalIPs
+      PivotThreshold:
+        simple: "500"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 1370,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "49":
+    id: "49"
+    taskid: 297e92e6-08e2-4345-8b3e-5d3b665069d4
+    type: playbook
+    task:
+      id: 297e92e6-08e2-4345-8b3e-5d3b665069d4
+      version: -1
+      name: Domain Enrichment - Generic v2
+      playbookName: Domain Enrichment - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      Domain:
+        complex:
+          root: DomainTools
+          accessor: PivotedDomains.Name
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Domain.Name
+                iscontext: true
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "50":
+    id: "50"
+    taskid: 96b1c231-e1f4-4e74-8c41-17f285a36280
+    type: condition
+    task:
+      id: 96b1c231-e1f4-4e74-8c41-17f285a36280
+      version: -1
+      name: Can malicious domains hosted on the IP be blocked?
+      description: Checks whether domains can be blocked automatically, and whether malicious domains were found in the reverse IP lookup or in the IP pivoting process.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "52"
+      "yes":
+      - "57"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Domain
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Score
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "3"
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.BlockMaliciousDomains
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 82f7571d-ccdd-4bec-871b-f2a2a948bc50
+    type: regular
+    task:
+      id: 82f7571d-ccdd-4bec-871b-f2a2a948bc50
+      version: -1
+      name: Manually block related malicious domains
+      description: Manually block malicious domains that were found to be associated with the attacker's IP address.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "54":
+    id: "54"
+    taskid: 7e666585-4779-44d7-8563-cddc521b3a1d
+    type: regular
+    task:
+      id: 7e666585-4779-44d7-8563-cddc521b3a1d
+      version: -1
+      name: Update scan source type
+      description: Updates the scan source type to "External".
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "7"
+      - "10"
+      - "59"
+    reputationcalc: 1
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Scan Source Type
+      output:
+        simple: External
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "55":
+    id: "55"
+    taskid: fb50b7cc-087f-4ad0-8d9a-a49060325bb2
+    type: regular
+    task:
+      id: fb50b7cc-087f-4ad0-8d9a-a49060325bb2
+      version: -1
+      name: Save attacker IP to local context
+      description: Saves the attacker IP address to the SourceExternalIPs context key, outside of the playbook inputs.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      key:
+        simple: SourceExternalIPs
+      value:
+        complex:
+          root: inputs.SourceExternalIPs
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "56":
+    id: "56"
+    taskid: 59110f15-f1ec-49cb-8c15-0c19bfe7a098
+    type: playbook
+    task:
+      id: 59110f15-f1ec-49cb-8c15-0c19bfe7a098
+      version: -1
+      name: Calculate Severity - Generic v2
+      description: |-
+        Calculate and assign the incident severity based on the highest returned severity level from the following calculations:
+
+        - DBotScores of indicators
+        - Critical assets
+        - Email authenticity
+        - Current incident severity
+      playbookName: Calculate Severity - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      CriticalEndpoints:
+        simple: admin
+      CriticalGroups:
+        simple: admins,administrators
+      CriticalUsers:
+        simple: admin,administrator
+      DBotScore:
+        complex:
+          root: inputs.DBotScore
+      Endpoint:
+        complex:
+          root: Endpoint
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: f57c255a-834b-43cd-8374-16a4e9920a22
+    type: regular
+    task:
+      id: f57c255a-834b-43cd-8374-16a4e9920a22
+      version: -1
+      name: Update incident fields with blocked domains
+      description: Updates the Associated Malicious Domains and Malicious Domains Blocked fields.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      associatedmaliciousdomains:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: Domain
+              ignorecase: true
+          - - operator: isEqualNumber
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ', '
+      maliciousdomainsblocked:
+        simple: "True"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "58":
+    id: "58"
+    taskid: a4123a06-c6d9-4fa9-8b92-1f4d11018a40
+    type: regular
+    task:
+      id: a4123a06-c6d9-4fa9-8b92-1f4d11018a40
+      version: -1
+      name: Update incident fields with blocked IP
+      description: Updates the Attacker IP Blocked field.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      attackeripblocked:
+        simple: "True"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "59":
+    id: "59"
+    taskid: 1c99695c-7353-4485-873e-5f6bde306fdb
+    type: condition
+    task:
+      id: 1c99695c-7353-4485-873e-5f6bde306fdb
+      version: -1
+      name: Is DomainTools Iris enabled?
+      description: Checks whether the DomainTools Iris integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "56"
+      "yes":
+      - "48"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: DomainTools Iris
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1257.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "60":
+    id: "60"
+    taskid: 3a4eeb86-d9dc-4f83-82c4-fa98b5e398e9
+    type: playbook
+    task:
+      id: 3a4eeb86-d9dc-4f83-82c4-fa98b5e398e9
+      version: -1
+      name: Block IP - Generic v3
+      description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the XSOAR user (and set by default to outgoing)\nNote the following:\n-  some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
+      playbookName: Block IP - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      IP:
+        complex:
+          root: IP
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: IP.Address
+                iscontext: true
+              right:
+                value:
+                  simple: AttackerIPs
+                iscontext: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: IP.InRange
+                iscontext: true
+              right:
+                value:
+                  simple: "no"
+          accessor: Address
+          transformers:
+          - operator: uniq
+      InputEnrichment:
+        simple: "False"
+      RuleDirection:
+        simple: outbound
+      RuleName:
+        simple: XSOAR - Block IP playbook - ${incident.id}
+      UserVerification:
+        simple: "False"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_56_#default#": 0.21,
+      "59_56_#default#": 0.1,
+      "7_56_#default#": 0.22
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1785,
+        "width": 1700,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: BlockAttackerIP
+  value:
+    simple: "False"
+  required: true
+  description: Whether attacking IPs should be automatically blocked using firewalls.
+  playbookInputQuery:
+- key: SourceExternalIPs
+  value: {}
+  required: false
+  description: The external IP address(es) that initiated the port scan.
+  playbookInputQuery:
+- key: BlockMaliciousDomains
+  value:
+    simple: "False"
+  required: true
+  description: In the event that reverse IP lookup is performed, and a malicious domain is found, setting this to True will automatically block the malicious domains. If set to False, an analyst can manually block the domains.
+  playbookInputQuery:
+- key: DBotScore
+  value:
+    complex:
+      root: DBotScore
+  required: false
+  description: All the DBotScores that were calculated, either automatically by auto-reputation or using specific tasks, when the incident was ingested. This is used to calculate the incident severity at a later stage.
+  playbookInputQuery:
+outputs: []
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
+contentitemexportablefields:
+  contentitemfields: {}

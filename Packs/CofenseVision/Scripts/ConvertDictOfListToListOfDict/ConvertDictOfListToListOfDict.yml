@@ -1,0 +1,21 @@
+commonfields:
+  id: ConvertDictOfListToListOfDict
+  version: -1
+name: ConvertDictOfListToListOfDict
+script: ''
+type: python
+tags:
+- transformer
+comment: Converts dictionary of lists to list of dictionaries.
+enabled: true
+args:
+- name: key
+  required: true
+  description: Object Key.
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.10.8.36650
+runas: DBotWeakRole
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)

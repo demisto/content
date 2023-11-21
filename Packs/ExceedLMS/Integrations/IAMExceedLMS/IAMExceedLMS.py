@@ -16,6 +16,7 @@ ERROR_CODES_TO_SKIP = [
 
 class Client(BaseClient):
     """ A client class that implements logic to authenticate with the application. """
+
     def __init__(self, base_url, api_key, headers, proxy=False, verify=True, ok_codes=None, manager_email=None):
         super().__init__(base_url, verify, proxy, ok_codes, headers)
         self.api_key = api_key
@@ -277,7 +278,9 @@ def main():
     user_profile = None
     params = demisto.params()
     base_url = urljoin(params['url'].strip('/'))
-    api_key = params.get('api_key')
+    api_key = params.get('credentials_api_key', {}).get('password') or params.get('api_key')
+    if not api_key:
+        return_error('API key must be provided.')
     mapper_in = params.get('mapper_in')
     mapper_out = params.get('mapper_out')
     verify_certificate = not params.get('insecure', True)

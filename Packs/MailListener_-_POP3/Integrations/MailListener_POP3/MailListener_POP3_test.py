@@ -1,10 +1,9 @@
-# -*- coding: iso-8859-1 -*-
 import base64
+# -*- coding: iso-8859-1 -*-
+import demistomock as demisto
 
-from MailListener_POP3 import parse_mail_parts
 
-
-def test_parse_mail_parts():
+def test_parse_mail_parts(mocker):
     """
     Given
     - Email data
@@ -15,19 +14,22 @@ def test_parse_mail_parts():
     - Validate The result body.
     """
 
+    from MailListener_POP3 import parse_mail_parts
+    mocker.patch.object(demisto, 'params', return_value={'credentials_password': {'password': 'password'}})
+
     class MockEmailPart:
         pass
 
     part = MockEmailPart()
     part._headers = [['content-transfer-encoding', 'quoted-printable']]
-    part._payload = "El Ni\xc3\xb1o"
+    part._payload = "el Ni=C3=B1o"
     parts = [part]
 
     body, html, attachments = parse_mail_parts(parts)
-    assert body == 'El Nio'
+    assert body.encode('utf-8') == b'el Ni\xc3\xb1o'
 
 
-def test_base64_mail_decode():
+def test_base64_mail_decode(mocker):
     """
     Given
     - base64 email data which could not be decoded into utf-8
@@ -38,10 +40,13 @@ def test_base64_mail_decode():
     - Validate that no exception is thrown
     - Validate The result body
     """
+    from MailListener_POP3 import parse_mail_parts
+    mocker.patch.object(demisto, 'params', return_value={'credentials_password': {'password': 'password'}})
+
     class MockEmailPart:
         pass
 
-    test_payload = 'Foo\xbbBar=='
+    test_payload = b'Foo\xbbBar=='
     base_64_encoded_test_payload = base64.b64encode(test_payload)
 
     part = MockEmailPart()

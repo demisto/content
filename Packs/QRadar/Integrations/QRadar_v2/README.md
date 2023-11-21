@@ -58,7 +58,7 @@ Depending on the system load, **the initial fetch might take a long time**.
 
 #### Field (Schema) Mapping
 The scheme is divided to 4 sections. Offense (root), Events: Builtins, Events: Custom Fields, and Assets.
-For more details, see the [Classification & Mapping documentation](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/incidents/classification-and-mapping/create-a-mapper.html).
+For more details, see the [Classification & Mapping documentation](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Create-a-Mapper).
 
 #### Query to fetch offenses
 You can apply additional (optional) filters for the fetch-incident query using the `Query to fetch offenses` integration parameter. For more information on how to use the filter syntax, see the [QRadar filter documentation](https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.3/com.ibm.qradar.doc/c_rest_api_filtering.html) and [QRadar offense documentation](https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.2/com.ibm.qradar.doc/11.0--siem-offenses-GET.html).
@@ -570,7 +570,7 @@ List all assets found in the model
                 "Name": {
                     "LastUser": "IDENTITY:0",
                     "Property Name": "Name",
-                    "Value": "ec2-54-245-171-52.us-west-2.compute.amazonaws.com"
+                    "Value": "ec2.us.compute-1.amazonaws.com"
                 }
             },
             {
@@ -578,7 +578,7 @@ List all assets found in the model
                 "Name": {
                     "LastUser": "IDENTITY:0",
                     "Property Name": "Name",
-                    "Value": "ec2-44-234-115-112.us-west-2.compute.amazonaws.com"
+                    "Value": "ec2.us.compute-1.amazonaws.com"
                 }
             }
         ]
@@ -592,11 +592,11 @@ List all assets found in the model
 >### Asset(ID:1914)
 >|LastUser|Property Name|Value|
 >|---|---|---|
->| IDENTITY:0 | Name | ec2-54-245-171-52.us-west-2.compute.amazonaws.com |
+>| IDENTITY:0 | Name | ec2.us.compute-1.amazonaws.com |
 >### Asset(ID:1928)
 >|LastUser|Property Name|Value|
 >|---|---|---|
->| IDENTITY:0 | Name | ec2-44-234-115-112.us-west-2.compute.amazonaws.com |
+>| IDENTITY:0 | Name | ec2.us.compute-1.amazonaws.com |
 >### Endpoint
 >|IPAddress|
 >|---|
@@ -668,7 +668,7 @@ Retrieves the asset by id
             "Name": {
                 "LastUser": "IDENTITY:0",
                 "Property Name": "Name",
-                "Value": "ec2-44-234-115-112.us-west-2.compute.amazonaws.com"
+                "Value": "ec2.us.compute-1.amazonaws.com"
             }
         }
     }
@@ -681,7 +681,7 @@ Retrieves the asset by id
 >### Asset(ID:1928)
 >|LastUser|Property Name|Value|
 >|---|---|---|
->| IDENTITY:0 | Name | ec2-44-234-115-112.us-west-2.compute.amazonaws.com |
+>| IDENTITY:0 | Name | ec2.us.compute-1.amazonaws.com |
 >### Endpoint
 >|IPAddress|MACAddress|
 >|---|---|

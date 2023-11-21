@@ -1,11 +1,6 @@
-[file:CybersixgillDVEFeed.yml]
-ignore=IN145
-
-[file:CybersixgillDVEEnrichment.yml]
-ignore=IN145
-
 [file:CybersixgillDVEEnrichment_image.png]
 ignore=IM111
 
 [file:CybersixgillDVEFeed_image.png]
 ignore=IM111
+

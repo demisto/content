@@ -1200,7 +1200,7 @@
 <pre>{
     "DBotScore": [
         {
-            "Vendor": "MISP.None", 
+            "Vendor": "MISP", 
             "Indicator": "3d74da0a7276735f1afae01951b39ff7a9d92c94", 
             "Score": 3, 
             "Type": "hash"
@@ -1209,7 +1209,7 @@
     "File": [
         {
             "Malicious": {
-                "Vendor": "MISP.None", 
+                "Vendor": "MISP", 
                 "Description": "file hash found in MISP event with ID: 754"
             }, 
             "SHA1": "3d74da0a7276735f1afae01951b39ff7a9d92c94"
@@ -1233,7 +1233,7 @@
 <tbody>
 <tr>
 <td>754</td>
-<td>MISP.None</td>
+<td>MISP</td>
 <td>HIGH</td>
 </tr>
 </tbody>
@@ -1246,6 +1246,7 @@
 <hr>
 <p> </p>
 <p>Checks if the URL is in MISP events.</p>
+<p>Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.</p>
 <p> </p>
 <h5>Base Command</h5>
 <p> </p>

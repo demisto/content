@@ -1,0 +1,27 @@
+commonfields:
+  id: DisplayHTML
+  version: -1
+name: DisplayHTML
+script: ''
+type: python
+subtype: python3
+tags: []
+comment: Display HTML in the War Room.
+system: true
+args:
+- name: html
+  required: true
+  description: The HTML to display
+- name: markAsNote
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Should the entry be marked as a note?
+- name: header
+  description: Add a header text to the output
+scripttarget: 0
+fromversion: 6.5.0
+dockerimage: demisto/python3:3.10.12.63474
+tests:
+- No tests (auto formatted)

@@ -26,6 +26,7 @@ data_test_set_and_handle_empty_with_value_and_stringify = [
     ('key', '{"key_inside": "val_inside"}', {'key': '{"key_inside": "val_inside"}'}),
     ('key', ["val0", "val1", "val2"], {'key': "['val0', 'val1', 'val2']"}),
     ('key', {"key_inside": "val_inside"}, {'key': "{'key_inside': 'val_inside'}"}),
+    ('key', None, {}),
 ]
 
 

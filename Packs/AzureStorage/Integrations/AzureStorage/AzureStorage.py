@@ -1,85 +1,112 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+from MicrosoftApiModule import *  # noqa: E402
 
 import urllib3
 
 urllib3.disable_warnings()
 
-API_VERSION = '2019-06-01'
+API_VERSION = '2022-09-01'
+GRANT_BY_CONNECTION = {'Device Code': DEVICE_CODE, 'Authorization Code': AUTHORIZATION_CODE}
+SCOPE_BY_CONNECTION = {'Device Code': "https://management.azure.com/user_impersonation offline_access user.read",
+                       'Authorization Code': "https://management.azure.com/.default"}
+PREFIX_URL = 'https://management.azure.com/subscriptions/'
 
 
 class ASClient:
-    def __init__(self, app_id: str, subscription_id: str, resource_group_name: str, verify: bool, proxy: bool):
+    def __init__(self, app_id: str, subscription_id: str, resource_group_name: str, verify: bool, proxy: bool,
+                 connection_type: str, tenant_id: str = None, enc_key: str = None, auth_code: str = None,
+                 redirect_uri: str = None,
+                 managed_identities_client_id: str = None):
         if '@' in app_id:
             app_id, refresh_token = app_id.split('@')
             integration_context = get_integration_context()
             integration_context.update(current_refresh_token=refresh_token)
             set_integration_context(integration_context)
 
-        self.ms_client = MicrosoftClient(
+        client_args = assign_params(
             self_deployed=True,
             auth_id=app_id,
             token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
-            grant_type=DEVICE_CODE,
-            base_url=f'https://management.azure.com/subscriptions/{subscription_id}',
+            grant_type=GRANT_BY_CONNECTION.get(connection_type),
+            base_url=f'{PREFIX_URL}{subscription_id}',
             verify=verify,
             proxy=proxy,
-            resource='https://management.core.windows.net',
-            scope='https://management.azure.com/user_impersonation offline_access user.read',
+            resource='https://management.core.windows.net' if 'Device' in connection_type else None,
+            scope=SCOPE_BY_CONNECTION.get(connection_type),
+            tenant_id=tenant_id,
+            enc_key=enc_key,
+            auth_code=auth_code,
+            redirect_uri=redirect_uri,
+            managed_identities_client_id=managed_identities_client_id,
+            managed_identities_resource_uri=Resources.management_azure,
+            command_prefix="azure-storage",
         )
+        self.ms_client = MicrosoftClient(**client_args)
         self.subscription_id = subscription_id
         self.resource_group_name = resource_group_name
+        self.connection_type = connection_type
 
     @logger
-    def storage_account_list_request(self, account_name: str) -> Dict:
+    def storage_account_list_request(self, account_name: str, resource_group_name: str, subscription_id: str) -> Dict:
         """
             Send the get storage account/s request to the API.
         Args:
             account_name: The storage account name, optional.
+            resource_group_name: The resource group name.
+            subscription_id: The subscription id.
 
         Returns:
             The json response from the API call.
         """
-
         return self.ms_client.http_request(
             method='GET',
-            url_suffix=f'/resourceGroups/{self.resource_group_name}/providers/Microsoft.Storage/storageAccounts/'
-                       f'{account_name}',
+            full_url=(f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}'
+                      f'/providers/Microsoft.Storage/storageAccounts/{account_name}'
+                      ),
             params={
                 'api-version': API_VERSION,
             }
         )
 
     @logger
-    def storage_blob_service_properties_get_request(self, account_name: str) -> Dict:
+    def storage_blob_service_properties_get_request(self, account_name: str,
+                                                    resource_group_name: str,
+                                                    subscription_id: str) -> Dict:
         """
             Send the get blob service properties request to the API.
         Args:
             account_name: The storage account name.
+            resource_group_name: The resource group name.
+            subscription_id: The subscription id.
 
         Returns:
             The json response from the API call.
         """
         return self.ms_client.http_request(
             method='GET',
-            url_suffix=f'/resourceGroups/{self.resource_group_name}/providers/Microsoft.Storage/storageAccounts/'
-                       f'{account_name}/blobServices/default',
+            full_url=(f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}'
+                      f'/providers/Microsoft.Storage/storageAccounts/{account_name}/blobServices/default'
+                      ),
             params={
                 'api-version': API_VERSION,
             }
         )
 
     @logger
-    def storage_account_create_update_request(self, args: Dict) -> Dict:
+    def storage_account_create_update_request(self, subscription_id: str, resource_group_name: str, args: Dict) -> Dict:
         """
             Send the user arguments for the create/update account in the request body to the API.
         Args:
+            subscription_id: The subscription id.
+            resource_group_name: The resource group name.
             args: The user arguments.
 
         Returns:
             The json response from the API call.
         """
+        account_name = args.get('account_name', '')
         json_data_args = {
             'sku': {
                 'name': args['sku']
@@ -166,8 +193,8 @@ class ASClient:
 
         return self.ms_client.http_request(
             method='PUT',
-            url_suffix=f'/resourceGroups/{self.resource_group_name}/providers/Microsoft.Storage/storageAccounts/'
-                       f'/{args["account_name"]}',
+            full_url=(f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}'
+                      f'/providers/Microsoft.Storage/storageAccounts/{account_name}'),
             params={
                 'api-version': API_VERSION,
             },
@@ -175,15 +202,19 @@ class ASClient:
             resp_type='response'
         )
 
-    def storage_blob_service_properties_set_request(self, args: Dict) -> Dict:
+    def storage_blob_service_properties_set_request(self, subscription_id: str | None,
+                                                    resource_group_name: str | None, args: Dict) -> Dict:
         """
             Send the user arguments for the blob service in the request body to the API.
         Args:
+            subscription_id: The subscription id.
+            resource_group_name: The resource group name.
             args: The user arguments.
 
         Returns:
             The json response from the API call.
         """
+        account_name = args.get('account_name')
         properties = {}
 
         if 'change_feed_enabled' in args:
@@ -245,24 +276,30 @@ class ASClient:
 
         return self.ms_client.http_request(
             method='PUT',
-            url_suffix=f'/resourceGroups/{self.resource_group_name}/providers/Microsoft.Storage/storageAccounts/'
-                       f'{args["account_name"]}/blobServices/default',
+            full_url=(f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}'
+                      f'/providers/Microsoft.Storage/storageAccounts/{account_name}/blobServices/default'
+                      ),
             params={
                 'api-version': API_VERSION,
             },
             json_data={'properties': properties}
         )
 
-    def storage_blob_containers_create_update_request(self, args, method):
+    def storage_blob_containers_create_update_request(self, subscription_id: str | None,
+                                                      resource_group_name: str | None, args: Dict, method: str) -> Dict:
         """
                 Send the user arguments for the create blob container in the request body to the API.
             Args:
+                subscription_id: The subscription id.
+                resource_group_name: The resource group name.
                 args: The user arguments.
                 method: The method for the http request.
 
             Returns:
                 The json response from the API call.
         """
+        container_name = args.get('container_name', '')
+        account_name = args.get('account_name', '')
         properties = {}
 
         if 'default_encryption_scope' in args:
@@ -276,26 +313,33 @@ class ASClient:
 
         return self.ms_client.http_request(
             method=method,
-            url_suffix=f'/resourceGroups/{self.resource_group_name}/providers/Microsoft.Storage/storageAccounts/'
-                       f'{args["account_name"]}/blobServices/default/containers/{args["container_name"]}',
+            full_url=(f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}'
+                      f'/providers/Microsoft.Storage/storageAccounts/{account_name}'
+                      f'/blobServices/default/containers/{container_name}'
+                      ),
             params={
                 'api-version': API_VERSION,
             },
             json_data={'properties': properties}
         )
 
-    def storage_blob_containers_list_request(self, args):
+    def storage_blob_containers_list_request(self, subscription_id: str | None,
+                                             resource_group_name: str | None, args: Dict) -> Dict:
         """
                 Send the get blob container/s request to the API.
             Args:
+                subscription_id: The subscription id.
+                resource_group_name: The resource group name.
                 args: The user arguments.
 
             Returns:
                 The json response from the API call.
         """
-
-        url = f'/resourceGroups/{self.resource_group_name}/providers/Microsoft.Storage/storageAccounts/' \
-              f'{args["account_name"]}/blobServices/default/containers/{args.get("container_name", "")}'
+        account_name = args.get('account_name', '')
+        container_name = args.get('container_name', '')
+        full_url = (f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}'
+                    f'/providers/Microsoft.Storage/storageAccounts/{account_name}'
+                    f'/blobServices/default/containers/{container_name}?')
 
         params = {
             'api-version': API_VERSION,
@@ -309,48 +353,73 @@ class ASClient:
 
         return self.ms_client.http_request(
             method='GET',
-            url_suffix=url,
+            full_url=full_url,
             params=params,
         )
 
-    def storage_blob_containers_delete_request(self, args):
+    def storage_blob_containers_delete_request(self, subscription_id: str | None,
+                                               resource_group_name: str | None,
+                                               account_name: str | None, container_name: str | None) -> requests.Response:
 
         return self.ms_client.http_request(
             method='DELETE',
-            url_suffix=f'/resourceGroups/{self.resource_group_name}/providers/Microsoft.Storage/storageAccounts/'
-                       f'{args["account_name"]}/blobServices/default/containers/{args["container_name"]}',
+            full_url=(f'{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}'
+                      f'/providers/Microsoft.Storage/storageAccounts/{account_name}'
+                      f'/blobServices/default/containers/{container_name}'
+                      ),
             params={
                 'api-version': API_VERSION,
             },
             resp_type='response'
         )
 
+    def list_subscriptions_request(self):
+        return self.ms_client.http_request(
+            method='GET',
+            full_url='https://management.azure.com/subscriptions',
+            params={
+                'api-version': API_VERSION,
+            })
+
+    def list_resource_groups_request(self, subscription_id: str | None,
+                                     filter_by_tag: str | None, limit: int | None) -> Dict:
+        full_url = f'{PREFIX_URL}{subscription_id}/resourcegroups?'
+        return self.ms_client.http_request('GET', full_url=full_url,
+                                           params={'$filter': filter_by_tag, '$top': limit,
+                                                   'api-version': API_VERSION})
 
 # Storage Account Commands
 
 
-def storage_account_list(client: ASClient, args: Dict) -> CommandResults:
+def storage_account_list(client: ASClient, params: Dict, args: Dict) -> CommandResults:
     """
         Gets a storage account if an account name is specified, and a list of storage accounts if not.
     Args:
         client: The microsoft client.
+        params: The configuration parameters.
         args: The users arguments, (like account name).
 
     Returns:
         CommandResults: The command results in MD table and context data.
     """
+    # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
+    # if both are passed as arguments, the command arguments will be used.
+    subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
+    resource_group_name = get_from_args_or_params(params=params, args=args, key='resource_group_name')
     account_name = args.get('account_name', '')
-    response = client.storage_account_list_request(account_name)
+    response = client.storage_account_list_request(account_name=account_name,
+                                                   resource_group_name=resource_group_name,
+                                                   subscription_id=subscription_id)
     accounts = response.get('value', [response])
 
     readable_output = []
     for account in accounts:
 
         if subscription_id := re.search('subscriptions/(.+?)/resourceGroups', account.get('id', '')):
-            subscription_id = subscription_id.group(1)
+            subscription_id = subscription_id.group(1)  # type: ignore
 
         if resource_group := re.search('resourceGroups/(.+?)/providers', account.get('id', '')):
-            resource_group = resource_group.group(1)
+            resource_group = resource_group.group(1)  # type: ignore
 
         readable_output.append({
             'Account Name': account.get('name'),
@@ -376,28 +445,35 @@ def storage_account_list(client: ASClient, args: Dict) -> CommandResults:
     )
 
 
-def storage_account_create_update(client: ASClient, args: Dict) -> Union[CommandResults, str]:
+def storage_account_create_update(client: ASClient, params: Dict, args: Dict) -> Union[CommandResults, str]:
     """
         Creates or updates a given storage account.
     Args:
         client: The microsoft client.
+        params: The configuration parameters.
         args: The users arguments, (like account name).
 
     Returns:
         CommandResults: The command results in MD table and context data.
     """
+    # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
+    # if both are passed as arguments, the command arguments will be used.
+    subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
+    resource_group_name = get_from_args_or_params(params=params, args=args, key='resource_group_name')
 
-    response = client.storage_account_create_update_request(args)
+    response = client.storage_account_create_update_request(subscription_id=subscription_id,
+                                                            resource_group_name=resource_group_name,
+                                                            args=args)
 
     if not response.text:
         return f"The request was accepted - the account {args.get('account_name')} will be created shortly"
 
     response = response.json()
     if subscription_id := re.search('subscriptions/(.+?)/resourceGroups', response.get('id', '')):
-        subscription_id = subscription_id.group(1)
+        subscription_id = subscription_id.group(1)  # type: ignore
 
     if resource_group := re.search('resourceGroups/(.+?)/providers', response.get('id', '')):
-        resource_group = resource_group.group(1)
+        resource_group = resource_group.group(1)  # type: ignore
 
     readable_output = {
         'Account Name': response.get('name'),
@@ -426,28 +502,34 @@ def storage_account_create_update(client: ASClient, args: Dict) -> Union[Command
 # Blob Service Commands
 
 
-def storage_blob_service_properties_get(client: ASClient, args: Dict) -> CommandResults:
+def storage_blob_service_properties_get(client: ASClient, params: Dict, args: Dict) -> CommandResults:
     """
         Gets the blob service properties for the storage account.
     Args:
         client: The microsoft client.
+        params: The configuration parameters.
         args: The users arguments, (like account name).
 
     Returns:
         CommandResults: The command results in MD table and context data.
     """
-
+    # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
+    # if both are passed as arguments, the command arguments will be used.
+    subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
+    resource_group_name = get_from_args_or_params(params=params, args=args, key='resource_group_name')
     account_name = args.get('account_name')
-    response = client.storage_blob_service_properties_get_request(account_name)
+    response = client.storage_blob_service_properties_get_request(account_name=account_name,
+                                                                  resource_group_name=resource_group_name,
+                                                                  subscription_id=subscription_id)
 
     if subscription_id := re.search('subscriptions/(.+?)/resourceGroups', response.get('id', '')):
-        subscription_id = subscription_id.group(1)
+        subscription_id = subscription_id.group(1)  # type: ignore
 
     if resource_group := re.search('resourceGroups/(.+?)/providers', response.get('id', '')):
-        resource_group = resource_group.group(1)
+        resource_group = resource_group.group(1)  # type: ignore
 
     if account_name := re.search('storageAccounts/(.+?)/blobServices', response.get('id', '')):
-        account_name = account_name.group(1)
+        account_name = account_name.group(1)  # type: ignore
 
     readable_output = {
         'Name': response.get('name'),
@@ -475,27 +557,34 @@ def storage_blob_service_properties_get(client: ASClient, args: Dict) -> Command
     )
 
 
-def storage_blob_service_properties_set(client: ASClient, args: Dict):
+def storage_blob_service_properties_set(client: ASClient, params: Dict, args: Dict):
     """
         Sets the blob service properties for the storage account.
     Args:
         client: The microsoft client.
+        params: The configuration parameters.
         args: The users arguments, (like account name).
 
     Returns:
         CommandResults: The command results in MD table and context data.
     """
+    # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
+    # if both are passed as arguments, the command arguments will be used.
+    subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
+    resource_group_name = get_from_args_or_params(params=params, args=args, key='resource_group_name')
 
-    response = client.storage_blob_service_properties_set_request(args)
+    response = client.storage_blob_service_properties_set_request(subscription_id=subscription_id,
+                                                                  resource_group_name=resource_group_name,
+                                                                  args=args)
 
     if subscription_id := re.search('subscriptions/(.+?)/resourceGroups', response.get('id', '')):
-        subscription_id = subscription_id.group(1)
+        subscription_id = subscription_id.group(1)  # type: ignore
 
     if resource_group := re.search('resourceGroups/(.+?)/providers', response.get('id', '')):
-        resource_group = resource_group.group(1)
+        resource_group = resource_group.group(1)  # type: ignore
 
     if account_name := re.search('storageAccounts/(.+?)/blobServices', response.get('id', '')):
-        account_name = account_name.group(1)
+        account_name = account_name.group(1)  # type: ignore
 
     readable_output = {
         'Name': response.get('name'),
@@ -517,36 +606,42 @@ def storage_blob_service_properties_set(client: ASClient, args: Dict):
             'Azure Storage Blob Service Properties',
             readable_output,
             ['Name', 'Account Name', 'Subscription ID', 'Resource Group', 'Change Feed', 'Delete Retention Policy',
-             'Versioning'],
+                'Versioning'],
         ),
         raw_response=response
     )
 
-
 # Blob Containers Commands
 
 
-def storage_blob_containers_create(client, args):
+def storage_blob_containers_create(client: ASClient, params: Dict, args: Dict):
     """
             Creates a blob container.
         Args:
             client: The microsoft client.
+            params: The configuration parameters.
             args: The users arguments, (like account name, container name).
 
         Returns:
             CommandResults: The command results in MD table and context data.
     """
+    # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
+    # if both are passed as arguments, the command arguments will be used.
+    subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
+    resource_group_name = get_from_args_or_params(params=params, args=args, key='resource_group_name')
 
-    response = client.storage_blob_containers_create_update_request(args, 'PUT')
+    response = client.storage_blob_containers_create_update_request(subscription_id=subscription_id,
+                                                                    resource_group_name=resource_group_name,
+                                                                    args=args, method='PUT')
 
     if subscription_id := re.search('subscriptions/(.+?)/resourceGroups', response.get('id', '')):
-        subscription_id = subscription_id.group(1)
+        subscription_id = subscription_id.group(1)  # type: ignore
 
     if resource_group := re.search('resourceGroups/(.+?)/providers', response.get('id', '')):
-        resource_group = resource_group.group(1)
+        resource_group = resource_group.group(1)  # type: ignore
 
     if account_name := re.search('storageAccounts/(.+?)/blobServices', response.get('id', '')):
-        account_name = account_name.group(1)
+        account_name = account_name.group(1)  # type: ignore
 
     readable_output = {
         'Name': response.get('name'),
@@ -568,27 +663,34 @@ def storage_blob_containers_create(client, args):
     )
 
 
-def storage_blob_containers_update(client, args):
+def storage_blob_containers_update(client: ASClient, params: Dict, args: Dict) -> CommandResults:
     """
             Updates a given blob container.
         Args:
             client: The microsoft client.
+            params: The configuration parameters.
             args: The users arguments, (like account name, container name).
 
         Returns:
             CommandResults: The command results in MD table and context data.
     """
+    # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
+    # if both are passed as arguments, the command arguments will be used.
+    subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
+    resource_group_name = get_from_args_or_params(params=params, args=args, key='resource_group_name')
 
-    response = client.storage_blob_containers_create_update_request(args, 'PATCH')
+    response = client.storage_blob_containers_create_update_request(subscription_id=subscription_id,
+                                                                    resource_group_name=resource_group_name,
+                                                                    args=args, method='PATCH')
 
     if subscription_id := re.search('subscriptions/(.+?)/resourceGroups', response.get('id', '')):
-        subscription_id = subscription_id.group(1)
+        subscription_id = subscription_id.group(1)  # type: ignore
 
     if resource_group := re.search('resourceGroups/(.+?)/providers', response.get('id', '')):
-        resource_group = resource_group.group(1)
+        resource_group = resource_group.group(1)  # type: ignore
 
     if account_name := re.search('storageAccounts/(.+?)/blobServices', response.get('id', '')):
-        account_name = account_name.group(1)
+        account_name = account_name.group(1)  # type: ignore
 
     readable_output = {
         'Name': response.get('name'),
@@ -611,31 +713,38 @@ def storage_blob_containers_update(client, args):
     )
 
 
-def storage_blob_containers_list(client, args):
+def storage_blob_containers_list(client: ASClient, params: Dict, args: Dict) -> CommandResults:
     """
             Gets a blob container if an container name is specified, and a list of blob containers if not.
         Args:
             client: The microsoft client.
+            params: The configuration parameters.
             args: The users arguments, (like account name, container name).
 
         Returns:
             CommandResults: The command results in MD table and context data.
     """
+    # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
+    # if both are passed as arguments, the command arguments will be used.
+    subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
+    resource_group_name = get_from_args_or_params(params=params, args=args, key='resource_group_name')
 
-    response = client.storage_blob_containers_list_request(args)
+    response = client.storage_blob_containers_list_request(subscription_id=subscription_id,
+                                                           resource_group_name=resource_group_name,
+                                                           args=args)
     containers = response.get('value', [response])
 
     readable_output = []
     for container in containers:
 
         if subscription_id := re.search('subscriptions/(.+?)/resourceGroups', container.get('id', '')):
-            subscription_id = subscription_id.group(1)
+            subscription_id = subscription_id.group(1)  # type: ignore
 
         if resource_group := re.search('resourceGroups/(.+?)/providers', container.get('id', '')):
-            resource_group = resource_group.group(1)
+            resource_group = resource_group.group(1)  # type: ignore
 
         if account_name := re.search('storageAccounts/(.+?)/blobServices', container.get('id', '')):
-            account_name = account_name.group(1)
+            account_name = account_name.group(1)  # type: ignore
 
         readable_output.append({
             'Container Name': container.get('name'),
@@ -661,13 +770,96 @@ def storage_blob_containers_list(client, args):
     )
 
 
-def storage_blob_containers_delete(client, args):
+def storage_blob_containers_delete(client: ASClient, params: Dict, args: Dict) -> str:
+    """
+    This function deletes a given blob container.
+    Args:
+        client: The microsoft client.
+        params: The configuration parameters.
+        args: The users arguments.
+    Returns:
+        str: A string that represent the status of the request.
+    """
 
-    client.storage_blob_containers_delete_request(args)
-    return 'The request to delete the blob container was sent successfully.'
+    # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
+    # if both are passed as arguments, the command arguments will be used.
+    subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
+    resource_group_name = get_from_args_or_params(params=params, args=args, key='resource_group_name')
+    account_name = args.get("account_name", '')
+    container_name = args.get("container_name", '')
+
+    res = client.storage_blob_containers_delete_request(subscription_id=subscription_id,
+                                                        resource_group_name=resource_group_name,
+                                                        account_name=account_name,
+                                                        container_name=container_name)
+    if res.status_code == 200:
+        return 'The request to delete the blob container was sent successfully.'
+    else:
+        return (
+            f'Failed to delete the blob container.\
+Status code: {res.status_code} \nPlease verify that the container and account name are correct.')
 
 
-# Authentication Functions
+def storage_subscriptions_list(client: ASClient) -> CommandResults:
+    """
+        Gets a list of subscriptions.
+    Args:
+        client: The microsoft client.
+    Returns:
+        CommandResults: The command results in MD table and context data.
+    """
+    res = client.list_subscriptions_request()
+    subscriptions = res.get('value', [])
+
+    return CommandResults(
+        outputs_prefix='AzureStorage.Subscription',
+        outputs_key_field='id',
+        outputs=subscriptions,
+        readable_output=tableToMarkdown(
+            'Azure Storage Subscriptions list',
+            subscriptions,
+            ['subscriptionId', 'tenantId', 'displayName', 'state'],
+        ),
+        raw_response=res
+    )
+
+
+def storage_resource_group_list(client: ASClient, params: Dict, args: Dict) -> CommandResults:
+    """
+    List all resource groups in the subscription.
+    Args:
+        client (KeyVaultClient): microsoft client.
+        args (Dict[str, Any]): command arguments.
+        params (Dict[str, Any]): configuration parameters.
+    Returns:
+        CommandResults: Command results with raw response, outputs and readable outputs.
+    """
+    tag = args.get('tag')
+    limit = arg_to_number(args.get('limit')) or 50
+    # subscription_id can be passed as command argument or as configuration parameter,
+    # if both are passed as arguments, the command argument will be used.
+    subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
+    filter_by_tag = azure_tag_formatter(tag) if tag else ''
+
+    response = client.list_resource_groups_request(subscription_id=subscription_id,
+                                                   filter_by_tag=filter_by_tag, limit=limit)
+    data_from_response = response.get('value', [])
+
+    readable_output = tableToMarkdown('Resource Groups List',
+                                      data_from_response,
+                                      ['name', 'location', 'tags',
+                                       'properties.provisioningState'
+                                       ],
+                                      removeNull=True, headerTransform=string_to_table_header)
+    return CommandResults(
+        outputs_prefix='AzureStorage.ResourceGroup',
+        outputs_key_field='id',
+        outputs=data_from_response,
+        raw_response=response,
+        readable_output=readable_output,
+    )
+
+    # Authentication Functions
 
 
 def start_auth(client: ASClient) -> CommandResults:
@@ -685,13 +877,33 @@ def test_connection(client: ASClient) -> str:
     return '✅ Success!'
 
 
-def reset_auth() -> str:
-    set_integration_context({})
-    return 'Authorization was reset successfully. Run **!azure-storage-auth-start** to start the authentication \
-    process.'
+def test_module(client: ASClient) -> str:
+    """Tests API connectivity and authentication'
+    Returning 'ok' indicates that the integration works like it is supposed to.
+    Connection to the service is successful.
+    Raises exceptions if something goes wrong.
+    :type ASClient: ``Client``
+    :param Client: client to use
+    :return: 'ok' if test passed.
+    :rtype: ``str``
+    """
+    # This  should validate all the inputs given in the integration configuration panel,
+    # either manually or by using an API that uses them.
+    if "Device" in client.connection_type:
+        raise DemistoException("Please enable the integration and run `!azure-storage-auth-start`"
+                               "and `!azure-storage-auth-complete` to log in."
+                               "You can validate the connection by running `!azure-storage-auth-test`\n"
+                               "For more details press the (?) button.")
+
+    elif client.connection_type == 'Azure Managed Identities':
+        client.ms_client.get_access_token()
+        return 'ok'
+    else:
+        raise Exception("When using user auth flow configuration, "
+                        "Please enable the integration and run the !azure-storage-auth-test command in order to test it")
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     params = demisto.params()
     command = demisto.command()
     args = demisto.args()
@@ -704,9 +916,17 @@ def main() -> None:
             resource_group_name=params.get('resource_group_name', ''),
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False),
+            connection_type=params.get('auth_type', 'Device Code'),
+            tenant_id=params.get('tenant_id'),
+            enc_key=params.get('credentials', {}).get('password'),
+            auth_code=(params.get('auth_code', {})).get('password'),
+            redirect_uri=params.get('redirect_uri'),
+            managed_identities_client_id=get_azure_managed_identities_client_id(params)
         )
         if command == 'test-module':
-            return_results('The test module is not functional, run the azure-storage-auth-start command instead.')
+            return_results(test_module(client))
+        elif command == 'azure-storage-generate-login-url':
+            return_results(generate_login_url(client.ms_client))
         elif command == 'azure-storage-auth-start':
             return_results(start_auth(client))
         elif command == 'azure-storage-auth-complete':
@@ -716,29 +936,30 @@ def main() -> None:
         elif command == 'azure-storage-auth-reset':
             return_results(reset_auth())
         elif command == 'azure-storage-account-list':
-            return_results(storage_account_list(client, args))
+            return_results(storage_account_list(client, params, args))
         elif command == 'azure-storage-account-create-update':
-            return_results(storage_account_create_update(client, args))
+            return_results(storage_account_create_update(client, params, args))
         elif command == 'azure-storage-blob-service-properties-get':
-            return_results(storage_blob_service_properties_get(client, args))
+            return_results(storage_blob_service_properties_get(client, params, args))
         elif command == 'azure-storage-blob-service-properties-set':
-            return_results(storage_blob_service_properties_set(client, args))
+            return_results(storage_blob_service_properties_set(client, params, args))
         elif command == 'azure-storage-blob-containers-create':
-            return_results(storage_blob_containers_create(client, args))
+            return_results(storage_blob_containers_create(client, params, args))
         elif command == 'azure-storage-blob-containers-update':
-            return_results(storage_blob_containers_update(client, args))
+            return_results(storage_blob_containers_update(client, params, args))
         elif command == 'azure-storage-blob-containers-list':
-            return_results(storage_blob_containers_list(client, args))
+            return_results(storage_blob_containers_list(client, params, args))
         elif command == 'azure-storage-blob-container-delete':
-            return_results(storage_blob_containers_delete(client, args))
+            return_results(storage_blob_containers_delete(client, params, args))
+        elif command == 'azure-storage-subscriptions-list':
+            return_results(storage_subscriptions_list(client))
+        elif command == 'azure-storage-resource-group-list':
+            return_results(storage_resource_group_list(client, params, args))
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
     except Exception as e:
         demisto.debug(traceback.format_exc())
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}', e)
-
-
-from MicrosoftApiModule import *  # noqa: E402
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

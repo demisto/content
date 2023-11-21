@@ -288,7 +288,7 @@ def get_all_panw_iot_assets_and_send_to_siem(asset_type):
             offset += page_size
         else:
             break
-    return(f'Successfully sent total {count} {asset_type_map[asset_type]} to SIEM')
+    return (f'Successfully sent total {count} {asset_type_map[asset_type]} to SIEM')
 
 
 def main():

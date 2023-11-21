@@ -78,6 +78,10 @@
                     "complex": null,
                     "simple": "watchlist_name"
                 },
+                "Carbon Black EDR Unique ID": {
+                    "complex": null,
+                    "simple": "unique_id"
+                },
                 "severity": {
                     "complex": null,
                     "simple": "alert_severity"

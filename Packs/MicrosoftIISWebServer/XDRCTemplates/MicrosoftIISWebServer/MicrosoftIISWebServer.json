@@ -1,0 +1,8 @@
+{
+    "os_type": "AGENT_OS_WINDOWS",
+    "profile_type": "STANDARD",
+    "name": "MicrosoftDNS",
+    "content_global_id": "MicrosoftIISWebServer",
+    "from_xdr_version": "3.5.0",
+    "yaml_template": ""
+  }

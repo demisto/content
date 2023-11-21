@@ -1,10 +1,4 @@
 {
-    "id": "AWS CloudTrail Misconfiguration",
-    "group": "incident",
-    "name": "AWS CloudTrail Misconfiguration Incident",
-    "description": "",
-    "version": -1,
-    "fromVersion": "6.0.0",
     "detailsV2": {
         "tabs": [
             {
@@ -22,58 +16,63 @@
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "type",
-                                "height": 24,
+                                "height": 22,
                                 "id": "0acff760-b339-11e9-b119-d93d58ec6fe8",
                                 "index": 0,
                                 "listId": "gfrgdzfgei-aa0d7560-b338-11e9-b119-d93d58ec6fe8",
+                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
                                 "fieldId": "severity",
-                                "height": 24,
+                                "height": 22,
                                 "id": "0d2d2140-b339-11e9-b119-d93d58ec6fe8",
                                 "index": 1,
+                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
                                 "fieldId": "owner",
-                                "height": 24,
+                                "height": 22,
                                 "id": "108218a0-b339-11e9-b119-d93d58ec6fe8",
                                 "index": 2,
+                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
                                 "fieldId": "sourceinstance",
-                                "height": 24,
+                                "height": 22,
                                 "id": "19d3ced0-b339-11e9-b119-d93d58ec6fe8",
                                 "index": 3,
+                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "sourcebrand",
-                                "height": 24,
+                                "height": 22,
                                 "id": "21f23520-b339-11e9-b119-d93d58ec6fe8",
                                 "index": 4,
                                 "listId": "gfrgdzfgei-aa0d7560-b338-11e9-b119-d93d58ec6fe8",
+                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
                                 "fieldId": "playbookid",
-                                "height": 24,
+                                "height": 22,
                                 "id": "282bfcf0-b339-11e9-b119-d93d58ec6fe8",
                                 "index": 5,
+                                "sectionItemType": "field",
                                 "startCol": 0
                             }
                         ],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Case Details",
                         "static": false,
@@ -88,7 +87,6 @@
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Work Plan",
                         "static": false,
@@ -104,7 +102,6 @@
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Notes",
                         "static": false,
@@ -120,7 +117,6 @@
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Incident Timeline",
                         "query": {
@@ -146,7 +142,6 @@
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Team Members",
                         "static": false,
@@ -162,7 +157,6 @@
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Evidence",
                         "static": false,
@@ -178,7 +172,6 @@
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Linked Incidents",
                         "static": false,
@@ -194,7 +187,6 @@
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Child Incidents",
                         "static": false,
@@ -222,7 +214,6 @@
                         ],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Attachments",
                         "static": false,
@@ -241,83 +232,99 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "prismacloudid",
-                                "height": 24,
+                                "height": 22,
                                 "id": "7a4369a0-f8b8-11e9-a470-b7537b797c27",
                                 "index": 0,
+                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "prismacloudtime",
-                                "height": 24,
+                                "height": 22,
                                 "id": "97ada000-f8b8-11e9-a470-b7537b797c27",
                                 "index": 1,
                                 "listId": "gfrgdzfgei-57cfecc0-f766-11e9-8c27-6359f1848ae7",
+                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "prismacloudstatus",
-                                "height": 24,
+                                "height": 22,
                                 "id": "7fc5c850-f8b8-11e9-a470-b7537b797c27",
                                 "index": 2,
                                 "listId": "gfrgdzfgei-57cfecc0-f766-11e9-8c27-6359f1848ae7",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "prismaclouddismissalnote",
+                                "height": 22,
+                                "id": "50267800-3686-11ee-8c1f-a16407f8f329",
+                                "index": 3,
+                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
                                 "fieldId": "prismacloudreason",
-                                "height": 24,
+                                "height": 22,
                                 "id": "7cf9fe20-f8b8-11e9-a470-b7537b797c27",
-                                "index": 3,
+                                "index": 4,
+                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
                                 "fieldId": "firstseen",
-                                "height": 24,
+                                "height": 22,
                                 "id": "a5bd1cf0-f766-11e9-8c27-6359f1848ae7",
                                 "index": 0,
                                 "listId": "gfrgdzfgei-57cfecc0-f766-11e9-8c27-6359f1848ae7",
+                                "sectionItemType": "field",
                                 "startCol": 2
                             },
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
                                 "fieldId": "lastseen",
-                                "height": 24,
+                                "height": 22,
                                 "id": "a6b97e50-f766-11e9-8c27-6359f1848ae7",
                                 "index": 1,
                                 "listId": "gfrgdzfgei-57cfecc0-f766-11e9-8c27-6359f1848ae7",
+                                "sectionItemType": "field",
                                 "startCol": 2
                             },
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
                                 "fieldId": "riskscore",
-                                "height": 24,
+                                "height": 22,
                                 "id": "b062f170-f766-11e9-8c27-6359f1848ae7",
                                 "index": 2,
                                 "listId": "gfrgdzfgei-57cfecc0-f766-11e9-8c27-6359f1848ae7",
+                                "sectionItemType": "field",
                                 "startCol": 2
                             },
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
                                 "fieldId": "riskrating",
-                                "height": 24,
+                                "height": 22,
                                 "id": "aa6fa880-f766-11e9-8c27-6359f1848ae7",
                                 "index": 3,
                                 "listId": "gfrgdzfgei-57cfecc0-f766-11e9-8c27-6359f1848ae7",
+                                "sectionItemType": "field",
                                 "startCol": 2
                             }
                         ],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Prisma Cloud Alert Summary",
                         "static": false,
@@ -638,5 +645,15 @@
                 "type": "canvas"
             }
         ]
-    }
+    },
+    "group": "incident",
+    "id": "AWS CloudTrail Misconfiguration",
+    "name": "AWS CloudTrail Misconfiguration Incident",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "marketplaces": [
+        "xsoar"
+    ],
+    "description": ""
 }

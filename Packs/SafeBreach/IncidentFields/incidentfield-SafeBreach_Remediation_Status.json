@@ -3,16 +3,12 @@
     "associatedTypes": [
         "SafeBreach Insight"
     ],
-    "breachScript": "",
     "caseInsensitive": true,
     "cliName": "safebreachremediationstatus",
     "closeForm": false,
-    "columns": null,
     "content": true,
-    "defaultRows": null,
     "description": "Status of the Insight within XSOAR (New, Remediated, Not Remediated, Ignored)",
     "editForm": true,
-    "fieldCalcScript": "",
     "group": 0,
     "hidden": false,
     "id": "incident_safebreachremediationstatus",
@@ -21,9 +17,7 @@
     "name": "SafeBreach Remediation Status",
     "neverSetAsRequired": false,
     "ownerOnly": false,
-    "placeholder": "",
     "required": false,
-    "script": "",
     "selectValues": [
         "New",
         "Remediated",
@@ -32,13 +26,11 @@
     ],
     "sla": 0,
     "system": false,
-    "systemAssociatedTypes": null,
     "threshold": 72,
     "type": "singleSelect",
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "useAsKpi": false,
-    "validationRegex": "",
     "version": -1,
     "fromVersion": "5.5.0"
 }

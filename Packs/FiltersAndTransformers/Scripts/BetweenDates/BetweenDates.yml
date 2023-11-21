@@ -1,0 +1,41 @@
+commonfields:
+  id: BetweenDates
+  version: -1
+name: BetweenDates
+fromversion: 5.0.0
+comment: Whether value is within a date range.
+script: ''
+type: python
+tags:
+- transformer
+- date
+enabled: true
+args:
+- name: value
+  required: true
+  description: Value to check
+- name: begin_date
+  required: true
+  description: Lower date range
+- name: end_date
+  required: true
+  description: Upper date range
+outputs:
+- contextPath: BetweenDates.result
+  description: Whether the input hour is between the given hours.
+  type: boolean
+- contextPath: BetweenDates.value
+  description: The value to check.
+  type: string
+- contextPath: BetweenDates.begin_date
+  description: Lower date range.
+  type: string
+- contextPath: BetweenDates.end_date
+  description: Upper date range.
+  type: string
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.10.12.63474
+runas: DBotWeakRole
+tests:
+- No test

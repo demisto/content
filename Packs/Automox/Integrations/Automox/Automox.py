@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 """Automox Integration for Cortex XSOAR (aka Demisto)
 
 This integration empowers users of Cortex XSOAR with the
@@ -12,13 +14,11 @@ import time
 import traceback
 from typing import Any, Dict, List
 
-import demistomock as demisto
-import requests
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+import urllib3
 from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 VERSION = "1.0.0"

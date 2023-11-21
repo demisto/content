@@ -1,0 +1,31 @@
+{
+    "dataType": "incidents",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "fromDateLicense": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byFrom": "days",
+            "byTo": "",
+            "field": "",
+            "fromValue": 7,
+            "toValue": null
+        },
+        "toDate": "0001-01-01T00:00:00Z"
+    },
+    "id": "f3156d11-bb29-4cb6-83b7-ad0faa4e163c",
+    "isPredefined": true,
+    "name": "Use Cases",
+    "params": {
+        "groupBy": [
+            "occurred(d)",
+            "name"
+        ],
+        "valuesFormat": "abbreviated"
+    },
+    "query": "type:\"Use Case Builder\"",
+    "version": -1,
+    "widgetType": "bar",
+    "fromVersion": "6.8.0",
+    "description": ""
+}

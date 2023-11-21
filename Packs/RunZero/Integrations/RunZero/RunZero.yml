@@ -1,0 +1,432 @@
+category: IT Services
+commonfields:
+  id: RunZero
+  version: -1
+configuration:
+- defaultvalue: https://console.runzero.com
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+- displaypassword: API Key
+  additionalinfo: The API Key to use for connection.
+  name: api_key
+  required: true
+  hiddenusername: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+description: "RunZero is a network discovery and asset inventory\n platform that uncovers every network in use and identifies every device connected – without credentials.\n Scan your network and build your asset inventory in minutes."
+display: 'RunZero'
+name: RunZero
+script:
+  commands:
+  - name: runzero-asset-search
+    description: Get assets.
+    arguments:
+    - name: asset_ids
+      description: A comma-separated list of asset IDs.
+      isArray: true
+    - name: search
+      description: "The query by which to search. For information on the syntax, see: https://www.runzero.com/docs/runzero-manual.pdf page 288."
+    - name: ips
+      description: A comma-separated list of IP addresses.
+      isArray: true
+    - name: hostnames
+      description: A comma-separated list of hostnames.
+      isArray: true
+    - auto: PREDEFINED
+      defaultValue: false
+      description: Whether to include the attributes section in the returned result.
+      name: display_attributes
+      predefined:
+      - 'True'
+      - 'False'
+    - auto: PREDEFINED
+      defaultValue: false
+      description: Whether to include a services section in the returned result.
+      name: display_services
+      predefined:
+      - 'True'
+      - 'False'
+    - name: limit
+      description: Limit the number of assets returned.
+      defaultValue: 50
+    outputs:
+    - contextPath: RunZero.Asset.ID
+      description: Asset service ID.
+      type: UUID
+    - contextPath: RunZero.Asset.Addresses
+      description: Asset addresses.
+      type: Array
+    - contextPath: RunZero.Asset.Asset_Status
+      description: Asset status.
+      type: Boolean
+    - contextPath: RunZero.Asset.Hostname
+      description: Asset hostname.
+      type: Array
+    - contextPath: RunZero.Asset.OS
+      description: Operating system version.
+      type: String
+    - contextPath: RunZero.Asset.Type
+      description: Asset type.
+      type: String
+    - contextPath: RunZero.Asset.Hardware
+      description: Asset hardware.
+      type: String
+    - contextPath: RunZero.Asset.Outlier
+      description: Asset outlier score.
+      type: String
+    - contextPath: RunZero.Asset.MAC_Vendor
+      description: Asset vendor MAC address is allocated to.
+      type: String
+    - contextPath: RunZero.Asset.MAC_Age
+      description: Asset date MAC address was allocated.
+      type: Integer
+    - contextPath: RunZero.Asset.MAC
+      description: Asset MAC address.
+      type: UUID
+    - contextPath: RunZero.Asset.OS_EOL
+      description: Asset operating system end-of-life date.
+      type: String
+    - contextPath: RunZero.Asset.Sources
+      description: Asset data sources.
+      type: String
+    - contextPath: RunZero.Asset.Comments
+      description: Comments attached to the asset.
+      type: String
+    - contextPath: RunZero.Asset.Tags
+      description: Tags attached to the asset.
+      type: Array
+    - contextPath: RunZero.Asset.Svcs
+      description: Number of total service count.
+      type: Integer
+    - contextPath: RunZero.Asset.TCP
+      description: Asset TCP service count.
+      type: Integer
+    - contextPath: RunZero.Asset.UDP
+      description: Asset UDP service count.
+      type: Integer
+    - contextPath: RunZero.Asset.ICMP
+      description: Asset ICMP response.
+      type: Integer
+    - contextPath: RunZero.Asset.ARP
+      description: Asset ARP response.
+      type: Integer
+    - contextPath: RunZero.Asset.SW
+      description: Asset identified software.
+      type: Integer
+    - contextPath: RunZero.Asset.Vulns
+      description: Asset identified vulnerability count.
+      type: Integer
+    - contextPath: RunZero.Asset.RTT/ms
+      description: Asset round-trip time latency.
+      type: Integer
+    - contextPath: RunZero.Asset.Hops
+      description: Asset estimated hop count from scanner.
+      type: Integer
+    - contextPath: RunZero.Asset.Detected
+      description: Asset method of detection.
+      type: String
+    - contextPath: RunZero.Asset.First_Seen
+      description: Datetime of when the asset was first seen.
+      type: String
+    - contextPath: RunZero.Asset.Last_Seen
+      description: Datetime of when the asset was last seen.
+      type: String
+    - contextPath: RunZero.Asset.Explorer
+      description: Name of the RunZero explorer which most recently found the asset.
+      type: String
+    - contextPath: RunZero.Asset.Hosted_Zone
+      description: Asset hosted zone.
+      type: String
+    - contextPath: RunZero.Asset.Site
+      description: Asset site name.
+      type: String
+  - name: runzero-asset-delete
+    description: Bulk delete assets.
+    arguments:
+    - name: asset_ids
+      description: A comma-separated list of UUIDs of the asset to delete.
+      isArray: true
+      required: true
+  - name: runzero-service-search
+    description: Get services.
+    arguments:
+    - name: service_id
+      description: UUID of the service to retrieve.
+    - name: search
+      description: "The query by which to search. For information on the syntax, see: https://www.runzero.com/docs/runzero-manual.pdf page 288"
+    - name: service_addresses
+      description: A comma-separated list of services by addresses.
+      isArray: true
+    - auto: PREDEFINED
+      defaultValue: false
+      description: Whether to include an attributes section in the returned result.
+      name: display_attributes
+      predefined:
+      - 'True'
+      - 'False'
+    - name: limit
+      description: Limit the number of assets returned.
+      defaultValue: 50
+    outputs:
+    - contextPath: RunZero.Service.ID
+      description: Service ID.
+      type: UUID
+    - contextPath: RunZero.Service.Address
+      description: Service addresses.
+      type: String
+    - contextPath: RunZero.Service.Asset_Status
+      description: Service asset status.
+      type: Boolean
+    - contextPath: RunZero.Service.Hostname
+      description: Service hostname.
+      type: Array
+    - contextPath: RunZero.Service.Transport
+      description: Service transport.
+      type: String
+    - contextPath: RunZero.Service.Port
+      description: Service port.
+      type: Integer
+    - contextPath: RunZero.Service.Protocol
+      description: Service protocol.
+      type: Array
+    - contextPath: RunZero.Service.VHost
+      description: Service virtual host.
+      type: Array
+    - contextPath: RunZero.Service.Summary
+      description: Service summary.
+      type: Array
+    - contextPath: RunZero.Service.Hostname
+      description: Service hostname.
+      type: Array
+    - contextPath: RunZero.Service.OS
+      description: Service operating system version.
+      type: String
+    - contextPath: RunZero.Service.Type
+      description: Service type.
+      type: String
+    - contextPath: RunZero.Service.Hardware
+      description: Service hardware.
+      type: String
+    - contextPath: RunZero.Service.Outlier
+      description: Service outlier score.
+      type: String
+    - contextPath: RunZero.Service.MAC_Vendor
+      description: Service vendor MAC address is allocated to.
+      type: String
+    - contextPath: RunZero.Service.MAC_Age
+      description: Service date MAC address was allocated.
+      type: Integer
+    - contextPath: RunZero.Service.MAC
+      description: Service MAC address.
+      type: UUID
+    - contextPath: RunZero.Service.OS_EOL
+      description: Service operating system end-of-life.
+      type: String
+    - contextPath: RunZero.Service.Comments
+      description: Comments attached to the service.
+      type: String
+    - contextPath: RunZero.Service.Tags
+      description: Tags attached to the service.
+      type: Array
+    - contextPath: RunZero.Service.Svcs
+      description: Total service count.
+      type: Integer
+    - contextPath: RunZero.Service.TCP
+      description: TCP service count.
+      type: Integer
+    - contextPath: RunZero.Service.UDP
+      description: UDP service count.
+      type: Integer
+    - contextPath: RunZero.Service.ICMP
+      description: ICMP response.
+      type: Integer
+    - contextPath: RunZero.Service.ARP
+      description: ARP response.
+      type: Integer
+    - contextPath: RunZero.Service.SW
+      description: Identified software.
+      type: Integer
+    - contextPath: RunZero.Service.Vulns
+      description: Identified vulnerabilities.
+      type: Integer
+    - contextPath: RunZero.Service.RTT/ms
+      description: Service round-trip time latency.
+      type: Integer
+    - contextPath: RunZero.Service.Hops
+      description: Estimated hop count from scanner.
+      type: Integer
+    - contextPath: RunZero.Service.Detected
+      description: Method of detection.
+      type: String
+    - contextPath: RunZero.Service.First_Seen
+      description: Datetime of when the service was first seen.
+      type: String
+    - contextPath: RunZero.Service.Last_Seen
+      description: Datetime of when the service was last seen.
+      type: String
+    - contextPath: RunZero.Service.Explorer
+      description: Name of the RunZero explorer which most recently found the asset.
+      type: String
+    - contextPath: RunZero.Service.Hosted_Zone
+      description: Service hosted zone.
+      type: String
+    - contextPath: RunZero.Service.Site
+      description: Service site name.
+      type: String
+  - name: runzero-service-delete
+    description: Delete a service.
+    arguments:
+    - name: service_id
+      description: UUID of the service to delete.
+      required: true
+  - name: runzero-comment-add
+    description: Add a comment or override an existing asset comment.
+    arguments:
+    - name: asset_id
+      description: Asset ID.
+      required: true
+    - name: comment
+      description: Comment to add.
+      required: true
+  - name: runzero-tag-add
+    description: Add tag or tags to the asset.
+    arguments:
+    - name: asset_id
+      description: Asset ID.
+      required: true
+    - name: tags
+      description: Tags to add to the asset.
+      required: true
+  - name: runzero-quota-get
+    description: Get information about the API key used. Type, Limit, usage etc.
+    outputs:
+    - contextPath: RunZero.Quota.id
+      description: API key ID.
+      type: UUID
+    - contextPath: RunZero.Quota.client_id
+      description: Client ID.
+      type: UUID
+    - contextPath: RunZero.Quota.organization_id
+      description: Organization ID.
+      type: UUID
+    - contextPath: RunZero.Quota.created_at
+      description: Time the API was created.
+      type: Integer
+    - contextPath: RunZero.Quota.comment
+      description: API key comment.
+      type: String
+    - contextPath: RunZero.Quota.last_used_at
+      description: The time when the API key was last seen.
+      type: Integer
+    - contextPath: RunZero.Quota.last_used_ip
+      description: The IP address last used by the API key.
+      type: String
+    - contextPath: RunZero.Quota.last_used_ua
+      description: The user agent last used by the API key.
+      type: String
+    - contextPath: RunZero.Quota.counter
+      description: The API key usage counter.
+      type: Integer
+    - contextPath: RunZero.Quota.usage_today
+      description: The API key usage today.
+      type: Integer
+    - contextPath: RunZero.Quota.usage_limit
+      description: The API key usage limit.
+      type: Integer
+    - contextPath: RunZero.Quota.token
+      description: The API key.
+      type: String
+    - contextPath: RunZero.Quota.inactive
+      description: Whether the API key is inactive.
+      type: String
+    - contextPath: RunZero.Quota.type
+      description: API key type (org, etc.).
+      type: String
+  - name: runzero-tag-delete
+    description: Delete tags for specific asset.
+    arguments:
+    - name: asset_id
+      description: Asset ID from which to remove specified tags.
+      required: true
+    - name: tags
+      description: A comma separated list of tags to delete.
+      isArray: true
+      required: true
+  - name: runzero-wireless-lan-search
+    description: Get all wireless LANs.
+    arguments:
+    - name: wireless_id
+      description: The wireless LAN ID.
+    - name: search
+      description: "The query by which to search. For information on the syntax, see: https://www.runzero.com/docs/runzero-manual.pdf page 288."
+    - name: limit
+      description: Limit the number of wireless LAN returned.
+      defaultValue: 50
+    outputs:
+    - contextPath: RunZero.WirelessLAN.ID
+      description: Wireless LAN ID.
+      type: UUID
+    - contextPath: RunZero.WirelessLAN.ESSID
+      description: Wireless LAN extended service set identifier (ESSID).
+      type: String
+    - contextPath: RunZero.WirelessLAN.BSSID
+      description: Wireless LAN basic service set identifier (BSSID).
+      type: String
+    - contextPath: RunZero.WirelessLAN.Vendor
+      description: Wireless LAN vendor.
+      type: String
+    - contextPath: RunZero.WirelessLAN.Family
+      description: Wireless LAN family.
+      type: String
+    - contextPath: RunZero.WirelessLAN.Type
+      description: Wireless LAN type.
+      type: String
+    - contextPath: RunZero.WirelessLAN.Auth
+      description: Wireless LAN auth.
+      type: String
+    - contextPath: RunZero.WirelessLAN.Enc
+      description: Wireless LAN encryption.
+      type: String
+    - contextPath: RunZero.WirelessLAN.Sig
+      description: WirelessLAN signal strength.
+      type: Integer
+    - contextPath: RunZero.WirelessLAN.Int
+      description: Wireless LAN interface.
+      type: String
+    - contextPath: RunZero.WirelessLAN.Additional
+      description: Wireless LAN additional information.
+      type: Array
+    - contextPath: RunZero.WirelessLAN.First_seen
+      description: Datetime of when the wireless LAN was first seen.
+      type: String
+    - contextPath: RunZero.WirelessLAN.Last_seen
+      description: Datetime of when the wireless LAN was last seen.
+      type: String
+    - contextPath: RunZero.WirelessLAN.Site
+      description: Wireless LAN site name.
+      type: String
+  - name: runzero-wireless-lan-delete
+    description: Remove a wireless LAN.
+    arguments:
+    - name: wireless_id
+      description: UUID of the wireless LAN to remove.
+      required: true
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.12.63474
+marketplaces:
+- xsoar
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

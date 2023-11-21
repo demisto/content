@@ -4,9 +4,10 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 import requests
 from urllib.parse import urlparse
+import urllib3
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 

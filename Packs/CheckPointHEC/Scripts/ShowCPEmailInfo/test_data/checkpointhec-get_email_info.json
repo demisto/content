@@ -1,0 +1,113 @@
+{
+  "responseEnvelope": {
+    "requestId": "b58b1e41-1018-4062-9d1c-bcaeccbfcb93",
+    "responseCode": 200,
+    "responseText": "",
+    "additionalText": "",
+    "recordsNumber": 1,
+    "scrollId": ""
+  },
+  "responseData": [
+    {
+      "entityInfo": {
+        "entityId": "637d86da7bcf42375cb8431d266e3dc3",
+        "customerId": "fdolab",
+        "customerOem": "Avanan",
+        "saas": "office365_emails",
+        "saasEntityType": "office365_emails_email",
+        "entityCreated": "2022-08-15T21:24:27.745655Z",
+        "entityUpdated": "2022-08-15T21:24:36.979329",
+        "entityActionState": null
+      },
+      "entityPayload": {
+        "fromEmail": "example@checkpoint.com",
+        "to": [
+          "unicode@avanandevus1.onmicrosoft.com",
+          "user1@avanandevus1.onmicrosoft.com"
+        ],
+        "replyToEmail": null,
+        "replyToNickname": null,
+        "recipients": [
+          "user1@avanandevus1.onmicrosoft.com",
+          "unicode@avanandevus1.onmicrosoft.com"
+        ],
+        "subject": "Fw: dnp-split-quarantine-2",
+        "cc": [],
+        "bcc": [],
+        "isRead": null,
+        "received": "2022-08-15T21:24:15",
+        "isDeleted": false,
+        "isIncoming": true,
+        "isOutgoing": false,
+        "internetMessageId": "<00000000.00000000000000.00000000000000.00000000@mail.example.com>",
+        "isUserExposed": true
+      },
+      "entitySecurityResult": {
+        "combinedVerdict": {
+          "ap": "phishing",
+          "dlp": null,
+          "clicktimeProtection": null,
+          "shadowIt": "clean",
+          "av": null
+        },
+        "ap": [
+          {
+            "entityId": "637d86da7bcf42375cb8431d266e3dc3",
+            "entityType": "office365_emails_email",
+            "payload": {
+              "reasons": [],
+              "reasons_by_category": {
+                "Links": [
+                  {
+                    "short_text": "Link to a low-traffic site",
+                    "full_text": "The email contains link to low-traffic web-sites - often indicating low-trust domains"
+                  }
+                ],
+                "Email Headers": [
+                  {
+                    "short_text": "Missing DMARC",
+                    "full_text": "The email's header suggest that DMARC signature is missing/invalid"
+                  }
+                ],
+                "Sender Reputation": [
+                  {
+                    "short_text": "Insignificant historical reputation with sender",
+                    "full_text": "The sending email address hasn't established significant historical reputation with your domain"
+                  }
+                ]
+              }
+            },
+            "score": "225.994363",
+            "securityResultEntityId": "637d86da7bcf42375cb8431d266e3dc3",
+            "securityResultEntityType": "avanan_ap_scan",
+            "statusCode": "0",
+            "statusDescription": null,
+            "verdict": "phishing"
+          }
+        ],
+        "dlp": null,
+        "clicktimeProtection": null,
+        "shadowIt": [
+          {
+            "entityId": "637d86da7bcf42375cb8431d266e3dc3",
+            "entityType": "office365_emails_email",
+            "payload": {
+              "domain": "",
+              "subject": "Fw: dnp-split-quarantine-2",
+              "from": "example@checkpoint.com"
+            },
+            "score": "0",
+            "securityResultEntityId": "637d86da7bcf42375cb8431d266e3dc3",
+            "securityResultEntityType": "shadow_it_emails_scan",
+            "statusCode": "clean",
+            "statusDescription": "Clean",
+            "verdict": "clean"
+          }
+        ],
+        "av": null
+      },
+      "entityActions": [],
+      "entityAvailableActions": []
+    }
+  ]
+}

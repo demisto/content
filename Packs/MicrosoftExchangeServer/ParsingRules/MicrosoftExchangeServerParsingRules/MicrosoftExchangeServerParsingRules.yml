@@ -1,0 +1,6 @@
+name: MicrosoftExchangeServer Parsing Rule
+id: MicrosoftExchangeServer_Parsing_Rule
+fromversion: 6.10.0
+tags: []
+rules: ''
+samples: ''

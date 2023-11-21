@@ -1,0 +1,38 @@
+commonfields:
+  id: FireEyeDetonateFile
+  version: -1
+name: FireEyeDetonateFile
+script: ''
+type: python
+subtype: python3
+tags:
+- fireeye
+- file
+- enhancement
+comment: Detonate File or URL through FireEye
+enabled: true
+args:
+- name: file
+  required: true
+  default: true
+  description: File /EntryID to detonate
+- name: profiles
+  required: true
+  description: The FireEye profiles to use (comma separated)
+- name: analysistype
+  description: Specify live or sandbox analysis mode. 0—Sandbox, analyze suspected malware objects in a closed, protected environment. 1 —Live, analyze suspected malware objects live within the MAS Multivector Virtual Execution (MVX) analysis engine.
+  defaultValue: "0"
+- name: prefetch
+  description: Specifies whether to determine the file target based on an internal determination rather than browsing to the target location. 0—No 1—Yes
+  defaultValue: "1"
+scripttarget: 0
+dependson:
+  must:
+  - fe-submit
+  - fe-submit-result
+  - fe-submit-status
+timeout: 960ns
+tests:
+- No test
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.10.12.68714

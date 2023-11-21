@@ -1260,7 +1260,7 @@ def main() -> None:
     :rtype:
     """
     params: dict = demisto.params()
-    token: str = params.get("token", "")
+    token: str = params.get('token_creds', {}).get('password') or params.get("token", "")
     project_name: str = params.get("project_name", "")
 
     # get the service API url

@@ -105,8 +105,14 @@
                 "dbotMirrorInstance": {
                     "simple": "mirror_instance"
                 },
+                "dbotMirrorTags": {
+                    "simple": "mirror_tags"
+                },
                 "details": {
                     "simple": "rule_description"
+                },
+                "Splunk Comments": {
+                    "simple": "SplunkComments"
                 },
                 "name": {
                     "complex": {
@@ -164,6 +170,9 @@
                 },
                 "dbotMirrorInstance": {
                     "simple": "mirror_instance"
+                },
+                "dbotMirrorTags": {
+                    "simple": "mirror_tags"
                 }
             }
         }

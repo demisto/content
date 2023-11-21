@@ -1,0 +1,18 @@
+commonfields:
+  id: CyCognitoGetEndpoints
+  version: -1
+name: CyCognitoGetEndpoints
+comment: Generates a deep link to the CyCognito platform using the incident context.
+script: ''
+type: python
+tags:
+- field-change-triggered
+- dynamic-section
+enabled: true
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.10.12.63474
+runas: DBotWeakRole
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)

@@ -1,21 +1,24 @@
 Automate your AppID Adoption by using this integration together with your Palo Alto Networks Next-Generation Firewall or Panorama.
-This integration was integrated and tested with version 0.1 of PAN-OS Policy Optimizer
-## Configure PAN-OS Policy Optimizer on Cortex XSOAR
+This integration was integrated and tested with version 8 up to version 10.1.6 and version 10.2.0 of PAN-OS Policy Optimizer.
+Moved to beta due to the lack of a formal API.
+
+## Configure PAN-OS Policy Optimizer on Cortex XSOAR (beta)
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for PAN-OS Policy Optimizer.
+2. Search for PAN-OS Policy Optimizer (beta).
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
+    | **Parameter**                              | **Required** |
     | --- | --- |
     | Server URL (e.g., https://192.168.0.1:443) | True |
-    | Username | True |
-    | Vsys - Firewall instances only | False |
-    | Device Group - Panorama instances only | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
+    | Username                                   | True |
+    | Vsys - Firewall instances only             | False |
+    | Device Group - Panorama instances only     | False |
+    | PAN-OS Version(e.g. 8.2.3, 9, 10.1.6)      | False |
+    | Trust any certificate (not secure)         | False |
+    | Use system proxy settings                  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+1. Click **Test** to validate the URLs, token, and connection.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -29,7 +32,9 @@ Gets the Policy Optimizer statistics.
 `pan-os-po-get-stats`
 #### Input
 
-There are no input arguments for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| position | Whether to get pre-rules statistics or post-rules statistics. 'pre' for pre rules, 'post' for post-rules. Only for Panorama instances. Possible values are: pre, post. Default is pre. | Optional | 
 
 #### Context Output
 
@@ -84,7 +89,9 @@ Shows all security policies with no apps specified.
 `pan-os-po-no-apps`
 #### Input
 
-There are no input arguments for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| position | Whether to get pre-rules with no apps or post-rules with no apps. 'pre' for pre rules, 'post' for post-rules. Only for Panorama instances. Possible values are: pre, post. Default is pre. | Optional | 
 
 #### Context Output
 
@@ -179,6 +186,8 @@ There are no input arguments for this command.
 >| pano_rule | uuid | allow | a test rule for the move function | member: any | member: any |
 
 
+
+
 ### pan-os-po-unused-apps
 ***
 Gets the unused apps.
@@ -189,7 +198,9 @@ Gets the unused apps.
 `pan-os-po-unused-apps`
 #### Input
 
-There are no input arguments for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| position | Whether to get pre-rules unused apps or post-rules unused apps. 'pre' for pre rules, 'post' for post-rules. Only for Panorama instances. Possible values are: pre, post. Default is pre. | Optional | 
 
 #### Context Output
 
@@ -203,7 +214,7 @@ There are no input arguments for this command.
 
 #### Human Readable Output
 
->No Rules with unused apps were found.
+
 
 ### pan-os-po-get-rules
 ***

@@ -1,0 +1,95 @@
+commonfields:
+  id: If-Then-Else
+  version: -1
+name: If-Then-Else
+script: ''
+type: javascript
+tags:
+- transformer
+- general
+comment: A transformer for simple if-then-else logic.
+enabled: true
+args:
+- name: value
+  description: The value to evaluate
+- name: equals
+  description: (Deprecated) If value equals this
+- name: then
+  description: Return this value if 'condition' is true
+- name: else
+  description: Return this value if 'condition' is false
+- name: condition
+  auto: PREDEFINED
+  predefined:
+  - lhs===rhs
+  - lhs!==rhs
+  - lhs==rhs
+  - lhs!=rhs
+  - lhs>rhs
+  - lhs>=rhs
+  - lhs<rhs
+  - lhs<=rhs
+  - lhs=~rhs
+  - lhs in list rhs
+  - lhs not in list rhs
+  - value===rhs
+  - value!==rhs
+  - value==rhs
+  - value!=rhs
+  - value>rhs
+  - value>=rhs
+  - value<rhs
+  - value<=rhs
+  - value=~rhs
+  - value in list rhs
+  - value not in list rhs
+  description: The condition expression to evaluate such as lhs==rhs or lhs!=rhs. Will evaluate as value==rhs if left empty for backward compatibility.
+- name: lhs
+  description: The value to compare in the condition (left hand side)
+- name: rhs
+  description: The value to compare in the condition (right hand side)
+- name: options
+  description: 'Option flags (comma separated list): available options are `case_insensitive`, `regex_dot_all`, `regex_multiline`, `regex_full_match`, `input_data_type:then=<type>`, `input_data_type:else=<type>`, `input_data_type:lhs=<type>` and `input_data_type:rhs=<type>`. Choose `value`, `json` or `raw` for <type>.'
+- name: lhsB
+  description: The value to compare in the second condition (left hand side)
+- name: rhsB
+  description: The value to compare in the second condition (right hand side)
+- name: conditionB
+  auto: PREDEFINED
+  predefined:
+  - lhsB===rhsB
+  - lhsB!==rhsB
+  - lhsB==rhsB
+  - lhsB!=rhsB
+  - lhsB>rhsB
+  - lhsB>=rhsB
+  - lhsB<rhsB
+  - lhsB<=rhsB
+  - lhsB=~rhsB
+  - lhsB in list rhsB
+  - lhsB not in list rhsB
+  - value===rhsB
+  - value!==rhsB
+  - value==rhsB
+  - value!=rhsB
+  - value>rhsB
+  - value>=rhsB
+  - value<rhsB
+  - value<=rhsB
+  - value=~rhsB
+  - value in list rhsB
+  - value not in list rhsB
+  description: The second condition expression to evaluate such as lhsB==rhsB or lhsB!=rhsB. Will evaluate as value==rhsB if left empty for backward compatibility.
+- name: conditionInBetween
+  auto: PREDEFINED
+  predefined:
+  - and
+  - or
+  description: The condition to put between the first condition (lhs and rhs) and the second condition (lhsB and rhsB)
+- name: optionsB
+  description: 'Option flags (comma separated list): available options are `case_insensitive`, `regex_dot_all`, `regex_multiline`, `regex_full_match`, `input_data_type:then=<type>`, `input_data_type:else=<type>`, `input_data_type:lhs=<type>` and `input_data_type:rhs=<type>`. Choose `value`, `json` or `raw` for <type>.'
+scripttarget: 0
+runas: DBotWeakRole
+fromversion: 5.0.0
+tests:
+- IfThenElse-Test

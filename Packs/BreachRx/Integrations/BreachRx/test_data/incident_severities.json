@@ -1,0 +1,30 @@
+{
+  "data": {
+    "incidentSeverities": [
+      {
+        "name": "High",
+        "ordering": 5
+      },
+      {
+        "name": "Critical",
+        "ordering": 6
+      },
+      {
+        "name": "Medium",
+        "ordering": 4
+      },
+      {
+        "name": "Low",
+        "ordering": 3
+      },
+      {
+        "name": "Unknown",
+        "ordering": 2
+      },
+      {
+        "name": "0",
+        "ordering": 6
+      }
+    ]
+  }
+}

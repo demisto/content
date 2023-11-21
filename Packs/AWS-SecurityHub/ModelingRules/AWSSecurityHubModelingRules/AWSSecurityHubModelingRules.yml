@@ -1,0 +1,6 @@
+fromversion: 6.10.0
+id: aws_security_hub_modeling_rule
+name: AWS Security Hub Modeling Rule
+rules: ''
+schema: ''
+tags: AWS

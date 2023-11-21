@@ -1,0 +1,6 @@
+name: Microsoft Defender Advanced Threat Protection Parsing Rule
+id: Microsoft_DefenderAdvancedThreatProtection_ParsingRule 
+fromversion: 6.10.0
+tags: []
+rules: ''
+samples: ''

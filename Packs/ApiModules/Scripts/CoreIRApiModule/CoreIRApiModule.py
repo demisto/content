@@ -1,19 +1,31 @@
 import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import urllib3
 import copy
+import re
 from operator import itemgetter
-from CommonServerPython import *  # noqa: F401
+
 from typing import Tuple, Callable
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
-XSOAR_RESOLVED_STATUS = {
+XSOAR_RESOLVED_STATUS_TO_XDR = {
     'Other': 'resolved_other',
     'Duplicate': 'resolved_duplicate',
     'False Positive': 'resolved_false_positive',
     'Resolved': 'resolved_true_positive',
+}
+
+XDR_RESOLVED_STATUS_TO_XSOAR = {
+    'resolved_known_issue': 'Other',
+    'resolved_duplicate': 'Duplicate',
+    'resolved_false_positive': 'False Positive',
+    'resolved_true_positive': 'Resolved',
+    'resolved_security_testing': 'Other',
+    'resolved_other': 'Other',
+    'resolved_auto': 'Resolved'
 }
 
 ALERT_GENERAL_FIELDS = {
@@ -129,8 +141,6 @@ ALERT_EVENT_AZURE_FIELDS = {
     "tenantId",
 }
 
-MIRROR_IN_CLOSE_REASON = 'Closed during mirroring-in due to the remote incident being closed.'
-
 
 class CoreClient(BaseClient):
 
@@ -138,46 +148,11 @@ class CoreClient(BaseClient):
         super().__init__(base_url=base_url, headers=headers, proxy=proxy, verify=verify)
         self.timeout = timeout
 
-    def update_incident(self, incident_id, status=None, assigned_user_mail=None, assigned_user_pretty_name=None, severity=None,
-                        resolve_comment=None, unassign_user=None):
-        update_data = {}
-
-        if unassign_user and (assigned_user_mail or assigned_user_pretty_name):
-            raise ValueError("Can't provide both assignee_email/assignee_name and unassign_user")
-        if unassign_user:
-            update_data['assigned_user_mail'] = 'none'
-
-        if assigned_user_mail:
-            update_data['assigned_user_mail'] = assigned_user_mail
-
-        if assigned_user_pretty_name:
-            update_data['assigned_user_pretty_name'] = assigned_user_pretty_name
-
-        if status:
-            update_data['status'] = status
-
-        if severity:
-            update_data['manual_severity'] = severity
-
-        if resolve_comment:
-            update_data['resolve_comment'] = resolve_comment
-
-        request_data = {
-            'incident_id': incident_id,
-            'update_data': update_data,
-        }
-
-        self._http_request(
-            method='POST',
-            url_suffix='/incidents/update_incident/',
-            json_data={'request_data': request_data},
-            timeout=self.timeout
-        )
-
     def get_endpoints(self,
                       endpoint_id_list=None,
                       dist_name=None,
                       ip_list=None,
+                      public_ip_list=None,
                       group_name=None,
                       platform=None,
                       alias_name=None,
@@ -192,8 +167,7 @@ class CoreClient(BaseClient):
                       sort_by_first_seen=None,
                       sort_by_last_seen=None,
                       status=None,
-                      username=None,
-                      no_filter=False
+                      username=None
                       ):
 
         search_from = page_number * limit
@@ -204,54 +178,62 @@ class CoreClient(BaseClient):
             'search_to': search_to,
         }
 
-        if no_filter:
-            reply = self._http_request(
-                method='POST',
-                url_suffix='/endpoints/get_endpoints/',
-                json_data={},
-                timeout=self.timeout
-            )
-            endpoints = reply.get('reply')[search_from:search_to]
-            for endpoint in endpoints:
-                if not endpoint.get('endpoint_id'):
-                    endpoint['endpoint_id'] = endpoint.get('agent_id')
+        filters = create_request_filters(
+            status=status, username=username, endpoint_id_list=endpoint_id_list, dist_name=dist_name,
+            ip_list=ip_list, group_name=group_name, platform=platform, alias_name=alias_name, isolate=isolate,
+            hostname=hostname, first_seen_gte=first_seen_gte, first_seen_lte=first_seen_lte,
+            last_seen_gte=last_seen_gte, last_seen_lte=last_seen_lte, public_ip_list=public_ip_list
+        )
 
-        else:
-            filters = create_request_filters(
-                status=status, username=username, endpoint_id_list=endpoint_id_list, dist_name=dist_name,
-                ip_list=ip_list, group_name=group_name, platform=platform, alias_name=alias_name, isolate=isolate,
-                hostname=hostname, first_seen_gte=first_seen_gte, first_seen_lte=first_seen_lte,
-                last_seen_gte=last_seen_gte, last_seen_lte=last_seen_lte
-            )
+        if search_from:
+            request_data['search_from'] = search_from
 
-            if search_from:
-                request_data['search_from'] = search_from
+        if search_to:
+            request_data['search_to'] = search_to
 
-            if search_to:
-                request_data['search_to'] = search_to
+        if sort_by_first_seen:
+            request_data['sort'] = {
+                'field': 'first_seen',
+                'keyword': sort_by_first_seen
+            }
+        elif sort_by_last_seen:
+            request_data['sort'] = {
+                'field': 'last_seen',
+                'keyword': sort_by_last_seen
+            }
 
-            if sort_by_first_seen:
-                request_data['sort'] = {
-                    'field': 'first_seen',
-                    'keyword': sort_by_first_seen
-                }
-            elif sort_by_last_seen:
-                request_data['sort'] = {
-                    'field': 'last_seen',
-                    'keyword': sort_by_last_seen
-                }
+        request_data['filters'] = filters
 
-            request_data['filters'] = filters
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/endpoints/get_endpoint/',
+            json_data={'request_data': request_data},
+            timeout=self.timeout
+        )
+        demisto.debug(f"get_endpoints response = {reply}")
 
-            reply = self._http_request(
-                method='POST',
-                url_suffix='/endpoints/get_endpoint/',
-                json_data={'request_data': request_data},
-                timeout=self.timeout
-            )
-
-            endpoints = reply.get('reply').get('endpoints', [])
+        endpoints = reply.get('reply').get('endpoints', [])
         return endpoints
+
+    def set_endpoints_alias(self, filters: list[dict[str, str]], new_alias_name: str | None) -> dict:      # pragma: no cover
+        """
+        This func is used to set the alias name of an endpoint.
+
+        args:
+            filters: list of filters to get the endpoints
+            new_alias_name: the new alias name to set
+
+        returns: dict of the response(True if success else error message)
+        """
+
+        request_data = {'filters': filters, 'alias': new_alias_name}
+
+        return self._http_request(
+            method='POST',
+            url_suffix='/endpoints/update_agent_name/',
+            json_data={'request_data': request_data},
+            timeout=self.timeout,
+        )
 
     def isolate_endpoint(self, endpoint_id, incident_id=None):
         request_data = {
@@ -912,6 +894,8 @@ class CoreClient(BaseClient):
             json_data={'request_data': request_data},
             timeout=self.timeout
         )
+        demisto.debug(f"retrieve_file = {reply}")
+
         return reply.get('reply')
 
     def generate_files_dict(self, endpoint_id_list: list, file_path_list: list) -> Dict[str, Any]:
@@ -933,7 +917,7 @@ class CoreClient(BaseClient):
                 files['windows'].append(file_path)
             elif 'linux' in endpoint_os_type.lower():
                 files['linux'].append(file_path)
-            elif 'macos' in endpoint_os_type.lower():
+            elif 'mac' in endpoint_os_type.lower():
                 files['macos'].append(file_path)
 
         # remove keys with no value
@@ -952,9 +936,11 @@ class CoreClient(BaseClient):
             json_data={'request_data': request_data},
             timeout=self.timeout
         )
+        demisto.debug(f"retrieve_file_details = {reply}")
 
         return reply.get('reply').get('data')
 
+    @logger
     def get_scripts(self, name: list, description: list, created_by: list, windows_supported,
                     linux_supported, macos_supported, is_high_risk) -> Dict[str, Any]:
 
@@ -1099,9 +1085,13 @@ class CoreClient(BaseClient):
             timeout=self.timeout,
         )
         link = response.get('reply', {}).get('DATA')
+        demisto.debug(f"From the previous API call, this link was returned {link=}")
+        # If the link is None, the API call will result in a 'Connection Timeout Error', so we raise an exception
+        if not link:
+            raise DemistoException(f'Failed getting response files for {action_id=}, {endpoint_id=}')
         return self._http_request(
             method='GET',
-            full_url=link,
+            url_suffix=re.findall('download.*', link)[0],
             resp_type='response',
         )
 
@@ -1116,8 +1106,11 @@ class CoreClient(BaseClient):
             json_data={'request_data': request_data},
             timeout=self.timeout
         )
+        demisto.debug(f"action_status_get = {reply}")
+
         return reply.get('reply').get('data')
 
+    @logger
     def get_file(self, file_link):
         reply = self._http_request(
             method='GET',
@@ -1136,13 +1129,17 @@ class CoreClient(BaseClient):
         )
         return reply
 
+    @logger
     def get_endpoints_by_status(self, status, last_seen_gte=None, last_seen_lte=None):
         filters = []
+
+        if not isinstance(status, list):
+            status = [status]
 
         filters.append({
             'field': 'endpoint_status',
             'operator': 'IN',
-            'value': [status]
+            'value': status
         })
 
         if last_seen_gte:
@@ -1247,6 +1244,66 @@ class CoreClient(BaseClient):
             timeout=self.timeout
         )
 
+    def list_users(self) -> dict[str, list[dict[str, Any]]]:
+        return self._http_request(
+            method='POST',
+            url_suffix='/rbac/get_users/',
+            json_data={"request_data": {}},
+        )
+
+    def risk_score_user_or_host(self, user_or_host_id: str) -> dict[str, dict[str, Any]]:
+        return self._http_request(
+            method='POST',
+            url_suffix='/get_risk_score/',
+            json_data={"request_data": {"id": user_or_host_id}},
+        )
+
+    def list_risky_users(self) -> dict[str, list[dict[str, Any]]]:
+        return self._http_request(
+            method='POST',
+            url_suffix='/get_risky_users/',
+        )
+
+    def list_risky_hosts(self) -> dict[str, list[dict[str, Any]]]:
+        return self._http_request(
+            method='POST',
+            url_suffix='/get_risky_hosts/',
+        )
+
+    def list_user_groups(self, group_names: list[str]) -> dict[str, list[dict[str, Any]]]:
+        return self._http_request(
+            method='POST',
+            url_suffix='/rbac/get_user_group/',
+            json_data={"request_data": {"group_names": group_names}},
+        )
+
+    def list_roles(self, role_names: list[str]) -> dict[str, list[list[dict[str, Any]]]]:
+        return self._http_request(
+            method='POST',
+            url_suffix='/rbac/get_roles/',
+            json_data={"request_data": {"role_names": role_names}},
+        )
+
+    def set_user_role(self, user_emails: list[str], role_name: str) -> dict[str, dict[str, str]]:
+        return self._http_request(
+            method='POST',
+            url_suffix='/rbac/set_user_role/',
+            json_data={"request_data": {
+                "user_emails": user_emails,
+                "role_name": role_name
+            }},
+        )
+
+    def remove_user_role(self, user_emails: list[str]) -> dict[str, dict[str, str]]:
+        return self._http_request(
+            method='POST',
+            url_suffix='/rbac/set_user_role/',
+            json_data={"request_data": {
+                "user_emails": user_emails,
+                "role_name": ""
+            }},
+        )
+
 
 class AlertFilterArg:
     def __init__(self, search_field: str, search_type: Optional[str], arg_type: str, option_mapper: dict = None):
@@ -1254,6 +1311,21 @@ class AlertFilterArg:
         self.search_type = search_type
         self.arg_type = arg_type
         self.option_mapper = option_mapper
+
+
+def catch_and_exit_gracefully(e):
+    """
+
+    Args:
+        e: DemistoException caught while running a command.
+
+    Returns:
+        CommandResult if the error is internal XDR error, else, the exception.
+    """
+    if e.res.status_code == 500 and 'no endpoint was found for creating the requested action' in str(e).lower():
+        return CommandResults(readable_output="The operation executed is not supported on the given machine.")
+    else:
+        raise e
 
 
 def init_filter_args_options():
@@ -1273,6 +1345,7 @@ def init_filter_args_options():
             'False': False,
         }),
         'Identity_type': AlertFilterArg('Identity_type', 'EQ', dropdown),
+        'alert_action_status': AlertFilterArg('alert_action_status', 'EQ', dropdown, ALERT_STATUS_TYPES_REVERSE_DICT),
         'agent_id': AlertFilterArg('agent_id', 'EQ', array),
         'action_external_hostname': AlertFilterArg('action_external_hostname', 'CONTAINS', array),
         'rule_id': AlertFilterArg('matching_service_rule_id', 'EQ', array),
@@ -1312,14 +1385,20 @@ def run_polling_command(client: CoreClient,
                         polling_value: List,
                         stop_polling: bool = False) -> CommandResults:
     """
-    args: demito args
-    cmd: the command to schedule by after the current command
-    command_function: the function which is runs the actual command
-    command_decision_field: the field in the response based on it what the command status and if the command occurred
-    results_function: the function which we are polling on and retrieves the status of the command_function
-    polling_field: the field which from the result of the results_function which we are interested in its value
-    polling_value: list of values of the polling_field we want to check
-    stop_polling: yes - polling_value is stopping, not - polling_value not stopping
+    Arguments:
+    args: args
+    cmd: the scheduled command's name (as appears in the yml file) to run in the following polling.
+    command_function: the pythonic function that executes the command.
+    command_decision_field: the field that is retrieved from the command_function's response that indicates
+    the command_function status.
+    results_function: the pythonic result function which we want to poll on.
+    polling_field: the field that is retrieved from the results_function's response and indicates the polling status.
+    polling_value: list of values of the polling_field we want to check. The list can contain values to stop or
+    continue polling on, not both.
+    stop_polling: True - polling_value stops the polling. False - polling_value does not stop the polling.
+
+    Return:
+    command_results(CommandResults)
     """
 
     ScheduledCommand.raise_error_if_not_supported()
@@ -1503,11 +1582,10 @@ def validate_args_scan_commands(args):
         if endpoint_id_list or dist_name or gte_first_seen or gte_last_seen or lte_first_seen or lte_last_seen \
                 or ip_list or group_name or platform or alias or hostname:
             raise Exception(err_msg)
-    else:
-        if not endpoint_id_list and not dist_name and not gte_first_seen and not gte_last_seen \
-                and not lte_first_seen and not lte_last_seen and not ip_list and not group_name and not platform \
-                and not alias and not hostname:
-            raise Exception(err_msg)
+    elif not endpoint_id_list and not dist_name and not gte_first_seen and not gte_last_seen \
+            and not lte_first_seen and not lte_last_seen and not ip_list and not group_name and not platform \
+            and not alias and not hostname:
+        raise Exception(err_msg)
 
 
 def endpoint_scan_command(client: CoreClient, args) -> CommandResults:
@@ -1616,14 +1694,17 @@ def isolate_endpoint_command(client: CoreClient, args) -> CommandResults:
         raise ValueError(
             f'Error: Endpoint {endpoint_id} is pending isolation cancellation and therefore can not be isolated.'
         )
-    result = client.isolate_endpoint(endpoint_id=endpoint_id, incident_id=incident_id)
+    try:
+        result = client.isolate_endpoint(endpoint_id=endpoint_id, incident_id=incident_id)
 
-    return CommandResults(
-        readable_output=f'The isolation request has been submitted successfully on Endpoint {endpoint_id}.\n',
-        outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.'
-                 f'Isolation.endpoint_id(val.endpoint_id == obj.endpoint_id)': endpoint_id},
-        raw_response=result
-    )
+        return CommandResults(
+            readable_output=f'The isolation request has been submitted successfully on Endpoint {endpoint_id}.\n',
+            outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.'
+                     f'Isolation.endpoint_id(val.endpoint_id == obj.endpoint_id)': endpoint_id},
+            raw_response=result
+        )
+    except Exception as e:
+        return catch_and_exit_gracefully(e)
 
 
 def arg_to_timestamp(arg, arg_name: str, required: bool = False):
@@ -1645,6 +1726,7 @@ def arg_to_timestamp(arg, arg_name: str, required: bool = False):
         return int(date.timestamp() * 1000)
     if isinstance(arg, (int, float)):
         return arg
+    return None
 
 
 def create_account_context(endpoints):
@@ -1679,7 +1761,7 @@ def convert_os_to_standard(endpoint_os):
         os_type = "Windows"
     elif 'linux' in endpoint_os:
         os_type = "Linux"
-    elif 'macos' in endpoint_os:
+    elif 'mac' in endpoint_os:
         os_type = "Macos"
     elif 'android' in endpoint_os:
         os_type = "Android"
@@ -1725,64 +1807,63 @@ def get_endpoints_command(client, args):
         required=True
     )
 
-    if list(args.keys()) == ['limit', 'page', 'sort_order']:
-        endpoints = client.get_endpoints(page_number=page_number, limit=limit, no_filter=True)
-    else:
-        endpoint_id_list = argToList(args.get('endpoint_id_list'))
-        dist_name = argToList(args.get('dist_name'))
-        ip_list = argToList(args.get('ip_list'))
-        group_name = argToList(args.get('group_name'))
-        platform = argToList(args.get('platform'))
-        alias_name = argToList(args.get('alias_name'))
-        isolate = args.get('isolate')
-        hostname = argToList(args.get('hostname'))
-        status = args.get('status')
+    endpoint_id_list = argToList(args.get('endpoint_id_list'))
+    dist_name = argToList(args.get('dist_name'))
+    ip_list = argToList(args.get('ip_list'))
+    public_ip_list = argToList(args.get('public_ip_list'))
+    group_name = argToList(args.get('group_name'))
+    platform = argToList(args.get('platform'))
+    alias_name = argToList(args.get('alias_name'))
+    isolate = args.get('isolate')
+    hostname = argToList(args.get('hostname'))
+    status = argToList(args.get('status'))
 
-        first_seen_gte = arg_to_timestamp(
-            arg=args.get('first_seen_gte'),
-            arg_name='first_seen_gte'
-        )
+    first_seen_gte = arg_to_timestamp(
+        arg=args.get('first_seen_gte'),
+        arg_name='first_seen_gte'
+    )
 
-        first_seen_lte = arg_to_timestamp(
-            arg=args.get('first_seen_lte'),
-            arg_name='first_seen_lte'
-        )
+    first_seen_lte = arg_to_timestamp(
+        arg=args.get('first_seen_lte'),
+        arg_name='first_seen_lte'
+    )
 
-        last_seen_gte = arg_to_timestamp(
-            arg=args.get('last_seen_gte'),
-            arg_name='last_seen_gte'
-        )
+    last_seen_gte = arg_to_timestamp(
+        arg=args.get('last_seen_gte'),
+        arg_name='last_seen_gte'
+    )
 
-        last_seen_lte = arg_to_timestamp(
-            arg=args.get('last_seen_lte'),
-            arg_name='last_seen_lte'
-        )
+    last_seen_lte = arg_to_timestamp(
+        arg=args.get('last_seen_lte'),
+        arg_name='last_seen_lte'
+    )
 
-        sort_by_first_seen = args.get('sort_by_first_seen')
-        sort_by_last_seen = args.get('sort_by_last_seen')
+    sort_by_first_seen = args.get('sort_by_first_seen')
+    sort_by_last_seen = args.get('sort_by_last_seen')
 
-        username = argToList(args.get('username'))
+    username = argToList(args.get('username'))
 
-        endpoints = client.get_endpoints(
-            endpoint_id_list=endpoint_id_list,
-            dist_name=dist_name,
-            ip_list=ip_list,
-            group_name=group_name,
-            platform=platform,
-            alias_name=alias_name,
-            isolate=isolate,
-            hostname=hostname,
-            page_number=page_number,
-            limit=limit,
-            first_seen_gte=first_seen_gte,
-            first_seen_lte=first_seen_lte,
-            last_seen_gte=last_seen_gte,
-            last_seen_lte=last_seen_lte,
-            sort_by_first_seen=sort_by_first_seen,
-            sort_by_last_seen=sort_by_last_seen,
-            status=status,
-            username=username
-        )
+    endpoints = client.get_endpoints(
+        endpoint_id_list=endpoint_id_list,
+        dist_name=dist_name,
+        ip_list=ip_list,
+        public_ip_list=public_ip_list,
+        group_name=group_name,
+        platform=platform,
+        alias_name=alias_name,
+        isolate=isolate,
+        hostname=hostname,
+        page_number=page_number,
+        limit=limit,
+        first_seen_gte=first_seen_gte,
+        first_seen_lte=first_seen_lte,
+        last_seen_gte=last_seen_gte,
+        last_seen_lte=last_seen_lte,
+        sort_by_first_seen=sort_by_first_seen,
+        sort_by_last_seen=sort_by_last_seen,
+        status=status,
+        username=username
+    )
 
     standard_endpoints = generate_endpoint_by_contex_standard(endpoints, False, integration_name)
     endpoint_context_list = []
@@ -1804,6 +1885,63 @@ def get_endpoints_command(client, args):
         outputs=context,
         raw_response=endpoints
     )
+
+
+def endpoint_alias_change_command(client: CoreClient, **args) -> CommandResults:
+    # get arguments
+    endpoint_id_list = argToList(args.get('endpoint_id_list'))
+    dist_name_list = argToList(args.get('dist_name'))
+    ip_list = argToList(args.get('ip_list'))
+    group_name_list = argToList(args.get('group_name'))
+    platform_list = argToList(args.get('platform'))
+    alias_name_list = argToList(args.get('alias_name'))
+    isolate = args.get('isolate')
+    hostname_list = argToList(args.get('hostname'))
+    status = args.get('status')
+    scan_status = args.get('scan_status')
+    username_list = argToList(args.get('username'))
+    new_alias_name = args.get('new_alias_name')
+
+    # This is a workaround that is needed because of a specific behaviour of the system
+    # that converts an empty string to a string with double quotes.
+    if new_alias_name == '""':
+        new_alias_name = ""
+
+    first_seen_gte = arg_to_timestamp(
+        arg=args.get('first_seen_gte'),
+        arg_name='first_seen_gte'
+    )
+
+    first_seen_lte = arg_to_timestamp(
+        arg=args.get('first_seen_lte'),
+        arg_name='first_seen_lte'
+    )
+
+    last_seen_gte = arg_to_timestamp(
+        arg=args.get('last_seen_gte'),
+        arg_name='last_seen_gte'
+    )
+
+    last_seen_lte = arg_to_timestamp(
+        arg=args.get('last_seen_lte'),
+        arg_name='last_seen_lte'
+    )
+
+    # create filters
+    filters: list[dict[str, str]] = create_request_filters(
+        status=status, username=username_list, endpoint_id_list=endpoint_id_list, dist_name=dist_name_list,
+        ip_list=ip_list, group_name=group_name_list, platform=platform_list, alias_name=alias_name_list, isolate=isolate,
+        hostname=hostname_list, first_seen_gte=first_seen_gte, first_seen_lte=first_seen_lte,
+        last_seen_gte=last_seen_gte, last_seen_lte=last_seen_lte, scan_status=scan_status
+    )
+    if not filters:
+        raise DemistoException('Please provide at least one filter.')
+    # importent: the API will return True even if the endpoint does not exist, so its a good idea to check
+    # the results by a get_endpoints command
+    client.set_endpoints_alias(filters=filters, new_alias_name=new_alias_name)
+
+    return CommandResults(
+        readable_output="The endpoint alias was changed successfully.")
 
 
 def unisolate_endpoint_command(client, args):
@@ -1979,25 +2117,29 @@ def quarantine_files_command(client, args):
     file_hash = args.get("file_hash")
     incident_id = arg_to_number(args.get('incident_id'))
 
-    reply = client.quarantine_files(
-        endpoint_id_list=endpoint_id_list,
-        file_path=file_path,
-        file_hash=file_hash,
-        incident_id=incident_id
-    )
-    output = {
-        'endpointIdList': endpoint_id_list,
-        'filePath': file_path,
-        'fileHash': file_hash,
-        'actionId': reply.get("action_id")
-    }
+    try:
+        reply = client.quarantine_files(
+            endpoint_id_list=endpoint_id_list,
+            file_path=file_path,
+            file_hash=file_hash,
+            incident_id=incident_id
+        )
+        output = {
+            'endpointIdList': endpoint_id_list,
+            'filePath': file_path,
+            'fileHash': file_hash,
+            'actionId': reply.get("action_id")
+        }
 
-    return CommandResults(
-        readable_output=tableToMarkdown('Quarantine files', output, headers=[*output], headerTransform=pascalToSpace),
-        outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.'
-                 f'quarantineFiles.actionIds(val.actionId === obj.actionId)': output},
-        raw_response=reply
-    )
+        return CommandResults(
+            readable_output=tableToMarkdown('Quarantine files', output, headers=[*output],
+                                            headerTransform=pascalToSpace),
+            outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.'
+                     f'quarantineFiles.actionIds(val.actionId === obj.actionId)': output},
+            raw_response=reply
+        )
+    except Exception as e:
+        return catch_and_exit_gracefully(e)
 
 
 def restore_file_command(client, args):
@@ -2047,7 +2189,7 @@ def blocklist_files_command(client, args):
                                         headers=['added_hashes'],
                                         headerTransform=pascalToSpace),
         outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.'
-                 f'blocklist.added_hashes.fileHash(val.fileHash == obj.fileHash)': hash_list},
+                 f'{args.get("prefix", "blocklist")}.added_hashes.fileHash(val.fileHash == obj.fileHash)': hash_list},
         raw_response=res
     )
 
@@ -2084,7 +2226,7 @@ def allowlist_files_command(client, args):
     if detailed_response:
         return CommandResults(
             readable_output=tableToMarkdown('Allowlist Files', res),
-            outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.blocklist',
+            outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.allowlist',
             outputs=res,
             raw_response=res
         )
@@ -2097,7 +2239,7 @@ def allowlist_files_command(client, args):
                                         headers=['added_hashes'],
                                         headerTransform=pascalToSpace),
         outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.'
-                 f'allowlist.added_hashes.fileHash(val.fileHash == obj.fileHash)': hash_list},
+                 f'{args.get("prefix", "allowlist")}.added_hashes.fileHash(val.fileHash == obj.fileHash)': hash_list},
         raw_response=res
     )
 
@@ -2247,7 +2389,7 @@ def get_process_context(alert, process_type):
     remove_nulls_from_dictionary(process_context)
 
     # If the process contains only 'HostName' , don't create an indicator
-    if len(process_context.keys()) == 1 and 'Hostname' in process_context.keys():
+    if len(process_context.keys()) == 1 and 'Hostname' in process_context:
         return {}
     return process_context
 
@@ -2325,43 +2467,32 @@ def get_indicators_context(incident):
 
     file_artifacts = incident.get('file_artifacts', [])
     for file in file_artifacts:
+        file_sha = file.get('file_sha256')
         file_details = {
             'Name': file.get('file_name'),
-            'SHA256': file.get('file_sha256'),
+            'SHA256': file_sha,
         }
         remove_nulls_from_dictionary(file_details)
+        is_malicious = file.get("is_malicious")
+
         if file_details:
             file_context.append(file_details)
+            if file_sha:
+                relevant_processes = filter(lambda p: p.get("SHA256") == file_sha, process_context)
+                for process in relevant_processes:
+                    process["is_malicious"] = is_malicious
 
     return file_context, process_context, domain_context, ip_context
-
-
-def update_incident_command(client, args):
-    incident_id = args.get('incident_id')
-    assigned_user_mail = args.get('assigned_user_mail')
-    assigned_user_pretty_name = args.get('assigned_user_pretty_name')
-    status = args.get('status')
-    severity = args.get('manual_severity')
-    unassign_user = args.get('unassign_user') == 'true'
-    resolve_comment = args.get('resolve_comment')
-
-    client.update_incident(
-        incident_id=incident_id,
-        assigned_user_mail=assigned_user_mail,
-        assigned_user_pretty_name=assigned_user_pretty_name,
-        unassign_user=unassign_user,
-        status=status,
-        severity=severity,
-        resolve_comment=resolve_comment
-    )
-
-    return f'Incident {incident_id} has been updated', None, None
 
 
 def endpoint_command(client, args):
     endpoint_id_list = argToList(args.get('id'))
     endpoint_ip_list = argToList(args.get('ip'))
     endpoint_hostname_list = argToList(args.get('hostname'))
+
+    if not any((endpoint_id_list, endpoint_ip_list, endpoint_hostname_list)):
+        raise DemistoException(f'{args.get("integration_name", "CoreApiModule")} -'
+                               f' In order to run this command, please provide a valid id, ip or hostname')
 
     endpoints = client.get_endpoints(
         endpoint_id_list=endpoint_id_list,
@@ -2558,7 +2689,7 @@ def sort_by_key(list_to_sort, main_key, fallback_key):
 
 def drop_field_underscore(section):
     section_copy = section.copy()
-    for field in section_copy.keys():
+    for field in section_copy:
         if '_' in field:
             section[field.replace('_', '')] = section.get(field)
 
@@ -2588,58 +2719,35 @@ def handle_user_unassignment(update_args):
         update_args['assigned_user_pretty_name'] = None
 
 
-def handle_outgoing_issue_closure(update_args, inc_status):
-    if inc_status == 2:
-        if MIRROR_IN_CLOSE_REASON not in update_args.get('closeNotes', ''):
-            update_args['resolve_comment'] = update_args.get('closeNotes', '')
-            update_args['status'] = XSOAR_RESOLVED_STATUS.get(update_args.get('closeReason', 'Other'))
-            demisto.debug(f"Closing Remote incident with status {update_args['status']}")
-        else:
-            demisto.debug('Ignore closing Remote incident because incident closed during mirroring in')
+def handle_outgoing_issue_closure(remote_args):
+    update_args = remote_args.delta
+    current_remote_status = remote_args.data.get('status') if remote_args.data else None
+    # force closing remote incident only if:
+    #   The XSOAR incident is closed
+    #   and the remote incident isn't already closed
+    if remote_args.inc_status == 2 and \
+       current_remote_status not in XDR_RESOLVED_STATUS_TO_XSOAR:
+
+        if close_notes := update_args.get('closeNotes'):
+            update_args['resolve_comment'] = close_notes
+        update_args['status'] = XSOAR_RESOLVED_STATUS_TO_XDR.get(update_args.get('closeReason', 'Other'))
+        demisto.debug(f"Closing Remote incident with status {update_args['status']}")
 
 
-def get_update_args(delta, inc_status):
+def get_update_args(remote_args):
     """Change the updated field names to fit the update command"""
-    update_args = delta
-    handle_outgoing_incident_owner_sync(update_args)
-    handle_user_unassignment(update_args)
-    if update_args.get('closingUserId'):
-        handle_outgoing_issue_closure(update_args, inc_status)
-    return update_args
 
-
-def update_remote_system_command(client, args):
-    remote_args = UpdateRemoteSystemArgs(args)
-
-    if remote_args.delta:
-        demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update'
-                      f'incident {remote_args.remote_incident_id}')
-    try:
-        if remote_args.incident_changed:
-            update_args = get_update_args(remote_args.delta, remote_args.inc_status)
-
-            update_args['incident_id'] = remote_args.remote_incident_id
-            demisto.debug(f'Sending incident with remote ID [{remote_args.remote_incident_id}]\n')
-            update_incident_command(client, update_args)
-
-        else:
-            demisto.debug(f'Skipping updating remote incident fields [{remote_args.remote_incident_id}] '
-                          f'as it is not new nor changed')
-
-        return remote_args.remote_incident_id
-
-    except Exception as e:
-        demisto.debug(f"Error in outgoing mirror for incident {remote_args.remote_incident_id} \n"
-                      f"Error message: {str(e)}")
-
-        return remote_args.remote_incident_id
+    handle_outgoing_issue_closure(remote_args)
+    handle_outgoing_incident_owner_sync(remote_args.delta)
+    handle_user_unassignment(remote_args.delta)
+    return remote_args.delta
 
 
 def get_distribution_versions_command(client, args):
     versions = client.get_distribution_versions()
 
     readable_output = []
-    for operation_system in versions.keys():
+    for operation_system in versions:
         os_versions = versions[operation_system]
 
         readable_output.append(
@@ -2893,7 +3001,8 @@ def get_script_code_command(client: CoreClient, args: Dict[str, str]) -> Tuple[s
 @polling_function(
     name=demisto.command(),
     interval=arg_to_number(demisto.args().get('polling_interval_in_seconds', 10)),
-    timeout=arg_to_number(demisto.args().get('polling_timeout', 600)),
+    # Check for both 'polling_timeout_in_seconds' and 'polling_timeout' to avoid breaking BC:
+    timeout=arg_to_number(demisto.args().get('polling_timeout_in_seconds', demisto.args().get('polling_timeout', 600))),
     requires_polling_arg=False  # means it will always be default to poll, poll=true
 )
 def script_run_polling_command(args: dict, client: CoreClient) -> PollResult:
@@ -3100,31 +3209,33 @@ def decode_dict_values(dict_to_decode: dict):
                 continue
 
 
-def filter_general_fields(alert: dict) -> dict:
+def filter_general_fields(alert: dict, filter_fields: bool = True) -> dict:
     """filter only relevant general fields from a given alert.
 
     Args:
       alert (dict): The alert to filter
+      filter_fields (bool): Whether to return a subset of the fields.
 
     Returns:
       dict: The filtered alert
     """
 
-    updated_alert = {}
-    updated_event = {}
-    for field in ALERT_GENERAL_FIELDS:
-        if field in alert:
-            updated_alert[field] = alert.get(field)
-
-    event = alert.get('raw_abioc', {}).get('event', {})
-    if not event:
-        return_warning('No XDR cloud analytics event.')
+    if filter_fields:
+        result = {k: v for k, v in alert.items() if k in ALERT_GENERAL_FIELDS}
     else:
-        for field in ALERT_EVENT_GENERAL_FIELDS:
-            if field in event:
-                updated_event[field] = event.get(field)
-        updated_alert['event'] = updated_event
-    return updated_alert
+        result = alert
+
+    if not (event := alert.get('raw_abioc', {}).get('event', {})):
+        return_warning('No XDR cloud analytics event.')
+        return result
+
+    if filter_fields:
+        updated_event = {k: v for k, v in event.items() if k in ALERT_EVENT_GENERAL_FIELDS}
+    else:
+        updated_event = event
+
+    result['event'] = updated_event
+    return result
 
 
 def filter_vendor_fields(alert: dict):
@@ -3156,30 +3267,85 @@ def get_original_alerts_command(client: CoreClient, args: Dict) -> CommandResult
     raw_response = client.get_original_alerts(alert_id_list)
     reply = copy.deepcopy(raw_response)
     alerts = reply.get('alerts', [])
+    processed_alerts = []
     filtered_alerts = []
-    for i, alert in enumerate(alerts):
+
+    filter_fields_argument = argToBoolean(args.get('filter_alert_fields', True))  # default, for BC, is True.
+
+    for alert in alerts:
         # decode raw_response
         try:
             alert['original_alert_json'] = safe_load_json(alert.get('original_alert_json', ''))
             # some of the returned JSON fields are double encoded, so it needs to be double-decoded.
             # example: {"x": "someValue", "y": "{\"z\":\"anotherValue\"}"}
             decode_dict_values(alert)
-        except Exception:
+        except Exception as e:
+            demisto.debug("encountered the following while decoding dictionary values, skipping")
+            demisto.debug(e)
             continue
-        # remove original_alert_json field and add its content to alert.
-        alert.update(
-            alert.pop('original_alert_json', None))
-        updated_alert = filter_general_fields(alert)
-        if 'event' in updated_alert:
-            filter_vendor_fields(updated_alert)
-        filtered_alerts.append(updated_alert)
+
+        # Remove original_alert_json field and add its content to the alert body.
+        alert.update(alert.pop('original_alert_json', {}))
+
+        # Process the alert (with without filetring fields)
+        processed_alerts.append(filter_general_fields(alert, filter_fields=False))
+
+        # Create a filtered version (used either for output when filter_fields is False, or for readable output)
+        filtered_alert = filter_general_fields(alert, filter_fields=True)
+        filter_vendor_fields(filtered_alert)  # changes in-place
+
+        filtered_alerts.append(filtered_alert)
 
     return CommandResults(
         outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.OriginalAlert',
         outputs_key_field='internal_id',
-        outputs=filtered_alerts,
+        outputs=filtered_alerts if filter_fields_argument else processed_alerts,
+        readable_output=tableToMarkdown("Alerts", t=filtered_alerts),  # Filtered are always used for readable output
         raw_response=raw_response,
     )
+
+
+ALERT_STATUS_TYPES = {
+    'DETECTED': 'detected',
+    'DETECTED_0': 'detected (allowed the session)',
+    'DOWNLOAD': 'detected (download)',
+    'DETECTED_19': 'detected (forward)',
+    'POST_DETECTED': 'detected (post detected)',
+    'PROMPT_ALLOW': 'detected (prompt allow)',
+    'DETECTED_4': 'detected (raised an alert)',
+    'REPORTED': 'detected (reported)',
+    'REPORTED_TRIGGER_4': 'detected (on write)',
+    'SCANNED': 'detected (scanned)',
+    'DETECTED_23': 'detected (sinkhole)',
+    'DETECTED_18': 'detected (syncookie sent)',
+    'DETECTED_21': 'detected (wildfire upload failure)',
+    'DETECTED_20': 'detected (wildfire upload success)',
+    'DETECTED_22': 'detected (wildfire upload skip)',
+    'DETECTED_MTH': 'detected (xdr managed threat hunting)',
+    'BLOCKED_25': 'prevented (block)',
+    'BLOCKED': 'prevented (blocked)',
+    'BLOCKED_14': 'prevented (block-override)',
+    'BLOCKED_5': 'prevented (blocked the url)',
+    'BLOCKED_6': 'prevented (blocked the ip)',
+    'BLOCKED_13': 'prevented (continue)',
+    'BLOCKED_1': 'prevented (denied the session)',
+    'BLOCKED_8': 'prevented (dropped all packets)',
+    'BLOCKED_2': 'prevented (dropped the session)',
+    'BLOCKED_3': 'prevented (dropped the session and sent a tcp reset)',
+    'BLOCKED_7': 'prevented (dropped the packet)',
+    'BLOCKED_16': 'prevented (override)',
+    'BLOCKED_15': 'prevented (override-lockout)',
+    'BLOCKED_26': 'prevented (post detected)',
+    'PROMPT_BLOCK': 'prevented (prompt block)',
+    'BLOCKED_17': 'prevented (random-drop)',
+    'BLOCKED_24': 'prevented (silently dropped the session with an icmp unreachable message to the host or application)',
+    'BLOCKED_9': 'prevented (terminated the session and sent a tcp reset to both sides of the connection)',
+    'BLOCKED_10': 'prevented (terminated the session and sent a tcp reset to the client)',
+    'BLOCKED_11': 'prevented (terminated the session and sent a tcp reset to the server)',
+    'BLOCKED_TRIGGER_4': 'prevented (on write)',
+}
+
+ALERT_STATUS_TYPES_REVERSE_DICT = {v: k for k, v in ALERT_STATUS_TYPES.items()}
 
 
 def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResults:
@@ -3229,7 +3395,15 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
     demisto.debug(f'sending the following request data: {request_data}')
     raw_response = client.get_alerts_by_filter_data(request_data)
 
-    context = [alert.get('alert_fields') for alert in raw_response.get('alerts', [])]
+    context = []
+    for alert in raw_response.get('alerts', []):
+        alert = alert.get('alert_fields')
+        if 'alert_action_status' in alert:
+            # convert the status, if failed take the original status
+            action_status = alert.get('alert_action_status')
+            alert['alert_action_status_readable'] = ALERT_STATUS_TYPES.get(action_status, action_status)
+
+        context.append(alert)
 
     human_readable = [{
         'Alert ID': alert.get('internal_id'),
@@ -3237,7 +3411,7 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
         'Name': alert.get('alert_name'),
         'Severity': alert.get('severity'),
         'Category': alert.get('alert_category'),
-        'Action': alert.get('alert_action_status'),
+        'Action': alert.get('alert_action_status_readable'),
         'Description': alert.get('alert_description'),
         'Host IP': alert.get('agent_ip_addresses'),
         'Host Name': alert.get('agent_hostname'),
@@ -3258,17 +3432,18 @@ def get_dynamic_analysis_command(client: CoreClient, args: Dict) -> CommandResul
     reply = copy.deepcopy(raw_response)
     alerts = reply.get('alerts', [])
     filtered_alerts = []
-    for i, alert in enumerate(alerts):
+    for alert in alerts:
         # decode raw_response
         try:
             alert['original_alert_json'] = safe_load_json(alert.get('original_alert_json', ''))
             # some of the returned JSON fields are double encoded, so it needs to be double-decoded.
             # example: {"x": "someValue", "y": "{\"z\":\"anotherValue\"}"}
             decode_dict_values(alert)
-        except Exception:
-            continue
+        except Exception as e:
+            demisto.debug("encountered the following while decoding dictionary values, skipping")
+            demisto.debug(e)
         # remove original_alert_json field and add its content to alert.
-        alert.update(alert.pop('original_alert_json', None))
+        alert.update(alert.pop('original_alert_json', {}))
         if demisto.get(alert, 'messageData.dynamicAnalysis'):
             filtered_alerts.append(demisto.get(alert, 'messageData.dynamicAnalysis'))
     if not filtered_alerts:
@@ -3289,6 +3464,7 @@ def create_request_filters(
     endpoint_id_list: Optional[List] = None,
     dist_name: Optional[List] = None,
     ip_list: Optional[List] = None,
+    public_ip_list: Optional[List] = None,
     group_name: Optional[List] = None,
     platform: Optional[List] = None,
     alias_name: Optional[List] = None,
@@ -3298,6 +3474,7 @@ def create_request_filters(
     first_seen_lte=None,
     last_seen_gte=None,
     last_seen_lte=None,
+    scan_status=None,
 ):
     filters = []
 
@@ -3305,7 +3482,7 @@ def create_request_filters(
         filters.append({
             'field': 'endpoint_status',
             'operator': 'IN',
-            'value': [status]
+            'value': status if isinstance(status, list) else [status]
         })
 
     if username:
@@ -3334,6 +3511,13 @@ def create_request_filters(
             'field': 'ip_list',
             'operator': 'in',
             'value': ip_list
+        })
+
+    if public_ip_list:
+        filters.append({
+            'field': 'public_ip_list',
+            'operator': 'in',
+            'value': public_ip_list
         })
 
     if group_name:
@@ -3399,6 +3583,13 @@ def create_request_filters(
             'value': last_seen_lte
         })
 
+    if scan_status:
+        filters.append({
+            'field': 'scan_status',
+            'operator': 'IN',
+            'value': [scan_status]
+        })
+
     return filters
 
 
@@ -3451,8 +3642,9 @@ def args_to_request_filters(args):
 def add_tag_to_endpoints_command(client: CoreClient, args: Dict):
     endpoint_ids = argToList(args.get('endpoint_ids', []))
     tag = args.get('tag')
-
-    raw_response = client.add_tag_endpoint(endpoint_ids=endpoint_ids, tag=tag, args=args)
+    raw_response = {}
+    for b in batch(endpoint_ids, 1000):
+        raw_response.update(client.add_tag_endpoint(endpoint_ids=b, tag=tag, args=args))
 
     return CommandResults(
         readable_output=f'Successfully added tag {tag} to endpoint(s) {endpoint_ids}', raw_response=raw_response
@@ -3462,9 +3654,308 @@ def add_tag_to_endpoints_command(client: CoreClient, args: Dict):
 def remove_tag_from_endpoints_command(client: CoreClient, args: Dict):
     endpoint_ids = argToList(args.get('endpoint_ids', []))
     tag = args.get('tag')
-
-    raw_response = client.remove_tag_endpoint(endpoint_ids=endpoint_ids, tag=tag, args=args)
+    raw_response = {}
+    for b in batch(endpoint_ids, 1000):
+        raw_response.update(client.remove_tag_endpoint(endpoint_ids=b, tag=tag, args=args))
 
     return CommandResults(
         readable_output=f'Successfully removed tag {tag} from endpoint(s) {endpoint_ids}', raw_response=raw_response
+    )
+
+
+def parse_risky_users_or_hosts(user_or_host_data: dict[str, Any],
+                               id_header: str,
+                               score_header: str,
+                               description_header: str
+                               ) -> dict[str, Any]:
+
+    reasons = user_or_host_data.get('reasons', [])
+    return {
+        id_header: user_or_host_data.get('id'),
+        score_header: user_or_host_data.get('score'),
+        description_header: reasons[0].get('description') if reasons else None,
+    }
+
+
+def parse_user_groups(group: dict[str, Any]) -> list[dict[str, Any]]:
+    return [
+        {
+            'User email': user,
+            'Group Name': group.get('group_name'),
+            'Group Description': group.get('description'),
+        }
+        for user in group.get("user_email", [])
+    ]
+
+
+def parse_role_names(role_data: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "Role Name": role_data.get("pretty_name"),
+        "Description": role_data.get("description"),
+        "Permissions": role_data.get("permissions", []),
+        "Users": role_data.get("users", []),
+        "Groups": role_data.get("groups", []),
+    }
+
+
+def enrich_error_message_id_group_role(e: DemistoException, type_: str | None, custom_message: str | None) -> str | None:
+    """
+    Attempts to parse additional info from an exception and return it as string. Returns `None` if it can't do that.
+
+    Args:
+        e (Exception): The error that occurred.
+        type (str | None): The type of resource associated with the error(Role id or Group), if applicable.
+        custom_message (str | None): A custom error message to be included in the raised ValueError, if desired.
+
+    Raises:
+        ValueError: If the error message indicates that the resource was not found, a more detailed error message
+            is constructed using the `find_the_cause_error` function and raised with the original error as the cause.
+    """
+    if (
+        e.res is not None
+        and e.res.status_code == 500
+        and 'was not found' in str(e)
+    ):
+        error_message: str = ''
+        pattern = r"(id|Group|Role) \\?'([/A-Za-z 0-9_]+)\\?'"
+        if match := re.search(pattern, str(e)):
+            error_message = f'Error: {match[1]} {match[2]} was not found. '
+
+        return (f'{error_message}{custom_message if custom_message and type_ in ("Group", "Role") else ""}'
+                f'Full error message: {e}')
+    return None
+
+
+def list_users_command(client: CoreClient, args: dict[str, str]) -> CommandResults:
+    """
+    Returns a list of all users using the Core API client.
+
+    Args:
+        client: A CoreClient instance used for connecting to the Core API.
+        args: A dictionary containing additional arguments. Possible keys include:
+            - integration_context_brand (str): The name of the integration context brand.
+
+    Returns:
+        A CommandResults object containing the readable_output and outputs fields.
+
+    Raises:
+        ValueError: If the API connection failed.
+    """
+
+    def parse_user(user: dict[str, Any]) -> dict[str, Any]:
+        return {
+            'User email': user.get('user_email'),
+            'First Name': user.get('user_first_name'),
+            'Last Name': user.get('user_last_name'),
+            'Role': user.get('role_name'),
+            'Type': user.get('user_type'),
+            'Groups': user.get('groups'),
+        }
+
+    listed_users: list[dict[str, Any]] = client.list_users().get('reply', [])
+    table_for_markdown = [parse_user(user) for user in listed_users]
+    readable_output = tableToMarkdown(name='Users', t=table_for_markdown)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.User',
+        outputs_key_field='user_email',
+        outputs=listed_users,
+    )
+
+
+def list_user_groups_command(client: CoreClient, args: dict[str, str]) -> CommandResults:
+    """
+     Retrieves a list of user groups from the Core API module based on the specified group names.
+
+    Args:
+        client: A CoreClient object used to communicate with the Core API module.
+        args: A dictionary of arguments passed to the function. The following keys may be present:
+            - group_names (required): A list of group names to retrieve details for.
+
+    Returns:
+        A CommandResults object containing the table of user groups.
+
+    Raises:
+        ValueError: If the API connection fails or the specified group name(s) is not found.
+    """
+
+    group_names = argToList(args['group_names'])
+    try:
+        outputs = client.list_user_groups(group_names).get("reply", [])
+    except DemistoException as e:
+        custom_message = None
+        if len(group_names) > 1:
+            custom_message = "Note: If you sent more than one group name, they may not exist either. "
+
+        if error_message := enrich_error_message_id_group_role(e=e, type_="Group", custom_message=custom_message):
+            raise DemistoException(error_message)
+        raise
+
+    table_for_markdown: list[dict[str, str | None]] = []
+    for group in outputs:
+        table_for_markdown.extend(parse_user_groups(group))
+
+    headers = ["Group Name", "Group Description", "User email"]
+    readable_output = tableToMarkdown(name='Groups', t=table_for_markdown, headers=headers)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.UserGroup',
+        outputs_key_field='group_name',
+        outputs=outputs,
+    )
+
+
+def list_roles_command(client: CoreClient, args: dict[str, str]) -> CommandResults:
+    """
+    Retrieves a list of roles with the provided role names from the Core API.
+
+    Args:
+        client: A CoreClient object used to communicate with the Core API module.
+        args: A dictionary of arguments. The 'role_names' key should be present and contain a
+              comma-separated string of role names to retrieve.
+
+    Returns:
+         A CommandResults object containing the table of roles.
+
+    Raises:
+        DemistoException: If an error occurs while retrieving the data from the Core API.
+        ValueError: If the input argument is not valid.
+
+    """
+    role_names = argToList(args["role_names"])
+    try:
+        outputs = client.list_roles(role_names).get("reply", [])
+    except DemistoException as e:
+        custom_message = None
+        if len(role_names) > 1:
+            custom_message = "Note: If you sent more than one Role name, they may not exist either. "
+
+        if error_message := enrich_error_message_id_group_role(e=e, type_="Role", custom_message=custom_message):
+            raise DemistoException(error_message)
+        raise
+
+    headers = ["Role Name", "Description", "Permissions", "Users", "Groups"]
+    table_for_markdown = [parse_role_names(role[0]) for role in outputs if len(role) == 1]
+    readable_output = tableToMarkdown(
+        name='Roles',
+        t=table_for_markdown,
+        headers=headers
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.Role',
+        outputs_key_field='pretty_name',
+        outputs=outputs,
+    )
+
+
+def change_user_role_command(client: CoreClient, args: dict[str, str]) -> CommandResults:
+    """
+     Changes or removes the role of user(s) in the system.
+
+    Args:
+        client (CoreClient): An instance of the CoreClient class used to interact with the system.
+        args (dict[str, str]): A dictionary containing the command arguments.
+            - 'user_emails' (str): A comma-separated string of user emails.
+            - 'role_name' (str, optional): The name of the role to assign to the user(s).
+              If not provided, the role for the user(s) will be removed.
+
+    Returns:
+        CommandResults: An object containing the result of the command execution.
+    """
+    user_emails = argToList(args['user_emails'])
+
+    if role_name := args.get('role_name'):
+        res = client.set_user_role(user_emails, role_name)["reply"]
+        action_message = "updated"
+    else:
+        res = client.remove_user_role(user_emails)["reply"]
+        action_message = "removed"
+
+    if not (count := int(res["update_count"])):
+        raise DemistoException(f"No user role has been {action_message}.")
+
+    plural_suffix = 's' if count > 1 else ''
+
+    return CommandResults(
+        readable_output=f"Role was {action_message} successfully for {count} user{plural_suffix}."
+    )
+
+
+def list_risky_users_or_host_command(client: CoreClient, command: str, args: dict[str, str]) -> CommandResults:
+    """
+    Retrieves a list of risky users or details about a specific user's risk score.
+
+    Args:
+        client: A CoreClient object used to communicate with the API.
+        args: A dictionary containing the following headers (optional):
+            - user_id [str]: ID of the user to retrieve risk score details for.
+            - limit [str]: Specifying the maximum number of risky users to return.
+
+    Returns:
+        A CommandResults object, in case the user was not found, an appropriate message will be returend.
+
+    Raises:
+        ValueError: If the API connection fails.
+
+    """
+    def _warn_if_module_is_disabled(e: DemistoException) -> None:
+        if (
+                e is not None
+                and e.res is not None
+                and e.res.status_code == 500
+                and 'No identity threat' in str(e)
+                and "An error occurred while processing XDR public API" in e.message
+        ):
+            return_warning(f'Please confirm the XDR Identity Threat Module is enabled.\nFull error message: {e}', exit=True)
+
+    match command:
+        case "user":
+            id_key = "user_id"
+            table_title = "Risky Users"
+            outputs_prefix = "RiskyUser"
+            get_func = client.list_risky_users
+            table_headers = ["User ID", "Score", "Description"]
+        case 'host':
+            id_key = "host_id"
+            table_title = "Risky Hosts"
+            outputs_prefix = "RiskyHost"
+            get_func = client.list_risky_hosts
+            table_headers = ["Host ID", "Score", "Description"]
+
+    outputs: list[dict] | dict
+    if id_ := args.get(id_key):
+        try:
+            outputs = client.risk_score_user_or_host(id_).get('reply', {})
+        except DemistoException as e:
+            _warn_if_module_is_disabled(e)
+            if error_message := enrich_error_message_id_group_role(e=e, type_="id", custom_message=""):
+                not_found_message = 'was not found'
+                if not_found_message in error_message:
+                    return CommandResults(readable_output=f'The {command} {id_} {not_found_message}')
+                else:
+                    raise DemistoException(error_message)
+            else:
+                raise
+
+        table_for_markdown = [parse_risky_users_or_hosts(outputs, *table_headers)]  # type: ignore[arg-type]
+
+    else:
+        list_limit = int(args.get('limit', 50))
+
+        try:
+            outputs = get_func().get('reply', [])[:list_limit]
+        except DemistoException as e:
+            _warn_if_module_is_disabled(e)
+            raise
+        table_for_markdown = [parse_risky_users_or_hosts(user, *table_headers) for user in outputs]
+
+    readable_output = tableToMarkdown(name=table_title, t=table_for_markdown, headers=table_headers)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.{outputs_prefix}',
+        outputs_key_field='id',
+        outputs=outputs,
     )

@@ -1,0 +1,23 @@
+comment: |-
+  This is a pre-processing script that is used to create the attachments of incoming incidents in an existing incident, then drop the incoming incident.
+  It should be configured as a pre-processing rule, and the logic for finding the right incident should be added to the code manually.
+  The automation collects the paths and names of the attachments of the incoming incident and passes it to the "CreateFileFromPathObject" automation that is being executed on the existing incident
+commonfields:
+  id: GetFilePathPreProcessing
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.10.12.63474
+enabled: true
+name: GetFilePathPreProcessing
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- preProcessing
+type: python
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,43 @@
+args:
+- description: Markdown Text to transform.
+  name: text
+  required: true
+- auto: PREDEFINED
+  defaultValue: 'True'
+  description: If True - The markdown text will be converted to HTML without a Full HTML structure.
+  name: convertOnlyMarkdown
+  predefined:
+  - 'True'
+  - 'False'
+- auto: PREDEFINED
+  defaultValue: 'False'
+  description: If True - The resulted HTML will be nicely formatted as a Unicode string, with a separate line for each tag and each string.
+  name: prettifyHTML
+  predefined:
+  - 'True'
+  - 'False'
+comment: Converts Markdown to HTML.
+commonfields:
+  id: MarkdownToHTML
+  version: -1
+enabled: true
+name: MarkdownToHTML
+outputs:
+- contextPath: MarkdownToHTML.HTML
+  description: The HTML converted text.
+  type: String
+script: '-'
+subtype: python3
+tags:
+- markdown
+- HTML
+timeout: '0'
+type: python
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/bs4-py3:1.0.0.30051
+runas: DBotWeakRole
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0

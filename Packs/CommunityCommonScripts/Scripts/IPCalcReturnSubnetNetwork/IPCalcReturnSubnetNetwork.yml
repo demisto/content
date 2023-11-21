@@ -1,0 +1,21 @@
+args:
+- description: Subnet to use
+  name: subnet
+  required: true
+comment: An Automation Script to return subnet network ID
+commonfields:
+  id: IPCalcReturnSubnetNetwork
+  version: -1
+name: IPCalcReturnSubnetNetwork
+outputs:
+- contextPath: IPCalc.IP.Network
+  description: Subnet network
+  type: String
+script: '-'
+subtype: python3
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.10.12.63474
+tests:
+- No tests
+fromversion: 6.0.0

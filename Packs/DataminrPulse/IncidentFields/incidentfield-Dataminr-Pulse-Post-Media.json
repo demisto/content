@@ -1,0 +1,110 @@
+{
+    "id": "incident_dataminrpulsepostmedia",
+    "version": -1,
+    "modified": "2023-01-30T12:41:22.94581208+05:30",
+    "name": "Dataminr Pulse Post Media",
+    "ownerOnly": false,
+    "cliName": "dataminrpulsepostmedia",
+    "type": "grid",
+    "closeForm": true,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Dataminr Pulse Alert"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "type",
+            "displayName": "Type",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": true,
+            "selectValues": null
+        },
+        {
+            "key": "source",
+            "displayName": "Source",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": true,
+            "selectValues": null
+        },
+        {
+            "key": "description",
+            "displayName": "Description",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": true,
+            "selectValues": null
+        },
+        {
+            "key": "url",
+            "displayName": "URL",
+            "type": "url",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": true,
+            "selectValues": null
+        },
+        {
+            "key": "display_url",
+            "displayName": "Display URL",
+            "type": "url",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": true,
+            "selectValues": null
+        },
+        {
+            "key": "media_url",
+            "displayName": "Media URL",
+            "type": "url",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": true,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}

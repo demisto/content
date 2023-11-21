@@ -1,0 +1,21 @@
+commonfields:
+  id: ImpSfListEndpoints
+  version: -1
+name: ImpSfListEndpoints
+script: ''
+type: python
+subtype: python2
+tags:
+- Imperva Skyfence
+comment: The endpoints list request enables a client application to receive a list of all managed and unmanaged endpoints, with their basic details. This list can then be externally filtered or searched by the application to identify individual endpoints that might require action. For any such endpoint, the application can obtain fuller details (see Endpoint Details Request below) and if relevant change its enrollment status.
+system: true
+args: []
+scripttarget: 0
+timeout: 0s
+dependson:
+  must:
+  - imp-sf-list-endpoints
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.10.12.68714
+tests:
+- No tests (auto formatted)

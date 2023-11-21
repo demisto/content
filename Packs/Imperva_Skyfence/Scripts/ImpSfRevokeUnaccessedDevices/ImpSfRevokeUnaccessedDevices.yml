@@ -1,0 +1,23 @@
+commonfields:
+  id: ImpSfRevokeUnaccessedDevices
+  version: -1
+name: ImpSfRevokeUnaccessedDevices
+script: ''
+type: python
+subtype: python2
+tags:
+- Imperva Skyfence
+comment: "Getting all devices data from server, if a device haven't been accessed to in over two months (and is still managed), the script will send the corresponding user a warning mail.\nIf it's haven't been accessed to in over three months, the script will revoke the device credentials and notify the user by mail  "
+system: true
+scripttarget: 0
+dependson:
+  must:
+  - ImpSfSetEndpointStatus
+  - ImpSfListEndpoints
+timeout: 0s
+tests:
+- No test - old script
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.10.11.58677
+marketplaces:
+- xsoar

@@ -1,0 +1,1094 @@
+id: Pull Request Creation - Github
+version: -1
+name: Pull Request Creation - Github
+description: This playbook creates a pull request using Github integration.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 21f56ea1-e6e2-4f27-8140-68d9e22529d9
+    type: start
+    task:
+      id: 21f56ea1-e6e2-4f27-8140-68d9e22529d9
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "37"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 725
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "2":
+    id: "2"
+    taskid: dd384c27-7c83-4c18-8e53-790b016c06c7
+    type: regular
+    task:
+      id: dd384c27-7c83-4c18-8e53-790b016c06c7
+      version: -1
+      name: Get main branch
+      description: Gets a branch.
+      script: '|||GitHub-get-branch'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      branch_name:
+        complex:
+          root: inputs.MainBranch
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "3":
+    id: "3"
+    taskid: ab1f8a8d-96b2-43d5-8a88-fdebec91d755
+    type: regular
+    task:
+      id: ab1f8a8d-96b2-43d5-8a88-fdebec91d755
+      version: -1
+      name: Create new branch
+      description: Create a new branch.
+      script: '|||GitHub-create-branch'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      branch_name:
+        complex:
+          root: BranchName
+      commit_sha:
+        complex:
+          root: GitHub.Branch
+          accessor: CommitSHA
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "6":
+    id: "6"
+    taskid: cae729f9-6d8f-4dc7-8360-f216b32f5813
+    type: regular
+    task:
+      id: cae729f9-6d8f-4dc7-8360-f216b32f5813
+      version: -1
+      name: Commit files
+      scriptName: CommitFiles
+      type: regular
+      iscommand: false
+      brand: ""
+      description: Commit the given files to GitHub, Bitbucket ot Gitlab.
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      branch:
+        complex:
+          root: BranchName
+      comment:
+        complex:
+          root: incident
+          accessor: cicdpullrequestcomment
+      files:
+        complex:
+          root: File
+      pack:
+        complex:
+          root: PackName
+      template:
+        complex:
+          root: inputs.PullRequestTemplate
+      user:
+        complex:
+          root: DemistoUsers
+          transformers:
+          - operator: FirstArrayElement
+      git_integration:
+        simple: GitHub
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "7":
+    id: "7"
+    taskid: bd5da6c3-be6e-40cc-84e8-b7df09bd76a0
+    type: regular
+    task:
+      id: bd5da6c3-be6e-40cc-84e8-b7df09bd76a0
+      version: -1
+      name: Create pull request
+      description: Creates a new pull request.
+      script: '|||GitHub-create-pull-request'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      base:
+        complex:
+          root: inputs.MainBranch
+      body:
+        complex:
+          root: PR_text
+      draft:
+        simple: "false"
+      head:
+        complex:
+          root: BranchName
+      title:
+        complex:
+          root: incident
+          accessor: cicdpullrequesttitle
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "8":
+    id: "8"
+    taskid: 99a60e25-a0f2-4877-8249-46417c49a779
+    type: regular
+    task:
+      id: 99a60e25-a0f2-4877-8249-46417c49a779
+      version: -1
+      name: Request pr review
+      description: Requests reviews from GitHub users for a given pull request.
+      script: '|||GitHub-request-review'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      pull_number:
+        complex:
+          root: GitHub.PR
+          accessor: Number
+      reviewers:
+        complex:
+          root: incident
+          accessor: cicdreviewer
+    separatecontext: false
+    continueonerror: true
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 3750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "9":
+    id: "9"
+    taskid: 87625665-5af9-4f16-8852-9d7cc1158a75
+    type: condition
+    task:
+      id: 87625665-5af9-4f16-8852-9d7cc1158a75
+      version: -1
+      name: Add reviewer?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: Add reviewer?
+    nexttasks:
+      '#default#':
+      - "36"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.cicdreviewer
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "18":
+    id: "18"
+    taskid: acf12aa7-e0b5-4be7-82f3-b681fe4fce4c
+    type: regular
+    task:
+      id: acf12aa7-e0b5-4be7-82f3-b681fe4fce4c
+      version: -1
+      name: Get branch
+      description: Gets a branch.
+      script: '|||GitHub-get-branch'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      branch_name:
+        complex:
+          root: BranchName
+    separatecontext: false
+    continueonerror: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "19":
+    id: "19"
+    taskid: 633c7cad-6240-4b33-8692-60eecedc81f3
+    type: condition
+    task:
+      id: 633c7cad-6240-4b33-8692-60eecedc81f3
+      version: -1
+      name: Does branch exist?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: Does branch exist?
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: GitHub.Branch
+                accessor: Name
+            iscontext: true
+          right:
+            value:
+              simple: BranchName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "20":
+    id: "20"
+    taskid: fb955df1-6d7a-4ee0-80ae-416e900ab26c
+    type: condition
+    task:
+      id: fb955df1-6d7a-4ee0-80ae-416e900ab26c
+      version: -1
+      name: Does branch exist?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: Does branch exist?
+    nexttasks:
+      '#default#':
+      - "40"
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: GitHub.Branch
+                accessor: Name
+            iscontext: true
+          right:
+            value:
+              simple: BranchName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2905
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "25":
+    id: "25"
+    taskid: e9293da4-c2f9-44f7-87c3-df00d582f1cb
+    type: regular
+    task:
+      id: e9293da4-c2f9-44f7-87c3-df00d582f1cb
+      version: -1
+      name: Set branch name from CI/CD Branch field
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: BranchName
+      value:
+        complex:
+          root: incident
+          accessor: cicdbranch
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "26":
+    id: "26"
+    taskid: 619e5339-d6a2-40df-820e-8358aca8c738
+    type: condition
+    task:
+      id: 619e5339-d6a2-40df-820e-8358aca8c738
+      version: -1
+      name: Is CI/CD Branch field given
+      type: condition
+      iscommand: false
+      brand: ""
+      description: Is there a branch name in the update branch field in the incident.
+    nexttasks:
+      '#default#':
+      - "27"
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.cicdbranch
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "27":
+    id: "27"
+    taskid: 52106987-11ce-4e99-8fdf-e801727e413c
+    type: regular
+    task:
+      id: 52106987-11ce-4e99-8fdf-e801727e413c
+      version: -1
+      name: Suggest branch name
+      scriptName: SuggestBranchName
+      type: regular
+      iscommand: false
+      brand: ""
+      description: |
+        The script gets the pack name as input and suggests an available branch name, for example:
+        pack name is "MyPack" the branch name will be "MyPack".
+        If a branch with the name "MyPack" exists, the script return "MyPack_1".
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      pack:
+        complex:
+          root: PackName
+      use_command:
+        simple: GitHub-get-branch
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "28":
+    id: "28"
+    taskid: 1db5ed38-8943-4f14-8ef6-7e2834859a5a
+    type: regular
+    task:
+      id: 1db5ed38-8943-4f14-8ef6-7e2834859a5a
+      version: -1
+      name: Set branch name from SuggestBranchName output
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: BranchName
+      value:
+        complex:
+          root: AvailableBranch
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "29":
+    id: "29"
+    taskid: 2641253d-0171-4231-8cbc-db33e3e6b601
+    type: condition
+    task:
+      id: 2641253d-0171-4231-8cbc-db33e3e6b601
+      version: -1
+      name: Is CI/CD Pull Request Branch field given
+      type: condition
+      iscommand: false
+      brand: ""
+      description: Is there a branch name in the matching field in the CI/CD incident.
+    nexttasks:
+      '#default#':
+      - "26"
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.cicdpullrequestbranch
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "30":
+    id: "30"
+    taskid: 87d2f0fd-30c7-42d6-8310-a57bb1bc380e
+    type: regular
+    task:
+      id: 87d2f0fd-30c7-42d6-8310-a57bb1bc380e
+      version: -1
+      name: Set branch name from CI/CD Pull Request Branch field
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: BranchName
+      value:
+        complex:
+          root: incident
+          accessor: cicdpullrequestbranch
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "31":
+    id: "31"
+    taskid: bf871ea0-2ab9-4a93-8fa9-a5258cc0d053
+    type: regular
+    task:
+      id: bf871ea0-2ab9-4a93-8fa9-a5258cc0d053
+      version: -1
+      name: Get pull request
+      description: Gets pull requests corresponding to the given branch name.
+      script: '|||GitHub-list-branch-pull-requests'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      branch_name:
+        complex:
+          root: BranchName
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 3750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "35":
+    id: "35"
+    taskid: fd372789-c9c9-4074-83ee-93a3a19fd64c
+    type: regular
+    task:
+      id: fd372789-c9c9-4074-83ee-93a3a19fd64c
+      version: -1
+      name: Set MessageText value for update action
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      key:
+        simple: MessageText
+      value:
+        simple: |-
+          This pull request for the pack ${PackName} was updated by ${DemistoUsers.[0].username}:
+          https://github.com/${GitHub.PR.Head.Repo.FullName}/pull/${GitHub.PR.Number}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 4100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "36":
+    id: "36"
+    taskid: 82810f35-b458-4860-8444-a380498c539b
+    type: regular
+    task:
+      id: 82810f35-b458-4860-8444-a380498c539b
+      version: -1
+      name: Set MessageText for new pull request
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      key:
+        simple: MessageText
+      value:
+        simple: |-
+          New pull request was created by ${DemistoUsers.[0].username} for the pack ${PackName}:
+          https://github.com/${GitHub.PR.Head.Repo.FullName}/pull/${GitHub.PR.Number}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3925
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "37":
+    id: "37"
+    taskid: ba80256a-c59c-4f8a-8288-3321f6f8ef48
+    type: title
+    task:
+      id: ba80256a-c59c-4f8a-8288-3321f6f8ef48
+      version: -1
+      name: Set the branch name
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "38":
+    id: "38"
+    taskid: 3e27cc27-c147-4619-8f43-ce67ab50cfb5
+    type: title
+    task:
+      id: 3e27cc27-c147-4619-8f43-ce67ab50cfb5
+      version: -1
+      name: Check if branch exists and create it if not
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "39":
+    id: "39"
+    taskid: e7592ef9-7d47-45a2-8db4-5dca5a1cade7
+    type: title
+    task:
+      id: e7592ef9-7d47-45a2-8db4-5dca5a1cade7
+      version: -1
+      name: Commit the files
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2585
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "40":
+    id: "40"
+    taskid: abd6533c-52cc-404f-8d93-12d89645e3ef
+    type: title
+    task:
+      id: abd6533c-52cc-404f-8d93-12d89645e3ef
+      version: -1
+      name: Create new pull request
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "46"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "41":
+    id: "41"
+    taskid: c66df801-2886-421d-85c5-ef0a9368f1a8
+    type: title
+    task:
+      id: c66df801-2886-421d-85c5-ef0a9368f1a8
+      version: -1
+      name: Update existing pull request
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 3590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "45":
+    id: "45"
+    taskid: fd9eb151-0af1-4cfe-8eee-98bbe2be8883
+    type: regular
+    task:
+      id: fd9eb151-0af1-4cfe-8eee-98bbe2be8883
+      version: -1
+      name: Create pull request with pack name as title
+      description: Creates a new pull request.
+      script: '|||GitHub-create-pull-request'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      base:
+        complex:
+          root: inputs.MainBranch
+      body:
+        complex:
+          root: PR_text
+      draft:
+        simple: "false"
+      head:
+        complex:
+          root: BranchName
+      title:
+        complex:
+          root: PackName
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "46":
+    id: "46"
+    taskid: b4fc03fc-4dbd-4f59-8653-6b19e87fbe21
+    type: condition
+    task:
+      id: b4fc03fc-4dbd-4f59-8653-6b19e87fbe21
+      version: -1
+      name: Is Pull Request title empty?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: Is the field of the pull request title in the incident empty?
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: cicdpullrequesttitle
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "47":
+    id: "47"
+    taskid: 6cec6b0e-aae6-4377-8753-3d21e2561c5e
+    type: regular
+    task:
+      id: 6cec6b0e-aae6-4377-8753-3d21e2561c5e
+      version: -1
+      name: Update pull request
+      description: Updates a pull request in a repository.
+      script: GitHub|||GitHub-update-pull-request
+      type: regular
+      iscommand: true
+      brand: GitHub
+    nexttasks:
+      '#none#':
+        - "35"
+    scriptarguments:
+      body:
+        simple: ${PR_text}
+      pull_number:
+        simple: ${GitHub.PR.Number}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 3925
+        }
+      }
+    note: false
+    timertriggers: [ ]
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3295,
+        "width": 1240,
+        "x": 50,
+        "y": 725
+      }
+    }
+  }
+inputs:
+- key: PullRequestTemplate
+  value: {}
+  required: true
+  description: Pull request description template.
+  playbookInputQuery:
+- key: MainBranch
+  value: {}
+  required: true
+  description: The name of the branch you want the changes pulled into, which must be an existing branch on the current repository.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

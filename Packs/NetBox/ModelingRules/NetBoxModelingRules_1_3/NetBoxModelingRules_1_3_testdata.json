@@ -1,0 +1,104 @@
+{
+    "data": [
+        {
+            "test_data_event_id": "4fb88aab-7506-41b2-9187-e098b30623c6",
+            "vendor": "netbox",
+            "product": "irm",
+            "dataset": "netbox_irm_raw",
+            "event_data": {
+                "id": 6,
+                "url": "https://www.example.com/api/extras/journal-entries/6/",
+                "display": "2022-12-04 14:33 (Info)",
+                "assigned_object_type": "dcim.device",
+                "assigned_object_id": 4,
+                "assigned_object": {
+                    "id": 4,
+                    "url": "https://www.example.com/api/dcim/devices/4/",
+                    "display": "test3",
+                    "name": "test3"
+                },
+                "created": "2022-12-04T14:33:52.067484Z",
+                "created_by": 1,
+                "kind": {
+                    "value": "info",
+                    "label": "Info"
+                },
+                "comments": "## test",
+                "tags": [],
+                "custom_fields": {},
+                "last_updated": "2022-12-07T08:19:57.807055Z"},
+                "expected_values": {
+                    "xdm.event.description": "## test",
+                    "xdm.target.resource.id": "4",
+                    "xdm.target.resource.type": "dcim.device",
+                    "xdm.target.resource.name": "test3",
+                    "xdm.alert.subcategory": "info"
+            }
+        },
+        {
+            "test_data_event_id": "bdae2500-85e8-4051-8e76-313cc64353cf",
+            "vendor": "netbox",
+            "product": "irm",
+            "dataset": "netbox_irm_raw",
+            "event_data": {
+                "id": 10,
+                "url": "https://www.example.com/api/extras/object-changes/10/",
+                "display": "extras | journal entry 2022-12-04 14:33 (Info) updated by netbox",
+                "time": "2022-12-07T08:19:57.810348Z",
+                "user": {
+                    "id": 1,
+                    "url": "https://www.example.com/api/users/users/1/",
+                    "display": "netbox",
+                    "username": "netbox"
+                },
+                "user_name": "netbox",
+                "request_id": "12345678-abcd-1234-abcd-1234567890ab",
+                "action": {
+                    "value": "update",
+                    "label": "Updated"
+                },
+                "changed_object_type": "extras.journalentry",
+                "changed_object_id": 6,
+                "changed_object": {
+                    "id": 6,
+                    "url": "https://www.example.com/api/extras/journal-entries/6/",
+                    "display": "2022-12-04 14:33 (Info)",
+                    "created": "2022-12-04T14:33:52.067484Z"
+                },
+                "prechange_data": {
+                    "kind": "",
+                    "tags": [],
+                    "created": "2022-12-04T14:33:52.067Z",
+                    "comments": "",
+                    "created_by": 1,
+                    "last_updated": "2022-12-04T14:33:52.067Z",
+                    "custom_fields": {},
+                    "assigned_object_id": 4,
+                    "assigned_object_type": 25
+                },
+                "postchange_data": {
+                    "kind": "info",
+                    "tags": [],
+                    "created": "2022-12-04T14:33:52.067Z",
+                    "comments": "",
+                    "created_by": 1,
+                    "last_updated": "2022-12-07T08:19:57.807Z",
+                    "custom_fields": {},
+                    "assigned_object_id": 4,
+                    "assigned_object_type": 25
+                }
+            },
+            "expected_values": {
+                "xdm.event.id": "12345678-abcd-1234-abcd-1234567890ab",
+                "xdm.event.description": "extras | journal entry 2022-12-04 14:33 (Info) updated by netbox",
+                "xdm.event.operation": "update",
+                "xdm.target.resource.id": "6",
+                "xdm.target.resource.name": "2022-12-04 14:33 (Info)",
+                "xdm.target.resource.type": "extras.journalentry",
+                "xdm.target.resource_before.name": null,
+                "xdm.source.user.username": "netbox"
+            }
+        }
+    ],
+    "ignored_validations": ["schema_test_data_types"]
+}

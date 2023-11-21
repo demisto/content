@@ -1,0 +1,63 @@
+{
+  "next": null,
+  "page_size": 10,
+  "previous": null,
+  "results": [
+    {
+      "analyst_score": null,
+      "analyst_tlp": null,
+      "confidence_score": 50,
+      "confidence_type": "ctix",
+      "country": "Australia",
+      "created": 1667250758,
+      "ctix_created": 1667250759,
+      "ctix_modified": 1667250759,
+      "first_seen": null,
+      "id": "734944c2-00a9-459d-a4fd-f800eb19bf49",
+      "indicator_type": "ipv4-addr",
+      "ioc_type": "ipv4-addr",
+      "is_actioned": false,
+      "is_deprecated": false,
+      "is_false_positive": false,
+      "is_reviewed": false,
+      "is_revoked": false,
+      "is_watchlist": false,
+      "is_whitelisted": false,
+      "last_seen": null,
+      "modified": 1667250759,
+      "name": "1.2.3.4",
+      "null": [],
+      "primary_attribute": null,
+      "published_collections": [
+        {
+          "id": "cf437db1-c15e-4842-80db-69c5c490f008",
+          "name": null
+        }
+      ],
+      "risk_severity": "UNKNOWN",
+      "source_collections": [
+        {
+          "id": "5432c580-e1f9-40c3-b40a-a47686dfcf22",
+          "name": "Free Text"
+        }
+      ],
+      "source_confidence": "HIGH",
+      "sources": [
+        {
+          "id": "7eb93036-688e-4916-ab1f-fe9015c16b78",
+          "name": "Import",
+          "source_type": "CUSTOM_STIX_SOURCES"
+        }
+      ],
+      "sub_type": "value",
+      "subscriber_collections": [],
+      "subscribers": [],
+      "tags": [],
+      "tlp": "AMBER",
+      "type": "indicator",
+      "valid_from": 1667250758,
+      "valid_until": null
+    }
+  ],
+  "total": 1
+}

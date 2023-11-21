@@ -1,0 +1,21 @@
+commonfields:
+  id: ThreeDigitAlphaCountryCodeToCountryName
+  version: -1
+name: ThreeDigitAlphaCountryCodeToCountryName
+script: ''
+type: python
+tags:
+- transformer
+comment: Script for converting country names based on 3 letter Alpha codes.
+enabled: true
+args:
+- name: value
+  description: Three digit country code
+  isArray: true
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/pycountry:1.0.0.36195
+runas: DBotWeakRole
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)

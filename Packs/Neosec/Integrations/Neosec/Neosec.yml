@@ -1,0 +1,122 @@
+category: Network Security
+commonfields:
+  id: Neosec
+  version: -1
+configuration:
+- name: credentials
+  display:
+  required: true
+  defaultvalue:
+  type: 9
+  additionalinfo: The API Key to use for connection
+  displaypassword: API Key
+  hiddenusername: true
+- name: url
+  display: URL
+  required: true
+  defaultvalue: https://neograph.neosec.com
+  type: 0
+  additionalinfo: ""
+- name: tenant_key
+  display: Tenant Key
+  required: true
+  defaultvalue:
+  type: 0
+  additionalinfo: ""
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- name: alert_status
+  display: Fetch alerts with status
+  defaultvalue: Open
+  type: 15
+  additionalinfo: ""
+  options:
+  - Open
+  - Closed
+  required: false
+- name: alert_type
+  display: Fetch alerts with type
+  defaultvalue:
+  type: 16
+  additionalinfo: ""
+  options:
+  - Runtime
+  - Posture
+  required: false
+- name: severities
+  display: Severity of alerts to fetch
+  defaultvalue: Low,Medium,High,Critical
+  type: 16
+  additionalinfo: ""
+  options:
+  - Info
+  - Low
+  - Medium
+  - High
+  - Critical
+  required: false
+- name: max_fetch
+  display: Max incident to fetch
+  defaultvalue: "50"
+  type: 0
+  additionalinfo: ""
+  required: false
+- name: first_fetch
+  display: First fetch time
+  defaultvalue: 3 days
+  type: 0
+  additionalinfo:
+  required: false
+- name: neosec_node_url
+  display: Neosec Node URL (Optional)
+  defaultvalue:
+  type: 0
+  additionalinfo: ""
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  defaultvalue: Neosec Incident
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+description: Neosec is reinventing application security. Its pioneering SaaS platform gives security professionals visibility into behavior across their entire API estate. Built for organizations that expose APIs to partners, suppliers, and users, Neosec discovers all your APIs, analyzes their behavior, and stops threats lurking inside.
+display: Neosec
+name: Neosec
+script:
+  commands:
+  - name: neosec-alert-status-set
+    description: Set alert status(Open, Closed)
+    arguments:
+    - name: alert_id
+      description: The alert id(UUID) in the Neosec platform.
+      required: true
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: alert_status
+      description: The alert status, the options are "Open" or "Closed".
+      required: true
+      defaultValue: ""
+      auto: PREDEFINED
+      predefined:
+      - Open
+      - Closed
+    outputs: []
+  isfetch: true
+  script: "-"
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.12.63474
+fromversion: 6.5.0
+defaultmapperin: Neosec - Incoming Mapper
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,848 @@
+{
+    "description": "FeedCyCognito Asset Indicator Layout",
+    "group": "indicator",
+    "id": "CyCognito Asset Information",
+    "indicatorsDetails": {
+        "tabs": [
+            {
+                "id": "default-main",
+                "name": "Info",
+                "sections": [
+                    {
+                        "h": 2,
+                        "i": "default-main-FeedCyCognito Asset-default-main-FeedCyCognito Asset - Layout-default-main-relationshipsTable",
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Relationships",
+                        "static": false,
+                        "type": "relationshipsTable",
+                        "w": 2,
+                        "x": 0,
+                        "y": 3
+                    },
+                    {
+                        "h": 2,
+                        "i": "default-main-FeedCyCognito Asset-default-main-FeedCyCognito Asset - Layout-default-main-relatedIncidents",
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Related Incidents",
+                        "static": false,
+                        "type": "relatedIncidents",
+                        "w": 2,
+                        "x": 0,
+                        "y": 5
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "default-main-FeedCyCognito Asset-default-main-FeedCyCognito Asset - Layout-default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "indicatortype",
+                                "height": 22,
+                                "id": "indicator-type",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "modified",
+                                "height": 22,
+                                "id": "indicator-modified",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "expiration",
+                                "height": 22,
+                                "id": "indicator-expiration",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "timestamp",
+                                "height": 22,
+                                "id": "indicator-timestamp",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Basic Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 1
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 1,
+                        "hideName": false,
+                        "i": "default-main-FeedCyCognito Asset-default-main-FeedCyCognito Asset - Layout-default-main-actions",
+                        "items": [
+                            {
+                                "args": {},
+                                "endCol": 1,
+                                "height": 44,
+                                "index": 0,
+                                "name": "Enrich indicator",
+                                "scriptId": "Builtin|||enrichIndicators",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "height": 44,
+                                "index": 1,
+                                "name": "Expire indicator",
+                                "scriptId": "Builtin|||expireIndicators",
+                                "sectionItemType": "button",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Actions",
+                        "static": false,
+                        "type": "actions",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "default-main-FeedCyCognito Asset-default-main-FeedCyCognito Asset - Layout-default-main-tagsAndTLP",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "tags",
+                                "height": 53,
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "field": {
+                                        "simple": "tags"
+                                    }
+                                },
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "height": 53,
+                                "index": 1,
+                                "name": "Add tags",
+                                "scriptId": "Builtin|||appendIndicatorField",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "trafficlightprotocol",
+                                "height": 53,
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "field": {
+                                        "simple": "tags"
+                                    }
+                                },
+                                "endCol": 2,
+                                "height": 53,
+                                "index": 1,
+                                "name": "Remove tags",
+                                "scriptId": "Builtin|||removeIndicatorField",
+                                "sectionItemType": "button",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Tags and TLP",
+                        "static": false,
+                        "type": "tagsAndTLP",
+                        "w": 1,
+                        "x": 2,
+                        "y": 3
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 4,
+                        "i": "default-main-FeedCyCognito Asset-default-main-FeedCyCognito Asset - Layout-default-main-indicatorTimeline",
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Timeline",
+                        "static": false,
+                        "type": "indicatorTimeline",
+                        "w": 1,
+                        "x": 2,
+                        "y": 5
+                    },
+                    {
+                        "h": 3,
+                        "i": "default-main-FeedCyCognito Asset-default-main-FeedCyCognito Asset - Layout-default-main-comments",
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Comments",
+                        "static": false,
+                        "type": "comments",
+                        "w": 1,
+                        "x": 2,
+                        "y": 9
+                    },
+                    {
+                        "h": 1,
+                        "hideName": true,
+                        "i": "default-main-FeedCyCognito Asset-default-main-FeedCyCognito Asset - Layout-default-main-reputationStatus",
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Verdict Status",
+                        "static": false,
+                        "type": "reputationStatus",
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "h": 1,
+                        "hideName": true,
+                        "i": "default-main-FeedCyCognito Asset-default-main-FeedCyCognito Asset - Layout-default-main-expirationStatus",
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Expiration Status",
+                        "static": false,
+                        "type": "expirationStatus",
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "default-main-FeedCyCognito Asset-default-main-FeedCyCognito Asset - Layout-default-main-reputationSources",
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Verdict",
+                        "static": false,
+                        "type": "reputationSources",
+                        "w": 1,
+                        "x": 1,
+                        "y": 1
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "default-main-FeedCyCognito Asset-default-main-FeedCyCognito Asset - Layout-default-main-publications",
+                        "items": [
+                            {
+                                "endCol": 4,
+                                "fieldId": "communitynotes",
+                                "height": 106,
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "publications",
+                                "height": 106,
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Publications",
+                        "static": false,
+                        "type": "publications",
+                        "w": 2,
+                        "x": 0,
+                        "y": 7
+                    },
+                    {
+                        "h": 2,
+                        "i": "default-main-cee760e0-ea0c-11ec-9aa5-1b164807e4dc",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Link to CyCognito Platform",
+                        "query": "FeedCyCognitoGetAssetEndpoint",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamicIndicator",
+                        "w": 1,
+                        "x": 2,
+                        "y": 1
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "ifthhjcj8m",
+                "name": "CyCognito Asset Information",
+                "sections": [
+                    {
+                        "displayType": "CARD",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "ifthhjcj8m-FeedCyCognito Asset-ifthhjcj8m-7610e820-e0d8-11ec-85f0-1354bd87b429",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "feedcycognitoassetid",
+                                "height": 53,
+                                "id": "832ffa00-e0d8-11ec-85f0-1354bd87b429",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "feedcycognitoassettype",
+                                "height": 53,
+                                "id": "85df6290-e0d8-11ec-85f0-1354bd87b429",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "feedcycognitoinvestigationstatus",
+                                "height": 53,
+                                "id": "8cf46f30-e0d8-11ec-85f0-1354bd87b429",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "feedcycognitohostingtypes",
+                                "height": 53,
+                                "id": "8ab30ab0-e0d8-11ec-85f0-1354bd87b429",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "feedcycognitoorganizations",
+                                "height": 53,
+                                "id": "9046f1a0-ea04-11ec-af07-2b50bf4cd363",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "feedcycognitolocations",
+                                "height": 53,
+                                "id": "2b2cb890-e0e0-11ec-8ed8-7568cb70f2dc",
+                                "index": 5,
+                                "listId": "ifthhjcj8m-ffbc21c0-e0d8-11ec-85f0-1354bd87b429",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "firstseenbysource",
+                                "height": 53,
+                                "id": "0480ef90-e6e9-11ec-b4a2-ff1d371925ae",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "lastseenbysource",
+                                "height": 53,
+                                "id": "110b89a0-e6e9-11ec-b4a2-ff1d371925ae",
+                                "index": 1,
+                                "listId": "ifthhjcj8m-FeedCyCognito Asset-ifthhjcj8m-7610e820-e0d8-11ec-85f0-1354bd87b429",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "feedcycognitosecuritygrade",
+                                "height": 53,
+                                "id": "9acd3420-e0d8-11ec-85f0-1354bd87b429",
+                                "index": 2,
+                                "listId": "ifthhjcj8m-7610e820-e0d8-11ec-85f0-1354bd87b429",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "feedcycognitostatus",
+                                "height": 53,
+                                "id": "85e5a030-ea04-11ec-af07-2b50bf4cd363",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "feedcycognitoissuescount",
+                                "height": 53,
+                                "id": "4dc931d0-e0e0-11ec-8ed8-7568cb70f2dc",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "feedcycognitosevereissues",
+                                "height": 53,
+                                "id": "9ccd22d0-e0d8-11ec-85f0-1354bd87b429",
+                                "index": 4,
+                                "listId": "ifthhjcj8m-7610e820-e0d8-11ec-85f0-1354bd87b429",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Asset Details",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "ifthhjcj8m-FeedCyCognito Asset-ifthhjcj8m-ffbc21c0-e0d8-11ec-85f0-1354bd87b429",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "feedcycognitotags",
+                                "height": 53,
+                                "id": "d8e5d9f0-e0d9-11ec-8ed8-7568cb70f2dc",
+                                "index": 0,
+                                "listId": "ifthhjcj8m-ffbc21c0-e0d8-11ec-85f0-1354bd87b429",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "feedcycognitocomment",
+                                "height": 106,
+                                "id": "ce91ab10-e0dd-11ec-8ed8-7568cb70f2dc",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Comments",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "ifthhjcj8m-FeedCyCognito Asset-ifthhjcj8m-80f6e800-e0da-11ec-8ed8-7568cb70f2dc",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "feedcycognitosubjectcommonname",
+                                "height": 53,
+                                "id": "ff9b4160-e0da-11ec-8ed8-7568cb70f2dc",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "feedcycognitosubjectalternativenames",
+                                "height": 53,
+                                "id": "00a97d10-e0db-11ec-8ed8-7568cb70f2dc",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "feedcycognitosubjectorganization",
+                                "height": 53,
+                                "id": "0392e160-e0db-11ec-8ed8-7568cb70f2dc",
+                                "index": 0,
+                                "listId": "ifthhjcj8m-80f6e800-e0da-11ec-8ed8-7568cb70f2dc",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "feedcycognitosubjectorganizationunit",
+                                "height": 53,
+                                "id": "048a39b0-e0db-11ec-8ed8-7568cb70f2dc",
+                                "index": 1,
+                                "listId": "ifthhjcj8m-80f6e800-e0da-11ec-8ed8-7568cb70f2dc",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "feedcycognitosubjectlocality",
+                                "height": 53,
+                                "id": "0676a060-e0db-11ec-8ed8-7568cb70f2dc",
+                                "index": 0,
+                                "listId": "ifthhjcj8m-80f6e800-e0da-11ec-8ed8-7568cb70f2dc",
+                                "sectionItemType": "field",
+                                "startCol": 4
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "feedcycognitosubjectstate",
+                                "height": 53,
+                                "id": "07dc23d0-e0db-11ec-8ed8-7568cb70f2dc",
+                                "index": 1,
+                                "listId": "ifthhjcj8m-80f6e800-e0da-11ec-8ed8-7568cb70f2dc",
+                                "sectionItemType": "field",
+                                "startCol": 4
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "feedcycognitosubjectcountry",
+                                "height": 53,
+                                "id": "0a782b70-e0db-11ec-8ed8-7568cb70f2dc",
+                                "index": 2,
+                                "listId": "ifthhjcj8m-80f6e800-e0da-11ec-8ed8-7568cb70f2dc",
+                                "sectionItemType": "field",
+                                "startCol": 4
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Certificate Subject Information",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "ifthhjcj8m-FeedCyCognito Asset-ifthhjcj8m-82381a90-e0da-11ec-8ed8-7568cb70f2dc",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "feedcycognitoissuercommonname",
+                                "height": 53,
+                                "id": "a63e35f0-e0da-11ec-8ed8-7568cb70f2dc",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "feedcycognitoissueralternativenames",
+                                "height": 53,
+                                "id": "a7d94850-e0da-11ec-8ed8-7568cb70f2dc",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "feedcycognitoissuerorganization",
+                                "height": 53,
+                                "id": "ab401a00-e0da-11ec-8ed8-7568cb70f2dc",
+                                "index": 1,
+                                "listId": "ifthhjcj8m-82381a90-e0da-11ec-8ed8-7568cb70f2dc",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "feedcycognitoissuerorganizationunit",
+                                "height": 53,
+                                "id": "ac996870-e0da-11ec-8ed8-7568cb70f2dc",
+                                "index": 1,
+                                "listId": "ifthhjcj8m-82381a90-e0da-11ec-8ed8-7568cb70f2dc",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "feedcycognitoissuerlocality",
+                                "height": 53,
+                                "id": "aea34230-e0da-11ec-8ed8-7568cb70f2dc",
+                                "index": 0,
+                                "listId": "ifthhjcj8m-82381a90-e0da-11ec-8ed8-7568cb70f2dc",
+                                "sectionItemType": "field",
+                                "startCol": 4
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "feedcycognitoissuerstate",
+                                "height": 53,
+                                "id": "af74ea10-e0da-11ec-8ed8-7568cb70f2dc",
+                                "index": 1,
+                                "listId": "ifthhjcj8m-82381a90-e0da-11ec-8ed8-7568cb70f2dc",
+                                "sectionItemType": "field",
+                                "startCol": 4
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "feedcycognitoissuercountry",
+                                "height": 53,
+                                "id": "b0dbcd10-e0da-11ec-8ed8-7568cb70f2dc",
+                                "index": 2,
+                                "listId": "ifthhjcj8m-82381a90-e0da-11ec-8ed8-7568cb70f2dc",
+                                "sectionItemType": "field",
+                                "startCol": 4
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Certificate Issuer Information",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 8
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "ifthhjcj8m-FeedCyCognito Asset-ifthhjcj8m-c2dee880-e0df-11ec-8ed8-7568cb70f2dc",
+                        "items": [
+                            {
+                                "endCol": 3,
+                                "fieldId": "feedcycognitoopenports",
+                                "height": 106,
+                                "id": "70562d20-e6f3-11ec-b4a2-ff1d371925ae",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "feedcycognitoclosedports",
+                                "height": 106,
+                                "id": "746a55d0-e6f3-11ec-b4a2-ff1d371925ae",
+                                "index": 0,
+                                "listId": "ifthhjcj8m-FeedCyCognito Asset-ifthhjcj8m-c2dee880-e0df-11ec-8ed8-7568cb70f2dc",
+                                "sectionItemType": "field",
+                                "startCol": 3
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Open \u0026 Close Ports",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 10
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "ifthhjcj8m-FeedCyCognito Asset-ifthhjcj8m-259d8bd0-e0e4-11ec-8ed8-7568cb70f2dc",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "ipaddress",
+                                "height": 53,
+                                "id": "8805f5a0-e0e4-11ec-8ed8-7568cb70f2dc",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "domainname",
+                                "height": 53,
+                                "id": "ca520160-e0e4-11ec-8ed8-7568cb70f2dc",
+                                "index": 1,
+                                "listId": "ifthhjcj8m-FeedCyCognito Asset-ifthhjcj8m-259d8bd0-e0e4-11ec-8ed8-7568cb70f2dc",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "feedcycognitoaliveendpoint",
+                                "height": 53,
+                                "id": "354d0c90-e0e4-11ec-8ed8-7568cb70f2dc",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "feedcycognitodomains",
+                                "height": 53,
+                                "id": "43a031a0-e0e4-11ec-8ed8-7568cb70f2dc",
+                                "index": 3,
+                                "listId": "ifthhjcj8m-FeedCyCognito Asset-ifthhjcj8m-259d8bd0-e0e4-11ec-8ed8-7568cb70f2dc",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "feedcycognitocertificatesignature",
+                                "height": 53,
+                                "id": "3da324b0-e0e4-11ec-8ed8-7568cb70f2dc",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "creationdate",
+                                "height": 53,
+                                "id": "64227d70-e0e4-11ec-8ed8-7568cb70f2dc",
+                                "index": 0,
+                                "listId": "ifthhjcj8m-FeedCyCognito Asset-ifthhjcj8m-259d8bd0-e0e4-11ec-8ed8-7568cb70f2dc",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "feedcycognitoipaddresses",
+                                "height": 53,
+                                "id": "4b6ddfe0-e0e4-11ec-8ed8-7568cb70f2dc",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "feedcycognitosignaturealgorithm",
+                                "height": 53,
+                                "id": "55f81610-e0e4-11ec-8ed8-7568cb70f2dc",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "feedcycognitobusinessunits",
+                                "height": 53,
+                                "id": "3b4ed470-e0e4-11ec-8ed8-7568cb70f2dc",
+                                "index": 3,
+                                "listId": "ifthhjcj8m-FeedCyCognito Asset-ifthhjcj8m-259d8bd0-e0e4-11ec-8ed8-7568cb70f2dc",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "feedcycognitoexpiration",
+                                "height": 53,
+                                "id": "4e5b8fa0-e6e7-11ec-b4a2-ff1d371925ae",
+                                "index": 0,
+                                "listId": "ifthhjcj8m-FeedCyCognito Asset-ifthhjcj8m-259d8bd0-e0e4-11ec-8ed8-7568cb70f2dc",
+                                "sectionItemType": "field",
+                                "startCol": 4
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "feedcycognitodynamicallyresolved",
+                                "height": 53,
+                                "id": "8b29f1f0-e0e4-11ec-8ed8-7568cb70f2dc",
+                                "index": 1,
+                                "listId": "ifthhjcj8m-259d8bd0-e0e4-11ec-8ed8-7568cb70f2dc",
+                                "sectionItemType": "field",
+                                "startCol": 4
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "feedcycognitosubdomains",
+                                "height": 53,
+                                "id": "bd58ee10-e0e4-11ec-8ed8-7568cb70f2dc",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 4
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "feedcycognitoassetdiscoverability",
+                                "height": 53,
+                                "id": "4274f810-e0e4-11ec-8ed8-7568cb70f2dc",
+                                "index": 3,
+                                "listId": "ifthhjcj8m-FeedCyCognito Asset-ifthhjcj8m-259d8bd0-e0e4-11ec-8ed8-7568cb70f2dc",
+                                "sectionItemType": "field",
+                                "startCol": 4
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Asset Specific Details",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 3
+                    }
+                ],
+                "type": "custom"
+            }
+        ]
+    },
+    "name": "CyCognito Asset Information",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.2.0"
+}

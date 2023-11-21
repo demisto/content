@@ -1,0 +1,31 @@
+args:
+- description: The URL to encode.
+  name: value
+  required: true
+- name: safe_character
+  default: true
+  description: The optional safe_character argument allows to specify ASCII characters that should not be encoded. Default value is "/".
+  defaultValue: /
+- name: ignore_safe_character
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Whether to ignore safe_character argument encoding - all characters will be encoded. Default is "false".
+  defaultValue: "false"
+comment: 'Encodes a URL string by replacing special characters in the string using the %xx escape. For example: https://example.com converts to https:%2F%2Fexample.com.'
+commonfields:
+  id: URLEncode
+  version: -1
+enabled: true
+name: URLEncode
+script: '-'
+subtype: python3
+tags:
+- transformer
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.10.12.63474
+tests:
+- URLEncode-Test
+fromversion: 5.0.0

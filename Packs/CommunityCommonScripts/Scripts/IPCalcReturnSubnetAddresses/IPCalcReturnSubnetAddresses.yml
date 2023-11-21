@@ -1,0 +1,21 @@
+args:
+- description: Subnet to use
+  name: subnet
+  required: true
+comment: An automation script to return subnet addresses
+commonfields:
+  id: IPCalcReturnSubnetAddresses
+  version: -1
+name: IPCalcReturnSubnetAddresses
+outputs:
+- contextPath: IPCalc.IP.Address
+  description: Subnet addresses
+  type: String
+script: '-'
+subtype: python3
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.10.12.63474
+tests:
+- No tests
+fromversion: 6.0.0

@@ -37,8 +37,9 @@ class Client:
         self.project = params.get('project')
         self.location = params.get('location')
         self.key_ring = params.get('key_ring')
-        self.service_account = params.get('service_account')
-
+        self.service_account = params.get('credentials_service_account', {}).get('password') or params.get('service_account')
+        if not self.service_account:
+            raise DemistoException("User's Service Account JSON must be provided.")
         handle_proxy()
         # Creates an API client for the KMS API.
         try:
@@ -719,8 +720,8 @@ def enable_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any, 
     # Print results
     response = client.kms_client.update_crypto_key_version(request={'crypto_key_version': version,
                                                                     'update_mask': update_mask})
-    return(f'CryptoKeyVersion {crypto_key_version_name}\'s state has been set to '
-           f'{kms.CryptoKeyVersion.CryptoKeyVersionState(response.state).name}.', None, None)
+    return (f'CryptoKeyVersion {crypto_key_version_name}\'s state has been set to '
+            f'{kms.CryptoKeyVersion.CryptoKeyVersionState(response.state).name}.', None, None)
 
 
 def destroy_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any, Any]:

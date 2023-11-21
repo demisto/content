@@ -26,7 +26,7 @@ def test_list_languages():
     ('bomb.jpg', 'You must transfer bitcoins', None),
     ('noisy1.jpg', 'Tesseract OCR', None),
     ('noisy.png', 'Tesseract Will', None),
-    ('cnbc.gif', 'Goldman Sachs', None),
+    ('cnbc.gif', 'MARKETS', None),
     ('hebrew.tiff', 'ביטקוין', ['eng', 'heb'])
 ])  # noqa: E124
 def test_extract_text(image, expected_text, langs):

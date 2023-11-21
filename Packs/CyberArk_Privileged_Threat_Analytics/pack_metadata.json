@@ -1,0 +1,18 @@
+{
+    "name": "CyberArk Privileged Threat Analytics",
+    "description": "CyberArk Privileged Threat Analytics (PTA) leverages the analytic capabilities of PTA and assigns a risk score to privileged sessions.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "marketplacev2"
+    ]
+}

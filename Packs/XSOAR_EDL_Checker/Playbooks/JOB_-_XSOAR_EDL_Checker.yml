@@ -1,0 +1,243 @@
+id: JOB - XSOAR EDL Checker
+version: -1
+name: JOB - XSOAR EDL Checker
+description: "This playbook executes the XSOAR EDL Checker automation and will send email notification when an EDL is not functioning.   \n\nRun this playbook as a job to monitor your EDLs."
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fa6ee827-92a4-4776-83b6-79b7441fae37
+    type: start
+    task:
+      id: fa6ee827-92a4-4776-83b6-79b7441fae37
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 50\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 2dd36113-a90b-4fb5-8833-e6564215240c
+    type: title
+    task:
+      id: 2dd36113-a90b-4fb5-8833-e6564215240c
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 1070\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 5db5364b-6935-4ef9-838d-965d4a8e16a5
+    type: regular
+    task:
+      id: 5db5364b-6935-4ef9-838d-965d4a8e16a5
+      version: -1
+      name: Check the EDLs
+      description: Runs the xsoaredlchecker-get-edl command for all configured instances, and returns a consolidated output.
+      type: regular
+      iscommand: false
+      brand: ""
+      script: XSOARAllEDLCheckerAutomation
+    nexttasks:
+      '#none#':
+      - "4"
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 195\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 5b72b7e7-1ea9-4cb9-85d8-12de534b353a
+    type: condition
+    task:
+      id: 5b72b7e7-1ea9-4cb9-85d8-12de534b353a
+      version: -1
+      name: Are there failing EDLs?
+      description: 'Check if there are EDLs which are not returning a 200 OK response. '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - '7'
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: EDLChecker.Status
+            iscontext: true
+          right:
+            value:
+              simple: "200"
+    continueonerrortype: ""
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 370\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 0393f17d-09a2-4cae-8626-90f838e14cec
+    type: condition
+    task:
+      id: 0393f17d-09a2-4cae-8626-90f838e14cec
+      version: -1
+      name: Should we send notifications?
+      description: 'Check whether the input for SendNotification has a list of emails to send notification to. '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - '7'
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.SendNotification
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 9860a8d2-fe4e-454a-8363-3796e5dc6914
+    type: regular
+    task:
+      id: 9860a8d2-fe4e-454a-8363-3796e5dc6914
+      version: -1
+      name: Send Notification
+      description: Send an email
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      body:
+        simple: |-
+          The XSOAR EDL Checker has noted failures on the following EDLS, view the full results here:
+
+          ${demistoUrls.investigation}
+
+          Results:
+          ${EDLChecker}
+      subject:
+        simple: XSOAR EDL Checker Notification
+      to:
+        complex:
+          root: inputs.SendNotification
+    separatecontext: false
+    continueonerrortype: ""
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '7':
+    id: '7'
+    taskid: 267cc391-387c-450c-8427-d4d51a34c37b
+    type: regular
+    task:
+      id: 267cc391-387c-450c-8427-d4d51a34c37b
+      version: -1
+      name: Close
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      closeNotes:
+        simple: Job's done.
+      closeReason:
+        simple: Other
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 895\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1085,\n      \"width\": 605,\n      \"x\": 50,\n      \"y\": 50\n    }\n  }\n}"
+inputs:
+- key: SendNotification
+  value: {}
+  required: false
+  description: 'The comma separated list of email addresses to send notification to. '
+  playbookInputQuery:
+outputs: []
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,110 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: InfobloxBloxOneThreatDefense
+  version: -1
+configuration:
+- displaypassword: Service API Key
+  name: credentials
+  required: true
+  hiddenusername: true
+  type: 9
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+description: BloxOne Threat Defense is a hybrid cybersecurity solution that leverages DNS as the first line of defense to detect and block cyber threats.
+display: 'Infoblox BloxOne Threat Defense'
+name: InfobloxBloxOneThreatDefense
+script:
+  commands:
+  - arguments:
+    - description: 'The type of indcator to search by. Available values: host, ip, url, hash, email.'
+      name: indicator_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - host
+      - ip
+      - url
+      - hash
+      - email
+    - description: 'The indicator to search on.'
+      name: value
+      required: true
+    - description: 'The sources to query. Multiple sources can be specified. If no source is specified, the call will search on all available sources. (You can see the list of the available sources by running bloxone-td-dossier-source-list).'
+      isArray: true
+      name: sources
+    - description: 'The interval in seconds between each poll.'
+      name: interval_in_seconds
+      defaultValue: 10
+    - description: 'The timeout in seconds until polling ends.'
+      name: timeout
+      defaultValue: 600
+    - description: 'used for polling.'
+      name: job_id
+    description: 'The Dossier Lookup API returns detailed information on the specified indicator from the requested sources.'
+    polling: true
+    name: bloxone-td-dossier-lookup-get
+    outputs:
+    - contextPath: BloxOneTD.DossierLookup.source
+      description: 'The Dossier source.'
+      type: String
+    - contextPath: BloxOneTD.DossierLookup.target
+      description: The targeted indicator.
+      type: String
+    - contextPath: BloxOneTD.DossierLookup.task_id
+      description: The Dossier task ID.
+      type: String
+    - contextPath: BloxOneTD.DossierLookup.type
+      description: 'The indicator type.'
+      type: String
+  - name: bloxone-td-dossier-source-list
+    description: Get available Dossier sources.
+    outputs:
+    - contextPath: BloxOneTD.DossierSource
+      description: Available Dossier sources.
+      type: String
+  - arguments:
+    - description: The free query filter argument.
+      name: filter
+    - description: Filter by target domain.
+      name: target_domain
+    - description: Filter by values that are greater than or equal to the given value. You can use ISO format (e.g. '2023-02-14T00:11:22Z') or use a relative time (e.g. "3 days").
+      name: detected_at
+    - description: Maximum number of results to return from the query.
+      name: limit
+      defaultValue: 50
+    - description: Return results starting at this offset. Should be an integer. Default is 0.
+      name: offset
+    description: Get lookalike domain lists.
+    polling: true
+    name: bloxone-td-lookalike-domain-list
+    outputs:
+    - contextPath: BloxOneTD.LookalikeDomain.detected_at
+      description: The date of the lookalike detection.
+      type: Date
+    - contextPath: BloxOneTD.LookalikeDomain.lookalike_domain
+      description: The lookalike domain.
+      type: String
+    - contextPath: BloxOneTD.LookalikeDomain.lookalike_host
+      description: 'The lookalike host.'
+      type: String
+    - contextPath: BloxOneTD.LookalikeDomain.reason
+      description: The reason for the detection.
+      type: String
+    - contextPath: BloxOneTD.LookalikeDomain.target_domain
+      description: The domain that was targeted by the lookalike domain.
+      type: String
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.12.66339
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

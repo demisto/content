@@ -5,13 +5,14 @@ var RESPONSE_TYPES = {
     'xml': 'text/xml',
     'octet-stream': 'application/octet-stream'
 };
-var SSL_PORT = '56105';
-var NON_SSL_PORT = '50105';
+var API_REST_PORT = '50105';
 var LAST_HOURS = 'lastHours';
 var LAST_MINUTES = 'lastMinutes';
 var QUERY = 'query';
-var USER_NAME = params.username;
-var PASSWORD = params.password;
+var USER_NAME = params.user_creds ? params.user_creds.identifier : params.username;
+
+var PASSWORD = (params.user_creds || params).password;
+
 
 function fixUrl(base) {
     var url = base.trim();
@@ -33,18 +34,14 @@ function getUrl(currentUrl){
         // Check if port was provided, omit it if yes
         var match = args.concentratorIP.match(/(https{0,1}:\/\/?.*):/);
         urlToReturn = match ? match[1] : args.concentratorIP;
-        var port = args.concentratorPort;
-        if(port){
-            if(port === SSL_PORT){
-                urlToReturn = urlToReturn.indexOf('https://') === -1 ? 'https://' + urlToReturn : urlToReturn;
-            }
-            else{
-                urlToReturn = urlToReturn.indexOf('http://') === -1 ? 'http://' + urlToReturn : urlToReturn;
-            }
+        var port = args.concentratorPort || API_REST_PORT;
+        var useSSL = args.useSSL;
+
+        if(useSSL === "true"){
+            urlToReturn = urlToReturn.indexOf('https://') === -1 ? 'https://' + urlToReturn : urlToReturn;
         }
         else{
             urlToReturn = urlToReturn.indexOf('http://') === -1 ? 'http://' + urlToReturn : urlToReturn;
-            port = NON_SSL_PORT;
         }
 
         urlToReturn = urlToReturn + ":" + port;
@@ -511,7 +508,21 @@ function parseDownloadResponse(resp) {
             if(args && args.fileExt){
                 extension = args.fileExt;
             }
-            return createFileEntry(resp.Bytes, extension);
+            if (args.renderToContext === "true" && args.render === "application/json"){
+                var jsonstr = JSON.parse(resp.Body);
+                return {
+                    Type: entryTypes.note,
+                    Contents: jsonstr,
+                    ContentsFormat: formats.json,
+                    HumanReadable: jsonstr["logs"],
+                    ReadableContentsFormat: formats.json,
+                    EntryContext: {
+                        'NetWitness.Packets': jsonstr["logs"]
+                    }
+                };
+            } else{
+                return createFileEntry(resp.Bytes, extension);
+            }
         } catch (e) {
             return e;
         }

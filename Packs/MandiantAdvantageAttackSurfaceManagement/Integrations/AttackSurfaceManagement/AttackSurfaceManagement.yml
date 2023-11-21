@@ -1,0 +1,120 @@
+category: Vulnerability Management
+commonfields:
+  id: AttackSurfaceManagement
+  version: -1
+configuration:
+- name: url
+  defaultvalue: https://asm-api.advantage.mandiant.com/
+  display: Your server URL
+  required: true
+  type: 0
+  additionalinfo: The ASM API URL.  Leave as `https://asm-api.advantage.mandiant.com/` if you're unsure
+- name: credentials
+  displaypassword: Secret Key
+  display: Access Key
+  additionalinfo: The Access and Secret Keys used for authentication
+  required: true
+  type: 9
+- name: project_id
+  display: Project ID
+  type: 0
+  additionalinfo: The ASM Project ID to retrieve issues from
+  required: false
+- name: collection_ids
+  display: Collection IDs
+  type: 0
+  additionalinfo: A list of Collection IDs, separated by commas (`,`)
+  required: false
+- defaultvalue: 7 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  type: 0
+  additionalinfo: The number of days to look back when first retrieving issues.
+  required: false
+- name: max_fetch
+  defaultvalue: 30
+  display: Maximum Issues To Fetch
+  required: true
+  type: 0
+  additionalinfo: The maximum number of issues to pull during a single fetch-incidents command.
+- name: minimum_severity
+  defaultvalue: 1
+  display: Minimum Severity
+  required: true
+  type: 0
+  additionalinfo: The minimum severity of issues to import.  Between 1 and 5.
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- defaultvalue: 'false'
+  display: Mirror incoming incidents
+  name: incoming_mirror
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+description: 'Integrate with Mandiant Advantage Attack Surface Management to import "issues" as Incidents.'
+display: 'Mandiant Attack Surface Management'
+name: AttackSurfaceManagement
+script:
+  commands:
+  - name: attacksurfacemanagement-get-projects
+    description: Retrieve a list of all accessible ASM projects.
+    outputs:
+    - contextPath: MandiantAdvantageASM.Projects.Name
+      description: The name of the project
+      type: String
+    - contextPath: MandiantAdvantageASM.Projects.ID
+      description: The ID of the project
+      type: Number
+    - contextPath: MandiantAdvantageASM.Projects.Owner
+      description: The E-Mail of the project owner
+  - name: attacksurfacemanagement-get-collections
+    description: Retrieve a list of collections for a specified project
+    arguments:
+    - name: project_id
+      description: 'The ID of the project to query collections for'
+    outputs:
+    - contextPath: MandiantAdvantageASM.Collections.Name
+      description: The name of the collection
+      type: String
+    - contextPath: MandiantAdvantageASM.Collections.ID
+      description: The ID of the collection
+      type: String
+    - contextPath: MandiantAdvantageASM.Collections.Owner
+      description: The owner of the collection
+  - name: fetch-incidents
+    description: Fetch Incidents
+  - name: get-remote-data
+    description: Update a specific incident
+    arguments:
+    - description: The ASM Incident ID
+      name: id
+      required: true
+    - description: Retrieve entries that were created after lastUpdate.
+      name: lastUpdate
+      defaultValue: '0'
+  - name: update-remote-system
+    description: Update issue in Mandiant Advantage ASM
+    arguments: []
+  isfetch: true
+  isremotesyncin: true
+  isremotesyncout: true
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.13.72123
+fromversion: "6.8.0"
+tests:
+- No tests (auto formatted)

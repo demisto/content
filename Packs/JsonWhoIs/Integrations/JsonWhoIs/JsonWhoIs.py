@@ -1,7 +1,7 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import urllib3
 
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 
 # Disable insecure warnings
@@ -12,7 +12,7 @@ urllib3.disable_warnings()
 PARAMS = demisto.params()
 
 # TOKEN
-TOKEN = PARAMS.get('token')
+TOKEN = PARAMS.get('credentials', {}).get('password') or PARAMS.get('token')
 
 # Service base URL
 BASE_URL = 'https://jsonwhois.com'

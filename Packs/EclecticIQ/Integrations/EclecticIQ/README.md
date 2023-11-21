@@ -1,6 +1,6 @@
 <!-- HTML_DOC -->
 <div class="cl-preview-section">
-<p>Threat Intelligence Platform that connects and interprets intelligence data from open sources, commercial suppliers and industry partnerships.<br> EclecticIQ Platform is used through Cortex XSOAR to get reputation of IOCs and their related entities.<br> This integration was integrated and tested with version 2.3.0-1 of EclecticIQ Platform</p>
+<p>Deprecated. No available replacement.</p>
 </div>
 <div class="cl-preview-section">
 <h2 id="use-cases">Use Cases</h2>
@@ -239,6 +239,7 @@
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
 <p>Gets the reputation of a URL observable.</p>
+<p>Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.</p>
 </div>
 <div class="cl-preview-section">
 <h5 id="base-command-1">Base Command</h5>
@@ -1050,6 +1051,7 @@
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
 <p>Gets the reputation of a domain observable.</p>
+<p>Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.</p>
 </div>
 <div class="cl-preview-section">
 <h5 id="base-command-5">Base Command</h5>

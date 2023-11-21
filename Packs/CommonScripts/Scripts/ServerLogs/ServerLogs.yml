@@ -1,0 +1,23 @@
+comment: Uses the ssh integration to grab the host server logs
+commonfields:
+  id: ServerLogs
+  version: -1
+dockerimage: demisto/python3:3.10.12.63474
+enabled: true
+name: ServerLogs
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+dependson:
+  must:
+  - remoteaccess|||ssh
+tags:
+- widget
+type: python
+fromversion: 6.0.0
+marketplaces:
+- xsoar
+- marketplacev2
+tests:
+- No tests (auto formatted)

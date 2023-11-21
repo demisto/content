@@ -1,5 +1,5 @@
-var apiid = params.apiid;
-var apikey = params.apikey;
+var apiid = params.creds ? params.creds.identifier : params.apiid;
+var apikey = params.creds ? params.creds.password : params.apikey;
 var base = 'https://my.incapsula.com';
 var proxy = params.proxy;
 
@@ -114,6 +114,7 @@ var urlDict = {
     'incap-change-logs-collector-configuration':'/api/logscollector/change/status',
     'incap-get-infra-protection-statistics': '/api/v1/infra/stats',
     'incap-get-infra-protection-events': '/api/v1/infra/events',
+    'incap-get-infra-protection-top-items-table': '/api/v1/infra/top-table',
     /*
         Login Protect
      */

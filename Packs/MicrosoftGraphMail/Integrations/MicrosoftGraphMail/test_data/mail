@@ -4,7 +4,7 @@
     "createdDateTime": "2019-04-16T19:40:00Z",
     "lastModifiedDateTime": "2019-04-16T19:40:02Z",
     "changeKey": "change_key",
-    "categories": [],
+    "categories": ["Green category"],
     "receivedDateTime": "2019-04-16T19:40:01Z",
     "sentDateTime": "2019-04-16T19:40:01Z",
     "hasAttachments": false,

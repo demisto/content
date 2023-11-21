@@ -1,0 +1,575 @@
+category: Email
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: EWS Extension Online Powershell v2
+  version: -1
+configuration:
+- defaultvalue: https://outlook.office365.com
+  display: Exchange Online URL
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- displaypassword: Certificate
+  name: certificate
+  type: 9
+  required: true
+  additionalinfo: A pfx certificate encoded in Base64.
+  hiddenusername: true
+  section: Connect
+- displaypassword: Password
+  name: password
+  required: true
+  type: 9
+  hiddenusername: true
+  section: Connect
+- display: The organization used in app-only authentication.
+  name: organization
+  required: true
+  type: 0
+  section: Connect
+- display: The application ID from the Azure portal
+  name: app_id
+  required: true
+  type: 0
+  section: Connect
+description: Deprecated. Use ***EWS Extension Online Powershell v3*** instead.
+display: EWS Extension Online Powershell v2 (Deprecated)
+name: EWS Extension Online Powershell v2
+deprecated: true
+script:
+  commands:
+  - arguments:
+    - name: identity
+      description: The identity of the mailbox you want to view.
+    - isArray: true
+      name: property_sets
+      description: 'A comma-separated list of property sets to fetch. These property sets will supplement the outputs of this integration.  Available properties are: "All", "Minimum", "AddressList", "Archive", "Audit", "Delivery", "Hold", "Moderation", "Move", "Policy", "PublicFolder", "Quota", "Resource", "Retention", "SCL", "SoftDelete", "StatisticsSeed".'
+      defaultValue: Minimum
+    - description: The object's location in Active Directory by which to filter the results.
+      name: organizational_unit
+    - description: The primary SMTP email address of the mailbox you want to view. Cannot be used with the user_principal_name argument. Can be retrieved using the ews-user-list command.
+      name: primary_smtp_address
+    - description: The UPN of the mailbox you want to view. Cannot be used with the primary_smtp_address argument. Can be retrieved using the ews-user-list command.
+      name: user_principal_name
+    - description: The maximum number of results to retrieve. Default is 10.
+      name: limit
+      defaultValue: '10'
+    outputs:
+    - contextPath: EWS.Mailbox.EmailAddresses
+      description: Email addresses of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.AuditBypassEnabled
+      description: Whether audit bypass is enabled.
+      type: Boolean
+    - contextPath: EWS.Mailbox.DistinguishedName
+      description: Distinguished name of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.ExchangeObjectId
+      description: Exchange object ID of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.ExchangeVersion
+      description: Exchange version of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.Guid
+      description: GUID of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.Id
+      description: ID of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.Identity
+      description: Identity of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.IsValid
+      description: Whether the mailbox is valid.
+      type: Boolean
+    - contextPath: EWS.Mailbox.Name
+      description: Name of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.ObjectCategory
+      description: Object category of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.ObjectClass
+      description: Object class of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.ObjectId
+      description: Object ID of the of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.ObjectState
+      description: Object state of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.OrganizationId
+      description: Organization ID of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.OriginatingServer
+      description: Originating server of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.PSComputerName
+      description: PowerShell computer name of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.PSShowComputerName
+      description: PowerShell show computer name of the mailbox.
+      type: Boolean
+    - contextPath: EWS.Mailbox.RunspaceId
+      description: Run space ID of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.WhenChanged
+      description: Local time of when the mailbox was last changed.
+      type: Date
+    - contextPath: EWS.Mailbox.WhenChangedUTC
+      description: UTC time of when the mailbox was last changed.
+      type: Date
+    - contextPath: EWS.Mailbox.WhenCreated
+      description: Local time of when the mailbox was created.
+      type: Date
+    - contextPath: EWS.Mailbox.WhenCreatedUTC
+      description: UTC time of when the mailbox was created.
+      type: Date
+    description: Displays mailbox objects and attributes, populate property pages, or supplies mailbox information to other tasks.
+    name: ews-mailbox-list
+  - arguments:
+    - name: identity
+      description: The identity of the mailbox you want to view.
+    - description: The object's location in Active Directory by which to filter the results.
+      name: organizational_unit
+    - description: The primary SMTP email address of the mailbox you want to view. Cannot be used with the user_principal_name argument. Can be retrieved using the ews-user-list command.
+      name: primary_smtp_address
+    - description: The UPN of the mailbox you want to view. Cannot be used with the primary_smtp_address argument. Can be retrieved using the ews-user-list command.
+      name: user_principal_name
+    - description: The maximum number of results to retrieve. Default is 10.
+      name: limit
+      defaultValue: '10'
+    outputs:
+    - contextPath: EWS.CASMailbox.ActiveSyncEnabled
+      description: Whether active sync is enabled.
+      type: Boolean
+    - contextPath: EWS.CASMailbox.DisplayName
+      description: The display name of the mailbox.
+      type: String
+    - contextPath: EWS.CASMailbox.ECPEnabled
+      description: Whether the Exchange Control Panel (ECP) is enabled.
+      type: Boolean
+    - contextPath: EWS.CASMailbox.EmailAddresses
+      description: The email addresses retrieved.
+      type: String
+    - contextPath: EWS.CASMailbox.EwsEnabled
+      description: Whether the Exchange Web Services (EWS) is enabled.
+      type: Boolean
+    - contextPath: EWS.CASMailbox.ExchangeVersion
+      description: Exchange version of the client access server mailbox.
+      type: String
+    - contextPath: EWS.CASMailbox.ExternalDirectoryObjectId
+      description: External directory object ID of the client access server mailbox.
+      type: String
+    - contextPath: EWS.CASMailbox.Guid
+      description: The GUID of the client access server mailbox.
+      type: String
+    - contextPath: EWS.CASMailbox.Identity
+      description: Identity of the client access server mailbox.
+      type: String
+    - contextPath: EWS.CASMailbox.ImapEnabled
+      description: Whether the Internet Message Access Protocol (IMAP) is enabled.
+      type: Boolean
+    - contextPath: EWS.CASMailbox.MAPIEnabled
+      description: Whether the Messaging Application Programming Interface is enabled.
+      type: Boolean
+    - contextPath: EWS.CASMailbox.Name
+      description: Name of the client access server mailbox.
+      type: String
+    - contextPath: EWS.CASMailbox.OWAEnabled
+      description: Whether Outlook on the web (OWA) is enabled.
+      type: Boolean
+    - contextPath: EWS.CASMailbox.OrganizationId
+      description: Organization ID
+      type: String
+    - contextPath: EWS.CASMailbox.PopEnabled
+      description: Whether Post Office Protocol (POP) is enabled.
+      type: Boolean
+    - contextPath: EWS.CASMailbox.PrimarySmtpAddress
+      description: Primary SMTP address.
+      type: String
+    - contextPath: EWS.CASMailbox.ServerLegacyDN
+      description: Server legacy distinguished name (DN).
+      type: String
+    description: Displays Client Access settings that are configured on mailboxes.
+    name: ews-cas-mailbox-list
+  - arguments:
+    - description: The identity of the mailbox you want to view.
+      name: identity
+      required: true
+    outputs:
+    - contextPath: EWS.MailboxPermission.Identity
+      description: The specified identity of the mailbox.
+      type: String
+    - contextPath: EWS.MailboxPermission.Permission.AccessRights
+      description: Access rights of the mailbox.
+      type: String
+    - contextPath: EWS.MailboxPermission.Permission.Deny.IsPresent
+      description: Whether permission is denied.
+      type: Boolean
+    - contextPath: EWS.MailboxPermission.Permission.Identity
+      description: The permission identity.
+      type: String
+    - contextPath: EWS.MailboxPermission.Permission.InheritanceType
+      description: Permission inheritance type.
+      type: String
+    - contextPath: EWS.MailboxPermission.Permission.IsInherited
+      description: Whether permission is inherited.
+      type: Boolean
+    - contextPath: EWS.MailboxPermission.Permission.User
+      description: The permission of the user.
+      type: String
+    description: Retrieves permissions on a mailbox.
+    name: ews-mailbox-permission-list
+  - arguments:
+    - description: The identity of the mailbox you want to view.
+      name: identity
+    - description: The maximum number of results to retrieve. Default is 10.
+      name: limit
+      defaultValue: '10'
+    outputs:
+    - contextPath: EWS.RecipientPermission.AccessControlType
+      description: Access control type of the recipient permission.
+      type: String
+    - contextPath: EWS.RecipientPermission.AccessRights
+      description: Access rights of the recipient permission.
+      type: Number
+    - contextPath: EWS.RecipientPermission.Identity
+      description: Identity of the recipient permission.
+      type: String
+    - contextPath: EWS.RecipientPermission.InheritanceType
+      description: Inheritance type of the recipient permission.
+      type: String
+    - contextPath: EWS.RecipientPermission.IsInherited
+      description: Whether the recipient permission is inherited.
+      type: Boolean
+    - contextPath: EWS.RecipientPermission.Trustee
+      description: Trustee of the recipient permission.
+      type: String
+    description: Displays information about SendAs permissions that are configured for users.
+    name: ews-recipient-permission-list
+  - arguments:
+    - description: The identity of the mailbox you want to view.
+      name: identity
+    - description: The maximum number of results to retrieve. Default is 10.
+      name: limit
+      defaultValue: '10'
+    outputs:
+    - contextPath: EWS.Recipient.Alias
+      description: Recipient alias.
+      type: String
+    - contextPath: EWS.Recipient.DisplayName
+      description: Recipient display name.
+      type: String
+    - contextPath: EWS.Recipient.DistinguishedName
+      description: Recipient distinguished name.
+      type: String
+    - contextPath: EWS.Recipient.EmailAddresses
+      description: Recipient email addresses.
+      type: String
+    - contextPath: EWS.Recipient.ExchangeVersion
+      description: Recipient exchange version.
+      type: String
+    - contextPath: EWS.Recipient.ExternalDirectoryObjectId
+      description: Recipient external directory object ID.
+      type: String
+    - contextPath: EWS.Recipient.Identity
+      description: Recipient identity.
+      type: String
+    - contextPath: EWS.Recipient.Name
+      description: Recipient name.
+      type: String
+    - contextPath: EWS.Recipient.OrganizationId
+      description: Recipient organization ID.
+      type: String
+    - contextPath: EWS.Recipient.PrimarySmtpAddress
+      description: Recipient primary SMTP address.
+      type: String
+    - contextPath: EWS.Recipient.RecipientType
+      description: Recipient type.
+      type: String
+    - contextPath: EWS.Recipient.RecipientTypeDetails
+      description: Recipient type details.
+      type: String
+    description: Displays existing recipient objects in your organization. This command returns all mail-enabled objects (for example, mailboxes, mail users, mail contacts, and distribution groups).
+    name: ews-recipient-list
+  - name: ews-new-tenant-allow-block-list-items
+    arguments:
+    - name: entries
+      required: true
+      description: A comma-separated list of entries to add to the list (e.g. "Item1,Item2").
+      isArray: true
+    - name: list_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - sender
+      - filehash
+      - url
+      description: List type to add items to.
+    - name: list_subtype
+      auto: PREDEFINED
+      predefined:
+      - Tenant
+      - AdvancedDelivery
+      description: List subtype to add items to.
+      defaultValue: Tenant
+    - name: action
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Block
+      - Allow
+      description: Action to set for new entries
+    - name: notes
+      description: Notes to include on new list entries
+    - name: expiration_date
+      description: Enter a specific date and time for the new entries to expire using ISO format "YYYY-MM-DDTHH:MM:SSZ" for UTC time.  Alternately, a PowerShell **GetDate** statement can be used.
+    - name: no_expiration
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+      description: Specify whether to create list entries with no expiration date.  Cannot be used with "expiration_date".  If left false and no expiration date is set, default of 30 days will be used.
+      defaultValue: 'false'
+    outputs:
+    - contextPath: EWS.NewTenantBlocks.Action
+      description: List type ('Block' or 'Allow')
+      type: string
+    - contextPath: EWS.NewTenantBlocks.EntryValueHash
+      description: Entry Value Hash
+      type: string
+    - contextPath: EWS.NewTenantBlocks.Error
+      description: Error (if any) returned by remote command
+    - contextPath: EWS.NewTenantBlocks.ExpirationDate
+      description: DateTime the entry will expire and be removed
+      type: string
+    - contextPath: EWS.NewTenantBlocks.Identity
+      description: Unique identifier for the entry
+      type: string
+    - contextPath: EWS.NewTenantBlocks.LastModifiedDateTime
+      description: DateTime of last modification
+      type: string
+    - contextPath: EWS.NewTenantBlocks.ListSubType
+      description: List sub type (Tenant or AdvancedDelivery)
+      type: string
+    - contextPath: EWS.NewTenantBlocks.ModifiedBy
+      description: User / App Registration which last modified this entry
+      type: string
+    - contextPath: EWS.NewTenantBlocks.Notes
+      description: Custom notes added to the entry.
+      type: string
+    - contextPath: EWS.NewTenantBlocks.ObjectState
+      description: State of the object (e.g. New/Modified/Deleted)
+      type: string
+    - contextPath: EWS.NewTenantBlocks.PSComputerName
+      description: Name of Remote Powershell endpoint
+      type: string
+    - contextPath: EWS.NewTenantBlocks.PSShowComputerName
+      description: Flag whether or not remote computer name is shown in PS prompt
+      type: boolean
+    - contextPath: EWS.NewTenantBlocks.RunspaceId
+      description: RunspaceID of the entry
+      type: string
+    - contextPath: EWS.NewTenantBlocks.SubmissionID
+      description: SubmissionID of the entry
+      type: string
+    - contextPath: EWS.NewTenantBlocks.SysManaged
+      description: SysManaged property of the entry
+      type: boolean
+    - contextPath: EWS.NewTenantBlocks.Value
+      description: The value of the new entry created
+      type: string
+    description: Add new items to the Tenant Allow/Block Lists.  Uses PowerShell New-TenantAllowBlockListItems cmdlet.
+    execution: true
+  - name: ews-get-tenant-allow-block-list-items
+    arguments:
+    - name: list_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - sender
+      - filehash
+      - url
+      description: List type to retrieve items from.
+    - name: list_subtype
+      auto: PREDEFINED
+      predefined:
+      - Tenant
+      - AdvancedDelivery
+      description: List subtype to retrieve items from.
+      defaultValue: Tenant
+    - name: action
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Block
+      - Allow
+      description: Action to filter entries by.
+    - name: expiration_date
+      description: Enter a specific date and time to filter entries by using ISO format "YYYY-MM-DDTHH:MM:SSZ" for UTC time.  Alternately, a PowerShell **GetDate** statement can be used.
+    - name: no_expiration
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+      description: Filter list items that are set to never expire.
+      defaultValue: 'false'
+    - name: entry
+      description: Specific entry value to retrieve.
+    outputs:
+    - contextPath: EWS.CurrentTenantBlocks.Action
+      description: List type ('Block' or 'Allow')
+      type: string
+    - contextPath: EWS.CurrentTenantBlocks.EntryValueHash
+      description: Entry Value Hash
+      type: string
+    - contextPath: EWS.CurrentTenantBlocks.Error
+      description: Error (if any) returned by remote command
+      type: boolean
+    - contextPath: EWS.CurrentTenantBlocks.ExpirationDate
+      description: DateTime the entry will expire and be removed
+      type: string
+    - contextPath: EWS.CurrentTenantBlocks.Identity
+      description: Unique identifier for the entry
+      type: string
+    - contextPath: EWS.CurrentTenantBlocks.LastModifiedDateTime
+      description: DateTime of last modification
+      type: string
+    - contextPath: EWS.CurrentTenantBlocks.ListSubType
+      description: List sub type (Tenant or AdvancedDelivery)
+      type: string
+    - contextPath: EWS.CurrentTenantBlocks.ModifiedBy
+      description: User / App Registration which last modified this entry
+      type: string
+    - contextPath: EWS.CurrentTenantBlocks.Notes
+      description: Custom notes added to the entry.
+      type: string
+    - contextPath: EWS.CurrentTenantBlocks.ObjectState
+      description: State of the object (e.g. New/Modified/Deleted)
+      type: string
+    - contextPath: EWS.CurrentTenantBlocks.PSComputerName
+      description: Name of Remote Powershell endpoint
+    - contextPath: EWS.CurrentTenantBlocks.PSShowComputerName
+      description: Flag whether or not remote computer name is shown in PS prompt
+      type: boolean
+    - contextPath: EWS.CurrentTenantBlocks.RunspaceId
+      description: RunspaceID of the entry
+      type: string
+    - contextPath: EWS.CurrentTenantBlocks.SubmissionID
+      description: SubmissionID of the entry
+      type: string
+    - contextPath: EWS.CurrentTenantBlocks.SysManaged
+      description: SysManaged property of the entry
+      type: boolean
+    - contextPath: EWS.CurrentTenantBlocks.Value
+      description: The value of the new entry created
+      type: string
+    description: Retrieve current Tenant Allow/Block List items.  Uses Get-TenantAllowBlockListItems cmdlet.
+  - name: ews-get-tenant-allow-block-list-count
+    arguments:
+    - name: list_type
+      auto: PREDEFINED
+      predefined:
+      - sender
+      - filehash
+      - url
+      description: List type to retrieve items from.
+    - name: list_subtype
+      auto: PREDEFINED
+      predefined:
+      - Tenant
+      - AdvancedDelivery
+      description: List subtype to retrieve items from.
+      defaultValue: Tenant
+    outputs:
+    - contextPath: EWS.CurrentListCount.Count
+      description: Number of entries presently in the specified list
+      type: number
+    - contextPath: EWS.CurrentListCount.ListSubType
+      description: List sub type (Tenant or AdvancedDelivery)
+      type: string
+    - contextPath: EWS.CurrentListCount.ListType
+      description: List type
+      type: string
+    description: Retrieve current count of defined Tenant Allow/Block List items.  Uses Get-TenantAllowBlockListItems cmdlet.
+  - name: ews-remove-tenant-allow-block-list-items
+    arguments:
+    - name: entries
+      description: Entries to remove from the list.  Either use this OR 'ids' to specify items to remove.  Separate multiple entries with a comma (e.g. "Item1,Item2").
+      isArray: true
+    - name: ids
+      description: Entry IDs to remove from the list.  Either use this OR 'entries' to specify items to remove.  Separate multiple entries with a comma (e.g. "Item1,Item2").
+    - name: list_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - sender
+      - filehash
+      - url
+      description: List type to remove items from.
+    - name: list_subtype
+      auto: PREDEFINED
+      predefined:
+      - Tenant
+      - AdvancedDelivery
+      description: List subtype to remove items from.
+      defaultValue: Tenant
+    outputs:
+    - contextPath: EWS.RemovedTenantBlocks.Action
+      description: Action
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.EntryValueHash
+      description: Null for deleted items.
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.Error
+      description: Null for deleted items.
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.ExpirationDate
+      description: Null for deleted items.
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.Identity
+      description: Blank for deleted items.
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.LastModifiedDateTime
+      description: Null for deleted items.
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.ListSubType
+      description: Null for deleted items.
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.ModifiedBy
+      description: Null for deleted items.
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.Notes
+      description: Null for deleted items.
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.ObjectState
+      description: State of the object (Deleted)
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.PSComputerName
+      description: Name of Remote Powershell endpoint
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.PSShowComputerName
+      description: Flag whether or not remote computer name is shown in PS prompt
+      type: boolean
+    - contextPath: EWS.RemovedTenantBlocks.RunspaceId
+      description: RunspaceID of the entry
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.SubmissionID
+      description: SubmissionID of the entry
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.SysManaged
+      description: SysManaged property of the entry
+      type: boolean
+    - contextPath: EWS.RemovedTenantBlocks.Value
+      description: The value of the entry that was removed
+      type: string
+    description: Remove items from the Tenant Allow/Block Lists.   You can delete items by their value or by unique ID.  Uses PowerShell cmdlet Remove-TenantAllowBlockListItems cmdlet.
+  script: ''
+  type: powershell
+  dockerimage: demisto/pwsh-exchangev3:1.0.0.49863
+fromversion: 5.5.0
+tests:
+- playbook-O365-EWS-Extension-Powershell-Online-V2-Test

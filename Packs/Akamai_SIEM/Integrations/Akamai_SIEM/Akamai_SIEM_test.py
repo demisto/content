@@ -51,7 +51,7 @@ class TestCommandsFunctions:
                                                                     config_ids='50170',
                                                                     last_run={})
         expected_incidents = load_params_from_json(datadir['expected_fetch.json'], type='incidents')
-        expected_last_run = {'lastRun': "318d8"}
+        expected_last_run = {'lastRun': "1576002507"}
         assert expected_incidents == tested_incidents, "Incidents - No last time exsits and event available"
         assert tested_last_run == expected_last_run, "Last run - No last time exsits and event available"
 
@@ -59,14 +59,14 @@ class TestCommandsFunctions:
     def test_fetch_incidents_command_2(self, client, datadir, requests_mock):
         """Test - Last time exsits and events available"""
         from Akamai_SIEM import fetch_incidents_command
-        requests_mock.get(f'{BASE_URL}/50170?offset=318d8&limit=5', text=SEC_EVENTS_TXT)
+        requests_mock.get(f'{BASE_URL}/50170?from=1575966002&limit=5', text=SEC_EVENTS_TXT)
         tested_incidents, tested_last_run = fetch_incidents_command(client=client,
                                                                     fetch_time='12 hours',
                                                                     fetch_limit='5',
                                                                     config_ids='50170',
-                                                                    last_run='318d8')
+                                                                    last_run='1575966002')
         expected_incidents = load_params_from_json(datadir['expected_fetch.json'], type='incidents')
-        expected_last_run = {'lastRun': "318d8"}
+        expected_last_run = {'lastRun': "1576002507"}
         assert expected_incidents == tested_incidents, "Incidents - Last time exsits and events available"
         assert tested_last_run == expected_last_run, "Last run - No last time exsits and event available"
 
@@ -74,13 +74,13 @@ class TestCommandsFunctions:
     def test_fetch_incidents_command_3(self, client, datadir, requests_mock):
         """Test - Last time exsits and no available data"""
         from Akamai_SIEM import fetch_incidents_command
-        requests_mock.get(f'{BASE_URL}/50170?offset=318d8&limit=5', text=SEC_EVENTS_EMPTY_TXT)
+        requests_mock.get(f'{BASE_URL}/50170?from=1575966002&limit=5', text=SEC_EVENTS_EMPTY_TXT)
         tested_incidents, tested_last_run = fetch_incidents_command(client=client,
                                                                     fetch_time='12 hours',
                                                                     fetch_limit=5,
                                                                     config_ids='50170',
-                                                                    last_run='318d8')
-        expected_last_run = {'lastRun': "318d8"}
+                                                                    last_run='1575966002')
+        expected_last_run = {'lastRun': "1575966002"}
         expected_incidents = []
         assert expected_incidents == tested_incidents, "Incidents - Last time exsits and no available data"
         assert tested_last_run == expected_last_run, "Last run - No last time exsits and event available"
@@ -95,7 +95,7 @@ class TestCommandsFunctions:
                                                                     fetch_limit=5,
                                                                     config_ids='50170',
                                                                     last_run={})
-        expected_last_run = {'lastRun': "318d8"}
+        expected_last_run = {'lastRun': "1575966002"}
         expected_incidents = []
         assert expected_incidents == tested_incidents, "Incidents - No last time exsits and no available data"
         assert tested_last_run == expected_last_run, "Last run - No last time exsits and no available data"

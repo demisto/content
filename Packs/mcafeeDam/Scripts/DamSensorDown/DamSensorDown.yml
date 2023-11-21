@@ -1,0 +1,21 @@
+commonfields:
+  id: DamSensorDown
+  version: -1
+name: DamSensorDown
+script: ''
+type: python
+subtype: python3
+tags:
+- preProcessing
+comment: |
+  Pre processing script for Emails from Mcafee DAM, about sensor disconnected.
+  Will ignore second notification, but will process first notification into incidents.
+system: true
+scripttarget: 0
+dependson:
+  must:
+  - dam-get-latest-by-rule
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.10.12.68714
+tests:
+- No tests (auto formatted)

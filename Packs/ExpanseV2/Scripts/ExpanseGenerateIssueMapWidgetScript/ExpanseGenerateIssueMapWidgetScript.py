@@ -21083,7 +21083,7 @@ def generate_map_command(args: Dict[str, Any]) -> str:
     geolocations = extract_geolocation(args.get('from'), args.get('to'))
 
     image = Image.open(BytesIO(BASE_LAYER), formats=["PNG"]).convert('RGBA')
-    image = image.resize((RESULT_IMAGE_X, RESULT_IMAGE_Y), Image.ANTIALIAS)
+    image = image.resize((RESULT_IMAGE_X, RESULT_IMAGE_Y), Image.Resampling.LANCZOS)
 
     clusters: List[List[Tuple[int, int]]] = reduce(calc_clusters, geolocations, [])
     circles = []
@@ -21111,7 +21111,7 @@ def generate_map_command(args: Dict[str, Any]) -> str:
             font=font
         )
 
-    annotations_image = annotations_image.resize((RESULT_IMAGE_X, RESULT_IMAGE_Y), Image.ANTIALIAS)
+    annotations_image = annotations_image.resize((RESULT_IMAGE_X, RESULT_IMAGE_Y), Image.Resampling.LANCZOS)
     image.paste(annotations_image, (0, 0), annotations_image)
     image = image.crop(
         (0, (TOP_CROP / IMAGE_Y) * RESULT_IMAGE_Y,

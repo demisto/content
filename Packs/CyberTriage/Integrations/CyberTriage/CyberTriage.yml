@@ -1,0 +1,79 @@
+commonfields:
+  id: Cyber Triage
+  version: -1
+name: Cyber Triage
+display: Cyber Triage
+category: Endpoint
+description: 'Allows you to conduct a mini-forensic investigation on an endpoint. It pushes a collection tool to the remote endpoint, collects volatile and file system data, and analyzes the data. '
+configuration:
+- display: Hostname of Cyber Triage server (e.g. 192.168.1.2)
+  name: server
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: REST Port
+  name: rest_port
+  defaultvalue: "9443"
+  type: 0
+  required: true
+- displaypassword: API Key
+  name: api_key
+  type: 9
+  hiddenusername: true
+  required: false
+- display: Username
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Use proxy
+  name: use_proxy
+  defaultvalue: "true"
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  subtype: python3
+  commands:
+  - name: ct-triage-endpoint
+    arguments:
+    - name: endpoint
+      required: true
+      default: true
+      description: IP or hostname of a windows endpoint
+    - name: scan_options
+      description: Comma separated list of data types that Cyber Triage will collect. Processes (pr), Network (nw),  Network Caches (nc), Startup Items (st), Scheduled Tasks (sc), Program Run (ru),  System Config (co), User Logins (lo), Network Shares (ns), Web Artifacts (wb), Full File System Scan (fs)
+      defaultValue: pr,nw,nc,st,sc,ru,co,lo,ns,wb,fs
+    - name: malware_hash_upload
+      auto: PREDEFINED
+      predefined:
+      - "yes"
+      - "no"
+      description: Send MD5 hashes to external malware analysis service
+      defaultValue: "yes"
+    - name: malware_file_upload
+      auto: PREDEFINED
+      predefined:
+      - "yes"
+      - "no"
+      description: Send unknown files to external malware analysis service. Hash upload must be enabled for file uploads to occur.
+      defaultValue: "no"
+    - name: incident_name
+      description: Cyber Triage incident name that the collection will belong to
+      defaultValue: Default
+    outputs:
+    - contextPath: CyberTriage.SessionId
+      description: The session ID for the newly created session
+      type: string
+    - contextPath: Endpoint.IPAddress
+      description: The endpoint IP address that Cyber Triage investigated
+      type: string
+    - contextPath: Endpoint.Hostname
+      description: The endpoint hostname that Cyber Triage investigated
+      type: string
+    description: initiates a cyber triage collection on an endpoint
+  dockerimage: demisto/python3:3.10.13.72123
+tests:
+- No test - no instance
+fromversion: 5.0.0

@@ -1,0 +1,6 @@
+name: Mimecast Parsing Rule
+id: Mimecast_ParsingRule
+fromversion: 6.10.0
+tags: []
+rules: ''
+samples: ''

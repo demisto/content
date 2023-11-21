@@ -1,0 +1,20 @@
+comment: "This is an SLA breach script that will complete playbook tasks tagged with 'timerbreach' when the SLA breaches. \n\nThis can be used to complete tasks waiting for manual input when a timer breaches its SLA, and move the playbook along."
+commonfields:
+  id: CompleteTaskOnTimerBreach
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.12.63474
+enabled: true
+name: CompleteTaskOnTimerBreach
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- sla
+type: python
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

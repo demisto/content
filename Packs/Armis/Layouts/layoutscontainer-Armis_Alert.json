@@ -445,7 +445,7 @@
               },
               {
                 "endCol": 2,
-                "fieldId": "armisdeviceid",
+                "fieldId": "armisdeviceidentifier",
                 "height": 22,
                 "id": "cc032690-764d-11eb-b0cd-addc6954af82",
                 "index": 9,
@@ -493,5 +493,6 @@
         "type": "canvas"
       }
     ]
-  }
+  },
+  "marketplaces": ["xsoar"]
 }

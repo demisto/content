@@ -7,14 +7,13 @@ comment: Read the license_data.log file extracted from the log bundle
 commonfields:
   id: HealthCheckLicenseData
   version: -1
-dockerimage: demisto/python3:3.10.4.29342
+dockerimage: demisto/python3:3.10.8.37753
 enabled: true
 name: HealthCheckLicenseData
 outputs:
 - contextPath: FileData
   description: Data read from war room file
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

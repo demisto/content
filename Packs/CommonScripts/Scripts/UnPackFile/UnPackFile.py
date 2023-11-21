@@ -1,8 +1,8 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import os
 from os.path import isdir, isfile
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 from pyunpack import Archive
 
 filePath = None

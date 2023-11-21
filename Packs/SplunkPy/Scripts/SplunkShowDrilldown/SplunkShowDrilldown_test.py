@@ -41,7 +41,7 @@ def test_incident_not_successful(mocker):
     Then:
         Verifies that the output returned is correct
     """
-    incident = {'CustomFields': {"notabledrilldown": {"name": "test"}, "successfuldrilldownenrichment": "false"}}
+    incident = {'labels': [{'type': 'successful_drilldown_enrichment', 'value': 'false'}]}
     mocker.patch('demistomock.incident', return_value=incident)
     res = SplunkShowDrilldown.main()
     assert res.readable_output == 'Drilldown enrichment failed.'
@@ -56,7 +56,7 @@ def test_json_loads_fails(mocker):
     Then:
         Verifies that the output returned is correct
     """
-    incident = {'CustomFields': {"notabledrilldown": {"name"}, "successfuldrilldownenrichment": "true"}}
+    incident = {'labels': [{'type': 'Drilldown', 'value': {'not json'}}]}
     mocker.patch('demistomock.incident', return_value=incident)
     with raises(ValueError):
         SplunkShowDrilldown.main()

@@ -1,0 +1,6 @@
+id: proofpoint_threat_response_ParsingRule
+name: Proofpoint Threat Response Parsing Rule
+fromversion: 6.10.0
+tags: []
+rules: ''
+samples: ''

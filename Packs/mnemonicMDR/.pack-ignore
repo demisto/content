@@ -5,7 +5,7 @@ ignore=PB106,PB115
 ignore=PA125
 
 [file:ArgusManagedDefence.yml]
-ignore=BA109,IN145
+ignore=BA109
 
 [file:classifier-Argus_Case_Mapper.json]
 ignore=BA101
@@ -37,9 +37,9 @@ ignore=IF100
 [file:incidentfield-Argus_Event_Type.json]
 ignore=IF100
 
-
 [file:ArgusManagedDefence_image.png]
 ignore=IM111
 
 [file:classifier-Argus_Case_Classifier.json]
 ignore=BA101
+

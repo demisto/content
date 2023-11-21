@@ -1,0 +1,313 @@
+category: Messaging and Conferencing
+commonfields:
+  id: MicrosoftGraphTeams
+  version: -1
+configuration:
+- defaultvalue: https://graph.microsoft.com
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+- additionalinfo: Token or Tenant ID
+  display: Tenant ID
+  hiddenusername: true
+  name: tenant_id
+  required: true
+  type: 4
+- additionalinfo: ID or Client ID
+  display: Client ID
+  hiddenusername: true
+  name: client_id
+  required: true
+  type: 4
+- additionalinfo: Key or Client Secret
+  display: Client Secret
+  hiddenusername: true
+  name: secret
+  type: 4
+  required: false
+- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  display: Certificate Thumbprint
+  name: certificate_thumbprint
+  type: 4
+  required: false
+- additionalinfo: Used for certificate authentication. The private key of the registered certificate.
+  display: Private Key
+  name: private_key
+  type: 4
+  required: false
+- display: Use a self deployed Azure Application
+  name: self_deployed
+  type: 8
+  required: false
+  additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
+- display: Application redirect URI (for Authorization Code flow mode)
+  name: redirect_uri
+  type: 0
+  required: false
+- additionalinfo: Authorization code on behalf of a user, used with self deployed Azure Applications.
+  display: Authorization Code
+  hiddenusername: true
+  name: auth_code
+  type: 4
+  required: false
+- display: Email address of the XSOAR delegated Teams user (e.g. "example@demisto.com")
+  name: delegated_user
+  required: true
+  type: 0
+- defaultvalue: "false"
+  display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- defaultvalue: "false"
+  display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- defaultvalue: "true"
+  display: Suppress Errors for Non Found Users
+  name: handle_error
+  type: 8
+  required: false
+description: Microsoft Graph lets your app get authorized access to a user's Teams app in a personal or organization account.
+display: O365 Teams (Using Graph API)
+name: MicrosoftGraphTeams
+script:
+  commands:
+  - arguments:
+    - description: User ID to use Teams as (can be principal ID (email address)).
+      name: user_id
+    - description: An OData query. See README for OData usage examples.
+      name: odata
+    - defaultValue: "20"
+      description: Limit chats to fetch in one request
+      name: limit
+    description: Retrieve the list of chats that the user is part of.
+    name: msgraph-teams-list-chats
+    outputs:
+    - contextPath: MSGraphTeamsChat.ID
+      description: The ID of the chat.
+      type: String
+    - contextPath: MSGraphTeamsChat.UserID
+      description: The ID of the user.
+      type: String
+    - contextPath: MSGraphTeamsChat.Subject
+      description: The title of the chat.
+      type: String
+    - contextPath: MSGraphTeamsChat.Created
+      description: The time the chat was created.
+      type: Date
+    - contextPath: MSGraphTeamsChat.LastUpdatedTime
+      description: The time the chat was last updated.
+      type: Date
+    - contextPath: MSGraphTeamsChat.Type
+      description: The type of chat.
+      type: String
+  - arguments:
+    - description: User ID to use Teams as (can be principal ID (email address)).
+      name: user_id
+    - description: The title of the chat.
+      name: subject
+      required: true
+    - auto: PREDEFINED
+      default: true
+      defaultValue: group
+      description: 'Specifies the type of chat. Possible values are: group and oneOnOne.'
+      name: type
+      predefined:
+      - group
+      - oneOnOne
+    - description: A comma-separated list members that should be added. using user principal name (email).
+      isArray: true
+      name: members
+      required: true
+    description: Create a new chat.
+    name: msgraph-teams-create-chat
+    outputs:
+    - contextPath: MSGraphTeamsChat.ID
+      description: The ID of the chat.
+      type: String
+    - contextPath: MSGraphTeamsChat.UserID
+      description: The ID of the user.
+      type: String
+    - contextPath: MSGraphTeamsChat.Subject
+      description: The title of the chat.
+      type: String
+    - contextPath: MSGraphTeamsChat.Created
+      description: The time the chat was created.
+      type: Date
+    - contextPath: MSGraphTeamsChat.LastUpdatedTime
+      description: The time the chat was last updated.
+      type: Date
+    - contextPath: MSGraphTeamsChat.Type
+      description: The type of chat.
+      type: String
+  - arguments:
+    - description: User ID to use Teams as (can be principal ID (email address)).
+      name: user_id
+    - description: The chat's unique identifier.
+      name: chat_id
+      required: true
+    description: Retrieve a single chat (without its messages).
+    name: msgraph-teams-get-chat
+    outputs:
+    - contextPath: MSGraphTeamsChat.ID
+      description: The ID of the chat.
+      type: String
+    - contextPath: MSGraphTeamsChat.UserID
+      description: The ID of the user.
+      type: String
+    - contextPath: MSGraphTeamsChat.Subject
+      description: The title of the chat.
+      type: String
+    - contextPath: MSGraphTeamsChat.Created
+      description: The time the chat was created.
+      type: Date
+    - contextPath: MSGraphTeamsChat.LastUpdatedTime
+      description: The time the chat was last updated.
+      type: Date
+    - contextPath: MSGraphTeamsChat.Type
+      description: The type of chat.
+      type: String
+  - arguments:
+    - description: The chat's unique identifier.
+      name: chat_id
+      required: true
+    - description: The title of the chat.
+      name: subject
+      required: true
+    description: Update the properties of a chat object.
+    name: msgraph-teams-update-chat
+    outputs:
+    - contextPath: MSGraphTeamsChat.ID
+      description: The ID of the chat.
+      type: String
+    - contextPath: MSGraphTeamsChat.UserID
+      description: The ID of the user.
+      type: String
+    - contextPath: MSGraphTeamsChat.Subject
+      description: The title of the chat.
+      type: String
+    - contextPath: MSGraphTeamsChat.Created
+      description: The time the chat was created.
+      type: Date
+    - contextPath: MSGraphTeamsChat.LastUpdatedTime
+      description: The time the chat was last updated.
+      type: Date
+    - contextPath: MSGraphTeamsChat.Type
+      description: The type of chat.
+      type: String
+  - arguments:
+    - description: User ID to use Teams as (can be principal ID (email address)).
+      name: user_id
+    - description: The chat's unique identifier.
+      name: chat_id
+      required: true
+    description: List all conversation members in a chat.
+    name: msgraph-teams-list-members
+    outputs:
+    - contextPath: MSGraphTeamsChatMember.ID
+      description: The ID of the chat member.
+      type: String
+    - contextPath: MSGraphTeamsChatMember.Name
+      description: The display name of the chat member.
+      type: String
+    - contextPath: MSGraphTeamsChatMember.HistoryStartTime
+      description: The timestamp denoting how far back a conversation's history is shared with the conversation member. This property is settable only for members of a chat.
+      type: Date
+    - contextPath: MSGraphTeamsChatMember.ChatID
+      description: The ID of the chat.
+  - arguments:
+    - description: The chat's unique identifier.
+      name: chat_id
+      required: true
+    - description: User ID to add to Teams chat (can be principal ID (email address)).
+      name: user_id
+      required: true
+    - auto: PREDEFINED
+      default: true
+      defaultValue: "true"
+      description: Allowing sharing of the whole history of the chat
+      name: share_history
+      predefined:
+      - "true"
+      - "false"
+    description: Add a conversationMember to a chat.
+    name: msgraph-teams-add-member
+  - arguments:
+    - description: User ID to use Teams as (can be principal ID (email address)).
+      name: user_id
+    - description: The chat's unique identifier.
+      name: chat_id
+      required: true
+    - default: true
+      defaultValue: "50"
+      description: Limit messages to fetch in one request
+      name: limit
+    description: Retrieve the list of messages in a chat.
+    name: msgraph-teams-list-messages
+    outputs:
+    - contextPath: MSGraphTeamsChatMessage.ID
+      description: The ID of the message.
+      type: String
+    - contextPath: MSGraphTeamsChatMessage.ChatID
+      description: The ID of the chat.
+      type: String
+    - contextPath: MSGraphTeamsChatMessage.From
+      description: The Name of the sender of the chat message.
+      type: String
+    - contextPath: MSGraphTeamsChatMessage.Created
+      description: Timestamp of when the chat message was created.
+      type: Date
+    - contextPath: MSGraphTeamsChatMessage.LastModifiedTime
+      description: Timestamp when the chat message is created (initial setting) or modified, including when a reaction is added or removed.
+      type: Date
+    - contextPath: MSGraphTeamsChatMessage.Body
+      description: HTML representation of the content of the chat message. Representation is specified by the contentType inside the body.
+      type: htmlBody
+  - arguments:
+    - description: The chat's unique identifier.
+      name: chat_id
+      required: true
+    - description: HTML representation of the content of the chat message. Representation is specified by the contentType inside the body.
+      name: body
+      required: true
+    description: Send a new message in a chat.
+    name: msgraph-teams-send-message
+    outputs:
+    - contextPath: MSGraphTeamsChatMessage.ID
+      description: The ID of the message.
+      type: String
+    - contextPath: MSGraphTeamsChatMessage.chatID
+      description: The ID of the chat.
+      type: String
+    - contextPath: MSGraphTeamsChatMessage.From
+      description: The Name of the sender of the chat message.
+      type: String
+    - contextPath: MSGraphTeamsChatMessage.Created
+      description: Timestamp of when the chat message was created.
+      type: Date
+    - contextPath: MSGraphTeamsChatMessage.LastModifiedTime
+      description: Timestamp when the chat message is created (initial setting) or modified, including when a reaction is added or removed.
+      type: Date
+    - contextPath: MSGraphTeamsChatMessage.Body
+      description: HTML representation of the content of the chat message. Representation is specified by the contentType inside the body.
+      type: htmlBody
+  - arguments: []
+    description: Tests connectivity to Microsoft Graph Teams.
+    name: msgraph-teams-test
+  - description: Generate the login url used for Authorization code flow.
+    name: msgraph-teams-generate-login-url
+    arguments: []
+  - description: Run this command if for some reason you need to rerun the authentication process.
+    execution: false
+    name: msgraph-teams-auth-reset
+    arguments: []
+  dockerimage: demisto/crypto:1.0.0.68914
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

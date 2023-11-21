@@ -1,0 +1,211 @@
+{
+    "links": {
+        "self": "links_self"
+    },
+    "items": [
+        {
+            "name": "Balanced Security and Connectivity",
+            "id": "items[0]_id",
+            "type": "intrusionpolicy",
+            "links": {
+                "self": "items[0]_links_self"
+            },
+            "description": "Balanced Security and Connectivity",
+            "inlineDrop": 1,
+            "inspectionMode": "PREVENTION",
+            "isSystemDefined": true,
+            "metadata": {
+                "mappedPolicy": {
+                    "name": "Balanced Security and Connectivity",
+                    "id": "items[0]_metadata_mappedPolicy_id",
+                    "type": "intrusionpolicy",
+                    "inspectionMode": "PREVENTION",
+                    "snortEngine": "SNORT2"
+                },
+                "usage": {
+                    "accesspolicy": 0,
+                    "devices": 0
+                },
+                "domain": {
+                    "name": "Global",
+                    "id": "items[0]_metadata_domain_id",
+                    "type": "Domain"
+                },
+                "snortEngine": "SNORT3"
+            }
+        },
+        {
+            "name": "Connectivity Over Security",
+            "id": "items[1]_id",
+            "type": "intrusionpolicy",
+            "links": {
+                "self": "items[1]_links_self"
+            },
+            "description": "Connectivity Over Security",
+            "inlineDrop": 1,
+            "inspectionMode": "PREVENTION",
+            "isSystemDefined": true,
+            "metadata": {
+                "mappedPolicy": {
+                    "name": "Connectivity Over Security",
+                    "id": "items[1]_metadata_mappedPolicy_id",
+                    "type": "intrusionpolicy",
+                    "inspectionMode": "PREVENTION",
+                    "snortEngine": "SNORT2"
+                },
+                "usage": {
+                    "accesspolicy": 0,
+                    "devices": 0
+                },
+                "domain": {
+                    "name": "Global",
+                    "id": "items[1]_metadata_domain_id",
+                    "type": "Domain"
+                },
+                "snortEngine": "SNORT3"
+            }
+        },
+        {
+            "name": "Maximum Detection",
+            "id": "items[2]_id",
+            "type": "intrusionpolicy",
+            "links": {
+                "self": "items[2]_links_self"
+            },
+            "description": "Maximum Detection",
+            "inlineDrop": 1,
+            "inspectionMode": "PREVENTION",
+            "isSystemDefined": true,
+            "metadata": {
+                "mappedPolicy": {
+                    "name": "Maximum Detection",
+                    "id": "items[2]_metadata_mappedPolicy_id",
+                    "type": "intrusionpolicy",
+                    "inspectionMode": "PREVENTION",
+                    "snortEngine": "SNORT2"
+                },
+                "usage": {
+                    "accesspolicy": 0,
+                    "devices": 0
+                },
+                "domain": {
+                    "name": "Global",
+                    "id": "items[2]_metadata_domain_id",
+                    "type": "Domain"
+                },
+                "snortEngine": "SNORT3"
+            }
+        },
+        {
+            "name": "No Rules Active",
+            "id": "items[3]_id",
+            "type": "intrusionpolicy",
+            "links": {
+                "self": "items[3]_links_self"
+            },
+            "description": "No Rules Active",
+            "inlineDrop": 1,
+            "inspectionMode": "PREVENTION",
+            "isSystemDefined": true,
+            "metadata": {
+                "mappedPolicy": {
+                    "name": "No Rules Active",
+                    "id": "items[3]_metadata_mappedPolicy_id",
+                    "type": "intrusionpolicy",
+                    "inspectionMode": "DETECTION",
+                    "snortEngine": "SNORT2"
+                },
+                "usage": {
+                    "asscoiatedAcPolicies": [
+                        {
+                            "type": "AccessPolicy",
+                            "name": "Qmasters",
+                            "id": "items[3]_metadata_usage_asscoiatedAcPolicies[0]_id"
+                        }
+                    ],
+                    "accesspolicy": 1,
+                    "devices": 1
+                },
+                "domain": {
+                    "name": "Global",
+                    "id": "items[3]_metadata_domain_id",
+                    "type": "Domain"
+                },
+                "snortEngine": "SNORT3"
+            }
+        },
+        {
+            "name": "Security Over Connectivity",
+            "id": "items[4]_id",
+            "type": "intrusionpolicy",
+            "links": {
+                "self": "items[4]_links_self"
+            },
+            "description": "Security Over Connectivity",
+            "inlineDrop": 1,
+            "inspectionMode": "PREVENTION",
+            "isSystemDefined": true,
+            "metadata": {
+                "mappedPolicy": {
+                    "name": "Security Over Connectivity",
+                    "id": "items[4]_metadata_mappedPolicy_id",
+                    "type": "intrusionpolicy",
+                    "inspectionMode": "PREVENTION",
+                    "snortEngine": "SNORT2"
+                },
+                "usage": {
+                    "accesspolicy": 0,
+                    "devices": 0
+                },
+                "domain": {
+                    "name": "Global",
+                    "id": "items[4]_metadata_domain_id",
+                    "type": "Domain"
+                },
+                "snortEngine": "SNORT3"
+            }
+        },
+        {
+            "name": "Test",
+            "id": "items[5]_id",
+            "type": "intrusionpolicy",
+            "links": {
+                "self": "items[5]_links_self"
+            },
+            "basePolicy": {
+                "name": "Maximum Detection",
+                "id": "items[5]_basePolicy_id",
+                "type": "intrusionpolicy"
+            },
+            "description": "Test Test",
+            "inlineDrop": 0,
+            "inspectionMode": "DETECTION",
+            "isSystemDefined": false,
+            "metadata": {
+                "mappedPolicy": {
+                    "name": "Test",
+                    "id": "items[5]_metadata_mappedPolicy_id",
+                    "type": "intrusionpolicy",
+                    "inspectionMode": "DETECTION",
+                    "snortEngine": "SNORT2"
+                },
+                "usage": {
+                    "accesspolicy": 0,
+                    "devices": 0
+                },
+                "domain": {
+                    "name": "Global",
+                    "id": "items[5]_metadata_domain_id",
+                    "type": "Domain"
+                },
+                "snortEngine": "SNORT3"
+            }
+        }
+    ],
+    "paging": {
+        "offset": 0,
+        "limit": 1000,
+        "count": 6,
+        "pages": 1
+    }
+}

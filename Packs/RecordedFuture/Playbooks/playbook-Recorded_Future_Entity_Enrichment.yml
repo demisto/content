@@ -1,0 +1,980 @@
+id: Recorded Future Entity Enrichment
+version: -1
+name: Recorded Future Entity Enrichment
+description: "Template playbook to incorporate Recorded Future enrichment for IPs, Hashes, Domains, URLs into your current workflows. Playbook also shows how to look up available 'Links' data for IOCs."
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 00109219-5fc8-4bbb-881e-e597ec3b7439
+    type: start
+    task:
+      id: 00109219-5fc8-4bbb-881e-e597ec3b7439
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "44"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: [ ]
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 89ce26db-58e9-4a6d-88f2-d6810e458ee2
+    type: title
+    task:
+      id: 89ce26db-58e9-4a6d-88f2-d6810e458ee2
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: [ ]
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 339fc232-e5d0-468b-87ea-cf8d41ea0ca6
+    type: condition
+    task:
+      id: 339fc232-e5d0-468b-87ea-cf8d41ea0ca6
+      version: -1
+      name: Is there a SHA256 hash?
+      description: Check if there is a SHA256 hash in context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+        - "7"
+      "yes":
+        - "33"
+    scriptarguments:
+      value:
+        simple: ${File.SHA256}
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isExists
+              left:
+                value:
+                  complex:
+                    root: inputs.SHA256
+                iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: [ ]
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 7b75bf11-6a0d-4de6-8ce3-e56f8609e994
+    type: condition
+    task:
+      id: 7b75bf11-6a0d-4de6-8ce3-e56f8609e994
+      version: -1
+      name: Is there a SHA1 hash?
+      description: Check if there is a SHA1 hash in context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+        - "7"
+      "yes":
+        - "32"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isExists
+              left:
+                value:
+                  complex:
+                    root: inputs.SHA1
+                iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2300,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: [ ]
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 0814da4f-9c12-41e6-80e9-2f0f64a711e3
+    type: condition
+    task:
+      id: 0814da4f-9c12-41e6-80e9-2f0f64a711e3
+      version: -1
+      name: Is there a MD5 hash?
+      description: Check if there is a SHA1 hash in context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+        - "7"
+      "yes":
+        - "31"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isExists
+              left:
+                value:
+                  complex:
+                    root: inputs.MD5
+                iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: [ ]
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 887c0100-7911-4463-8dca-914bb01c16a0
+    type: condition
+    task:
+      id: 887c0100-7911-4463-8dca-914bb01c16a0
+      version: -1
+      name: Is there a Domain?
+      description: Check if there is a SHA1 hash in context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+        - "7"
+      "yes":
+        - "35"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isExists
+              left:
+                value:
+                  complex:
+                    root: inputs.Domain
+                iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1850,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: [ ]
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: c40052d7-76c5-4508-82e8-31e24f888797
+    type: condition
+    task:
+      id: c40052d7-76c5-4508-82e8-31e24f888797
+      version: -1
+      name: Is there a URL?
+      description: Check if there is a SHA1 hash in context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+        - "7"
+      "yes":
+        - "34"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isExists
+              left:
+                value:
+                  complex:
+                    root: inputs.URL
+                iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: [ ]
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 581a34c0-09a1-4901-8cdc-52a9b4ad6ea9
+    type: condition
+    task:
+      id: 581a34c0-09a1-4901-8cdc-52a9b4ad6ea9
+      version: -1
+      name: Is there a IP?
+      description: Check if there is a SHA1 hash in context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+        - "7"
+      "yes":
+        - "36"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isExists
+              left:
+                value:
+                  complex:
+                    root: inputs.IP
+                iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: [ ]
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: ea456cbc-51de-41ff-8a44-8f6a871e11b9
+    type: regular
+    task:
+      id: ea456cbc-51de-41ff-8a44-8f6a871e11b9
+      version: -1
+      name: Recorded Future MD5 Intel
+      description: Get threat intelligence for an IP, Domain, CVE, URL or File.
+      script: Recorded Future v2|||recordedfuture-intelligence
+      type: regular
+      iscommand: true
+      brand: Recorded Future v2
+    nexttasks:
+      '#none#':
+        - "39"
+    scriptarguments:
+      entity:
+        complex:
+          root: inputs.MD5
+      entity_type:
+        simple: file
+      fetch_related_entities:
+        simple: "no"
+      fetch_riskyCIDRips:
+        simple: "no"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: [ ]
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 425c4073-237b-406c-8a5d-5875744601b2
+    type: regular
+    task:
+      id: 425c4073-237b-406c-8a5d-5875744601b2
+      version: -1
+      name: Recorded Future SHA1 Intel
+      description: Get threat intelligence for an IP, Domain, CVE, URL or File.
+      script: Recorded Future v2|||recordedfuture-intelligence
+      type: regular
+      iscommand: true
+      brand: Recorded Future v2
+    nexttasks:
+      '#none#':
+        - "37"
+    scriptarguments:
+      entity:
+        complex:
+          root: inputs.SHA1
+      entity_type:
+        simple: file
+      fetch_related_entities:
+        simple: "no"
+      fetch_riskyCIDRips:
+        simple: "no"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2412.5,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: [ ]
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 7d124834-d04f-4ae8-8c81-a88a88d1f028
+    type: regular
+    task:
+      id: 7d124834-d04f-4ae8-8c81-a88a88d1f028
+      version: -1
+      name: Recorded Future SHA256 Intel
+      description: Get threat intelligence for an IP, Domain, CVE, URL or File.
+      script: Recorded Future v2|||recordedfuture-intelligence
+      type: regular
+      iscommand: true
+      brand: Recorded Future v2
+    nexttasks:
+      '#none#':
+        - "38"
+    scriptarguments:
+      entity:
+        complex:
+          root: inputs.SHA256
+      entity_type:
+        simple: file
+      fetch_related_entities:
+        simple: "no"
+      fetch_riskyCIDRips:
+        simple: "no"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: [ ]
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 3625404e-0bca-4565-8779-7d4dcf675aaa
+    type: regular
+    task:
+      id: 3625404e-0bca-4565-8779-7d4dcf675aaa
+      version: -1
+      name: Recorded Future URL Intel
+      description: Get threat intelligence for an IP, Domain, CVE, URL or File.
+      script: Recorded Future v2|||recordedfuture-intelligence
+      type: regular
+      iscommand: true
+      brand: Recorded Future v2
+    nexttasks:
+      '#none#':
+        - "40"
+    scriptarguments:
+      entity:
+        complex:
+          root: inputs.URL
+      entity_type:
+        simple: url
+      fetch_related_entities:
+        simple: "no"
+      fetch_riskyCIDRips:
+        simple: "no"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: [ ]
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 2301eb55-62cb-4499-8d6e-596f5e593d64
+    type: regular
+    task:
+      id: 2301eb55-62cb-4499-8d6e-596f5e593d64
+      version: -1
+      name: Recorded Future Domain Intel
+      description: Get threat intelligence for an IP, Domain, CVE, URL or File.
+      script: Recorded Future v2|||recordedfuture-intelligence
+      type: regular
+      iscommand: true
+      brand: Recorded Future v2
+    nexttasks:
+      '#none#':
+        - "41"
+    scriptarguments:
+      entity:
+        complex:
+          root: inputs.Domain
+      entity_type:
+        simple: domain
+      fetch_related_entities:
+        simple: "no"
+      fetch_riskyCIDRips:
+        simple: "no"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1962.5,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: [ ]
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 628b1b8f-dc88-489f-8915-65d660446971
+    type: regular
+    task:
+      id: 628b1b8f-dc88-489f-8915-65d660446971
+      version: -1
+      name: Recorded Future IP Intel
+      description: Get threat intelligence for an IP, Domain, CVE, URL or File.
+      script: Recorded Future v2|||recordedfuture-intelligence
+      type: regular
+      iscommand: true
+      brand: Recorded Future v2
+    nexttasks:
+      '#none#':
+        - "42"
+    scriptarguments:
+      entity:
+        complex:
+          root: inputs.IP
+      entity_type:
+        simple: ip
+      fetch_related_entities:
+        simple: "no"
+      fetch_riskyCIDRips:
+        simple: "no"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1512.5,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: [ ]
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 4ab6eaf1-1121-4d45-8ca1-e41c58b07299
+    type: regular
+    task:
+      id: 4ab6eaf1-1121-4d45-8ca1-e41c58b07299
+      version: -1
+      name: Recorded Future Link Research (SHA1)
+      description: Get Insikt Group Research Links for an IP, Domain, CVE, URL or
+        File.
+      script: Recorded Future v2|||recordedfuture-links
+      type: regular
+      iscommand: true
+      brand: Recorded Future v2
+    nexttasks:
+      '#none#':
+        - "7"
+    scriptarguments:
+      entity:
+        complex:
+          root: inputs.SHA1
+      entity_type:
+        simple: file
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2412.5,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: [ ]
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 465f2642-548a-47ee-8d29-e020a3caa41b
+    type: regular
+    task:
+      id: 465f2642-548a-47ee-8d29-e020a3caa41b
+      version: -1
+      name: Recorded Future Link Research (SHA256)
+      description: Get Insikt Group Research Links for an IP, Domain, CVE, URL or
+        File.
+      script: Recorded Future v2|||recordedfuture-links
+      type: regular
+      iscommand: true
+      brand: Recorded Future v2
+    nexttasks:
+      '#none#':
+        - "7"
+    scriptarguments:
+      entity:
+        complex:
+          root: inputs.SHA256
+      entity_type:
+        simple: file
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: [ ]
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 4ada0ebe-07bf-4e93-8b42-90ceabc42a76
+    type: regular
+    task:
+      id: 4ada0ebe-07bf-4e93-8b42-90ceabc42a76
+      version: -1
+      name: Recorded Future Link Research (MD5)
+      description: Get Insikt Group Research Links for an IP, Domain, CVE, URL or
+        File.
+      script: Recorded Future v2|||recordedfuture-links
+      type: regular
+      iscommand: true
+      brand: Recorded Future v2
+    nexttasks:
+      '#none#':
+        - "7"
+    scriptarguments:
+      entity:
+        complex:
+          root: inputs.MD5
+      entity_type:
+        simple: file
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: [ ]
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 94346cf0-f8d6-44bb-86ee-22d6b1570f7f
+    type: regular
+    task:
+      id: 94346cf0-f8d6-44bb-86ee-22d6b1570f7f
+      version: -1
+      name: Recorded Future Link Research (URL)
+      description: Get Insikt Group Research Links for an IP, Domain, CVE, URL or
+        File.
+      script: Recorded Future v2|||recordedfuture-links
+      type: regular
+      iscommand: true
+      brand: Recorded Future v2
+    nexttasks:
+      '#none#':
+        - "7"
+    scriptarguments:
+      entity:
+        complex:
+          root: inputs.URL
+      entity_type:
+        simple: url
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: [ ]
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 16ec97ec-7fe6-4db9-8be6-644fe27fac9b
+    type: regular
+    task:
+      id: 16ec97ec-7fe6-4db9-8be6-644fe27fac9b
+      version: -1
+      name: Recorded Future Link Research (Domain)
+      description: Get Insikt Group Research Links for an IP, Domain, CVE, URL or
+        File.
+      script: Recorded Future v2|||recordedfuture-links
+      type: regular
+      iscommand: true
+      brand: Recorded Future v2
+    nexttasks:
+      '#none#':
+        - "7"
+    scriptarguments:
+      entity:
+        complex:
+          root: inputs.Domain
+      entity_type:
+        simple: domain
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1962.5,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: [ ]
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: bebf426a-796a-428b-8e88-cc1b59d75ab3
+    type: regular
+    task:
+      id: bebf426a-796a-428b-8e88-cc1b59d75ab3
+      version: -1
+      name: Recorded Future Link Research (IP)
+      description: Get Insikt Group Research Links for an IP, Domain, CVE, URL or
+        File.
+      script: Recorded Future v2|||recordedfuture-links
+      type: regular
+      iscommand: true
+      brand: Recorded Future v2
+    nexttasks:
+      '#none#':
+        - "7"
+    scriptarguments:
+      entity:
+        complex:
+          root: inputs.IP
+      entity_type:
+        simple: ip
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1512.5,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: [ ]
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 9674b1f1-1c70-41f4-84a5-24119df055d3
+    type: title
+    task:
+      id: 9674b1f1-1c70-41f4-84a5-24119df055d3
+      version: -1
+      name: Check Indicator Extraction
+      description: commands.local.cmd.extract.indicators
+      type: title
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+        - "25"
+        - "29"
+        - "27"
+        - "30"
+        - "28"
+        - "26"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1175,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: [ ]
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 3437415d-1d9e-4cc4-88a4-9ccd84b8781c
+    type: condition
+    task:
+      id: 3437415d-1d9e-4cc4-88a4-9ccd84b8781c
+      version: -1
+      name: Is Recorded Future API enabled?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+        - "7"
+      "yes":
+        - "43"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isExists
+              left:
+                value:
+                  complex:
+                    root: modules
+                    filters:
+                      - - operator: containsString
+                          left:
+                            value:
+                              simple: modules.brand
+                            iscontext: true
+                          right:
+                            value:
+                              simple: Recorded Future v2
+                      - - operator: isEqualString
+                          left:
+                            value:
+                              simple: modules.state
+                            iscontext: true
+                          right:
+                            value:
+                              simple: active
+                    accessor: brand
+                iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: [ ]
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "25_7_#default#": 0.44,
+      "44_43_yes": 0.37
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1055,
+        "width": 2742.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+  - key: MD5
+    value:
+      complex:
+        root: File
+        accessor: MD5
+        transformers:
+          - operator: uniq
+    required: false
+    description: File MD5 hash to enrich.
+    playbookInputQuery: null
+  - key: SHA256
+    value:
+      complex:
+        root: File
+        accessor: SHA256
+        transformers:
+          - operator: uniq
+    required: false
+    description: The file SHA256 hash to enrich.
+    playbookInputQuery: null
+  - key: SHA1
+    value:
+      complex:
+        root: File
+        accessor: SHA1
+        transformers:
+          - operator: uniq
+    required: false
+    description: The file SHA1 hash to enrich.
+    playbookInputQuery: null
+  - key: IP
+    value:
+      complex:
+        root: IP
+        accessor: Address
+    required: false
+    description: The IP Address to enrich.
+    playbookInputQuery: null
+  - key: Domain
+    value:
+      complex:
+        root: Domain
+        accessor: Name
+    required: false
+    description: The Domain name to enrich.
+    playbookInputQuery: null
+  - key: URL
+    value:
+      complex:
+        root: URL
+        accessor: Data
+    required: false
+    description: The URL to enrich.
+    playbookInputQuery: null
+outputs:
+  - contextPath: DBotScore.Indicator
+    description: The indicator that was tested.
+    type: string
+  - contextPath: DBotScore.Type
+    description: The indicator type.
+    type: string
+  - contextPath: DBotScore
+    description: The DBotScore object.
+    type: unknown
+  - contextPath: DBotScore.Vendor
+    description: Vendor used to calculate the score.
+    type: string
+  - contextPath: DBotScore.Score
+    description: The actual score.
+    type: number
+tests:
+  - No tests
+fromversion: 6.5.0

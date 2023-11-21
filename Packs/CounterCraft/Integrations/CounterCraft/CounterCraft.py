@@ -11,12 +11,13 @@ from datetime import datetime
 import time
 import binascii
 import uuid
+import urllib3
 
 from typing import Dict, List
 from hashlib import sha1
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 """ GLOBALS"""
 

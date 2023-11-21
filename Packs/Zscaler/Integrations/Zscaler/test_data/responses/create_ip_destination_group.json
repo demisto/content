@@ -1,0 +1,13 @@
+{
+    "id": "2000359", 
+    "name": "Test99", 
+    "type": "DSTN_IP", 
+    "addresses": [
+        "127.0.0.2", 
+        "127.0.0.1"
+    ], 
+    "description": "Localhost",
+    "ipCategories": [], 
+    "countries": [], 
+    "isNonEditable": false
+}

@@ -1,0 +1,35 @@
+{
+    "dataType": "incidents",
+    "params": {
+        "colors": {
+            "isEnabled": false,
+            "items": {},
+            "type": "above"
+        },
+        "keys": [
+            "avg|triagesla.totalDuration"
+        ]
+    },
+    "query": "-category:job and triagesla.runStatus:ended",
+    "modified": "2022-09-15T14:39:18.696172536Z",
+    "name": "Mean Time to Triage",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byTo": "",
+            "byFrom": "days",
+            "toValue": null,
+            "fromValue": 7,
+            "field": ""
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "isPredefined": true,
+    "version": -1,
+    "id": "81b585f2-c439-42de-8ad6-6a2877808f09",
+    "widgetType": "duration",
+    "fromVersion": "6.5.0",
+    "description": ""
+}

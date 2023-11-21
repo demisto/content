@@ -1,0 +1,30 @@
+commonfields:
+  id: ConvertCountryCodeCountryName
+  version: -1
+name: ConvertCountryCodeCountryName
+script: ''
+type: python
+tags:
+- transformer
+comment: |-
+  Convert country name to country code or country code to country name.
+  Only one of 'country_code' or 'country_name' can be provided.
+  Example:
+  Input: { "country_code": "US" }
+  Output: { "United States" }
+  Another Example:
+  Input: { "country_name": "United States" }
+  Output: { "US" }
+enabled: true
+args:
+- name: country_code
+  description: 'Country Code Alpha 2 (Example: US)'
+- name: country_name
+  description: Country Name
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.10.12.63474
+runas: DBotWeakRole
+fromversion: 6.5.0
+tests:
+- ConvertCountryCodeCountryName_Test

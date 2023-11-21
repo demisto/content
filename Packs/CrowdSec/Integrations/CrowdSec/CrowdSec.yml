@@ -1,0 +1,188 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: CrowdSec
+  version: -1
+configuration:
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- display: API Key
+  name: apikey
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+description: 'Identify Malicious IP addresses with the CrowdSec CTI API.'
+display: 'CrowdSec'
+name: CrowdSec
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: 'The IP Address to check'
+      isArray: true
+      name: ip
+      required: true
+    description: 'Check the specified IP Address against the CrowdSec CTI.'
+    name: ip
+    outputs:
+    - contextPath: CrowdSec.Info.ip_range_score
+      description: 'The score of the IP Range'
+      type: Number
+    - contextPath: CrowdSec.Info.ip
+      description: 'The IP address'
+      type: String
+    - contextPath: IP.Address
+      description: 'The IP address'
+      type: String
+    - contextPath: CrowdSec.Info.ip_range
+      description: 'The IP range'
+      type: String
+    - contextPath: CrowdSec.Info.as_name
+      description: 'The AS name'
+      type: String
+    - contextPath: CrowdSec.Info.as_num
+      description: 'The AS number'
+      type: Number
+    - contextPath: CrowdSec.Info.location.country
+      description: 'The country of the IP'
+      type: String
+    - contextPath: CrowdSec.Info.location.city
+      description: 'The city of the IP'
+      type: String
+    - contextPath: CrowdSec.Info.location.latitude
+      description: 'The latitude of the IP'
+      type: Number
+    - contextPath: CrowdSec.Info.location.longitude
+      description: 'The longitude of the IP'
+      type: Number
+    - contextPath: CrowdSec.Info.reverse_dns
+      description: 'The reverse DNS of the IP'
+      type: String
+    - contextPath: CrowdSec.Info.behaviors
+      description: 'List of IP behaviors'
+      type: Array
+    - contextPath: CrowdSec.Info.history.first_seen
+      description: 'Date of the first time this IP was reported'
+      type: Date
+    - contextPath: CrowdSec.Info.history.last_seen
+      description: 'Date of the last time this IP was reported'
+      type: Date
+    - contextPath: CrowdSec.Info.history.full_age
+      description: 'Delta in days between first seen and today'
+      type: Number
+    - contextPath: CrowdSec.Info.history.days_age
+      description: 'Delta in days between first and last seen timestamps'
+      type: Number
+    - contextPath: CrowdSec.Info.classifications.classifications
+      description: 'A list of categories associated with the IP. Those data can be sourced from 3rd parties (i.e. tor exit nodes list)'
+      type: Array
+    - contextPath: CrowdSec.Info.classifications.false_positives
+      description: "A list of false positives tags associated with the IP. Any IP with false_positives tags shouldn't be considered as malicious"
+      type: Array
+    - contextPath: CrowdSec.Info.classifications.classifications.description
+      description: ''
+      type: String
+    - contextPath: CrowdSec.Info.attack_details
+      description: 'A more exhaustive list of the scenarios for which a given IP was reported'
+      type: Array
+    - contextPath: CrowdSec.Info.target_countries
+      description: 'The top 10 reports repartition by country about the IP, as a percentage'
+      type: Object
+    - contextPath: CrowdSec.Info.scores.overall.aggressiveness
+      description: 'Overall aggressiveness score'
+      type: Number
+    - contextPath: CrowdSec.Info.scores.overall.threat
+      description: 'Overall threat score'
+      type: Number
+    - contextPath: CrowdSec.Info.scores.overall.trust
+      description: 'Overall trust score'
+      type: Number
+    - contextPath: CrowdSec.Info.scores.overall.anomaly
+      description: 'Overall anomaly score'
+      type: Number
+    - contextPath: CrowdSec.Info.scores.overall.total
+      description: 'Overall score'
+      type: Number
+    - contextPath: CrowdSec.Info.scores.last_day.aggressiveness
+      description: 'Last day aggressiveness score'
+      type: Number
+    - contextPath: CrowdSec.Info.scores.last_day.threat
+      description: 'Last day threat score'
+      type: Number
+    - contextPath: CrowdSec.Info.scores.last_day.trust
+      description: 'Last day trust score'
+      type: Number
+    - contextPath: CrowdSec.Info.scores.last_day.anomaly
+      description: 'Last day anomaly score'
+      type: Number
+    - contextPath: CrowdSec.Info.scores.last_day.total
+      description: 'Last day score'
+      type: Number
+    - contextPath: CrowdSec.Info.scores.last_week.aggressiveness
+      description: 'Last week aggressiveness score'
+      type: Number
+    - contextPath: CrowdSec.Info.scores.last_week.threat
+      description: 'Last week threat score'
+      type: Number
+    - contextPath: CrowdSec.Info.scores.last_week.trust
+      description: 'Last week trust score'
+      type: Number
+    - contextPath: CrowdSec.Info.scores.last_week.anomaly
+      description: 'Last week anomaly score'
+      type: Number
+    - contextPath: CrowdSec.Info.scores.last_week.total
+      description: 'Last week score'
+      type: Number
+    - contextPath: CrowdSec.Info.scores.last_month.aggressiveness
+      description: 'Last month aggressiveness score'
+      type: Number
+    - contextPath: CrowdSec.Info.scores.last_month.threat
+      description: 'Last month threat score'
+      type: Number
+    - contextPath: CrowdSec.Info.scores.last_month.trust
+      description: 'Last month trust score'
+      type: Number
+    - contextPath: CrowdSec.Info.scores.last_month.anomaly
+      description: 'Last month anomaly score'
+      type: Number
+    - contextPath: CrowdSec.Info.scores.last_month.total
+      description: 'Last month score'
+      type: Number
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.12.63474
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

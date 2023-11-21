@@ -1,0 +1,10 @@
+[INGEST:vendor="msft", product="radius", target_dataset="msft_radius_raw", no_hit=keep]
+// Support only date time of format: MM/dd/yyyy hh:mm:ss.nnn. For example: 01/01/2021 10:00:00.123
+filter _raw_log ~= "\<Timestamp\sdata_type\=\"\d+\"\>\d{2}\/\d{2}\/\d{4}\s\d+\:\d+\:\d+\.\d+Z?\<"
+| alter tmp_extract_timestamp = arrayindex(regextract(_raw_log,"\<Timestamp\sdata_type\=\"\d+\"\>([^\<]+)\<"),0)
+| alter tmp_splittime = split(tmp_extract_timestamp, ".")
+| alter epoch_s = to_string(to_epoch(parse_timestamp("%m/%d/%Y %H:%M:%S", arrayindex(tmp_splittime,0)), "seconds")),
+        epoch_ms = to_string(arrayindex(regextract(trim(arrayindex(tmp_splittime, 1),"Z"),"^(\d{3})"),0))
+| alter tmp_timestampModify = concat(epoch_s , epoch_ms)
+| alter _time = to_timestamp(to_integer(tmp_timestampModify), "millis")
+| fields -epoch_s, epoch_ms, tmp_extract_timestamp, tmp_splittime, tmp_timestampModify;

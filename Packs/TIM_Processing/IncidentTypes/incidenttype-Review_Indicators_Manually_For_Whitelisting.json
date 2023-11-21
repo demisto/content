@@ -1,6 +1,9 @@
 {
 	"id": "Review Indicators Manually For Whitelisting",
     "fromVersion": "5.5.0",
+    "marketplaces": [
+    "xsoar"
+    ],
 	"version": -1,
 	"sortValues": null,
 	"locked": false,

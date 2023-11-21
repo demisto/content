@@ -29,7 +29,8 @@
           "domain": "puknews.com"
         },
         {
-          "ipAddress": "0.0.0.0"
+          "ipAddress": "0.0.0.0",
+          "port": [44902,65178]
         }
       ],
       "firstActiveTime": "1970-01-01T00:00:00Z",

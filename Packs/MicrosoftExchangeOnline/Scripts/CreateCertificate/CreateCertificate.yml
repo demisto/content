@@ -1,0 +1,39 @@
+args:
+- description: Password to protect the certificate.
+  name: password
+  required: true
+  secret: true
+- description: Number of days the certificate is available. Default is "365".
+  name: days
+  required: true
+  defaultValue: '365'
+- description: A friendly name to identify the certificate.
+  name: friendly_name
+- description: Country of the certificate issuer.
+  name: country
+- description: State or province of the certificate issuer.
+  name: state_or_province
+comment: Creates a public key (.cer file), a private key (.pfx) file, and a Base64 encoded private key to use to authenticate the EWS Extension Online Powershell v2 integration.
+commonfields:
+  id: CreateCertificate
+  version: -1
+name: CreateCertificate
+outputs:
+- contextPath: Certificate.PublicKey
+  description: The .cer file to add to the Azure app.
+  type: String
+- contextPath: Certificate.PrivateKey
+  description: The binary certificate (.pfx file).
+  type: String
+- contextPath: Certificate.PrivateKeyBase64
+  description: The private key encoded in Base64 to use in the integration parameter.
+  type: String
+script: '-'
+tags:
+- basescript
+timeout: '0'
+type: powershell
+dockerimage: demisto/pwsh-exchange:1.0.0.34118
+fromversion: 5.5.0
+tests:
+- CreateCertificate-Test

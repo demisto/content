@@ -21,7 +21,7 @@ def load_mock_response(file_path: str) -> str:
     Returns:
         str: Mock file content.
     """
-    with open(file_path, mode='r', encoding='utf-8') as mock_file:
+    with open(file_path, encoding='utf-8') as mock_file:
         return mock_file.read()
 
 
@@ -51,7 +51,6 @@ def get_client_mock():
         subscription_id=SUBSCRIPTION_ID,
         resource_group=RESOURCE_GROUP_NAME,
         client_id=CLIENT_ID,
-        api_version='2021-03-01',
         verify=False,
         proxy=False)
 
@@ -118,7 +117,7 @@ def test_azure_firewall_get_command(requests_mock):
     mock_response = json.loads(load_mock_response('test_data/firewall/firewall_get.json'))
     requests_mock.get(url, json=mock_response)
 
-    command_arguments = dict(firewall_names=firewall_name)
+    command_arguments = {"firewall_names": firewall_name}
     result = azure_firewall_get_command(client, command_arguments)
 
     assert len(result[0].outputs) == 1
@@ -150,7 +149,7 @@ def test_azure_firewall_rules_collection_list_command_for_firewall(requests_mock
     mock_response = json.loads(load_mock_response('test_data/firewall/firewall_get.json'))
     requests_mock.get(url, json=mock_response)
 
-    command_arguments = dict(firewall_name=firewall_name, rule_type="application_rule")
+    command_arguments = {"firewall_name": firewall_name, "rule_type": "application_rule"}
     result = azure_firewall_rules_collection_list_command(client, command_arguments)
 
     assert len(result.outputs) == 1
@@ -188,7 +187,7 @@ def test_azure_firewall_rules_collection_list_command_for_policy(requests_mock):
     requests_mock.get(url, json=mock_response)
 
     rule_type = "application_rule"
-    command_arguments = dict(policy=policy_name, rule_type=rule_type)
+    command_arguments = {"policy": policy_name, "rule_type": rule_type}
     result = azure_firewall_rules_collection_list_command(client, command_arguments)
 
     collection_key = get_policy_rule_collection_name(rule_type=rule_type)
@@ -229,7 +228,7 @@ def test_azure_firewall_rules_list_command_for_policy(requests_mock):
     mock_response = json.loads(load_mock_response('test_data/policy/policy_rule_list.json'))
     requests_mock.get(url, json=mock_response)
 
-    command_arguments = dict(policy=policy_name, collection_name=collection_name)
+    command_arguments = {"policy": policy_name, "collection_name": collection_name}
     result = azure_firewall_rules_list_command(client, command_arguments)
 
     assert len(result.outputs) == 1
@@ -263,7 +262,7 @@ def test_azure_firewall_rules_list_command_for_firewall(requests_mock):
     mock_response = json.loads(load_mock_response('test_data/firewall/firewall_get.json'))
     requests_mock.get(url, json=mock_response)
 
-    command_arguments = dict(firewall_name=firewall_name, collection_name=collection_name, rule_type="application_rule")
+    command_arguments = {"firewall_name": firewall_name, "collection_name": collection_name, "rule_type": "application_rule"}
     result = azure_firewall_rules_list_command(client, command_arguments)
 
     assert len(result.outputs) == 1
@@ -297,8 +296,8 @@ def test_azure_firewall_rules_get_command_for_firewall(requests_mock):
     mock_response = json.loads(load_mock_response('test_data/firewall/firewall_get.json'))
     requests_mock.get(url, json=mock_response)
 
-    command_arguments = dict(firewall_name=firewall_name, collection_name=collection_name, rule_type="application_rule",
-                             rule_name=rule_name)
+    command_arguments = {"firewall_name": firewall_name, "collection_name": collection_name, "rule_type": "application_rule",
+                         "rule_name": rule_name}
     result = azure_firewall_rule_get_command(client, command_arguments)
 
     assert result.outputs_key_field == 'name'
@@ -331,7 +330,7 @@ def test_azure_firewall_rule_get_command_for_policy(requests_mock):
     mock_response = json.loads(load_mock_response('test_data/policy/policy_rule_list.json'))
     requests_mock.get(url, json=mock_response)
 
-    command_arguments = dict(policy=policy_name, collection_name=collection_name, rule_name=rule_name)
+    command_arguments = {"policy": policy_name, "collection_name": collection_name, "rule_name": rule_name}
     result = azure_firewall_rule_get_command(client, command_arguments)
 
     assert result.outputs_key_field == 'name'
@@ -363,8 +362,8 @@ def test_azure_firewall_policy_create_command(requests_mock):
     mock_response = json.loads(load_mock_response('test_data/policy/policy_create.json'))
     requests_mock.put(url, json=mock_response)
 
-    command_arguments = dict(policy_name=policy_name, threat_intelligence_mode="Turned-off", location="eastus",
-                             tier="Standard", enable_proxy="False")
+    command_arguments = {"policy_name": policy_name, "threat_intelligence_mode": "Turned-off", "location": "eastus",
+                         "tier": "Standard", "enable_proxy": "False"}
     result = azure_firewall_policy_create_command(client, command_arguments)
 
     assert len(result.outputs) == 1
@@ -464,7 +463,7 @@ def test_azure_firewall_policy_get_command(requests_mock):
     mock_response = json.loads(load_mock_response('test_data/policy/policy_get.json'))
     requests_mock.get(url, json=mock_response)
 
-    command_arguments = dict(policy_names=policy_name)
+    command_arguments = {"policy_names": policy_name}
     result = azure_firewall_policy_get_command(client, command_arguments)
 
     assert len(result) == 1
@@ -495,7 +494,7 @@ def test_azure_firewall_policy_delete_command(requests_mock):
 
     requests_mock.delete(url, status_code=202)
 
-    command_arguments = dict(policy_names=policy_name)
+    command_arguments = {"policy_names": policy_name}
     result = azure_firewall_policy_delete_command(client, command_arguments)
 
     assert len(result) == 1
@@ -1317,3 +1316,86 @@ def test_azure_firewall_service_tag_list_command(requests_mock):
     assert len(result.outputs) == 1
     assert result.outputs_prefix == 'AzureFirewall.ServiceTag'
     assert result.outputs[0].get('name') == 'ActionGroup'
+
+
+@pytest.mark.parametrize(argnames='client_id', argvalues=['test_client_id', None])
+def test_test_module_command_with_managed_identities(mocker, requests_mock, client_id):
+    """
+    Given:
+     - User has provided managed identities client oid.
+    When:
+     - test-module called.
+    Then:
+     - Ensure the out[ut are as expected
+    """
+    from AzureFirewall import main, MANAGED_IDENTITIES_TOKEN_URL, Resources
+    import AzureFirewall
+
+    mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
+    get_mock = requests_mock.get(MANAGED_IDENTITIES_TOKEN_URL, json=mock_token)
+    params = {
+        'managed_identities_client_id': {'password': client_id},
+        'use_managed_identities': 'True',
+        'subscription_id': {'password': 'test'},
+        'resource_group': 'test_resource_group'
+    }
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(AzureFirewall, 'return_results')
+    mocker.patch('MicrosoftApiModule.get_integration_context', return_value={})
+
+    main()
+
+    assert 'ok' in AzureFirewall.return_results.call_args[0][0]
+    qs = get_mock.last_request.qs
+    assert qs['resource'] == [Resources.management_azure]
+    assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs
+
+
+def test_azure_firewall_resource_group_list_command(requests_mock):
+    """
+    Given:
+        - limit argument
+        - Mock response from API client
+    When:
+        - Calling azure_firewall_resource_group_list_command
+    Then:
+        - Validate expected outputs returned
+    """
+    from AzureFirewall import azure_firewall_resource_group_list_command
+    authorization_mock(requests_mock)
+    client = get_client_mock()
+
+    url = f'https://management.azure.com/subscriptions/{SUBSCRIPTION_ID}/resourcegroups'
+    mock_response = json.loads(load_mock_response('test_data/resource_group_list.json'))
+    requests_mock.get(url, json=mock_response)
+
+    result = azure_firewall_resource_group_list_command(client, {'limit': 50})
+
+    assert len(result.outputs) == 1
+    assert result.outputs_prefix == 'AzureFirewall.ResourceGroup'
+    assert result.outputs[0].get('name') == 'name'
+
+
+def test_azure_firewall_subscriptions_list_command(requests_mock):
+    """
+    Given:
+        - Nothing
+    When:
+        - Calling azure_firewall_subscriptions_list_command
+    Then:
+        - Validate expected outputs returned
+    """
+    from AzureFirewall import azure_firewall_subscriptions_list_command
+    authorization_mock(requests_mock)
+    client = get_client_mock()
+
+    url = 'https://management.azure.com/subscriptions'
+    mock_response = json.loads(load_mock_response('test_data/subscriptions_list.json'))
+    requests_mock.get(url, json=mock_response)
+
+    result = azure_firewall_subscriptions_list_command(client)
+
+    assert len(result.outputs) == 2
+    assert result.outputs_prefix == 'AzureFirewall.Subscription'
+    assert result.outputs[0].get('id') == '/subscriptions/1234'

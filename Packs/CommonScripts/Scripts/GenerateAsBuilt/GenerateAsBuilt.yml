@@ -1,0 +1,30 @@
+args:
+- description: Who has prepared this as-built.
+  name: author
+  required: true
+- description: Whom this as-built was prepared for.
+  name: customer
+  required: true
+- defaultValue: '7'
+  description: Days back to search for incidents.
+  name: days
+- description: Maximum number of results to return - default 1000.
+  name: size
+- description: Retrieve more information such as dependencies from a specific use case.
+  name: playbook
+comment: Generate an as built document, as HTML, based on the running XSOAR instance. Requires an instance of the Demisto API integration configured.
+commonfields:
+  id: GenerateAsBuilt
+  version: -1
+name: GenerateAsBuilt
+script: '-'
+subtype: python3
+timeout: '0'
+type: python
+fromversion: 6.0.0
+dockerimage: demisto/teams:1.0.0.43500
+tests:
+- No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2

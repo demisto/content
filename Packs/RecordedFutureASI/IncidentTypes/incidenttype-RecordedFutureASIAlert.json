@@ -1,0 +1,74 @@
+{
+  "id": "Recorded Future ASI Alert",
+  "version": -1,
+  "vcShouldIgnore": false,
+  "locked": false,
+  "name": "Recorded Future ASI Alert",
+  "prevName": "Recorded Future ASI Alert",
+  "color": "#0071cf",
+  "hours": 0,
+  "days": 0,
+  "weeks": 0,
+  "hoursR": 0,
+  "daysR": 0,
+  "weeksR": 0,
+  "system": false,
+  "readonly": false,
+  "default": false,
+  "autorun": true,
+  "disabled": false,
+  "reputationCalc": 0,
+  "onChangeRepAlg": 0,
+  "layout": "RecordedFutureASILayout",
+  "detached": false,
+  "extractSettings": {
+    "mode": "Specific",
+    "fieldCliNameToExtractSettings": {
+      "recordedfutureattacksurfaceintelligenceaffectedhosts": {
+        "extractAsIsIndicatorTypeId": "",
+        "isExtractingAllIndicatorTypes": false,
+        "extractIndicatorTypesIDs": [
+          "domainRepUnified",
+          "ipRep"
+        ]
+      },
+      "agentid": {
+        "extractAsIsIndicatorTypeId": "",
+        "isExtractingAllIndicatorTypes": false,
+        "extractIndicatorTypesIDs": []
+      },
+      "alertname": {
+        "extractAsIsIndicatorTypeId": "",
+        "isExtractingAllIndicatorTypes": false,
+        "extractIndicatorTypesIDs": [
+          "cveRep",
+          "domainRepUnified",
+          "ipRep"
+        ]
+      },
+      "description": {
+        "extractAsIsIndicatorTypeId": "",
+        "isExtractingAllIndicatorTypes": false,
+        "extractIndicatorTypesIDs": [
+          "cveRep"
+        ]
+      },
+      "sourcehostname": {
+        "extractAsIsIndicatorTypeId": "",
+        "isExtractingAllIndicatorTypes": false,
+        "extractIndicatorTypesIDs": [
+          "domainRepUnified",
+          "ipRep"
+        ]
+      },
+      "recordedfutureattacksurfaceintelligencetriggeredrules": {
+        "extractAsIsIndicatorTypeId": "",
+        "isExtractingAllIndicatorTypes": false,
+        "extractIndicatorTypesIDs": [
+          "cveRep"
+        ]
+      }
+    }
+  },
+  "fromVersion": "6.5.0"
+}

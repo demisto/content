@@ -1,5 +1,6 @@
-import demistomock as demisto
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+import urllib3
 from CommonServerUserPython import *
 
 """ IMPORTS """
@@ -12,7 +13,7 @@ from sixgill.sixgill_request_classes.sixgill_auth_request import SixgillAuthRequ
 from sixgill.sixgill_enrich_client import SixgillEnrichClient
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 hashes: Dict[str, Any] = {}
 

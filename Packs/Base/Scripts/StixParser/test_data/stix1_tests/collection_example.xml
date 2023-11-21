@@ -1,0 +1,284 @@
+<taxii_11:Poll_Response collection_name="example" in_response_to="cb06e50e-886b-415d-af5a-286e751b3feb" xmlns:taxii_11="http://taxii.mitre.org/messages/taxii_xml_binding-1.1" message_id="72917" more="false">
+    <taxii_11:Inclusive_End_Timestamp>2021-10-20T06:43:00+00:00</taxii_11:Inclusive_End_Timestamp>
+    <taxii_11:Content_Block xmlns:taxii="http://taxii.mitre.org/messages/taxii_xml_binding-1" xmlns:taxii_11="http://taxii.mitre.org/messages/taxii_xml_binding-1.1" xmlns:tdq="http://taxii.mitre.org/query/taxii_default_query-1">
+        <taxii_11:Content_Binding binding_id="id"/>
+        <taxii_11:Content>
+            <stix:STIX_Package xmlns:cyboxCommon="http://example.org/common-2" xmlns:cybox="http://example.org/cybox-2" xmlns:cyboxVocabs="http://example.org/default_vocabularies-2" xmlns:marking="http://example.org/Marking-1" xmlns:simpleMarking="http://example.org/extensions/MarkingStructure#Simple-1" xmlns:tlpMarking="http://example.org/extensions/MarkingStructure#TLP-1" xmlns:TOUMarking="http://example.org/extensions/MarkingStructure#Terms_Of_Use-1" xmlns:opensource="http://hailataxii.com" xmlns:edge="http://example.org/" xmlns:indicator="http://example.org/Indicator-2" xmlns:ttp="http://example.org/TTP-1" xmlns:stixCommon="http://example.org/common-1" xmlns:stixVocabs="http://example.org/default_vocabularies-1" xmlns:stix="http://example.org/stix-1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="edge:Package-ff652ede-caf6-4a92-ae55-5ca44a950f67" version="1.1.1" timestamp="2021-10-20T06:43:08.838140+00:00">
+                <stix:STIX_Header>
+                    <stix:Handling>
+                        <marking:Marking>
+                            <marking:Controlled_Structure>../../../../descendant-or-self::node()</marking:Controlled_Structure>
+                            <marking:Marking_Structure xsi:type="tlpMarking:TLPMarkingStructureType" color="WHITE"/>
+                            <marking:Marking_Structure xsi:type="TOUMarking:TermsOfUseMarkingStructureType">
+                                <TOUMarking:Terms_Of_Use>TBD</TOUMarking:Terms_Of_Use>
+                            </marking:Marking_Structure>
+                            <marking:Marking_Structure xsi:type="simpleMarking:SimpleMarkingStructureType">
+                                <simpleMarking:Statement>Unclassified (Public)</simpleMarking:Statement>
+                            </marking:Marking_Structure>
+                        </marking:Marking>
+                    </stix:Handling>
+                </stix:STIX_Header>
+                <stix:Indicators>
+                    <stix:Indicator id="opensource:indicator-62ed3e13-938b-4edd-b3ee-ec9443dcc6bb" timestamp="2021-10-19T15:06:35.300875+00:00" xsi:type="indicator:IndicatorType" version="2.1.1">
+                        <indicator:Title>phishTank.com id:7324360 with malicious URL:http://app.example...</indicator:Title>
+                        <indicator:Type xsi:type="stixVocabs:IndicatorTypeVocab-1.1">URL Watchlist</indicator:Type>
+                        <indicator:Description>This URL:[http://example.org/?n] was identified by phishtank.com as part of a phishing email. This URL appears to still be online as of 2021-10-19T04:13:43+00:00. More detailed infomation can be found at http://www.phishtank.com/phish_detail.php?phish_id=7324360</indicator:Description>
+                        <indicator:Short_Description>phishTank.com id:7324360 with malicious URL:http://app.example...</indicator:Short_Description>
+                        <indicator:Observable idref="opensource:Observable-335290e0-3496-4644-bdaa-25b323814b46">            </indicator:Observable>
+                        <indicator:Indicated_TTP>
+                            <stixCommon:TTP idref="opensource:ttp-c819f3ef-fbc3-4077-8d56-bf619c8d9b29" xsi:type="ttp:TTPType" version="1.1.1"/>
+                        </indicator:Indicated_TTP>
+                        <indicator:Confidence timestamp="2021-10-19T15:06:35.300903+00:00">
+                            <stixCommon:Value xsi:type="stixVocabs:HighMediumLowVocab-1.0">High</stixCommon:Value>
+                        </indicator:Confidence>
+                        <indicator:Producer>
+                            <stixCommon:Identity id="opensource:Identity-7a8b2bab-9be3-4c70-adfe-45cbfff8327b">
+                                <stixCommon:Name>http://www.phishtank.com/</stixCommon:Name>
+                            </stixCommon:Identity>
+                            <stixCommon:Time>
+                                <cyboxCommon:Produced_Time>2021-10-19T04:13:43+00:00</cyboxCommon:Produced_Time>
+                                <cyboxCommon:Received_Time>2021-10-19T15:05:19+00:00</cyboxCommon:Received_Time>
+                            </stixCommon:Time>
+                        </indicator:Producer>
+                    </stix:Indicator>
+                </stix:Indicators>
+            </stix:STIX_Package>
+        </taxii_11:Content>
+        <taxii_11:Timestamp_Label>2021-10-20T06:43:08.840864+00:00</taxii_11:Timestamp_Label>
+    </taxii_11:Content_Block>
+    <taxii_11:Content_Block xmlns:taxii="http://taxii.mitre.org/messages/taxii_xml_binding-1" xmlns:taxii_11="http://taxii.mitre.org/messages/taxii_xml_binding-1.1" xmlns:tdq="http://taxii.mitre.org/query/taxii_default_query-1">
+        <taxii_11:Content_Binding binding_id="id"/>
+        <taxii_11:Content>
+            <stix:STIX_Package xmlns:cyboxCommon="http://example.org/common-2" xmlns:cybox="http://example.org/cybox-2" xmlns:cyboxVocabs="http://example.org/default_vocabularies-2" xmlns:URIObj="http://example.org/objects#URIObject-2" xmlns:marking="http://example.org/Marking-1" xmlns:simpleMarking="http://example.org/extensions/MarkingStructure#Simple-1" xmlns:tlpMarking="http://example.org/extensions/MarkingStructure#TLP-1" xmlns:TOUMarking="http://example.org/extensions/MarkingStructure#Terms_Of_Use-1" xmlns:opensource="http://hailataxii.com" xmlns:edge="http://example.org/" xmlns:stixCommon="http://example.org/common-1" xmlns:stixVocabs="http://example.org/default_vocabularies-1" xmlns:stix="http://example.org/stix-1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="edge:Package-65bdcda9-54f2-47aa-a473-5176d4c2c1d8" version="1.1.1" timestamp="2021-10-20T06:43:08.841901+00:00">
+                <stix:STIX_Header>
+                    <stix:Handling>
+                        <marking:Marking>
+                            <marking:Controlled_Structure>../../../../descendant-or-self::node()</marking:Controlled_Structure>
+                            <marking:Marking_Structure xsi:type="tlpMarking:TLPMarkingStructureType" color="WHITE"/>
+                            <marking:Marking_Structure xsi:type="TOUMarking:TermsOfUseMarkingStructureType">
+                                <TOUMarking:Terms_Of_Use>TBD</TOUMarking:Terms_Of_Use>
+                            </marking:Marking_Structure>
+                            <marking:Marking_Structure xsi:type="simpleMarking:SimpleMarkingStructureType">
+                                <simpleMarking:Statement>Unclassified (Public)</simpleMarking:Statement>
+                            </marking:Marking_Structure>
+                        </marking:Marking>
+                    </stix:Handling>
+                </stix:STIX_Header>
+                <stix:Observables cybox_major_version="2" cybox_minor_version="1" cybox_update_version="0">
+                    <cybox:Observable id="opensource:Observable-335290e0-3496-4644-bdaa-25b323814b46" sighting_count="1">
+                        <cybox:Title>URL: http://example.org/?n...</cybox:Title>
+                        <cybox:Description>URL: http://example.org/?n| isOnline:yes| dateVerified:2021-10-19T04:13:43+00:00</cybox:Description>
+                        <cybox:Object id="opensource:URI-d63ca0ba-3e0d-490e-914d-3271a66dc803">
+                            <cybox:Properties xsi:type="URIObj:URIObjectType" type="URL">
+                                <URIObj:Value condition="Equals">http://example.org/?n</URIObj:Value>
+                            </cybox:Properties>
+                        </cybox:Object>
+                    </cybox:Observable>
+                </stix:Observables>
+            </stix:STIX_Package>
+        </taxii_11:Content>
+        <taxii_11:Timestamp_Label>2021-10-20T06:43:08.843260+00:00</taxii_11:Timestamp_Label>
+    </taxii_11:Content_Block>
+    <taxii_11:Content_Block xmlns:taxii="http://taxii.mitre.org/messages/taxii_xml_binding-1" xmlns:taxii_11="http://taxii.mitre.org/messages/taxii_xml_binding-1.1" xmlns:tdq="http://taxii.mitre.org/query/taxii_default_query-1">
+        <taxii_11:Content_Binding binding_id="id"/>
+        <taxii_11:Content>
+            <stix:STIX_Package xmlns:cyboxCommon="http://example.org/common-2" xmlns:cybox="http://example.org/cybox-2" xmlns:cyboxVocabs="http://example.org/default_vocabularies-2" xmlns:marking="http://example.org/Marking-1" xmlns:simpleMarking="http://example.org/extensions/MarkingStructure#Simple-1" xmlns:tlpMarking="http://example.org/extensions/MarkingStructure#TLP-1" xmlns:TOUMarking="http://example.org/extensions/MarkingStructure#Terms_Of_Use-1" xmlns:edge="http://example.org/" xmlns:ttp="http://example.org/TTP-1" xmlns:stixCommon="http://example.org/common-1" xmlns:stixVocabs="http://example.org/default_vocabularies-1" xmlns:stix="http://example.org/stix-1" xmlns:opensource="http://www.hailataxii.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="edge:Package-3b8d75d7-e1f7-4071-8571-6559cf0cf635" version="1.1.1" timestamp="2021-10-20T06:43:08.844195+00:00">
+                <stix:STIX_Header>
+                    <stix:Handling>
+                        <marking:Marking>
+                            <marking:Controlled_Structure>../../../../descendant-or-self::node()</marking:Controlled_Structure>
+                            <marking:Marking_Structure xsi:type="tlpMarking:TLPMarkingStructureType" color="WHITE"/>
+                            <marking:Marking_Structure xsi:type="TOUMarking:TermsOfUseMarkingStructureType">
+                                <TOUMarking:Terms_Of_Use>TBD</TOUMarking:Terms_Of_Use>
+                            </marking:Marking_Structure>
+                            <marking:Marking_Structure xsi:type="simpleMarking:SimpleMarkingStructureType">
+                                <simpleMarking:Statement>Unclassified (Public)</simpleMarking:Statement>
+                            </marking:Marking_Structure>
+                        </marking:Marking>
+                    </stix:Handling>
+                </stix:STIX_Header>
+                <stix:TTPs>
+                    <stix:TTP id="opensource:ttp-c819f3ef-fbc3-4077-8d56-bf619c8d9b29" timestamp="2015-03-03T17:26:10.992441+00:00" xsi:type="ttp:TTPType" version="1.1.1">
+                        <ttp:Title>Email Emmbedded URL</ttp:Title>
+                        <ttp:Description>Target Users via Email by adding a malicious URL</ttp:Description>
+                        <ttp:Short_Description>Target Users via Email by adding a malicious URL</ttp:Short_Description>
+                        <ttp:Intended_Effect timestamp="2015-03-03T17:26:10.992590+00:00">
+                            <stixCommon:Value xsi:type="stixVocabs:IntendedEffectVocab-1.0">Theft - Credential Theft</stixCommon:Value>
+                        </ttp:Intended_Effect>
+                        <ttp:Behavior>
+                            <ttp:Attack_Patterns>
+                                <ttp:Attack_Pattern id="opensource:attackpattern-3cd411e4-e11a-4afb-81c4-1cf10470df65">
+                                    <ttp:Title>URL embedded in Email</ttp:Title>
+                                </ttp:Attack_Pattern>
+                            </ttp:Attack_Patterns>
+                        </ttp:Behavior>
+                        <ttp:Information_Source>
+                            <stixCommon:Identity id="opensource:Identity-13907755-bd3c-49fe-b880-7e7462edd21b">
+                                <stixCommon:Name>http://www.phishtank.com/</stixCommon:Name>
+                            </stixCommon:Identity>
+                        </ttp:Information_Source>
+                    </stix:TTP>
+                </stix:TTPs>
+            </stix:STIX_Package>
+        </taxii_11:Content>
+        <taxii_11:Timestamp_Label>2021-10-20T06:43:08.845786+00:00</taxii_11:Timestamp_Label>
+    </taxii_11:Content_Block>
+    <taxii_11:Content_Block xmlns:taxii="http://taxii.mitre.org/messages/taxii_xml_binding-1" xmlns:taxii_11="http://taxii.mitre.org/messages/taxii_xml_binding-1.1" xmlns:tdq="http://taxii.mitre.org/query/taxii_default_query-1">
+        <taxii_11:Content_Binding binding_id="id"/>
+        <taxii_11:Content>
+            <stix:STIX_Package xmlns:cyboxCommon="http://example.org/common-2" xmlns:cybox="http://example.org/cybox-2" xmlns:cyboxVocabs="http://example.org/default_vocabularies-2" xmlns:marking="http://example.org/Marking-1" xmlns:simpleMarking="http://example.org/extensions/MarkingStructure#Simple-1" xmlns:tlpMarking="http://example.org/extensions/MarkingStructure#TLP-1" xmlns:TOUMarking="http://example.org/extensions/MarkingStructure#Terms_Of_Use-1" xmlns:opensource="http://hailataxii.com" xmlns:edge="http://example.org/" xmlns:indicator="http://example.org/Indicator-2" xmlns:ttp="http://example.org/TTP-1" xmlns:stixCommon="http://example.org/common-1" xmlns:stixVocabs="http://example.org/default_vocabularies-1" xmlns:stix="http://example.org/stix-1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="edge:Package-e888768f-6eb4-41cd-9f14-e6fe26f55379" version="1.1.1" timestamp="2021-10-20T06:43:08.846344+00:00">
+                <stix:STIX_Header>
+                    <stix:Handling>
+                        <marking:Marking>
+                            <marking:Controlled_Structure>../../../../descendant-or-self::node()</marking:Controlled_Structure>
+                            <marking:Marking_Structure xsi:type="tlpMarking:TLPMarkingStructureType" color="WHITE"/>
+                            <marking:Marking_Structure xsi:type="TOUMarking:TermsOfUseMarkingStructureType">
+                                <TOUMarking:Terms_Of_Use>TBD</TOUMarking:Terms_Of_Use>
+                            </marking:Marking_Structure>
+                            <marking:Marking_Structure xsi:type="simpleMarking:SimpleMarkingStructureType">
+                                <simpleMarking:Statement>Unclassified (Public)</simpleMarking:Statement>
+                            </marking:Marking_Structure>
+                        </marking:Marking>
+                    </stix:Handling>
+                </stix:STIX_Header>
+                <stix:Indicators>
+                    <stix:Indicator id="opensource:indicator-22b34283-f349-4fcf-af36-7bec63f76f55" timestamp="2021-10-19T15:06:35.229459+00:00" xsi:type="indicator:IndicatorType" version="2.1.1">
+                        <indicator:Title>phishTank.com id:7324397 with malicious URL:https://example...</indicator:Title>
+                        <indicator:Type xsi:type="stixVocabs:IndicatorTypeVocab-1.1">URL Watchlist</indicator:Type>
+                        <indicator:Description>This URL:[https://pancakeswap.finance.exchange-goswap.com/] was identified by phishtank.com as part of a phishing email. This URL appears to still be online as of 2021-10-19T04:13:43+00:00. More detailed infomation can be found at http://www.phishtank.com/phish_detail.php?phish_id=7324397</indicator:Description>
+                        <indicator:Short_Description>phishTank.com id:7324397 with malicious URL:https://example...</indicator:Short_Description>
+                        <indicator:Observable idref="opensource:Observable-5af3d9a1-b0ac-4846-95b0-efd498c14594">            </indicator:Observable>
+                        <indicator:Indicated_TTP>
+                            <stixCommon:TTP idref="opensource:ttp-c819f3ef-fbc3-4077-8d56-bf619c8d9b29" xsi:type="ttp:TTPType" version="1.1.1"/>
+                        </indicator:Indicated_TTP>
+                        <indicator:Confidence timestamp="2021-10-19T15:06:35.229486+00:00">
+                            <stixCommon:Value xsi:type="stixVocabs:HighMediumLowVocab-1.0">High</stixCommon:Value>
+                        </indicator:Confidence>
+                        <indicator:Producer>
+                            <stixCommon:Identity id="opensource:Identity-4126971e-59c8-4b2a-a5ac-bebb0172eed4">
+                                <stixCommon:Name>http://www.phishtank.com/</stixCommon:Name>
+                            </stixCommon:Identity>
+                            <stixCommon:Time>
+                                <cyboxCommon:Produced_Time>2021-10-19T04:13:43+00:00</cyboxCommon:Produced_Time>
+                                <cyboxCommon:Received_Time>2021-10-19T15:05:19+00:00</cyboxCommon:Received_Time>
+                            </stixCommon:Time>
+                        </indicator:Producer>
+                    </stix:Indicator>
+                </stix:Indicators>
+            </stix:STIX_Package>
+        </taxii_11:Content>
+        <taxii_11:Timestamp_Label>2021-10-20T06:43:08.848171+00:00</taxii_11:Timestamp_Label>
+    </taxii_11:Content_Block>
+    <taxii_11:Content_Block xmlns:taxii="http://taxii.mitre.org/messages/taxii_xml_binding-1" xmlns:taxii_11="http://taxii.mitre.org/messages/taxii_xml_binding-1.1" xmlns:tdq="http://taxii.mitre.org/query/taxii_default_query-1">
+        <taxii_11:Content_Binding binding_id="id"/>
+        <taxii_11:Content>
+            <stix:STIX_Package xmlns:cyboxCommon="http://example.org/common-2" xmlns:cybox="http://example.org/cybox-2" xmlns:cyboxVocabs="http://example.org/default_vocabularies-2" xmlns:URIObj="http://example.org/objects#URIObject-2" xmlns:marking="http://example.org/Marking-1" xmlns:simpleMarking="http://example.org/extensions/MarkingStructure#Simple-1" xmlns:tlpMarking="http://example.org/extensions/MarkingStructure#TLP-1" xmlns:TOUMarking="http://example.org/extensions/MarkingStructure#Terms_Of_Use-1" xmlns:opensource="http://hailataxii.com" xmlns:edge="http://example.org/" xmlns:stixCommon="http://example.org/common-1" xmlns:stixVocabs="http://example.org/default_vocabularies-1" xmlns:stix="http://example.org/stix-1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="edge:Package-21742790-1e7b-493c-8be0-905fb16fc73c" version="1.1.1" timestamp="2021-10-20T06:43:08.848872+00:00">
+                <stix:STIX_Header>
+                    <stix:Handling>
+                        <marking:Marking>
+                            <marking:Controlled_Structure>../../../../descendant-or-self::node()</marking:Controlled_Structure>
+                            <marking:Marking_Structure xsi:type="tlpMarking:TLPMarkingStructureType" color="WHITE"/>
+                            <marking:Marking_Structure xsi:type="TOUMarking:TermsOfUseMarkingStructureType">
+                                <TOUMarking:Terms_Of_Use>TBD</TOUMarking:Terms_Of_Use>
+                            </marking:Marking_Structure>
+                            <marking:Marking_Structure xsi:type="simpleMarking:SimpleMarkingStructureType">
+                                <simpleMarking:Statement>Unclassified (Public)</simpleMarking:Statement>
+                            </marking:Marking_Structure>
+                        </marking:Marking>
+                    </stix:Handling>
+                </stix:STIX_Header>
+                <stix:Observables cybox_major_version="2" cybox_minor_version="1" cybox_update_version="0">
+                    <cybox:Observable id="opensource:Observable-5af3d9a1-b0ac-4846-95b0-efd498c14594" sighting_count="1">
+                        <cybox:Title>URL: https://pancakeswap.finance.exchange-goswap.com/...</cybox:Title>
+                        <cybox:Description>URL: https://pancakeswap.finance.exchange-goswap.com/| isOnline:yes| dateVerified:2021-10-19T04:13:43+00:00</cybox:Description>
+                        <cybox:Object id="opensource:URI-5b607289-96eb-4baf-bb6c-b318cf201187">
+                            <cybox:Properties xsi:type="URIObj:URIObjectType" type="URL">
+                                <URIObj:Value condition="Equals">https://pancakeswap.finance.exchange-goswap.com/</URIObj:Value>
+                            </cybox:Properties>
+                        </cybox:Object>
+                    </cybox:Observable>
+                </stix:Observables>
+            </stix:STIX_Package>
+        </taxii_11:Content>
+        <taxii_11:Timestamp_Label>2021-10-20T06:43:08.849666+00:00</taxii_11:Timestamp_Label>
+    </taxii_11:Content_Block>
+    <taxii_11:Content_Block xmlns:taxii="http://taxii.mitre.org/messages/taxii_xml_binding-1" xmlns:taxii_11="http://taxii.mitre.org/messages/taxii_xml_binding-1.1" xmlns:tdq="http://taxii.mitre.org/query/taxii_default_query-1">
+        <taxii_11:Content_Binding binding_id="id"/>
+        <taxii_11:Content>
+            <stix:STIX_Package xmlns:cyboxCommon="http://example.org/common-2" xmlns:cybox="http://example.org/cybox-2" xmlns:cyboxVocabs="http://example.org/default_vocabularies-2" xmlns:marking="http://example.org/Marking-1" xmlns:simpleMarking="http://example.org/extensions/MarkingStructure#Simple-1" xmlns:tlpMarking="http://example.org/extensions/MarkingStructure#TLP-1" xmlns:TOUMarking="http://example.org/extensions/MarkingStructure#Terms_Of_Use-1" xmlns:opensource="http://hailataxii.com" xmlns:edge="http://example.org/" xmlns:indicator="http://example.org/Indicator-2" xmlns:ttp="http://example.org/TTP-1" xmlns:stixCommon="http://example.org/common-1" xmlns:stixVocabs="http://example.org/default_vocabularies-1" xmlns:stix="http://example.org/stix-1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="edge:Package-fc291516-27cc-44ca-91e6-62a05742653c" version="1.1.1" timestamp="2021-10-20T06:43:08.850011+00:00">
+                <stix:STIX_Header>
+                    <stix:Handling>
+                        <marking:Marking>
+                            <marking:Controlled_Structure>../../../../descendant-or-self::node()</marking:Controlled_Structure>
+                            <marking:Marking_Structure xsi:type="tlpMarking:TLPMarkingStructureType" color="WHITE"/>
+                            <marking:Marking_Structure xsi:type="TOUMarking:TermsOfUseMarkingStructureType">
+                                <TOUMarking:Terms_Of_Use>TBD</TOUMarking:Terms_Of_Use>
+                            </marking:Marking_Structure>
+                            <marking:Marking_Structure xsi:type="simpleMarking:SimpleMarkingStructureType">
+                                <simpleMarking:Statement>Unclassified (Public)</simpleMarking:Statement>
+                            </marking:Marking_Structure>
+                        </marking:Marking>
+                    </stix:Handling>
+                </stix:STIX_Header>
+                <stix:Indicators>
+                    <stix:Indicator id="opensource:indicator-398bc245-487a-47d6-b886-adf526ad3748" timestamp="2021-10-19T15:06:34.235953+00:00" xsi:type="indicator:IndicatorType" version="2.1.1">
+                        <indicator:Title>phishTank.com id:7324767 with malicious URL:https://example...</indicator:Title>
+                        <indicator:Type xsi:type="stixVocabs:IndicatorTypeVocab-1.1">URL Watchlist</indicator:Type>
+                        <indicator:Description>This URL:[http://example.org/] was identified by phishtank.com as part of a phishing email. This URL appears to still be online as of 2021-10-19T10:07:34+00:00. More detailed infomation can be found at http://www.phishtank.com/phish_detail.php?phish_id=7324767</indicator:Description>
+                        <indicator:Short_Description>phishTank.com id:7324767 with malicious URL:https://example...</indicator:Short_Description>
+                        <indicator:Observable idref="opensource:Observable-cfe14953-f986-450b-93f1-0041a597b8d2">            </indicator:Observable>
+                        <indicator:Indicated_TTP>
+                            <stixCommon:TTP idref="opensource:ttp-c819f3ef-fbc3-4077-8d56-bf619c8d9b29" xsi:type="ttp:TTPType" version="1.1.1"/>
+                        </indicator:Indicated_TTP>
+                        <indicator:Confidence timestamp="2021-10-19T15:06:34.235979+00:00">
+                            <stixCommon:Value xsi:type="stixVocabs:HighMediumLowVocab-1.0">High</stixCommon:Value>
+                        </indicator:Confidence>
+                        <indicator:Producer>
+                            <stixCommon:Identity id="opensource:Identity-3102c54d-7eec-486c-a859-f30ac5760dde">
+                                <stixCommon:Name>http://www.phishtank.com/</stixCommon:Name>
+                            </stixCommon:Identity>
+                            <stixCommon:Time>
+                                <cyboxCommon:Produced_Time>2021-10-19T10:07:34+00:00</cyboxCommon:Produced_Time>
+                                <cyboxCommon:Received_Time>2021-10-19T15:05:19+00:00</cyboxCommon:Received_Time>
+                            </stixCommon:Time>
+                        </indicator:Producer>
+                    </stix:Indicator>
+                </stix:Indicators>
+            </stix:STIX_Package>
+        </taxii_11:Content>
+        <taxii_11:Timestamp_Label>2021-10-20T06:43:08.851574+00:00</taxii_11:Timestamp_Label>
+    </taxii_11:Content_Block>
+    <taxii_11:Content_Block xmlns:taxii="http://taxii.mitre.org/messages/taxii_xml_binding-1" xmlns:taxii_11="http://taxii.mitre.org/messages/taxii_xml_binding-1.1" xmlns:tdq="http://taxii.mitre.org/query/taxii_default_query-1">
+        <taxii_11:Content_Binding binding_id="id"/>
+        <taxii_11:Content>
+            <stix:STIX_Package xmlns:cyboxCommon="http://example.org/common-2" xmlns:cybox="http://example.org/cybox-2" xmlns:cyboxVocabs="http://example.org/default_vocabularies-2" xmlns:URIObj="http://example.org/objects#URIObject-2" xmlns:marking="http://example.org/Marking-1" xmlns:simpleMarking="http://example.org/extensions/MarkingStructure#Simple-1" xmlns:tlpMarking="http://example.org/extensions/MarkingStructure#TLP-1" xmlns:TOUMarking="http://example.org/extensions/MarkingStructure#Terms_Of_Use-1" xmlns:opensource="http://hailataxii.com" xmlns:edge="http://example.org/" xmlns:stixCommon="http://example.org/common-1" xmlns:stixVocabs="http://example.org/default_vocabularies-1" xmlns:stix="http://example.org/stix-1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="edge:Package-91d1c0c3-e6c4-4931-83c4-a9404b640a6a" version="1.1.1" timestamp="2021-10-20T06:43:08.852314+00:00">
+                <stix:STIX_Header>
+                    <stix:Handling>
+                        <marking:Marking>
+                            <marking:Controlled_Structure>../../../../descendant-or-self::node()</marking:Controlled_Structure>
+                            <marking:Marking_Structure xsi:type="tlpMarking:TLPMarkingStructureType" color="WHITE"/>
+                            <marking:Marking_Structure xsi:type="TOUMarking:TermsOfUseMarkingStructureType">
+                                <TOUMarking:Terms_Of_Use>TBD</TOUMarking:Terms_Of_Use>
+                            </marking:Marking_Structure>
+                            <marking:Marking_Structure xsi:type="simpleMarking:SimpleMarkingStructureType">
+                                <simpleMarking:Statement>Unclassified (Public)</simpleMarking:Statement>
+                            </marking:Marking_Structure>
+                        </marking:Marking>
+                    </stix:Handling>
+                </stix:STIX_Header>
+                <stix:Observables cybox_major_version="2" cybox_minor_version="1" cybox_update_version="0">
+                    <cybox:Observable id="opensource:Observable-cfe14953-f986-450b-93f1-0041a597b8d2" sighting_count="1">
+                        <cybox:Title>URL: http://example.org/...</cybox:Title>
+                        <cybox:Description>URL: http://example.org/| isOnline:yes| dateVerified:2021-10-19T10:07:34+00:00</cybox:Description>
+                        <cybox:Object id="opensource:URI-fa125422-3419-4d68-8a78-fd6a5c5f2dec">
+                            <cybox:Properties xsi:type="URIObj:URIObjectType" type="URL">
+                                <URIObj:Value condition="Equals">http://example.org/</URIObj:Value>
+                            </cybox:Properties>
+                        </cybox:Object>
+                    </cybox:Observable>
+                </stix:Observables>
+            </stix:STIX_Package>
+        </taxii_11:Content>
+        <taxii_11:Timestamp_Label>2021-10-20T06:43:08.853465+00:00</taxii_11:Timestamp_Label>
+    </taxii_11:Content_Block>
+</taxii_11:Poll_Response>

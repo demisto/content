@@ -1,43 +1,27 @@
 Azure network security groups are used to filter network traffic to and from Azure resources in an Azure virtual network.
+This integration was integrated and tested with version 2022-09-01 of Azure Network Security Groups.
 ## Configure Azure Network Security Groups on Cortex XSOAR
 
-In both options below, the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) is used.
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for Azure Network Security Groups.
+3. Click **Add instance** to create and configure a new integration instance.
 
-In order to connect to the Azure Network Security Group using either Cortex XSOAR Azure App or the Self-Deployed Azure App:
-1. Fill in the required parameters.
-   
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Application ID |  | True |
-    | Subscription ID |  | True |
-    | Resource Group Name |  | True |
+    | Application ID |  | False |
+     | Default Subscription ID | There are two options to set the specified value, either in the configuration or directly within the commands. However, setting values in both places will cause an override by the command value. | True |
+    | Default Resource Group Name |There are two options to set the specified value, either in the configuration or directly within the commands. However, setting values in both places will cause an override by the command value.  | True |
     | Azure AD endpoint | Azure AD endpoint associated with a national cloud. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
-   
-2. Run the ***!azure-nsg-auth-start*** command. 
-3. Follow the instructions that appear.
-4. Run the ***!azure-nsg-auth-complete*** command.
+    | Authentication Type | Type of authentication - can be Authorization Code flow \(recommended\), Device Code Flow, or Azure Managed Identities. | True |
+    | Tenant ID (for user-auth mode) |  | False |
+    | Client Secret (for user-auth mode) |  | False |
+    | Application redirect URI (for user-auth mode) |  | False |
+    | Authorization code | For user-auth mode - received from the authorization step. See Detailed Instructions \(?\) section. | False |
+    | Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. |False |
 
-At end of the process you'll see a message that you've logged in successfully. 
-
-## Required Permissions:
-1. user_impersonation
-2. offline_access
-3. user.read 
-
-#### Cortex XSOAR Azure App
-
-In order to use the Cortex XSOAR Azure application, use the default application ID (d4736600-e3d5-4c97-8e65-57abd2b979fe).
-
-You only need to fill in your subscription ID and resource group name. 
-
-#### Self-Deployed Azure App
-
-To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal.
-
-The application must have *user_impersonation* permission and must allow public client flows (can be found under the **Authentication** section of the app).
-
+4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -51,7 +35,8 @@ List all network security groups.
 `azure-nsg-security-groups-list`
 #### Input
 
-There are no input arguments for this command.
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
+| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
 
 #### Context Output
 
@@ -105,8 +90,10 @@ List all rules of the specified security groups.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | security_group_name | A comma-separated list of the names of the security groups. | Required | 
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
+| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'. | Optional | 
 | limit | The maximum number of rules to display. Default is 50. | Optional | 
-| offset | The index of the first rule to display.  Used for pagination. Default is 0. | Optional | 
+| offset | The index of the first rule to display. Used for pagination. Default is 0. | Optional | 
 
 
 #### Context Output
@@ -202,13 +189,15 @@ Delete a security rule.
 
 #### Base Command
 
-`azure-nsg-security-rules-delete`
+`azure-nsg-security-rule-delete`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | security_group_name | The name of the security group. | Required | 
-| security_rule_name | The name of the rule to be deleted. | Required | 
+| security_rule_name | The name of the rule to be deleted. | Required |
+|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. |Optional|
+resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'.|Optional|
 
 
 #### Context Output
@@ -229,7 +218,7 @@ Create a security rule.
 
 #### Base Command
 
-`azure-nsg-security-rules-create`
+`azure-nsg-security-rule-create`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -240,11 +229,13 @@ Create a security rule.
 | action | Whether to allow the traffic. Possible values are: "Allow" and "Deny". Possible values are: Allow, Deny. | Optional | 
 | protocol | The protocol on which to apply the rule. Possible values are: "Any", "TCP", "UDP" and "ICMP". Possible values are: Any, TCP, UDP, ICMP. | Optional | 
 | source | The source IP address range from which incoming traffic will be allowed or denied by this rule. Possible values are "Any", an IP address range, an application security group, or a default tag. Default is "Any". | Optional | 
-| priority | The priority by which the rules will be processed. The lower the number, the higher the priority. We recommend leaving gaps between rules - 100, 200, 300, etc. - so that it is easier to add new rules without having to edit existing rules. Default is "4096". | Optional | 
+| priority | The priority by which the rules will be processed. The lower the number, the higher the priority. We recommend leaving gaps between rules - 100, 200, 300, etc. - so that it is easier to add new rules without having to edit existing rules. Default is "4096".| Optional | 
 | source_ports | The source ports from which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is "*". | Optional | 
 | destination | The specific destination IP address range for outgoing traffic that will be allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag. | Optional | 
-| destination_ports | The destination ports for which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is "*". | Optional | 
-| description | A description to add to the rule. | Optional | 
+| destination_ports | The destination ports for which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. | Optional | 
+| description | A description to add to the rule. | Optional |
+|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. |Optional|
+resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'.|Optional|
 
 
 #### Context Output
@@ -313,7 +304,7 @@ Update a security rule. If one does not exist, it will be created.
 
 #### Base Command
 
-`azure-nsg-security-rules-update`
+`azure-nsg-security-rule-update`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -325,10 +316,12 @@ Update a security rule. If one does not exist, it will be created.
 | protocol | The protocol on which to apply the rule. Possible values are: "Any", "TCP", "UDP", and "ICMP". Possible values are: Any, TCP, UDP, ICMP. | Optional | 
 | source | The source IP address range from which incoming traffic will be allowed or denied by this rule. Possible values are "Any", an IP address range, an application security group, or a default tag. Default is "Any". | Optional | 
 | priority | The priority by which the rules will be processed. The lower the number, the higher the priority. We recommend leaving gaps between rules - 100, 200, 300, etc. - so that it is easier to add new rules without having to edit existing rules. Default is "4096". | Optional | 
-| source_ports | The source ports from which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is "*". | Optional | 
+| source_ports | The source ports from which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is "*".| Optional | 
 | destination | The specific destination IP address range for outgoing traffic that will be allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag. | Optional | 
-| destination_ports | The destination ports for which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is "*". | Optional | 
+| destination_ports | The destination ports for which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. | Optional | 
 | description | A description to add to the rule. | Optional | 
+|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. |Optional|
+resource_group_name|The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'. |Optional|
 
 
 #### Context Output
@@ -398,13 +391,15 @@ Get a specific rule.
 
 #### Base Command
 
-`azure-nsg-security-rules-get`
+`azure-nsg-security-rule-get`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | security_group_name | The name of the security group. | Optional | 
-| security_rule_name | A comma-separated list of the names of the rules to get. | Optional | 
+| security_rule_name | A comma-separated list of the names of the rules to get. | Optional |
+|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. |Optional|
+resource_group_name| The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'. |Optional|
 
 
 #### Context Output
@@ -683,3 +678,184 @@ Get a specific rule.
 | AzureNSG.Rule.access | String | The rule's access. Can be "Allow" or "Deny". | 
 | AzureNSG.Rule.priority | Number | The rule's priority. Can be from 100 to 4096. | 
 | AzureNSG.Rule.direction | String | The rule's direction. Can be "Inbound" or "Outbound". | 
+
+
+### azure-nsg-generate-login-url
+***
+Generate the login url used for Authorization code flow.
+
+#### Base Command
+
+`azure-nsg-generate-login-url`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```azure-nsg-generate-login-url```
+
+#### Human Readable Output
+
+>### Authorization instructions
+>1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
+You will be automatically redirected to a link with the following structure:
+```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
+>2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
+and paste it in your instance configuration under the **Authorization code** parameter.
+
+### azure-nsg-subscriptions-list
+***
+Gets all subscriptions for a tenant.
+#### Base Command
+
+`azure-nsg-subscriptions-list`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureNSG.Subscription.id | String | The unique identifier of the Azure Network Security Groups subscription. | 
+| AzureNSG.Subscription.authorizationSource | String | The source of authorization for the Azure Network Security Groups subscription. | 
+| AzureNSG.Subscription.managedByTenants | Unknown | The tenants that have access to manage the Azure Network Security Groups subscription. | 
+| AzureNSG.Subscription.subscriptionId | String | The ID of the Azure Network Security Groups subscription. | 
+| AzureNSG.Subscription.tenantId | String | The ID of the tenant associated with the Azure Network Security Groups subscription. | 
+| AzureNSG.Subscription.displayName | String | The display name of the Azure Network Security Groups subscription. | 
+| AzureNSG.Subscription.state | String | The current state of the Azure Network Security Groups subscription. | 
+| AzureNSG.Subscription.subscriptionPolicies.locationPlacementId | String | The ID of the location placement policy for the Azure Network Security Groups subscription. | 
+| AzureNSG.Subscription.subscriptionPolicies.quotaId | String | The ID of the quota policy for the Azure Network Security Groups subscription. | 
+| AzureNSG.Subscription.subscriptionPolicies.spendingLimit | String | The spending limit policy for the Azure Network Security Groups subscription. | 
+| AzureNSG.Subscription.count.type | String | The type of the Azure Network Security Groups subscription count. | 
+| AzureNSG.Subscription.count.value | Number | The value of the Azure Network Security Groups subscription count. | 
+
+#### Command example
+```!azure-nsg-subscriptions-list```
+#### Context Example
+```json
+{
+    "AzureNSG": {
+        "Subscription": [
+            {
+                "authorizationSource": "RoleBased",
+                "displayName": "Access to Azure Active Directory",
+                "id": "/subscriptions/057b1785-fd",
+                "managedByTenants": [],
+                "state": "Enabled",
+                "subscriptionId": "057b1785-fd7b-4ca",
+                "subscriptionPolicies": {
+                    "locationPlacementId": "Public_2014-09-01",
+                    "quotaId": "AAD_2015-09-01",
+                    "spendingLimit": "On"
+                },
+                "tenantId": "ebac1a16-81bf-4"
+            },
+            {
+                "authorizationSource": "RoleBased",
+                "displayName": "Pay-As-You-Go",
+                "id": "/subscriptions/0f907ea4",
+                "managedByTenants": [],
+                "state": "Enabled",
+                "subscriptionId": "0f907ea4-bc",
+                "subscriptionPolicies": {
+                    "locationPlacementId": "Public_2014-09-01",
+                    "quotaId": "PayAsYouGo_2014-09-01",
+                    "spendingLimit": "Off"
+                },
+                "tenantId": "ebac1a16-81bf-"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Azure Network Security Groups Subscriptions list
+>|subscriptionId|tenantId|displayName|state|
+>|---|---|---|---|
+>| 057b1785-fd7b-4 | ebac1a16-81bf-449 | Access to Azure Active Directory | Enabled |
+>| 0f907ea4-bc8b-4 | ebac1a16-81bf-449 | Pay-As-You-Go | Enabled |
+
+
+
+### azure-nsg-resource-group-list
+
+***
+Gets all resource groups for a subscription.
+
+#### Base Command
+
+`azure-nsg-resource-group-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
+| limit | Limit on the number of resource groups to return. Default is 50. | Optional | 
+| tag | A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list by. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureNSG.ResourceGroup.id | String | The unique identifier of the Azure Network Security Groups resource group. | 
+| AzureNSG.ResourceGroup.name | String | The name of the Azure Network Security Groups resource group. | 
+| AzureNSG.ResourceGroup.type | String | The type of the Azure Network Security Groups resource group. | 
+| AzureNSG.ResourceGroup.location | String | The location of the Azure Network Security Groups resource group. | 
+| AzureNSG.ResourceGroup.properties.provisioningState | String | The provisioning state of the Azure Network Security Groups resource group. | 
+| AzureNSG.ResourceGroup.tags.Owner | String | The owner tag of the Azure Network Security Groups resource group. | 
+| AzureNSG.ResourceGroup.tags | Unknown | The tags associated with the Azure Network Security Groups resource group. | 
+| AzureNSG.ResourceGroup.tags.Name | String | The name tag of the Azure Network Security Groups resource group. | 
+| AzureNSG.ResourceGroup.managedBy | String | The entity that manages the Azure Network Security Groups resource group. | 
+| AzureNSG.ResourceGroup.tags.aNSG-managed-cluster-name | String | The ANSG managed cluster name tag associated with the Azure Network Security Groups resource group. | 
+| AzureNSG.ResourceGroup.tags.aNSG-managed-cluster-rg | String | The ANSG managed cluster resource group tag associated with the Azure Network Security Groups resource group. | 
+| AzureNSG.ResourceGroup.tags.type | String | The type tag associated with the Azure Network Security Groups resource group. | 
+
+#### Command example
+```!azure-nsg-resource-group-list```
+#### Context Example
+```json
+{
+    "AzureNSG": {
+        "ResourceGroup": [
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7/resourceGroups/cloud-shell-storage-eastus",
+                "location": "eastus",
+                "name": "cloud-shell-storage-eastus",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7/resourceGroups/demi",
+                "location": "centralus",
+                "name": "demi",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "tags": {
+                    "Owner": "Demi"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Resource Groups List
+>|Name|Location|Tags|
+>|---|---|---|
+>| cloud-shell-storage-eastus | eastus |  |
+>| demi | centralus | Owner: Demi |

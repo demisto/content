@@ -6,7 +6,6 @@
     "name": "Recorded Future Alert",
     "prevName": "Recorded Future Alert",
     "color": "#0071cf",
-    "playbookId": "playbook0",
     "hours": 0,
     "days": 0,
     "weeks": 0,
@@ -20,7 +19,7 @@
     "disabled": false,
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
-    "layout": "RecordedFutureLayout",
+    "layout": "Recorded Future Incident",
     "detached": false,
     "extractSettings": {
         "mode": "All",

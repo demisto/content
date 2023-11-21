@@ -1,7 +1,7 @@
-import requests
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import requests
+
 
 NON_SSL_PREFIX = "http"
 SSL_PREFIX = "https"
@@ -27,7 +27,7 @@ def arg_to_list_with_regex(arg):
     if isinstance(arg, STRING_TYPES):
         if arg[0] == '[' and arg[-1] == ']':
             return json.loads(arg)
-        return re.split(URL_REGEX_PATTERN, arg)
+        return re.split(URL_REGEX_PATTERN, arg)   # type: ignore[arg-type]
     return arg
 
 
@@ -36,7 +36,7 @@ def mark_http_as_suspicious(set_http_as_suspicious):
     return set_http_as_suspicious != 'false'
 
 
-def main():
+def main():     # pragma: no cover
     url_arg = demisto.get(demisto.args(), "url")
     urls = arg_to_list_with_regex(url_arg)
 

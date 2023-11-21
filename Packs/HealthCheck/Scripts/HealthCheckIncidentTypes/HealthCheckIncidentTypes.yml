@@ -1,0 +1,16 @@
+comment: "Identify custom and detached system incidents type  \nChecking if 'Auto Extraction' is turned on for:\nExtract from all\nExtract from specific indicators doesn't have any settings"
+commonfields:
+  id: HealthCheckIncidentTypes
+  version: -1
+dockerimage: demisto/python3:3.10.11.58677
+enabled: true
+name: HealthCheckIncidentTypes
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

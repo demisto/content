@@ -222,6 +222,16 @@
 <td style="width: 417px;">Default Access Control List for the object.</td>
 <td style="width: 106px;">Optional</td>
 </tr>
+<tr>
+<td style="width: 185px;">location</td>
+<td style="width: 417px;">The location of the bucket, The default value is US.</td>
+<td style="width: 106px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 185px;">uniform_bucket_level_access</td>
+<td style="width: 417px;">Whether the bucket is configured to allow only IAM, The default value is false.</td>
+<td style="width: 106px;">Optional</td>
+</tr>
 </tbody>
 </table>
 <p> </p>

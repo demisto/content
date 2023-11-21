@@ -1,0 +1,442 @@
+id: Spear Phishing Investigation
+version: -1
+name: Spear Phishing Investigation
+description: The "Spear Phishing Investigation" playbook is designed to detect patterns that indicates a spear phishing attempt by the attacker.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 56356c32-2608-4402-893d-b35280351a2a
+    type: start
+    task:
+      id: 56356c32-2608-4402-893d-b35280351a2a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: a3bf8786-d0c4-47a6-8a51-c116123b39e4
+    type: title
+    task:
+      id: a3bf8786-d0c4-47a6-8a51-c116123b39e4
+      version: -1
+      name: Domain Squatting
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 310fa350-ca1a-4dd7-8352-d302c4ab60ff
+    type: title
+    task:
+      id: 310fa350-ca1a-4dd7-8352-d302c4ab60ff
+      version: -1
+      name: Keywords Search
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 40ab5b82-b0fb-4e24-89d8-db5077fdfc4f
+    type: condition
+    task:
+      id: 40ab5b82-b0fb-4e24-89d8-db5077fdfc4f
+      version: -1
+      name: Did DomainSquatting occur?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.DomainSquattingResults
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 4bc3e5e8-ba44-4bfe-8ccd-14ac4cf7737f
+    type: regular
+    task:
+      id: 4bc3e5e8-ba44-4bfe-8ccd-14ac4cf7737f
+      version: -1
+      name: Save Domain-Squatting result to incident field
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      domainsquattingresult:
+        complex:
+          root: inputs.DomainSquattingResults
+          transformers:
+          - operator: uniq
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '@'
+              fields:
+                value:
+                  simple: "2"
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: The attacker used the domain **
+              suffix: {}
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: '** which looks like another domain involved in this incident.'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -80,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 4451884f-d282-4519-8d98-f99098f618f1
+    type: title
+    task:
+      id: 4451884f-d282-4519-8d98-f99098f618f1
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: c68376e6-38f2-4d3f-89c3-01e1540d3a85
+    type: condition
+    task:
+      id: c68376e6-38f2-4d3f-89c3-01e1540d3a85
+      version: -1
+      name: Has list of keywords and email body?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.KeywordsToSearch
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.MailBody
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 6981fc14-899c-4f81-8f19-27e1f0a54f8b
+    type: regular
+    task:
+      id: 6981fc14-899c-4f81-8f19-27e1f0a54f8b
+      version: -1
+      name: Search if keywords exist
+      description: Extracts regex data from the provided text. The script support groups and looping.
+      scriptName: MatchRegexV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      contextKey:
+        simple: KeyWordsFound
+      data:
+        complex:
+          root: inputs.MailBody
+      regex:
+        complex:
+          root: inputs.KeywordsToSearch
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: db9e774b-dacd-416d-82e6-38cc237565c8
+    type: condition
+    task:
+      id: db9e774b-dacd-416d-82e6-38cc237565c8
+      version: -1
+      name: Has results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: KeyWordsFound
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: d12e22c4-df08-46c1-84b6-b780c7cb17cc
+    type: regular
+    task:
+      id: d12e22c4-df08-46c1-84b6-b780c7cb17cc
+      version: -1
+      name: Set keywords found to layout
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      emailkeywordsfound:
+        complex:
+          root: KeyWordsFound
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "17_5_#default#": 0.42,
+      "3_5_#default#": 0.17,
+      "6_5_#default#": 0.16
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1025,
+        "width": 1390,
+        "x": -80,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: DomainSquattingResults
+  value: {}
+  required: false
+  description: Results of the domain squatting investigation.
+  playbookInputQuery:
+- key: KeywordsToSearch
+  value: {}
+  required: false
+  description: |-
+    A comma-separated or list of keywords to search in the email body.
+    for example: name of the organization finance app that the attacker might impost to.
+  playbookInputQuery:
+- key: MailBody
+  value: {}
+  required: false
+  description: The phishing mail body.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

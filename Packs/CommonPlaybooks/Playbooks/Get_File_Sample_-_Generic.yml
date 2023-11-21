@@ -1,0 +1,378 @@
+id: Get File Sample - Generic
+version: -1
+name: Get File Sample - Generic
+description: Retrieves files from endpoints by the file hash or the file path.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2f9db3d3-0254-4d38-8bce-aa2325da9194
+    type: start
+    task:
+      id: 2f9db3d3-0254-4d38-8bce-aa2325da9194
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 452.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 7456030a-675f-4c46-8231-7820167addc6
+    type: playbook
+    task:
+      id: 7456030a-675f-4c46-8231-7820167addc6
+      version: -1
+      name: Get File Sample By Hash - Generic v3
+      description: |-
+        This playbook returns a file sample correlating to a hash in the War Room using the following sub-playbooks:
+        - Get the binary file from Carbon Black by its MD5 hash
+        - Get File Sample By Hash - Cylance Protect v2
+        - Code42 File Download
+      playbookName: Get File Sample By Hash - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      MD5:
+        complex:
+          root: inputs.MD5
+      NewFilename:
+        complex:
+          root: inputs.NewFilename
+      SHA256:
+        complex:
+          root: inputs.SHA256
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 5759c2d5-753c-4591-86f6-ff7d4647f306
+    type: playbook
+    task:
+      id: 5759c2d5-753c-4591-86f6-ff7d4647f306
+      version: -1
+      name: Get File Sample From Path - Generic V3
+      description: |
+        This playbook returns a file sample from a specified path and host that you input in the following playbooks:
+        - PS Remote Get File Sample From Path
+        - Get File Sample From Path - VMware Carbon Black EDR - Live Response API
+      playbookName: Get File Sample From Path - Generic V3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      Agent_ID:
+        complex:
+          root: inputs.AgentID
+      Host:
+        complex:
+          root: inputs.Hostname
+      Path:
+        complex:
+          root: inputs.FilePath
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 0de5f36a-ceca-4ef5-8fc5-8f3268aed0fe
+    type: playbook
+    task:
+      id: 0de5f36a-ceca-4ef5-8fc5-8f3268aed0fe
+      version: -1
+      name: Unzip File
+      description: This playbook checks whether a file has an extension that supports unzipping, and unzips the file.
+      playbookName: Unzip File
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      File:
+        complex:
+          root: File
+      Password:
+        complex:
+          root: inputs.ZipPassword
+      ZipTool:
+        complex:
+          root: inputs.ZipTool
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 0ef94b0c-f547-471f-8af9-2e75834b30ba
+    type: condition
+    task:
+      id: 0ef94b0c-f547-471f-8af9-2e75834b30ba
+      version: -1
+      name: Should files be unzipped?
+      description: Checks whether retrieved files should be unzipped according to the playbook inputs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.UnzipFile
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 452.5,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 76635ebc-b129-40a7-804a-6519ff1b15dc
+    type: title
+    task:
+      id: 76635ebc-b129-40a7-804a-6519ff1b15dc
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 452.5,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "4_5_#default#": 0.3
+    },
+    "paper": {
+      "dimensions": {
+        "height": 815,
+        "width": 840,
+        "x": 230,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: MD5
+  value:
+    complex:
+      root: File
+      accessor: MD5
+  required: false
+  description: The MD5 hash of the file to retrieve.
+  playbookInputQuery:
+- key: SHA256
+  value:
+    complex:
+      root: File
+      accessor: SHA256
+  required: false
+  description: The SHA256 hash of the file to retrieve.
+  playbookInputQuery:
+- key: Hostname
+  value:
+    complex:
+      root: Endpoint
+      accessor: Hostname
+  required: false
+  description: The hostname from which to retrieve the file.
+  playbookInputQuery:
+- key: AgentID
+  value:
+    complex:
+      root: incident
+      accessor: agentid
+  required: false
+  description: The agent ID that should be used to retrieve the file.
+  playbookInputQuery:
+- key: FilePath
+  value:
+    complex:
+      root: incident
+      accessor: filepath
+  required: false
+  description: "The full path to the file that needs to be retrieved."
+  playbookInputQuery:
+- key: NewFilename
+  value: {}
+  required: false
+  description: Optional - a new name for the retrieved file. If left empty, the filename will not change.
+  playbookInputQuery:
+- key: UnzipFile
+  value: {}
+  required: false
+  description: Whether to unzip zipped files after retrieving them.
+  playbookInputQuery:
+- key: ZipTool
+  value: {}
+  required: false
+  description: 'The tool used to unzip the file. The options are: 7z, zipfile.'
+  playbookInputQuery:
+- key: ZipPassword
+  value: {}
+  required: false
+  description: The password used to unzip zipped files.
+  playbookInputQuery:
+outputs:
+- contextPath: File
+  description: File objects. Includes the zipped file and any unzipped files.
+  type: unknown
+- contextPath: File.Size
+  description: The size of the file.
+  type: number
+- contextPath: File.Type
+  description: The type of the file.
+  type: string
+- contextPath: File.Info
+  description: General information about the file.
+  type: string
+- contextPath: File.MD5
+  description: The MD5 hash of the file.
+  type: string
+- contextPath: File.SHA1
+  description: The SHA1 hash of the file.
+  type: string
+- contextPath: File.SHA256
+  description: The SHA256 hash of the file.
+  type: string
+- contextPath: File.SHA512
+  description: The SHA512 hash of the file.
+  type: string
+- contextPath: File.SSDeep
+  description: The SSDeep of the file.
+  type: string
+- contextPath: File.Extension
+  description: The file extension.
+  type: string
+- contextPath: File.EntryID
+  description: The file entry ID.
+  type: string
+- contextPath: File.Name
+  description: The file name.
+  type: string
+- contextPath: ExtractedFiles
+  description: Files that were unzipped.
+  type: unknown
+quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

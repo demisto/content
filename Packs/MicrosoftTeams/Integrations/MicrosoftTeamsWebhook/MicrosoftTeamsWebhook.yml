@@ -1,0 +1,52 @@
+category: Messaging and Conferencing
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: Microsoft Teams via Webhook
+  version: -1
+configuration:
+- additionalinfo: The webhook URL in the Teams channel.
+  display: Microsoft Webhook URL
+  name: webhookurl
+  required: true
+  type: 0
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+description: Integration for sending notifications to a Microsoft Teams channel via Incoming Webhook.
+display: Microsoft Teams via Webhook
+name: Microsoft Teams via Webhook
+script:
+  commands:
+  - arguments:
+    - defaultValue: None
+      description: 'The message to send.  For example: "This is a message from Cortex XSOAR,"'
+      name: message
+    - description: The alternative webhook for a different team.  If not defined, the integration's default webhook is used.
+      name: team_webhook
+    - description: The alternative URL to send in place of the link to the XSOAR Investigation.
+      name: alternative_url
+    - defaultValue: Cortex XSOAR URL
+      description: The title for the link, defaults to "Cortex XSOAR URL"
+      name: url_title
+    description: Send a message to Microsoft Teams via Incoming Webhook
+    name: ms-teams-message
+  dockerimage: demisto/python3:3.10.12.63474
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)

@@ -10,9 +10,11 @@
     "categories": [
         "IT Services"
     ],
-    "tags": [],
+    "tags": [
+        "Use Case"
+    ],
     "useCases": [
-        "Employee Offboarding"
+        "Compliance"
     ],
     "keywords": [],
     "dependencies": {
@@ -51,10 +53,6 @@
         "GoogleVault": {
             "mandatory": false,
             "display_name": "Google Vault"
-        },
-        "EWSMailSender": {
-            "mandatory": false,
-            "display_name": "EWS Mail Sender"
         },
         "DuoAdminApi": {
             "mandatory": false,

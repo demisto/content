@@ -2,7 +2,7 @@
     "name": "AlienVault Feed",
     "description": "Indicators feed from AlienVault",
     "support": "xsoar",
-    "currentVersion": "1.1.20",
+    "currentVersion": "1.1.28",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -10,11 +10,14 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
+    "tags": [
+        "Threat Intelligence Management",
+        "Plug & Fetch",
+        "Free Feed"
+    ],
     "useCases": [],
     "keywords": [
-        "AlienVault",
-        "Feed"
+        "AlienVault"
     ],
     "marketplaces": [
         "xsoar",

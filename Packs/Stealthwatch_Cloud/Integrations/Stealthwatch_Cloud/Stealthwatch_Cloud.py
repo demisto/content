@@ -6,14 +6,14 @@ import json
 import os
 from datetime import datetime, timedelta
 import collections
+import urllib3
 
-# disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 SERVER = demisto.params().get('serverURL', '').strip('/')
 SERVER_URL = SERVER + '/api/v3'
-API_KEY = demisto.params()['APIKey']
+API_KEY = demisto.params().get('credentials_api_key', {}).get('password') or demisto.params().get('APIKey')
 
 USE_SSL = not demisto.params().get('insecure')
 
@@ -39,7 +39,7 @@ def http_request(method, url_suffix, params_dict=None, headers=DEFAULT_HEADERS, 
 
     url = SERVER_URL + url_suffix
 
-    LOG('running {} request with url={}\tparams={}'.format(method, url, json.dumps(req_params)))
+    LOG(f'running {method} request with url={url}\tparams={json.dumps(req_params)}')
 
     try:
         res = requests.request(method,
@@ -57,7 +57,7 @@ def http_request(method, url_suffix, params_dict=None, headers=DEFAULT_HEADERS, 
             return "Request completed"
     except Exception as e:
         LOG(e)
-        raise(e)
+        raise (e)
 
 
 def underscore_to_camelcase(word):
@@ -92,7 +92,7 @@ def show_alert(alert_id):
     Returns alert by specific id
     """
 
-    api_endpoint = "/alerts/alert/{}/".format(alert_id)
+    api_endpoint = f"/alerts/alert/{alert_id}/"
     return http_request('GET', api_endpoint, {}, DEFAULT_HEADERS)
 
 
@@ -112,7 +112,7 @@ def show_alert_command():
 
     list_for_md = ['resolved', 'id', 'last_modified', 'obj_created', 'assigned_to']
 
-    dict_for_md = {underscore_to_camelcase(k): v for k, v in alert_data.iteritems() if k in list_for_md}
+    dict_for_md = {underscore_to_camelcase(k): v for k, v in alert_data.items() if k in list_for_md}
     md = tableToMarkdown(alert_data.get('text', ''), dict_for_md)
 
     return {
@@ -132,7 +132,7 @@ def update_alert(alert_id, data):
     Updates alert by specific id
     """
 
-    api_endpoint = "/alerts/alert/{}/".format(alert_id)
+    api_endpoint = f"/alerts/alert/{alert_id}/"
     return http_request('PUT', api_endpoint, data=json.dumps(data))
 
 
@@ -163,7 +163,7 @@ def update_alert_command():
 
     list_for_md = ['resolved', 'id', 'last_modified', 'obj_created', 'assigned_to']
 
-    dict_for_md = {k: v for k, v in alert_data.iteritems() if k in list_for_md}
+    dict_for_md = {k: v for k, v in alert_data.items() if k in list_for_md}
     md = tableToMarkdown(alert_data.get('text', ''), dict_for_md)
 
     return {
@@ -302,7 +302,7 @@ def domain_unblock(domain_id):
     Removes domain from the blacklist
     """
 
-    api_endpoint = "/blacklist/domains/{}/".format(domain_id)
+    api_endpoint = f"/blacklist/domains/{domain_id}/"
     return http_request('DELETE', api_endpoint, None, DEFAULT_HEADERS, None)
 
 
@@ -355,7 +355,7 @@ def list_blocked_domains_command():
 
     data_output = []
     for obs in domains_result:
-        data_output.append({underscore_to_camelcase(k): v for k, v in obs.items()})
+        data_output.append({underscore_to_camelcase(k): v for k, v in list(obs.items())})
 
     return {
         'Type': entryTypes['note'],
@@ -397,7 +397,7 @@ def list_observations_command():
 
     data_output = []
     for obs in observations_data:
-        data_output.append({underscore_to_camelcase(k): v for k, v in obs.items()})
+        data_output.append({underscore_to_camelcase(k): v for k, v in list(obs.items())})
 
     return {
         'Type': entryTypes['note'],
@@ -472,7 +472,7 @@ def list_sessions_command():
 
     data_output = []
     for sess in final_sessions_data:
-        data_output.append({underscore_to_camelcase(k): v for k, v in sess.items()})
+        data_output.append({underscore_to_camelcase(k): v for k, v in list(sess.items())})
 
     return {
         'Type': entryTypes['note'],
@@ -533,32 +533,40 @@ def fetch_incidents():
 
 
 ''' EXECUTION CODE '''
-try:
-    if demisto.command() == 'test-module':
-        # This is the call made when pressing the integration test button.
-        if list_alerts_command():
-            demisto.results('ok')
-        else:
-            demisto.results('test failed')
-    elif demisto.command() == 'sw-show-alert':
-        demisto.results(show_alert_command())
-    elif demisto.command() == 'sw-update-alert':
-        demisto.results(update_alert_command())
-    elif demisto.command() == 'sw-list-alerts':
-        demisto.results(list_alerts_command())
-    elif demisto.command() == 'sw-block-domain-or-ip':
-        demisto.results(block_domain_command())
-    elif demisto.command() == 'sw-unblock-domain':
-        demisto.results(unblock_domain_command())
-    elif demisto.command() == 'sw-list-blocked-domains':
-        demisto.results(list_blocked_domains_command())
-    elif demisto.command() == 'sw-list-observations':
-        demisto.results(list_observations_command())
-    elif demisto.command() == 'sw-list-sessions':
-        demisto.results(list_sessions_command())
-    elif demisto.command() == 'fetch-incidents':
-        demisto.results(fetch_incidents())
-except Exception as e:
-    LOG(e.message)
-    LOG.print_log()
-    raise
+
+
+def main():
+    demisto.debug(f'Command being called is {demisto.command()}')
+    if not API_KEY:
+        raise DemistoException('Stealthwatch Cloud API key must be provided.')
+    try:
+        if demisto.command() == 'test-module':
+            # This is the call made when pressing the integration test button.
+            if list_alerts_command():
+                demisto.results('ok')
+            else:
+                demisto.results('test failed')
+        elif demisto.command() == 'sw-show-alert':
+            demisto.results(show_alert_command())
+        elif demisto.command() == 'sw-update-alert':
+            demisto.results(update_alert_command())
+        elif demisto.command() == 'sw-list-alerts':
+            demisto.results(list_alerts_command())
+        elif demisto.command() == 'sw-block-domain-or-ip':
+            demisto.results(block_domain_command())
+        elif demisto.command() == 'sw-unblock-domain':
+            demisto.results(unblock_domain_command())
+        elif demisto.command() == 'sw-list-blocked-domains':
+            demisto.results(list_blocked_domains_command())
+        elif demisto.command() == 'sw-list-observations':
+            demisto.results(list_observations_command())
+        elif demisto.command() == 'sw-list-sessions':
+            demisto.results(list_sessions_command())
+        elif demisto.command() == 'fetch-incidents':
+            demisto.results(fetch_incidents())
+    except Exception as e:
+        return_error('error has occurred: {}'.format(str(e)))
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
+    main()

@@ -10,10 +10,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 0904ffce-b274-4eff-89da-167044ff160e
+    taskid: efc817de-5e12-4222-8938-f1e01b5681bb
     type: start
     task:
-      id: 0904ffce-b274-4eff-89da-167044ff160e
+      id: efc817de-5e12-4222-8938-f1e01b5681bb
       version: -1
       name: ""
       iscommand: false
@@ -21,7 +21,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "7"
     separatecontext: false
     view: |-
       {
@@ -37,26 +37,16 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "1":
     id: "1"
-    taskid: 42d36a82-4520-4563-80c4-9ddfdc08ae40
+    taskid: 00adeea4-d538-4061-84a0-6872a0df35ab
     type: playbook
     task:
-      id: 42d36a82-4520-4563-80c4-9ddfdc08ae40
+      id: 00adeea4-d538-4061-84a0-6872a0df35ab
       version: -1
       name: Block IP - Generic v3
-      description: "This playbook blocks malicious IP addresses using all integrations\
-        \ that are enabled. The direction of the traffic that will be blocked is determined\
-        \ by the XSOAR user (and set by default to outgoing)\nNote the following:\n\
-        -  some of those integrations require specific parameters to run, which are\
-        \ based on the playbook inputs. Also, certain integrations use FW rules or\
-        \ appended network objects.\n- Note that the appended network objects should\
-        \ be specified in blocking rules inside the system later on. \n\n\nSupported\
-        \ integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]:\
-        \ \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n\
-        * Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n\
-        * Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n\
-        * Sophos Firewall\n\n"
+      description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the XSOAR user (and set by default to outgoing)\nNote the following:\n-  some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
       playbookName: Block IP - Generic v3
       type: playbook
       iscommand: false
@@ -93,7 +83,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 1055
         }
       }
     note: false
@@ -103,12 +93,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "2":
     id: "2"
-    taskid: 31db64ee-000c-4ddf-8486-9f4010f87368
+    taskid: 33a27c98-d708-443f-81a7-f7540fb01b4f
     type: regular
     task:
-      id: 31db64ee-000c-4ddf-8486-9f4010f87368
+      id: 33a27c98-d708-443f-81a7-f7540fb01b4f
       version: -1
       name: Get indicator by tag
       description: commands.local.cmd.find.indicators
@@ -129,7 +120,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 1230
         }
       }
     note: false
@@ -139,12 +130,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "3":
     id: "3"
-    taskid: 7ddab282-fe27-4675-8654-15af8e503166
+    taskid: 2fbd18e8-26bd-4257-89ea-957c5d49bfd2
     type: condition
     task:
-      id: 7ddab282-fe27-4675-8654-15af8e503166
+      id: 2fbd18e8-26bd-4257-89ea-957c5d49bfd2
       version: -1
       name: Check if the tag was applied for EDL
       type: condition
@@ -171,7 +163,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 1405
         }
       }
     note: false
@@ -181,12 +173,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "4":
     id: "4"
-    taskid: 94b850d4-cac9-4898-8fce-87910687ea86
+    taskid: a2cbb88b-37a8-4161-81b2-7d368c7ebe24
     type: title
     task:
-      id: 94b850d4-cac9-4898-8fce-87910687ea86
+      id: a2cbb88b-37a8-4161-81b2-7d368c7ebe24
       version: -1
       name: Done
       type: title
@@ -198,7 +191,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1755
         }
       }
     note: false
@@ -208,12 +201,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "5":
     id: "5"
-    taskid: 8fe41eff-1f02-43fc-8dc2-128c90bfc888
+    taskid: 87d3c3ff-cd72-46d5-831d-856531c0329a
     type: regular
     task:
-      id: 8fe41eff-1f02-43fc-8dc2-128c90bfc888
+      id: 87d3c3ff-cd72-46d5-831d-856531c0329a
       version: -1
       name: Error in the test playbook
       description: Prints an error entry with a given message
@@ -232,7 +226,200 @@ tasks:
       {
         "position": {
           "x": 360,
-          "y": 720
+          "y": 1580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "6":
+    id: "6"
+    taskid: 5d75d4b3-13ee-458a-8b1b-f3c92501e21b
+    type: regular
+    task:
+      id: 5d75d4b3-13ee-458a-8b1b-f3c92501e21b
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: beb86b60-9a99-42a8-8419-e1dfb1b66889
+    type: title
+    task:
+      id: beb86b60-9a99-42a8-8419-e1dfb1b66889
+      version: -1
+      name: Empty Input Test
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: a10b4263-8cf8-42d8-8adc-a624f0914080
+    type: regular
+    task:
+      id: a10b4263-8cf8-42d8-8adc-a624f0914080
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 27622d0a-531d-4e70-830f-3196e7963333
+    type: title
+    task:
+      id: 27622d0a-531d-4e70-830f-3196e7963333
+      version: -1
+      name: Empty Input Test
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: bdc9fcc2-dc04-43b9-89c7-9fc1bc1dc36f
+    type: playbook
+    task:
+      id: bdc9fcc2-dc04-43b9-89c7-9fc1bc1dc36f
+      version: -1
+      name: Block IP - Generic v3
+      playbookName: Block IP - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      InputEnrichment:
+        simple: "False"
+      RuleDirection:
+        simple: outbound
+      RuleName:
+        simple: XSOAR - Block IP playbook - ${incident.id}
+      UserVerification:
+        simple: "True"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 500
         }
       }
     note: false
@@ -247,7 +434,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 910,
+        "height": 1770,
         "width": 690,
         "x": 50,
         "y": 50

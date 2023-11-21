@@ -1,0 +1,80 @@
+args:
+- description: 'Device IDs to isolate or unisolate.'
+  isArray: true
+  name: device_ids
+  required: true
+- description: 'The action to apply to device IDs - isolate or unisolate.'
+  name: action
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - 'isolate'
+  - 'unisolate'
+comment: 'This is a wrapper to isolate or unisolate hash lists from Cortex XDR, MSDE or CrowdStrike (Available from Cortex XSOAR 6.0.0).'
+commonfields:
+  id: IsolationAssetWrapper
+  version: -1
+name: IsolationAssetWrapper
+outputs:
+  # MSDE outputs
+- contextPath: MicrosoftATP.MachineAction.ID
+  description: The machine action ID.
+  type: String
+- contextPath: MicrosoftATP.MachineAction.Type
+  description: The type of the machine action.
+  type: String
+- contextPath: MicrosoftATP.MachineAction.Scope
+  description: The scope of the action.
+  type: Unknown
+- contextPath: MicrosoftATP.MachineAction.Requestor
+  description: The ID of the user that executed the action.
+  type: String
+- contextPath: MicrosoftATP.MachineAction.RequestorComment
+  description: The comment that was written when issuing the action.
+  type: String
+- contextPath: MicrosoftATP.MachineAction.Status
+  description: The current status of the command.
+  type: String
+- contextPath: MicrosoftATP.MachineAction.MachineID
+  description: The machine ID on which the action was executed.
+  type: String
+- contextPath: MicrosoftATP.MachineAction.ComputerDNSName
+  description: The machine DNS name on which the action was executed.
+  type: String
+- contextPath: MicrosoftATP.MachineAction.CreationDateTimeUtc
+  description: The date and time the action was created.
+  type: Date
+- contextPath: MicrosoftATP.MachineAction.LastUpdateTimeUtc
+  description: The last date and time the action status was updated.
+  type: Date
+- contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier
+  description: The file identifier.
+  type: String
+- contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
+  description: 'The type of the file identifier. Possible values: "SHA1" ,"SHA256", and "MD5".'
+  type: String
+
+
+    # XDR outputs
+
+- contextPath: PaloAltoNetworksXDR.Isolation.endpoint_id
+  description: The endpoint ID.
+  type: String
+- contextPath: PaloAltoNetworksXDR.UnIsolation.endpoint_id
+  description: Isolates the specified endpoint.
+  type: String
+
+
+  # CrowdStrike outputs
+
+script: '-'
+tags:
+- basescript
+- incident-action-button
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.10.12.63474
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

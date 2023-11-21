@@ -1,10 +1,10 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import itertools
 from collections import Counter
 
 import dateutil
 from nltk import sent_tokenize, word_tokenize
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 import pandas as pd
 import numpy as np
@@ -17,7 +17,7 @@ import tldextract
 import pytz
 
 
-no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=None)
+no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=None, cache_dir=False)
 utc = pytz.UTC
 
 SELF_IN_CONTEXT = False
@@ -150,17 +150,18 @@ def create_context_for_campaign_details(campaign_found=False, incidents_df=None,
         if invalid_context_keys:
             return_warning(INVALID_KEY_WARNING.format(fields=invalid_context_keys))
 
-        incident_df = incidents_df[context_keys]  # lgtm [py/hash-unhashable-value]
+        incidents_context_df = incidents_df.copy(deep=True)
+        incident_df = incidents_context_df[list(context_keys)]  # lgtm [py/hash-unhashable-value]
         if not SELF_IN_CONTEXT:
             incident_df = incident_df[incident_df['id'] != incident_id]
 
         incident_df.rename({FROM_DOMAIN_FIELD: 'emailfromdomain'}, axis=1, inplace=True)
         incidents_context = incident_df.fillna(1).to_dict(orient='records')
-        datetimes: pd.DataFrame = incidents_df['created_dt'].dropna()
+        datetimes: pd.DataFrame = incidents_context_df['created_dt'].dropna()
         min_datetime = min(datetimes).isoformat()
         return {
             'isCampaignFound': campaign_found,
-            'involvedIncidentsCount': len(incidents_df) if incidents_df is not None else 0,
+            'involvedIncidentsCount': len(incidents_context_df) if incidents_context_df is not None else 0,
             'firstIncidentDate': min_datetime,
             'fieldsToDisplay': additional_context_fields,
             INCIDENTS_CONTEXT_TD: incidents_context
@@ -320,7 +321,7 @@ def summarize_email_body(body, subject, nb_sentences=3, subject_weight=1.5, keyw
     cv = CountVectorizer(stop_words=list(stopwords.words('english')))
     body_arr = cv.fit_transform(corpus).toarray()
     subject_arr = cv.transform(sent_tokenize(subject)).toarray()
-    word_list = cv.get_feature_names()
+    word_list = cv.get_feature_names_out()
     count_list = body_arr.sum(axis=0) + subject_arr.sum(axis=0) * subject_weight
     duplicate_sentences = [i for i, arr in enumerate(body_arr) if
                            any(cosine_sim(arr, arr2) > DUPLICATE_SENTENCE_THRESHOLD

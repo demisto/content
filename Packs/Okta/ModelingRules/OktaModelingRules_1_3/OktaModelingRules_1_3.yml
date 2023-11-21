@@ -1,0 +1,7 @@
+fromversion: 6.10.0
+id: Okta_ModelingRule
+name: Okta Modeling Rule
+rules: ''
+schema: ''
+tags: okta
+toversion: 8.3.0

@@ -69,7 +69,7 @@ tasks:
       brand: ""
     scriptarguments:
       expectedValue:
-        simple: Subject:If you can read this yo
+        simple: "Subject: If you can read this yo"
       fields: {}
       path:
         simple: DecodedMimeHeader

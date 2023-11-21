@@ -1,0 +1,628 @@
+{
+    "id": "CyCognito Assets",
+    "version": -1,
+    "fromDate": "0001-01-01T00:00:00Z",
+    "toDate": "0001-01-01T00:00:00Z",
+    "period": {
+        "by": "",
+        "byTo": "",
+        "byFrom": "days",
+        "toValue": null,
+        "fromValue": 30,
+        "field": ""
+    },
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "name": "CyCognito Assets",
+    "layout": [
+        {
+            "id": "378824d0-e26b-11ec-9e73-879237e98170",
+            "forceRange": false,
+            "x": 0,
+            "y": 0,
+            "i": "378824d0-e26b-11ec-9e73-879237e98170",
+            "w": 4,
+            "h": 2,
+            "widget": {
+                "id": "dcda7042-03ef-4bb6-8008-022f4b9efa36",
+                "version": 1,
+                "modified": "2022-06-02T17:27:43.494922642+05:30",
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Total Assets",
+                "prevName": "Total Assets",
+                "dataType": "indicators",
+                "widgetType": "number",
+                "query": "sourceBrands:FeedCyCognito ",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "valuesFormat": "abbreviated"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "bb7ba270-e26c-11ec-9e73-879237e98170",
+            "forceRange": false,
+            "x": 0,
+            "y": 2,
+            "i": "bb7ba270-e26c-11ec-9e73-879237e98170",
+            "w": 4,
+            "h": 2,
+            "widget": {
+                "id": "c4eeda70-8167-4925-80bf-42f434e76b5b",
+                "version": 1,
+                "modified": "2022-06-02T17:38:35.114842858+05:30",
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Assets By Grade",
+                "prevName": "Assets By Grade",
+                "dataType": "indicators",
+                "widgetType": "pie",
+                "query": "sourceBrands:FeedCyCognito",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "feedcycognitosecuritygrade"
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "e17ca370-e26c-11ec-9e73-879237e98170",
+            "forceRange": false,
+            "x": 4,
+            "y": 2,
+            "i": "e17ca370-e26c-11ec-9e73-879237e98170",
+            "w": 4,
+            "h": 2,
+            "widget": {
+                "id": "ab67df26-8ede-4d33-80e1-ef6a19469e66",
+                "version": 1,
+                "modified": "2022-06-02T17:39:39.441282653+05:30",
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Assets By Status",
+                "prevName": "Asset By Status",
+                "dataType": "indicators",
+                "widgetType": "pie",
+                "query": "sourceBrands:FeedCyCognito",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "feedcycognitostatus"
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "ff47e590-e26c-11ec-9e73-879237e98170",
+            "forceRange": false,
+            "x": 8,
+            "y": 2,
+            "i": "ff47e590-e26c-11ec-9e73-879237e98170",
+            "w": 4,
+            "h": 2,
+            "widget": {
+                "id": "cd990f59-1273-4503-81f1-296ff2b53c4d",
+                "version": 1,
+                "modified": "2022-06-02T17:40:29.218797437+05:30",
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Assets By Type",
+                "prevName": "Assets By Type",
+                "dataType": "indicators",
+                "widgetType": "pie",
+                "query": "sourceBrands:FeedCyCognito",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "feedcycognitoassettype"
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "369e4f20-e26d-11ec-9e73-879237e98170",
+            "forceRange": false,
+            "x": 4,
+            "y": 4,
+            "i": "369e4f20-e26d-11ec-9e73-879237e98170",
+            "w": 4,
+            "h": 3,
+            "widget": {
+                "id": "90f4232e-7453-46d6-8fda-c085dade992a",
+                "version": 1,
+                "modified": "2022-06-02T17:42:00.488552185+05:30",
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Assets By Status Over Time",
+                "prevName": "Assets By Grade Over Time",
+                "dataType": "indicators",
+                "widgetType": "column",
+                "query": "sourceBrands:FeedCyCognito",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "firstseenbysource(d)",
+                        "feedcycognitostatus"
+                    ],
+                    "timeFrame": "days",
+                    "valuesFormat": "abbreviated"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "60ee8600-e26d-11ec-9e73-879237e98170",
+            "forceRange": false,
+            "x": 0,
+            "y": 4,
+            "i": "60ee8600-e26d-11ec-9e73-879237e98170",
+            "w": 4,
+            "h": 3,
+            "widget": {
+                "id": "85cac54c-83d5-44dc-8694-99be349342c4",
+                "version": 1,
+                "modified": "2022-06-02T17:43:12.299621463+05:30",
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Assets By Grade Over Time",
+                "prevName": "Assets By Status Over Time",
+                "dataType": "indicators",
+                "widgetType": "column",
+                "query": "sourceBrands:FeedCyCognito",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "firstseenbysource(d)",
+                        "feedcycognitosecuritygrade"
+                    ],
+                    "timeFrame": "days",
+                    "valuesFormat": "abbreviated"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "182412e0-e26e-11ec-9e73-879237e98170",
+            "forceRange": false,
+            "x": 0,
+            "y": 7,
+            "i": "182412e0-e26e-11ec-9e73-879237e98170",
+            "w": 6,
+            "h": 2,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Riskiest Locations",
+                "prevName": "",
+                "dataType": "indicators",
+                "widgetType": "bar",
+                "query": "sourceBrands:FeedCyCognito",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "feedcycognitolocations",
+                        "feedcycognitosecuritygrade"
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "f7a0f1d0-e26f-11ec-9e73-879237e98170",
+            "forceRange": false,
+            "x": 4,
+            "y": 0,
+            "i": "f7a0f1d0-e26f-11ec-9e73-879237e98170",
+            "w": 4,
+            "h": 2,
+            "widget": {
+                "id": "a1008de4-0d2e-499c-8069-7c5180fb2d63",
+                "version": 1,
+                "modified": "2022-06-02T18:01:44.779187905+05:30",
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Assets Detected in Current Month",
+                "prevName": "Assets Detected in Current Month",
+                "dataType": "indicators",
+                "widgetType": "trend",
+                "query": "sourceBrands:FeedCyCognito ",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "calendarMonths",
+                        "toValue": null,
+                        "fromValue": 0,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "valuesFormat": "abbreviated"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "82972090-e566-11ec-a7d3-39b1524dc8e1",
+            "forceRange": false,
+            "x": 8,
+            "y": 0,
+            "i": "82972090-e566-11ec-a7d3-39b1524dc8e1",
+            "w": 4,
+            "h": 2,
+            "widget": {
+                "id": "a7eb5097-855e-408f-853f-8fcc01bfb5ea",
+                "version": 1,
+                "modified": "2022-06-06T12:31:35.586081655+05:30",
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Total Assets at Risk",
+                "prevName": "Total Assets at Risk",
+                "dataType": "indicators",
+                "widgetType": "number",
+                "query": "sourceBrands:FeedCyCognito and (feedcycognitosecuritygrade:\"D\" or feedcycognitosecuritygrade:\"F\")",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": 5
+                            },
+                            "#D13C3C": {
+                                "value": 50
+                            },
+                            "#EF9700": {
+                                "value": 10
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "valuesFormat": "abbreviated"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "6b3a4370-e569-11ec-b6b4-e79d40e78efa",
+            "forceRange": false,
+            "x": 8,
+            "y": 4,
+            "i": "6b3a4370-e569-11ec-b6b4-e79d40e78efa",
+            "w": 4,
+            "h": 3,
+            "widget": {
+                "id": "cdf7d8de-3cb0-4121-818f-3aa71a804980",
+                "version": 1,
+                "modified": "2022-06-06T12:52:25.417710366+05:30",
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Assets by Tag",
+                "prevName": "Assets by Tag",
+                "dataType": "indicators",
+                "widgetType": "bar",
+                "query": "sourceBrands:FeedCyCognito",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "feedcycognitotags",
+                        "feedcycognitosecuritygrade"
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "cc2e7600-eb0a-11ec-bad0-c7b2c438050e",
+            "forceRange": false,
+            "x": 6,
+            "y": 7,
+            "i": "cc2e7600-eb0a-11ec-bad0-c7b2c438050e",
+            "w": 6,
+            "h": 2,
+            "widget": {
+                "id": "fe4c69d4-b0f8-4da7-8482-176e0aab0c64",
+                "version": 1,
+                "modified": "2022-06-13T16:20:14.63217859+05:30",
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Riskiest Protocols (Open Ports)",
+                "prevName": "Riskiest Protocols",
+                "dataType": "indicators",
+                "widgetType": "bar",
+                "query": "sourceBrands:FeedCyCognito",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "feedcycognitoopenportprotocols",
+                        "feedcycognitosecuritygrade"
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        }
+    ],
+    "fromVersion": "6.2.0",
+    "description": "The dashboard consists of assets overview, distribution of assets on the basis of grades & status which are detected by the CyCognito platform.",
+    "isPredefined": true
+}

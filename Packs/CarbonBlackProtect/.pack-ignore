@@ -5,12 +5,13 @@ ignore=BA101,PB107
 ignore=BA101
 
 [file:CarbonBlackProtect.yml]
-ignore=IN126,IN145,IN124
+ignore=IN126,IN124
 
 [file:README.md]
 ignore=RM104
 
 [known_words]
 cbp
-fileRule
-createOrUpdate
+filerule
+createorupdate
+

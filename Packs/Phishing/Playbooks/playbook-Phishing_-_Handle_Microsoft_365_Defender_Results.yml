@@ -1,0 +1,1421 @@
+id: Phishing - Handle Microsoft 365 Defender Results
+version: -1
+name: Phishing - Handle Microsoft 365 Defender Results
+description: |-
+  This playbook is used to handle the results from the "Microsoft 365 Defender - Threat Hunting Generic" playbook inside a phishing incident. It performs the following actions:
+  1) Set the relevant incident fields based on the results, such as "Clicked URLs", "Malicious URL Viewed", and "Malicious URL Clicked".
+  2) In case the relevant playbook inputs were configured, it will create new incidents for each email returned in the results of the "Microsoft 365 Defender - Threat Hunting Generic" playbook. First, it will try to retrieve the original emails' files and then it will create an incident for each retrieved email.
+  3) Link the newly created incidents to the main originating incident.
+
+  Note that this playbook should only be used inside a phishing incident and not as a main playbook.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2ab1ac8c-41e7-44d6-8b6f-bd1c4f837a29
+    type: start
+    task:
+      id: 2ab1ac8c-41e7-44d6-8b6f-bd1c4f837a29
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "30"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 51fa7386-c66d-4c39-8e3a-68e4d3af4356
+    type: condition
+    task:
+      id: 51fa7386-c66d-4c39-8e3a-68e4d3af4356
+      version: -1
+      name: Were any URLs clicked in this email?
+      description: In case we have the Message-ID of the reported email in this incident (if the original email was retrieved or attached), did any of the recipients click any of the malicious URLs in it, if there are any.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      - "34"
+      "yes":
+      - "16"
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.RetrievedEmails
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: inputs.RetrievedEmails.InternetMessageId
+                      iscontext: true
+                    right:
+                      value:
+                        simple: incident.reportedemailmessageid
+                      iscontext: true
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: inputs.RetrievedEmails.ClickTimestamp
+                      iscontext: true
+                accessor: InternetMessageId
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1300,
+          "y": 1980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: a88d12db-be77-4c5c-8b23-f2b70746825e
+    type: regular
+    task:
+      id: a88d12db-be77-4c5c-8b23-f2b70746825e
+      version: -1
+      name: Set Clicked URLs grid
+      description: Creates a grid table from items or key-value pairs.
+      scriptName: SetGridField
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      columns:
+        simple: User,URL,Click Timestamp,URL Chain,Action Type,Is Clicked Through
+      context_path:
+        simple: ClickedEmail
+      grid_id:
+        simple: clickedurls
+      keys:
+        simple: AccountUpn,Url,ClickTimestamp,UrlChain,ActionType,IsClickedThrough
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2340,
+          "y": 2330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 1b45e412-97d4-4098-8632-d2816f985b30
+    type: condition
+    task:
+      id: 1b45e412-97d4-4098-8632-d2816f985b30
+      version: -1
+      name: Any Other Emails Found?
+      description: Check if any other emails' data was found other than URL clicks in the email reported in this incident.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "38"
+      "yes":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.RetrievedEmails
+                filters:
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: inputs.RetrievedEmails.InternetMessageId
+                      iscontext: true
+                    right:
+                      value:
+                        simple: incident.reportedemailmessageid
+                      iscontext: true
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1830,
+          "y": 2890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: fa3a0e1b-be7a-40bd-8225-57c11c57de26
+    type: title
+    task:
+      id: fa3a0e1b-be7a-40bd-8225-57c11c57de26
+      version: -1
+      name: Search for existing incidents in XSOAR
+      description: Set a value in context under the key you entered.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1580,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 1b926b5a-cebd-4145-836e-71ae2ac8e79a
+    type: playbook
+    task:
+      id: 1b926b5a-cebd-4145-836e-71ae2ac8e79a
+      version: -1
+      name: Phishing - Search Related Incidents (Defender 365)
+      description: |-
+        This playbook should only be used as a sub-playbook inside the "Phishing - Handle Microsoft 365 Defender Results" playbook.
+        It searches through existing Cortex XSOAR incidents based on retrieved email message IDs. It returns data only for emails that were not found in existing incidents.
+      playbookName: Phishing - Search Related Incidents (Defender 365)
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      RetrievedEmails:
+        complex:
+          root: inputs.RetrievedEmails
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1580,
+          "y": 3690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 603a9966-ce30-413e-8a12-b28bdd2b79c1
+    type: title
+    task:
+      id: 603a9966-ce30-413e-8a12-b28bdd2b79c1
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 5430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: c8de02c3-683c-4a1b-8349-6730d4379a35
+    type: playbook
+    task:
+      id: c8de02c3-683c-4a1b-8349-6730d4379a35
+      version: -1
+      name: Phishing - Create New Incident
+      playbookName: Phishing - Create New Incident
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      EntryIDs:
+        complex:
+          root: NewIncidentsFields
+          accessor: EntryID
+      IncidentName:
+        complex:
+          root: NewIncidentsFields
+          accessor: Subject
+      ReportedEmailMessageID:
+        complex:
+          root: NewIncidentsFields
+          accessor: MessageID
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 1580,
+          "y": 5070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 81bf9202-12b5-4830-8851-0eb779da3e59
+    type: condition
+    task:
+      id: 81bf9202-12b5-4830-8851-0eb779da3e59
+      version: -1
+      name: Are there email files to retrieve?
+      description: In case there are results in the "EmailFilesRetrieval" key, it means that there are emails which were found and are not currently part of an existing Cortex XSOAR incident.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: EmailFilesRetrieval
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1580,
+          "y": 3880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: d215b5df-7aae-4f0b-8f19-13ad41a62753
+    type: title
+    task:
+      id: d215b5df-7aae-4f0b-8f19-13ad41a62753
+      version: -1
+      name: Retrieve EMLs for hunted emails without an existing Cortex XSOAR incident.
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1580,
+          "y": 4150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 33ed1e15-bc52-4e09-8887-36ca89b9bd7e
+    type: regular
+    task:
+      id: 33ed1e15-bc52-4e09-8887-36ca89b9bd7e
+      version: -1
+      name: Prepare a list of clicked URLs data
+      description: |-
+        When found, clicks data will be passed to the next task in order to fill "Clicked URLs grid" which will be shown in the layout, displaying these columns for each click event:
+        - URL
+        - Click Timestamp
+        - URL Chain
+        - Action Type
+        - Is Clicked Through
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "28"
+      - "34"
+    scriptarguments:
+      key:
+        simple: ClickedEmail
+      value:
+        complex:
+          root: inputs.RetrievedEmails
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.RetrievedEmails.InternetMessageId
+                iscontext: true
+              right:
+                value:
+                  simple: incident.reportedemailmessageid
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.RetrievedEmails.ClickTimestamp
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1830,
+          "y": 2160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: edbcffb2-76b0-431e-87a6-7e53f78a3154
+    type: condition
+    task:
+      id: edbcffb2-76b0-431e-87a6-7e53f78a3154
+      version: -1
+      name: Create new incidents for found emails?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.CreateNewIncidents
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1580,
+          "y": 3300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: b92dc56b-c638-46e9-8a66-5a7552023b30
+    type: regular
+    task:
+      id: b92dc56b-c638-46e9-8a66-5a7552023b30
+      version: -1
+      name: Link incidents
+      description: commands.local.cmd.linkIncidents
+      script: Builtin|||linkIncidents
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      linkedIncidentIDs:
+        complex:
+          root: CreatedIncidentID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1580,
+          "y": 5260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 25d681d1-c9fa-4c28-8f17-ade67e845e16
+    type: condition
+    task:
+      id: 25d681d1-c9fa-4c28-8f17-ade67e845e16
+      version: -1
+      name: Were any URL clicks allowed or clicked through?
+      description: In case a malicious URL was clicked and the user was able to view the website, the "Malicious URL Clicked" field will be set to "True" and will be displayed in the layout.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "Yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.RetrievedEmails
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: inputs.RetrievedEmails.InternetMessageId
+                      iscontext: true
+                    right:
+                      value:
+                        simple: incident.reportedemailmessageid
+                      iscontext: true
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: inputs.RetrievedEmails.ClickTimestamp
+                      iscontext: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: inputs.RetrievedEmails.ActionType
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ClickAllowed
+                accessor: InternetMessageId
+            iscontext: true
+          right:
+            value: {}
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.RetrievedEmails
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: inputs.RetrievedEmails.InternetMessageId
+                      iscontext: true
+                    right:
+                      value:
+                        simple: incident.reportedemailmessageid
+                      iscontext: true
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: inputs.RetrievedEmails.ClickTimestamp
+                      iscontext: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: inputs.RetrievedEmails.IsClickedThrough
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "1"
+                accessor: InternetMessageId
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2340,
+          "y": 2535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: e9b03f95-5e22-476a-81f2-4b62651d879c
+    type: regular
+    task:
+      id: e9b03f95-5e22-476a-81f2-4b62651d879c
+      version: -1
+      name: Set "Malicious URL Clicked" to True
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      maliciousurlclicked:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2340,
+          "y": 2160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 9df0b3fb-341a-404d-88fb-18b2c0d75996
+    type: regular
+    task:
+      id: 9df0b3fb-341a-404d-88fb-18b2c0d75996
+      version: -1
+      name: Set "Malicious URL Viewed" to True
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      maliciousurlviewed:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2340,
+          "y": 2720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 2fe46ed3-72fa-4e48-8c26-5fe57b88f96c
+    type: regular
+    task:
+      id: 2fe46ed3-72fa-4e48-8c26-5fe57b88f96c
+      version: -1
+      name: Prepare new incidents required fields
+      description: |-
+        In order to create a new incident for each retrieved email (that is not part of an existing incident) these 3 fields should identify each email uniquely:
+        - Subject --> The new incident name.
+        - MessageID --> The new incident "Reported Email Message ID".
+        - EntryID --> The new incident email attachment that will be investigated.
+
+        This task prepares a new key called "NewIncidentsFields" that will hold these values for each email separately.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      key:
+        simple: NewIncidentsFields
+      value:
+        simple: '${.=merge(val.FileAssociation, val.EmailFilesRetrieval);function merge(x, y){let res = []; if (Array.isArray(y) != true && y.length != 0){res.push({MessageID: y.InternetMessageId, EntryID: x[0].EntryID, Subject: y.Subject}); return res;}; for(let i=0; i<x.length; i++) {for(let j=0; j<y.length; j++){if(x[i].MessageID==y[j].InternetMessageId) {res.push({MessageID: x[i].MessageID, EntryID: x[i].EntryID, Subject: y[j].Subject});}}} return res;}}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1580,
+          "y": 4480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 5c8ac07b-42e3-45a4-8077-3834ad031fbc
+    type: playbook
+    task:
+      id: 5c8ac07b-42e3-45a4-8077-3834ad031fbc
+      version: -1
+      name: Phishing - Get Original Email Loop
+      playbookName: Phishing - Get Original Email Loop
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      EmailBrand:
+        complex:
+          root: inputs.EmailBrand
+      MessageID:
+        complex:
+          root: EmailFilesRetrieval
+          accessor: InternetMessageId
+      UserID:
+        complex:
+          root: EmailFilesRetrieval
+          accessor: RecipientEmailAddress
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 1580,
+          "y": 4290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 90787fbf-3dbd-4f8d-8d61-4b74b8c5f2bc
+    type: condition
+    task:
+      id: 90787fbf-3dbd-4f8d-8d61-4b74b8c5f2bc
+      version: -1
+      name: Were any emails retrieved?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: NewIncidentsFields
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1580,
+          "y": 4680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 48c26cce-2969-407b-82c2-4c7b3e60f62b
+    type: condition
+    task:
+      id: 48c26cce-2969-407b-82c2-4c7b3e60f62b
+      version: -1
+      name: Are there any BCC in the email?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.RetrievedEmails
+                filters:
+                - - operator: notInList
+                    left:
+                      value:
+                        simple: inputs.RetrievedEmails.RecipientEmailAddress
+                      iscontext: true
+                    right:
+                      value:
+                        simple: incident.reportedemailto
+                      iscontext: true
+                - - operator: notInList
+                    left:
+                      value:
+                        simple: inputs.RetrievedEmails.RecipientEmailAddress
+                      iscontext: true
+                    right:
+                      value:
+                        simple: incident.reportedemailcc
+                      iscontext: true
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: inputs.RetrievedEmails.RecipientEmailAddress
+                      iscontext: true
+                    right:
+                      value:
+                        simple: incident.reportedemailto
+                      iscontext: true
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: inputs.RetrievedEmails.RecipientEmailAddress
+                      iscontext: true
+                    right:
+                      value:
+                        simple: incident.reportedemailcc
+                      iscontext: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: inputs.RetrievedEmails.InternetMessageId
+                      iscontext: true
+                    right:
+                      value:
+                        simple: incident.reportedemailmessageid
+                      iscontext: true
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1830,
+          "y": 2330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 548ce7cf-077d-4fa0-8be6-27ca5aa2f700
+    type: regular
+    task:
+      id: 548ce7cf-077d-4fa0-8be6-27ca5aa2f700
+      version: -1
+      name: Set BCC
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      emailbcc:
+        complex:
+          root: inputs.RetrievedEmails
+          filters:
+          - - operator: notIn
+              left:
+                value:
+                  simple: inputs.RetrievedEmails.RecipientEmailAddress
+                iscontext: true
+              right:
+                value:
+                  simple: incident.reportedemailto
+                iscontext: true
+          - - operator: notIn
+              left:
+                value:
+                  simple: inputs.RetrievedEmails.RecipientEmailAddress
+                iscontext: true
+              right:
+                value:
+                  simple: incident.reportedemailcc
+                iscontext: true
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: inputs.RetrievedEmails.RecipientEmailAddress
+                iscontext: true
+              right:
+                value:
+                  simple: incident.reportedemailto
+                iscontext: true
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: inputs.RetrievedEmails.RecipientEmailAddress
+                iscontext: true
+              right:
+                value:
+                  simple: incident.reportedemailcc
+                iscontext: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.RetrievedEmails.InternetMessageId
+                iscontext: true
+              right:
+                value:
+                  simple: incident.reportedemailmessageid
+                iscontext: true
+          accessor: RecipientEmailAddress
+          transformers:
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1830,
+          "y": 2610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: efb64d0d-c85f-48d9-87ef-ea89817ac953
+    type: title
+    task:
+      id: efb64d0d-c85f-48d9-87ef-ea89817ac953
+      version: -1
+      name: Set Incident Fields
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 1580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 726e842b-f5b4-4388-84a2-450efaab3dbf
+    type: condition
+    task:
+      id: 726e842b-f5b4-4388-84a2-450efaab3dbf
+      version: -1
+      name: Check if Message-ID exists for this incident
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "36"
+      - "34"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: reportedemailmessageid
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 1750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: e2d9bf29-6f98-4361-847b-520b8e2d1de8
+    type: condition
+    task:
+      id: e2d9bf29-6f98-4361-847b-520b8e2d1de8
+      version: -1
+      name: Were any URLs clicked in other emails?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.RetrievedEmails
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: inputs.RetrievedEmails.ClickTimestamp
+                      iscontext: true
+                accessor: InternetMessageId
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1300,
+          "y": 2330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 15c0e8ff-8818-4848-8812-961b4b7b8f6a
+    type: regular
+    task:
+      id: 15c0e8ff-8818-4848-8812-961b4b7b8f6a
+      version: -1
+      name: Set "Total Malicious URLs Clicks" number
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      totalmaliciousurlsclicks:
+        complex:
+          root: inputs.RetrievedEmails
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.RetrievedEmails.ClickTimestamp
+                iscontext: true
+          accessor: InternetMessageId
+          transformers:
+          - operator: count
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1300,
+          "y": 2610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 125b6896-3274-4188-8908-60f9a6fd42ad
+    type: condition
+    task:
+      id: 125b6896-3274-4188-8908-60f9a6fd42ad
+      version: -1
+      name: Any Emails Were Found?
+      description: Check if any other emails' data was found other than URL clicks in the email reported in this incident.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "38"
+      "yes":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.RetrievedEmails
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 2890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: e3a2c0ac-ca69-49db-8ea4-dda50014a53a
+    type: title
+    task:
+      id: e3a2c0ac-ca69-49db-8ea4-dda50014a53a
+      version: -1
+      name: Emails Found
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1830,
+          "y": 3140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 460566f7-3d0c-4b9e-87f6-cb6aebe10f1a
+    type: title
+    task:
+      id: 460566f7-3d0c-4b9e-87f6-cb6aebe10f1a
+      version: -1
+      name: Emails Not Found
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 3140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: b0209faf-5ecf-44cc-8767-9b76b7a10199
+    type: title
+    task:
+      id: b0209faf-5ecf-44cc-8767-9b76b7a10199
+      version: -1
+      name: Create new incidents for retrieved EML files
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1580,
+          "y": 4890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "13_15_yes": 0.64,
+      "13_9_#default#": 0.23,
+      "18_4_yes": 0.55,
+      "18_9_#default#": 0.11,
+      "1_28_#default#": 0.31,
+      "1_34_#default#": 0.24,
+      "22_24_Yes": 0.57,
+      "22_3_#default#": 0.25,
+      "27_9_#default#": 0.36,
+      "28_29_yes": 0.64,
+      "28_3_#default#": 0.13,
+      "31_34_#default#": 0.46,
+      "34_35_yes": 0.47,
+      "34_3_#default#": 0.22,
+      "36_37_yes": 0.77,
+      "36_38_#default#": 0.45,
+      "3_37_yes": 0.23,
+      "3_38_#default#": 0.76
+    },
+    "paper": {
+      "dimensions": {
+        "height": 4075,
+        "width": 1910,
+        "x": 810,
+        "y": 1420
+      }
+    }
+  }
+inputs:
+- key: RetrievedEmails
+  value: {}
+  required: true
+  description: Emails retrieved by the "Microsoft 365 Defender - Threat Hunting Generic" playbook.
+  playbookInputQuery:
+- key: CreateNewIncidents
+  value:
+    simple: "False"
+  required: false
+  description: When "True", the playbook will create new phishing incidents for each email that contains one of the malicious indicators. Default is "False"
+  playbookInputQuery:
+- key: EmailBrand
+  value:
+    simple: MicrosoftGraphMail
+  required: false
+  description: "In order to retrieve email files in case any emails containing malicious indicators were found, this playbook would run the \"Phishing - Get Original Email Loop\" sub-playbook that will loop in order to retrieve all of the found emails. It will internally run the \"Get Original Email - Generic v2\" playbook that will use this input in order to run the relevant \"Get Original Email\" playbook based on the selected brand. \n\nPossible values:\n- EWS v2\n- EWSO365\n- MicrosoftGraphMail\n\nDefault is \"MicrosoftGraphMail\"."
+  playbookInputQuery:
+outputs:
+- contextPath: FileAssociation
+  description: When this playbook is looped, there is no actual way to distinguish which retrieved file is related to which Message-ID. In order to solve this issue, the EntryID would be saved alongside the Message-ID inside the "FileAssociation" context key.
+  type: string
+- contextPath: EmailFilesRetrieval
+  description: The emails to be retrieved.
+  type: string
+quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

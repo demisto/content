@@ -1,0 +1,30 @@
+commonfields:
+  id: OSQueryBasicQuery
+  version: -1
+name: OSQueryBasicQuery
+script: ''
+type: python
+subtype: python3
+tags:
+- OSQuery
+comment: |-
+  Returns the results from a basic OSQuery query on a remote Linux machine.
+  For more information read documentation at https://osquery.readthedocs.io/
+system: true
+args:
+- name: system
+  required: true
+  default: true
+  description: The System to remote execute on, can be a list of systems
+- name: query
+  required: true
+  description: The osquery query to execute on remote system
+scripttarget: 0
+dependson:
+  must:
+  - RemoteExec
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.10.12.63474
+tests:
+- No tests (auto formatted)

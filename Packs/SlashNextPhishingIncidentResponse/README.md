@@ -20,7 +20,7 @@ SlashNext leads the industry with the greatest speed at internet scale, fast and
 * **Playbooks** for automating abuse inbox management and online brand protection
 
 ### SlashNext Platform Architecture
-![Architecture](https://app.box.com/shared/static/xu3e0n5j0w1ppfsydx7p5o2xrco1klsm.png)
+![Architecture](doc_files/Architecture.png)
 
 ### Package Includes
 * URL Intelligence and Forensics

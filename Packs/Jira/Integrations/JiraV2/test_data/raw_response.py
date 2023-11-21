@@ -86,7 +86,7 @@ QUERY_ISSUE_RESPONSE = {
                     "self": "https://localhost/rest/api/2/issuetype/10001",
                     "subtask": False
                 },
-                "labels": [],
+                "labels": ['test', 'debug'],
                 "lastViewed": None,
                 "priority": {
                     "iconUrl": "https://localhost/images/icons/priorities/high.svg",
@@ -220,7 +220,7 @@ GET_ISSUE_RESPONSE = {
                        'self': '',
                        'id': 2, 'key': 'new', 'colorName': 'blue-gray', 'name': 'To Do'}},
         'components': [], 'timeoriginalestimate': None,
-        'description': 'changeing again again\n\nagain gain',
+        'description': 'changing again again\n\nagain gain',
         'customfield_10013': None, 'customfield_10014': None,
         'customfield_10015': {'hasEpicLinkFieldDependency': False, 'showField': False,
                               'nonEditableReason': {'reason': 'PLUGIN_LICENSE_ERROR',
@@ -233,12 +233,12 @@ GET_ISSUE_RESPONSE = {
              'content': 'https://localhost/rest/attachment/content/15451',
              'id': '15451',
              'filename': 'entry_artifact_5@317.json', 'author': {
-                'accountId': 'accountid',
-                'emailAddress': 'email',
-                'avatarUrls': {
-                    '48x48': ''},
-                'displayName': 'displayName', 'active': True, 'timeZone': 'Asia/Jerusalem',
-                'accountType': 'atlassian'},
+                 'accountId': 'accountid',
+                 'emailAddress': 'email',
+                 'avatarUrls': {
+                     '48x48': ''},
+                 'displayName': 'displayName', 'active': True, 'timeZone': 'Asia/Jerusalem',
+                 'accountType': 'atlassian'},
              'created': '2021-04-04T12:49:42.881+0300', 'size': 8225,
              'mimeType': 'application/json',
              }],
@@ -293,7 +293,7 @@ GET_ISSUE_RESPONSE_WITH_LABELS = {
                        'self': '',
                        'id': 2, 'key': 'new', 'colorName': 'blue-gray', 'name': 'To Do'}},
         'components': [], 'timeoriginalestimate': None,
-        'description': 'changeing again again\n\nagain gain',
+        'description': 'changing again again\n\nagain gain',
         'creator': {
             'accountId': 'accountid',
             'accountType': 'atlassian',
@@ -373,5 +373,72 @@ ATTACHMENTS = {
         "size": 4,
         "mimeType": "binary/octet-stream",
         "content": "https://localhost/secure/attachment/18447/filename"
+    }
+}
+
+
+ORGANIZATIONS = {
+    "_links": {
+        "base": "https://demistodev.atlassian.net",
+        "context": "",
+        "self": "https://demistodev.atlassian.net/rest/servicedeskapi/organization"
+    },
+    "isLastPage": True,
+    "limit": 50,
+    "size": 2,
+    "start": 0,
+    "values": [
+        {
+            "_links": {
+                "self": "https://demistodev.atlassian.net/rest/servicedeskapi/organization/23"
+            },
+            "id": "23",
+            "name": "TEST"
+        },
+        {
+            "_links": {
+                "self": "https://demistodev.atlassian.net/rest/servicedeskapi/organization/4"
+            },
+            "id": "4",
+            "name": "XSOAR"
+        }
+    ]
+}
+
+
+PROJECT_ROLES = {
+    "Agent": "https://demistodev.atlassian.net/rest/api/2/project/10804/role/11824",
+    "Administrator": "https://demistodev.atlassian.net/rest/api/2/project/10804/role/11823",
+}
+
+
+PROJECT_ROLE = {
+    "self": "https://demistodev.atlassian.net/rest/api/2/project/10804/role/11823",
+    "name": "Administrator",
+    "id": 11823,
+    "description": "Admins can do most things, like update settings and add other admins.",
+    "actors": [
+        {
+            "id": 44432,
+            "displayName": "XSOAR",
+            "type": "atlassian-user-role-actor",
+            "actorUser": {
+                "accountId": "123456789"
+            }
+        },
+        {
+            "id": 44430,
+            "displayName": "Demisto",
+            "type": "atlassian-user-role-actor",
+            "actorUser": {
+                "accountId": "987654321"
+            }
+        }
+    ],
+    "scope": {
+        "type": "PROJECT",
+        "project": {
+            "id": "10804"
+        }
     }
 }

@@ -1,5 +1,8 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import pyminizip
+
+DEFAULT_PWD_GENERATION_SCRIPT = "GeneratePassword"
 
 
 def main():
@@ -15,11 +18,32 @@ def main():
     to_email = args.get("to_email")
     inc_id = args.get("inc_id")
     email_subject = args.get("email_subject")
+    email_body = args.get("email_body")
+    min_lcase = args.get("min_lcase", 0)
+    max_lcase = args.get("max_lcase", 10)
+    min_ucase = args.get("min_ucase", 0)
+    max_ucase = args.get("max_ucase", 10)
+    min_digits = args.get("min_digits", 0)
+    max_digits = args.get("max_digits", 10)
+    min_symbols = args.get("min_symbols", 0)
+    max_symbols = args.get("max_symbols", 10)
     password = None
+    zip_protect_with_password = args.get("ZipProtectWithPassword", '')
 
     try:
         # Generate a random password
-        pwd_generation_script_output = demisto.executeCommand(pwd_generation_script, {})
+        if pwd_generation_script == DEFAULT_PWD_GENERATION_SCRIPT:
+            pwd_generation_script_output = demisto.executeCommand(pwd_generation_script,
+                                                                  {"min_lcase": min_lcase,
+                                                                   "max_lcase": max_lcase,
+                                                                   "min_ucase": min_ucase,
+                                                                   "max_ucase": max_ucase,
+                                                                   "min_digits": min_digits,
+                                                                   "max_digits": max_digits,
+                                                                   "min_symbols": min_symbols,
+                                                                   "max_symbols": max_symbols})
+        else:
+            pwd_generation_script_output = demisto.executeCommand(pwd_generation_script, {})
         if is_error(pwd_generation_script_output):
             raise Exception(f'An error occurred while trying to generate a new password for the user. '
                             f'Error is:\n{get_error(pwd_generation_script_output)}')
@@ -69,7 +93,8 @@ def main():
 
     try:
         send_mail_outputs = send_email(display_name, username, user_email, err,
-                                       to_email, password, inc_id, email_subject)
+                                       to_email, password, inc_id, email_subject, email_body,
+                                       zip_protect_with_password)
 
         if is_error(send_mail_outputs):
             raise Exception(f'An error occurred while trying to send mail. Error is:\n{get_error(send_mail_outputs)}')
@@ -96,20 +121,26 @@ def main():
     return_results(result)
 
 
-def send_email(display_name, username, user_email, err, to_email, password, inc_id, email_subject):
+def send_email(display_name, username, user_email, err, to_email, password, inc_id, email_subject, email_body, zip_with_password):
     if not err:
         if not email_subject:
             email_subject = f'[IAM] User {display_name} was successfully activated in Active Directory'
 
-        email_body = 'Hello,\n\n' \
-                     'The following account has been created in Active Directory:\n\n'
-        if display_name:
-            email_body += 'Name: ' + display_name + '\n'
+        email_password = 'Available in the attached zip file' if zip_with_password else password
+        if not email_body:
+            email_body = 'Hello,\n\n' \
+                         'The following account has been created in Active Directory:\n\n'
+            if display_name:
+                email_body += f'Name: {display_name} \n'
 
-        email_body += 'Username: ' + username + '\n' \
-                      'Email: ' + user_email + '\n' \
-                      'Password: ' + password + '\n\n' \
-                      'Regards,\nIAM Team'
+            email_body += f'Username: {username}\nEmail: {user_email}\nPassword: {email_password}\n\nRegards,\nIAM Team'
+        else:
+            email_body += f'\nUsername: {username}\nEmail: {user_email}\nPassword: {email_password}'
+
+        if zip_with_password:
+            zip_file = create_zip_with_password(password, zip_with_password)
+            result = fileResult('Okta_Password.zip', zip_file)
+            file_id = result['FileID']
     else:
         email_subject = f'"IAM - Activate User In Active Directory" incident {inc_id} failed with user {display_name}'
         email_body = 'Hello,\n\n' \
@@ -117,7 +148,35 @@ def send_email(display_name, username, user_email, err, to_email, password, inc_
                      'to activate the user account of ' + username + ' in the active Directory.\n\n' \
                      'The error is: ' + err + '\n\nRegards,\nIAM Team'
 
-    return demisto.executeCommand("send-mail", {"to": to_email, "subject": email_subject, "body": email_body})
+    send_email_args = {"to": to_email, "subject": email_subject, "body": email_body}
+    if zip_with_password:
+        send_email_args |= {"attachIDs": file_id, "attachNames": 'Okta_Password.zip'}
+
+    return demisto.executeCommand("send-mail", send_email_args)
+
+
+def create_zip_with_password(generated_password, zip_password):
+    text_file_name = 'AD_password.txt'
+    zip_file_name = 'AD_password.zip'
+
+    try:
+        with open(text_file_name, 'w') as text_file:
+            text_file.write(generated_password)
+
+        pyminizip.compress(text_file_name, '', zip_file_name, zip_password, 1)
+
+        with open(zip_file_name, 'rb') as zip_file:
+            zip_content = zip_file.read()
+
+    except Exception as e:
+        raise Exception(f'An error occurred while trying to create a zip file. Error is:\n{str(e)}')
+
+    finally:
+        for file_name in (text_file_name, zip_file_name):
+            if os.path.exists(file_name):
+                os.remove(file_name)
+
+    return zip_content
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:

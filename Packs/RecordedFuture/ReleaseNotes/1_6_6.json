@@ -1,0 +1,1 @@
+{"breakingChanges":true,"breakingChangesNotes":"Changed naming of field for not using ssl verification (unsecure -> insecure), to continue using no ssl verification (insecure) reenable setting"}

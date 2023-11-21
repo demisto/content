@@ -1,0 +1,26 @@
+args:
+- description: JSON object
+  name: value
+comment: Recursively un-escapes JSON data if escaped JSON is found
+commonfields:
+  id: JsonUnescape
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3-deb:3.10.10.49238
+enabled: true
+name: JsonUnescape
+outputs:
+- contextPath: JsonUnescape
+  description: Unescaped JSON Data
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- transformer
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

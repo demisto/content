@@ -1,0 +1,18 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Threat Vault classifier",
+    "keyTypeMap": {
+        "THREAT VAULT - RELEASE NOTES": "Threat Vault Release notes"
+    },
+    "name": "Threat Vault classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "simple": "data.[0].Source name"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

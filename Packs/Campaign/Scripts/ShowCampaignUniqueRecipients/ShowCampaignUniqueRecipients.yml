@@ -1,0 +1,17 @@
+commonfields:
+  id: ShowCampaignUniqueRecipients
+  version: -1
+name: ShowCampaignUniqueRecipients
+script: ''
+type: python
+tags:
+- dynamic-section
+comment: Displays the number of unique recipients of an email campaign.
+enabled: true
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.10.12.63474
+runas: DBotWeakRole
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

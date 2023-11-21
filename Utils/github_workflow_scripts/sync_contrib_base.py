@@ -59,7 +59,7 @@ def get_branch_names_with_contrib(repo: Repository) -> List[str]:  # noqa: E999
 def update_branch(content_repo, branch_name, master_sha):
     git_ref = content_repo.get_git_ref(f'heads/{branch_name}')
     print(f'Updating branch "{branch_name}" to sha "{master_sha}"')
-    git_ref.edit(master_sha, force=True)
+    git_ref.edit(master_sha)
 
 
 def main():

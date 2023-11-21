@@ -1,0 +1,26 @@
+!taegis-add-evidence-to-investigation id=ff9ca818-4749-4ccb-883a-2ccc6f6c9e0f alerts="alert://priv:crowdstrike:11772:1677742145475:07e2d9cc-0a04-55ec-890a-97f39d63698e"
+!taegis-create-comment comment="This is a test comment" id="c2e09554-833e-41a1-bc9d-8160aec0d70d"
+!taegis-create-investigation priority=1 title="XSOAR Created Investigation"
+!taegis-create-sharelink id=ff9ca818-4749-4ccb-883a-2ccc6f6c9e0f type=investigationId
+!taegis-execute-playbook id=UGxheWJvb2tJbnN0YW5jZTphZDNmNzBlZi1mN2U0LTQ0OWYtODJiMi1hYWQwMjQzZTA2NTg= inputs=`{'myvar': 'myval'}`
+!taegis-fetch-alerts
+!taegis-fetch-alerts offset=5 limit=5 cql_query="from alert status='OPEN' and severity >= 0.6"
+!taegis-fetch-alerts ids="alert://priv:crowdstrike:11772:1666269058114:59284e28-4ec8-542b-a4a1-452c3688bc1a,alert://priv:crowdstrike:11772:1666269058114:59284e28-4ec8-542b-a4a1-452c3688b123"
+!taegis-fetch-assets
+!taegis-fetch-assets page=1 page_size=5
+!taegis-fetch-assets hostname=MyHostname01
+!taegis-fetch-comment id=ff9ca818-4749-4ccb-883a-2ccc6f6c9e0f
+!taegis-fetch-comments id=c2e09554-833e-41a1-bc9d-8160aec0d70d
+!taegis-fetch-endpoint id=ff9ca818-4749-4ccb-883a-2ccc6f6c9e0f
+!taegis-fetch-investigation
+!taegis-fetch-investigation id="936c1cc1-db8f-430c-837c-1c914fcca35a"
+!taegis-fetch-investigation-alerts id=936c1cc1-db8f-430c-837c-1c914fcca35a
+!taegis-fetch-playbook-execution id=UGxheWJvb2tFeGVjdXRpb246NGYwZDZiNGQtNWNiZS00NDkxLTg3YzYtMDZkNjkxYzMwMTg4
+!taegis-fetch-users id="auth0|123456"
+!taegis-fetch-users email="mytenantuser@email.com"
+!taegis-isolate-asset id="e43b545a-580a-4047-b489-4338c1cc4ba1" reason="See ticket 12345"
+!taegis-update-alert-status ids="alert://priv:crowdstrike:11772:1677742145475:07e2d9cc-0a04-55ec-890a-97f39d63698e" status=NOT_ACTIONABLE reason="Test Reason"
+!taegis-update-comment id="ff9ca818-4749-4ccb-883a-2ccc6f6c9e0f" comment="Newly updated comment"
+!taegis-update-investigation investigation_id="936c1cc1-db8f-430c-837c-1c914fcca35a" status=Open description="XSOAR Modified Investigation"
+!taegis-archive-investigation id=c207ca4c-8a78-4408-a056-49f05d6eb77d
+!taegis-unarchive-investigation id=c207ca4c-8a78-4408-a056-49f05d6eb77d

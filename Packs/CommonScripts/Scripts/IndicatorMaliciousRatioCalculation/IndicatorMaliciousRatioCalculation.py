@@ -24,24 +24,24 @@ def hash_object(str_list_dict):
     if str_list_dict == "" or str_list_dict is None:
         return str_list_dict
     if (type(str_list_dict)) == dict:
-        return dict(map(lambda (k, v): (k, hash_object(v)), str_list_dict.iteritems()))
-    if (type(str_list_dict) == list):
-        return map(lambda x: hash_object(x), str_list_dict)
+        return {k_v[0]: hash_object(k_v[1]) for k_v in iter(str_list_dict.items())}
+    if (isinstance(str_list_dict, list)):
+        return [hash_object(x) for x in str_list_dict]
 
-    if (type(str_list_dict) in [str, unicode]):
+    if (type(str_list_dict) in [str, str]):
         str_value = str_list_dict.encode('utf-8')
     else:
         str_value = str(str_list_dict)
-    return hashlib.md5(str_value).hexdigest()
+    return hashlib.md5(str_value).hexdigest()  # guardrails-disable-line  # nosec
 
 
 def get_indicator_data(indicator):
-    return {k: v for k, v in indicator.items() if
+    return {k: v for k, v in list(indicator.items()) if
             k in ['indicator_type', 'firstSeen', 'lastSeen', 'investigationIDs', 'manualScore', 'id', 'score', 'value']}
 
 
 def get_incident_data(incident):
-    result = {k: v for k, v in incident.items() if k in ['id', 'type', 'occurred', 'CustomFields', 'labels']}
+    result = {k: v for k, v in list(incident.items()) if k in ['id', 'type', 'occurred', 'CustomFields', 'labels']}
     result['labels'] = hash_object(get_incident_labels_map(result.get('labels')))
     result['CustomFields'] = hash_object(result.get('CustomFields'))
     return result
@@ -56,7 +56,7 @@ def parse_datetime(datetime_str):
 
 def build_query_for_incidents_search(base_query, from_date):
     if from_date:
-        return '%s created:>="%s"' % (base_query, parse_datetime(from_date))
+        return '{} created:>="{}"'.format(base_query, parse_datetime(from_date))
     else:
         return base_query
 
@@ -73,15 +73,15 @@ def indicator_malicious_ratio_calculation(args):
     query = build_query_for_incidents_search(base_query, from_date)
     res = demisto.executeCommand("findIndicators", {'query': base_query, 'size': max_indicators})
     indicators = res[0]['Contents']
-    indicators_result = map(get_indicator_data, indicators)
+    indicators_result = list(map(get_indicator_data, indicators))
     res = demisto.executeCommand("SearchIncidentsV2", {'query': query.replace('incident.', ''), 'size': max_incidents})
     incidents = []
     if res[0].get("Contents") and res[0].get("Contents", [{}])[0].get("Contents"):
         incidents = res[0].get("Contents", [{}])[0].get("Contents", {}).get("data")
 
     if incidents:
-        incidents_result = map(get_incident_data, incidents)
-        resolved_incident_ids = set(map(lambda x: x['id'], incidents_result))
+        incidents_result = list(map(get_incident_data, incidents))
+        resolved_incident_ids = {x['id'] for x in incidents_result}
         non_resolved_id = set()  # type: Any
         for i in indicators_result:
             resolved = [x for x in i['investigationIDs'] if x in resolved_incident_ids]
@@ -95,11 +95,11 @@ def indicator_malicious_ratio_calculation(args):
         non_resolved_incidents = []
         if non_resolved_id:
             res = demisto.executeCommand("SearchIncidentsV2", {'query': " or ".join(
-                map(lambda x: "id:%s" % x, non_resolved_id)), 'size': max_incidents})
+                ["id:%s" % x for x in non_resolved_id]), 'size': max_incidents})
             if res[0].get("Contents") and res[0].get("Contents", [{}])[0].get("Contents"):
                 non_resolved_incidents = res[0].get("Contents", [{}])[0].get("Contents", {}).get("data")
             if non_resolved_incidents:
-                non_resolved_incidents = map(get_incident_data, non_resolved_incidents)
+                non_resolved_incidents = list(map(get_incident_data, non_resolved_incidents))
         else:
             non_resolved_incidents = []
 
@@ -137,7 +137,7 @@ def main():
         return_results(indicator_malicious_ratio_calculation(demisto.args()))
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error('Failed to execute IndicatorMaliciousRatioCalculation. Error:' + str(ex))
+        return_error(f'Failed to execute IndicatorMaliciousRatioCalculation. Error: {ex}')
 
 
 ''' ENTRY POINT '''

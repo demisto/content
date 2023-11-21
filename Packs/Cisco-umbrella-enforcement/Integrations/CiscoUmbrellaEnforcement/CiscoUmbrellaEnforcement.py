@@ -1,8 +1,9 @@
 import demistomock as demisto
 from CommonServerPython import *
 
+import urllib3
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 
 class Client(BaseClient):
@@ -179,7 +180,9 @@ def test_module(client: Client) -> str:
 def main():
     params = demisto.params()
     base_url = f"{params.get('url')}/1.0/"
-    api_key = params.get('api_key')
+    api_key = params.get('cred_api_key', {}).get('password') or params.get('api_key', None)
+    if not api_key:
+        raise DemistoException('API key must be provided.')
     verify = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     command = demisto.command()

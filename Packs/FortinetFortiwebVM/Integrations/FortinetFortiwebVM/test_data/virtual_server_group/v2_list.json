@@ -1,0 +1,40 @@
+{
+    "results": [
+        {
+            "id": 1,
+            "can_view": 0,
+            "q_ref": 0,
+            "can_clone": 1,
+            "q_type": 1,
+            "name": "test",
+            "sz_vip-list": 0
+        },
+        {
+            "id": 2,
+            "can_view": 0,
+            "q_ref": 0,
+            "can_clone": 1,
+            "q_type": 1,
+            "name": "test2",
+            "sz_vip-list": 1
+        },
+        {
+            "id": 3,
+            "can_view": 0,
+            "q_ref": 0,
+            "can_clone": 1,
+            "q_type": 1,
+            "name": "test3",
+            "sz_vip-list": 0
+        },
+        {
+            "id": 4,
+            "can_view": 0,
+            "q_ref": 0,
+            "can_clone": 1,
+            "q_type": 1,
+            "name": "test4",
+            "sz_vip-list": 0
+        }
+    ]
+}

@@ -6,7 +6,7 @@ TEST_VERSION = "5.1.9"
 JSON_SHOULD_STAY = 'Packs/CommonReports/Reports/report-MTTRbyIncidentType2Quar.json'
 YML_SHOULD_STAY = 'Packs/ThinkstCanary/Integrations/ThinkstCanary/ThinkstCanary.yml'
 JSON_SHOULD_DELETE = 'Utils/tests/test_data_old_content/json_should_delete.json'
-YML_SHOULD_DELETE = 'Packs/CommonPlaybooks/Playbooks/playbook-Calculate_Severity_By_Highest_DBotScore.yml'
+YML_SHOULD_DELETE = 'Utils/tests/test_data_old_content/yml_should_delete.yml'
 TEST_TPB = 'Utils/tests/test_data_old_content/temp_test_playbook.yml'
 
 
@@ -74,7 +74,7 @@ def test_handle_yml__should_delete():
     with open(YML_SHOULD_DELETE, 'r') as yml_file:
 
         yml_content = ryaml.load(yml_file)
-    assert should_keep_yml_file(yml_content, TEST_VERSION) is True
+    assert should_keep_yml_file(yml_content, TEST_VERSION) is False
 
 
 def test_edit_playbooks_directory(tmp_path):

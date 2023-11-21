@@ -1,0 +1,93 @@
+commonfields:
+  id: Aella Star Light
+  version: -1
+name: Aella Star Light
+display: Aella Star Light
+category: Data Enrichment & Threat Intelligence
+description: Aella Star Light Integration
+configuration:
+- display: Server URL (e.g. https://starlight.companyname.com:8889)
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: User name
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: Fetching interval in minutes (default is 15, minimum is 15 )
+  name: fetch_interval
+  defaultvalue: "15"
+  type: 0
+  required: false
+- display: The specific security event to look for. Default is all events
+  name: event_name
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Security event severity threshold, between 0-100
+  name: severity
+  defaultvalue: "50"
+  type: 0
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  subtype: python3
+  commands:
+  - name: aella-get-event
+    arguments:
+    - name: event_id
+      required: true
+      description: event id from the Star Light incident
+    outputs:
+    - contextPath: Aella.Event.event_name
+      description: The event name
+      type: string
+    - contextPath: Aella.Event.severity
+      description: The severity score
+      type: string
+    - contextPath: Aella.Event.dstip
+      description: The Destination IP
+      type: string
+    - contextPath: Aella.Event.srcip
+      description: The source IP
+      type: string
+    - contextPath: Aella.Event.tenantid
+      description: The tenant ID
+      type: string
+    - contextPath: Aella.Event.srcip_reputation
+      description: The source IP reputation
+      type: string
+    - contextPath: Aella.Event.dstip_reputation
+      description: The destination IP reputation
+      type: string
+    - contextPath: Aella.Event.dstip_geo
+      description: The destination IP geo location
+    - contextPath: Aella.Event.srcip_geo
+      description: The source  IP geo location
+    description: Query the details for a specific Start Light event
+  isfetch: true
+  runonce: false
+  dockerimage: demisto/python3:3.10.12.63474
+tests:
+- No test
+fromversion: 6.5.0

@@ -2,13 +2,17 @@
     "name": "Common Scripts",
     "description": "Frequently used scripts pack.",
     "support": "xsoar",
-    "currentVersion": "1.7.21",
+    "currentVersion": "1.12.44",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-05-14T08:33:25Z",
-    "categories": [],
-    "tags": [],
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [
+        "Core"
+    ],
     "useCases": [],
     "keywords": [],
     "dependencies": {
@@ -19,10 +23,6 @@
         "Gmail": {
             "mandatory": false,
             "display_name": "Gmail"
-        },
-        "EWSMailSender": {
-            "mandatory": false,
-            "display_name": "EWS Mail Sender"
         },
         "MailSenderNew": {
             "mandatory": false,
@@ -45,8 +45,13 @@
             "display_name": "RemoteAccess v2"
         }
     },
+    "excludedDependencies": [
+        "GoogleMaps",
+        "Slack"
+    ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "xpanse"
     ]
 }

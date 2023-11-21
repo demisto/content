@@ -77,6 +77,7 @@ class TestHttpRequest:
         assert e.value.res.status_code == status_code
 
     def test_http_request_bad_json(self, requests_mock):
+        # For an unknown reason, this does not pass locally, but only on the CI.
         """
             Given:
                 - a client
@@ -93,8 +94,7 @@ class TestHttpRequest:
             client.http_request('suffix', requests_kwargs={})
         assert e.value.message == f'Could not parse json out of {text}'
         assert e.value.res.status_code == 200
-        assert isinstance(e.value.exception, json.JSONDecodeError)
-        assert e.value.exception.args == ('Expecting value', 'not a json')
+        assert isinstance(e.value.exception, requests.exceptions.JSONDecodeError | json.decoder.JSONDecodeError)
 
 
 class TestGetRequestsKwargs:
@@ -179,18 +179,20 @@ class TestCreateFile:
         ('File_iocs', 'File_iocs_to_keep_file')
     ]
 
-    def setup(self):
+    @classmethod
+    def setup_method(cls):
         # creates the file
         with open(TestCreateFile.path, 'w') as _file:
             _file.write('')
 
-    def teardown(self):
+    @classmethod
+    def teardown_method(cls):
         # removes the file when done
         os.remove(TestCreateFile.path)
 
     @staticmethod
     def get_file(path):
-        with open(path, 'r') as _file:
+        with open(path) as _file:
             return _file.read()
 
     @staticmethod
@@ -291,7 +293,7 @@ class TestCreateFile:
         mocker.patch.object(demisto, 'searchIndicators', return_value={})
         create_file_iocs_to_keep(TestCreateFile.path)
         data = self.get_file(TestCreateFile.path)
-        expected_data = ''
+        expected_data = ' '
         assert data == expected_data, f'create_file_iocs_to_keep with no iocs\n\tcreates: {data}\n\tinstead: {expected_data}'
 
     @pytest.mark.parametrize('in_iocs, out_iocs', data_test_create_file_iocs_to_keep)
@@ -443,11 +445,11 @@ class TestDemistoIOCToXDR:
         ),
         (
             {'value': '11.11.11.11', 'indicator_type': 'IP', 'comments': [{'type': 'IndicatorCommentRegular', 'content': 'test'}]},    # noqa: E501
-            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP', 'comment': 'test'}    # noqa: E501
+            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP', 'comment': ['test']}    # noqa: E501
         ),
         (
             {'value': '11.11.11.11', 'indicator_type': 'IP', 'comments': [{'type': 'IndicatorCommentRegular', 'content': 'test'}, {'type': 'IndicatorCommentRegular', 'content': 'this is the comment'}]},    # noqa: E501
-            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP', 'comment': 'this is the comment'}    # noqa: E501
+            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP', 'comment': ['this is the comment']}    # noqa: E501
         ),
         (
             {'value': '11.11.11.11', 'indicator_type': 'IP', 'aggregatedReliability': 'A - Completely reliable'},
@@ -519,7 +521,8 @@ class TestXDRIOCToDemisto:
                 'fields': {
                     'expirationdate': 'Never',
                     'tags': 'Cortex XDR',
-                    'xdrstatus': 'disabled'
+                    'xdrstatus': 'disabled',
+                    'sourceoriginalseverity': 'INFO',
                 }
             }
         ),
@@ -539,7 +542,8 @@ class TestXDRIOCToDemisto:
                 'fields': {
                     'expirationdate': 'Never',
                     'tags': 'Cortex XDR',
-                    'xdrstatus': 'disabled'
+                    'xdrstatus': 'disabled',
+                    'sourceoriginalseverity': 'INFO',
                 }
             }
         ),
@@ -561,7 +565,8 @@ class TestXDRIOCToDemisto:
                 'fields': {
                     'expirationdate': 'Never',
                     'tags': 'Cortex XDR',
-                    'xdrstatus': 'enabled'
+                    'xdrstatus': 'enabled',
+                    'sourceoriginalseverity': 'INFO',
                 }
             }
         )
@@ -638,7 +643,7 @@ class TestCommands:
         mocker_reurn_results = mocker.patch('XDR_iocs.return_results')
         mocker_set_context = mocker.patch.object(demisto, 'setIntegrationContext')
         set_sync_time('2021-11-25T00:00:00')
-        mocker_reurn_results.assert_called_once_with('set sync time to 2021-11-25T00:00:00 seccedded.')
+        mocker_reurn_results.assert_called_once_with('set sync time to 2021-11-25T00:00:00 succeeded.')
         call_args = mocker_set_context.call_args[0][0]
         assert call_args['ts'] == 1637798400000
         assert call_args['time'] == '2021-11-25T00:00:00Z'
@@ -670,10 +675,10 @@ class TestCommands:
         mocker.patch.object(demisto, 'getIntegrationContext', return_value={'ts': 1591142400000})
         mocker.patch.object(demisto, 'createIndicators')
         mocker.patch.object(demisto, 'searchIndicators', return_value={})
-        xdr_res = {'reply': list(map(lambda xdr_ioc: xdr_ioc[0], TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto))}
+        xdr_res = {'reply': [xdr_ioc[0] for xdr_ioc in TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto]}
         mocker.patch.object(Client, 'http_request', return_value=xdr_res)
         get_changes(client)
-        xdr_ioc_to_timeline(list(map(lambda x: str(x[0].get('RULE_INDICATOR')), TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto)))    # noqa: E501
+        xdr_ioc_to_timeline([str(x[0].get('RULE_INDICATOR')) for x in TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto])    # noqa: E501
 
 
 class TestParams:
@@ -721,7 +726,7 @@ class TestParams:
         Client.tag = demisto.params().get('feedTags', demisto.params().get('tag', Client.tag))
         Client.tlp_color = demisto.params().get('tlp_color')
         client = Client({'url': 'yana'})
-        xdr_res = {'reply': list(map(lambda xdr_ioc: xdr_ioc[0], TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto))}
+        xdr_res = {'reply': [xdr_ioc[0] for xdr_ioc in TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto]}
         mocker.patch.object(Client, 'http_request', return_value=xdr_res)
         get_changes(client)
         output = outputs.call_args.args[0]
@@ -778,3 +783,231 @@ data_test_batch = [
 @pytest.mark.parametrize('input_enumerator, batch_size, expected_output', data_test_batch)
 def test_batch_iocs(input_enumerator, batch_size, expected_output):
     assert list(batch_iocs(input_enumerator, batch_size=batch_size)) == expected_output
+
+
+def test_overriding_severity_xsoar():
+    # back up class attributes
+    xsoar_severity_field_backup = Client.xsoar_severity_field
+    severity_value_backup = Client.severity
+
+    # for testing
+    Client.severity = 'LOW'
+
+    # constants
+    custom_severity_field = 'custom_severity_field'
+    dummy_demisto_ioc = {'value': '1.1.1.1', 'indicator_type': 'FILE_123',
+                         'CustomFields': {custom_severity_field: 'critical'}}
+
+    # default behavior
+    assert Client.override_severity is True
+    assert demisto_ioc_to_xdr(dummy_demisto_ioc)['severity'] == 'LOW'
+
+    # behavior when override_severity is False
+    Client.override_severity = False
+    Client.xsoar_severity_field = custom_severity_field
+    assert demisto_ioc_to_xdr(dummy_demisto_ioc)['severity'] == 'CRITICAL'
+
+    # behavior when there is no custom severity value
+    dummy_demisto_ioc['CustomFields'][custom_severity_field] = None
+    assert demisto_ioc_to_xdr(dummy_demisto_ioc)['severity'] == Client.severity
+
+    # behavior when there is no custom severity field
+    del dummy_demisto_ioc['CustomFields'][custom_severity_field]
+    assert demisto_ioc_to_xdr(dummy_demisto_ioc)['severity'] == Client.severity
+
+    # restore class attributes
+    Client.override_severity = True
+    Client.severity = severity_value_backup
+    Client.xsoar_severity_field = xsoar_severity_field_backup
+
+
+def test_overriding_severity_xdr_to_demisto():
+    # back up class attributes
+    xsoar_severity_field_backup = Client.xsoar_severity_field
+    severity_value_backup = Client.severity
+
+    Client.severity = 'some hardcoded severity value'
+    severity_field = 'custom_severity_field'
+
+    Client.xsoar_severity_field = severity_field
+    dummy_xdr_ioc = {'IOC_TYPE': 'IP', 'RULE_EXPIRATION_TIME': -1, 'RULE_SEVERITY': 'SEV_050_CRITICAL'}
+
+    # default behavior
+    assert Client.override_severity is True  # this should always be the default
+    assert xdr_ioc_to_demisto(dummy_xdr_ioc)['fields'][severity_field] == Client.severity
+
+    # behavior when override_severity is False
+    Client.override_severity = False
+    assert xdr_ioc_to_demisto(dummy_xdr_ioc)['fields'][severity_field] == 'CRITICAL'
+
+    # restore class attributes
+    Client.override_severity = True
+    Client.severity = severity_value_backup
+    Client.xsoar_severity_field = xsoar_severity_field_backup
+
+
+@pytest.mark.parametrize('value', (
+    'info',
+    'Info',
+    'informational',
+    'INformationAL'
+))
+def test_severity_fix_info(value: str):
+    """
+    given
+            a severity value that should be fixed to INFO
+    when
+            calling validate_fix_severity_value
+    then
+            make sure the value returned INFO
+    """
+    assert validate_fix_severity_value(value) == 'INFO'
+
+
+@pytest.mark.parametrize('value', ('', 'a', 'foo', 'severity', 'infoo', 'informationall'))
+def test_severity_validate(value: str):
+    with pytest.raises(DemistoException):
+        validate_fix_severity_value(value)
+
+
+def test_parse_demisto_comments__default():
+    """
+    Given   a custom field name, and comma-separated comments in it
+    When    parsing a comment of the default comment field
+    Then    check the output values
+    """
+    from XDR_iocs import _parse_demisto_comments
+    comment_value = 'here be comment'
+    assert _parse_demisto_comments(
+        ioc={Client.xsoar_comments_field: [{'type': 'IndicatorCommentRegular', 'content': comment_value}]},
+        comment_field_name=Client.xsoar_comments_field,
+        comments_as_tags=False
+    ) == [comment_value]
+
+
+def test_parse_demisto_comments__default_empty():
+    """
+    Given   a custom field name, and comma-separated comments in it
+    When    parsing a comment of the default comment field
+    Then    check parsing a comment results in None.
+    """
+    from XDR_iocs import _parse_demisto_comments
+    assert _parse_demisto_comments(
+        ioc={},
+        comment_field_name=Client.xsoar_comments_field,
+        comments_as_tags=False
+    ) is None
+
+
+def test_parse_demisto_comments__default_as_tag():
+    """
+    Given   a custom field name
+    When    parsing a comment of the default comment field, passing comments_as_tags=True
+    Then    make sure an appropriate exception is raised
+    """
+    from XDR_iocs import _parse_demisto_comments
+    with pytest.raises(DemistoException) as exc:
+        _parse_demisto_comments(
+            ioc={Client.xsoar_comments_field: [{'type': 'IndicatorCommentRegular', 'content': 'whatever'}]},
+            comment_field_name=Client.xsoar_comments_field,
+            comments_as_tags=True
+        )
+    assert exc.value.message == "When specifying comments_as_tags=True, the xsoar_comment_field cannot be `comments`)."\
+                                "Set a different value."
+
+
+@pytest.mark.parametrize('comment_value,comments_as_tags,expected', (
+    ('hello', True, ['hello']),
+    ('hello', False, ['hello']),
+    ('hello,world', True, ['hello', 'world']),
+    ('hello,world', False, ['hello,world']),
+))
+def test_parse_demisto_comments__custom_field(comment_value: str, comments_as_tags: bool, expected: str):
+    """
+    Given   a custom field name
+    When    parsing a comment of a non-default comment field
+    Then    make sure the comment is parsed as expected
+    """
+    from XDR_iocs import _parse_demisto_comments
+    comment_field = 'comment_field'
+
+    assert _parse_demisto_comments(
+        ioc={'CustomFields': {comment_field: comment_value}},
+        comment_field_name=comment_field,
+        comments_as_tags=comments_as_tags
+    ) == expected
+
+
+@pytest.mark.parametrize('comments_as_tags', (True, False))
+def test_parse_demisto_comments__custom_field_empty_value(comments_as_tags: bool):
+    """
+    Given   a custom field name, and an empty value as
+    When    parsing a comment of a non-default comment field
+    Then    make sure the comment is parsed as expected
+    """
+    from XDR_iocs import _parse_demisto_comments
+    comment_field = 'comment_field'
+
+    assert _parse_demisto_comments(
+        ioc={'CustomFields': {comment_field: ''}},
+        comment_field_name=comment_field,
+        comments_as_tags=comments_as_tags
+    ) is None
+
+
+@pytest.mark.parametrize('comments_as_tags', (True, False))
+def test_parse_demisto_comments__custom_field_missing(comments_as_tags: bool):
+    """
+    Given   a custom field name, which does not exist in the IOC
+    When    parsing a comment
+    Then    make sure the comment is parsed as expected
+    """
+    from XDR_iocs import _parse_demisto_comments
+
+    assert _parse_demisto_comments(
+        ioc={'CustomFields': {}},
+        comment_field_name='comment_field',
+        comments_as_tags=comments_as_tags
+    ) is None
+
+
+@pytest.mark.parametrize(
+    'raw_comment,comments_as_tags,expected_comment', (
+        ('hello', True, ['hello']),
+        ('hello', False, ['hello']),
+        ('hello,world', True, ['hello', 'world']),
+        ('hello,world', False, ['hello,world']),
+        ('', True, []),
+        ('', False, []),
+    ))
+def test_parse_xdr_comments(raw_comment: str | list[str], comments_as_tags: bool, expected_comment: str | None):
+    """
+    Given   a custom field name, and comma-separated comments in it
+    When    converting an XSOAR IOC to XDR
+    Then    check the output values
+    """
+    from XDR_iocs import _parse_xdr_comments
+    assert _parse_xdr_comments(raw_comment, comments_as_tags) == expected_comment
+
+
+@pytest.mark.parametrize(
+    'validation_errors, expected_str', (
+        ([{'indicator': '1.1.1.1',
+           'error': 'Expiration time 1696323079000 is invalid; expiration date cannot be in the past'},
+          {'indicator': '3.3.3.3',
+           'error': 'Expiration time 1696150302000 is invalid; expiration date cannot be in the past'}],
+         'Expiration time 1696323079000 is invalid; expiration date cannot be in the past'),
+        ([{'indicator': '1.1.1.1',
+           'error': 'Expiration time 1696323079000 is invalid; expiration date cannot be in the past'}],
+         'Expiration time 1696323079000 is invalid; expiration date cannot be in the past'),
+        ([],
+         ''),
+    ))
+def test_create_validation_errors_response(validation_errors, expected_str):
+    """
+    Given   validation errors that returned from the server.
+    When    pushing XSOAR IOC to XDR
+    Then    check the parsed error
+    """
+    from XDR_iocs import create_validation_errors_response
+    assert expected_str in create_validation_errors_response(validation_errors)

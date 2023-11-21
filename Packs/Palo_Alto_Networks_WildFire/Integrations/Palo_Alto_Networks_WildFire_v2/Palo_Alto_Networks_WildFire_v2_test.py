@@ -4,11 +4,26 @@ from requests import Response
 import pytest
 
 import demistomock as demisto
-from Palo_Alto_Networks_WildFire_v2 import prettify_upload, prettify_report_entry, prettify_verdict, \
-    create_dbot_score_from_verdict, prettify_verdicts, create_dbot_score_from_verdicts, hash_args_handler, \
-    file_args_handler, wildfire_get_sample_command, wildfire_get_report_command, run_polling_command, \
-    wildfire_upload_url_command, prettify_url_verdict, create_dbot_score_from_url_verdict, parse_file_report, \
-    parse_wildfire_object
+from Palo_Alto_Networks_WildFire_v2 import (
+    prettify_upload,
+    prettify_report_entry,
+    prettify_verdict,
+    create_dbot_score_from_verdict,
+    prettify_verdicts,
+    create_dbot_score_from_verdicts,
+    hash_args_handler,
+    file_args_handler,
+    wildfire_get_sample_command,
+    wildfire_get_report_command,
+    run_polling_command,
+    wildfire_upload_url_command,
+    prettify_url_verdict,
+    create_dbot_score_from_url_verdict,
+    parse_file_report,
+    parse_wildfire_object,
+    wildfire_get_file_report,
+    wildfire_file_command,
+)
 
 
 def test_will_return_ok():
@@ -31,12 +46,15 @@ def test_prettify_report_entry():
     assert expected_report_dict == prettify_report_entry_res
 
 
-def test_prettify_verdict():
-    expected_verdict_dict = dict({
-        'MD5': "md5_hash", 'SHA256': "sha256_hash", 'Verdict': "1", 'VerdictDescription': 'malware'})
-    prettify_verdict_res = prettify_verdict(
-        {'md5': "md5_hash", 'sha256': "sha256_hash", 'verdict': "1"})
-    assert expected_verdict_dict == prettify_verdict_res
+@pytest.mark.parametrize('verdict_dict, expected_verdict', [
+    ({'md5': "md5_hash", 'sha256': "sha256_hash", 'verdict': "1"},
+     {'MD5': "md5_hash", 'SHA256': "sha256_hash", 'Verdict': "1", 'VerdictDescription': 'malware'}),
+    ({'md5': "md5_hash", 'sha256': "sha256_hash", 'verdict': "5"},
+     {'MD5': "md5_hash", 'SHA256': "sha256_hash", 'Verdict': "5", 'VerdictDescription': 'c2'})
+])
+def test_prettify_verdict(verdict_dict, expected_verdict):
+    prettify_verdict_res = prettify_verdict(verdict_dict)
+    assert expected_verdict == prettify_verdict_res
 
 
 def test_prettify_url_verdict():
@@ -217,6 +235,53 @@ def test_report_chunked_response(mocker):
 
     assert command_results[0].outputs == context
     assert command_results[0].readable_output == hr
+
+
+def test_file_command_with_array(mocker):
+    """
+    Given:
+     - hash of file.
+
+    When:
+     - Running report command.
+
+    Then:
+     - outputs is valid.
+    """
+    mocker.patch.object(demisto, "results")
+    get_sample_response = Response()
+    get_sample_response.status_code = 200
+    get_sample_response.headers = {
+        "Server": "nginx",
+        "Date": "Thu, 28 May 2020 15:03:35 GMT",
+        "Transfer-Encoding": "chunked",
+        "Connection": "keep-alive",
+        "x-envoy-upstream-service-time": "258",
+    }
+    get_sample_response._content = (
+        b'<?xml version="1.0" encoding="UTF-8"?><wildfire><version>2.0</version><file_info>'
+        b"<file_signer>None</file_signer><malware>no</malware><sha1></sha1><filetype>PDF"
+        b"</filetype><sha256>"
+        b"8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51</sha256><md5>"
+        b"4b41a3475132bd861b30a878e30aa56a</md5><size>3028</size></file_info><task_info>"
+        b"<report><version>2.0</version><platform>100</platform><software>"
+        b"PDF Static Analyzer</software><sha256>"
+        b"8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51</sha256>"
+        b"<md5>4b41a3475132bd861b30a878e30aa56a</md5><malware>no</malware><summary/>"
+        b"</report></task_info></wildfire>"
+    )
+    mocker.patch("requests.request", return_value=get_sample_response)
+    mocker.patch(
+        "Palo_Alto_Networks_WildFire_v2.URL",
+        "https://wildfire.paloaltonetworks.com/publicapi",
+    )
+    command_outputs = wildfire_file_command(
+        {
+            "file": "8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51"
+            ",8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51"
+        }
+    )
+    assert len(command_outputs) == 2
 
 
 def util_load_json(path):
@@ -531,3 +596,72 @@ def test_tags_file_report_response(mocker, response, expected_output):
          'format': 'xml'})
 
     assert command_results[0].indicator.tags == expected_output
+
+
+def test_wildfire_get_pending_file_report(mocker):
+    """
+    Given:
+     - hash of a file pending to be constructed
+
+    When:
+     - Running report command.
+
+    Then:
+     - Assert CommandResults are returned.
+     - Assert status is pending.
+    """
+    mocker.patch("Palo_Alto_Networks_WildFire_v2.URL", "SomeURL")
+    get_sample_response = Response()
+    get_sample_response.status_code = 200
+    get_sample_response.headers = {
+        'Server': 'nginx',
+        'Date': 'Thu, 28 May 2020 15:03:35 GMT',
+        'Transfer-Encoding': 'chunked',
+        'Connection': 'keep-alive',
+        'x-envoy-upstream-service-time': '258'
+    }
+    get_sample_response._content = b'<?xml version="1.0" encoding="UTF-8"?><response><version>2.0</version></response>'
+    mocker.patch(
+        'requests.request',
+        return_value=get_sample_response
+    )
+    command_results, status = wildfire_get_file_report(file_hash='some_hash',
+                                                       args={'extended_data': 'false',
+                                                             'format': 'xml',
+                                                             'verbose': 'false'})
+    assert command_results
+    assert status == 'Pending'
+
+
+def test_invalid_argument_res(mocker):
+    """
+    Given:
+     - hash of a file pending to be constructed.
+
+    When:
+     - Running report command with Invalid argument error message.
+
+    Then:
+     - Assert Exception occurred.
+     - Assert error entry created with the error message from the response.
+    """
+    mocker.patch("Palo_Alto_Networks_WildFire_v2.URL", "SomeURL")
+    mocker.patch.object(demisto, 'results')
+    get_sample_response = Response()
+    get_sample_response.status_code = 421
+    get_sample_response._content = b'<?xml version="1.0" encoding="UTF-8"?><error><error-message>' \
+                                   b'Invalid argument</error-message></error>'
+    mocker.patch(
+        'requests.request',
+        return_value=get_sample_response
+    )
+    try:
+        wildfire_get_file_report(file_hash='some_hash',
+                                 args={'extended_data': 'false',
+                                       'format': 'xml',
+                                       'verbose': 'false'})
+    except Exception as e:
+        assert e.message == 'Error while trying to get the report from the API.'
+        assert demisto.results.call_count == 1
+        assert demisto.results.call_args[0][0]['Type'] == 4
+        assert demisto.results.call_args[0][0]['Contents'] == 'Invalid argument'

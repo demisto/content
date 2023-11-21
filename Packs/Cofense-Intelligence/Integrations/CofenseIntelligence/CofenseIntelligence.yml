@@ -4,9 +4,7 @@ commonfields:
 name: Cofense Intelligence
 display: Cofense Intelligence (Deprecated)
 category: Data Enrichment & Threat Intelligence
-description: Deprecated. Use Cofense Intelligence v2 instead. Use the Cofense Intelligence
-  integration to check the reputation of URLs, IP addresses, file hashes, and email
-  addresses.
+description: Deprecated. Use Cofense Intelligence v2 instead. Use the Cofense Intelligence integration to check the reputation of URLs, IP addresses, file hashes, and email addresses.
 configuration:
 - display: Server URL (e.g., https://www.threathq.com/apiv1)
   name: url
@@ -42,26 +40,22 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
-- display: URL Threshold (None, Minor, Moderate, or Major). Minimum severity to consider
-    the URL malicious
+- display: URL Threshold (None, Minor, Moderate, or Major). Minimum severity to consider the URL malicious
   name: urlThreshold
   defaultvalue: Major
   type: 0
   required: false
-- display: File Threshold (None, Minor, Moderate, or Major). Minimum severity to consider
-    the file malicious
+- display: File Threshold (None, Minor, Moderate, or Major). Minimum severity to consider the file malicious
   name: fileThreshold
   defaultvalue: Major
   type: 0
   required: false
-- display: IP Threshold (None, Minor, Moderate, or Major). Minimum severity to consider
-    the IP malicious
+- display: IP Threshold (None, Minor, Moderate, or Major). Minimum severity to consider the IP malicious
   name: ipThreshold
   defaultvalue: Major
   type: 0
   required: false
-- display: Email Threshold (None, Minor, Moderate, or Major). Minimum severity to
-    consider the email malicious
+- display: Email Threshold (None, Minor, Moderate, or Major). Minimum severity to consider the email malicious
   name: emailThreshold
   defaultvalue: Major
   type: 0
@@ -244,6 +238,5 @@ script:
     - contextPath: Cofense.String
       description: String that was searched.
     description: Searches for extracted strings identified within malware campaigns.
-  runonce: false
 deprecated: true
 fromversion: 5.0.0

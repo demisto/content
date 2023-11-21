@@ -1,10 +1,10 @@
 import demistomock as demisto
 from CommonServerPython import *
 import traceback
-import requests
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 DEFAULT_OUTGOING_MAPPER = "User Profile - SCIM (Outgoing)"
 DEFAULT_INCOMING_MAPPER = "User Profile - SCIM (Incoming)"
@@ -99,8 +99,18 @@ def test_module(client):
     :param client: the client object
     :return: ok if got a valid accesses token
     """
-    client.get_user("id", "1234")
-    return 'ok'
+    message: str = ''
+    try:
+        result = client.get_user("id", "1234")
+        if result:
+            message = 'ok'
+    except DemistoException as e:
+        # The url is for the users, it can throw not found for bad url as well, and we do want to catch it.
+        if 'Not Found' in str(e) and 'list-scim-provisioned-identities' in str(e):
+            message = 'ok'
+        else:
+            raise e
+    return message
 
 
 def get_user_command(client, args, mapper_in, mapper_out):
@@ -313,7 +323,7 @@ def get_mapping_fields_command():
     return GetMappingFieldsResponse([incident_type_scheme])
 
 
-def main():
+def main():  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
 
@@ -321,7 +331,12 @@ def main():
     # checks for '/' at the end url, if it is not available add it
     if base_url[-1] != '/':
         base_url += '/'
-    token = params.get('token')
+
+    token = params.get('creds_token', {}).get('password') or params.get('token')
+
+    if token is None:
+        raise ValueError('Token must be provided.')
+
     org = params.get('org')
 
     mapper_in = params.get('mapper_in', DEFAULT_INCOMING_MAPPER)

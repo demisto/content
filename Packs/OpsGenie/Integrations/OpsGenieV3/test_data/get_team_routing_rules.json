@@ -1,0 +1,30 @@
+{
+    "data": [
+        {
+            "description": "",
+            "id": "0234de-4870-44-82fd-f5aff14a684",
+            "name": "Demisto_EscalationHigh",
+            "ownerTeam": {
+                "id": "a6604a9f-b152-54c-b31-1b9741c109",
+                "name": "Demisto"
+            },
+            "rules": [
+                {
+                    "condition": "if-not-closed",
+                    "delay": {
+                        "timeAmount": 360,
+                        "timeUnit": "minutes"
+                    },
+                    "notifyType": "admins",
+                    "recipient": {
+                        "id": "a6606a9f-b132-444c-bba1-1b97c111c109",
+                        "name": "Demisto",
+                        "type": "team"
+                    }
+                }
+            ]
+        }
+    ],
+    "requestId": "f5aede7c-247e-4f38-b50b-6c9848f49beb",
+    "took": 0.111
+}

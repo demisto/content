@@ -1,0 +1,7 @@
+{
+    "builtin": false,
+    "category": "benign_true_positive",
+    "id": 4,
+    "title": "Vectra Outcome Test True Positive",
+    "user_selectable": true
+}

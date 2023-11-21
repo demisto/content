@@ -1,0 +1,64 @@
+category: Utilities
+commonfields:
+  id: ClickSend
+  version: -1
+configuration:
+- additionalinfo: 'You''ll find your api key here: https://dashboard.clicksend.com/account/subaccounts'
+  display: Api Key
+  name: api_key
+  required: true
+  type: 4
+- additionalinfo: 'You''ll find your username here: https://dashboard.clicksend.com/account/subaccounts'
+  display: Username
+  name: username
+  required: true
+  type: 0
+description: This is the ClickSend integration for make a phonecall from XSOAR  made by Trustnet
+display: ClickSend
+name: ClickSend
+script:
+  commands:
+  - arguments:
+    - description: 'Phone Number  Example: +972501234567'
+      name: phoneNumber
+      required: true
+    - description: Message Body
+      name: Message
+      required: true
+    - auto: PREDEFINED
+      description: If you want that the person will need to input.
+      name: require_input
+      predefined:
+      - "False"
+      - "True"
+      required: true
+    - auto: PREDEFINED
+      description: You Can choose either Male or Female
+      name: voice
+      predefined:
+      - male
+      - female
+      required: true
+    description: 'Make phone call with you own text. Example: !text-to-voice Message="Hi im here" phoneNumber=+972501234567 require_input=False voice=male'
+    name: clicksend-text-to-voice
+    outputs:
+    - contextPath: Voice.MSG.id
+      description: Message ID
+    - contextPath: Voice.MSG.responseCode
+      description: Response Code
+    - contextPath: Voice.MSG.responseMsg
+      description: Response MSG
+  - arguments: []
+    description: 'Your calls history Example: !voice-history'
+    name: clicksend-voice-history
+    outputs:
+    - contextPath: Voice.History
+      description: Your Calls History
+  dockerimage: demisto/python3:3.10.12.68714
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

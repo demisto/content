@@ -1,6 +1,9 @@
 commonfields:
   id: CrowdStrike Falcon Intel v2
   version: -1
+sectionOrder:
+- Connect
+- Collect
 name: CrowdStrike Falcon Intel v2
 display: CrowdStrike Falcon Intel v2
 category: Data Enrichment & Threat Intelligence
@@ -11,21 +14,31 @@ configuration:
   name: server_url
   required: true
   type: 0
+  section: Connect
 - display: Client ID
   displaypassword: Client Secret
   name: credentials
   required: true
   type: 9
-- display: Indicator Threshold. Minimum malicious confidence from Falcon Intel to
-    consider the indicator malicious.
+  section: Connect
+- display: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
+  name: timeout
+  defaultvalue: "10"
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+- display: Indicator Threshold. Minimum malicious confidence from Falcon Intel to consider the indicator malicious.
   name: threshold
   defaultvalue: high
   type: 15
-  required: false
   options:
   - low
   - medium
   - high
+  section: Collect
+  advanced: true
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -40,6 +53,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+  section: Collect
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -48,30 +62,34 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
+  section: Collect
+  advanced: true
+  required: false
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
-  required: false
   type: 1
+  section: Collect
+  advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  section: Connect
+  advanced: true
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  section: Connect
+  advanced: true
   required: false
 script:
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.12.68714
   type: python
   subtype: python3
   script: '-'
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   commands:
   - name: file
     arguments:
@@ -390,17 +408,13 @@ script:
     - name: description
       description: Search based on a description.
     - name: created_date
-      description: 'Search from the created date. Supported formats: ISO 8601 (for example, 2020-07-28T10:00:00Z)
-       and time period (for example, 24 hours).'
+      description: 'Search from the created date. Supported formats: ISO 8601 (for example, 2020-07-28T10:00:00Z) and time period (for example, 24 hours).'
     - name: max_last_modified_date
-      description: 'Search up to the last modified date. Supported formats: ISO 8601 (for example, 2020-07-28T10:00:00Z)
-                     and time period (for example, 24 hours).'
+      description: 'Search up to the last modified date. Supported formats: ISO 8601 (for example, 2020-07-28T10:00:00Z) and time period (for example, 24 hours).'
     - name: min_last_activity_date
-      description: 'Search from the last activity date. Supported formats: ISO 8601 (for example, 2020-07-28T10:00:00Z)
-                     and time period (for example, 24 hours).'
+      description: 'Search from the last activity date. Supported formats: ISO 8601 (for example, 2020-07-28T10:00:00Z) and time period (for example, 24 hours).'
     - name: max_last_activity_date
-      description: 'Search up to the last activity date. Supported formats: ISO 8601 (for example, 2020-07-28T10:00:00Z)
-                     and time period (for example, 24 hours).'
+      description: 'Search up to the last activity date. Supported formats: ISO 8601 (for example, 2020-07-28T10:00:00Z) and time period (for example, 24 hours).'
     - name: origins
       description: Search by origins, separated by ",".
       isArray: true
@@ -420,8 +434,7 @@ script:
       default: true
       defaultValue: '10'
     - name: sort
-      description: Sort by field and direction. Select a pre-defined value and direction. For example, for ascending list of names, "name|asc",
-       for descending list of names, "name|desc".
+      description: Sort by field and direction. Select a pre-defined value and direction. For example, for ascending list of names, "name|asc", for descending list of names, "name|desc".
       auto: PREDEFINED
       predefined:
       - name|asc
@@ -501,7 +514,6 @@ script:
     - name: query
       description: Search based on a query written in FQL (Falcon Query Language, See https://falcon.crowdstrike.com/support/documentation/45/falcon-query-language-fql for more information)..
     - name: type
-      required: false
       description: The indicator type. Add a pre-defined value, such as email_address, hash_ion, password, etc.
       auto: PREDEFINED
       predefined:
@@ -535,27 +547,21 @@ script:
       - x509_seria
       - x509_subject
     - name: malicious_confidence
-      required: false
       auto: PREDEFINED
       predefined:
       - high
       - medium
       - low
       - unverified
-      description: Indicates a confidence level by which an indicator is considered
-        to be malicious. Can be "high", "medium", "low", or "unverified".
+      description: Indicates a confidence level by which an indicator is considered to be malicious. Can be "high", "medium", "low", or "unverified".
     - name: offset
-      description: Used to paginate the response. You can then use limit to set the
-        number of results for the next page.
+      description: Used to paginate the response. You can then use limit to set the number of results for the next page.
     - name: last_updated_date
-      description: 'The date the indicator was last updated. Supported formats: ISO 8601 (for example, 2020-07-28T10:00:00Z)
-                     and time period (for example, 24 hours).'
+      description: 'The date the indicator was last updated. Supported formats: ISO 8601 (for example, 2020-07-28T10:00:00Z) and time period (for example, 24 hours).'
     - name: indicator
-      required: false
       description: The value for the given indicator type.
     - name: sort
-      description: Sort by field and direction. Select a pre-defined value and direction. For example, for ascending list of IDs, "id|asc",
-       for descending list of IDs, "id|desc".
+      description: Sort by field and direction. Select a pre-defined value and direction. For example, for ascending list of IDs, "id|asc", for descending list of IDs, "id|desc".
       auto: PREDEFINED
       predefined:
       - id|asc
@@ -570,14 +576,10 @@ script:
       - last_updated|desc
     - name: id
       description: "The indicator's ID, in the following format: <type>_<indicator>."
-      required: false
-      isArray: false
     - default: true
       defaultValue: '10'
       description: The maximum number of indicators to retrieve. The default is 10.
-      isArray: false
       name: limit
-      required: false
     outputs:
     - contextPath: File.MD5
       description: The MD5 hash of the file.
@@ -736,8 +738,7 @@ script:
     - name: name
       description: Search for keywords across report names (for example, the report’s title).
     - name: actors
-      description: Search for a report related to particular actors. Actors should
-        be comma separated. For example, actor1,actor2, etc.
+      description: Search for a report related to particular actors. Actors should be comma separated. For example, actor1,actor2, etc.
       isArray: true
     - name: target_countries
       description: Search reports by targeted country/countries.
@@ -771,21 +772,17 @@ script:
     - name: tags
       description: Tags associated with a report (managed internally by CrowdStrike).
     - name: created_date
-      description: 'Search for reports created on a certain date. Supported formats: ISO 8601 (for example, 2020-07-28T10:00:00Z)
-                     and time period (for example, 24 hours).'
+      description: 'Search for reports created on a certain date. Supported formats: ISO 8601 (for example, 2020-07-28T10:00:00Z) and time period (for example, 24 hours).'
     - name: max_last_modified_date
-      description: 'Search for reports modified on or before a certain date. Supported formats: ISO 8601 (for example, 2020-07-28T10:00:00Z)
-                     and time period (for example, 24 hours).'
+      description: 'Search for reports modified on or before a certain date. Supported formats: ISO 8601 (for example, 2020-07-28T10:00:00Z) and time period (for example, 24 hours).'
     - name: offset
-      description: Used to paginate the response. You can then use limit to set the
-        number of results for the next page.
+      description: Used to paginate the response. You can then use limit to set the number of results for the next page.
     - name: limit
       description: The maximum number of reports to retrieve. The default is 10.
       default: true
       defaultValue: '10'
     - name: sort
-      description: Sort by field and direction. Select a pre-defined value and direction. For example, for ascending list of types, "type|asc",
-       for descending list of types, "types|desc".
+      description: Sort by field and direction. Select a pre-defined value and direction. For example, for ascending list of types, "type|asc", for descending list of types, "types|desc".
       auto: PREDEFINED
       predefined:
       - id|asc
@@ -842,9 +839,7 @@ script:
     - contextPath: FalconIntel.Report.Tags
       description: "The report's tags. For example, intel_feed."
       type: String
-    description: Queries CrowdStrike intelligence
-      publications.
-  runonce: false
+    description: Queries CrowdStrike intelligence publications.
 tests:
 - CrowdStrike Falcon Intel v2 - Test
 fromversion: 5.0.0

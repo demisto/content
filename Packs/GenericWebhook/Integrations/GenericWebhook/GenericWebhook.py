@@ -1,3 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+import json
 from collections import deque
 from copy import copy
 from secrets import compare_digest
@@ -12,8 +15,6 @@ from fastapi.security.api_key import APIKey, APIKeyHeader
 from pydantic import BaseModel
 from uvicorn.logging import AccessFormatter
 
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 
 sample_events_to_store = deque(maxlen=20)  # type: ignore[var-annotated]
@@ -56,11 +57,14 @@ async def handle_post(
         credentials: HTTPBasicCredentials = Depends(basic_auth),
         token: APIKey = Depends(token_auth)
 ):
+    header_name = None
+    request_headers = dict(request.headers)
+
     credentials_param = demisto.params().get('credentials')
+
     if credentials_param and (username := credentials_param.get('identifier')):
         password = credentials_param.get('password', '')
         auth_failed = False
-        header_name = None
         if username.startswith('_header'):
             header_name = username.split(':')[1]
             token_auth.model.name = header_name
@@ -70,14 +74,18 @@ async def handle_post(
                                    and compare_digest(credentials.password, password))):
             auth_failed = True
         if auth_failed:
-            request_headers = dict(request.headers)
             secret_header = (header_name or 'Authorization').lower()
             if secret_header in request_headers:
                 request_headers[secret_header] = '***'
             demisto.debug(f'Authorization failed - request headers {request_headers}')
             return Response(status_code=status.HTTP_401_UNAUTHORIZED, content='Authorization failed.')
 
+    secret_header = (header_name or 'Authorization').lower()
+    request_headers.pop(secret_header, None)
+
     raw_json = incident.raw_json or await request.json()
+    raw_json['headers'] = request_headers
+
     incident = {
         'name': incident.name or 'Generic webhook triggered incident',
         'type': incident.type or demisto.params().get('incidentType'),

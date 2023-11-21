@@ -1,0 +1,61 @@
+{
+   "data":[
+      {
+         "test_data_event_id":"cbd77b10-9bbc-4b21-ae6f-8cadf26346b0",
+         "vendor":"aws",
+         "product":"security_hub",
+         "dataset":"aws_security_hub_raw",
+         "event_data":{
+            "Id":"arn:aws:securityhub:eu-central-1:123456789012:subscription/cis-aws-foundations-benchmark/v/1.2.0/1.3/finding/1f710db2-d22c-4326-b5f3-b37d979d1211",
+            "ProductName":"Security Hub",
+            "Region":"eu-central-1",
+            "AwsAccountId":"123456789012",
+            "Types":[
+               "Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark"
+            ],
+            "Severity":{
+               "Product":0,
+               "Label":"INFORMATIONAL",
+               "Normalized":0,
+               "Original":"INFORMATIONAL"
+            },
+            "Title":"1.3 Ensure credentials unused for 90 days or greater are disabled",
+            "Description":"AWS IAM users can access AWS resources using different types of credentials, such as passwords or access keys. It is recommended that all credentials that have been unused in 90 or greater days be removed or deactivated.",
+            "Resources":[
+               {
+                  "Type":"AwsAccount",
+                  "Id":"AWS::::Account:123456789012",
+                  "Partition":"aws",
+                  "Region":"eu-central-1"
+               }
+            ],
+            "Compliance":{
+               "Status":"PASSED",
+               "StatusReasons":[
+                  {
+                     "ReasonCode":"CONFIG_EVALUATIONS_EMPTY",
+                     "Description":"AWS Config evaluated your resources against the rule. The rule did not apply to the AWS resources in its scope, the specified resources were deleted, or the evaluation results were deleted."
+                  }
+               ]
+            }
+         },
+         "expected_values":{
+            "xdm.alert.subcategory":"[\"Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark\"]",
+            "xdm.alert.description":"AWS IAM users can access AWS resources using different types of credentials, such as passwords or access keys. It is recommended that all credentials that have been unused in 90 or greater days be removed or deactivated.",
+            "xdm.source.zone":"eu-central-1",
+            "xdm.source.cloud.provider":"AWS",
+            "xdm.target.resource.type":"AwsAccount",
+            "xdm.alert.original_alert_id":"arn:aws:securityhub:eu-central-1:123456789012:subscription/cis-aws-foundations-benchmark/v/1.2.0/1.3/finding/1f710db2-d22c-4326-b5f3-b37d979d1211",
+            "xdm.alert.name":"1.3 Ensure credentials unused for 90 days or greater are disabled",
+            "xdm.event.outcome":"SUCCESS",
+            "xdm.source.cloud.project":"123456789012",
+            "xdm.target.resource.id":"AWS::::Account:123456789012",
+            "xdm.alert.severity":"INFORMATIONAL",
+            "xdm.observer.product":"Security Hub"
+         }
+      }
+   ],
+   "ignored_validations":[
+      "schema_test_data_types"
+   ]
+}

@@ -1,34 +1,44 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-from typing import Tuple, Dict, List, Any, Optional, Union
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
+
+from typing import Any
 import requests
 import dateparser
+import urllib3
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
+
 
 TOKEN_INPUT_IDENTIFIER = '__token'
+DAYS_BACK_FOR_FIRST_QUERY_OF_INCIDENTS = 3
+DATETIME_FORMAT_MILISECONDS = '%Y-%m-%dT%H:%M:%S.%f'
 
 
 class Client(BaseClient):
     """
     Client to use in the Exabeam integration. Overrides BaseClient
     """
+
     def __init__(self, base_url: str, username: str, password: str, verify: bool,
-                 proxy: bool, headers):
+                 proxy: bool, headers, api_key: str = '', is_fetch: bool = None):
+        self.validate_authentication_params(username=username, password=password, api_key=api_key, is_fetch=is_fetch)
         super().__init__(base_url=f'{base_url}', headers=headers, verify=verify, proxy=proxy)
         self.username = username
         self.password = password
+        self.api_key = api_key
         self.session = requests.Session()
         self.session.headers = headers
         if not proxy:
             self.session.trust_env = False
-        if self.username != TOKEN_INPUT_IDENTIFIER:
+        if self.is_token_auth():
+            self.session.headers['ExaAuthToken'] = self.password or self.api_key
+        else:
             self._login()
 
-    def __del__(self):
-        if self.username != TOKEN_INPUT_IDENTIFIER:
+    def shutdown(self):
+        if not self.is_token_auth():
             self._logout()
         super().__del__()
 
@@ -50,13 +60,51 @@ class Client(BaseClient):
         except Exception as err:
             demisto.debug(f'An error occurred during the logout.\n{str(err)}')
 
+    def validate_authentication_params(self, username: str = None,
+                                       password: str = None,
+                                       api_key: str = None,
+                                       is_fetch: bool = None):
+        if username == TOKEN_INPUT_IDENTIFIER:
+            if is_fetch:
+                raise ValueError('In order to use the “Fetch Incident” functionality,'
+                                 ' the username must be provided in the “Username” parameter.\n'
+                                 ' Please see documentation `Authentication Methods`')
+            if api_key:
+                raise ValueError(f'When specifying {username=}, the API Token must be provieded using in the password field'
+                                 ' please empty the other field')
+            if not password:
+                raise ValueError('Please insert API Token in the password field'
+                                 ' or see documentation `Authentication Methods` for another authentication methods')
+        elif not username:
+            if not api_key:
+                raise ValueError('If an API token is not provided, it is mandatory to insert username and password.')
+            if is_fetch:
+                raise ValueError('In order to use the “Fetch Incident” functionality,'
+                                 ' the username must be provided in the “Username” parameter.\n'
+                                 ' Please see documentation `Authentication Methods`')
+        else:
+            if not password and not api_key:
+                raise ValueError('Please insert password or API token.')
+            if password and api_key:
+                raise ValueError('Please insert API token OR password and not both.')
+
+    def is_token_auth(self) -> bool:
+
+        if not self.username:
+            return True
+        if self.username == TOKEN_INPUT_IDENTIFIER:
+            return True
+        if self.api_key:
+            return True
+        return False
+
     def test_module_request(self):
         """
         Performs basic get request to check if the server is reachable.
         """
         self._http_request('GET', full_url=f'{self._base_url}/api/auth/check', resp_type='text')
 
-    def get_notable_users_request(self, api_unit: str = None, num: str = None, limit: int = None) -> Dict:
+    def get_notable_users_request(self, api_unit: str = None, num: str = None, limit: int = None) -> dict:
         """
         Args:
             api_unit:
@@ -74,7 +122,7 @@ class Client(BaseClient):
         response = self._http_request('GET', url_suffix='/uba/api/users/notable', params=params)
         return response
 
-    def get_user_info_request(self, username: str) -> Dict:
+    def get_user_info_request(self, username: str) -> dict:
         """
         Args:
             username: the username
@@ -85,7 +133,7 @@ class Client(BaseClient):
         response = self._http_request('GET', url_suffix=f'/uba/api/user/{username}/info')
         return response
 
-    def get_peer_groups_request(self) -> Dict:
+    def get_peer_groups_request(self) -> dict:
         """
         Returns:
             peer groups
@@ -93,7 +141,7 @@ class Client(BaseClient):
         response = self._http_request('GET', url_suffix='/uba/api/peerGroup')
         return response
 
-    def get_user_labels_request(self) -> Dict:
+    def get_user_labels_request(self) -> dict:
         """
         Returns:
             user labels
@@ -101,7 +149,7 @@ class Client(BaseClient):
         response = self._http_request('GET', url_suffix='/uba/api/userLabel')
         return response
 
-    def user_sequence_request(self, username: str = None, parse_start_time=None, parse_end_time=None) -> Dict:
+    def user_sequence_request(self, username: str = None, parse_start_time=None, parse_end_time=None) -> dict:
         """
         Args:
             username:
@@ -135,7 +183,7 @@ class Client(BaseClient):
         """
         self._http_request('DELETE', url_suffix=f'/uba/api/watchlist/{watchlist_id}/')
 
-    def get_asset_data_request(self, asset_name: str = None) -> Dict:
+    def get_asset_data_request(self, asset_name: str = None) -> dict:
         """
 
         Args:
@@ -147,7 +195,7 @@ class Client(BaseClient):
         response = self._http_request('GET', url_suffix=f'/uba/api/asset/{asset_name}/data')
         return response
 
-    def get_session_info_request(self, session_id: str = None) -> Dict:
+    def get_session_info_request(self, session_id: str = None) -> dict:
         """
 
             Args:
@@ -159,7 +207,7 @@ class Client(BaseClient):
         response = self._http_request('GET', url_suffix=f'/uba/api/session/{session_id}/info')
         return response
 
-    def list_top_domains_request(self, sequence_id: str = None, sequence_type: str = None) -> Dict:
+    def list_top_domains_request(self, sequence_id: str = None, sequence_type: str = None) -> dict:
         """
 
             Args:
@@ -176,7 +224,7 @@ class Client(BaseClient):
         response = self._http_request('GET', url_suffix='/uba/api/data_feed/topDomains', params=params)
         return response
 
-    def list_triggered_rules_request(self, sequence_id: str = None, sequence_type: str = None) -> Dict:
+    def list_triggered_rules_request(self, sequence_id: str = None, sequence_type: str = None) -> dict:
         """
 
             Args:
@@ -193,7 +241,7 @@ class Client(BaseClient):
         response = self._http_request('GET', url_suffix='/uba/api/user/sequence/triggeredRules', params=params)
         return response
 
-    def get_asset_info_request(self, asset_id: str = None, max_users_number: int = None) -> Dict[str, Any]:
+    def get_asset_info_request(self, asset_id: str = None, max_users_number: int = None) -> dict[str, Any]:
         """
 
             Args:
@@ -214,7 +262,7 @@ class Client(BaseClient):
                                        event_categories: list = None,
                                        event_types: list = None,
                                        event_type_include: str = None,
-                                       sequence_types: list = None) -> Dict:
+                                       sequence_types: list = None) -> dict:
         """
 
             Args:
@@ -250,7 +298,7 @@ class Client(BaseClient):
         return response
 
     def list_security_alerts_request(self, asset_id: str = None, sort_by: str = None,
-                                     sort_order: int = None, limit: int = None) -> Dict:
+                                     sort_order: int = None, limit: int = None) -> dict:
         """
             Args:
                 asset_id: ID of the asset to fetch info for
@@ -274,7 +322,7 @@ class Client(BaseClient):
         response = self._http_request('GET', url_suffix=url_suffix, params=params)
         return response
 
-    def search_rules_request(self, keyword: str = None, filter_exp: str = None) -> Union[List, Dict]:
+    def search_rules_request(self, keyword: str = None, filter_exp: str = None) -> list | dict:
         """
             Args:
                 keyword: The search keyword
@@ -307,7 +355,7 @@ class Client(BaseClient):
         response = self._http_request('GET', url_suffix=url_suffix, resp_type='text')
         return response
 
-    def fetch_rules_request(self, filter_by: str = None) -> Union[List, Dict]:
+    def fetch_rules_request(self, filter_by: str = None) -> list | dict:
         """
             Args:
                 filter_by: rules to retrieve (default/custom/all).
@@ -322,7 +370,7 @@ class Client(BaseClient):
         response = self._http_request('GET', url_suffix=url_suffix, params=params)
         return response
 
-    def get_model_definition_request(self, model_name: str = None) -> Dict:
+    def get_model_definition_request(self, model_name: str = None) -> dict:
         """
             Args:
                 model_name: The model name.
@@ -338,7 +386,7 @@ class Client(BaseClient):
         return response
 
     def add_watchlist_items_from_csv_request(self, watchlist_id: str = None, watch_until_days: int = None,
-                                             csv_file: str = None, category: str = None) -> Dict:
+                                             csv_file: str = None, category: str = None) -> dict:
         """
             Args:
                 watchlist_id: ID of the watchlist to search assets for
@@ -367,7 +415,7 @@ class Client(BaseClient):
             raise ValueError('Invalid entry_id argument.')
 
     def add_watchlist_items_by_name_request(self, watchlist_id: str = None, watch_until_days: int = None,
-                                            items: list = None, category: str = None) -> Dict:
+                                            items: list = None, category: str = None) -> dict:
         """
             Args:
                 watchlist_id: ID of the watchlist to search assets for
@@ -391,7 +439,7 @@ class Client(BaseClient):
         return response
 
     def search_asset_in_watchlist_request(self, keyword: str = None, watchlist_id: str = None, limit: int = None,
-                                          is_exclusive: str = None, search_by_ip: str = None) -> Dict:
+                                          is_exclusive: str = None, search_by_ip: str = None) -> dict:
         """
             Args:
                 keyword: A keyword to search
@@ -417,7 +465,7 @@ class Client(BaseClient):
         return response
 
     def remove_watchlist_items_request(self, watchlist_id: str = None, items: list = None,
-                                       category: str = None) -> Dict:
+                                       category: str = None) -> dict:
         """
             Args:
                 watchlist_id: ID of the watchlist to remove an item from
@@ -440,7 +488,7 @@ class Client(BaseClient):
         return response
 
     def list_context_table_records_request(self, context_table_name: str = None,
-                                           page_size: int = None, page_number: int = None) -> Dict:
+                                           page_size: int = None, page_number: int = None) -> dict:
         """
             Args:
                 context_table_name: The context table name.
@@ -478,8 +526,8 @@ class Client(BaseClient):
             # the context table should be updated so we proceed and don't raise an exception.
             pass
 
-    def add_context_table_records_request(self, context_table_name: str, records_list: List[str],
-                                          key_only: bool, session_id: str = None) -> Dict:
+    def add_context_table_records_request(self, context_table_name: str, records_list: list[str],
+                                          key_only: bool, session_id: str = None) -> dict:
         """
             Args:
                 context_table_name: The context table name.
@@ -504,8 +552,8 @@ class Client(BaseClient):
             self.update_session_id_of_context_table(context_table_name, session_id=response.get('sessionId'))
         return response
 
-    def update_context_table_records_request(self, context_table_name: str, records_list: List[str],
-                                             key_only: bool, session_id: str = None) -> Dict:
+    def update_context_table_records_request(self, context_table_name: str, records_list: list[str],
+                                             key_only: bool, session_id: str = None) -> dict:
         """
             Args:
                 context_table_name: The context table name.
@@ -533,8 +581,8 @@ class Client(BaseClient):
 
         return response
 
-    def delete_context_table_records_request(self, context_table_name: str, records: List[str],
-                                             session_id: str = None) -> Dict:
+    def delete_context_table_records_request(self, context_table_name: str, records: list[str],
+                                             session_id: str = None) -> dict:
         """
             Args:
                 context_table_name: The context table name.
@@ -560,7 +608,7 @@ class Client(BaseClient):
 
     def add_context_table_records_from_csv_request(self, context_table_name: str = None,
                                                    csv_file: str = None, has_header: bool = False,
-                                                   session_id: str = None, replace: bool = False) -> Dict:
+                                                   session_id: str = None, replace: bool = False) -> dict:
         """
             Args:
                 context_table_name: The context table name.
@@ -579,7 +627,7 @@ class Client(BaseClient):
 
             files = {'data': (os.path.basename(file_path), open(file_path, 'rb'), 'text/csv')}
 
-            params: Dict[str, Any] = {'hasHeader': has_header}
+            params: dict[str, Any] = {'hasHeader': has_header}
             if session_id:
                 params['sessionId'] = session_id
 
@@ -593,7 +641,7 @@ class Client(BaseClient):
         else:
             raise ValueError('Invalid entry_id argument.')
 
-    def get_context_table_csv_request(self, context_table_name: str = None) -> Tuple[str, str]:
+    def get_context_table_csv_request(self, context_table_name: str = None) -> tuple[str, str]:
         """
             Args:
                 context_table_name: The context table name.
@@ -608,12 +656,12 @@ class Client(BaseClient):
         response = self._http_request('GET', url_suffix=url_suffix, headers=headers, resp_type='response')
         # 'Content-Disposition' value is of the form: attachment; filename="filename.csv"
         # Since we don't have the file name anywhere else in the response object, we parse it from this entry.
-        filename = response.headers.get('Content-Disposition', str()).split('\"')[1]
+        filename = response.headers.get('Content-Disposition', '').split('\"')[1]
         content = response.content
 
         return filename, content
 
-    def get_notable_assets_request(self, api_unit: str = None, num: str = None, limit: int = None) -> Dict:
+    def get_notable_assets_request(self, api_unit: str = None, num: str = None, limit: int = None) -> dict:
         """
         Args:
             api_unit: The time duration unit.
@@ -633,7 +681,7 @@ class Client(BaseClient):
         return response
 
     def get_notable_session_details_request(self, asset_id: str = None, sort_by: str = None,
-                                            sort_order: int = None, limit: int = None) -> Dict:
+                                            sort_order: int = None, limit: int = None) -> dict:
         """
         Args:
             asset_id: ID of the asset to fetch info for
@@ -691,8 +739,49 @@ class Client(BaseClient):
                                       params=params)
         return response
 
+    def get_list_incidents(self, query_params: dict):
+
+        return self._http_request('GET', url_suffix='/ir/api/incident/list',
+                                  params=query_params)
+
+    def get_single_incident(self, incident_id: str, username: str = None):
+        headers = self._headers | {'EXA_USERNAME': username or self.username}
+        return self._http_request('GET', url_suffix=f'/ir/api/incident/{incident_id}',
+                                  headers=headers)
+
+    def get_incidents(self, query: dict[str, Any]):
+        headers = self._headers
+        if not self.password:
+            headers = headers | {'EXA_USERNAME': self.username}
+        return self._http_request(
+            'POST',
+            url_suffix='/ir/api/incidents/search',
+            headers=headers,
+            json_data=query,
+        )
+
 
 ''' HELPER FUNCTIONS '''
+
+
+def format_single_incident(incident: dict[str, Any]) -> dict[str, Any]:
+    incident_fields = incident.get('fields', {})
+    formatted_incident = {'incidentId': incident.get('incidentId'),
+                          'name': incident.get('name'),
+                          'fields': {
+        'startedDate': convert_unix_to_date(incident_fields.get('startedDate')),
+        'closedDate': convert_unix_to_date(incident_fields.get('closedDate')),
+        'createdAt': convert_unix_to_date(incident_fields.get('createdAt')),
+        'owner': incident_fields.get('owner'),
+        'status': incident_fields.get('status'),
+        'incidentType': incident_fields.get('incidentType'),
+        'source': incident_fields.get('source'),
+        'priority': incident_fields.get('priority'),
+        'queue': incident_fields.get('queue'),
+        'description': incident_fields.get('description')
+    }}
+
+    return formatted_incident
 
 
 def get_query_params_str(params: dict, array_type_params: dict) -> str:
@@ -750,7 +839,7 @@ def convert_date_to_unix(date_string):
     return int(parsed_date.timestamp() * 1000)
 
 
-def contents_user_info(user, user_info) -> Dict:
+def contents_user_info(user, user_info) -> dict:
     """create a content obj for the user
 
     Args:
@@ -778,7 +867,7 @@ def contents_user_info(user, user_info) -> Dict:
     return contents
 
 
-def contents_append_notable_user_info(contents, user, user_, user_info) -> List[Any]:
+def contents_append_notable_user_info(contents, user, user_, user_info) -> list[Any]:
     """Appends a dictionary of data to the base list
 
     Args:
@@ -809,7 +898,7 @@ def contents_append_notable_user_info(contents, user, user_, user_info) -> List[
     return contents
 
 
-def contents_append_notable_assets_info(asset, asset_, highest_risk_sequence, latest_asset_comment) -> Dict:
+def contents_append_notable_assets_info(asset, asset_, highest_risk_sequence, latest_asset_comment) -> dict:
     """Appends a dictionary of data to the base list
 
     Args:
@@ -847,7 +936,7 @@ def contents_append_notable_assets_info(asset, asset_, highest_risk_sequence, la
     return asset_info
 
 
-def contents_append_notable_session_details(session) -> Dict:
+def contents_append_notable_session_details(session) -> dict:
     """Appends a dictionary of data to the base list
 
     Args:
@@ -865,7 +954,7 @@ def contents_append_notable_session_details(session) -> Dict:
     return content
 
 
-def contents_append_notable_session_user_details(user_details, user_info) -> Dict:
+def contents_append_notable_session_user_details(user_details, user_info) -> dict:
     """Appends a dictionary of filtered data to the base list for the context
 
     Args:
@@ -893,7 +982,7 @@ def contents_append_notable_session_user_details(user_details, user_info) -> Dic
     return content
 
 
-def contents_append_notable_sequence_details(sequence, sequence_info) -> Dict:
+def contents_append_notable_sequence_details(sequence, sequence_info) -> dict:
     """Appends a dictionary of filtered data to the base list for the context
 
     Args:
@@ -922,7 +1011,7 @@ def contents_append_notable_sequence_details(sequence, sequence_info) -> Dict:
     return content
 
 
-def contents_append_notable_sequence_event_types(sequence, asset_sequence_id) -> Dict:
+def contents_append_notable_sequence_event_types(sequence, asset_sequence_id) -> dict:
     """Appends a dictionary of filtered data to the base list for the context
 
     Args:
@@ -941,7 +1030,7 @@ def contents_append_notable_sequence_event_types(sequence, asset_sequence_id) ->
     return content
 
 
-def contents_asset_data(asset_data) -> Dict:
+def contents_asset_data(asset_data) -> dict:
     """create a content obj for the asset
 
     Args:
@@ -960,7 +1049,7 @@ def contents_asset_data(asset_data) -> Dict:
     return contents
 
 
-def get_rules_in_xsoar_format(rules_raw_data: Union[List, Dict], from_idx: int, to_idx: int) -> Tuple[List[Any], str]:
+def get_rules_in_xsoar_format(rules_raw_data: list | dict, from_idx: int, to_idx: int) -> tuple[list[Any], str]:
     """ Converts rules raw data to XSOAR format.
 
     Args:
@@ -986,7 +1075,7 @@ def get_rules_in_xsoar_format(rules_raw_data: Union[List, Dict], from_idx: int, 
     return res, tableToMarkdown('Rule Search Results', res, removeNull=True, headerTransform=pascalToSpace)
 
 
-def aggregated_events_to_xsoar_format(asset_id: str, events: List[Any]) -> Tuple[List[Any], str]:
+def aggregated_events_to_xsoar_format(asset_id: str, events: list[Any]) -> tuple[list[Any], str]:
     """ Converts an asset aggregated events raw data to XSOAR format.
 
     Args:
@@ -1045,7 +1134,7 @@ def parse_context_table_records_list(records_list: list, fmt: str, is_delete: bo
         if len(keys) != len(record_item):
             raise ValueError('records argument is malformed.')
 
-        record = {k: v for k, v in zip(keys, record_item)}
+        record = dict(zip(keys, record_item))
         if is_delete:
             record['key'] = ''
         if record.get('value'):
@@ -1056,7 +1145,7 @@ def parse_context_table_records_list(records_list: list, fmt: str, is_delete: bo
     return records
 
 
-def create_context_table_updates_outputs(name: str, raw_response: Dict) -> Tuple[Any, Dict[str, Any]]:
+def create_context_table_updates_outputs(name: str, raw_response: dict) -> tuple[Any, dict[str, Any]]:
     # flatten results
     outputs = [{
         'contextTableName': name,
@@ -1075,10 +1164,66 @@ def create_context_table_updates_outputs(name: str, raw_response: Dict) -> Tuple
     return human_readable, entry_context
 
 
+def order_time_as_milisecound_for_fetch(start_time: str, end_time: str) -> tuple[str, str]:
+
+    start = datetime.strptime(start_time, DATETIME_FORMAT_MILISECONDS)
+    end = datetime.strptime(end_time, DATETIME_FORMAT_MILISECONDS)
+
+    start_unix = convert_date_to_unix(start.strftime(DATETIME_FORMAT_MILISECONDS))
+    end_unix = convert_date_to_unix(end.strftime(DATETIME_FORMAT_MILISECONDS))
+
+    return str(start_unix), str(end_unix)
+
+
+def convert_all_unix_keys_to_date(incident: dict) -> dict:
+    keys = ['createdAt', 'startedDate', 'closedDate', 'updatedAt']
+    if 'baseFields' in incident:
+        for key in keys:
+            if key in incident['baseFields']:
+                incident['baseFields'][key] = convert_unix_to_date(incident['baseFields'][key]).split('.')[0] + 'Z'
+    return incident
+
+
+def build_incident_response_query_params(query: str | None,
+                                         incident_type: str | None,
+                                         priority: str | None,
+                                         status: str | None,
+                                         limit: int | None,
+                                         page_size: int | None,
+                                         page_number: int | None,
+                                         ) -> dict:
+
+    params: dict[str, Any] = {}
+    if not query:
+        q = ''
+        if incident_type:
+            q += f'incidentType:{incident_type} AND '
+        if priority:
+            q += f'priority:{priority} AND '
+        if status:
+            q += f'status:{status}'
+
+        if q.strip().split(' ')[-1] == 'AND':
+            q = q[:-(len(' AND '))]
+
+        if q:
+            params['query'] = q
+    else:
+        params['query'] = query
+
+    if page_size and page_number:
+        params['offset'] = page_size * page_number
+
+    if limit:
+        params['length'] = limit
+
+    return params
+
+
 ''' COMMANDS '''
 
 
-def test_module(client: Client, *_):
+def test_module(client: Client, args: dict[str, str], params: dict[str, str]):
     """test function
 
     Args:
@@ -1089,10 +1234,9 @@ def test_module(client: Client, *_):
     """
     client.test_module_request()
     demisto.results('ok')
-    return '', None, None
 
 
-def get_notable_users(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def get_notable_users(client: Client, args: dict) -> tuple[str, dict, dict]:
     """ Get notable users in a period of time
 
     Args:
@@ -1133,7 +1277,7 @@ def get_notable_users(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, raw_users
 
 
-def get_user_info(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def get_user_info(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Returns User info data for the given username
     Args:
         client: Client
@@ -1158,7 +1302,7 @@ def get_user_info(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     return human_readable, context, user
 
 
-def get_user_sessions(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def get_user_sessions(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Returns sessions for the given username and time range
 
     Args:
@@ -1201,7 +1345,7 @@ def get_user_sessions(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, user
 
 
-def get_peer_groups(client: Client, *_) -> Tuple[str, Dict, Dict]:
+def get_peer_groups(client: Client, *_) -> tuple[str, dict, dict]:
     """Returns all peer groups
 
     Args:
@@ -1219,7 +1363,7 @@ def get_peer_groups(client: Client, *_) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, groups
 
 
-def get_user_labels(client: Client, *_) -> Tuple[str, Dict, Dict]:
+def get_user_labels(client: Client, *_) -> tuple[str, dict, dict]:
     """ Returns all user Labels
 
     Args:
@@ -1237,7 +1381,7 @@ def get_user_labels(client: Client, *_) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, labels
 
 
-def get_watchlist(client: Client, *_) -> Tuple[str, Dict, Dict]:
+def get_watchlist(client: Client, *_) -> tuple[str, dict, dict]:
     """  Returns all watchlist ids and titles.
 
     Args:
@@ -1260,7 +1404,7 @@ def get_watchlist(client: Client, *_) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, watchlist
 
 
-def delete_watchlist(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def delete_watchlist(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Delete a watchlist
 
     Args:
@@ -1275,7 +1419,7 @@ def delete_watchlist(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     return f'The watchlist {watchlist_id} was deleted successfully.', {}, {}
 
 
-def get_asset_data(client: Client, args: Dict) -> Tuple[Any, Dict[str, Dict[Any, Any]], Optional[Any]]:
+def get_asset_data(client: Client, args: dict) -> tuple[Any, dict[str, dict[Any, Any]], Any | None]:
     """  Return asset data for given asset ID (hostname or IP address)
 
     Args:
@@ -1297,7 +1441,7 @@ def get_asset_data(client: Client, args: Dict) -> Tuple[Any, Dict[str, Dict[Any,
     return human_readable, entry_context, asset_raw_data
 
 
-def get_session_info_by_id(client: Client, args: Dict) -> Tuple[Any, Dict[str, Optional[Any]], Dict[Any, Any]]:
+def get_session_info_by_id(client: Client, args: dict) -> tuple[Any, dict[str, Any | None], dict[Any, Any]]:
     """  Return session information for a given session ID
 
     Args:
@@ -1321,7 +1465,7 @@ def get_session_info_by_id(client: Client, args: Dict) -> Tuple[Any, Dict[str, O
     return human_readable, entry_context, session_info_raw_data
 
 
-def list_top_domains(client: Client, args: Dict) -> Tuple[Any, Dict[str, Dict[Any, Any]], Optional[Any]]:
+def list_top_domains(client: Client, args: dict) -> tuple[Any, dict[str, dict[Any, Any]], Any | None]:
     """  Return session information for given session ID
 
     Args:
@@ -1342,7 +1486,7 @@ def list_top_domains(client: Client, args: Dict) -> Tuple[Any, Dict[str, Dict[An
     return human_readable, entry_context, top_domains_raw_data
 
 
-def list_triggered_rules(client: Client, args: Dict) -> Tuple[Any, Dict[str, Optional[Any]], Dict[Any, Any]]:
+def list_triggered_rules(client: Client, args: dict) -> tuple[Any, dict[str, Any | None], dict[Any, Any]]:
     """  Returns all triggered rules for a given sequence
 
     Args:
@@ -1366,7 +1510,7 @@ def list_triggered_rules(client: Client, args: Dict) -> Tuple[Any, Dict[str, Opt
     return human_readable, entry_context, triggered_rules_raw_data
 
 
-def get_asset_info(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, Optional[Any]], Dict[Any, Any]]:
+def get_asset_info(client: Client, args: dict[str, str]) -> tuple[Any, dict[str, Any | None], dict[Any, Any]]:
     """  Returns asset info for given asset ID (hostname or IP address)
 
     Args:
@@ -1389,7 +1533,7 @@ def get_asset_info(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str,
     return human_readable, entry_context, asset_raw_data
 
 
-def list_asset_next_events(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, List[Any]], Dict[Any, Any]]:
+def list_asset_next_events(client: Client, args: dict[str, str]) -> tuple[Any, dict[str, list[Any]], dict[Any, Any]]:
     """  Returns next events for a given asset.
 
     Args:
@@ -1424,7 +1568,7 @@ def list_asset_next_events(client: Client, args: Dict[str, str]) -> Tuple[Any, D
 
 
 def list_security_alerts_by_asset(client: Client,
-                                  args: Dict[str, str]) -> Tuple[Any, Dict[str, List[Any]], Dict[Any, Any]]:
+                                  args: dict[str, str]) -> tuple[Any, dict[str, list[Any]], dict[Any, Any]]:
     """  Returns security alerts for a given asset.
 
     Args:
@@ -1454,7 +1598,7 @@ def list_security_alerts_by_asset(client: Client,
     return human_readable, entry_context, security_alerts_raw_data
 
 
-def search_rules(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, List[Any]], Union[List, Dict]]:
+def search_rules(client: Client, args: dict[str, str]) -> tuple[Any, dict[str, list[Any]], list | dict]:
     """  Searches for rules by a keyword.
 
     Args:
@@ -1478,7 +1622,7 @@ def search_rules(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, L
     return human_readable, entry_context, rules_raw_data
 
 
-def get_rule_string(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, Dict[str, Optional[Any]]], str]:
+def get_rule_string(client: Client, args: dict[str, str]) -> tuple[Any, dict[str, dict[str, Any | None]], str]:
     """  Gets a rule string by ID.
 
     Args:
@@ -1499,7 +1643,7 @@ def get_rule_string(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str
     return human_readable, entry_context, rule_string_raw_data
 
 
-def fetch_rules(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
+def fetch_rules(client: Client, args: dict[str, str]) -> tuple[Any, dict[str, Any], Any | None]:
     """  Gets all rules.
 
     Args:
@@ -1521,7 +1665,7 @@ def fetch_rules(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, An
     return human_readable, entry_context, rules_raw_data
 
 
-def get_rules_model_definition(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
+def get_rules_model_definition(client: Client, args: dict[str, str]) -> tuple[Any, dict[str, Any], Any | None]:
     """  Gets a rule model definition by name.
 
     Args:
@@ -1539,7 +1683,7 @@ def get_rules_model_definition(client: Client, args: Dict[str, str]) -> Tuple[An
     return human_readable, entry_context, model
 
 
-def add_watchlist_items(client: Client, args: Dict[str, str]) -> Tuple[str, Optional[Any], Optional[Any]]:
+def add_watchlist_items(client: Client, args: dict[str, str]) -> tuple[str, Any | None, Any | None]:
     """  Add a watchlist items by names or from a CSV file.
 
     Args:
@@ -1568,7 +1712,7 @@ def add_watchlist_items(client: Client, args: Dict[str, str]) -> Tuple[str, Opti
     return human_readable, None, raw_response
 
 
-def search_asset_in_watchlist(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
+def search_asset_in_watchlist(client: Client, args: dict[str, str]) -> tuple[Any, dict[str, Any], Any | None]:
     """  Gets the assets of a specified watchlist according to a keyword.
 
     Args:
@@ -1595,7 +1739,7 @@ def search_asset_in_watchlist(client: Client, args: Dict[str, str]) -> Tuple[Any
     return human_readable, entry_context, assets_raw_data
 
 
-def remove_watchlist_items(client: Client, args: Dict[str, str]) -> Tuple[str, Optional[Any], Optional[Any]]:
+def remove_watchlist_items(client: Client, args: dict[str, str]) -> tuple[str, Any | None, Any | None]:
     """  Removes items from a watchlist.
 
     Args:
@@ -1615,7 +1759,7 @@ def remove_watchlist_items(client: Client, args: Dict[str, str]) -> Tuple[str, O
     return human_readable, None, raw_response
 
 
-def list_context_table_records(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
+def list_context_table_records(client: Client, args: dict[str, str]) -> tuple[Any, dict[str, Any], Any | None]:
     """  Returns a list of a context table records.
 
     Args:
@@ -1644,7 +1788,7 @@ def list_context_table_records(client: Client, args: Dict[str, str]) -> Tuple[An
     return human_readable, entry_context, records_raw_data
 
 
-def add_context_table_records(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
+def add_context_table_records(client: Client, args: dict[str, str]) -> tuple[Any, dict[str, Any], Any | None]:
     """  Adds records to a context table.
 
     Args:
@@ -1654,7 +1798,7 @@ def add_context_table_records(client: Client, args: Dict[str, str]) -> Tuple[Any
     """
     context_table_name = args['context_table_name']
     session_id = args.get('session_id')
-    key_only = True if args.get('context_table_type') == 'key_only' else False
+    key_only = args.get('context_table_type') == 'key_only'
     records_list = argToList(args.get('records'))
 
     record_updates_raw_data = client.add_context_table_records_request(context_table_name, records_list,
@@ -1663,7 +1807,7 @@ def add_context_table_records(client: Client, args: Dict[str, str]) -> Tuple[Any
     return human_readable, entry_context, record_updates_raw_data
 
 
-def update_context_table_records(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
+def update_context_table_records(client: Client, args: dict[str, str]) -> tuple[Any, dict[str, Any], Any | None]:
     """  Updates records of a context table.
 
     Args:
@@ -1674,7 +1818,7 @@ def update_context_table_records(client: Client, args: Dict[str, str]) -> Tuple[
     context_table_name = args['context_table_name']
     session_id = args.get('session_id')
     records = argToList(args.get('records'))
-    key_only = True if args.get('context_table_type') == 'key_only' else False
+    key_only = args.get('context_table_type') == 'key_only'
 
     record_updates_raw_data = client.update_context_table_records_request(context_table_name, records,
                                                                           key_only, session_id)
@@ -1682,7 +1826,7 @@ def update_context_table_records(client: Client, args: Dict[str, str]) -> Tuple[
     return human_readable, entry_context, record_updates_raw_data
 
 
-def delete_context_table_records(client: Client, args: Dict) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
+def delete_context_table_records(client: Client, args: dict) -> tuple[Any, dict[str, Any], Any | None]:
     """  Deletes records of a context table.
 
     Args:
@@ -1704,7 +1848,7 @@ def delete_context_table_records(client: Client, args: Dict) -> Tuple[Any, Dict[
 
 
 def add_context_table_records_from_csv(client: Client,
-                                       args: Dict[str, str]) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
+                                       args: dict[str, str]) -> tuple[Any, dict[str, Any], Any | None]:
     """  Bulk addition of a context table records from CSV file.
 
     Args:
@@ -1715,8 +1859,8 @@ def add_context_table_records_from_csv(client: Client,
     context_table_name = args['context_table_name']
     session_id = args.get('session_id')
     file_entry_id = args.get('file_entry_id')
-    has_header = True if args.get('has_header') == 'true' else False
-    replace = True if args.get('append_or_replace') == 'replace' else False
+    has_header = args.get('has_header') == 'true'
+    replace = args.get('append_or_replace') == 'replace'
 
     record_updates_raw_data = client.add_context_table_records_from_csv_request(context_table_name, file_entry_id,
                                                                                 has_header, session_id, replace)
@@ -1724,7 +1868,7 @@ def add_context_table_records_from_csv(client: Client,
     return human_readable, entry_context, record_updates_raw_data
 
 
-def get_context_table_csv(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
+def get_context_table_csv(client: Client, args: dict[str, str]) -> tuple[Any, dict[str, Any], Any | None]:
     """  Updates records of a context table.
 
     Args:
@@ -1740,7 +1884,7 @@ def get_context_table_csv(client: Client, args: Dict[str, str]) -> Tuple[Any, Di
     return f'Successfully downloaded Context Table CSV file {context_table_name}.', {}, None
 
 
-def get_notable_assets(client: Client, args: Dict) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
+def get_notable_assets(client: Client, args: dict) -> tuple[Any, dict[str, Any], Any | None]:
     """  Updates records of a context table.
 
     Args:
@@ -1782,7 +1926,7 @@ def get_notable_assets(client: Client, args: Dict) -> Tuple[Any, Dict[str, Any],
     return human_readable, entry_context, notable_assets
 
 
-def get_notable_session_details(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
+def get_notable_session_details(client: Client, args: dict[str, str]) -> tuple[Any, dict[str, Any], Any | None]:
     """  Updates records of a context table.
 
     Args:
@@ -1800,12 +1944,12 @@ def get_notable_session_details(client: Client, args: Dict[str, str]) -> Tuple[A
     contents: list = []
     users: list = []
     executive_user_flags: list = []
-
-    for session in session_details_raw_data.get('sessions', {}):
+    sessions = session_details_raw_data.get('sessions', {})
+    for session in sessions:
         contents.append(contents_append_notable_session_details(session))
 
     users_response = session_details_raw_data.get('users', {})
-    for user_name, user_details in users_response.items():
+    for _user_name, user_details in users_response.items():
         user_info = user_details.get('info', {})
         users.append(contents_append_notable_session_user_details(user_details, user_info))
 
@@ -1816,15 +1960,16 @@ def get_notable_session_details(client: Client, args: Dict[str, str]) -> Tuple[A
         })
 
     contents_entry = {'sessions': contents, 'users': users, 'executiveUserFlags': executive_user_flags}
-
     entry_context = {'Exabeam.NotableSession(val.SessionID && val.SessionID === obj.SessionID)': contents_entry}
-
-    human_readable = tableToMarkdown('Notable Session details:', session, removeNull=True)
+    if sessions:
+        human_readable = tableToMarkdown('Notable Sessions details:', sessions, removeNull=True)
+    else:
+        human_readable = 'No results found.'
 
     return human_readable, entry_context, session_details_raw_data
 
 
-def get_notable_sequence_details(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
+def get_notable_sequence_details(client: Client, args: dict[str, str]) -> tuple[Any, dict[str, Any], Any | None]:
     """  Updates records of a context table.
 
     Args:
@@ -1861,7 +2006,7 @@ def get_notable_sequence_details(client: Client, args: Dict[str, str]) -> Tuple[
     return human_readable, entry_context, sequence_details_raw_data
 
 
-def get_notable_sequence_event_types(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
+def get_notable_sequence_event_types(client: Client, args: dict[str, str]) -> tuple[Any, dict[str, Any], Any | None]:
     """  Updates records of a context table.
 
     Args:
@@ -1895,21 +2040,144 @@ def get_notable_sequence_event_types(client: Client, args: Dict[str, str]) -> Tu
     return human_readable, entry_context, sequence_event_types_raw_data
 
 
-def main():
+def list_incidents(client: Client, args: dict[str, str]):
+    incident_ids = argToList(args.get('incident_id'))
+    query = args.get('query')
+    incident_type = args.get('incident_type')
+    priority = args.get('priority')
+    status = args.get('status')
+    limit = arg_to_number(args.get('limit', 50))
+    page_size = arg_to_number(args.get('page_size', 25))
+    page_number = arg_to_number(args.get('page_number', 0))
+    username = args.get('username')
+
+    if incident_ids and client.is_token_auth() and not username and not client.username:
+        raise ValueError('The username argument is necessary be for this command if the instance configured by api key')
+
+    incidents = []
+
+    if incident_ids:
+        for incident_id in incident_ids:
+            raw_response = client.get_single_incident(incident_id, username)
+            incidents.append(format_single_incident(raw_response))
+
+    else:
+        if any((query, incident_type, priority, status)):
+            query_params = build_incident_response_query_params(query,
+                                                                incident_type,
+                                                                priority,
+                                                                status,
+                                                                limit,
+                                                                page_size,
+                                                                page_number,
+                                                                )
+            raw_response = client.get_list_incidents(query_params)
+            for incident in raw_response['incidents']:
+                incidents.append(format_single_incident(incident))
+        else:
+            return_error('One of the following params is a must: query, incident_type, priority, status')
+
+    entry_context = {'Exabeam.Incident(val.incidentId && val.incidentId === obj.incidentId)': incidents}
+
+    human_readable = tableToMarkdown('Incidents list:', incidents)
+
+    return human_readable, entry_context, raw_response
+
+
+def fetch_incidents(client: Client, args: dict[str, str]) -> tuple[list, dict]:
+    look_back = arg_to_number(args.get('look_back', '1'))
+    last_run = demisto.getLastRun()
+    demisto.debug(f"Last run before the fetch run: {last_run}")
+    start_time, end_time = get_fetch_run_time_range(
+        last_run=last_run,
+        first_fetch=args.get('first_fetch', '3 days'),
+        look_back=look_back,
+        date_format=DATETIME_FORMAT_MILISECONDS,
+    )
+
+    demisto.debug(f"fetching incidents between {start_time=} and {end_time=}")
+    start_time_as_milisecound, end_time_as_milisecound = order_time_as_milisecound_for_fetch(start_time, end_time)
+
+    demisto.debug(f'fetching incidents between {start_time_as_milisecound=}, {end_time_as_milisecound=} in milisecound')
+
+    incident_type = argToList(args.get('incident_type'))
+    priority = argToList(args.get('priority'))
+    status = argToList(args.get('status'))
+    limit = arg_to_number(args.get('max_fetch', 50))
+    q = {
+        "queryMap": {
+            "status": status,
+            "incidentType": incident_type,
+            "priority": priority,
+            "createdAt": [
+                start_time_as_milisecound,
+                end_time_as_milisecound
+            ],
+        },
+        "sortBy": "createdAt",
+        "sortOrder": "asc",
+        "idOnly": False,
+        "offset": 0,
+        "length": last_run.get('limit') or limit
+    }
+    demisto.debug(f'The query incidentType: {incident_type}')
+    demisto.debug(f'The query for fetch: {q}')
+
+    resp = client.get_incidents(q)
+    incidents_res: list[dict] = resp.get('incidents', [])
+    demisto.debug(f'Got {len(incidents_res)} incidents from the API, before filtering')
+
+    incidents_filtered = filter_incidents_by_duplicates_and_limit(
+        incidents_res=incidents_res,
+        last_run=last_run,
+        fetch_limit=limit,
+        id_field='incidentId'
+    )
+    demisto.debug(f'After filtering, there are {len(incidents_filtered)} incidents')
+
+    incidents: list[dict] = []
+    for incident in incidents_filtered:
+        incident['createdAt'] = datetime.fromtimestamp(
+            incident.get('baseFields', {}).get('createdAt') / 1000.0).strftime(DATETIME_FORMAT_MILISECONDS)
+        incident = convert_all_unix_keys_to_date(incident)
+        incidents.append({
+            'Name': incident.get('name'),
+            'occurred': incident.get('baseFields', {}).get('createdAt'),
+            'rawJSON': json.dumps(incident)
+        })
+
+    last_run = update_last_run_object(
+        last_run=last_run,
+        incidents=incidents_filtered,
+        fetch_limit=limit,
+        start_fetch_time=start_time,
+        end_fetch_time=end_time,
+        look_back=look_back,
+        created_time_field='createdAt',
+        id_field='incidentId',
+        date_format=DATETIME_FORMAT_MILISECONDS,
+        increase_last_run_time=True
+    )
+    demisto.debug(f"Last run after the fetch run: {last_run}")
+    return incidents, last_run
+
+
+def main():  # pragma: no cover
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    username = demisto.params().get('credentials').get('identifier')
-    password = demisto.params().get('credentials').get('password')
-    base_url = demisto.params().get('url')
-    verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
+    params = demisto.params()
+    args = demisto.args()
+    username = params.get('credentials', {}).get('identifier')
+    password = params.get('credentials', {}).get('password')
+    api_key = params.get('api_token', {}).get('password')
+    base_url = params.get('url')
+    verify_certificate = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
+    is_fetch = argToBoolean(params.get('isFetch'))
     headers = {'Accept': 'application/json', 'Csrf-Token': 'nocheck'}
-    if username == TOKEN_INPUT_IDENTIFIER:
-        headers['ExaAuthToken'] = password
 
     commands = {
-        'test-module': test_module,
         'get-notable-users': get_notable_users,
         'exabeam-get-notable-users': get_notable_users,
         'get-peer-groups': get_peer_groups,
@@ -1946,16 +2214,23 @@ def main():
         'exabeam-get-notable-assets': get_notable_assets,
         'exabeam-get-notable-sequence-details': get_notable_sequence_details,
         'exabeam-get-notable-session-details': get_notable_session_details,
-        'exabeam-get-sequence-eventtypes': get_notable_sequence_event_types
+        'exabeam-get-sequence-eventtypes': get_notable_sequence_event_types,
+        'exabeam-list-incident': list_incidents,
     }
-
+    client = None
     try:
         client = Client(base_url.rstrip('/'), verify=verify_certificate, username=username,
-                        password=password, proxy=proxy, headers=headers)
+                        password=password, proxy=proxy, headers=headers, api_key=api_key, is_fetch=is_fetch)
         command = demisto.command()
         LOG(f'Command being called is {command}.')
-        if command in commands:
-            return_outputs(*commands[command](client, demisto.args()))  # type: ignore
+        if command == 'fetch-incidents':
+            incidents, next_run = fetch_incidents(client, params)
+            demisto.setLastRun(next_run)
+            demisto.incidents(incidents)
+        elif command == 'test-module':
+            test_module(client, args, params)
+        elif command in commands:
+            return_outputs(*commands[command](client, args))  # type: ignore
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
 
@@ -1970,6 +2245,10 @@ def main():
 
     except Exception as err:
         return_error(str(err))
+
+    finally:
+        if client:
+            client.shutdown()
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:

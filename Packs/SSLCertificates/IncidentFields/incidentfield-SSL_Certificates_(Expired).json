@@ -1,0 +1,77 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "sslcertificatesexpired",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "Domain",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "domain",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 224
+        },
+        {
+            "displayName": "ExpirationDate",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "expirationdate",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 207
+        },
+        {
+            "displayName": "TimeToExpiration",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "timetoexpiration",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "description": "Certificates which have already expired",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_sslcertificatesexpired",
+    "isReadOnly": true,
+    "locked": false,
+    "name": "SSL Certificates (Expired)",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

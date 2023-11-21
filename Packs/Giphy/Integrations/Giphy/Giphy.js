@@ -4,7 +4,7 @@ var sendRequest = function(tag) {
       serverUrl = serverUrl.substring(0, serverUrl.length - 1);
     }
 
-    var apiKey = params.apikey;
+    var apiKey = params.apikey_creds ? params.apikey_creds.password : params.apikey;
     var requestUrl = serverUrl + '?api_key=' + apiKey + '&tag=' + encodeURIComponent(tag);
     var res = http(requestUrl, { Method: 'GET' });
 

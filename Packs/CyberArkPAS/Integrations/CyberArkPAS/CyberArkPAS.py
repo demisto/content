@@ -1,7 +1,7 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from typing import Tuple
 
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 
 import urllib3
@@ -67,6 +67,23 @@ def incident_priority_to_dbot_score(score: float) -> int:
     elif 75 < score <= 100:
         return 3
     return 0
+
+
+def order_properties_to_dict(properties: str | dict) -> dict:
+    """
+    ordering the properties so that they are valid json for the api
+    """
+    if not properties:
+        return {}
+    if isinstance(properties, dict):
+        return properties
+    elif isinstance(properties, str):
+        try:
+            return json.loads(properties.replace("'", '"'))
+        except json.decoder.JSONDecodeError:
+            raise ValueError(f"Properties ({properties}) are not valid JSON")
+    else:
+        raise ValueError(f"Properties must be a JSON string or dictionary (got {properties})")
 
 
 def filter_by_score(events_data: list, score: int) -> list:
@@ -361,7 +378,7 @@ class Client(BaseClient):
                     safe_name: str,
                     password: str,
                     secret_type: str,
-                    properties: str,
+                    properties: dict,
                     automatic_management_enabled: str,
                     manual_management_reason: str,
                     remote_machines: str,
@@ -763,12 +780,13 @@ def get_list_safes_command(
     :return: CommandResults
     """
     response = client.get_list_safes()
-    total_safes = response.get("Total")
+    # from 12.1 version the response's structure was changed (Total -> count, Safes -> value)
+    total_safes = response.get("Total", response.get("count"))
     headline = f"There are {total_safes} safes"
-    safes = response.get("Safes")
+    safes = response.get("Safes", response.get("value"))
     results = CommandResults(
         raw_response=response,
-        readable_output=tableToMarkdown(headline, safes),
+        readable_output=tableToMarkdown(name=headline, t=safes),
         outputs_prefix='CyberArkPAS.Safes',
         outputs_key_field='SafeName',
         outputs=safes
@@ -891,12 +909,13 @@ def list_safe_members_command(
     :return: CommandResults
     """
     response = client.list_safe_members(safe_name)
-    total_safe_members = response.get("Total")
+    # from 12.1 version the response's structure was changed (Total -> count, SafeMembers -> value)
+    total_safe_members = response.get("Total", response.get("count"))
     headline = f"There are {total_safe_members} safe members for {safe_name}"
-    members = response.get("SafeMembers")
+    members = response.get("SafeMembers", response.get("value"))
     results = CommandResults(
         raw_response=response,
-        readable_output=tableToMarkdown(headline, members),
+        readable_output=tableToMarkdown(name=headline, t=members),
         outputs_prefix='CyberArkPAS.Safes.Members',
         outputs_key_field='MemberName',
         outputs=members
@@ -993,7 +1012,7 @@ def add_account_command(
         safe_name: str = "",
         password: str = "",
         secret_type: str = "password",
-        properties: str = "",
+        properties: dict | str = "",
         automatic_management_enabled: str = "true",
         manual_management_reason: str = "",
         remote_machines: str = "",
@@ -1016,9 +1035,20 @@ def add_account_command(
     :param access_restricted_to_remote_machines: Whether or not to restrict access only to specified remote machines.
     :return: CommandResults
     """
-    response = client.add_account(account_name, address, username, platform_id, safe_name, password, secret_type,
-                                  properties, automatic_management_enabled, manual_management_reason, remote_machines,
-                                  access_restricted_to_remote_machines)
+    response = client.add_account(
+        account_name,
+        address,
+        username,
+        platform_id,
+        safe_name,
+        password,
+        secret_type,
+        order_properties_to_dict(properties),
+        automatic_management_enabled,
+        manual_management_reason,
+        remote_machines,
+        access_restricted_to_remote_machines,
+    )
     results = CommandResults(
         raw_response=response,
         outputs_prefix='CyberArkPAS.Accounts',

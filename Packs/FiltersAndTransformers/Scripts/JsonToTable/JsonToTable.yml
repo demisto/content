@@ -1,0 +1,32 @@
+commonfields:
+  id: JsonToTable
+  version: -1
+fromversion: 5.5.0
+name: JsonToTable
+script: ''
+type: python
+tags:
+- transformer
+- entirelist
+- general
+comment: Accepts a json object and returns a markdown.
+enabled: true
+args:
+- name: value
+  required: true
+  description: The json to transform to a markdown table.
+  isArray: true
+- name: title
+  description: The markdown title.
+- name: headers
+  description: Comma-separated list of table header values. Default will include all available table headers.
+- name: is_auto_json_transform
+  description: Try transforming complex JSON automatically.
+- name: json_transform_properties
+  description: 'Transformation JSON from value to strings. The syntax is: `{"header_key": {"keys": [<item1>, ...], "is_nested": true/false}}` '
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.10.12.63474
+runas: DBotWeakRole
+tests:
+- JsonToTable - Test Playbook

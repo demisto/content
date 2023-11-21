@@ -1,0 +1,21 @@
+{
+  "simulation": {
+    "id": 8826,
+    "name": "cortex-test2",
+    "description": "this simulation created with cortex app",
+    "schedule_id": 878,
+    "agent_id": 2465,
+    "is_active": true,
+    "integrations": null,
+    "protocols": null,
+    "obfuscation_methods": null,
+    "template_id": 137
+  },
+  "run_info": {
+    "id": 24083,
+    "status": "SCHEDULED",
+    "browser": ""
+  },
+  "run_immediately": true,
+  "simulation_already_exist": false
+}

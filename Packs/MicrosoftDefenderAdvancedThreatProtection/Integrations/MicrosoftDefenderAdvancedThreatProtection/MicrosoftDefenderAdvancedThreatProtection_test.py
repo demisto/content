@@ -11,7 +11,8 @@ from CommonServerPython import DemistoException
 from MicrosoftDefenderAdvancedThreatProtection import MsClient, get_future_time, build_std_output, parse_ip_addresses, \
     print_ip_addresses, get_machine_details_command, run_polling_command, run_live_response_script_action, \
     get_live_response_file_action, put_live_response_file_action, HuntingQueryBuilder, assign_params, \
-    get_machine_users_command, get_machine_alerts_command, SECURITY_GCC_RESOURCE, SECURITY_CENTER_RESOURCE
+    get_machine_users_command, get_machine_alerts_command, get_advanced_hunting_command, create_filters_conjunction, \
+    create_filters_disjunctions, create_filter, MICROSOFT_DEFENDER_FOR_ENDPOINT_API
 
 ARGS = {'id': '123', 'limit': '2', 'offset': '0'}
 with open('test_data/expected_hunting_queries.json') as expected_json:
@@ -26,7 +27,8 @@ def mock_demisto(mocker):
 client_mocker = MsClient(
     tenant_id="tenant_id", auth_id="auth_id", enc_key='enc_key', app_name='app_name', base_url='url', verify='use_ssl',
     proxy='proxy', self_deployed='self_deployed', alert_severities_to_fetch='Informational,Low,Medium,High',
-    alert_time_to_fetch='3 days', alert_status_to_fetch='New', max_fetch='10', is_gcc=False,)
+    alert_time_to_fetch='3 days', alert_status_to_fetch='New', max_fetch='10', auth_code='', auth_type='',
+    redirect_uri='', endpoint_type='com', alert_detectionsource_to_fetch='')
 
 
 def atp_mocker(mocker, file_name):
@@ -71,7 +73,7 @@ def test_second_fetch_incidents(mocker):
                    '"machineId": "43df73d1dac43593d1275e20422f44a949f6dfc3", "alertUser": null, "comments": [], '
                    '"alertFiles": [], "alertDomains": [], "alertIps": []}',
         'name': 'Microsoft Defender ATP Alert da637029414680409372_735564929',
-        'occurred': '2019-09-01T13:31:08.0252869Z'}] == incidents
+        'occurred': '2019-09-01T13:31:08.0252869Z', 'dbotMirrorId': 'da637029414680409372_735564929'}] == incidents
 
 
 def test_third_fetch_incidents(mocker):
@@ -421,7 +423,7 @@ INVESTIGATION_SAS_URI_API_RES = {
     "value": 'https://userrequests-us.securitycenter.windows.com:443/safedownload/'
              'WDATP_Investigation_Package.zip?token=test1'
 }
-STOP_AND_QUARANTINE_FILE_RAW_RESPONSE = {
+STOP_AND_QUARANTINE_FILE_RAW_RESPONSE: dict = {
     "cancellationComment": None,
     "cancellationDateTimeUtc": None,
     "cancellationRequestor": None,
@@ -647,7 +649,7 @@ MACHINE_RESPONSE_API = {
     ]
 }
 
-SINGLE_MACHINE_RESPONSE_API = {
+SINGLE_MACHINE_RESPONSE_API: dict = {
     "@odata.context": "https://api-eu.securitycenter.windows.com/api/$metadata#Machines/$entity",
     "aadDeviceId": None,
     "agentVersion": "10.7740.19041.1151",
@@ -817,7 +819,7 @@ MACHINE_ALERTS_OUTPUT = {
     "Title": "Network connection to a risky host",
 }
 
-MACHINE_OFFBOARD_API_RESPONSE = {
+MACHINE_OFFBOARD_API_RESPONSE: dict = {
     "@odata.context": "https://api.securitycenter.windows.com/api/$metadata#MachineActions/$entity",
     "id": "947a677a-a11a-4240-ab6q-91277e2386b9",
     "type": "Offboard",
@@ -1215,7 +1217,7 @@ ALERTS = [
      'evidence': []},
 ]
 
-EMPTY_LAST_RUN = {}
+EMPTY_LAST_RUN: dict = {}
 OLD_LAST_RUN_WITH_IDS = {'last_alert_fetched_time': '2022-02-17T02:07:23',
                          'existing_ids': ['da637806604436477417_-578430041',
                                           'da637806604436712653_-30042333']}
@@ -1253,12 +1255,12 @@ def test_fetch_fails(mocker):
     from MicrosoftDefenderAdvancedThreatProtection import fetch_incidents
     mocker.patch.object(demisto, 'debug')
 
-    def raise_mock(params=None):
+    def raise_mock(params=None, overwrite_rate_limit_retry=True):
         raise DemistoException("""Verify that the server URL parameter is correct and that you have access to the server from your host.
 Error Type: <requests.exceptions.ConnectionError>
 Error Number: [None]
 Message: None
-""")
+""")  # noqa: E501
 
     mocker.patch.object(client_mocker, 'list_alerts_by_params', side_effect=raise_mock)
     with pytest.raises(Exception) as e:
@@ -1270,7 +1272,7 @@ Message: None
 
 QUERY_BUILDING_CASES = [
     (
-        'New, Resolved', 'Informational,Low,Medium,High', '5', False, '2022-02-17T14:39:01.391001Z',
+        'New, Resolved', 'Informational,Low,Medium,High', '5', False, '2022-02-17T14:39:01.391001Z', None,
         {
             '$filter': "alertCreationTime+gt+2022-02-17T14:39:01.391001Z and "
                        "((status+eq+'New') or (status+eq+'Resolved')) and "
@@ -1280,7 +1282,7 @@ QUERY_BUILDING_CASES = [
         }
     ),
     (
-        None, 'Informational,Low,Medium,High', '5', False, '2022-02-17T14:39:01.391001Z',
+        None, 'Informational,Low,Medium,High', '5', False, '2022-02-17T14:39:01.391001Z', None,
         {
             '$filter': "alertCreationTime+gt+2022-02-17T14:39:01.391001Z and "
                        "((severity+eq+'Informational') or (severity+eq+'Low') "
@@ -1289,28 +1291,28 @@ QUERY_BUILDING_CASES = [
         }
     ),
     (
-        'New', None, '5', False, '2022-02-17T14:39:01.391001Z',
+        'New', None, '5', False, '2022-02-17T14:39:01.391001Z', None,
         {
             '$filter': "alertCreationTime+gt+2022-02-17T14:39:01.391001Z and (status+eq+'New')",
             '$orderby': 'alertCreationTime asc', '$top': '5'
         }
     ),
     (
-        None, 'Informational', '5', False, '2022-02-17T14:39:01.391001Z',
+        None, 'Informational', '5', False, '2022-02-17T14:39:01.391001Z', None,
         {
             '$filter': "alertCreationTime+gt+2022-02-17T14:39:01.391001Z and (severity+eq+'Informational')",
             '$orderby': 'alertCreationTime asc', '$top': '5'
         }
     ),
     (
-        None, None, '5', False, '2022-02-17T14:39:01.391001Z',
+        None, None, '5', False, '2022-02-17T14:39:01.391001Z', None,
         {
             '$filter': 'alertCreationTime+gt+2022-02-17T14:39:01.391001Z', '$orderby': 'alertCreationTime asc',
             '$top': '5'
         }
     ),
     (
-        'Resolved', 'High', '5', True, '2022-02-17T14:39:01.391001Z',
+        'Resolved', 'High', '5', True, '2022-02-17T14:39:01.391001Z', None,
         {
             '$filter': "alertCreationTime+gt+2022-02-17T14:39:01.391001Z and "
                        "(status+eq+'Resolved') and (severity+eq+'High')",
@@ -1318,23 +1320,59 @@ QUERY_BUILDING_CASES = [
         }
     ),
     (
-        None, None, '5', True, '2022-02-17T14:39:01.391001Z',
+        None, None, '5', True, '2022-02-17T14:39:01.391001Z', None,
         {
             '$filter': 'alertCreationTime+gt+2022-02-17T14:39:01.391001Z', '$orderby': 'alertCreationTime asc',
             '$expand': 'evidence', '$top': '5'
+        }
+    ),
+    (
+        None, None, '5', True, '2022-02-17T14:39:01.391001Z', None,
+        {
+            '$filter': 'alertCreationTime+gt+2022-02-17T14:39:01.391001Z', '$orderby': 'alertCreationTime asc',
+            '$expand': 'evidence', '$top': '5'
+        }
+    ),
+    (
+        None, 'Informational', '5', False, '2022-02-17T14:39:01.391001Z', 'Microsoft Defender for Office 365',
+        {
+            '$filter': "alertCreationTime+gt+2022-02-17T14:39:01.391001Z and "
+                       "(detectionSource+eq+'OfficeATP') and (severity+eq+'Informational')",
+            '$orderby': 'alertCreationTime asc', '$top': '5'
+        }
+    ),
+    (
+        'New', None, '5', False, '2022-02-17T14:39:01.391001Z', 'EDR',
+        {
+            '$filter': "alertCreationTime+gt+2022-02-17T14:39:01.391001Z and (detectionSource+eq+'WindowsDefenderAtp') and "
+                       "(status+eq+'New')",
+            '$orderby': 'alertCreationTime asc', '$top': '5'
+        }
+    ),
+    (
+        'New, Resolved', 'Informational,Low,Medium,High', '5', False, '2022-02-17T14:39:01.391001Z', 'Custom detection,Custom TI',
+        {
+            '$filter': "alertCreationTime+gt+2022-02-17T14:39:01.391001Z and "
+                       "((detectionSource+eq+'CustomDetection') or (detectionSource+eq+'CustomerTI')) and "
+                       "((status+eq+'New') or (status+eq+'Resolved')) and "
+                       "((severity+eq+'Informational') or (severity+eq+'Low') or (severity+eq+'Medium') "
+                       "or (severity+eq+'High'))",
+            '$orderby': 'alertCreationTime asc', '$top': '5'
         }
     )
 
 ]
 
 
-@pytest.mark.parametrize('status, severity, limit, evidence, last_fetch_time, expected_result', QUERY_BUILDING_CASES)
-def test_get_incidents_query_params(status, severity, limit, evidence, last_fetch_time, expected_result):
+@pytest.mark.parametrize('status, severity, limit, evidence, last_fetch_time, detection_sources, expected_result',
+                         QUERY_BUILDING_CASES)
+def test_get_incidents_query_params(status, severity, limit, evidence, last_fetch_time, expected_result, detection_sources):
     from copy import deepcopy
     from MicrosoftDefenderAdvancedThreatProtection import _get_incidents_query_params
 
     client = deepcopy(client_mocker)
     client.max_alerts_to_fetch = limit
+    client.alert_detectionsource_to_fetch = detection_sources
     client.alert_severities_to_fetch = severity
     client.alert_status_to_fetch = status
 
@@ -1468,7 +1506,8 @@ class TestHuntingQueryBuilder:
             assert actual[:12] == 'some query ('
             assert '(a in ("1"))' in actual
             assert '(b in ("1","2"))' in actual
-            assert 'or' in actual and 'in' in actual
+            assert 'or' in actual
+            assert 'in' in actual
             assert 'e test_op "1","2"' in actual
             assert ' suffix' in actual
 
@@ -2318,8 +2357,8 @@ def test_get_machine_alerts_command(mocker):
     assert results.outputs[0] == MACHINE_ALERTS_OUTPUT
 
 
-@pytest.mark.parametrize('is_gcc', (True, False))
-def test_gcc_resource(mocker, is_gcc: bool):
+@pytest.mark.parametrize('endpoint_type', ("com", "gcc"))
+def test_gcc_resource(mocker, endpoint_type):
     """
     Given
          an MsClient object
@@ -2332,11 +2371,527 @@ def test_gcc_resource(mocker, is_gcc: bool):
         tenant_id="tenant_id", auth_id="auth_id", enc_key='enc_key', app_name='app_name', base_url='url',
         verify='use_ssl',
         proxy='proxy', self_deployed='self_deployed', alert_severities_to_fetch='Informational,Low,Medium,High',
-        alert_time_to_fetch='3 days', alert_status_to_fetch='New', max_fetch='10', is_gcc=is_gcc, )
+        alert_time_to_fetch='3 days', alert_status_to_fetch='New', max_fetch='10', endpoint_type=endpoint_type,
+        auth_type='', auth_code='', redirect_uri='', alert_detectionsource_to_fetch='')
     # use requests_mock to catch a get to example.com
     req = mocker.patch.object(client.ms_client, 'http_request')
     with requests_mock.Mocker() as m:
         m.get('https://example.com')
     client.indicators_http_request('https://example.com', should_use_security_center=True)
-    assert req.call_args[1]['resource'] == {True: SECURITY_GCC_RESOURCE,
-                                            False: SECURITY_CENTER_RESOURCE}[is_gcc]
+    assert req.call_args[1]['resource'] == MICROSOFT_DEFENDER_FOR_ENDPOINT_API[endpoint_type]
+
+
+@pytest.mark.parametrize('page_num, page_size, res',
+                         [('5', '10600', {'$filter': 'filter', '$skip': '40000', '$top': '10000'}),
+                          ('3', '50', {'$filter': 'filter', '$skip': '100', '$top': '50'}),
+                          ('1', '3', {'$filter': 'filter', '$skip': '0', '$top': '3'})
+                          ]
+                         )
+def test_get_machines(mocker, page_num, page_size, res):
+    """
+    Given:
+        - page_num, page_size, limit to the get_machines method
+
+    When:
+        - Before calling the API to get the machines
+
+    Then:
+        - verify that the page_num , page_size, limit are added to the params array correctly.
+    """
+    req = mocker.patch.object(client_mocker.ms_client, 'http_request', return_value='')
+    client_mocker.get_machines('filter', page_num=page_num, page_size=page_size)
+    assert res == req.call_args.kwargs.get('params')
+
+
+@pytest.mark.parametrize('query, query_batch, hr_name, timeout',
+                         [('', '[{"query": "DeviceInfo | where OnboardingStatus == Onboarded | limit 10'
+                           ' | distinct DeviceName", "name": "name1", "timeout": "20"}]', "name1", 20),
+                          ('DeviceInfo | where OnboardingStatus == Onboarded | limit 10 | distinct DeviceName', '', "name", 10)])
+def test_get_advanced_hunting_command(mocker, query, query_batch, hr_name, timeout):
+    """
+    Given:
+        - query, query_batch, human readable name and a timeout
+
+    When:
+        - Running the get_advanced_hunting_command command
+
+    Then:
+        - verify the expected results
+    """
+    args = {'timeout': '10',
+            'time_range': '1 day',
+            'name': 'name',
+            'query': query,
+            'query_batch': query_batch}
+    req = mocker.patch.object(client_mocker, 'get_advanced_hunting',
+                              return_value={'Results': [{'DeviceName': 'win2016-msde-agent.msde.lab.demisto'},
+                                                        {'DeviceName': 'ec2amaz-ua9hieu'}]})
+    human_readable, _, _ = get_advanced_hunting_command(client_mocker, args)
+    assert f'### Hunt results for {hr_name} query' in human_readable
+    assert timeout == req.call_args[0][1]
+
+
+@pytest.mark.parametrize('query, query_batch, exception, return_value',
+                         [('', '', 'Both query and query_batch were not given, please provide one',
+                           {'Results': [{'DeviceName': 'win2016-msde-agent.msde.lab.demisto'}]}),
+                          ('query', 'query_batch', 'Both query and query_batch were given, please provide just one',
+                          {'Results': [{'DeviceName': 'win2016-msde-agent.msde.lab.demisto'}]})])
+def test_get_advanced_hunting_command_exception(mocker, query, query_batch, exception, return_value):
+    """
+    Given:
+        - query, query_batch
+
+    When:
+        - Running the get_advanced_hunting_command command expecting an exception
+
+    Then:
+        - verify the expected exception has the correct value
+    """
+    args = {'timeout': '10',
+            'time_range': '1 day',
+            'name': 'name',
+            'query': query,
+            'query_batch': query_batch}
+    mocker.patch.object(client_mocker, 'get_advanced_hunting', return_value=return_value)
+
+    with pytest.raises(Exception) as e:
+        get_advanced_hunting_command(client_mocker, args)
+
+    assert str(e.value) == exception
+
+
+@pytest.mark.parametrize('args, return_value,expected_human_readable,expected_outputs', [
+    ({'id': 'some_id'},
+     {'@odata.context': 'https://api.securitycenter.windows.com/api/$metadata#Collection(microsoft.windowsDefenderATP.api.PublicAssetDto)',  # noqa: E501
+     'value': [{'id': '1111', 'computerDnsName': 'desktop-11111',
+                'osPlatform': 'Windows10', 'rbacGroupName': 'UnassignedGroup', 'rbacGroupId': 1111},
+               {'id': '2222',
+                'computerDnsName': 'some_computer_name_1',
+                'osPlatform': 'WindowsServer2016', 'rbacGroupName': 'UnassignedGroup', 'rbacGroupId': 1111},
+               {'id': '3333',
+                'computerDnsName': 'some_computer_name_2',
+                'osPlatform': 'WindowsServer2016', 'rbacGroupName': 'UnassignedGroup', 'rbacGroupId': 1111}]},
+     '### Microsoft Defender ATP list machines by software: some_id\n|id|computerDnsName|osPlatform|rbacGroupName|rbacGroupId|\n|---|---|---|---|---|\n| 1111 | desktop-11111 | Windows10 | UnassignedGroup | 1111 |\n| 2222 | some_computer_name_1 | WindowsServer2016 | UnassignedGroup | 1111 |\n| 3333 | some_computer_name_2 | WindowsServer2016 | UnassignedGroup | 1111 |\n',  # noqa: E501
+     [{'id': '1111', 'computerDnsName': 'desktop-11111',
+       'osPlatform': 'Windows10', 'rbacGroupName': 'UnassignedGroup', 'rbacGroupId': 1111},
+      {'id': '2222',
+       'computerDnsName': 'some_computer_name_1',
+       'osPlatform': 'WindowsServer2016', 'rbacGroupName': 'UnassignedGroup', 'rbacGroupId': 1111},
+      {'id': '3333', 'computerDnsName':
+       'some_computer_name_2', 'osPlatform': 'WindowsServer2016',
+       'rbacGroupName': 'UnassignedGroup', 'rbacGroupId': 1111}])
+])
+def test_list_machines_by_software_command(mocker, args, return_value, expected_human_readable, expected_outputs):
+    """
+    Given:
+        - args to the command.
+
+    When:
+        - executing list_machines_by_software.
+
+    Then:
+        -the outputs and human readable are valid.
+    """
+    from MicrosoftDefenderAdvancedThreatProtection import list_machines_by_software_command
+    mocker.patch.object(client_mocker, 'get_list_machines_by_software', return_value=return_value)
+    result_list_software = list_machines_by_software_command(client_mocker, args)
+    assert result_list_software.readable_output == expected_human_readable
+    assert result_list_software.outputs == expected_outputs
+
+
+@pytest.mark.parametrize('args, return_value,expected_human_readable,expected_outputs', [
+    ({'id': 'some_id'},
+     {'@odata.context': 'https://api.securitycenter.windows.com/api/$metadata#Collection(microsoft.windowsDefenderATP.api.PublicDistributionDto)',  # noqa: E501
+     'value': [{'version': '6.2.4.0', 'installations': 1, 'vulnerabilities': 0},
+               {'version': '7.0.2.0', 'installations': 2, 'vulnerabilities': 7}]},
+     '### Microsoft Defender ATP software version distribution:\n'
+     '|version|installations|vulnerabilities|\n|---|---|---|\n|'
+     ' 6.2.4.0 | 1 | 0 |\n| 7.0.2.0 | 2 | 7 |\n',
+     [{'version': '6.2.4.0', 'installations': 1, 'vulnerabilities': 0},
+      {'version': '7.0.2.0', 'installations': 2, 'vulnerabilities': 7}])
+])
+def test_list_software_version_distribution_command(mocker, args, return_value, expected_human_readable, expected_outputs):
+    """
+    Given:
+        - args to the command.
+
+    When:
+        - executing list_software_command.
+
+    Then:
+        -the outputs and human readable are valid.
+    """
+    from MicrosoftDefenderAdvancedThreatProtection import list_software_version_distribution_command
+    mocker.patch.object(client_mocker, 'get_list_software_version_distribution', return_value=return_value)
+    result_list_software = list_software_version_distribution_command(client_mocker, args)
+    assert result_list_software.readable_output == expected_human_readable
+    assert result_list_software.outputs == expected_outputs
+
+
+@pytest.mark.parametrize('args, return_value,expected_human_readable,expected_outputs', [
+    ({'id': 'microsoft-_-.product'},
+     {'@odata.context': 'https://api.securitycenter.windows.com/api/$metadata#Collection(microsoft.windowsDefenderATP.api.PublicProductFixDto)',  # noqa: E501
+     'value': [{'id': '4556813', 'name': 'some_name', 'osBuild': 11111,
+                'productsNames': ['.product'], 'url': 'some_url',
+                'machineMissedOn': 1, 'cveAddressed': 2},
+               {'id': '4534271', 'name': 'some_name', 'osBuild': 11111,
+                'productsNames': ['.product'], 'url': 'some_url',
+                'machineMissedOn': 1, 'cveAddressed': 2}]},
+     '### Microsoft Defender ATP missing kb by software: microsoft-_-.product\n'
+     '|id|name|osBuild|productsNames|url|machineMissedOn|cveAddressed|\n'
+     '|---|---|---|---|---|---|---|\n'
+     '| 4556813 | some\_name | 11111 | .product | some\_url | 1 | 2 |\n'
+     '| 4534271 | some\_name | 11111 | .product | some\_url | 1 | 2 |\n',
+     [{'id': '4556813', 'name': 'some_name', 'osBuild': 11111,
+       'productsNames': ['.product'], 'url': 'some_url',
+       'machineMissedOn': 1, 'cveAddressed': 2},
+      {'id': '4534271', 'name': 'some_name', 'osBuild': 11111,
+       'productsNames': ['.product'], 'url': 'some_url',
+       'machineMissedOn': 1, 'cveAddressed': 2}])
+])
+def test_list_missing_kb_by_software_command(mocker, args, return_value, expected_human_readable, expected_outputs):
+    """
+    Given:
+        - args to the command.
+
+    When:
+        - executing list_software_command.
+
+    Then:
+        -the outputs and human readable are valid.
+    """
+    from MicrosoftDefenderAdvancedThreatProtection import list_missing_kb_by_software_command
+    mocker.patch.object(client_mocker, 'get_list_missing_kb_by_software', return_value=return_value)
+    result_list_software = list_missing_kb_by_software_command(client_mocker, args)
+    assert result_list_software.readable_output == expected_human_readable
+    assert result_list_software.outputs == expected_outputs
+
+
+@pytest.mark.parametrize('args, return_value,expected_human_readable,expected_outputs', [
+    ({'id': 'some_id'},
+     {'@odata.context': 'https://api.securitycenter.windows.com/api/$metadata#PublicVulnerabilityDto',
+     'value': [{'id': 'CVE-1111-1111', 'name': 'CVE-1111-1111', 'description': 'vulnerability_description',
+                'severity': 'Medium', 'cvssV3': 5.3, 'exposedMachines': 2, 'publishedOn': '2023-09-06T00:00:00Z',
+                'updatedOn': '2022-11-09T00:00:00Z', 'publicExploit': False, 'exploitVerified': False,
+                'exploitInKit': False, 'exploitTypes': [], 'exploitUris': []}]},
+     '### Microsoft Defender ATP vulnerability CVE-1111-1111 by software: some_id\n|id|name|description|severity|cvssV3|publishedOn|updatedOn|exposedMachines|exploitVerified|publicExploit|\n|---|---|---|---|---|---|---|---|---|---|\n| CVE-1111-1111 | CVE-1111-1111 | vulnerability\\_description | Medium | 5.3 | 2023-09-06T00:00:00Z | 2022-11-09T00:00:00Z | 2 | false | false |\n',  # noqa: E501
+     {'id': 'CVE-1111-1111', 'name': 'CVE-1111-1111', 'description': 'vulnerability_description',
+      'severity': 'Medium', 'cvssV3': 5.3, 'exposedMachines': 2,
+      'publishedOn': '2023-09-06T00:00:00Z', 'updatedOn': '2022-11-09T00:00:00Z', 'publicExploit': False,
+      'exploitVerified': False,
+      'exploitInKit': False, 'exploitTypes': [], 'exploitUris': []})
+])
+def test_list_vulnerabilities_by_software_command(mocker, args, return_value, expected_human_readable, expected_outputs):
+    """
+    Given:
+        - args to the command.
+
+    When:
+        - executing list_software_command.
+
+    Then:
+        -the outputs and human readable are valid.
+    """
+    from MicrosoftDefenderAdvancedThreatProtection import list_vulnerabilities_by_software_command
+    mocker.patch.object(client_mocker, 'get_list_vulnerabilities_by_software', return_value=return_value)
+    result_list_software = list_vulnerabilities_by_software_command(client_mocker, args)
+    assert result_list_software[0].readable_output == expected_human_readable
+    assert result_list_software[0].outputs == expected_outputs
+
+
+@pytest.mark.parametrize('filters_arg_list, name, expected_result', [
+    (['id1'], 'id', "id eq 'id1'"),
+    (['id1', 'id2'], 'id', "id eq 'id1' or id eq 'id2'"),
+    (['id1', 'id2', 'id3'], 'id', "id eq 'id1' or id eq 'id2' or id eq 'id3'"),
+    ([], 'id', ""),
+
+])
+def test_create_filters_conjunction(filters_arg_list, name, expected_result):
+    """
+    Given:
+        - filters_arg_list, name.
+
+    When:
+        - executing create_filters_conjunction function.
+
+    Then:
+        - the returned filter string is valid.
+    """
+    create_filters_conjunction_result = create_filters_conjunction(filters_arg_list, name)
+
+    assert create_filters_conjunction_result == expected_result
+
+
+@pytest.mark.parametrize('filters_arg_list, expected_result', [
+    (["id eq 'id1' or id eq 'id2' or id eq 'id3'", "vendor eq 'vendor1' or vendor eq 'vendor2' or vendor eq 'vendor3'"],
+     "(id eq 'id1' or id eq 'id2' or id eq 'id3') and (vendor eq 'vendor1' or vendor eq 'vendor2' or vendor eq 'vendor3')"),
+    (["id eq 'id1' or id eq 'id2' or id eq 'id3'"], "id eq 'id1' or id eq 'id2' or id eq 'id3'"),
+    ([], ""),
+    (["", "id eq 'id1' or id eq 'id2' or id eq 'id3'", ""], "id eq 'id1' or id eq 'id2' or id eq 'id3'")
+
+])
+def test_create_filters_disjunctions(filters_arg_list, expected_result):
+    """
+    Given:
+        - filters_arg_list, name.
+
+    When:
+        - executing create_filters_disjunctions function.
+
+    Then:
+        - the returned filter string is valid.
+    """
+    create_filters_disjunctions_result = create_filters_disjunctions(filters_arg_list)
+
+    assert create_filters_disjunctions_result == expected_result
+
+
+@pytest.mark.parametrize('args_and_name_list, expected_result', [
+    ([(['id1'], 'id'), (['vendor1', 'vendor2'], 'vendor')], "(id eq 'id1') and (vendor eq 'vendor1' or vendor eq 'vendor2')"),
+    ([(['id1', 'id2'], 'id'), (['vendor1', 'vendor2'], 'vendor')],
+     "(id eq 'id1' or id eq 'id2') and (vendor eq 'vendor1' or vendor eq 'vendor2')"),
+    ([(['id1'], 'id')], "id eq 'id1'")
+])
+def test_create_filter(args_and_name_list, expected_result):
+    """
+    Given:
+        - args_and_name_list.
+
+    When:
+        - executing create_filter function.
+
+    Then:
+        - the returned filter string is valid.
+    """
+    create_filters_result = create_filter(args_and_name_list)
+
+    assert create_filters_result == expected_result
+
+
+@pytest.mark.parametrize('id_and_severity, name_equal, name_contains, description, published_on, cvss,'
+                         'updated_on, expected_result',
+                         [("", "", "", "", "2020-12-16T00:00:00Z", "", "", "publishedOn ge 2020-12-16T00:00:00Z"),
+                          ("", "", "", "", "", "", "2020-12-16T00:00:00Z", "updatedOn ge 2020-12-16T00:00:00Z"),
+                          ("", "", "", "", "", "some_cvss", "", "cvssV3 ge some_cvss"),
+                          ("", "", "", "some_description", "", "", "", "contains(description, 'some_description')"),
+                          ("", "some_name_equal", "", "", "", "", "", "name eq 'some_name_equal'"),
+                          ("", "", "some_name_contains", "", "", "", "", "contains(name, 'some_name_contains')"),
+                          ("", "", "some_name", "", "2020-12-16T00:00:00Z", "", "2020-12-16T00:00:00Z",
+                           "(contains(name, 'some_name')) and (updatedOn ge 2020-12-16T00:00:00Z) and "
+                           "(publishedOn ge 2020-12-16T00:00:00Z)")
+                          ])
+def test_create_filter_list_vulnerabilities(id_and_severity, name_equal, name_contains, description, published_on, cvss,
+                                            updated_on, expected_result):
+    from MicrosoftDefenderAdvancedThreatProtection import create_filter_list_vulnerabilities
+    result = create_filter_list_vulnerabilities(id_and_severity, name_equal, name_contains, description, published_on,
+                                                cvss, updated_on)
+    assert result == expected_result
+
+
+@pytest.mark.parametrize('args, return_value_get_list_software,expected_human_readable,expected_outputs', [
+    ({'vendor': 'some_vendor'},
+     {'@odata.context': 'https://api.securitycenter.windows.com/api/$metadata#Software', 'value':
+     [{'id': 'some_id', 'name': 'some_name',
+       'vendor': 'some_vendor', 'weaknesses': 0, 'publicExploit': False,
+       'activeAlert': False, 'exposedMachines': 0, 'installedMachines': 1, 'impactScore': 0,
+       'isNormalized': False, 'category': '', 'distributions': []},
+      {'id': 'some_id', 'name': 'some_name', 'vendor': 'some_vendor', 'weaknesses': 0,
+       'publicExploit': False, 'activeAlert': False, 'exposedMachines': 0, 'installedMachines': 1,
+       'impactScore': 0, 'isNormalized': False, 'category': '', 'distributions': []}]},
+        '### Microsoft Defender ATP list software:\n|id|name|vendor|weaknesses|activeAlert|exposedMachines|installedMachines|publicExploit|\n|---|---|---|---|---|---|---|---|\n| some\_id | some\_name | some\_vendor | 0 | false | 0 | 1 | false |\n| some\_id | some\_name | some\_vendor | 0 | false | 0 | 1 | false |\n',  # noqa: E501
+     [{'id': 'some_id', 'name': 'some_name', 'vendor': 'some_vendor',
+       'weaknesses': 0, 'publicExploit': False, 'activeAlert': False,
+       'exposedMachines': 0, 'installedMachines': 1, 'impactScore': 0,
+       'isNormalized': False, 'category': '', 'distributions': []},
+      {'id': 'some_id', 'name': 'some_name', 'vendor': 'some_vendor',
+       'weaknesses': 0, 'publicExploit': False, 'activeAlert': False,
+       'exposedMachines': 0, 'installedMachines': 1, 'impactScore': 0,
+       'isNormalized': False, 'category': '', 'distributions': []}])
+])
+def test_list_software_command(mocker, args, return_value_get_list_software, expected_human_readable, expected_outputs):
+    """
+    Given:
+        - args to the command.
+
+    When:
+        - executing list_software_command.
+
+    Then:
+        -the outputs and human readable are valid.
+    """
+    from MicrosoftDefenderAdvancedThreatProtection import list_software_command
+    mocker.patch.object(client_mocker, 'get_list_software', return_value=return_value_get_list_software)
+    result_list_software = list_software_command(client_mocker, args)
+    assert result_list_software.readable_output == expected_human_readable
+    assert result_list_software.outputs == expected_outputs
+
+
+@pytest.mark.parametrize('args, return_value,expected_human_readable,expected_outputs', [
+    ({'cve_id': 'CVE-3333-33333'},
+     {'@odata.context': 'https://api.securitycenter.windows.com/api/$metadata#Collection(microsoft.windowsDefenderATP.api.PublicAssetVulnerabilityDto)',  # noqa: E501
+     'value': [{'id': 'some_id', 'cveId': 'CVE-3333-33333', 'machineId': 'some_machine_id',
+                'fixingKbId': None, 'productName': 'some_product_name', 'productVendor': 'some_vendor',
+                'productVersion': '7.0.2.0', 'severity': 'High'}]},
+     '### Microsoft Defender ATP vulnerability CVE-3333-33333:\n'
+     '|id|cveId|machineId|productName|productVendor|productVersion|severity|\n'
+     '|---|---|---|---|---|---|---|\n|'
+     ' some\_id | CVE-3333-33333 |'
+     ' some\_machine\_id |'
+     ' some\_product\_name | some\_vendor | 7.0.2.0 | High |\n',
+     {'id': 'some_id',
+      'cveId': 'CVE-3333-33333', 'machineId': 'some_machine_id',
+      'fixingKbId': None, 'productName': 'some_product_name', 'productVendor': 'some_vendor',
+      'productVersion': '7.0.2.0', 'severity': 'High'})
+])
+def test_list_vulnerabilities_by_machine_command(mocker, args, return_value, expected_human_readable, expected_outputs):
+    """
+    Given:
+        - args to the command.
+
+    When:
+        - executing list_software_command.
+
+    Then:
+        -the outputs and human readable are valid.
+    """
+    from MicrosoftDefenderAdvancedThreatProtection import list_vulnerabilities_by_machine_command
+    mocker.patch.object(client_mocker, 'get_list_vulnerabilities_by_machine', return_value=return_value)
+    result_list_software = list_vulnerabilities_by_machine_command(client_mocker, args)
+    assert result_list_software[0].readable_output == expected_human_readable
+    assert result_list_software[0].outputs == expected_outputs
+
+
+@pytest.mark.parametrize('args, return_value,expected_human_readable,expected_outputs', [
+    ({'published_on': '1 days ago'},
+     {'@odata.context': 'https://api.securitycenter.windows.com/api/$metadata#Vulnerabilities',
+     'value': [{'id': 'CVE-2023-11111', 'name': 'CVE-2023-11111',
+                'description': 'some_description',
+                'severity': 'Critical', 'cvssV3': 9.8, 'exposedMachines': 0, 'publishedOn': '2023-04-24T15:15:00Z',
+                'updatedOn': '2023-04-24T15:15:00Z', 'publicExploit': False,
+                'exploitVerified': False, 'exploitInKit': False,
+                'exploitTypes': [], 'exploitUris': []}]},
+     '### Microsoft Defender ATP vulnerabilities:\n|id|name|description|severity|publishedOn|updatedOn|'
+     'exposedMachines|exploitVerified|publicExploit|cvssV3|\n'
+     '|---|---|---|---|---|---|---|---|---|---|\n|'
+     ' CVE-2023-11111 | CVE-2023-11111 | some\\_description | Critical '
+     '| 2023-04-24T15:15:00Z | 2023-04-24T15:15:00Z | 0 | false | false | 9.8 |\n',
+     {'id': 'CVE-2023-11111',
+      'name': 'CVE-2023-11111',
+      'description': 'some_description',
+      'severity': 'Critical', 'cvssV3': 9.8, 'exposedMachines': 0,
+      'publishedOn': '2023-04-24T15:15:00Z',
+      'updatedOn': '2023-04-24T15:15:00Z',
+      'publicExploit': False, 'exploitVerified': False,
+      'exploitInKit': False, 'exploitTypes': [], 'exploitUris': []})
+])
+def test_list_vulnerabilities_command(mocker, args, return_value, expected_human_readable, expected_outputs):
+    """
+    Given:
+        - args to the command.
+
+    When:
+        - executing list_software_command.
+
+    Then:
+        -the outputs and human readable are valid.
+    """
+    from MicrosoftDefenderAdvancedThreatProtection import list_vulnerabilities_command
+    mocker.patch.object(client_mocker, 'get_list_vulnerabilities', return_value=return_value)
+    result_list_software = list_vulnerabilities_command(client_mocker, args)
+    assert result_list_software[0].readable_output == expected_human_readable
+    assert result_list_software[0].outputs == expected_outputs
+
+
+@pytest.mark.parametrize('data_to_escape_with_backslash, expected_result', [(
+    [{'id': 'some_id', 'cveId': 'CVE-3333-33333', 'machineId': 'some_machine_id',
+      'fixingKbId': None, 'productName': 'some_product_name', 'productVendor': 'some_vendor',
+      'productVersion': '7.0.2.0', 'severity': 'High'}],
+    [{'id': 'some\\_id', 'cveId': 'CVE-3333-33333', 'machineId': 'some\\_machine\\_id',
+      'fixingKbId': None, 'productName': 'some\\_product\\_name', 'productVendor': 'some\\_vendor',
+      'productVersion': '7.0.2.0', 'severity': 'High'}])
+])
+def test_add_backslash_infront_of_underscore_list(data_to_escape_with_backslash, expected_result):
+    from MicrosoftDefenderAdvancedThreatProtection import add_backslash_infront_of_underscore_list
+    result = add_backslash_infront_of_underscore_list(data_to_escape_with_backslash)
+    assert result == expected_result
+
+
+@pytest.mark.parametrize('client_id', ("test_client_id", None))
+def test_test_module_command_with_managed_identities(mocker, requests_mock, client_id):
+    """
+        Given:
+            - Managed Identities client id for authentication.
+        When:
+            - Calling test_module.
+        Then:
+            - Ensure the output are as expected.
+    """
+
+    from MicrosoftDefenderAdvancedThreatProtection import main, MANAGED_IDENTITIES_TOKEN_URL
+    import re
+
+    mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
+    get_mock = requests_mock.get(MANAGED_IDENTITIES_TOKEN_URL, json=mock_token)
+    security_center = 'https://api.securitycenter.microsoft.com'
+    requests_mock.get(re.compile(f'^{security_center}.*'), json={})
+
+    params = {
+        'managed_identities_client_id': {'password': client_id},
+        'auth_type': 'Azure Managed Identities',
+        'url': security_center
+    }
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(demisto, 'results', return_value=params)
+    mocker.patch('MicrosoftApiModule.get_integration_context', return_value={})
+
+    main()
+
+    assert 'ok' in demisto.results.call_args[0][0]
+    qs = get_mock.last_request.qs
+    assert qs['resource'] == [security_center]
+    assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs
+
+
+def test_generate_login_url(mocker):
+    """
+    Given:
+        - Self-deployed are true and auth code are the auth flow
+    When:
+        - Calling function microsoft-atp-generate-login-url
+    Then:
+        - Ensure the generated url are as expected.
+    """
+    # prepare
+    import demistomock as demisto
+    from MicrosoftDefenderAdvancedThreatProtection import main
+    import MicrosoftDefenderAdvancedThreatProtection
+
+    redirect_uri = 'redirect_uri'
+    tenant_id = 'tenant_id'
+    client_id = 'client_id'
+    mocked_params = {
+        'redirect_uri': redirect_uri,
+        'auth_type': 'Authorization Code',
+        'self_deployed': 'True',
+        'tenant_id': tenant_id,
+        'auth_id': client_id,
+        'credentials': {
+            'password': 'client_secret'
+        },
+        'endpoint_type': 'Worldwide',
+    }
+    mocker.patch.object(demisto, 'params', return_value=mocked_params)
+    mocker.patch.object(demisto, 'command', return_value='microsoft-atp-generate-login-url')
+    mocker.patch.object(MicrosoftDefenderAdvancedThreatProtection, 'return_results')
+
+    # call
+    main()
+
+    # assert
+    expected_url = f'[login URL](https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/authorize?' \
+                   f'response_type=code&scope=offline_access%20' \
+                   'https://securitycenter.onmicrosoft.com/windowsatpservice/.default' \
+                   f'&client_id={client_id}&redirect_uri={redirect_uri})'
+    res = MicrosoftDefenderAdvancedThreatProtection.return_results.call_args[0][0].readable_output
+    assert expected_url in res

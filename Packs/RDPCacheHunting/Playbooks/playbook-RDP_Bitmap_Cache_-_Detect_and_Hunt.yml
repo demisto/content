@@ -1,0 +1,1939 @@
+id: RDP Bitmap Cache - Detect and Hunt
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: RDP Bitmap Cache - Detect and Hunt
+description: |-
+  ## Playbook: Automated Collection and Forensic Analysis of RDP Sessions Cache Data
+
+  This playbook automates the collection and forensic analysis of RDP sessions cache data. It involves the following steps:
+
+  ### Step 1: Collect Cache Files and Convert to Image
+
+  The first step is to collect the cache files from RDP sessions and convert them into an image format.
+
+  ### Step 2: Extract Readable Text from the Image
+
+  Once the cache files are converted into an image, the playbook extracts readable text from the image to facilitate analysis.
+
+  ### Step 3: Build Indicators of Compromise (IOCs) from Text
+
+  In this step, the extracted text is used to build indicators of compromise (IOCs) for further investigation and threat hunting.
+
+  ### Step 4: Enrich Extracted Indicators for Further Hunting
+
+  Finally, the playbook enriches the extracted indicators by adding additional context and information, enhancing their usefulness for further hunting and analysis.
+
+  > Note: It is important to customize and adapt this playbook to fit specific use cases and environments. Additionally, ensure compliance with legal and privacy requirements when collecting and analyzing data.
+
+  Feel free to modify and enhance this playbook according to your requirements.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7e0b59dc-2b02-4284-8ac8-7bef3ca61007
+    type: start
+    task:
+      id: 7e0b59dc-2b02-4284-8ac8-7bef3ca61007
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -1345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 6d46906f-b6cd-40c2-8560-4f114bc39aac
+    type: regular
+    task:
+      id: 6d46906f-b6cd-40c2-8560-4f114bc39aac
+      version: -1
+      name: OCR from original
+      description: Extracts text from an image.
+      script: '|||image-ocr-extract-text'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      entryid:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: png
+              ignorecase: true
+          - - operator: startWith
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: original
+              ignorecase: true
+          accessor: EntryID
+      execution-timeout:
+        simple: "600"
+      retry-count:
+        simple: "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 630
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: RDP Bitmap Cache OCR Output
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 5e9607d5-4aed-45ba-83eb-c19d1debccce
+    type: regular
+    task:
+      id: 5e9607d5-4aed-45ba-83eb-c19d1debccce
+      version: -1
+      name: Parse RDP cache files
+      description: Parse RDP bitmap cache data into a single collage image file.
+      scriptName: BMCTool
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      EntryID:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: bin
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: bmc
+              ignorecase: true
+          accessor: EntryID
+      execution-timeout:
+        simple: "600"
+      retry-count:
+        simple: "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -105
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Collage of the RDP session cache
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: b62236b8-bdb7-4413-8fb3-7a87333c447a
+    type: regular
+    task:
+      id: b62236b8-bdb7-4413-8fb3-7a87333c447a
+      version: -1
+      name: Suspicious tools hunting
+      description: This automation calculates the similarity ratio between text and a list of strings and outputs a decimal value between 0.0 and 1.0 (1.0 if the sequences are identical, and 0.0 if they don't have anything in common).
+      scriptName: StringSimilarity
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      similarity_threshold:
+        complex:
+          root: 'inputs.similarity_threshold '
+      string_A:
+        complex:
+          root: File
+          accessor: Text
+          transformers:
+          - operator: uniq
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ' '
+      string_B:
+        complex:
+          root: LOLBAS.Indicators
+          accessor: Name
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: mimikatz
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -210,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: b38a7d82-a817-461b-8e7a-4566ce95d815
+    type: regular
+    task:
+      id: b38a7d82-a817-461b-8e7a-4566ce95d815
+      version: -1
+      name: Suspicious strings hunting
+      description: This script runs the StringSifter ML tool for malware analysis and ranking of words. You can enter an entryID or string_text as input.
+      scriptName: StringSifter
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      file_name:
+        complex:
+          root: File.Name
+          filters:
+          - - operator: startWith
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: sharpened
+              ignorecase: true
+      limit:
+        complex:
+          root: inputs.limit
+      min_score:
+        complex:
+          root: inputs.min_score
+      string_text:
+        complex:
+          root: File
+          filters:
+          - - operator: startWith
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: sharpened
+              ignorecase: true
+          accessor: Text
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1090,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 6e9db268-53c4-403e-8222-f510be234080
+    type: title
+    task:
+      id: 6e9db268-53c4-403e-8222-f510be234080
+      version: -1
+      name: Process RDP Cache Files
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+      - "60"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: f18e2c3a-39d7-454b-89cf-ea9abdc51078
+    type: title
+    task:
+      id: f18e2c3a-39d7-454b-89cf-ea9abdc51078
+      version: -1
+      name: Extract Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 805
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 3880fbf7-f43a-465e-85f6-6713bc9b7a3b
+    type: regular
+    task:
+      id: 3880fbf7-f43a-465e-85f6-6713bc9b7a3b
+      version: -1
+      name: Extract indicators from the OCR output
+      description: commands.local.cmd.extract.indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      text:
+        complex:
+          root: File
+          accessor: Text
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Total Indicator Count
+      output:
+        complex:
+          root: ExtractedIndicators
+          accessor: Domain
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: ExtractedIndicators.URL
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: ExtractedIndicators.Windows_Path
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: ExtractedIndicators.Windows_Path_2
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: ExtractedIndicators.IP
+          - operator: uniq
+          - operator: count
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: f189b6c1-6a45-4c75-861a-b5f9383dde87
+    type: title
+    task:
+      id: f189b6c1-6a45-4c75-861a-b5f9383dde87
+      version: -1
+      name: Threat Hunting
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+      - "27"
+      - "26"
+      - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 2ab3172e-ab10-4d23-8fe1-dab1893dfec0
+    type: title
+    task:
+      id: 2ab3172e-ab10-4d23-8fe1-dab1893dfec0
+      version: -1
+      name: Set Layout
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+      - "24"
+      - "30"
+      - "50"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 518d9ea8-d979-44ce-855a-cde44efb6ed6
+    type: regular
+    task:
+      id: 518d9ea8-d979-44ce-855a-cde44efb6ed6
+      version: -1
+      name: Set String Sifter results in the layout
+      description: Creates a Grid table from items or key-value pairs.
+      scriptName: SetGridField
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      columns:
+        simple: Rating,String
+      context_path:
+        simple: Stringsifter.Results
+      grid_id:
+        simple: incidentrdpcachehuntingstringsifter
+      keys:
+        simple: Rating,Word
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 8684daa2-cc12-4573-8fc1-509b73e640d9
+    type: title
+    task:
+      id: 8684daa2-cc12-4573-8fc1-509b73e640d9
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 321161fe-f350-40ea-8899-adfe57921b4c
+    type: regular
+    task:
+      id: 321161fe-f350-40ea-8899-adfe57921b4c
+      version: -1
+      name: Set strings similarity results in the layout
+      description: Creates a Grid table from items or key-value pairs.
+      scriptName: SetGridField
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      columns:
+        simple: Found String,MITRE ATT&CK Tool,Similarity Ratio
+      context_path:
+        simple: StringSimilarity
+      grid_id:
+        simple: incidentrdpachehuntingstringssimilarity
+      keys:
+        simple: StringA,StringB,SimilarityScore
+      sort_by:
+        simple: Similarity Ratio
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 1700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 1216e574-1d1c-46fb-8e01-86260d41abaf
+    type: playbook
+    task:
+      id: 1216e574-1d1c-46fb-8e01-86260d41abaf
+      version: -1
+      name: Threat Hunting - Generic
+      description: "This playbook enables threat hunting for IOCs in your enterprise. It currently supports the following integrations: \n- Splunk\n- QRadar\n- PAN-OS \n- Cortex Data Lake \n- Autofocus\n- Microsoft 365 Defender"
+      playbookName: Threat Hunting - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      IPAddress:
+        complex:
+          root: ExtractedIndicators
+          accessor: IP
+          transformers:
+          - operator: uniq
+      QRadarTimeFrame:
+        simple: LAST 7 DAYS
+      SplunkEarliestTime:
+        simple: -7d@d
+      SplunkLatestTime:
+        simple: now
+      URLDomain:
+        complex:
+          root: ExtractedIndicators
+          accessor: Domain
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: ExtractedIndicators.URL
+                iscontext: true
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 6cc6060b-aea7-4d86-82be-ffc667e55c3d
+    type: regular
+    task:
+      id: 6cc6060b-aea7-4d86-82be-ffc667e55c3d
+      version: -1
+      name: Hunt RDP IoCs - Exe + Path
+      description: Hunt for Windows Executable & Path IOC's using Splunk search query.
+      script: '|||splunk-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      earliest_time:
+        simple: ${inputs.splunkEarliestTime}
+      latest_time:
+        simple: ${inputs.splunkLatestTime}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 7a58e00c-1f74-44d7-8c63-d3b5f3c51f59
+    type: regular
+    task:
+      id: 7a58e00c-1f74-44d7-8c63-d3b5f3c51f59
+      version: -1
+      name: Set the Technical Details tab in the layout
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      usecasedescription:
+        simple: "**Remote Desktop Protocol (RDP) is a Microsoft protocol that allows users to connect to other Windows operating systems via a graphical user interface (GUI).**\n\nRDP Bitmap Cache was introduced to improve the RDP user experience while reducing network bandwidth usage. Simply said, it saves cached tiles of your RDP sessions into a file so your session can reuse them and avoid potential delays.\n\n**Why?**\n\n* Attackers often operate outside the organization's working hours, therefore, Weekends and holidays are the best time to operate.\n* As shown - RDP is still massively used by attackers, either as an initial attack vector or for lateral movement within the network.\n* Without any session recording tool, it is almost impossible to tell what happened during the RDP session.\n\n**How do we investigate?**\n\n**Preparation:**\n\n1. Collect the RDP bitmap cache files using Cortex XDR integration.\n2. Process the files and extract the cached tiles using BMC-Tools.\n3. Improve the quality of the extracted collage using PIL and OpenCV.\n4. Extract text from the tiles collage using OCR.\n5. Extract IoCs from the extracted OCR text.\n\n**Analysis:**\n\n6. Search for similar strings against the MITRE ATT&CK Software list.\n7. Detect suspicious strings using Mandiant Stringsifter ML ranking capabilities.\n8. Hunt for the extracted IoCs prevalence using your SIEM.\n\n\n**What will you achieve using this playbook?**\n\n* Helps the analyst determine whether there were internal RDP sessions on predefined hosts.\n* Points out any suspicious activity that was detected.\n* Allows the analyst to hunt for suspicious indicators found during the process.\n* Provide the analyst with the collage processed for further analysis.\n\n**How do we calculate the overall score?**\n\nThe overall score is a combination of:\n1. Tools found in the similarity check:\nThe similarity check produces a similarity ratio for each string and tool pair; the score can be somewhere between 0 to 1. Then we take the similarity ratio and multiply it by 5, meaning a finding can have a maximum score of 5.\ne.g. \nFor a finding with a similarity ratio of 0.85, the score will be 0.85*5 = 4.25.\nWe then sum up all the findings scores and move on to the next step.\n2. Executables found using 'extractindicators' and appear in the Stringsifter results:\nIn this step, we are basing the score on both the extracted indicators of type 'Executables' and the Stringsifter ranking.\nIf an executable was successfully extracted using '!extractindicators' and also appears in the Stringsifter results, we'll take the score and add it to the combined score we got from step 1.\ne.g.\nIf mimikatz.exe was extracted using '!extractinidcators' and also appears in the Stringsifter results with a rank of 9.5, we'll add 9.5 to the overall score.\n\n**Note:**\n* The maximum score can be 100.\n* If the score is 0, no suspicious **strings** were found.\n"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1300,
+          "y": 1700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 0e2634c0-efd3-4a2b-875f-b402b31a7c6c
+    type: condition
+    task:
+      id: 0e2634c0-efd3-4a2b-875f-b402b31a7c6c
+      version: -1
+      name: Was the file retrieved successfully?
+      description: Check if the file was successfully retrieved
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "32"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Extension
+            iscontext: true
+          right:
+            value:
+              simple: bin
+          ignorecase: true
+        - operator: containsString
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Extension
+            iscontext: true
+          right:
+            value:
+              simple: bmc
+          ignorecase: true
+        - operator: isExists
+          left:
+            value:
+              complex:
+                root: incident.attachment
+                filters:
+                - - operator: endWith
+                    left:
+                      value:
+                        simple: incident.attachment.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: bin
+                    ignorecase: true
+                  - operator: endWith
+                    left:
+                      value:
+                        simple: incident.attachment.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: bmc
+                    ignorecase: true
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: adb731eb-3747-454f-8420-154a702b8807
+    type: title
+    task:
+      id: adb731eb-3747-454f-8420-154a702b8807
+      version: -1
+      name: No Files to Process
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1080,
+          "y": 5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 8e69838c-895e-4502-8b8c-91e3d1fd02fb
+    type: condition
+    task:
+      id: 8e69838c-895e-4502-8b8c-91e3d1fd02fb
+      version: -1
+      name: Should collect RDP cache files?
+      description: Check if should collect RDP cache from endpoints or cache files to be provided manually.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "55"
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.ShouldCollectRDPCache
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 83a592fb-794f-4a1c-8857-36dc30a0677d
+    type: playbook
+    task:
+      id: 83a592fb-794f-4a1c-8857-36dc30a0677d
+      version: -1
+      name: Retrieve File from Endpoint - Generic V3
+      description: |-
+        'This playbook retrieves a file sample from an endpoint using the following playbooks:'
+        - Get File Sample From Path - Generic v2.
+        - Get File Sample By Hash - Generic v3.
+      playbookName: Retrieve File from Endpoint - Generic V3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      Agent_ID:
+        complex:
+          root: inputs.EndpointIDs
+          transformers:
+          - operator: uniq
+      Path:
+        complex:
+          root: inputs.FilePath
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 2e9077f1-944d-4a35-8761-3a93dbce6e3d
+    type: title
+    task:
+      id: 2e9077f1-944d-4a35-8761-3a93dbce6e3d
+      version: -1
+      name: Get Cache Files
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "36"
+      - "34"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 60c8b639-7ad4-4f8d-83b2-b52228ec0ccd
+    type: regular
+    task:
+      id: 60c8b639-7ad4-4f8d-83b2-b52228ec0ccd
+      version: -1
+      name: Get RDP cache files
+      description: Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints. At least one endpoint ID and one file path are necessary in order to run the command. After running this command, you can use the xdr-action-status-get command with returned action_id, to check the action status.
+      script: '|||xdr-file-retrieve'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      endpoint_ids:
+        complex:
+          root: inputs.EndpointIDs
+      windows_file_paths:
+        complex:
+          root: inputs.FilePath
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": -810
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: RDP session cache file
+      occurred: {}
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 71205af2-43d9-4957-8cc4-ffaf68ee8454
+    type: title
+    task:
+      id: 71205af2-43d9-4957-8cc4-ffaf68ee8454
+      version: -1
+      name: Prepare RDP cache image for OCR
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "39"
+      - "40"
+      - "56"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: c20a2faa-1649-486b-8e6b-f95c1bad0816
+    type: regular
+    task:
+      id: c20a2faa-1649-486b-8e6b-f95c1bad0816
+      version: -1
+      name: Preprocess Grayscale Image
+      description: This script pre-processes (resizes, sharpens, and grayscales) an image file from context, given an entry_id.
+      scriptName: PreProcessImage
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      action:
+        simple: grayscale
+      file_entry_id:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: bmp
+              ignorecase: true
+          accessor: EntryID
+          transformers:
+          - operator: FirstArrayElement
+      image_resize_height:
+        simple: "4961"
+      image_resize_width:
+        simple: "7016"
+      retry-count:
+        simple: "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: cfeaa9d7-0dac-4ba4-8f84-d1e50341cb9b
+    type: regular
+    task:
+      id: cfeaa9d7-0dac-4ba4-8f84-d1e50341cb9b
+      version: -1
+      name: Preprocess Sharpened Image
+      description: This script pre-processes (resizes, sharpens, and grayscales) an image file from context, given an entry_id.
+      scriptName: PreProcessImage
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      action:
+        simple: sharpened
+      file_entry_id:
+        complex:
+          root: File
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: bmp
+              ignorecase: true
+          accessor: EntryID
+          transformers:
+          - operator: FirstArrayElement
+      image_resize_height:
+        simple: "4961"
+      image_resize_width:
+        simple: "7016"
+      retry-count:
+        simple: "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 005cc594-74b1-4aff-8cec-ba5016d8b9bf
+    type: title
+    task:
+      id: 005cc594-74b1-4aff-8cec-ba5016d8b9bf
+      version: -1
+      name: OCR text extraction
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+      - "57"
+      - "58"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 485
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 8f9cb3d9-9ce6-42fa-8a5d-0d9c0996401d
+    type: title
+    task:
+      id: 8f9cb3d9-9ce6-42fa-8a5d-0d9c0996401d
+      version: -1
+      name: Display RDP Cache image
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "47"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: b9d01a96-a1fa-403f-86b8-0dbc86a5d838
+    type: regular
+    task:
+      id: b9d01a96-a1fa-403f-86b8-0dbc86a5d838
+      version: -1
+      name: Rasterize the PDF file
+      description: Converts a PDF file to an image file.
+      tags:
+      - RDPCacheImage
+      script: Rasterize|||rasterize-pdf
+      type: regular
+      iscommand: true
+      brand: Rasterize
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      EntryID:
+        complex:
+          root: InfoFile
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: InfoFile.Name
+                iscontext: true
+              right:
+                value:
+                  simple: RDPCacheImage
+              ignorecase: true
+          - - operator: containsString
+              left:
+                value:
+                  simple: InfoFile.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: pdf
+              ignorecase: true
+          accessor: EntryID
+      file_name:
+        simple: RDPCacheImage
+      retry-count:
+        simple: "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 6cffcf11-c4b9-491e-8005-eea7794b89ea
+    type: regular
+    task:
+      id: 6cffcf11-c4b9-491e-8005-eea7794b89ea
+      version: -1
+      name: Convert the PNG file to PDF
+      description: Converts an image file to a PDF file.
+      script: Rasterize|||rasterize-image
+      type: regular
+      iscommand: true
+      brand: Rasterize
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      EntryID:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: png
+              ignorecase: true
+          - - operator: startWith
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: original
+              ignorecase: true
+          accessor: EntryID
+      file_name:
+        simple: RDPCacheImage
+      retry-count:
+        simple: "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 24384b63-ceaf-42ee-89a2-e7693398d323
+    type: regular
+    task:
+      id: 24384b63-ceaf-42ee-89a2-e7693398d323
+      version: -1
+      name: Set string similarity score
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      key:
+        simple: OverallScore
+      value:
+        complex:
+          root: StringSimilarity
+          accessor: SimilarityScore
+          transformers:
+          - operator: SumList
+          - operator: multiply
+            args:
+              by:
+                value:
+                  simple: "5"
+          - operator: precision
+            args:
+              by:
+                value:
+                  simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 1700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 66277633-6eac-4ba4-8786-e018a6b83a8c
+    type: regular
+    task:
+      id: 66277633-6eac-4ba4-8786-e018a6b83a8c
+      version: -1
+      name: Set Stringsifter score
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      key:
+        simple: OverallScore
+      value:
+        complex:
+          root: Stringsifter.Results
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: Stringsifter.Results.Word
+                iscontext: true
+              right:
+                value:
+                  simple: ExtractedIndicators.Executables
+                iscontext: true
+          accessor: Rating
+          transformers:
+          - operator: uniq
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: OverallScore
+                iscontext: true
+          - operator: SumList
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 1860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: ba48cfd7-3f3d-4fef-8a37-bc026b17a060
+    type: regular
+    task:
+      id: ba48cfd7-3f3d-4fef-8a37-bc026b17a060
+      version: -1
+      name: Unzip files
+      description: Unzip a file using fileName or entryID to specify a file. Unzipped files will be loaded to the War Room and names will be put into the context.
+      scriptName: UnzipFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      entryID:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: zip
+              ignorecase: true
+          accessor: EntryID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": -640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 3dd96895-827e-4dbc-875b-5959c07e24aa
+    type: collection
+    task:
+      id: 3dd96895-827e-4dbc-875b-5959c07e24aa
+      version: -1
+      name: Manual file submission
+      description: Submit an RDP cache file for hunting malicious activity
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": -965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Submit an RDP cache file (bin/bmc) for hunting
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: attachments
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Manual file submission
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: dae5744f-3677-4d35-8f6b-392c8e73fbf0
+    type: regular
+    task:
+      id: dae5744f-3677-4d35-8f6b-392c8e73fbf0
+      version: -1
+      name: Preprocess original Image
+      description: This script pre-processes (resizes, sharpens, and grayscales) an image file from context, given an entry_id.
+      scriptName: PreProcessImage
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+      - "44"
+    scriptarguments:
+      action:
+        simple: original
+      file_entry_id:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: bmp
+              ignorecase: true
+          accessor: EntryID
+          transformers:
+          - operator: FirstArrayElement
+      image_resize_height:
+        simple: "4961"
+      image_resize_width:
+        simple: "7016"
+      retry-count:
+        simple: "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 8fc229b8-d007-492e-8fdb-310005d4e8fd
+    type: regular
+    task:
+      id: 8fc229b8-d007-492e-8fdb-310005d4e8fd
+      version: -1
+      name: OCR from sharpened
+      description: Extracts text from an image.
+      script: '|||image-ocr-extract-text'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      entryid:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: png
+              ignorecase: true
+          - - operator: startWith
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: sharpened
+              ignorecase: true
+          accessor: EntryID
+      execution-timeout:
+        simple: "600"
+      retry-count:
+        simple: "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 630
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: RDP Bitmap Cache OCR Output
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: b66f267a-09d7-4aa8-8fcf-ca415ca99ae4
+    type: regular
+    task:
+      id: b66f267a-09d7-4aa8-8fcf-ca415ca99ae4
+      version: -1
+      name: OCR from grayscale
+      description: Extracts text from an image.
+      script: '|||image-ocr-extract-text'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      entryid:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: png
+              ignorecase: true
+          - - operator: startWith
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: grayscale
+              ignorecase: true
+          accessor: EntryID
+      execution-timeout:
+        simple: "600"
+      retry-count:
+        simple: "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 630
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: RDP Bitmap Cache OCR Output
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: 0886bbab-18c8-4e59-8ca4-bd18350ca7f2
+    type: regular
+    task:
+      id: 0886bbab-18c8-4e59-8ca4-bd18350ca7f2
+      version: -1
+      name: Getting a list of lolbins to hunt
+      description: Retrieves a limited number of indicators.
+      script: '|||lolbas-get-indicators'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      limit:
+        simple: "100"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1050,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 15bb1f6a-c0a2-4e8e-8a92-03eb0e568cc0
+    type: condition
+    task:
+      id: 15bb1f6a-c0a2-4e8e-8a92-03eb0e568cc0
+      version: -1
+      name: Is LOLBAS Feed integration enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "59"
+    scriptarguments:
+      brandname:
+        simple: LOLBAS Feed
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1050,
+          "y": -160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {
+      "31_10_yes": 0.35,
+      "31_32_#default#": 0.1,
+      "33_35_yes": 0.48
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3440,
+        "width": 2810,
+        "x": -1080,
+        "y": -1345
+      }
+    }
+  }
+inputs:
+- key: ShouldCollectRDPCache
+  value:
+    simple: "false"
+  required: true
+  description: When set to True, will use XDR to get RDP cache files from the endpoints, but set to False will try and use existing cache file from context
+  playbookInputQuery:
+- key: EndpointIDs
+  value: {}
+  required: false
+  description: A comma seperated list of endpoint ID's to retrieve cache files from
+  playbookInputQuery:
+- key: FilePath
+  value:
+    simple: C:\Users\administrator\AppData\Local\Microsoft\Terminal Server Client\Cache\*
+  required: false
+  description: |-
+    The path of the file to retrieve or use wildcard for multiple files.
+    For example:
+    C:\the\path\to\cache_file.bin
+    C:\the\path\to\*
+  playbookInputQuery:
+- key: Hostname
+  value: {}
+  required: false
+  description: Hostname of the machine on which the file is located for PS remote it can also be an IP address.
+  playbookInputQuery:
+- key: min_score
+  value: {}
+  required: false
+  description: StringSifter - Limit output to strings with score >= min-score.
+  playbookInputQuery:
+- key: limit
+  value: {}
+  required: false
+  description: StringSifter - Limit output to the top limit ranked strings.
+  playbookInputQuery:
+- key: 'similarity_threshold '
+  value:
+    simple: "0.3"
+  required: false
+  description: StringSimilarity - The similarity threshold to show results for, a value between 0 < x >1
+  playbookInputQuery:
+- key: QRadarTimeFrame
+  value:
+    simple: LAST 7 DAYS
+  required: false
+  description: The time frame for the Qradar hunting query
+  playbookInputQuery:
+- key: SplunkEarliestTime
+  value:
+    simple: -7d@d
+  required: false
+  description: The earliest time for the Splunk hunting query.
+  playbookInputQuery:
+- key: SplunkLatestTime
+  value:
+    simple: now
+  required: false
+  description: The latest time for the Splunk hunting query.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0

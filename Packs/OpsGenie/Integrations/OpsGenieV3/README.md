@@ -49,7 +49,8 @@ Create an alert in Opsgenie.
 | tags | Comma-separated list of tags to add. | Optional | 
 | priority | Incident priority. Possible values are: P1, P2, P3, P4, P5. Default is P3. | Optional | 
 | source | Display name of the request source. Defaults to IP address of the request sender. | Optional | 
-| note | Additional alert note. | Optional | 
+| note | Additional alert note. | Optional |
+| details | Comma-separated key=value pairs to use as custom properties of the alert. JSON format is also supported when used within an automation. Examples; details="account=pa,hostname=computer01". | Optional |
 
 
 #### Context Output
@@ -1593,6 +1594,51 @@ Remove a tag from the OpsGenie alert.
 >|---|---|---|---|---|---|---|
 >| Remove Tags | b15c7555-d685-4a96-8798-46320618004e | 3cc69931-167f-411c-a331-768997c29d2e | true | 2021-12-01T13:49:02.53Z | Removed tags | true |
 
+### opsgenie-invite-user
+***
+Invite a user to OpsGenie
+
+#### Base Command
+
+`opsgenie-invite-user`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| username  | E-mail address of the user. | True | 
+| fullName | Name of the user | True | 
+| role | Role of user. It may be one of admin, user or the name of a custom role you've created.| True | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OpsGenie.User.Id | String | ID of the User | 
+| OpsGenie.User.name | String | Username of the user | 
+
+
+#### Command Example
+```!opsgenie-invite-user username=test@example.com fullName="Test XSOAR" role=user```
+
+#### Context Example
+```json
+{
+    "OpsGenie": {
+        "User": {
+            "id": "f14b51c9-151b-48b2-afda-e2fcc182f230-1613001837514",
+            "name": "test@example.com"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### OpsGenie
+>|Id|name|
+>|---|---|
+>| 3cc69931-167f-411c-a331-768997c29d2e | test@example.com |
 
 ### opsgenie-get-teams
 ***
@@ -1794,3 +1840,118 @@ Removed the following commands in this version:
   * *OpsGenieV2.CloseAlert.status* - replaced by *OpsGenie.ClosedAlert.status*.
   * *OpsGenieV2.CloseAlert.success* - replaced by *OpsGenie.ClosedAlert.success*.
   
+### opsgenie-get-team-routing-rules
+
+***
+Lists team routing rules.
+
+#### Base Command
+
+`opsgenie-get-team-routing-rules`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| team_id | The ID of the team from Opsgenie. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OpsGenie.TeamRoutingRule.name | unknown | Name of the routing rule. | 
+| OpsGenie.TeamRoutingRule.order | unknown | Order of the routing rule. | 
+| OpsGenie.TeamRoutingRule.id | unknown | ID of the routing rule. | 
+| OpsGenie.TeamRoutingRule.timezone | unknown | Timezone of the routing rule. | 
+| OpsGenie.TeamRoutingRule.teamId | unknown | Team ID of the routing rule. | 
+| OpsGenie.TeamRoutingRule.customerId | unknown | Customer ID of the routing rule. | 
+| OpsGenie.TeamRoutingRule.notify.id | unknown | Notify ID of the routing rule. | 
+| OpsGenie.TeamRoutingRule.notify.name | unknown | Notify name of the routing rule. | 
+| OpsGenie.TeamRoutingRule.notify.type | unknown | Notify type of the routing rule. | 
+
+### opsgenie-get-alert-logs
+
+***
+Gets logs of an OpsGenie Alert.
+
+#### Base Command
+
+`opsgenie-get-alert-logs`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_id | Alert ID. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OpsGenie.AlertLogs.createdAt | String | Time the alert was created. | 
+| OpsGenie.AlertLogs.log | String | Log of the alert. | 
+| OpsGenie.AlertLogs.offset | String | Offset of the alert log. | 
+| OpsGenie.AlertLogs.owner | String | Owner of the alert log. | 
+| OpsGenie.AlertLogs.type | String | Type of the alert log. | 
+
+### opsgenie-add-alert-note
+
+***
+Adds a note to an OpsGenie Alert.
+
+#### Base Command
+
+`opsgenie-add-alert-note`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_id | Alert ID to add the note to. | Required | 
+| note | Alert note to add. | Required | 
+| user | Display name of the request owner. | Optional | 
+| source | Display name of the request source. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OpsGenie.AddAlertNote.action | String | Action of this request. | 
+| OpsGenie.AddAlertNote.alertId | String | ID of the created alert. | 
+| OpsGenie.AddAlertNote.alias | String | Alias of the created alert. | 
+| OpsGenie.AddAlertNote.integrationId | String | Integration ID of the created alert. | 
+| OpsGenie.AddAlertNote.isSuccess | Boolean | Whether the request was successful. | 
+| OpsGenie.AddAlertNote.processedAt | Date | When the request was processed. | 
+| OpsGenie.AddAlertNote.requestId | String | The ID of the request. | 
+| OpsGenie.AddAlertNote.status | String | The human readable result of the request. | 
+| OpsGenie.AddAlertNote.success | Boolean | Whether the request was successful. | 
+
+### opsgenie-add-alert-details
+
+***
+Adds details to an OpsGenie Alert.
+
+#### Base Command
+
+`opsgenie-add-alert-details`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_id | Alert ID to add the details to. | Required | 
+| details | Comma-separated key=value pairs to use as custom properties of the alert. JSON format is also supported when used within an automation. Examples; details="account=pa,hostname=computer01". | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OpsGenie.AddAlertDetails.action | String | Action of this request. | 
+| OpsGenie.AddAlertDetails.alertId | String | ID of the created alert. | 
+| OpsGenie.AddAlertDetails.alias | String | Alias of the created alert. | 
+| OpsGenie.AddAlertDetails.integrationId | String | Integration ID of the created alert. | 
+| OpsGenie.AddAlertDetails.isSuccess | Boolean | Whether the request was successful. | 
+| OpsGenie.AddAlertDetails.processedAt | Date | When the request was processed. | 
+| OpsGenie.AddAlertDetails.requestId | String | The ID of the request. | 
+| OpsGenie.AddAlertDetails.status | String | The human readable result of the request. | 
+| OpsGenie.AddAlertDetails.success | Boolean | Whether the request was successful. |

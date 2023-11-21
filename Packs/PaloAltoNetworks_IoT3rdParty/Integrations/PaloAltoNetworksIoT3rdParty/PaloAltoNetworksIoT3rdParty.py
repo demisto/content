@@ -5,8 +5,12 @@ import urllib3
 urllib3.disable_warnings()
 
 DEFAULT_HEADERS = {
-    'X-Access-Key': demisto.params().get("Access Key"),
-    'X-Key-Id': demisto.params().get("Key ID"),
+    'X-Key-Id':
+        demisto.params().get('credentials', {}).get('identifier')
+        or demisto.params().get("Key ID"),
+    'X-Access-Key':
+        demisto.params().get('credentials', {}).get('password')
+        or demisto.params().get("Access Key"),
     'Content-Type': 'application/json',
 }
 CUSTOMER_ID = demisto.params().get("Customer ID")
@@ -361,10 +365,7 @@ def convert_vulnerability_list_to_cef(vulnerability_list=None):
             input_field = t[0]
             output_field = t[1]
             # print input_field, output_field
-            if input_field in vulnerability:
-                val = vulnerability[input_field]
-            else:
-                val = ""
+            val = vulnerability.get(input_field, '')
             if output_field and val:
                 line += str(output_field) + str(val) + " "
         data.append(line)
@@ -431,10 +432,7 @@ def convert_device_list_to_cef(device_list=None):
                 input_field = t[0]
                 output_field = t[1]
                 # print input_field, output_field
-                if input_field in device_map:
-                    val = device_map[input_field]
-                else:
-                    val = ""
+                val = device_map.get(input_field, '')
                 if output_field and val:
                     line += str(output_field) + str(val) + " "
             data.append(line)
@@ -462,7 +460,8 @@ def convert_device_list_to_ise_attributes(device_list=None):
                     if field in INT_FIELDS:
                         try:
                             int_val = int(device_map[field])
-                        except Exception:
+                        except Exception as e:
+                            demisto.debug(f'int({device_map[field]}) raised {e}')
                             continue
                         zb_attributes[CISCO_ISE_FIELD_MAP[field][0]] = int_val
                         zb_attributes[CISCO_ISE_FIELD_MAP[field][1]] = int_val

@@ -1,0 +1,140 @@
+commonfields:
+  id: EasyVista
+  version: -1
+name: EasyVista
+display: EasyVista
+category: IT Services
+description: EasyVista Service Manager manages the entire process of designing, managing and delivering IT services.
+configuration:
+- display: Server URL
+  additionalinfo: e.g. https://your_company.easyvista.com
+  name: server
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Account
+  name: account
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Credentials
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  subtype: python3
+  commands:
+  - name: easy-vista-search
+    arguments:
+    - name: asset
+      description: Asset to search, e.g. requestor (This argument is mandatory if the "request" argument is not given)
+    - name: attribute
+      description: Attribute to search, e.g. last_name (This argument is mandatory if the "request" argument is not given)
+    - name: value
+      description: Value to search, e.g. "Morley, Gaby" (This argument is mandatory if the "request" argument is not given)
+    - name: request
+      description: Integrated request of assets, attributes and values, e.g.  requestor.last_name:"Morley, Gaby" (This argument replaces the other arguments given each one separately)
+    outputs:
+    - contextPath: EasyVista.Records.CatalogRequest.CatalogRequestPath
+      description: Catalog Request Path
+      type: string
+    - contextPath: EasyVista.Records.CatalogRequest.Code
+      description: Catalog Request Code
+      type: string
+    - contextPath: EasyVista.Records.CatalogRequest.SdCatalogId
+      description: SD Catalog ID
+      type: string
+    - contextPath: EasyVista.Records.CatalogRequest.TitleEn
+      description: Request Title
+      type: string
+    - contextPath: EasyVista.Records.Department.DepartmentCode
+      description: Department Code
+      type: string
+    - contextPath: EasyVista.Records.Department.DepartmentEn
+      description: Department Name
+      type: string
+    - contextPath: EasyVista.Records.Department.DepartmentId
+      description: Department ID
+      type: string
+    - contextPath: EasyVista.Records.Department.DepratmentLabel
+      description: Department Label
+      type: string
+    - contextPath: EasyVista.Records.Department.DepartmentPath
+      description: Department Path
+      type: string
+    - contextPath: EasyVista.Records.KnownProblem.KnownProblemPath
+      description: Known Problem Path
+      type: string
+    - contextPath: EasyVista.Records.KnownProblem.KnownProblemsId
+      description: Known Problems ID
+      type: string
+    - contextPath: EasyVista.Records.KnownProblem.KpNumber
+      description: Number of Known Problems
+      type: string
+    - contextPath: EasyVista.Records.KnownProblem.QuestionEn
+      description: Known problem question
+      type: string
+    - contextPath: EasyVista.Records.Location.City
+      description: City
+      type: string
+    - contextPath: EasyVista.Records.Location.LocationCode
+      description: Location Code
+      type: string
+    - contextPath: EasyVista.Records.Location.LocationEn
+      description: Location En
+      type: string
+    - contextPath: EasyVista.Records.Location.LocationId
+      description: Location ID
+      type: string
+    - contextPath: EasyVista.Records.Location.LocationPath
+      description: Location Path
+      type: string
+    - contextPath: EasyVista.Records.Recipient.BeginOfContract
+      description: Begin Of Contract Date
+      type: string
+    - contextPath: EasyVista.Records.Recipient.CellularNumber
+      description: Cellular number of recipient
+      type: string
+    - contextPath: EasyVista.Records.Recipient.DerpartmentPath
+      description: Department path of recipient
+      type: string
+    - contextPath: EasyVista.Records.Recipient.EMail
+      description: Email address of recipient
+      type: string
+    - contextPath: EasyVista.Records.Recipient.EmployeeId
+      description: Employee ID of recipient
+      type: string
+    - contextPath: EasyVista.Records.Recipient.LastName
+      description: Last name of recipient
+      type: string
+    - contextPath: EasyVista.Records.Recipient.LocationPath
+      description: Location of recipient
+      type: string
+    - contextPath: EasyVista.Records.Recipient.PhoneNumber
+      description: Phone number of recipient
+      type: string
+    - contextPath: EasyVista.Records.Status.StatusEn
+      description: Status of request
+      type: string
+    - contextPath: EasyVista.Records.Status.StatusGuid
+      description: Request GUID
+      type: string
+    - contextPath: EasyVista.Records.Status.StatusId
+      description: Request ID
+      type: string
+    description: This method allows a list of incidents / requests (service, change, investment) to be obtained.
+  dockerimage: demisto/python3:3.10.12.63474
+tests:
+- No tests
+fromversion: 5.0.0

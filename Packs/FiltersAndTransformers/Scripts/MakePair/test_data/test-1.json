@@ -1,0 +1,608 @@
+[
+  {
+    "args": {
+      "value": [1, 2, 3],
+      "array1_key": null,
+      "array2": ["a", "b", "c"],
+      "array2_key": null,
+      "output_name1": "x",
+      "output_name2": "y",
+      "determine_output_length_by": null,
+      "merge_dict": null
+    },
+    "result": [
+      {
+        "x": 1,
+        "y": "a"
+      },
+      {
+        "x": 2,
+        "y": "b"
+      },
+      {
+        "x": 3,
+        "y": "c"
+      }
+    ]
+  },
+  
+  {
+    "args": {
+      "value": [1, 2],
+      "array1_key": null,
+      "array2": ["a", "b", "c"],
+      "array2_key": null,
+      "output_name1": "x",
+      "output_name2": "y",
+      "determine_output_length_by": "shorter",
+      "merge_dict": null
+    },
+    "result": [
+      {
+        "x": 1,
+        "y": "a"
+      },
+      {
+        "x": 2,
+        "y": "b"
+      }
+    ]
+  },
+
+  {
+    "args": {
+      "value": [1, 2, 3],
+      "array1_key": null,
+      "array2": ["a", "b"],
+      "array2_key": null,
+      "output_name1": "x",
+      "output_name2": "y",
+      "determine_output_length_by": "shorter",
+      "merge_dict": null
+    },
+    "result": [
+      {
+        "x": 1,
+        "y": "a"
+      },
+      {
+        "x": 2,
+        "y": "b"
+      }
+    ]
+  },
+
+  {
+    "args": {
+      "value": [1, 2],
+      "array1_key": null,
+      "array2": ["a", "b", "c"],
+      "array2_key": null,
+      "output_name1": "x",
+      "output_name2": "y",
+      "determine_output_length_by": "longer",
+      "merge_dict": null
+    },
+    "result": [
+      {
+        "x": 1,
+        "y": "a"
+      },
+      {
+        "x": 2,
+        "y": "b"
+      },
+      {
+        "x": null,
+        "y": "c"
+      }
+    ]
+  },
+
+  {
+    "args": {
+      "value": [1, 2, 3],
+      "array1_key": null,
+      "array2": ["a", "b"],
+      "array2_key": null,
+      "output_name1": "x",
+      "output_name2": "y",
+      "determine_output_length_by": "longer",
+      "merge_dict": null
+    },
+    "result": [
+      {
+        "x": 1,
+        "y": "a"
+      },
+      {
+        "x": 2,
+        "y": "b"
+      },
+      {
+        "x": 3,
+        "y": null
+      }
+    ]
+  },
+
+  {
+    "args": {
+      "value": [1, 2],
+      "array1_key": null,
+      "array2": ["a", "b", "c"],
+      "array2_key": null,
+      "output_name1": "x",
+      "output_name2": "y",
+      "determine_output_length_by": "array1",
+      "merge_dict": null
+    },
+    "result": [
+      {
+        "x": 1,
+        "y": "a"
+      },
+      {
+        "x": 2,
+        "y": "b"
+      }
+    ]
+  },
+
+  {
+    "args": {
+      "value": [1, 2, 3],
+      "array1_key": null,
+      "array2": ["a", "b"],
+      "array2_key": null,
+      "output_name1": "x",
+      "output_name2": "y",
+      "determine_output_length_by": "array1",
+      "merge_dict": null
+    },
+    "result": [
+      {
+        "x": 1,
+        "y": "a"
+      },
+      {
+        "x": 2,
+        "y": "b"
+      },
+      {
+        "x": 3,
+        "y": null
+      }
+    ]
+  },
+
+  {
+    "args": {
+      "value": [1, 2],
+      "array1_key": null,
+      "array2": ["a", "b", "c"],
+      "array2_key": null,
+      "output_name1": "x",
+      "output_name2": "y",
+      "determine_output_length_by": "array2",
+      "merge_dict": null
+    },
+    "result": [
+      {
+        "x": 1,
+        "y": "a"
+      },
+      {
+        "x": 2,
+        "y": "b"
+      },
+      {
+        "x": null,
+        "y": "c"
+      }
+    ]
+  },
+
+  {
+    "args": {
+      "value": [1, 2, 3],
+      "array1_key": null,
+      "array2": ["a", "b"],
+      "array2_key": null,
+      "output_name1": "x",
+      "output_name2": "y",
+      "determine_output_length_by": "array2",
+      "merge_dict": null
+    },
+    "result": [
+      {
+        "x": 1,
+        "y": "a"
+      },
+      {
+        "x": 2,
+        "y": "b"
+      }
+    ]
+  },
+  
+  {
+    "args": {
+      "value": [
+        {
+          "key1": "a",
+          "key2": "A"
+        },
+        {
+          "key1": "b",
+          "key2": "B"
+        },
+        {
+          "key2": "C"
+        }
+      ],
+      "array1_key": "key1",
+      "array2": [
+        {
+          "key3": "x",
+          "key4": "X"
+        },
+        {
+          "key3": "y",
+          "key4": "Y"
+        },
+        {
+          "key4": "Z"
+        }
+      ],
+      "array2_key": "key3",
+      "output_name1": "xxx",
+      "output_name2": "yyy",
+      "determine_output_length_by": "shorter",
+      "merge_dict": null
+    },
+    "result": [
+      {
+        "xxx": "a",
+        "yyy": "x"
+      },
+      {
+        "xxx": "b",
+        "yyy": "y"
+      },
+      {
+        "xxx": null,
+        "yyy": null
+      }
+    ]
+  },
+  
+  {
+    "args": {
+      "value": [
+        {
+          "key1": "a",
+          "key2": "A"
+        },
+        {
+          "key1": "b",
+          "key2": "B"
+        },
+        {
+          "key2": "C"
+        }
+      ],
+      "array1_key": null,
+      "array2": [
+        {
+          "key3": "x",
+          "key4": "X"
+        },
+        {
+          "key3": "y",
+          "key4": "Y"
+        },
+        {
+          "key4": "Z"
+        }
+      ],
+      "array2_key": null,
+      "output_name1": "xxx",
+      "output_name2": "yyy",
+      "determine_output_length_by": "shorter",
+      "merge_dict": "array1"
+    },
+    "result": [
+      {
+        "key1": "a",
+        "key2": "A",
+        "yyy": {
+          "key3": "x",
+          "key4": "X"
+        }
+      },
+      {
+        "key1": "b",
+        "key2": "B",
+        "yyy": {
+          "key3": "y",
+          "key4": "Y"
+        }
+      },
+      {
+        "key2": "C",
+        "yyy": {
+          "key4": "Z"
+        }
+      }
+    ]
+  },
+  
+  {
+    "args": {
+      "value": [
+        {
+          "key1": "a",
+          "key2": "A"
+        },
+        {
+          "key1": "b",
+          "key2": "B"
+        },
+        {
+          "key2": "C"
+        }
+      ],
+      "array1_key": null,
+      "array2": [
+        {
+          "key3": "x",
+          "key4": "X"
+        },
+        {
+          "key3": "y",
+          "key4": "Y"
+        },
+        {
+          "key4": "Z"
+        }
+      ],
+      "array2_key": null,
+      "output_name1": "xxx",
+      "output_name2": "yyy",
+      "determine_output_length_by": "shorter",
+      "merge_dict": "array2"
+    },
+    "result": [
+      {
+        "xxx": {
+          "key1": "a",
+          "key2": "A"
+        },
+        "key3": "x",
+        "key4": "X"
+      },
+      {
+        "xxx": {
+          "key1": "b",
+          "key2": "B"
+        },
+        "key3": "y",
+        "key4": "Y"
+      },
+      {
+        "xxx": {
+          "key2": "C"
+        },
+        "key4": "Z"
+      }
+    ]
+  },
+  
+  {
+    "args": {
+      "value": [
+        {
+          "key1": "a",
+          "key2": "A"
+        },
+        {
+          "key1": "b",
+          "key2": "B"
+        },
+        {
+          "key2": "C"
+        }
+      ],
+      "array1_key": null,
+      "array2": [
+        {
+          "key3": "x",
+          "key1": "X"
+        },
+        {
+          "key3": "y",
+          "key1": "Y"
+        },
+        {
+          "key1": "Z"
+        }
+      ],
+      "array2_key": null,
+      "output_name1": "xxx",
+      "output_name2": "yyy",
+      "determine_output_length_by": "shorter",
+      "merge_dict": "array1<array2"
+    },
+    "result": [
+      {
+        "key1": "X",
+        "key2": "A",
+        "key3": "x"
+      },
+      {
+        "key1": "Y",
+        "key2": "B",
+        "key3": "y"
+      },
+      {
+        "key2": "C",
+        "key1": "Z"
+      }
+    ]
+  },
+  
+  {
+    "args": {
+      "value": [
+        {
+          "key1": "a",
+          "key2": "A"
+        },
+        {
+          "key1": "b",
+          "key2": "B"
+        },
+        {
+          "key2": "C"
+        }
+      ],
+      "array1_key": null,
+      "array2": [
+        {
+          "key3": "x",
+          "key1": "X"
+        },
+        {
+          "key3": "y",
+          "key1": "Y"
+        },
+        {
+          "key1": "Z"
+        }
+      ],
+      "array2_key": null,
+      "output_name1": "xxx",
+      "output_name2": "yyy",
+      "determine_output_length_by": "shorter",
+      "merge_dict": "array2<array1"
+    },
+    "result": [
+      {
+        "key1": "a",
+        "key2": "A",
+        "key3": "x"
+      },
+      {
+        "key1": "b",
+        "key2": "B",
+        "key3": "y"
+      },
+      {
+        "key2": "C",
+        "key1": "Z"
+      }
+    ]
+  },
+  
+  {
+    "args": {
+      "value": [
+        {
+          "key1": "a",
+          "key2": "A"
+        },
+        {
+          "key1": "b",
+          "key2": "B"
+        }
+      ],
+      "array1_key": "key1",
+      "array2": [
+        {
+          "key3": "x",
+          "key4": "X"
+        },
+        {
+          "key3": "y",
+          "key4": "Y"
+        },
+        {
+          "key3": "z",
+          "key4": "Z"
+        }
+      ],
+      "array2_key": "key3",
+      "output_name1": "xxx",
+      "output_name2": "yyy",
+      "determine_output_length_by": "array1",
+      "merge_dict": null
+    },
+    "result": [
+      {
+        "xxx": "a",
+        "yyy": "x"
+      },
+      {
+        "xxx": "b",
+        "yyy": "y"
+      }
+    ]
+  },
+
+  {
+    "args": {
+      "value": [
+        {
+          "key1": "a",
+          "key2": "A"
+        },
+        {
+          "key1": "b",
+          "key2": "B"
+        }
+      ],
+      "array1_key": null,
+      "array2": [
+        1,
+        2
+      ],
+      "array2_key": null,
+      "output_name1": "xxx",
+      "output_name2": "yyy",
+      "determine_output_length_by": null,
+      "merge_dict": "array1"
+    },
+    "result": [
+      {
+        "key1": "a",
+        "key2": "A",
+        "yyy": 1
+      },
+      {
+        "key1": "b",
+        "key2": "B",
+        "yyy": 2
+      }
+    ]
+  },
+
+  {
+    "args": {
+      "value": 1,
+      "array1_key": null,
+      "array2": "abc",
+      "array2_key": null,
+      "output_name1": "x",
+      "output_name2": "y",
+      "determine_output_length_by": null,
+      "merge_dict": null
+    },
+    "result": [
+      {
+        "x": 1,
+        "y": "abc"
+      }
+    ]
+  }
+]

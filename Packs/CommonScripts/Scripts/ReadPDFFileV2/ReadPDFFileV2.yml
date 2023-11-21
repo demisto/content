@@ -1,23 +1,13 @@
 args:
 - default: true
   description: War Room entryID of the file to read.
-  isArray: false
   name: entryID
   required: true
-  secret: false
-- default: false
-  description: Password for the file, if encrypted.
-  isArray: false
+- description: Password for the file, if encrypted.
   name: userPassword
-  required: false
-  secret: false
-- default: false
-  defaultValue: '20'
+- defaultValue: "20"
   description: Maximum number of images to extract from the PDF file.
-  isArray: false
   name: maxImages
-  required: false
-  secret: false
 comment: |-
   Load a PDF file's content and metadata into context.
 commonfields:
@@ -119,16 +109,14 @@ outputs:
 - contextPath: Account.Email
   description: The email address of the account.
   type: String
-script: '-'
+script: "-"
 subtype: python3
-system: false
 tags:
 - Utility
 - ingestion
-timeout: '0'
+timeout: "0"
 type: python
-dockerimage: demisto/readpdf:1.0.0.32561
-runonce: false
+dockerimage: demisto/readpdf:1.0.0.78799
 runas: DBotRole
 tests:
 - Extract Indicators From File - Generic v2 - Test

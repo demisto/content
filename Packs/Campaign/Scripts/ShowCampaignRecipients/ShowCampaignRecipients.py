@@ -1,7 +1,7 @@
-from collections import Counter
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from collections import Counter
+
 
 EMAIL_TO_FIELD = 'emailto'
 EMAIL_CC_FIELD = 'emailcc'
@@ -48,7 +48,7 @@ def get_campaign_recipients() -> str:
     if not recipients:
         return 'No incident recipients found.'
 
-    recipients_counter = Counter(recipients).most_common()  # type: ignore
+    recipients_counter = Counter(filter(None, recipients)).most_common()  # type: ignore
 
     recipients_table_content = [{"Email": item[0], "Number Of Appearances": item[1]} for item in recipients_counter]
     headers = ['Email', 'Number Of Appearances']

@@ -1,0 +1,19 @@
+commonfields:
+  id: delete_expired_indicator_with_exlusion
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.12.63474
+comment: deletes expired indicators.
+enabled: true
+name: delete_expired_indicator_with_exlusion
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)

@@ -3,18 +3,16 @@ from CommonServerUserPython import *
 
 from CommonServerPython import *
 
-reload(sys)
-sys.setdefaultencoding('utf8')  # pylint: disable=no-member
-
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+import urllib3
+urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 # PagerDuty API works only with secured communication.
 USE_SSL = not demisto.params().get('insecure', False)
 
 USE_PROXY = demisto.params().get('proxy', True)
-API_KEY = demisto.params()['APIKey']
+API_KEY = demisto.params().get("credentials_api_key", {}).get('password') or demisto.params().get('APIKey')
 SERVICE_KEY = demisto.params()['ServiceKey']
 FETCH_INTERVAL = demisto.params()['FetchInterval']
 DEFAULT_REQUESTOR = demisto.params().get('DefaultRequestor', '')
@@ -92,7 +90,7 @@ INCIDENTS_HEADERS = ['ID', 'Title', 'Description', 'Status', 'Created On', 'Urge
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method, url, params_dict=None, data=None, json_data=None, additional_headers=None):
+def http_request(method, url, params_dict=None, data=None, json_data=None, additional_headers=None):  # pragma: no cover
     LOG('running %s request with url=%s\nparams=%s' % (method, url, json.dumps(params_dict)))
     headers = DEFAULT_HEADERS.copy()
     if not additional_headers:
@@ -117,9 +115,9 @@ def http_request(method, url, params_dict=None, data=None, json_data=None, addit
 
 
 def translate_severity(sev):
-    if sev == 'high':
+    if sev.lower() == 'high':
         return 3
-    elif sev == 'Low':
+    elif sev.lower() == 'low':
         return 1
     return 0
 
@@ -129,15 +127,15 @@ def unicode_to_str_recur(obj):
     if IS_PY3:
         return obj
     if isinstance(obj, dict):
-        obj = {unicode_to_str_recur(k): unicode_to_str_recur(v) for k, v in obj.items()}
+        obj = {unicode_to_str_recur(k): unicode_to_str_recur(v) for k, v in list(obj.items())}
     elif isinstance(obj, list):
-        obj = map(unicode_to_str_recur, obj)
-    elif isinstance(obj, unicode):
+        obj = list(map(unicode_to_str_recur, obj))
+    elif isinstance(obj, str):
         obj = obj.encode('utf-8', 'ignore')
     return obj
 
 
-def test_module():
+def test_module():  # pragma: no cover
     get_on_call_now_users_command()
     demisto.results('ok')
 
@@ -185,7 +183,7 @@ def extract_on_call_now_user_data(users_on_call_now):
     contexts = []  # type: List[Dict]
     oncalls = users_on_call_now.get('oncalls', {})
 
-    for i in xrange(len(oncalls)):
+    for i in range(len(oncalls)):
         output = {}
         context = {}
 
@@ -822,6 +820,8 @@ def run_response_play(incident_id, from_email, response_play_uuid):
 
 
 def main():
+    if not API_KEY:
+        raise DemistoException('API key must be provided.')
     LOG('command is %s' % (demisto.command(),))
     try:
         if demisto.command() == 'test-module':

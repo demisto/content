@@ -1,0 +1,32 @@
+{
+    "results": [
+        {
+            "seq": 1,
+            "_id": 1,
+            "q_type": 0,
+            "id": "2",
+            "interface": "port3",
+            "interface_val": "1085",
+            "status": "enable",
+            "status_val": "1",
+            "use-interface-ip": "enable",
+            "use-interface-ip_val": "1",
+            "vip": "",
+            "vip_val": "0"
+        },
+        {
+            "seq": 2,
+            "_id": 2,
+            "q_type": 0,
+            "id": "3",
+            "interface": "port2",
+            "interface_val": "1084",
+            "status": "enable",
+            "status_val": "1",
+            "use-interface-ip": "enable",
+            "use-interface-ip_val": "1",
+            "vip": "",
+            "vip_val": "0"
+        }
+    ]
+}

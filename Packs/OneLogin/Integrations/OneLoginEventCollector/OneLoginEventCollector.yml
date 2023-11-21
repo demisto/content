@@ -1,0 +1,71 @@
+category: Analytics & SIEM
+commonfields:
+  id: OneLogin Event Collector
+  version: -1
+configuration:
+- display: Your server URL
+  name: url
+  required: true
+  type: 0
+- displaypassword: Client Secret
+  display: Client Id
+  additionalinfo: The API Key to use for connection.
+  name: credentials
+  required: true
+  type: 9
+- display: The maximum number of events per fetch
+  name: limit
+  type: 0
+  defaultvalue: 1000
+  required: false
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: since
+  type: 0
+  defaultvalue: 3 days
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+description: Simple customer authentication and streamlined workforce identity operations.
+display: OneLogin Event Collector
+name: OneLogin Event Collector
+script:
+  commands:
+  - description: Manual command to fetch events and display them.
+    name: onelogin-get-events
+    arguments:
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: If true, the command will create events, otherwise it will only display them.
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    - description: Number of results to return. Maximum is 2000.
+      name: limit
+      defaultValue: 10
+    - description: A string pointing at the next page of results. The cursor can be found within the response_metadata field, as part of the raw response of the OneLogin Events API call.
+      name: cursor
+    - description: Occurrence time of the least recent event to include (inclusive).
+      name: since
+      defaultValue: 3 days
+    - description: Occurrence time of the most recent event to include (inclusive).
+      name: until
+    - description: A comma-separated list of type IDs of events to include.
+      name: event_type_id
+  isfetchevents: true
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.12.67728
+marketplaces:
+- marketplacev2
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)

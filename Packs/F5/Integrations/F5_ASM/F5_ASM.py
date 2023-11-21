@@ -1,9 +1,10 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from typing import Optional, List
-import demistomock as demisto
-from CommonServerPython import *
 
+import urllib3
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 LIST_FIELDS = ['name', 'id', 'ipAddress', 'type', 'protocol', 'method', 'actAsMethod',

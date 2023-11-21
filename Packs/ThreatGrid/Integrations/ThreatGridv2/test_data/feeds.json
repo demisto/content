@@ -1,0 +1,48 @@
+{
+    "api_version": "api_version",
+    "id": "id",
+    "request_id": "request_id",
+    "data": {
+        "current_item_count": "data_current_item_count",
+        "index": "data_index",
+        "items": [
+            {
+                "sample_id": "sample_id",
+                "sample_sha256": "data_items[0]_sample_sha256",
+                "timestamp": "data_items[0]_timestamp",
+                "path": "path",
+                "ioc": "ioc",
+                "confidence": "confidence",
+                "severity": "severity"
+            },
+            {
+                "sample_id": "data_items[1]_sample_id",
+                "sample_sha256": "data_items[1]_sample_sha256",
+                "timestamp": "data_items[1]_timestamp",
+                "path": "data_items[1]_path",
+                "ioc": "data_items[1]_ioc",
+                "confidence": "data_items[1]_confidence",
+                "severity": "data_items[1]_severity"
+            },
+            {
+                "sample_id": "data_items[2]_sample_id",
+                "sample_sha256": "data_items[2]_sample_sha256",
+                "timestamp": "data_items[2]_timestamp",
+                "path": "data_items[2]_path",
+                "ioc": "data_items[2]_ioc",
+                "confidence": "data_items[2]_confidence",
+                "severity": "data_items[2]_severity"
+            },
+            {
+                "sample_id": "data_items[3]_sample_id",
+                "sample_sha256": "data_items[3]_sample_sha256",
+                "timestamp": "data_items[3]_timestamp",
+                "path": "data_items[3]_path",
+                "ioc": "data_items[3]_ioc",
+                "confidence": "data_items[3]_confidence",
+                "severity": "data_items[3]_severity"
+            }
+        ],
+        "items_per_page": "data_items_per_page"
+    }
+}

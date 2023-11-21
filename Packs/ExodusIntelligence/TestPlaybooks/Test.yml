@@ -1,0 +1,47 @@
+id: Test
+inputs: []
+name: Test
+outputs: []
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 8e9fd358-b4cc-4aa7-8e21-b2c19b141091
+      iscommand: false
+      name: ''
+      version: -1
+      description: ''
+    taskid: 8e9fd358-b4cc-4aa7-8e21-b2c19b141091
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 65,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+fromversion: 6.2.0
+description: ''

@@ -1,0 +1,525 @@
+id: playbook-GoogleChronicleBackstoryReferenceList-Test
+version: -1
+name: playbook-GoogleChronicleBackstoryReferenceList-Test
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 79036eaf-b456-4b73-855c-38dbba016231
+    type: start
+    task:
+      id: 79036eaf-b456-4b73-855c-38dbba016231
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: ce7f2f75-4ef9-4bb2-8466-a0085c54f9f3
+    type: regular
+    task:
+      id: ce7f2f75-4ef9-4bb2-8466-a0085c54f9f3
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: c2995db0-b74d-4456-8cd4-731fb4bb0fd0
+    type: regular
+    task:
+      id: c2995db0-b74d-4456-8cd4-731fb4bb0fd0
+      version: -1
+      name: gcb-get-reference-list
+      description: Returns the specified list.
+      script: '|||gcb-get-reference-list'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      name:
+        complex:
+          root: GoogleChronicleBackstory.ReferenceLists.name
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
+    taskid: bc58294b-7a6d-4e16-858b-1845c3be751a
+    type: condition
+    task:
+      id: bc58294b-7a6d-4e16-858b-1845c3be751a
+      version: -1
+      name: Verify Outputs
+      description: Verify output of gcb-get-reference-list command.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '11'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.ReferenceList.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.ReferenceList.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.ReferenceList.createTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.ReferenceList.lines
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '4':
+    id: '4'
+    taskid: aef8d207-a93c-4123-8fc2-b5323f00068b
+    type: regular
+    task:
+      id: aef8d207-a93c-4123-8fc2-b5323f00068b
+      version: -1
+      name: gcb-list-reference-list
+      description: Retrieve all the reference lists.
+      script: '|||gcb-list-reference-list'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      page_size:
+        simple: '5'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: 929bcf7a-eb35-4811-8749-08c61a3e073f
+    type: condition
+    task:
+      id: 929bcf7a-eb35-4811-8749-08c61a3e073f
+      version: -1
+      name: Verify Outputs
+      description: Verify output of gcb-list-reference-list command.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '2'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.ReferenceLists.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.ReferenceLists.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.ReferenceLists.createTime
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: 4592c653-c401-4c7b-8268-e6d09d2f017f
+    type: regular
+    task:
+      id: 4592c653-c401-4c7b-8268-e6d09d2f017f
+      version: -1
+      name: gcb-create-reference-list
+      description: Create a new reference list.
+      script: '|||gcb-create-reference-list'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      description:
+        simple: Test playbook creating new reference list.
+      lines:
+        simple: Line 1,Line 2,Line 3
+      name:
+        complex:
+          root: RandomString
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: XSOAR_GoogleChronicleBackstory_Test_
+              suffix: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '7':
+    id: '7'
+    taskid: 189cbe31-62cb-44da-80d5-a449972ab298
+    type: condition
+    task:
+      id: 189cbe31-62cb-44da-80d5-a449972ab298
+      version: -1
+      name: Verify Outputs
+      description: Verify output of gcb-create-reference-list command.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.ReferenceList.name
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.ReferenceList.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.ReferenceList.lines
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.ReferenceList.createTime
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '8':
+    id: '8'
+    taskid: cd3d08e8-9803-47ea-832a-a0f04c2ffb31
+    type: regular
+    task:
+      id: cd3d08e8-9803-47ea-832a-a0f04c2ffb31
+      version: -1
+      name: gcb-update-reference-list
+      description: Updates an existing reference list.
+      script: '|||gcb-update-reference-list'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      description:
+        simple: sample list
+      lines:
+        simple: Line 3,Line2,Line 1
+      name:
+        complex:
+          root: GoogleChronicleBackstory.ReferenceList.name
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '9':
+    id: '9'
+    taskid: a003ced0-b13a-4a75-8c73-91139b5a05fb
+    type: condition
+    task:
+      id: a003ced0-b13a-4a75-8c73-91139b5a05fb
+      version: -1
+      name: Verify Outputs
+      description: Verify output of gcb-update-reference-list command.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '10'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.ReferenceList.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.ReferenceList.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.ReferenceList.lines
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.ReferenceList.createTime
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '10':
+    id: '10'
+    taskid: 49f87ef0-9bfd-49bb-872f-6ad7ce942188
+    type: title
+    task:
+      id: 49f87ef0-9bfd-49bb-872f-6ad7ce942188
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '11':
+    id: '11'
+    taskid: 9c278d83-302c-4c28-8600-dceced07586b
+    type: regular
+    task:
+      id: 9c278d83-302c-4c28-8600-dceced07586b
+      version: -1
+      name: Generate Random String
+      description: Generates random string
+      scriptName: GenerateRandomString
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments:
+      Digits:
+        simple: 'False'
+      Length:
+        simple: '7'
+      Lowercase:
+        simple: 'True'
+      Punctuation:
+        simple: 'False'
+      Uppercase:
+        simple: 'False'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1960,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: Playbook to test commands:- gcb-list-reference-list, gcb-get-reference-list, gcb-create-reference-list and gcb-update-reference-list

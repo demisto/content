@@ -1,0 +1,33 @@
+{
+  "indicator": {
+    "indicatorValue": "mail16.amadeus.net",
+    "indicatorType": "DOMAIN",
+    "summaryGenerationTs": 1663488050591,
+    "firstSeenTsGlobal": null,
+    "lastSeenTsGlobal": null,
+    "latestPanVerdicts": {
+      "PAN_DB": "BENIGN"
+    },
+    "seenByDataSourceIds": [],
+    "whoisAdminCountry": null,
+    "whoisAdminEmail": null,
+    "whoisAdminName": null,
+    "whoisDomainCreationDate": null,
+    "whoisDomainExpireDate": null,
+    "whoisDomainUpdateDate": null,
+    "whoisRegistrar": null,
+    "whoisRegistrarUrl": null,
+    "whoisRegistrant": null,
+    "wildfireRelatedSampleVerdictCounts": {}
+  },
+  "tags": [],
+  "bucketInfo": {
+    "minutePoints": 200,
+    "dailyPoints": 100000,
+    "minuteBucketStart": "2022-09-18 08:00:39",
+    "dailyBucketStart": "2022-09-17 19:29:02",
+    "minutePointsRemaining": 198,
+    "dailyPointsRemaining": 87031,
+    "waitInSeconds": 0
+  }
+}

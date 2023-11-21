@@ -7,7 +7,7 @@ type: javascript
 tags:
 - agent
 - forensics
-comment: Running the Intezer Endpoint Analysis Scanner
+comment: "Deprecated. D2 agent is deprecated. No available replacement."
 enabled: true
 args:
 - name: api_key
@@ -18,8 +18,8 @@ args:
   required: true
   description: The endpoint analysis id
 scripttarget: 1
-runonce: false
 runas: Administrator
 tests:
 - no test
 fromversion: 5.0.0
+deprecated: true

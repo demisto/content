@@ -1,0 +1,20 @@
+commonfields:
+  id: SetDateField
+  version: -1
+name: SetDateField
+script: ''
+type: python
+subtype: python3
+tags:
+- Utility
+comment: Sets a custom incident field with current date
+enabled: true
+args:
+- name: fieldName
+  required: true
+  description: "The name of the incident custom field of type date"
+scripttarget: 0
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.10.12.63474
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,7 @@
+[INGEST:vendor="symantec", product="ep", target_dataset="symantec_ep_raw", no_hit = keep]
+// Support only date time of format: MMM dd hh:mm:ss.nnn. For example: "Dec 1 10:00:00".
+filter _raw_log ~= "[a-zA-z]{3}\s*\d*\s\d*:\d*:\d*\s"
+| alter tmp_time1 = to_string(arrayindex(regextract(_raw_log, "([a-zA-z]{3}\s*\d*\s\d*:\d*:\d*)\s"),0))
+| alter tmp_time1 = concat(format_timestamp("%Y",_insert_time)," ", tmp_time1)
+| alter _time = parse_timestamp("%Y %b %d %T", tmp_time1)
+| fields -tmp_time1;

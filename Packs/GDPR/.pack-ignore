@@ -1,2 +1,6 @@
 [file:layoutscontainer-GDPR_Data_Breach.json]
 ignore=BA101
+
+[file:GDPRContactAuthorities.yml]
+ignore=BA124
+

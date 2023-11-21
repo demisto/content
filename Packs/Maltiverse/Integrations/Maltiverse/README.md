@@ -1,5 +1,5 @@
 Analyze suspicious hashes, URLs, domains and IP addresses
-This integration was integrated and tested with version 1.0.0-oas3 of Maltiverse
+This integration was integrated and tested with version 1.1 of Maltiverse
 
 ## Use Cases
 ---
@@ -76,6 +76,8 @@ Checks the reputation of an IP address
 ### 2. domain
 ---
 Checks the reputation of a Domain
+
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 ##### Base Command
 
 `domain`
@@ -112,10 +114,7 @@ Checks the reputation of a Domain
 | Maltiverse.Domain.Tags | String | Attribute to label an IoC | 
 | Maltiverse.Domain.ModificationTime | Date | Date when the IoC was updated for the last time | 
 | Maltiverse.Domain.CreationTime | Date | Date when a IoC was inserted for the first time | 
-| Maltiverse.Domain.TLD | String | Top level domain of the hostname | 
-| Maltiverse.Domain.ResolvedIP.IP | String | Stores an IP that was resolved by the domain | 
-| Maltiverse.Domain.ResolvedIP.Timestamp | Date | Stores an timestamp when an IP address has been resolved by the domain | 
-
+| Maltiverse.Domain.TLD | String | Top level domain of the hostname |
 
 ##### Command Example
 ```!domain domain=google.com```
@@ -128,6 +127,8 @@ Checks the reputation of a Domain
 ### 3. url
 ---
 Checks the reputation of an URL
+
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 ##### Base Command
 
 `url`

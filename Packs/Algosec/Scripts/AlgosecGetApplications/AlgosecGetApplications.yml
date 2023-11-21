@@ -1,0 +1,33 @@
+commonfields:
+  id: AlgosecGetApplications
+  version: -1
+name: AlgosecGetApplications
+script: ''
+type: python
+subtype: python3
+tags:
+- Algosec
+comment: Find applications containing network objects related to IP address using BusinessFlow
+system: true
+args:
+- name: address
+  required: true
+  default: true
+  description: The IP/Subnet to search
+- name: type
+  auto: PREDEFINED
+  predefined:
+  - INTERSECT
+  - CONTAINED
+  - CONTAINING
+  - EXACT
+  description: The search method for the address
+scripttarget: 0
+timeout: 0s
+dependson:
+  must:
+  - algosec-get-applications
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.10.12.63474
+tests:
+- No tests (auto formatted)

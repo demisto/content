@@ -1,0 +1,32 @@
+args:
+- description: Arrary Of Commands Executed
+  name: cmds
+  required: true
+- description: Array of Tasks Names
+  name: tasks
+  required: true
+- description: Field Name to Store Data In
+  name: gridfield
+  required: true
+- description: Result of the Command (true, false)
+  name: status
+  required: true
+commonfields:
+  id: UnitTestResults
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.12.68300
+enabled: true
+name: UnitTestResults
+comment: ""
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

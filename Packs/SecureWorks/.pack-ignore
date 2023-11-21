@@ -4,9 +4,18 @@ ignore=IN126
 [file:README.md]
 ignore=RM104
 
-
 [file:SecureWorks_image.png]
 ignore=IM111
 
 [file:TaegisXDR_image.png]
 ignore=IM111
+
+[known_words]
+MSPs
+assignee
+CQL
+namespace
+sharelink
+Taegis
+TaegisXDRv2
+XD

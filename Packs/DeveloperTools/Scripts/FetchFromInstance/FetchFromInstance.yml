@@ -1,0 +1,37 @@
+commonfields:
+  id: FetchFromInstance
+  version: -1
+name: FetchFromInstance
+fromversion: 5.0.0
+script: ''
+type: python
+subtype: python3
+tags: []
+comment: Execute FetchIncident for a given instance
+enabled: true
+args:
+- name: instance_name
+  description: The name of the instance you want to fetch from
+- name: expect_data
+  description: Whether to expect data to return from the fetch
+  defaultValue: "true"
+- name: brand_name
+  description: The name of the brand you want to fetch from
+- name: add_to_context
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Add the raw JSON of incidents to context
+  defaultValue: "false"
+- name: error_msg_in_incident
+  description: If this error message appears in the contents of the fetched incidents, will return error
+  defaultValue: "Error"
+outputs:
+- contextPath: FetchedIncidents
+  description: All incidents entries (raw JSON)
+scripttarget: 0
+runonce: false
+tests:
+- No test - cannot create a dummy integration inorder to test that
+dockerimage: demisto/python3:3.10.12.63474

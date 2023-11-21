@@ -2,8 +2,6 @@ import csv
 
 from CommonServerPython import *
 
-reload(sys)  # type: ignore
-sys.setdefaultencoding('utf8')  # pylint: disable=E1101
 codec_type = demisto.args().get('codec', 'utf-8')
 
 
@@ -13,7 +11,7 @@ def remove_non_printable_chars(s):
     'ZERO WIDTH SPACE' (U+200B)
     'ZERO WIDTH NO-BREAK SPACE' (U+FEFF)
     """
-    return s.replace(u'\ufeff', '').replace(u'\u200f', '')
+    return s.replace('\ufeff', '').replace('\u200f', '')
 
 
 def unicode_dict_reader(csv_data, **kwargs):
@@ -47,7 +45,7 @@ def unicode_dict_reader(csv_data, **kwargs):
     for row in csv_reader:
         row_dict = {}
 
-        for key, value in row.iteritems():
+        for key, value in row.items():
             if key is None:
                 # if the key is None it means there are fields in the row which has no column name
                 # so we create NO_NAME_COLUMN_{} column
@@ -57,17 +55,17 @@ def unicode_dict_reader(csv_data, **kwargs):
                 counter = 0
                 for val in value:
                     col_name = 'NO_NAME_COLUMN_{}'.format(counter)
-                    row_dict[col_name] = unicode(val, codec_type)
+                    row_dict[col_name] = val
                     counter += 1
 
                 if no_name_columns_counter < counter:
                     no_name_columns_counter = counter
 
             elif value is not None:
-                col_name = remove_non_printable_chars(unicode(key, codec_type))
-                row_dict[col_name] = unicode(value, codec_type)
+                col_name = remove_non_printable_chars(key)
+                row_dict[col_name] = value
             else:
-                col_name = remove_non_printable_chars(unicode(key, codec_type))
+                col_name = remove_non_printable_chars(key)
                 row_dict[col_name] = None
 
         arr.append(row_dict)
@@ -89,7 +87,7 @@ def get_entry_by_file_name(file_name):
     for entry in reversed(entries):
         fn = demisto.get(entry, 'File')
 
-        if type(fn) not in [unicode, str]:
+        if not isinstance(fn, str):
             continue
 
         if file_name.lower() == fn.lower():
@@ -140,7 +138,7 @@ def main():
             entry = get_entry_by_file_name(file_name)
             entry_id = entry['ID']
         except ValueError as e:
-            return_error(e.message)
+            return_error(str(e))
 
     res = demisto.getFilePath(entry_id)
     if not res:
@@ -205,24 +203,28 @@ def main():
             for row in csv_data:
                 content += ','.join(row) + '\n'
                 if parse_ip != -1:
-                    md += (row[parse_ip] + '|' if row[parse_ip] else ' |')
                     is_ip = re.search(r'([0-9]{1,3}\.){3}[0-9]{1,3}', row[parse_ip])
                     is_valid = is_ip_valid(row[parse_ip])
                     if is_ip and is_valid:
                         ip_list.append(row[parse_ip])
+                        continue
+
+                if parse_hash != -1:
+                    is_hash = re.search(r'[0-9A-Fa-f]{32,128}', row[parse_hash])
+                    if is_hash:
+                        hash_list.append(row[parse_hash])
+                        continue
 
                 if parse_domain != -1:
-                    md += (row[parse_domain] + '|' if row[parse_domain] else ' |')
                     has_dot = '.' in row[parse_domain]
                     no_spaces = ' ' not in row[parse_domain]
                     if has_dot and no_spaces:
                         domain_list.append(row[parse_domain])
 
-                if parse_hash != -1:
-                    md += (row[parse_hash] + '|' if row[parse_hash] else ' |')
-                    is_hash = re.search(r'[0-9A-Fa-f]{32,128}', row[parse_hash])
-                    if is_hash:
-                        hash_list.append(row[parse_hash])
+            for c in range(max(len(ip_list), len(domain_list), len(hash_list))):
+                md += ip_list[c] + '|' if len(ip_list) >= c + 1 else ' |'
+                md += domain_list[c] + '|' if len(domain_list) >= c + 1 else ' |'
+                md += hash_list[c] + '|' if len(hash_list) >= c + 1 else ' |'
                 md += '\n'
 
         context = {}  # type: dict

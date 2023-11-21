@@ -1,12 +1,12 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from typing import Any, Dict, List, Optional, Tuple
 
 import dateparser
-import demistomock as demisto
-import requests
-from CommonServerPython import *  # noqa: F401
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 
 ''' CONSTANTS '''

@@ -1,0 +1,41 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Case"
+    ],
+    "caseInsensitive": true,
+    "cliName": "subclassification",
+    "closeForm": false,
+    "content": true,
+    "description": "For CMNG",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_subclassification",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "subclassification",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "placeholder": "Other",
+    "required": false,
+    "selectValues": [
+        "Other",
+        "Port Scan",
+        "Malware",
+        "Remote Code Execution",
+        "CASB (Cloud Security)",
+        "Impossible Traveler",
+        "Multiple Failed Login Attempts"
+    ],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.8.0"
+}

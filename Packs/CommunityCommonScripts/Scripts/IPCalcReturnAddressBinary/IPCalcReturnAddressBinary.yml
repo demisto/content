@@ -1,0 +1,24 @@
+args:
+- description: Address to use
+  name: ip_address
+  required: true
+comment: An automation script to return address in binary format
+commonfields:
+  id: IPCalcReturnAddressBinary
+  version: -1
+name: IPCalcReturnAddressBinary
+outputs:
+- contextPath: IPCalc.IP.Binary.binary
+  description: Subnet binary
+  type: String
+- contextPath: IPCalc.IP.Binary.address
+  description: IP address
+  type: String
+script: '-'
+subtype: python3
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.10.12.63474
+tests:
+- No tests
+fromversion: 6.0.0

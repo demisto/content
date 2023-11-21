@@ -1,0 +1,23 @@
+commonfields:
+  id: ConvertToSingleElementArray
+  version: -1
+name: ConvertToSingleElementArray
+script: ''
+type: python
+tags:
+- transformer
+- entirelist
+comment: Converts a single string to an array of that string.
+enabled: true
+args:
+- name: value
+  default: true
+  description: The string to convert to an array of that string.
+  isArray: true
+scripttarget: 0
+subtype: python3
+runas: DBotWeakRole
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
+dockerimage: demisto/python3:3.10.12.63474

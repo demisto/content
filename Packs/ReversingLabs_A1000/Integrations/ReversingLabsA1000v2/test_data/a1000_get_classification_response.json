@@ -1,0 +1,34 @@
+{
+    "classification": "malicious",
+    "riskscore": 10,
+    "first_seen": "2022-12-19T11:39:11Z",
+    "last_seen": "2022-12-19T11:46:40Z",
+    "classification_result": "Win32.Trojan.Delf",
+    "classification_reason": "Antivirus",
+    "classification_origin": {
+        "sha1": "aeb8cb59f158ca853a41c55ca3cfa14c0bf1baad",
+        "sha256": "43d51f009bf94707556031b9688e84bb85df2c59854fba8fcb90be6c0d19e1d1",
+        "sha512": "8a1c9512fa167b938ea31c047a48dd6ec36d9b22443bc4ee6b97a116e16ff33427645ac76349f531cd9a672b4fffc3c4c92d1c82d2a71241915c1499336fd221",
+        "md5": "8521e64c683e47c1db64d80577513016",
+        "imphash": "c57e34b759dff2e57f71960b2fdb93da"
+    },
+    "cloud_last_lookup": "2022-12-19T21:43:44Z",
+    "data_source": "LOCAL",
+    "sha1": "a94775deb818a4d68635eeed3d16abc7f7b8bdd6",
+    "sha256": "d3d8091a287c8aee0ee5c54838540e714f22eef7cbeb65eb2b6af42116f5d5f2",
+    "md5": "a322205db6c3b1c451725b84f1d010cc",
+    "av_scanners": {
+        "scanner_count": 31,
+        "scanner_match": 0,
+        "scanner_percent": 0.0,
+        "vendor_count": 21,
+        "vendor_match": 0,
+        "vendor_percent": 0.0,
+        "antivirus": {
+            "vendor_match": 0,
+            "scanner_match": 0,
+            "vendor_count": 21,
+            "scanner_count": 31
+        }
+    }
+}

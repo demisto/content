@@ -1,0 +1,45 @@
+args:
+- description: 'Query to use to find the Indicators, same as you''d use on the Threat Intel page. '
+  name: query
+  required: true
+- defaultValue: "25"
+  description: The number of indicators to return, defaults to a max of 25.
+  name: size
+- description: 'A comma seperated list of fields to return to the context, (default: id,indicator_type,value,score,verdict))'
+  name: add_fields_to_context
+comment: |-
+  Searches Cortex XSOAR Indicators.
+
+  Search for XSOAR Indicators and returns the id, indicator_type, value, and score/verdict.
+
+  You can add additional fields from the indicators using the add_field_to_context argument.
+commonfields:
+  id: SearchIndicator
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.12.63474
+enabled: true
+name: SearchIndicator
+outputs:
+- contextPath: foundIndicators.id
+  description: The id of the indicator in the XSOAR database.
+- contextPath: foundIndicators.indicator_type
+  description: The type of Indicator (i.e. IP, Domain, URL, etc)
+- contextPath: foundIndicators.value
+  description: The value of the Indicator
+- contextPath: foundIndicators.score
+  description: The numeric score of the indicator (0 = Unknown, 1 = Good, 2 = Suspicious, 3 = Malicious)
+- contextPath: foundIndicators.verdict
+  description: The human readable score/verdict of the Indicator.
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Utility
+type: python
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

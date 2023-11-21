@@ -92,8 +92,7 @@ script:
       required: true
       description: Range of machine IPs (can also be just one)
     - name: source-name
-      description: Gives the job a category, and identifies what appliance generated
-        the alert
+      description: Gives the job a category, and identifies what appliance generated the alert
     - name: file-name
       required: true
       description: Name of the file to check hash for
@@ -102,7 +101,6 @@ script:
     - name: content-hash
       description: Input an MD5 to collect file by hash signature
     description: This command finds if a given hash is active on an endpoint
-hidden: false
 tests:
 - No tests
 fromversion: 5.0.0

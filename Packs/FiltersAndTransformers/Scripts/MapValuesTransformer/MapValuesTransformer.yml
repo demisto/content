@@ -1,0 +1,53 @@
+commonfields:
+  id: MapValuesTransformer
+  version: -1
+name: MapValuesTransformer
+script: ''
+type: python
+tags:
+- transformer
+- string
+comment: |-
+  This script converts the input value into another value using two lists. The input value is searched in the first list (input_values). 
+  If it exists, the value from the second list (mapped_values) at the same index is retutrned. If there is no match, the original value is returned.
+  If the original input is a dictionary, then the script will look for a "stringified" version of the key/:/value pair in the input_values and then map the result in the output_values into the original "value".
+
+  Example 1:
+
+  input_values = "1,2,3,4"
+  mapper_values = "4,3,2,1"
+  value = 3
+
+  Output would be "2"
+
+  Example 2:
+
+  input_values ="firstkey: datahere,secondkey: datathere"
+  mapper_values = "datathere,datahere"
+  value(dict)= {
+                                  "firstkey": "datahere"
+                            }
+
+  Output would be:
+                            {
+                                  "firstkey": "datathere"
+                             }
+
+  The reason for matching the key AND value pair in a dictionary is to allow the mappig of values that have a specific key name. In most cases, dictionaries will continan key-value pairs in which the values are the same. You might want to change the value of KeyA, but not the value of KeyB. This method gives control over which key is changed.
+
+  When the input is a dict, str , int, or list, the output is ALWAYS returned as a string.
+enabled: true
+args:
+- name: input_values
+  required: true
+  description: Comma-separated values to map from.
+- name: mapped_values
+  required: true
+  description: Comma-separated values to map to.
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.10.12.63474
+runas: DBotWeakRole
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

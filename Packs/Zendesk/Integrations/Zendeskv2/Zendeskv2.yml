@@ -1,0 +1,1599 @@
+commonfields:
+  id: Zendesk v2
+  version: -1
+name: Zendesk v2
+display: Zendesk v2
+category: Case Management
+description: IT service management
+detaileddescription: Zendesk integration requires the API key and a username.
+configuration:
+- display: Server URL (e.g., https://demisto.zendesk.com)
+  name: base_url
+  type: 0
+  required: true
+  section: Connect
+- display: Username (or '<username>/token' when using API key).
+  additionalinfo: example 'admin@org.com' when using the password, or 'admin@org.com/token' when using an API key.
+  displaypassword: Password/API key
+  name: credentials
+  type: 9
+  required: true
+  section: Connect
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  section: Connect
+  required: false
+- additionalinfo: 'Selects which direction you want the incidents mirrored. You can mirror **Incoming** only (from Zendesk to Cortex XSOAR), **Outgoing** only (from Cortex XSOAR to Zendesk), or both **Incoming And Outgoing**.'
+  defaultvalue: None
+  display: Incident Mirroring Direction
+  hidden:
+  - marketplacev2
+  name: mirror_direction
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  type: 15
+  required: false
+- display: Close mirrored incidents
+  name: close_incident
+  defaultvalue: "true"
+  type: 8
+  additionalinfo: If true, XSOAR will mirror also the ticket closeing.
+  hidden:
+  - marketplacev2
+  required: false
+- display: Get incident attachments
+  name: get_attachments
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
+- additionalinfo: Comment and files that will be marked with this tag will be pushed into Zendesk.
+  defaultvalue: mirror
+  display: Mirror tags
+  hidden:
+  - marketplacev2
+  name: mirror_tags
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+- display: Ticket Field to Fetch by
+  name: time_filter
+  defaultvalue: created-at
+  type: 15
+  options:
+  - created-at
+  - updated-at
+  additionalinfo: Duplications might accrue when choosing 'updated-at'
+  section: Collect
+  advanced: true
+  required: false
+- display: Ticket types to fetch
+  name: ticket_types
+  defaultvalue: all
+  type: 16
+  options:
+  - all
+  - problem
+  - incident
+  - question
+  - task
+  section: Collect
+  advanced: true
+  required: false
+- display: Fetch tickets status filter
+  name: ticket_status
+  defaultvalue: all
+  type: 16
+  options:
+  - all
+  - new
+  - open
+  - pending
+  - hold
+  - solved
+  - closed
+  section: Collect
+  advanced: true
+  required: false
+- display: Fetch tickets priority filter
+  name: ticket_priority
+  defaultvalue: all
+  type: 16
+  options:
+  - all
+  - low
+  - normal
+  - high
+  - urgent
+  section: Collect
+  advanced: true
+  required: false
+- display: Fetch tickets query filter
+  name: fetch_query
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+- display: Maximum number of incidents per fetch
+  name: max_fetch
+  type: 0
+  defaultvalue: '50'
+  required: false
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  type: 0
+  required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  type: 19
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: Zendesk Ticket
+  type: 13
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+script:
+  script: '-'
+  type: python
+  commands:
+  - name: zendesk-user-list
+    description: |-
+      Gets the specified user's data. 
+      Required permissions: Admins, Agents and Light Agents.
+    arguments:
+    - name: user_id
+      isArray: true
+      description: The user's ID to retrieve.
+    - name: user_name
+      description: |-
+        The user's name. 
+        Required permissions to use this argument: Agents. 
+    - name: external_id
+      description: The user's unique identifier from another system.
+    - name: role
+      auto: PREDEFINED
+      predefined:
+      - end-user
+      - agent
+      - admin
+      description: The user's role.
+    - name: limit
+      default: true
+      description: Maximum number of results to return. Default is 50.
+    - name: page_size
+      description: The page size (used for pagination).
+    - name: page_number
+      description: The page number (used for pagination).
+    outputs:
+    - contextPath: Zendesk.User.active
+      type: boolean
+      description: False if the user has been deleted.
+    - contextPath: Zendesk.User.alias
+      type: string
+      description: An alias displayed to end users.
+    - contextPath: Zendesk.User.chat_only
+      type: boolean
+      description: Whether the user is a chat-only agent.
+    - contextPath: Zendesk.User.created_at
+      type: date
+      description: The time the user was created.
+    - contextPath: Zendesk.User.custom_role_id
+      type: number
+      description: A custom role if the user is an agent on the Enterprise plan or above.
+    - contextPath: Zendesk.User.default_group_id
+      type: number
+      description: The ID of the user's default group.
+    - contextPath: Zendesk.User.details
+      type: string
+      description: Any details you want to store about the user, such as an address.
+    - contextPath: Zendesk.User.external_id
+      type: string
+      description: A unique identifier from another system.
+    - contextPath: Zendesk.User.email
+      type: string
+      description: The user's primary email address.
+    - contextPath: Zendesk.User.iana_time_zone
+      type: string
+      description: The time zone for the user.
+    - contextPath: Zendesk.User.id
+      type: number
+      description: The user's ID.
+    - contextPath: Zendesk.User.last_login_at
+      type: string
+      description: The last time the user signed in to Zendesk Support.
+    - contextPath: Zendesk.User.locale
+      type: string
+      description: The user's locale.
+    - contextPath: Zendesk.User.moderator
+      type: boolean
+      description: Whether the user has forum moderation capabilities.
+    - contextPath: Zendesk.User.name
+      type: string
+      description: The user's name.
+    - contextPath: Zendesk.User.notes
+      type: string
+      description: Any notes you want to store about the user.
+    - contextPath: Zendesk.User.only_private_comments
+      type: boolean
+      description: True if the user can only create private comments.
+    - contextPath: Zendesk.User.organization_id
+      type: number
+      description: The ID of the user's organization.
+    - contextPath: Zendesk.User.organization
+      type: string
+      description: The name of the user's organization.
+    - contextPath: Zendesk.User.phone
+      type: string
+      description: The user's primary phone number.
+    - contextPath: Zendesk.User.remote_photo_url
+      type: string
+      description: A URL pointing to the user's profile picture.
+    - contextPath: Zendesk.User.report_csv
+      type: boolean
+      description: Whether the user can access the CSV report on the Search tab of the Reporting page in the Support admin interface.
+    - contextPath: Zendesk.User.restricted_agent
+      type: boolean
+      description: Whether the agent has any restrictions; false for admins and unrestricted agents, true for other agents.
+    - contextPath: Zendesk.User.role
+      type: string
+      description: The user's role. Possible values are "end-user", "agent", or "admin".
+    - contextPath: Zendesk.User.role_type
+      type: string
+      description: The user's role type.
+    - contextPath: Zendesk.User.shared
+      type: boolean
+      description: Whether the user is shared from a different Zendesk Support instance.
+    - contextPath: Zendesk.User.shared_agent
+      type: boolean
+      description: Whether the user is a shared agent from a different Zendesk Support instance.
+    - contextPath: Zendesk.User.shared_phone_number
+      type: boolean
+      description: Whether the phone number is shared.
+    - contextPath: Zendesk.User.signature
+      type: string
+      description: The user's signature.
+    - contextPath: Zendesk.User.suspended
+      type: boolean
+      description: Whether the agent is suspended. Tickets from suspended users are also suspended, and these users cannot sign in to the end user portal.
+    - contextPath: Zendesk.User.tags
+      type: string
+      description: The user's tags. Only present if your account has user tagging enabled.
+    - contextPath: Zendesk.User.ticket_restriction
+      type: string
+      description: 'Specifies which tickets the user has access to. Possible values are: "organization", "groups", "assigned", "requested", null.'
+    - contextPath: Zendesk.User.time_zone
+      type: string
+      description: The user's time zone.
+    - contextPath: Zendesk.User.two_factor_auth_enabled
+      type: boolean
+      description: Whether two factor authentication is enabled.
+    - contextPath: Zendesk.User.updated_at
+      type: string
+      description: The time the user was last updated.
+    - contextPath: Zendesk.User.verified
+      type: boolean
+      description: Whether any of the user's identities is verified.
+  - name: zendesk-user-create
+    description: |-
+      Creates a new Zendesk user. 
+      Required permissions: Agents, with restrictions on certain actions.
+    arguments:
+    - name: name
+      required: true
+      description: The user's name.
+    - name: email
+      required: true
+      description: The user's primary email address.
+    - name: role
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - end_user
+      - agent
+      - admin
+      description: The user's role. Possible values are "end-user", "agent", or "admin".
+    - name: role_type
+      auto: PREDEFINED
+      predefined:
+      - custom_agent
+      - light_agent
+      - chat_agent
+      - chat_agent_contributor
+      - admin
+      - billing_admin
+      description: The user's role type.
+    - name: verified
+      description: Whether to mark the user's email as verified.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    - name: tags
+      isArray: true
+      description: A comma-separated list of users' tags.
+    - name: phone
+      description: The user's primary phone number.
+    - name: organization_name
+      description: The name of the user's organization.
+    - name: organization_id
+      description: The ID of the user's organization.
+    - name: notes
+      description: Any notes you want to store about the user.
+    - name: details
+      description: Any details you want to store about the user, such as an address.
+    - name: external_id
+      description: A unique identifier from another system.
+    - name: locale
+      description: The user's locale.
+    - name: alias
+      description: An alias displayed to end users.
+    - name: default_group_id
+      description: The ID of the user's default group.
+    - name: custom_role_id
+      description: A custom role if the user is an agent on the Enterprise plan or above.
+    - name: identities
+      description: 'Users external identities (JSON-formatted argument) e.g., [{"type": "email", "value": "test@user.com"}, {"type": "twitter", "value": "tester84"}]'
+    - name: user_fields
+      description: Values of custom fields in the user's profile (json formated field).
+    - name: check_if_user_exists
+      description: Check if the user already exists (Will fail if the user exists already or will update a user's existing data).
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    outputs:
+    - contextPath: Zendesk.User.active
+      type: boolean
+      description: false if the user has been deleted.
+    - contextPath: Zendesk.User.alias
+      type: string
+      description: An alias displayed to end users.
+    - contextPath: Zendesk.User.chat_only
+      type: boolean
+      description: Whether or not the user is a chat-only agent.
+    - contextPath: Zendesk.User.created_at
+      type: date
+      description: The time the user was created.
+    - contextPath: Zendesk.User.custom_role_id
+      type: number
+      description: A custom role if the user is an agent on the Enterprise plan or above.
+    - contextPath: Zendesk.User.default_group_id
+      type: number
+      description: The ID of the user's default group.
+    - contextPath: Zendesk.User.details
+      type: string
+      description: Any details you want to store about the user, such as an address.
+    - contextPath: Zendesk.User.external_id
+      type: string
+      description: A unique identifier from another system.
+    - contextPath: Zendesk.User.email
+      type: string
+      description: The user's primary email address.
+    - contextPath: Zendesk.User.iana_time_zone
+      type: string
+      description: The time zone for the user.
+    - contextPath: Zendesk.User.id
+      type: number
+      description: The user's ID.
+    - contextPath: Zendesk.User.last_login_at
+      type: string
+      description: The last time the user signed in to Zendesk Support.
+    - contextPath: Zendesk.User.locale
+      type: string
+      description: The user's locale.
+    - contextPath: Zendesk.User.moderator
+      type: boolean
+      description: Whether the user has forum moderation capabilities.
+    - contextPath: Zendesk.User.name
+      type: string
+      description: The user's name.
+    - contextPath: Zendesk.User.notes
+      type: string
+      description: Any notes you want to store about the user.
+    - contextPath: Zendesk.User.only_private_comments
+      type: boolean
+      description: True if the user can only create private comments.
+    - contextPath: Zendesk.User.organization_id
+      type: number
+      description: The ID of the user's organization.
+    - contextPath: Zendesk.User.organization
+      type: string
+      description: The name of the user's organization.
+    - contextPath: Zendesk.User.phone
+      type: string
+      description: The user's primary phone number.
+    - contextPath: Zendesk.User.remote_photo_url
+      type: string
+      description: A URL pointing to the user's profile picture.
+    - contextPath: Zendesk.User.report_csv
+      type: boolean
+      description: Whether the user can access the CSV report on the Search tab of the Reporting page in the Support admin interface.
+    - contextPath: Zendesk.User.restricted_agent
+      type: boolean
+      description: Whether the agent has any restrictions; false for admins and unrestricted agents, true for other agents.
+    - contextPath: Zendesk.User.role
+      type: string
+      description: The user's role. Possible values are "end-user", "agent", or "admin".
+    - contextPath: Zendesk.User.role_type
+      type: string
+      description: The user's role type.
+    - contextPath: Zendesk.User.shared
+      type: boolean
+      description: Whether the user is shared from a different Zendesk Support instance.
+    - contextPath: Zendesk.User.shared_agent
+      type: boolean
+      description: Whether the user is a shared agent from a different Zendesk Support instance.
+    - contextPath: Zendesk.User.shared_phone_number
+      type: boolean
+      description: Whether the phone number is shared.
+    - contextPath: Zendesk.User.signature
+      type: string
+      description: The user's signature.
+    - contextPath: Zendesk.User.suspended
+      type: boolean
+      description: Whether the agent is suspended. Tickets from suspended users are also suspended, and these users cannot sign in to the end user portal.
+    - contextPath: Zendesk.User.tags
+      type: string
+      description: The user's tags. Only present if your account has user tagging enabled.
+    - contextPath: Zendesk.User.ticket_restriction
+      type: string
+      description: 'Specifies which tickets the user has access to. Possible values are: "organization", "groups", "assigned", "requested", null.'
+    - contextPath: Zendesk.User.time_zone
+      type: string
+      description: The user's time zone.
+    - contextPath: Zendesk.User.two_factor_auth_enabled
+      type: boolean
+      description: Whether two factor authentication is enabled.
+    - contextPath: Zendesk.User.updated_at
+      type: string
+      description: The time the user was last updated.
+    - contextPath: Zendesk.User.verified
+      type: boolean
+      description: Whether any of the user's identities is verified.
+  - name: zendesk-user-update
+    description: |-
+      Update user data. 
+      Required permissions: Agents, with restrictions on certain actions.
+    arguments:
+    - name: user_id
+      required: true
+      description: The user ID to update.
+    - name: name
+      description: The user's name.
+    - name: role
+      auto: PREDEFINED
+      predefined:
+      - end-user
+      - agent
+      - admin
+      description: The user's role. Possible values are "end-user", "agent", or "admin".
+    - name: role_type
+      auto: PREDEFINED
+      predefined:
+      - custom_agent
+      - light_agent
+      - chat_agent
+      - chat_agent_contributor
+      - admin
+      - billing_admin
+      description: The user's role type.
+    - name: verified
+      description: Whether to mark the user email as verified (the added email).
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: suspended
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: Whether the user is suspended.
+    - name: tags
+      isArray: true
+      description: The user's tags.
+    - name: email
+      description: Secondary email to add.
+    - name: phone
+      description: The user's primary phone number.
+    - name: organization_name
+      description: The name of the user's organization.
+    - name: organization_id
+      description: The ID of the user's organization.
+    - name: notes
+      description: Any notes you want to store about the user.
+    - name: details
+      description: Any details you want to store about the user, such as an address.
+    - name: external_id
+      description: A unique identifier from another system.
+    - name: locale
+      description: The user's locale.
+    - name: alias
+      description: An alias displayed to end users.
+    - name: default_group_id
+      description: The ID of the user's default group.
+    - name: custom_role_id
+      description: A custom role if the user is an agent on the Enterprise plan or above.
+    - name: identities
+      description: 'Users external identities (JSON-formatted argument) e.g., [{"type": "email", "value": "test@user.com"}, {"type": "twitter", "value": "tester84"}]'
+    - name: user_fields
+      description: Values of custom fields in the user's profile (JSON-formatted field).
+    outputs:
+    - contextPath: Zendesk.User.active
+      type: boolean
+      description: False if the user has been deleted.
+    - contextPath: Zendesk.User.alias
+      type: string
+      description: An alias displayed to end users.
+    - contextPath: Zendesk.User.chat_only
+      type: boolean
+      description: Whether the user is a chat-only agent.
+    - contextPath: Zendesk.User.created_at
+      type: date
+      description: The time the user was created.
+    - contextPath: Zendesk.User.custom_role_id
+      type: number
+      description: A custom role if the user is an agent on the Enterprise plan or above.
+    - contextPath: Zendesk.User.default_group_id
+      type: number
+      description: The ID of the user's default group.
+    - contextPath: Zendesk.User.details
+      type: string
+      description: Any details you want to store about the user, such as an address.
+    - contextPath: Zendesk.User.external_id
+      type: string
+      description: A unique identifier from another system.
+    - contextPath: Zendesk.User.email
+      type: string
+      description: The user's primary email address.
+    - contextPath: Zendesk.User.iana_time_zone
+      type: string
+      description: The time zone for the user.
+    - contextPath: Zendesk.User.id
+      type: number
+      description: The user's ID.
+    - contextPath: Zendesk.User.last_login_at
+      type: string
+      description: The last time the user signed in to Zendesk Support.
+    - contextPath: Zendesk.User.locale
+      type: string
+      description: The user's locale.
+    - contextPath: Zendesk.User.moderator
+      type: boolean
+      description: Whether the user has forum moderation capabilities.
+    - contextPath: Zendesk.User.name
+      type: string
+      description: The user's name.
+    - contextPath: Zendesk.User.notes
+      type: string
+      description: Any notes you want to store about the user.
+    - contextPath: Zendesk.User.only_private_comments
+      type: boolean
+      description: True if the user can only create private comments.
+    - contextPath: Zendesk.User.organization_id
+      type: number
+      description: The ID of the user's organization.
+    - contextPath: Zendesk.User.organization
+      type: string
+      description: The name of the user's organization.
+    - contextPath: Zendesk.User.phone
+      type: string
+      description: The user's primary phone number.
+    - contextPath: Zendesk.User.remote_photo_url
+      type: string
+      description: A URL pointing to the user's profile picture.
+    - contextPath: Zendesk.User.report_csv
+      type: boolean
+      description: Whether the user can access the CSV report on the Search tab of the Reporting page in the Support admin interface.
+    - contextPath: Zendesk.User.restricted_agent
+      type: boolean
+      description: If the agent has any restrictions; false for admins and unrestricted agents, true for other agents.
+    - contextPath: Zendesk.User.role
+      type: string
+      description: The user's role. Possible values are "end-user", "agent", or "admin".
+    - contextPath: Zendesk.User.role_type
+      type: string
+      description: The user's role type.
+    - contextPath: Zendesk.User.shared
+      type: boolean
+      description: Whether the user is shared from a different Zendesk Support instance.
+    - contextPath: Zendesk.User.shared_agent
+      type: boolean
+      description: Whether the user is a shared agent from a different Zendesk Support instance.
+    - contextPath: Zendesk.User.shared_phone_number
+      type: boolean
+      description: Whether the phone number is shared.
+    - contextPath: Zendesk.User.signature
+      type: string
+      description: The user's signature.
+    - contextPath: Zendesk.User.suspended
+      type: boolean
+      description: Whether the agent is suspended. Tickets from suspended users are also suspended, and these users cannot sign in to the end user portal.
+    - contextPath: Zendesk.User.tags
+      type: string
+      description: The user's tags. Only present if your account has user tagging enabled.
+    - contextPath: Zendesk.User.ticket_restriction
+      type: string
+      description: 'Specifies which tickets the user has access to. Possible values are: "organization", "groups", "assigned", "requested", null'
+    - contextPath: Zendesk.User.time_zone
+      type: string
+      description: The user's time zone.
+    - contextPath: Zendesk.User.two_factor_auth_enabled
+      type: boolean
+      description: Whether two factor authentication is enabled.
+    - contextPath: Zendesk.User.updated_at
+      type: string
+      description: The time the user was last updated.
+    - contextPath: Zendesk.User.verified
+      type: boolean
+      description: Whether any of the user's identities is verified.
+  - name: zendesk-user-delete
+    description: |-
+      Delete a user. 
+      Required permissions: Admins. 
+    arguments:
+    - name: user_id
+      required: true
+      description: The ID of the user to delete.
+    execution: true
+  - name: zendesk-organization-list
+    description: |-
+      Get organization's data. 
+      Required permissions: Agents, with certain restrictions. 
+      If the agent has a custom agent role that restricts the agent's access to only users in their own organization,
+      a 403 Forbidden error is returned. See Creating custom agent roles in the Zendesk help.
+    arguments:
+    - name: organization_id
+      description: |-
+        The ID of a specific organization. 
+        Required permissions: Admins, Agents. 
+    - name: limit
+      default: true
+      description: Maximum number of results to return. Default is 50.
+    - name: page_size
+      description: The page size (used for pagination).
+    - name: page_number
+      description: The page number (used for pagination).
+    outputs:
+    - contextPath: Zendesk.Organization.created_at
+      type: date
+      description: The time the organization was created.
+    - contextPath: Zendesk.Organization.details
+      type: string
+      description: Any details about the organization, such as the address.
+    - contextPath: Zendesk.Organization.domain_names
+      type: string
+      description: Domain names associated with this organization.
+    - contextPath: Zendesk.Organization.external_id
+      type: string
+      description: A unique external ID to associate organizations to an external record.
+    - contextPath: Zendesk.Organization.group_id
+      type: number
+      description: New tickets from users in this organization are automatically put in this group.
+    - contextPath: Zendesk.Organization.id
+      type: number
+      description: The organization ID.
+    - contextPath: Zendesk.Organization.name
+      type: string
+      description: The name of the organization.
+    - contextPath: Zendesk.Organization.notes
+      type: string
+      description: Any notes you have about the organization.
+    - contextPath: Zendesk.Organization.shared_comments
+      type: boolean
+      description: End users in this organization are able to see each other's comments on tickets.
+    - contextPath: Zendesk.Organization.shared_tickets
+      type: boolean
+      description: End users in this organization are able to see each other's tickets.
+    - contextPath: Zendesk.Organization.tags
+      type: string
+      description: The tags of the organization.
+    - contextPath: Zendesk.Organization.updated_at
+      type: date
+      description: The time of the last update of the organization.
+    - contextPath: Zendesk.Organization.url
+      type: string
+      description: The API URL of this organization.
+  - name: zendesk-group-user-list
+    description: |-
+      Get group's users. 
+      Allowed for: Admins, Agents and Light Agents.
+    arguments:
+    - name: group_id
+      required: true
+      description: |-
+        The ID of a specific group.
+    - name: limit
+      defaultValue: 50
+      description: Maximum number of results to return.
+    - name: page_size
+      description: The page size (used for pagination).
+    - name: page_number
+      description: The page number (used for pagination).
+    outputs:
+    - contextPath: Zendesk.UserGroup.active
+      description: False if the user has been deleted.
+      type: Boolean
+    - contextPath: Zendesk.UserGroup.alias
+      description: An alias displayed to end users.
+      type: String
+    - contextPath: Zendesk.UserGroup.created_at
+      description: The time the user was created.
+      type: Date
+    - contextPath: Zendesk.UserGroup.custom_role_id
+      description: A custom role if the user is an agent on the Enterprise plan or above.
+      type: Number
+    - contextPath: Zendesk.UserGroup.default_group_id
+      description: The ID of the user's default group.
+      type: Number
+    - contextPath: Zendesk.UserGroup.details
+      description: Any details you want to store about the user, such as an address.
+      type: String
+    - contextPath: Zendesk.UserGroup.email
+      description: The user's primary email address.
+      type: String
+    - contextPath: Zendesk.UserGroup.external_id
+      description: A unique identifier from another system.
+      type: String
+    - contextPath: Zendesk.UserGroup.iana_time_zone
+      description: The time zone for the user.
+      type: String
+    - contextPath: Zendesk.UserGroup.id
+      description: The user's ID.
+      type: Number
+    - contextPath: Zendesk.UserGroup.last_login_at
+      description: The last time the user signed in to Zendesk Support.
+      type: Date
+    - contextPath: Zendesk.UserGroup.locale
+      description: The user's locale.
+      type: String
+    - contextPath: Zendesk.UserGroup.locale_id
+      description: The user's locale ID.
+      type: Number
+    - contextPath: Zendesk.UserGroup.moderator
+      description: Whether the user has forum moderation capabilities.
+      type: Boolean
+    - contextPath: Zendesk.UserGroup.name
+      description: The user's name.
+      type: String
+    - contextPath: Zendesk.UserGroup.notes
+      description: Any notes you want to store about the user.
+      type: String
+    - contextPath: Zendesk.UserGroup.only_private_comments
+      description: True if the user can only create private comments.
+      type: Boolean
+    - contextPath: Zendesk.UserGroup.organization_id
+      description: The ID of the user's organization.
+      type: Number
+    - contextPath: Zendesk.UserGroup.phone
+      description: The user's primary phone number.
+      type: String
+    - contextPath: Zendesk.UserGroup.photo
+      description: A URL pointing to the user's profile picture.
+      type: String
+    - contextPath: Zendesk.UserGroup.report_csv
+      description: Whether the user can access the CSV report on the Search tab of the Reporting page in the Support admin interface.
+      type: Boolean
+    - contextPath: Zendesk.UserGroup.restricted_agent
+      description: Whether the agent has any restrictions; false for admins and unrestricted agents, true for other agents.
+      type: Boolean
+    - contextPath: Zendesk.UserGroup.role
+      description: The user's role. Possible values are "end-user", "agent", or "admin".
+      type: String
+    - contextPath: Zendesk.UserGroup.role_type
+      description: The user's role type.
+      type: Number
+    - contextPath: Zendesk.UserGroup.shared
+      description: Whether the user is shared from a different Zendesk Support instance.
+      type: Boolean
+    - contextPath: Zendesk.UserGroup.shared_agent
+      description: Whether the user is a shared agent from a different Zendesk Support instance.
+      type: Boolean
+    - contextPath: Zendesk.UserGroup.shared_phone_number
+      description: Whether the phone number is shared.
+      type: Boolean
+    - contextPath: Zendesk.UserGroup.signature
+      description: The user's signature.
+      type: String
+    - contextPath: Zendesk.UserGroup.suspended
+      description: Whether the agent is suspended. Tickets from suspended users are also suspended, and these users cannot sign in to the end user portal.
+      type: Boolean
+    - contextPath: Zendesk.UserGroup.tags
+      description: The user's tags. Only present if your account has user tagging enabled.
+      type: Unknown
+    - contextPath: Zendesk.UserGroup.ticket_restriction
+      description: 'Specifies which tickets the user has access to. Possible values are: "organization", "groups", "assigned", "requested", null.'
+      type: Unknown
+    - contextPath: Zendesk.UserGroup.time_zone
+      description: The user's time zone.
+      type: String
+    - contextPath: Zendesk.UserGroup.two_factor_auth_enabled
+      description: Whether two factor authentication is enabled.
+      type: Unknown
+    - contextPath: Zendesk.UserGroup.updated_at
+      description: The time the user was last updated.
+      type: Date
+    - contextPath: Zendesk.UserGroup.url
+      description: The URL that points to the user's API record.
+      type: String
+    - contextPath: Zendesk.UserGroup.user_fields
+      description: The user fields as shown in the Zendesk user interface.
+      type: Unknown
+    - contextPath: Zendesk.UserGroup.verified
+      description: Whether any of the user's identities is verified.
+      type: Boolean
+  - name: zendesk-group-list
+    description: |-
+      Get Zendesk groups. 
+      Allowed for: Admins, Agents.
+    arguments:
+    - name: limit
+      default: true
+      description: Maximum number of results to return.
+    - name: page_size
+      description: The page size (used for pagination).
+    - name: page_number
+      description: The page number (used for pagination).
+    outputs:
+    - contextPath: Zendesk.Group.created_at
+      description: The time the group was created.
+      type: Date
+    - contextPath: Zendesk.Group.default
+      description: If the group is the default one for the account.
+      type: Boolean
+    - contextPath: Zendesk.Group.deleted
+      description: true if the group is deleted false otherwise.
+      type: Boolean
+    - contextPath: Zendesk.Group.description
+      description: The description of the group.
+      type: String
+    - contextPath: Zendesk.Group.id
+      description: The group ID.
+      type: Number
+    - contextPath: Zendesk.Group.is_public
+      description: If true, the group is public. If false, the group is private. You can't change a private group to a public group
+      type: Boolean
+    - contextPath: Zendesk.Group.name
+      description: The name of the group.
+      type: String
+    - contextPath: Zendesk.Group.updated_at
+      description: The time of the last update of the group.
+      type: Date
+    - contextPath: Zendesk.Group.url
+      description: The API URL of the group.
+      type: String
+  - name: zendesk-ticket-list
+    description: |-
+      List Zendesk tickets. 
+      Required permissions: Agents. 
+    arguments:
+    - name: query
+      description: 'Query to search for tickets. For more information about the search syntax, see https://developer.zendesk.com/rest_api/docs/core/search. '
+    - name: ticket_id
+      isArray: true
+      description: The ID of a specific ticket.
+    - name: filter
+      auto: PREDEFINED
+      predefined:
+      - assigned
+      - requested
+      - ccd
+      - followed
+      - recent
+      description: Filter tickets for which the specified user is relevant.
+    - name: user_id
+      description: The agent ID associated with tickets filtered.
+    - name: sort
+      auto: PREDEFINED
+      predefined:
+      - id_asc
+      - status_asc
+      - updated_at_asc
+      - id_desc
+      - status_desc
+      - updated_at_desc
+      description: The order of the retrieved tickets.
+    - name: limit
+      default: true
+      description: Maximum number of results to return. Default is 50.
+    - name: page_size
+      description: The page size (used for pagination).
+    - name: page_number
+      description: The page number (used for pagination).
+    outputs:
+    - contextPath: Zendesk.Ticket.allow_attachments
+      type: boolean
+      description: Whether the agents have permission to attachments to a comment.
+    - contextPath: Zendesk.Ticket.allow_channelback
+      type: boolean
+      description: False if channelback is disabled, true otherwise. Only applicable for channels framework ticket.
+    - contextPath: Zendesk.Ticket.assignee
+      type: string
+      description: The agent currently assigned to the ticket.
+    - contextPath: Zendesk.Ticket.assignee_id
+      type: number
+      description: The ID of the agent currently assigned to the ticket.
+    - contextPath: Zendesk.Ticket.collaborators
+      type: string
+      description: The users currently CC'ed on the ticket.
+    - contextPath: Zendesk.Ticket.collaborator_ids
+      type: number
+      description: The ID of the users currently CC'ed on the ticket.
+    - contextPath: Zendesk.Ticket.created_at
+      type: date
+      description: The ticket creation time.
+    - contextPath: Zendesk.Ticket.description
+      type: string
+      description: The ticket description.
+    - contextPath: Zendesk.Ticket.due_at
+      type: date
+      description: If this is a ticket of type "task" it has a due date. Due date format uses ISO 8601 format.
+    - contextPath: Zendesk.Ticket.email_ccs
+      type: string
+      description: The agents or end users currently CC'ed on the ticket.
+    - contextPath: Zendesk.Ticket.email_cc_ids
+      type: number
+      description: The ID of the agents or end users currently CC'ed on the ticket.
+    - contextPath: Zendesk.Ticket.external_id
+      type: string
+      description: An ID you can use to link Zendesk Support tickets to local records.
+    - contextPath: Zendesk.Ticket.followers
+      type: string
+      description: The agents currently following the ticket.
+    - contextPath: Zendesk.Ticket.follower_ids
+      type: number
+      description: The ID of the user who is currently following the ticket.
+    - contextPath: Zendesk.Ticket.followup_ids
+      description: The IDs of the followups created from this ticket. IDs are only visible once the ticket is closed.
+      type: number
+    - contextPath: Zendesk.Ticket.forum_topic_id
+      type: number
+      description: The topic in the Zendesk Web portal this ticket originated from, if any.
+    - contextPath: Zendesk.Ticket.group_id
+      type: number
+      description: The ID of the group this ticket is assigned to.
+    - contextPath: Zendesk.Ticket.has_incidents
+      type: boolean
+      description: True if a ticket is a problem type and has one or more incidents linked to it. Otherwise, the value is false.
+    - contextPath: Zendesk.Ticket.id
+      type: number
+      description: The ticket ID.
+    - contextPath: Zendesk.Ticket.is_public
+      type: boolean
+      description: True if any comments are public, false otherwise.
+    - contextPath: Zendesk.Ticket.organization
+      type: string
+      description: The organization of the requester.
+    - contextPath: Zendesk.Ticket.organization_id
+      type: number
+      description: The ID of the organization of the requester.
+    - contextPath: Zendesk.Ticket.priority
+      type: string
+      description: The urgency with which the ticket should be addressed.
+    - contextPath: Zendesk.Ticket.problem_id
+      description: For tickets of type "incident", the ID of the problem the incident is linked to.
+      type: number
+    - contextPath: Zendesk.Ticket.raw_subject
+      type: string
+      description: The dynamic content placeholder, if present, or the "subject" value, if not.
+    - contextPath: Zendesk.Ticket.recipient
+      type: string
+      description: The original recipient email address of the ticket.
+    - contextPath: Zendesk.Ticket.requester
+      type: string
+      description: The user who requested this ticket.
+    - contextPath: Zendesk.Ticket.requester_id
+      type: number
+      description: The ID of the user who requested this ticket.
+    - contextPath: Zendesk.Ticket.satisfaction_rating
+      description: The satisfaction rating of the ticket, if it exists, or the state of satisfaction, "offered" or "unoffered".
+    - contextPath: Zendesk.Ticket.sharing_agreement_ids
+      type: number
+      description: The IDs of the sharing agreements used for this ticket.
+    - contextPath: Zendesk.Ticket.status
+      type: string
+      description: The state of the ticket.
+    - contextPath: Zendesk.Ticket.subject
+      type: string
+      description: The value of the subject field for this ticket.
+    - contextPath: Zendesk.Ticket.submitter
+      type: string
+      description: The user who submitted the ticket.
+    - contextPath: Zendesk.Ticket.submitter_id
+      type: number
+      description: The ID of the user who submitted the ticket.
+    - contextPath: Zendesk.Ticket.tags
+      type: string
+      description: The array of tags applied to this ticket.
+    - contextPath: Zendesk.Ticket.type
+      type: string
+      description: The type of this ticket.
+    - contextPath: Zendesk.Ticket.updated_at
+      type: date
+      description: When this ticket was last updated.
+    - contextPath: Zendesk.Ticket.url
+      type: string
+      description: The API URL of this ticket.
+  - name: zendesk-ticket-create
+    description: |-
+      Create a new Zendesk ticket.
+      Required permissions: Agents.
+    arguments:
+    - name: subject
+      required: true
+      description: The subject of this ticket.
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - problem
+      - incident
+      - question
+      - task
+      description: The type of this ticket.
+    - name: requester
+      required: true
+      description: The user who requested this ticket.
+    - name: assignee_email
+      description: The email address of the agent to assign the ticket to.
+    - name: comment
+      description: A comment to add to the ticket.
+    - name: html_comment
+      description: An HTML comment to add to the ticket.
+    - name: public
+      description: true if a public comment; false if an internal note. The initial value set on ticket creation persists for any additional comment unless you change it.
+      defaultValue: 'true'
+      auto: PREDEFINED
+      predefined:
+        - 'true'
+        - 'false'
+    - name: collaborators
+      isArray: true
+      description: Users to add as CC's when creating a ticket.
+    - name: description
+      required: true
+      description: The ticket description.
+    - name: recipient
+      description: The original recipient email address of the ticket.
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - new
+      - open
+      - pending
+      - hold
+      - solved
+      - closed
+      description: The state of the ticket.
+    - name: priority
+      auto: PREDEFINED
+      predefined:
+      - urgent
+      - high
+      - normal
+      - low
+      defaultValue: normal
+      description: The urgency with which the ticket should be addressed.
+    - name: due_at
+      description: If this is a ticket of type "task" it has a due date. Due date format uses ISO 8601 format.
+    - name: email_ccs
+      isArray: true
+      description: An array of agents or end users email CCs to add or delete from the ticket. Default is add.\nThe format is '562624,562625:put,example@example.com:delete'.
+    - name: external_id
+      description: An ID you can use to link Zendesk Support tickets to local records.
+    - name: forum_topic_id
+      description: The topic in the Zendesk Web portal this ticket originated from, if any.
+    - name: followers
+      isArray: true
+      description: An array of agent followers to add or delete from the ticket. Default is add.\nThe format is '562624,562625:put,example@example.com:delete'.
+    - name: group_id
+      description: The group this ticket is assigned to.
+    - name: organization_id
+      description: The organization of the requester.
+    - name: problem_id
+      description: For tickets of type "incident", the ID of the problem the incident is linked to.
+    - name: tags
+      isArray: true
+      description: The tags applied to this ticket.
+    - name: via_followup_source_id
+      description: The ID of a closed ticket when creating a follow-up ticket.
+    - name: custom_fields
+      description: 'Custom fields for the ticket (this is a JSON-formatted argument, see: https://developer.zendesk.com/documentation/ticketing/managing-tickets/creating-and-updating-tickets#setting-custom-field-values).'
+    - name: brand_id
+      description: Enterprise only. The ID of the brand this ticket is associated with.
+    outputs:
+    - contextPath: Zendesk.Ticket.allow_attachments
+      type: boolean
+      description: Whether the agents have permission to add attachments to a comment.
+    - contextPath: Zendesk.Ticket.allow_channelback
+      type: boolean
+      description: False if channelback is disabled, true otherwise. Only applicable for channels framework ticket.
+    - contextPath: Zendesk.Ticket.assignee
+      type: string
+      description: The agent currently assigned to the ticket.
+    - contextPath: Zendesk.Ticket.assignee_id
+      type: number
+      description: The ID of the agent currently assigned to the ticket.
+    - contextPath: Zendesk.Ticket.collaborators
+      type: string
+      description: The users currently CC'ed on the ticket.
+    - contextPath: Zendesk.Ticket.collaborator_ids
+      type: number
+      description: The ID of the users currently CC'ed on the ticket.
+    - contextPath: Zendesk.Ticket.created_at
+      type: date
+      description: The ticket creation time.
+    - contextPath: Zendesk.Ticket.description
+      type: string
+      description: The ticket description.
+    - contextPath: Zendesk.Ticket.due_at
+      type: date
+      description: If this is a ticket of type "task" it has a due date. Due date format uses ISO 8601 format.
+    - contextPath: Zendesk.Ticket.email_ccs
+      type: string
+      description: The agents or end users currently CC'ed on the ticket.
+    - contextPath: Zendesk.Ticket.email_cc_ids
+      type: number
+      description: The ID of the agents or end users currently CC'ed on the ticket.
+    - contextPath: Zendesk.Ticket.external_id
+      type: string
+      description: An ID you can use to link Zendesk Support tickets to local records.
+    - contextPath: Zendesk.Ticket.followers
+      type: string
+      description: The agents currently following the ticket.
+    - contextPath: Zendesk.Ticket.follower_ids
+      type: number
+      description: The ID of the user who is currently following the ticket.
+    - contextPath: Zendesk.Ticket.followup_ids
+      description: The IDs of the followups created from this ticket. IDs are only visible once the ticket is closed.
+      type: number
+    - contextPath: Zendesk.Ticket.forum_topic_id
+      type: number
+      description: The topic in the Zendesk Web portal this ticket originated from, if any.
+    - contextPath: Zendesk.Ticket.group_id
+      type: number
+      description: The ID of the group this ticket is assigned to.
+    - contextPath: Zendesk.Ticket.has_incidents
+      type: boolean
+      description: True if a ticket is a problem type and has one or more incidents linked to it. Otherwise, the value is false.
+    - contextPath: Zendesk.Ticket.id
+      type: number
+      description: The ticket ID.
+    - contextPath: Zendesk.Ticket.is_public
+      type: boolean
+      description: True if any comments are public, false otherwise.
+    - contextPath: Zendesk.Ticket.organization
+      type: string
+      description: The organization of the requester.
+    - contextPath: Zendesk.Ticket.organization_id
+      type: number
+      description: The ID of the organization of the requester.
+    - contextPath: Zendesk.Ticket.priority
+      type: string
+      description: The urgency with which the ticket should be addressed.
+    - contextPath: Zendesk.Ticket.problem_id
+      description: For tickets of type "incident", the ID of the problem the incident is linked to.
+      type: number
+    - contextPath: Zendesk.Ticket.raw_subject
+      type: string
+      description: The dynamic content placeholder, if present, or the "subject" value, if not.
+    - contextPath: Zendesk.Ticket.recipient
+      type: string
+      description: The original recipient email address of the ticket.
+    - contextPath: Zendesk.Ticket.requester
+      type: string
+      description: The user who requested this ticket.
+    - contextPath: Zendesk.Ticket.requester_id
+      type: number
+      description: The ID of the user who requested this ticket.
+    - contextPath: Zendesk.Ticket.satisfaction_rating
+      description: The satisfaction rating of the ticket, if it exists, or the state of satisfaction, "offered" or "unoffered".
+    - contextPath: Zendesk.Ticket.sharing_agreement_ids
+      type: number
+      description: The IDs of the sharing agreements used for this ticket.
+    - contextPath: Zendesk.Ticket.status
+      type: string
+      description: The state of the ticket.
+    - contextPath: Zendesk.Ticket.subject
+      type: string
+      description: The value of the subject field for this ticket.
+    - contextPath: Zendesk.Ticket.submitter
+      type: string
+      description: The user who submitted the ticket.
+    - contextPath: Zendesk.Ticket.submitter_id
+      type: number
+      description: The ID of the user who submitted the ticket.
+    - contextPath: Zendesk.Ticket.tags
+      type: string
+      description: The array of tags applied to this ticket.
+    - contextPath: Zendesk.Ticket.type
+      type: string
+      description: The type of this ticket.
+    - contextPath: Zendesk.Ticket.updated_at
+      type: date
+      description: When this ticket was last updated.
+    - contextPath: Zendesk.Ticket.url
+      type: string
+      description: The API URL of this ticket.
+  - name: zendesk-ticket-update
+    description: |-
+      Updates a Zendesk ticket.
+      Required permissions: Agents.
+    arguments:
+    - name: ticket_id
+      required: true
+      description: The ID of the ticket to update.
+    - name: subject
+      description: The subject of this ticket.
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - problem
+      - incident
+      - question
+      - task
+      description: The type of this ticket.
+    - name: requester
+      description: The user who requested this ticket.
+    - name: assignee_email
+      description: The email address of the agent to assign the ticket to.
+    - name: collaborators
+      isArray: true
+      description: Users to add as CCs when creating a ticket.
+    - name: comment
+      description: A comment to add to the ticket.
+    - name: html_comment
+      description: An HTML comment to add to the ticket.
+    - name: public
+      description: true if a public comment; false if an internal note. The initial value set on ticket creation persists for any additional comment unless you change it.
+      defaultValue: 'true'
+      auto: PREDEFINED
+      predefined:
+        - 'true'
+        - 'false'
+    - name: recipient
+      description: The original recipient email address of the ticket.
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - open
+      - pending
+      - hold
+      - solved
+      - closed
+      description: The state of the ticket.
+    - name: priority
+      auto: PREDEFINED
+      predefined:
+      - urgent
+      - high
+      - normal
+      - low
+      description: The urgency with which the ticket should be addressed.
+    - name: due_at
+      description: If this is a ticket of type "task" it has a due date. Due date format uses ISO 8601 format.
+    - name: email_ccs
+      isArray: true
+      description: An array of agents or end users email CC's to add or delete from the ticket. Default is add.\nThe format is '562624,562625:put,example@example.com:delete'.
+    - name: external_id
+      description: An ID you can use to link Zendesk Support tickets to local records.
+    - name: followers
+      isArray: true
+      description: An array of agent followers to add or delete from the ticket. Default is add.\nThe format is '562624,562625:put,example@example.com:delete'.
+    - name: group_id
+      description: The ID of the group this ticket is assigned to.
+    - name: organization
+      description: The ID of the organization of the requester.
+    - name: problem_id
+      description: For tickets of type "incident", the ID of the problem the incident is linked to.
+    - name: tags
+      isArray: true
+      description: The tags applied to this ticket.
+    - name: custom_fields
+      description: 'Custom fields for the ticket (this is a JSON-formatted argument see: https://developer.zendesk.com/documentation/ticketing/managing-tickets/creating-and-updating-tickets#setting-custom-field-values).'
+    - name: brand_id
+      description: Enterprise only. The ID of the brand this ticket is associated with.
+    outputs:
+    - contextPath: Zendesk.Ticket.allow_attachments
+      type: boolean
+      description: Whether the agents have permission to attachments to a comment.
+    - contextPath: Zendesk.Ticket.allow_channelback
+      type: boolean
+      description: False if channelback is disabled, true otherwise. Only applicable for channels framework ticket.
+    - contextPath: Zendesk.Ticket.assignee
+      type: string
+      description: The agent currently assigned to the ticket.
+    - contextPath: Zendesk.Ticket.collaborators
+      type: string
+      description: The users currently CC'ed on the ticket.
+    - contextPath: Zendesk.Ticket.collaborator_ids
+      type: number
+      description: The ID of the users currently CC'ed on the ticket.
+    - contextPath: Zendesk.Ticket.created_at
+      type: date
+      description: The ticket creation time.
+    - contextPath: Zendesk.Ticket.description
+      type: string
+      description: The ticket description.
+    - contextPath: Zendesk.Ticket.due_at
+      type: date
+      description: If this is a ticket of type "task" it has a due date. Due date format uses ISO 8601 format.
+    - contextPath: Zendesk.Ticket.email_ccs
+      type: string
+      description: The agents or end users currently CC'ed on the ticket.
+    - contextPath: Zendesk.Ticket.email_cc_ids
+      type: number
+      description: The ID of the agents or end users currently CC'ed on the ticket.
+    - contextPath: Zendesk.Ticket.external_id
+      type: string
+      description: An ID you can use to link Zendesk Support tickets to local records.
+    - contextPath: Zendesk.Ticket.followers
+      type: string
+      description: The agents currently following the ticket.
+    - contextPath: Zendesk.Ticket.follower_ids
+      type: number
+      description: The ID of the user who is currently following the ticket.
+    - contextPath: Zendesk.Ticket.followup_ids
+      description: The IDs of the followups created from this ticket. Ids are only visible once the ticket is closed.
+      type: number
+    - contextPath: Zendesk.Ticket.forum_topic_id
+      type: number
+      description: The topic in the Zendesk Web portal this ticket originated from, if any.
+    - contextPath: Zendesk.Ticket.group_id
+      type: number
+      description: The group this ticket is assigned to.
+    - contextPath: Zendesk.Ticket.has_incidents
+      type: boolean
+      description: True if a ticket is a problem type and has one or more incidents linked to it. Otherwise, the value is false.
+    - contextPath: Zendesk.Ticket.id
+      type: number
+      description: The ticket ID.
+    - contextPath: Zendesk.Ticket.is_public
+      type: boolean
+      description: True if any comments are public, false otherwise.
+    - contextPath: Zendesk.Ticket.organization
+      type: string
+      description: The organization of the requester.
+    - contextPath: Zendesk.Ticket.priority
+      type: string
+      description: The urgency with which the ticket should be addressed.
+    - contextPath: Zendesk.Ticket.problem_id
+      description: For tickets of type "incident", the ID of the problem the incident is linked to.
+      type: number
+    - contextPath: Zendesk.Ticket.raw_subject
+      type: string
+      description: The dynamic content placeholder, if present, or the "subject" value, if not.
+    - contextPath: Zendesk.Ticket.recipient
+      type: string
+      description: The original recipient email address of the ticket.
+    - contextPath: Zendesk.Ticket.requester
+      type: string
+      description: The user who requested this ticket.
+    - contextPath: Zendesk.Ticket.satisfaction_rating
+      description: The satisfaction rating of the ticket, if it exists, or the state of satisfaction, "offered" or "unoffered".
+    - contextPath: Zendesk.Ticket.sharing_agreement_ids
+      type: number
+      description: The IDs of the sharing agreements used for this ticket.
+    - contextPath: Zendesk.Ticket.status
+      type: string
+      description: The state of the ticket.
+    - contextPath: Zendesk.Ticket.subject
+      type: string
+      description: The value of the subject field for this ticket.
+    - contextPath: Zendesk.Ticket.submitter
+      type: string
+      description: The user who submitted the ticket.
+    - contextPath: Zendesk.Ticket.tags
+      type: string
+      description: The array of tags applied to this ticket.
+    - contextPath: Zendesk.Ticket.type
+      type: string
+      description: The type of this ticket.
+    - contextPath: Zendesk.Ticket.updated_at
+      type: date
+      description: When this ticket was last updated.
+    - contextPath: Zendesk.Ticket.url
+      type: string
+      description: The API URL of this ticket.
+  - name: zendesk-ticket-delete
+    description: |-
+      Delete ticket. 
+      Required permissions: Admins, Agents with permission to delete tickets.
+      Agent delete permissions are set in Support.
+      See Deleting tickets in the Zendesk Support Help Center.
+    arguments:
+    - name: ticket_id
+      required: true
+      description: The ID of the ticket to delete.
+  - name: zendesk-ticket-comment-list
+    description: |-
+      List comments for a given ticket.
+      Required permissions: Agents.
+    arguments:
+    - name: ticket_id
+      required: true
+      description: The ID of the ticket to list comments.
+    - name: limit
+      default: true
+      description: Maximum number of results to return. Default is 50.
+    - name: page_size
+      description: The page size (used for pagination).
+    - name: page_number
+      description: The page number (used for pagination).
+    outputs:
+    - contextPath: Zendesk.Ticket.Comment.attachments.content_type
+      type: string
+      description: 'The content type of the image. Example value: "image/png".'
+    - contextPath: Zendesk.Ticket.Comment.attachments.content_url
+      type: string
+      description: A full URL where the attached image file can be downloaded.
+    - contextPath: Zendesk.Ticket.Comment.attachments.deleted
+      type: boolean
+      description: If true, the attachment has been deleted.
+    - contextPath: Zendesk.Ticket.Comment.attachments.file_name
+      type: string
+      description: The name of the file.
+    - contextPath: Zendesk.Ticket.Comment.attachments.height
+      type: string
+      description: The height of the image file in pixels.
+    - contextPath: Zendesk.Ticket.Comment.attachments.id
+      type: number
+      description: The ID of the attachment.
+    - contextPath: Zendesk.Ticket.Comment.attachments.inline
+      type: boolean
+      description: If true, the attachment is excluded from the attachment list and the attachment's URL can be referenced within the comment of a ticket.
+    - contextPath: Zendesk.Ticket.Comment.attachments.mapped_content_url
+      type: string
+      description: The URL the attachment image file has been mapped to.
+    - contextPath: Zendesk.Ticket.Comment.attachments.size
+      type: number
+      description: The size of the image file in bytes.
+    - contextPath: Zendesk.Ticket.Comment.attachments.url
+      type: string
+      description: A URL to access the attachment details.
+    - contextPath: Zendesk.Ticket.Comment.attachments.width
+      type: string
+      description: The width of the image file in pixels.
+    - contextPath: Zendesk.Ticket.Comment.audit_id
+      type: number
+      description: The ID of the ticket audit record.
+    - contextPath: Zendesk.Ticket.Comment.author
+      type: string
+      description: The comment author.
+    - contextPath: Zendesk.Ticket.Comment.body
+      type: string
+      description: The comment string.
+    - contextPath: Zendesk.Ticket.Comment.created_at
+      type: date
+      description: The time the comment was created.
+    - contextPath: Zendesk.Ticket.Comment.html_body
+      type: string
+      description: The comment formatted as HTML.
+    - contextPath: Zendesk.Ticket.Comment.id
+      type: number
+      description: The comment ID.
+    - contextPath: Zendesk.Ticket.Comment.metadata
+      description: System information (web client, IP address, etc.) and comment flags, if any.
+    - contextPath: Zendesk.Ticket.Comment.plain_body
+      type: string
+      description: The comment as plain text.
+    - contextPath: Zendesk.Ticket.Comment.public
+      type: boolean
+      description: True if a public comment, false if an internal note.
+    - contextPath: Zendesk.Ticket.Comment.type
+      type: string
+      description: Comment or VoiceComment.
+  - name: zendesk-ticket-attachment-add
+    description: |-
+      Attach a file to a ticket.
+      Required permissions: End users.
+    arguments:
+    - name: ticket_id
+      required: true
+      description: The ID of the ticket where the file should be uploaded.
+    - name: file_id
+      required: true
+      isArray: true
+      description: The file entry ID.
+    - name: comment
+      required: true
+      description: The comment body for the attached file.
+    - name: filename
+      default: true
+      isArray: true
+      description: The filename to upload. Default is the original filename.
+  - name: zendesk-attachment-get
+    description: |-
+      Get attachment.
+      Required permissions: Admins.
+    arguments:
+    - name: attachment_id
+      required: true
+      description: The ID of attachment to retrieve.
+  - name: zendesk-search
+    description: Search in Zendesk.
+    arguments:
+    - name: query
+      required: true
+      description: The query for the search.
+    - name: page_number
+      description: The page number (used for pagination).
+    - name: page_size
+      description: The page size (used for pagination).
+    - name: limit
+      default: true
+      description: Maximum number of results to return. Default is 50.
+    outputs:
+    - contextPath: Zendesk.Search
+      type: unknown
+      description: The search results.
+  - name: zendesk-article-list
+    description: |-
+      List all available articles.
+      Required permissions: Agents, End users, Anonymous users.
+    arguments:
+    - name: article_id
+      isArray: true
+      description: The ID of a specific article to retrieve.
+    - name: locale
+      description: The locale that the article is displayed in.
+    - name: limit
+      default: true
+      description: Maximum number of results to return. Default is 50.
+    - name: page_size
+      description: The page size (used for pagination).
+    - name: page_number
+      description: The page number (used for pagination).
+  - name: zendesk-clear-cache
+    arguments: []
+    description: Clears the Zendesk integration cache.
+  - name: get-remote-data
+    arguments:
+    - description: The remote incident ID.
+      name: id
+      required: true
+    - defaultValue: '0'
+      description: UTC timestamp in seconds. The incident is only updated if it was modified after the last update time.
+      name: lastUpdate
+    description: Get remote data from a remote incident. Note that this method will not update the current incident. It's used for debugging purposes.
+  - description: Returns the list of fields for an incident type.
+    name: get-mapping-fields
+  - arguments:
+    - description: Date string representing the local time. The incident is only returned if it was modified after the last update time.
+      name: lastUpdate
+    description: Get the list of incidents that were modified since the last update. Note that this method is used for debugging purposes. get-modified-remote-data is used as part of a Mirroring feature, which is available since version 6.1.
+    name: get-modified-remote-data
+  - description: Updates local incident changes in the remote incident. This method is only used for debugging purposes and will not update the current incident.
+    name: update-remote-system
+  dockerimage: demisto/python3:3.10.12.68714
+  isfetch: true
+  subtype: python3
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
+  isFetchSamples: true
+defaultmapperin: Zendesk - Incoming Mapper
+fromversion: 6.6.0
+tests:
+- Zendesk V2 TEST

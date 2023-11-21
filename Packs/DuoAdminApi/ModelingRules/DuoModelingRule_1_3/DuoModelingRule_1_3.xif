@@ -1,0 +1,60 @@
+[MODEL: dataset=duo_duo_raw]
+filter
+    eventtype = "authentication"
+| alter
+        os_version = json_extract_scalar(access_device, "$.os_version"),
+        os = lowercase(json_extract_scalar(access_device, "$.os")),
+        browser = json_extract_scalar(access_device, "$.browser"),
+        browser_version = json_extract_scalar(access_device, "$.browser_version"),
+        source_ipv4 = arrayindex(regextract(json_extract_scalar(access_device, "$.ip"), "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+        source_ipv6 = arrayindex(regextract(json_extract_scalar(access_device, "$.ip"), "([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0),
+        result_enum = lowercase(result)
+| alter
+        xdm.source.host.hostname = json_extract_scalar(access_device, "$.hostname"),
+        xdm.source.ipv4 = source_ipv4,
+        xdm.source.ipv6 = if(source_ipv4 = null, source_ipv6, null),
+        xdm.source.location.city = json_extract_scalar(access_device, "$.location.city"),
+        xdm.source.location.country = json_extract_scalar(access_device, "$.location.country"),
+        xdm.source.location.region = json_extract_scalar(access_device, "$.location.state"),
+        xdm.source.host.os_family = if(os contains "windows", XDM_CONST.OS_FAMILY_WINDOWS, os contains "mac", XDM_CONST.OS_FAMILY_MACOS, os contains "linux", XDM_CONST.OS_FAMILY_LINUX, os contains "android", XDM_CONST.OS_FAMILY_ANDROID, os contains "ios", XDM_CONST.OS_FAMILY_IOS, os contains "ubuntu", XDM_CONST.OS_FAMILY_UBUNTU, os contains "debian", XDM_CONST.OS_FAMILY_DEBIAN, os contains "fedora", XDM_CONST.OS_FAMILY_FEDORA, os contains "centos", XDM_CONST.OS_FAMILY_CENTOS, os contains "chrome", XDM_CONST.OS_FAMILY_CHROMEOS, os contains "solaris", XDM_CONST.OS_FAMILY_SOLARIS, os contains "scada", XDM_CONST.OS_FAMILY_SCADA, to_string(os)),
+        xdm.source.host.os = concat(os, " ", os_version),
+        xdm.event.type = eventtype,
+        xdm.observer.name = HOST,
+        xdm.source.user.username = json_extract_scalar(user, "$.name"),
+        xdm.source.user.upn = email,
+        xdm.event.outcome_reason = reason,
+        xdm.event.outcome = if(result_enum contains "failure", XDM_CONST.OUTCOME_FAILED, result_enum contains "success", XDM_CONST.OUTCOME_SUCCESS, to_string(result)),
+        xdm.source.application.name = json_extract_scalar(application, "$.name"),
+        xdm.auth.auth_method = factor,
+        xdm.network.http.browser = concat(browser, " ", browser_version),
+        xdm.intermediate.host.hostname = json_extract_scalar(auth_device, "$.name"),
+        xdm.intermediate.location.country = json_extract_scalar(auth_device, "$.location.country"),
+        xdm.intermediate.location.city = json_extract_scalar(auth_device, "$.location.city"),
+        xdm.intermediate.location.region = json_extract_scalar(auth_device, "$.location.state"),
+        xdm.auth.mfa.method = factor;
+filter
+    eventtype = "administrator"
+| alter
+        source_ipv4 = arrayindex(regextract(json_extract_scalar(description, "$.ip_address"), "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+        source_ipv6 = arrayindex(regextract(json_extract_scalar(description, "$.ip_address"), "([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0)
+| alter
+    xdm.event.operation = action,
+    xdm.event.description = description,
+    xdm.target.resource.name = object,
+    xdm.source.user.username = username,
+    xdm.event.type = eventtype,
+    xdm.observer.name = HOST,
+    xdm.target.user.upn = json_extract_scalar(description, "$.email"),
+    xdm.auth.auth_method = json_extract_scalar(description, "$.factor"),
+    xdm.source.ipv4 =  source_ipv4,
+    xdm.source.ipv6 = if(source_ipv4 = null, source_ipv6, null),
+    xdm.target.user.groups  = arraycreate(coalesce(json_extract_scalar(description, "$.role"),""));
+filter
+    eventtype = "telephony"
+| alter
+        xdm.observer.name = HOST,
+        xdm.event.type = eventtype,
+        xdm.auth.mfa.method = type,
+        xdm.event.description = context,
+        xdm.event.id = telephony_id,
+        xdm.source.host.hostname = phone;

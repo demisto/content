@@ -1,0 +1,6 @@
+fromversion: 8.3.0
+id: Microsoft_ADFS_Collection
+name: Microsoft ADFS Collection
+rules: ''
+schema: ''
+tags: Microsoft Windows Active Directory Federation Services ADFS Event Colletion

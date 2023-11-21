@@ -22,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
+          "x": 50,
           "y": 50
         }
       }
@@ -33,6 +33,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ''
   "1":
     id: "1"
     taskid: 15fb19a6-b9ad-4925-84fc-e6eff859e02a
@@ -94,6 +95,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ''
   "2":
     id: "2"
     taskid: e08b576d-2e34-4f21-88dd-dfe541fd7692
@@ -136,6 +138,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ''
   "3":
     id: "3"
     taskid: 96d46dcd-29e5-4e9c-8541-b7f16a505703
@@ -172,6 +175,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ''
   "4":
     id: "4"
     taskid: 9f8a0368-98b5-4afe-8bfe-b1e5bd25bbb0
@@ -188,10 +192,10 @@ tasks:
         1. Initiate the operation.
         2. Poll to check if the operation completed.
         3. (optional) Get the results of the operation.
-      playbookName: GenericPolling
       type: playbook
       iscommand: false
       brand: ""
+      playbookId: GenericPolling
     nexttasks:
       "#none#":
       - "7"
@@ -218,7 +222,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 1060
+          "y": 1070
         }
       }
     note: false
@@ -228,6 +232,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ''
   "6":
     id: "6"
     taskid: 229f4061-9b02-4089-84e4-734e00a35d1a
@@ -245,7 +250,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1420
         }
       }
     note: false
@@ -255,6 +260,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ''
   "7":
     id: "7"
     taskid: b2935177-bc59-4bb4-8274-e5f47f15bd95
@@ -289,12 +295,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ''
   "8":
     id: "8"
-    taskid: 7c8b02ea-b9e8-4054-86ad-d2ffdc319d84
+    taskid: 765a4bc4-7d3e-4eb7-8453-14c41eb82728
     type: regular
     task:
-      id: 7c8b02ea-b9e8-4054-86ad-d2ffdc319d84
+      id: 765a4bc4-7d3e-4eb7-8453-14c41eb82728
       version: -1
       name: Sleep (let the sandbox create the task)
       description: sleep
@@ -318,11 +325,12 @@ tasks:
       }
     note: false
     timertriggers: []
-    ignoreworker: false
+    ignoreworker: true
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ''
   "9":
     id: "9"
     taskid: 55574304-9525-46b5-84e7-06c51df3d9e6
@@ -357,12 +365,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ''
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1290,
+        "height": 1435,
         "width": 605,
         "x": 50,
         "y": 50
@@ -419,5 +428,9 @@ outputs:
   description: Tasks performed in the analysis.
   type: unknown
 tests:
-- Hatching Triage - Detonate File
+- No tests (auto formatted)
 fromversion: 6.2.0
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all

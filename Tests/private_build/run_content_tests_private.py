@@ -1,4 +1,3 @@
-from __future__ import print_function
 import sys
 import time
 import argparse
@@ -137,7 +136,7 @@ def run_test(tests_settings: SettingsTester, demisto_user: str, demisto_pass: st
 
 
 def run_private_test_scenario(tests_settings: SettingsTester, t: dict, default_test_timeout: int,
-                              skipped_tests_conf: dict, nightly_integrations: list, skipped_integrations_conf: set,
+                              skipped_tests_conf: dict, skipped_integrations_conf: set,
                               skipped_integration: set, filtered_tests: list, skipped_tests: set, secret_params: dict,
                               failed_playbooks: list, playbook_skipped_integration: set, succeed_playbooks: list,
                               slack: str, circle_ci: str, build_number: str, server: str, build_name: str,
@@ -151,7 +150,6 @@ def run_private_test_scenario(tests_settings: SettingsTester, t: dict, default_t
     :param default_test_timeout: Time in seconds indicating when the test should timeout if no
                                  status is reported.
     :param skipped_tests_conf: Collection of the tests which are skipped.
-    :param nightly_integrations: List of integrations which should only be tested on a nightly build.
     :param skipped_integrations_conf: Collection of integrations which are skiped.
     :param skipped_integration: Set of skipped integrations. Currently not used in private.
     :param filtered_tests: List of tests excluded from testing.
@@ -188,14 +186,14 @@ def run_private_test_scenario(tests_settings: SettingsTester, t: dict, default_t
     if not isinstance(instance_names_conf, list):
         instance_names_conf = [instance_names_conf, ]
 
-    test_skipped_integration, integrations, is_nightly_integration = collect_integrations(
-        integrations_conf, skipped_integration, skipped_integrations_conf, nightly_integrations)
+    test_skipped_integration, integrations = collect_integrations(
+        integrations_conf, skipped_integration, skipped_integrations_conf)
 
     if playbook_id in filtered_tests:
         playbook_skipped_integration.update(test_skipped_integration)
 
     # Skip tests that are missing from filtered list
-    if filtered_tests and playbook_id not in filtered_tests:
+    if playbook_id not in filtered_tests:
         return
 
     # Skip bad test
@@ -244,7 +242,6 @@ def execute_testing(tests_settings: SettingsTester, server_ip: str, all_tests: s
     :return: No object is returned, just updates the tests_data_keep object.
     """
     server = SERVER_URL.format(server_ip)
-    server_numeric_version = tests_settings.serverNumericVersion or ''
     logging.info(f"Executing tests with the server {server} - and the server ip {server_ip}")
     slack = tests_settings.slack
     circle_ci = tests_settings.circleci
@@ -259,13 +256,15 @@ def execute_testing(tests_settings: SettingsTester, server_ip: str, all_tests: s
 
     tests = conf['tests']
     skipped_tests_conf = conf['skipped_tests']
-    nightly_integrations = conf['nightly_integrations']
     skipped_integrations_conf = conf['skipped_integrations']
     unmockable_integrations = conf['unmockable_integrations']
 
     secret_params = secret_conf['integrations'] if secret_conf else []
 
     filtered_tests = extract_filtered_tests()
+    if not filtered_tests:
+        logging.info('no tests were collected to execute.')
+        return
 
     if not tests or len(tests) == 0:
         logging.info('no integrations are configured for test')
@@ -273,14 +272,16 @@ def execute_testing(tests_settings: SettingsTester, server_ip: str, all_tests: s
     xsoar_client = demisto_client.configure(base_url=server, username=demisto_user,
                                             password=demisto_pass, verify_ssl=False)
 
+    server_numeric_version = get_server_numeric_version(xsoar_client, tests_settings.is_local_run)
+
     # turn off telemetry
     turn_off_telemetry(xsoar_client)
 
     failed_playbooks: list = []
     succeed_playbooks: list = []
-    skipped_tests: set = set([])
-    skipped_integration: set = set([])
-    playbook_skipped_integration: set = set([])
+    skipped_tests: set = set()
+    skipped_integration: set = set()
+    playbook_skipped_integration: set = set()
 
     #  Private builds do not use mocking. Here we copy the mocked test list to the unmockable list.
     private_tests = get_test_records_of_given_test_names(tests_settings, all_tests)
@@ -293,7 +294,7 @@ def execute_testing(tests_settings: SettingsTester, server_ip: str, all_tests: s
             executed_in_current_round = update_round_set_and_sleep_if_round_completed(
                 executed_in_current_round, t)
             run_private_test_scenario(tests_settings, t, default_test_timeout, skipped_tests_conf,
-                                      nightly_integrations, skipped_integrations_conf,
+                                      skipped_integrations_conf,
                                       skipped_integration,
                                       filtered_tests, skipped_tests, secret_params,
                                       failed_playbooks, playbook_skipped_integration,
@@ -349,8 +350,6 @@ def manage_tests(tests_settings: SettingsTester):
                                         tests should be ran.
 
     """
-    tests_settings.serverNumericVersion = get_server_numeric_version(tests_settings.serverVersion,
-                                                                     tests_settings.is_local_run)
     instances_ips = get_instances_ips_and_names(tests_settings)
     tests_data_keeper = DataKeeperTester()
 

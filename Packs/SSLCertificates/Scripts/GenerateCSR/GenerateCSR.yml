@@ -1,0 +1,48 @@
+args:
+- description: Cert Common Name (Mandatory)
+  name: cn
+  required: true
+  type: textArea
+- description: Cert Owner Email Address
+  name: email
+  type: textArea
+- description: Cert Organization
+  name: org
+  type: textArea
+- description: Cert Organizational Unit
+  name: orgUnit
+  type: textArea
+- description: Cert Country
+  name: country
+  type: textArea
+- description: Cert State
+  name: state
+  type: textArea
+- description: Cert Locality (City)
+  name: locality
+  type: textArea
+- auto: PREDEFINED
+  defaultValue: "False"
+  description: 'Output CSR text to war room? (Default: False)'
+  name: OutputToWarRoom
+  predefined:
+  - "True"
+  - "False"
+comment: "Generates a certificate signing request for fulfillment by an organization certification authority (CA)\n\nOutput is the request.csr file placed directly into context under a \"File\" object. "
+commonfields:
+  id: GenerateCSR
+  version: -1
+dockerimage: demisto/ansible-runner:1.0.0.47562
+enabled: true
+name: GenerateCSR
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Utility
+- Certificates
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

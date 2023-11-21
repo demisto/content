@@ -1,9 +1,10 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import requests
 
-import demistomock as demisto
-from CommonServerPython import *
+import urllib3.util
 
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 BASE_URL = demisto.params().get('url')
 VERIFY_CERTIFICATE = not demisto.params().get('unsecure')
@@ -22,7 +23,7 @@ def get_first(iterable, default=None):
 
 
 def get_sites():
-    fullurl = BASE_URL + '/api/sites'
+    fullurl = f'{BASE_URL}/api/sites'
     res = requests.get(
         fullurl,
         auth=(USERNAME, PASSWORD),
@@ -30,8 +31,8 @@ def get_sites():
     )
 
     if res.status_code < 200 or res.status_code >= 300:
-        return_error('Failed to get sites.\nRequest URL: {}\nStatusCode: {}\nResponse Body: {}'.format(
-            fullurl, res.status_code, res.content))
+        return_error(f'Failed to get sites.\nRequest URL: {fullurl}'  # type: ignore[str-bytes-safe]
+                     f'\nStatusCode: {res.status_code}\nResponse Body: {res.content}')  # type: ignore[str-bytes-safe]
 
     raw_sites = json.loads(xml2json(res.content))
 
@@ -123,8 +124,8 @@ def get_site(site_type, site_name):
     )
 
     if res.status_code < 200 or res.status_code >= 300:
-        return_error('Failed to get site {}.\nRequest URL: {}\nStatusCode: {}\nResponse Body: {}'.format(
-            site_name, fullurl, res.status_code, res.content))
+        return_error(f'Failed to get site {site_name}.\nRequest URL: {fullurl}'  # type: ignore[str-bytes-safe]
+                     f'\nStatusCode: {res.status_code}\nResponse Body: {res.content}')
 
     raw_site = json.loads(xml2json(res.content))
 
@@ -143,7 +144,7 @@ def get_site(site_type, site_name):
 
     if site is not None:
         site['Type'] = site_type
-        site['Resource'] = BASE_URL + '/api/site/{}/{}'.format(site_type, site_name)
+        site['Resource'] = BASE_URL + f'/api/site/{site_type}/{site_name}'
 
     return site
 
@@ -162,7 +163,7 @@ def get_site_command():
         'ContentsFormat': formats['json'],
         'Contents': site,
         'HumanReadable': tableToMarkdown(
-            'BigFix Site: {} - {}'.format(site_type, site_name),
+            f'BigFix Site: {site_type} - {site_name}',
             [site],
             ['Name', 'Type', 'GatherURL', 'Description', 'GlobalReadPermissions', 'Subscription']
         ),
@@ -182,8 +183,8 @@ def get_endpoints(should_get_endpoint_details):
     )
 
     if res.status_code < 200 or res.status_code >= 300:
-        return_error('Failed to get endpoints.\nRequest URL: {}\nStatusCode: {}\nResponse Body: {}'.format(
-            fullurl, res.status_code, res.content))
+        return_error(f'Failed to get endpoints.\nRequest URL: {fullurl}'  # type: ignore[str-bytes-safe]
+                     f'\nStatusCode: {res.status_code}\nResponse Body: {res.content}')
 
     raw_endpoints = json.loads(xml2json(res.content))
 
@@ -253,7 +254,7 @@ def get_endpoints_command():
 
 
 def get_endpoint_details(computer_id):
-    fullurl = BASE_URL + '/api/computer/{}'.format(computer_id)
+    fullurl = BASE_URL + f'/api/computer/{computer_id}'
     res = requests.get(
         fullurl,
         auth=(USERNAME, PASSWORD),
@@ -262,8 +263,8 @@ def get_endpoint_details(computer_id):
 
     if res.status_code < 200 or res.status_code >= 300:
         return_error(
-            'Failed to get computer {}.\nRequest URL: {}\nStatusCode: {}\nResponse Body: {}'.format(
-                computer_id, fullurl, res.status_code, res.content)
+            f'Failed to get computer {computer_id}.\nRequest URL: {fullurl}'  # type: ignore[str-bytes-safe]
+            f'\nStatusCode: {res.status_code}\nResponse Body: {res.content}'  # type: ignore[str-bytes-safe]
         )
 
     raw_endpoint = json.loads(xml2json(res.content))
@@ -332,10 +333,10 @@ def get_endpoint_details_command():
 
     endpoint = get_endpoint_details(computer_id)
     if endpoint is None:
-        demisto.results('Endpoint with id {} was not found'.format(computer_id))
+        demisto.results(f'Endpoint with id {computer_id} was not found')
         sys.exit(0)
 
-    markdown = tableToMarkdown('BigFix Endpoint {}'.format(computer_id), [endpoint], headers=[
+    markdown = tableToMarkdown(f'BigFix Endpoint {computer_id}', [endpoint], headers=[
         'ID',
         'Resource',
         'LastReportTime',
@@ -379,7 +380,7 @@ def get_endpoint_details_command():
 
 
 def get_patches(site_type='', site_name=''):
-    fullurl = BASE_URL + '/api/fixlets/{}'.format(site_type)
+    fullurl = BASE_URL + f'/api/fixlets/{site_type}'
     if site_type != 'master':
         # if site name is not empty the add to url
         fullurl += '/' + site_name
@@ -392,8 +393,9 @@ def get_patches(site_type='', site_name=''):
 
     if res.status_code < 200 or res.status_code >= 300:
         return_error(
-            'Failed to get patches. Request URL: {}\nStatusCode: {}\nResponse Body: {}'.format(
-                fullurl, res.status_code, res.content)
+            f'Failed to get patches. Request URL: {fullurl}\n'  # type: ignore[str-bytes-safe]
+            f'StatusCode: {res.status_code}\n'  # type: ignore[str-bytes-safe]
+            f'Response Body: {res.content}'  # type: ignore[str-bytes-safe]
         )
 
     raw_patches = json.loads(xml2json(res.content))
@@ -448,9 +450,9 @@ def get_patches_command():
 
 def get_patch_details(site_type, site_name, patch_id):
     if site_type == 'master':
-        fullurl = BASE_URL + '/api/fixlet/master/{}'.format(patch_id)
+        fullurl = BASE_URL + f'/api/fixlet/master/{patch_id}'
     else:
-        fullurl = BASE_URL + '/api/fixlet/{}/{}/{}'.format(site_type, site_name, patch_id)
+        fullurl = BASE_URL + f'/api/fixlet/{site_type}/{site_name}/{patch_id}'
 
     res = requests.get(
         fullurl,
@@ -459,9 +461,8 @@ def get_patch_details(site_type, site_name, patch_id):
     )
 
     if res.status_code < 200 or res.status_code >= 300:
-        return_error('Failed to get patch/fixlet {}. Request URL: {}\nStatusCode: {}\nResponse Body: {}'.format(
-            patch_id, fullurl, res.status_code, res.content)
-        )
+        return_error(f'Failed to get patch/fixlet {patch_id}. Request URL: {fullurl}'  # type: ignore[str-bytes-safe]
+                     f'\nStatusCode: {res.status_code}\nResponse Body: {res.content}')  # type: ignore[str-bytes-safe]
 
     raw_patch = json.loads(xml2json(res.content))
     if not raw_patch or 'BES' not in raw_patch:
@@ -493,7 +494,7 @@ def get_patch_details_command():
     patch_id = demisto.args().get('id')
 
     patch = get_patch_details(site_type, site_name, patch_id)
-    markdown = tableToMarkdown('BigFix Patch {}'.format(patch_id), [patch], headers=[
+    markdown = tableToMarkdown(f'BigFix Patch {patch_id}', [patch], headers=[
         'ID',
         'Name',
         'Resource',
@@ -524,7 +525,7 @@ def deploy_patch(site_name, computer_ids, fixlet_id, action_id):
     if 'all' in computer_ids:
         target = '<AllComputers>true</AllComputers>'
     else:
-        target = '\n'.join(['<ComputerID>{}</ComputerID>'.format(computer_id) for computer_id in computer_ids])
+        target = '\n'.join([f'<ComputerID>{computer_id}</ComputerID>' for computer_id in computer_ids])
 
     request_body = """<?xml version="1.0" encoding="UTF-8"?>
     <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
@@ -541,7 +542,7 @@ def deploy_patch(site_name, computer_ids, fixlet_id, action_id):
      </SourcedFixletAction>
     </BES>
     """.format(site_name, fixlet_id, action_id, target)
-    LOG('deploy_patch - request: ' + request_body)
+    LOG(f'deploy_patch - request: {request_body}')
 
     fullurl = BASE_URL + '/api/actions'
     res = requests.post(
@@ -551,10 +552,10 @@ def deploy_patch(site_name, computer_ids, fixlet_id, action_id):
         data=request_body
     )
 
-    LOG('deploy_patch - raw response: ' + res.content)
+    LOG(f'deploy_patch - raw response: {res.content}')  # type: ignore[str-bytes-safe]
     if res.status_code < 200 or res.status_code >= 300:
-        return_error('Failed to deploy patch {}.\nRequest URL: {}\nStatusCode: {}\nResponse Body: {}'.format(
-            fixlet_id, fullurl, res.status_code, res.content))
+        return_error(f'Failed to deploy patch {fixlet_id}.\nRequest URL: {fullurl}'  # type: ignore[str-bytes-safe]
+                     f'\nStatusCode: {res.status_code}\nResponse Body: {res.content}')  # type: ignore[str-bytes-safe]
 
     raw_action = json.loads(xml2json(res.content))
     if not raw_action or 'BESAPI' not in raw_action:
@@ -582,7 +583,7 @@ def deploy_patch_command():
 
     action = deploy_patch(site_name, computer_ids, fixlet_id, action_id)
 
-    markdown = tableToMarkdown('BigFix Action {}'.format(action_id), [action], headers=[
+    markdown = tableToMarkdown(f'BigFix Action {action_id}', [action], headers=[
         'ID',
         'Name',
         'FixletID',
@@ -611,8 +612,8 @@ def action_delete(action_id):
     )
 
     if res.status_code < 200 or res.status_code >= 300:
-        return_error('Failed to delete action {}.\nRequest URL: {}\nStatusCode: {}\nResponse Body: {}'.format(
-            action_id, fullurl, res.status_code, res.content))
+        return_error(f'Failed to delete action {action_id}.\nRequest URL: {fullurl}'  # type: ignore[str-bytes-safe]
+                     f'\nStatusCode: {res.status_code}\nResponse Body: {res.content}')  # type: ignore[str-bytes-safe]
 
 
 def action_delete_command():
@@ -620,7 +621,7 @@ def action_delete_command():
 
     action_delete(action_id)
 
-    demisto.results('Action {} was deleted successfully'.format(action_id))
+    demisto.results(f'Action {action_id} was deleted successfully')
 
 
 def get_action_status(action_id):
@@ -632,8 +633,8 @@ def get_action_status(action_id):
     )
 
     if res.status_code < 200 or res.status_code >= 300:
-        return_error('Failed to get action {} status.\nRequest URL: {}\nStatusCode: {}\nResponse Body: {}'.format(
-            action_id, fullurl, res.status_code, res.content))
+        return_error(f'Failed to get action {action_id} status.\nRequest URL: {fullurl}'  # type: ignore[str-bytes-safe]
+                     f'\nStatusCode: {res.status_code}\nResponse Body: {res.content}')  # type: ignore[str-bytes-safe]
 
     raw_action = json.loads(xml2json(res.content))
     if not raw_action or 'BESAPI' not in raw_action:
@@ -656,7 +657,7 @@ def get_action_status_command():
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': output,
-        'HumanReadable': 'Action {} status is {}'.format(action_id, status),
+        'HumanReadable': f'Action {action_id} status is {status}',
         'EntryContext': {
             'Bigfix.Action(val.ID==obj.ID)': output
         }
@@ -672,8 +673,8 @@ def action_stop(action_id):
     )
 
     if res.status_code < 200 or res.status_code >= 300:
-        return_error('Failed to stop action {}.\nRequest URL: {}\nStatusCode: {}\nResponse Body: {}'.format(
-            action_id, fullurl, res.status_code, res.content))
+        return_error(f'Failed to stop action {action_id}.\nRequest URL: {fullurl}'  # type: ignore[str-bytes-safe]
+                     f'\nStatusCode: {res.status_code}\nResponse Body: {res.content}')  # type: ignore[str-bytes-safe]
 
 
 def action_stop_command():
@@ -681,7 +682,7 @@ def action_stop_command():
 
     action_stop(action_id)
 
-    demisto.results('Action {} was stopped successfully'.format(action_id))
+    demisto.results(f'Action {action_id} was stopped successfully')
 
 
 def query(relevance):
@@ -697,12 +698,14 @@ def query(relevance):
     )
 
     if res.status_code < 200 or res.status_code >= 300:
-        return_error('Query failed.\nRequest URL: {}\nStatusCode: {}\nResponse Body: {}'.format(
-            fullurl, res.status_code, res.content))
+        return_error(
+            f'Query failed.\nRequest URL: {fullurl}\nStatusCode: {res.status_code}'  # type: ignore[str-bytes-safe]
+            f'\nResponse Body: {res.content}')
 
     raw_action = json.loads(xml2json(res.content))
     if not raw_action or 'BESAPI' not in raw_action:
-        demisto.info('BigFix query has incorrect response format. Response Body: {}'.format(res.content))
+        demisto.info(
+            f'BigFix query has incorrect response format. Response Body: {res.content}')  # type: ignore[str-bytes-safe]
         return_error('The response has incorrect format. Check the logs')
 
     if demisto.get(raw_action, 'BESAPI.Query.Error'):
@@ -729,7 +732,7 @@ def query_command():
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': results,
-        'HumanReadable': tableToMarkdown('Query Results: {}'.format(relevance), output, ['Results']),
+        'HumanReadable': tableToMarkdown(f'Query Results: {relevance}', output, ['Results']),
         'EntryContext': {
             'Bigfix.QueryResults': output
         }
@@ -749,7 +752,7 @@ try:
         res.raise_for_status()
 
     if demisto.command() == 'test-module':
-        # do requets to /api/help
+        # do requests to /api/help
         # should be good indicator for test connectivity
         test()
         demisto.results('ok')
@@ -788,6 +791,6 @@ try:
         query_command()
 
 except Exception as e:
-    LOG(e.message)
+    LOG(e)
     LOG.print_log()
-    return_error(e.message)
+    return_error(e)

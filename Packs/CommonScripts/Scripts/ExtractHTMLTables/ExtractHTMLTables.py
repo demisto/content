@@ -38,7 +38,7 @@ def extract_html_table(html, indexes):
         if len(table) > 0:
             tables.append(table)
     if len(tables) > 0:
-        return({
+        return ({
             'Type': entryTypes['note'],
             'Contents': 'Found {} tables in HTML.'.format(len(tables)),
             'ContentsFormat': formats['text'],
@@ -54,6 +54,5 @@ def main():
     demisto.results(extract_html_table(html, indexes))
 
 
-# python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ in ['__main__', 'builtin', 'builtins']:
     main()

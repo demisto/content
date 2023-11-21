@@ -1,5 +1,6 @@
-name: JiraEventCollector
-id: JiraEventCollector
 fromversion: 3.3.0
+id: JiraEventCollector
+name: JiraEventCollector
 rules: ''
 schema: ''
+toversion: 6.9.9

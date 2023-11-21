@@ -1,0 +1,115 @@
+commonfields:
+  id: ATDDetonate
+  version: -1
+name: ATDDetonate
+script: ''
+type: python
+subtype: python3
+tags:
+- file
+- enhancement
+- atd
+comment: Detonate File or URL through McAfee ATD
+system: true
+args:
+- name: vmProfileList
+  default: true
+  description: Analyzer profile ID. The profile ID number can be found in the UI Policy/Analyzer Profile page, OR using command atd-list-analyzer-profiles, under vmProfileid key result
+- name: submitType
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - "0"
+  - "1"
+  - "2"
+  - "3"
+  description: This parameter accepts four values — '0', '1', '2' and '3'. • 0 — Regular file upload • 1 — URL submission — URL link is processed inside analyzer VM • 2 — Submit file with URL • 3 — URL Download — File from URL is firstly downloaded and then analyzed
+- name: url
+  description: Any valid web URL.
+- name: messageId
+  description: Maximum 128-character string.
+- name: srcIp
+  description: ' IPv4 address of the source system or gateway from where the file is downloaded.'
+- name: dstIp
+  description: ' IPv4 address of the target endpoint.'
+- name: skipTaskId
+  auto: PREDEFINED
+  predefined:
+  - "0"
+  - "1"
+  description: Value '0' indicates corresponding taskid in API response. Value '1' indicates -1 as taskid in API response.
+- name: analyzeAgain
+  auto: PREDEFINED
+  predefined:
+  - "0"
+  - "1"
+  description: Value '0' indicates skip sample analysis if it is analyzed previously . Value '1' indicates do not skip sample analysis if it is not analyzed previously.
+- name: xMode
+  auto: PREDEFINED
+  predefined:
+  - "0"
+  - "1"
+  description: Value '0' indicates no user interaction is needed during sample analysis. Value '1' indicates user interaction is needed during sample analysis.
+- name: filePriorityQ
+  auto: PREDEFINED
+  predefined:
+  - run_now
+  - add_to_q
+  description: ' This parameter indicates priority of sample analysis. run_now assigns highest priority (i.e., sample is analyzed right away), add_to_q puts sample in waiting state if there is a waiting queue of samples, default is run_now'
+- name: entryID
+  description: entry ID
+- name: reportType
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - html
+  - txt
+  - xml
+  - zip
+  - json
+  - ioc
+  - stix
+  - pdf
+  - sample
+  description: 'iType can be one of the following types: • html — HTML report • txt — Text report • xml — XML report • zip — All files packaged in a single zip file • json — Same as xml but in the JSON format • ioc - Indicators of Compromise format • stix - Structured Threat Information expression. Stix generation is disabled, by default. Use set stixreportstatus enable to enable it. • pdf - Portable Document Format • sample - Download sample from McAfee Advanced Threat Defense'
+  defaultValue: json
+- name: timeout
+  description: Timeout in seconds. Default is 10 minutes.
+- name: interval
+  description: Interval to poll for results. Default is 10 seconds.
+scripttarget: 0
+dependson:
+  must:
+  - atd-file-upload
+  - atd-check-status
+  - atd-get-report
+timeout: 960ns
+outputs:
+- contextPath: File.Name
+  description: Filename (only in case of report type=json)
+- contextPath: File.Type
+  description: File type e.g. "PE" (only in case of report type=json)
+- contextPath: File.Size
+  description: File size (only in case of report type=json)
+- contextPath: File.MD5
+  description: MD5 hash of the file (only in case of report type=json)
+- contextPath: File.SHA1
+  description: SHA1 hash of the file (only in case of report type=json)
+- contextPath: File.SHA256
+  description: SHA256 hash of the file (only in case of report type=json)
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+- contextPath: File.Malicious.Description
+  description: For malicious files, the reason for the vendor to make the decision
+- contextPath: DBotScore.Indicator
+  description: The indicator we tested (only in case of report type=json)
+- contextPath: DBotScore.Type
+  description: The type of the indicator (only in case of report type=json)
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score (only in case of report type=json)
+- contextPath: DBotScore.Score
+  description: The actual score (only in case of report type=json)
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.10.12.63474
+tests:
+- No tests (auto formatted)

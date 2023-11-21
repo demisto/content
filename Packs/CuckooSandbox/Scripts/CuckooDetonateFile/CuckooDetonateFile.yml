@@ -1,0 +1,41 @@
+commonfields:
+  id: CuckooDetonateFile
+  version: -1
+name: CuckooDetonateFile
+script: ''
+type: python
+subtype: python3
+tags:
+- cuckoo
+comment: Deprecated. Use the 'cuckoo-create-task-from-file' command instead.
+deprecated: true
+args:
+- name: entryID
+  required: true
+  default: true
+  description: ID of the entry containing the file to detonate.
+- name: machine
+  description: (optional) Label of the machine to use for analysis
+- name: package
+  description: (optional) analysis package to be used for the analysis
+- name: timeout
+  description: (optional) analysis timeout (in seconds)
+- name: enforce_timeout
+  description: (optional) enable to enforce the execution for the full timeout value
+- name: platform
+  description: (optional) - name of the platform to select the analysis machine from (e.g. “windows”)
+- name: tags
+  description: (optional) - define machine to start by tags. Platform must be set to use that. Tags are comma separated
+- name: memory
+  description: (optional) - enable the creation of a full memory dump of the analysis machine
+- name: options
+  description: (optional) - options to pass to the analysis package
+scripttarget: 0
+dependson:
+  must:
+  - cuckoo-create-task-from-file
+timeout: 0s
+tests:
+- No test
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.10.6.33415

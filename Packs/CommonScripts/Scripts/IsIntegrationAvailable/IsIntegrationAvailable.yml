@@ -1,0 +1,29 @@
+commonfields:
+  id: IsIntegrationAvailable
+  version: -1
+name: IsIntegrationAvailable
+script: ''
+type: python
+subtype: python3
+tags:
+- infra
+- Condition
+comment: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+system: true
+args:
+- name: brandname
+  description: Integration's brand name to query
+  required: true
+  default: true
+scripttarget: 0
+dependson: {}
+timeout: 0s
+outputs:
+- contextPath: yes
+  description: if integration is available
+- contextPath: no
+  description: if there is no instance for the given brand
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.10.12.63474
+tests:
+- No tests (auto formatted)

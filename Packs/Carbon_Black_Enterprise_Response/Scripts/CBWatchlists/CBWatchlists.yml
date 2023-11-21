@@ -1,0 +1,24 @@
+commonfields:
+  id: CBWatchlists
+  version: -1
+name: CBWatchlists
+script: ''
+type: python
+subtype: python3
+tags:
+- carbon-black
+comment: Display all watchlists and their details, queries, etc.
+system: true
+args:
+- name: id
+  default: true
+  description: Display a specific watchlist by watchlist ID (numeric)
+scripttarget: 0
+dependson:
+  must:
+  - cb-edr-watchlists-list
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.10.12.63474
+tests:
+- No tests (auto formatted)

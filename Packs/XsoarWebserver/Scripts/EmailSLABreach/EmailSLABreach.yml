@@ -1,0 +1,19 @@
+comment: This is used to complete the Scheduled command if the either/both the users respond in time. The time is configured on the EmailUserSLA.
+commonfields:
+  id: EmailSLABreach
+  version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+dockerimage: demisto/python3:3.10.12.63474
+enabled: true
+name: EmailSLABreach
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- sla
+type: python
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

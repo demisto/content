@@ -1,10 +1,11 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import urllib3
 from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
 
 # IMPORTS
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 # CONSTANTS
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -164,6 +165,21 @@ class Client(BaseClient):
             json_data=body
         )
 
+    def set_temp_password(self, user_id):
+        uri = f'users/{user_id}/lifecycle/expire_password'
+
+        return self._http_request(
+            method="POST",
+            url_suffix=uri,
+        )
+
+    def expire_password(self, user_id):
+        uri = f'users/{user_id}/lifecycle/expire_password'
+        return self._http_request(
+            method="POST",
+            url_suffix=uri
+        )
+
     def add_user_to_group(self, user_id, group_id):
         uri = f'groups/{group_id}/users/{user_id}'
         return self._http_request(
@@ -289,12 +305,13 @@ class Client(BaseClient):
         response['factorResult'] = "TIMEOUT"
         return response
 
-    def search(self, term, limit):
+    def search(self, term, limit, advanced_search):
         uri = "users"
-        query_params = {
-            'q': encode_string_results(term),
-            'limit': limit
-        }
+        query_params = assign_params(
+            limit=limit,
+            q=encode_string_results(term),
+            search=encode_string_results(advanced_search)
+        )
         return self._http_request(
             method='GET',
             url_suffix=uri,
@@ -317,7 +334,9 @@ class Client(BaseClient):
                 'Created': user.get('created'),
                 'Activated': user.get('activated'),
                 'StatusChanged': user.get('statusChanged'),
-                'PasswordChanged': user.get('passwordChanged')
+                'PasswordChanged': user.get('passwordChanged'),
+                'Manager': user.get('profile', {}).get('manager'),
+                'ManagerEmail': user.get('profile', {}).get('managerEmail')
             }
             if user.get('group'):
                 user['Group'] = user.get('group')
@@ -362,6 +381,8 @@ class Client(BaseClient):
                     'Login': user.get('profile', {}).get('login'),
                     'Email': user.get('profile', {}).get('email'),
                     'Second Email': user.get('profile', {}).get('secondEmail'),
+                    'Manager': user.get('profile', {}).get('manager'),
+                    'Manager Email': user.get('profile', {}).get('managerEmail')
                 }
                 additionalData = {
                     'ID': user.get('id'),
@@ -392,7 +413,9 @@ class Client(BaseClient):
                     'Last Name': user.get('profile').get('lastName'),
                     'Mobile Phone': user.get('profile').get('mobilePhone'),
                     'Last Login': user.get('lastLogin'),
-                    'Status': user.get('status')
+                    'Status': user.get('status'),
+                    'Manager': user.get('profile', {}).get('manager'),
+                    'Manager Email': user.get('profile', {}).get('managerEmail')
                 }
                 users.append(user)
             return users
@@ -655,7 +678,6 @@ def test_module(client, args):
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
-    args
     uri = 'users/me'
     client._http_request(method='GET', url_suffix=uri)
     return 'ok', None, None
@@ -778,9 +800,37 @@ def set_password_command(client, args):
 
     raw_response = client.set_password(user_id, password)
     readable_output = f"{args.get('username')} password was last changed on {raw_response.get('passwordChanged')}"
+
+    if argToBoolean(args.get('temporary_password', False)):
+        client.set_temp_password(user_id)
+
     return (
         readable_output,
         {},
+        raw_response
+    )
+
+
+def expire_password_command(client, args):
+    user_id = client.get_user_id(args.get('username'))
+
+    if not (args.get('username') or user_id):
+        raise Exception("You must supply either 'Username' or 'userId")
+
+    raw_response = client.expire_password(user_id)
+    user_context = client.get_users_context(raw_response)
+
+    if argToBoolean(args.get('temporary_password', True)):
+        client.set_temp_password(user_id)
+
+    readable_output = tableToMarkdown('Okta Expired Password', raw_response, removeNull=True)
+    outputs = {
+        'Account(val.ID && val.ID === obj.ID)': createContext(user_context, removeNull=True)
+    }
+
+    return (
+        readable_output,
+        outputs,
         raw_response
     )
 
@@ -872,7 +922,10 @@ def search_command(client, args):
     term = args.get('term')
     limit = args.get('limit') or SEARCH_LIMIT
     verbose = args.get('verbose')
-    raw_response = client.search(term, limit)
+    advanced_search = args.get('advanced_search', '')
+    if not term and not advanced_search:
+        raise DemistoException('Please provide either the term or advanced_search argument')
+    raw_response = client.search(term, limit, advanced_search)
 
     if raw_response and len(raw_response) > 0:
         users_context = client.get_users_context(raw_response)
@@ -897,7 +950,14 @@ def get_user_command(client, args):
     if not (args.get('username') or args.get('userId')):
         raise Exception("You must supply either 'Username' or 'userId")
     user_term = args.get('userId') if args.get('userId') else args.get('username')
-    raw_response = client.get_user(user_term)
+
+    try:
+        raw_response = client.get_user(user_term)
+    except Exception as e:
+        if '404' in str(e):
+            return (f'User {args.get("username")} was not found.', {}, {})
+        raise e
+
     verbose = args.get('verbose')
 
     user_context = client.get_users_context(raw_response)
@@ -989,7 +1049,7 @@ def list_users_command(client, args):
         'Account(val.ID && val.ID == obj.ID)': context,
         'Okta.User(val.tag)': {'tag': after_tag}
     }
-    return(
+    return (
         readable_output,
         outputs,
         raw_response
@@ -1305,7 +1365,11 @@ def main():
     """
     # get the service API url
     base_url = urljoin(demisto.params()['url'].strip('/'), '/api/v1/')
-    apitoken = demisto.params().get('apitoken')
+    apitoken = demisto.params().get("credentials", {}).get("password", '') or demisto.params().get('apitoken', '')
+
+    if not apitoken:
+        raise ValueError('Missing API token.')
+
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
 
@@ -1320,6 +1384,7 @@ def main():
         'okta-unsuspend-user': unsuspend_user_command,
         'okta-reset-factor': reset_factor_command,
         'okta-set-password': set_password_command,
+        'okta-expire-password': expire_password_command,
         'okta-add-to-group': add_user_to_group_command,
         'okta-remove-from-group': remove_from_group_command,
         'okta-get-groups': get_groups_for_user_command,

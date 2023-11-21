@@ -1,0 +1,314 @@
+id: AWS - Enrichment
+version: -1
+name: AWS - Enrichment
+description: Given the IP address this playbook enriches EC2 and IAM information.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b0f0baa0-e143-462d-8d65-40afab3ee28f
+    type: start
+    task:
+      id: b0f0baa0-e143-462d-8d65-40afab3ee28f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": -780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 753f7d27-7bf4-4285-88ea-33dc9addd41f
+    type: regular
+    task:
+      id: 753f7d27-7bf4-4285-88ea-33dc9addd41f
+      version: -1
+      name: Lookup EC2 information associated with IP
+      description: Describes EC2 instance based off public IP address.
+      script: AWS - EC2|||aws-ec2-describe-instances
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      filters:
+        complex:
+          root: inputs.AwsIP
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: Name=ip-address,Values=
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": -330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: f2639ea7-6574-456e-81f6-083abf047f34
+    type: title
+    task:
+      id: f2639ea7-6574-456e-81f6-083abf047f34
+      version: -1
+      name: |
+        Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: b78275c7-b0cb-4a9b-8215-fdae8f7aa1a1
+    type: regular
+    task:
+      id: b78275c7-b0cb-4a9b-8215-fdae8f7aa1a1
+      version: -1
+      name: Lookup SecurityGroup information associated with InstanceID
+      description: Describes security groups of EC2 instance.
+      script: AWS - EC2|||aws-ec2-describe-security-groups
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      groupIds:
+        complex:
+          root: AWS.EC2.Instances.NetworkInterfaces.Groups
+          accessor: GroupId
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 8dedaf42-1479-43d2-82cf-4d34946dc410
+    type: condition
+    task:
+      id: 8dedaf42-1479-43d2-82cf-4d34946dc410
+      version: -1
+      name: Was there an EC2 instance?
+      description: Check whether the last command returned EC2 information or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: AWS.EC2.Instances
+                accessor: InstanceId
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": -160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 53eb9bbe-3269-44d9-878e-6ba4f77f9c98
+    type: condition
+    task:
+      id: 53eb9bbe-3269-44d9-878e-6ba4f77f9c98
+      version: -1
+      name: Is AWS - EC2 enabled and is Input value defined?
+      description: Determines if the AWS - EC2 integration instance is configured and Input values are defined to pull enrichment data.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AWS - EC2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.AwsIP
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_2_#default#": 0.27,
+      "10_3_yes": 0.55
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1265,
+        "width": 800,
+        "x": 140,
+        "y": -780
+      }
+    }
+  }
+inputs:
+- key: ""
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery:
+    query: ""
+    queryEntity: indicators
+    results:
+    daterange:
+      fromdate: 0001-01-01T00:00:00Z
+      todate: 0001-01-01T00:00:00Z
+      period:
+        by: ""
+        byto: ""
+        byfrom: ""
+        tovalue:
+        fromvalue:
+        field: ""
+      fromdatelicenseval: 0001-01-01T00:00:00Z
+    runFromLastJobTime: true
+- key: AwsIP
+  value:
+    complex:
+      root: alert
+      accessor: remoteip
+  required: true
+  description: AWS IP in alert
+  playbookInputQuery:
+outputs:
+- contextPath: AWS.EC2.Instances
+  description: AWS EC2 information.
+  type: unknown
+- contextPath: AWS.EC2.SecurityGroups
+  description: AWS Security group information.
+  type: unknown
+quiet: true
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)
+contentitemexportablefields:
+  contentitemfields: {}

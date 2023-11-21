@@ -1,0 +1,320 @@
+commonfields:
+  id: Minerva Labs Anti-Evasion Platform
+  version: -1
+name: Minerva Labs Anti-Evasion Platform
+display: Minerva Labs Anti-Evasion Platform
+category: Endpoint
+description: Minerva eliminates the endpoint security gap while empowering companies to embrace technology fearlessly.
+configuration:
+- display: Minerva Management Console URL
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Username
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  subtype: python3
+  commands:
+  - name: minerva-add-exclusion
+    arguments:
+    - name: data
+      required: true
+      description: data
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - hash
+      - path
+      description: The exclusion type.
+    - name: appliedGroupsIds
+      description: A list of group IDs to which this exclusion applies.
+      isArray: true
+      defaultValue: All Groups
+    - name: description
+      required: true
+      description: A description of the exclusion.
+    outputs:
+    - contextPath: Minerva.Exclusion.Id
+      description: Exclusion ID.
+      type: string
+    - contextPath: Minerva.Exclusion.Type
+      description: Exclusion type.
+      type: string
+    - contextPath: Minerva.Exclusion.Data
+      description: Exclusion data.
+      type: string
+    - contextPath: Minerva.Exclusion.Description
+      description: A description of the exclusion.
+      type: string
+    - contextPath: Minerva.Exclusion.lastModifiedBy
+      description: The user that last modified this exclusion.
+      type: string
+    - contextPath: Minerva.Exclusion.lastModifiedOn
+      description: The date this exclusion was last modified.
+      type: date
+    - contextPath: Minerva.Exclusion.appliedGroupsIds
+      description: Group IDs to which this exclusion applies.
+      type: string
+    description: Add exclusions to Minerva Console.
+    execution: true
+  - name: minerva-add-vaccine
+    arguments:
+    - name: name
+      required: true
+      description: Name of the mutex.
+    - name: description
+      description: A description of the vaccination.
+    - name: isMonitorOnly
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: isMonitorOnly
+      defaultValue: "False"
+    outputs:
+    - contextPath: Minerva.Vaccine.Name
+      description: Name of the mutex vaccination.
+      type: string
+    - contextPath: Minerva.Vaccine.Description
+      description: A description of the mutex vaccination.
+      type: string
+    - contextPath: Minerva.Vaccine.isMonitorOnly
+      description: Whether this mutex vaccination is only monitored.
+      type: boolean
+    - contextPath: Minerva.Vaccine.lastModifiedBy
+      description: The user that last modified this mutex vaccination.
+      type: string
+    - contextPath: Minerva.Vaccine.lastModifiedOn
+      description: The date this mutex vaccination was last modified.
+      type: date
+    - contextPath: Minerva.Vaccine.Id
+      description: Mutex vaccination ID.
+      type: string
+    - contextPath: Minerva.Vaccine.Type
+      description: 'Vaccine type, for example: Mutex.'
+      type: string
+    description: Vaccinate with Minerva.
+    execution: true
+  - name: minerva-search-process
+    arguments:
+    - name: param
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - fileHash
+      - processCommandLine
+      - processName
+      - username
+      - endpoint
+      description: Parameter to search for.
+    - name: condition
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - equalTo
+      - notEqualTo
+      - contain
+      - notContain
+      - startWith
+      - endWith
+      description: A condition to apply to the search.
+    - name: value
+      required: true
+      description: value
+    outputs:
+    - contextPath: Minerva.Process.Endpoint
+      description: The name of the endpoint on which the process was run.
+      type: string
+    - contextPath: Minerva.Process.SHA256
+      description: The SHA256 hash of the process.
+      type: string
+    - contextPath: Minerva.Process.CommandLine
+      description: The process command line.
+      type: string
+    - contextPath: Minerva.Process.Username
+      description: The user name with which the process was executed.
+      type: string
+    - contextPath: Minerva.Process.Createtime
+      description: The time the process was created.
+      type: date
+    - contextPath: Minerva.Process.Pid
+      description: The process ID.
+      type: number
+    - contextPath: Minerva.Process.Name
+      description: The process name.
+      type: string
+    description: Search processes with Minerva.
+  - name: minerva-search-endpoint
+    arguments:
+    - name: param
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - group
+      - endpoint
+      - loggedOnUsers
+      - armorVersion
+      - receivedIpAddress
+      - reportedIpAddress
+      - operatingSystem
+      description: Parameter to search for.
+    - name: condition
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - equalTo
+      - notEqualTo
+      - contain
+      - notContain
+      - startWith
+      - endWith
+      description: A condition to apply to the search.
+    - name: value
+      required: true
+      description: value
+    outputs:
+    - contextPath: Minerva.Endpoint.Group
+      description: The group to which the endpoint belongs.
+      type: string
+    - contextPath: Minerva.Endpoint.Name
+      description: The endpoint name.
+      type: string
+    - contextPath: Minerva.Endpoint.Users
+      description: The list of logged-on users.
+      type: string
+    - contextPath: Minerva.Endpoint.IP
+      description: The reported IP address.
+      type: string
+    - contextPath: Minerva.Endpoint.OS
+      description: The endpoint operating system.
+      type: string
+    description: Search Minerva for an endpoint.
+  - name: minerva-get-groups
+    arguments: []
+    outputs:
+    - contextPath: Minerva.Group.Id
+      description: The ID of the group.
+      type: string
+    - contextPath: Minerva.Group.Name
+      description: The name of the group.
+      type: string
+    - contextPath: Minerva.Group.Policy
+      description: The policy applied to the group.
+      type: string
+    - contextPath: Minerva.Group.PolicyVersion
+      description: The policy version applied to the group.
+      type: string
+    - contextPath: Minerva.Group.EndpointSettings
+      description: The settings applied to the group.
+      type: string
+    - contextPath: Minerva.Group.Endpoints
+      description: The number of endpoints in the group.
+      type: number
+    - contextPath: Minerva.Group.Comment
+      description: The comment the group creator added.
+      type: string
+    - contextPath: Minerva.Group.CreationTime
+      description: The time the group was created.
+      type: date
+    description: Fetches all the groups defined in Minerva Management Console.
+  - name: minerva-get-vaccines
+    arguments: []
+    outputs:
+    - contextPath: Minerva.Vaccine.Name
+      description: Mutex vaccination name.
+      type: string
+    - contextPath: Minerva.Vaccine.Description
+      description: Mutex vaccination description.
+      type: string
+    - contextPath: Minerva.Vaccine.isMonitorOnly
+      description: Whether this mutex vaccination is only monitored without simulation.
+      type: boolean
+    - contextPath: Minerva.Vaccine.lastModifiedBy
+      description: The user that last modified this mutex vaccination.
+      type: string
+    - contextPath: Minerva.Vaccine.lastModifiedOn
+      description: The date this mutex vaccination was last modified.
+      type: date
+    - contextPath: Minerva.Vaccine.Id
+      description: Mutex vaccination ID.
+      type: string
+    description: Retrieves the mutex vaccines.
+  - name: minerva-delete-vaccine
+    arguments:
+    - name: vaccine_id
+      required: true
+      description: The vaccine the specified vaccines.
+    description: Deletes a vaccine by the vaccine ID.
+  - name: minerva-get-exclusions
+    arguments: []
+    outputs:
+    - contextPath: Minerva.Exclusion.Id
+      description: Exclusion ID.
+      type: string
+    - contextPath: Minerva.Exclusion.Type
+      description: Exclusion type.
+      type: string
+    - contextPath: Minerva.Exclusion.Data
+      description: Exclusion data.
+      type: string
+    - contextPath: Minerva.Exclusion.Description
+      description: 'Exclusion description. '
+      type: string
+    - contextPath: Minerva.Exclusion.lastModifiedBy
+      description: The user that last modified this exclusion.
+      type: string
+    - contextPath: Minerva.Exclusion.lastModifiedOn
+      description: The date this exclusion was last modified.
+      type: date
+    - contextPath: Minerva.Exclusion.appliedGroupsIds
+      description: Group IDs to which this exclusion applies.
+      type: string
+    description: Retrieves all exclusions.
+  - name: minerva-delete-exclusion
+    arguments:
+    - name: id
+      required: true
+      description: Exclusion ID.
+      isArray: true
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - hash
+      - path
+      - script
+      - certificate
+      description: Exclusion type.
+    description: Deletes an exclusion by the exculsion ID.
+  - name: minerva-unarchive-events
+    arguments: []
+    description: Moves all the events from Archive state to New event state.
+  isfetch: true
+  runonce: false
+  dockerimage: demisto/python3:3.10.12.63474
+tests:
+- No tests
+fromversion: 5.0.0

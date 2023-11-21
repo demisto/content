@@ -1,28 +1,29 @@
 id: AWS - IAM Test Playbook
 version: -1
+vcShouldKeepItemLegacyProdMachine: false
 name: AWS - IAM Test Playbook
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: d8456ea7-71c7-404d-8581-fe3f66374222
+    taskid: 09640e7a-a450-44e4-8ade-3fb7823f2058
     type: start
     task:
-      id: d8456ea7-71c7-404d-8581-fe3f66374222
+      id: 09640e7a-a450-44e4-8ade-3fb7823f2058
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
-      - "77"
+      - "95"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 50
+          "y": -90
         }
       }
     note: false
@@ -34,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 03522c81-14b6-4859-80c6-85e3465c8247
+    taskid: 74bfe2e2-635c-487a-819c-900872f18e90
     type: regular
     task:
-      id: 03522c81-14b6-4859-80c6-85e3465c8247
+      id: 74bfe2e2-635c-487a-819c-900872f18e90
       version: -1
       name: aws-iam-list-users
       description: Lists the IAM users, returns all users in the AWS account.
@@ -50,11 +51,12 @@ tasks:
       - "64"
       - "65"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 5095
+          "y": 5785
         }
       }
     note: false
@@ -66,10 +68,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: bdde76d6-9d7d-4515-8691-9cc600852527
+    taskid: 20114031-c205-4522-8781-19edc290038f
     type: regular
     task:
-      id: bdde76d6-9d7d-4515-8691-9cc600852527
+      id: 20114031-c205-4522-8781-19edc290038f
       version: -1
       name: aws-iam-create-group
       description: Creates a new iam group.
@@ -83,13 +85,14 @@ tasks:
       - "69"
     scriptarguments:
       groupName:
-        simple: playbookgrp
+        simple: test_group_${TimeNowUnix}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 5445
+          "y": 6135
         }
       }
     note: false
@@ -101,10 +104,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 5a05baf5-2ec3-4c45-81fc-bcc99f36fa7e
+    taskid: 538231da-4cc7-4d21-804e-6f2ed20a0464
     type: regular
     task:
-      id: 5a05baf5-2ec3-4c45-81fc-bcc99f36fa7e
+      id: 538231da-4cc7-4d21-804e-6f2ed20a0464
       version: -1
       name: aws-iam-list-groups
       description: Lists all the IAM groups in the AWS account
@@ -117,11 +120,12 @@ tasks:
       - "70"
       - "71"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 5795
+          "y": 6475
         }
       }
     note: false
@@ -133,10 +137,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 74069ec2-d47b-445e-8bc7-6a9fcead118f
+    taskid: 764d6ba7-950b-41bf-80dc-313b289bdc40
     type: regular
     task:
-      id: 74069ec2-d47b-445e-8bc7-6a9fcead118f
+      id: 764d6ba7-950b-41bf-80dc-313b289bdc40
       version: -1
       name: aws-iam-list-policies
       description: Lists all the managed policies that are available in your AWS account,
@@ -154,6 +158,7 @@ tasks:
       scope:
         simple: AWS
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -170,10 +175,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 71fb5a5f-24e3-4687-8ee2-4d8be00e1c37
+    taskid: eb4c0e9c-65f6-486e-8f5d-21912a7c0c95
     type: regular
     task:
-      id: 71fb5a5f-24e3-4687-8ee2-4d8be00e1c37
+      id: eb4c0e9c-65f6-486e-8f5d-21912a7c0c95
       version: -1
       name: aws-iam-list-roles
       description: Lists all IAM roles
@@ -186,11 +191,12 @@ tasks:
       - "55"
       - "56"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 4045
+          "y": 4755
         }
       }
     note: false
@@ -202,10 +208,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 8169bfa5-e6a7-4830-8c89-009e128af44e
+    taskid: f72bae99-7b75-4e8c-8b32-04fac427926b
     type: regular
     task:
-      id: 8169bfa5-e6a7-4830-8c89-009e128af44e
+      id: f72bae99-7b75-4e8c-8b32-04fac427926b
       version: -1
       name: aws-iam-delete-group
       description: Deletes the specified IAM group. The group must not contain any
@@ -219,13 +225,14 @@ tasks:
       - "90"
     scriptarguments:
       groupName:
-        simple: playbookgrp
+        simple: test_group_${TimeNowUnix}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 6345
+          "y": 7035
         }
       }
     note: false
@@ -237,10 +244,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 14a36bc2-4e16-4ecc-8266-8a932d8f4043
+    taskid: a8751f08-8ca2-4314-825f-166f68cf43e3
     type: regular
     task:
-      id: 14a36bc2-4e16-4ecc-8266-8a932d8f4043
+      id: a8751f08-8ca2-4314-825f-166f68cf43e3
       version: -1
       name: aws-iam-create-instance-profile
       description: Creates a new instance profile.
@@ -256,6 +263,7 @@ tasks:
       instanceProfileName:
         simple: ${TestPBProfileName}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -272,10 +280,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 4ce92f8b-7ca6-4e97-8dc0-8e6cf08f5b89
+    taskid: c1e1f573-71e7-4356-8265-056771ad0075
     type: regular
     task:
-      id: 4ce92f8b-7ca6-4e97-8dc0-8e6cf08f5b89
+      id: c1e1f573-71e7-4356-8265-056771ad0075
       version: -1
       name: aws-iam-delete-instance-profile
       description: Deletes the specified instance profile. The instance profile must
@@ -286,11 +294,12 @@ tasks:
       brand: AWS - IAM
     nexttasks:
       '#none#':
-      - "30"
+      - "96"
     scriptarguments:
       instanceProfileName:
         simple: ${TestPBProfileName}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -307,10 +316,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: e0789a21-47eb-4720-805e-c77d9b4a45e0
+    taskid: 8b02bbe1-0719-41aa-862a-c00f3e64fb0f
     type: regular
     task:
-      id: e0789a21-47eb-4720-805e-c77d9b4a45e0
+      id: 8b02bbe1-0719-41aa-862a-c00f3e64fb0f
       version: -1
       name: aws-iam-list-instance-profiles
       description: Lists all the instance profiles tin your AWS account.
@@ -323,6 +332,7 @@ tasks:
       - "49"
       - "50"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -339,10 +349,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: aaf62380-0702-40e8-8bff-d909b9e34c99
+    taskid: 0d557d4e-c198-437c-888f-51d29e2b8a8e
     type: regular
     task:
-      id: aaf62380-0702-40e8-8bff-d909b9e34c99
+      id: 0d557d4e-c198-437c-888f-51d29e2b8a8e
       version: -1
       name: aws-iam-add-role-to-instance-profile
       description: Adds the specified IAM role to the specified instance profile.
@@ -363,6 +373,7 @@ tasks:
       roleName:
         simple: ${TestPBRoleName}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -379,10 +390,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: ca9a0277-e95a-4456-82fd-ed5793785f75
+    taskid: 68ad5382-33ec-4e24-8698-cb1f3d5167f8
     type: regular
     task:
-      id: ca9a0277-e95a-4456-82fd-ed5793785f75
+      id: 68ad5382-33ec-4e24-8698-cb1f3d5167f8
       version: -1
       name: aws-iam-remove-role-from-instance-profile
       description: Removes the specified IAM role from the specified EC2 instance
@@ -400,6 +411,7 @@ tasks:
       roleName:
         simple: ${TestPBRoleName}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -416,10 +428,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 7aaa7f47-f476-4b0e-809d-8bef3c96a060
+    taskid: e4442717-56f2-427f-82ac-365f62587976
     type: regular
     task:
-      id: 7aaa7f47-f476-4b0e-809d-8bef3c96a060
+      id: e4442717-56f2-427f-82ac-365f62587976
       version: -1
       name: aws-iam-list-instance-profiles-for-role
       description: Lists the instance profiles that have the specified associated
@@ -436,6 +448,7 @@ tasks:
       roleName:
         simple: ${TestPBRoleName}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -452,10 +465,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 14e32014-ff82-4f03-860a-08f121a0bb69
+    taskid: 71bf8dbc-82f9-4fb0-8de1-feb8e166b9aa
     type: regular
     task:
-      id: 14e32014-ff82-4f03-860a-08f121a0bb69
+      id: 71bf8dbc-82f9-4fb0-8de1-feb8e166b9aa
       version: -1
       name: aws-iam-get-instance-profile
       description: Retrieves information about the specified instance profile.
@@ -471,6 +484,7 @@ tasks:
       instanceProfileName:
         simple: ${TestPBProfileName}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -487,10 +501,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 0df842df-7d3f-40f5-8d6e-19aff24e2e66
+    taskid: b6384b34-de88-4597-83d1-8ea2269d2da5
     type: regular
     task:
-      id: 0df842df-7d3f-40f5-8d6e-19aff24e2e66
+      id: b6384b34-de88-4597-83d1-8ea2269d2da5
       version: -1
       name: aws-iam-get-role
       description: Retrieves information about the specified role.
@@ -500,17 +514,17 @@ tasks:
       brand: AWS - IAM
     nexttasks:
       '#none#':
-      - "53"
-      - "54"
+      - "97"
     scriptarguments:
       roleName:
         simple: ${TestPBRoleName}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 3695
+          "y": 3865
         }
       }
     note: false
@@ -522,10 +536,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: d5b5169e-46e6-4a3c-8856-d54f09ad4b58
+    taskid: 24e338cc-277b-4b54-82fd-0e868a625e45
     type: regular
     task:
-      id: d5b5169e-46e6-4a3c-8856-d54f09ad4b58
+      id: 24e338cc-277b-4b54-82fd-0e868a625e45
       version: -1
       name: aws-iam-delete-role
       description: 'Deletes the specified role. The role must not have any policies
@@ -541,11 +555,12 @@ tasks:
       roleName:
         simple: ${TestPBRoleName}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 4570
+          "y": 5260
         }
       }
     note: false
@@ -557,10 +572,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: fda5efb6-db6f-4cd3-85c1-b0dd95cf201b
+    taskid: 645dd417-5a4d-4de6-8acf-ddbd13fa8f2e
     type: regular
     task:
-      id: fda5efb6-db6f-4cd3-85c1-b0dd95cf201b
+      id: 645dd417-5a4d-4de6-8acf-ddbd13fa8f2e
       version: -1
       name: aws-iam-create-role
       description: Creates a new role for your AWS account.
@@ -590,6 +605,7 @@ tasks:
       roleName:
         simple: ${TestPBRoleName}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -606,10 +622,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 53978282-ce29-4499-830a-ec26b4d34f49
+    taskid: 89b36d02-158e-4f4c-8cab-c1a7e23df77a
     type: regular
     task:
-      id: 53978282-ce29-4499-830a-ec26b4d34f49
+      id: 89b36d02-158e-4f4c-8cab-c1a7e23df77a
       version: -1
       name: VerifyContext
       description: |-
@@ -618,7 +634,7 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      script: VerifyContext
+      scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
@@ -629,6 +645,7 @@ tasks:
       path:
         simple: AWS.IAM.Policies.PolicyId
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -645,10 +662,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 7bb1fcb2-9b99-4b32-87f0-d9da1a849289
+    taskid: 5995c242-8f7e-48f0-89a1-3fbf94ec7fba
     type: regular
     task:
-      id: 7bb1fcb2-9b99-4b32-87f0-d9da1a849289
+      id: 5995c242-8f7e-48f0-89a1-3fbf94ec7fba
       version: -1
       name: VerifyContext
       description: |-
@@ -657,7 +674,7 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      script: VerifyContext
+      scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
@@ -668,6 +685,7 @@ tasks:
       path:
         simple: AWS.IAM.Policies.PolicyName
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -684,10 +702,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 4a157437-7eed-4f31-8463-4dcf1d535e2c
+    taskid: 56d7f06d-fe85-4614-86de-302de14713e5
     type: regular
     task:
-      id: 4a157437-7eed-4f31-8463-4dcf1d535e2c
+      id: 56d7f06d-fe85-4614-86de-302de14713e5
       version: -1
       name: VerifyContext
       description: |-
@@ -696,7 +714,7 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      script: VerifyContext
+      scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
@@ -707,6 +725,7 @@ tasks:
       path:
         simple: AWS.IAM.Policies.Arn
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -723,10 +742,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: f7010901-1b30-48e4-8bbc-a5657a618796
+    taskid: 5387fe1e-0cec-4837-8cfd-5e15665494d2
     type: regular
     task:
-      id: f7010901-1b30-48e4-8bbc-a5657a618796
+      id: 5387fe1e-0cec-4837-8cfd-5e15665494d2
       version: -1
       name: VerifyContext
       description: |-
@@ -735,7 +754,7 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      script: VerifyContext
+      scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
@@ -746,6 +765,7 @@ tasks:
       path:
         simple: AWS.IAM.Roles.Arn
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -762,10 +782,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: acb415c4-1838-41e2-8ec8-c20f93b8db36
+    taskid: 18880cef-795b-4a84-8e49-c2c7f3fd2545
     type: regular
     task:
-      id: acb415c4-1838-41e2-8ec8-c20f93b8db36
+      id: 18880cef-795b-4a84-8e49-c2c7f3fd2545
       version: -1
       name: VerifyContext
       description: |-
@@ -774,7 +794,7 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      script: VerifyContext
+      scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
@@ -785,6 +805,7 @@ tasks:
       path:
         simple: AWS.IAM.Roles.RoleName
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -801,10 +822,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 71906eec-cad0-44dc-81c2-d7382a0a0350
+    taskid: 21e8de5a-1727-453e-8036-065130fdd479
     type: regular
     task:
-      id: 71906eec-cad0-44dc-81c2-d7382a0a0350
+      id: 21e8de5a-1727-453e-8036-065130fdd479
       version: -1
       name: VerifyContext
       description: |-
@@ -813,7 +834,7 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      script: VerifyContext
+      scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
@@ -824,6 +845,7 @@ tasks:
       path:
         simple: AWS.IAM.InstanceProfiles.Arn
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -840,10 +862,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 46b8cfa8-99dc-4311-8045-a1d4e9a414cb
+    taskid: 62ea8e86-1324-440d-83fd-fb80669f9741
     type: regular
     task:
-      id: 46b8cfa8-99dc-4311-8045-a1d4e9a414cb
+      id: 62ea8e86-1324-440d-83fd-fb80669f9741
       version: -1
       name: VerifyContext
       description: |-
@@ -852,7 +874,7 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      script: VerifyContext
+      scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
@@ -863,6 +885,7 @@ tasks:
       path:
         simple: AWS.IAM.InstanceProfiles.InstanceProfileName
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -879,10 +902,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 9f1e0edf-bb0e-4e6c-8dc6-ef6c241176dd
+    taskid: e3d32f0c-e828-47eb-866e-e75be9357adc
     type: regular
     task:
-      id: 9f1e0edf-bb0e-4e6c-8dc6-ef6c241176dd
+      id: e3d32f0c-e828-47eb-866e-e75be9357adc
       version: -1
       name: VerifyContext
       description: |-
@@ -891,7 +914,7 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      script: VerifyContext
+      scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
@@ -902,6 +925,7 @@ tasks:
       path:
         simple: AWS.IAM.InstanceProfiles.InstanceProfileName
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -918,10 +942,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 5b636149-9a07-460c-8d86-b068bbf3eb56
+    taskid: 6db916e8-1e2e-4498-8e4f-dd5054ef7379
     type: regular
     task:
-      id: 5b636149-9a07-460c-8d86-b068bbf3eb56
+      id: 6db916e8-1e2e-4498-8e4f-dd5054ef7379
       version: -1
       name: VerifyContext
       description: |-
@@ -930,7 +954,7 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      script: VerifyContext
+      scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
@@ -941,6 +965,7 @@ tasks:
       path:
         simple: AWS.IAM.InstanceProfiles.InstanceProfileName
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -957,10 +982,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 4f17c6ef-c74a-4fae-816f-da030bf172c0
+    taskid: 2200e67e-b7c9-466f-8bc9-b99379dcc689
     type: regular
     task:
-      id: 4f17c6ef-c74a-4fae-816f-da030bf172c0
+      id: 2200e67e-b7c9-466f-8bc9-b99379dcc689
       version: -1
       name: VerifyContext
       description: |-
@@ -969,7 +994,7 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      script: VerifyContext
+      scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
@@ -980,6 +1005,7 @@ tasks:
       path:
         simple: AWS.IAM.InstanceProfiles.Arn
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -996,10 +1022,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: a219d0f6-2718-4d95-8a66-5963fce82ce6
+    taskid: c359c654-4c90-496d-86f7-7c75d3e3f68a
     type: regular
     task:
-      id: a219d0f6-2718-4d95-8a66-5963fce82ce6
+      id: c359c654-4c90-496d-86f7-7c75d3e3f68a
       version: -1
       name: VerifyContext
       description: |-
@@ -1008,7 +1034,7 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      script: VerifyContext
+      scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
@@ -1019,6 +1045,7 @@ tasks:
       path:
         simple: AWS.IAM.InstanceProfiles.InstanceProfileName
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1035,10 +1062,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: f3a0370b-fcc0-4c33-806b-4805b43b5563
+    taskid: dec410c8-1338-4c26-8b28-b8ea4a2e1df3
     type: regular
     task:
-      id: f3a0370b-fcc0-4c33-806b-4805b43b5563
+      id: dec410c8-1338-4c26-8b28-b8ea4a2e1df3
       version: -1
       name: VerifyContext
       description: |-
@@ -1047,7 +1074,7 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      script: VerifyContext
+      scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
@@ -1058,6 +1085,7 @@ tasks:
       path:
         simple: AWS.IAM.InstanceProfiles.Arn
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1074,10 +1102,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: 8e3822e8-096a-4722-8f27-570aeb84f49e
+    taskid: 5e86ffb0-6e85-4745-8841-a5c348928ab9
     type: regular
     task:
-      id: 8e3822e8-096a-4722-8f27-570aeb84f49e
+      id: 5e86ffb0-6e85-4745-8841-a5c348928ab9
       version: -1
       name: VerifyContext
       description: |-
@@ -1086,7 +1114,7 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      script: VerifyContext
+      scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
@@ -1097,6 +1125,7 @@ tasks:
       path:
         simple: AWS.IAM.InstanceProfiles.Roles.CreateDate
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1113,10 +1142,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: d6134eb2-0baf-4577-8e60-405eb8a3e094
+    taskid: 3f5d65aa-6b36-4c50-81c4-bfdd16414473
     type: regular
     task:
-      id: d6134eb2-0baf-4577-8e60-405eb8a3e094
+      id: 3f5d65aa-6b36-4c50-81c4-bfdd16414473
       version: -1
       name: VerifyContext
       description: |-
@@ -1125,7 +1154,7 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      script: VerifyContext
+      scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
@@ -1136,6 +1165,7 @@ tasks:
       path:
         simple: AWS.IAM.InstanceProfiles.Arn
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1152,10 +1182,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: 623f2648-83fd-4bc4-889a-8dda975ad951
+    taskid: 0e774844-43c2-4ed4-89d8-7e17c9d1f8a8
     type: regular
     task:
-      id: 623f2648-83fd-4bc4-889a-8dda975ad951
+      id: 0e774844-43c2-4ed4-89d8-7e17c9d1f8a8
       version: -1
       name: VerifyContext
       description: |-
@@ -1164,7 +1194,7 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      script: VerifyContext
+      scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
@@ -1175,6 +1205,7 @@ tasks:
       path:
         simple: AWS.IAM.InstanceProfiles.Roles.CreateDate
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1189,90 +1220,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "53":
-    id: "53"
-    taskid: eff20963-e464-4bd8-85e7-d6050932614a
-    type: regular
-    task:
-      id: eff20963-e464-4bd8-85e7-d6050932614a
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      script: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      path:
-        simple: AWS.IAM.Roles.Arn
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 3870
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "54":
-    id: "54"
-    taskid: 79d15b36-9d1c-42fc-8ad5-8f5c112f4cbc
-    type: regular
-    task:
-      id: 79d15b36-9d1c-42fc-8ad5-8f5c112f4cbc
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      script: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      path:
-        simple: AWS.IAM.Roles.RoleName
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 3870
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: 1fe54edf-9467-4142-84b0-7c1b24b145df
+    taskid: 91eecdbf-77d7-4982-8286-8ba6c5e82715
     type: regular
     task:
-      id: 1fe54edf-9467-4142-84b0-7c1b24b145df
+      id: 91eecdbf-77d7-4982-8286-8ba6c5e82715
       version: -1
       name: VerifyContext
       description: |-
@@ -1281,7 +1234,7 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      script: VerifyContext
+      scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
@@ -1292,11 +1245,12 @@ tasks:
       path:
         simple: AWS.IAM.Roles.Arn
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 4220
+          "y": 4910
         }
       }
     note: false
@@ -1308,10 +1262,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: 76c70a04-1666-4c45-8317-d1e81d84d7ef
+    taskid: 838fa690-23e7-432a-80e7-7df0354aa273
     type: regular
     task:
-      id: 76c70a04-1666-4c45-8317-d1e81d84d7ef
+      id: 838fa690-23e7-432a-80e7-7df0354aa273
       version: -1
       name: VerifyContext
       description: |-
@@ -1320,7 +1274,7 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      script: VerifyContext
+      scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
@@ -1331,11 +1285,12 @@ tasks:
       path:
         simple: AWS.IAM.Roles.Arn
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 695,
-          "y": 4220
+          "y": 4910
         }
       }
     note: false
@@ -1347,10 +1302,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "64":
     id: "64"
-    taskid: c60bdf16-f319-4c01-80d3-75695c1750f6
+    taskid: 5bca68e2-1aeb-4eac-8512-5b5a1ccd0abf
     type: regular
     task:
-      id: c60bdf16-f319-4c01-80d3-75695c1750f6
+      id: 5bca68e2-1aeb-4eac-8512-5b5a1ccd0abf
       version: -1
       name: VerifyContext
       description: |-
@@ -1359,7 +1314,7 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      script: VerifyContext
+      scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
@@ -1370,11 +1325,12 @@ tasks:
       path:
         simple: AWS.IAM.Users.UserName
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 5270
+          "y": 5960
         }
       }
     note: false
@@ -1386,10 +1342,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "65":
     id: "65"
-    taskid: 2859cdca-1d9c-445b-8964-6f7e3efff5bb
+    taskid: d175164e-e78a-4331-85de-b9ddd216c038
     type: regular
     task:
-      id: 2859cdca-1d9c-445b-8964-6f7e3efff5bb
+      id: d175164e-e78a-4331-85de-b9ddd216c038
       version: -1
       name: VerifyContext
       description: |-
@@ -1398,7 +1354,7 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      script: VerifyContext
+      scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
@@ -1409,11 +1365,12 @@ tasks:
       path:
         simple: AWS.IAM.Users.UserId
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 695,
-          "y": 5270
+          "y": 5960
         }
       }
     note: false
@@ -1425,10 +1382,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "68":
     id: "68"
-    taskid: 5c1a928f-993a-4406-87d6-f9e2c0e823ec
+    taskid: fd12fff1-a987-40bc-8b46-8bdeede1c2d4
     type: regular
     task:
-      id: 5c1a928f-993a-4406-87d6-f9e2c0e823ec
+      id: fd12fff1-a987-40bc-8b46-8bdeede1c2d4
       version: -1
       name: VerifyContext
       description: |-
@@ -1437,7 +1394,7 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      script: VerifyContext
+      scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
@@ -1448,11 +1405,12 @@ tasks:
       path:
         simple: AWS.IAM.Groups.GroupId
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 5620
+          "y": 6310
         }
       }
     note: false
@@ -1464,10 +1422,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "69":
     id: "69"
-    taskid: 12be86f0-e368-4323-833e-87ef92c9d574
+    taskid: 7ba8f47d-87fd-46ce-83f8-2dd939214c18
     type: regular
     task:
-      id: 12be86f0-e368-4323-833e-87ef92c9d574
+      id: 7ba8f47d-87fd-46ce-83f8-2dd939214c18
       version: -1
       name: VerifyContext
       description: |-
@@ -1476,7 +1434,7 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      script: VerifyContext
+      scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
@@ -1487,11 +1445,12 @@ tasks:
       path:
         simple: AWS.IAM.Groups.Arn
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 695,
-          "y": 5620
+          "y": 6310
         }
       }
     note: false
@@ -1503,10 +1462,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "70":
     id: "70"
-    taskid: b842caf9-706c-4d8e-898a-203418eea21f
+    taskid: b4dbb274-676a-4f32-8983-73f6792968da
     type: regular
     task:
-      id: b842caf9-706c-4d8e-898a-203418eea21f
+      id: b4dbb274-676a-4f32-8983-73f6792968da
       version: -1
       name: VerifyContext
       description: |-
@@ -1515,7 +1474,7 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      script: VerifyContext
+      scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
@@ -1526,11 +1485,12 @@ tasks:
       path:
         simple: AWS.IAM.Groups.Arn
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 5970
+          "y": 6660
         }
       }
     note: false
@@ -1542,10 +1502,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "71":
     id: "71"
-    taskid: 178d3cfc-30ec-4c48-88d3-75809502fa16
+    taskid: ed26cae4-e0ec-4dc1-897e-28bb29810aca
     type: regular
     task:
-      id: 178d3cfc-30ec-4c48-88d3-75809502fa16
+      id: ed26cae4-e0ec-4dc1-897e-28bb29810aca
       version: -1
       name: VerifyContext
       description: |-
@@ -1554,7 +1514,7 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      script: VerifyContext
+      scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
@@ -1565,11 +1525,12 @@ tasks:
       path:
         simple: AWS.IAM.Groups.GroupId
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 695,
-          "y": 5970
+          "y": 6660
         }
       }
     note: false
@@ -1581,10 +1542,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "74":
     id: "74"
-    taskid: 78c40c1c-e530-4616-863d-389b011a4c90
+    taskid: ebfba128-e58b-49df-8d7e-44c0bb1fa3a1
     type: regular
     task:
-      id: 78c40c1c-e530-4616-863d-389b011a4c90
+      id: ebfba128-e58b-49df-8d7e-44c0bb1fa3a1
       version: -1
       name: Generate TestPlaybook Profile Name
       description: Set a value in context under the key you entered.
@@ -1601,6 +1562,7 @@ tasks:
       value:
         simple: ${TimeNowUnix}-TestProfile
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1617,10 +1579,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "75":
     id: "75"
-    taskid: de0e57c2-05c7-468a-8970-4ac44c62ff76
+    taskid: c2e8b5eb-91c7-4529-88f5-be0e4e5db4fe
     type: regular
     task:
-      id: de0e57c2-05c7-468a-8970-4ac44c62ff76
+      id: c2e8b5eb-91c7-4529-88f5-be0e4e5db4fe
       version: -1
       name: Generate TestPlaybook Role Name
       description: Set a value in context under the key you entered.
@@ -1637,6 +1599,7 @@ tasks:
       value:
         simple: ${TimeNowUnix}-TestRole
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1653,10 +1616,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "76":
     id: "76"
-    taskid: e0b3876d-18c1-4c59-8c7e-6436594b0f61
+    taskid: 8542053e-b430-461f-81ba-3186a949a6db
     type: regular
     task:
-      id: e0b3876d-18c1-4c59-8c7e-6436594b0f61
+      id: 8542053e-b430-461f-81ba-3186a949a6db
       version: -1
       name: List Role Policies
       description: Lists the names of the inline policies that are embedded in the
@@ -1672,11 +1635,12 @@ tasks:
       roleName:
         simple: ${TestPBRoleName}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 4395
+          "y": 5085
         }
       }
     note: false
@@ -1688,10 +1652,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "77":
     id: "77"
-    taskid: df33282a-49f5-4809-8ae5-3344f90f0644
+    taskid: 4c56b778-c7a3-4ada-8982-659da896d0a4
     type: regular
     task:
-      id: df33282a-49f5-4809-8ae5-3344f90f0644
+      id: 4c56b778-c7a3-4ada-8982-659da896d0a4
       version: -1
       name: GetTime
       description: |
@@ -1704,11 +1668,12 @@ tasks:
       '#none#':
       - "74"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 195
+          "y": 205
         }
       }
     note: false
@@ -1720,10 +1685,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "78":
     id: "78"
-    taskid: 53d8be18-8d59-4e7b-82c4-aab924bf4b0e
+    taskid: fc80cbf0-677f-44e3-81fd-089f10b052b8
     type: regular
     task:
-      id: 53d8be18-8d59-4e7b-82c4-aab924bf4b0e
+      id: fc80cbf0-677f-44e3-81fd-089f10b052b8
       version: -1
       name: Generate TestPlaybook Profile Name
       description: Set a value in context under the key you entered.
@@ -1740,6 +1705,7 @@ tasks:
       value:
         simple: ${TimeNowUnix}-TestUser
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1756,10 +1722,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "79":
     id: "79"
-    taskid: efdbf9e2-b1b4-4e07-854e-e2e14fdab4a2
+    taskid: 16eead7c-4cba-4e5a-8e53-05288e5537b0
     type: regular
     task:
-      id: efdbf9e2-b1b4-4e07-854e-e2e14fdab4a2
+      id: 16eead7c-4cba-4e5a-8e53-05288e5537b0
       version: -1
       name: aws-iam-get-role-policy
       description: Retrieves the specified inline policy document that is embedded
@@ -1777,11 +1743,12 @@ tasks:
       roleName:
         simple: c7nSecurityAuditRole
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 4745
+          "y": 5435
         }
       }
     note: false
@@ -1793,10 +1760,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "80":
     id: "80"
-    taskid: 45f9b381-a22d-4bc9-8303-833c51e61c39
+    taskid: e3f214a1-45f4-41a0-8fe3-51399b93bb96
     type: regular
     task:
-      id: 45f9b381-a22d-4bc9-8303-833c51e61c39
+      id: e3f214a1-45f4-41a0-8fe3-51399b93bb96
       version: -1
       name: aws-iam-list-role-policies
       description: Lists the names of the inline policies that are embedded in the
@@ -1812,11 +1779,12 @@ tasks:
       roleName:
         simple: c7nSecurityAuditRole
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 4920
+          "y": 5610
         }
       }
     note: false
@@ -1828,22 +1796,22 @@ tasks:
     isautoswitchedtoquietmode: false
   "89":
     id: "89"
-    taskid: 5b3b9e29-f314-4757-81fa-7bb14220ba6d
+    taskid: e403d29d-21a8-49db-81f1-68e7e3427521
     type: title
     task:
-      id: 5b3b9e29-f314-4757-81fa-7bb14220ba6d
+      id: e403d29d-21a8-49db-81f1-68e7e3427521
       version: -1
       name: Test Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 7220
+          "y": 7610
         }
       }
     note: false
@@ -1855,10 +1823,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "90":
     id: "90"
-    taskid: da1f0529-5641-4511-811d-8534b254a767
+    taskid: d63e2884-d306-46ef-810d-89b03dc51637
     type: regular
     task:
-      id: da1f0529-5641-4511-811d-8534b254a767
+      id: d63e2884-d306-46ef-810d-89b03dc51637
       version: -1
       name: aws-iam-list-user-policies
       script: AWS - IAM|||aws-iam-list-user-policies
@@ -1876,11 +1844,12 @@ tasks:
           transformers:
           - operator: FirstArrayElement
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 6550
+          "y": 7220
         }
       }
     note: false
@@ -1892,10 +1861,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "92":
     id: "92"
-    taskid: c27a413f-d099-48c8-8eac-5ec8116fced9
+    taskid: 51539536-d4a0-4c8b-8fb2-93a4eaa46525
     type: regular
     task:
-      id: c27a413f-d099-48c8-8eac-5ec8116fced9
+      id: 51539536-d4a0-4c8b-8fb2-93a4eaa46525
       version: -1
       name: aws-iam-list-attached-user-policies
       script: AWS - IAM|||aws-iam-list-attached-user-policies
@@ -1913,11 +1882,12 @@ tasks:
           transformers:
           - operator: FirstArrayElement
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 6790
+          "y": 7410
         }
       }
     note: false
@@ -1929,10 +1899,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "94":
     id: "94"
-    taskid: c4886c9d-364e-4032-8095-c1a99b1258d9
+    taskid: 3b623dcf-ccba-4c65-80d8-47b2e420fc02
     type: regular
     task:
-      id: c4886c9d-364e-4032-8095-c1a99b1258d9
+      id: 3b623dcf-ccba-4c65-80d8-47b2e420fc02
       version: -1
       name: aws-iam-list-attached-group-policies
       script: AWS - IAM|||aws-iam-list-attached-group-policies
@@ -1950,11 +1920,254 @@ tasks:
           transformers:
           - operator: FirstArrayElement
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 6170
+          "y": 6860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "95":
+    id: "95"
+    taskid: 58382405-0de4-406b-880b-0eeb27f927fc
+    type: regular
+    task:
+      id: 58382405-0de4-406b-880b-0eeb27f927fc
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "77"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "96":
+    id: "96"
+    taskid: 3dabfd18-853d-4cfe-8541-47659694649f
+    type: regular
+    task:
+      id: 3dabfd18-853d-4cfe-8541-47659694649f
+      version: -1
+      name: aws-iam-tag-role
+      description: Adds one or more tags to an IAM role. The role can be a regular
+        role or a service-linked role. If a tag with the same key name already exists,
+        then that tag is overwritten with the new value.
+      script: '|||aws-iam-tag-role'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      roleName:
+        simple: ${TestPBRoleName}
+      tags:
+        simple: Key1:Value1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "97":
+    id: "97"
+    taskid: 3f414816-06df-4915-825f-cd30af29ff09
+    type: condition
+    task:
+      id: 3f414816-06df-4915-825f-cd30af29ff09
+      version: -1
+      name: Verify Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "98"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AWS.IAM.Roles.RoleName
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isExists
+          left:
+            value:
+              simple: AWS.IAM.Roles.Arn
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AWS.IAM.Roles.Tags.Key
+            iscontext: true
+          right:
+            value:
+              simple: Key1
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "98":
+    id: "98"
+    taskid: 897e9aa4-d10a-4de2-8cc4-158f3ad4e566
+    type: regular
+    task:
+      id: 897e9aa4-d10a-4de2-8cc4-158f3ad4e566
+      version: -1
+      name: aws-iam-untag-role
+      description: Removes the specified tags from the role.
+      script: '|||aws-iam-untag-role'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "99"
+    scriptarguments:
+      roleName:
+        simple: ${TestPBRoleName}
+      tagKeys:
+        simple: Key1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "99":
+    id: "99"
+    taskid: 65f5cbc9-b75a-4211-8af1-984603e8f68e
+    type: regular
+    task:
+      id: 65f5cbc9-b75a-4211-8af1-984603e8f68e
+      version: -1
+      name: aws-iam-get-role
+      description: Retrieves information about the specified role.
+      script: AWS - IAM|||aws-iam-get-role
+      type: regular
+      iscommand: true
+      brand: AWS - IAM
+    nexttasks:
+      '#none#':
+      - "100"
+    scriptarguments:
+      roleName:
+        simple: ${TestPBRoleName}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "100":
+    id: "100"
+    taskid: c3acdebb-aa14-44fc-8b4c-a070116435eb
+    type: condition
+    task:
+      id: c3acdebb-aa14-44fc-8b4c-a070116435eb
+      version: -1
+      name: Verify untag role
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: AWS.IAM.Roles.Tags
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4560
         }
       }
     note: false
@@ -1969,10 +2182,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 7235,
+        "height": 7765,
         "width": 1240,
         "x": 50,
-        "y": 50
+        "y": -90
       }
     }
   }

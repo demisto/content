@@ -6,10 +6,11 @@ import json
 import shutil
 from typing import Dict, List
 
+import urllib3
 import requests
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBAL VARIABLES '''
 SERVER_URL = demisto.params()['serverUrl'].rstrip('/')
@@ -91,6 +92,13 @@ CONTEXT_PATH = {
     'attachment': 'ThreatQ.File(val.ID === obj.ID)'
 }
 
+TABLE_TLP = {
+    4: "WHITE",
+    3: "GREEN",
+    2: "AMBER",
+    1: "RED"
+}
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -146,6 +154,34 @@ def get_errors_string_from_bad_request(bad_request_results, status_code):
     return str()  # Service did not provide any errors.
 
 
+def get_tlp_from_indicator(sources):
+    if not sources:
+        return None
+    tlp = 0
+    for source in sources:
+        try:
+            tlp = int(source.get('TLP')) if int(source.get('TLP')) > tlp else tlp
+        except Exception as e:
+            demisto.debug(f"Failed getting TLP from {source.get('Name')} source:\n{str(e)}")
+            continue
+
+    return TABLE_TLP.get(tlp)
+
+
+def get_generic_context(indicator, generic_context=None):
+
+    tlp = get_tlp_from_indicator(indicator.get('Source'))
+    if tlp:
+        if generic_context:
+            generic_context['TrafficLightProtocol'] = tlp
+        else:
+            generic_context = {'Data': indicator.get('Value'), 'TrafficLightProtocol': tlp}
+    else:
+        generic_context = generic_context or {'Data': indicator.get('Value')}
+
+    return generic_context
+
+
 def tq_request(method, url_suffix, params=None, files=None, retrieve_entire_response=False, allow_redirects=True):
     api_call_headers = None
     if url_suffix != '/token':
@@ -156,6 +192,7 @@ def tq_request(method, url_suffix, params=None, files=None, retrieve_entire_resp
             params = json.dumps(params)
             api_call_headers.update({'Content-Type': 'application/json'})
 
+    demisto.debug(f"[TEST] - Sending request with url endpoint: {url_suffix}")
     response = requests.request(
         method,
         API_URL + url_suffix,
@@ -165,6 +202,7 @@ def tq_request(method, url_suffix, params=None, files=None, retrieve_entire_resp
         files=files,
         allow_redirects=allow_redirects
     )
+    demisto.debug(f"Response status code: {response.status_code}")
 
     if response.status_code >= 400:
         errors_string = get_errors_string_from_bad_request(response, response.status_code)
@@ -261,11 +299,11 @@ def make_indicator_reputation_request(indicator_type, value, generic_context):
             is_httpx = True
 
         if is_httpx:
-            body = {"criteria": {"+or": [{"value": {"+equals": value}}, {"value": {"+equals": value_without_proto}}]},
+            body = {"criteria": {"+or": [{"value": value}, {"value": value_without_proto}]},
                     "filters": {"type_name": tq_type}}
         else:
             body = {
-                "criteria": {"value": {"+equals": value}},
+                "criteria": {"value": value},
                 "filters": {"type_name": tq_type}
             }
 
@@ -275,13 +313,13 @@ def make_indicator_reputation_request(indicator_type, value, generic_context):
         tq_type = "Email Address"
 
     if indicator_type == 'file':
-        body = {"criteria": {"value": {"+equals": value}},
+        body = {"criteria": {"value": value},
                 "filters": {
                     "+or": [{"type_name": "MD5"}, {"type_name": "SHA-1"}, {"type_name": "SHA-256"}, {"type_name": "SHA-384"},
                             {"type_name": "SHA-512"}]}}
     elif tq_type != "URL":
         body = {
-            "criteria": {"value": {"+equals": value}},
+            "criteria": {"value": value},
             "filters": {"type_name": tq_type}
         }
 
@@ -301,6 +339,7 @@ def make_indicator_reputation_request(indicator_type, value, generic_context):
             res = tq_request('GET', url_suffix)
             indicators.append(indicator_data_to_demisto_format(res['data']))
     indicators = indicators or [{'Value': value, 'TQScore': -1}]
+
     entry_context = aggregate_search_results(
         indicators=indicators,
         default_indicator_type=indicator_type,
@@ -679,10 +718,11 @@ def get_indicator_type_id(indicator_name: str) -> str:
 def aggregate_search_results(indicators, default_indicator_type, generic_context=None):
     entry_context = []
     for i in indicators:
+        generic_context = get_generic_context(i, generic_context)
         entry_context.append(set_indicator_entry_context(
             indicator_type=i.get('Type') or default_indicator_type,
             indicator=i,
-            generic_context=generic_context or {'Data': i.get('Value')}
+            generic_context=generic_context
         ))
 
     aggregated: Dict = {}

@@ -1,6 +1,5 @@
-import json
-import demistomock as demisto
 from CommonServerPython import *
+import demistomock as demisto
 from urllib import parse
 
 DEMISTO_OCCURRED_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -9,496 +8,356 @@ WIZ_HTTP_QUERIES_LIMIT = 500  # Request limit during run
 WIZ_API_LIMIT = 500  # limit number of returned records from the Wiz API
 WIZ = 'wiz'
 
+WIZ_VERSION = '1.2.11'
+INTEGRATION_GUID = '8864e131-72db-4928-1293-e292f0ed699f'
+
+
+def get_integration_user_agent():
+    integration_user_agent = f'{INTEGRATION_GUID}/xsoar/{WIZ_VERSION}'
+    return integration_user_agent
+
+
 # Standard headers
-HEADERS_AUTH = dict()
-HEADERS_AUTH["Content-Type"] = "application/x-www-form-urlencoded"
-HEADERS = dict()
-HEADERS["Content-Type"] = "application/json"
+HEADERS_AUTH = {"Content-Type": "application/x-www-form-urlencoded",
+                "User-Agent": get_integration_user_agent()}
+
+HEADERS = {"Content-Type": "application/json",
+           "User-Agent": get_integration_user_agent()}
+
 TOKEN = None
 URL = ''
+AUTH_E = ''
+AUTH_DEFAULT = "auth"  # NEED TO BE REMOVED AFTER THAT AUTH0 IS DEPRECATED
+COGNITO_PREFIX = [
+    "auth.app",
+    "auth.gov",
+    "auth.test"
+]
+AUTH0_PREFIX = [
+    "auth",
+    "auth0.gov",
+    "auth0.test"
+]
+URL_SUFFIX = 'wiz.io/oauth/token'
 
-
-def get_token():
-    """
-    Retrieve the token using the credentials
-    """
-    demisto_params = demisto.params()
-    said = demisto_params.get('credentials').get('identifier')
-    sasecret = demisto_params.get('credentials').get('password')
-    auth_payload = parse.urlencode({
-        'grant_type': 'client_credentials',
-        'audience': 'beyond-api',
-        'client_id': said,
-        'client_secret': sasecret
-    })
-    response = requests.post("https://auth.wiz.io/oauth/token", headers=HEADERS_AUTH, data=auth_payload)
-
-    if response.status_code != requests.codes.ok:
-        raise Exception('Error authenticating to Wiz [%d] - %s' % (response.status_code, response.text))
-    try:
-        response_json = response.json()
-        TOKEN = response_json.get('access_token')
-        if not TOKEN:
-            demisto.debug(json.dumps(response_json))
-            message = 'Could not retrieve token from Wiz: {}'.format(response_json.get("message"))
-            raise Exception(message)
-    except ValueError as exception:
-        demisto.debug(exception)
-        raise Exception('Could not parse API response')
-    HEADERS["Authorization"] = "Bearer " + TOKEN
-
-    return TOKEN
-
-
-def checkAPIerrors(query, variables):
-    if not TOKEN:
-        get_token()
-
-    data = {"variables": variables, "query": query}
-
-    try:
-        result = requests.post(url=URL, json=data, headers=HEADERS)
-
-    except Exception as e:
-        if '502: Bad Gateway' not in str(e) and '503: Service Unavailable' not in str(e):
-            demisto.error("<p>Wiz-API-Error: %s</p>" % str(e))
-            return (e)
-        else:
-            demisto.debug("Retry")
-
-    return result.json()
-
-
-def translate_severity(issue):
-    """
-    Translate issue severity to demisto
-    Might take risk grade into account in the future
-    """
-    severity = demisto.get(issue, 'severity')
-    if severity == 'CRITICAL':
-        return 4
-    if severity == 'HIGH':
-        return 3
-    if severity == 'MEDIUM':
-        return 2
-    if severity == 'LOW':
-        return 1
-    if severity == 'INFORMATIONAL':
-        return 0.5
-
-
-def build_incidents(issue):
-    if issue is None:
-        return {}
-
-    return {
-        'name': issue.get('control', {}).get('name', 'No Control') + ' - ' + issue.get('id'),
-        'occurred': issue['createdAt'],
-        'rawJSON': json.dumps(issue),
-        'severity': translate_severity(issue)
+# Pull Issues
+PULL_ISSUES_QUERY = ("""
+query IssuesTable(
+  $filterBy: IssueFilters
+  $first: Int
+  $after: String
+  $orderBy: IssueOrder
+) {
+  issues:issuesV2(filterBy: $filterBy
+    first: $first
+    after: $after
+    orderBy: $orderBy) {
+    nodes {
+      id
+      sourceRule{
+        __typename
+        ... on Control {
+          id
+          name
+          controlDescription: description
+          resolutionRecommendation
+          securitySubCategories {
+            title
+            category {
+              name
+              framework {
+                name
+              }
+            }
+          }
+        }
+        ... on CloudEventRule{
+          id
+          name
+          cloudEventRuleDescription: description
+          sourceType
+          type
+        }
+        ... on CloudConfigurationRule{
+          id
+          name
+          cloudConfigurationRuleDescription: description
+          remediationInstructions
+          serviceType
+        }
+      }
+      createdAt
+      updatedAt
+      dueAt
+      projects {
+        id
+        name
+        slug
+        businessUnit
+        riskProfile {
+          businessImpact
+        }
+      }
+      status
+      severity
+      entitySnapshot {
+        id
+        type
+        nativeType
+        name
+        status
+        cloudPlatform
+        cloudProviderURL
+        providerId
+        region
+        resourceGroupExternalId
+        subscriptionExternalId
+        subscriptionName
+        subscriptionTags
+        tags
+        externalId
+      }
+      serviceTickets {
+        externalId
+        name
+        url
+      }
+      notes {
+        id
+        createdAt
+        updatedAt
+        text
+        user {
+          name
+          email
+        }
+        serviceAccount {
+          name
+        }
+      }
     }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+""")
+PULL_ISSUE_WITH_EVIDENCE_PARAM_QUERY = ("""
+query IssuesTable(
+  $filterBy: IssueFilters
+  $first: Int
+  $after: String
+  $orderBy: IssueOrder
+) {
+  issues:issuesV2(filterBy: $filterBy
+    first: $first
+    after: $after
+    orderBy: $orderBy) {
+    nodes {
+      evidenceQuery
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+""")
+PULL_ISSUES_TEST_VARIABLES = test_variables = {
+    'first': 1,
+    'filterBy': {
+        'status': [
+            'OPEN',
+            'IN_PROGRESS'
+        ]
+    },
+    'orderBy': {
+        'field': 'SEVERITY',
+        'direction': 'DESC'
+    }
+}
 
-
-def fetch_issues(max_fetch):
-    """
-    Fetch all Issues (OOB XSOAR Fetch)
-    """
-
-    if max_fetch > 500:
-        max_fetch = 500
-
-    last_run = demisto.getLastRun().get('time')
-    if not last_run:  # first time fetch
-        last_run = dateparser.parse(demisto.params().get('first_fetch', '7 days').strip())
-        last_run = (last_run.isoformat()[:-3] + 'Z')
-
-    query = (  # pragma: no cover
-        """
-        query IssuesTable(
-            $filterBy: IssueFilters
-            $first: Int
-            $after: String
-            $orderBy: IssueOrder
-          ) {
-            issues(
-                filterBy: $filterBy
-                first: $first
-                after: $after
-                orderBy: $orderBy
-            ) {
-                nodes {
-                    ...IssueDetails
-                }
-                pageInfo {
-                    hasNextPage
-                    endCursor
-                }
-                totalCount
-                informationalSeverityCount
-                lowSeverityCount
-                mediumSeverityCount
-                highSeverityCount
-                criticalSeverityCount
-                uniqueEntityCount
-            }
-        }
-
-        fragment IssueDetails on Issue {
-            id
-            control {
-                id
-                name
-                query
-                description
-            }
-            createdAt
-            updatedAt
-            projects {
-                id
-                name
-                slug
-                businessUnit
-                projectOwners {
-                    id
-                    name
-                    email
-                }
-                securityChampions {
-                    id
-                    name
-                    email
-                }
-                riskProfile {
-                    businessImpact
-                }
-            }
-            status
-            severity
-            entity {
-                id
-                name
-                type
-            }
-            entitySnapshot {
-                id
-                type
-                nativeType
-                name
-                subscriptionId
-                subscriptionExternalId
-                subscriptionName
-                resourceGroupId
-                resourceGroupExternalId
-                region
-                cloudPlatform
-                cloudProviderURL
-                status
-                tags
-                providerId
-                subscriptionTags
-            }
+# Pull Issue Evidence
+PULL_ISSUE_EVIDENCE_QUERY = ("""
+  query GraphSearch(
+    $query: GraphEntityQueryInput
+    $controlId: ID
+    $projectId: String!
+    $first: Int
+    $after: String
+    $fetchTotalCount: Boolean!
+    $quick: Boolean = true
+    $fetchPublicExposurePaths: Boolean = false
+    $fetchInternalExposurePaths: Boolean = false
+    $fetchIssueAnalytics: Boolean = false
+    $fetchLateralMovement: Boolean = false
+    $fetchKubernetes: Boolean = false
+  ) {
+    graphSearch(
+      query: $query
+      controlId: $controlId
+      projectId: $projectId
+      first: $first
+      after: $after
+      quick: $quick
+    ) {
+      totalCount @include(if: $fetchTotalCount)
+      maxCountReached @include(if: $fetchTotalCount)
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+      nodes {
+        entities {
+          ...PathGraphEntityFragment
+          userMetadata {
+            isInWatchlist
+            isIgnored
             note
-            dueAt
-            serviceTicket {
-                externalId
-                name
-                url
+          }
+          technologies {
+            id
+            icon
+          }
+          publicExposures(first: 10) @include(if: $fetchPublicExposurePaths) {
+            nodes {
+              ...NetworkExposureFragment
             }
-            serviceTickets {
-                externalId
-                name
-                url
-                action {
-                    id
-                    type
+          }
+          otherSubscriptionExposures(first: 10)
+            @include(if: $fetchInternalExposurePaths) {
+            nodes {
+              ...NetworkExposureFragment
+            }
+          }
+          otherVnetExposures(first: 10)
+            @include(if: $fetchInternalExposurePaths) {
+            nodes {
+              ...NetworkExposureFragment
+            }
+          }
+          lateralMovementPaths(first: 10) @include(if: $fetchLateralMovement) {
+            nodes {
+              id
+              pathEntities {
+                entity {
+                  ...PathGraphEntityFragment
                 }
+              }
             }
+          }
+          kubernetesPaths(first: 10) @include(if: $fetchKubernetes) {
+            nodes {
+              id
+              path {
+                ...PathGraphEntityFragment
+              }
+            }
+          }
         }
+        aggregateCount
+      }
+    }
+  }
+
+  fragment PathGraphEntityFragment on GraphEntity {
+    id
+    name
+    type
+    properties
+    issueAnalytics: issues(filterBy: { status: [IN_PROGRESS, OPEN] })
+      @include(if: $fetchIssueAnalytics) {
+      highSeverityCount
+      criticalSeverityCount
+    }
+  }
+
+
+  fragment NetworkExposureFragment on NetworkExposure {
+    id
+    portRange
+    sourceIpRange
+    destinationIpRange
+    path {
+      ...PathGraphEntityFragment
+    }
+    applicationEndpoints {
+      ...PathGraphEntityFragment
+    }
+  }
     """)
-    variables = {
-        "first": max_fetch,
-        "filterBy": {
-            "status": [
-                "OPEN",
-                "IN_PROGRESS"
-            ],
-            "createdAt": {
-                "after":
-                    last_run
-            },
-            "relatedEntity":
-                {}
-        },
-        "orderBy": {
-            "field":
-                "SEVERITY",
-            "direction":
-                "DESC"
+PULL_ISSUE_EVIDENCE_PARAMS = {
+    'quick': True,
+    'fetchPublicExposurePaths': False,
+    'fetchInternalExposurePaths': False,
+    'fetchIssueAnalytics': False,
+    'fetchLateralMovement': False,
+    'fetchKubernetes': False,
+    'first': 5,
+    'projectId': '*',
+    'query': None,
+    'fetchTotalCount': False
+}
+UPDATE_ISSUE_QUERY = ("""
+mutation UpdateIssue(
+    $issueId: ID!
+    $patch: UpdateIssuePatch
+    $override: UpdateIssuePatch
+  ) {
+    updateIssue(input: { id: $issueId, patch: $patch, override: $override }) {
+      issue {
+        id
+        notes {
+          ...IssueNoteDetails
         }
+        status
+        dueAt
+        resolutionReason
+      }
     }
+  }
 
-    response_json = checkAPIerrors(query, variables)
-
-    issues = response_json['data']['issues']['nodes']
-    while (response_json['data']['issues']['pageInfo']['hasNextPage']):
-
-        variables['after'] = response_json['data']['issues']['pageInfo']['endCursor']
-        response_json = checkAPIerrors(query, variables)
-        if response_json['data']['issues']['nodes'] != []:
-            issues += (response_json['data']['issues']['nodes'])
-
-    incidents = list()
-    for issue in issues:
-        incident = build_incidents(issue=issue)
-        incidents.append(incident)
-
-    demisto.incidents(incidents)
-    demisto.setLastRun(
-        {'time': datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)})
-
-
-def get_filtered_issues(issue_type, resource_id, severity, limit):
-    """
-    Retrieves Filtered Issues
-    """
-
-    if issue_type and resource_id or (not issue_type and not resource_id):
-        demisto.info("You should (only) pass either issue_type or resource_id filters")
-        return "You should (only) pass either issue_type or resource_id filters"
-
-    query = (  # pragma: no cover
-        """
-        query IssuesTable(
-            $filterBy: IssueFilters
-            $first: Int
-            $after: String
-            $orderBy: IssueOrder
-          ) {
-            issues(
-                filterBy: $filterBy
-                first: $first
-                after: $after
-                orderBy: $orderBy
-            ) {
-                nodes {
-                    ...IssueDetails
-                }
-                pageInfo {
-                    hasNextPage
-                    endCursor
-                }
-                totalCount
-                informationalSeverityCount
-                lowSeverityCount
-                mediumSeverityCount
-                highSeverityCount
-                criticalSeverityCount
-                uniqueEntityCount
-            }
+  fragment IssueNoteDetails on IssueNote {
+    id
+    text
+    updatedAt
+    createdAt
+    user {
+      id
+      email
+    }
+    serviceAccount {
+      id
+      name
+    }
+  }
+""")
+CREATE_COMMENT_QUERY = ("""
+mutation CreateIssueComment($input: CreateIssueNoteInput!) {
+    createIssueNote(input: $input) {
+      issueNote {
+        createdAt
+        id
+        text
+        user {
+          id
+          email
         }
-        fragment IssueDetails on Issue {
-            id
-            control {
-                id
-                name
-                query
-            }
-            createdAt
-            updatedAt
-            projects {
-                id
-                name
-                slug
-                businessUnit
-                projectOwners {
-                    id
-                    name
-                    email
-                }
-                securityChampions {
-                    id
-                    name
-                    email
-                }
-                riskProfile {
-                    businessImpact
-                }
-            }
-            status
-            severity
-            entity {
-                id
-                name
-                type
-            }
-            entitySnapshot {
-                id
-                type
-                nativeType
-                name
-                subscriptionId
-                subscriptionExternalId
-                subscriptionName
-                resourceGroupId
-                resourceGroupExternalId
-                region
-                cloudPlatform
-                cloudProviderURL
-                status
-                tags
-                providerId
-                subscriptionTags
-            }
-            note
-            dueAt
-            serviceTicket {
-                externalId
-                name
-                url
-            }
-            serviceTickets {
-                externalId
-                name
-                url
-                action {
-                    id
-                    type
-                }
-            }
-        }
+      }
+    }
+  }
+    """)
+DELETE_NOTE_QUERY = ("""
+    mutation DeleteIssueNote($input: DeleteIssueNoteInput!) {
+    deleteIssueNote(input: $input) {
+      _stub
+    }
+  }
     """)
 
-    if issue_type:
-        variables = {
-            "first": limit,
-            "filterBy": {
-                "status": [
-                    "OPEN",
-                    "IN_PROGRESS"
-                ],
-                "relatedEntity": {
-                    "type": [
-                        issue_type
-                    ]
-                }
-            },
-            "orderBy": {
-                "field":
-                    "SEVERITY",
-                "direction":
-                    "DESC"
-            }
-        }
-    elif resource_id:
-        get_resource_graph_id_helper_variables = {
-            "projectId": "*",
-            "query": {
-                "type": [
-                    "CLOUD_RESOURCE"
-                ],
-                "where": {
-                    "providerUniqueId": {
-                        "EQUALS":
-                            resource_id
-                    }
-                }
-            }
-        }
-        get_resource_graph_id_helper_query = ("""
-            query GraphEntityResourceFilterAutosuggest(
-                $query: GraphEntityQueryInput
-                $projectId: String!
-              ) {
-                graphSearch(
-                    first: 100, query: $query, quick: true, projectId: $projectId
-                ) {
-                    nodes {
-                        entities {
-                            id
-                            name
-                            type
-                        }
-                    }
-                }
-            }
-        """)
-        graph_resource_response_json = checkAPIerrors(get_resource_graph_id_helper_query,
-                                                      get_resource_graph_id_helper_variables)
-        if graph_resource_response_json['data']['graphSearch']['nodes'] != []:
-            graph_resource_id = graph_resource_response_json['data']['graphSearch']['nodes'][0]['entities'][0]['id']
-            variables = \
-                {"first": limit,
-                 "filterBy": {"status": ["OPEN", "IN_PROGRESS"],
-                              "relatedEntity":
-                                  {"id": graph_resource_id}},
-                 "orderBy": {"field": "SEVERITY", "direction": "DESC"}}
-        else:
-            demisto.info("Resource not found.")
-            return "Resource not found."
-
-    if severity:
-        if severity.upper() == 'CRITICAL':
-            variables['filterBy']['severity'] = ['CRITICAL']
-        elif severity.upper() == 'HIGH':
-            variables['filterBy']['severity'] = ['CRITICAL', 'HIGH']
-        elif severity.upper() == 'MEDIUM':
-            variables['filterBy']['severity'] = ['CRITICAL', 'HIGH', 'MEDIUM']
-        elif severity.upper() == 'LOW':
-            variables['filterBy']['severity'] = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW']
-        elif severity.upper() == 'INFORMATIONAL':
-            variables['filterBy']['severity'] = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'INFORMATIONAL']
-        else:
-            demisto.info("You should only use these severity types: CRITICAL, HIGH, MEDIUM, LOW or INFORMATIONAL "
-                         "in upper or lower case.")
-            return ("You should only use these severity types: CRITICAL, HIGH, MEDIUM, LOW or INFORMATIONAL in "
-                    "upper or lower case.")
-
-    response_json = checkAPIerrors(query, variables)
-
-    issues = dict()
-    if response_json['data']['issues']['nodes'] != []:
-        issues = response_json['data']['issues']['nodes']
-    while (response_json['data']['issues']['pageInfo']['hasNextPage']):
-
-        variables['after'] = response_json['data']['issues']['pageInfo']['endCursor']
-        response_json = checkAPIerrors(query, variables)
-        if response_json['data']['issues']['nodes'] != []:
-            issues += (response_json['data']['issues']['nodes'])
-
-    return issues
-
-
-def get_resource(resource_id):
-    """
-    Retrieves Resource Details
-    """
-
-    demisto.debug("get_resource, enter")
-
-    variables = {
-        "fetchPublicExposurePaths": True,
-        "fetchInternalExposurePaths": False,
-        "fetchIssueAnalytics": False,
-        "first": 50,
-        "query": {
-            "type": [
-                "CLOUD_RESOURCE"
-            ],
-            "select": True,
-            "where": {
-                "providerUniqueId": {
-                    "EQUALS": [
-                        resource_id
-                    ]
-                }
-            }
-        },
-        "projectId": "*",
-        "fetchTotalCount": True,
-        "quick": True
-    }
-    query = (  # pragma: no cover
-        """
+# Pull Resources
+PULL_RESOURCES_QUERY = ("""
         query GraphSearch(
             $query: GraphEntityQueryInput
             $controlId: ID
@@ -586,67 +445,435 @@ def get_resource(resource_id):
                 }
             }
     """)
+PULL_RESOURCES_VARIABLES = {
+    "fetchPublicExposurePaths": True,
+    "fetchInternalExposurePaths": False,
+    "fetchIssueAnalytics": False,
+    "first": 50,
+    "query": {
+        "type": [
+            "CLOUD_RESOURCE"
+        ],
+        "select": True,
+        "where": {
+            "providerUniqueId": {
+                "EQUALS": []
+            }
+        }
+    },
+    "projectId": "*",
+    "fetchTotalCount": True,
+    "quick": True
+}
+
+
+class WizInputParam:
+    ISSUE_ID = 'issue_id'
+    ISSUE_TYPE = 'issue_type'
+    RESOURCE_ID = 'resource_id'
+    SEVERITY = 'severity'
+    REJECT_REASON = 'reject_reason'
+    REJECT_NOTE = 'reject_note'
+    REOPEN_NOTE = 'reopen_note'
+    NOTE = 'note'
+    DUE_AT = 'due_at'
+    VM_ID = 'vm_id'
+    PROJECT_NAME = 'project_name'
+
+
+class WizStatus:
+    OPEN = 'OPEN'
+    IN_PROGRESS = 'IN PROGRESS'
+    REJECTED = 'REJECTED'
+
+
+def set_authentication_endpoint(auth_endpoint):
+    global AUTH_E
+    AUTH_E = generate_auth_urls(AUTH_DEFAULT)[1] if auth_endpoint == '' else auth_endpoint
+
+
+def set_api_endpoint(api_endpoint):
+    global URL
+    URL = api_endpoint
+
+
+def generate_auth_urls(prefix):
+    auth_url = f"{prefix}.{URL_SUFFIX}"
+    http_auth_url = f"https://{auth_url}"
+    return auth_url, http_auth_url
+
+
+def get_token():
+    """
+    Retrieve the token using the credentials
+    """
+    audience = ''
+    cognito_list = []
+    for cognito_prefix in COGNITO_PREFIX:
+        cognito_list.extend(generate_auth_urls(cognito_prefix))
+
+    auth0_list = []
+    for auth0_prefix in AUTH0_PREFIX:
+        auth0_list.extend(generate_auth_urls(auth0_prefix))
+
+    # check Wiz portal auth endpoint - Cognito or Auth0
+    if AUTH_E in cognito_list:
+        audience = 'wiz-api'
+    elif AUTH_E in auth0_list:
+        audience = 'beyond-api'
+    else:
+        raise Exception('Not a valid authentication endpoint')
+
+    demisto_params = demisto.params()
+    said = demisto_params.get('credentials').get('identifier')
+    sasecret = demisto_params.get('credentials').get('password')
+    auth_payload = parse.urlencode({
+        'grant_type': 'client_credentials',
+        'audience': audience,
+        'client_id': said,
+        'client_secret': sasecret
+    })
+    response = requests.post(AUTH_E, headers=HEADERS_AUTH, data=auth_payload)
+
+    if response.status_code != requests.codes.ok:
+        raise Exception('Error authenticating to Wiz [%d] - %s' % (response.status_code, response.text))
+    try:
+        response_json = response.json()
+        TOKEN = response_json.get('access_token')
+        if not TOKEN:
+            demisto.debug(json.dumps(response_json))
+            message = 'Could not retrieve token from Wiz: {}'.format(response_json.get("message"))
+            raise Exception(message)
+    except ValueError as exception:
+        demisto.debug(exception)
+        raise Exception('Could not parse API response')
+    HEADERS["Authorization"] = "Bearer " + TOKEN
+
+    return TOKEN
+
+
+def checkAPIerrors(query, variables):
+    if not TOKEN:
+        get_token()
+
+    data = {"variables": variables, "query": query}
+
+    demisto.info(f"Invoking the API with is {json.dumps(data)}")
+
+    result = requests.post(url=URL, json=data, headers=HEADERS)
+
+    demisto.info(f"Result is {result}")
+    demisto.info(f"Result Json is {result.json()}")
+
+    error_message = ""
+    if "errors" in result.json():
+        error_message = f"Error details: {get_error_output(result.json())}"
+
+    if "data" in result.json() and "issues" in result.json()['data'] and len(result.json()['data']['issues'].get('nodes')) == 0:
+        demisto.info("No Issue(/s) available to fetch.")
+
+    if error_message:
+        demisto.error("An error has occurred using:\n"
+                      f"\tQuery: {query}\n"
+                      f"\tVariables: {variables}\n"
+                      f"\t{error_message}")
+        demisto.error(error_message)
+        raise Exception(f"{error_message}\nCheck 'server.log' file to get additional information")
+    return result.json()
+
+
+def translate_severity(issue):
+    """
+    Translate issue severity to demisto
+    Might take risk grade into account in the future
+    """
+    severity = demisto.get(issue, WizInputParam.SEVERITY)
+    if severity == 'CRITICAL':
+        return 4
+    if severity == 'HIGH':
+        return 3
+    if severity == 'MEDIUM':
+        return 2
+    if severity == 'LOW':
+        return 1
+    if severity == 'INFORMATIONAL':
+        return 0.5
+    return None
+
+
+def build_incidents(issue):
+    if issue is None:
+        return {}
+
+    return {
+        'name': issue.get('sourceRule', {}).get('name', 'No sourceRule') + ' - ' + issue.get('id'),
+        'occurred': issue['createdAt'],
+        'rawJSON': json.dumps(issue),
+        'severity': translate_severity(issue)
+    }
+
+
+def fetch_issues(max_fetch):
+    """
+    Fetch all Issues (OOB XSOAR Fetch)
+    """
+
+    if max_fetch > 500:
+        max_fetch = 500
+
+    last_run = demisto.getLastRun().get('time')
+    if not last_run:  # first time fetch
+        last_run = dateparser.parse(demisto.params().get('first_fetch', '7 days').strip())
+        last_run = (last_run.isoformat()[:-3] + 'Z')
+
+    query = PULL_ISSUES_QUERY
+    variables = {
+        "first": max_fetch,
+        "filterBy": {
+            "status": [
+                "OPEN",
+                "IN_PROGRESS"
+            ],
+
+            "createdAt": {
+                "after":
+                    last_run
+            },
+            "relatedEntity":
+                {}
+        },
+        "orderBy": {
+            "field":
+                "SEVERITY",
+            "direction":
+                "DESC"
+        }
+    }
+
+    response_json = checkAPIerrors(query, variables)
+
+    issues = response_json['data']['issues']['nodes']
+    while response_json['data']['issues']['pageInfo']['hasNextPage']:
+        variables['after'] = response_json['data']['issues']['pageInfo']['endCursor']
+        response_json = checkAPIerrors(query, variables)
+        if response_json['data']['issues']['nodes'] != []:
+            issues += (response_json['data']['issues']['nodes'])
+
+    incidents = []
+    for issue in issues:
+        incident = build_incidents(issue=issue)
+        incidents.append(incident)
+
+    demisto.incidents(incidents)
+    demisto.setLastRun(
+        {'time': datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)})
+
+
+def get_filtered_issues(issue_type, resource_id, severity, limit, issue_id=''):
+    """
+    Retrieves Filtered Issues
+    """
+    demisto.info(f"Issue type is {issue_type}\n"
+                 f"Resource ID is {resource_id}\n"
+                 f"Severity is {severity}")
+    error_msg = ''
+
+    if not severity and not issue_type and not resource_id and not issue_id:
+        error_msg = "You should pass (at least) one of the following parameters:\n\tissue_type\n\tresource_id" \
+                    "\n\tseverity\n"
+
+    if issue_type and resource_id:
+        error_msg = f"{error_msg}You cannot pass issue_type and resource_id together\n"
+
+    if error_msg:
+        demisto.error(error_msg)
+        return error_msg
+
+    issue_variables = {}
+    query = PULL_ISSUES_QUERY
+
+    if issue_type:
+        issue_variables = {
+            "first": limit,
+            "filterBy": {
+                "status": [
+                    "OPEN",
+                    "IN_PROGRESS"
+                ],
+                "relatedEntity": {
+                    "type": [
+                        issue_type
+                    ]
+                }
+            },
+            "orderBy": {
+                "field":
+                    "SEVERITY",
+                "direction":
+                    "DESC"
+            }
+        }
+    elif resource_id:
+        get_resource_graph_id_helper_variables = {
+            "projectId": "*",
+            "query": {
+                "type": [
+                    "CLOUD_RESOURCE"
+                ],
+                "where": {
+                    "providerUniqueId": {
+                        "EQUALS":
+                            resource_id
+                    }
+                }
+            }
+        }
+        get_resource_graph_id_helper_query = ("""
+            query GraphEntityResourceFilterAutosuggest(
+                $query: GraphEntityQueryInput
+                $projectId: String!
+              ) {
+                graphSearch(
+                    first: 100, query: $query, quick: true, projectId: $projectId
+                ) {
+                    nodes {
+                        entities {
+                            id
+                            name
+                            type
+                        }
+                    }
+                }
+            }
+        """)
+        graph_resource_response_json = checkAPIerrors(get_resource_graph_id_helper_query,
+                                                      get_resource_graph_id_helper_variables)
+        if graph_resource_response_json['data']['graphSearch']['nodes'] != []:
+            graph_resource_id = graph_resource_response_json['data']['graphSearch']['nodes'][0]['entities'][0]['id']
+            issue_variables = \
+                {"first": limit,
+                 "filterBy": {"status": ["OPEN", "IN_PROGRESS"],
+                              "relatedEntity":
+                                  {"id": graph_resource_id}},
+                 "orderBy": {"field": "SEVERITY", "direction": "DESC"}}
+        else:
+            demisto.info("Resource not found.")
+            return "Resource not found."
+
+    if severity:
+        if 'filterBy' not in issue_variables.keys():
+            issue_variables['filterBy'] = {"severity": []}
+            issue_variables['first'] = limit
+        if severity.upper() == 'CRITICAL':
+            issue_variables['filterBy']['severity'] = ['CRITICAL']
+        elif severity.upper() == 'HIGH':
+            issue_variables['filterBy']['severity'] = ['CRITICAL', 'HIGH']
+        elif severity.upper() == 'MEDIUM':
+            issue_variables['filterBy']['severity'] = ['CRITICAL', 'HIGH', 'MEDIUM']
+        elif severity.upper() == 'LOW':
+            issue_variables['filterBy']['severity'] = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW']
+        elif severity.upper() == 'INFORMATIONAL':
+            issue_variables['filterBy']['severity'] = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'INFORMATIONAL']
+        else:
+            demisto.info("You should only use these severity types: CRITICAL, HIGH, MEDIUM, LOW or INFORMATIONAL "
+                         "in upper or lower case.")
+            return ("You should only use these severity types: CRITICAL, HIGH, MEDIUM, LOW or INFORMATIONAL in "
+                    "upper or lower case.")
+
+    if issue_id:
+        issue_variables = {
+            "first": 5,
+            "filterBy": {
+                "id": issue_id
+            }
+        }
+
+    demisto.info(f"Query is {query}")
+    demisto.info(f"Issue variables is {issue_variables}")
+
+    response_json = checkAPIerrors(query, issue_variables)
+
+    demisto.info(f"The API response is {response_json}")
+
+    issues = {}
+    if response_json['data']['issues']['nodes'] != []:
+        issues = response_json['data']['issues']['nodes']
+    while response_json['data']['issues']['pageInfo']['hasNextPage']:
+
+        issue_variables['after'] = response_json['data']['issues']['pageInfo']['endCursor']
+        response_json = checkAPIerrors(query, issue_variables)
+        if response_json['data']['issues']['nodes'] != []:
+            issues += (response_json['data']['issues']['nodes'])
+
+    return issues
+
+
+def get_resource(resource_id):
+    """
+    Retrieves Resource Details
+    """
+
+    demisto.debug("get_resource, enter")
+
+    variables = {
+        "fetchPublicExposurePaths": True,
+        "fetchInternalExposurePaths": False,
+        "fetchIssueAnalytics": False,
+        "first": 50,
+        "query": {
+            "type": [
+                "CLOUD_RESOURCE"
+            ],
+            "select": True,
+            "where": {
+                "providerUniqueId": {
+                    "EQUALS": [resource_id]
+                }
+            }
+        },
+        "projectId": "*",
+        "fetchTotalCount": True,
+        "quick": True
+    }
 
     try:
-        response_json = checkAPIerrors(query, variables)
+        response_json = checkAPIerrors(PULL_RESOURCES_QUERY, variables)
     except DemistoException:
         demisto.debug(f"could not find resource with ID {resource_id}")
         return {}
 
-    if response_json['data']['graphSearch']['nodes'] is None:
-        return "Resource Not Found"
+    if response_json['data']['graphSearch']['nodes'] is None or not response_json['data']['graphSearch']['nodes']:
+        demisto.info("Resource Not Found")
+        return {}
     else:
         return response_json['data']['graphSearch']['nodes'][0]['entities'][0]
 
 
-def reject_issue(issue_id, reject_reason, reject_note):
+def reject_issue(issue_id, reject_reason, reject_comment):
     """
     Reject a Wiz Issue
     """
-
     demisto.debug("reject_issue, enter")
 
-    if not issue_id or not reject_reason or not reject_note:
-        demisto.error("You should pass all of: Issue ID, rejection reason and note.")
+    if not issue_id or not reject_reason or not reject_comment:
+        demisto.error("You should pass all of: Issue ID, rejection reason and comment.")
         return "You should pass all of: Issue ID, rejection reason and note."
 
     variables = {
         'issueId': issue_id,
         'patch': {
             'status': 'REJECTED',
-            'resolutionReason': reject_reason,
-            'note': reject_note
+            'note': reject_comment,
+            'resolutionReason': reject_reason
         }
     }
-    query = (  # pragma: no cover
-        """
-        mutation UpdateIssue(
-            $issueId: ID!
-            $patch: UpdateIssuePatch
-            $override: UpdateIssuePatch
-            ) {
-            updateIssue(input: { id: $issueId, patch: $patch, override: $override }) {
-                issue {
-                    id
-                    note
-                    status
-                    dueAt
-                    resolutionReason
-                }
-            }
-        }
-    """)
+    query = UPDATE_ISSUE_QUERY
 
     try:
         response = checkAPIerrors(query, variables)
     except DemistoException:
         demisto.debug(f"could not find Issue with ID {issue_id}")
         return {}
-
-    if 'errors' in response:
-        demisto.error(f"Could not find Issue with ID {issue_id}")
-        demisto.error(f"Error: {response}")
-        return (f"Could not find Issue with ID {issue_id}")
 
     return response
 
@@ -665,39 +892,15 @@ def reopen_issue(issue_id, reopen_note):
     variables = {
         'issueId': issue_id,
         'patch': {
-            'status': 'OPEN',
-            'note': reopen_note
+            'status': 'OPEN'
         }
     }
-    query = (  # pragma: no cover
-        """
-        mutation UpdateIssue(
-            $issueId: ID!
-            $patch: UpdateIssuePatch
-            $override: UpdateIssuePatch
-            ) {
-            updateIssue(input: { id: $issueId, patch: $patch, override: $override }) {
-                issue {
-                    id
-                    note
-                    status
-                    dueAt
-                    resolutionReason
-                }
-            }
-        }
-    """)
+    query = UPDATE_ISSUE_QUERY
 
-    try:
-        response = checkAPIerrors(query, variables)
-    except DemistoException:
-        demisto.debug(f"could not find Issue with ID {issue_id}")
-        return {}
+    response = checkAPIerrors(query, variables)
 
-    if 'errors' in response:
-        demisto.error(f"Could not find Issue with ID {issue_id}")
-        demisto.error(f"Error: {response}")
-        return (f"Could not find Issue with ID {issue_id}")
+    if reopen_note:
+        set_issue_comment(issue_id, reopen_note)
 
     return response
 
@@ -719,114 +922,60 @@ def issue_in_progress(issue_id):
             'status': 'IN_PROGRESS'
         }
     }
-    query = (  # pragma: no cover
-        """
-        mutation UpdateIssue(
-            $issueId: ID!
-            $patch: UpdateIssuePatch
-            $override: UpdateIssuePatch
-            ) {
-            updateIssue(input: { id: $issueId, patch: $patch, override: $override }) {
-                issue {
-                    id
-                    note
-                    status
-                    dueAt
-                    resolutionReason
-                }
-            }
-        }
-    """)
+    query = UPDATE_ISSUE_QUERY
 
-    try:
-        response = checkAPIerrors(query, variables)
-    except DemistoException:
-        demisto.debug(f"could not find Issue with ID {issue_id}")
-        return {}
-
-    if 'errors' in response:
-        demisto.error(f"Could not find Issue with ID {issue_id}")
-        demisto.error(f"Error: {response}")
-        return (f"Could not find Issue with ID {issue_id}")
+    response = checkAPIerrors(query, variables)
 
     return response
 
 
-def set_issue_note(issue_id, note):
+def _get_issue(issue_id, is_evidence=False):
+    issue_variables = {
+        'first': 1,
+        'filterBy': {
+            'id': issue_id
+        },
+    }
+
+    issue_query = PULL_ISSUE_WITH_EVIDENCE_PARAM_QUERY if is_evidence else PULL_ISSUES_QUERY
+
+    issue_response = checkAPIerrors(issue_query, issue_variables)
+
+    return issue_response
+
+
+def set_issue_comment(issue_id, comment):
     """
     Set a note on Wiz Issue
     """
 
-    demisto.debug("set_issue_note, enter")
+    demisto.debug("set_issue_comment, enter")
 
-    if not issue_id or not note:
+    if not issue_id or not comment:
         demisto.error("You should pass an Issue ID and note.")
         return "You should pass an Issue ID and note."
 
-    # get existing note to append to it.
     issue_variables = {
-        'issueId': issue_id
-    }
-    issue_query = (  # pragma: no cover
-        """
-        query IssueDrawer($issueId: ID!) {
-          issue(id: $issueId) {
-            id
-            note
-          }
-        }
-    """)
-
-    try:
-        issue_response = checkAPIerrors(issue_query, issue_variables)
-    except DemistoException:
-        demisto.debug(f"could not find Issue with ID {issue_id}")
-        return {}
-
-    if 'errors' in issue_response:
-        demisto.error(f"Could not find Issue with ID {issue_id}")
-        demisto.error(f"Error: {issue_response}")
-        return f"Could not find Issue with ID {issue_id}"
-
-    # Check if note is empty for appending
-    issue_response_json = issue_response['data']
-    if not issue_response_json['issue'].get('note'):
-        new_note = datetime.today().strftime('%Y-%m-%d') + " " + note
-    else:
-        new_note = issue_response_json['issue']['note'] + "\n" + datetime.today().strftime('%Y-%m-%d') + " " + note
-
-    variables = {
-        'issueId': issue_id,
-        'patch': {
-            'note': new_note
+        "input": {
+            "issueId": issue_id,
+            "text": comment
         }
     }
-    query = (  # pragma: no cover
-        """
-        mutation UpdateIssue(
-            $issueId: ID!
-            $patch: UpdateIssuePatch
-            $override: UpdateIssuePatch
-            ) {
-            updateIssue(input: { id: $issueId, patch: $patch, override: $override }) {
-                issue {
-                    id
-                    note
-                    status
-                    dueAt
-                    resolutionReason
-                }
-            }
-        }
-    """)
+    issue_query = CREATE_COMMENT_QUERY
 
-    try:
-        response = checkAPIerrors(query, variables)
-    except DemistoException:
-        demisto.debug(f"Could not update Issue with ID {issue_id}")
-        return {}
+    response = checkAPIerrors(issue_query, issue_variables)
 
     return response
+
+
+def get_error_output(wiz_api_response):
+    error_output_message = ''
+    if 'errors' in wiz_api_response:
+        for error_message in wiz_api_response['errors']:
+            if 'message' in error_message:
+                error_output_message = error_output_message + error_message['message']
+
+    return error_output_message if error_output_message else wiz_api_response
 
 
 def clear_issue_note(issue_id):
@@ -840,41 +989,20 @@ def clear_issue_note(issue_id):
         demisto.error("You should pass an Issue ID.")
         return "You should pass an Issue ID."
 
-    variables = {
-        'issueId': issue_id,
-        'patch': {
-            'note': ''
-        }
-    }
-    query = (  # pragma: no cover
-        """
-        mutation UpdateIssue(
-            $issueId: ID!
-            $patch: UpdateIssuePatch
-            $override: UpdateIssuePatch
-            ) {
-            updateIssue(input: { id: $issueId, patch: $patch, override: $override }) {
-                issue {
-                    id
-                    note
-                    status
-                    dueAt
-                    resolutionReason
-                }
+    issue_object = _get_issue(issue_id)
+
+    issue_notes = issue_object['data']['issues']['nodes'][0]['notes']
+    demisto.info(f"The issue notes are: {issue_notes}")
+
+    query = DELETE_NOTE_QUERY
+    for note in issue_notes:
+        variables = {
+            "input": {
+                "id": note['id']
             }
         }
-    """)
 
-    try:
         response = checkAPIerrors(query, variables)
-    except DemistoException:
-        demisto.debug(f"could not find Issue with ID {issue_id}")
-        return {}
-
-    if 'errors' in response:
-        demisto.error(f"Could not find Issue with ID {issue_id}")
-        demisto.error(f"Error: {response}")
-        return f"Could not find Issue with ID {issue_id}"
 
     return response
 
@@ -905,35 +1033,13 @@ def set_issue_due_date(issue_id, due_at):
             'dueAt': due_at
         }
     }
-    query = (  # pragma: no cover
-        """
-        mutation UpdateIssue(
-            $issueId: ID!
-            $patch: UpdateIssuePatch
-            $override: UpdateIssuePatch
-            ) {
-            updateIssue(input: { id: $issueId, patch: $patch, override: $override }) {
-                issue {
-                    id
-                    note
-                    status
-                    dueAt
-                    resolutionReason
-                }
-            }
-        }
-    """)
+    query = UPDATE_ISSUE_QUERY
 
     try:
         response = checkAPIerrors(query, variables)
     except DemistoException:
         demisto.debug(f"could not find Issue with ID {issue_id}")
         return {}
-
-    if 'errors' in response:
-        demisto.error(f"Could not find Issue with ID {issue_id}")
-        demisto.error(f"Error: {response}")
-        return f"Could not find Issue with ID {issue_id}"
 
     return response
 
@@ -949,73 +1055,17 @@ def clear_issue_due_date(issue_id):
         demisto.error("You should pass an Issue ID.")
         return "You should pass an Issue ID."
 
+    issue_query = UPDATE_ISSUE_QUERY
     issue_variables = {
-        'issueId': issue_id
-    }
-    issue_query = (  # pragma: no cover
-        """
-        query IssueDrawer($issueId: ID!) {
-            issue(id: $issueId) {
-                id
-                note
-                status
-                dueAt
-                resolutionReason
-            }
-        }
-    """)
-
-    try:
-        issue_response = checkAPIerrors(issue_query, issue_variables)
-    except DemistoException:
-        demisto.debug(f"could not find Issue with ID {issue_id}")
-        return f"could not find Issue with ID {issue_id}"
-
-    if 'errors' in issue_response:
-        demisto.error(f"Could not find Issue with ID {issue_id}")
-        demisto.error(f"Error: {issue_response}")
-        return f"Could not find Issue with ID {issue_id}"
-
-    variables = {
         'issueId': issue_id,
         'override': {
-            'note': issue_response['data']['issue']['note'],
-            'status': issue_response['data']['issue']['status'],
-            'resolutionReason': issue_response['data']['issue']['resolutionReason']
+            'dueAt': None
         }
     }
 
-    query = (  # pragma: no cover
-        """
-        mutation UpdateIssue(
-            $issueId: ID!
-            $patch: UpdateIssuePatch
-            $override: UpdateIssuePatch
-            ) {
-            updateIssue(input: { id: $issueId, patch: $patch, override: $override }) {
-                issue {
-                    id
-                    note
-                    status
-                    dueAt
-                    resolutionReason
-                }
-            }
-        }
-    """)
+    issue_response = checkAPIerrors(issue_query, issue_variables)
 
-    try:
-        response = checkAPIerrors(query, variables)
-    except DemistoException:
-        demisto.debug(f"could not find Issue with ID {issue_id}")
-        return (f"could not find Issue with ID {issue_id}")
-
-    if 'errors' in response:
-        demisto.error(f"Could not find Issue with ID {issue_id}")
-        demisto.error(f"Error: {response}")
-        return (f"Could not find Issue with ID {issue_id}")
-
-    return response
+    return issue_response
 
 
 def get_issue_evidence(issue_id):
@@ -1029,144 +1079,22 @@ def get_issue_evidence(issue_id):
         demisto.error("You should pass an Issue ID.")
         return "You should pass an Issue ID."
 
-    # get Control Query to search it.
-    issue_variables = {
-        'issueId': issue_id
-    }
-    issue_query = (  # pragma: no cover
-        """
-        query IssueDrawer($issueId: ID!) {
-          issue(id: $issueId) {
-            id
-            control {
-                id
-                name
-                query
-            }
-          }
-        }
-    """)
+    # Getting the Issue Evidence Query
+    issue_object = _get_issue(issue_id, is_evidence=True)
 
-    try:
-        issue_response = checkAPIerrors(issue_query, issue_variables)
-    except DemistoException:
-        demisto.debug(f"Could not find Issue with ID {issue_id}")
-        return {}
+    query_for_evidence = issue_object['data']['issues']['nodes'][0]['evidenceQuery']
 
-    if 'errors' in issue_response:
-        demisto.error(f"Could not find Issue with ID {issue_id}")
-        demisto.error(f"Error: {issue_response}")
-        return f"Could not find Issue with ID {issue_id}"
-
-    # Run the Graph Query
-    issue_response_json = issue_response['data']
-    query_for_evidence = issue_response_json['issue']['control']['query']
-
-    variables = {
-        'fetchPublicExposurePaths': True,
-        'fetchInternalExposurePaths': False,
-        'fetchIssueAnalytics': True,
-        'first': 5,
-        'projectId': '*',
-        'query': query_for_evidence,
-        'fetchTotalCount': True
-    }
-
-    query = (  # pragma: no cover
-        """
-        query GraphSearch(
-          $query: GraphEntityQueryInput
-          $controlId: ID
-          $projectId: String!
-          $first: Int
-          $after: String
-          $fetchTotalCount: Boolean!
-          $quick: Boolean
-          $fetchPublicExposurePaths: Boolean = false
-          $fetchInternalExposurePaths: Boolean = false
-          $fetchIssueAnalytics: Boolean = false
-        ) {
-          graphSearch(
-            query: $query
-            controlId: $controlId
-            projectId: $projectId
-            first: $first
-            after: $after
-            quick: $quick
-          ) {
-            totalCount @include(if: $fetchTotalCount)
-            maxCountReached @include(if: $fetchTotalCount)
-            pageInfo {
-              endCursor
-              hasNextPage
-            }
-            nodes {
-              entities {
-                id
-                name
-                type
-                properties
-                userMetadata {
-                  isInWatchlist
-                  isIgnored
-                  note
-                }
-                issueAnalytics: issues(filterBy: { status: [IN_PROGRESS, OPEN] })
-                  @include(if: $fetchIssueAnalytics) {
-                  lowSeverityCount
-                  mediumSeverityCount
-                  highSeverityCount
-                  criticalSeverityCount
-                }
-                publicExposures(first: 10) @include(if: $fetchPublicExposurePaths) {
-                  nodes {
-                    ...NetworkExposureFragment
-                  }
-                }
-            otherSubscriptionExposures(first: 10)
-                  @include(if: $fetchInternalExposurePaths) {
-                  nodes {
-                    ...NetworkExposureFragment
-                  }
-                }
-                otherVnetExposures(first: 10)
-                  @include(if: $fetchInternalExposurePaths) {
-                  nodes {
-                    ...NetworkExposureFragment
-                  }
-                }
-              }
-              aggregateCount
-            }
-          }
-        }
-
-        fragment NetworkExposureFragment on NetworkExposure {
-          id
-          portRange
-          sourceIpRange
-          destinationIpRange
-          path {
-            id
-            name
-            type
-            properties
-            issueAnalytics: issues(filterBy: { status: [IN_PROGRESS, OPEN] })
-              @include(if: $fetchIssueAnalytics) {
-              lowSeverityCount
-              mediumSeverityCount
-              highSeverityCount
-              criticalSeverityCount
-            }
-          }
-    }
-    """)
+    # Creating the query/variables to get the Issue Evidence
+    query = PULL_ISSUE_EVIDENCE_QUERY
+    variables = PULL_ISSUE_EVIDENCE_PARAMS
+    variables['query'] = query_for_evidence
 
     try:
         response = checkAPIerrors(query, variables)
-    except DemistoException:
-        demisto.debug(f"Failed getting Issue evidence on ID {issue_id}")
-        return {}
+    except Exception as e:
+        error_message = f"Failed getting Issue evidence on ID {issue_id}.\nError details: {str(e)}"
+        demisto.error(error_message)
+        raise Exception(error_message)
 
     if response.get('data', {}).get('graphSearch', {}).get('nodes') is None:
         return "Resource Not Found"
@@ -1353,7 +1281,7 @@ def get_project_team(project_name):
 
     demisto.info(f"Validating if Project with name \"{project_name}\" exists.")
     if not project_response:
-        demisto.debug(f"Project with name {project_name} doesn not exist")
+        demisto.debug(f"Project with name {project_name} does not exist")
         return {}
 
     else:
@@ -1365,107 +1293,22 @@ def get_project_team(project_name):
 
 
 def main():
-    global URL
     params = demisto.params()
-    URL = params.get('api_endpoint')
+    set_authentication_endpoint(params.get('auth_endpoint'))
+    set_api_endpoint(params.get('api_endpoint', ''))
     try:
         command = demisto.command()
         if command == 'test-module':
             auth_token = get_token()
             if 'error' not in auth_token:
-                test_query = ("""
-                    query IssuesTable(
-                        $filterBy: IssueFilters
-                        $first: Int
-                        $after: String
-                        $orderBy: IssueOrder
-                    ) {
-                        issues(
-                        filterBy: $filterBy
-                        first: $first
-                        after: $after
-                        orderBy: $orderBy
-                        ) {
-                        nodes {
-                            ...IssueDetails
-                        }
-                        pageInfo {
-                            hasNextPage
-                            endCursor
-                        }
-                        totalCount
-                        informationalSeverityCount
-                        lowSeverityCount
-                        mediumSeverityCount
-                        highSeverityCount
-                        criticalSeverityCount
-                        uniqueEntityCount
-                        }
-                    }
-
-                    fragment IssueDetails on Issue {
-                        id
-                        control {
-                        id
-                        name
-                        query
-                        }
-                        createdAt
-                        updatedAt
-                        projects {
-                        id
-                        name
-                        slug
-                        businessUnit
-                        riskProfile {
-                            businessImpact
-                        }
-                        }
-                        status
-                        severity
-                        entity {
-                        id
-                        name
-                        type
-                        }
-                        entitySnapshot {
-                        id
-                        type
-                        name
-                        }
-                        note
-                        serviceTickets {
-                        externalId
-                        name
-                        url
-                        action {
-                            id
-                            type
-                        }
-                        }
-                    }
-                """)
-
-                test_variables = {
-                    'first': 1,
-                    'filterBy': {
-                        'status': [
-                            'OPEN',
-                            'IN_PROGRESS'
-                        ]
-                    },
-                    'orderBy': {
-                        'field': 'SEVERITY',
-                        'direction': 'DESC'
-                    }
-                }
-
-                test_response = checkAPIerrors(test_query, test_variables)
+                test_response = checkAPIerrors(PULL_ISSUES_QUERY, PULL_ISSUES_TEST_VARIABLES)
 
                 if 'errors' not in test_response:
                     demisto.results('ok')
                 else:
                     demisto.results(test_response)
+            else:
+                demisto.results("Invalid token")
 
         elif command == 'fetch-incidents':
             max_fetch = int(demisto.params().get('max_fetch'))
@@ -1475,9 +1318,9 @@ def main():
 
         elif command == 'wiz-get-issues':
             demisto_args = demisto.args()
-            issue_type = demisto_args.get('issue_type')
-            resource_id = demisto_args.get('resource_id')
-            severity = demisto_args.get('severity')
+            issue_type = demisto_args.get(WizInputParam.ISSUE_TYPE)
+            resource_id = demisto_args.get(WizInputParam.RESOURCE_ID)
+            severity = demisto_args.get(WizInputParam.SEVERITY)
             issues = get_filtered_issues(
                 issue_type=issue_type,
                 resource_id=resource_id,
@@ -1493,28 +1336,28 @@ def main():
             return_results(command_result)
 
         elif command == "wiz-get-resource":
-            resource = get_resource(resource_id=demisto.args()['resource_id'])
+            resource = get_resource(resource_id=demisto.args()[WizInputParam.RESOURCE_ID])
             command_result = CommandResults(outputs_prefix="Wiz.Manager.Resource", outputs=resource,
                                             raw_response=resource)
             return_results(command_result)
 
         elif command == 'wiz-reject-issue':
             demisto_args = demisto.args()
-            issue_id = demisto_args.get('issue_id')
-            reject_reason = demisto_args.get('reject_reason')
-            reject_note = demisto_args.get('reject_note')
+            issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
+            reject_reason = demisto_args.get(WizInputParam.REJECT_REASON)
+            reject_note = demisto_args.get(WizInputParam.REJECT_NOTE)
             issue_response = reject_issue(
                 issue_id=issue_id,
                 reject_reason=reject_reason,
-                reject_note=reject_note
+                reject_comment=reject_note
             )
             command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
             return_results(command_result)
 
         elif command == 'wiz-reopen-issue':
             demisto_args = demisto.args()
-            issue_id = demisto_args.get('issue_id')
-            reopen_note = demisto_args.get('reopen_note')
+            issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
+            reopen_note = demisto_args.get(WizInputParam.REOPEN_NOTE)
             issue_response = reopen_issue(
                 issue_id=issue_id,
                 reopen_note=reopen_note
@@ -1524,7 +1367,7 @@ def main():
 
         elif command == 'wiz-issue-in-progress':
             demisto_args = demisto.args()
-            issue_id = demisto_args.get('issue_id')
+            issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
             issue_response = issue_in_progress(
                 issue_id=issue_id
             )
@@ -1533,18 +1376,18 @@ def main():
 
         elif command == 'wiz-set-issue-note':
             demisto_args = demisto.args()
-            issue_id = demisto_args.get('issue_id')
-            note = demisto_args.get('note')
-            issue_response = set_issue_note(
+            issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
+            note = demisto_args.get(WizInputParam.NOTE)
+            issue_response = set_issue_comment(
                 issue_id=issue_id,
-                note=note
+                comment=note
             )
             command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
             return_results(command_result)
 
         elif command == 'wiz-clear-issue-note':
             demisto_args = demisto.args()
-            issue_id = demisto_args.get('issue_id')
+            issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
             issue_response = clear_issue_note(
                 issue_id=issue_id
             )
@@ -1553,7 +1396,7 @@ def main():
 
         elif command == 'wiz-get-issue-evidence':
             demisto_args = demisto.args()
-            issue_id = demisto_args.get('issue_id')
+            issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
             issue_response = get_issue_evidence(
                 issue_id=issue_id
             )
@@ -1562,7 +1405,7 @@ def main():
 
         elif command == 'wiz-set-issue-due-date':
             demisto_args = demisto.args()
-            issue_id = demisto_args.get('issue_id')
+            issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
             due_at = demisto_args.get('due_at')
             issue_response = set_issue_due_date(
                 issue_id=issue_id,
@@ -1573,7 +1416,7 @@ def main():
 
         elif command == 'wiz-clear-issue-due-date':
             demisto_args = demisto.args()
-            issue_id = demisto_args.get('issue_id')
+            issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
             issue_response = clear_issue_due_date(
                 issue_id=issue_id
             )
@@ -1582,7 +1425,7 @@ def main():
 
         elif command == 'wiz-rescan-machine-disk':
             demisto_args = demisto.args()
-            vm_id = demisto_args.get('vm_id')
+            vm_id = demisto_args.get(WizInputParam.VM_ID)
             issue_response = rescan_machine_disk(
                 vm_id=vm_id
             )
@@ -1591,7 +1434,7 @@ def main():
 
         elif command == 'wiz-get-project-team':
             demisto_args = demisto.args()
-            project_name = demisto_args.get('project_name')
+            project_name = demisto_args.get(WizInputParam.PROJECT_NAME)
             projects_response = get_project_team(
                 project_name=project_name
             )

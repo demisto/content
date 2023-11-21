@@ -1,0 +1,50 @@
+{
+    "next": "https://api.zerofox.com/cti/phishing/?cursor=c2E9MTYyNjQ2NzU0NjAwMCZzYT04MTM4MQ%3D%3D&domain=www.character-try.xyz",
+    "results": [
+        {
+            "scanned": "1970-01-19T19:41:27.989000Z",
+            "domain": "www.purfan.com",
+            "url": "https://www.purfan.com/modules/pr/-/canada/manage/Canada_en",
+            "cert": {
+                "authority": "Cloudflare, Inc.",
+                "fingerprint": "1900D261A30FBB6930021D9B47C7757FACABF8B0",
+                "issued": "1970-01-19T15:18:43.200000Z"
+            },
+            "host": {
+                "ip": "some_ip_address",
+                "asn": 13335,
+                "geo": "US"
+            }
+        },
+        {
+            "scanned": "2021-07-12T12:41:38Z",
+            "domain": "hutsjwt.com",
+            "url": "some_url/css/mbt",
+            "cert": {
+                "authority": "cPanel, Inc.",
+                "fingerprint": "871B3BD9A98E83573B8368DFDB09629D4E1777BB",
+                "issued": "2021-05-09T00:00:00Z"
+            },
+            "host": {
+                "ip": "some_ip_address",
+                "asn": 201200,
+                "geo": "BG"
+            }
+        },
+        {
+            "scanned": "2021-07-14T10:03:13Z",
+            "domain": "sandalci.com.tr",
+            "url": "https://sandalci.com.tr/3r/final/0d5a4a5a748611231b945d28436b8ece",
+            "cert": {
+                "authority": "Let's Encrypt",
+                "fingerprint": "985C0AB576F0ADD480779480544EFC5A1D156C61",
+                "issued": "2021-06-23T23:25:26Z"
+            },
+            "host": {
+                "ip": "some_ip_address",
+                "asn": 34984,
+                "geo": "TR"
+            }
+        }
+    ]
+}

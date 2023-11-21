@@ -1,0 +1,83 @@
+{
+    "response_json": {
+        "history": [
+            {
+                "time_end": 1545945607,
+                "scan_uuid": "fc9dc7c5-8eec-4d39-ad9c-20e833cca69b",
+                "id": 10535512,
+                "is_archived": true,
+                "time_start": 1545945482,
+                "visibility": "public",
+                "targets": {
+                    "custom": false,
+                    "default": null
+                },
+                "status": "canceled"
+            },
+            {
+                "time_end": 1545945457,
+                "scan_uuid": "9e3a89e5-f3d0-4708-9ec9-403a34e7cd5e",
+                "id": 10535505,
+                "is_archived": true,
+                "time_start": 1545945321,
+                "visibility": "public",
+                "targets": {
+                    "custom": false,
+                    "default": null
+                },
+                "status": "completed"
+            }
+        ]
+    },
+    "outputs": [
+        {
+            "time_end": 1545945607,
+            "scan_uuid": "fc9dc7c5-8eec-4d39-ad9c-20e833cca69b",
+            "id": 10535512,
+            "is_archived": true,
+            "time_start": 1545945482,
+            "visibility": "public",
+            "targets": {
+                "custom": false,
+                "default": null
+            },
+            "status": "canceled"
+        },
+        {
+            "time_end": 1545945457,
+            "scan_uuid": "9e3a89e5-f3d0-4708-9ec9-403a34e7cd5e",
+            "id": 10535505,
+            "is_archived": true,
+            "time_start": 1545945321,
+            "visibility": "public",
+            "targets": {
+                "custom": false,
+                "default": null
+            },
+            "status": "completed"
+        }
+    ],
+    "readable_output": "### Tenable IO Scan History\n|History id|History uuid|Status|Is archived|Targets custom|Visibility|Time start|Time end|\n|---|---|---|---|---|---|---|---|\n| 10535512 | fc9dc7c5-8eec-4d39-ad9c-20e833cca69b | canceled | true | false | public | 1545945482 | 1545945607 |\n| 10535505 | 9e3a89e5-f3d0-4708-9ec9-403a34e7cd5e | completed | true | false | public | 1545945321 | 1545945457 |\n",
+    "args": {
+        "scanId": "16",
+        "excludeRollover": "true",
+        "sortFields": "end_date,status",
+        "sortOrder": "desc",
+        "page": "2",
+        "pageSize": "30"
+    },
+    "called_with": {
+        "args": [
+            "GET",
+            "scans/16/history"
+        ],
+        "kwargs": {
+            "params": {
+                "sort": "end_date:desc,status:desc",
+                "exclude_rollover": "true",
+                "limit": 30,
+                "offset": 30
+            }
+        }
+    }
+}

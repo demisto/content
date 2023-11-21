@@ -91,7 +91,15 @@ def test_gcp_iam_project_get_command(client):
     assert result[0].readable_output == get_error_message(project_name)
 
 
-def test_gcp_iam_project_iam_policy_get_command(client):
+@pytest.mark.parametrize(
+    "project_name, roles, expected_bindings_length, expected_role, expected_readable_output",
+    [
+        ("projects/project-name-1", "roles/browser", 1, "roles/browser", "Current page size: 1"),
+        ("projects/project-name-1", None, 2, "roles/anthosidentityservice.serviceAgent", "Current page size: 2")
+    ],
+)
+def test_gcp_iam_project_iam_policy_get_command(client, project_name, roles, expected_bindings_length, expected_role,
+                                                expected_readable_output):
     """
     Scenario: Retrieve the IAM access control policy for the specified project.
     Given:
@@ -105,13 +113,13 @@ def test_gcp_iam_project_iam_policy_get_command(client):
     """
     mock_response = load_mock_response('project/project_iam_policy_get.json')
     client.gcp_iam_project_iam_policy_get_request = Mock(return_value=mock_response)
-    project_name = "projects/project-name-1"
-    result = GCP_IAM.gcp_iam_project_iam_policy_get_command(client, {"project_name": project_name})
+    result = GCP_IAM.gcp_iam_project_iam_policy_get_command(client, {"project_name": project_name, "roles": roles})
 
-    assert len(result.outputs.get('bindings')) == 2
+    assert len(result.outputs.get('bindings')) == expected_bindings_length
     assert result.outputs_prefix == 'GCPIAM.Policy'
     assert result.outputs.get('name') == project_name
-    assert result.outputs.get('bindings')[0].get('role') == 'roles/anthosidentityservice.serviceAgent'
+    assert result.outputs.get('bindings')[0].get('role') == expected_role
+    assert expected_readable_output in result.readable_output
 
 
 def test_gcp_iam_project_iam_test_permission_command(client):
@@ -452,7 +460,7 @@ def test_gcp_iam_group_membership_create_command(client):
     client.gcp_iam_group_membership_create_request.side_effect = Exception('Not Found')
     result = GCP_IAM.gcp_iam_group_membership_create_command(client, command_args)
     assert result[0].readable_output == \
-           f'An error occurred while creating membership in group {group_name}.\n Not Found'
+        f'An error occurred while creating membership in group {group_name}.\n Not Found'
 
 
 def test_gcp_iam_group_membership_list_command(client):
@@ -583,7 +591,7 @@ def test_gcp_iam_group_membership_delete_request(client):
     client.gcp_iam_group_membership_delete_request.side_effect = Exception('Not Found')
     result = GCP_IAM.gcp_iam_group_membership_delete_command(client, command_args)
     assert result[0].readable_output == \
-           f'An error occurred while deleting the membership {membership_name}.\n Not Found'
+        f'An error occurred while deleting the membership {membership_name}.\n Not Found'
 
 
 def test_gcp_iam_testable_permission_list_command(client):
@@ -1968,3 +1976,32 @@ def test_gcp_iam_organization_iam_policy_remove_command(client):
     result = GCP_IAM.gcp_iam_organization_iam_policy_remove_command(client, command_args)
 
     assert result.readable_output == f'Organization {organization_name} IAM policies updated successfully.'
+
+
+def test_gcp_iam_tagbindings_list_command(client):
+    """
+    Scenario: list tagbindings.
+    Given:
+     - User has provided valid credentials.
+    When:
+     - gcp-iam-tagbindings-list command called.
+    Then:
+     - Ensure number of items is correct.
+     - Ensure outputs prefix is correct.
+     - Ensure a sample value from the API matches what is generated in the context.
+    """
+    mock_binding = load_mock_response('tag_bindings/tag_bindings.json')
+    client.gcp_iam_tagbindings_list_request = Mock(return_value=mock_binding)
+
+    mock_keys = load_mock_response('tag_bindings/tag_keys.json')
+    client.gcp_iam_tagkeys_get_request = Mock(return_value=mock_keys)
+
+    mock_values = load_mock_response('tag_bindings/tag_values.json')
+    client.gcp_iam_tagvalues_get_request = Mock(return_value=mock_values)
+
+    parent = "folder/111111111111"
+    result = GCP_IAM.gcp_iam_tagbindings_list_command(client, {"parent": parent})
+
+    assert len(result.outputs) == 1
+    assert result.outputs_prefix == 'GCPIAM.TagBindings'
+    assert result.outputs == [{'key': 'environment', 'value': 'non-production'}]

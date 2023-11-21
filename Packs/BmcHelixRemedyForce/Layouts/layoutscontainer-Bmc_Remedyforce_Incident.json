@@ -731,5 +731,6 @@
         "type": "custom"
       }
     ]
-  }
+  },
+  "marketplaces": ["xsoar"]
 }

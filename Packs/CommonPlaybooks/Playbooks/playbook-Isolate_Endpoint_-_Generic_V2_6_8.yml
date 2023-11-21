@@ -1,0 +1,461 @@
+id: Isolate Endpoint - Generic V2
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Isolate Endpoint - Generic V2
+description: |-
+  This playbook isolates a given endpoint using various endpoint product integrations.
+  Make sure to provide valid playbook inputs for the integration you are using.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 20f01f93-7b37-4f3f-8c17-a466dac351ef
+    type: start
+    task:
+      id: 20f01f93-7b37-4f3f-8c17-a466dac351ef
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+      - "7"
+      - "9"
+      - "10"
+      - "12"
+      - "13"
+      - "14"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 050d36dd-0ec3-4490-827e-e210ac5e9a04
+    type: title
+    task:
+      id: 050d36dd-0ec3-4490-827e-e210ac5e9a04
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 31a268a0-3862-4dcb-8549-b55d0ad936a0
+    type: playbook
+    task:
+      id: 31a268a0-3862-4dcb-8549-b55d0ad936a0
+      version: -1
+      name: Isolate Endpoint - Cybereason
+      description: This playbook isolates an endpoint based on the hostname provided.
+      playbookName: Isolate Endpoint - Cybereason
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      Hostname:
+        complex:
+          root: inputs.Endpoint_hostname
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 46562ad2-14ed-4064-8ce8-9adfb791d660
+    type: playbook
+    task:
+      id: 46562ad2-14ed-4064-8ce8-9adfb791d660
+      version: -1
+      name: Cortex XDR - Isolate Endpoint
+      description: This playbook accepts an XDR endpoint ID and isolates it using the 'Palo Alto Networks Cortex XDR - Investigation and Response' integration.
+      playbookName: Cortex XDR - Isolate Endpoint
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      endpoint_id:
+        complex:
+          root: inputs.Endpoint_id
+      hostname:
+        complex:
+          root: inputs.Endpoint_hostname
+      ip_list:
+        complex:
+          root: inputs.Endpoint_ip
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 2604374d-9538-4451-8064-2f5bb5c6dd81
+    type: playbook
+    task:
+      id: 2604374d-9538-4451-8064-2f5bb5c6dd81
+      version: -1
+      name: Crowdstrike Falcon - Isolate Endpoint
+      description: This playbook will auto isolate endpoints by the device ID that was provided in the playbook.
+      playbookId: Crowdstrike Falcon - Isolate Endpoint
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      Device_id:
+        complex:
+          root: inputs.Endpoint_id
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 48226108-0787-44b0-80f6-cf333758b5e8
+    type: playbook
+    task:
+      id: 48226108-0787-44b0-80f6-cf333758b5e8
+      version: -1
+      name: FireEye HX - Isolate Endpoint
+      description: This playbook will auto isolate endpoints by the endpoint ID that was provided in the playbook.
+      playbookName: FireEye HX - Isolate Endpoint
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      Endpoint_id:
+        complex:
+          root: inputs.Endpoint_id
+      Hostname:
+        complex:
+          root: inputs.Endpoint_hostname
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: d438379a-5602-49f9-8d6d-404f9dbe3919
+    type: playbook
+    task:
+      id: d438379a-5602-49f9-8d6d-404f9dbe3919
+      version: -1
+      name: Microsoft Defender For Endpoint - Isolate Endpoint
+      playbookId: Microsoft Defender For Endpoint - Isolate Endpoint
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      Device_IP:
+        complex:
+          root: inputs.Endpoint_ip
+      Device_id:
+        complex:
+          root: inputs.Endpoint_id
+      Hostname:
+        complex:
+          root: inputs.Endpoint_hostname
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 6288e7cc-1f1c-4132-834c-02efaf383aee
+    type: regular
+    task:
+      id: 6288e7cc-1f1c-4132-834c-02efaf383aee
+      version: -1
+      name: Core - Isolate Endpoint
+      description: Isolates the specified endpoint.
+      script: '|||core-isolate-endpoint'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      endpoint_id:
+        complex:
+          root: inputs.Endpoint_id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -380,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 73a03b52-b75a-4d47-8220-376956270c68
+    type: playbook
+    task:
+      id: 73a03b52-b75a-4d47-8220-376956270c68
+      version: -1
+      name: Block Endpoint - Carbon Black Response V2.1
+      description: Carbon Black Response - isolates an endpoint for a given hostname.
+      playbookName: Block Endpoint - Carbon Black Response V2.1
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      Hostname:
+        complex:
+          root: inputs.Endpoint_hostname
+      Sensor_id:
+        complex:
+          root: inputs.Endpoint_id
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 2960,
+        "x": -380,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Endpoint_hostname
+  value: {}
+  required: false
+  description: The host name of the endpoint to isolate.
+  playbookInputQuery:
+- key: Endpoint_ip
+  value: {}
+  required: false
+  description: The IP of the endpoint to isolate.
+  playbookInputQuery:
+- key: Endpoint_id
+  value: {}
+  required: false
+  description: The ID of the endpoint to isolate.
+  playbookInputQuery:
+outputs:
+- contextPath: Endpoint
+  description: The isolated endpoint.
+  type: string
+- contextPath: Traps.Isolate.EndpointID
+  description: The ID of the endpoint.
+  type: string
+- contextPath: Traps.IsolateResult.Status
+  description: The status of the isolation operation.
+  type: string
+- contextPath: Cybereason.Machine
+  description: The Cybereason machine name.
+- contextPath: Cybereason.IsIsolated
+  description: Whether the machine is isolated.
+- contextPath: Endpoint.Hostname
+  description: The host name of the endpoint.
+- contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_id
+  description: The endpoint ID.
+- contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_name
+  description: The endpoint name.
+- contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_status
+  description: The status of the endpoint.
+- contextPath: PaloAltoNetworksXDR.Endpoint.ip
+  description: The endpoint's IP address.
+- contextPath: PaloAltoNetworksXDR.Endpoint.is_isolated
+  description: Whether the endpoint is isolated.
+- contextPath: MicrosoftATP.MachineAction.ID
+  description: The machine action ID.
+  type: string
+- contextPath: MicrosoftATP.IsolateList
+  description: The IDs of the machines that were isolated.
+  type: string
+- contextPath: MicrosoftATP.NonIsolateList
+  description: The IDs of the machines that will not be isolated.
+  type: string
+- contextPath: MicrosoftATP.IncorrectIDs
+  description: Incorrect device IDs entered.
+  type: string
+- contextPath: MicrosoftATP.IncorrectHostnames
+  description: Incorrect device host names entered.
+  type: string
+- contextPath: MicrosoftATP.IncorrectIPs
+  description: Incorrect device IPs entered.
+  type: string
+- contextPath: Core.Isolation.endpoint_id
+  description: The ID of the isolated endpoint.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor
+  description: The sensor info.
+  type: unknown
+- contextPath: CarbonBlackEDR.Sensor.id
+  description: The ID of this sensor.
+- contextPath: CarbonBlackEDR.Sensor.is_isolating
+  description: Boolean representing the sensor-reported isolation status.
+- contextPath: CarbonBlackEDR.Sensor.status
+  description: The sensor status.
+tests:
+- Isolate and unisolate endpoint - test
+fromversion: 6.8.0

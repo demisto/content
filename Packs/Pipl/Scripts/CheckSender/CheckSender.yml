@@ -1,0 +1,27 @@
+commonfields:
+  id: CheckSender
+  version: -1
+name: CheckSender
+script: ''
+type: python
+subtype: python3
+tags:
+- server
+- phishing
+comment: For phishing incidents, check the sender of the email via Pipl search
+system: true
+args:
+- name: email
+  default: true
+  description: Email address to look up. If omitted, will instead extract with regular expression from the fullmail argument, where the phishing email should be provided.
+- name: fullmail
+  description: Raw email text to regex the sender from
+scripttarget: 0
+dependson:
+  must:
+  - pipl-search
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.10.12.63474
+tests:
+- No tests (auto formatted)

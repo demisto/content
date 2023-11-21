@@ -1,0 +1,9 @@
+[known_words]
+vectra
+destinationips
+destinationports
+samaccountname
+
+[file:Vectra_AIEventCollector_1_3.yml]
+ignore=MR108
+

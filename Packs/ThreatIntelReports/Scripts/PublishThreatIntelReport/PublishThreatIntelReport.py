@@ -1,7 +1,6 @@
-from datetime import datetime
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from datetime import datetime
 
 
 def publish():
@@ -14,7 +13,7 @@ def publish():
         {
             'id': object_id,
             'xsoarReadOnlyRoles': demisto.dt(
-                roles, 'DemistoRoles.name'
+                roles, 'name'
             ),
             'reportstatus': 'Published',
             'published': now_utc.isoformat(),

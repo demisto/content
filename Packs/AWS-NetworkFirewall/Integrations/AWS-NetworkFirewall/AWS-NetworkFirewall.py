@@ -21,8 +21,8 @@ AWS_ROLE_ARN = demisto.params().get('roleArn')
 AWS_ROLE_SESSION_NAME = demisto.params().get('roleSessionName')
 AWS_ROLE_SESSION_DURATION = demisto.params().get('sessionDuration')
 AWS_ROLE_POLICY = None
-AWS_ACCESS_KEY_ID = demisto.params().get('access_key')
-AWS_SECRET_ACCESS_KEY = demisto.params().get('secret_key')
+AWS_ACCESS_KEY_ID = demisto.params().get('credentials', {}).get('identifier') or demisto.params().get('access_key')
+AWS_SECRET_ACCESS_KEY = demisto.params().get('credentials', {}).get('password') or demisto.params().get('secret_key')
 VERIFY_CERTIFICATE = not demisto.params().get('insecure', True)
 proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
 config = Config(
@@ -287,7 +287,7 @@ def create_firewall_policy_command(args):
     )
     kwargs = {
         "FirewallPolicyName": args.get("firewall_policy_name", None),
-        "FirewallPolicy": safe_load_json(args.get("firewall_policy_json",None)),
+        "FirewallPolicy": safe_load_json(args.get("firewall_policy_json", None)),
         "Description": args.get("description", None),
         "Tags": parse_tag_field(args.get("tags")),
 
@@ -692,7 +692,7 @@ def list_rule_groups_command(args):
     )
     kwargs = {
         "NextToken": args.get("next_token", None),
-        "MaxResults": args.get("max_results",None)
+        "MaxResults": args.get("max_results", None)
     }
     kwargs = remove_empty_elements(kwargs)
     if args.get('raw_json') is not None and not kwargs:

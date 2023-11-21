@@ -1,0 +1,15 @@
+[INGEST:vendor="msft", product="graph_security_alerts", target_dataset="msft_graph_security_alerts_raw", no_hit=keep]
+filter to_string(createdDateTime) ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}[\.\dZ]+"
+| alter
+    tmp_get_date = arraystring(regextract(createdDateTime, "(\d{4}\-\d{2}\-\d{2})T"), ""),
+    tmp_get_time = arraystring(regextract(createdDateTime, "T(\d{2}:\d{2}:\d{2})\.\d{3}"), ""),
+    tmp_get_mili = arraystring(regextract(createdDateTime, "T\d{2}:\d{2}:\d{2}\.(\d{3})"), "")
+| alter 
+    tmp_date_time = arraystring(arraycreate(tmp_get_date, tmp_get_time), " ")
+| alter
+    tmp_create_epoch = to_epoch(parse_timestamp("%Y-%m-%d %H:%M:%S", tmp_date_time))
+| alter
+    tmp_epoch_mili = arraystring(arraycreate(to_string(tmp_create_epoch), tmp_get_mili), "")
+| alter
+    _time = to_timestamp(to_integer(tmp_epoch_mili), "millis")
+| fields -tmp_get_date, tmp_get_time, tmp_get_mili, tmp_date_time, tmp_create_epoch, tmp_epoch_mili;

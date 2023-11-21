@@ -1,0 +1,81 @@
+commonfields:
+  id: MapPattern
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+name: MapPattern
+script: ''
+type: python
+tags:
+- transformer
+- string
+comment: |-
+  This transformer will take in a value and transform it based on multiple condition expressions (wildcard, regex, etc) defined in a JSON dictionary structure. The key:value pair of the JSON dictionary should be:
+
+  "condition expression": "desired outcome"
+
+  For example:
+
+  {
+      ".*match 1.*": "Dest Val1",
+      ".*match 2.*": "Dest Val2",
+      ".*match 3(.*)": "\\1",
+      "*match 4*": {
+          "algorithm": "wildcard",
+          "output": "Dest Val4"
+      }
+  }
+
+  The transformer will return the value matched to a pattern following to the priority.
+  When unmatched or the input value is structured (dict or list), it will simply return the input value.
+enabled: true
+args:
+- name: value
+  description: The value to modify.
+- name: mappings
+  required: true
+  isArray: true
+  description: A JSON dictionary that contains key:value pairs that represent the "Condition":"Outcome".
+- name: algorithm
+  auto: PREDEFINED
+  predefined:
+  - literal
+  - wildcard
+  - regex
+  - regmatch
+  - dt
+  description: 'The default algorithm for pattern match. Available algorithm: literal,wildcard,regex,regmatch and dt.'
+  defaultValue: literal
+- name: caseless
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Set to true for caseless comparison, otherwise false.
+  defaultValue: "true"
+- name: priority
+  auto: PREDEFINED
+  predefined:
+  - first_match
+  - last_match
+  description: The option to choose which value matched to return.
+  defaultValue: first_match
+- name: context
+  description: '`demisto` context: Input . (single dot) on `From previous tasks` to enable to extract the context data.'
+- name: flags
+  description: The comma separated flags for pattern matching in regex. "dotall" (s), "multiline" (m), "ignorecase" (i) and "unicode" (u) are supported. This will apply to all the algorithms.
+- name: compare_fields
+  description: Set to true if you want pattern matching for each field, otherwise false.
+  defaultValue: "false"
+- name: wildcards
+  description: The list of the special patterns which match to any values regardless of algorithm.
+- name: default_value
+  description: The value to return when all the patterns are not satisfied.
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.10.12.63474
+runas: DBotWeakRole
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

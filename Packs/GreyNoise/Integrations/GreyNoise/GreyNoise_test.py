@@ -1,6 +1,8 @@
 import pytest
 import json
 import GreyNoise
+import demistomock as demisto
+from pytest import raises
 from test_data.input_data import (  # type: ignore
     parse_code_and_body_data,
     get_ip_reputation_score_data,
@@ -13,6 +15,8 @@ from test_data.input_data import (  # type: ignore
     stats_command_data,
     riot_command_response_data,
     context_command_response_data,
+    similar_command_response_data,
+    timeline_command_response_data,
 )
 
 
@@ -72,7 +76,7 @@ def test_test_module(api_key, api_response, status_code, expected_output, mocker
 @pytest.mark.parametrize("args, test_scenario, api_response, status_code, expected_output", ip_reputation_command_data)
 def test_ip_reputation_command(args, test_scenario, api_response, status_code, expected_output, mocker):
     """
-    Tests various combinations of vald and invalid responses for IPReputation command.
+    Tests various combinations of valid and invalid responses for IPReputation command.
     """
     client = GreyNoise.Client("true_api_key", "dummy_server", 10, "proxy", False, "dummy_integration")
     reliability = "B - Usually reliable"
@@ -96,19 +100,19 @@ def test_ip_quick_check_command(args, test_scenario, api_response, status_code, 
     client = GreyNoise.Client("true_api_key", "dummy_server", 10, "proxy", False, "dummy_integration")
     dummy_response = DummyResponse({"Content-Type": "application/json"}, json.dumps(api_response), status_code)
     if test_scenario == "positive":
-        mocker.patch("requests.Session.get", return_value=dummy_response)
+        mocker.patch("requests.Session.post", return_value=dummy_response)
         response = GreyNoise.ip_quick_check_command(client, args)
         assert response.outputs == expected_output
 
     elif test_scenario == "negative" and status_code == 200:
-        mocker.patch("requests.Session.get", return_value=dummy_response)
+        mocker.patch("requests.Session.post", return_value=dummy_response)
         response = GreyNoise.ip_quick_check_command(client, args)
-        with open("test_data/quick_check.md") as f:
+        with open("test_data/quick_check.txt") as f:
             expected_hr = f.read()
         assert response.readable_output == expected_hr
 
     elif test_scenario == "negative":
-        mocker.patch("requests.Session.get", return_value=dummy_response)
+        mocker.patch("requests.Session.post", return_value=dummy_response)
         with pytest.raises(Exception) as err:
             _ = GreyNoise.ip_quick_check_command(client, args)
         assert str(err.value) == expected_output
@@ -223,5 +227,103 @@ def test_context_command(mocker, args, test_scenario, api_response, status_code,
         mocker.patch("requests.Session.get", return_value=dummy_response)
         with pytest.raises(Exception) as err:
             _ = GreyNoise.ip_reputation_command(client, args, reliability)
-            print("this is err: " + str(err))
         assert str(err.value) == expected_output
+
+
+@pytest.mark.parametrize(
+    "args, test_scenario, api_response, status_code, expected_output", similar_command_response_data
+)
+def test_similar_command(mocker, args, test_scenario, api_response, status_code, expected_output):
+    """
+    Test various inputs for context command
+    """
+    client = GreyNoise.Client(
+        api_key="true_api_key",
+        api_server="dummy_server",
+        timeout=10,
+        proxy="proxy",
+        use_cache=False,
+        integration_name="dummy_integration",
+    )
+    dummy_response = DummyResponse({"Content-Type": "application/json"}, json.dumps(expected_output), status_code)
+    mocker.patch("requests.Session.get", return_value=dummy_response)
+    if test_scenario == "positive":
+        response = GreyNoise.similarity_command(client, args)
+        assert response.outputs == expected_output
+    else:
+        mocker.patch("requests.Session.get", return_value=dummy_response)
+        with pytest.raises(Exception) as err:
+            _ = GreyNoise.similarity_command(client, args)
+        assert str(err.value) == expected_output
+
+
+@pytest.mark.parametrize(
+    "args, test_scenario, api_response, status_code, expected_output", timeline_command_response_data
+)
+def test_timeline_command(mocker, args, test_scenario, api_response, status_code, expected_output):
+    """
+    Test various inputs for context command
+    """
+    client = GreyNoise.Client(
+        api_key="true_api_key",
+        api_server="dummy_server",
+        timeout=10,
+        proxy="proxy",
+        use_cache=False,
+        integration_name="dummy_integration",
+    )
+    dummy_response = DummyResponse({"Content-Type": "application/json"}, json.dumps(expected_output), status_code)
+    mocker.patch("requests.Session.get", return_value=dummy_response)
+    if test_scenario == "positive":
+        response = GreyNoise.timeline_command(client, args)
+        assert response.outputs == expected_output
+    else:
+        mocker.patch("requests.Session.get", return_value=dummy_response)
+        with pytest.raises(Exception) as err:
+            _ = GreyNoise.timeline_command(client, args)
+        assert str(err.value) == expected_output
+
+
+@pytest.mark.parametrize(
+    "demisto_params_result, expected_result",
+    [({'credentials': {'password': 'api_key'}, 'apikey': 'old_api_key'}, 'api_key'),
+     ({'credentials': {'password': ''}, 'apikey': 'old_api_key'}, 'old_api_key'),
+     ({'apikey': 'old_api_key'}, 'old_api_key')]
+)
+def test_get_api_key(mocker, demisto_params_result, expected_result):
+    """Test get API key.
+
+    Given: Input parameters to the main function, including the API key configured
+           in credentials or passed directly via the apikey parameter.
+
+    When: The main function is called, which instantiates a client.
+
+    Then: Ensure the API key passed to the client constructor matches the expected API key based on the input parameters.
+
+    """
+    mocker.patch.object(demisto, 'params', return_value=demisto_params_result)
+    mock_client = mocker.patch('GreyNoise.Client')
+    # Call main()
+    GreyNoise.main()
+
+    # Get the client that was instantiated
+    assert mock_client.call_args[1].get('api_key') == expected_result
+
+
+def test_get_api_key_invalid_key(mocker):
+    """Test get API key.
+
+    Given: Input parameters to the main function, including empty AP key and empty credentials object.
+
+    When: The main function is called, which instantiates a client.
+
+    Then: Ensure that error message was raised.
+
+    """
+    mocker.patch.object(demisto, 'params', return_value={'credentials': {'password': ''}, 'apikey': ''})
+    mocker.patch.object(demisto, 'results')
+
+    # Get the client that was instantiated
+    with raises(SystemExit):
+        GreyNoise.main()
+    assert demisto.results.call_args[0][0]['Contents'] == 'Please provide a valid API token'

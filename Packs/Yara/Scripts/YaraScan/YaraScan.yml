@@ -51,7 +51,6 @@ outputs:
   description: A list of tags that are defined in the rule.
 scripttarget: 0
 subtype: python3
-runonce: false
 dockerimage: demisto/yarapy:1.0.0.10928
 runas: DBotWeakRole
 fromversion: 5.0.0

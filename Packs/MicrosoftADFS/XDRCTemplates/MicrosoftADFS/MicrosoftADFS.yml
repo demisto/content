@@ -1,0 +1,13 @@
+winlogbeat.event_logs: 
+  - name: AD FS Auditing
+    processors:
+      - add_fields:
+          fields:
+            vendor: microsoft
+            product: adfs
+  - name: AD FS/Admin
+    processors:
+      - add_fields:
+          fields:
+            vendor: microsoft
+            product: adfs

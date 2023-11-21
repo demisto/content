@@ -1,6 +1,6 @@
-import cv2
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import cv2
 from unifi_video import UnifiVideoAPI
 import dateparser
 import json

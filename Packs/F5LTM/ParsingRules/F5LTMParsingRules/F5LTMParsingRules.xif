@@ -1,0 +1,11 @@
+[INGEST:vendor="f5", product="ltm", target_dataset="f5_ltm_raw", no_hit=keep]
+// Support only date time of format: MMM dd yyyy hh:mm:ss or format: yyyy-MM-dd hh:mm:ss. For example: "Jan 01 2021 10:00:00" or "2021-01-01 10:00:00".
+filter _raw_log ~= "timestamp\=\"\w+\s\d+\s\d+\s\d{2}\:\d{2}\:\d{2}\"\," or _raw_log ~= "date_time\=\"\d+-\d+-\d+\s\d{2}\:\d{2}\:\d{2}\"\,"
+| alter
+        timestamp = arrayindex(regextract(_raw_log,"timestamp\=\"([^=]+)\"\,"),0),
+        timestamp2 = arrayindex(regextract(_raw_log,"date_time\=\"([^=]+)\"\,"),0)
+| alter
+        timestamp = parse_timestamp("%b %d %Y %H:%M:%S", timestamp),
+        timestamp2 = parse_timestamp("%Y-%m-%d %H:%M:%S", timestamp2)
+| alter _time = coalesce(timestamp, timestamp2)
+| fields -timestamp, timestamp2;

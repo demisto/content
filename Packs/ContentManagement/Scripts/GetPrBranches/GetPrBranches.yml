@@ -1,0 +1,20 @@
+comment: Field-display script that gets the branch names from "Pull Request Creation" incidents to use in the "Pull Request Branch" incident field.
+commonfields:
+  id: GetPrBranches
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.10.12.63474
+enabled: true
+name: GetPrBranches
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- field-display
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

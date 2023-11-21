@@ -422,6 +422,38 @@ def test_start_xql_query_valid(mocker):
     assert response == 'execution_id'
 
 
+@pytest.mark.parametrize('tenant_id,expected', [
+    ({'tenant_id': 'test_tenant_1'}, 'test_tenant_1'),
+    ({'tenant_ids': 'test_tenants_2'}, 'test_tenants_2'),
+    ({'tenant_id': 'test_tenant_3', 'tenant_ids': 'test_tenants_4'}, 'test_tenant_3')])
+def test_start_xql_query_with_tenant_id_and_tenant_ids(mocker, tenant_id, expected):
+    """
+    This test is to ensure a fix of a bug will not be removed in the future.
+    The bug was that the arg name is 'tenant_id', but the code was 'args.get('tenant_ids')'
+    in order to fix that without BC in case someone is using it with the wrong arg name, we added support for both.
+    Given:
+    - A valid query to search.
+    1. 'tenant_id' is the name of the key given in the args.
+    2. 'tenant_ids' is the name of the key given in the args.
+    3.both 'tenant_id' and 'tenant_ids' are given in the args.
+
+    When:
+    - Calling start_xql_query function.
+
+    Then:
+    - Ensure the call to start_xql_query is sent with the correct tenant_id.
+    """
+    args = {
+        'query': 'test_query',
+        'time_frame': '1 year',
+    }
+    args |= tenant_id
+
+    res = mocker.patch.object(CLIENT, 'start_xql_query', return_value='execution_id')
+    XQLQueryingEngine.start_xql_query(CLIENT, args=args)
+    assert res.call_args[0][0].get('request_data').get('tenants')[0] == expected
+
+
 def test_get_xql_query_results_success_under_1000(mocker):
     """
     Given:
@@ -933,8 +965,11 @@ def test_get_built_in_query_results_polling_command(mocker):
     res = mocker.patch('XQLQueryingEngine.start_xql_query_polling_command')
     mocker.patch.object(demisto, 'command', return_value='xdr-xql-file-event-query')
     XQLQueryingEngine.get_built_in_query_results_polling_command(CLIENT, args)
-    assert res.call_args.args[1]['query'] == '''dataset = xdr_data | filter agent_id in ("123456","654321") and event_type = FILE and action_file_sha256
+    assert (
+        res.call_args.args[1]["query"]
+        == """dataset = xdr_data | filter agent_id in ("123456","654321") and event_type = FILE and action_file_sha256
  in ("abcde","edcba","p1p2p3")| fields agent_hostname, agent_ip_addresses, agent_id, action_file_path, action_file_sha256,
- actor_process_file_create_time, EXTRA1, EXTRA2 | limit 400'''
+ actor_process_file_create_time, EXTRA1, EXTRA2 | limit 400"""
+    )
     assert res.call_args.args[1]['tenants'] == ["tenantID", "tenantID"]
     assert res.call_args.args[1]['time_frame'] == '7 days'

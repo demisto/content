@@ -1,0 +1,33 @@
+{
+    "dataType": "incidents",
+    "params": {
+        "groupBy": [
+            "occurred(d)",
+            "severity"
+        ],
+        "timeFrame": "days",
+        "valuesFormat": "abbreviated"
+    },
+    "query": "-category:job and containmentsla.runStatus:ended",
+    "modified": "2022-09-15T14:26:39.834493673Z",
+    "name": "MTTC by Severity",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byTo": "",
+            "byFrom": "days",
+            "toValue": null,
+            "fromValue": 7,
+            "field": ""
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "isPredefined": true,
+    "version": -1,
+    "id": "92d112e0-cfb8-4efc-8bc4-9cce6e34f2d1",
+    "widgetType": "line",
+    "fromVersion": "6.5.0",
+    "description": ""
+}

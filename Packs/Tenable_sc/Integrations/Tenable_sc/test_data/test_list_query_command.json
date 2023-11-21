@@ -1,0 +1,34 @@
+{
+    "test_case_1": {
+        "args": {},
+        "mocked_function": "list_queries",
+        "mock_response": {"error_code":0,"error_msg":"",
+        "response": {
+            "manageable": [
+                {
+                    "id": "1", "name": "test_name", "description": "test_description", "filters": "filter"
+                },
+                {
+                    "id": "2", "name": "test_name", "description": "test_description", "filters": null
+                }
+            ],
+            "usable": [
+                {
+                    "id": "1", "name": "test_name", "description": "test_description", "filters": "filter"
+                },
+                {
+                    "id": "3", "name": "test_name", "description": "test_description", "filters": null
+                }
+            ]}, "timestamp":1684676253,"type":"regular","warnings":[]},
+        "expected_hr": "### Queries:\n|Query ID|Query  Name|Query Description|Query Filters|Query Manageable|Query Usable|\n|---|---|---|---|---|---|\n| 1 | test_name | test_description | filter | True | True |\n| 2 | test_name | test_description |  | True | False |\n| 3 | test_name | test_description |  | False | True |\n",
+        "expected_ec": {"Manageable": [{"ID": "1", "Name": "test_name", "Description": "test_description", "Filters": "filter"}, {"ID": "2", "Name": "test_name", "Description": "test_description", "Filters": null}],
+                "Usable": [{"ID": "1", "Name": "test_name", "Description": "test_description", "Filters": "filter"}, {"ID": "3", "Name": "test_name", "Description": "test_description", "Filters": null}]}
+    },
+    "test_case_2": {
+        "args": {"query_id": "test_id"},
+        "mocked_function": "get_query",
+        "mock_response": {"error_code":0,"error_msg":"","response":{"id": "test_id", "name": "test_name", "description": "test_description", "filters": null}, "timestamp":1684676253,"type":"regular","warnings":[]},
+        "expected_hr": "### Query test_id\n|Query ID|Query  Name|Query Description|\n|---|---|---|\n| test_id | test_name | test_description |\n",
+        "expected_ec": {"ID": "test_id", "Name": "test_name", "Description": "test_description"}
+    }
+}

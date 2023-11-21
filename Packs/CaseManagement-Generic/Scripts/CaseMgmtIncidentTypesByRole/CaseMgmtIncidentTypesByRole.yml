@@ -1,0 +1,17 @@
+comment: "Restricts the Incident Types a user can create manually, based on their assigned XSOAR Role(s). \n\nRequirements - Create an XSOAR List called IncidentTypeRBAC with the following structure, the names must match exactly to the names in the Incident Types under Settings!\n\nExample List:\n{\n\"Default\":[\"Case\",\"Job\",\"Unclassified\"],\n\"Analyst\":[\"Phishing\",\"Malware\"],\n\"ThreatHunters\":[\"Hunt\"]\n}"
+commonfields:
+  id: CaseMgmtIncidentTypesByRole
+  version: -1
+dockerimage: demisto/python3:3.10.12.63474
+enabled: true
+name: CaseMgmtIncidentTypesByRole
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- field-display
+type: python
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

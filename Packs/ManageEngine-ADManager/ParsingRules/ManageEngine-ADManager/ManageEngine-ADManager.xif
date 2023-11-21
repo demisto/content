@@ -1,0 +1,36 @@
+[INGEST:vendor="manageengine", product="admanager", target_dataset="manageengine_admanager_raw", no_hit=keep]
+// Supports Legacy RFC 3164 compatible timestamps format: "MMM dd HH:MM:SS" . For example: "Dec 05 19:25:34"
+filter _raw_log ~= "\w{3}\s+\d{2}\s+\d{2}\:\d{2}\:\d{2}"
+| alter // 3164 timestamps lack the year, so default to the current year 
+    tmp_current_year = arrayindex(regextract(to_string(current_time()), "\d{4}"), 0),
+    tmp_raw_timestamp = arrayindex(regextract(_raw_log, "\w{3}\s+\d{1,2}\s+\d{2}:\d{2}:\d{2}"), 0)
+| alter tmp_timestamp_string = format_string("%s %s", tmp_current_year, tmp_raw_timestamp)
+| alter tmp_time = parse_timestamp("%Y %b %d %H:%M:%S", tmp_timestamp_string)
+| alter _time = if(  
+    // if calculated time is in the future (due to year transition during ingestion), default to previous year
+    tmp_time < current_time(), tmp_time, 
+    parse_timestamp("%Y %b %d %H:%M:%S", format_string("%s %s", to_string(subtract(to_integer(tmp_current_year), 1)), tmp_raw_timestamp)))
+| fields - tmp*;
+
+// Supports RFC 5424 compatible timestamps format, which do NOT include a seconds fraction precision for example: "2023-07-20T11:18:59Z", or "2023-07-20T11:18:59+03:00"
+filter _raw_log ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}([+-]\d{2}:\d{2}|Z)"
+| alter tmp_raw_timestamp = arrayindex(regextract(_raw_log, "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}\S+"), 0)
+| alter tmp_datetime_timestamp = if(
+    tmp_raw_timestamp ~= "Z$", parse_timestamp("%FT%XZ", tmp_raw_timestamp),
+    tmp_raw_timestamp ~= "[\+\-]\d{2}\:\d{2}$", parse_timestamp("%FT%X%Ez", tmp_raw_timestamp))
+| alter _time = tmp_datetime_timestamp
+| fields - tmp*;
+
+// Supports RFC 5424 compatible timestamps format, which include a seconds fraction precision for example: "2023-07-20T11:18:59.52Z", or "2023-07-20T11:18:59.52+03:00"
+filter _raw_log ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}\.\d+([+-]\d{2}:\d{2}|Z)"
+| alter tmp_raw_timestamp = arrayindex(regextract(_raw_log, "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}\S+"), 0)
+| alter tmp_timestamp = replace(to_string(tmp_raw_timestamp), "Z", "+00:00") 
+| alter tmp_precision = arrayindex(regextract(tmp_timestamp, "\.(\d{1,6})"), 0)
+| alter tmp_precision_length = len(tmp_precision)
+| alter tmp_time = if( // adjust parsing format according to the precision length
+    tmp_precision_length = 1, parse_timestamp("%FT%H:%M:%E1S%Ez", tmp_timestamp),
+    tmp_precision_length = 2, parse_timestamp("%FT%H:%M:%E2S%Ez", tmp_timestamp),
+    tmp_precision_length = 3, parse_timestamp("%FT%H:%M:%E3S%Ez", tmp_timestamp),
+    tmp_precision_length = 6, parse_timestamp("%FT%H:%M:%E6S%Ez", tmp_timestamp))
+| alter _time = tmp_time
+| fields - tmp*;

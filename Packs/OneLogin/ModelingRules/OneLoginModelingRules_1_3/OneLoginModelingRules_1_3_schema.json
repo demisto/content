@@ -1,0 +1,60 @@
+{
+  "onelogin_iam_raw": {
+    "policy_name": {
+      "type": "string",
+      "is_array": false
+    },
+    "actor_user_name": {
+      "type": "string",
+      "is_array": false
+    },
+    "id": {
+      "type": "int",
+      "is_array": false
+    },
+    "notes": {
+      "type": "string",
+      "is_array": false
+    },
+    "event_type_id": {
+      "type": "int",
+      "is_array": false
+    },
+    "user_id": {
+      "type": "int",
+      "is_array": false
+    },
+    "ipaddr": {
+      "type": "string",
+      "is_array": false
+    },
+    "user_name": {
+      "type": "string",
+      "is_array": false
+    },
+    "risk_score": {
+      "type": "int",
+      "is_array": false
+    },
+    "risk_reasons": {
+      "type": "string",
+      "is_array": false
+    },
+    "app_name": {
+      "type": "string",
+      "is_array": false
+    },
+    "actor_user_id": {
+      "type": "int",
+      "is_array": false
+    },
+    "otp_device_name": {
+      "type": "string",
+      "is_array": false
+    },
+    "otp_device_id": {
+      "type": "int",
+      "is_array": false
+    }
+  }
+}

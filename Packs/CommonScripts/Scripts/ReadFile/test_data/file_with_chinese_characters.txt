@@ -1,0 +1,10 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN"><html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<meta name="Generator" content="test">
+<title></title>
+</head>
+<body>
+<p><span lang="zh-cn"><font face="����">test,</font></span>
+</p>
+</body>
+</html>

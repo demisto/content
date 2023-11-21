@@ -1,0 +1,59 @@
+commonfields:
+  id: Remedy AR
+  version: -1
+name: Remedy AR
+display: BMC Remedy AR
+category: Case Management
+description: BMC Remedy AR System is a professional development environment that leverages the recommendations of the IT Infrastructure Library (ITIL) and provides a foundation for Business Service Management (BSM) solutions. For incident management (i.e. create, fetch, update), please refer to Remedy On-Demand integration.
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Credentials
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  subtype: python3
+  commands:
+  - name: remedy-get-server-details
+    arguments:
+    - name: qualification
+      description: 'Search qualification, given as: ''key1''="value1" AND ''key2''!="value2"'
+    - name: fields
+      description: Parts of the entry object to retrieve, given as CSV (i.e. Company,Name)
+      defaultValue: Name,Company,Short Description,NC_IOPs,Reconciliation Identity
+    outputs:
+    - contextPath: Remedy.ServerDetails.Reconciliation Identity
+      description: Server reconciliation Identity
+      type: string
+    - contextPath: Remedy.ServerDetails.Short Description
+      description: Server description
+      type: string
+    - contextPath: Remedy.ServerDetails.Company
+      description: Company name
+      type: string
+    - contextPath: Remedy.ServerDetails.NC_IOPs
+      description: Server NC IOPS
+      type: string
+    - contextPath: Remedy.ServerDetails.Name
+      description: Server name
+      type: string
+    description: Retrieves server details
+  dockerimage: demisto/python3:3.10.12.63474
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

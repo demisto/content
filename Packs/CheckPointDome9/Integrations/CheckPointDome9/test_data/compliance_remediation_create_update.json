@@ -1,0 +1,14 @@
+{
+    "cloudAccountId": null,
+    "cloudBots": [
+        "cloudBots"
+    ],
+    "comment": "comment",
+    "id": "id",
+    "logic": null,
+    "platform": "platform",
+    "ruleId": null,
+    "ruleLogicHash": "ruleLogicHash",
+    "ruleName": null,
+    "rulesetId": "rulesetId"
+}

@@ -116,6 +116,8 @@ Submission Time: 2020-02-25 06:58:19
 ### Submit a URL for analysis
 ---
 Submits a URL for analysis.
+
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 ##### Base Command
 
 `lastline-upload-url`

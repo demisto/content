@@ -2,7 +2,7 @@ import pytest
 import json
 import io
 
-from HYASProtect import Client, get_domain_verdict, get_ip_verdict,\
+from HYASProtect import Client, get_domain_verdict, get_ip_verdict, \
     get_fqdn_verdict, get_nameserver_verdict
 
 client = Client(

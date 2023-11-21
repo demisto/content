@@ -439,7 +439,7 @@ Checks the reputation of a file hash.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file | The MD5 hash of the file to check. | Required | 
+| file | The hash of the file to check. | Required | 
 | days_back | The maximum number of days from which to start returning data. 90 days is recommended by Cofense. | Optional | 
 
 
@@ -447,12 +447,19 @@ Checks the reputation of a file hash.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File.Extension | unknown | The file extension. | 
-| File.MD5 | unknown | The MD5 hash of the file. | 
-| File.Malicious.Description | unknown | A description explaining why the file was determined to be malicious. | 
-| File.Malicious.Vendor | unknown | The vendor who reported the file as malicious. | 
-| File.MalwareFamily | unknown | The malware family associated with the file. | 
-| File.Name | unknown | The full file name. | 
+| File.Extension | Unknown | The file extension. | 
+| File.MD5 | Unknown | The MD5 hash of the file. | 
+| File.sha1 | String | The SHA-1 hash of the file. | 
+| File.sha256 | String | The SHA-256 hash of the file. | 
+| File.sha512 | String | The SHA-512 hash of the file. | 
+| File.SSDeep | String | The SSDeep hash of the file. | 
+| File.Type | String | The file type. | 
+| File.Hashes.type | String | The hash type. | 
+| File.Hashes.value | String | The hash value. | 
+| File.Malicious.Description | Unknown | A description explaining why the file was determined to be malicious. | 
+| File.Malicious.Vendor | Unknown | The vendor who reported the file as malicious. | 
+| File.MalwareFamily | Unknown | The malware family associated with the file. | 
+| File.Name | Unknown | The full file name. | 
 | File.Relationships.EntityA | String | The source of the relationship. | 
 | File.Relationships.EntityB | String | The destination of the relationship. | 
 | File.Relationships.Relationship | String | The name of the relationship. | 
@@ -493,6 +500,7 @@ Checks the reputation of a file hash.
 | CofenseIntelligence.File.Threats.executableSet.vendorDetections.threatVendorName | String | Name of the antivirus vendor. | 
 | CofenseIntelligence.File.Threats.executableSet.fileName | String | The file name of any file discovered during a malware infection. | 
 | CofenseIntelligence.File.Threats.executableSet.type | String | Description of the purpose this file serves within the malware infection. | 
+| CofenseIntelligence.File.Threats.executableSet.ssdeep | String | The ssdeep hash of the file. | 
 | CofenseIntelligence.File.Threats.executableSet.dateEntered | Date | Date when this file was analyzed by Malcovery. | 
 | CofenseIntelligence.File.Threats.executableSet.severityLevel | String | The malware infection severity level. | 
 | CofenseIntelligence.File.Threats.executableSet.fileNameExtension | String | The file extension. | 
@@ -519,7 +527,7 @@ Checks the reputation of a file hash.
 | CofenseIntelligence.File.Threats.threatDetailURL | String | T3 report URL. | 
 | CofenseIntelligence.File.Threats.malwareFamilySet.familyName | String | Family name of the malware. | 
 | CofenseIntelligence.File.Threats.malwareFamilySet.description | String | Description of the malware family set. | 
-| CofenseIntelligence.File.Threats.threatType | String | If malware, will have value ‘malware’, otherwise it is empty. | 
+| CofenseIntelligence.File.Threats.threatType | String | If malware, will have value 'malware', otherwise it is empty. | 
 
 #### Command Example
 ```!file file=9798ba6199168e6d2cf205760ea683d1 using=CofenseIntelligenceV2_instance```
@@ -546,8 +554,7 @@ Checks the reputation of a file hash.
                             },
                             "role": "C2",
                             "roleDescription": "Command and control location used by malware"
-                        },
-
+                        }
                     ],
                     "campaignBrandSet": [
                         {
@@ -575,7 +582,26 @@ Checks the reputation of a file hash.
                         }
                     ],
                     "domainSet": [],
-                    "executableSet":[ 
+                    "executableSet":[
+                        {
+                            "dateEntered": 1598576136841,
+                            "deliveryMechanism": {
+                                "description": "Microsoft Office documents with macro scripting for malware delivery",
+                                "mechanismName": "OfficeMacro"
+                            },
+                            "fileName": "bobbyx.exe",
+                            "fileNameExtension": "exe",
+                            "md5Hex": "9798ba6199168e6d2cf205760ea683d1",
+                            "severityLevel": "Major",
+                            "sha1Hex": "dcfad03686e029646d6118a5edd18a3b56a2c358",
+                            "sha224Hex": "78c4f0f7f8c90d137fcb633b6c2c24e2a9f6b9c6054e5de1157d1bed",
+                            "sha256Hex": "5eb93964840290b1a5e35577b2e7ed1c0f212ef275113d5ecdb4a85c127ae57a",
+                            "sha384Hex": "9bd5ab8d458cf2bd64e6942dd586b5456f4a37d73ae788e4acbef666332c7ed00672fa4bc714d1f5b1b826f8e32ca6fe",
+                            "sha512Hex": "4be7710c5d25b94861ace0a7ad83459163c6e294a511c41876e0d29a69d715a805bc859ad3f06a100141e245975893719a089c98cdffb60b3432119b66586f03",
+                            "ssdeep": "3072:2vYy0u8YGgjv+ZvchmkHcI/o1/Vb6//////////////////////////////////p:S0uXnWFchmmcI/o1/3Jwnp",
+                            "type": "Attachment",
+                            "vendorDetections": []
+                        }
                     ],
                     "executiveSummary": "summary",
                     "extractedStringSet": [],
@@ -630,10 +656,37 @@ Checks the reputation of a file hash.
     "File": {
         "Extension": "exe",
         "MD5": "9798ba6199168e6d2cf205760ea683d1",
+        "sha1": "dcfad03686e029646d6118a5edd18a3b56a2c358",
+        "sha256": "5eb93964840290b1a5e35577b2e7ed1c0f212ef275113d5ecdb4a85c127ae57a",
+        "sha512": "4be7710c5d25b94861ace0a7ad83459163c6e294a511c41876e0d29a69d715a805bc859ad3f06a100141e245975893719a089c98cdffb60b3432119b66586f03",
+        "SSDeep": "3072:2vYy0u8YGgjv+ZvchmkHcI/o1/Vb6//////////////////////////////////p:S0uXnWFchmmcI/o1/3Jwnp",
+        "Type": "Attachment",
         "Malicious": {
             "Description": null,
             "Vendor": "CofenseIntelligenceV2"
         },
+        "Hashes": [
+          {
+            "type": "MD5",
+            "value": "9798ba6199168e6d2cf205760ea683d1"
+          },
+          {
+            "type": "sha1",
+            "value": "dcfad03686e029646d6118a5edd18a3b56a2c358"
+          },
+          {
+            "type": "sha256",
+            "value": "5eb93964840290b1a5e35577b2e7ed1c0f212ef275113d5ecdb4a85c127ae57a"
+          },
+          {
+            "type": "sha512",
+            "value": "4be7710c5d25b94861ace0a7ad83459163c6e294a511c41876e0d29a69d715a805bc859ad3f06a100141e245975893719a089c98cdffb60b3432119b66586f03"
+          },
+          {
+            "type": "SSDeep",
+            "value": "3072:2vYy0u8YGgjv+ZvchmkHcI/o1/Vb6//////////////////////////////////p:S0uXnWFchmmcI/o1/3Jwnp"
+          }
+        ],
         "MalwareFamily": "Agent Tesla",
         "Name": "bobbyx.exe"
     }
@@ -1325,6 +1378,67 @@ Checks the reputation of the domain.
 >|Threat ID|Threat Type|Verdict|Executive Summary|Campaign|Malware Family Description|Last Published|Threat Report|
 >|---|---|---|---|---|---|---|---|
 >| 55110 | MALWARE | Suspicious | This report is part of our Emotet/Geodo series. Emotet is a malware family that was initially formed as a banking trojan but today often downloads additional malware payloads. We process very large Emotet campaigns containing thousands of stage one documents and we often find there are a small number of unique URLs and stage two payloads in each campaign. As such, you may notice these lists contain mostly document-specific IOCs, compared with fewer unique URLs and unique stage two payloads. | Finance or Response Themed - OfficeMacro, Emotet/Geodo | Adaptable financial crimes botnet trojan with email worm and malware delivery capabilities, also known as Emotet | 2020-08-28 13:52:25 | [https://www.threathq.com/api/l/activethreatreport/55110/html](https://www.threathq.com/api/l/activethreatreport/55110/html) |
+
+### cofense-threat-report-get
+***
+Downloads threat report provided by cofense intelligence of an indicator for the given unique report id.
+
+
+#### Base Command
+
+`cofense-threat-report-get`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| report_id | Unique id to download the specified threat report. | Required | 
+| report_format | Report format to download.<br/>Allowed types are html and pdf. Possible values are: html, pdf. Default is html. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.Size | Number | The size of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.SHA256 | String | The SHA256 hash of the file. | 
+| File.SHA512 | String | The SHA512 hash of the file. | 
+| File.Name | String | The name of the file. | 
+| File.SSDeep | String | The SSDeep hash of the file. | 
+| File.EntryID | String | The entry ID of the file. | 
+| File.Info | String | File information. | 
+| File.Type | String | The file type. | 
+| File.MD5 | String | The MD5 hash of the file. | 
+| File.Extension | String | The file extension. | 
+
+#### Command example
+```!cofense-threat-report-get report_id=290367```
+#### Context Example
+```json
+{
+    "File": {
+        "EntryID": "17353@2f1342cd-06b5-4b3f-8c20-fe27a087f3a8",
+        "Extension": "html",
+        "Info": "text/html; charset=utf-8",
+        "MD5": "e61fc1a2b206650a3eb48f7856126291",
+        "Name": "290367.html",
+        "SHA1": "bb419100bd5319a43f4f5640075f22a7716ed5f8",
+        "SHA256": "d5da427907395fc8cf0e2942465990486e9bdb016ff820c89511599a0ec0b86a",
+        "SHA512": "aad5ffa7e291bb1f1528f2ed805307a8dfe9bdfae13b766e4fdbd7b9605008a2bc7eb9b177b3306de9fc113eda7c5c632f27446956394f601713cdeeaa075a43",
+        "SSDeep": "1536:TVsXVrOaM0uEcFrlsd21G33VRxQFsUKRFdLeo0sw/x7W:4OapOlOXLisUybLeoO/4",
+        "Size": 79669,
+        "Type": "HTML document, ASCII text, with very long lines, with CRLF line terminators"
+    }
+}
+```
+
+#### Human Readable Output
+
+Uploaded file: 290367.html [Download](https://1.1.1.1/entry/download/17)
+
+>|EntryID|Info|MD5|Name|SHA1|SHA256|SHA512|SSDeep|Size|Type|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 17353@2f1342cd-06b5-4b3f-8c20-fe27a087f3a8 | text/html; charset=utf-8 | e61fc1a2b206650a3eb48f7856126291 | 290367.html | bb419100bd5319a43f4f5640075f22a7716ed5f8 | d5da427907395fc8cf0e2942465990486e9bdb016ff820c89511599a0ec0b86a | aad5ffa7e291bb1f1528f2ed805307a8dfe9bdfae13b766e4fdbd7b9605008a2bc7eb9b177b3306de9fc113eda7c5c632f27446956394f601713cdeeaa075a43 | 1536:TVsXVrOaM0uEcFrlsd21G33VRxQFsUKRFdLeo0sw/x7W:4OapOlOXLisUybLeoO/4 | 79669 | HTML document, ASCII text, with very long lines, with CRLF line terminators |
 
 ## Breaking changes from previous versions of this integration
 The following sections list the changes in this version.

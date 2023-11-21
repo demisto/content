@@ -1,7 +1,7 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import dateutil  # type: ignore
 
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 import pandas as pd
 from bs4 import BeautifulSoup
@@ -103,7 +103,7 @@ def extract_domain(address):
 
 
 def get_text_from_html(html):
-    soup = BeautifulSoup(html)
+    soup = BeautifulSoup(html, features="html.parser")
     # kill all script and style elements
     for script in soup(["script", "style"]):
         script.extract()  # rip it out
@@ -120,8 +120,14 @@ def get_text_from_html(html):
 
 def eliminate_urls_extensions(text):
     urls_list = re.findall(URL_REGEX, text)
-    for url in urls_list:
-        parsed_uri = urlparse(url)
+    if len(urls_list) == 0:
+        return text
+    formatted_urls_list_res = demisto.executeCommand('FormatURL', {'input': ','.join(urls_list)})
+    if is_error(formatted_urls_list_res):
+        return_error(formatted_urls_list_res)
+    formatted_urls_list = [entry["Contents"][-1] for entry in formatted_urls_list_res]
+    for url, formatted_url in zip(urls_list, formatted_urls_list):
+        parsed_uri = urlparse(formatted_url)
         url_with_no_path = '{uri.scheme}://{uri.netloc}/'.format(uri=parsed_uri)
         text = text.replace(url, url_with_no_path)
     return text

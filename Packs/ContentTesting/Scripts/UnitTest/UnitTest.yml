@@ -1,0 +1,35 @@
+args:
+- description: Playbook to Execute
+  name: playbook
+- description: Playbook Task to Add This Task After
+  name: addAfter
+- auto: PREDEFINED
+  description: Type of Test to Run
+  name: testType
+  predefined:
+  - Playbook
+  - Subplaybook
+  - Automation
+  - Multiselect
+- description: List to Read Subplaybooks or Automations From
+  name: listName
+commonfields:
+  id: UnitTest
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.13.72123
+enabled: true
+name: UnitTest
+comment: "Provides for automated testing of automations, playbooks, and sub-playbooks"
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
+runonce: false

@@ -1,0 +1,116 @@
+{
+    "cloudflare_waf_raw": {
+      "EdgeResponseBytes": {
+          "type": "int",
+          "is_array": false
+        },
+      "EdgePathingOp": {
+          "type": "string",
+          "is_array": false
+        },
+      "EdgeServerIP": {
+          "type": "string",
+          "is_array": false
+        },
+      "OriginIP": {
+          "type": "string",
+          "is_array": false
+        },
+      "EdgeResponseStatus": {
+          "type": "int",
+          "is_array": false
+        },
+      "OriginResponseStatus": {
+          "type": "int",
+          "is_array": false
+        },
+      "ClientRequestMethod": {
+          "type": "string",
+          "is_array": false
+        },
+      "ClientASN": {
+          "type": "int",
+          "is_array": false
+        },
+      "ClientCountry": {
+          "type": "string",
+          "is_array": false
+        },
+      "ClientDeviceType": {
+          "type": "string",
+          "is_array": false
+        },
+      "ClientRegionCode": {
+          "type": "string",
+          "is_array": false
+        },
+      "ClientRequestBytes": {
+          "type": "int",
+          "is_array": false
+        },
+      "ClientRequestHost": {
+          "type": "string",
+          "is_array": false
+        },
+      "ClientRequestScheme": {
+          "type": "string",
+          "is_array": false
+        },
+      "ClientRequestURI": {
+          "type": "string",
+          "is_array": false
+        },
+      "ClientRequestReferer": {
+          "type": "string",
+          "is_array": false
+        },
+      "ClientRequestUserAgent": {
+          "type": "string",
+          "is_array": false
+        },
+      "ClientSSLCipher": {
+          "type": "string",
+          "is_array": false
+        },
+      "ClientSSLProtocol": {
+          "type": "string",
+          "is_array": false
+        },
+      "ClientSrcPort": {
+          "type": "int",
+          "is_array": false
+        },
+      "RayID": {
+          "type": "string",
+          "is_array": false
+        },
+      "RequestHeaders": {
+          "type": "string",
+          "is_array": false
+        },
+      "WAFAttackScore": {
+          "type": "int",
+          "is_array": false
+        },
+      "ZoneName": {
+          "type": "string",
+          "is_array": false
+        },
+      "securityaction": {
+          "type": "string",
+          "is_array": false
+        },
+      "clientip": {
+        "type": "string",
+        "is_array": false
+      },
+      "securityruledescription": {
+        "type": "string",
+        "is_array": false
+      },
+      "securityruleid": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+}

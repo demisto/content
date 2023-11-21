@@ -31,6 +31,7 @@
 <h3 id="h_66414687541541575058084">1. Search for indicators</h3>
 <hr>
 <p>Search for an indicator that is related to previous urlscan.io scans.</p>
+<p>Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.</p>
 <h5>Base Command</h5>
 <p><code>urlscan-search</code></p>
 <h5>Input</h5>
@@ -277,6 +278,11 @@
 <tr>
 <td style="width: 165px;">scan_visibility</td>
 <td style="width: 446px;">The submission visibility. If specified, overrides the 'public' parameter</td>
+<td style="width: 97px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 165px;">use_url_as_name</td>
+<td style="width: 446px;">Whether to use the URL as the screenshot name. Default is false which sets screenshot name to screenshot.png</td>
 <td style="width: 97px;">Optional</td>
 </tr>
 </tbody>

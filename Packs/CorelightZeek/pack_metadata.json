@@ -1,0 +1,18 @@
+{
+    "name": "Corelight Zeek",
+    "description": "An open-source software network analysis framework.",
+    "support": "xsoar",
+    "currentVersion": "1.0.7",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "marketplacev2"
+    ]
+}

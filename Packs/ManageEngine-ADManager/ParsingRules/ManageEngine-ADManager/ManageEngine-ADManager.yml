@@ -1,0 +1,6 @@
+name: ManageEngine ADManager Parsing Rule
+id: ManageEngine_ADManager_ParsingRule
+fromversion: 6.10.0
+tags: []
+rules: ''
+samples: ''

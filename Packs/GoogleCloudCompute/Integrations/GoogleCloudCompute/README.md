@@ -10,6 +10,8 @@ Google Compute Engine delivers virtual machines running in Google's innovative d
 | --- | --- | --- |
 | service | Service Account Private Key file contents \(JSON\) | True |
 | proxy | Use system proxy settings | False |
+| default_search_scope | What is the top level object to search in (usually a project or organization in format of organization/XX). | False |
+
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -1057,7 +1059,7 @@ Returns the specified Instance resource. Gets a list of available instances by m
 | --- | --- | --- |
 | instance | Name of the instance resource to return. | Required | 
 | zone | The name of the zone for this request. | Required | 
-
+| project_id | Project ID that you want to run this command on. | Optional |
 
 ##### Context Output
 
@@ -5816,6 +5818,7 @@ Creates a firewall rule in the specified project using the data included in the 
 | direction | Direction of traffic to which this firewall applies; default is INGRESS. Note: For INGRESS traffic, it is NOT supported to specify destinationRanges; For EGRESS traffic, it is NOT supported to specify sourceRanges OR sourceTags. | Optional | 
 | logConfigEnable | This field denotes whether to enable logging for a particular firewall rule. | Optional | 
 | disabled | Denotes whether the firewall rule is disabled, i.e not applied to the network it is associated with. When set to true, the firewall rule is not enforced and the network behaves as if it did not exist. If this is unspecified, the firewall rule will be enabled. | Optional | 
+| project_id | Project ID that you want to run this command on. | Optional |
 
 
 ##### Context Output
@@ -6001,6 +6004,7 @@ Retrieves the list of firewall rules available to the specified project.
 | filters | A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, &gt;, or &lt;.  For example, if you are filtering Compute Engine instances, you can exclude instances named example-instance by specifying name != example-instance. | Optional | 
 | orderBy | Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.  You can also sort results in descending order based on the creation timestamp using orderBy=&quot;creationTimestamp desc&quot;. This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first. | Optional | 
 | pageToken | Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results. | Optional | 
+| project_id | Project ID that you want to run this command on. | Optional |
 
 
 ##### Context Output
@@ -6626,4 +6630,321 @@ There is no context output for this command.
 |id|kind|name|operationType|progress|status|
 |---|---|---|---|---|---|
 | 42 | compute#operation | mock-operation | compute.projects.setCommonInstanceMetadata | 0 | RUNNING |
+
+
+### gcp-compute-aggregated-list-instances-by-ip
+***
+Retrieves instance information based on public IP in your project across all regions and zones.
+
+
+##### Base Command
+
+`gcp-compute-aggregated-list-instances-by-ip`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip | IP Address to search on. | Required | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleCloudCompute.Instances.id | string | The unique identifier for the resource. This identifier is defined by the server. | 
+| GoogleCloudCompute.Instances.creationTimestamp | string | Creation timestamp in RFC3339 text format. | 
+| GoogleCloudCompute.Instances.name | string | The name of the resource, provided by the client when initially creating the resource. The resource name must be 1\-63 characters long, and comply with RFC1035. Specifically, the name must be 1\-63 characters long and match the regular expression \[a\-z\]\(\[\-a\-z0\-9\]\*\[a\-z0\-9\]\)? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. | 
+| GoogleCloudCompute.Instances.description | string | An optional description of this resource. Provide this property when you create the resource. | 
+| GoogleCloudCompute.Instances.tags | string | Tags to apply to this instance. Tags are used to identify valid sources or targets for network firewalls and are specified by the client during instance creation. The tags can be later modified by the setTags method. Each tag within the list must comply with RFC1035. Multiple tags can be specified via the tags.items field. | 
+| GoogleCloudCompute.Instances.tags.items | string | An array of tags. Each tag must be 1\-63 characters long, and comply with RFC1035. | 
+| GoogleCloudCompute.Instances.tags.fingerprint | string | Specifies a fingerprint for this request, which is essentially a hash of the tags contents and used for optimistic locking. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update tags. You must always provide an up\-to\-date fingerprint hash in order to update or change tags. | 
+| GoogleCloudCompute.Instances.machineType | string | Full or partial URL of the machine type resource to use for this instance, in the format: zones/zone/machineTypes/machine\-type. This is provided by the client when the instance is created. | 
+| GoogleCloudCompute.Instances.status | string | The status of the instance. One of the following values: PROVISIONING, STAGING, RUNNING, STOPPING, STOPPED, SUSPENDING, SUSPENDED, and TERMINATED. | 
+| GoogleCloudCompute.Instances.statusMessage | string | An optional, human\-readable explanation of the status. | 
+| GoogleCloudCompute.Instances.zone | string | URL of the zone where the instance resides. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body. | 
+| GoogleCloudCompute.Instances.canIpForward | boolean | Allows this instance to send and receive packets with non\-matching destination or source IPs. This is required if you plan to use this instance to forward routes. For more information, see Enabling IP Forwarding. | 
+| GoogleCloudCompute.Instances.networkInterfaces | string | An array of network configurations for this instance. These specify how interfaces are configured to interact with other network services, such as connecting to the internet. Multiple interfaces are supported per instance. | 
+| GoogleCloudCompute.Instances.networkInterfaces.network | string | URL of the network resource for this instance. When creating an instance, if neither the network nor the subnetwork is specified, the default network global/networks/default is used; if the network is not specified but the subnetwork is specified, the network is inferred. | 
+| GoogleCloudCompute.Instances.networkInterfaces.subnetwork | string | The URL of the Subnetwork resource for this instance. If the network resource is in legacy mode, do not provide this property. If the network is in auto subnet mode, providing the subnetwork is optional. If the network is in custom subnet mode, then this field should be specified. If you specify this property, you can specify the subnetwork as a full or partial URL | 
+| GoogleCloudCompute.Instances.networkInterfaces.networkIP | string | An IPv4 internal network address to assign to the instance for this network interface. If not specified by the user, an unused internal IP is assigned by the system. | 
+| GoogleCloudCompute.Instances.networkInterfaces.name | string |  The name of the network interface, generated by the server. For network devices, these are eth0, eth1, etc. | 
+| GoogleCloudCompute.Instances.networkInterfaces.accessConfigs | string | An array of configurations for this interface. Currently, only one access config, ONE\_TO\_ONE\_NAT, is supported. If there are no accessConfigs specified, then this instance will have no external internet access. | 
+| GoogleCloudCompute.Instances.networkInterfaces.accessConfigs.type | string | The type of configuration. The default and only option is ONE\_TO\_ONE\_NAT. | 
+| GoogleCloudCompute.Instances.networkInterfaces.accessConfigs.name | string | The name of this access configuration. The default and recommended name is External NAT but you can use any arbitrary string you would like. For example, My external IP or Network Access. | 
+| GoogleCloudCompute.Instances.networkInterfaces.accessConfigs.natIP | string | An external IP address associated with this instance. Specify an unused static external IP address available to the project or leave this field undefined to use an IP from a shared ephemeral IP address pool. If you specify a static external IP address, it must live in the same region as the zone of the instance. | 
+| GoogleCloudCompute.Instances.networkInterfaces.accessConfigs.setPublicPtr | boolean | Specifies whether a public DNS ‘PTR’ record should be created to map the external IP address of the instance to a DNS domain name. | 
+| GoogleCloudCompute.Instances.networkInterfaces.accessConfigs.publicPtrDomainName | string | The DNS domain name for the public PTR record. This field can only be set when the setPublicPtr field is enabled. | 
+| GoogleCloudCompute.Instances.networkInterfaces.accessConfigs.networkTier | string | This signifies the networking tier used for configuring this access configuration and can only take the following values: PREMIUM, STANDARD. | 
+| GoogleCloudCompute.Instances.networkInterfaces.accessConfigs.kind | string | Type of the resource. Always compute\#accessConfig for access configs. | 
+| GoogleCloudCompute.Instances.networkInterfaces.aliasIpRanges | string | An array of alias IP ranges for this network interface. Can only be specified for network interfaces on subnet\-mode networks. | 
+| GoogleCloudCompute.Instances.networkInterfaces.aliasIpRanges.ipCidrRange | string | The IP CIDR range represented by this alias IP range. This IP CIDR range must belong to the specified subnetwork and cannot contain IP addresses reserved by system or used by other network interfaces. This range may be a single IP address \(e.g. 0.0.0.0\), a netmask \(e.g. /24\) or a CIDR format string \(e.g. 0.0.0.0/24\). | 
+| GoogleCloudCompute.Instances.networkInterfaces.aliasIpRanges.subnetworkRangeName | string | Optional subnetwork secondary range name specifying the secondary range from which to allocate the IP CIDR range for this alias IP range. If left unspecified, the primary range of the subnetwork will be used. | 
+| GoogleCloudCompute.Instances.networkInterfaces.fingerprint | string | Fingerprint hash of contents stored in this network interface. This field will be ignored when inserting an Instance or adding a NetworkInterface. An up\-to\-date fingerprint must be provided in order to update the NetworkInterface, otherwise the request will fail with error 412 conditionNotMet. | 
+| GoogleCloudCompute.Instances.networkInterfaces.kind | string | Type of the resource. Always compute\#networkInterface for network interfaces. | 
+| GoogleCloudCompute.Instances.disks | string | Array of disks associated with this instance. Persistent disks must be created before you can assign them. | 
+| GoogleCloudCompute.Instances.disks.type | string | Specifies the type of the disk, either SCRATCH or PERSISTENT. If not specified, the default is PERSISTENT. | 
+| GoogleCloudCompute.Instances.disks.mode | string | The mode in which to attach this disk, either READ\_WRITE or READ\_ONLY. If not specified, the default is to attach the disk in READ\_WRITE mode. | 
+| GoogleCloudCompute.Instances.disks.source | string | Specifies a valid partial or full URL to an existing Persistent Disk resource. When creating a new instance, one of initializeParams.sourceImage or disks.source is required except for local SSD. | 
+| GoogleCloudCompute.Instances.disks.deviceName | string | Specifies a unique device name of your choice that is reflected into the /dev/disk/by\-id/google\-\* tree of a Linux operating system running within the instance. This name can be used to reference the device for mounting, resizing, and so on, from within the instance. | 
+| GoogleCloudCompute.Instances.disks.index | number | A zero\-based index to this disk, where 0 is reserved for the boot disk. If you have many disks attached to an instance, each disk would have a unique index number. | 
+| GoogleCloudCompute.Instances.disks.boot | boolean | Indicates that this is a boot disk. The virtual machine will use the first partition of the disk for its root filesystem. | 
+| GoogleCloudCompute.Instances.disks.initializeParams | string | Specifies the parameters for a new disk that will be created alongside the new instance. Use initialization parameters to create boot disks or local SSDs attached to the new instance. | 
+| GoogleCloudCompute.Instances.disks.initializeParams.diskName | string | Specifies the disk name. If not specified, the default is to use the name of the instance. If the disk with the instance name exists already in the given zone/region, a new name will be automatically generated. | 
+| GoogleCloudCompute.Instances.disks.initializeParams.sourceImage | string | The source image to create this disk. When creating a new instance, one of initializeParams.sourceImage or disks.source is required except for local SSD. | 
+| GoogleCloudCompute.Instances.disks.initializeParams.diskSizeGb | string | Specifies the size of the disk in base\-2 GB. | 
+| GoogleCloudCompute.Instances.disks.initializeParams.diskType | string | Specifies the disk type to use to create the instance. If not specified, the default is pd\-standard, specified using the full URL | 
+| GoogleCloudCompute.Instances.disks.initializeParams.sourceImageEncryptionKey | string | The customer\-supplied encryption key of the source image. Required if the source image is protected by a customer\-supplied encryption key. | 
+| GoogleCloudCompute.Instances.disks.initializeParams.sourceImageEncryptionKey.sha256 | string | The RFC 4648 base64 encoded SHA\-256 hash of the customer\-supplied encryption key that protects this resource. | 
+| GoogleCloudCompute.Instances.disks.initializeParams.sourceImageEncryptionKey.rawKey | string | Specifies a 256\-bit customer\-supplied encryption key, encoded in RFC 4648 base64 to either encrypt or decrypt this resource. | 
+| GoogleCloudCompute.Instances.disks.initializeParams.sourceImageEncryptionKey.kmsKeyName | string | The name of the encryption key that is stored in Google Cloud KMS.  | 
+| GoogleCloudCompute.Instances.disks.initializeParams.labels | string | Labels to apply to this disk. These can be later modified by the disks.setLabels method. This field is only applicable for persistent disks. | 
+| GoogleCloudCompute.Instances.disks.initializeParams.labels.key | string | The disk label key. | 
+| GoogleCloudCompute.Instances.disks.initializeParams.labels.value | string | The disk label value. | 
+| GoogleCloudCompute.Instances.disks.initializeParams.description | string | An optional description. Provide this property when creating the disk. | 
+| GoogleCloudCompute.Instances.disks.autoDelete | boolean | Specifies whether the disk will be auto\-deleted when the instance is deleted \(but not when the disk is detached from the instance\). | 
+| GoogleCloudCompute.Instances.disks.licenses | string |  Any valid publicly visible licenses. | 
+| GoogleCloudCompute.Instances.disks.interface | string | Specifies the disk interface to use for attaching this disk, which is either SCSI or NVME. The default is SCSI. Persistent disks must always use SCSI and the request will fail if you attempt to attach a persistent disk in any other format than SCSI. Local SSDs can use either NVME or SCSI. For performance characteristics of SCSI over NVMe, see Local SSD performance. | 
+| GoogleCloudCompute.Instances.disks.guestOsFeatures | string | A list of features to enable on the guest operating system. Applicable only for bootable images. Read Enabling guest operating system features to see a list of available options. | 
+| GoogleCloudCompute.Instances.disks.guestOsFeatures.type | string | The ID of a supported feature. Read Enabling guest operating system features to see a list of available options. | 
+| GoogleCloudCompute.Instances.disks.diskEncryptionKey | string | Encrypts or decrypts a disk using a customer\-supplied encryption key. | 
+| GoogleCloudCompute.Instances.disks.diskEncryptionKey.rawKey | string | Specifies a 256\-bit customer\-supplied encryption key, encoded in RFC 4648 base64 to either encrypt or decrypt this resource. | 
+| GoogleCloudCompute.Instances.disks.diskEncryptionKey.kmsKeyName | string | The name of the encryption key that is stored in Google Cloud KMS. | 
+| GoogleCloudCompute.Instances.disks.diskEncryptionKey.sha256 | string | The RFC 4648 base64 encoded SHA\-256 hash of the customer\-supplied encryption key that protects this resource. | 
+| GoogleCloudCompute.Instances.disks.kind | string | Type of the resource. Always compute\#attachedDisk for attached disks. | 
+| GoogleCloudCompute.Instances.metadata | string | The metadata key/value pairs assigned to this instance. This includes custom metadata and predefined keys. | 
+| GoogleCloudCompute.Instances.metadata.fingerprint | string | Specifies a fingerprint for this request, which is essentially a hash of the metadatas contents and used for optimistic locking. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update metadata. You must always provide an up\-to\-date fingerprint hash in order to update or change metadata, otherwise the request will fail with error 412 conditionNotMet. | 
+| GoogleCloudCompute.Instances.metadata.items | string | Array of key/value pairs. The total size of all keys and values must be less than 512 KB. | 
+| GoogleCloudCompute.Instances.metadata.items.key | string | Key for the metadata entry. Keys must conform to the following regexp: \[a\-zA\-Z0\-9\-\_\]\+, and be less than 128 bytes in length. This is reflected as part of a URL in the metadata server. Additionally, to avoid ambiguity, keys must not conflict with any other metadata keys for the project. | 
+| GoogleCloudCompute.Instances.metadata.items.value | string | Value for the metadata entry. These are free\-form strings, and only have meaning as interpreted by the image running in the instance. The only restriction placed on values is that their size must be less than or equal to 42 bytes \(256 KiB\). | 
+| GoogleCloudCompute.Instances.metadata.kind | string | Type of the resource. Always compute\#metadata for metadata. | 
+| GoogleCloudCompute.Instances.serviceAccounts | string | A list of service accounts, with their specified scopes, authorized for this instance. Only one service account per VM instance is supported. | 
+| GoogleCloudCompute.Instances.serviceAccounts.email | string | Email address of the service account. | 
+| GoogleCloudCompute.Instances.serviceAccounts.scopes | string | The list of scopes to be made available for this service account | 
+| GoogleCloudCompute.Instances.selfLink | string | Server\-defined URL for this resource. | 
+| GoogleCloudCompute.Instances.scheduling | string | Sets the scheduling options for this instance. | 
+| GoogleCloudCompute.Instances.scheduling.onHostMaintenance | string | Defines the maintenance behavior for this instance. For standard instances, the default behavior is MIGRATE. For preemptible instances, the default and only possible behavior is TERMINATE. For more information, see Setting Instance Scheduling Options. | 
+| GoogleCloudCompute.Instances.scheduling.automaticRestart | boolean | Specifies whether the instance should be automatically restarted if it is terminated by Compute Engine \(not terminated by a user\). You can only set the automatic restart option for standard instances. Preemptible instances cannot be automatically restarted. | 
+| GoogleCloudCompute.Instances.scheduling.preemptible | boolean | Defines whether the instance is preemptible. This can only be set during instance creation, it cannot be set or changed after the instance has been created. | 
+| GoogleCloudCompute.Instances.scheduling.nodeAffinities | string | A set of node affinity and anti\-affinity. | 
+| GoogleCloudCompute.Instances.scheduling.nodeAffinities.key | string | Corresponds to the label key of Node resource. | 
+| GoogleCloudCompute.Instances.scheduling.nodeAffinities.operator | string | Defines the operation of node selection. | 
+| GoogleCloudCompute.Instances.scheduling.nodeAffinities.values | string | Corresponds to the label values of Node resource. | 
+| GoogleCloudCompute.Instances.cpuPlatform | string | The CPU platform used by this instance. | 
+| GoogleCloudCompute.Instances.labels | string | Labels to apply to this instance. These can be later modified by the setLabels method. | 
+| GoogleCloudCompute.Instances.labels.key | string | The label key. | 
+| GoogleCloudCompute.Instances.labels.value | string | The label value. | 
+| GoogleCloudCompute.Instances.labelFingerprint | string | A fingerprint for this request, which is essentially a hash of the labels contents and used for optimistic locking. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update labels. You must always provide an up\-to\-date fingerprint hash in order to update or change labels. | 
+| GoogleCloudCompute.Instances.minCpuPlatform | string | Specifies a minimum CPU platform for the VM instance. Applicable values are the friendly names of CPU platforms, such as minCpuPlatform: &quot;Intel Haswell&quot; or minCpuPlatform: &quot;Intel Sandy Bridge&quot;. | 
+| GoogleCloudCompute.Instances.guestAccelerators | string | A list of the type and count of accelerator cards attached to the instance. | 
+| GoogleCloudCompute.Instances.guestAccelerators.acceleratorType | string | Full or partial URL of the accelerator type resource to attach to this instance. For example: projects/my\-project/zones/us\-central1\-c/acceleratorTypes/nvidia\-tesla\-p100 If you are creating an instance template, specify only the accelerator name. See GPUs on Compute Engine for a full list of accelerator types. | 
+| GoogleCloudCompute.Instances.guestAccelerators.acceleratorCount | string | The number of the guest accelerator cards exposed to this instance. | 
+| GoogleCloudCompute.Instances.startRestricted | boolean | Whether a VM has been restricted for start because Compute Engine has detected suspicious activity. | 
+| GoogleCloudCompute.Instances.deletionProtection | boolean | Whether the resource should be protected against deletion. | 
+| GoogleCloudCompute.Instances.hostname | string | Hostname | 
+| GoogleCloudCompute.Instances.kind | string | \] Type of the resource. Always compute\#instance for instances. | 
+
+
+##### Command Example
+```!gcp-compute-aggregated-list-instances-by-ip ip=8.8.8.8```
+
+##### Context Example
+```
+{
+    "GoogleCloudCompute": {
+        "Instances": [
+            {
+                "canIpForward": false,
+                "cpuPlatform": "Unknown CPU Platform",
+                "creationTimestamp": "creationTimestamp",
+                "deletionProtection": false,
+                "description": "",
+                "disks": [
+                    {
+                        "autoDelete": true,
+                        "boot": true,
+                        "deviceName": "test01",
+                        "diskSizeGb": "100",
+                        "guestOsFeatures": [
+                            {
+                                "type": "UEFI_COMPATIBLE"
+                            }
+                        ],
+                        "index": 0,
+                        "interface": "SCSI",
+                        "kind": "compute#attachedDisk",
+                        "licenses": [
+                            "license"
+                        ],
+                        "mode": "READ_WRITE",
+                        "source": "source",
+                        "type": "PERSISTENT"
+                    }
+                ],
+                "displayDevice": {
+                    "enableDisplay": false
+                },
+                "fingerprint": "fingerprint",
+                "id": "42",
+                "kind": "compute#instance",
+                "labelFingerprint": "labelFingerprint",
+                "labels": {
+                    "a123": "abc",
+                    "a231": "cba"
+                },
+                "machineType": "machineType",
+                "metadata": {
+                    "fingerprint": "fingerprint",
+                    "kind": "compute#metadata"
+                },
+                "name": "test01",
+                "networkInterfaces": [
+                    {
+                        "accessConfigs": [
+                            {
+                                "kind": "compute#accessConfig",
+                                "name": "External NAT",
+                                "networkTier": "PREMIUM",
+                                "natIP": "8.8.8.8"
+                                "type": "ONE_TO_ONE_NAT"
+                            }
+                        ],
+                        "fingerprint": "fingerprint",
+                        "kind": "compute#networkInterface",
+                        "name": "nic0",
+                        "network": "network",
+                        "networkIP": "10.0.0.1",
+                        "subnetwork": "subnetwork"
+                    }
+                ],
+                "reservationAffinity": {
+                    "consumeReservationType": "ANY_RESERVATION"
+                },
+                "scheduling": {
+                    "automaticRestart": true,
+                    "onHostMaintenance": "MIGRATE",
+                    "preemptible": false
+                },
+                "selfLink": "selfLink",
+                "serviceAccounts": [
+                    {
+                        "email": "email",
+                        "scopes": [
+                            "https://www.googleapis.com/auth/devstorage.read_only"
+                        ]
+                    }
+                ],
+                "shieldedInstanceConfig": {
+                    "enableIntegrityMonitoring": true,
+                    "enableSecureBoot": false,
+                    "enableVtpm": true
+                },
+                "shieldedInstanceIntegrityPolicy": {
+                    "updateAutoLearnPolicy": true
+                },
+                "startRestricted": false,
+                "status": "TERMINATED",
+                "tags": {
+                    "fingerprint": "fingerprint",
+                    "items": [
+                        "https-server"
+                    ]
+                },
+                "zone": "https://www.mockapi.com/zones/europe-west2-c"
+            }
+        ]
+    }
+}
+```
+
+##### Human Readable Output
+### Google Cloud Compute Instances
+|id|machineType|name|zone|
+|---|---|---|---|
+| 42 | machineType | test01 | https://www.mockapi.com/zones/europe-west2-c |
+
+
+### gcp-compute-add-network-tag
+***
+Add network tag for the specified instance.
+
+
+##### Base Command
+
+`gcp-compute-add-network-tag`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| instance | Name of the instance scoping this request. | Required | 
+| zone | The name of the zone for this request. | Required | 
+| tag | Network tag to add.  Tag must be unique, 1-63 characters long, and comply with RFC1035. | Required | 
+| project_id | Project ID that you want to run this command on. | Optional |
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleCloudCompute.Operations.id | string | The unique identifier for the resource. This identifier is defined by the server. | 
+| GoogleCloudCompute.Operations.name | string | Name of the resource. | 
+| GoogleCloudCompute.Operations.zone | string | The URL of the zone where the operation resides. Only available when performing per\-zone operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body. | 
+| GoogleCloudCompute.Operations.clientOperationId | string | The value of requestId if you provided it in the request. Not present otherwise. | 
+| GoogleCloudCompute.Operations.operationType | string | The type of operation, such as insert, update, or delete, and so on. | 
+| GoogleCloudCompute.Operations.targetLink | string | The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk that the snapshot was created from. | 
+| GoogleCloudCompute.Operations.targetId | string | The unique target ID, which identifies a specific incarnation of the target resource | 
+| GoogleCloudCompute.Operations.status | string | The status of the operation, which can be one of the following: PENDING RUNNING or DONE | 
+| GoogleCloudCompute.Operations.statusMessage | string | An optional textual description of the current status of the operation. | 
+| GoogleCloudCompute.Operations.user | string | User who requested the operation for example EMAILADDRESS. | 
+| GoogleCloudCompute.Operations.progress | number | An optional progress indicator that ranges from 0 to 100. There is no requirement that this be linear or support any granularity of operations. This should not be used to guess when the operation will be complete. This number should monotonically increase as the operation progresses. | 
+| GoogleCloudCompute.Operations.insertTime | string | The time that this operation was requested. This value is in RFC3339 text format. | 
+| GoogleCloudCompute.Operations.startTime | string | The time that this operation was started by the server. This value is in RFC3339 text format. | 
+| GoogleCloudCompute.Operations.endTime | string | The time that this operation was completed. This value is in RFC3339 text format. | 
+| GoogleCloudCompute.Operations.error | string | If errors are generated during processing of the operation, this field will be populated. | 
+| GoogleCloudCompute.Operations.error.errors | string | The array of errors encountered while processing this operation. | 
+| GoogleCloudCompute.Operations.error.errors.code | string | The error type identifier for this error. | 
+| GoogleCloudCompute.Operations.error.errors.location | string | Indicates the field in the request that caused the error. This property is optional. | 
+| GoogleCloudCompute.Operations.error.errors.message | string | An optional, human\-readable error message. | 
+| GoogleCloudCompute.Operations.warnings | string | If warning messages are generated during processing of the operation, this field will be populated. | 
+| GoogleCloudCompute.Operations.warnings.code | string | A warning code, if applicable. For example, Compute Engine returns NO\_RESULTS\_ON\_PAGE if there are no results in the response. | 
+| GoogleCloudCompute.Operations.warnings.message | string | A human\-readable description of the warning code. | 
+| GoogleCloudCompute.Operations.warnings.data | string | Metadata about this warning in key: value format. | 
+| GoogleCloudCompute.Operations.warnings.data.key | string | A key that provides more detail on the warning being returned. For example, for warnings where there are no results in a list request for a particular zone, this key might be scope and the key value might be the zone name. Other examples might be a key indicating a deprecated resource and a suggested replacement, or a warning about invalid network settings \(for example, if an instance attempts to perform IP forwarding but is not enabled for IP forwarding\). | 
+| GoogleCloudCompute.Operations.warnings.data.value | string | A warning data value corresponding to the key. | 
+| GoogleCloudCompute.Operations.httpErrorStatusCode | number | If the operation fails, this field contains the HTTP error status code that was returned. For example, a 404 means the resource was not found. | 
+| GoogleCloudCompute.Operations.httpErrorMessage | string | If the operation fails, this field contains the HTTP error message that was returned, such as NOT FOUND. | 
+| GoogleCloudCompute.Operations.selfLink | string | Server\-defined URL for the resource. | 
+| GoogleCloudCompute.Operations.region | string | The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body. | 
+| GoogleCloudCompute.Operations.description | string | A textual description of the operation, which is set when the operation is created. | 
+| GoogleCloudCompute.Operations.kind | string | Type of the resource. Always compute\#operation for Operation resources. | 
+
+
+##### Command Example
+```!gcp-compute-add-network-tag tag="example-tag" zone="europe-west2-c" instance="test01"```
+##### Context Example
+```
+{
+    "GoogleCloudCompute": {
+        "ProjectMetadata": {
+            "id": "42",
+            "insertTime": "2020-05-03T01:15:54.395-07:00",
+            "kind": "compute#operation",
+            "name": "mock-operation",
+            "operationType": "setTags",
+            "progress": 0,
+            "selfLink": "selfLink",
+            "startTime": "2020-05-03T01:15:54.401-07:00",
+            "status": "RUNNING",
+            "targetId": "42",
+            "targetLink": "https://www.mockapi.com",
+            "user": "user"
+        }
+    }
+}
+```
+
+##### Human Readable Output
+### Google Cloud Compute Operations
+|id|kind|name|operationType|progress|status|
+|---|---|---|---|---|---|
+| 42 | compute#operation | mock-operation | setTags | 0 | RUNNING |
 

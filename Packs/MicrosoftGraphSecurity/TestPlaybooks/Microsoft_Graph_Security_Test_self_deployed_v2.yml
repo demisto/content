@@ -1,0 +1,85 @@
+id: Microsoft Graph Security Test self deployed v2
+version: 2
+vcShouldKeepItemLegacyProdMachine: false
+name: Microsoft Graph Security Test self deployed v2
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b7c945f0-f875-4a93-855c-441709f1f1bf
+    type: start
+    task:
+      id: b7c945f0-f875-4a93-855c-441709f1f1bf
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: f8606c8b-07c4-4ad1-8438-94ad70a64993
+    type: regular
+    task:
+      id: f8606c8b-07c4-4ad1-8438-94ad70a64993
+      version: -1
+      name: set playbook to Microsoft Graph Security Test V2
+      description: set playbook for current incident to Microsoft Graph Security Test V2
+      script: Builtin|||setPlaybook
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      incidentId:
+        simple: ${incident.id}
+      name:
+        simple: Microsoft Graph Security Test V2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: Microsoft Graph Security Test dev
+fromversion: 5.0.0

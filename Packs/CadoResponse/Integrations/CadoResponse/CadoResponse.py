@@ -1,21 +1,21 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 ''' Cado Response API Integration for the Cortex XSOAR Platform '''
 
 import time
 import traceback
 from typing import Any, Dict, Optional
 
-from CommonServerPython import *
 
 from CommonServerUserPython import *
 
-import demistomock as demisto
 
-import requests
+import urllib3
 
 
 ''' Module Level Declarations '''
 
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 CadoResponseCombinedOutput = Union[Dict[str, Any], List[Dict[str, Any]]]
 
 DATE_FORMAT: str = '%Y-%m-%dT%H:%M:%SZ'

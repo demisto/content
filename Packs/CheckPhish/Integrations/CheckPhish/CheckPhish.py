@@ -6,9 +6,10 @@ from CommonServerUserPython import *
 
 import json
 import requests
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
@@ -124,6 +125,8 @@ def submit_to_checkphish(url, api_key, base_url, use_ssl):
             'scanType': 'full'
         }
         res = http_request('POST', base_url, use_ssl, data=json.dumps(query))
+        if res.get('errorMessage'):
+            raise ValueError(res.get('errorMessage'))
 
         return res['jobID']
 
@@ -220,11 +223,12 @@ handle_proxy()
 def main():
 
     demisto_params = demisto.params()
-
     good_disp = argToList(demisto_params.get('good_disp'))
     susp_disp = argToList(demisto_params.get('susp_disp'))
     bad_disp = argToList(demisto_params.get('bad_disp'))
-
+    api_key = demisto_params.get('credentials_api_token', {}).get('password') or demisto_params.get('token')
+    if not api_key:
+        raise DemistoException('API token must be provided.')
     unite_dispositions(good_disp, susp_disp, bad_disp)
 
     reliability = demisto_params.get('integrationReliability')
@@ -237,7 +241,7 @@ def main():
 
     params = {
         'base_url': demisto_params['url'],
-        'api_key': demisto_params.get('token'),
+        'api_key': api_key,
         'use_ssl': not demisto_params.get('insecure', False),
         'reliability': reliability
     }

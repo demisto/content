@@ -1,5 +1,8 @@
 import pytest
 import requests_mock
+import requests
+import unittest
+from unittest.mock import MagicMock, patch
 
 from FeedOffice365 import Client, get_indicators_command, fetch_indicators_command, build_region_or_category_list, \
     ALL_REGIONS_LIST, ALL_CATEGORY_LIST
@@ -114,3 +117,54 @@ def test_build_region_or_category_list(param_list, all_config_list, response):
     region_list.sort()
     response.sort()
     assert region_list == response
+
+
+class TestClient(unittest.TestCase):
+
+    def test_build_iterator_success(self):
+        # Mock the requests library to return a successful response
+        mock_response = MagicMock()
+        mock_response.json.return_value = [{'ips': ['1.1.1.1'], 'category': 'category1'}]
+        mock_get = MagicMock(return_value=mock_response)
+        with patch('requests.get', mock_get):
+            urls_list = [{'FeedURL': 'http://example.com', 'Region': 'Region1', 'Service': 'Service1'}]
+            category_list = ['category1']
+            client = Client(urls_list, category_list)
+            result = client.build_iterator()
+            self.assertEqual(result, [
+                {'ips': ['1.1.1.1'], 'category': 'category1', 'Region': 'Region1', 'Service': 'Service1',
+                 'FeedURL': 'http://example.com'}])
+
+    def test_build_iterator_connection_error(self):
+        # Mock the requests library to raise a ConnectionError
+        mock_get = MagicMock(side_effect=requests.ConnectionError)
+        with patch('requests.get', mock_get):
+            urls_list = [{'FeedURL': 'http://example.com', 'Region': 'Region1', 'Service': 'Service1'}]
+            category_list = ['category1']
+            client = Client(urls_list, category_list)
+            with self.assertRaises(Exception):
+                client.build_iterator()
+
+    def test_build_iterator_http_error(self):
+        # Mock the requests library to raise an HTTPError
+        mock_response = MagicMock()
+        mock_response.status_code = 400
+        mock_get = MagicMock(side_effect=requests.exceptions.HTTPError(response=mock_response))
+        with patch('requests.get', mock_get):
+            urls_list = [{'FeedURL': 'http://example.com', 'Region': 'Region1', 'Service': 'Service1'}]
+            category_list = ['category1']
+            client = Client(urls_list, category_list)
+            with self.assertRaises(Exception):
+                client.build_iterator()
+
+    def test_build_iterator_value_error(self):
+        # Mock the requests library to return an invalid JSON response
+        mock_response = MagicMock()
+        mock_response.json.side_effect = ValueError
+        mock_get = MagicMock(return_value=mock_response)
+        with patch('requests.get', mock_get):
+            urls_list = [{'FeedURL': 'http://example.com', 'Region': 'Region1', 'Service': 'Service1'}]
+            category_list = ['category1']
+            client = Client(urls_list, category_list)
+            with self.assertRaises(ValueError):
+                client.build_iterator()

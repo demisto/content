@@ -1,0 +1,48 @@
+{
+    "zoom_zoom_raw": {
+        "time": {
+            "type": "string",
+            "is_array": false
+        },
+        "operator": {
+            "type": "string",
+            "is_array": false
+        },
+        "category_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "operation_detail": {
+            "type": "string",
+            "is_array": false
+        },
+        "action": {
+            "type": "string",
+            "is_array": false
+        },
+        "email": {
+            "type": "string",
+            "is_array": false
+        },
+        "type": {
+            "type": "string",
+            "is_array": false
+        },
+        "ip_address": {
+            "type": "string",
+            "is_array": false
+        },
+        "client_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "version": {
+            "type": "string",
+            "is_array": false
+        },
+        "event_type": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}

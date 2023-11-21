@@ -1,0 +1,44 @@
+{
+    "meta": {},
+    "data": [
+        {
+            "requests": 10,
+            "identitycount": 1,
+            "sha256": "dummy_sha256",
+            "categories": [
+                {
+                    "id": 113,
+                    "type": "content",
+                    "label": "Computer Security",
+                    "integration": false,
+                    "deprecated": false
+                },
+                {
+                    "id": 67,
+                    "type": "security",
+                    "label": "Malware",
+                    "integration": false,
+                    "deprecated": false
+                },
+                {
+                    "id": 167,
+                    "type": "content",
+                    "label": "Computers and Internet",
+                    "integration": false,
+                    "deprecated": false
+                },
+                {
+                    "id": 25,
+                    "type": "content",
+                    "label": "Software/Technology",
+                    "integration": false,
+                    "deprecated": true
+                }
+            ],
+            "filenames": [
+                "dummy_domain.com"
+            ],
+            "filetypes": []
+        }
+    ]
+}

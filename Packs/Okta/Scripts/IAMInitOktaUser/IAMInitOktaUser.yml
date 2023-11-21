@@ -1,0 +1,86 @@
+commonfields:
+  id: IAMInitOktaUser
+  version: -1
+name: IAMInitOktaUser
+script: ''
+type: python
+tags:
+- IAM
+- Utility
+- Okta
+comment: |-
+  Generates a password and sets the password for an Okta user.
+  Enables the account.
+  Sends an  email to the user with the account information.
+  This script is running the `send-mail` command, make sure there is a mail sender integration configured.
+enabled: true
+args:
+- name: pwdGenerationScript
+  description: The password generator script.
+  defaultValue: GeneratePassword
+- name: username
+  required: true
+  description: The Okta username of the user.
+- name: displayname
+  description: The display name of the employee.
+- auto: PREDEFINED
+  name: temporary_password
+  description: When true, you'll need to change the password in the next login.
+  defaultValue: 'false'
+  predefined:
+  - 'true'
+  - 'false'
+- name: to_email
+  required: true
+  description: The email address that the password will be sent to.
+- name: email_subject
+  description: The subject of the email sent to IT.
+- name: min_lcase
+  description: Minimum number of lower case characters to include in password. Used with the GeneratePassword script (leave empty if using another script).
+  defaultValue: "0"
+- name: max_lcase
+  description: Maximum number of lower case characters to include in password. Used with the GeneratePassword script (leave empty if using another script).
+  defaultValue: "10"
+- name: min_ucase
+  description: Minimum number of upper case characters to include in password. Used with the GeneratePassword script (leave empty if using another script).
+  defaultValue: "0"
+- name: max_ucase
+  description: Maximum number of upper case characters to include in password. Used with the GeneratePassword script (leave empty if using another script).
+  defaultValue: "10"
+- name: min_digits
+  description: Minimum number of digits to include in password. Used with the GeneratePassword script (leave empty if using another script).
+  defaultValue: "0"
+- name: max_digits
+  description: Maximum number of digits to include in password. Used with the GeneratePassword script (leave empty if using another script).
+  defaultValue: "10"
+- name: min_symbols
+  description: Minimum number of symbols to include in password. Used with the GeneratePassword script (leave empty if using another script).
+  defaultValue: "0"
+- name: max_symbols
+  description: Maximum number of symbols to include in password. Used with the GeneratePassword script (leave empty if using another script).
+  defaultValue: "10"
+- name: ZipProtectWithPassword
+  description: The password to protect the zip file that contains the generated password. if not provided, the generated password will be send in the body of the email.
+  defaultValue: ""
+- name: email_body
+  description: The body of the email that will be sent to the user.
+outputs:
+- contextPath: IAM.InitOktaUser.success
+  description: True if the Okta user was successfully activated, false otherwise.
+  type: Boolean
+- contextPath: IAM.InitOktaUser.sentMail
+  description: True if the mail containing the information about the user activation and its auto-generated password was successfully sent to IT, false otherwise.
+  type: Boolean
+- contextPath: IAM.InitOktaUser.errorDetails
+  description: The error details, if exists.
+  type: String
+- contextPath: IAM.InitOktaUser.sendMailError
+  description: The error received from send-mail command, if exists.
+  type: String
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/py3-tools:1.0.0.50499
+runas: DBotWeakRole
+fromversion: 6.5.0
+tests:
+- IAMInitOktaUser - Test

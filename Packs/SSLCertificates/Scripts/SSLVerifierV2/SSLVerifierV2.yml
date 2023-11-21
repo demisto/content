@@ -1,0 +1,35 @@
+args:
+- description: URL to check
+  name: URL
+  required: true
+- default: true
+  defaultValue: "443"
+  description: Port to check
+  name: Port
+comment: Use this automation to check for validity of your SSL certificate and get the time until expiration.
+commonfields:
+  id: SSLVerifierV2
+  version: -1
+dockerimage: demisto/ansible-runner:1.0.0.47562
+enabled: true
+name: SSLVerifierV2
+outputs:
+- contextPath: SSLVerifierV2.Certificate.ExpirationDate
+  description: Date Certificate Expires
+  type: string
+- contextPath: SSLVerifierV2.Certificate.Site
+  description: Site that was checked
+  type: string
+- contextPath: SSLVerifierV2.Certificate.TimeToExpiration
+  description: Days to expiration
+  type: string
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Utilities
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

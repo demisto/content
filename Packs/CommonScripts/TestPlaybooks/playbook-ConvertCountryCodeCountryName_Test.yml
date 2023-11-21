@@ -1,0 +1,187 @@
+id: ConvertCountryCodeCountryName_Test
+version: -1
+name: ConvertCountryCodeCountryName_Test
+description: Test Playbook for Transformer check - ConvertCountryCodeCountryName
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 98b0fdd8-a765-4534-8366-228403302d04
+    type: start
+    task:
+      id: 98b0fdd8-a765-4534-8366-228403302d04
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: b8245e48-78dc-45c7-8d46-11fdf05b9850
+    type: regular
+    task:
+      id: b8245e48-78dc-45c7-8d46-11fdf05b9850
+      version: -1
+      name: convert Country code to country name by transformer
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      key:
+        simple: CountryNameAfterConver
+      value:
+        complex:
+          root: inputs.CountryCode
+          transformers:
+          - operator: c6ba0064-897c-4bb8-8757-6f83944fa3e1
+            args:
+              country_code:
+                value:
+                  simple: inputs.CountryCode
+                iscontext: true
+              country_name: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: d2ad558b-bd98-4319-854b-27d59f22d28b
+    type: regular
+    task:
+      id: d2ad558b-bd98-4319-854b-27d59f22d28b
+      version: -1
+      name: convert Country name to country code by transformer
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      key:
+        simple: CountryCodeAfterConver
+      value:
+        complex:
+          root: inputs.CountryName
+          transformers:
+          - operator: c6ba0064-897c-4bb8-8757-6f83944fa3e1
+            args:
+              country_code:
+                iscontext: true
+              country_name:
+                value:
+                  simple: inputs.CountryName
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 5f657cb1-fc2f-4d33-8985-d2afc95cbdc5
+    type: title
+    task:
+      id: 5f657cb1-fc2f-4d33-8985-d2afc95cbdc5
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 665,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: CountryCode
+  value:
+    simple: IL
+  required: false
+  description: ""
+  playbookInputQuery:
+- key: CountryName
+  value:
+    simple: united states
+  required: false
+  description: ""
+  playbookInputQuery:
+outputs: []
+quiet: true
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

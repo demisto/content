@@ -1,0 +1,6 @@
+fromversion: 6.10.0
+id: symantec_cloud_soc_ModelingRule
+name: SymantecCloudSOC Modeling Rule
+rules: ''
+schema: ''
+tags: SymantecCloudSOC

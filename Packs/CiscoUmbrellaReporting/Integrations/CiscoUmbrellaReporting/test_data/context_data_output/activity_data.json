@@ -1,0 +1,43 @@
+{
+    "meta": {},
+    "data": [
+        {
+            "returncode": 0,
+            "externalip": "1.1.1.1",
+            "allapplications": [],
+            "date": "2022-09-07",
+            "internalip": "1.1.1.1",
+            "time": "22:49:44",
+            "querytype": "A",
+            "policycategories": [],
+            "type": "dns",
+            "categories": [
+                {
+                    "id": 123,
+                    "type": "content",
+                    "label": "Infrastructure and Content Delivery Networks",
+                    "integration": false,
+                    "deprecated": false
+                }
+            ],
+            "verdict": "proxied",
+            "domain": "dummy_domain.com",
+            "timestamp": 1662590984000,
+            "blockedapplications": [],
+            "allowedapplications": [],
+            "identities": [
+                {
+                    "id": 589064228,
+                    "type": {
+                        "id": 9,
+                        "type": "roaming",
+                        "label": "Roaming Computers"
+                    },
+                    "label": "DESKTOP",
+                    "deleted": false
+                }
+            ],
+            "threats": []
+        }
+    ]
+}

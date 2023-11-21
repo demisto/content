@@ -1,0 +1,25 @@
+commonfields:
+  id: AlgosecGetTicket
+  version: -1
+name: AlgosecGetTicket
+script: ''
+type: python
+subtype: python3
+tags:
+- Algosec
+comment: Retrieves a FireFlow change request by its ID
+system: true
+args:
+- name: ticketId
+  required: true
+  default: true
+  description: ID of requested change request
+scripttarget: 0
+timeout: 0s
+dependson:
+  must:
+  - algosec-get-ticket
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.10.12.63474
+tests:
+- No tests (auto formatted)

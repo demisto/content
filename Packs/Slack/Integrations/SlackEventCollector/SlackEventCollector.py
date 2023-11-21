@@ -1,9 +1,8 @@
-import demistomock as demisto
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+import urllib3
 
-from typing import Tuple
-
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 VENDOR = "slack"
 PRODUCT = "slack"
@@ -22,7 +21,7 @@ def prepare_query_params(params: dict) -> dict:
     Parses the given inputs into Slack Audit Logs API expected format.
     """
     query_params = {
-        'limit': arg_to_number(params.get('limit')) or 200,
+        'limit': arg_to_number(params.get('limit')) or 1000,
         'oldest': arg_to_timestamp(params.get('oldest')),
         'latest': arg_to_timestamp(params.get('latest')),
         'action': params.get('action'),
@@ -30,24 +29,23 @@ def prepare_query_params(params: dict) -> dict:
         'entity': params.get('entity'),
         'cursor': params.get('cursor'),
     }
-    if not 0 < query_params['limit'] <= 1000:  # type: ignore
-        raise ValueError('limit argument must be an integer between 1 to 1000.')
     return query_params
 
 
 class Client(BaseClient):
-    def test(self, params: dict) -> dict:
-        query_params = prepare_query_params(params)
-        return self.get_logs(query_params)[0]
-
-    def get_logs(self, query_params: dict) -> Tuple:
-        raw_response = self._http_request(method='GET', url_suffix='logs', params=query_params)
+    def get_logs(self, query_params: dict) -> tuple[dict, list, str | None]:
+        raw_response = self._http_request(
+            method='GET',
+            url_suffix='logs',
+            params=query_params,
+            retries=2,
+        )
         events = raw_response.get('entries', [])
         cursor = raw_response.get('response_metadata', {}).get('next_cursor')
 
         return raw_response, events, cursor
 
-    def handle_pagination_first_batch(self, query_params: dict, last_run: dict) -> Tuple:
+    def handle_pagination_first_batch(self, query_params: dict, last_run: dict) -> tuple[list, str | None]:
         """
         Makes the first logs API call in the current fetch run.
         If `first_id` exists in the lastRun obj, finds it in the response and
@@ -63,7 +61,7 @@ class Client(BaseClient):
             last_run.pop('first_id', None)  # removing to make sure it won't be used in future runs
         return events, cursor
 
-    def get_logs_with_pagination(self, query_params: dict, last_run: dict) -> List[dict]:
+    def get_logs_with_pagination(self, query_params: dict, last_run: dict) -> list[dict]:
         """
         Aggregates logs using cursor-based pagination, until one of the following occurs:
         1. Encounters an event that was already fetched in a previous run / reaches the end of the pagination.
@@ -78,7 +76,7 @@ class Client(BaseClient):
            In this case, stores the last cursor used in the lastRun obj
            and returns the events that have been accumulated so far.
         """
-        aggregated_logs: List[dict] = []
+        aggregated_logs: list[dict] = []
 
         user_defined_limit = query_params.pop('limit')
         query_params['limit'] = 200  # recommended limit value by Slack
@@ -91,7 +89,7 @@ class Client(BaseClient):
                         cursor = None
                         break
 
-                    elif len(aggregated_logs) == user_defined_limit:
+                    if len(aggregated_logs) == user_defined_limit:
                         demisto.debug(f'Reached the user-defined limit ({user_defined_limit}) - stopping.')
                         last_run['first_id'] = event.get('id')
                         cursor = query_params['cursor']
@@ -101,15 +99,13 @@ class Client(BaseClient):
 
                 else:
                     # Finished iterating through all events in this batch (did not encounter a break statement)
-                    if not cursor:
-                        demisto.debug('Finished iterating through all events in this fetch run.')
-                        break
+                    if cursor:
+                        demisto.debug('Using the cursor from the last API call to execute the next call.')
+                        query_params['cursor'] = cursor
+                        _, events, cursor = self.get_logs(query_params)
+                        continue
 
-                    demisto.debug('Using the cursor from the last API call to execute the next call.')
-                    query_params['cursor'] = cursor
-                    _, events, cursor = self.get_logs(query_params)
-
-                # Encountered a break statement in the for loop - exit while loop
+                demisto.debug('Finished iterating through all events in this fetch run.')
                 break
 
         except DemistoException as e:
@@ -136,11 +132,11 @@ def test_module_command(client: Client, params: dict) -> str:
     Returns:
         (str) 'ok' if success.
     """
-    client.test(params)
+    fetch_events_command(client, params, last_run={})
     return 'ok'
 
 
-def get_events_command(client: Client, args: dict) -> Tuple[list, CommandResults]:
+def get_events_command(client: Client, args: dict) -> tuple[list, CommandResults]:
     """
     Gets log events from Slack.
     Args:
@@ -165,7 +161,7 @@ def get_events_command(client: Client, args: dict) -> Tuple[list, CommandResults
     return events, results
 
 
-def fetch_events_command(client: Client, params: dict, last_run: dict) -> Tuple[list, dict]:
+def fetch_events_command(client: Client, params: dict, last_run: dict) -> tuple[list, dict]:
     """
     Collects log events from Slack using pagination.
     Args:
@@ -205,15 +201,9 @@ def main() -> None:  # pragma: no cover
         if command == 'test-module':
             return_results(test_module_command(client, params))
 
-        else:
-            if command == 'slack-get-events':
-                events, results = get_events_command(client, args)
-                return_results(results)
-
-            else:  # command == 'fetch-events'
-                last_run = demisto.getLastRun()
-                events, last_run = fetch_events_command(client, params, last_run)
-                demisto.setLastRun(last_run)
+        elif command == 'slack-get-events':
+            events, results = get_events_command(client, args)
+            return_results(results)
 
             if argToBoolean(args.get('should_push_events', 'true')):
                 send_events_to_xsiam(
@@ -221,6 +211,18 @@ def main() -> None:  # pragma: no cover
                     vendor=VENDOR,
                     product=PRODUCT
                 )
+
+        elif command == 'fetch-events':
+            last_run = demisto.getLastRun()
+            events, last_run = fetch_events_command(client, params, last_run)
+
+            send_events_to_xsiam(
+                events,
+                vendor=VENDOR,
+                product=PRODUCT
+            )
+            demisto.setLastRun(last_run)
+
     except Exception as e:
         return_error(f'Failed to execute {command} command.\nError:\n{e}')
 
