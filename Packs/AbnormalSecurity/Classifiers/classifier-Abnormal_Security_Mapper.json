@@ -45,7 +45,7 @@
                 "Abnormal Security Affected Employee": {
                     "simple": "affectedEmployee"
                 },
-                "Abnormal Security Analysis ": {
+                "Abnormal Security Analysis": {
                     "simple": "analysis"
                 },
                 "Abnormal Security Attachment Count": {
@@ -87,7 +87,7 @@
                 "Abnormal Security From Address": {
                     "simple": "messages.fromAddress"
                 },
-                "Abnormal Security From Name ": {
+                "Abnormal Security From Name": {
                     "simple": "messages.fromName"
                 },
                 "Abnormal Security Impersonated Party": {
