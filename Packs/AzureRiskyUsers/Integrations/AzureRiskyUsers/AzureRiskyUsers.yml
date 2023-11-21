@@ -70,7 +70,7 @@ script:
       name: limit
     - description: Amount of results per request. Can be values between 1 and 500.
       name: page_size
-    - description: The URL for the next set of items to return. (Received this URL from a previous call).
+    - description: The URL for the next set of items to return during pagination. (Received this URL from a previous call).
       name: next_token
     - auto: PREDEFINED
       description: Sets the Risk Level to retrieve.

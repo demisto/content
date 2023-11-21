@@ -235,13 +235,11 @@ def do_pagination(client: Client, response: dict[str, Any], limit: int = 1) -> d
     :return: dict of the limited response_data and the last nextLink URL.
     """
 
-    response_data = response.get('value', [])
+    response_data = response.get('value') or []
     next_link = response.get('@odata.nextLink')
-    # old_next_link is for a situation that we have more results in the response then the limit
     while (next_link := response.get('@odata.nextLink')) and len(response_data) < limit:
-        demisto.debug(f"Using response {next_link=}")
         response = client.risky_users_list_request(limit=limit, skip_token=next_link)
-        response_data.extend(response.get('value', []))
+        response_data.extend(response.get('value') or [])
     demisto.debug(f'The limited response contains: {len(response_data[:limit])}')
     return {'value': response_data[:limit], "@odata.context": response.get('@odata.context'), '@odata.nextLink': next_link}
 
@@ -288,15 +286,14 @@ def risky_users_list_command(client: Client, args: dict[str, str]) -> List[Comma
         raw_response = client.risky_users_list_request(risk_state=risk_state, risk_level=risk_level, skip_token=next_token)
     elif page_size:
         raw_response = client.risky_users_list_request(risk_state=risk_state, risk_level=risk_level, limit=page_size)
-        next_token_from_request = raw_response.get('@odata.nextLink')
     else:  # there is only a limit
         top = MAX_ITEMS_PER_REQUEST if limit >= MAX_ITEMS_PER_REQUEST else limit
         raw_response = client.risky_users_list_request(risk_state=risk_state,
                                                        risk_level=risk_level, limit=top)
         raw_response = do_pagination(client, raw_response, limit)
 
-    list_users = raw_response.get('value', [])
-    next_token_from_request = raw_response.get('@odata.nextLink', "")
+    list_users = raw_response.get('value') or []
+    next_token_from_request = raw_response.get('@odata.nextLink') or ""
 
     command_results = []
     command_results.append(CommandResults(

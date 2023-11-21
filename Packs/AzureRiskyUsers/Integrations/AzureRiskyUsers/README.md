@@ -182,7 +182,7 @@ Returns a list of all risky users and their properties.
 | risk_state | Sets the Risk State to retrieve. Possible values are: atRisk, confirmedCompromised, remediated, dismissed. | Optional | 
 | limit | Limit of results to retrieve. Default is 50. | Optional | 
 | page_size | Amount of results per request. Can be values between 1 and 500. Default is 50. | Optional | 
-| next_token | The URL for the next set of items to return. (Received this URL from a previous call). | Optional | 
+| next_token | The URL for the next set of items to return during pagination. (Received this URL from a previous call). | Optional | 
 | risk_level | Sets the Risk Level to retrieve. Possible values are: low, medium, high. | Optional | 
 
 #### Context Output
