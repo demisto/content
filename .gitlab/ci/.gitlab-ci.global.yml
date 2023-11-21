@@ -251,7 +251,7 @@
   - ./Tests/scripts/fetch_through_merge_base.sh "$CI_COMMIT_SHA" "origin/master"
   - sleep 10
   - ./Tests/scripts/fetch_through_merge_base.sh "$CI_COMMIT_SHA" "$LAST_UPLOAD_COMMIT"
-  - section_end "Fetch Through Merge Base Completed"
+  - section_end "Fetch Through Merge Base"
 
 .default-before-script:
   before_script:
