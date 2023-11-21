@@ -187,7 +187,8 @@ def is_incident_state_as_expected(client: XsoarClient, incident_id: str, expecte
     incident_status = incident_status.get(incident.get("status"))
     if incident_status == expected_state:
         return True
-    raise Exception(f'incident {incident} status is {incident_status} and is not in state {expected_state}')
+    incident_name = incident.get("name")
+    raise Exception(f'incident {incident_name} status is {incident_status} and is not in state {expected_state}')
 
 
 @contextmanager
