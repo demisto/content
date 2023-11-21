@@ -13,7 +13,6 @@ This playbook does not use any sub-playbooks.
 ### Integrations
 
 * Palo_Alto_Networks_WildFire_v2
-* WildFire-v2
 
 ### Scripts
 
@@ -21,8 +20,8 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* wildfire-report
 * wildfire-upload-file-url
+* wildfire-report
 
 ## Playbook Inputs
 
@@ -33,7 +32,7 @@ This playbook does not use any scripts.
 | FileURL | URL of the web file to detonate. The FileUrl is taken from the context. | FileURL | Optional |
 | Interval | Duration for executing the pooling \(in minutes\). | 1 | Optional |
 | Timeout | The duration after which to stop pooling and to resume the playbook \(in minutes\). | 8 | Optional |
-| ReportFileType | The resource type to download. Default is pdf. xml is also possible. |  | Optional |
+| ReportFileType | The resource type to download. Default is pdf. XML is also possible. |  | Optional |
 
 ## Playbook Outputs
 

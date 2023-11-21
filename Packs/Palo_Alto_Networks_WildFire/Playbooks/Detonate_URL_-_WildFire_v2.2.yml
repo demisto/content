@@ -214,10 +214,10 @@ tasks:
       version: -1
       name: WildFire Upload File URL
       description: Uploads a URL of a webpage to WildFire for analysis.
-      script: WildFire-v2|||wildfire-upload-url
+      script: '|||wildfire-upload-url'
       type: regular
       iscommand: true
-      brand: WildFire-v2
+      brand: ""
     nexttasks:
       '#none#':
       - "8"
@@ -271,6 +271,8 @@ inputs:
     complex:
       root: URL
       accessor: Data
+      transformers:
+      - operator: uniq
   required: false
   description: URL of the webpage or file url to detonate. The URL is taken from the context.
   playbookInputQuery:

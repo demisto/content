@@ -376,10 +376,10 @@ tasks:
       version: -1
       name: WildFire Upload File
       description: Uploads a file to WildFire for analysis.
-      script: WildFire-v2|||wildfire-upload
+      script: '|||wildfire-upload'
       type: regular
       iscommand: true
-      brand: WildFire-v2
+      brand: ""
     nexttasks:
       '#none#':
       - "3"
@@ -403,7 +403,7 @@ tasks:
       {
         "position": {
           "x": 560,
-          "y": 820
+          "y": 830
         }
       }
     note: false
@@ -433,6 +433,8 @@ inputs:
   value:
     complex:
       root: File
+      transformers:
+      - operator: uniq
   required: false
   description: File object of the file to detonate. The file is taken from the context.
   playbookInputQuery:

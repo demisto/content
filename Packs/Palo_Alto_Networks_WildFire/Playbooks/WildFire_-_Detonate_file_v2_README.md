@@ -16,11 +16,10 @@ This playbook does not use any sub-playbooks.
 ### Integrations
 
 * Palo_Alto_Networks_WildFire_v2
-* WildFire-v2
 
 ### Scripts
 
-SetAndHandleEmpty
+* SetAndHandleEmpty
 
 ### Commands
 
