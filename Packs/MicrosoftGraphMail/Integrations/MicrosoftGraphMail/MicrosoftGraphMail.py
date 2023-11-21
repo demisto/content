@@ -236,7 +236,6 @@ def main():  # pragma: no cover
         elif command == 'msgraph-mail-delete-rule':
             return_results(delete_rule_command(client, args))
 
-
     # Log exceptions
     except Exception as e:
         return_error(str(e))
