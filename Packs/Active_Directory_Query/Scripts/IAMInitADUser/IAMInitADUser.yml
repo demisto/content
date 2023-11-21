@@ -89,3 +89,4 @@ contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
 scripttarget: 0
+polling: true

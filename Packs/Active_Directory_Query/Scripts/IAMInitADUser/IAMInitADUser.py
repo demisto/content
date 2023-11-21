@@ -117,22 +117,21 @@ def ad_update_user(username: str, password: str, password_generation_script: str
     if is_error(set_password_outputs):
         error_message = get_error(set_password_outputs)
         if '5003' in error_message:
-            raise Exception(f"An error occurred while trying to set a new password for the user. "
+            raise Exception(f"Could not set a new password for the user. "
                             f"Please make sure that \"{password_generation_script}\" script "
                             f"complies with your domain's password complexity policy.")
-        raise Exception(f"An error occurred while trying to set a new password for the user. "
-                        f"Error is:\n{error_message}")
+        raise Exception(error_message)
 
     # Enable user (in case it was disabled)
     enable_outputs = demisto.executeCommand("ad-enable-account", ad_command_args)
 
     if is_error(enable_outputs):
-        raise Exception(f'An error occurred while trying to enable the user account:'
+        raise Exception(f'Could not enable the user account:'
                         f'\n{get_error(enable_outputs)}')
 
     update_outputs = demisto.executeCommand("ad-update-user", ad_command_args)
     if is_error(update_outputs):
-        raise Exception(f'An error occurred while trying to update the user account:'
+        raise Exception(f'Could not update the user account:'
                         f'\n{get_error(update_outputs)}')
 
 
@@ -169,7 +168,7 @@ def send_email(username: str, user_email: str, incident_id: str, email_recipient
         email_body = ('Hello,\n\n'
                       'This message was sent to inform you that an error occurred while trying '
                       f"to activate the user account of '{username}' in the active Directory.\n\n"
-                      f"The error is: {error_message}\n\nRegards,\nIAM Team")
+                      f"Error: {error_message}\n\nRegards,\nIAM Team")
 
     else:
         if not email_subject:
@@ -196,7 +195,7 @@ def send_email(username: str, user_email: str, incident_id: str, email_recipient
 
 
 @polling_function(
-    name="IAMInitOktaUser",
+    name="IAMInitADUser",
     interval=10,
     timeout=30,
     requires_polling_arg=False,
