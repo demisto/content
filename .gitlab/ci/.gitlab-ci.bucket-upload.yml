@@ -232,6 +232,7 @@ install-packs-in-server-master:
     PRODUCT_TYPE: "XSIAM"
     SERVER_TYPE: "XSIAM"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
+    ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER_MPV2}/instance_${INSTANCE_ROLE}"
     ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_MPV2}/server_type_${SERVER_TYPE}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json"
     INSTANCE_CREATED: "true"
@@ -264,9 +265,7 @@ install-packs-in-server-master:
       else
         echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
       fi
-    - section_start "Clean Machine"
-    - ./Tests/scripts/uninstall_packs_and_reset_bucket_cloud.sh || EXIT_CODE=$?
-    - section_end "Clean Machine"
+    - !reference [.uninstall-packs-and-reset-bucket-cloud]
 
     - section_start "Run end to end sanity tests"
     - ./Tests/scripts/run_end_to_end_tests.sh || EXIT_CODE=$?

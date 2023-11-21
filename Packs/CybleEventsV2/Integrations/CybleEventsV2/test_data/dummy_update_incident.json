@@ -1,0 +1,59 @@
+{
+    "success": true,
+    "data": [{
+            "created_at": "2023-09-11T11:51:55.509Z",
+            "updated_at": "2023-09-11T11:53:55.524Z",
+            "deleted_at": null,
+            "id": "00000000-0000-0000-0000-000000000000",
+            "data_message": "abc",
+            "hash": "00000000000000000000000000000000000000",
+            "data_id": "00000000-0000-0000-0000-000000000000",
+            "entity_id": 24251,
+            "entity_type": 0,
+            "service": "service",
+            "metadata": {
+                "created_at": "2023-09-11T11:51:03.799706412Z",
+                "entity": {
+                    "entity_type": 0,
+                    "entity_id": 24251,
+                    "keyword": {
+                        "id": 24251,
+                        "tag_name": "tag_name",
+                        "bucket_id": 441,
+                        "company_id": 41,
+                        "display_name": "keyword",
+                        "created_at": "2021-11-01T07:53:20Z",
+                        "updated_at": "2023-06-12T11:40:33Z",
+                        "k_query": {
+                            "query": {
+                                "search_Keyword": "",
+                                "search_by_file_name": "",
+                                "search_by_language": "",
+                                "search_by_extension": "",
+                                "short_by": "",
+                                "per_page": ""
+                            }
+                        },
+                        "queries": null
+                    }
+                }
+            },
+            "company_id": 10,
+            "priority": null,
+            "description": null,
+            "status": "UNDER_REVIEW",
+            "assignee_id": null,
+            "assignment_date": null,
+            "archived": false,
+            "archive_date": null,
+            "severity": "MEDIUM",
+            "updated_by_id": "00000000-0000-0000-0000-000000000000",
+            "created_by": null,
+            "tags": {},
+            "user_severity": "MEDIUM",
+            "risk_score": null,
+            "ai_enriched": true,
+            "filter_enriched": false,
+            "alert_group_id": "00000000-0000-0000-0000-000000000000"
+        }]
+}

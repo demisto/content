@@ -1,3 +1,6 @@
+[file:Cortex_ASM_-_ASM_Alert.yml]
+ignore=PB105
+
 [file:incidentfield-ASM_-_Alert_Summary.json]
 ignore=IF100
 

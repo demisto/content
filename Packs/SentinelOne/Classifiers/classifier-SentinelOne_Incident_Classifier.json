@@ -4,7 +4,8 @@
 	"feed": false,
 	"id": "SentinelOne Classifier",
 	"keyTypeMap": {
-		"SentinelOne Incident": "SentinelOne Incident"
+		"SentinelOne Incident": "SentinelOne Incident",
+		"incident": "SentinelOne Incident"
 	},
 	"name": "SentinelOne Classifier",
 	"transformer": {

@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import Any
 
+import pandas as pd
 from jira import Issue
 from junitparser import TestSuite, JUnitXml
 
@@ -15,6 +16,8 @@ PRIVATE_NIGHTLY = 'Private Nightly'
 TEST_NATIVE_CANDIDATE = 'Test Native Candidate'
 SECURITY_SCANS = 'Security Scans'
 BUILD_MACHINES_CLEANUP = 'Build Machines Cleanup'
+UNIT_TESTS_WORKFLOW_SUBSTRINGS = {'lint', 'unit', 'demisto sdk nightly', TEST_NATIVE_CANDIDATE.lower()}
+
 WORKFLOW_TYPES = {
     CONTENT_NIGHTLY,
     CONTENT_PR,
@@ -105,7 +108,7 @@ def calculate_results_table(jira_tickets_for_result: dict[str, Issue],
                             without_jira: bool = False,
                             with_skipped: bool = False,
                             multiline_headers: bool = True,
-                            transpose: bool = False) -> tuple[list[str], list[str], list[list[Any]], JUnitXml, int]:
+                            transpose: bool = False) -> tuple[list[str], list[list[Any]], JUnitXml, int]:
     xml = JUnitXml()
     headers_multiline_char = "\n" if multiline_headers else " "
     headers = [h.replace("\n", headers_multiline_char) for h in base_headers]
@@ -119,7 +122,7 @@ def calculate_results_table(jira_tickets_for_result: dict[str, Issue],
             server_version if transpose else f"{server_version}{headers_multiline_char}({TEST_SUITE_DATA_CELL_HEADER})"
         )
         column_align.append("center")
-    tabulate_data = []
+    tabulate_data = [headers]
     total_row: list[Any] = ([""] * fixed_headers_length + [TestSuiteStatistics(no_color)
                                                            for _ in range(len(server_versions_list))])
     total_errors = 0
@@ -180,7 +183,11 @@ def calculate_results_table(jira_tickets_for_result: dict[str, Issue],
         total_row[0] = (green_text(TOTAL_HEADER) if total_errors == 0 else red_text(TOTAL_HEADER)) \
             if not no_color else TOTAL_HEADER
         tabulate_data.append(total_row)
-    return headers, column_align, tabulate_data, xml, total_errors
+
+    if transpose:
+        tabulate_data = pd.DataFrame(tabulate_data, index=None).transpose().to_numpy()
+
+    return column_align, tabulate_data, xml, total_errors
 
 
 def get_all_failed_results(results: dict[str, dict[str, Any]]) -> dict[str, dict[str, Any]]:
