@@ -911,7 +911,7 @@ def get_images_data(packs_list: list, markdown_images_dict: dict):
 
 
 def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signature_key,
-                                       packs_dict: dict[str, Pack]):
+                                       packs_dict):
     """
     Uploads packs with mandatory dependencies zip for all packs
     Args:
