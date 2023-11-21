@@ -6,9 +6,9 @@ if (parseInt(args.seconds) >= polling_threshold &&
     return {
         Type: entryTypes.note,
         Contents: 'Sleep will complete in ' + args.seconds + ' seconds',
-        PollingCommand: 'SleepCompletePolling',
+        PollingCommand: 'Print',
         NextRun: args.seconds,
-        PollingArgs: args,
+        PollingArgs: {value: 'Sleep completed in ' + args.seconds + ' seconds'},
         Timeout: String(parseInt(args.seconds) + 60)
     }
 }

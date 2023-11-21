@@ -1,1 +1,0 @@
-return 'Sleep completed after ' + args.seconds + ' seconds';
