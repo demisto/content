@@ -13,16 +13,58 @@
 	"itemVersion": "",
 	"keyTypeMap": {},
 	"locked": false,
-	"logicalVersion": 2,
+	"logicalVersion": 3,
 	"mapping": {
 		"AbnormalSecurity": {
 			"dontMapEventToLabels": true,
 			"internalMapping": {
+				"Abnormal Security Abuse Campaign Attack Type ": {
+					"simple": "attackType"
+				},
+				"Abnormal Security Abuse Campaign First Reported": {
+					"simple": "firstReported"
+				},
+				"Abnormal Security Abuse Campaign From Address": {
+					"simple": "fromAddress"
+				},
+				"Abnormal Security Abuse Campaign From Name": {
+					"simple": "fromName"
+				},
+				"Abnormal Security Abuse Campaign ID": {
+					"simple": "campaignId"
+				},
+				"Abnormal Security Abuse Campaign Judgement Status": {
+					"simple": "judgementStatus"
+				},
+				"Abnormal Security Abuse Campaign Last Reported": {
+					"simple": "lastReported"
+				},
+				"Abnormal Security Abuse Campaign Message ID": {
+					"simple": "messageId"
+				},
+				"Abnormal Security Abuse Campaign Overall Status": {
+					"simple": "overallStatus"
+				},
+				"Abnormal Security Abuse Campaign Recipient Address": {
+					"simple": "recipientAddress"
+				},
+				"Abnormal Security Abuse Campaign Recipient Name": {
+					"simple": "recipientName"
+				},
+				"Abnormal Security Abuse Campaign Subject": {
+					"simple": "subject"
+				},
+				"Abnormal Security Affected Employee": {
+					"simple": "affectedEmployee"
+				},
+				"Abnormal Security Analysis ": {
+					"simple": "analysis"
+				},
 				"Abnormal Security Attachment Count": {
 					"simple": "messages.attachmentCount"
 				},
 				"Abnormal Security Attachment Names": {
-					"simple": "attachmentNames"
+					"simple": "messages.attachmentNames"
 				},
 				"Abnormal Security Attack Strategy": {
 					"simple": "messages.attackStrategy"
@@ -41,6 +83,18 @@
 				},
 				"Abnormal Security CC Emails": {
 					"simple": "messages.ccEmails"
+				},
+				"Abnormal Security Case ID": {
+					"simple": "caseId"
+				},
+				"Abnormal Security Case Status": {
+					"simple": "case_status"
+				},
+				"Abnormal Security Customer Visible Time ": {
+					"simple": "customerVisibleTime"
+				},
+				"Abnormal Security First Observed Time ": {
+					"simple": "firstObserved"
 				},
 				"Abnormal Security From Address": {
 					"simple": "messages.fromAddress"
@@ -79,7 +133,7 @@
 					"simple": "messages.remediationTimestamp"
 				},
 				"Abnormal Security Reply To Emails": {
-					"simple": "messages. replyToEmails"
+					"simple": "messages.replyToEmails"
 				},
 				"Abnormal Security Return Path ": {
 					"simple": "messages.returnPath"
@@ -93,6 +147,12 @@
 				"Abnormal Security Sent Time ": {
 					"simple": "messages.sentTime"
 				},
+				"Abnormal Security Severity ": {
+					"simple": "severity"
+				},
+				"Abnormal Security Severity Level": {
+					"simple": "severity_level"
+				},
 				"Abnormal Security Subject": {
 					"simple": "messages.subject"
 				},
@@ -102,6 +162,9 @@
 				"Abnormal Security Threat ID": {
 					"simple": "messages.threatId"
 				},
+				"Abnormal Security Threat IDs": {
+					"simple": "threatIds"
+				},
 				"Abnormal Security To Addresses": {
 					"simple": "messages.toAddresses"
 				},
@@ -110,8 +173,7 @@
 				},
 				"URLs": {
 					"simple": "messages.urls"
-				},
-                ""
+				}
 			}
 		}
 	},
