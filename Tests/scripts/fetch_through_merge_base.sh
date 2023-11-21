@@ -7,6 +7,5 @@ BASE_REF=${2:-origin/master}
 while [ -z "$(git merge-base "$BASE_REF" "$HEAD_REF" 2>/dev/null)" ]; do
   echo "Continuing fetch with a depth of $DEEPEN_LENGTH commits..."
   git fetch -q --deepen="$DEEPEN_LENGTH" origin;
-  COMMON_ANCESTOR=$(git merge-base "$BASE_REF" "$HEAD_REF")
-  echo "Common Ancestor: $COMMON_ANCESTOR"
+  echo "git merge-base $BASE_REF $HEAD_REF"
 done
