@@ -70,13 +70,15 @@ class Client(BaseClient):
             aql_query (str): AQL query request parameter for the API call.
             max_fetch (int): Max number of events to fetch.
             after (None | datetime): The date and time to fetch events from. Defaults to None.
-
+            order_by (str): Order by parameter for the API call. Defaults to 'time'.
+            event_type (str): Event type to fetch. Defaults to 'alerts'.
         Returns:
             list[dict]: List of events objects represented as dictionaries.
         """
         params: dict[str, Any] = {'aql': aql_query, 'includeTotal': 'true', 'length': max_fetch, 'orderBy': order_by}
         if not after:  # this should only happen when get-events command is used without from_date argument
-            after = datetime.now()
+            demisto.debug('debug-log: in not after will set datetime to now - 1 minute.')
+            after = datetime.now() - timedelta(minutes=1)
         if event_type == 'alerts':
             params['aql'] += f' after:{after.strftime(DATE_FORMAT)}'  # add 'after' date filter to AQL query in the desired format
         else:
@@ -186,14 +188,17 @@ def calculate_fetch_start_time(last_fetch_time: str | None, fetch_start_time: da
     # case 1
     if last_fetch_time:
         last_fetch_datetime = arg_to_datetime(last_fetch_time)
+        demisto.debug(f'debug-log: setting last_fetch_date_time case 1: {last_fetch_datetime}')
         if not last_fetch_datetime:
             raise DemistoException(f'last_fetch_time is not a valid date: {last_fetch_time}')
         return last_fetch_datetime
     # case 2
     elif fetch_start_time:
+        demisto.debug(f'debug-log: setting fetch_start_time case 2: {fetch_start_time}')
         return fetch_start_time
     # case 3
     else:
+        demisto.debug('debug-log: setting fetch_start_time case 3')
         return None
 
 
@@ -294,6 +299,7 @@ def fetch_by_event_type(event_type: EVENT_TYPE, events: dict, next_run: dict, cl
     last_fetch_time = f'{event_type.type}_last_fetch_time'
 
     demisto.debug(f'debug-log: handling event-type: {event_type.type}')
+    demisto.debug(f'debug-log: last run of type: {event_type.type} is: {last_run.get(last_fetch_time)}')
     event_type_fetch_start_time = calculate_fetch_start_time(last_run.get(last_fetch_time), fetch_start_time)
 
     response = client.fetch_by_aql_query(
@@ -308,6 +314,7 @@ def fetch_by_event_type(event_type: EVENT_TYPE, events: dict, next_run: dict, cl
         new_events, next_run[last_fetch_ids] = dedup_events(
             response, last_run.get(last_fetch_ids, []), event_type.unique_id_key, event_type.order_by)
         next_run[last_fetch_time] = new_events[-1].get(event_type.order_by) if new_events else last_run.get(last_fetch_time)
+        demisto.debug(f'debug-log: updated next_run with: {next_run[last_fetch_time]}')
         events.setdefault(event_type.dataset_name, []).extend(new_events)
         demisto.debug(f'debug-log: overall {len(new_events)} {event_type.dataset_name} (after dedup)')
         demisto.debug(f'debug-log: last {event_type.dataset_name} in list: {new_events[-1] if new_events else {}}')
@@ -336,19 +343,25 @@ def fetch_events(client: Client,
     """
     events: dict[str, list[dict]] = {}
     next_run: dict[str, list | str] = {}
-    if 'Devices' in event_types_to_fetch\
-            and not should_run_device_fetch(last_run, device_fetch_interval):
-        event_types_to_fetch.remove('Devices')
+    # if 'Devices' in event_types_to_fetch\
+    #         and not should_run_device_fetch(last_run, device_fetch_interval):
+    #     event_types_to_fetch.remove('Devices')
 
-    fetch_by_event_type(EVENT_TYPES['Alerts'], events, next_run, client,
-                        max_fetch, last_run, fetch_start_time)
+    try:
+        fetch_by_event_type(EVENT_TYPES['Alerts'], events, next_run, client,
+                            max_fetch, last_run, fetch_start_time)
+    except Exception as e:
+        if "Invalid access token" in str(e):
+            demisto.debug("debug-log: Invalid access token")
+            client.update_access_token()
+            fetch_by_event_type(EVENT_TYPES['Alerts'], events, next_run, client,
+                                max_fetch, last_run, fetch_start_time)
     if events:
-        # Initialize blank list of alert IDs
+        # Initialize blank set of alert IDs
         alert_ids = set()
         # Add IDs for all alerts to fetch activities and devices for
         for alert in events['alerts']:
             alert_ids.add(alert.get('alertId'))
-        # alert_ids = list(alert_ids)
         aql_alerts_ids = f'alert:(alertId:({",".join([str(i) for i in alert_ids])}))'
         EVENT_TYPES['Activities'].aql_query += f' {aql_alerts_ids}'
         EVENT_TYPES['Devices'].aql_query += f' {aql_alerts_ids}'
@@ -420,18 +433,21 @@ def handle_fetched_events(events: dict[str, list[dict[str, Any]]],
     """
     if events:
         for event_type, events_list in events.items():
+            product = f'{PRODUCT}_{event_type}' if event_type != 'alerts' else PRODUCT
+            if not events_list:
+                demisto.debug(f'debug-log: No events of type: {event_type} fetched from API.')
             add_time_to_events(events_list, event_type)
             demisto.debug(f'debug-log: {len(events_list)} events of type: {event_type} are about to be sent to XSIAM.')
-            product = f'{PRODUCT}_{event_type}' if event_type != 'alerts' else PRODUCT
             send_events_to_xsiam(
-                events_list,
+                events=events_list,
                 vendor=VENDOR,
                 product=product
             )
             demisto.debug(f'debug-log: {len(events_list)} events of {event_type} were sent to XSIAM.')
         demisto.setLastRun(next_run)
     else:
-        demisto.debug('debug-log: No new events fetched.')
+        demisto.debug('debug-log: No new events fetched. Sending 0 to XSIAM.')
+        send_events_to_xsiam(events=[], vendor=VENDOR, product=PRODUCT)
 
     demisto.debug(f'debug-log: {next_run=}')
 
@@ -464,8 +480,8 @@ def set_last_run_with_current_time(last_run: dict, event_types_to_fetch) -> None
     """
     now: datetime = datetime.now() - timedelta(minutes=1)
     now_str: str = now.strftime(DATE_FORMAT)
-    for event_type in event_types_to_fetch:
-        last_fetch_time = f'{EVENT_TYPES[event_type].type}_last_fetch_time'
+    for event_type in EVENT_TYPES.values():
+        last_fetch_time = f'{event_type.type}_last_fetch_time'
         last_run[last_fetch_time] = now_str
 
 

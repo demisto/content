@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: THD_Custom_ArmisEventCollector
+  id: ArmisEventCollector
   version: -1
 configuration:
 - defaultvalue: https://<armis-instance>.armis.com
@@ -64,7 +64,7 @@ configuration:
   required: false
 description: Collects alerts, devices and activities from Armis resources.
 display: Armis Event Collector
-name: THD_Custom_ArmisEventCollector
+name: ArmisEventCollector
 supportlevelheader: xsoar
 script:
   commands:
