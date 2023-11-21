@@ -2,26 +2,33 @@ Enrich IP addresses using one or more integrations.
 
 - Resolve IP addresses to hostnames (DNS)
 - Provide threat information
+- IP address Reputation using !ip command
 - Separate internal and external IP addresses
 - For internal IP addresses, get host information
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* IP Enrichment - Internal - Generic v2
+
 * IP Enrichment - External - Generic v2
+* IP Enrichment - Internal - Generic v2
 
 ### Integrations
+
 This playbook does not use any integrations.
 
 ### Scripts
+
 This playbook does not use any scripts.
 
 ### Commands
+
 This playbook does not use any commands.
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -32,6 +39,7 @@ This playbook does not use any commands.
 | UseReputationCommand | Define if you would like to use the \!IP command.<br/>Note: This input should be used whenever there is no auto-extract enabled in the investigation flow.<br/>Possible values: True / False. | False | Required |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -46,5 +54,7 @@ This playbook does not use any commands.
 | Endpoint.Domain | Endpoint domain name | string |
 
 ## Playbook Image
+
 ---
+
 ![IP Enrichment - Generic v2](../doc_files/IP_Enrichment_-_Generic_v2.png)
