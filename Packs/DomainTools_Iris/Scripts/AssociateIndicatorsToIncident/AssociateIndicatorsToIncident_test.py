@@ -12,6 +12,7 @@ def test_associate_existing_indicators_to_incident_already_associated(mocker):
     assert len(results) == 1
     assert results[0]['HumanReadable'] == 'Related indicators are already associated.'
 
+
 def test_associate_existing_indicators_to_incident(mocker):
     mocker.patch.object(demisto, "context", return_value={"associatedIndicators": False})
     mocker.patch.object(demisto, "incident", return_value={"id": 1, "CustomFields": {"additionalindicators": "2"}})

@@ -210,8 +210,7 @@ def test_check_pivotable_output(mocker):
         "Name": "demisto.com",
         "PivotableRegistrantContactName": {
             "pivotable": True,
-            "items": {"count": 200,
-                       "value": "just a test"}
+            "items": {"count": 200, "value": "just a test"}
         },
         "PivotableRegistrantOrg": {
             "pivotable": True,
