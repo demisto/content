@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "### In order to use the new mail rules command you will need to reauthenticate your instance\n\n#### If you are using The XSOAR app\nYou just need to recreate your instance keys by using the link in the relevant integration documentation.\n\n#### if you are using a self deployed app\nYou need to add a new permission to your app `MailboxSettings.ReadWrite` (please check in the relevant integration which scope is requierd).\nThen create a new secret and continue the authorithation proccess.\n\n#### if you are using Azure Managed Identities\nAdd the relevant `MailboxSettings.ReadWrite` permission to the relevant user."
+}
