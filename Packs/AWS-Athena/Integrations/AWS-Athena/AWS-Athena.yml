@@ -127,7 +127,7 @@ script:
     - contextPath: AWS.Athena.Query.QueryExecutionId
       description: ID of the newly created query.
       type: String
-    - contextPath: AWS.Athena.Query.QueryString
+    - contextPath: AWS.Athena.Query.Query
       description: The query string submitted.
       type: String
   - name: aws-athena-stop-query
