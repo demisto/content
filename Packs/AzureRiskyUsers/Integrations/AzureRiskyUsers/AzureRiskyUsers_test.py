@@ -13,7 +13,7 @@ def load_mock_response(file_name: str) -> dict:
     Args:
         file_name (str): Name of the mock response JSON file to return.
     """
-    with open(f'test_data/{file_name}', mode='r', encoding='utf-8') as json_file:
+    with open(f'test_data/{file_name}', encoding='utf-8') as json_file:
         return json.loads(json_file.read())
 
 
@@ -42,9 +42,9 @@ def test_risky_users_list_command(requests_mock) -> None:
     requests_mock.post(ACCESS_TOKEN_REQUEST_URL, json={})
     requests_mock.get(f'{BASE_URL}identityProtection/riskyUsers', json=mock_response)
     result = risky_users_list_command(mock_client(), {'limit': '20', 'page': '1'})
-    assert result.outputs_prefix == 'AzureRiskyUsers.RiskyUser'
-    assert result.outputs_key_field == 'id'
-    assert len(result.raw_response) == 3
+    assert result[0].outputs_prefix == 'AzureRiskyUsers.RiskyUser'
+    assert result[0].outputs_key_field == 'id'
+    assert len(result[0].raw_response) == 3
 
 
 def test_risky_user_get_command(requests_mock) -> None:
@@ -243,3 +243,29 @@ def test_update_query(query, filter_name, filter_value, filter_operator, expecte
     from AzureRiskyUsers import update_query
     query = update_query(query, filter_name, filter_value, filter_operator)
     assert query == expected_query
+
+
+def test_do_pagination(mocker):
+    """
+    Given:
+      - The function arguments: response, limit:
+          - The response has a nextLink URL.
+          - The limit is greater than the number of results in the first response.
+    When:
+      - Calling the 'pages_puller' function.
+    Then:
+      - Assert the request url is as expected - make an API request using the nextLink URL.
+      - Verify the function output is as expected
+    """
+    from AzureRiskyUsers import do_pagination
+    mock_response = load_mock_response('list_risky_users.json')
+    requests_mock = mocker.patch.object(Client, 'risky_users_list_request', return_value=mock_response)
+    limit = 6
+    expected_result = mock_response.get('value', []) * 2
+
+    result = do_pagination(mock_client(), mock_response, limit)
+    data = result.get('value', [])
+    last_next_link = result.get('@odata.nextLink', "")
+    assert requests_mock.call_count == 1
+    assert data == expected_result
+    assert last_next_link == mock_response.get('@odata.nextLink')
