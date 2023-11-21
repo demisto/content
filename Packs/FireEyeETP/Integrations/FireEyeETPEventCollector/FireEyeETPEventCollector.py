@@ -11,7 +11,7 @@ urllib3.disable_warnings()
 
 VENDOR = "fireeye"
 PRODUCT = "etp"
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%S%f%zZ"
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 LOG_LINE = f"{VENDOR}_{PRODUCT}:"
 DEFAULT_FIRST_FETCH = "3 days"
 DEFAULT_MAX_FETCH = 1000
@@ -223,7 +223,7 @@ class EventCollector:
         events: list = []
 
         if not demisto_last_run:  # First fetch
-            first_fetch = first_fetch if first_fetch else datetime.now()
+            first_fetch = first_fetch if first_fetch else datetime.now() - timedelta(days=30)
             demisto.debug(
                 f"{LOG_LINE} First fetch recognized, setting first_datetime to {first_fetch}"
             )
@@ -275,9 +275,8 @@ class EventCollector:
         res_count = 0
         res: list[dict] = []
         results_left = True
-        iso_start_time = start_time.isoformat()[
-            :-3
-        ]  # formating to 3 digit's microseconds
+        iso_start_time = parse_date_for_api_3_digits(start_time)
+
         #  Running as long as we have not reached the amount of event or the time frame requested.
         while results_left and res_count < event_type.client_max_fetch:
             demisto.debug(
@@ -315,7 +314,7 @@ class EventCollector:
             else:
                 results_left = False
 
-        return res, datetime.fromisoformat(iso_start_time)
+        return res, parse_special_iso_format(iso_start_time)
 
     def fetch_activity_log(
         self, event_type: EventType, start_time: datetime, fetched_ids: set = set()
@@ -370,9 +369,10 @@ class EventCollector:
     ) -> tuple[list[dict], datetime]:
         res_count = 0
         res = []
-        iso_start_time = start_time.isoformat()[
-            :-3
-        ]  # formating to 3 digit's microseconds
+
+        # getting start time, formatting to 3 digit's microseconds.
+        iso_start_time = parse_date_for_api_3_digits(start_time)
+
         results_left = True
 
         while results_left and res_count < event_type.client_max_fetch:
@@ -414,7 +414,7 @@ class EventCollector:
             else:
                 results_left = False
 
-        return res, datetime.fromisoformat(iso_start_time)
+        return res, parse_special_iso_format(iso_start_time)
 
     def get_events(
         self, event_type: EventType, last_run: LastRun
@@ -534,16 +534,40 @@ def parse_special_iso_format(datetime_str: str) -> datetime:
 
         if not date_obj:
             demisto.debug(f"Failed to parse date after changes: {datetime_str}")
-            raise DemistoException("Failed parsing date. Check logs for more information.")
+            raise DemistoException(
+                "Failed parsing date. Check logs for more information."
+            )
         return date_obj
 
     try:
         date_obj = dateparser.parse(datetime_str, settings={"TIMEZONE": "UTC"})
-        return date_obj if date_obj else fix_format(datetime_str)
+        date_obj = date_obj if date_obj else fix_format(datetime_str)
+
+        # The API sometimes returns dates without full data, causing the parsing to fail.
+        return date_obj
 
     except Exception as e:
         demisto.debug(f"Failed parsing {datetime_str}. Error={str(e)}.")
         raise e
+
+
+def parse_date_for_api_3_digits(date_to_parse: datetime) -> str:
+    """
+    Returns str representation the API can deal with.
+    """
+    demisto.debug(f"Parsing {date_to_parse=} to API format")
+    # getting start time, formatting to 3 digit's microseconds.
+    iso_start_time_splitted = date_to_parse.isoformat().split(".")
+
+    # Dealing with 3 digit AND 6 digit microseconds if exists
+    # since .123 is .000123 in ISO.
+    # If no microseconds found, add .000 instead
+    micro_sec = (
+        str(int(iso_start_time_splitted[1]))[:3]
+        if len(iso_start_time_splitted) == 2
+        else "000"
+    )
+    return f"{iso_start_time_splitted[0]}.{micro_sec}"
 
 
 """ FORMAT FUNCTION """
@@ -734,7 +758,7 @@ def main() -> None:  # pragma: no cover
         elif command == "fireeye-etp-get-events":
             should_push_events = argToBoolean(args.pop("should_push_events", ""))
             first_fetch_time = arg_to_datetime(
-                arg=params.get("first_fetch", "3 days"), required=True
+                arg=params.get("first_fetch", "30 days"), required=True
             )
             assert isinstance(first_fetch_time, datetime)
 

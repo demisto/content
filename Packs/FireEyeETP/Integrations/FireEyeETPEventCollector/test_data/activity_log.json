@@ -76,7 +76,7 @@
         "user_action": "QUARANTINE_RESCAN_ERROR",
         "details": "3yPim8W-68317-088B71293030D0D7B46d1aafce0"
       },
-      "_TIME": "2023-08-01T14:15:26000000+0000Z",
+      "_TIME": "2023-08-01T14:15:26.000000Z",
       "event_type": "activity"
     }
   }

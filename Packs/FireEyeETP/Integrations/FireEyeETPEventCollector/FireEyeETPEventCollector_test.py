@@ -64,16 +64,16 @@ def test_last_run(last_run_dict, event_types_to_run, expected):
 
 def mock_client():
     return FireEyeETPEventCollector.Client(
-        base_url='test.com',
+        base_url='test.xom',
         verify_certificate=False,
         proxy=False,
-        api_key='api-key',
+        api_key='api_key',
         outbound_traffic=False,
         hide_sensitive=True
     )
 
 
-@ freeze_time("2023-07-18 11:34:30")
+@ freeze_time("2023-07-18T11:34")
 @ pytest.mark.parametrize('hide_sensitive, alert_expected, trace_expected, activity_expected', (
                           pytest.param(True,
                                        'formatted_response_hidden_true', 'formatted_response_hidden_true',
@@ -95,8 +95,8 @@ def test_fetch_alerts(mocker, hide_sensitive, alert_expected, trace_expected, ac
     mocked_activity_data = util_load_json('test_data/activity_log.json')
     event_types_to_run = [
         FireEyeETPEventCollector.EventType('alerts', 25, outbound=False),
-        FireEyeETPEventCollector.EventType('email_trace', 1000, outbound=False),
-        # FireEyeETPEventCollector.EventType('activity_log', 25, outbound=False)
+        FireEyeETPEventCollector.EventType('email_trace', 200, outbound=False),
+        FireEyeETPEventCollector.EventType('activity_log', 25, outbound=False)
     ]
     collector = FireEyeETPEventCollector.EventCollector(client, event_types_to_run)
     mocker.patch.object(FireEyeETPEventCollector.Client, 'get_alerts', side_effect=[
@@ -238,3 +238,13 @@ def test_get_max_events_to_fetch(max_fetch, limit_args, expected):
             FireEyeETPEventCollector._get_max_events_to_fetch(max_fetch, limit_args)
     else:
         assert FireEyeETPEventCollector._get_max_events_to_fetch(max_fetch, limit_args) == expected
+
+
+@pytest.mark.parametrize("input_dt,expected", [
+    (datetime(2023, 1, 15, 14, 30, 45, 123456), "2023-01-15T14:30:45.123"),
+    (datetime(2023, 1, 15, 14, 30, 45, 123), "2023-01-15T14:30:45.123"),
+    (datetime(2023, 1, 15, 14, 30, 45), "2023-01-15T14:30:45.000")
+])
+def test_parse_date_for_api_3_digits(input_dt, expected):
+    output = FireEyeETPEventCollector.parse_date_for_api_3_digits(input_dt)
+    assert output == expected
