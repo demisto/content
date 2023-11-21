@@ -1,0 +1,36 @@
+{
+	"brands": null,
+	"cacheVersn": 0,
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "DomainTools Iris - Classifier",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "DomainTools_Iris_-_Classifier",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {
+		"DomainTools Iris Search Hash": "DomainTools Iris Monitor Domains - Iris Search Hash",
+		"DomainTools Iris Tag": "DomainTools Iris Monitor Domains - Iris Tags"
+	},
+	"locked": false,
+	"logicalVersion": 1,
+	"mapping": null,
+	"name": "DomainTools Iris - Classifier",
+	"nameRaw": "DomainTools Iris - Classifier",
+	"packID": "",
+	"propagationLabels": [
+		"all"
+	],
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {
+		"simple": "type"
+	},
+	"type": "classification",
+	"unclassifiedCases": null,
+	"version": -1
+}
