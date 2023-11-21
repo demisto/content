@@ -1816,13 +1816,13 @@ class TestCopyAndUploadToStorage:
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
 
         # case: latest version is not in build bucket
-        dummy_pack.latest_version = "2.0.0"
+        dummy_pack.current_version = "2.0.0"
         dummy_build_bucket.list_blobs.return_value = []
         successful_packs_dict = {
             dummy_pack.name: {
                 BucketUploadFlow.STATUS: "",
                 BucketUploadFlow.AGGREGATED: "False",
-                BucketUploadFlow.LATEST_VERSION: dummy_pack.latest_version
+                BucketUploadFlow.LATEST_VERSION: dummy_pack.current_version
             }
         }
 
@@ -1865,7 +1865,7 @@ class TestCopyAndUploadToStorage:
         dummy_prod_bucket = mocker.MagicMock()
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
         blob_name = "content/packs/TestPack/2.0.0/TestPack.zip"
-        dummy_pack.latest_version = "2.0.0"
+        dummy_pack.current_version = "2.0.0"
         dummy_build_bucket.list_blobs.return_value = [Blob(blob_name, dummy_build_bucket)]
         dummy_build_bucket.copy_blob.return_value = Blob(blob_name, dummy_prod_bucket)
         task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(
@@ -1873,7 +1873,7 @@ class TestCopyAndUploadToStorage:
                 "TestPack": {
                     BucketUploadFlow.STATUS: "status1",
                     BucketUploadFlow.AGGREGATED: "False",
-                    BucketUploadFlow.LATEST_VERSION: dummy_pack.latest_version
+                    BucketUploadFlow.LATEST_VERSION: dummy_pack.current_version
                 }
             }, {}, GCPConfig.CONTENT_PACKS_PATH, GCPConfig.BUILD_BASE_PATH
         )
@@ -1893,7 +1893,7 @@ class TestCopyAndUploadToStorage:
         dummy_prod_bucket = mocker.MagicMock()
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
         blob_name = "content/packs/TestPack/2.0.0/TestPack.zip"
-        dummy_pack.latest_version = "2.0.0"
+        dummy_pack.current_version = "2.0.0"
         dummy_build_bucket.list_blobs.return_value = [Blob(blob_name, dummy_build_bucket)]
         dummy_build_bucket.copy_blob.return_value = Blob(blob_name, dummy_prod_bucket)
         task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(
@@ -1901,7 +1901,7 @@ class TestCopyAndUploadToStorage:
                 "TestPack": {
                     BucketUploadFlow.STATUS: "status1",
                     BucketUploadFlow.AGGREGATED: "False",
-                    BucketUploadFlow.LATEST_VERSION: dummy_pack.latest_version
+                    BucketUploadFlow.LATEST_VERSION: dummy_pack.current_version
                 }
             }, GCPConfig.CONTENT_PACKS_PATH, GCPConfig.BUILD_BASE_PATH
         )

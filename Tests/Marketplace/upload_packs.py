@@ -1316,7 +1316,7 @@ def main():
                             )
 
     # dependencies zip is currently supported only for marketplace=xsoar, not for xsiam/xpanse
-    if is_create_dependencies_zip and marketplace == XSOAR_MP and (is_regular_upload_flow or override_all_packs):
+    if is_create_dependencies_zip and marketplace == XSOAR_MP:
         # handle packs with dependencies zip
         all_packs_dict = {p.name: p for p in all_packs_objects_list}
         upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signature_key,

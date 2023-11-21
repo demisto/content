@@ -1783,7 +1783,7 @@ class Pack:
             self._search_rank = mp_statistics.PackStatisticsHandler.calculate_search_rank(
                 tags=self._tags, certification=self._certification, content_items=self._content_items
             )
-            self._displayed_integration_images = self.search_for_integration_images()
+            self._displayed_integration_images = self.build_integration_images_metadata()
             self._related_integration_images = self._get_all_pack_images(
                 index_folder_path, self._displayed_integration_images, self._displayed_images_dependent_on_packs,
                 pack_dependencies_by_download_count
@@ -2058,8 +2058,8 @@ class Pack:
             integration_path_basename in unified_integrations
         ])
 
-    def search_for_integration_images(self) -> list[dict]:
-        """Searches for integration images and collects their data to be added in pack's metadata.json
+    def build_integration_images_metadata(self) -> list[dict]:
+        """Collects the integration images metadata to be added in pack's metadata.json
 
         Returns:
             list[dict]: List of objects with the integration image data
