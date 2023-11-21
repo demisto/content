@@ -1327,61 +1327,61 @@ inputs:
 outputs:
 - contextPath: AzureScriptBasedUserAgentEvents
   description: Script-based user agent events used by the user in the Azure environment.
-  type: unknown
+  type: string
 - contextPath: CountAzureEvents.AzureScriptBasedUserAgentCount
   description: The number of script-based user agent usages by the user in the Azure environment.
-  type: unknown
+  type: number
 - contextPath: AzureAdminActivitiesEvents
   description: Administrative activities performed by the user in the Azure environment.
-  type: unknown
+  type: string
 - contextPath: CountAzureEvents.AzureAdminActivitiesCount
   description: The number of administrative activities performed by the user in the Azure environment.
-  type: unknown
+  type: number
 - contextPath: AzureSecurityRulesChangeEvents
   description: Security rules that were changed by the user in the Azure environment.
-  type: unknown
+  type: string
 - contextPath: CountAzureEvents.AzureSecurityRulesChangeCount
   description: The number of security rules that were changed by the user in the Azure environment.
-  type: unknown
+  type: number
 - contextPath: AzureUnsuccessSecurityRulesChangeEvents
   description: Unsuccessful attempts to change security rules by the user in the Azure environment.
-  type: unknown
+  type: string
 - contextPath: CountAzureEvents.AzureUnsuccessSecurityRulesChangeCount
   description: The number of unsuccessful attempts to change security rules by the user in the Azure environment.
-  type: unknown
+  type: number
 - contextPath: AzureFailLoginCount
   description: The number of failed logins by the user in the Azure environment.
-  type: unknown
+  type: number
 - contextPath: AzureFailLoginMFACount
   description: The number of failed logins by the user using MFA in the Azure environment.
-  type: unknown
+  type: number
 - contextPath: AzureAnomaliesEvents
   description: Anomaly events on the user in the Azure environment.
-  type: unknown
+  type: string
 - contextPath: CountAzureEvents.AzureAnomaliesCount
   description: The number of anomaly events on the user in the Azure environment.
-  type: unknown
+  type: number
 - contextPath: AzureRiskyUserCount
   description: The number of events where the user was defined as a risky user in the Azure environment.
-  type: unknown
+  type: number
 - contextPath: AzureUncommonCountryLogonEvents
   description: Uncommon country logon events by the user in the Azure environment.
-  type: unknown
+  type: string
 - contextPath: CountAzureEvents.AzureUncommonCountryLogonCount
   description: The number of uncommon country logon events by the user in the Azure environment.
-  type: unknown
+  type: number
 - contextPath: AzureUncommonVolumeEvents
   description: Uncommon volume events by the user in the Azure environment.
-  type: unknown
+  type: string
 - contextPath: CountAzureEvents.AzureUncommonVolumeCount
   description: The number of uncommon volume events by the user in the Azure environment.
-  type: unknown
+  type: number
 - contextPath: AzureUncommonActivitiesEvents
   description: Uncommon activity events by the user in the Azure environment.
-  type: unknown
+  type: string
 - contextPath: CountAzureEvents.AzureUncommonActivitiesCount
   description: The number of uncommon activity events by the user in the Azure environment.
-  type: unknown
+  type: number
 tests:
 - No tests (auto formatted)
 fromversion: 6.9.0
