@@ -15,6 +15,10 @@
         "description": {
             "type": "string",
             "is_array": false
+        },
+        "custom_details": {
+            "type": "string",
+            "is_array": false
         }
     }
 }
