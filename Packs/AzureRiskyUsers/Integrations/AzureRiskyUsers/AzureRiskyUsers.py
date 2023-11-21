@@ -243,7 +243,7 @@ def do_pagination(client: Client, response: dict[str, Any], limit: int = 1) -> d
         response = client.risky_users_list_request(limit=limit, skip_token=next_link)
         response_data.extend(response.get('value', []))
     demisto.debug(f'The limited response contains: {len(response_data[:limit])}')
-    return {'value': response_data[:limit], '@odata.nextLink': next_link}
+    return {'value': response_data[:limit], "@odata.context": response.get('@odata.context'), '@odata.nextLink': next_link}
 
 
 def get_user_human_readable(users: list) -> Any:
