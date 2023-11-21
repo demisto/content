@@ -1,0 +1,27 @@
+{
+    "name": "Tessian",
+    "description": "XSoar integration for interacting with Tessian's events",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Tessian",
+    "url": "",
+    "email": "support@tessian.com",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "phishing",
+        "email",
+        "security",
+        "tessian"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "NicBunn-PlutoFlume"
+    ]
+}
