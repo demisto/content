@@ -1,7 +1,6 @@
 Enrich a file using one or more integrations.
 
 - Provide threat information
-- File Reputation using !file command
 
 ## Dependencies
 
@@ -21,8 +20,8 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* file
 * cylance-protect-get-threat
+* file
 
 ## Playbook Inputs
 

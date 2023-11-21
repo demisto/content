@@ -2,7 +2,6 @@ Enrich IP addresses using one or more integrations.
 
 - Resolve IP addresses to hostnames (DNS)
 - Provide threat information
-- IP address Reputation using !ip command
 - Separate internal and external IP addresses
 - For internal IP addresses, get host information
 

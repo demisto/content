@@ -5,7 +5,6 @@ description: |-
   Enrich a file using one or more integrations.
 
   - Provide threat information
-  - File Reputation using !file command
 starttaskid: "0"
 tasks:
   "0":
