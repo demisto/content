@@ -100,7 +100,7 @@ def get_alerts_and_audit_logs(client: Client, add_audit_logs: bool, last_run: di
         alerts, last_run = get_alerts_to_limit(client, last_run)
         if add_audit_logs:
             try:
-                audit_logs = dedupe_audit_logs(audit_logs_future.result(), last_run.get(LAST_AUDIT_IDS), client.max_audit_logs)
+                audit_logs = prepare_audit_logs_result(audit_logs_future.result(), last_run.get(LAST_AUDIT_IDS), client.max_audit_logs)
             except Exception as e:
                 demisto.error(f'Failed getting audit logs. Error: {e}')
     return alerts, audit_logs
@@ -116,7 +116,7 @@ def get_alerts_to_limit(client: Client, last_run: dict):
             start_time = last_run.get(LAST_ALERT_TIME)
             max_rows = min(client.max_alerts - len(alerts), MAX_ALERTS_IN_PAGE)
             next_batch_alerts = client.get_alerts(start_time, 1, max_rows)  # type: ignore
-            next_batch_alerts = dedupe_alerts(next_batch_alerts, last_run)
+            next_batch_alerts = prepare_alerts_result(next_batch_alerts, last_run)
             if next_batch_alerts:
                 last_run = update_last_run(last_run, alerts=next_batch_alerts)
                 alerts.extend(next_batch_alerts)
@@ -140,7 +140,10 @@ def update_last_run(last_run, alerts=None, audit_logs=None):
     return last_run
 
 
-def dedupe_audit_logs(audit_logs, last_audit_ids, max_audit_logs):
+def prepare_audit_logs_result(audit_logs, last_audit_ids, max_audit_logs):
+    """
+    Filters audit logs to return only new logs since the last run, and add _time field.
+    """
     if not audit_logs:
         return audit_logs
 
@@ -154,7 +157,10 @@ def dedupe_audit_logs(audit_logs, last_audit_ids, max_audit_logs):
     return audit_logs[:max_audit_logs]
 
 
-def dedupe_alerts(alerts, last_run):
+def prepare_alerts_result(alerts, last_run):
+    """
+    Filters alerts to return only new alerts since the last run, and add _time field.
+    """
     if not alerts:
         return alerts
 
