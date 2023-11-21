@@ -248,9 +248,8 @@
 
 .fetch-through-merge-base: &fetch-through-merge-base
   - section_start "Fetch Through Merge Base"
+  - ./Tests/scripts/fetch_through_merge_base.sh "$LAST_UPLOAD_COMMIT" "origin/master"
   - ./Tests/scripts/fetch_through_merge_base.sh "$CI_COMMIT_SHA" "origin/master"
-  - sleep 10
-  - ./Tests/scripts/fetch_through_merge_base.sh "$CI_COMMIT_SHA" "$LAST_UPLOAD_COMMIT"
   - section_end "Fetch Through Merge Base"
 
 .default-before-script:
