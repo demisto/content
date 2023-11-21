@@ -1022,8 +1022,8 @@ class ScoreCalculator:
         files = relationship_files_response.get('data', [])[:lookback]  # lookback on recent 20 results. By design
         total_malicious = 0
         total_suspicious = 0
-        file_hash = file.get('sha256', file.get('sha1', file.get('md5', file.get('ssdeep'))))
         for file in files:
+            file_hash = file.get('sha256', file.get('sha1', file.get('md5', file.get('ssdeep'))))
             if file_hash and self.file_score(file_hash, files) == Common.DBotScore.BAD:
                 total_malicious += 1
             elif file_hash and self.file_score(file_hash, files) == Common.DBotScore.SUSPICIOUS:
@@ -1035,7 +1035,8 @@ class ScoreCalculator:
             return Common.DBotScore.BAD
         if total_suspicious >= self.relationship_threshold['suspicious']:
             self.logs.append(
-                f'Found suspicious by relationship files. {total_malicious + total_suspicious} >= {self.relationship_threshold["suspicious"]}')
+                'Found suspicious by relationship files. '
+                f'{total_malicious + total_suspicious} >= {self.relationship_threshold["suspicious"]}')
             return Common.DBotScore.SUSPICIOUS
         self.logs.append(
             f'Found safe by relationship files. {total_malicious} < {self.relationship_threshold["suspicious"]}')
@@ -1675,7 +1676,8 @@ def merge_two_dicts(dict_a, dict_b):
 # region Reputation commands
 
 
-def ip_command(client: Client, score_calculator: ScoreCalculator, args: dict, relationships: str, disable_private_ip_lookup: bool) -> List[CommandResults]:
+def ip_command(client: Client, score_calculator: ScoreCalculator, args: dict,
+               relationships: str, disable_private_ip_lookup: bool) -> List[CommandResults]:
     """
     1 API Call for regular
     1-4 API Calls for premium subscriptions
@@ -1688,7 +1690,8 @@ def ip_command(client: Client, score_calculator: ScoreCalculator, args: dict, re
     for ip in ips:
         raise_if_ip_not_valid(ip)
         if disable_private_ip_lookup and ipaddress.ip_address(ip).is_private and not override_private_lookup:
-            result = CommandResults(readable_output=f'Reputation lookups have been disabled for private IP addresses. Enrichment skipped for {ip}')
+            result = CommandResults(
+                readable_output=f'Reputation lookups have been disabled for private IP addresses. Enrichment skipped for {ip}')
             results.append(result)
             execution_metrics.success += 1
             continue

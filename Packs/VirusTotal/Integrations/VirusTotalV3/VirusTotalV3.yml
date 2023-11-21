@@ -41,7 +41,7 @@ configuration:
   defaultvalue: '5'
   type: 0
   required: false
-  - display: IP Malicious Threshold. Minimum number of positive results from VT scanners to consider the IP malicious.
+- display: IP Malicious Threshold. Minimum number of positive results from VT scanners to consider the IP malicious.
   name: ipMaliciousThreshold
   defaultvalue: '10'
   type: 0
