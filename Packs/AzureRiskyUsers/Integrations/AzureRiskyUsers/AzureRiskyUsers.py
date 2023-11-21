@@ -10,7 +10,7 @@ import urllib3
 
 CLIENT_CREDENTIALS_FLOW = 'Client Credentials'
 DEVICE_FLOW = 'Device Code'
-MAX_ITEMS_PER_RESPONSE = 500
+MAX_ITEMS_PER_REQUEST = 500
 
 
 class Client:
@@ -96,8 +96,9 @@ class Client:
         else:  # Device Code Flow
             return 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
 
-    def risky_users_list_request(self, risk_state: str | None, risk_level: str | None,
-                                 limit: int, skip_token: str | None = None) -> dict:
+    def risky_users_list_request(self, limit: int = None, risk_state: str | None = None,
+                                 risk_level: str | None = None,
+                                 skip_token: str | None = None) -> dict:
         """
         List risky users.
 
@@ -225,22 +226,24 @@ def get_skip_token(next_link: str | None, outputs_prefix: str, outputs_key_field
         return parse_qs(parsed_url.query)['$skiptoken'][0]
 
 
-def pages_puller(client: Client, response: dict[str, Any], limit: int = 1) -> tuple[list, str | None]:
+def do_pagination(client: Client, response: dict[str, Any], limit: int = 1) -> dict:
     """
     Retrieves a limited number of pages by repeatedly making requests to the API using the nextLink URL
     until it has reached the specified limit or there are no more pages to retrieve,
     :param response: response body, contains collection of chat/message objects
     :param limit: the requested limit
-    :return: tuple of the limited response_data and the last nextLink URL.
+    :return: dict of the limited response_data and the last nextLink URL.
     """
 
     response_data = response.get('value', [])
+    next_link = response.get('@odata.nextLink')
+    # old_next_link is for a situation that we have more results in the response then the limit
     while (next_link := response.get('@odata.nextLink')) and len(response_data) < limit:
         demisto.debug(f"Using response {next_link=}")
-        response = client.risky_users_list_request(None, None, limit, next_link)
+        response = client.risky_users_list_request(limit=limit, skip_token=next_link)
         response_data.extend(response.get('value', []))
     demisto.debug(f'The limited response contains: {len(response_data[:limit])}')
-    return response_data[:limit], next_link
+    return {'value': response_data[:limit], '@odata.nextLink': next_link}
 
 
 def get_user_human_readable(users: list) -> Any:
@@ -272,37 +275,43 @@ def risky_users_list_command(client: Client, args: dict[str, str]) -> List[Comma
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-
-    page_size = arg_to_number(args.get('page_size')) or 50
-    if page_size < 1 or page_size > 500:
-        raise DemistoException("Page size must be between 1 and 500.")
     next_token = args.get('next_token')
     limit = arg_to_number(args.get('limit')) or 50
     risk_state = args.get('risk_state')
     risk_level = args.get('risk_level')
+    page_size = arg_to_number(args.get('page_size'))
+    if page_size and (page_size < 1 or page_size > 500):
+        raise DemistoException("Page size must be between 1 and 500.")
 
-    top = MAX_ITEMS_PER_RESPONSE if limit >= MAX_ITEMS_PER_RESPONSE else limit
-    if next_token and page_size:
-        limit = page_size
-        raw_response = client.risky_users_list_request(risk_state, risk_level, top, next_token)
+    if next_token:
+        # the page_size already defined the in the token.
+        raw_response = client.risky_users_list_request(risk_state=risk_state, risk_level=risk_level, skip_token=next_token)
+    elif page_size:
+        raw_response = client.risky_users_list_request(risk_state=risk_state, risk_level=risk_level, limit=page_size)
+        next_token_from_request = raw_response.get('@odata.nextLink')
     else:  # there is only a limit
-        raw_response = client.risky_users_list_request(risk_state, risk_level, top, None)
+        top = MAX_ITEMS_PER_REQUEST if limit >= MAX_ITEMS_PER_REQUEST else limit
+        raw_response = client.risky_users_list_request(risk_state=risk_state,
+                                                       risk_level=risk_level, limit=top)
+        raw_response = do_pagination(client, raw_response, limit)
 
-    list_users_data, next_token = pages_puller(client, raw_response, limit)
+    list_users = raw_response.get('value', [])
+    next_token_from_request = raw_response.get('@odata.nextLink', "")
 
     command_results = []
     command_results.append(CommandResults(
         outputs_prefix='AzureRiskyUsers.RiskyUser',
         outputs_key_field='id',
-        outputs=list_users_data,
-        readable_output=get_user_human_readable(list_users_data),
+        outputs=list_users,
+        readable_output=get_user_human_readable(list_users),
         raw_response=raw_response))
-    if next_token:
-        readable_output_next_token = tableToMarkdown("Risky Users List Token:", {'next_token': next_token},
-                                                     headers=['next_token'], removeNull=False)
+
+    # We won't display the next_token if the user does not choose to use pagination.
+    if (page_size and next_token_from_request) or (next_token and next_token_from_request):
         command_results.append(CommandResults(
-            outputs={'AzureRiskyUsers(true)': {'RiskyUserListNextToken': next_token}},
-            readable_output=readable_output_next_token,
+            outputs={'AzureRiskyUsers(true)': {'RiskyUserListNextToken': next_token_from_request}},
+            readable_output=tableToMarkdown("Risky Users List Token:", {'next_token': next_token_from_request},
+                                            headers=['next_token'], removeNull=False),
         ))
     return command_results
 

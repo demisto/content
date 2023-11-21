@@ -245,7 +245,7 @@ def test_update_query(query, filter_name, filter_value, filter_operator, expecte
     assert query == expected_query
 
 
-def test_pages_puller(mocker):
+def test_do_pagination(mocker):
     """
     Given:
       - The function arguments: response, limit:
@@ -257,12 +257,15 @@ def test_pages_puller(mocker):
       - Assert the request url is as expected - make an API request using the nextLink URL.
       - Verify the function output is as expected
     """
-    from AzureRiskyUsers import pages_puller
+    from AzureRiskyUsers import do_pagination
     mock_response = load_mock_response('list_risky_users.json')
     requests_mock = mocker.patch.object(Client, 'risky_users_list_request', return_value=mock_response)
     limit = 6
     expected_result = mock_response.get('value', []) * 2
-    result, last_next_link = pages_puller(mock_client(), mock_response, limit)
+
+    result = do_pagination(mock_client(), mock_response, limit)
+    data = result.get('value', [])
+    last_next_link = result.get('@odata.nextLink', "")
     assert requests_mock.call_count == 1
-    assert result == expected_result
+    assert data == expected_result
     assert last_next_link == mock_response.get('@odata.nextLink')
