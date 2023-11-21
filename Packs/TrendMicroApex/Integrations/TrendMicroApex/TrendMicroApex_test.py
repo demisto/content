@@ -22,6 +22,22 @@ def load_test_data(json_path):
         return json.load(f)
 
 
+def test_correct_url_is_set(requests_mock, mocker):
+    """
+
+    Given: Url with added slash at the end
+    When: calling a command using the SuspicousObjects API
+    Then: Verify the correct url is generated.
+
+    """
+    mock = mocker.patch.object(client, "_http_request")
+    mocker.patch.object(client, "create_jwt_token", return_value='test')
+    client.base_url = f'{client.base_url}/'  # This process happens in the main method
+    client.udso_list()
+    assert mock.call_args.kwargs.get(
+        'full_url') == 'https://TrendMicro-fake-api.com/WebApp/api/SuspiciousObjects/UserDefinedSO?type=&contentFilter='
+
+
 def test_list_logs_command(requests_mock, mocker):
     """ Unit test
     Given
