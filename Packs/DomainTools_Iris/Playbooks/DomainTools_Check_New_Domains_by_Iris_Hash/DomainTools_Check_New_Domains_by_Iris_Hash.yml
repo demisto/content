@@ -54,8 +54,6 @@ tasks:
     scriptarguments:
       search_hash:
         simple: ${inputs.iris_search_hash}
-      using:
-        simple: DomainTools Iris_instance_1
     separatecontext: false
     view: |-
       {
@@ -186,9 +184,9 @@ tasks:
     id: "6"
     taskid: 2acb6136-a013-4137-8d01-8b4f5a02b24c
     type: regular
-    description: 'Manually Review the Incident'
     task:
       id: 2acb6136-a013-4137-8d01-8b4f5a02b24c
+      description: 'Manually Review the Incident'
       version: -1
       name: Manually Review the Incident
       type: regular
@@ -216,9 +214,9 @@ tasks:
     id: "7"
     taskid: dcfda4ef-9cf2-4bea-892e-f2fdf08f1ece
     type: condition
-    description: 'Should wait for analyst review?'
     task:
       id: dcfda4ef-9cf2-4bea-892e-f2fdf08f1ece
+      description: 'Should wait for analyst review?'
       version: -1
       name: Should wait for analyst review?
       type: condition
@@ -279,4 +277,4 @@ inputs:
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 6.9.0
+fromversion: 6.6.0

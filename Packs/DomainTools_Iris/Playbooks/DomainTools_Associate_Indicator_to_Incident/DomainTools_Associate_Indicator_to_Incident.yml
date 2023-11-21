@@ -1,9 +1,7 @@
-id: DomainTools_Associate_Indicator_to_Incident
+id: DomainTools Associate Indicator to Incident
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: DomainTools Associate Indicator to Incident
-description: 'This playbooks automatically associate additional indicators from the
-  incident context. (Key: incident.additionalindicators)'
+description: 'This playbooks automatically associate additional indicators from the incident context. (Key: incident.additionalindicators)'
 tags:
 - Domaintools
 starttaskid: "0"
@@ -14,6 +12,7 @@ tasks:
     type: start
     task:
       id: aa2db149-0cd4-46d9-82e1-8f096f7cc2ac
+      description: ''
       version: -1
       name: ""
       iscommand: false
@@ -73,6 +72,7 @@ tasks:
     type: title
     task:
       id: c3e58d8f-87ef-483e-8bcb-b8d4b7694f03
+      description: ''
       version: -1
       name: Done
       type: title
@@ -107,3 +107,6 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.6.0
+tests:
+- No tests (auto formatted)

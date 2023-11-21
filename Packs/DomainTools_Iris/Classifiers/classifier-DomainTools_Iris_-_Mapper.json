@@ -1,68 +1,47 @@
 {
-	"brands": null,
-	"cacheVersn": 0,
-	"defaultIncidentType": "",
-	"definitionId": "",
-	"description": "DomainTools Iris - Mapper",
-	"feed": false,
-	"fromServerVersion": "",
-	"id": "DomainTools_Iris_-_Mapper",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 7,
-	"mapping": {
-		"DomainTools Iris Monitor Domains - Iris Search Hash": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {
-				"Additional Indicators": {
-					"complex": {
-						"accessor": "domain",
-						"filters": [],
-						"root": "incidents",
-						"transformers": []
-					}
-				},
-				"Source Category": {
-					"simple": "type"
-				}
-			}
-		},
-		"DomainTools Iris Monitor Domains - Iris Tags": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {
-				"Additional Indicators": {
-					"complex": {
-						"accessor": "domain",
-						"filters": [],
-						"root": "incidents",
-						"transformers": []
-					}
-				},
-				"Source Category": {
-					"simple": "type"
-				}
-			}
-		},
-		"dbot_classification_incident_type_all": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {}
-		}
-	},
-	"name": "DomainTools Iris - Mapper",
-	"nameRaw": "DomainTools Iris - Mapper",
-	"packID": "",
-	"propagationLabels": [
-		"all"
-	],
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {},
-	"type": "mapping-incoming",
-	"unclassifiedCases": null,
-	"version": -1
+    "description": "DomainTools Iris - Mapper",
+    "feed": false,
+    "id": "DomainTools Iris - Mapper",
+    "mapping": {
+        "DomainTools Iris Monitor Domains - Iris Search Hash": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Additional Indicators": {
+                    "complex": {
+                        "accessor": "domain",
+                        "filters": [],
+                        "root": "incidents",
+                        "transformers": []
+                    }
+                },
+                "Source Category": {
+                    "simple": "type"
+                }
+            }
+        },
+        "DomainTools Iris Monitor Domains - Iris Tags": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Additional Indicators": {
+                    "complex": {
+                        "accessor": "domain",
+                        "filters": [],
+                        "root": "incidents",
+                        "transformers": []
+                    }
+                },
+                "Source Category": {
+                    "simple": "type"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {}
+        }
+    },
+    "name": "DomainTools Iris - Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.6.0"
 }

@@ -1,4 +1,5 @@
-A threat intelligence and investigation platform for domain names, IP addresses, email addresses, name servers and so on.
+Together, DomainTools and Cortex XSOAR automate and orchestrate the incident response process with essential domain profile, web crawl, SSL and infrastructure data. SOCs can create custom, automated workflows to trigger Indicator of Compromise (IoC) investigations, block threats based on connected infrastructure, and identify potentially malicious domains before weaponization.
+The DomainTools App for Cortex XSOAR is shipped with pre-built playbooks to enable automated enrichment, decision logic, ad-hoc investigations, and the ability to persist enriched intelligence.
 This integration was integrated and tested with version 1.0 of DomainTools Iris
 
 ## Configure DomainTools Iris on Cortex XSOAR
@@ -153,6 +154,15 @@ Returns a complete profile of the domain (SLD.TLD) using Iris Investigate. If pa
 | DomainTools.Hosting.RedirectsTo.count | Number | The Redirects To Count of the domain. | 
 | DomainTools.Analytics.GoogleAdsenseTrackingCode | Number | The tracking code of Google Adsense. | 
 | DomainTools.Analytics.GoogleAnalyticTrackingCode | Number | The tracking code of Google Analytics. | 
+| DomainTools.Domains.Analytics.GA4TrackingCode | Number | The tracking code of ga4. | 
+| DomainTools.Domains.Analytics.GTMTrackingCode | Number | The tracking code of gtm. | 
+| DomainTools.Domains.Analytics.FBTrackingCode | Number | The tracking code of fb. | 
+| DomainTools.Domains.Analytics.HotJarTrackingCode | Number | The tracking code of Hot Jar. | 
+| DomainTools.Domains.Analytics.BaiduTrackingCode | Number | The tracking code of Baidu. | 
+| DomainTools.Domains.Analytics.YandexTrackingCode | Number | The tracking code of Yandex. | 
+| DomainTools.Domains.Analytics.MatomoTrackingCode | Number | The tracking code of Matomo. | 
+| DomainTools.Domains.Analytics.StatcounterProjectTrackingCode | Number | The tracking code of Stat Counter Project. | 
+| DomainTools.Domains.Analytics.StatcounterSecurityTrackingCode | Number | The tracking code of Stat Counter Security. | 
 | DomainTools.WebsiteTitle | Number | The website title. | 
 | DomainTools.FirstSeen | Number | The date the domain was first seen. | 
 | DomainTools.ServerType | Number | The server type. | 
@@ -278,6 +288,15 @@ Returns a complete profile of the domain (SLD.TLD) using Iris Enrich. If parsing
 | DomainTools.Hosting.RedirectsTo.count | Number | The Redirects To Count of the domain. | 
 | DomainTools.Analytics.GoogleAdsenseTrackingCode | Number | The tracking code of Google Adsense. | 
 | DomainTools.Analytics.GoogleAnalyticTrackingCode | Number | The tracking code of Google Analytics. | 
+| DomainTools.Domains.Analytics.GA4TrackingCode | Number | The tracking code of ga4. | 
+| DomainTools.Domains.Analytics.GTMTrackingCode | Number | The tracking code of gtm. | 
+| DomainTools.Domains.Analytics.FBTrackingCode | Number | The tracking code of fb. | 
+| DomainTools.Domains.Analytics.HotJarTrackingCode | Number | The tracking code of Hot Jar. | 
+| DomainTools.Domains.Analytics.BaiduTrackingCode | Number | The tracking code of Baidu. | 
+| DomainTools.Domains.Analytics.YandexTrackingCode | Number | The tracking code of Yandex. | 
+| DomainTools.Domains.Analytics.MatomoTrackingCode | Number | The tracking code of Matomo. | 
+| DomainTools.Domains.Analytics.StatcounterProjectTrackingCode | Number | The tracking code of Stat Counter Project. | 
+| DomainTools.Domains.Analytics.StatcounterSecurityTrackingCode | Number | The tracking code of Stat Counter Security. | 
 | DomainTools.WebsiteTitle | Number | The website title. | 
 | DomainTools.FirstSeen | Number | The date the domain was first seen. | 
 | DomainTools.ServerType | Number | The server type. | 
@@ -402,7 +421,16 @@ Displays DomainTools Analytic data in a markdown format table.
 | DomainTools.Domains.Hosting.RedirectsTo.value | String | The Redirects To value of the domain. | 
 | DomainTools.Domains.Hosting.RedirectsTo.count | Number | The Redirects To count of the domain. | 
 | DomainTools.Domains.Analytics.GoogleAdsenseTrackingCode | Number | The tracking code of Google Adsense. | 
-| DomainTools.Domains.Analytics.GoogleAnalyticTrackingCode | Number | The tracking code of Google Analytics. | 
+| DomainTools.Analytics.GoogleAnalyticTrackingCode | Number | The tracking code of Google Analytics. | 
+| DomainTools.Domains.Analytics.GA4TrackingCode | Number | The tracking code of ga4. | 
+| DomainTools.Domains.Analytics.GTMTrackingCode | Number | The tracking code of gtm. | 
+| DomainTools.Domains.Analytics.FBTrackingCode | Number | The tracking code of fb. | 
+| DomainTools.Domains.Analytics.HotJarTrackingCode | Number | The tracking code of Hot Jar. | 
+| DomainTools.Domains.Analytics.BaiduTrackingCode | Number | The tracking code of Baidu. | 
+| DomainTools.Domains.Analytics.YandexTrackingCode | Number | The tracking code of Yandex. | 
+| DomainTools.Domains.Analytics.MatomoTrackingCode | Number | The tracking code of Matomo. | 
+| DomainTools.Domains.Analytics.StatcounterProjectTrackingCode | Number | The tracking code of Stat Counter Project. | 
+| DomainTools.Domains.Analytics.StatcounterSecurityTrackingCode | Number | The tracking code of Stat Counter Security. | 
 | DBotScore.Indicator | String | The DBotScore indicator. | 
 | DBotScore.Type | String | The indicator type of the DBotScore. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
@@ -523,7 +551,16 @@ Displays DomainTools Threat Profile data in a markdown format table.
 | DomainTools.Domains.Hosting.RedirectsTo.value | String | The Redirects To value of the domain. | 
 | DomainTools.Domains.Hosting.RedirectsTo.count | Number | The Redirects To count of the domain. | 
 | DomainTools.Domains.Analytics.GoogleAdsenseTrackingCode | Number | The tracking code of Google Adsense. | 
-| DomainTools.Domains.Analytics.GoogleAnalyticTrackingCode | Number | The tracking code of Google Analytics. | 
+| DomainTools.Analytics.GoogleAnalyticTrackingCode | Number | The tracking code of Google Analytics. | 
+| DomainTools.Domains.Analytics.GA4TrackingCode | Number | The tracking code of ga4. | 
+| DomainTools.Domains.Analytics.GTMTrackingCode | Number | The tracking code of gtm. | 
+| DomainTools.Domains.Analytics.FBTrackingCode | Number | The tracking code of fb. | 
+| DomainTools.Domains.Analytics.HotJarTrackingCode | Number | The tracking code of Hot Jar. | 
+| DomainTools.Domains.Analytics.BaiduTrackingCode | Number | The tracking code of Baidu. | 
+| DomainTools.Domains.Analytics.YandexTrackingCode | Number | The tracking code of Yandex. | 
+| DomainTools.Domains.Analytics.MatomoTrackingCode | Number | The tracking code of Matomo. | 
+| DomainTools.Domains.Analytics.StatcounterProjectTrackingCode | Number | The tracking code of Stat Counter Project. | 
+| DomainTools.Domains.Analytics.StatcounterSecurityTrackingCode | Number | The tracking code of Stat Counter Security. | 
 | DBotScore.Indicator | String | The DBotScore indicator. | 
 | DBotScore.Type | String | The indicator type of the DBotScore. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
@@ -701,7 +738,7 @@ Hosting History will list IP address, name server and registrar history.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DomainTools.History.Value | unknown | Name of domain | 
+| DomainTools.History.Value | unknown | Name of domain. | 
 | DomainTools.History.IPHistory | unknown | Domain IP history data. | 
 | DomainTools.History.NameserverHistory | unknown | Domain Nameserver history data. | 
 | DomainTools.History.RegistrarHistory | unknown | Domain Registrar history data. | 
@@ -752,38 +789,3 @@ The DomainTools Parsed Whois API provides parsed information extracted from the 
 | Domain.Name | unknown | Requested domain name. | 
 | Domain.Whois | unknown | Parsed Whois data. | 
 | Domain.WhoisRecords | unknown | Full Whois record. | 
-
-### reverseIP
-
-***
-Reverse loopkup of an IP address.
-
-#### Base Command
-
-`reverseIP`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
-#### Context Output
-
-There is no context output for this command.
-### reverseNameServer
-
-***
-Reverse nameserver lookup.
-
-#### Base Command
-
-`reverseNameServer`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
-#### Context Output
-
-There is no context output for this command.

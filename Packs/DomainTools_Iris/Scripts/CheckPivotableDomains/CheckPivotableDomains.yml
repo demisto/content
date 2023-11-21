@@ -168,6 +168,6 @@ tags:
 enabled: true
 subtype: python3
 fromversion: 6.6.0
-dockerimage: demisto/python3:3.10.13.80014
+dockerimage: demisto/python3:3.10.13.80593
 tests:
 - No tests (auto formatted)
