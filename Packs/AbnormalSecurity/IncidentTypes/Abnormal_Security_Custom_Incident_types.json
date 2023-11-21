@@ -1,20 +1,7 @@
 {
     "id": "AbnormalSecurity",
-    "version": 2,
-    "cacheVersn": 0,
-    "modified": "2023-11-21T14:33:55.389394408Z",
-    "created": "0001-01-01T00:00:00Z",
-    "sizeInBytes": 0,
-    "packID": "",
-    "packName": "",
-    "itemVersion": "",
-    "fromServerVersion": "",
-    "toServerVersion": "",
-    "definitionId": "",
+    "version": -1,
     "vcShouldIgnore": false,
-    "vcShouldKeepItemLegacyProdMachine": false,
-    "commitMessage": "",
-    "shouldCommit": false,
     "locked": false,
     "name": "AbnormalSecurity",
     "prevName": "AbnormalSecurity",
@@ -30,15 +17,13 @@
     "readonly": false,
     "default": false,
     "autorun": false,
-    "preProcessingScript": "",
-    "closureScript": "",
     "disabled": false,
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
-    "layout": "",
     "detached": false,
     "extractSettings": {
         "mode": "Specific",
         "fieldCliNameToExtractSettings": {}
-    }
+    },
+    "fromVersion": "6.9.0"
 }
