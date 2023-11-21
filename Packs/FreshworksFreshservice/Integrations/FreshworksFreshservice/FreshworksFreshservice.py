@@ -2,7 +2,8 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from http import HTTPStatus
 from collections import namedtuple
-from typing import Any, Callable, Dict, Tuple, Optional, List, Union
+from collections.abc import Callable
+from typing import Any, Optional, Union
 import requests
 import base64
 
@@ -437,8 +438,8 @@ class Client(BaseClient):
         ticket_filter: str = None,
         include: str = None,
         order_type: str = None,
-    ) -> Dict[str, Any]:
-        """ Lists all the Tickets in a Freshservice account.
+    ) -> dict[str, Any]:
+        """ lists all the Tickets in a Freshservice account.
 
         Args:
             page (int): The number of items per page.
@@ -451,7 +452,7 @@ class Client(BaseClient):
             order_type (str, optional): order type. Defaults to None.
 
         Returns:
-            Dict[str, Any]: API response from Freshservice.
+            dict[str, Any]: API response from Freshservice.
         """
         params = remove_empty_elements({
             'page': page,
@@ -469,12 +470,12 @@ class Client(BaseClient):
                                   f'api/v2/tickets{url_suffix}',
                                   params=params)
 
-    def freshservice_ticket_create(self, **kwargs) -> Dict[str, Any]:
+    def freshservice_ticket_create(self, **kwargs) -> dict[str, Any]:
         """ Create a new Ticket in a Freshservice account.
 
         Args:
             urgency (int, optional): Ticket urgency. Defaults to None.
-            tags (List[str], optional): Tags that have been associated
+            tags (list[str], optional): Tags that have been associated
                     with the ticket. Defaults to None.
             subject (str, optional): The subject of the ticket. Defaults to None.
             sub_category (str, optional): Ticket subcategory. Defaults to None.
@@ -512,7 +513,7 @@ class Client(BaseClient):
             description (str, optional): Ticket. Defaults to None.
             department_id (int, optional): Department ID of the requester.
                     Defaults to None.
-            custom_fields (List[str], optional): Key value pairs containing the names
+            custom_fields (list[str], optional): Key value pairs containing the names
                     and values of custom fields. Defaults to None.
             change_initiating_ticket (int, optional): Change causing the Ticket that
                     needs to be associated with the Ticket (change display id).
@@ -520,16 +521,16 @@ class Client(BaseClient):
             change_initiated_by_ticket (int, optional): Change needed for the Ticket
                     to be fixed that needs to be associated with the Ticket
                     (change display id). Defaults to None.
-            cc_emails (List[str], optional): Email address added in the 'cc' field
+            cc_emails (list[str], optional): Email address added in the 'cc' field
                     of the incoming Ticket email. Defaults to None.
             category (str, optional): Ticket category. Defaults to None.
-            attachments (List[Dict[str, Any]], optional): Ticket attachments.
+            attachments (list[dict[str, Any]], optional): Ticket attachments.
                     Defaults to None.
             assets (int, optional): Assets that have to be associated with the ticket.
                     Defaults to None.
 
         Returns:
-            Dict[str, Any]: API response from Freshservice.
+            dict[str, Any]: API response from Freshservice.
         """
         kwargs = locals().pop('kwargs', None)
         data = remove_empty_elements(kwargs)
@@ -543,15 +544,15 @@ class Client(BaseClient):
     def freshservice_ticket_update(
         self,
         ticket_id: int,
-        attachments: List[Tuple] = None,
+        attachments: list[tuple] = None,
         **kwargs,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ Update a Ticket in a Freshservice account.
 
         Args:
             ticket_id (int): Ticket ID.
             urgency (int, optional): Ticket urgency. Defaults to None.
-            tags (List[str], optional): Tags that have been associated
+            tags (list[str], optional): Tags that have been associated
                     with the ticket. Defaults to None.
             subject (str, optional): The subject of the ticket. Defaults to None.
             sub_category (str, optional): Ticket subcategory. Defaults to None.
@@ -589,7 +590,7 @@ class Client(BaseClient):
             description (str, optional): Ticket. Defaults to None.
             department_id (int, optional): Department ID of the requester.
                     Defaults to None.
-            custom_fields (List[str], optional): Key value pairs containing the names
+            custom_fields (list[str], optional): Key value pairs containing the names
                     and values of custom fields. Defaults to None.
             change_initiating_ticket (int, optional): Change causing the Ticket that
                     needs to be associated with the Ticket (change display id).
@@ -597,16 +598,16 @@ class Client(BaseClient):
             change_initiated_by_ticket (int, optional): Change needed for the Ticket
                     to be fixed that needs to be associated with the Ticket
                     (change display id). Defaults to None.
-            cc_emails (List[str], optional): Email address added in the 'cc' field
+            cc_emails (list[str], optional): Email address added in the 'cc' field
                     of the incoming Ticket email. Defaults to None.
             category (str, optional): Ticket category. Defaults to None.
-            attachments (List[Dict[str, Any]], optional): Ticket attachments.
+            attachments (list[dict[str, Any]], optional): Ticket attachments.
                     Defaults to None.
             assets (int, optional): Assets that have to be associated with the ticket.
                     Defaults to None.
 
         Returns:
-            Dict[str, Any]: API response from Freshservice.
+            dict[str, Any]: API response from Freshservice.
         """
         kwargs = locals().pop('kwargs', None)
         data = remove_empty_elements(kwargs)
@@ -636,7 +637,7 @@ class Client(BaseClient):
         page: int = None,
         page_size: int = None,
         task_id: int = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ Retrieve tasks list (or a specific task) on a Ticket with
             the given ID from Freshservice.
 
@@ -647,7 +648,7 @@ class Client(BaseClient):
             task_id (int, optional): Task ID. Defaults to None.
 
         Returns:
-            Dict[str, Any]: API response from Freshservice.
+            dict[str, Any]: API response from Freshservice.
         """
         params = remove_empty_elements({
             'page': page,
@@ -668,7 +669,7 @@ class Client(BaseClient):
         title: str,
         description: str,
         status: int = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ Create a new task on a Ticket request in Freshservice.
 
         Args:
@@ -680,7 +681,7 @@ class Client(BaseClient):
             status (int, optional): Task status. Defaults to None.
 
         Returns:
-            Dict[str, Any]: API response from Freshservice.
+            dict[str, Any]: API response from Freshservice.
         """
         data = remove_empty_elements({
             "description": description,
@@ -702,7 +703,7 @@ class Client(BaseClient):
         title: str = None,
         description: str = None,
         status: int = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ Update a task on a Ticket request in Freshservice.
 
         Args:
@@ -715,7 +716,7 @@ class Client(BaseClient):
             status (int, optional): Task status. Defaults to None.
 
         Returns:
-            Dict[str, Any]: API response from Freshservice.
+            dict[str, Any]: API response from Freshservice.
         """
         data = remove_empty_elements({
             "description": description,
@@ -755,7 +756,7 @@ class Client(BaseClient):
         ticket_id: int,
         page: int = None,
         page_size: int = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ Retrieve all Conversations of a Ticket.
 
         Args:
@@ -764,7 +765,7 @@ class Client(BaseClient):
             ticket_id (int, optional): Ticket ID. Defaults to None.
 
         Returns:
-            Dict[str, Any]: API response from Freshservice.
+            dict[str, Any]: API response from Freshservice.
         """
         params = remove_empty_elements({
             'page': page,
@@ -781,10 +782,10 @@ class Client(BaseClient):
         body: str,
         from_email: str = None,
         user_id: int = None,
-        cc_emails: List[str] = None,
-        bcc_emails: List[str] = None,
-        files: List[Tuple] = None,
-    ) -> Dict[str, Any]:
+        cc_emails: list[str] = None,
+        bcc_emails: list[str] = None,
+        files: list[tuple] = None,
+    ) -> dict[str, Any]:
         """ Create a new reply for an existing Ticket Conversation.
 
         Args:
@@ -795,14 +796,14 @@ class Client(BaseClient):
                     Defaults to None.
             user_id (int, optional): The ID of the agent/user who is adding
                     the note. Defaults to None.
-            cc_emails (List[str], optional): Email address added in the 'cc'
+            cc_emails (list[str], optional): Email address added in the 'cc'
                     field of the outgoing Ticket email. Defaults to None.
-            bcc_emails (List[str], optional): Email address added in the 'bcc'
+            bcc_emails (list[str], optional): Email address added in the 'bcc'
                     field of the outgoing Ticket email. Defaults to None.
-            files (List[Tuple], optional): Attachments. Defaults to None.
+            files (list[tuple], optional): Attachments. Defaults to None.
 
         Returns:
-            Dict[str, Any]: API response from Freshservice.
+            dict[str, Any]: API response from Freshservice.
         """
         data = remove_empty_elements({
             'body': body,
@@ -825,10 +826,10 @@ class Client(BaseClient):
         body: str,
         incoming: str = None,
         user_id: int = None,
-        notify_emails: List[str] = None,
+        notify_emails: list[str] = None,
         private: str = None,
-        files: List[Tuple] = None,
-    ) -> Dict[str, Any]:
+        files: list[tuple] = None,
+    ) -> dict[str, Any]:
         """ Create a new note for an existing Ticket Conversation.
 
         Args:
@@ -838,15 +839,15 @@ class Client(BaseClient):
                     being created from the outside. Defaults to None.
             user_id (int, optional): The ID of the agent/user who is adding
                     the note. Defaults to None.
-            notify_emails (List[str], optional): Email addresses of
+            notify_emails (list[str], optional): Email addresses of
                     agents/users who need to be notified about this note.
                     Defaults to None.
             private (str, optional): True if the note is private.
                     Defaults to None.
-            files (List[Tuple], optional): Attachments. Defaults to None.
+            files (list[tuple], optional): Attachments. Defaults to None.
 
         Returns:
-            Dict[str, Any]: API response from Freshservice.
+            dict[str, Any]: API response from Freshservice.
         """
         data = remove_empty_elements({
             'body': body,
@@ -869,8 +870,8 @@ class Client(BaseClient):
         conversation_id: int,
         body: str,
         name: str = None,
-        files: List[Tuple] = None,
-    ) -> Dict[str, Any]:
+        files: list[tuple] = None,
+    ) -> dict[str, Any]:
         """ Update an existing Conversation on an existing Ticket
             in Freshservice.
 
@@ -878,11 +879,11 @@ class Client(BaseClient):
             conversation_id (int): The Conversation ID.
             body (str): Conversation content to update.
             name (str, optional): Conversation name. Defaults to None.
-            files (List[Tuple], optional): Conversation attachments.
+            files (list[tuple], optional): Conversation attachments.
                     Defaults to None.
 
         Returns:
-            Dict[str, Any]: API response from Freshservice
+            dict[str, Any]: API response from Freshservice
         """
         data = {
             'body': body,
@@ -923,8 +924,8 @@ class Client(BaseClient):
         problem_id: int = None,
         updated_since: str = None,
         order_type: str = None,
-    ) -> Dict[str, Any]:
-        """ Lists all the problems in a Freshservice account.
+    ) -> dict[str, Any]:
+        """ lists all the problems in a Freshservice account.
 
         Args:
             page (int): The number of items per page.
@@ -934,7 +935,7 @@ class Client(BaseClient):
             order_type (str, optional): order type. Defaults to None.
 
         Returns:
-            Dict[str, Any]: API response from Freshservice.
+            dict[str, Any]: API response from Freshservice.
         """
         params = remove_empty_elements({
             'page': page,
@@ -948,7 +949,7 @@ class Client(BaseClient):
             f'api/v2/problems{get_url_suffix(problem_id)}',
             params=params)
 
-    def freshservice_problem_create(self, **kwargs) -> Dict[str, Any]:
+    def freshservice_problem_create(self, **kwargs) -> dict[str, Any]:
         """ Create a new problem request in Freshservice.
 
         Args:
@@ -973,15 +974,15 @@ class Client(BaseClient):
                     Defaults to None.
             department_id (int, optional): Unique ID of the department
                     initiating the Problem. Defaults to None.
-            custom_fields (List[str], optional): Key value pairs containing
+            custom_fields (list[str], optional): Key value pairs containing
                     the names and values of custom fields. Defaults to None.
             category (str, optional): Category of the Problem.
                     Defaults to None.
-            assets (int, optional): List of assets associated with the problem.
+            assets (int, optional): list of assets associated with the problem.
                     Defaults to None.
 
         Returns:
-            Dict[str, Any]: API response from Freshservice.
+            dict[str, Any]: API response from Freshservice.
         """
         kwargs = locals().pop('kwargs', None)
         data = remove_empty_elements(kwargs)
@@ -993,7 +994,7 @@ class Client(BaseClient):
         )
 
     def freshservice_problem_update(self, ticket_id: int,
-                                    **kwargs) -> Dict[str, Any]:
+                                    **kwargs) -> dict[str, Any]:
         """ Update an existing Problem in Freshservice.
 
         Args:
@@ -1019,15 +1020,15 @@ class Client(BaseClient):
                     Defaults to None.
             department_id (int, optional): Unique ID of the department
                     initiating the Problem. Defaults to None.
-            custom_fields (List[str], optional): Key value pairs containing
+            custom_fields (list[str], optional): Key value pairs containing
                     the names and values of custom fields. Defaults to None.
             category (str, optional): Category of the Problem.
                     Defaults to None.
-            assets (int, optional): List of assets associated with the problem.
+            assets (int, optional): list of assets associated with the problem.
                     Defaults to None.
 
         Returns:
-            Dict[str, Any]: API response from Freshservice.
+            dict[str, Any]: API response from Freshservice.
         """
         kwargs = locals().pop('kwargs', None)
         data = remove_empty_elements(kwargs)
@@ -1061,8 +1062,8 @@ class Client(BaseClient):
         page: int = None,
         page_size: int = None,
         task_id: int = None,
-    ) -> Dict[str, Any]:
-        """ Lists all the problem tasks in a Freshservice account.
+    ) -> dict[str, Any]:
+        """ lists all the problem tasks in a Freshservice account.
 
         Args:
             page (int): The number of items per page.
@@ -1070,7 +1071,7 @@ class Client(BaseClient):
             problem_id (int, optional): Problem ID. Defaults to None.
             task_id (int, optional): Task ID. Defaults to None.
         Returns:
-            Dict[str, Any]: API response from Freshservice.
+            dict[str, Any]: API response from Freshservice.
         """
 
         params = remove_empty_elements({
@@ -1092,7 +1093,7 @@ class Client(BaseClient):
         title: str,
         description: str,
         status: int = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ Create a new task on a Problem request in Freshservice.
 
         Args:
@@ -1104,7 +1105,7 @@ class Client(BaseClient):
             status (int, optional): Task status. Defaults to None.
 
         Returns:
-            Dict[str, Any]: API response from Freshservice.
+            dict[str, Any]: API response from Freshservice.
         """
         data = remove_empty_elements({
             "description": description,
@@ -1127,7 +1128,7 @@ class Client(BaseClient):
         title: str = None,
         description: str = None,
         status: int = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ Update a task on a problem request in Freshservice.
 
         Args:
@@ -1140,7 +1141,7 @@ class Client(BaseClient):
             status (int, optional): Task status. Defaults to None.
 
         Returns:
-            Dict[str, Any]: API response from Freshservice.
+            dict[str, Any]: API response from Freshservice.
         """
         data = remove_empty_elements({
             "description": description,
@@ -1182,8 +1183,8 @@ class Client(BaseClient):
         change_id: int = None,
         updated_since: str = None,
         order_type: str = None,
-    ) -> Dict[str, Any]:
-        """ Lists all the changes in a Freshservice account.
+    ) -> dict[str, Any]:
+        """ lists all the changes in a Freshservice account.
 
         Args:
             page (int): The number of items per page.
@@ -1193,7 +1194,7 @@ class Client(BaseClient):
             order_type (str, optional): order type. Defaults to None.
 
         Returns:
-            Dict[str, Any]: API response from Freshservice.
+            dict[str, Any]: API response from Freshservice.
         """
         params = remove_empty_elements({
             'page': page,
@@ -1206,7 +1207,7 @@ class Client(BaseClient):
                                   f'api/v2/changes{get_url_suffix(change_id)}',
                                   params=params)
 
-    def freshservice_change_create(self, **kwargs) -> Dict[str, Any]:
+    def freshservice_change_create(self, **kwargs) -> dict[str, Any]:
         """ Create a new change request in Freshservice.
 
         Args:
@@ -1233,7 +1234,7 @@ class Client(BaseClient):
                     the change is assigned. Defaults to None.
 
         Returns:
-            Dict[str, Any]: API response from Freshservice.
+            dict[str, Any]: API response from Freshservice.
         """
         kwargs = locals().pop('kwargs', None)
         data = remove_empty_elements(kwargs)
@@ -1244,7 +1245,7 @@ class Client(BaseClient):
         self,
         ticket_id: int,
         **kwargs,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ Update an existing change request in Freshservice.
 
         Args:
@@ -1272,7 +1273,7 @@ class Client(BaseClient):
                     the change is assigned. Defaults to None.
 
         Returns:
-            Dict[str, Any]: API response from Freshservice.
+            dict[str, Any]: API response from Freshservice.
         """
         kwargs = locals().pop('kwargs', None)
         data = remove_empty_elements(kwargs)
@@ -1308,8 +1309,8 @@ class Client(BaseClient):
         page: int = None,
         page_size: int = None,
         task_id: int = None,
-    ) -> Dict[str, Any]:
-        """ Lists all the change tasks in a Freshservice account.
+    ) -> dict[str, Any]:
+        """ lists all the change tasks in a Freshservice account.
 
         Args:
             page (int): The number of items per page.
@@ -1317,7 +1318,7 @@ class Client(BaseClient):
             change_id (int, optional): Change ID. Defaults to None.
             task_id (int, optional): Task ID. Defaults to None.
         Returns:
-            Dict[str, Any]: API response from Freshservice.
+            dict[str, Any]: API response from Freshservice.
         """
 
         params = remove_empty_elements({
@@ -1339,7 +1340,7 @@ class Client(BaseClient):
         title: str,
         description: str,
         status: int = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ Create a new task on a change request in Freshservice.
 
         Args:
@@ -1351,7 +1352,7 @@ class Client(BaseClient):
             status (int, optional): Task status. Defaults to None.
 
         Returns:
-            Dict[str, Any]: API response from Freshservice.
+            dict[str, Any]: API response from Freshservice.
         """
         data = remove_empty_elements({
             "description": description,
@@ -1374,7 +1375,7 @@ class Client(BaseClient):
         title: str = None,
         description: str = None,
         status: int = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ Update a task on a change request in Freshservice.
 
         Args:
@@ -1387,7 +1388,7 @@ class Client(BaseClient):
             status (int, optional): Task status. Defaults to None.
 
         Returns:
-            Dict[str, Any]: API response from Freshservice.
+            dict[str, Any]: API response from Freshservice.
         """
         data = remove_empty_elements({
             "description": description,
@@ -1430,8 +1431,8 @@ class Client(BaseClient):
         updated_query: str = None,
         updated_since: str = None,
         order_type: str = None,
-    ) -> Dict[str, Any]:
-        """ Lists all the releases in a Freshservice account.
+    ) -> dict[str, Any]:
+        """ lists all the releases in a Freshservice account.
 
         Args:
             page (int): The number of items per page.
@@ -1440,7 +1441,7 @@ class Client(BaseClient):
             updated_since (str, optional): Fetch ticket updated since. Defaults to None.
             order_type (str, optional): order type. Defaults to None.
         Returns:
-            Dict[str, Any]: API response from Freshservice.
+            dict[str, Any]: API response from Freshservice.
         """
         params = remove_empty_elements({
             'page': page,
@@ -1455,7 +1456,7 @@ class Client(BaseClient):
             f'api/v2/releases{get_url_suffix(release_id)}',
             params=params)
 
-    def freshservice_release_create(self, **kwargs) -> Dict[str, Any]:
+    def freshservice_release_create(self, **kwargs) -> dict[str, Any]:
         """ Create a new release request in Freshservice.
 
         Args:
@@ -1481,11 +1482,11 @@ class Client(BaseClient):
                     which the release is assigned. Defaults to None.
             agent_id (int, optional): Unique identifier of the agent to whom
                     the release is assigned. Defaults to None.
-            custom_fields (List[str], optional): Key value pairs containing
+            custom_fields (list[str], optional): Key value pairs containing
                     the names and values of custom fields. Defaults to None.
 
         Returns:
-            Dict[str, Any]: API response from Freshservice.
+            dict[str, Any]: API response from Freshservice.
         """
         kwargs = locals().pop('kwargs', None)
         data = remove_empty_elements(kwargs)
@@ -1496,7 +1497,7 @@ class Client(BaseClient):
         self,
         ticket_id: int,
         **kwargs,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ Update an existing release request in Freshservice.
 
         Args:
@@ -1522,11 +1523,11 @@ class Client(BaseClient):
                     which the release is assigned. Defaults to None.
             agent_id (int, optional): Unique identifier of the agent to whom
                     the release is assigned. Defaults to None.
-            custom_fields (List[str], optional): Key value pairs containing
+            custom_fields (list[str], optional): Key value pairs containing
                     the names and values of custom fields. Defaults to None.
 
         Returns:
-            Dict[str, Any]: API response from Freshservice.
+            dict[str, Any]: API response from Freshservice.
         """
         kwargs = locals().pop('kwargs', None)
         data = remove_empty_elements(kwargs)
@@ -1562,8 +1563,8 @@ class Client(BaseClient):
         page: int = None,
         page_size: int = None,
         task_id: int = None,
-    ) -> Dict[str, Any]:
-        """ Lists all the release tasks in a Freshservice account.
+    ) -> dict[str, Any]:
+        """ lists all the release tasks in a Freshservice account.
 
         Args:
             page (int): The number of items per page.
@@ -1571,7 +1572,7 @@ class Client(BaseClient):
             release_id (int, optional): Release ID. Defaults to None.
             task_id (int, optional): Task ID. Defaults to None.
         Returns:
-            Dict[str, Any]: API response from Freshservice.
+            dict[str, Any]: API response from Freshservice.
         """
 
         params = remove_empty_elements({
@@ -1593,7 +1594,7 @@ class Client(BaseClient):
         title: str,
         description: str,
         status: int = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ Create a new task on a release request in Freshservice.
 
         Args:
@@ -1605,7 +1606,7 @@ class Client(BaseClient):
             status (int, optional): Task status. Defaults to None.
 
         Returns:
-            Dict[str, Any]: API response from Freshservice.
+            dict[str, Any]: API response from Freshservice.
         """
         data = remove_empty_elements({
             "description": description,
@@ -1628,7 +1629,7 @@ class Client(BaseClient):
         title: str = None,
         description: str = None,
         status: int = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ Update a task on a release request in Freshservice.
 
         Args:
@@ -1641,7 +1642,7 @@ class Client(BaseClient):
             status (int, optional): Task status. Defaults to None.
 
         Returns:
-            Dict[str, Any]: API response from Freshservice.
+            dict[str, Any]: API response from Freshservice.
         """
         data = remove_empty_elements({
             "description": description,
@@ -1682,8 +1683,8 @@ class Client(BaseClient):
         page_size: int = None,
         entity_id_value: int = None,
         updated_query: str = None,
-    ) -> Dict[str, Any]:
-        """ Lists all the requesters in a Freshservice account.
+    ) -> dict[str, Any]:
+        """ lists all the requesters in a Freshservice account.
 
         Args:
             page (int): The number of items per page.
@@ -1692,7 +1693,7 @@ class Client(BaseClient):
             updated_query (str, optional): Query to filter items. Defaults to None.
 
         Returns:
-            Dict[str, Any]: API response from Freshservice.
+            dict[str, Any]: API response from Freshservice.
         """
         params = remove_empty_elements({
             'page': page,
@@ -1709,11 +1710,11 @@ class Client(BaseClient):
         self,
         page: int = None,
         page_size: int = None,
-    ) -> Dict[str, Any]:
-        """ Lists all the requesters in a Freshservice account.
+    ) -> dict[str, Any]:
+        """ lists all the requesters in a Freshservice account.
 
         Returns:
-            Dict[str, Any]: API response from Freshservice.
+            dict[str, Any]: API response from Freshservice.
         """
         params = remove_empty_elements({
             'page': page,
@@ -1731,8 +1732,8 @@ class Client(BaseClient):
         page_size: int = None,
         entity_id_value: int = None,
         updated_query: str = None,
-    ) -> Dict[str, Any]:
-        """ Lists all the Agents in a Freshservice account.
+    ) -> dict[str, Any]:
+        """ lists all the Agents in a Freshservice account.
 
         Args:
             page (int): The number of items per page.
@@ -1741,7 +1742,7 @@ class Client(BaseClient):
             updated_query (str, optional): Query to filter items. Defaults to None.
 
         Returns:
-            Dict[str, Any]: API response from Freshservice.
+            dict[str, Any]: API response from Freshservice.
         """
         params = remove_empty_elements({
             'page': page,
@@ -1759,8 +1760,8 @@ class Client(BaseClient):
         page: int = None,
         page_size: int = None,
         entity_id_value: int = None,
-    ) -> Dict[str, Any]:
-        """ Lists all the Roles in a Freshservice account.
+    ) -> dict[str, Any]:
+        """ lists all the Roles in a Freshservice account.
 
         Args:
             page (int): The number of items per page.
@@ -1768,7 +1769,7 @@ class Client(BaseClient):
             entity_id_value (int, optional): Role ID. Defaults to None.
 
         Returns:
-            Dict[str, Any]: API response from Freshservice.
+            dict[str, Any]: API response from Freshservice.
         """
         params = remove_empty_elements({'page': page, 'per_page': page_size})
 
@@ -1782,8 +1783,8 @@ class Client(BaseClient):
         page: int = None,
         page_size: int = None,
         entity_id_value: int = None,
-    ) -> Dict[str, Any]:
-        """ Lists all the Vendors in a Freshservice account.
+    ) -> dict[str, Any]:
+        """ lists all the Vendors in a Freshservice account.
 
         Args:
             page (int): The number of items per page.
@@ -1791,7 +1792,7 @@ class Client(BaseClient):
             entity_id_value (int, optional): Vendor ID. Defaults to None.
 
         Returns:
-            Dict[str, Any]: API response from Freshservice.
+            dict[str, Any]: API response from Freshservice.
         """
         params = remove_empty_elements({'page': page, 'per_page': page_size})
 
@@ -1805,8 +1806,8 @@ class Client(BaseClient):
         page: int = None,
         page_size: int = None,
         entity_id_value: int = None,
-    ) -> Dict[str, Any]:
-        """ Lists all the Softwares in a Freshservice account.
+    ) -> dict[str, Any]:
+        """ lists all the Softwares in a Freshservice account.
 
         Args:
             page (int): The number of items per page.
@@ -1814,7 +1815,7 @@ class Client(BaseClient):
             entity_id_value (int, optional): Software ID. Defaults to None.
 
         Returns:
-            Dict[str, Any]: API response from Freshservice.
+            dict[str, Any]: API response from Freshservice.
         """
 
         params = remove_empty_elements({'page': page, 'per_page': page_size})
@@ -1830,8 +1831,8 @@ class Client(BaseClient):
         page_size: int = None,
         entity_id_value: int = None,
         updated_query: str = None,
-    ) -> Dict[str, Any]:
-        """ Lists all the Assets in a Freshservice account.
+    ) -> dict[str, Any]:
+        """ lists all the Assets in a Freshservice account.
 
         Args:
             page (int): The number of items per page.
@@ -1840,7 +1841,7 @@ class Client(BaseClient):
             updated_query (str, optional): Query to filter items. Defaults to None.
 
         Returns:
-            Dict[str, Any]: API response from Freshservice.
+            dict[str, Any]: API response from Freshservice.
         """
         params = {
             'filter': updated_query
@@ -1859,8 +1860,8 @@ class Client(BaseClient):
         page: int = None,
         page_size: int = None,
         entity_id_value: int = None,
-    ) -> Dict[str, Any]:
-        """ Lists all the purchase orders in a Freshservice account.
+    ) -> dict[str, Any]:
+        """ lists all the purchase orders in a Freshservice account.
 
         Args:
             page_size (int): The number of items per page.
@@ -1868,7 +1869,7 @@ class Client(BaseClient):
             entity_id_value (int, optional): Purchase order ID.
 
         Returns:
-            Dict[str, Any]: API response from Freshservice.
+            dict[str, Any]: API response from Freshservice.
         """
         params = remove_empty_elements({'page': page, 'per_page': page_size})
 
@@ -1882,8 +1883,8 @@ class Client(BaseClient):
         page: int = None,
         page_size: int = None,
         entity_id_value: int = None,
-    ) -> Dict[str, Any]:
-        """ Lists all the agent groups in a Freshservice account.
+    ) -> dict[str, Any]:
+        """ lists all the agent groups in a Freshservice account.
 
         Args:
             page_size (int): The number of items per page.
@@ -1891,7 +1892,7 @@ class Client(BaseClient):
             entity_id_value (int, optional): Agent group ID.
 
         Returns:
-            Dict[str, Any]: API response from Freshservice.
+            dict[str, Any]: API response from Freshservice.
         """
         params = remove_empty_elements({'page': page, 'per_page': page_size})
 
@@ -1906,8 +1907,8 @@ class Client(BaseClient):
         page_size: int = None,
         entity_id_value: int = None,
         updated_query: str = None,
-    ) -> Dict[str, Any]:
-        """ Lists all the departments in a Freshservice account.
+    ) -> dict[str, Any]:
+        """ lists all the departments in a Freshservice account.
 
         Args:
             page_size (int): The number of items per page.
@@ -1915,7 +1916,7 @@ class Client(BaseClient):
             entity_id_value (int, optional): Department ID.
 
         Returns:
-            Dict[str, Any]: API response from Freshservice.
+            dict[str, Any]: API response from Freshservice.
         """
         params = remove_empty_elements({
             'page': page,
@@ -1931,13 +1932,13 @@ class Client(BaseClient):
 
 def list_freshservice_ticket_command(
     client: Client,
-    args: Dict[str, Any],
+    args: dict[str, Any],
 ) -> CommandResults:
-    """ Lists all the tickets/ problems/ changes/ releases in a Freshservice account.
+    """ lists all the tickets/ problems/ changes/ releases in a Freshservice account.
 
     Args:
         client (Client): Freshservice API client.
-        args (Dict[str, Any]): Command arguments from XSOAR.
+        args (dict[str, Any]): Command arguments from XSOAR.
 
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
@@ -1979,13 +1980,13 @@ def list_freshservice_ticket_command(
 
 def create_update_freshservice_ticket_command(
     client: Client,
-    args: Dict[str, Any],
+    args: dict[str, Any],
 ) -> CommandResults:
     """ Create a new or update an existing Ticket/ Problem/ Change/ Release in Freshservice.
 
     Args:
         client (Client): Freshservice API client.
-        args (Dict[str, Any]): Command arguments from XSOAR.
+        args (dict[str, Any]): Command arguments from XSOAR.
 
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
@@ -2033,13 +2034,13 @@ def create_update_freshservice_ticket_command(
 
 def delete_freshservice_ticket_command(
     client: Client,
-    args: Dict[str, Any],
+    args: dict[str, Any],
 ) -> CommandResults:
     """ Delete an existing Ticket/ Problem/ Change/ Release in Freshservice.
 
     Args:
         client (Client): Freshservice API client.
-        args (Dict[str, Any]): Command arguments from XSOAR.
+        args (dict[str, Any]): Command arguments from XSOAR.
 
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
@@ -2065,14 +2066,14 @@ def delete_freshservice_ticket_command(
 
 def list_freshservice_ticket_task_command(
     client: Client,
-    args: Dict[str, Any],
+    args: dict[str, Any],
 ) -> CommandResults:
     """ Retrieve tasks list (or a specific task) on a Ticket/ Problem/ Change/
         Release with the given ID from Freshservice.
 
     Args:
         client (Client): Freshservice API client.
-        args (Dict[str, Any]): Command arguments from XSOAR.
+        args (dict[str, Any]): Command arguments from XSOAR.
 
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
@@ -2112,14 +2113,14 @@ def list_freshservice_ticket_task_command(
 
 def create_update_freshservice_ticket_task_command(
     client: Client,
-    args: Dict[str, Any],
+    args: dict[str, Any],
 ) -> CommandResults:
     """ Create or Update task of a Ticket/ Problem/ Change/
         Release with the given ID from Freshservice.
 
     Args:
         client (Client): Freshservice API client.
-        args (Dict[str, Any]): Command arguments from XSOAR.
+        args (dict[str, Any]): Command arguments from XSOAR.
 
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
@@ -2172,14 +2173,14 @@ def create_update_freshservice_ticket_task_command(
 
 def delete_freshservice_ticket_task_command(
     client: Client,
-    args: Dict[str, Any],
+    args: dict[str, Any],
 ) -> CommandResults:
     """ Delete task from a Ticket/ Problem/ Change/
         Release with the given ID from Freshservice.
 
     Args:
         client (Client): Freshservice API client.
-        args (Dict[str, Any]): Command arguments from XSOAR.
+        args (dict[str, Any]): Command arguments from XSOAR.
 
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
@@ -2208,14 +2209,14 @@ def delete_freshservice_ticket_task_command(
 
 def list_freshservice_ticket_conversation_command(
     client: Client,
-    args: Dict[str, Any],
+    args: dict[str, Any],
 ) -> CommandResults:
     """ Retrieve all Conversations of a Ticket. Conversations consist of
         replies as well as public and private notes added to a ticket.
 
     Args:
         client (Client): Freshservice API client.
-        args (Dict[str, Any]): Command arguments from XSOAR.
+        args (dict[str, Any]): Command arguments from XSOAR.
 
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
@@ -2249,13 +2250,13 @@ def list_freshservice_ticket_conversation_command(
 
 def create_freshservice_ticket_conversation_reply_command(
     client: Client,
-    args: Dict[str, Any],
+    args: dict[str, Any],
 ) -> CommandResults:
     """ Create a new reply for an existing Ticket Conversation.
 
     Args:
         client (Client): Freshservice API client.
-        args (Dict[str, Any]): Command arguments from XSOAR.
+        args (dict[str, Any]): Command arguments from XSOAR.
 
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
@@ -2265,8 +2266,8 @@ def create_freshservice_ticket_conversation_reply_command(
     body = args['body']
     from_email = args.get('from_email')
     user_id = args.get('user_id')
-    cc_emails = argToList(args.get('cc_emails'))
-    bcc_emails = argToList(args.get('bcc_emails'))
+    cc_emails = argTolist(args.get('cc_emails'))
+    bcc_emails = argTolist(args.get('bcc_emails'))
 
     files = get_files_to_attach(args)
 
@@ -2300,13 +2301,13 @@ def create_freshservice_ticket_conversation_reply_command(
 
 def create_freshservice_ticket_conversation_note_command(
     client: Client,
-    args: Dict[str, Any],
+    args: dict[str, Any],
 ) -> CommandResults:
     """ Create a new note for an existing Ticket Conversation.
 
     Args:
         client (Client): Freshservice API client.
-        args (Dict[str, Any]): Command arguments from XSOAR.
+        args (dict[str, Any]): Command arguments from XSOAR.
 
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
@@ -2346,13 +2347,13 @@ def create_freshservice_ticket_conversation_note_command(
 
 def update_freshservice_ticket_conversation_command(
     client: Client,
-    args: Dict[str, Any],
+    args: dict[str, Any],
 ) -> CommandResults:
     """ Update an existing Conversation on an existing Ticket in Freshservice.
 
     Args:
         client (Client): Freshservice API client.
-        args (Dict[str, Any]): Command arguments from XSOAR.
+        args (dict[str, Any]): Command arguments from XSOAR.
 
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
@@ -2390,14 +2391,14 @@ def update_freshservice_ticket_conversation_command(
 
 def delete_freshservice_ticket_conversation_command(
     client: Client,
-    args: Dict[str, Any],
+    args: dict[str, Any],
 ) -> CommandResults:
     """ Delete the Conversation on a Ticket with the
         given ID from Freshservice.
 
     Args:
         client (Client): Freshservice API client.
-        args (Dict[str, Any]): Command arguments from XSOAR.
+        args (dict[str, Any]): Command arguments from XSOAR.
 
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
@@ -2421,14 +2422,14 @@ def delete_freshservice_ticket_conversation_command(
 
 def list_freshservice_entities_command(
     client: Client,
-    args: Dict[str, Any],
+    args: dict[str, Any],
 ) -> CommandResults:
-    """ Lists all the requesters/ agents/ vendors/ softwares/ assets/
+    """ lists all the requesters/ agents/ vendors/ softwares/ assets/
         agent groups/ roles/ purchase orders in a Freshservice account.
 
     Args:
         client (Client): Freshservice API client.
-        args (Dict[str, Any]): Command arguments from XSOAR.
+        args (dict[str, Any]): Command arguments from XSOAR.
 
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
@@ -2496,18 +2497,18 @@ def test_module(client: Client) -> str:
 
 def get_request_arguments_per_ticket_type(
     entity_name: str,
-    args: Dict[str, Any],
+    args: dict[str, Any],
     entity_id_value: str = None,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """ Get the arguments for each ticket type when create or update ticket.
 
     Args:
         entity_name (str): The command entity name.
-        args (Dict[str, Any]): command arguments from XSOAR.
+        args (dict[str, Any]): command arguments from XSOAR.
         entity_id_value (str | None, optional): Ticket ID. Defaults to None.
 
     Returns:
-        Dict[str, Any]: The updated arguments.
+        dict[str, Any]: The updated arguments.
     """
     ticket_properties = convert_command_properties(
         args,
@@ -2528,7 +2529,7 @@ def get_request_arguments_per_ticket_type(
             status=ticket_properties.status,
             subject=args.get('subject'),
             urgency=ticket_properties.urgency,
-            tags=argToList(args.get('tags')),
+            tags=argTolist(args.get('tags')),
             sub_category=args.get('sub_category'),
             source=ticket_properties.source,
             responder_id=arg_to_number(args.get('responder_id')),
@@ -2550,11 +2551,11 @@ def get_request_arguments_per_ticket_type(
             change_initiated_by_ticket=get_arg_template(
                 args.get('change_initiated_by_ticket'),
                 'change_initiated_by_ticket'),
-            cc_emails=argToList(args.get('cc_emails')),
+            cc_emails=argTolist(args.get('cc_emails')),
             category=args.get('category'),
             attachments=get_files_to_attach(args),
-            assets=get_arg_template(argToList(args.get('assets')), 'assets'),
-            analysis_fields=argToList(args.get('analysis_fields')),
+            assets=get_arg_template(argTolist(args.get('assets')), 'assets'),
+            analysis_fields=argTolist(args.get('analysis_fields')),
             change_type=ticket_properties.change_type,
             risk=ticket_properties.risk,
             release_type=ticket_properties.release_type,
@@ -2565,19 +2566,19 @@ def get_request_arguments_per_ticket_type(
 
 
 def update_ticket_attachments(
-        client: Client, args_for_request: Dict[str, Any],
-        create_response: Dict[str, Any],
-        command_operator: str) -> Union[Dict[str, Any], None]:
+        client: Client, args_for_request: dict[str, Any],
+        create_response: dict[str, Any],
+        command_operator: str) -> Union[dict[str, Any], None]:
     """ Update ticket with attachments when user create ticket with attachments.
 
     Args:
         client (Client): Freshservice client.
-        args_for_request (Dict[str, Any]): Request arguments.
-        create_response (Dict[str, Any]): Create ticket response.
+        args_for_request (dict[str, Any]): Request arguments.
+        create_response (dict[str, Any]): Create ticket response.
         command_operator (str): The command operator.
 
     Returns:
-        Union[Dict[str, Any], None]: Update ticket response.
+        Union[dict[str, Any], None]: Update ticket response.
     """
     response = None
     attachments = args_for_request.get('attachments')
@@ -2590,17 +2591,17 @@ def update_ticket_attachments(
 
 
 def get_arg_template(
-    arg_values: Optional[List[Dict[str, Any]]],
+    arg_values: Optional[list[dict[str, Any]]],
     arg_name: str,
-) -> Union[Dict[str, Optional[int]], List[Dict[str, Optional[int]]], None]:
+) -> Union[dict[str, Optional[int]], list[dict[str, Optional[int]]], None]:
     """ Get argument template {'display_id': some_id}.
 
     Args:
-        arg_values (Optional[List[Dict[str, Any]]]): argument values (could be a list).
+        arg_values (Optional[list[dict[str, Any]]]): argument values (could be a list).
         arg_name (str): argument name.
 
     Returns:
-        List[dict[str, int]] | None: updated argument according the template.
+        list[dict[str, int]] | None: updated argument according the template.
     """
     if not arg_values:
         return None
@@ -2614,14 +2615,14 @@ def get_arg_template(
     return arg_template
 
 
-def update_custom_fields(args: Dict[str, Any]) -> Dict[Any, Any] | None:
+def update_custom_fields(args: dict[str, Any]) -> dict[Any, Any] | None:
     """ Update custom_fields argument to match Freshservice template.
 
     Args:
-        args (Dict[str, Any]): command arguments from XSOAR.
+        args (dict[str, Any]): command arguments from XSOAR.
 
     Returns:
-        Optional[Dict[Any, Any]]: Updated field.
+        Optional[dict[Any, Any]]: Updated field.
     """
     updated_custom_fields = None
     if custom_fields := args.get('custom_fields'):
@@ -2632,7 +2633,7 @@ def update_custom_fields(args: Dict[str, Any]) -> Dict[Any, Any] | None:
 
 def validate_mandatory_ticket_requester_fields(
     entity_name: str,
-    args: Dict[str, Any],
+    args: dict[str, Any],
     entity_id_value: str = None,
 ):
     """ Validate user specified one of the following:
@@ -2641,7 +2642,7 @@ def validate_mandatory_ticket_requester_fields(
 
     Args:
         entity_name (str): The command entity name.
-        args (Dict[str, Any]): command arguments from XSOAR.
+        args (dict[str, Any]): command arguments from XSOAR.
         entity_id_value (str | None, optional): Ticket ID. Defaults to None.
 
     Raises:
@@ -2658,31 +2659,31 @@ def validate_mandatory_ticket_requester_fields(
             'One of the following is mandatory: requester_id, phone, email')
 
 
-def get_files_to_attach(args: Dict[str, Any], ) -> List[Tuple]:
+def get_files_to_attach(args: dict[str, Any], ) -> list[tuple]:
     """ Get array of files to attach in Freshservice.
 
     Args:
-        args (Dict[str, Any]): Command arguments from XSOAR.
+        args (dict[str, Any]): Command arguments from XSOAR.
 
     Returns:
-        List[Tuple]: List of files.
+        list[tuple]: list of files.
     """
-    return [get_file(file) for file in argToList(args.get('attachments'))]
+    return [get_file(file) for file in argTolist(args.get('attachments'))]
 
 
 def convert_response_properties(
-    updated_response: List[dict] | Dict[str, Any],
-    predefined_values: Dict[str, Dict[str, int]],
-) -> List[dict] | Dict[str, Any]:
+    updated_response: list[dict] | dict[str, Any],
+    predefined_values: dict[str, dict[str, int]],
+) -> list[dict] | dict[str, Any]:
     """ Convert command properties from number to string for
         the XSOAR output.
 
     Args:
-        updated_response (List[dict]): Freshservice response.
-        predefined_values (Dict[str, Dict[str, int]]): Predefined values for Freshservice.
+        updated_response (list[dict]): Freshservice response.
+        predefined_values (dict[str, dict[str, int]]): Predefined values for Freshservice.
 
     Returns:
-        List[dict]: Updated response.
+        list[dict]: Updated response.
     """
     if not updated_response:
         return updated_response
@@ -2703,24 +2704,24 @@ def convert_response_properties(
     return updated_response
 
 
-def reverse_dict(dict_: Dict[str, Any]) -> Dict[str, Any]:
+def reverse_dict(dict_: dict[str, Any]) -> dict[str, Any]:
     """ Reverse dictionary.
     Args:
-        dict_ (dict[str, Any]): Dictionary to reverse.
+        dict_ (dict[str, Any]): dictionary to reverse.
     Returns:
         dict[Any, str]: Reversed dictionary.
     """
     return {v: k for k, v in dict_.items()}
 
 
-def get_args_by_command_name(args: Dict[str, Any]) -> Tuple:
+def get_args_by_command_name(args: dict[str, Any]) -> tuple:
     """ Return the default command args by the command name.
 
     Args:
-        args (Dict[str, Any]): Command arguments from XSOAR.
+        args (dict[str, Any]): Command arguments from XSOAR.
 
     Returns:
-        Tuple: The arguments.
+        tuple: The arguments.
     """
     command_name = args['command_name'].split("-")
     command_operator = command_name[-1]
@@ -2752,14 +2753,14 @@ def get_default_seconds(time_in_seconds: int) -> int:
                key=lambda default_time: abs(default_time - time_in_seconds))
 
 
-def get_file(file_id: str) -> Tuple:
+def get_file(file_id: str) -> tuple:
     """ Open file to send data to API.
 
     Args:
         file_id (str): The file ID.
 
     Returns:
-        Dict[str, Any]: Dict with file data.
+        dict[str, Any]: dict with file data.
     """
     file_data = demisto.getFilePath(file_id)
     with open(file_data['path'], 'rb') as f:
@@ -2768,17 +2769,17 @@ def get_file(file_id: str) -> Tuple:
     return file
 
 
-def convert_command_properties(args: Dict[str, Any],
+def convert_command_properties(args: dict[str, Any],
                                ticket_type: str) -> TicketProperties:
     """ Convert command properties from string to number for
         the Freshservice request.
 
     Args:
-        args (Dict[str, Any]): args (Dict[str, Any]): Command arguments from XSOAR.
+        args (dict[str, Any]): args (dict[str, Any]): Command arguments from XSOAR.
         ticket_type (str): The ticket type.
 
     Returns:
-        Tuple: The converted arguments.
+        tuple: The converted arguments.
     """
     ticket_property_keys = [
         'urgency',
@@ -2823,7 +2824,7 @@ def get_command_request(client: Client, command_entity: str) -> Callable:
         Callable: The request function.
     """
 
-    entities_request_functions: Dict[str, Callable] = {
+    entities_request_functions: dict[str, Callable] = {
         'vendor': client.freshservice_vendor_list,
         'department': client.freshservice_department_list,
         'asset': client.freshservice_asset_list,
@@ -2870,21 +2871,21 @@ def get_command_request(client: Client, command_entity: str) -> Callable:
     return entities_request_functions[command_entity]
 
 
-def get_command_list_args(args: Dict[str, Any],
+def get_command_list_args(args: dict[str, Any],
                           command_response_key: str,
                           command_arg_id: int = None) -> CommandArgs:
     """ Get command arguments according to the command mode: list or get.
         If command_arg_id is specified the command mode is get, otherwise is list.
 
     Args:
-        args (Dict[str, Any]): Command arguments from XSOAR.
+        args (dict[str, Any]): Command arguments from XSOAR.
         command_arg_id (int, optional): Command argument ID. Defaults to None.
 
     Raises:
         ValueError: In case specified other arguments except command_arg_id.
 
     Returns:
-        Tuple: The command argument according to the command mode.
+        tuple: The command argument according to the command mode.
     """
 
     if command_response_key == 'agent_group':
@@ -2934,13 +2935,13 @@ def get_command_list_args(args: Dict[str, Any],
 
 
 def build_query(
-    non_empty_args: Dict[str, Any],
+    non_empty_args: dict[str, Any],
     entity_name: str,
 ) -> str:
     """ Create a query for Freshservice according their template.
 
     Args:
-        args (Dict[str, Any]): Command arguments from XSOAR.
+        args (dict[str, Any]): Command arguments from XSOAR.
 
     Raises:
         ValueError: In case specified other arguments except query.
@@ -3027,15 +3028,15 @@ def validate_pagination_arguments(
         raise ValueError(f"limit argument must be greater than {MIN_LIMIT}.")
 
 
-def pagination(args: Dict[str, Any]) -> Tuple:
+def pagination(args: dict[str, Any]) -> tuple:
     """ Return the correct limit and offset for the API
         based on the user arguments page, page_size and limit.
 
     Args:
-        args (Dict[str, Any]): Command arguments from XSOAR.
+        args (dict[str, Any]): Command arguments from XSOAR.
 
     Returns:
-        Tuple: new_limit, offset, pagination_message.
+        tuple: new_limit, offset, pagination_message.
     """
     page = arg_to_number(args.get("page"))
     page_size = arg_to_number(args.get("page_size"))
@@ -3070,13 +3071,13 @@ def date_to_epoch_for_fetch(date: Optional[datetime]) -> int:
 
 
 def get_modified_remote_data(
-        client: Client, args: Dict[str, Any]) -> GetModifiedRemoteDataResponse:
+        client: Client, args: dict[str, Any]) -> GetModifiedRemoteDataResponse:
     """
     Queries for incidents that were modified since the last update.
 
     Args:
         client: Freshservice API client.
-        args (Dict[str, Any]): command arguments.
+        args (dict[str, Any]): command arguments.
 
     Returns:
         GetModifiedRemoteDataResponse: modified tickets from Freshservice.
@@ -3113,7 +3114,7 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     Pulls the remote schema for the different incident types, and their associated incident fields, from the remote system.
 
     Returns:
-    GetMappingFieldsResponse: Dictionary with keys as field names.
+    GetMappingFieldsResponse: dictionary with keys as field names.
     """
 
     mapping_response = GetMappingFieldsResponse()
@@ -3131,7 +3132,7 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
 
 def update_remote_system(
     client: Client,
-    args: Dict[str, Any],
+    args: dict[str, Any],
 ) -> str:
     """
     This command pushes local changes to the remote system.
@@ -3196,17 +3197,17 @@ def update_remote_system(
 
 def get_remote_data_command(
     client: Client,
-    args: Dict[str, Any],
-    params: Dict[str, Any],
+    args: dict[str, Any],
+    params: dict[str, Any],
 ) -> GetRemoteDataResponse:
     """
     Gets new information about the incidents in the remote system
     and updates existing incidents in Cortex XSOAR.
     Args:
         client: Freshservice API client.
-        args (Dict[str, Any]): command arguments.
+        args (dict[str, Any]): command arguments.
     Returns:
-        List[Dict[str, Any]]: first entry is the incident (which can be completely empty) and the new entries.
+        list[dict[str, Any]]: first entry is the incident (which can be completely empty) and the new entries.
     """
     parsed_args = GetRemoteDataArgs(args)
     close_incident = params.get("close_incident")
@@ -3261,37 +3262,37 @@ def convert_datetime_to_iso(created_at: str) -> datetime:
     return FormatIso8601(alert_date) + 'Z'
 
 
-def get_alert_properties(args: Dict[str, Any]) -> Tuple:
+def get_alert_properties(args: dict[str, Any]) -> tuple:
     """ Get alert properties.
 
     Args:
-        args (Dict[str, Any]): XSOAR arguments.
+        args (dict[str, Any]): XSOAR arguments.
 
     Returns:
-        Tuple: Updated alert properties.
+        tuple: Updated alert properties.
     """
-    ticket_types = argToList(args.get('ticket_type'))
+    ticket_types = argTolist(args.get('ticket_type'))
     if ticket_types == ['All']:
         ticket_types = FETCH_TICKET_TYPE.keys()
 
     ticket_prefix = 'ticket_'
     alert_properties = [(alert_property,
-                         argToList(args.get(ticket_prefix + alert_property)))
+                         argTolist(args.get(ticket_prefix + alert_property)))
                         for alert_property in
                         ['impact', 'status', 'risk', 'urgency', 'priority']]
 
     return ticket_types, alert_properties
 
 
-def get_last_run(args: Dict[str, Any], ticket_type: str) -> Tuple:
+def get_last_run(args: dict[str, Any], ticket_type: str) -> tuple:
     """ Get last run arguments.
 
     Args:
-        args (Dict[str, Any]): XSOAR arguments.
+        args (dict[str, Any]): XSOAR arguments.
         ticket_type (str): Ticket type.
 
     Returns:
-        Tuple: Updated last run arguments.
+        tuple: Updated last run arguments.
     """
     last_run = demisto.getLastRun()
     ticket_last_run = last_run.get(ticket_type)
@@ -3321,14 +3322,14 @@ def get_last_run(args: Dict[str, Any], ticket_type: str) -> Tuple:
     return last_run_id, last_run_datetime, last_run_datetime_str
 
 
-def get_ticket_type_by_alert_id(alert_id: str) -> Tuple:
+def get_ticket_type_by_alert_id(alert_id: str) -> tuple:
     """ Get ticket ID & type from the alert ID.
 
     Args:
         alert_id (str): Alert ID.
 
     Returns:
-        Tuple: Ticket ID & type.
+        tuple: Ticket ID & type.
     """
     alert_data = alert_id.split(':')
     ticket_prefix_type = alert_data[0]
@@ -3340,21 +3341,21 @@ def get_ticket_type_by_alert_id(alert_id: str) -> Tuple:
 
 def fetch_relevant_tickets_by_ticket_type(
     client: Client,
-    alert_list: List[dict],
-    alert_properties: List[Tuple],
+    alert_list: list[dict],
+    alert_properties: list[tuple],
     fetch_ticket_task: bool,
     ticket_type: str,
     last_run_id: str,
     last_run_datetime: datetime,
     max_fetch_per_ticket_type: int,
     mirror_direction: Optional[str],
-) -> Tuple:
+) -> tuple:
     """ Fetch only relevant ticket by ticket defined properties.
 
     Args:
         client (Client): Freshservice client.
-        alert_list (List[dict]): Ticket list from Freshservice.
-        alert_properties (List[Tuple]): Alert defined properties.
+        alert_list (list[dict]): Ticket list from Freshservice.
+        alert_properties (list[tuple]): Alert defined properties.
         fetch_ticket_task (bool): Whether to fetch also ticket tasks.
         ticket_type (str): Ticket type.
         last_run_id (int): Last run ID.
@@ -3363,7 +3364,7 @@ def fetch_relevant_tickets_by_ticket_type(
         mirror_direction (str): The mirror direction.
 
     Returns:
-        Tuple: Incidents for XSOAR and alert list.
+        tuple: Incidents for XSOAR and alert list.
     """
     alerts = []
     incidents = []
@@ -3518,8 +3519,8 @@ def fetch_incidents(client: Client, params: dict):
 
 
 def main():
-    params: Dict[str, Any] = demisto.params()
-    args: Dict[str, Any] = demisto.args()
+    params: dict[str, Any] = demisto.params()
+    args: dict[str, Any] = demisto.args()
 
     url = params['url']
     api_token = params.get('credentials', {}).get('password')
