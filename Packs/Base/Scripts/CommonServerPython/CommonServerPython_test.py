@@ -27,6 +27,9 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
     url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, \
     remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, ExecutionMetrics, \
+    response_to_context, is_integration_command_execution, is_xsiam_or_xsoar_saas, is_xsoar, is_xsoar_on_prem, \
+    is_xsoar_hosted, is_xsoar_saas, is_xsiam
+
     response_to_context, is_integration_command_execution, send_data_to_xsiam
 
 try:
@@ -292,60 +295,60 @@ class TestTableToMarkdown:
             '| a3 | b3 | c3 |\n'
         )
         assert table == expected_table
-    #
-    # @staticmethod
-    # def test_multiline():
-    #     """
-    #     Given:
-    #       - list of objects.
-    #       - some values contains a new line and the "|" sign.
-    #     When:
-    #       - calling tableToMarkdown.
-    #     Then:
-    #       - return a valid table with "br" tags instead of new lines and escaped pipe sign.
-    #     """
-    #     data = copy.deepcopy(DATA)
-    #     for i, d in enumerate(data):
-    #         d['header_2'] = 'b%d.1\nb%d.2' % (i + 1, i + 1,)
-    #         d['header_3'] = 'c%d|1' % (i + 1,)
-    #
-    #     table = tableToMarkdown('tableToMarkdown test with multiline', data)
-    #     expected_table = (
-    #         '### tableToMarkdown test with multiline\n'
-    #         '|header_1|header_2|header_3|\n'
-    #         '|---|---|---|\n'
-    #         '| a1 | b1.1<br>b1.2 | c1\|1 |\n'
-    #         '| a2 | b2.1<br>b2.2 | c2\|1 |\n'
-    #         '| a3 | b3.1<br>b3.2 | c3\|1 |\n'
-    #     )
-    #     assert table == expected_table
-    #
-    # @staticmethod
-    # def test_url():
-    #     """
-    #     Given:
-    #       - list of objects.
-    #       - some values contain a URL.
-    #       - some values are missing.
-    #     When:
-    #       - calling tableToMarkdown.
-    #     Then:
-    #       - return a valid table.
-    #     """
-    #     data = copy.deepcopy(DATA)
-    #     for d in data:
-    #         d['header_2'] = None
-    #         d['header_3'] = '[url](https:\\demisto.com)'
-    #     table_url_missing_info = tableToMarkdown('tableToMarkdown test with url and missing info', data)
-    #     expected_table_url_missing_info = (
-    #         '### tableToMarkdown test with url and missing info\n'
-    #         '|header_1|header_2|header_3|\n'
-    #         '|---|---|---|\n'
-    #         '| a1 |  | [url](https:\demisto.com) |\n'
-    #         '| a2 |  | [url](https:\demisto.com) |\n'
-    #         '| a3 |  | [url](https:\demisto.com) |\n'
-    #     )
-    #     assert table_url_missing_info == expected_table_url_missing_info
+
+    @staticmethod
+    def test_multiline():
+        """
+        Given:
+          - list of objects.
+          - some values contains a new line and the "|" sign.
+        When:
+          - calling tableToMarkdown.
+        Then:
+          - return a valid table with "br" tags instead of new lines and escaped pipe sign.
+        """
+        data = copy.deepcopy(DATA)
+        for i, d in enumerate(data):
+            d['header_2'] = 'b%d.1\nb%d.2' % (i + 1, i + 1,)
+            d['header_3'] = 'c%d|1' % (i + 1,)
+
+        table = tableToMarkdown('tableToMarkdown test with multiline', data)
+        expected_table = (
+            '### tableToMarkdown test with multiline\n'
+            '|header_1|header_2|header_3|\n'
+            '|---|---|---|\n'
+            '| a1 | b1.1<br>b1.2 | c1\|1 |\n'
+            '| a2 | b2.1<br>b2.2 | c2\|1 |\n'
+            '| a3 | b3.1<br>b3.2 | c3\|1 |\n'
+        )
+        assert table == expected_table
+
+    @staticmethod
+    def test_url():
+        """
+        Given:
+          - list of objects.
+          - some values contain a URL.
+          - some values are missing.
+        When:
+          - calling tableToMarkdown.
+        Then:
+          - return a valid table.
+        """
+        data = copy.deepcopy(DATA)
+        for d in data:
+            d['header_2'] = None
+            d['header_3'] = '[url](https:\\demisto.com)'
+        table_url_missing_info = tableToMarkdown('tableToMarkdown test with url and missing info', data)
+        expected_table_url_missing_info = (
+            '### tableToMarkdown test with url and missing info\n'
+            '|header_1|header_2|header_3|\n'
+            '|---|---|---|\n'
+            '| a1 |  | [url](https:\demisto.com) |\n'
+            '| a2 |  | [url](https:\demisto.com) |\n'
+            '| a3 |  | [url](https:\demisto.com) |\n'
+        )
+        assert table_url_missing_info == expected_table_url_missing_info
 
     @staticmethod
     def test_single_column():
@@ -7225,6 +7228,28 @@ class TestIsDemistoServerGE:
             }
         )
         assert not is_demisto_version_ge(version, build)
+
+
+class TestDeterminePlatform:
+    @classmethod
+    @pytest.fixture(scope='function', autouse=True)
+    def clear_cache(cls):
+        get_demisto_version._version = None
+
+    @pytest.mark.parametrize('demistoVersion, method', [
+        ({'platform': 'xsoar', 'version': '6.5.0'}, is_xsoar),
+        ({'platform': 'xsoar', 'version': '8.2.0'}, is_xsoar),
+        ({'platform': 'xsoar_hosted', 'version': '6.5.0'}, is_xsoar),
+        ({'platform': 'x2', 'version': '8.2.0'}, is_xsiam_or_xsoar_saas),
+        ({'platform': 'xsoar', 'version': '8.2.0'}, is_xsiam_or_xsoar_saas),
+        ({'platform': 'xsoar', 'version': '6.5.0'}, is_xsoar_on_prem),
+        ({'platform': 'xsoar_hosted', 'version': '6.5.0'}, is_xsoar_hosted),
+        ({'platform': 'xsoar', 'version': '8.2.0'}, is_xsoar_saas),
+        ({'platform': 'x2', 'version': '8.2.0'}, is_xsiam),
+    ])
+    def test_determine_platform(self, mocker, demistoVersion, method):
+        mocker.patch.object(demisto, 'demistoVersion', return_value=demistoVersion)
+        assert method()
 
 
 def test_smart_get_dict():
