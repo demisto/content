@@ -27,10 +27,10 @@ class TestScoreCalculator:
             {
                 'preferredVendors': 'vt1, v2, vt3',
                 'preferredVendorsThreshold': 2,
-                'fileMaliciousThreshold': 1,
-                'ipMaliciousThreshold': 1,
-                'urlMaliciousThreshold': 1,
-                'domainMaliciousThreshold': 0,
+                'fileThreshold': 1,
+                'ipThreshold': 1,
+                'urlThreshold': 1,
+                'domainThreshold': 0,
                 'fileSuspiciousThreshold': 0,
                 'ipSuspiciousThreshold': 0,
                 'urlSuspiciousThreshold': 0,
@@ -39,8 +39,8 @@ class TestScoreCalculator:
                 'yaraRulesThreshold': 1,
                 'SigmaIDSThreshold': 1,
                 'domain_popularity_ranking': 1,
-                'relationshipMaliciousThreshold': 1,
-                'relationshipSuspiciousThreshold': 0
+                'relationship_threshold': 1,
+                'relationship_suspicious_threshold': 0
             }
         )
 
@@ -218,10 +218,10 @@ DEFAULT_PARAMS = {
     'url_relationships': '* cname records',
     'preferredVendors': 'vt1, v2, vt3',
     'preferredVendorsThreshold': 2,
-    'fileMaliciousThreshold': 1,
-    'ipMaliciousThreshold': 1,
-    'urlMaliciousThreshold': 1,
-    'domainMaliciousThreshold': 1,
+    'fileThreshold': 1,
+    'ipThreshold': 1,
+    'urlThreshold': 1,
+    'domainThreshold': 1,
     'fileSuspiciousThreshold': 0,
     'ipSuspiciousThreshold': 0,
     'urlSuspiciousThreshold': 0,
@@ -230,8 +230,8 @@ DEFAULT_PARAMS = {
     'yaraRulesThreshold': 1,
     'SigmaIDSThreshold': 1,
     'domain_popularity_ranking': 1,
-    'relationshipMaliciousThreshold': 1,
-    'relationshipSuspiciousThreshold': 0,
+    'relationship_threshold': 1,
+    'relationship_suspicious_threshold': 0,
     'is_premium_api': 'false',
     'feedReliability': 'A - Completely reliable',
     'insecure': 'false',
@@ -327,10 +327,12 @@ def test_ip_command(mocker, requests_mock):
 
     assert results[1].execution_metrics == [{'APICallsCount': 1, 'Type': 'Successful'}]
     assert results[0].execution_metrics is None
-    assert results[0].readable_output == 'Reputation lookups have been disabled for private IP addresses. Enrichment skipped for 192.168.0.1'
+    assert results[0].readable_output == ('Reputation lookups have been disabled for private IP addresses. '
+                                          'Enrichment skipped for 192.168.0.1')
 
     # Run command but enabling private IP enrichment after disabling it
-    mocker.patch.object(demisto, 'args', return_value={'ip': '192.168.0.1', 'extended_data': 'false', 'override_private_lookup': 'true'})
+    mocker.patch.object(demisto, 'args', return_value={'ip': '192.168.0.1', 'extended_data': 'false',
+                                                       'override_private_lookup': 'true'})
     results = ip_command(
         client=client, score_calculator=mocked_score_calculator,
         args=demisto.args(), relationships=ip_relationships,

@@ -659,7 +659,7 @@ class ScoreCalculator:
         )
         self.file_threshold = {
             'malicious': arg_to_number_must_int(
-                params['fileMaliciousThreshold'],
+                params['fileThreshold'],
                 arg_name='File Malicious Threshold',
                 required=True),
             'suspicious': arg_to_number_must_int(
@@ -669,7 +669,7 @@ class ScoreCalculator:
         }
         self.ip_threshold = {
             'malicious': arg_to_number_must_int(
-                params['ipMaliciousThreshold'],
+                params['ipThreshold'],
                 arg_name='IP Malicious Threshold',
                 required=True),
             'suspicious': arg_to_number_must_int(
@@ -679,7 +679,7 @@ class ScoreCalculator:
         }
         self.url_threshold = {
             'malicious': arg_to_number_must_int(
-                params['urlMaliciousThreshold'],
+                params['urlThreshold'],
                 arg_name='URL Malicious Threshold',
                 required=True),
             'suspicious': arg_to_number_must_int(
@@ -689,7 +689,7 @@ class ScoreCalculator:
         }
         self.domain_threshold = {
             'malicious': arg_to_number_must_int(
-                params['domainMaliciousThreshold'],
+                params['domainThreshold'],
                 arg_name='Domain Malicious Threshold',
                 required=True),
             'suspicious': arg_to_number_must_int(
@@ -711,11 +711,11 @@ class ScoreCalculator:
         )
         self.relationship_threshold = {
             'malicious': arg_to_number_must_int(
-                params['relationshipMaliciousThreshold'],
+                params['relationship_threshold'],
                 arg_name='Relationship Files Malicious Threshold',
                 required=True),
             'suspicious': arg_to_number_must_int(
-                params['relationshipSuspiciousThreshold'],
+                params['relationship_suspicious_threshold'],
                 arg_name='Relationship Files Suspicious Threshold',
                 required=True)
         }
