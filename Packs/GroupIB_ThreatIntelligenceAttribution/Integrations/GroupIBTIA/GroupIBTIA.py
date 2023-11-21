@@ -907,8 +907,8 @@ def transform_some_fields_into_markdown(collection_name, feed: dict) -> dict:
             date = i.get("dateCreated")
             # file_diff = "[https://bt.group-ib.com/api/v2/osi/git_leak]({0})".format(i.get("fileDiff"))
             # info = find_element_by_key(i,'revisions.info')
-            author_email = ''.join(find_element_by_key(i, 'revisions.info.authorEmail'))
-            author_name = ''.join(find_element_by_key(i, 'revisions.info.authorName'))
+            author_email = ''.join(str(find_element_by_key(i, 'revisions.info.authorEmail')))
+            author_name = ''.join(str(find_element_by_key(i, 'revisions.info.authorName')))
             timestamp = ''.join(str(find_element_by_key(i, 'revisions.info.timestamp')))
             # author_email, author_name, date = info.get("authorEmail"), info.get("authorName"), info.get("dateCreated")
             buffer += f"| {url} | {author_email} | {author_name} | {date} | {timestamp} |\n"
