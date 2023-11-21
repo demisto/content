@@ -85,7 +85,7 @@ class Client(BaseClient):
 
 def is_audit_interval(run, interval):
     # TODO: finish implementation
-    return False
+    return True
 
 
 def get_alerts_and_audit_logs(client: Client, add_audit_logs: bool, last_run: dict):
@@ -141,16 +141,30 @@ def update_last_run(last_run, alerts=None, audit_logs=None):
 
 
 def dedupe_audit_logs(audit_logs, last_audit_ids, max_audit_logs):
-    if audit_logs and last_audit_ids:
-        last_run_ids = set(last_audit_ids)
-        audit_logs = list(filter(lambda audit: audit[AUDIT_ID] not in last_run_ids, audit_logs))
+    if not audit_logs:
+        return audit_logs
+
+    last_run_ids = set(last_audit_ids)
+    new_audits = []
+    for audit in audit_logs:
+        if audit[AUDIT_ID] not in last_run_ids:
+            audit['_time'] = timestamp_to_datestring(audit[AUDIT_TIMESTAMP], is_utc=True)
+            new_audits.append(audit)
+    audit_logs = new_audits
     return audit_logs[:max_audit_logs]
 
 
 def dedupe_alerts(alerts, last_run):
-    if alerts and last_run.get(LAST_ALERT_TIME) == alerts[0][ALERT_TIMESTAMP]:
-        last_run_ids = set(last_run[LAST_ALERT_IDS])
-        alerts = list(filter(lambda alert: alert[ALERT_ID] not in last_run_ids, alerts))
+    if not alerts:
+        return alerts
+
+    last_run_ids = set(last_run[LAST_ALERT_IDS])
+    new_alerts = []
+    for alert in alerts:
+        if alert[ALERT_ID] not in last_run_ids:
+            alert['_time'] = alert[ALERT_TIMESTAMP]
+            new_alerts.append(alert)
+    alerts = new_alerts
     return alerts
 
 
@@ -171,19 +185,8 @@ def get_events(client: Client, last_run: dict, add_audit_logs: bool,
 
 
 def test_module(client: Client) -> str:
-    message: str = ''
-    try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
-        message = 'ok'
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-    return message
-
+    client.get_alerts(datetime.now().strftime(DATE_FORMAT), 1, 1)
+    return 'ok'
 
 ''' MAIN FUNCTION '''
 
@@ -202,7 +205,7 @@ def main() -> None:  # pragma: no cover
     params = demisto.params()
     command = demisto.command()
     vendor, product = params.get('vendor', 'vmware_carbon_black'), params.get('product', 'cloud')
-    # support_multithreading()  # audit_logs will be fetched async
+    # support_multithreading()  # audit_logs will be fetched on a separate thread
     demisto.debug(f'Command being called is {command}')
     try:
         last_run = init_last_run(demisto.getLastRun())
@@ -232,7 +235,7 @@ def main() -> None:  # pragma: no cover
             )
             demisto.debug(f'sending {len(events)} to xsiam')
             send_events_to_xsiam(events=events, vendor=vendor, product=product)
-            demisto.debug(f'Handled {len(events)} total events seconds')
+            demisto.debug(f'Handled {len(events)} total events')
             demisto.setLastRun(new_last_run)
     # Log exceptions and return errors
     except Exception as e:
