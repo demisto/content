@@ -422,14 +422,20 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_t
 def fetch_incidents(service: client.Service, mapper: UserMappingObject, comment_tag_to_splunk: str, comment_tag_from_splunk: str):
     if ENABLED_ENRICHMENTS:
         integration_context = get_integration_context()
+        demisto.debug(f'{demisto.getLastRun()=} {integration_context=}' )
         if not demisto.getLastRun() and integration_context:
             # In "Pull from instance" in Classification & Mapping the last run object is empty, integration context
             # will not be empty because of the enrichment mechanism. In regular enriched fetch, we use dummy data
             # in the last run object to avoid entering this case
+            demisto.debug('not enrichment 1')
+
             fetch_incidents_for_mapping(integration_context)
         else:
+            demisto.debug('enrichment')
             run_enrichment_mechanism(service, integration_context, mapper, comment_tag_to_splunk, comment_tag_from_splunk)
     else:
+        demisto.debug('not enrichment 2')
+
         fetch_notables(service=service, enrich_notables=False, mapper=mapper, comment_tag_to_splunk=comment_tag_to_splunk,
                        comment_tag_from_splunk=comment_tag_from_splunk)
 
@@ -1050,15 +1056,13 @@ def handle_submitted_notable(service: client.Service, notable: Notable, enrichme
                 try:
                     job = client.Job(service=service, sid=enrichment.id)
                     if job.is_done():
-                        demisto.debug(f'Handling open {enrichment.type} enrichment for notable {notable.id}')
-                        all_items = results.JSONResultsReader(job.results(output_mode=OUTPUT_MODE_JSON))
-                        demisto.debug(f'{notable.id} {enrichment.type} successful. {len(all_items)}')
-                        for item in all_items:
+                        demisto.debug(f'Handling {enrichment.type=} for notable {notable.id}')
+                        for item in results.JSONResultsReader(job.results(output_mode=OUTPUT_MODE_JSON)):
                             if handle_message(item):
                                 continue
                             enrichment.data.append(item)
                         enrichment.status = Enrichment.SUCCESSFUL
-                        demisto.debug(f'{notable.id} {enrichment.type} successful. {len(enrichment.data)=}')
+                        demisto.debug(f'{notable.id} {enrichment.type} status is successful. {len(enrichment.data)=}')
                     else:
                         demisto.debug(f'Enrichment {enrichment.type} for notable {notable.id} is still not done')
                 except Exception as e:
