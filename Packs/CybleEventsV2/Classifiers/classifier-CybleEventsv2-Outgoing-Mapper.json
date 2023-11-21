@@ -11,6 +11,9 @@
                 },
                 "severity": {
                     "simple": "severity"
+                },
+                "status": {
+                    "simple": "cybleeventsv2status"
                 }
             }
         }
