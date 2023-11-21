@@ -93,3 +93,8 @@ To limit the 'connectApi' service indicators list.
 | RecordedFutureFeed.RiskRule.Name | String | The risk rule name. | 
 | RecordedFutureFeed.RiskRule.Description | String | The risk rule description. | 
 | RecordedFutureFeed.RiskRule.Criticality | String | The risk rule criticality. | 
+
+
+### Troubleshooting
+
+If indicators expire unexpectedly, please ensure that the feed is not receiving more than 100,000 indicators per fetch. As it is discouraged to use "large" as a risk rule, we currently receive indicators in a single large CSV file containing up to 100,000 indicators. If Recorded Future has additional indicators to send, the CSV will be sorted in descending order based on the highest score. Consequently, some indicators may not pass through, leading to their expiration, particularly if the expiration is configured as "When removed from the feed" and they were present in our system from previous fetches.
