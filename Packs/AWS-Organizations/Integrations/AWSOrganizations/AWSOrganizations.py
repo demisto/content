@@ -650,9 +650,8 @@ def resource_tag_list_command(args: dict, aws_client: 'OrganizationsClient') -> 
             'Tag', next_token, tags, 'Key'
         ),
         readable_output=tableToMarkdown(
-            'AWS Organization Resource Tags',
+            f'AWS Organization *{args["resource_id"]}* Tags',
             tags, ['Key', 'Value'],
-            removeNull=True
         )
     )
 

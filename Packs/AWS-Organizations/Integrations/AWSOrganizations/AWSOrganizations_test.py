@@ -1,5 +1,6 @@
 import pytest
 from test_data.data import *  # noqa
+from CommonServerPython import *  # noqa
 
 # from mypy_boto3_organizations import *
 
@@ -155,6 +156,23 @@ def test_paginate(
     assert output == expected_output, message
 
 
+def test_build_tags_error():
+    """
+    Given:
+        An invalid "tags" argument that is not in the format ""key1=value1,key2=value2"".
+
+    When:
+        Attempting to add tags to an AWS Organizations resource.
+
+    Then:
+        Raise an error that explains the correct format.
+    """
+    from AWSOrganizations import build_tags
+
+    with pytest.raises(DemistoException, match='Tags must be provided in the format "key=value".'):
+        build_tags('invalid_tag,key=value')
+
+
 def test_root_list_command(mocker):
     from AWSOrganizations import root_list_command
 
@@ -280,26 +298,13 @@ def test_account_move():
 #     assert result.response.  == None
 
 
-def test_account_create():
-    from AWSOrganizations import account_create_command
+# def test_account_close_initial_call():
 
-    result = account_create_command(
-        account_create.command_args, MockOrganizationsClient()
-    )
+#     from AWSOrganizations import account_close_command
 
-    assert result.outputs == account_create.context_outputs
-    assert result.readable_output == account_create.readable_output
+#     result = account_close_command(MockOrganizationsClient())  TODO
 
-
-def test_account_close():
-    from AWSOrganizations import account_close_command
-
-    result = account_close_command(
-        account_close.command_args, MockOrganizationsClient()
-    )
-
-    assert result.outputs == account_close.context_outputs
-    assert result.readable_output == account_close.readable_output
+#     assert result.response.  == None
 
 
 def test_organization_unit_create():

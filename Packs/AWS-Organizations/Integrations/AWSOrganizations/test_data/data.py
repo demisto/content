@@ -336,20 +336,23 @@ class account_move(Data):
 
 
 class organization_unit_create(Data):
-    command_args = {"name": "name", "parent_id": "parent_id", "tags": "key1=value1,key2=value2"}
-    client_func_kwargs = {'ParentId': 'parent_id', 'Name': 'name', 'Tags': [{'key1': 'value1', 'key2': 'value2'}]}
+    command_args = {
+        "name": "name",
+        "parent_id": "parent_id",
+        "tags": "key1=value1,key2=value2",
+    }
+    client_func_kwargs = {
+        "ParentId": "parent_id",
+        "Name": "name",
+        "Tags": [
+            {"Key": "key1", "Value": "value1"},
+            {"Key": "key2", "Value": "value2"},
+        ],
+    }
     client_func_return = {
-        'OrganizationalUnit': {
-            'Id': 'id',
-            'Arn': 'arn',
-            'Name': 'name'
-        }
+        "OrganizationalUnit": {"Id": "id", "Arn": "arn", "Name": "name"}
     }
-    context_outputs = {
-        'Id': 'id',
-        'Arn': 'arn',
-        'Name': 'name'
-    }
+    context_outputs = {"Id": "id", "Arn": "arn", "Name": "name"}
     readable_output = """### AWS Organization Unit
 |Id|Name|Arn|
 |---|---|---|
@@ -369,7 +372,10 @@ class organization_unit_delete(Data):
 
 class organization_unit_rename(Data):
     command_args = {"organizational_unit_id": "organizational_unit_id", "name": "name"}
-    client_func_kwargs = {"OrganizationalUnitId": "organizational_unit_id", "Name": "name"}
+    client_func_kwargs = {
+        "OrganizationalUnitId": "organizational_unit_id",
+        "Name": "name",
+    }
     readable_output = """### AWS Organization Unit Renamed
 |Name|OrganizationalUnitId|
 |---|---|
@@ -379,48 +385,48 @@ class organization_unit_rename(Data):
 
 class policy_list(Data):
     command_args = {"policy_type": "AI Services Opt Out Policy"}
-    client_func_kwargs = {"Filter": 'AISERVICES_OPT_OUT_POLICY'}
+    client_func_kwargs = {"Filter": "AISERVICES_OPT_OUT_POLICY"}
     client_func_return = (
         [
             {
-                'Id': 'id1',
-                'Arn': 'arn1',
-                'Name': 'name1',
-                'Description': 'desc1',
-                'Type': 'type1',
-                'AwsManaged': True
+                "Id": "id1",
+                "Arn": "arn1",
+                "Name": "name1",
+                "Description": "desc1",
+                "Type": "type1",
+                "AwsManaged": True,
             },
             {
-                'Id': 'id2',
-                'Arn': 'arn2',
-                'Name': 'name2',
-                'Description': 'desc2',
-                'Type': 'type2',
-                'AwsManaged': False
+                "Id": "id2",
+                "Arn": "arn2",
+                "Name": "name2",
+                "Description": "desc2",
+                "Type": "type2",
+                "AwsManaged": False,
             },
         ],
-        'next_token'
+        "next_token",
     )
     context_outputs = [
         [
             {
-                'Id': 'id1',
-                'Arn': 'arn1',
-                'Name': 'name1',
-                'Description': 'desc1',
-                'Type': 'type1',
-                'AwsManaged': True
+                "Id": "id1",
+                "Arn": "arn1",
+                "Name": "name1",
+                "Description": "desc1",
+                "Type": "type1",
+                "AwsManaged": True,
             },
             {
-                'Id': 'id2',
-                'Arn': 'arn2',
-                'Name': 'name2',
-                'Description': 'desc2',
-                'Type': 'type2',
-                'AwsManaged': False
+                "Id": "id2",
+                "Arn": "arn2",
+                "Name": "name2",
+                "Description": "desc2",
+                "Type": "type2",
+                "AwsManaged": False,
             },
         ],
-        {'PolicyNextToken': 'next_token'}
+        {"PolicyNextToken": "next_token"},
     ]
     readable_output = """### AWS Organization Policies
 |Id|Arn|Name|Description|Type|AwsManaged|
@@ -432,48 +438,48 @@ class policy_list(Data):
 
 class target_policy_list(Data):
     command_args = {"policy_type": "Service Control Policy", "target_id": "target_id"}
-    client_func_kwargs = {"Filter": 'SERVICE_CONTROL_POLICY', "TargetId": "target_id"}
+    client_func_kwargs = {"Filter": "SERVICE_CONTROL_POLICY", "TargetId": "target_id"}
     client_func_return = (
         [
             {
-                'Id': 'id1',
-                'Arn': 'arn1',
-                'Name': 'name1',
-                'Description': 'desc1',
-                'Type': 'type1',
-                'AwsManaged': True
+                "Id": "id1",
+                "Arn": "arn1",
+                "Name": "name1",
+                "Description": "desc1",
+                "Type": "type1",
+                "AwsManaged": True,
             },
             {
-                'Id': 'id2',
-                'Arn': 'arn2',
-                'Name': 'name2',
-                'Description': 'desc2',
-                'Type': 'type2',
-                'AwsManaged': False
+                "Id": "id2",
+                "Arn": "arn2",
+                "Name": "name2",
+                "Description": "desc2",
+                "Type": "type2",
+                "AwsManaged": False,
             },
         ],
-        'next_token'
+        "next_token",
     )
     context_outputs = [
         [
             {
-                'Id': 'id1',
-                'Arn': 'arn1',
-                'Name': 'name1',
-                'Description': 'desc1',
-                'Type': 'type1',
-                'AwsManaged': True
+                "Id": "id1",
+                "Arn": "arn1",
+                "Name": "name1",
+                "Description": "desc1",
+                "Type": "type1",
+                "AwsManaged": True,
             },
             {
-                'Id': 'id2',
-                'Arn': 'arn2',
-                'Name': 'name2',
-                'Description': 'desc2',
-                'Type': 'type2',
-                'AwsManaged': False
+                "Id": "id2",
+                "Arn": "arn2",
+                "Name": "name2",
+                "Description": "desc2",
+                "Type": "type2",
+                "AwsManaged": False,
             },
         ],
-        {'TargetPolicyNextToken': 'next_token'}
+        {"TargetPolicyNextToken": "next_token"},
     ]
     readable_output = """### AWS Organization *target_id* Policies
 |Id|Arn|Name|Description|Type|AwsManaged|
@@ -487,25 +493,25 @@ class policy_get(Data):
     command_args = {"policy_id": "policy_id"}
     client_func_kwargs = {"PolicyId": "policy_id"}
     client_func_return = {
-        'Policy': {
-            'PolicySummary': {
-                'Id': 'id',
-                'Arn': 'arn',
-                'Name': 'name',
-                'Description': 'desc',
-                'Type': 'type',
-                'AwsManaged': True
+        "Policy": {
+            "PolicySummary": {
+                "Id": "id",
+                "Arn": "arn",
+                "Name": "name",
+                "Description": "desc",
+                "Type": "type",
+                "AwsManaged": True,
             },
-            'Content': ...
+            "Content": ...,
         }
     }
     context_outputs = {
-        'Id': 'id',
-        'Arn': 'arn',
-        'Name': 'name',
-        'Description': 'desc',
-        'Type': 'type',
-        'AwsManaged': True
+        "Id": "id",
+        "Arn": "arn",
+        "Name": "name",
+        "Description": "desc",
+        "Type": "type",
+        "AwsManaged": True,
     }
     readable_output = """### AWS Organization Policies
 |Id|Arn|Name|Description|Type|AwsManaged|
@@ -537,25 +543,86 @@ class policy_attach(Data):
 class policy_target_list(Data):
     command_args = {"policy_id": "policy_id"}
     client_func_kwargs = {"PolicyId": "policy_id"}
-    client_func_return = None
-    context_outputs = None
-    readable_output = """
+    client_func_return = (
+        [
+            {
+                "TargetId": "target_id1",
+                "Arn": "arn1",
+                "Name": "name1",
+                "Type": "type1",
+            },
+            {
+                "TargetId": "target_id2",
+                "Arn": "arn2",
+                "Name": "name2",
+                "Type": "type2",
+            },
+        ],
+        "next_token",
+    )
+    context_outputs = [
+        [
+            {
+                "TargetId": "target_id1",
+                "Arn": "arn1",
+                "Name": "name1",
+                "Type": "type1",
+                "PolicyId": "policy_id",
+            },
+            {
+                "TargetId": "target_id2",
+                "Arn": "arn2",
+                "Name": "name2",
+                "Type": "type2",
+                "PolicyId": "policy_id",
+            },
+        ],
+        {"PolicyTargetNextToken": "next_token"},
+    ]
+    readable_output = """### AWS Organization *policy_id* Targets
+|TargetId|Arn|Name|Type|
+|---|---|---|---|
+| target_id1 | arn1 | name1 | type1 |
+| target_id2 | arn2 | name2 | type2 |
 """
 
 
 class resource_tag_add(Data):
     command_args = {"resource_id": "resource_id", "tags": "key1=value1,key2=value2"}
-    client_func_kwargs = {}
-    client_func_return = None
-    context_outputs = None
-    readable_output = """
+    client_func_kwargs = {
+        "ResourceId": "resource_id",
+        "Tags": [
+            {"Key": "key1", "Value": "value1"},
+            {"Key": "key2", "Value": "value2"},
+        ],
+    }
+    readable_output = """### AWS Organization Resource Tagged
+|ResourceId|
+|---|
+| resource_id |
 """
 
 
 class resource_tag_list(Data):
     command_args = {"resource_id": "resource_id"}
-    client_func_kwargs = {}
-    client_func_return = None
-    context_outputs = None
-    readable_output = """
+    client_func_kwargs = {"ResourceId": "resource_id"}
+    client_func_return = (
+        [
+            {"Key": "key1", "Value": "value1"},
+            {"Key": "key2", "Value": "value2"},
+        ],
+        "next_token",
+    )
+    context_outputs = [
+        [
+            {"Key": "key1", "Value": "value1"},
+            {"Key": "key2", "Value": "value2"},
+        ],
+        {"TagNextToken": "next_token"},
+    ]
+    readable_output = """### AWS Organization *resource_id* Tags
+|Key|Value|
+|---|---|
+| key1 | value1 |
+| key2 | value2 |
 """
