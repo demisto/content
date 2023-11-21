@@ -200,9 +200,9 @@ def handle_assets(assets_last_run, assets):
         assets = list(filter(lambda asset: asset.get('id') != last_asset_id, assets))
 
     for asset in assets:
-        created_at = round(get_timestamp(arg_to_datetime(asset.get('last_scan_time'))))
-        if created_at > last_fetch:
-            last_fetch = created_at
+        last_scanned = round(get_timestamp(arg_to_datetime(asset.get('last_scan_time'))))
+        if last_scanned > last_fetch:
+            last_fetch = last_scanned
             assets_last_run.update({"asset_id": asset.get("id")})
     assets_last_run.update({'last_fetch': last_fetch + 1})
 
@@ -592,8 +592,6 @@ def main() -> None:  # pragma: no cover
 
     # transform minutes to seconds
     first_fetch: datetime = arg_to_datetime(params.get('first_fetch', '3 days'))  # type: ignore
-    arg_to_datetime(params.get("first_fetch_time_assets", "107 days"))
-    demisto.debug(f"scanned from is: {params.get('scanned_from')}")
     scanned_since: datetime = arg_to_datetime(params.get('scanned_from', '107') + ' days')  # type: ignore
     demisto.debug(f'Command being called is {command}')
     try:
@@ -656,7 +654,6 @@ def main() -> None:  # pragma: no cover
 
             send_events_to_xsiam(assets, product=PRODUCT, vendor=VENDOR)
             demisto.debug(f"done sending {len(assets)} assets to xsiam")
-            # demisto.updateModuleHealth({'eventsPulled': len(assets)})
 
             # todo: to be implemented in CSP once we have the api endpoint from xdr
             demisto.updateModuleHealth({'assetsPulled': len(assets)})
