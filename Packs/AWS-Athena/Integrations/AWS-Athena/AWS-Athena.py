@@ -98,6 +98,12 @@ def stop_query_command(args: dict, client):
         raise DemistoException(f"Failed to stop query '{query_execution_id}'.")
 
 
+@polling_function(
+    name=demisto.command(),
+    interval=arg_to_number(demisto.args().get('interval_in_seconds', 10)),
+    timeout=arg_to_number(demisto.args().get('timeout_in_seconds', 300)),
+    requires_polling_arg=True,
+)
 def get_query_execution_command(args: dict, client):
     query_execution_id: str = args['QueryExecutionId']
     raw_response = client.get_query_execution(QueryExecutionId=query_execution_id)
@@ -112,57 +118,33 @@ def get_query_execution_command(args: dict, client):
 
     response = raw_response['QueryExecution']
 
-    return CommandResults(
-        outputs_prefix='AWS.Athena.Query',
-        outputs_key_field='QueryExecutionId',
-        outputs=response,
-        raw_response=raw_response,
-        readable_output=tableToMarkdown('AWS Athena Query Execution', response),
+    return PollResult(
+        response=CommandResults(
+            outputs_prefix='AWS.Athena.Query',
+            outputs_key_field='QueryExecutionId',
+            outputs=response,
+            raw_response=raw_response,
+            readable_output=tableToMarkdown('AWS Athena Query Execution', response),
+        ),
+        continue_to_poll=(response['Status']['State'] in ('QUEUED', 'RUNNING')),
+        args_for_next_run=args,
     )
 
 
-@polling_function(
-    name=demisto.command(),
-    interval=arg_to_number(demisto.args().get('interval_in_seconds', 10)),
-    timeout=arg_to_number(demisto.args().get('timeout_in_seconds', 300)),
-    requires_polling_arg=True,
-)
 def get_query_results_command(args: dict, client):
     query_execution_id: str = args['QueryExecutionId']
-    polling: bool = argToBoolean(args["polling"])
-
-    try:
-        raw_response = client.get_query_results(QueryExecutionId=query_execution_id)
-
-    except client.exceptions.InvalidRequestException as e:
-        error_message: str = e.response['Message']
-
-        if polling and 'Query has not yet finished.' in error_message:
-            return PollResult(
-                response=None,
-                continue_to_poll=True,
-                partial_result=CommandResults(readable_output=error_message),
-                args_for_next_run=args
-            )
-
-        else:
-            raise
+    raw_response = client.get_query_results(QueryExecutionId=query_execution_id)
 
     parsed_response = parse_rows_response(rows_data=raw_response['ResultSet']['Rows'])
 
     for result_item in parsed_response:
         result_item['query_execution_id'] = query_execution_id
 
-    result = CommandResults(
+    return CommandResults(
         outputs_prefix='AWS.Athena.QueryResults',
         outputs=parsed_response,
         raw_response=raw_response,
         readable_output=tableToMarkdown('AWS Athena Query Results', parsed_response),
-    )
-
-    return PollResult(
-        response=result,
-        continue_to_poll=False,
     )
 
 
