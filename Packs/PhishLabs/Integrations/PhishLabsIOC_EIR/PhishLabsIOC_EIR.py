@@ -330,6 +330,7 @@ def fetch_incidents_command(
     incidents_raw: List = []
     # Set last run time
     occurred_format = '%Y-%m-%dT%H:%M:%SZ'
+    subcategories = [cat.replace(" ", "") for cat in subcategories]
     if not last_run:
         datetime_new_last_run, _ = parse_date_range(date_range=fetch_time,
                                                     date_format=occurred_format)
@@ -363,9 +364,12 @@ def fetch_incidents_command(
     incidents_report = []
     demisto.debug(f'Got {len(incidents_raw)} incidents from the API.')
     if incidents_raw:
+        demisto.debug(f" subcategories are {str(subcategories)}")
         for incident_raw in incidents_raw:
-            incident_subcategory = incident_raw.get('details', {}).get('subClassification')
+            incident_subcategory = incident_raw.get('details', {}).get('subClassification').replace(" ", "")
+            demisto.debug(f"Comparing incident with id {incident_raw.get('id')} with sub-category {incident_subcategory}")
             if subcategories and incident_subcategory and incident_subcategory not in subcategories:
+                demisto.debug(f"Couldnt find {incident_subcategory} in subcategories, skipping")
                 continue
             # Creates incident entry
             occurred = incident_raw.get('created')
