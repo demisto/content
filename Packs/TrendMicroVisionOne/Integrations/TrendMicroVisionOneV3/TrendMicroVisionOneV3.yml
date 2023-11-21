@@ -503,8 +503,6 @@ script:
       name: start
     - description: 'Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made.'
       name: end
-    - description: 'Number of records displayed on a page.'
-      name: top
     - description: 'List of fields to include in the search results. If no fields are specified, the query returns all supported fields.'
       name: select
     - description: Query Operator.
@@ -595,8 +593,6 @@ script:
       name: start
     - description: 'Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made.'
       name: end
-    - description: 'Number of records displayed on a page.'
-      name: top
     - description: 'List of fields to include in the search results. If no fields are specified, the query returns all supported fields.'
       name: select
     - description: Query Operator.

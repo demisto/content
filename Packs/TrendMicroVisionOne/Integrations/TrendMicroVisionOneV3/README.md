@@ -6,19 +6,19 @@ Trend Micro Vision One is a purpose-built threat defense platform that provides 
 2. Search for Trend Micro Vision One V3..
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter**                                 | **Description**                                            | **Required** |
-    | --------------------------------------------- | ---------------------------------------------------------- | ------------ |
+    | **Parameter**                                   | **Description**                                            | **Required** |
+    | ----------------------------------------------- | ---------------------------------------------------------- | ------------ |
     | API URL (e.g. <https://api.xdr.trendmicro.com>) | The base url for the Trend Micro Vision One API            | True         |
-    | API Key                                       | The API token to access data                               | True         |
-    | Fetch incidents                               |                                                            | False        |
-    | Incidents Fetch Interval                      |                                                            | False        |
-    | Incident type                                 |                                                            | False        |
-    | Sync On First Run (days)                      |                                                            | False        |
-    | Max Incidents                                 |                                                            | False        |
-    | Use system proxy settings                     |                                                            | False        |
-    | Trust any certificate (not secure)            |                                                            | False        |
-    | Source Reliability                            | Reliability of the source providing the intelligence data. | False        |
-    | Severity                                      | Severity of the incident being fetched.                    | False        |
+    | API Key                                         | The API token to access data                               | True         |
+    | Fetch incidents                                 |                                                            | False        |
+    | Incidents Fetch Interval                        |                                                            | False        |
+    | Incident type                                   |                                                            | False        |
+    | Sync On First Run (days)                        |                                                            | False        |
+    | Max Incidents                                   |                                                            | False        |
+    | Use system proxy settings                       |                                                            | False        |
+    | Trust any certificate (not secure)              |                                                            | False        |
+    | Source Reliability                              | Reliability of the source providing the intelligence data. | False        |
+    | Severity                                        | Severity of the incident being fetched.                    | False        |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -480,7 +480,6 @@ Displays total count of search results from the Endpoint Activity Data source th
 | fields            | Statement that allows you to retrieve a subset of the collected endpoint activity data.                                                                             | Required     |
 | start             | Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made. | Optional     |
 | end               | Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made.       | Optional     |
-| top               | Number of records displayed on a page.                                                                                                                              | Optional     |
 | select            | List of fields to include in the search results. If no fields are specified, the query returns all supported fields.                                                | Optional     |
 | query_op          | Query Operator. Possible values are: and, or.                                                                                                                       | Optional     |
 
@@ -546,7 +545,6 @@ Displays search results from the Email Activity Data source that match the param
 | fields            | Statement that allows you to retrieve a subset of the collected email activity data.                                                                                | Required     |
 | start             | Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made. | Optional     |
 | end               | Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made.       | Optional     |
-| top               | Number of records displayed on a page.                                                                                                                              | Optional     |
 | select            | List of fields to include in the search results. If no fields are specified, the query returns all supported fields.                                                | Optional     |
 | query_op          | Query Operator. Possible values are: and, or.                                                                                                                       | Optional     |
 

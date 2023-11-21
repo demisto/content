@@ -947,7 +947,6 @@ def get_endpoint_activity_data_count(
     """
     start = args.get(START, EMPTY_STRING)
     end = args.get(END, EMPTY_STRING)
-    top = args.get(TOP, EMPTY_STRING)
     select = args.get(SELECT, EMPTY_STRING).split(",")
     query_op = args.get(QUERY_OP, EMPTY_STRING)
     fields = json.loads(args.get(FIELDS, EMPTY_STRING))
@@ -955,7 +954,7 @@ def get_endpoint_activity_data_count(
     resp = v1_client.get_endpoint_activity_data_count(
         start_time=start,
         end_time=end,
-        top=top,
+        top=500,
         select=select,
         op=query_op,
         **fields,
@@ -1055,14 +1054,13 @@ def get_email_activity_data_count(
     fields = json.loads(args.get(FIELDS, EMPTY_STRING))
     start = args.get(START, EMPTY_STRING)
     end = args.get(END, EMPTY_STRING)
-    top = args.get(TOP, EMPTY_STRING)
     select = args.get(SELECT, EMPTY_STRING).split(",")
     query_op = args.get(QUERY_OP, EMPTY_STRING)
     # Make rest call
     resp = v1_client.get_email_activity_data_count(
         start_time=start,
         end_time=end,
-        top=top,
+        top=500,
         select=select,
         op=query_op,
         **fields,

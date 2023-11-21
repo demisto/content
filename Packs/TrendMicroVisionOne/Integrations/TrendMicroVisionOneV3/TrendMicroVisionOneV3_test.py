@@ -1270,7 +1270,6 @@ def test_get_endpoint_activity_data_count(mocker):
     args = {
         "start": "2022-10-04T08:22:37Z",
         "end": "2023-10-04T08:22:37Z",
-        "top": 500,
         "query_op": "or",
         "select": "dpt,dst,endpointHostName",
         "get_activity_data_count": "true",
@@ -1336,7 +1335,6 @@ def test_get_email_activity_data_count(mocker):
     args = {
         "start": "2022-10-04T08:22:37Z",
         "end": "2023-10-04T08:22:37Z",
-        "top": 50,
         "query_op": "or",
         "select": "mailFromAddresses,mailToAddresses",
         "fields": json.dumps(
