@@ -119,11 +119,13 @@ def mark_suspicious(suspicious_reason: str, entry_id: str, path: str, file_name:
 def run_shell_command(command: str, *args) -> bytes:
     """Runs shell command and returns the result if not encountered an error"""
     cmd = [command] + list(args)
+    demisto.debug(f'Running the shell command {cmd=}')
     completed_process = subprocess.run(
         cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE
     )
     exit_codes = completed_process.returncode
     error_string = completed_process.stderr.decode('utf-8')
+    demisto.debug(f'Got the following error: {exit_codes=},  {error_string=}')
     if exit_codes != 0:
         if 'PDF file is damaged' in error_string or 'Couldn\'t read xref table' in error_string:
             raise ShellException('PDf file is damaged/corrupted.')
@@ -166,12 +168,20 @@ def get_images_paths_in_path(path: str) -> List[str]:
     return res
 
 
-def get_pdf_metadata(file_path: str, user_password: str | None = None) -> dict:
+def get_pdf_metadata(file_path: str, user_or_owner_password: str | None = None) -> dict:
     """Gets the metadata from the pdf as a dictionary"""
-    if user_password:
-        metadata_txt = run_shell_command(
-            "pdfinfo", "-upw", user_password, file_path
-        )
+    if user_or_owner_password:
+        try:
+            demisto.debug('Trying password as user password, using the [upw] flag')
+            metadata_txt = run_shell_command(
+                "pdfinfo", "-upw", user_or_owner_password, file_path
+            )
+        except PdfInvalidCredentialsException:
+            demisto.debug('Trying password as owner password, using the [opw] flag')
+            metadata_txt = run_shell_command(
+                "pdfinfo", "-opw", user_or_owner_password, file_path
+            )
+        demisto.debug('PDF file has been successfully opened. Metadata has been retrieved.')
     else:
         metadata_txt = run_shell_command("pdfinfo", "-enc", "UTF-8", file_path)
     metadata = {}

@@ -70,7 +70,7 @@ script:
       - Finished
       - Canceled
       - Errors
-    - description: Specify a user login ID to get reports launched by the specified user login ID
+    - description: Specify a user login ID to get reports launched by the specified user login ID.
       name: user_login
     - description: Specify the date and time to get only reports that expire before it. use YYYY-MM-DD[THH:MM:SSZ] like “2007-07-01” or “2007-01-25T23:12:00Z” or today, yesterday, 24hr ago, 3 days ago, last week.
       name: expires_before_datetime
@@ -78,9 +78,9 @@ script:
       name: client_id
     - description: (Optional) Name of the client (Consultant type subscriptions). Note, The client_id and client_name parameters are mutually exclusive and cannot be specified together in the same request.
       name: client_name
-    - description: Specify a positive numeric value to limit the amount of results in the requested list
+    - description: Specify a positive numeric value to limit the amount of results in the requested list.
       name: limit
-    description: Get a list of generated reports in the system
+    description: Get a list of generated reports in the system.
     name: qualys-report-list
     outputs:
     - contextPath: Qualys.Report.ID
@@ -167,9 +167,9 @@ script:
       predefined:
       - '1'
       - '0'
-    - description: Specify a positive numeric value to limit the amount of results in the requested list
+    - description: Specify a positive numeric value to limit the amount of results in the requested list.
       name: limit
-    description: Lists vulnerability scans in the user’s account
+    description: Lists vulnerability scans in the user’s account.
     name: qualys-vm-scan-list
     outputs:
     - contextPath: Qualys.Scan.REF
@@ -263,9 +263,9 @@ script:
       predefined:
       - '1'
       - '0'
-    - description: Specify a positive numeric value to limit the amount of results in the requested list
+    - description: Specify a positive numeric value to limit the amount of results in the requested list.
       name: limit
-    description: Gives you a list of SCAP scans in your account
+    description: Gives you a list of SCAP scans in your account.
     name: qualys-scap-scan-list
     outputs:
     - contextPath: Qualys.SCAP.Scan.ID
@@ -301,9 +301,9 @@ script:
     - contextPath: Qualys.SCAP.Scan.UserLogin
       description: The user that created the scan.
   - arguments:
-    - description: Scan id
+    - description: Scan id.
       name: scan_id
-    - description: Scan reference
+    - description: Scan reference.
       name: scan_ref
     - description: Show only one or more scan states.
       name: state
@@ -359,7 +359,7 @@ script:
       name: client_id
     - description: (Optional) Name of the client (Consultant type subscriptions). Note, The client_id and client_name parameters are mutually exclusive and cannot be specified together in the same request.
       name: client_name
-    - description: Specify a positive numeric value to limit the amount of results in the requested list
+    - description: Specify a positive numeric value to limit the amount of results in the requested list.
       name: limit
     description: Get a list of compliance scans in your account.
     name: qualys-pc-scan-list
@@ -404,7 +404,7 @@ script:
     - description: (Optional) Specify 1 to include the notification settings for each schedule in the XML output.
       name: show_notifications
     - auto: PREDEFINED
-      description: (Optional) Launch a scan with a certain type
+      description: (Optional) Launch a scan with a certain type.
       name: scan_type
       predefined:
       - certview
@@ -417,9 +417,9 @@ script:
       name: client_id
     - description: (Optional) Name of the client (Consultant type subscription only). Parameter client_id or client_name may be specified for the same request.
       name: client_name
-    - description: Specify a positive numeric value to limit the amount of results in the requested list
+    - description: Specify a positive numeric value to limit the amount of results in the requested list.
       name: limit
-    description: Shows schedule scans
+    description: Shows schedule scans.
     name: qualys-schedule-scan-list
     outputs:
     - contextPath: Qualys.Scan.ID
@@ -533,7 +533,7 @@ script:
       predefined:
       - '0'
       - '1'
-    - description: 'Specify the name of the cloud provider to show the assets managed by the cloud provider. Valid values: ec2, google, azure'
+    - description: 'Specify the name of the cloud provider to show the assets managed by the cloud provider. Valid values: ec2, google, azure.'
       name: host_metadata
     - description: (Optional when host_metadata is specified) Specify metadata fields to only return data for certain attributes.
       name: host_metadata_fields
@@ -545,12 +545,12 @@ script:
       - '1'
     - description: (Optional when show_cloud_tags is specified) Specify cloud tags or cloud tag and name combinations to only return information for specified cloud tags. A cloud tag name and value combination is specified with a colon (for example:SomeTag6:AY_ec2). For each cloud tag, we show the cloud tag’s name, its value, and last success date (the tag last success date/time, fetched from instance). If this parameter is not specified and "show_cloud_tags" is set to 1, we will show all the cloud provider tags for the assets.
       name: cloud_tag_fields
-    - description: Specify a positive numeric value to limit the amount of results in the requested list
+    - description: Specify a positive numeric value to limit the amount of results in the requested list.
       name: limit
       auto: PREDEFINED
     - auto: PREDEFINED
       defaultValue: Basic
-      description: '(Optional) Show the requested amount of host information for each host. A valid value is: Basic, Basic/AGs, All, All/AGs, or None. AGs is equal to Asset Groups'
+      description: '(Optional) Show the requested amount of host information for each host. A valid value is: Basic, Basic/AGs, All, All/AGs, or None. AGs is equal to Asset Groups.'
       name: details
       predefined:
       - Basic
@@ -592,7 +592,7 @@ script:
       name: ip
     - description: Show only virtual hosts that have a certain port.
       name: port
-    - description: Specify a positive numeric value to limit the amount of results in the requested list
+    - description: Specify a positive numeric value to limit the amount of results in the requested list.
       name: limit
     description: View a list of virtual hosts in the user account.
     name: qualys-virtual-host-list
@@ -605,7 +605,7 @@ script:
       description: Fully qualified domain name.
   - arguments:
     - auto: PREDEFINED
-      description: Virtual host action to perform
+      description: Virtual host action to perform.
       name: action
       predefined:
       - create
@@ -632,7 +632,7 @@ script:
     - contextPath: Qualys.VirtualEndpoint.TEXT
       description: Result message of the executed action.
   - arguments:
-    - description: Get list of excluded hosts or addresses range
+    - description: Get list of excluded hosts or addresses range.
       name: ips
     - description: (Optional, and valid only when the Network Support feature is enabled for the user’s account) Restrict the request to a certain custom network ID.
       name: network_id
@@ -668,7 +668,7 @@ script:
       name: tag_set_include
     - description: (Optional when use_tags=1) Specify a tag set to exclude. Excluded hosts that match these tags will be ignored. You identify the tag set by providing tag names or IDs. Multiple entries are comma separated.
       name: tag_set_exclude
-    - description: Specify a positive numeric value to limit the amount of results in the requested list
+    - description: Specify a positive numeric value to limit the amount of results in the requested list.
       name: limit
     description: Show the excluded host list for the user's account. Hosts in your excluded host list will not be scanned.
     name: qualys-host-excluded-list
@@ -686,17 +686,17 @@ script:
     - contextPath: Qualys.Excluded.Host.Range
       description: Range of IP addresses.
   - arguments:
-    - description: Scheduled report ID
+    - description: Scheduled report ID.
       name: id
     - auto: PREDEFINED
-      description: Select is_active=1 for active or is_active=0 for inactive scheduled reports to view
+      description: Select is_active=1 for active or is_active=0 for inactive scheduled reports to view.
       name: is_active
       predefined:
       - '1'
       - '0'
-    - description: Specify a positive numeric value to limit the amount of results in the requested list
+    - description: Specify a positive numeric value to limit the amount of results in the requested list.
       name: limit
-    description: Get list of scheduled reports
+    description: Get list of scheduled reports.
     name: qualys-scheduled-report-list
     outputs:
     - contextPath: Qualys.Report.ID
@@ -737,9 +737,9 @@ script:
     - contextPath: Qualys.Report.SCHEDULE.TIME_ZONE.TIME_ZONE_DETAILS
       description: Timezone details of the scheduled report.
   - arguments:
-    - description: Specify a positive numeric value to limit the amount of results in the requested list
+    - description: Specify a positive numeric value to limit the amount of results in the requested list.
       name: limit
-    description: get list of report template for user
+    description: get list of report template for user.
     name: qualys-report-template-list
     outputs:
     - contextPath: Qualys.ReportTemplate.ID
@@ -833,9 +833,9 @@ script:
       predefined:
       - '0'
       - '1'
-    - description: Specify a positive numeric value to limit the amount of results in the requested list
+    - description: Specify a positive numeric value to limit the amount of results in the requested list.
       name: limit
-    description: download a list of vulnerabilities from Qualys’ KnowledgeBase
+    description: download a list of vulnerabilities from Qualys’ KnowledgeBase.
     name: qualys-vulnerability-list
     outputs:
     - contextPath: Qualys.Vulnerability.List.QID
@@ -887,7 +887,7 @@ script:
       name: id_min
     - description: Show only asset groups that have an ID less than or equal to the specified ID.
       name: id_max
-    - description: Specify the maximum number of asset group records to output. By default this is set to 1000 records. If you specify truncation_limit=0, the output is not paginated and all records are returned in a single output
+    - description: Specify the maximum number of asset group records to output. By default this is set to 1000 records. If you specify truncation_limit=0, the output is not paginated and all records are returned in a single output.
       name: truncation_limit
     - description: Optional and valid only when the Networks feature is enabled in your account) Restrict the request to certain network IDs. Multiple IDs are comma separated.
       name: network_ids
@@ -899,9 +899,9 @@ script:
       name: title
     - description: 'Show attributes for each asset group along with the ID. Your options are: None, All or a comma-separated list of attribute names: ID, TITLE, OWNER_USER_NAME, OWNER_USER_ID, OWNER_UNIT_ID, NETWORK_IDS, LAST_UPDATE, IP_SET, APPLIANCE_LIST, DOMAIN_LIST, DNS_LIST, NETBIOS_LIST, EC2_ID_LIST, HOST_IDS, ASSIGNED_USER_IDS, ASSIGNED_UNIT_IDS, BUSINESS_IMPACT, CVSS, COMMENTS.'
       name: show_attributes
-    - description: Specify a positive numeric value to limit the amount of results in the requested list
+    - description: Specify a positive numeric value to limit the amount of results in the requested list.
       name: limit
-    description: Get account asset groups
+    description: Get account asset groups.
     name: qualys-group-list
     outputs:
     - contextPath: Qualys.AssetGroup.ID
@@ -927,7 +927,7 @@ script:
       name: id
       required: true
     - auto: PREDEFINED
-      description: Type of the file of the report. Can be checked by calling the qualys-report-list command
+      description: Type of the file of the report. Can be checked by calling the qualys-report-list command.
       name: file_format
       predefined:
       - pdf
@@ -938,7 +938,7 @@ script:
       - docx
       - online
       required: true
-    description: Download report
+    description: Download report.
     name: qualys-report-fetch
     outputs:
     - contextPath: InfoFile.Name
@@ -969,7 +969,7 @@ script:
       name: client_id
     - description: Name of the client (Consultant type subscription only). Parameter client_id or client_name may be specified for the same request.
       name: client_name
-    description: Download scan results when scan has status Finished, Canceled, Paused or Error
+    description: Download scan results when scan has status Finished, Canceled, Paused or Error.
     name: qualys-vm-scan-fetch
     outputs:
     - contextPath: Qualys.VM.Dns
@@ -988,7 +988,7 @@ script:
     - description: 'The scan reference for a compliance scan. This will have the format: compliance/nnnnnnnnnn.nnnnn'
       name: scan_ref
       required: true
-    description: fetch scan results for a scan
+    description: fetch scan results for a scan.
     name: qualys-pc-scan-fetch
     outputs:
     - contextPath: Qualys.PC.USERNAME
@@ -1018,7 +1018,7 @@ script:
     - contextPath: Qualys.PC.STATUS
       description: Status of the scan.
   - arguments:
-    - description: Report ID
+    - description: Report ID.
       name: id
       required: true
     description: Cancel the running report.
@@ -1026,7 +1026,7 @@ script:
     name: qualys-report-cancel
     outputs:
     - contextPath: Qualys.Report.ID
-      description: ID of the canceled report
+      description: ID of the canceled report.
       type: String
     - contextPath: Qualys.ScheduleScan.DATETIME
       description: Date the command was executed.
@@ -1052,10 +1052,10 @@ script:
       description: Qualys response for the report deletion.
       type: String
   - arguments:
-    - description: Scorecard name for the vulnerability scorecard report
+    - description: Scorecard name for the vulnerability scorecard report.
       name: name
       required: true
-    - description: User-defined report title
+    - description: User-defined report title.
       name: report_title
     - auto: PREDEFINED
       defaultValue: xml
@@ -1068,7 +1068,7 @@ script:
       - xml
       - csv
       required: true
-    - description: The source asset groups for the report
+    - description: The source asset groups for the report.
       name: source
       required: true
     - auto: PREDEFINED
@@ -1079,9 +1079,9 @@ script:
       - '0'
     - description: The password to be used for encryption.
       name: pdf_password
-    - description: The report recipients in the form of one or more distribution groups
+    - description: The report recipients in the form of one or more distribution groups.
       name: recipient_group
-    - description: Specify users who will receive the email notification when the report is complete
+    - description: Specify users who will receive the email notification when the report is complete.
       name: recipient_group_id
     - description: The titles of asset groups to be used as source asset groups for the scorecard report.
       name: asset_groups
@@ -1202,7 +1202,7 @@ script:
     - description: 'The ID of the compliance option profile to be used. One of these parameters must be specified in a request: option_title or option_id. These are mutually exclusive and cannot be specified in the same request.'
       name: option_id
     - auto: PREDEFINED
-      description: Specify a value of 0 - 9 to set a processing priority level for the scan. When not specified, a value of 0 (no priority) is used. 0 = No Priority (the default), 1 = Emergency, 2 = Ultimate, 3 = Critical, 4 = Major, 5 = High, 6 = Standard, 7 = Medium, 8 = Minor, 9 = Low
+      description: Specify a value of 0 - 9 to set a processing priority level for the scan. When not specified, a value of 0 (no priority) is used. 0 = No Priority (the default), 1 = Emergency, 2 = Ultimate, 3 = Critical, 4 = Major, 5 = High, 6 = Standard, 7 = Medium, 8 = Minor, 9 = Low.
       name: priority
       predefined:
       - '0'
@@ -1251,7 +1251,7 @@ script:
       description: Value of the key.
   - arguments:
     - auto: PREDEFINED
-      description: One action required for the request
+      description: One action required for the request.
       name: action
       predefined:
       - cancel
@@ -1262,12 +1262,12 @@ script:
     - description: 'The scan reference for a vulnerability scan. This will have the format: scan/nnnnnnnnnn.nnnnn'
       name: scan_ref
       required: true
-    description: allows users to take actions on vulnerability scans in their account, like cancel, pause, resume, delete and fetch completed scan results
+    description: allows users to take actions on vulnerability scans in their account, like cancel, pause, resume, delete and fetch completed scan results.
     execution: true
     name: qualys-vm-scan-action
   - arguments:
     - auto: PREDEFINED
-      description: One action required for the request
+      description: One action required for the request.
       name: action
       predefined:
       - cancel
@@ -1358,9 +1358,9 @@ script:
     name: qualys-pc-scan-launch
     outputs:
     - contextPath: Qualys.Scan.KEY
-      description: Scan key, either ID or Reference
+      description: Scan key, either ID or Reference.
     - contextPath: Qualys.Scan.VALUE
-      description: Scan value, either value of ID or Reference
+      description: Scan value, either value of ID or Reference.
   - arguments:
     - description: 'The hosts you want to add to the subscription. '
       name: ips
@@ -1390,11 +1390,11 @@ script:
       required: true
     - description: The owner of the host asset(s). The owner must be a Manager or a Unit Manager.
       name: owner
-    - description: Values for user-defined fields 1, 2 and 3. You can specify a maximum of 128 characters
+    - description: Values for user-defined fields 1, 2 and 3. You can specify a maximum of 128 characters.
       name: ud1
-    - description: Values for user-defined fields 1, 2 and 3. You can specify a maximum of 128 characters
+    - description: Values for user-defined fields 1, 2 and 3. You can specify a maximum of 128 characters.
       name: ud2
-    - description: Values for user-defined fields 1, 2 and 3. You can specify a maximum of 128 characters
+    - description: Values for user-defined fields 1, 2 and 3. You can specify a maximum of 128 characters.
       name: ud3
     - description: User-defined comments.
       name: comment
@@ -1435,11 +1435,11 @@ script:
       - NETBIOS
     - description: The owner of the host asset(s). The owner must be a Manager or a Unit Manager.
       name: owner
-    - description: Values for user-defined fields 1, 2 and 3. You can specify a maximum of 128 characters
+    - description: Values for user-defined fields 1, 2 and 3. You can specify a maximum of 128 characters.
       name: ud1
-    - description: Values for user-defined fields 1, 2 and 3. You can specify a maximum of 128 characters
+    - description: Values for user-defined fields 1, 2 and 3. You can specify a maximum of 128 characters.
       name: ud2
-    - description: Values for user-defined fields 1, 2 and 3. You can specify a maximum of 128 characters
+    - description: Values for user-defined fields 1, 2 and 3. You can specify a maximum of 128 characters.
       name: ud3
     - description: User-defined comments.
       name: comment
@@ -1453,7 +1453,7 @@ script:
       description: Date & time of the action.
   - arguments:
     - auto: PREDEFINED
-      description: Select add/remove/remove_all ips
+      description: Select add/remove/remove_all ips.
       name: action
       predefined:
       - add
@@ -1463,7 +1463,7 @@ script:
     - description: User-defined notes (up to 1024 characters).
       name: comment
       required: true
-    - description: 'The IP addresses to be added to the excluded IPs list. Enter a comma-separated list of IPv4 singletons or ranges. For example: 10.10.10.13,10.10.10.25-10.10.10.29'
+    - description: 'The IP addresses to be added to the excluded IPs list. Enter a comma-separated list of IPv4 singletons or ranges. For example: 10.10.10.13,10.10.10.25-10.10.10.29.'
       name: ips
     - description: (Optional when action=add) The number of days the IPs being added to the excluded IPs list will be considered valid for exclusion. When the expiration is reached, the IPs are removed from the list and made available again for scanning. When unspecified, the IPs being added have no expiration and will remain on the list until removed by a user.
       name: expiry_days
@@ -1504,7 +1504,7 @@ script:
       name: report_refs
       required: true
     - auto: PREDEFINED
-      description: One output format may be specified
+      description: One output format may be specified.
       name: output_format
       predefined:
       - pdf
@@ -1524,7 +1524,7 @@ script:
       predefined:
       - '0'
       - '1'
-    - description: (Required for secure PDF distribution, Manager or Unit Manager only) Used for secure PDF report distribution when this feature is enabled in the user's account (under Reports > Setup > Report Share). The password to be used for encryption. - the password must have a minimum of 8 characters (ascii), and a maximum of 32 characters - the password must contain alpha and numeric characters - the password cannot match the password for the user’s Qualys account. - the password must follow the password security guidelines defined for your subscription (under Users > Setup > Security)
+    - description: (Required for secure PDF distribution, Manager or Unit Manager only) Used for secure PDF report distribution when this feature is enabled in the user's account (under Reports > Setup > Report Share). The password to be used for encryption. - the password must have a minimum of 8 characters (ascii), and a maximum of 32 characters - the password must contain alpha and numeric characters - the password cannot match the password for the user’s Qualys account. - the password must follow the password security guidelines defined for your subscription (under Users > Setup > Security).
       name: pdf_password
     - description: Used for secure PDF distribution. The report recipients in the form of one or more distribution group names, as defined using the Qualys UI. Multiple distribution groups are comma separated. A maximum of 50 distribution groups may be entered.
       name: recipient_group
@@ -1567,15 +1567,15 @@ script:
       name: recipient_group_id
     - description: '(Optional; Required for secure PDF distribution) The password to be used for encryption. Requirements: - the password must have a minimum of 8 characters (ascii), and a maximum of 32 characters - the password must contain alpha and numeric characters - the password cannot match the password for the user’s Qualys account. - the password must follow the password security guidelines defined for your subscription (log in and go to Subscription Setup—>Security Options).'
       name: pdf_password
-    - description: Optional; Optional for secure PDF distribution) The report recipients in the form of one or more distribution groups, as defined using the Qualys UI. Multiple distribution groups are comma separated. A maximum of 50 distribution groups may be entered. Chapter 4 — Report API Launch Report  recipient_group={value}
+    - description: Optional; Optional for secure PDF distribution) The report recipients in the form of one or more distribution groups, as defined using the Qualys UI. Multiple distribution groups are comma separated. A maximum of 50 distribution groups may be entered. Chapter 4 — Report API Launch Report  recipient_group={value}.
       name: recipient_group
-    - description: Specify IPs/ranges to change (override) the report target, as defined in the scan report template. Multiple IPs/ranges are comma separated. When specified, hosts defined in the report template are not included in the report. See also “Using Asset Tags.”
+    - description: Specify IPs/ranges to change (override) the report target, as defined in the scan report template. Multiple IPs/ranges are comma separated. When specified, hosts defined in the report template are not included in the report. See also “Using Asset Tags.”.
       name: ips
     - description: Specify asset group IDs to change (override) the report target, as defined in the scan report template. When specified, hosts defined in the report template are not included in the report. Looking for asset group IDs? Use the asset_group_list.php function (see the API v1 User Guide).
       name: asset_group_ids
     - description: Optional, and valid only when the Network Support feature is enabled for the user’s account) The ID of a network that is used to restrict the report’s target to the IPs/ranges specified in the“ips” parameter. Set to a custom network ID (note this does not filter IPs/ranges specified in “asset_group_ids”). Or set to “0” (the default) for the Global Default Network - this is used to report on hosts outside of your custom networks.
       name: ips_network_id
-    description: Run host based findings report
+    description: Run host based findings report.
     execution: true
     name: qualys-report-launch-host-based-findings
     outputs:
@@ -1614,11 +1614,11 @@ script:
       name: recipient_group_id
     - description: '(Optional; Required for secure PDF distribution) The password to be used for encryption. Requirements: - the password must have a minimum of 8 characters (ascii), and a maximum of 32 characters - the password must contain alpha and numeric characters - the password cannot match the password for the user’s Qualys account. - the password must follow the password security guidelines defined for your subscription (log in and go to Subscription Setup—>Security Options).'
       name: pdf_password
-    - description: Optional; Optional for secure PDF distribution) The report recipients in the form of one or more distribution groups, as defined using the Qualys UI. Multiple distribution groups are comma separated. A maximum of 50 distribution groups may be entered. Chapter 4 — Report API Launch Report  recipient_group={value}
+    - description: Optional; Optional for secure PDF distribution) The report recipients in the form of one or more distribution groups, as defined using the Qualys UI. Multiple distribution groups are comma separated. A maximum of 50 distribution groups may be entered. Chapter 4 — Report API Launch Report  recipient_group={value}.
       name: recipient_group
     - description: (Optional)  For a scan report, the report content will be restricted to the specified IPs/ranges. Multiple IPs and/or ranges are comma separated.
       name: ip_restriction
-    description: launches a scan report including scan based findings
+    description: launches a scan report including scan based findings.
     name: qualys-report-launch-scan-based-findings
     outputs:
     - contextPath: Qualys.Report.ID
@@ -1645,13 +1645,13 @@ script:
       name: recipient_group_id
     - description: '(Optional; Required for secure PDF distribution) The password to be used for encryption. Requirements: - the password must have a minimum of 8 characters (ascii), and a maximum of 32 characters - the password must contain alpha and numeric characters - the password cannot match the password for the user’s Qualys account. - the password must follow the password security guidelines defined for your subscription (log in and go to Subscription Setup—>Security Options).'
       name: pdf_password
-    - description: Optional; Optional for secure PDF distribution) The report recipients in the form of one or more distribution groups, as defined using the Qualys UI. Multiple distribution groups are comma separated. A maximum of 50 distribution groups may be entered. Chapter 4 — Report API Launch Report  recipient_group={value}
+    - description: Optional; Optional for secure PDF distribution) The report recipients in the form of one or more distribution groups, as defined using the Qualys UI. Multiple distribution groups are comma separated. A maximum of 50 distribution groups may be entered. Chapter 4 — Report API Launch Report  recipient_group={value}.
       name: recipient_group
-    - description: Specify IPs/ranges to change (override) the report target, as defined in the patch report template. Multiple IPs/ranges are comma separated. When specified, hosts defined in the report template are not included in the report. See also “Using Asset Tags.”
+    - description: Specify IPs/ranges to change (override) the report target, as defined in the patch report template. Multiple IPs/ranges are comma separated. When specified, hosts defined in the report template are not included in the report. See also “Using Asset Tags.”.
       name: ips
     - description: Specify IPs/ranges to change (override) the report target, as defined in the patch report template. Multiple asset group IDs are comma separated. When specified, hosts defined in the report template are not included in the report. Looking for asset group IDs? Use the asset_group_list.php function (see the API v1 User Guide).
       name: asset_group_ids
-    description: Run patch report
+    description: Run patch report.
     execution: true
     name: qualys-report-launch-patch
     outputs:
@@ -1685,7 +1685,7 @@ script:
       name: recipient_group_id
     - description: '(Optional; Required for secure PDF distribution) The password to be used for encryption. Requirements: - the password must have a minimum of 8 characters (ascii), and a maximum of 32 characters - the password must contain alpha and numeric characters - the password cannot match the password for the user’s Qualys account. - the password must follow the password security guidelines defined for your subscription (log in and go to Subscription Setup—>Security Options).'
       name: pdf_password
-    - description: Optional; Optional for secure PDF distribution) The report recipients in the form of one or more distribution groups, as defined using the Qualys UI. Multiple distribution groups are comma separated. A maximum of 50 distribution groups may be entered. Chapter 4 — Report API Launch Report  recipient_group={value}
+    - description: Optional; Optional for secure PDF distribution) The report recipients in the form of one or more distribution groups, as defined using the Qualys UI. Multiple distribution groups are comma separated. A maximum of 50 distribution groups may be entered. Chapter 4 — Report API Launch Report  recipient_group={value}.
       name: recipient_group
     - description: (Optional for remediation report) Specify IPs/ranges you want to include in the report. Multiple IPs and/or ranges are comma separated.
       name: ips
@@ -1697,7 +1697,7 @@ script:
       predefined:
       - User
       - All
-    description: Run remediation report
+    description: Run remediation report.
     execution: true
     name: qualys-report-launch-remediation
     outputs:
@@ -1711,7 +1711,7 @@ script:
       description: Qualys response for the launch remediation.
       type: String
   - arguments:
-    - description: The template ID of the report you want to launch. Can be found by running the command qualys-report-template-list
+    - description: The template ID of the report you want to launch. Can be found by running the command qualys-report-template-list.
       name: template_id
       required: true
     - description: A user-defined report title. The title may have a maximum of 128 characters. For a PCI compliance report, the report title is provided by Qualys and cannot be changed.
@@ -1722,7 +1722,7 @@ script:
       name: recipient_group_id
     - description: '(Optional; Required for secure PDF distribution) The password to be used for encryption. Requirements: - the password must have a minimum of 8 characters (ascii), and a maximum of 32 characters - the password must contain alpha and numeric characters - the password cannot match the password for the user’s Qualys account. - the password must follow the password security guidelines defined for your subscription (log in and go to Subscription Setup—>Security Options).'
       name: pdf_password
-    - description: Optional; Optional for secure PDF distribution) The report recipients in the form of one or more distribution groups, as defined using the Qualys UI. Multiple distribution groups are comma separated. A maximum of 50 distribution groups may be entered. Chapter 4 — Report API Launch Report  recipient_group={value}
+    - description: Optional; Optional for secure PDF distribution) The report recipients in the form of one or more distribution groups, as defined using the Qualys UI. Multiple distribution groups are comma separated. A maximum of 50 distribution groups may be entered. Chapter 4 — Report API Launch Report  recipient_group={value}.
       name: recipient_group
     - auto: PREDEFINED
       description: 'One output format may be specified. When output_format=pdf is specified, the Secure PDF Distribution may be used. '
@@ -1738,7 +1738,7 @@ script:
       name: asset_group_ids
     - description: For a PCI compliance report, either the technical or executive report, this parameter specifies the scan reference to include. A scan reference starts with the string “scan/” followed by a reference ID number. The scan reference must be for a scan that was run using the PCI Options profile. Only one scan reference may be specified. Reference can be found by running the command qualys-pc-scan-list.
       name: report_refs
-    description: Run compliance report
+    description: Run compliance report.
     execution: true
     name: qualys-report-launch-compliance
     outputs:
@@ -1763,7 +1763,7 @@ script:
       name: recipient_group_id
     - description: '(Optional; Required for secure PDF distribution) The password to be used for encryption. Requirements: - the password must have a minimum of 8 characters (ascii), and a maximum of 32 characters - the password must contain alpha and numeric characters - the password cannot match the password for the user’s Qualys account. - the password must follow the password security guidelines defined for your subscription (log in and go to Subscription Setup—>Security Options).'
       name: pdf_password
-    - description: Optional; Optional for secure PDF distribution) The report recipients in the form of one or more distribution groups, as defined using the Qualys UI. Multiple distribution groups are comma separated. A maximum of 50 distribution groups may be entered. Chapter 4 — Report API Launch Report  recipient_group={value}
+    - description: Optional; Optional for secure PDF distribution) The report recipients in the form of one or more distribution groups, as defined using the Qualys UI. Multiple distribution groups are comma separated. A maximum of 50 distribution groups may be entered. Chapter 4 — Report API Launch Report  recipient_group={value}.
       name: recipient_group
     - auto: PREDEFINED
       description: 'One output format may be specified. When output_format=pdf is specified, the Secure PDF Distribution may be used. '
@@ -1786,7 +1786,7 @@ script:
       name: host_id
     - description: Specifies a single instance on the selected host. The instance string may be “os” or a string like “oracle10:1:1521:ora10204u”.
       name: instance_string
-    description: Run compliance policy report
+    description: Run compliance policy report.
     execution: true
     name: qualys-report-launch-compliance-policy
     outputs:
@@ -1800,7 +1800,7 @@ script:
       description: Qualys response for the launch compliance policy.
       type: String
   - arguments:
-    - description: Specify a positive numeric value to limit the amount of results in the requested list
+    - description: Specify a positive numeric value to limit the amount of results in the requested list.
       name: limit
     description: Get the list of restricted IPs within the user's subscription.
     execution: true
@@ -1812,7 +1812,7 @@ script:
       description: List of the restricted IPs.
   - arguments:
     - auto: PREDEFINED
-      description: activate - enable or disable the restricted IPs feature. clear - clear all restricted IPs and de-active this feature. add - add restricted IPs. delete - delete restricted IPs. replace - replace restricted IPs
+      description: activate - enable or disable the restricted IPs feature. clear - clear all restricted IPs and de-active this feature. add - add restricted IPs. delete - delete restricted IPs. replace - replace restricted IPs.
       name: action
       predefined:
       - activate
@@ -2551,14 +2551,14 @@ script:
       description: Timezone code details.
       type: String
   - arguments:
-    - description: Record IDs to update
+    - description: Record IDs to update.
       name: ids
       required: true
-    - description: IPs specified will overwrite existing IPs in the record, and existing IPs will be removed
+    - description: IPs specified will overwrite existing IPs in the record, and existing IPs will be removed.
       name: add_ips
       required: true
     name: qualys-update-unix-record
-    description: Update Unix records for authenticated scans of hosts running on Unix
+    description: Update Unix records for authenticated scans of hosts running on Unix.
   - arguments:
     - description: Criteria field to search by predefined types.
       name: criteria
@@ -2571,7 +2571,7 @@ script:
       - name
       - id
       - criticalityScore
-    - description: "Operator assigned to the search criteria.\nAcceptable values are:\nparent - EQUALS, NOT EQUALS, IN\nprovider - EQUALS, NOT EQUALS, IN\nruleType - EQUALS, NOT EQUALS, IN\nname - CONTAINS, EQUALS, NOT EQUALS\nid - EQUALS, NOT EQUALS, IN, GREATER, LESSER\ncriticalityScore - EQUALS, NOT EQUALS, GREATER, LESSER"
+    - description: "Operator assigned to the search criteria.\nAcceptable values are:\nparent - EQUALS, NOT EQUALS, IN\nprovider - EQUALS, NOT EQUALS, IN\nruleType - EQUALS, NOT EQUALS, IN\nname - CONTAINS, EQUALS, NOT EQUALS\nid - EQUALS, NOT EQUALS, IN, GREATER, LESSER\ncriticalityScore - EQUALS, NOT EQUALS, GREATER, LESSER."
       name: operator
       required: true
     - description: Content to search.
@@ -2621,7 +2621,7 @@ script:
       - OPEN_PORTS
       - VULN_EXIST
       - STATIC
-    - description: "Criteria for the rule. \nOptional for STATIC rule type, required for the rest of the rule types. \nAcceptable formats for each Rule Type argument: \nNETWORK_RANGE - formats: 10.10.10.1-10.10.10.6 OR 10.10.10.0/24\nVULN_EXIST(QID) - format: 12345(int)\nOPEN_PORTS - format: 443,888,12034(int)\nNAME_CONTAINS - format: REGEX\nINSTALLED_SOFTWARE - format: REGEX\nSTATIC - *RULE TEXT OPTIONAL*"
+    - description: "Criteria for the rule. \nOptional for STATIC rule type, required for the rest of the rule types. \nAcceptable formats for each Rule Type argument: \nNETWORK_RANGE - formats: 10.10.10.1-10.10.10.6 OR 10.10.10.0/24\nVULN_EXIST(QID) - format: 12345(int)\nOPEN_PORTS - format: 443,888,12034(int)\nNAME_CONTAINS - format: REGEX\nINSTALLED_SOFTWARE - format: REGEX\nSTATIC - *RULE TEXT OPTIONAL*."
       name: rule_text
     - description: Criticality score of the asset tag. Values between 1 (lowest) and 5 (highest).
       name: criticality_score
@@ -2667,7 +2667,7 @@ script:
       - OPEN_PORTS
       - VULN_EXIST
       - STATIC
-    - description: "Criteria for the rule. \nOptional for STATIC rule type, required for the rest of the rule types. \nAcceptable formats for each Rule Type argument: \nNETWORK_RANGE - formats: 10.10.10.1-10.10.10.6 OR 10.10.10.0/24\nVULN_EXIST(QID) - format: 12345(int)\nOPEN_PORTS - format: 443,888,12034(int)\nNAME_CONTAINS - format: REGEX\nINSTALLED_SOFTWARE - format: REGEX\nSTATIC - *RULE TEXT OPTIONAL*"
+    - description: "Criteria for the rule. \nOptional for STATIC rule type, required for the rest of the rule types. \nAcceptable formats for each Rule Type argument: \nNETWORK_RANGE - formats: 10.10.10.1-10.10.10.6 OR 10.10.10.0/24\nVULN_EXIST(QID) - format: 12345(int)\nOPEN_PORTS - format: 443,888,12034(int)\nNAME_CONTAINS - format: REGEX\nINSTALLED_SOFTWARE - format: REGEX\nSTATIC - *RULE TEXT OPTIONAL*."
       name: rule_text
     - description: Comma-separated list of child tag ID's to remove.
       name: child_to_remove
@@ -2693,7 +2693,7 @@ script:
       name: ids
     - description: Purge host information for the defined IP addresses/ranges.
       name: ips
-    - description: Purge hosts belonging to asset groups with the defined IDs,
+    - description: Purge hosts belonging to asset groups with the defined IDs,.
       name: ag_ids
     - description: Purge hosts belonging to asset groups with the defined strings in the asset group title.
       name: ag_titles
@@ -2703,7 +2703,7 @@ script:
       name: no_vm_scan_since
     - description: Purge compliance hosts not scanned since the defined date and time.
       name: no_compliance_scan_since
-    - description: The type of data to purge. Specify “vm” to purge vulnerability data, specify “pc” to purge compliance data, or specify both as a comma-separated list to purge both types of data
+    - description: The type of data to purge. Specify “vm” to purge vulnerability data, specify “pc” to purge compliance data, or specify both as a comma-separated list to purge both types of data.
       name: data_scope
     - description: This parameter is valid only when the policy compliance module is enabled for the user account. Specify 1 to purge compliance hosts in the user's account. Specify 0 to purge hosts which are not assigned to the PC module.
       name: compliance_enabled
@@ -2718,7 +2718,7 @@ script:
     - contextPath: Qualys.Purge.ID
       description: IDs of the hosts queued for purging.
     description: Purge hosts in your account to remove the assessment data associated with them.
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.13.80014
   script: ''
   subtype: python3
   type: python
