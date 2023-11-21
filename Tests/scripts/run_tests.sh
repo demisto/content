@@ -92,7 +92,7 @@ else
   echo "Build failed for instance role: ${INSTANCE_ROLE}, server type:${SERVER_TYPE} with exit code: ${exit_code}"
 fi
 
-if [ -n "${ALLOW_FAILURE}" ]; then
+if [ -n "${FAIL_ON_ERROR}" ]; then
   if [ "${exit_code}" -eq 0 ]; then
     echo "Finish running server tests on instance role: ${INSTANCE_ROLE}, server type:${SERVER_TYPE} - exiting with code 0"
     exit 0

@@ -121,7 +121,7 @@ if [ -n "${CLOUD_CHOSEN_MACHINE_IDS}" ]; then
     echo "Failed testing Modeling Rules on at least one of the chosen machines"
   fi
 
-  if [ -n "${ALLOW_FAILURE}" ]; then
+  if [ -n "${FAIL_ON_ERROR}" ]; then
     if [ "${exit_code}" -eq 0 ]; then
       echo "Finish running test modeling rules, exiting with code 0"
       exit 0

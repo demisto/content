@@ -284,7 +284,7 @@ demisto-sdk-nightly:run-end-to-end-tests-general:
       TUNNEL_PORT=$(cat "${ENV_RESULTS_PATH}" | jq "map(select(.Role == \"$INSTANCE_ROLE\")) | .[].TunnelPort")
       export DEMISTO_BASE_URL="https://$(cat "${ENV_RESULTS_PATH}" | jq -r '.[0].InstanceDNS')"
       echo "Server URL: $DEMISTO_BASE_URL"
-      unset DEMISTO_API_KEY # a temporary fix 
+
       python3 -m pytest ${ARTIFACTS_FOLDER}/demisto-sdk/tests_end_to_end/${E2E_TEST_FOLDER} || EXIT_CODE=$?
     - section_end "End to End Tests"
 
@@ -313,7 +313,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
     ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER}/instance_${INSTANCE_ROLE}"
     ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER}/server_type_${SERVER_TYPE}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json"
-    ALLOW_FAILURE: "true"
+    FAIL_ON_ERROR: "true"
     E2E_TEST_FOLDER: "xsoar"
   needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
   stage: run-instances
@@ -336,10 +336,8 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
       mkdir $ARTIFACTS_FOLDER/demisto-sdk
       git clone -b ${SDK_REF} --single-branch --depth 1 https://github.com/demisto/demisto-sdk.git $ARTIFACTS_FOLDER/demisto-sdk
 
-      TUNNEL_PORT=$(cat "${ENV_RESULTS_PATH}" | jq "map(select(.Role == \"$INSTANCE_ROLE\")) | .[].TunnelPort")
       export DEMISTO_BASE_URL="https://$(cat "${ENV_RESULTS_PATH}" | jq -r '.[0].InstanceDNS')"
       echo "Server URL: $DEMISTO_BASE_URL"
-      unset DEMISTO_API_KEY # a temporary fix 
       python3 -m pytest ${ARTIFACTS_FOLDER}/demisto-sdk/tests_end_to_end/${E2E_TEST_FOLDER} || EXIT_CODE=$?
     - section_end "End to End Tests"
 
@@ -400,7 +398,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsiam:
       NON_REMOVABLE_PACKS: "Base"
       EXTRACT_PRIVATE_TESTDATA: "true"
       NIGHTLY: "true"
-      ALLOW_FAILURE: "true"
+      FAIL_ON_ERROR: "true"
       E2E_TEST_FOLDER: "xsiam"
       PRODUCT_TYPE: "XSIAM"
       ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_MPV2}/server_type_${SERVER_TYPE}"
@@ -459,7 +457,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
     MARKETPLACE_NAME: "xsoar_saas"
     NON_REMOVABLE_PACKS: "Base"
     NIGHTLY: "true"
-    ALLOW_FAILURE: "true"
+    FAIL_ON_ERROR: "true"
     E2E_TEST_FOLDER: "xsoar-saas"
     PRODUCT_TYPE: "XSOAR"
     CLOUD_API_TOKENS: $XSIAM_TOKENS
