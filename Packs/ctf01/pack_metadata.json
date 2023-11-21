@@ -18,6 +18,10 @@
         "CTF02": {
             "mandatory": false,
             "display_name": "Capture The Flag - 02"
+        },
+        "CortexXDR": {
+            "mandatory": true,
+            "display_name": "Cortex XDR by Palo Alto Networks"
         }
     },
     "marketplaces": [
