@@ -439,6 +439,41 @@ script:
     - contextPath: Varonis.Event.Path
       description: Path of asset
       type: String
+  - arguments:
+      - default: false
+        description: List of requested threat model ids
+        isArray: true
+        name: id
+        required: false
+        secret: false
+      - default: false
+        description: List of requested threat model names
+        isArray: true
+        name: name
+        required: false
+        secret: false  
+      - default: false
+        description: List of requested threat model categories
+        isArray: true
+        name: category
+        required: false
+        secret: false
+      - default: false
+        description: List of requested threat model severities
+        isArray: true
+        name: severity
+        required: false
+        secret: false
+      - default: false
+        description: List of requested threat model sources
+        isArray: true
+        name: source
+        required: false
+        secret: false
+    deprecated: false
+    description: Get Varonis threat models
+    execution: false
+    name: varonis-threat-models
   dockerimage: demisto/ntlm:1.0.0.78782
   feed: false
   isfetch: true

@@ -270,6 +270,16 @@ class EventAttributes:
     ]
 
 
+class ThreatModelAttributes:
+    Id = "ruleID"
+    Name = "ruleName"
+    Category = "ruleArea"
+    Source = "ruleSource"
+    Severity = "severity"
+
+    Columns = [Id, Name, Category, Source, Severity]
+
+
 class AlertItem:
     def __init__(self):
         self.ID: str = None
@@ -347,6 +357,23 @@ class EventItem:
         self.OnAccountIsDisabled: Optional[bool] = None
         self.OnAccountIsLockout: Optional[bool] = None
         self.Path: Optional[str] = None
+
+    def __getitem__(self, key: str) -> Any:
+        if hasattr(self, key):
+            return getattr(self, key)
+        raise KeyError(f"{key} not found in EventItem")
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {key: value for key, value in self.__dict__.items() if value is not None}
+
+
+class ThreatModelItem:
+    def __init__(self):
+        self.Id: Optional[str] = None
+        self.Name: Optional[List[str]] = None
+        self.Category: Optional[str] = None
+        self.Severity: Optional[str] = None
+        self.Source: Optional[str] = None
 
     def __getitem__(self, key: str) -> Any:
         if hasattr(self, key):
@@ -534,6 +561,26 @@ class SearchEventObjectMapper(BaseMapper):
         return None
 
 
+class ThreatModelObjectMapper(BaseMapper):
+    def map(self, json_data):
+        key_valued_objects = json_data
+
+        mapped_items = []
+        for obj in key_valued_objects:
+            mapped_items.append(self.map_item(obj).to_dict())
+
+        return mapped_items
+
+    def map_item(self, row: dict) -> ThreatModelItem:
+        threat_model_item = ThreatModelItem()
+        threat_model_item.ID = row[ThreatModelAttributes.Id]
+        threat_model_item.Name = row[ThreatModelAttributes.Name]
+        threat_model_item.Category = row[ThreatModelAttributes.Category]
+        threat_model_item.Source = row[ThreatModelAttributes.Source]
+        threat_model_item.Severity = row[ThreatModelAttributes.Severity]
+
+        return threat_model_item
+
 ''' CLIENT CLASS '''
 
 
@@ -695,7 +742,7 @@ class Client(BaseClient):
                 .set_path("Alert.Device.HostName")\
                 .set_operator("In")
             for device_name in device_names:
-                rules_condition.add_value({"Alert.Device.HostName": device_name, "displayValue": device_name})
+                device_condition.add_value({"Alert.Device.HostName": device_name, "displayValue": device_name})
             search_request.query.filter.add_filter(device_condition)
 
         if user_names and len(user_names) > 0:
@@ -1121,6 +1168,96 @@ def test_module_command(client: Client) -> str:
     return message
 
 
+def varonis_threat_models_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """Get threaat models from Varonis DA
+
+    :type client: ``Client``
+    :param client: Http client
+
+    :type args: ``Dict[str, Any]``
+    :param args:
+        all command arguments, usually passed from ``demisto.args()``.
+        ``args['id'] = None  # List of requested threat model ids
+        ``args['name'] = None  # List of requested threat model names
+        ``args['category'] = None  # List of requested threat model categories
+        ``args['severity'] = None  # List of requested threat model severities
+        ``args['source'] = None  # List of requested threat model sources
+
+    :return:
+        A ``CommandResults`` object
+
+    :rtype: ``CommandResults``
+    """
+
+    id = args.get('id', None)
+    name = args.get('name', None)
+    category = args.get('category', None)
+    severity = args.get('severity', None)
+    source = args.get('source', None)
+
+    id = try_convert(id, lambda x: argToList(x))
+    name = try_convert(name, lambda x: argToList(x))
+    category = try_convert(category, lambda x: argToList(x))
+    severity = try_convert(severity, lambda x: argToList(x))
+    source = try_convert(source, lambda x: argToList(x))
+
+    id_int = []
+    if id:
+        for id_item in id:
+            value = try_convert(
+                id_item,
+                lambda x: int(x),
+                ValueError(f'id should be integer, but it is {id_item}.')
+            )
+            id_int.append(value)
+
+    threat_models = client.varonis_get_enum(THREAT_MODEL_ENUM_ID)
+    mapper = ThreatModelObjectMapper()
+    mapped_items = mapper.map(threat_models)
+
+    def filter_threat_model_items(items, criteria):
+        filtered_items = []
+        # criteria is a dict of key: value or key: list of values
+        keys = criteria.keys()
+
+        for item in items:
+            isMatch = True
+            for key in keys:
+                criteria_match = False
+                if criteria[key] and len(criteria[key]) > 0:
+                    for value in criteria[key]:
+                        if isinstance(value, str) and value in str(item[key]) or value == item[key]:
+                            criteria_match = True
+                            break
+                    if not criteria_match:
+                        isMatch = False
+                        break
+            if isMatch:
+                filtered_items.append(item)
+
+        return filtered_items
+
+    filtered_items = filter_threat_model_items(mapped_items, {
+        'ID': id_int,
+        'Name': name,
+        'Category': category,
+        'Severity': severity,
+        'Source': source
+    })
+
+    outputs = dict()
+    outputs['threat_models'] = filtered_items
+
+    readable_output = tableToMarkdown('Varonis Alerts', mapped_items, headers=['ID', 'Name', 'Category', 'Severity', 'Source'])
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Varonis',
+        outputs_key_field='Varonis.Alert.ID',
+        outputs=outputs
+    )
+
+
 def fetch_incidents_command(client: Client, last_run: Dict[str, datetime], first_fetch_time: Optional[datetime],
                             alert_status: Optional[str], threat_model: Optional[str], severity: Optional[str]
                             ) -> Tuple[Dict[str, Optional[datetime]], List[dict]]:
@@ -1465,9 +1602,10 @@ def main() -> None:
     args = demisto.args()
 
     if not is_xsoar_env():
-        url = 'https://devc275a.varonis-preprod.com'
-        apiKey = 'vkey1_0b706936df8d471fb36b1cac63b1dc04_Mv9UZtoihlqGQYWRIsXQXilD73vsbvr7t4ZAUvio7eA='
-        command = 'varonis-get-alerts'  # 'test-module'|
+        url = 'https://intb3b67.varonis-preprod.com'
+        apiKey = 'vkey1_511d3e6d197a4ea4ae8cb282921bece3_dXZu1JKQxZFVWRJbHQMFIF8QZe5Dod/fSmDbPrh6kEE='
+        command = 'varonis-threat-models'  # 'test-module'|
+        # 'varonis-threat-models'|
         # 'varonis-get-alerts'|
         # 'varonis-get-alerted-events'|
         # 'varonis-update-alert-status'|
@@ -1487,6 +1625,14 @@ def main() -> None:
 
         if command == 'test-module':
             pass
+
+        if command == 'varonis-threat-models':
+            args['id'] = "1,2,3"  # List of requested threat model ids
+            args['name'] = None  # "Abnormal service behavior: access to atypical folders,Abnormal service behavior: access to atypical files"  # List of requested threat model names
+            args['category'] = None  # "Exfiltration,Reconnaissance"  # List of requested threat model categories
+            args['severity'] = None  # "3 - Error,4 - Warning"  # List of requested threat model severities
+            args['source'] = None  # "Predefined"  # List of requested threat model sources
+            
         elif command == 'varonis-get-alerts':
             args['threat_model_name'] = None  # List of requested threat models
             args['ingest_time_from'] = None  # Start ingest time of the range of alerts
@@ -1541,7 +1687,12 @@ def main() -> None:
 
         client.varonis_authenticate(apiKey)
 
-        if command == 'test-module':
+        if command == 'varonis-threat-models':
+            # This is the call made when pressing the integration Test button.
+            result = varonis_threat_models_command(client, args)
+            return_results(result)
+
+        elif command == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module_command(client)
             return_results(result)
