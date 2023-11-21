@@ -118,4 +118,4 @@ script:
 tests:
 - No tests
 fromversion: 5.0.0
-defaultmapperin: classifier-mapper-incoming-Cybersixgill-Actionable-Alerts
+defaultmapperin: Cybersixgill Actionable Alerts Incoming Mapper

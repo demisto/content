@@ -1,7 +1,7 @@
 {
 	"description": "",
 	"feed": false,
-	"id": "classifier-mapper-incoming-Cybersixgill-Actionable-Alerts",
+	"id": "Cybersixgill Actionable Alerts Incoming Mapper",
 	"mapping": {
 		"Cybersixgill Actionable Alerts": {
 			"dontMapEventToLabels": true,
@@ -24,7 +24,7 @@
 			}
 		}
 	},
-	"name": "classifier-mapper-incoming-Cybersixgill-Actionable-Alerts",
+	"name": "Cybersixgill Actionable Alerts Incoming Mapper",
 	"type": "mapping-incoming",
 	"version": -1,
     "fromVersion": "6.10.0"
