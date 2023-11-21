@@ -21,6 +21,13 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "playbook-AzureLogAnalytics-test",
+            "integrations": "Azure Log Analytics",
+            "instance_name" : "Azure_Log_Analytics_client_cred",
+            "timeout": 800,
+            "is_mockable": false
+        },
+        {
             "playbookID": "Test Playbook - NGFW Scan",
             "integrations": "VirusTotal (API v3)",
             "instance_names": "virus_total_v3",
@@ -4668,7 +4675,7 @@
         {
             "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_File",
             "fromversion": "6.1.0",
-            "memory_threshold": 150,
+            "memory_threshold": 200,
             "integrations": [
                 "CrowdStrike Falcon X"
             ],
@@ -5323,7 +5330,13 @@
             "playbookID": "FormatURL-Test"
         },
         {
+            "playbookID": "TestGetErrorsFromEntry"
+        },
+        {
             "playbookID": "IPToHost - Test"
+        },
+        {
+            "playbookID": "TestIsInCidrRanges"
         },
         {
             "playbookID": "NetskopeAPIv1 Test",
@@ -6196,3 +6209,4 @@
         "IPv6 extraction test"
     ]
 }
+
