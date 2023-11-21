@@ -573,7 +573,8 @@ class Client(BaseClient):
         self.headers["authorization"] = f'{token_type} {token}'
         return response
 
-    def varonis_get_alerts(self, ruleIds: Optional[List[str]], alertIds: Optional[List[str]], start_time: Optional[datetime],
+    def varonis_get_alerts(self, threat_model_names: Optional[List[str]],
+                           alertIds: Optional[List[str]], start_time: Optional[datetime],
                            end_time: Optional[datetime], ingest_time_from: Optional[datetime],
                            ingest_time_to: Optional[datetime], device_names: Optional[List[str]],
                            user_names: Optional[List[str]],
@@ -583,8 +584,8 @@ class Client(BaseClient):
                            descending_order: bool) -> List[Dict[str, Any]]:
         """Get alerts
 
-        :type ruleIds: ``Optional[List[str]]``
-        :param ruleIds: List of threat models to filter by
+        :type threat_model_names: ``Optional[List[str]]``
+        :param threat_model_names: List of threat models to filter by
 
         :type alertIds: ``Optional[List[str]]``
         :param alertIds: List of alertIds to filter by
@@ -673,20 +674,20 @@ class Client(BaseClient):
                     .add_value({"Alert.TimeUTC": last_days, "displayValue": last_days})
             search_request.query.filter.add_filter(time_condition)
 
-        if ruleIds and len(ruleIds) > 0:
-            rules_condition = FilterCondition()\
-                .set_path("Alert.Rule.ID")\
+        if threat_model_names and len(threat_model_names) > 0:
+            rule_condition = FilterCondition()\
+                .set_path("Alert.Rule.Name")\
                 .set_operator("In")
-            for alertId in ruleIds:
-                rules_condition.add_value({"Alert.Rule.ID": alertId, "displayValue": "New"})
-            search_request.query.filter.add_filter(rules_condition)
+            for threat_model_name in threat_model_names:
+                rule_condition.add_value({"Alert.Rule.Name": threat_model_name, "displayValue": "New"})
+            search_request.query.filter.add_filter(rule_condition)
 
         if alertIds and len(alertIds) > 0:
             alert_condition = FilterCondition()\
                 .set_path("Alert.ID")\
                 .set_operator("In")
             for alertId in alertIds:
-                rules_condition.add_value({"Alert.ID": alertId, "displayValue": "New"})
+                alert_condition.add_value({"Alert.ID": alertId, "displayValue": "New"})
             search_request.query.filter.add_filter(alert_condition)
 
         if device_names and len(device_names) > 0:
@@ -916,25 +917,6 @@ def get_included_severitires(severity: Optional[str]) -> List[str]:
         severities.remove('medium')
 
     return severities
-
-
-def validate_threat_models(client: Client, threat_models: List[str]):
-    """ Validates if threat models exist in Varonis
-
-    :type client: ``Client``
-    :param client: Http client
-
-    :type threat_models: ``Optional[List[str]]``
-    :param threat_model: List of threat model names of alerts to fetch
-
-    """
-
-    rules_enum = client.varonis_get_enum(THREAT_MODEL_ENUM_ID)
-    for threat_model in threat_models:
-        rule = next((r for r in rules_enum if strEqual(r['ruleName'], threat_model)), None)
-
-        if not rule:
-            raise ValueError(f'There is no threat model with name {threat_model}.')
 
 
 def try_convert(item, converter, error=None):
@@ -1174,8 +1156,6 @@ def fetch_incidents_command(client: Client, last_run: Dict[str, datetime], first
     """
 
     threat_model_names = argToList(threat_model)
-    if threat_model_names and len(threat_model_names) > 0:
-        validate_threat_models(client, threat_model_names)
 
     incidents: List[Dict[str, Any]] = []
 
@@ -1195,9 +1175,7 @@ def fetch_incidents_command(client: Client, last_run: Dict[str, datetime], first
 
     severities = get_included_severitires(severity)
 
-    ruleIds = get_rule_ids(client, threat_model_names)
-
-    alerts = client.varonis_get_alerts(ruleIds=ruleIds, alertIds=None, start_time=None, end_time=None,
+    alerts = client.varonis_get_alerts(threat_model_names=threat_model_names, alertIds=None, start_time=None, end_time=None,
                                        device_names=None, user_names=None, last_days=None,
                                        ingest_time_from=last_fetched_ingest_time,
                                        ingest_time_to=ingest_time_to,
@@ -1326,9 +1304,7 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
             if status.lower() not in ALERT_STATUSES.keys():
                 raise ValueError(f'There is no status {status}.')
 
-    ruleIds = get_rule_ids(client, threat_model_names)
-
-    alerts = client.varonis_get_alerts(ruleIds, alert_ids, start_time, end_time, ingest_time_from, ingest_time_to, device_names,
+    alerts = client.varonis_get_alerts(threat_model_names, alert_ids, start_time, end_time, ingest_time_from, ingest_time_to, device_names,
                                        user_names,
                                        last_days, alert_statuses, alert_severities,
                                        descending_order)
