@@ -42,7 +42,6 @@ from pytmv1 import (
     EmailActivity,
     Endpoint,
     EndpointActivity,
-    GetEndpointDataResp,
     GetAlertDetailsResp,
     GetEmailActivityDataResp,
     GetEndpointActivityDataResp,
@@ -55,6 +54,7 @@ from pytmv1 import (
     NoContentResp,
     OperatingSystem,
     ProductCode,
+    QueryOp,
     Result,
     ResultCode,
     RiskLevel,
@@ -75,6 +75,7 @@ from pytmv1.model.enums import Iam
 import demistomock as demisto
 import json
 import TrendMicroVisionOneV3
+from typing import Optional, TypeVar
 
 # import unittest
 from unittest.mock import Mock
@@ -83,6 +84,14 @@ from unittest.mock import Mock
 api_key = "test api key"
 proxy = True
 verify = True
+
+_T = TypeVar("_T")
+
+
+def unwrap(val: Optional[_T]) -> _T:
+    if val is None:
+        raise ValueError("Expected non-null value but received None.")
+    return val
 
 
 # Mock response for enabling or disabling user account
@@ -1157,44 +1166,42 @@ def test_check_task_status(mocker):
 
 # Mock for downloaded file information
 def mock_get_endpoint_info_response(*args, **kwargs):
-    return Result(
-        result_code=ResultCode.SUCCESS,
-        response=GetEndpointDataResp(
-            next_link="https://somelink.com",
-            items=[
-                Endpoint(
-                    agent_guid="35fa11da-a24e-40cf-8b56-baf8828cc151",
-                    login_account=ValueList(
-                        value=["MSEDGEWIN10\\\\IEUser"],
-                        updated_date_time="2020-06-01T02:12:56Z",
-                    ),
-                    endpoint_name=Value(
-                        value="MSEDGEWIN10", updated_date_time="2020-06-01T02:12:56Z"
-                    ),
-                    mac_address=ValueList(
-                        updated_date_time="2020-06-01T02:12:56Z",
-                        value=["00:1c:42:be:22:5f"],
-                    ),
-                    ip=ValueList(
-                        value=["10.211.55.36"], updated_date_time="2020-06-01T02:12:56Z"
-                    ),
-                    os_name=OperatingSystem.WINDOWS,
-                    os_version="10.0 (Build 19045)",
-                    os_description="Windows 10 10.0 (Build 19045)",
-                    product_code=ProductCode.SAO,
-                    installed_product_codes=[ProductCode.SAO, ProductCode.XES],
-                )
-            ],
+    return Endpoint(
+        agent_guid="35fa11da-a24e-40cf-8b56-baf8828cc151",
+        login_account=ValueList(
+            value=["MSEDGEWIN10\\\\IEUser"],
+            updated_date_time="2020-06-01T02:12:56Z",
         ),
+        endpoint_name=Value(
+            value="MSEDGEWIN10", updated_date_time="2020-06-01T02:12:56Z"
+        ),
+        mac_address=ValueList(
+            updated_date_time="2020-06-01T02:12:56Z",
+            value=["00:1c:42:be:22:5f"],
+        ),
+        ip=ValueList(value=["10.211.55.36"], updated_date_time="2020-06-01T02:12:56Z"),
+        os_name=OperatingSystem.WINDOWS,
+        os_version="10.0 (Build 19045)",
+        os_description="Windows 10 10.0 (Build 19045)",
+        product_code=ProductCode.SAO,
+        installed_product_codes=[ProductCode.SAO, ProductCode.XES],
     )
+
+
+def side_effect(lambda_func, args2, args3):
+    lambda_func(mock_get_endpoint_info_response())
 
 
 # Test case for get endpoint information.
 def test_get_endpoint_information(mocker):
     """Test get information from endpoint based on endpointName or agentGuid"""
+    args = {"endpoint": "hoMSEDGEWIN10stname", "query_op": "and"}
     client = Mock()
-    client.consume_endpoint_data = Mock(return_value=mock_get_endpoint_info_response())
-    args = {"endpoint": "hostname", "query_op": "or"}
+    client.consume_endpoint_data = Mock(side_effect=side_effect)
+    my_list = []
+    client.consume_endpoint_data(
+        lambda cons: my_list.append(cons), QueryOp.AND, "MSEDGEWIN10"
+    )
     result = get_endpoint_info(client, args)
     assert isinstance(result.outputs[0]["agent_guid"], str)
     assert isinstance(result.outputs[0]["login_account"], dict)
@@ -1206,6 +1213,7 @@ def test_get_endpoint_information(mocker):
     assert isinstance(result.outputs[0]["os_description"], str)
     assert isinstance(result.outputs[0]["product_code"], str)
     assert isinstance(result.outputs[0]["installed_product_codes"], list)
+    assert result.outputs_key_field == "endpoint_name"
 
 
 # Mock response for get endpoint activity data

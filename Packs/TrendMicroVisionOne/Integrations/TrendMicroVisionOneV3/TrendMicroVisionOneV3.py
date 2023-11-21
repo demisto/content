@@ -8,7 +8,7 @@ from CommonServerUserPython import *  # noqa: F401
 import json
 import urllib3
 from datetime import datetime, timezone, timedelta
-from typing import Any, Dict, List, Type, TypeVar, Union
+from typing import Any, Type, TypeVar, Union
 import pytmv1
 from pytmv1 import (
     AccountTask,
@@ -114,14 +114,14 @@ ENABLE_ACCOUNT = "Enable User Account."
 RESTORE_EMAIL = "Restore Email Message."
 TERMINATE_PROCESS = "Terminate Process."
 DISABLE_ACCOUNT = "Disable User Account."
-ADD_SUSPICIOUS = "Add to Suspicious List."
+ADD_SUSPICIOUS = "Add to Suspicious list."
 REMOVE_BLOCKLIST = "Remove from Blocklist."
 FAILED_CONNECTIVITY = "Connectivity failed!"
-ADD_EXCEPTION_LIST = "Add To Exception List."
+ADD_EXCEPTION_LIST = "Add To Exception list."
 QUARANTINE_EMAIL = "Quarantine Email Message."
 FORCE_PASSWORD_RESET = "Force Password Reset."
-DELETE_SUSPICIOUS = "Delete from Suspicious List."
-DELETE_EXCEPTION_LIST = "Delete from Exception List."
+DELETE_SUSPICIOUS = "Delete from Suspicious list."
+DELETE_EXCEPTION_LIST = "Delete from Exception list."
 # Table Heading
 TABLE_ENABLE_USER_ACCOUNT = "Enable user account "
 TABLE_DISABLE_USER_ACCOUNT = "Disable user account "
@@ -271,7 +271,7 @@ def check_datetime_aware(d):
     return (d.tzinfo is not None) and (d.tzinfo.utcoffset(d) is not None)
 
 
-def status_check(v1_client: pytmv1.Client, data: Dict[str, Any]) -> Any:
+def status_check(v1_client: pytmv1.Client, data: dict[str, Any]) -> Any:
     """
     Check the status of particular task.
     :type data: ``dict``
@@ -282,7 +282,7 @@ def status_check(v1_client: pytmv1.Client, data: Dict[str, Any]) -> Any:
     task_id = data.get(TASKID, EMPTY_STRING)
     poll = argToBoolean(data.get(POLL, TRUE))
     poll_time_sec = arg_to_number(data.get(POLL_TIME_SEC, 0))
-    message: Dict[str, Any] = {}
+    message: dict[str, Any] = {}
 
     # Make rest call
     resp = v1_client.get_base_task_result(task_id, poll, poll_time_sec)  # type: ignore
@@ -317,7 +317,7 @@ def status_check(v1_client: pytmv1.Client, data: Dict[str, Any]) -> Any:
     )
 
 
-def sandbox_submission_polling(v1_client: pytmv1.Client, data: Dict[str, Any]) -> Any:
+def sandbox_submission_polling(v1_client: pytmv1.Client, data: dict[str, Any]) -> Any:
     """
     Check the status of sandbox submission
     :type data: ``dict``
@@ -326,7 +326,7 @@ def sandbox_submission_polling(v1_client: pytmv1.Client, data: Dict[str, Any]) -
     :rtype: ``Any``
     """
     task_id = data.get(TASKID, EMPTY_STRING)
-    message: Dict[str, Any] = {}
+    message: dict[str, Any] = {}
     # Make rest call
     resp = v1_client.get_sandbox_submission_status(submit_id=task_id)
     resp_obj: pytmv1.SandboxSubmissionStatusResp = unwrap(resp.response)
@@ -336,8 +336,7 @@ def sandbox_submission_polling(v1_client: pytmv1.Client, data: Dict[str, Any]) -
         return_error(message=f"{err.message}", error=str(err))
     # Get the task status of rest call
     task_status = resp_obj.status
-
-    file_entry = None
+    file_entry = Common.File(sha256=None, md5=None, sha1=None, dbot_score=None)
     if task_status.lower() == SUCCEEDED:
         analysis_resp = v1_client.get_sandbox_analysis_result(submit_id=task_id)
         if _is_pytmv1_error(analysis_resp.result_code):
@@ -398,7 +397,7 @@ def sandbox_submission_polling(v1_client: pytmv1.Client, data: Dict[str, Any]) -
         outputs_prefix="VisionOne.Sandbox_Submission_Polling",
         outputs_key_field="report_id",
         outputs=message,
-        indicator=Common.File(file_entry),
+        indicator=file_entry,
     )
 
 
@@ -408,7 +407,7 @@ def exception_list_count(v1_client: pytmv1.Client) -> int:
     :return: number of exception object.
     :rtype: ``int``
     """
-    new_exceptions: List[ExceptionObject] = []
+    new_exceptions: list[ExceptionObject] = []
 
     #
     # Make rest call
@@ -428,7 +427,7 @@ def suspicious_list_count(v1_client: pytmv1.Client) -> int:
     :return: number of suspicious object.
     :rtype: ``int``
     """
-    new_suspicious: List[SuspiciousObject] = []
+    new_suspicious: list[SuspiciousObject] = []
 
     # Make rest call
     try:
@@ -450,7 +449,7 @@ def get_workbench_histories(v1_client: pytmv1.Client, start, end) -> list:
     end (str): Datetime in ISO 8601 format (yyyy-MM-ddThh:mm:ssZ in UTC) that indicates the end of the data retrieval
                 time range. "endDateTime" can not be earlier than "startDateTime".
     Returns:
-        list: List of incidents fetched
+        list: list of incidents fetched
     """
 
     if not check_datetime_aware(start):
@@ -468,7 +467,7 @@ def get_workbench_histories(v1_client: pytmv1.Client, start, end) -> list:
     formatted_start = str(start[: (start.index("."))]) + str(start[-1])
     formatted_end = str(end[: (start.index("."))]) + str(end[-1])
 
-    new_alerts: List[Union[SaeAlert, TiAlert]] = []
+    new_alerts: list[Union[SaeAlert, TiAlert]] = []
 
     # filter incidents per user preference
     def _filter_alerts(alert: Union[SaeAlert, TiAlert]) -> None:
@@ -535,7 +534,7 @@ def _get_ot_enum(obj_type: str) -> ObjectType:
 
 # Use response action type and return task class associated
 def _get_task_type(action: str) -> Type[BaseTaskResp]:
-    task_dict: Dict[Any, List[str]] = {
+    task_dict: dict[Any, list[str]] = {
         AccountTaskResp: [
             "enableAccount",
             "disableAccount",
@@ -555,8 +554,8 @@ def _get_task_type(action: str) -> Type[BaseTaskResp]:
 
 
 def run_polling_command(
-    args: Dict[str, Any], cmd: str, v1_client: pytmv1.Client
-) -> Union[str, CommandResults]:
+    args: dict[str, Any], cmd: str, v1_client: pytmv1.Client
+) -> str | CommandResults:
     """
     Performs polling interval to check status of task.
     :type args: ``args``
@@ -595,8 +594,8 @@ def run_polling_command(
 
 
 def get_task_status(
-    args: Dict[str, Any], v1_client: pytmv1.Client
-) -> Union[str, CommandResults]:
+    args: dict[str, Any], v1_client: pytmv1.Client
+) -> str | CommandResults:
     """
     check status of task.
 
@@ -610,8 +609,8 @@ def get_task_status(
 
 
 def get_sandbox_submission_status(
-    args: Dict[str, Any], v1_client: pytmv1.Client
-) -> Union[str, CommandResults]:
+    args: dict[str, Any], v1_client: pytmv1.Client
+) -> str | CommandResults:
     """
     call polling command to check status of sandbox submission.
     :type args: ``args``
@@ -637,8 +636,8 @@ def test_module(v1_client: pytmv1.Client) -> str:
 
 
 def enable_or_disable_user_account(
-    v1_client: pytmv1.Client, command: str, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+    v1_client: pytmv1.Client, command: str, args: dict[str, Any]
+) -> str | CommandResults:
     """
     Enable allows the user to sign in to new application and browser sessions.
     Disable signs the user out of all active application and browser sessions,
@@ -660,8 +659,8 @@ def enable_or_disable_user_account(
     """
     # Required Params
     account_identifiers = json.loads(args[ACCOUNT_IDENTIFIERS])
-    account_tasks: List[AccountTask] = []
-    message: List[Dict[str, Any]] = []
+    account_tasks: list[AccountTask] = []
+    message: list[dict[str, Any]] = []
 
     if command == ENABLE_USER_ACCOUNT_COMMAND:
         # Create account task list
@@ -677,7 +676,7 @@ def enable_or_disable_user_account(
         enable_resp_obj: pytmv1.MultiResp = unwrap(resp.response)
         # Check if an error occurred
         if _is_pytmv1_error(resp.result_code):
-            errs: List[pytmv1.MsError] = unwrap(resp.errors)
+            errs: list[pytmv1.MsError] = unwrap(resp.errors)
             return_error(message=f"{errs}", error=str(errs))
         # Add results to message to be sent to the War Room
         message = [item.dict() for item in enable_resp_obj.items]
@@ -696,7 +695,7 @@ def enable_or_disable_user_account(
         disable_resp_obj: pytmv1.MultiResp = unwrap(resp.response)
         # Check if an error occurred
         if _is_pytmv1_error(resp.result_code):
-            errors: List[pytmv1.MsError] = unwrap(resp.errors)
+            errors: list[pytmv1.MsError] = unwrap(resp.errors)
             return_error(message=f"{errors}", error=str(errors))
         # Add results to message to be sent to the War Room
         message = [item.dict() for item in disable_resp_obj.items]
@@ -715,8 +714,8 @@ def enable_or_disable_user_account(
 
 
 def force_sign_out(
-    v1_client: pytmv1.Client, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+    v1_client: pytmv1.Client, args: dict[str, Any]
+) -> str | CommandResults:
     """
     Signs the user out of all active application and browser sessions.
     Supported IAM systems: Azure AD
@@ -732,8 +731,8 @@ def force_sign_out(
     """
     # Required Params
     account_identifiers = json.loads(args[ACCOUNT_IDENTIFIERS])
-    account_tasks: List[AccountTask] = []
-    message: List[Dict[str, Any]] = []
+    account_tasks: list[AccountTask] = []
+    message: list[dict[str, Any]] = []
 
     # Create account task list
     for account in account_identifiers:
@@ -766,8 +765,8 @@ def force_sign_out(
 
 
 def force_password_reset(
-    v1_client: pytmv1.Client, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+    v1_client: pytmv1.Client, args: dict[str, Any]
+) -> str | CommandResults:
     """
     Signs the user out of all active application and browser sessions,
     and forces the user to create a new password during the next sign-in attempt.
@@ -784,8 +783,8 @@ def force_password_reset(
     """
     # Required Params
     account_identifiers = json.loads(args[ACCOUNT_IDENTIFIERS])
-    account_tasks: List[AccountTask] = []
-    message: List[Dict[str, Any]] = []
+    account_tasks: list[AccountTask] = []
+    message: list[dict[str, Any]] = []
 
     # Create account task list
     for account in account_identifiers:
@@ -800,7 +799,7 @@ def force_password_reset(
     resp_obj: pytmv1.MultiResp = unwrap(resp.response)
     # Check if an error occurred
     if _is_pytmv1_error(resp.result_code):
-        errors: List[pytmv1.MsError] = unwrap(resp.errors)
+        errors: list[pytmv1.MsError] = unwrap(resp.errors)
         return_error(message=f"{errors}", error=str(errors))
     # Add results to message to be sent to the War Room
     message = [item.dict() for item in resp_obj.items]
@@ -819,8 +818,8 @@ def force_password_reset(
 
 
 def get_endpoint_info(
-    v1_client: pytmv1.Client, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+    v1_client: pytmv1.Client, args: dict[str, Any]
+) -> str | CommandResults:
     """
     Retrieve information about the endpoint queried and
     sends the result to demisto war room.
@@ -837,8 +836,8 @@ def get_endpoint_info(
     # Required Params
     endpoint_list = argToList(args.get(ENDPOINT, EMPTY_STRING))
     query_op = args.get(QUERY_OP, EMPTY_STRING)
-    new_endpoint_data: List[Any] = []
-    message: List[Dict[str, Any]] = []
+    new_endpoint_data: list[Any] = []
+    message: list[dict[str, Any]] = []
     # Choose QueryOp Enum based on user choice
     if query_op.lower() == "or":
         query_op = pytmv1.QueryOp.OR
@@ -875,8 +874,8 @@ def get_endpoint_info(
 
 
 def get_endpoint_activity_data(
-    v1_client: pytmv1.Client, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+    v1_client: pytmv1.Client, args: dict[str, Any]
+) -> str | CommandResults:
     """
     Displays search results from the Endpoint Activity Data source
     in a paginated list and sends the result to demisto war room.
@@ -902,8 +901,8 @@ def get_endpoint_activity_data(
         query_op = pytmv1.QueryOp.OR
     elif query_op.lower() == "and":
         query_op = pytmv1.QueryOp.AND
-    # List to contain endpoint activity data
-    message: List[Any] = []
+    # list to contain endpoint activity data
+    message: list[Any] = []
     # Get the activity count
     count_obj = get_endpoint_activity_data_count(v1_client, args)
     activity_count = int(count_obj.outputs.get("endpoint_activity_count", EMPTY_STRING))  # type: ignore
@@ -938,8 +937,8 @@ def get_endpoint_activity_data(
 
 
 def get_endpoint_activity_data_count(
-    v1_client: pytmv1.Client, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+    v1_client: pytmv1.Client, args: dict[str, Any]
+) -> str | CommandResults:
     """
     Fetches endpoint activity data count.
 
@@ -983,8 +982,8 @@ def get_endpoint_activity_data_count(
 
 
 def get_email_activity_data(
-    v1_client: pytmv1.Client, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+    v1_client: pytmv1.Client, args: dict[str, Any]
+) -> str | CommandResults:
     """
     Displays search results from the Email Activity Data source
     in a paginated list and sends the result to demisto war room.
@@ -1010,8 +1009,8 @@ def get_email_activity_data(
         query_op = pytmv1.QueryOp.OR
     elif query_op.lower() == "and":
         query_op = pytmv1.QueryOp.AND
-    # List to populate email activity data
-    message: List[Any] = []
+    # list to populate email activity data
+    message: list[Any] = []
     # Get the activity count
     count_obj = get_email_activity_data_count(v1_client, args)
     activity_count = int(count_obj.outputs.get("email_activity_count", EMPTY_STRING))  # type: ignore
@@ -1045,8 +1044,8 @@ def get_email_activity_data(
 
 
 def get_email_activity_data_count(
-    v1_client: pytmv1.Client, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+    v1_client: pytmv1.Client, args: dict[str, Any]
+) -> str | CommandResults:
     """
     Fetches email activity data count.
 
@@ -1090,8 +1089,8 @@ def get_email_activity_data_count(
 
 
 def add_or_remove_from_block_list(
-    v1_client: pytmv1.Client, command: str, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+    v1_client: pytmv1.Client, command: str, args: dict[str, Any]
+) -> str | CommandResults:
     """
     Retrieve data from the add or remove from block list and
     sends the result to demist war room.
@@ -1111,8 +1110,8 @@ def add_or_remove_from_block_list(
     """
     # Required Params
     block_objects = json.loads(args[BLOCK_OBJECTS])
-    block_tasks: List[ObjectTask] = []
-    message: List[Dict[str, Any]] = []
+    block_tasks: list[ObjectTask] = []
+    message: list[dict[str, Any]] = []
 
     if command == ADD_BLOCKLIST_COMMAND:
         # Create block task list
@@ -1129,7 +1128,7 @@ def add_or_remove_from_block_list(
         add_block_resp_obj: pytmv1.MultiResp = unwrap(resp.response)
         # Check if an error occurred
         if _is_pytmv1_error(resp.result_code):
-            errs: List[pytmv1.MsError] = unwrap(resp.errors)
+            errs: list[pytmv1.MsError] = unwrap(resp.errors)
             return_error(message=f"{errs}", error=str(errs))
         # Add results to message to be sent to the War Room
         message = [item.dict() for item in add_block_resp_obj.items]
@@ -1149,7 +1148,7 @@ def add_or_remove_from_block_list(
         remove_block_resp_obj: pytmv1.MultiResp = unwrap(resp.response)
         # Check if an error occurred
         if _is_pytmv1_error(resp.result_code):
-            errors: List[pytmv1.MsError] = unwrap(resp.errors)
+            errors: list[pytmv1.MsError] = unwrap(resp.errors)
             return_error(message=f"{errors}", error=str(errors))
         # Add results to message to be sent to the War Room
         message = [item.dict() for item in remove_block_resp_obj.items]
@@ -1181,9 +1180,9 @@ def fetch_incidents(v1_client: pytmv1.Client):
     else:
         start = end + timedelta(days=-days)
     # Fetch alerts
-    alerts: List[Any] = get_workbench_histories(v1_client, start, end)
-    # List to store incidents that will be sent to the UI
-    incidents: List[Dict[str, Any]] = []
+    alerts: list[Any] = get_workbench_histories(v1_client, start, end)
+    # list to store incidents that will be sent to the UI
+    incidents: list[dict[str, Any]] = []
     if alerts:
         # Alerts are fetched per created_date_time in descending order
         # Set the last_event to the created_date_time for the first alert
@@ -1209,8 +1208,8 @@ def fetch_incidents(v1_client: pytmv1.Client):
 
 
 def quarantine_or_delete_email_message(
-    v1_client: pytmv1.Client, command: str, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+    v1_client: pytmv1.Client, command: str, args: dict[str, Any]
+) -> str | CommandResults:
     """
     Retrieve data from the quarantine or delete email message and
     sends the result to demist war room.
@@ -1230,8 +1229,8 @@ def quarantine_or_delete_email_message(
     """
     # Required Params
     email_identifiers = json.loads(args[EMAIL_IDENTIFIERS])
-    message: List[Dict[str, Any]] = []
-    email_tasks: List[Union[EmailMessageIdTask, EmailMessageUIdTask]] = []
+    message: list[dict[str, Any]] = []
+    email_tasks: list[Union[EmailMessageIdTask, EmailMessageUIdTask]] = []
 
     if command == QUARANTINE_EMAIL_COMMAND:
         # Create email task list
@@ -1256,7 +1255,7 @@ def quarantine_or_delete_email_message(
         quarantine_resp: pytmv1.MultiResp = unwrap(resp.response)
         # Check if an error occurred
         if _is_pytmv1_error(resp.result_code):
-            errs: List[pytmv1.MsError] = unwrap(resp.errors)
+            errs: list[pytmv1.MsError] = unwrap(resp.errors)
             return_error(message=f"{errs}", error=str(errs))
 
         # Add results to message to be sent to the War Room
@@ -1285,7 +1284,7 @@ def quarantine_or_delete_email_message(
         delete_resp: pytmv1.MultiResp = unwrap(resp.response)
         # Check if an error occurred
         if _is_pytmv1_error(resp.result_code):
-            errors: List[pytmv1.MsError] = unwrap(resp.errors)
+            errors: list[pytmv1.MsError] = unwrap(resp.errors)
             return_error(message=f"{errors}", error=str(errors))
         # Add results to message to be sent to the War Room
         message = [item.dict() for item in delete_resp.items]
@@ -1304,8 +1303,8 @@ def quarantine_or_delete_email_message(
 
 
 def restore_email_message(
-    v1_client: pytmv1.Client, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+    v1_client: pytmv1.Client, args: dict[str, Any]
+) -> str | CommandResults:
     """
     Restores a quarantined email message and
     sends the result to demist war room.
@@ -1325,8 +1324,8 @@ def restore_email_message(
     """
     # Required Params
     email_identifiers = json.loads(args[EMAIL_IDENTIFIERS])
-    message: List[Dict[str, Any]] = []
-    email_tasks: List[Union[EmailMessageIdTask, EmailMessageUIdTask]] = []
+    message: list[dict[str, Any]] = []
+    email_tasks: list[Union[EmailMessageIdTask, EmailMessageUIdTask]] = []
 
     # Create email task list
     for email in email_identifiers:
@@ -1350,7 +1349,7 @@ def restore_email_message(
         restore_resp: pytmv1.MultiResp = unwrap(resp.response)
         # Check if an error occurred
         if _is_pytmv1_error(resp.result_code):
-            errs: List[pytmv1.MsError] = unwrap(resp.errors)
+            errs: list[pytmv1.MsError] = unwrap(resp.errors)
             return_error(message=f"{errs}", error=str(errs))
         # Add results to message to be sent to the War Room
         message = [item.dict() for item in restore_resp.items]
@@ -1369,8 +1368,8 @@ def restore_email_message(
 
 
 def isolate_or_restore_connection(
-    v1_client: pytmv1.Client, command: str, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+    v1_client: pytmv1.Client, command: str, args: dict[str, Any]
+) -> str | CommandResults:
     """
     Retrieve data from the isolate or restore endpoint connection and
     sends the result to demist war room.
@@ -1390,8 +1389,8 @@ def isolate_or_restore_connection(
     """
     # Required Params
     endpoint_identifiers = json.loads(args[ENDPOINT_IDENTIFIERS])
-    message: List[Dict[str, Any]] = []
-    endpt_tasks: List[EndpointTask] = []
+    message: list[dict[str, Any]] = []
+    endpt_tasks: list[EndpointTask] = []
 
     if command == ISOLATE_ENDPOINT_COMMAND:
         # Create endpoint task list
@@ -1415,7 +1414,7 @@ def isolate_or_restore_connection(
         isolate_endpoint_resp: pytmv1.MultiResp = unwrap(resp.response)
         # Check if an error occurred
         if _is_pytmv1_error(resp.result_code):
-            errs: List[pytmv1.MsError] = unwrap(resp.errors)
+            errs: list[pytmv1.MsError] = unwrap(resp.errors)
             return_error(message=f"{errs}", error=str(errs))
         # Add results to message to be sent to the War Room
         message = [item.dict() for item in isolate_endpoint_resp.items]
@@ -1442,7 +1441,7 @@ def isolate_or_restore_connection(
         restore_endpoint_resp: pytmv1.MultiResp = unwrap(resp.response)
         # Check if an error occurred
         if _is_pytmv1_error(resp.result_code):
-            errors: List[pytmv1.MsError] = unwrap(resp.errors)
+            errors: list[pytmv1.MsError] = unwrap(resp.errors)
             return_error(message=f"{errors}", error=str(errors))
         # Add results to message to be sent to the War Room
         message = [item.dict() for item in restore_endpoint_resp.items]
@@ -1461,8 +1460,8 @@ def isolate_or_restore_connection(
 
 
 def terminate_process(
-    v1_client: pytmv1.Client, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+    v1_client: pytmv1.Client, args: dict[str, Any]
+) -> str | CommandResults:
     """
     Terminate the process running on the end point and
     sends the result to demist war room.
@@ -1478,8 +1477,8 @@ def terminate_process(
     """
     # Required Params
     process_identifiers = json.loads(args[PROCESS_IDENTIFIERS])
-    process_tasks: List[ProcessTask] = []
-    message: List[Dict[str, Any]] = []
+    process_tasks: list[ProcessTask] = []
+    message: list[dict[str, Any]] = []
 
     # Create process task list
     for process in process_identifiers:
@@ -1506,7 +1505,7 @@ def terminate_process(
     process_resp: pytmv1.MultiResp = unwrap(resp.response)
     # Check if an error occurred
     if _is_pytmv1_error(resp.result_code):
-        errs: List[pytmv1.MsError] = unwrap(resp.errors)
+        errs: list[pytmv1.MsError] = unwrap(resp.errors)
         return_error(message=f"{errs}", error=str(errs))
     # Add results to message to be sent to the War Room
     message = [item.dict() for item in process_resp.items]
@@ -1525,8 +1524,8 @@ def terminate_process(
 
 
 def add_or_delete_from_exception_list(
-    v1_client: pytmv1.Client, command: str, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+    v1_client: pytmv1.Client, command: str, args: dict[str, Any]
+) -> str | CommandResults:
     """
     Add or Delete the exception object to exception list and
     sends the result to demist war room.
@@ -1547,8 +1546,8 @@ def add_or_delete_from_exception_list(
     """
     # Required Params
     block_objects = json.loads(args[BLOCK_OBJECTS])
-    excp_tasks: List[ObjectTask] = []
-    message: Dict[str, Any] = {}
+    excp_tasks: list[ObjectTask] = []
+    message: dict[str, Any] = {}
 
     if command == ADD_EXCEPTION_LIST_COMMAND:
         # Create exception task list
@@ -1565,7 +1564,7 @@ def add_or_delete_from_exception_list(
         add_excp_resp: pytmv1.MultiResp = unwrap(resp.response)
         # Check if an error occurred
         if _is_pytmv1_error(resp.result_code):
-            errs: List[pytmv1.MsError] = unwrap(resp.errors)
+            errs: list[pytmv1.MsError] = unwrap(resp.errors)
             return_error(message=f"{errs}", error=str(errs))
         message = {
             "message": "success",
@@ -1587,7 +1586,7 @@ def add_or_delete_from_exception_list(
         rmv_excp_resp: pytmv1.MultiResp = unwrap(resp.response)
         # Check if an error occurred for each call
         if _is_pytmv1_error(resp.result_code):
-            errors: List[pytmv1.MsError] = unwrap(resp.errors)
+            errors: list[pytmv1.MsError] = unwrap(resp.errors)
             return_error(message=f"{errors}", error=str(errors))
         message = {
             "message": "success",
@@ -1611,8 +1610,8 @@ def add_or_delete_from_exception_list(
 
 
 def add_to_suspicious_list(
-    v1_client: pytmv1.Client, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+    v1_client: pytmv1.Client, args: dict[str, Any]
+) -> str | CommandResults:
     """
     Add suspicious object to suspicious list and
     sends the result to demist war room.
@@ -1629,8 +1628,8 @@ def add_to_suspicious_list(
     # Required Params
     block_objects = json.loads(args[BLOCK_OBJECTS])
 
-    suspicious_tasks: List[SuspiciousObjectTask] = []
-    message: Dict[str, Any] = {}
+    suspicious_tasks: list[SuspiciousObjectTask] = []
+    message: dict[str, Any] = {}
 
     # Create suspicious task list
     for block in block_objects:
@@ -1649,7 +1648,7 @@ def add_to_suspicious_list(
     add_sus_resp: pytmv1.MultiResp = unwrap(resp.response)
     # Check if an error occurred
     if _is_pytmv1_error(resp.result_code):
-        errs: List[pytmv1.MsError] = unwrap(resp.errors)
+        errs: list[pytmv1.MsError] = unwrap(resp.errors)
         return_error(message=f"{errs}", error=str(errs))
     # Get the total count of items in suspicious list
     suspicious_count = suspicious_list_count(v1_client)
@@ -1673,8 +1672,8 @@ def add_to_suspicious_list(
 
 
 def delete_from_suspicious_list(
-    v1_client: pytmv1.Client, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+    v1_client: pytmv1.Client, args: dict[str, Any]
+) -> str | CommandResults:
     """
     Delete the suspicious object from suspicious list and
     sends the result to demist war room.
@@ -1691,8 +1690,8 @@ def delete_from_suspicious_list(
     # Required Params
     block_objects = json.loads(args[BLOCK_OBJECTS])
 
-    suspicious_tasks: List[ObjectTask] = []
-    message: Dict[str, Any] = {}
+    suspicious_tasks: list[ObjectTask] = []
+    message: dict[str, Any] = {}
 
     # Create suspicious task list
     for block in block_objects:
@@ -1707,7 +1706,7 @@ def delete_from_suspicious_list(
     resp = v1_client.remove_from_suspicious_list(*suspicious_tasks)
     dlt_sus_resp: pytmv1.MultiResp = unwrap(resp.response)
     if _is_pytmv1_error(resp.result_code):
-        errs: List[pytmv1.MsError] = unwrap(resp.errors)
+        errs: list[pytmv1.MsError] = unwrap(resp.errors)
         return_error(message=f"{errs}", error=str(errs))
     # Get the total count of items in suspicious list
     suspicious_count = suspicious_list_count(v1_client)
@@ -1731,8 +1730,8 @@ def delete_from_suspicious_list(
 
 
 def get_file_analysis_status(
-    v1_client: pytmv1.Client, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+    v1_client: pytmv1.Client, args: dict[str, Any]
+) -> str | CommandResults:
     """
     Get the status of file based on task id and
     sends the result to demist war room
@@ -1748,7 +1747,7 @@ def get_file_analysis_status(
     """
     # Required Params
     task_id = args.get(TASKID, EMPTY_STRING)
-    message: Dict[str, Any] = {}
+    message: dict[str, Any] = {}
 
     # Make rest call
     resp = v1_client.get_sandbox_submission_status(submit_id=task_id)
@@ -1774,8 +1773,8 @@ def get_file_analysis_status(
 
 
 def get_file_analysis_result(
-    v1_client: pytmv1.Client, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+    v1_client: pytmv1.Client, args: dict[str, Any]
+) -> str | CommandResults:
     """
     Get the report of file based on report id and sends the result to demist war room
     :type client: ``Client``
@@ -1790,7 +1789,7 @@ def get_file_analysis_result(
     # Optional Params
     poll = argToBoolean(args.get(POLL, TRUE))
     poll_time_sec = arg_to_number(args.get(POLL_TIME_SEC, 0))
-    message: Dict[str, Any] = {}
+    message: dict[str, Any] = {}
 
     # Make rest call
     resp = v1_client.get_sandbox_analysis_result(
@@ -1851,8 +1850,8 @@ def get_file_analysis_result(
 
 
 def collect_file(
-    v1_client: pytmv1.Client, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+    v1_client: pytmv1.Client, args: dict[str, Any]
+) -> str | CommandResults:
     """
     Collect forensic file and sends the result to demist war room
     :type client: ``Client``
@@ -1865,8 +1864,8 @@ def collect_file(
     # Required Params
     collect_files = json.loads(args[COLLECT_FILES])
     # Create file task list
-    file_tasks: List[FileTask] = []
-    message: List[Dict[str, Any]] = []
+    file_tasks: list[FileTask] = []
+    message: list[dict[str, Any]] = []
 
     # Create file task list
     for file in collect_files:
@@ -1891,7 +1890,7 @@ def collect_file(
     file_resp: pytmv1.MultiResp = unwrap(resp.response)
     # Check if an error occurred
     if _is_pytmv1_error(resp.result_code):
-        errs: List[pytmv1.MsError] = resp.errors
+        errs: list[pytmv1.MsError] = resp.errors
         return_error(message=f"{errs}", error=str(errs))
 
     message = [item.dict() for item in file_resp.items]
@@ -1910,8 +1909,8 @@ def collect_file(
 
 
 def download_information_collected_file(
-    v1_client: pytmv1.Client, args: Dict[str, Any]
-) -> Union[Any, CommandResults]:
+    v1_client: pytmv1.Client, args: dict[str, Any]
+) -> str | CommandResults:
     """
     Get the analysis report of file based on action id and sends
     the file to demist war room where it can be downloaded.
@@ -1955,8 +1954,8 @@ def download_information_collected_file(
 
 
 def download_analysis_report(
-    v1_client: pytmv1.Client, args: Dict[str, Any]
-) -> Union[Any, CommandResults]:
+    v1_client: pytmv1.Client, args: dict[str, Any]
+) -> Any | CommandResults:
     """
     Get the analysis report of file based on action id and sends
     the file to demist war room where it can be downloaded.
@@ -2015,8 +2014,8 @@ def download_analysis_report(
 
 
 def download_investigation_package(
-    v1_client: pytmv1.Client, args: Dict[str, Any]
-) -> Union[Any, CommandResults]:
+    v1_client: pytmv1.Client, args: dict[str, Any]
+) -> Any | CommandResults:
     """
     Downloads the Investigation Package of the specified object based on
     submission id and sends the file to demist war room where it can be downloaded.
@@ -2076,11 +2075,11 @@ def download_investigation_package(
 
 
 def download_suspicious_object_list(
-    v1_client: pytmv1.Client, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+    v1_client: pytmv1.Client, args: dict[str, Any]
+) -> str | CommandResults:
     """
     Downloads the suspicious object list associated to the specified object
-    Note: Suspicious Object Lists are only available for objects with a high risk level
+    Note: Suspicious Object lists are only available for objects with a high risk level
     :type client: ``Client``
     :param v1_client: pytmv1.Client object used to initialize pytmv1 client.
     :type args: ``dict``
@@ -2093,7 +2092,7 @@ def download_suspicious_object_list(
     # Optional Params
     poll = argToBoolean(args.get(POLL, TRUE))
     poll_time_sec = arg_to_number(args.get(POLL_TIME_SEC, 0))
-    suspicious_objects: List[Dict[str, str]] = []
+    suspicious_objects: list[dict[str, str]] = []
 
     # Make rest call
     resp = v1_client.get_sandbox_suspicious_list(
@@ -2122,8 +2121,8 @@ def download_suspicious_object_list(
 
 
 def submit_file_to_sandbox(
-    v1_client: pytmv1.Client, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+    v1_client: pytmv1.Client, args: dict[str, Any]
+) -> str | CommandResults:
     """
     submit file to sandbox and sends the result to demist war room
     :type client: ``Client``
@@ -2179,8 +2178,8 @@ def submit_file_to_sandbox(
 
 
 def submit_file_entry_to_sandbox(
-    v1_client: pytmv1.Client, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+    v1_client: pytmv1.Client, args: dict[str, Any]
+) -> str | CommandResults:
     """
     submit file entry to sandbox and sends the result to demist war room
     :type client: ``Client``
@@ -2243,8 +2242,8 @@ def submit_file_entry_to_sandbox(
 
 
 def submit_urls_to_sandbox(
-    v1_client: pytmv1.Client, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+    v1_client: pytmv1.Client, args: dict[str, Any]
+) -> str | CommandResults:
     """
     submit Urls to sandbox and send the result to demist war room
     :type client: ``Client``
@@ -2255,14 +2254,14 @@ def submit_urls_to_sandbox(
     :rtype: ``dict`
     """
     # Required Params
-    urls: List[str] = argToList(args[URLS])
-    submit_urls_resp: List[Dict[str, Any]] = []
+    urls: list[str] = argToList(args[URLS])
+    submit_urls_resp: list[dict[str, Any]] = []
     # Make rest call
     resp = v1_client.submit_urls_to_sandbox(*urls)
     urls_resp: pytmv1.MultiUrlResp = unwrap(resp.response)
     # Check if an error occurred during rest call
     if _is_pytmv1_error(resp.result_code):
-        errs: List[pytmv1.MsError] = unwrap(resp.errors)
+        errs: list[pytmv1.MsError] = unwrap(resp.errors)
         return_error(message=f"{errs}", error=str(errs))
     for item in urls_resp.items:
         submit_urls_resp.append(item.dict())
@@ -2281,8 +2280,8 @@ def submit_urls_to_sandbox(
 
 
 def get_alert_details(
-    v1_client: pytmv1.Client, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+    v1_client: pytmv1.Client, args: dict[str, Any]
+) -> str | CommandResults:
     """
     Fetch information for a specific alert and display in war room.
     :type client: ``Client``
@@ -2294,7 +2293,7 @@ def get_alert_details(
     """
     # Required Params
     workbench_id: str = args.get(WORKBENCH_ID, EMPTY_STRING)
-    message: Dict[str, Any] = {}
+    message: dict[str, Any] = {}
     # Make rest call
     resp = v1_client.get_alert_details(alert_id=workbench_id)
     alert_resp: pytmv1.GetAlertDetailsResp = unwrap(resp.response)
@@ -2321,9 +2320,7 @@ def get_alert_details(
     )
 
 
-def add_note(
-    v1_client: pytmv1.Client, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+def add_note(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Adds a note to an existing workbench alert
     :type client: ``Client``
@@ -2336,7 +2333,7 @@ def add_note(
     # Required Params
     workbench_id = args.get(WORKBENCH_ID, EMPTY_STRING)
     content = args.get(CONTENT, EMPTY_STRING)
-    message: Dict[str, Any] = {}
+    message: dict[str, Any] = {}
 
     # Make rest call
     resp = v1_client.add_alert_note(alert_id=workbench_id, note=content)
@@ -2365,8 +2362,8 @@ def add_note(
 
 
 def update_status(
-    v1_client: pytmv1.Client, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+    v1_client: pytmv1.Client, args: dict[str, Any]
+) -> str | CommandResults:
     """
     Updates the status of an existing workbench alert
     :type client: ``Client``
@@ -2380,7 +2377,7 @@ def update_status(
     workbench_id = args.get(WORKBENCH_ID, EMPTY_STRING)
     status = args.get(STATUS, EMPTY_STRING)
     if_match = args.get(IF_MATCH, EMPTY_STRING)
-    message: Dict[str, Any] = {}
+    message: dict[str, Any] = {}
     # Choose Status Enum
     sts = status.upper()
     # Assign enum status

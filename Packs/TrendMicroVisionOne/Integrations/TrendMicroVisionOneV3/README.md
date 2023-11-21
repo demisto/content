@@ -8,7 +8,7 @@ Trend Micro Vision One is a purpose-built threat defense platform that provides 
 
     | **Parameter**                                 | **Description**                                            | **Required** |
     | --------------------------------------------- | ---------------------------------------------------------- | ------------ |
-    | API URL (e.g. https://api.xdr.trendmicro.com) | The base url for the Trend Micro Vision One API            | True         |
+    | API URL (e.g. <https://api.xdr.trendmicro.com>) | The base url for the Trend Micro Vision One API            | True         |
     | API Key                                       | The API token to access data                               | True         |
     | Fetch incidents                               |                                                            | False        |
     | Incidents Fetch Interval                      |                                                            | False        |
