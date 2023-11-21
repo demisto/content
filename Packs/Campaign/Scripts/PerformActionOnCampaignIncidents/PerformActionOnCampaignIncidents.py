@@ -15,13 +15,13 @@ SELECT_CAMPAIGN_LOWER_INCIDENTS_FIELD_NAME = 'selectlowsimilarityincidents'
 COMMAND_SUCCESS = 'The following incidents was successfully {action}: {ids}'
 
 
-def get_custom_field(filed_name):
-    incident = demisto.incidents()[0]
-    custom_fields = incident.get('CustomFields', {})
+def get_custom_field(filed_name: str) -> Any:
+    incident: dict = demisto.incidents()[0]
+    custom_fields: dict = incident.get('CustomFields', {})
     return custom_fields.get(filed_name)
 
 
-def get_campaign_incident_ids(context_path):
+def get_campaign_incident_ids(context_path: str) -> list[str] | None:
     """
         Collect the campaign incidents ids form the context
 
@@ -33,7 +33,7 @@ def get_campaign_incident_ids(context_path):
     if isError(res):
         return_error(f'Error occurred while trying to get the incident context: {get_error(res)}')
 
-    incidents = demisto.get(res[0], context_path)
+    incidents: list[dict] = demisto.get(res[0], context_path)
     if incidents:
         ids = [str(incident.get('id')) for incident in incidents]
         ids.sort(key=lambda val: int(val))
@@ -48,6 +48,17 @@ def get_close_notes():
 
 def perform_link_unlink(ids, action):
     ids = ','.join(ids)
+    campaign_id = demisto.incident()['id']
+    campaign_context = demisto.executeCommand('getContext', {'id': campaign_id})
+    if isError(campaign_context):
+        return_error(COMMAND_ERROR_MSG.format(action=action, ids=ids,
+                                              error=get_error(campaign_context)))
+    campaign_incidents_context = demisto.dt(campaign_context, 'Contents.context.EmailCampaign.incidents')
+    if isinstance(campaign_incidents_context, dict | str):
+        campaign_incidents_context = [campaign_incidents_context]  # TODO ????
+
+    # [_add_campaign_to_incident(id, campaign_id) for id in ids]
+
     res = demisto.executeCommand("linkIncidents",
                                  {"incidentId": demisto.incidents()[0]["id"],
                                   "linkedIncidentIDs": ids, "action": action})
@@ -92,8 +103,7 @@ def _add_campaign_to_incident(incident_id, campaign_id):
     res = demisto.executeCommand('setIncident', {'id': incident_id,
                                                  'customFields': {'partofcampaign': campaign_id}})
     if is_error(res):
-        return_error('Failed to add campaign data to incident {}. Error details:\n{}'.format(incident_id,
-                                                                                             get_error(res)))
+        return_error(f'Failed to add campaign data to incident {incident_id}. Error details:\n{get_error(res)}')
     demisto.debug(f"Added campaign {campaign_id} to incident {incident_id}")
 
 
@@ -109,7 +119,7 @@ def _remove_incident_from_lower_similarity_context(incident_context, incident_id
     res = demisto.executeCommand('SetByIncidentId', {'key': 'EmailCampaign.LowerSimilarityIncidents',
                                                      'value': lower_similarity_incident_context})
     if is_error(res):
-        return_error('Failed to change context. Error details:\n{}'.format(get_error(res)))
+        return_error(f'Failed to change context. Error details:\n{get_error(res)}')
 
 
 def perform_add_to_campaign(ids, action):
@@ -123,7 +133,7 @@ def perform_add_to_campaign(ids, action):
                                               error=get_error(campaign_incident_context)))
 
     incident_context = demisto.dt(campaign_incident_context, 'Contents.context.EmailCampaign.incidents')
-    if isinstance(incident_context, dict) or isinstance(incident_context, str):
+    if isinstance(incident_context, dict | str):
         incident_context = [incident_context]
 
     for incident_id in ids:
@@ -142,7 +152,7 @@ def perform_add_to_campaign(ids, action):
     res = demisto.executeCommand('SetByIncidentId', {'key': 'EmailCampaign.incidents',
                                                      'value': incident_context})
     if is_error(res):
-        return_error('Failed to change current context. Error details:\n{}'.format(get_error(res)))
+        return_error(f'Failed to change current context. Error details:\n{get_error(res)}')
 
     return COMMAND_SUCCESS.format(action=action, ids=','.join(ids))
 
