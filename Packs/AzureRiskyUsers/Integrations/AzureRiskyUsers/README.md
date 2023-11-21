@@ -201,7 +201,7 @@ Returns a list of all risky users and their properties.
 | AzureRiskyUsers.RiskyUserListNextToken | String | A property in the response that contains a URL to the next page of results. | 
 
 #### Command example
-```!azure-risky-users-list limit=2```
+```!azure-risky-users-list page_size=2```
 #### Context Example
 ```json
 {
@@ -230,7 +230,7 @@ Returns a list of all risky users and their properties.
                 "userPrincipalName": "User Principal Name"
             },
         ],
-        "RiskyUserNextToken": "token",
+        "RiskyUserListNextToken": "token",
     }
 }
 ```
