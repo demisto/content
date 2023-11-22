@@ -295,7 +295,7 @@
   - destroy_instances_exit_code=$?
   - |
     if [ "${destroy_instances_exit_code}" -ne 0 ]; then
-      echo "Failed to destroy instances, exit code: ${destroy_instances_exit_code}"
+      echo "Failed to destroy instances of role ${INSTANCE_ROLE}, exit code: ${destroy_instances_exit_code}"
     fi
   - section_end "Destroy Instances"
 
