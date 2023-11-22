@@ -8,10 +8,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 89d688bd-2022-42de-86e8-e89f16fddd75
+    taskid: e5960993-db4d-4b23-84d1-456892e20683
     type: start
     task:
-      id: 89d688bd-2022-42de-86e8-e89f16fddd75
+      id: e5960993-db4d-4b23-84d1-456892e20683
       version: -1
       name: ""
       iscommand: false
@@ -37,10 +37,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: ab1c0140-232a-4f9b-8f17-032bfe53def0
+    taskid: b52308b6-6db3-474f-805f-db7dd06b15a8
     type: regular
     task:
-      id: ab1c0140-232a-4f9b-8f17-032bfe53def0
+      id: b52308b6-6db3-474f-805f-db7dd06b15a8
       version: -1
       name: Query Domains by Iris Tag(s)
       description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
@@ -74,13 +74,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 08cfdb90-ed08-4a4b-8cb4-a4d15eee3c10
+    taskid: a70c9e3d-65a5-4429-8f4f-f25a635fd3e0
     type: title
     task:
-      id: 08cfdb90-ed08-4a4b-8cb4-a4d15eee3c10
-      description: 'Title'
+      id: a70c9e3d-65a5-4429-8f4f-f25a635fd3e0
       version: -1
       name: Done
+      description: Title
       type: title
       iscommand: false
       brand: ""
@@ -101,13 +101,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: b33df737-cba2-4c75-8ec0-60dd106fa207
+    taskid: cc098270-1a1c-49b3-8218-73e8e98ea37b
     type: regular
     task:
-      id: b33df737-cba2-4c75-8ec0-60dd106fa207
-      description: 'Manually Review High Risk Score Domains'
+      id: cc098270-1a1c-49b3-8218-73e8e98ea37b
       version: -1
       name: Manually Review High Risk Score Domains
+      description: Manually Review High Risk Score Domains
       type: regular
       iscommand: false
       brand: ""
@@ -133,10 +133,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: cfeb1fe9-de0e-46b9-8307-a18a3ad5a1e2
+    taskid: bff7a24a-8b22-4cb2-8228-83e1e66e38cd
     type: condition
     task:
-      id: cfeb1fe9-de0e-46b9-8307-a18a3ad5a1e2
+      id: bff7a24a-8b22-4cb2-8228-83e1e66e38cd
       version: -1
       name: Is there any Active and High Risk Score Domain?
       description: |-
@@ -155,7 +155,15 @@ tasks:
       - "5"
     scriptarguments:
       first:
-        simple: ${DomainTools.Pivots.PivotedDomains.Analytics.OverallRiskScore}
+        complex:
+          root: DomainTools.Pivots.PivotedDomains
+          filters:
+          - - operator: isTrue
+              left:
+                value:
+                  simple: DomainTools.Pivots.PivotedDomains.Registration.DomainStatus
+                iscontext: true
+          accessor: Analytics.OverallRiskScore
       second:
         simple: ${inputs.dt_min_riskscore_threshold}
     separatecontext: false
@@ -175,10 +183,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: f9dd6ec0-6672-4116-8686-e0da296f1616
+    taskid: 87ab1ad9-77c7-4470-875d-f2f4b03956c5
     type: regular
     task:
-      id: f9dd6ec0-6672-4116-8686-e0da296f1616
+      id: 87ab1ad9-77c7-4470-875d-f2f4b03956c5
       version: -1
       name: Add High Risk Domain to Indicator
       description: Sets Data for a Domain in the Indicator Table
@@ -225,13 +233,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 034fc5cb-6f90-4c37-8154-b995643d1edd
+    taskid: d553ecea-def5-43ce-84c3-ae0bbb1c7584
     type: condition
     task:
-      id: 034fc5cb-6f90-4c37-8154-b995643d1edd
-      description: 'Manually Review High Risk Score Domains'
+      id: d553ecea-def5-43ce-84c3-ae0bbb1c7584
       version: -1
       name: Should wait for an analyst review?
+      description: Manually Review High Risk Score Domains
       type: condition
       iscommand: false
       brand: ""
