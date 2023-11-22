@@ -26,6 +26,7 @@ configuration:
   - pcc
   - prismaaccessapi
   - xsoartim
+  - xdr
   - other
   type: 15
   section: Connect
@@ -1261,7 +1262,7 @@ script:
     - contextPath: InfoFile.Type
       description: The web artifacts file type.
       type: string
-  dockerimage: demisto/python3:3.10.13.75921
+  dockerimage: demisto/python3:3.10.13.80593
   runonce: false
   script: '-'
   subtype: python3
