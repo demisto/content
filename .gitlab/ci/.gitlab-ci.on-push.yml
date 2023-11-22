@@ -811,8 +811,7 @@ test-upload-flow:
   stage: results
   rules:
     - !reference [ .filter-non-nightly-docker-updates-rule, rules ]
-    - if: '$NIGHTLY'
-      when: always
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
   extends:
     - .default-job-settings
   needs:
