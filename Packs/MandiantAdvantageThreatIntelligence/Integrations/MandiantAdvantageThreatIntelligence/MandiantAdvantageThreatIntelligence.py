@@ -858,6 +858,7 @@ def create_base_indicator(
     indicator_obj = {
         "value": raw_indicator.get("value"),
         "score": get_verdict(raw_indicator.get("mscore")),
+        "rawJSON": raw_indicator,
         "type": indicator_type,
         "fields": fields,
         "relationships": campaign_relationships,
