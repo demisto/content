@@ -62,7 +62,7 @@ tasks:
       RDP Brute-Force:
       - "13"
       Remote PsExec with LOLBIN command:
-      - "18"
+      - "20"
     separatecontext: false
     conditions:
     - label: Malware
@@ -1290,7 +1290,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: true
+    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1345,15 +1345,15 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
-    taskid: fa5dc340-c8b8-4998-88c4-f7d667480ef1
+  "20":
+    id: "20"
+    taskid: 3587ca4b-bc41-4872-8a1c-805378c9f683
     type: playbook
     task:
-      id: fa5dc340-c8b8-4998-88c4-f7d667480ef1
+      id: 3587ca4b-bc41-4872-8a1c-805378c9f683
       version: -1
-      name: Remote PsExec with LOLBIN command execution alert
-      playbookName: Remote PsExec with LOLBIN command execution alert
+      name: Cortex XDR Remote PsExec with LOLBIN command execution alert
+      playbookName: Cortex XDR Remote PsExec with LOLBIN command execution alert
       type: playbook
       iscommand: false
       brand: ""
@@ -1361,49 +1361,12 @@ tasks:
     nexttasks:
       '#none#':
       - "5"
-    scriptarguments:
-      AutoRemediation:
-        simple: "false"
-      CriticalAlertsThreshold:
-        simple: "1"
-      EndpointIDs:
-        complex:
-          root: incident.xdralerts
-          filters:
-          - - operator: containsGeneral
-              left:
-                value:
-                  simple: incident.xdralerts.name
-                iscontext: true
-              right:
-                value:
-                  simple: Remote PsExec-like LOLBIN command execution
-              ignorecase: true
-          accessor: endpoint_id
-      HighAlertsThreshold:
-        simple: "1"
-      LOLBASFeedLimit:
-        simple: "100"
-      SrcIPAddress:
-        complex:
-          root: incident.xdralerts
-          accessor: actionremoteip
-          transformers:
-          - operator: uniq
-      alerts_ids:
-        complex:
-          root: inputs.alert_id
     separatecontext: true
     continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
     view: |-
       {
         "position": {
-          "x": 1380,
+          "x": 1390,
           "y": 575
         }
       }
@@ -1421,7 +1384,7 @@ view: |-
       "12_16_Token Theft": 0.58,
       "1_11_Cloud": 0.81,
       "1_14_First SSO Access": 0.82,
-      "1_7_#default#": 0.63,
+      "1_7_#default#": 0.8,
       "1_9_Malware": 0.65
     },
     "paper": {
@@ -1538,5 +1501,3 @@ outputs:
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0
-marketplaces:
-- xsoar
