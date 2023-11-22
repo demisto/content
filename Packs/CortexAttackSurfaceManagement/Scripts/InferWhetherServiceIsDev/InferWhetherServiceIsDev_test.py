@@ -9,18 +9,19 @@ def test_canonicalize():
     assert _canonicalize_string('" BLAH" ') == "blah"
 
 
-@pytest.mark.parametrize('tags_raw,matches',
+@pytest.mark.parametrize('raw,matches,list_type',
                          [([{"key": "ENV", "value": "non-prd"}],
-                          [{"key": "ENV", "value": "non-prd"}]),
-                          ([{"key": "ENV", "value": "prd"}], []),
-                             ([{"key": "ENV", "value": "dv"}, {"key": "stage", "value": "sbx"}],
-                              [{"key": "ENV", "value": "dv"}, {"key": "stage", "value": "sbx"}])
-                          ])
-def test_get_indicators_from_key_value_pairs(tags_raw, matches):
-    from InferWhetherServiceIsDev import get_indicators_from_key_value_pairs
+                          [{"key": "ENV", "value": "non-prd"}], "dictionary"),
+                          ([{"key": "ENV", "value": "prd"}], [], "dictionary"),
+                          ([{"key": "ENV", "value": "dv"}, {"key": "stage", "value": "sbx"}],
+                           [{"key": "ENV", "value": "dv"}, {"key": "stage", "value": "sbx"}], "dictionary"),
+                          (["eng-dev", "rando"], ["eng-dev"], "string"),
+                          (["eng-dev"], [], "break")])
+def test_get_indicators_from_list(raw, matches, list_type):
+    from InferWhetherServiceIsDev import get_indicators_from_list
     from InferWhetherServiceIsDev import is_dev_indicator
 
-    assert get_indicators_from_key_value_pairs(tags_raw, is_dev_indicator) == matches
+    assert get_indicators_from_list(raw, is_dev_indicator, list_type) == matches
 
 
 def test_is_dev_indicator():
@@ -72,7 +73,7 @@ def test_get_indicators_from_external_classification(classifications, matches):
 def test_determine_reason(external, internal, reason):
     from InferWhetherServiceIsDev import determine_reason
 
-    assert determine_reason(external, internal) == reason
+    assert determine_reason(external, internal, [], "") == reason
 
 
 def test_full_truth_table():
@@ -81,6 +82,8 @@ def test_full_truth_table():
     # Blank list means no external classification or tag matches.
     sample_no_match = []
     sample_dev_classification = ["DevelopmentEnvironment"]
+    sample_dev_hierarchy = ["ENG-DEV"]
+    sample_prod_hierarchy = ["ENG-PROD"]
 
     from InferWhetherServiceIsDev import final_decision
 
@@ -88,27 +91,73 @@ def test_full_truth_table():
 
     # kv pair contains no indicators
     # DevEnv is set (--> dev)
-    assert final_decision(sample_dev_classification, sample_no_match, sample_no_match)["result"]
+    assert final_decision(sample_dev_classification, sample_no_match, sample_no_match,
+                          sample_no_match, sample_no_match, "")["result"]
     # DevEnv is not set (--> can't tell)
-    assert not final_decision(sample_no_match, sample_no_match, sample_no_match)["result"]
+    assert not final_decision(sample_no_match, sample_no_match, sample_no_match, sample_no_match, sample_no_match, "")["result"]
 
     # kv pair contains dev indicators only
     # DevEnv is set (--> dev)
-    assert final_decision(sample_dev_classification, sample_dev_tag, sample_no_match)["result"]
+    # Dev Tags only
+    assert final_decision(sample_dev_classification, sample_dev_tag, sample_no_match,
+                          sample_no_match, sample_no_match, "")["result"]
+    # Dev Hierachy only
+    assert final_decision(sample_dev_classification, sample_no_match, sample_no_match,
+                          sample_dev_hierarchy, sample_no_match, "")["result"]
+    # Both Dev Tags and Hierarchy
+    assert final_decision(sample_dev_classification, sample_dev_tag, sample_no_match,
+                          sample_dev_hierarchy, sample_no_match, "")["result"]
+    #
     # DevEnv is not set (--> dev)
-    assert final_decision(sample_no_match, sample_dev_tag, sample_no_match)["result"]
+    # Dev Tag only
+    assert final_decision(sample_no_match, sample_dev_tag, sample_no_match, sample_no_match, sample_no_match, "")["result"]
+    # Dev Hierachy only
+    assert final_decision(sample_no_match, sample_no_match, sample_no_match, sample_dev_hierarchy, sample_no_match, "")["result"]
+    # Both Dev Tags and Hierarchy
+    assert final_decision(sample_no_match, sample_dev_tag, sample_no_match, sample_dev_hierarchy, sample_no_match, "")["result"]
 
     # kv pair contains prod indicators only
     # DevEnv is set (--> conflicting)
-    assert not final_decision(sample_dev_classification, sample_no_match, sample_prod_tag)["result"]
+    # PROD Tag only
+    assert not final_decision(sample_dev_classification, sample_no_match, sample_prod_tag,
+                              sample_no_match, sample_no_match, "")["result"]
+    # PROD Hierachy only
+    assert not final_decision(sample_dev_classification, sample_no_match, sample_no_match,
+                              sample_no_match, sample_prod_hierarchy, "")["result"]
+    # Both PROD Tags and Hierarchy
+    assert not final_decision(sample_dev_classification, sample_no_match, sample_prod_tag,
+                              sample_no_match, sample_prod_hierarchy, "")["result"]
+    #
     # DevEnv is not set (--> prod)
-    assert not final_decision(sample_no_match, sample_no_match, sample_prod_tag)["result"]
+    # PROD Tag only
+    assert not final_decision(sample_no_match, sample_no_match, sample_prod_tag, sample_no_match, sample_no_match, "")["result"]
+    # PROD Hierachy only
+    assert not final_decision(sample_no_match, sample_no_match, sample_no_match,
+                              sample_no_match, sample_prod_hierarchy, "")["result"]
+    # Both PROD Tags and Hierarchy
+    assert not final_decision(sample_no_match, sample_no_match, sample_prod_tag,
+                              sample_no_match, sample_prod_hierarchy, "")["result"]
 
     # kv pair contains conflicting indicators
     # DevEnv is set (--> conflicting)
-    assert not final_decision(sample_dev_classification, sample_dev_tag, sample_prod_tag)["result"]
+    # Conflicting tags only
+    assert not final_decision(sample_dev_classification, sample_dev_tag, sample_prod_tag,
+                              sample_no_match, sample_no_match, "")["result"]
+    # Conflicting hierarchy only
+    assert not final_decision(sample_dev_classification, sample_no_match, sample_no_match,
+                              sample_dev_hierarchy, sample_prod_hierarchy, "")["result"]
+    # Conflicting hiearchy and tags (would need other combinations to do full truth table)
+    assert not final_decision(sample_dev_classification, sample_dev_tag, sample_prod_tag,
+                              sample_dev_hierarchy, sample_prod_hierarchy, "")["result"]
+    #
     # DevEnv is not set (--> conflicting)
-    assert not final_decision(sample_no_match, sample_dev_tag, sample_prod_tag)["result"]
+    assert not final_decision(sample_no_match, sample_dev_tag, sample_prod_tag, sample_no_match, sample_no_match, "")["result"]
+    # Conflicting hierarchy only
+    assert not final_decision(sample_no_match, sample_no_match, sample_no_match,
+                              sample_dev_hierarchy, sample_prod_hierarchy, "")["result"]
+    # Conflicting hiearchy and tags (would need other combinations to do full truth table)
+    assert not final_decision(sample_no_match, sample_dev_tag, sample_prod_tag,
+                              sample_dev_hierarchy, sample_prod_hierarchy, "")["result"]
 
 
 @pytest.mark.parametrize('in_classifications,in_tags,expected_out_boolean',

@@ -41,7 +41,7 @@ class Client(BaseClient):
             AccessToken: A valid Access Token to authorize requests
         """
         if self._token is None or force_new or self._token.expired:
-            response = self._http_request('POST', '/access_token/', params={'secret_key': self._secret})
+            response = self._http_request('POST', '/access_token/', data={'secret_key': self._secret})
             token = response.get('data', {}).get('access_token')
             expiration = response.get('data', {}).get('expiration_utc')
             expiration_date = dateparser.parse(expiration)

@@ -17,22 +17,30 @@ configuration:
   type: 13
   section: Connect
   required: false
-- defaultvalue: None
-  display: Incident Mirroring Direction
+  defaultvalue: 'Cortex XDR - Lite'
+- defaultvalue: 'false'
+  display: Remove legacy incident fields
+  name: dont_format_sublists
+  type: 8
+  section: Collect
+  required: false
+  additionalinfo: Unchecked for backwards compatibility, recommended to check. This will remove duplicated incident fields under file_artifacts, network_artifacts, and alerts (like client_id, clientid.)
+- display: Incident Mirroring Direction
   name: mirror_direction
+  required: false
+  type: 15
+  section: Collect
+  defaultvalue: None
   options:
   - None
   - Incoming
   - Outgoing
   - Both
-  type: 15
-  section: Collect
-  required: false
-- display: Server URL (copy URL from XDR)
-  name: url
-  required: true
+- name: url
   type: 0
+  display: 'Server URL (copy URL from XDR)'
   section: Connect
+  required: true
 - displaypassword: API Key ID
   name: apikey_id_creds
   type: 9
@@ -40,13 +48,13 @@ configuration:
   display: ''
   section: Connect
   required: false
-- displaypassword: API Key
+- display: ''
   name: apikey_creds
   type: 9
-  hiddenusername: true
-  display: ''
   section: Connect
   required: false
+  displaypassword: API Key
+  hiddenusername: true
 - display: API Key ID
   name: apikey_id
   type: 4
@@ -56,51 +64,51 @@ configuration:
 - display: API Key
   name: apikey
   type: 4
-  hidden: true
   section: Connect
   required: false
+  hidden: true
 - additionalinfo: The timeout of the HTTP requests sent to Cortex XDR API (in seconds).
   defaultvalue: '120'
   display: HTTP Timeout
   name: timeout
   type: 0
   section: Connect
-  advanced: true
   required: false
-- additionalinfo: The maximum number of incidents per fetch. Cannot exceed 100.
-  defaultvalue: '10'
-  display: Maximum number of incidents per fetch
+  advanced: true
+- display: Maximum number of incidents per fetch
   name: max_fetch
   type: 0
   section: Collect
   required: false
+  additionalinfo: The maximum number of incidents per fetch. Cannot exceed 100.
+  defaultvalue: '10'
 - display: Only fetch starred incidents
   name: starred
   type: 8
   section: Collect
   advanced: true
   required: false
-- additionalinfo: Starred fetch window timestamp (<number> <time unit>, e.g., 12 hours, 7 days). Fetches only starred incidents within the specified time range.
-  defaultvalue: 3 days
+- defaultvalue: 3 days
   display: Starred incidents fetch window
   name: starred_incidents_fetch_window
   type: 0
   section: Collect
-  advanced: true
   required: false
-- defaultvalue: 3 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  additionalinfo: Starred fetch window timestamp (<number> <time unit>, e.g., 12 hours, 7 days). Fetches only starred incidents within the specified time range.
+  advanced: true
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
   type: 0
   section: Collect
   required: false
-- additionalinfo: For Cortex XSOAR version 6.0.0 and above. If selected, for every incident fetched from Cortex XDR to Cortex XSOAR, the incident owners will be synced. Note that once this value is changed and synchronized between the systems, additional changes will not be reflected. For example, if you change the owner in Cortex XSOAR, the new owner will also be changed in Cortex XDR. However, if you now change the owner back in Cortex XDR, this additional change will not be reflected in Cortex XSOAR. In addition, for this change to be reflected, the owners must exist in both Cortex XSOAR and Cortex XDR.
-  display: Sync Incident Owners
+  defaultvalue: 3 days
+- display: Sync Incident Owners
   name: sync_owners
   type: 8
   section: Collect
   advanced: true
   required: false
+  additionalinfo: For Cortex XSOAR version 6.0.0 and above. If selected, for every incident fetched from Cortex XDR to Cortex XSOAR, the incident owners will be synced. Note that once this value is changed and synchronized between the systems, additional changes will not be reflected. For example, if you change the owner in Cortex XSOAR, the new owner will also be changed in Cortex XDR. However, if you now change the owner back in Cortex XDR, this additional change will not be reflected in Cortex XSOAR. In addition, for this change to be reflected, the owners must exist in both Cortex XSOAR and Cortex XDR.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -113,10 +121,10 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- display: Prevent Only Mode
+- additionalinfo: 'Whether the XDR tenant Mode is prevent only'
+  display: Prevent Only Mode
   name: prevent_only
   type: 8
-  additionalinfo: Whether the XDR tenant Mode is prevent only
   section: Connect
   advanced: true
   required: false
@@ -554,11 +562,14 @@ script:
     - contextPath: Process.CommandLine
       description: The full command line (including arguments).
       type: String
+    - contextPath: Process.is_malicious
+      description: Whether the artifact is malicious, as decided by the Wildfire verdict.
+      type: boolean
     - contextPath: IP.Address
       description: IP address.
       type: String
     - contextPath: IP.Geo.Country
-      description: The country in which the IP address is located.
+      description: 'The country in which the IP address is located.'
       type: String
     - contextPath: Domain.Name
       description: 'The domain name, for example: "google.com".'
@@ -2720,8 +2731,8 @@ script:
       auto: PREDEFINED
       defaultValue: 'true'
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     description: Returns information about each alert ID.
     name: xdr-get-cloud-original-alerts
     outputs:
@@ -3455,7 +3466,7 @@ script:
       isArray: true
     name: xdr-remove-user-role
     description: Remove one or more users from a role.
-  dockerimage: demisto/python3:3.10.13.75921
+  dockerimage: demisto/python3:3.10.13.78960
   isfetch: true
   script: ''
   subtype: python3
@@ -3469,6 +3480,5 @@ tests:
 - Test XDR Playbook general commands
 - Test XDR Playbook retrieve file command
 defaultmapperin: Cortex XDR - IR-mapper
-defaultclassifier: Cortex XDR Incident Handler - Classifier
 defaultmapperout: Cortex XDR - IR-out-mapper
 fromversion: 5.0.0

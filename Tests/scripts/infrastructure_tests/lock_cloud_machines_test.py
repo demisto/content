@@ -4,7 +4,7 @@ import pytest
 import requests
 from requests import ConnectionError, Response
 
-from Tests.scripts.lock_cloud_machines import get_my_place_in_the_queue, try_to_lock_machine,\
+from Tests.scripts.lock_cloud_machines import get_my_place_in_the_queue, try_to_lock_machine, \
     get_machines_locks_details, wait_for_build_to_be_first_in_queue, get_and_lock_all_needed_machines, check_job_status
 
 
