@@ -42,3 +42,49 @@ This command allows you to pull Tessian event data into your XSOAR instance.
 | Tessian.EventsOutput.checkpoint | String | This value can be provided to a subsequent request via the after_checkpoint query parameter to ensure that events from this request are not returned in future responses. This allows clients to paginate through results. | 
 | Tessian.EventsOutput.additional_results | Boolean | True if there may be more events that can be immediately retrieved. | 
 | Tessian.EventsOutput.results | Unknown | The events returned by this request. | 
+
+### release_from_quarantine
+
+***
+This command allows you to release a quarantined email from Tessian.
+
+#### Base Command
+
+`release_from_quarantine`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| event_id | The ID of the event you would like to release from quarantine. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Tessian.ReleaseFromQuarantineOutput.number_of_actions_attempted | String | The number of users that release from quarantine actions were attempted for. | 
+| Tessian.ReleaseFromQuarantineOutput.number_of_actions_succeeded | String | The number of users that the release from quarantine action was successful for. | 
+| Tessian.ReleaseFromQuarantineOutput.results | Unknown | The results of the release action. This is an array of objects mapping the email address of users to the result of the release action. | 
+
+### delete_from_quarantine
+
+***
+This command allows you to delete a quarantined email from Tessian.
+
+#### Base Command
+
+`delete_from_quarantine`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| event_id | The ID of the event you would like to delete from quarantine. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Tessian.DeleteFromQuarantineOutput.number_of_actions_attempted | String | The number of users that delete from quarantine actions were attempted for. | 
+| Tessian.DeleteFromQuarantineOutput.number_of_actions_succeeded | String | The number of users that the delete from quarantine action was successful for. | 
+| Tessian.DeleteFromQuarantineOutput.results | Unknown | The results of the delete action. This is an array of objects mapping the email address of users to the result of the delete action. | 

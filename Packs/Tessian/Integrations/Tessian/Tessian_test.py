@@ -1,7 +1,7 @@
 
 import pytest
 
-from Tessian import format_url, Client, get_events_command
+from Tessian import format_url, Client, get_events_command, release_from_quarantine_command, delete_from_quarantine_command
 
 #  region HELPERS
 
@@ -21,9 +21,6 @@ def create_mock_client():
 def test_get_events_command(mocker):
     """
     Tests the get_events_command function.
-
-    No mock is needed here because the get_events_command does not call
-    any external API.
     """
 
     #  Mock the client
@@ -54,6 +51,86 @@ def test_get_events_command(mocker):
         "results": {
             "dummy_key": "dummy_value",
         }
+    }
+
+
+def test_release_from_quarantine_comand(mocker):
+    """
+    Tests the release_from_quarantine_command function.
+    """
+
+    #  Mock the client
+    client = create_mock_client()
+    mocker.patch.object(
+        client,
+        'release_from_quarantine',
+        return_value={
+            "number_of_actions_attempted": 1,
+            "number_of_actions_succeeded": 1,
+            "results": [
+                {
+                    "user_address": "example@gmail.com",
+                    "error": None,
+                }
+            ]
+        }
+    )
+
+    input = {
+        "event_id": "dummy_event_id",
+    }
+
+    response = release_from_quarantine_command(client, input)
+
+    assert response.outputs == {
+        "number_of_actions_attempted": 1,
+        "number_of_actions_succeeded": 1,
+        "results": [
+            {
+                "user_address": "example@gmail.com",
+                "error": None,
+            },
+        ]
+    }
+
+
+def test_delete_from_quarantine_command(mocker):
+    """
+    Tests the delete_from_quarantine_command function.
+    """
+
+    #  Mock the client
+    client = create_mock_client()
+    mocker.patch.object(
+        client,
+        'delete_from_quarantine',
+        return_value={
+            "number_of_actions_attempted": 1,
+            "number_of_actions_succeeded": 1,
+            "results": [
+                {
+                    "user_address": "example@gmail.com",
+                    "error": None,
+                }
+            ]
+        }
+    )
+
+    input = {
+        "event_id": "dummy_event_id",
+    }
+
+    response = delete_from_quarantine_command(client, input)
+
+    assert response.outputs == {
+        "number_of_actions_attempted": 1,
+        "number_of_actions_succeeded": 1,
+        "results": [
+            {
+                "user_address": "example@gmail.com",
+                "error": None,
+            },
+        ]
     }
 
 

@@ -28,14 +28,30 @@ class Client(BaseClient):
     """
 
     def get_events(self, limit: str | None, after_checkpoint: str | None, created_after: str | None) -> dict[str, Any]:
+        params = assign_params(limit=limit, after_checkpoint=after_checkpoint, created_after=created_after)
+
         return self._http_request(
             method='GET',
             url_suffix='/api/v1/events',
-            data=(
-                ('limit', limit),
-                ('after_checkpoint', after_checkpoint),
-                ('created_after', created_after)
-            ),
+            params=params,
+            resp_type='json',
+            ok_codes=(200,)
+        )
+
+    def release_from_quarantine(self, event_id: str) -> dict[str, Any]:
+        return self._http_request(
+            method='POST',
+            url_suffix='/api/v1/remediation/release_from_quarantine',
+            json_data={"event_id": event_id},
+            resp_type='json',
+            ok_codes=(200,)
+        )
+
+    def delete_from_quarantine(self, event_id: str) -> dict[str, Any]:
+        return self._http_request(
+            method='POST',
+            url_suffix='/api/v1/remediation/delete_from_quarantine',
+            json_data={"event_id": event_id},
             resp_type='json',
             ok_codes=(200,)
         )
@@ -82,6 +98,38 @@ def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
     return CommandResults(
         outputs_prefix='Tessian',
         outputs_key_field='EventsOutput',
+        outputs=results,
+        raw_response=results
+    )
+
+
+def release_from_quarantine_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    event_id = args.get('event_id', None)
+
+    if event_id is None:
+        raise ValueError('Event ID is required')
+
+    results = client.release_from_quarantine(event_id)
+
+    return CommandResults(
+        outputs_prefix='Tessian',
+        outputs_key_field='ReleaseFromQuarantineOutput',
+        outputs=results,
+        raw_response=results
+    )
+
+
+def delete_from_quarantine_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    event_id = args.get('event_id', None)
+
+    if event_id is None:
+        raise ValueError('Event ID is required')
+
+    results = client.delete_from_quarantine(event_id)
+
+    return CommandResults(
+        outputs_prefix='Tessian',
+        outputs_key_field='DeleteFromQuarantineOutput',
         outputs=results,
         raw_response=results
     )
@@ -153,6 +201,10 @@ def main() -> None:
             return_results(result)
         elif demisto.command() == 'get_events':
             return_results(get_events_command(client, demisto.args()))
+        elif demisto.command() == 'release_from_quarantine':
+            return_results(release_from_quarantine_command(client, demisto.args()))
+        elif demisto.command() == 'delete_from_quarantine':
+            return_results(delete_from_quarantine_command(client, demisto.args()))
         else:
             raise NotImplementedError(f"Either the command, {demisto.command}, is not supported yet or it does not exist.")
 
