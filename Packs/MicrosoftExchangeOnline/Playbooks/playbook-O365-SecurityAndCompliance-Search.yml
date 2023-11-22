@@ -5,7 +5,7 @@ description: |-
   3. Waits for the compliance search to complete.
   4. Gets the results of the compliance search as an output.
   5. Gets the preview results, if specified.
-id: O365 - Security And Compliance - Search
+id: O365 - Security And Compliance - Search_debug
 inputs:
 - key: search_name
   value: {}
@@ -623,6 +623,15 @@ tasks:
           right:
             value:
               simple: "true"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: O365.SecurityAndCompliance.ContentSearch.Search.SearchStatus
+            iscontext: true
+          right:
+            value:
+              simple: Success
+    continueonerrortype: ""
     view: |-
       {
         "position": {

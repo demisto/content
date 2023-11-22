@@ -3,7 +3,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: SecurityAndComplianceV2
+  id: SecurityAndComplianceV2_debug
   version: -1
 configuration:
 - display: Certificate Password
@@ -74,7 +74,7 @@ configuration:
   required: false
 description: This integration allows you to manage and interact with Microsoft security and compliance content search.
 display: O365 - Security And Compliance - Content Search v2
-name: SecurityAndComplianceV2
+name: SecurityAndComplianceV2_debug
 script:
   commands:
   - description: OAuth2.0 - Start authorization.
@@ -613,6 +613,9 @@ script:
       type: String
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.TenantId
       description: Security and compliance search action Tenant ID.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.SearchStatus
+      description: The status indicating whether or not the search for a given search_name was successful.
       type: String
   - arguments:
     - description: The name of the compliance search action.
