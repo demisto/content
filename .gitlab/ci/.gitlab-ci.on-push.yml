@@ -783,7 +783,7 @@ test-upload-flow:
     - section_end "Verify Created Testing Bucket"
     - job-done
 
-.server_test_results:
+.server_test_e2e_results:
   stage: results
   rules:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
@@ -831,7 +831,7 @@ xsoar_e2e_test_results:
     JIRA_ISSUE_TYPE: "XSOAR Dev Bug"
     JIRA_COMPONENT: "Test Failure"
     JIRA_LABELS: '["XSOAR", "nightly"]'
-  extends: .server_test_results
+  extends: .server_test_e2e_results
   needs:
     - job: tests_xsoar_server
     - job: xsoar_ng_server_ga
@@ -848,7 +848,7 @@ xsiam_e2e_test_results:
     JIRA_ISSUE_TYPE: "XSOAR Dev Bug"
     JIRA_COMPONENT: "Test Failure"
     JIRA_LABELS: '["XSIAM", "nightly"]'
-  extends: .server_test_results
+  extends: .server_test_e2e_results
   needs:
     - xsiam_server_ga
   dependencies:
