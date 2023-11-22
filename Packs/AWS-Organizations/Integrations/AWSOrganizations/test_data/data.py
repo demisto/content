@@ -208,7 +208,7 @@ class account_get(Data):
             "Arn": "arn",
             "Email": "email",
             "Name": "name",
-            "Status": "status",
+            "Status": "SUSPENDED",
             "JoinedMethod": "joined_method",
             "JoinedTimestamp": datetime(
                 year=2022, month=10, day=15, hour=12, minute=30, second=45
@@ -221,14 +221,14 @@ class account_get(Data):
         "Arn": "arn",
         "Email": "email",
         "Name": "name",
-        "Status": "status",
+        "Status": "SUSPENDED",
         "JoinedMethod": "joined_method",
         "JoinedTimestamp": "2022-10-15 12:30:45",
     }
     readable_output = """### AWS Organization Accounts
 |Id|Arn|Name|Email|JoinedMethod|JoinedTimestamp|Status|
 |---|---|---|---|---|---|---|
-| id | arn | name | email | joined_method | 2022-10-15 12:30:45 | status |
+| id | arn | name | email | joined_method | 2022-10-15 12:30:45 | SUSPENDED |
 """
 
 
@@ -304,35 +304,70 @@ class account_move(Data):
 """
 
 
-# class account_create(Data):
-#     command_args = {
-#         "account_name": "account_name",
-#         "email": "email",
-#         "iam_user_access_to_billing": "iam_user_access_to_billing",
-#         "role_name": "role_name",
-#         "tags": "key1=value1,key2=value2",
-#         "request_id": "request_id",
-#         "interval_in_seconds": "interval_in_seconds",
-#         "timeout": "timeout",
-#         "roleArn": "roleArn",
-#     }
-#     client_func_kwargs = {}
-#     client_func_return = None
-#     context_outputs = None
-#     readable_output = """
-# """
+class account_create_initial_call(Data):
+    command_args = {
+        "account_name": "account_name",
+        "email": "email",
+        "iam_user_access_to_billing": "Allow",
+        "role_name": "role_name",
+        "tags": "key1=value1,key2=value2",
+    }
+    client_func_kwargs = {
+        'Email': 'email',
+        'AccountName': 'account_name',
+        'RoleName': 'role_name',
+        'IamUserAccessToBilling': 'ALLOW',
+        'Tags': [
+            {"Key": "key1", "Value": "value1"},
+            {"Key": "key2", "Value": "value2"},
+        ]
+    }
+    client_func_return = {
+        'CreateAccountStatus': {
+            'Id': 'id',
+            'AccountName': 'account_name',
+            'State': 'IN_PROGRESS',
+            'RequestedTimestamp': datetime(2015, 1, 1),
+            'CompletedTimestamp': datetime(2015, 1, 1),
+            'AccountId': 'account_id',
+            'GovCloudAccountId': 'gov_id',
+            'FailureReason': 'none'
+        }
+    }
 
 
-# class account_close(Data):
-#     command_args = {
-#         "account_id": "account_id",
-#         "is_closed": True
-#     }
-#     client_func_kwargs = {}
-#     client_func_return = None
-#     context_outputs = None
-#     readable_output = """
-# """
+class account_create_final_call(Data):
+    command_args = {"request_id": "request_id"}
+    client_func_kwargs = {"CreateAccountRequestId": "request_id"}
+    client_func_return = {
+        'CreateAccountStatus': {
+            'Id': 'id',
+            'AccountName': 'account_name',
+            'State': 'SUCCEEDED',
+            'RequestedTimestamp': datetime(2015, 1, 1),
+            'CompletedTimestamp': datetime(2015, 1, 1),
+            'AccountId': 'account_id',
+            'GovCloudAccountId': 'gov_id',
+            'FailureReason': 'none'
+        }
+    }
+    context_outputs = account_get.context_outputs
+    readable_output = account_get.readable_output
+
+
+class account_close(Data):
+    command_args = {
+        "account_id": "account_id",
+        "is_closed": False
+    }
+    client_func_kwargs = {
+        "AccountId": "account_id"
+    }
+    readable_output = """### Account closed
+|AccountId|
+|---|
+| account_id |
+"""
 
 
 class organization_unit_create(Data):

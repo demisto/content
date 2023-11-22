@@ -21,6 +21,39 @@ POLICY_TYPE_MAP: dict[str, 'PolicyTypeType'] = {
     'Backup Policy': 'BACKUP_POLICY',
     'AI Services Opt Out Policy': 'AISERVICES_OPT_OUT_POLICY'
 }
+CREATE_ACCOUNT_FAILURE_MAP: dict['CreateAccountFailureReasonType', str] = {
+    "ACCOUNT_LIMIT_EXCEEDED":
+        "The account couldn't be created because you reached the limit on the number of accounts in your organization.",
+    "CONCURRENT_ACCOUNT_MODIFICATION":
+        "You already submitted a request with the same information.",
+    "EMAIL_ALREADY_EXISTS":
+        "The account could not be created because another Amazon Web Services account with that email address already exists.",
+    "FAILED_BUSINESS_VALIDATION":
+        "The Amazon Web Services account that owns your organization failed to receive business license validation.",
+    "GOVCLOUD_ACCOUNT_ALREADY_EXISTS":
+        "The account in the Amazon Web Services GovCloud (US) Region could not be created because this"
+        " Region already includes an account with that email address.",
+    "INVALID_IDENTITY_FOR_BUSINESS_VALIDATION":
+        "The Amazon Web Services account that owns your organization can't complete business license validation"
+        "because it doesn't have valid identity data.",
+    "INVALID_ADDRESS": "The account could not be created because the address you provided is not valid.",
+    "INVALID_EMAIL": "The account could not be created because the email address you provided is not valid.",
+    "INVALID_PAYMENT_INSTRUMENT":
+        "The Amazon Web Services account that owns your organization does not have a "
+        "supported payment method associated with the account.",
+    "INTERNAL_FAILURE":
+        "The account could not be created because of an internal failure. Try again later."
+        " If the problem persists, contact Amazon Web Services Customer Support.",
+    "MISSING_BUSINESS_VALIDATION":
+        "The Amazon Web Services account that owns your organization has not received Business Validation.",
+    "MISSING_PAYMENT_INSTRUMENT": "You must configure the management account with a valid payment method, such as a credit card.",
+    "PENDING_BUSINESS_VALIDATION":
+        "The Amazon Web Services account that owns your organization is still in the"
+        " process of completing business license validation.",
+    "UNKNOWN_BUSINESS_VALIDATION":
+        "The Amazon Web Services account that owns your organization"
+        " has an unknown issue with business license validation.",
+}
 
 ''' HELPER FUNCTIONS '''
 
@@ -315,7 +348,7 @@ def organization_get_command(aws_client: 'OrganizationsClient') -> CommandResult
     )
 
 
-def account_remove_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:  # TODO: test
+def account_remove_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
 
     aws_client.remove_account_from_organization(
         AccountId=args['account_id']
@@ -329,7 +362,7 @@ def account_remove_command(args: dict, aws_client: 'OrganizationsClient') -> Com
     )
 
 
-def account_move_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:  # TODO: test
+def account_move_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
 
     aws_client.move_account(
         AccountId=args['account_id'],
@@ -352,7 +385,7 @@ def account_move_command(args: dict, aws_client: 'OrganizationsClient') -> Comma
     poll_message='Creating account:',
     requires_polling_arg=False
 )
-def account_create_command(args: dict, aws_client: 'OrganizationsClient') -> PollResult:  # TODO: test
+def account_create_command(args: dict, aws_client: 'OrganizationsClient') -> PollResult:
 
     def initial_call() -> dict:
         account = aws_client.create_account(
@@ -363,27 +396,28 @@ def account_create_command(args: dict, aws_client: 'OrganizationsClient') -> Pol
             Tags=build_tags(args['tags'])
         )
         args['request_id'] = account['CreateAccountStatus']['Id']
-        return account
+        return account['CreateAccountStatus']
 
     def polling_call() -> dict:
-        return aws_client.describe_create_account_status(
+        account = aws_client.describe_create_account_status(
             CreateAccountRequestId=args['request_id']
         )
+        return account['CreateAccountStatus']
 
     def create_response(account: dict) -> PollResult:
 
-        match dict_safe_get(account, ['CreateAccountStatus', 'State']):
+        match account['State']:
             case 'SUCCEEDED':
                 return PollResult(
                     response=account_list_command(
-                        {'account_id': account.get('AccountId')},
+                        {'account_id': account['AccountId']},
                         aws_client
                     ),
                     continue_to_poll=False
                 )
             case 'FAILED':
-                reason = dict_safe_get(account, ['CreateAccountStatus', 'FailureReason'])
-                raise DemistoException(f'Failed to create account. Reason: {reason}')
+                reason = account.get('FailureReason')
+                raise DemistoException(f'Failed to create account. Reason: {CREATE_ACCOUNT_FAILURE_MAP.get(reason, reason)}')
             case _:
                 return PollResult(
                     response=None,
@@ -416,6 +450,7 @@ def account_close_command(args: dict, aws_client: 'OrganizationsClient') -> Poll
     account = aws_client.describe_account(
         AccountId=args['account_id']
     )
+
     return PollResult(
         response=CommandResults(
             readable_output=tableToMarkdown(

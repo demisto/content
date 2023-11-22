@@ -7,7 +7,7 @@ from CommonServerPython import *  # noqa
 
 class MockOrganizationsClient:  # (OrganizationsClient):
     def get_paginator(self, _):
-        return None
+        pass
 
     def describe_account(self, **kwargs):
         assert account_get.client_func_kwargs == kwargs
@@ -26,13 +26,16 @@ class MockOrganizationsClient:  # (OrganizationsClient):
     def move_account(self, **kwargs):
         assert account_move.client_func_kwargs == kwargs
 
-    # def account_create(self, **kwargs):
-    #     assert account_create.client_func_kwargs == kwargs
-    #     return account_create.client_func_return
+    def create_account(self, **kwargs):
+        assert account_create_initial_call.client_func_kwargs == kwargs
+        return account_create_initial_call.client_func_return
 
-    # def account_close(self, **kwargs):
-    #     assert account_close.client_func_kwargs == kwargs
-    #     return account_close.client_func_return
+    def describe_create_account_status(self, **kwargs):
+        assert account_create_final_call.client_func_kwargs == kwargs
+        return account_create_final_call.client_func_return
+
+    def close_account(self, **kwargs):
+        assert account_close.client_func_kwargs == kwargs
 
     def create_organizational_unit(self, **kwargs):
         assert organization_unit_create.client_func_kwargs == kwargs
@@ -289,22 +292,42 @@ def test_account_move():
     assert result.readable_output == account_move.readable_output
 
 
-# def test_account_create_initial_call():
+def test_account_create_initial_call(mocker):
+    from AWSOrganizations import account_create_command
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
+    mocker.patch.object(ScheduledCommand, '__init__', return_value=None)
 
-#     from AWSOrganizations import account_create_command
+    account_create_command(
+        account_create_initial_call.command_args,
+        MockOrganizationsClient()
+    )
 
-#     result = account_create_command(MockOrganizationsClient())  TODO
-
-#     assert result.response.  == None
+    assert account_create_initial_call.command_args['request_id'] == 'id'
 
 
-# def test_account_close_initial_call():
+def test_account_create_final_call(mocker):
+    from AWSOrganizations import account_create_command
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
+    mocker.patch.object(ScheduledCommand, '__init__', return_value=None)
 
-#     from AWSOrganizations import account_close_command
+    result = account_create_command(
+        account_create_final_call.command_args,
+        MockOrganizationsClient()
+    )
 
-#     result = account_close_command(MockOrganizationsClient())  TODO
+    assert result.outputs == account_create_final_call.context_outputs
+    assert result.readable_output == account_create_final_call.readable_output
 
-#     assert result.response.  == None
+
+def test_account_close(mocker):
+    from AWSOrganizations import account_close_command
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
+    mocker.patch.object(ScheduledCommand, '__init__', return_value=None)
+
+    result: CommandResults = account_close_command(account_close.command_args, MockOrganizationsClient())
+
+    assert result.outputs == account_close.context_outputs
+    assert result.readable_output == account_close.readable_output
 
 
 def test_organization_unit_create():
