@@ -25,6 +25,7 @@ def test_ip_command_when_api_quota_reached(mocker):
         'server': 'test',
         'proxy': True,
         'disregard_quota': True,
+        'disable_private_ip_lookup': False,
         'integrationReliability': DBotScoreReliability.C
     }
 
