@@ -51,12 +51,12 @@ def test_get_events_command(mocker):
     assert response.outputs == {
         "checkpoint": "dummy_checkpoint",
         "additional_results": True,
-    }
-    assert response.raw_response == {
-        "dummy_key": "dummy_value",
+        "results": {
+            "dummy_key": "dummy_value",
+        }
     }
 
-    assert client_mock.assert_called_with(limit=10, after_checkpoint=None, created_after=None)
+    assert client_mock.assert_called_with(10, None, None)
 
 
 @pytest.mark.parametrize(

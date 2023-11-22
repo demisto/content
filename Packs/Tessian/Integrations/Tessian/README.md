@@ -10,7 +10,6 @@ Tessian is an email security platform that allows organizations to protect their
     | --- | --- | --- |
     | Portal URL | The URL that you use to access the Tessian Portal. Please include the extension, e.g. "example.tessian-platform.com" or "example.tessian-app.com" | True |
     | API Key | The API Key to use to connect to the Tessian API. This can be found under "Security Integrations" in your Tessian Portal \(/0/admin/integrations/api/tokens\) | True |
-    | Password |  | True |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -42,3 +41,4 @@ This command allows you to pull Tessian event data into your XSOAR instance.
 | --- | --- | --- |
 | Tessian.EventsOutput.checkpoint | String | This value can be provided to a subsequent request via the after_checkpoint query parameter to ensure that events from this request are not returned in future responses. This allows clients to paginate through results. | 
 | Tessian.EventsOutput.additional_results | Boolean | True if there may be more events that can be immediately retrieved. | 
+| Tessian.EventsOutput.results | Unknown | The events returned by this request. | 

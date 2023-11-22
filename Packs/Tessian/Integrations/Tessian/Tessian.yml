@@ -37,6 +37,9 @@ script:
     - contextPath: Tessian.EventsOutput.additional_results
       description: True if there may be more events that can be immediately retrieved.
       type: Boolean
+    - contextPath: Tessian.EventsOutput.results
+      description: The events returned by this request.
+      type: Unknown
 
   runonce: false
   script: '-'

@@ -77,18 +77,13 @@ def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
     after_checkpoint = args.get('after_checkpoint', None)
     created_after = args.get('created_after', None)
 
-    result = client.get_events(limit, after_checkpoint, created_after)
-    output_results = {
-        "checkpoint": result['checkpoint'],
-        "additional_results": result['additional_results'],
-    }
-    raw_results = result['results']
+    results = client.get_events(limit, after_checkpoint, created_after)
 
     return CommandResults(
         outputs_prefix='Tessian',
         outputs_key_field='EventsOutput',
-        outputs=output_results,
-        raw_response=raw_results
+        outputs=results,
+        raw_response=results
     )
 
 
