@@ -8,7 +8,6 @@ configuration:
   defaultvalue: 'true'
   type: 8
   required: false
-  timeout: 3300
 - display: Indicator Reputation
   name: feedReputation
   defaultvalue: feedInstanceReputationNotSet
@@ -196,12 +195,13 @@ script:
     - contextPath: RecordedFutureFeed.RiskRule.Criticality
       description: The risk rule criticality.
       type: String
-  dockerimage: demisto/python3:3.10.13.75921
+  dockerimage: demisto/python3:3.10.13.80593
   feed: true
   runonce: false
   script: '-'
   subtype: python3
   type: python
+  timeout: 4000
 tests:
 - RecordedFutureFeed - Test
 fromversion: 5.5.0
