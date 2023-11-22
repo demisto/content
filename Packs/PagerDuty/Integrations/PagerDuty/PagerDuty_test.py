@@ -93,16 +93,16 @@ def test_add_responders(requests_mock: MockerCore, mocker: MockerFixture) -> Non
     )
     requests_mock.post(
         'https://api.pagerduty.com/incidents/PXP12GZ/responder_requests',
-        json=load_mock_response('responder_requests.json').get('specific_users')
+        json=load_mock_response('responder_requests.json')['specific_users']
     )
 
     from PagerDuty import add_responders_to_incident
     res = add_responders_to_incident(**demisto.args())
-    expected_users_requested = ','.join([x.get("ID") for x in res.outputs])
-    assert demisto.args().get('incident_id') == res.outputs[0].get('IncidentID')
-    assert demisto.args().get('message') == res.outputs[0].get('Message')
-    assert demisto.params().get('DefaultRequestor') == res.outputs[1].get('RequesterID')
-    assert demisto.args().get('user_requests') == expected_users_requested
+    expected_users_requested = ','.join([x["ID"] for x in res.outputs])
+    assert demisto.args()['incident_id'] == res.outputs[0]['IncidentID']
+    assert demisto.args()['message'] == res.outputs[0]['Message']
+    assert demisto.params()['DefaultRequestor'] == res.outputs[1]['RequesterID']
+    assert demisto.args()['user_requests'] == expected_users_requested
 
 
 def test_add_responders_default(requests_mock: MockerCore, mocker: MockerFixture) -> None:
@@ -136,16 +136,16 @@ def test_add_responders_default(requests_mock: MockerCore, mocker: MockerFixture
     )
     requests_mock.post(
         'https://api.pagerduty.com/incidents/PXP12GZ/responder_requests',
-        json=load_mock_response('responder_requests.json').get('default_user')
+        json=load_mock_response('responder_requests.json')['default_user']
     )
 
     from PagerDuty import add_responders_to_incident
     res = add_responders_to_incident(**demisto.args())
-    expected_users_requested = ','.join([x.get("ID") for x in res.outputs])
-    assert demisto.args().get('incident_id') == res.outputs[0].get('IncidentID')
-    assert demisto.args().get('message') == res.outputs[0].get('Message')
-    assert demisto.params().get('DefaultRequestor') == res.outputs[0].get('RequesterID')
-    assert demisto.params().get('DefaultRequestor') == expected_users_requested
+    expected_users_requested = ','.join([x["ID"] for x in res.outputs])
+    assert demisto.args()['incident_id'] == res.outputs[0]['IncidentID']
+    assert demisto.args()['message'] == res.outputs[0]['Message']
+    assert demisto.params()['DefaultRequestor'] == res.outputs[0]['RequesterID']
+    assert demisto.params()['DefaultRequestor'] == expected_users_requested
 
 
 def test_play_response_play(requests_mock: MockerCore, mocker: MockerFixture) -> None:
@@ -223,7 +223,7 @@ def test_get_users_on_call(requests_mock: MockerCore, mocker: MockerFixture) -> 
     )
     from PagerDuty import get_on_call_users_command
     res = get_on_call_users_command(**demisto.args())
-    assert demisto.args().get('scheduleID') == res.outputs[0].get('ScheduleID')
+    assert demisto.args()['scheduleID'] == res.outputs[0]['ScheduleID']
 
 
 def test_get_users_on_call_now(requests_mock: MockerCore, mocker: MockerFixture) -> None:
@@ -260,7 +260,7 @@ def test_get_users_on_call_now(requests_mock: MockerCore, mocker: MockerFixture)
     )
     from PagerDuty import get_on_call_now_users_command
     res = get_on_call_now_users_command(**demisto.args())
-    assert res.outputs[0].get('ScheduleID') in demisto.args().get('schedule_ids')
+    assert res.outputs[0]['ScheduleID'] in demisto.args()['schedule_ids']
     assert 'oncalls' in res.raw_response
 
 
@@ -300,7 +300,7 @@ def test_submit_event(requests_mock: MockerCore, mocker: MockerFixture) -> None:
     )
     from PagerDuty import submit_event_command
     res = submit_event_command(source, summary, severity, action)
-    assert '### Trigger Event' in res.get('HumanReadable')
+    assert '### Trigger Event' in res['HumanReadable']
 
 
 def test_get_all_schedules_command(mocker: MockerFixture, requests_mock: MockerCore) -> None:
@@ -337,7 +337,7 @@ def test_get_all_schedules_command(mocker: MockerFixture, requests_mock: MockerC
     )
     from PagerDuty import get_all_schedules_command
     res = get_all_schedules_command()
-    assert '### All Schedules' in res.get('HumanReadable')
+    assert '### All Schedules' in res['HumanReadable']
 
 
 def test_get_users_contact_methods_command(mocker: MockerFixture, requests_mock: MockerCore) -> None:
@@ -370,7 +370,7 @@ def test_get_users_contact_methods_command(mocker: MockerFixture, requests_mock:
     )
     from PagerDuty import get_users_contact_methods_command
     res = get_users_contact_methods_command(user_id)
-    assert '### Contact Methods' in res.get('HumanReadable')
+    assert '### Contact Methods' in res['HumanReadable']
 
 
 def test_get_users_notification_command(mocker: MockerFixture, requests_mock: MockerCore) -> None:
@@ -403,7 +403,7 @@ def test_get_users_notification_command(mocker: MockerFixture, requests_mock: Mo
     )
     from PagerDuty import get_users_notification_command
     res = get_users_notification_command(user_id)
-    assert '### User notification rules' in res.get('HumanReadable')
+    assert '### User notification rules' in res['HumanReadable']
 
 
 @pytest.mark.parametrize('severity, expected_result', [('high', 3), ('low', 1), ('other_severity', 0)])
@@ -431,14 +431,82 @@ def test_translate_severity(mocker: MockerFixture, severity: str, expected_resul
     assert res == expected_result
 
 
-def test_pagination_incidents_with_page_and_page_size(requests_mock: MockerCore) -> None:
+def test_paginate_with_limit(mocker: MockerFixture):
+    """Tests pagination when limit is equal to max incidents per page (100).
+
+    Verifies that a single API call is made to fetch all incidents when 
+    the requested limit matches the max incidents per page (100).
+    """
     from PagerDuty import pagination_incidents
-    args = {'page': 1, 'page_size': 20}
-    url = 'https://api.pagerduty.com/incidents?include%5B%5D=assignees&statuses%5B%5D=resolved&include%5B%5D=first_trigger_log_entries&include%5B%5D=assignments&time_zone=UTC'
-    mock_data = load_mock_response("incidents.json")
-    req = requests_mock.get(url, json=mock_data)
 
-    result = pagination_incidents(args, url)
+    re = mocker.patch(
+        "PagerDuty.http_request",
+        side_effect=[
+            {"incidents": list(range(100))}
+        ],
+    )
 
-    assert req.called_once
-    assert result == mock_data["incidents"]
+    result = pagination_incidents({"limit": 100}, "")
+
+    assert result == list(range(100))
+    assert re.call_count == 1
+    assert re.call_args_list[0].args == ("GET", "", {"limit": 100, "offset": 0})
+
+
+def test_paginate_with_limit_is_more_than_INCIDENT_API_LIMIT(mocker: MockerFixture):
+    """Tests pagination when limit is more than max incidents per page (100).
+
+    Verifies that multiple API calls are made to fetch all incidents when 
+    the requested limit exceeds the max incidents per page (100).
+
+    When limit is 179 , it should make two calls:
+        - First call with limit 100 and offset 0
+        - Second call with limit 79 (to fetch remaining incidents) and offset 100
+    """
+    from PagerDuty import pagination_incidents
+
+    re = mocker.patch(
+        "PagerDuty.http_request",
+        side_effect=[
+            {"incidents": list(range(100))},  # the response for the first call
+            {"incidents": list(range(100, 179))},  # the response for the secund call
+        ],
+    )
+
+    result = pagination_incidents({"limit": 179}, "")
+
+    assert result == list(range(179))
+    assert re.call_count == 2
+    assert re.call_args_list[0].args == ("GET", "", {"limit": 100, "offset": 0})  # first call
+    assert re.call_args_list[1].args == ("GET", "", {"limit": 79, "offset": 100})  # secund call
+
+
+def test_paginate_with_page_size(mocker: MockerFixture):
+    """Test pagination functionality with page size
+
+    Verifies pagination works correctly when a page size is provided. Mocks the API response to return a single page of results.
+    Asserts the paginated results match the mocked API response, and that the request used the provided limit and offset.
+    When pagination_incidents is called with a page size of 100 and page number 2,
+    it should make a single request to fetch results from offset 100 to 199.
+    """
+    from PagerDuty import pagination_incidents
+
+    re = mocker.patch(
+        "PagerDuty.http_request", side_effect=[{"incidents": list(range(100, 200))}]
+    )
+    result = pagination_incidents({"page_size": 100, "page": 2}, "")
+    assert result == list(range(100, 200))
+    assert re.call_count == 1
+    assert re.call_args_list[0].args == ('GET', '', {'limit': 100, 'offset': 100, 'page_size': 100, 'page': 2})
+
+
+def test_paginate_with_page_size_more_than_INCIDENT_API_LIMIT():
+    """Tests pagination_incidents when page size exceeds limit.
+
+    Verifies pagination_incidents raises a DemistoException when a page size 
+    greater than the API limit is provided. The API limit is defined in 
+    INCIDENT_API_LIMIT.
+    """
+    from PagerDuty import pagination_incidents
+    with pytest.raises(DemistoException, match="The max size for page is 100. Please provide a smaller page size."):
+        pagination_incidents({"page_size": 200, "page": 2}, "")

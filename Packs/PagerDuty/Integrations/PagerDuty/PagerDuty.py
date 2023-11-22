@@ -180,13 +180,13 @@ def extract_on_call_now_user_data(users_on_call_now: dict[str, Any]) -> CommandR
     """Extract the user data from the oncalls json."""
     outputs: list[dict] = []
     contexts: list[dict] = []
-    oncalls = users_on_call_now.get('oncalls', {})
+    oncalls: list[dict] = users_on_call_now.get('oncalls', [{}])
 
-    for i in range(len(oncalls)):
+    for oncall in oncalls:
         output = {}
         context = {}
 
-        data: dict = oncalls[i]
+        data = oncall
         user: dict = data.get('user', {})
         schedule_id = (data.get('schedule') or {}).get('id')
         if schedule_id:
@@ -497,8 +497,7 @@ def extract_responder_request(responder_request_response) -> CommandResults:
     responder_request = responder_request_response.get("responder_request")
     for request in responder_request.get("responder_request_targets", []):
         request = request.get("responder_request_target")
-        output = {"Type": request.get("type")}
-        output["ID"] = request.get("id")
+        output = {"Type": request.get("type"), "ID": request.get("id")}
         if output["Type"] == "user":
             responder_user = request.get("incidents_responders", [])[0].get("user")
         else:
@@ -592,33 +591,36 @@ def pagination_incidents(param_dict: dict, url: str) -> list[dict]:
         # param_dict must be before pagination_args for merging to work correctly
         return http_request('GET', url, param_dict | pagination_args).get("incidents", [{}])
 
-    pages: list = []
+    page: list = []
 
-    page = arg_to_number(param_dict.get("page"))
+    page_number = arg_to_number(param_dict.get("page"))
     page_size = arg_to_number(param_dict.get("page_size"))
-    if page is not None and page_size is not None:
+
+    if page_number is not None and page_size is not None:
+        if page_size > INCIDENT_API_LIMIT:
+            raise DemistoException(f"The max size for page is {INCIDENT_API_LIMIT}. Please provide a smaller page size.")
         limit = page_size
-        offset = (page - 1) * page_size
+        offset = (page_number - 1) * page_size
 
     else:
         limit = arg_to_number(param_dict.get("limit")) or 50
         offset = 0
 
-    if limit > INCIDENT_API_LIMIT:
-        for offset in range(0, limit - INCIDENT_API_LIMIT, INCIDENT_API_LIMIT):
-            pages += _get_page(
-                limit=INCIDENT_API_LIMIT,
-                offset=offset)
+        if limit > INCIDENT_API_LIMIT:
+            for offset in range(0, limit - INCIDENT_API_LIMIT, INCIDENT_API_LIMIT):
+                page += _get_page(
+                    limit=INCIDENT_API_LIMIT,
+                    offset=offset)
 
-        # the remaining call can be less than OR equal the api_limit but not empty
-        limit = limit % INCIDENT_API_LIMIT or INCIDENT_API_LIMIT
-        offset += INCIDENT_API_LIMIT
+            # the remaining call can be less than OR equal the api_limit but not empty
+            limit = limit % INCIDENT_API_LIMIT or INCIDENT_API_LIMIT
+            offset += INCIDENT_API_LIMIT
 
-    pages += _get_page(
+    page += _get_page(
         limit=limit,
         offset=offset)
 
-    return pages
+    return page
 
 
 def get_incidents_command(args: dict[str, str]) -> dict:

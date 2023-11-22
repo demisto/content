@@ -259,12 +259,12 @@ Shows incidents in PagerDuty. Default status parameters are triggered,acknowledg
 | sortBy | Used to specify both the field you wish to sort the results on, as well as the direction (ascending/descending) of the results.See more <https://v2.developer.pagerduty.com/v2/page/api-reference#!/Incidents/get_incidents>. | Optional | 
 | until | Last date and time.  Using ISO 8601 Representation. E.g. PagerDutyIncidents until=2016-05-06T13:00Z. | Optional | 
 | incident_key | Incident de-duplication key. E.g. 8e42eeb6391a4a2abeda5d12e09bddec. | Optional | 
-| limit | The maximum number of incidents to retrieve. If "page_size" is defined, this argument is ignored. Max value is 100. Default is 50. | Optional | 
+| limit | The maximum number of incidents to retrieve. If "page_size" is defined, this argument is ignored. Default is 50. | Optional | 
 | user_id | Returns only the incidents currently assigned to the passed user(s). This expects one or more user IDs. Note: When using the assigned_to_user filter, you will only receive incidents with statuses of triggered or acknowledged. This is because resolved incidents are not assigned to any user. | Optional | 
 | urgencies | Array of the urgencies of the incidents to be returned. Defaults to all urgencies. Account must have the urgencies ability to do this. Possible values are: high, low. | Optional | 
 | date_range | When set to all, the since and until parameters and defaults are ignored. Possible values are: all. | Optional | 
 | page | The page number of incidents to retrieve (used for pagination) starting from 1. The page size is defined by the "page_size" argument. | Optional | 
-| page_size | The number of incidents per page to retrieve (used for pagination). The page number is defined by the "page" argument. | Optional | 
+| page_size | The number of incidents per page to retrieve (used for pagination). The page number is defined by the "page" argument. The maximum value is 100. | Optional | 
 
 #### Context Output
 
