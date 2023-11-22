@@ -19,7 +19,7 @@ https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/Hel
 from CommonServerUserPython import *  # noqa
 
 import urllib3
-from typing import Any
+from typing import Any, Optional
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -42,73 +42,68 @@ class Client(BaseClient):
     For this  implementation, no special attributes defined
     """
 
-    # TODO: REMOVE the following dummy function:
-    def baseintegration_dummy(self, dummy: str) -> dict[str, str]:
-        """Returns a simple python dict with the information provided
-        in the input (dummy).
-
-        :type dummy: ``str``
-        :param dummy: string to add in the dummy dict that is returned
-
-        :return: dict as {"dummy": dummy}
-        :rtype: ``str``
-        """
-
-        return {"dummy": dummy}
-    # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
+    # TODO RETURNS LIST
+    def get_events(self, limit: Optional[str], after_checkpoint: Optional[str], created_after: Optional[str]) -> dict[str, Any]:
+        return self._http_request(
+            method='GET',
+            url_suffix='/api/v1/events',
+            data=(
+                ('limit', limit),
+                ('after_checkpoint', after_checkpoint),
+                ('created_after', created_after)
+            ),
+            resp_type='json',
+            ok_codes=(200,)
+        )
 
 
 ''' HELPER FUNCTIONS '''
 
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
-
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
+def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    pass
+    limit = args.get('limit', None)
+    after_checkpoint = args.get('after_checkpoint', None)
+    created_after = args.get('created_after', None)
 
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :type client: ``Client``
-    :param Client: client to use
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
-    """
-
-    message: str = ''
-    try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
-        message = 'ok'
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-    return message
-
-
-# TODO: REMOVE the following dummy command function
-def baseintegration_dummy_command(client: Client, args: dict[str, Any]) -> CommandResults:
-
-    dummy = args.get('dummy', None)
-    if not dummy:
-        raise ValueError('dummy not specified')
-
-    # Call the Client function and get the raw response
-    result = client.baseintegration_dummy(dummy)
+    result = client.get_events(limit, after_checkpoint, created_after)
+    output_results = {
+        "checkpoint": result['checkpoint'],
+        "additional_results": result['additional_results'],
+    }
+    raw_results = result['results']
 
     return CommandResults(
-        outputs_prefix='BaseIntegration',
-        outputs_key_field='',
-        outputs=result,
+        outputs_prefix='Tessian',
+        outputs_key_field='EventsOutput',
+        outputs=output_results,
+        raw_response=raw_results
     )
-# TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
+
+
+def test_module(client: Client) -> str:
+    """
+    Tests API connectivity and authentication'
+    Returning 'ok' indicates that connection to the service is successful.
+    Raises exceptions if something goes wrong.
+    """
+
+    try:
+        response = client.get_events('2', None, None)
+
+        success = demisto.get(response, 'success.total')  # Safe access to response['success']['total']
+        if success != 1:
+            return f'Unexpected result from the service: success={success} (expected success=1)'
+
+        return 'ok'
+    except Exception as e:
+        exception_text = str(e).lower()
+        if 'forbidden' in exception_text or 'authorization' in exception_text:
+            return 'Authorization Error: make sure API Key is correctly set'
+        else:
+            raise e
 
 
 ''' MAIN FUNCTION '''
@@ -125,7 +120,9 @@ def main() -> None:
     # api_key = demisto.params().get('credentials', {}).get('password')
 
     # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/api/v1')
+    params = demisto.params()
+    base_url = params.get('url')
+    api_key = params.get('api_key')
 
     # if your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
@@ -139,25 +136,24 @@ def main() -> None:
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
 
-        # TODO: Make sure you add the proper headers for authentication
-        # (i.e. "Authorization": {api key})
         headers: dict = {}
+        headers["Authorization"] = f"API-Token {api_key}"
 
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
             headers=headers,
-            proxy=proxy)
+            proxy=proxy,
+        )
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
             return_results(result)
-
-        # TODO: REMOVE the following dummy command case:
-        elif demisto.command() == 'baseintegration-dummy':
-            return_results(baseintegration_dummy_command(client, demisto.args()))
-        # TODO: ADD command cases for the commands you will implement
+        elif demisto.command() == 'get_events':
+            return_results(get_events_command(client, demisto.args()))
+        else:
+            raise NotImplementedError(f"Either the command, {demisto.command}, is not supported yet or it does not exist.")
 
     # Log exceptions and return errors
     except Exception as e:

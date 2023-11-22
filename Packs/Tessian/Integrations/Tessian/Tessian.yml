@@ -3,19 +3,13 @@ commonfields:
   id: Tessian
   version: -1
 configuration:
-- display: Environment
-  name: environment
-  additionalinfo: The environment that you have deployed Tessian in.
-  type: 0
-  defaultvalue: eu-west-1
-  required: true
-- display: Domain
-  name: domain
-  additionalinfo: Your domain for accessing the Tessian portal
+- display: Portal URL
+  name: url
+  additionalinfo: The url that you use to access Tessian.
   type: 0
   required: true
 - display: API Key
-  name: apikey
+  name: api_key
   additionalinfo: The API Key to use for connection to the Tessian API
   type: 9
   required: true
@@ -24,7 +18,7 @@ display: Tessian
 name: Tessian
 script:
   commands:
-  - name: events
+  - name: get_events
     description: 'get events from Tessian.'
     arguments:
     - name: limit
@@ -43,9 +37,6 @@ script:
     - contextPath: Tessian.EventsOutput.additional_results
       description: '[Enter a description of the data returned in this output.].'
       type: Boolean
-    - contextPath: Tessian.EventsOutput.results
-      description: '[Enter a description of the data returned in this output.].'
-      type: Unknown
 
   runonce: false
   script: '-'
