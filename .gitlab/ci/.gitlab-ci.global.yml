@@ -117,6 +117,7 @@
 
 .clone_and_export_variables: &clone_and_export_variables
   - section_start "Git - Job Start Actions" --collapsed
+  - git fetch origin master:refs/remotes/origin/master
   - git checkout -B $CI_COMMIT_BRANCH $CI_COMMIT_SHA
   - git config diff.renameLimit 6000
   - section_end "Git - Job Start Actions"
