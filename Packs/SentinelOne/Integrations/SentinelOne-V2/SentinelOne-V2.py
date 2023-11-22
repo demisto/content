@@ -105,8 +105,8 @@ def get_agents_outputs(agents, column_to_display: list | None = None):
         }
 
         for c in set(column_to_display or []).intersection(agent.keys()):
-            entry[c] = agent[c]                
-        
+            entry[c] = agent[c]
+
         remove_nulls_from_dictionary(entry)
         yield entry
 
@@ -1610,7 +1610,6 @@ def get_threat_notes(client: Client, args: dict) -> CommandResults:
     context_entries = []
     notes = client.get_threat_notes_request(threat_id)
     if notes:
-    # Parse response into context & content entries
         for note in notes:
             context_entries.append({
                 'CreatedAt': note.get('createdAt'),
@@ -3104,7 +3103,6 @@ def get_accounts(client: Client, args: dict) -> CommandResults:
     accounts = client.get_accounts_request(account_id)
 
     if accounts:
-    # Parse response into context & content entries
         for account in accounts:
             context_entries.append({
                 'AccountType': account.get('accountType'),
