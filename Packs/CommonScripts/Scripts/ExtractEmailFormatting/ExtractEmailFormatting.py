@@ -93,22 +93,28 @@ def main():
 
     emails = argToList(demisto.args().get('input'))
 
-    clean_emails = [extract_email(address) for address in emails]
+    try:
+        clean_emails = [extract_email(address) for address in emails]
 
-    list_results = [refang_email(email_address) for email_address in clean_emails]
+        list_results = [refang_email(email_address) for email_address in clean_emails]
 
-    output = [
-        {
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': [email_address] if email_address else [],
-            'EntryContext': {'Email': email_address} if email_address else {},
-        } for email_address in list_results]
+        output = [
+            {
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': [email_address] if email_address else [],
+                'EntryContext': {'Email': email_address} if email_address else {},
+            } for email_address in list_results]
 
-    if output:
-        return_results(output)
-    else:
-        return_results('')
+        if output:
+            return_results(output)
+        else:
+            return_results('')
+
+    except Exception as e:
+        return_error(
+            f'Failed to execute the automation. Error: \n{str(e)}'
+        )
 
 
 if __name__ in ('__main__', 'builtin', 'builtins'):
