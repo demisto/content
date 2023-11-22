@@ -48,7 +48,7 @@ class Client(BaseClient):
 
     def __init__(self, indicator_type: str, api_token: str, services: list, risk_rule: str = None,
                  fusion_file_path: str = None, insecure: bool = False,
-                 polling_timeout: int = 30, proxy: bool = False, threshold: int = 65, risk_score_threshold: int = 0,
+                 polling_timeout: int = 20, proxy: bool = False, threshold: int = 65, risk_score_threshold: int = 0,
                  tags: Optional[list] = None, tlp_color: Optional[str] = None):
         """
         Attributes:
@@ -58,7 +58,7 @@ class Client(BaseClient):
              risk_rule: string, an optional argument to the 'ConnectApi' service request.
              fusion_file_path: string, an optional argument to the 'Fusion' service request.
              insecure: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
-             polling_timeout: timeout of the polling request in seconds. Default: 30
+             polling_timeout: timeout of the polling request in seconds. Default: 20
              proxy: Sets whether use proxy when sending requests
              threshold: The minimum score from the feed in order to to determine whether the indicator is malicious.
              risk_score_threshold: The minimum score to filter out the ingested indicators.

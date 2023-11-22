@@ -130,7 +130,7 @@ configuration:
   type: 0
   required: false
 - additionalinfo: Time in seconds before HTTP requests timeout.
-  defaultvalue: '30'
+  defaultvalue: '20'
   display: Request Timeout
   name: polling_timeout
   required: true
@@ -201,7 +201,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-  timeout: 4000
 tests:
 - RecordedFutureFeed - Test
 fromversion: 5.5.0
