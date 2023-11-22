@@ -2,13 +2,13 @@
   rules:
     - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
       when: never
-    - if: '$BUCKET_UPLOAD == "true"'
+    - if: '$BUCKET_UPLOAD == "true" && $FORCE_BUCKET_UPLOAD == "false"'
 
 .bucket-upload-rule-always:
   rules:
     - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
       when: never
-    - if: '$BUCKET_UPLOAD == "true"'
+    - if: '$BUCKET_UPLOAD == "true" && $FORCE_BUCKET_UPLOAD == "false"'
       when: always
 
 
@@ -101,29 +101,29 @@ xsoar-saas-prepare-testing-bucket-upload-flow:
 
 
 mpv2-prepare-testing-bucket-upload-flow:
- extends:
-   - mpv2-prepare-testing-bucket
- variables:
-   IFRA_ENV_TYPE: "Bucket-Upload"
-   ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
- rules:
-   - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
-     when: never
-   - if: '$BUCKET_UPLOAD == "true"'
-   - if: '$FORCE_BUCKET_UPLOAD == "true"'
+  extends:
+      - mpv2-prepare-testing-bucket
+  variables:
+    IFRA_ENV_TYPE: "Bucket-Upload"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
+      when: never
+    - if: '$BUCKET_UPLOAD == "true"'
+    - if: '$FORCE_BUCKET_UPLOAD == "true"'
 
 
 xpanse-prepare-testing-bucket-upload-flow:
- extends:
-   - xpanse-prepare-testing-bucket
- variables:
-   IFRA_ENV_TYPE: "Bucket-Upload"
-   ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XPANSE}"
- rules:
-   - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
-     when: never
-   - if: '$BUCKET_UPLOAD == "true"'
-   - if: '$FORCE_BUCKET_UPLOAD == "true"'
+  extends:
+      - xpanse-prepare-testing-bucket
+  variables:
+    IFRA_ENV_TYPE: "Bucket-Upload"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XPANSE}"
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
+      when: never
+    - if: '$BUCKET_UPLOAD == "true"'
+    - if: '$FORCE_BUCKET_UPLOAD == "true"'
 
 
 .install_packs_in_xsoar_server:
@@ -217,17 +217,17 @@ install-packs-in-server-master:
   rules:
     - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
       when: never
-    - if: $TEST_XDR_ENV && $BUCKET_UPLOAD == "true"
+    - if: $TEST_XDR_ENV && $BUCKET_UPLOAD == "true" && $FORCE_BUCKET_UPLOAD == "false"
       when: always
       variables:
         CLOUD_MACHINES_TYPE: "testing"
         GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga-testing"
-    - if: $TEST_UPLOAD == "true" && $BUCKET_UPLOAD == "true"
+    - if: $TEST_UPLOAD == "true" && $BUCKET_UPLOAD == "true" && $FORCE_BUCKET_UPLOAD == "false"
       when: always
       variables:
         CLOUD_MACHINES_TYPE: "build"
         GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga"
-    - if: '$BUCKET_UPLOAD == "true"'
+    - if: '$BUCKET_UPLOAD == "true" && $FORCE_BUCKET_UPLOAD == "false"'
   variables:
     PRODUCT_TYPE: "XSIAM"
     SERVER_TYPE: "XSIAM"
@@ -615,37 +615,41 @@ upload-packs-to-xsoar-saas-marketplace:
 xsoar-force-pack-upload:
   needs: [ "xsoar-prepare-testing-bucket-upload-flow" ]
   variables:
+    SERVER_TYPE: "XSOAR"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+    ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_XSOAR}/server_type_${SERVER_TYPE}"
     GCS_MARKET_BUCKET_TO_UPLOAD: $GCS_MARKET_BUCKET
     MARKETPLACE: "xsoar"
     GCS_CURRENT_PRODUCTION_BUCKET: $GCS_PRODUCTION_BUCKET
   extends: .force-pack-upload
   rules:
-    - if: '$FORCE_BUCKET_UPLOAD'
-
+    - if: '$FORCE_BUCKET_UPLOAD == "true"'
 
 marketplace-v2-force-pack-upload:
   needs: [ "mpv2-prepare-testing-bucket-upload-flow" ]
   variables:
+    SERVER_TYPE: "XSIAM"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
+    ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_MPV2}/server_type_${SERVER_TYPE}"
     GCS_MARKET_BUCKET_TO_UPLOAD: $GCS_MARKET_V2_BUCKET
     MARKETPLACE: "marketplacev2"
     GCS_CURRENT_PRODUCTION_BUCKET: $GCS_PRODUCTION_V2_BUCKET
   extends: .force-pack-upload
   rules:
-    - if: '$FORCE_BUCKET_UPLOAD'
+    - if: '$FORCE_BUCKET_UPLOAD == "true"'
 
 xpanse-force-pack-upload:
   needs: [ "xpanse-prepare-testing-bucket-upload-flow" ]
   variables:
+    SERVER_TYPE: "XPANSE"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XPANSE}"
+    ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_XPANSE}/server_type_${SERVER_TYPE}"
     GCS_MARKET_BUCKET_TO_UPLOAD: $GCS_MARKET_XPANSE_BUCKET
     MARKETPLACE: "xpanse"
     GCS_CURRENT_PRODUCTION_BUCKET: $GCS_PRODUCTION_XPANSE_BUCKET
   extends: .force-pack-upload
   rules:
-    - if: '$FORCE_BUCKET_UPLOAD'
-
+    - if: '$FORCE_BUCKET_UPLOAD == "true"'
 
 .force-pack-upload:
   tags:
