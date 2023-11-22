@@ -268,7 +268,7 @@ install-packs-in-server-master:
     - !reference [.uninstall-packs-and-reset-bucket-cloud]
 
     - section_start "Run XSIAM end to end sanity tests"
-    - ./Tests/scripts/run_end_to_end_tests.sh || EXIT_CODE=$?
+    - ./Tests/scripts/run_e2e_tests.sh || EXIT_CODE=$?
     - section_end "Run XSIAM end to end sanity tests"
 
     - section_start "Get Instance Variables"

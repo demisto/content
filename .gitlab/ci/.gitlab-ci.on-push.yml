@@ -264,7 +264,7 @@ xpanse-prepare-testing-bucket:
       else
         echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
       fi
-      ./Tests/scripts/run_end_to_end_tests.sh || EXIT_CODE=$?
+      ./Tests/scripts/run_e2e_tests.sh || EXIT_CODE=$?
     else
       if [[ -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" ]]; then	
         cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" Tests/conf.json
@@ -590,7 +590,7 @@ slack-notify-on-merge:
         echo "Not running the instance flow, no tests to run were found."
         ./Tests/scripts/run_tests.sh --generate-empty-result-file
         ./Tests/scripts/test_modeling_rules.sh --generate-empty-result-file
-        ./Tests/scripts/run_end_to_end_tests.sh --generate-empty-result-file
+        ./Tests/scripts/run_e2e_tests.sh --generate-empty-result-file
         job-done
         exit $EXIT_CODE
       fi
