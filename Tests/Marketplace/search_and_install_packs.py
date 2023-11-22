@@ -514,8 +514,7 @@ def search_pack_and_its_dependencies(client: demisto_client,
     try:
         pack_api_data = api_data['packs'][0]
         current_packs_to_install = [pack_api_data]
-        if pack_id == 'DeveloperTools':
-            logging.info(f"response_data= {api_data.get('dependencies', [])}")
+        logging.info(f"response_data= {api_data.get('dependencies', [])}")
         create_dependencies_data_structure(response_data=api_data.get('dependencies', []),
                                            dependants_ids=[pack_id],
                                            dependencies_data=dependencies_data,
