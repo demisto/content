@@ -805,7 +805,7 @@ test-upload-flow:
       - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*  # restoring the default artifacts path from the job default settings
 
 
-.e2e_test_results:
+e2e_test_results:
   stage: results
   rules:
     - !reference [ .filter-non-nightly-docker-updates-rule, rules ]
