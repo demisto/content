@@ -15,7 +15,7 @@ def is_integration_available(brand_name: str, all_instances: Dict[str, dict]) ->
     )
 
 
-def main():
+def main():  # pragma: no cover
     try:
         brand_names = argToList(demisto.args()['brandname'])
         all_instances = demisto.getModules()
