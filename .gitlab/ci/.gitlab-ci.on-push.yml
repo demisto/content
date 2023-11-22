@@ -805,7 +805,7 @@ test-upload-flow:
       - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*  # restoring the default artifacts path from the job default settings
 
 
-e2e_test_results:
+.e2e_test_results:
   stage: results
   rules:
     - !reference [ .filter-non-nightly-docker-updates-rule, rules ]
@@ -876,6 +876,17 @@ xsiam-test_playbooks_results:
     - xsiam_server_ga
   dependencies:
     - xsiam_server_ga
+
+xsoar-saas_test_e2e_results:
+  variables:
+    SERVER_TYPE: "XSOAR"
+    PRODUCT_TYPE: "XSOAR SAAS"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+  extends: .e2e_test_results
+  needs:
+    - xsoar_ng_server_ga
+  dependencies:
+    - xsoar_ng_server_ga
 
 xsiam-test_modeling_rule_results:
   variables:
