@@ -1,2 +1,3 @@
 !cov-mgsec-get-aro query="resolution=Unresolved"
 !cov-mgsec-list-org
+!cov-mgsec-transition-aro aro_id="00000000-0000-0000-0000-000000000000" status="Resolved" comment="Risk mitigated."
