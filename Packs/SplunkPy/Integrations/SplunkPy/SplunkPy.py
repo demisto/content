@@ -341,11 +341,13 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_t
     fetch_query = build_fetch_query(params)
     last_run_fetched_ids = last_run_data.get('found_incidents_ids', {})
     if late_indexed_pagination := last_run_data.get('late_indexed_pagination'):
-        # code for additional pagination fetch here
+        # This is for handling the case when events get indexed late, and inserted in pages
+        # that we have already went through
         window = f'{kwargs_oneshot.get("earliest_time")}-{kwargs_oneshot.get("latest_time")}'
         demisto.debug(f'[SplunkPy] additional fetch for the window {window} to check for late indexed incidents')
         if last_run_fetched_ids:
-            exclude_id_where = f'where not event_id in ({",".join(last_run_fetched_ids)})'
+            ids_to_exclude = [f'"{fetched_id}"' for fetched_id in last_run_fetched_ids]
+            exclude_id_where = f'where not event_id in ({",".join(ids_to_exclude)})'
             fetch_query = f'{fetch_query} | {exclude_id_where}'
             kwargs_oneshot['offset'] = 0
 
@@ -400,11 +402,10 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_t
             # want to add data to the integration context (which will ruin the logic of the cache object)
             last_run_data.update({DUMMY: DUMMY})
 
-    # we didn't get any new incident or get less then limit
-    # so the next run earliest time will be the latest_time from this iteration
-    # should also set when num_of_dropped == FETCH_LIMIT
+    # We didn't get any new incidents or got less than limit,
+    # so the next run's earliest time will be the latest_time from this iteration
     if (len(incidents) + num_of_dropped) < FETCH_LIMIT:
-        demisto.debug(f'[SplunkPy] Number of fetched incidents, dropped or not, is less than {FETCH_LIMIT=}. Starting new page')
+        demisto.debug(f'[SplunkPy] Number of fetched incidents, dropped or not, is less than {FETCH_LIMIT=}. Starting new fetch')
         next_run_earliest_time = latest_time
         new_last_run = {
             'time': next_run_earliest_time,

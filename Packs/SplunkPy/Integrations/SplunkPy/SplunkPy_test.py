@@ -11,7 +11,7 @@ from splunklib import client
 from splunklib import results
 import SplunkPy as splunk
 from pytest_mock import MockerFixture
-from pytest import MonkeyPatch
+import pytest
 
 RETURN_ERROR_TARGET = 'SplunkPy.return_error'
 
@@ -603,12 +603,12 @@ class TestFetchForLateIndexedEvents:
         oneshot_mocker = mocker.patch.object(service.jobs, 'oneshot', side_effect=service.jobs.oneshot)
         mapper = UserMappingObject(service, False)
         splunk.fetch_incidents(service, mapper, 'from_xsoar', 'from_splunk')
-        assert oneshot_mocker.call_args_list[0][0][0] == 'something | where not event_id in (1234,5678)'
+        assert oneshot_mocker.call_args_list[0][0][0] == 'something | where not event_id in ("1234","5678")'
         assert oneshot_mocker.call_args_list[0][1]['offset'] == 0
 
 
 # If (num_of_dropped == FETCH_LIMIT and '`notable`' in fetch_query), then late_indexed_pagination should be set to True
-    def test_first_condition_for_late_indexed_pagination(self, mocker: MockerFixture, monkeypatch: MonkeyPatch):
+    def test_first_condition_for_late_indexed_pagination(self, mocker: MockerFixture, monkeypatch: pytest.MonkeyPatch):
         """
         Given
         - Incident IDs that were fetched in the last fetch round
@@ -636,10 +636,10 @@ class TestFetchForLateIndexedEvents:
         service = self.Service()
         mapper = UserMappingObject(service, False)
         splunk.fetch_incidents(service, mapper, 'from_xsoar', 'from_splunk')
-        assert set_last_run_mocker.call_args_list[0][0][0]['late_indexed_pagination'] == True
+        assert set_last_run_mocker.call_args_list[0][0][0]['late_indexed_pagination'] is True
 
 # If (len(incidents) == FETCH_LIMIT and late_indexed_pagination), then late_indexed_pagination should be set to True
-    def test_second_condition_for_late_indexed_pagination(self, mocker: MockerFixture, monkeypatch: MonkeyPatch):
+    def test_second_condition_for_late_indexed_pagination(self, mocker: MockerFixture, monkeypatch: pytest.MonkeyPatch):
         """
         Given
         - Incident IDs that were fetched in the last fetch round
@@ -667,7 +667,7 @@ class TestFetchForLateIndexedEvents:
         service = self.Service()
         mapper = UserMappingObject(service, False)
         splunk.fetch_incidents(service, mapper, 'from_xsoar', 'from_splunk')
-        assert set_last_run_mocker.call_args_list[0][0][0]['late_indexed_pagination'] == True
+        assert set_last_run_mocker.call_args_list[0][0][0]['late_indexed_pagination'] is True
 
 def test_fetch_incidents(mocker):
     """
