@@ -98,7 +98,9 @@ def create_client(args: dict, params: dict) -> 'OrganizationsClient':
 
 
 def paginate(
-    paginator: 'Paginator', key_to_pages: str, limit=None, page_size=None, next_token=None, **kwargs
+    paginator: 'Paginator',
+    key_to_pages: str, limit=None, page_size=None,
+    next_token=None, size_args_supported=True, **kwargs
 ) -> tuple[list, str | None]:
     '''This function exists because AWS doesn't guarantee that the client functions will
     return all results specified in a single call.
@@ -107,14 +109,20 @@ def paginate(
 
     max_items = arg_to_number(limit or page_size) or 50
     pagination_max = min(max_items, MAX_PAGINATION)
+    pagination_config = {
+        'StartingToken': next_token if not limit else None
+    }
+    if size_args_supported:
+        pagination_config.update(
+            {
+                'MaxItems': pagination_max,
+                'PageSize': pagination_max,
+            }
+        )
 
     iterator = paginator.paginate(
         **kwargs,
-        PaginationConfig={
-            'MaxItems': pagination_max,
-            'PageSize': pagination_max,
-            'StartingToken': next_token if not limit else None
-        }
+        PaginationConfig=pagination_config
     )
 
     pages: list = []
@@ -259,7 +267,7 @@ def organization_unit_get_command(args: dict, aws_client: 'OrganizationsClient')
 
     return CommandResults(
         outputs_key_field='Id',
-        outputs_prefix='AWS.Organizations.OrganizationalUnit',
+        outputs_prefix='AWS.Organizations.OrganizationUnit',
         outputs=ou.get('OrganizationalUnit', {}),
         readable_output=tableToMarkdown(
             'AWS Organization Unit',
@@ -556,7 +564,13 @@ def target_policy_list_command(args: dict, aws_client: 'OrganizationsClient') ->
 
     return CommandResults(
         outputs=next_token_output_dict(
-            'TargetPolicy', next_token, policies, 'Id',
+            'TargetPolicy',
+            next_token,
+            [
+                policy | {'TargetId': args['target_id']}
+                for policy in policies
+            ],
+            'Id',
         ),
         readable_output=tableToMarkdown(
             f'AWS Organization *{args["target_id"]}* Policies',
@@ -677,12 +691,19 @@ def resource_tag_list_command(args: dict, aws_client: 'OrganizationsClient') -> 
         limit=args.get('limit'),
         next_token=args.get('next_token'),
         page_size=args.get('page_size'),
+        size_args_supported=False,
         ResourceId=args['resource_id']
     )
 
     return CommandResults(
         outputs=next_token_output_dict(
-            'Tag', next_token, tags, 'Key'
+            'Tag',
+            next_token,
+            [
+                tag | {'ResourceId': args['resource_id']}
+                for tag in tags
+            ],
+            'Key'
         ),
         readable_output=tableToMarkdown(
             f'AWS Organization *{args["resource_id"]}* Tags',

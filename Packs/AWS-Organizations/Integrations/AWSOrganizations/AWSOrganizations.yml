@@ -173,13 +173,13 @@ script:
       Retrieve information about an organizational unit (OU).
       This command can be called only from the organization's management account or by a member account that is a delegated administrator for an Amazon Web Services service.
     outputs:
-    - contextPath: AWS.Organizations.OrganizationalUnit.Id
+    - contextPath: AWS.Organizations.OrganizationUnit.Id
       description: The unique identifier (ID) associated with the organizational unit.
       type: String
-    - contextPath: AWS.Organizations.OrganizationalUnit.Arn
+    - contextPath: AWS.Organizations.OrganizationUnit.Arn
       description: The Amazon Resource Name (ARN) of the organizational unit.
       type: String
-    - contextPath: AWS.Organizations.OrganizationalUnit.Name
+    - contextPath: AWS.Organizations.OrganizationUnit.Name
       description: The friendly name of the organizational unit.
       type: String
   - name: aws-org-account-list
@@ -403,13 +403,13 @@ script:
       name: roleSessionDuration
     description: Creates an organizational unit (OU) within a root or parent OU. An OU is a container for accounts that enables the organization of accounts to apply policies according to business requirements. The number of levels deep that OUs can be nested is dependent upon the policy types enabled for that root. For service control policies, the limit is five.
     outputs:
-    - contextPath: AWS.Organizations.OrganizationalUnit.Id
+    - contextPath: AWS.Organizations.OrganizationUnit.Id
       description: The unique identifier (ID) associated with this OU.
       type: String
-    - contextPath: AWS.Organizations.OrganizationalUnit.Arn
+    - contextPath: AWS.Organizations.OrganizationUnit.Arn
       description: The Amazon Resource Name (ARN) of this OU.
       type: String
-    - contextPath: AWS.Organizations.OrganizationalUnit.Name
+    - contextPath: AWS.Organizations.OrganizationUnit.Name
       description: The friendly name of this OU.
       type: String
   - name: aws-org-organization-unit-delete
@@ -535,6 +535,9 @@ script:
     - contextPath: AWS.Organizations.TargetPolicy.AwsManaged
       description: Indicates whether the specified policy is an Amazon Web Services managed policy. If true, the policy can be attached to roots, OUs, or accounts, but cannot be edited.
       type: Boolean
+    - contextPath: AWS.Organizations.TargetId
+      description: The unique identifier (ID) of the target.
+      type: String
     - contextPath: AWS.Organizations.TargetPolicyNextToken
       description: If not null, indicates that more output is available than is included in the current response. Use this value as the next_token argument in a subsequent call of the command to get the next part of the output.
       type: String
@@ -678,6 +681,9 @@ script:
       type: String
     - contextPath: AWS.Organizations.Tag.Value
       description: The string value that's associated with the key of the tag.
+      type: String
+    - contextPath: AWS.Organizations.Tag.ResourceId
+      description: The unique identifier (ID) of the resource.
       type: String
     - contextPath: AWS.Organizations.TagNextToken
       description: If not null, indicates that more output is available than is included in the current response. Use this value as the next_token argument in a subsequent call of the command to get the next part of the output.

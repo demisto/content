@@ -504,6 +504,7 @@ class target_policy_list(Data):
                 "Description": "desc1",
                 "Type": "type1",
                 "AwsManaged": True,
+                "TargetId": "target_id"
             },
             {
                 "Id": "id2",
@@ -512,6 +513,7 @@ class target_policy_list(Data):
                 "Description": "desc2",
                 "Type": "type2",
                 "AwsManaged": False,
+                "TargetId": "target_id"
             },
         ],
         {"TargetPolicyNextToken": "next_token"},
@@ -650,8 +652,8 @@ class resource_tag_list(Data):
     )
     context_outputs = [
         [
-            {"Key": "key1", "Value": "value1"},
-            {"Key": "key2", "Value": "value2"},
+            {"Key": "key1", "Value": "value1", "ResourceId": "resource_id"},
+            {"Key": "key2", "Value": "value2", "ResourceId": "resource_id"},
         ],
         {"TagNextToken": "next_token"},
     ]
