@@ -64,6 +64,35 @@ configuration:
   name: incidentFetchInterval
   required: false
   type: 19
+- additionalinfo: Choose the tag to add to an entry to mirror it as an article in OTRS.
+  defaultvalue: OTRS
+  display: Entry Tag To OTRS
+  name: tag
+  type: 0
+  hidden:
+  - marketplacev2
+  required: false
+- additionalinfo: Choose the tag to add to an entry to mirror it as an article from OTRS.
+  defaultvalue: FromOTRS
+  display: Entry Tag From OTRS
+  name: tag_from_otrs
+  type: 0
+  hidden:
+  - marketplacev2
+  required: false
+- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from OTRS to Cortex XSOAR), Outgoing (from Cortex XSOAR to OTRS), or Incoming and Outgoing (from/to Cortex XSOAR and OTRS).'
+  defaultvalue: None
+  display: Incident Mirroring Direction
+  name: mirror_direction
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  type: 15
+  hidden:
+  - marketplacev2
+  required: false
 description: Service management suite that comprises ticketing, workflow automation, and notification.
 display: OTRS
 name: OTRS
@@ -190,7 +219,7 @@ script:
     - description: Ticket Queues to filter by in CSV format (e.g., Raw,Misc).
       name: queue
     - auto: PREDEFINED
-      description: Ticket Priority to filter by in CSV format (e.g., 4High,5VeryHigh).
+      description: Ticket Priority to filter by in CSV format (e.g., 4High,5VeryHigh). For the use of a custom priority, you can specify a custom value outside the predefined set.
       name: priority
       predefined:
       - 1VeryLow
@@ -200,6 +229,8 @@ script:
       - 5VeryHigh
     - description: Ticket type to filter by.
       name: type
+    - description: Pattern to use with fulltext search in Article subject and body.
+      name: pattern
     description: Search for an OTRS ticket using search filters.
     name: otrs-search-ticket
     outputs:
@@ -241,7 +272,7 @@ script:
       name: queue
       required: true
     - auto: PREDEFINED
-      description: State to assign to the new ticket.
+      description: State to assign to the new ticket. For the use of a custom state, you can specify a custom value outside the predefined set.
       name: state
       predefined:
       - New
@@ -251,7 +282,7 @@ script:
       - PendingReminder
       required: true
     - auto: PREDEFINED
-      description: Priority to assign to the new ticket.
+      description: Priority to assign to the new ticket. For the use of a custom priority, you can specify a custom value outside the predefined set.
       name: priority
       predefined:
       - 1VeryLow
@@ -273,8 +304,10 @@ script:
       name: type
     - description: 'Dynamic fields to apply to the new ticket, in the format: field1=value1,field2=value2. For example: ProcessManagementProcessID=1,ProcessManagementActivityStatus=2.'
       name: dynamic_fields
-    - description: 'File entry ID of the file to add as an attachment to the new ticket in CSV format, e.g., 123@20,124@21.'
+    - description: 'File entry ID of the file to add as an attachment to the new ticket in CSV format, e.g., 123@20,124@21 .'
       name: attachment
+    - description: Ticket owner to assign to the new ticket.
+      name: owner
     description: Create a new ticket in OTRS.
     name: otrs-create-ticket
     outputs:
@@ -321,7 +354,7 @@ script:
     - description: Ticket Title of the ticket to update.
       name: title
     - auto: PREDEFINED
-      description: Ticket State of the ticket to update.
+      description: Ticket State of the ticket to update. For the use of a custom state, you can specify a custom value outside the predefined set.
       name: state
       predefined:
       - New
@@ -330,7 +363,7 @@ script:
       - Open
       - PendingReminder
     - auto: PREDEFINED
-      description: Priority of the ticket to update.
+      description: Priority of the ticket to update. For the use of a custom priority, you can specify a custom value outside the predefined set.
       name: priority
       predefined:
       - 1VeryLow
@@ -338,8 +371,12 @@ script:
       - 3Normal
       - 4High
       - 5VeryHigh
-    - description: Owner of the ticket to update.
-      name: owner
+    - description: Wether to change the lock state of the ticket.
+      name: lock
+      auto: PREDEFINED
+      predefined:
+      - lock
+      - unlock
     - description: Article Subject of the ticket to update.
       name: article_subject
     - description: Article Body of the ticket to update.
@@ -350,8 +387,12 @@ script:
       name: type
     - description: 'Dynamic fields to apply to the updated ticket, in the format: field1=value1,field2=value2. For example: ProcessManagementProcessID=1,ProcessManagementActivityStatus=2.'
       name: dynamic_fields
-    - description: 'File entry ID of the file to add as an attachment to the updated ticket in CSV format, e.g., 123@20,124@21.'
+    - description: 'File entry ID of the file to add as an attachment to the updated ticket in CSV format, e.g., 123@20,124@21 .'
       name: attachment
+    - description: Ticket owner to update to.
+      name: owner
+    - description: Customer user related to the ticket.
+      name: customer_user
     description: Update an OTRS ticket.
     name: otrs-update-ticket
     outputs:
@@ -392,6 +433,8 @@ script:
     - description: Article Body of the ticket to close.
       name: article_body
       required: true
+    - description: Ticket state to set when closing. Defaults to "closed successful".
+      name: state
     description: Close an OTRS ticket.
     name: otrs-close-ticket
     outputs:
@@ -407,12 +450,15 @@ script:
     - contextPath: OTRS.Ticket.Article.Body
       description: Ticket article body.
       type: string
-  dockerimage: demisto/pyotrs:1.0.0.80173
+  dockerimage: demisto/pyotrs:1.0.0.80761
   isfetch: true
   runonce: false
   script: '-'
   subtype: python3
   type: python
+  isremotesyncin: true
+  isremotesyncout: true
+  ismappable: false
 tests:
 - OTRS Test
 fromversion: 5.0.0
