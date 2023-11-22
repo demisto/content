@@ -1,4 +1,6 @@
-# Open Issue: Should we keep the "old" selenium? e.g. offline_mode
+# V TODO sleep
+# TODO force_selenium_usage args in yml
+# TODO kill zombies
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -14,6 +16,7 @@ from collections.abc import Callable
 from enum import Enum
 from io import BytesIO
 from pathlib import Path
+from threading import Event
 
 import numpy as np
 from pdf2image import convert_from_path
@@ -91,19 +94,74 @@ def ensure_chrome_running():  # pragma: no cover
     return False
 
 
+class PychromeEventHandler:
+    screen_lock = threading.Lock()
+
+    def __init__(self, browser, tab, tab_ready):
+        self.browser = browser
+        self.tab = tab
+        self.tab_ready = tab_ready
+        self.start_frame = None
+
+
+    def frame_started_loading(self, frameId):
+        if not self.start_frame:
+            self.start_frame = frameId
+
+
+    def frame_stopped_loading(self, frameId):
+        if self.start_frame == frameId:
+            self.tab.Page.stopLoading()
+
+            with self.screen_lock:
+                # must activate current tab
+                self.browser.activate_tab(self.tab.id)
+
+                try:
+                    # data = self.tab.Page.captureScreenshot()
+                    # with open("%s.png" % time.time(), "wb") as fd:
+                    #     fd.write(base64.b64decode(data['data']))
+                    self.tab_ready.set()
+                finally:
+                    self.tab.stop()
+
+
+def pychrome_reap_children():
+    try:
+        zombies, ps_out = find_zombie_processes()
+        if zombies:  # pragma: no cover
+            demisto.info(f'Found zombie processes will waitpid: {ps_out}')
+            for pid in zombies:
+                waitres = os.waitpid(int(pid), os.WNOHANG)[1]
+                demisto.info(f'waitpid result: {waitres}')
+        else:
+            demisto.debug(f'No zombie processes found for ps output: {ps_out}')
+    except Exception as e:  # pragma: no cover
+        demisto.error(f'Failed checking for zombie processes: {e}. Trace: {traceback.format_exc()}')
+
+
 def pychrome_screenshot_image(path, width, height, wait_time, max_page_load_time, full_screen,
                               include_url):  # pragma: no cover
     browser = pychrome.Browser(url="http://127.0.0.1:9222")
     tab = browser.new_tab()
-
-    # tab.set_listener("Network.requestWillBeSent", request_will_be_sent)
+    tab_ready = Event()
+    eh = PychromeEventHandler(browser, tab, tab_ready)
+    tab.Page.frameStartedLoading = eh.frame_started_loading
+    tab.Page.frameStoppedLoading = eh.frame_stopped_loading
 
     try:
         tab.start()
-        tab.call_method("Network.enable")
-        tab.call_method("Page.navigate", url=path, _timeout=max_page_load_time)
+        tab.Page.stopLoading()
+        # tab.call_method("Network.enable")
+        tab.Page.enable()
+        # tab.call_method("Page.navigate", url=path, _timeout=max_page_load_time)
+        page_start_time = int(time.time())
+        tab.Page.navigate(url=urls[i], _timeout=max_page_load_time)
+        page_load_time = int(time.time()) - page_start_time
 
-        time.sleep(wait_time)  # pylint: disable=E9003
+        if wait_time > 0:
+            # time.sleep(wait_time)  # pylint: disable=E9003
+            tab_ready.wait(wait_time - page_load_time + 1)
         return base64.b64decode(tab.Page.captureScreenshot()['data'])
     except pychrome.exceptions.TimeoutException:
         message = f'Timeout of {max_page_load_time} seconds reached while waiting for {path}'
@@ -111,22 +169,36 @@ def pychrome_screenshot_image(path, width, height, wait_time, max_page_load_time
         return_error(message)
     finally:
         tab.stop()
-        browser.close_tab(tab)
+        close_tab_response = browser.close_tab(tab)
+        demisto.debug(f"{path=}, {close_tab_response=}")
+        # pychrome_reap_children()
 
 
 def pychrome_screenshot_pdf(path, width, height, wait_time, max_page_load_time, full_screen,
                             include_url):  # pragma: no cover
     browser = pychrome.Browser(url="http://127.0.0.1:9222")
     tab = browser.new_tab()
+    tab_ready = Event()
+    eh = PychromeEventHandler(browser, tab, tab_ready)
+    tab.Page.frameStartedLoading = eh.frame_started_loading
+    tab.Page.frameStoppedLoading = eh.frame_stopped_loading
 
     # tab.set_listener("Network.requestWillBeSent", request_will_be_sent)
 
     try:
         tab.start()
-        tab.call_method("Network.enable")
-        tab.call_method("Page.navigate", url=path, _timeout=max_page_load_time)
+        tab.Page.stopLoading()
+        # tab.call_method("Network.enable")
+        tab.Page.enable()
+        # tab.call_method("Page.navigate", url=path, _timeout=max_page_load_time)
+        page_start_time = int(time.time())
+        tab.Page.navigate(url=urls[i], _timeout=max_page_load_time)
+        page_load_time = int(time.time()) - page_start_time
 
-        time.sleep(wait_time)  # pylint: disable=E9003
+        if wait_time > 0:
+            # time.sleep(wait_time)  # pylint: disable=E9003
+            tab_ready.wait(wait_time - page_load_time + 1)
+
         header_template = ''
         if include_url:
             header_template = "<span class=url></span>"
@@ -139,6 +211,7 @@ def pychrome_screenshot_pdf(path, width, height, wait_time, max_page_load_time, 
         tab.stop()
         close_tab_response = browser.close_tab(tab)
         demisto.debug(f"{path=}, {close_tab_response=}")
+        # pychrome_reap_children()
 
 
 def check_width_and_height(width: int, height: int) -> tuple[int, int]:
@@ -657,7 +730,7 @@ def convert_pdf_to_jpeg(path: str, max_pages: str, password: str, horizontal: bo
 
 def rasterize_command():  # pragma: no cover
     url = demisto.getArg('url')
-    w, h, r_mode = get_common_args(demisto.args())
+    w, h, r_mode, force_selenium_usage = get_common_args(demisto.args())
     r_type = RasterizeType(demisto.args().get('type', 'png').lower())
     wait_time = int(demisto.args().get('wait_time', 0))
     page_load = int(demisto.args().get('max_page_load_time', DEFAULT_PAGE_LOAD_TIME))
@@ -672,7 +745,7 @@ def rasterize_command():  # pragma: no cover
     file_name = f'{file_name}.{"pdf" if r_type == RasterizeType.PDF else "png"}'  # type: ignore
 
     output = rasterize(path=url, r_type=r_type, width=w, height=h, wait_time=wait_time, max_page_load_time=page_load,
-                       full_screen=full_screen, r_mode=r_mode, include_url=include_url)
+                       full_screen=full_screen, r_mode=r_mode, include_url=include_url, force_selenium_usage=force_selenium_usage)
     if r_type == RasterizeType.JSON:
         return_results(CommandResults(raw_response=output, readable_output="Successfully rasterize url: " + url))
         return
@@ -693,13 +766,14 @@ def get_common_args(args: dict):
     w = int(args.get('width', DEFAULT_W).rstrip('px'))
     h = int(args.get('height', DEFAULT_H).rstrip('px'))
     r_mode = RasterizeMode(args.get('mode', DEFAULT_MODE))
-    return w, h, r_mode
+    force_selenium_usage = bool(args.get('force_selenium_usage', False))
+    return w, h, r_mode, force_selenium_usage
 
 
 def rasterize_image_command():
     args = demisto.args()
     entry_id = args.get('EntryID')
-    w, h, r_mode = get_common_args(args)
+    w, h, r_mode, force_selenium_usage = get_common_args(args)
     file_name = args.get('file_name', entry_id)
     full_screen = argToBoolean(demisto.args().get('full_screen', False))
 
@@ -710,14 +784,14 @@ def rasterize_image_command():
 
     with open(file_path, 'rb') as f:
         output = rasterize(path=f'file://{os.path.realpath(f.name)}', width=w, height=h, r_type=RasterizeType.PDF,
-                           full_screen=full_screen, r_mode=r_mode)
+                           full_screen=full_screen, r_mode=r_mode, force_selenium_usage=force_selenium_usage)
         res = fileResult(filename=file_name, data=output, file_type=entryTypes['entryInfoFile'])
         demisto.results(res)
 
 
 def rasterize_email_command():  # pragma: no cover
     html_body = demisto.args().get('htmlBody')
-    w, h, r_mode = get_common_args(demisto.args())
+    w, h, r_mode, force_selenium_usage = get_common_args(demisto.args())
     offline = demisto.args().get('offline', 'false') == 'true'
     r_type = RasterizeType(demisto.args().get('type', 'png').lower())
     file_name = demisto.args().get('file_name', 'email')
@@ -732,7 +806,8 @@ def rasterize_email_command():  # pragma: no cover
     path = f'file://{os.path.realpath(f.name)}'
 
     output = rasterize(path=path, r_type=r_type, width=w, height=h, offline_mode=offline,
-                       max_page_load_time=html_load, full_screen=full_screen, r_mode=r_mode)
+                       max_page_load_time=html_load, full_screen=full_screen, r_mode=r_mode,
+                       force_selenium_usage=force_selenium_usage)
     res = fileResult(filename=file_name, data=output)
     if r_type == RasterizeType.PNG:
         res['Type'] = entryTypes['image']
@@ -766,9 +841,9 @@ def rasterize_pdf_command():  # pragma: no cover
 def rasterize_html_command():
     args = demisto.args()
     entry_id = args.get('EntryID')
-    w = args.get('width', DEFAULT_W).rstrip('px')
-    h = args.get('height', DEFAULT_H).rstrip('px')
+    w, h, r_mode, force_selenium_usage = get_common_args(demisto.args())
     r_type = args.get('type', 'png')
+
     file_name = args.get('file_name', 'email')
     full_screen = argToBoolean(demisto.args().get('full_screen', False))
     wait_time = int(args.get('wait_time', 0))
@@ -778,7 +853,7 @@ def rasterize_html_command():
     os.rename(f'./{file_path}', 'file.html')
 
     output = rasterize(path=f"file://{os.path.realpath('file.html')}", width=w, height=h, r_type=r_type,
-                       full_screen=full_screen, wait_time=wait_time)
+                       full_screen=full_screen, wait_time=wait_time, force_selenium_usage=force_selenium_usage)
 
     res = fileResult(filename=file_name, data=output)
     if r_type == 'png':
@@ -795,7 +870,8 @@ def module_test():  # pragma: no cover
         file_path = f'file://{os.path.realpath(test_file.name)}'
 
         # rasterizing the file
-        rasterize(path=file_path, width=250, height=250, r_mode=DEFAULT_MODE)
+        force_selenium_usage = bool(args.get('force_selenium_usage', False))
+        rasterize(path=file_path, width=250, height=250, r_mode=DEFAULT_MODE, force_selenium_usage=force_selenium_usage)
 
     demisto.results('ok')
 
