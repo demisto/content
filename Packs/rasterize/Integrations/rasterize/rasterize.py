@@ -104,11 +104,9 @@ class PychromeEventHandler:
         self.tab_ready = tab_ready
         self.start_frame = None
 
-
     def frame_started_loading(self, frameId):
         if not self.start_frame:
             self.start_frame = frameId
-
 
     def frame_stopped_loading(self, frameId):
         if self.start_frame == frameId:
@@ -158,11 +156,12 @@ def pychrome_screenshot_image(path, width, height, wait_time, max_page_load_time
         # tab.call_method("Page.navigate", url=path, _timeout=max_page_load_time)
         page_start_time = int(time.time())
         tab.Page.navigate(url=path, _timeout=max_page_load_time)
+        navigate_time = int(time.time()) - page_start_time
+        tab_ready.wait(wait_time - navigate_time + 1)
         page_load_time = int(time.time()) - page_start_time
 
         if wait_time > 0:
-            # time.sleep(wait_time)  # pylint: disable=E9003
-            tab_ready.wait(wait_time - page_load_time + 1)
+            time.sleep(wait_time - page_load_time + 1)  # pylint: disable=E9003
         return base64.b64decode(tab.Page.captureScreenshot()['data'])
     except pychrome.exceptions.TimeoutException:
         message = f'Timeout of {max_page_load_time} seconds reached while waiting for {path}'
@@ -194,11 +193,12 @@ def pychrome_screenshot_pdf(path, width, height, wait_time, max_page_load_time, 
         # tab.call_method("Page.navigate", url=path, _timeout=max_page_load_time)
         page_start_time = int(time.time())
         tab.Page.navigate(url=path, _timeout=max_page_load_time)
+        navigate_time = int(time.time()) - page_start_time
+        tab_ready.wait(wait_time - navigate_time + 1)
         page_load_time = int(time.time()) - page_start_time
 
         if wait_time > 0:
-            # time.sleep(wait_time)  # pylint: disable=E9003
-            tab_ready.wait(wait_time - page_load_time + 1)
+            time.sleep(wait_time - page_load_time + 1)  # pylint: disable=E9003
 
         header_template = ''
         if include_url:
