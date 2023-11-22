@@ -233,6 +233,12 @@ script:
     - contextPath: AzureSentinel.Incident.AssigneeEmail
       description: The email address of the incident assignee.
       type: String
+    - contextPath: AzureSentinel.Incident.AssigneeObjectID
+      description: The objectId of the incident assignee.
+      type: string
+    - contextPath: AzureSentinel.Incident.AssigneeUPN
+      description: Userprincipalname of incident assignee.
+      type: string
     - contextPath: AzureSentinel.Incident.Label.Name
       description: The name of the incident label.
       type: String
@@ -545,6 +551,8 @@ script:
       name: assignee_email
     - description: The user principal name of the client. Note that the updated API field is `owner.userPrincipalName`.
       name: user_principal_name
+    - description: Object ID of assignee, this is the unique objectid of a user to update assignee of incident Updated key is owner.objectId
+      name: assignee_objectid
     - description: Incident labels. Note that all labels will be set as labelType='User'.
       isArray: true
       name: labels
@@ -552,6 +560,13 @@ script:
       name: subscription_id
     - description: The resource group name.
       name: resource_group_name
+    - auto: PREDEFINED
+      description: If set to true the assignee will be removed and incident will remain unassigned.
+      name: unassign
+      predefined:
+      - 'false'
+      - 'true'
+      type: unknown
     description: Updates a single incident in Azure Sentinel.
     name: azure-sentinel-update-incident
     outputs:
@@ -576,6 +591,12 @@ script:
     - contextPath: AzureSentinel.Incident.AssigneeEmail
       description: The email address of the incident assignee.
       type: String
+    - contextPath: AzureSentinel.Incident.AssigneeObjectID
+      description: The objectId of the incident assignee.
+      type: string
+    - contextPath: AzureSentinel.Incident.AssigneeUPN
+      description: Userprincipalname of incident assignee.
+      type: string
     - contextPath: AzureSentinel.Incident.Label.Name
       description: The name of the incident label.
       type: String

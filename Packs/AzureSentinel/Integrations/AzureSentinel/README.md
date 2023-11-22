@@ -125,6 +125,8 @@ Gets a single incident from Azure Sentinel.
 | AzureSentinel.Incident.Status | String | The incident status. | 
 | AzureSentinel.Incident.AssigneeName | String | The name of the incident assignee. | 
 | AzureSentinel.Incident.AssigneeEmail | String | The email address of the incident assignee. | 
+| AzureSentinel.Incident.AssigneeObjectID | String | The objectId of the incident assignee. | 
+| AzureSentinel.Incident.AssigneeUPN | String | The userprincipalname of the incident assignee. | 
 | AzureSentinel.Incident.Label.Name | String | The name of the incident label. | 
 | AzureSentinel.Incident.Label.Type | String | The incident label type. | 
 | AzureSentinel.Incident.FirstActivityTimeUTC | Date | The date and time of the incident's first activity. | 
@@ -716,6 +718,8 @@ Updates a single incident in Azure Sentinel.
 | AzureSentinel.Incident.Status | String | The incident status. | 
 | AzureSentinel.Incident.AssigneeName | String | The name of the incident assignee. | 
 | AzureSentinel.Incident.AssigneeEmail | String | The email address of the incident assignee. | 
+| AzureSentinel.Incident.AssigneeObjectID | String | The objectId of the incident assignee. | 
+| AzureSentinel.Incident.AssigneeUPN | String | The userprincipalname of the incident assignee. | 
 | AzureSentinel.Incident.Label.Name | String | The name of the incident label. | 
 | AzureSentinel.Incident.Label.Type | String | The incident label type. | 
 | AzureSentinel.Incident.FirstActivityTimeUTC | Date | The date and time of the incident's first activity. | 
