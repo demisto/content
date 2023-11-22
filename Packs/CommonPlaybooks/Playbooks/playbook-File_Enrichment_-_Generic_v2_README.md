@@ -13,7 +13,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Integrations
 
-* Cylance Protect v2
+This playbook does not use any integrations.
 
 ### Scripts
 

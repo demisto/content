@@ -177,17 +177,17 @@ tasks:
     continueonerrortype: ""
   "28":
     id: "28"
-    taskid: 20d8b37e-f632-461a-8ba4-01e02e47b3b5
+    taskid: 6721f439-f2ce-4dec-8bff-5eedf90921c9
     type: regular
     task:
-      id: 20d8b37e-f632-461a-8ba4-01e02e47b3b5
+      id: 6721f439-f2ce-4dec-8bff-5eedf90921c9
       version: -1
       name: Get threat information from Cylance Protect v2
-      description: Gets threat information from the Cylance Protect v2 integration.
-      script: Cylance Protect v2|||cylance-protect-get-threat
+      description: Requests threat details for a specific threat.
+      script: '|||cylance-protect-get-threat'
       type: regular
       iscommand: true
-      brand: Cylance Protect v2
+      brand: ""
     nexttasks:
       "#none#":
       - "7"
