@@ -422,19 +422,18 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_t
 def fetch_incidents(service: client.Service, mapper: UserMappingObject, comment_tag_to_splunk: str, comment_tag_from_splunk: str):
     if ENABLED_ENRICHMENTS:
         integration_context = get_integration_context()
-        demisto.debug(f'{demisto.getLastRun()=} {integration_context=}' )
         if not demisto.getLastRun() and integration_context:
             # In "Pull from instance" in Classification & Mapping the last run object is empty, integration context
             # will not be empty because of the enrichment mechanism. In regular enriched fetch, we use dummy data
             # in the last run object to avoid entering this case
-            demisto.debug('not enrichment 1')
+            demisto.debug('running fetch_incidents_for_mapping')
 
             fetch_incidents_for_mapping(integration_context)
         else:
-            demisto.debug('enrichment')
+            demisto.debug('running run_enrichment_mechanism')
             run_enrichment_mechanism(service, integration_context, mapper, comment_tag_to_splunk, comment_tag_from_splunk)
     else:
-        demisto.debug('not enrichment 2')
+        demisto.debug('enrichments not enabled running fetch_notables')
 
         fetch_notables(service=service, enrich_notables=False, mapper=mapper, comment_tag_to_splunk=comment_tag_to_splunk,
                        comment_tag_from_splunk=comment_tag_from_splunk)
