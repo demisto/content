@@ -13,9 +13,9 @@ tasks:
       id: cdd6228a-7feb-4386-8ab1-7dfdf77d99c2
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -34,6 +34,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
     taskid: 38007764-1687-47b1-8490-0f3cded9dc95
@@ -42,10 +47,10 @@ tasks:
       id: 38007764-1687-47b1-8490-0f3cded9dc95
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -57,23 +62,27 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: afe0c443-753d-4633-89e1-0d77dc533447
+    taskid: 79119615-b605-486c-8592-d84ab35523d3
     type: playbook
     task:
-      id: afe0c443-753d-4633-89e1-0d77dc533447
+      id: 79119615-b605-486c-8592-d84ab35523d3
       version: -1
       name: IP Enrichment - Generic v2
       description: |-
-        Enrich IP using one or more integrations.
+        Enrich IP addresses using one or more integrations.
 
-        IP enrichment includes:
-        * Resolve IP to Hostname (DNS)
-        * Threat information
-        * Separate internal and external addresses
-        * IP reputation
-        * For internal addresses, get host information
+        - Resolve IP addresses to hostnames (DNS)
+        - Provide threat information
+        - IP address Reputation using !ip command
+        - Separate internal and external IP addresses
+        - For internal IP addresses, get host information
       playbookName: IP Enrichment - Generic v2
       type: playbook
       iscommand: false
@@ -95,11 +104,15 @@ tasks:
       ResolveIP:
         complex:
           root: inputs.ResolveIP
+      UseReputationCommand:
+        complex:
+          root: inputs.UseReputationCommand
     separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -110,15 +123,24 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 8189698a-475c-433b-8fbf-20275b3b2084
+    taskid: 6b49c26d-0f94-4a7d-82f3-cb91ec5d4530
     type: playbook
     task:
-      id: 8189698a-475c-433b-8fbf-20275b3b2084
+      id: 6b49c26d-0f94-4a7d-82f3-cb91ec5d4530
       version: -1
       name: File Enrichment - Generic v2
-      description: ""
+      description: |-
+        Enrich a file using one or more integrations.
+
+        - Provide threat information
+        - File Reputation using !file command
       playbookName: File Enrichment - Generic v2
       type: playbook
       iscommand: false
@@ -142,11 +164,15 @@ tasks:
           root: inputs.SHA256
           transformers:
           - operator: uniq
+      UseReputationCommand:
+        complex:
+          root: inputs.UseReputationCommand
     separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -157,15 +183,27 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: b00cb02f-d44b-4e40-8c27-281d17a94723
+    taskid: 92056557-239f-490a-8376-a4a0f52e6d66
     type: playbook
     task:
-      id: b00cb02f-d44b-4e40-8c27-281d17a94723
+      id: 92056557-239f-490a-8376-a4a0f52e6d66
       version: -1
       name: URL Enrichment - Generic v2
-      description: ""
+      description: |-
+        Enrich URLs using one or more integrations.
+
+        URL enrichment includes:
+        * SSL verification for URLs
+        * Threat information
+        * Providing of URL screenshots
+        * URL Reputation using !url
       playbookName: URL Enrichment - Generic v2
       type: playbook
       iscommand: false
@@ -184,11 +222,15 @@ tasks:
           - operator: uniq
       VerifyURL:
         simple: "False"
+      UseReputationCommand:
+        complex:
+          root: inputs.UseReputationCommand
     separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -199,18 +241,24 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 6245f7fc-b1cc-4120-81da-d3320f809b03
+    taskid: 7578f493-8243-47c0-86aa-ec1e24c752aa
     type: playbook
     task:
-      id: 6245f7fc-b1cc-4120-81da-d3320f809b03
+      id: 7578f493-8243-47c0-86aa-ec1e24c752aa
       version: -1
       name: Domain Enrichment - Generic v2
       description: |-
         Enrich domains using one or more integrations.
         Domain enrichment includes:
         * Threat information
+        * Domain reputation using !domain command
       playbookName: Domain Enrichment - Generic v2
       type: playbook
       iscommand: false
@@ -224,11 +272,15 @@ tasks:
           root: inputs.Domain
           transformers:
           - operator: uniq
+      UseReputationCommand:
+        complex:
+          root: inputs.UseReputationCommand
     separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -239,15 +291,24 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 0ba8dffe-9aac-40a7-8303-ff40de2d91f9
+    taskid: 3ee11f48-e5f2-472f-8911-2c0b20993cca
     type: playbook
     task:
-      id: 0ba8dffe-9aac-40a7-8303-ff40de2d91f9
+      id: 3ee11f48-e5f2-472f-8911-2c0b20993cca
       version: -1
       name: Email Address Enrichment - Generic v2.1
-      description: ""
+      description: |-
+        Enrich email addresses.
+        - Get information from Active Directory for internal addresses
+        - Get the domain-squatting reputation for external addresses
+        - Email address reputation using !email command
       playbookName: Email Address Enrichment - Generic v2.1
       type: playbook
       iscommand: false
@@ -272,11 +333,15 @@ tasks:
           root: inputs.InternalDomains
           transformers:
           - operator: uniq
+      UseReputationCommand:
+        complex:
+          root: inputs.UseReputationCommand
     separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -287,15 +352,32 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 7f313517-52cb-4653-8c77-08819d4910f3
+    taskid: 3f3e5655-01ed-4fd4-8509-fd6a78f80835
     type: playbook
     task:
-      id: 7f313517-52cb-4653-8c77-08819d4910f3
+      id: 3f3e5655-01ed-4fd4-8509-fd6a78f80835
       version: -1
       name: Account Enrichment - Generic v2.1
-      description: ""
+      description: |-
+        Enrich accounts using one or more integrations.
+        Supported integrations:
+        - Active Directory
+        - Microsoft Graph User
+        - SailPoint IdentityNow
+        - SailPoint IdentityIQ
+        - PingOne
+        - Okta
+        - AWS IAM
+        - Cortex XDR (account enrichment and reputation)
+
+        Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations. For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
       playbookName: Account Enrichment - Generic v2.1
       type: playbook
       iscommand: false
@@ -314,6 +396,7 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -324,15 +407,30 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 473ab066-87e5-408d-8317-70e38ead40ca
+    taskid: a8e9a8ae-1a6f-4425-8de8-3bc133b809dc
     type: playbook
     task:
-      id: 473ab066-87e5-408d-8317-70e38ead40ca
+      id: a8e9a8ae-1a6f-4425-8de8-3bc133b809dc
       version: -1
       name: Endpoint Enrichment - Generic v2.1
-      description: ""
+      description: |-
+        Enrich an endpoint by hostname using one or more integrations.
+        Supported integrations:
+        - Active Directory Query v2
+        - McAfee ePO v2
+        - VMware Carbon Black EDR v2
+        - Cylance Protect v2
+        - CrowdStrike Falcon
+        - ExtraHop Reveal(x)
+        - Cortex XDR / Core (endpoint enrichment, reputation and risk)
+        - Endpoint reputation using !endpoint command.
       playbookName: Endpoint Enrichment - Generic v2.1
       type: playbook
       iscommand: false
@@ -346,11 +444,15 @@ tasks:
           root: inputs.Hostname
           transformers:
           - operator: uniq
+      UseReputationCommand:
+        complex:
+          root: inputs.UseReputationCommand
     separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -361,6 +463,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -383,10 +490,12 @@ inputs:
       - operator: uniq
   required: false
   description: The IP addresses to enrich
+  playbookInputQuery:
 - key: InternalRange
   value: {}
   required: false
   description: 'A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided, will use default list provided in the IsIPInRanges script (the known IPv4 private address ranges).'
+  playbookInputQuery:
 - key: MD5
   value:
     complex:
@@ -396,6 +505,7 @@ inputs:
       - operator: uniq
   required: false
   description: File MD5 to enrich
+  playbookInputQuery:
 - key: SHA256
   value:
     complex:
@@ -405,6 +515,7 @@ inputs:
       - operator: uniq
   required: false
   description: File SHA256 to enrich
+  playbookInputQuery:
 - key: SHA1
   value:
     complex:
@@ -414,6 +525,7 @@ inputs:
       - operator: uniq
   required: false
   description: File SHA1 to enrich
+  playbookInputQuery:
 - key: URL
   value:
     complex:
@@ -423,6 +535,7 @@ inputs:
       - operator: uniq
   required: false
   description: URL to enrich
+  playbookInputQuery:
 - key: Email
   value:
     complex:
@@ -432,6 +545,7 @@ inputs:
       - operator: uniq
   required: false
   description: The email addresses to enrich
+  playbookInputQuery:
 - key: Hostname
   value:
     complex:
@@ -441,6 +555,7 @@ inputs:
       - operator: uniq
   required: false
   description: The hostname to enrich
+  playbookInputQuery:
 - key: Username
   value:
     complex:
@@ -450,6 +565,7 @@ inputs:
       - operator: uniq
   required: false
   description: The Username to enrich
+  playbookInputQuery:
 - key: Domain
   value:
     complex:
@@ -459,22 +575,35 @@ inputs:
       - operator: uniq
   required: false
   description: The domain name to enrich
+  playbookInputQuery:
 - key: ResolveIP
   value:
     simple: "False"
   required: false
   description: Determines whether the IP Enrichment - Generic playbook should convert IP addresses to hostnames using a DNS query. You can set this to either True or False.
+  playbookInputQuery:
 - key: InternalDomains
   value: {}
   required: false
   description: A CSV list of internal domains. The list will be used to determine whether an email address is internal or external.
+  playbookInputQuery:
+- key: UseReputationCommand
+  value:
+    simple: "False"
+  required: true
+  description: |-
+    Define whether you wish to use the reputation command during the enrichment process.
+    Note: This input should be used whenever auto-extract is not enabled in the investigation flow.
+    The default value is false
+    Possible values: True / False.
+  playbookInputQuery:
 outputs:
 - contextPath: IP
   description: The IP object.
   type: unknown
 - contextPath: Endpoint
   description: The endpoint object.
-  type: unknown
+  type: string
 - contextPath: Endpoint.Hostname
   description: The hostname that was enriched.
   type: string
@@ -483,14 +612,16 @@ outputs:
   type: string
 - contextPath: Endpoint.IP
   description: A list of endpoint IP addresses.
+  type: string
 - contextPath: Endpoint.MAC
   description: A list of endpoint MAC addresses.
+  type: string
 - contextPath: Endpoint.Domain
   description: The endpoint domain name.
   type: string
 - contextPath: DBotScore
   description: The DBotScore object.
-  type: unknown
+  type: string
 - contextPath: DBotScore.Indicator
   description: The indicator that was tested.
   type: string
@@ -505,7 +636,7 @@ outputs:
   type: number
 - contextPath: File
   description: The file object.
-  type: unknown
+  type: string
 - contextPath: File.SHA1
   description: SHA1 hash of the file.
   type: string
@@ -517,19 +648,19 @@ outputs:
   type: string
 - contextPath: File.Malicious
   description: Whether the file is malicious.
-  type: unknown
+  type: string
 - contextPath: File.Malicious.Vendor
   description: For malicious files, the vendor that made the decision.
   type: string
 - contextPath: URL
   description: The URL object.
-  type: uknown
+  type: string
 - contextPath: URL.Data
   description: The enriched URL.
   type: string
 - contextPath: URL.Malicious
   description: Whether the detected URL was malicious.
-  type: unknown
+  type: string
 - contextPath: URL.Vendor
   description: Vendor that labeled the URL as malicious.
   type: string
@@ -538,19 +669,19 @@ outputs:
   type: string
 - contextPath: Domain
   description: The domain object.
-  type: unknown
+  type: string
 - contextPath: Account
   description: The account object.
-  type: unknown
+  type: string
 - contextPath: Account.Email
   description: The email of the account.
-  type: unknown
+  type: string
 - contextPath: Account.Email.NetworkType
   description: The email account NetworkType (Internal/External).
   type: string
 - contextPath: Account.Email.Distance
   description: 'The object that contains the distance between the email domain and the compared domain. '
-  type: unknown
+  type: string
 - contextPath: Account.Email.Distance.Domain
   description: The compared domain.
   type: string
@@ -559,18 +690,926 @@ outputs:
   type: number
 - contextPath: ActiveDirectory.Users
   description: An object containing information about the user from Active Directory.
-  type: unknown
+  type: string
 - contextPath: ActiveDirectory.Users.sAMAccountName
   description: The user's samAccountName.
+  type: string
 - contextPath: ActiveDirectory.Users.userAccountControl
   description: The user's account control flag.
+  type: string
 - contextPath: ActiveDirectory.Users.mail
   description: The user's email address.
+  type: string
 - contextPath: ActiveDirectory.Users.memberOf
   description: Groups the user is a member of.
+  type: string
 - contextPath: CylanceProtectDevice
   description: The device information about the hostname that was enriched using Cylance Protect v2.
-  type: unknown
+  type: string
+- contextPath: File.VirusTotal.Scans
+  description: The scan object.
+  type: string
+- contextPath: File.VirusTotal.Scans.Source
+  description: Vendor that scanned this hash.
+  type: string
+- contextPath: File.VirusTotal.Scans.Detected
+  description: Whether a scan was detected for this hash (True/False).
+  type: boolean
+- contextPath: File.VirusTotal.Scans.Result
+  description: Scan result for this hash - signature, etc.
+  type: string
+- contextPath: IAM
+  description: Generic IAM output.
+  type: string
+- contextPath: UserManagerEmail
+  description: The email of the user's manager.
+  type: string
+- contextPath: UserManagerDisplayName
+  description: The display name of the user's manager.
+  type: string
+- contextPath: ActiveDirectory.Users.manager
+  description: The manager of the user.
+  type: string
+- contextPath: ActiveDirectory.Users.dn
+  description: The user distinguished name.
+  type: string
+- contextPath: ActiveDirectory.Users.displayName
+  description: The user display name.
+  type: string
+- contextPath: ActiveDirectory.Users.name
+  description: The user common name.
+  type: string
+- contextPath: ActiveDirectory.Users.userAccountControlFields
+  description: The user account control fields.
+  type: string
+- contextPath: IdentityIQ.Identity
+  description: Identity asset from IdentityIQ.
+  type: string
+- contextPath: PingOne.Account
+  description: Account in PingID.
+  type: string
+- contextPath: IAM.Vendor.active
+  description: When true, indicates that the employee's status is active in the 3rd-party integration.
+  type: string
+- contextPath: IAM.Vendor.brand
+  description: Name of the integration.
+  type: string
+- contextPath: IAM.Vendor.details
+  description: Provides the raw data from the 3rd-party integration.
+  type: string
+- contextPath: IAM.Vendor.email
+  description: The employee's email address.
+  type: string
+- contextPath: IAM.Vendor.errorCode
+  description: HTTP error response code.
+  type: string
+- contextPath: IAM.Vendor.errorMessage
+  description: Reason why the API failed.
+  type: string
+- contextPath: IAM.Vendor.id
+  description: The employee's user ID in the app.
+  type: string
+- contextPath: IAM.Vendor.instanceName
+  description: Name of the integration instance.
+  type: string
+- contextPath: IAM.Vendor.success
+  description: When true, indicates that the command was executed successfully.
+  type: string
+- contextPath: IAM.Vendor.username
+  description: The employee's username in the app.
+  type: string
+- contextPath: IAM.Vendor.action
+  description: The command name.
+  type: string
+- contextPath: IdentityIQ.Identity.userName
+  description: The IdentityIQ username (primary ID).
+  type: string
+- contextPath: IdentityIQ.Identity.id
+  description: The IdentityIQ internal ID (UUID).
+  type: string
+- contextPath: IdentityIQ.Identity.active
+  description: Indicates whether the ID is active or inactive in IdentityIQ.
+  type: string
+- contextPath: IdentityIQ.Identity.lastModified
+  description: Timestamp of when the identity was last modified.
+  type: string
+- contextPath: IdentityIQ.Identity.displayName
+  description: The display name of the identity.
+  type: string
+- contextPath: IdentityIQ.Identity.emails
+  description: Array of email objects.
+  type: string
+- contextPath: IdentityIQ.Identity.entitlements
+  description: Array of entitlement objects that the identity has.
+  type: string
+- contextPath: IdentityIQ.Identity.roles
+  description: Array of role objects that the identity has.
+  type: string
+- contextPath: IdentityIQ.Identity.capabilities
+  description: Array of string representations of the IdentityIQ capabilities assigned to this identity.
+  type: string
+- contextPath: IdentityIQ.Identity.name
+  description: Account name.
+  type: string
+- contextPath: IdentityIQ.Identity.manager
+  description: The account's manager returned from IdentityIQ.
+  type: string
+- contextPath: IdentityIQ.Identity.name.formatted
+  description: The display name of the identity.
+  type: string
+- contextPath: IdentityIQ.Identity.name.familyName
+  description: The last name of the identity.
+  type: string
+- contextPath: IdentityIQ.Identity.name.givenName
+  description: The first name of the identity.
+  type: string
+- contextPath: IdentityIQ.Identity.manager.userName
+  description: The IdentityIQ username (primary ID) of the identity's manager.
+  type: string
+- contextPath: IdentityIQ.Identity.emails.type
+  description: Type of the email being returned.
+  type: string
+- contextPath: IdentityIQ.Identity.emails.value
+  description: The email address of the identity.
+  type: string
+- contextPath: IdentityIQ.Identity.emails.primary
+  description: Indicates if this email address is the identity's primary email.
+  type: string
+- contextPath: PingOne.Account.ID
+  description: PingOne account ID.
+  type: string
+- contextPath: PingOne.Account.Username
+  description: PingOne account username.
+  type: string
+- contextPath: PingOne.Account.DisplayName
+  description: PingOne account display name.
+  type: string
+- contextPath: PingOne.Account.Email
+  description: PingOne account email.
+  type: string
+- contextPath: PingOne.Account.Enabled
+  description: PingOne account enabled status.
+  type: string
+- contextPath: PingOne.Account.CreatedAt
+  description: PingOne account create date.
+  type: string
+- contextPath: PingOne.Account.UpdatedAt
+  description: PingOne account updated date.
+  type: string
+- contextPath: Account.PasswordChanged
+  description: Timestamp for when the user's password was last changed.
+  type: string
+- contextPath: Account.StatusChanged
+  description: Timestamp for when the user's status was last changed.
+  type: string
+- contextPath: Account.Activated
+  description: Timestamp for when the user was activated.
+  type: string
+- contextPath: Account.Created
+  description: Timestamp for when the user was created.
+  type: string
+- contextPath: Account.Status
+  description: Okta account status.
+  type: string
+- contextPath: Account.Username
+  description: The user SAM account name.
+  type: string
+- contextPath: Account.ID
+  description: The user distinguished name.
+  type: string
+- contextPath: Account.Manager
+  description: The user manager.
+  type: string
+- contextPath: Account.Groups
+  description: Groups for which the user is a member.
+  type: string
+- contextPath: Account.DisplayName
+  description: The user display name.
+  type: string
+- contextPath: Account.ManagerEmail
+  description: The manager email.
+  type: string
+- contextPath: Account.JobTitle
+  description: User’s job title.
+  type: string
+- contextPath: Account.TelephoneNumber
+  description: User’s mobile phone number.
+  type: string
+- contextPath: Account.Office
+  description: User’s office location.
+  type: string
+- contextPath: Account.Type
+  description: The account entity type.
+  type: string
+- contextPath: ActiveDirectory.Users.userAccountControlFields.SCRIPT
+  description: Whether the login script is run. Works for *Windows Server 2012 R2*.
+  type: string
+- contextPath: ActiveDirectory.Users.userAccountControlFields.ACCOUNTDISABLE
+  description: Whether the user account is disabled. Works for *Windows Server 2012 R2*.
+  type: string
+- contextPath: ActiveDirectory.Users.userAccountControlFields.HOMEDIR_REQUIRED
+  description: Whether the home folder is required. Works for *Windows Server 2012 R2*.
+  type: string
+- contextPath: ActiveDirectory.Users.userAccountControlFields.LOCKOUT
+  description: Whether the user is locked out. Works for *Windows Server 2012 R2*.
+  type: string
+- contextPath: ActiveDirectory.Users.userAccountControlFields.PASSWD_NOTREQD
+  description: Whether the password is required. Works for *Windows Server 2012 R2*.
+  type: string
+- contextPath: ActiveDirectory.Users.userAccountControlFields.PASSWD_CANT_CHANGE
+  description: Whether the user can change the password. Works for *Windows Server 2012 R2*.
+  type: string
+- contextPath: ActiveDirectory.Users.userAccountControlFields.ENCRYPTED_TEXT_PWD_ALLOWED
+  description: Whether the user can send an encrypted password. Works for *Windows Server 2012 R2*.
+  type: string
+- contextPath: ActiveDirectory.Users.userAccountControlFields.TEMP_DUPLICATE_ACCOUNT
+  description: Whether this is an account for users whose primary account is in another domain. Works for *Windows Server 2012 R2*.
+  type: string
+- contextPath: ActiveDirectory.Users.userAccountControlFields.NORMAL_ACCOUNT
+  description: Whether this is a default account type that represents a typical user. Works for *Windows Server 2012 R2*.
+  type: string
+- contextPath: ActiveDirectory.Users.userAccountControlFields.INTERDOMAIN_TRUST_ACCOUNT
+  description: Whether the account is permitted to trust a system domain that trusts other domains. Works for *Windows Server 2012 R2*.
+  type: string
+- contextPath: ActiveDirectory.Users.userAccountControlFields.WORKSTATION_TRUST_ACCOUNT
+  description: Whether this is a computer account for a computer running Microsoft Windows NT 4.0 Workstation, Microsoft Windows NT 4.0 Server, Microsoft Windows 2000 Professional, or Windows 2000 Server and is a member of this domain.
+  type: string
+- contextPath: ActiveDirectory.Users.userAccountControlFields.PARTIAL_SECRETS_ACCOUNT
+  description: Whether the account is a read-only domain controller (RODC).
+  type: string
+- contextPath: ActiveDirectory.Users.userAccountControlFields.TRUSTED_TO_AUTH_FOR_DELEGATION
+  description: Whether the account is enabled for delegation.
+  type: string
+- contextPath: ActiveDirectory.Users.userAccountControlFields.DONT_REQ_PREAUTH
+  description: Whether this account require Kerberos pre-authentication for logging on.
+  type: string
+- contextPath: ActiveDirectory.Users.userAccountControlFields.USE_DES_KEY_ONLY
+  description: Whether to restrict this principal to use only Data Encryption Standard (DES) encryption types for keys.
+  type: string
+- contextPath: ActiveDirectory.Users.userAccountControlFields.NOT_DELEGATED
+  description: Whether the security context of the user isn't delegated to a service even if the service account is set as trusted for Kerberos delegation.
+  type: string
+- contextPath: ActiveDirectory.Users.userAccountControlFields.TRUSTED_FOR_DELEGATION
+  description: Whether the service account (the user or computer account) under which a service runs is trusted for Kerberos delegation.
+  type: string
+- contextPath: ActiveDirectory.Users.userAccountControlFields.SMARTCARD_REQUIRED
+  description: Whether to force the user to log in by using a smart card.
+  type: string
+- contextPath: ActiveDirectory.Users.userAccountControlFields.MNS_LOGON_ACCOUNT
+  description: Whether this is an MNS login account.
+  type: string
+- contextPath: ActiveDirectory.Users.userAccountControlFields.SERVER_TRUST_ACCOUNT
+  description: Whether this is a computer account for a domain controller that is a member of this domain. Works for *Windows Server 2012 R2*.
+  type: string
+- contextPath: ActiveDirectory.Users.userAccountControlFields.DONT_EXPIRE_PASSWORD
+  description: Whether to never expire the password on the account.
+  type: string
+- contextPath: ActiveDirectory.Users.userAccountControlFields.PASSWORD_EXPIRED
+  description: Whether the user password expired.
+  type: string
+- contextPath: IAM.Vendor
+  description: The returning results vendor.
+  type: string
+- contextPath: IAM.UserProfile
+  description: The user profile.
+  type: string
+- contextPath: SailPointIdentityNow.Account
+  description: The IdentityNow account object.
+  type: string
+- contextPath: SailPointIdentityNow.Account.id
+  description: The IdentityNow internal ID (UUID).
+  type: string
+- contextPath: SailPointIdentityNow.Account.name
+  description: Name of the identity on this account.
+  type: string
+- contextPath: SailPointIdentityNow.Account.identityId
+  description: The IdentityNow internal identity ID.
+  type: string
+- contextPath: SailPointIdentityNow.Account.nativeIdentity
+  description: The IdentityNow internal native identity ID.
+  type: string
+- contextPath: SailPointIdentityNow.Account.sourceId
+  description: Source ID that maps this account.
+  type: string
+- contextPath: SailPointIdentityNow.Account.created
+  description: Timestamp when the account was created.
+  type: string
+- contextPath: SailPointIdentityNow.Account.modified
+  description: Timestamp when the account was last modified.
+  type: string
+- contextPath: SailPointIdentityNow.Account.attributes
+  description: Map of variable number of attributes unique to this account.
+  type: string
+- contextPath: SailPointIdentityNow.Account.authoritative
+  description: Indicates whether the account is the true source for this identity.
+  type: string
+- contextPath: SailPointIdentityNow.Account.disabled
+  description: Indicates whether the account is disabled.
+  type: string
+- contextPath: SailPointIdentityNow.Account.locked
+  description: Indicates whether the account is locked.
+  type: string
+- contextPath: SailPointIdentityNow.Account.systemAccount
+  description: Indicates whether the account is a system account.
+  type: string
+- contextPath: SailPointIdentityNow.Account.uncorrelated
+  description: Indicates whether the account is uncorrelated.
+  type: string
+- contextPath: SailPointIdentityNow.Account.manuallyCorrelated
+  description: Indicates whether the account was manually correlated.
+  type: string
+- contextPath: SailPointIdentityNow.Account.hasEntitlements
+  description: Indicates whether the account has entitlement.
+  type: string
+- contextPath: MSGraphUser.ID
+  description: User's ID.
+  type: string
+- contextPath: MSGraphUser.DisplayName
+  description: User's display name.
+  type: string
+- contextPath: MSGraphUser.GivenName
+  description: User's given name.
+  type: string
+- contextPath: MSGraphUser.JobTitle
+  description: User's job title.
+  type: string
+- contextPath: MSGraphUser.Mail
+  description: User's mail address.
+  type: string
+- contextPath: MSGraphUser.Surname
+  description: User's surname.
+  type: string
+- contextPath: MSGraphUser.UserPrincipalName
+  description: User's principal name.
+  type: string
+- contextPath: MSGraphUser.MobilePhone
+  description: User's mobile phone number.
+  type: string
+- contextPath: MSGraphUser.OfficeLocation
+  description: User's office location.
+  type: string
+- contextPath: MSGraphUser.BusinessPhones
+  description: User's business phone numbers.
+  type: string
+- contextPath: MSGraphUserManager.Manager.ID
+  description: Manager's user ID.
+  type: string
+- contextPath: MSGraphUserManager.Manager.DisplayName
+  description: User's display name.
+  type: string
+- contextPath: MSGraphUserManager.Manager.GivenName
+  description: User's given name.
+  type: string
+- contextPath: MSGraphUserManager.Manager.Mail
+  description: User's mail address.
+  type: string
+- contextPath: MSGraphUserManager.Manager.Surname
+  description: User's surname.
+  type: string
+- contextPath: MSGraphUserManager.Manager.UserPrincipalName
+  description: User's principal name.
+  type: string
+- contextPath: MSGraphUserManager.Manager.BusinessPhones
+  description: User's business phone numbers.
+  type: string
+- contextPath: MSGraphUserManager.Manager.JobTitle
+  description: User's job title.
+  type: string
+- contextPath: MSGraphUserManager.Manager.MobilePhone
+  description: User's mobile phone number.
+  type: string
+- contextPath: MSGraphUserManager.Manager.OfficeLocation
+  description: User's office location.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyUser
+  description: The account object.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyUser.type
+  description: Form of identification element.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyUser.id
+  description: Identification value of the type field.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyUser.score
+  description: The score assigned to the user.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyUser.reasons
+  description: The account risk objects.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyUser.reasons.date created
+  description: Date when the incident was created.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyUser.reasons.description
+  description: Description of the incident.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyUser.reasons.severity
+  description: The severity of the incident
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyUser.reasons.status
+  description: The incident status
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyUser.reasons.points
+  description: The score.
+  type: string
+- contextPath: AWS.IAM.Users
+  description: AWS IAM output.
+  type: string
+- contextPath: AWS.IAM.Users.UserName
+  description: The friendly name identifying the user.
+  type: string
+- contextPath: AWS.IAM.Users.UserId
+  description: The stable and unique string identifying the user.
+  type: string
+- contextPath: AWS.IAM.Users.Arn
+  description: The Amazon Resource Name (ARN) that identifies the user.
+  type: string
+- contextPath: AWS.IAM.Users.CreateDate
+  description: The date and time when the user was created.
+  type: string
+- contextPath: AWS.IAM.Users.Path
+  description: The path to the user.
+  type: string
+- contextPath: AWS.IAM.Users.PasswordLastUsed
+  description: The date and time,  when the user's password was last used to sign in to an AWS website.
+  type: string
+- contextPath: Account.Email.Address
+  description: User’s mail address.
+  type: string
+- contextPath: URL.Malicious.Vendor
+  description: For malicious URLs, the vendor that made the decision.
+  type: string
+- contextPath: URL.Malicious.Description
+  description: For malicious URLs, the reason that the vendor made the decision.
+  type: string
+- contextPath: DBotScore.Reliability
+  description: Reliability of the source providing the intelligence data.
+  type: string
+- contextPath: Endpoint.IPAddress
+  description: The endpoint IP address.
+  type: string
+- contextPath: Endpoint.ID
+  description: The endpoint ID.
+  type: string
+- contextPath: Endpoint.Status
+  description: The endpoint status.
+  type: string
+- contextPath: Endpoint.IsIsolated
+  description: The endpoint isolation status.
+  type: string
+- contextPath: Endpoint.MACAddress
+  description: The endpoint MAC address.
+  type: string
+- contextPath: Endpoint.Vendor
+  description: The integration name of the endpoint vendor.
+  type: string
+- contextPath: Endpoint.Relationships
+  description: The endpoint relationships of the endpoint that was enriched.
+  type: string
+- contextPath: Endpoint.Processor
+  description: The model of the processor.
+  type: string
+- contextPath: Endpoint.Processors
+  description: The number of processors.
+  type: string
+- contextPath: Endpoint.Memory
+  description: Memory on this endpoint.
+  type: string
+- contextPath: Endpoint.Model
+  description: The model of the machine or device.
+  type: string
+- contextPath: Endpoint.BIOSVersion
+  description: The endpoint's BIOS version.
+  type: string
+- contextPath: Endpoint.OSVersion
+  description: The endpoint's operation system version.
+  type: string
+- contextPath: Endpoint.DHCPServer
+  description: The DHCP server of the endpoint.
+  type: string
+- contextPath: Endpoint.Groups
+  description: Groups for which the computer is listed as a member.
+  type: string
+- contextPath: ExtraHop.Device.Macaddr
+  description: The MAC Address of the device.
+  type: String
+- contextPath: ExtraHop.Device.DeviceClass
+  description: The class of the device.
+  type: String
+- contextPath: ExtraHop.Device.UserModTime
+  description: The time of the most recent update, expressed in milliseconds since the epoch.
+  type: Number
+- contextPath: ExtraHop.Device.AutoRole
+  description: The role automatically detected by the ExtraHop.
+  type: String
+- contextPath: ExtraHop.Device.ParentId
+  description: The ID of the parent device.
+  type: Number
+- contextPath: ExtraHop.Device.Vendor
+  description: The device vendor.
+  type: String
+- contextPath: ExtraHop.Device.Analysis
+  description: The level of analysis preformed on the device.
+  type: string
+- contextPath: ExtraHop.Device.DiscoveryId
+  description: The UUID given by the Discover appliance.
+  type: String
+- contextPath: ExtraHop.Device.DefaultName
+  description: The default name of the device.
+  type: String
+- contextPath: ExtraHop.Device.DisplayName
+  description: The display name of device.
+  type: String
+- contextPath: ExtraHop.Device.OnWatchlist
+  description: Whether the device is on the advanced analysis allow list.
+  type: Boolean
+- contextPath: ExtraHop.Device.ModTime
+  description: The time of the most recent update, expressed in milliseconds since the epoch.
+  type: Number
+- contextPath: ExtraHop.Device.IsL3
+  description: Indicates whether the device is a Layer 3 device.
+  type: Boolean
+- contextPath: ExtraHop.Device.Role
+  description: The role of the device.
+  type: String
+- contextPath: ExtraHop.Device.DiscoverTime
+  description: The time that the device was discovered.
+  type: Number
+- contextPath: ExtraHop.Device.Id
+  description: The ID of the device.
+  type: Number
+- contextPath: ExtraHop.Device.Ipaddr4
+  description: The IPv4 address of the device.
+  type: String
+- contextPath: ExtraHop.Device.Vlanid
+  description: The ID of VLan.
+  type: Number
+- contextPath: ExtraHop.Device.Ipaddr6
+  description: The IPv6 address of the device.
+  type: string
+- contextPath: ExtraHop.Device.NodeId
+  description: The Node ID of the Discover appliance.
+  type: number
+- contextPath: ExtraHop.Device.Description
+  description: A user customizable description of the device.
+  type: string
+- contextPath: ExtraHop.Device.DnsName
+  description: The DNS name associated with the device.
+  type: string
+- contextPath: ExtraHop.Device.DhcpName
+  description: The DHCP name associated with the device.
+  type: string
+- contextPath: ExtraHop.Device.CdpName
+  description: The Cisco Discovery Protocol name associated with the device.
+  type: string
+- contextPath: ExtraHop.Device.NetbiosName
+  description: The NetBIOS name associated with the device.
+  type: string
+- contextPath: ExtraHop.Device.Url
+  description: Link to the device details page in ExtraHop.
+  type: string
+- contextPath: McAfee.ePO.Endpoint
+  description: The endpoint that was enriched.
+  type: string
+- contextPath: ActiveDirectory.ComputersPageCookie
+  description: An opaque string received in a paged search, used for requesting subsequent entries.
+  type: string
+- contextPath: ActiveDirectory.Computers
+  description: The information about the hostname that was enriched using Active Directory.
+  type: string
+- contextPath: ActiveDirectory.Computers.dn
+  description: The computer distinguished name.
+  type: string
+- contextPath: ActiveDirectory.Computers.memberOf
+  description: Groups for which the computer is listed.
+  type: string
+- contextPath: ActiveDirectory.Computers.name
+  description: The computer name.
+  type: string
+- contextPath: CrowdStrike.Device
+  description: The information about  the endpoint.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.systemvolume_total_size
+  description: The size, in bytes, of the system volume of the endpoint on which the sensor is installed. installed.
+  type: number
+- contextPath: CarbonBlackEDR.Sensor.emet_telemetry_path
+  description: The path of the EMET telemetry associated with the sensor.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.os_environment_display_string
+  description: Human-readable string of the installed OS.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.emet_version
+  description: The EMET version associated with the sensor.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.emet_dump_flags
+  description: The flags of the EMET dump associated with the sensor.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.clock_delta
+  description: The clock delta associated with the sensor.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.supports_cblr
+  description: Whether the sensor supports Carbon Black Live Response (CbLR).
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.sensor_uptime
+  description: The uptime of the process.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.last_update
+  description: When the sensor was last updated.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.physical_memory_size
+  description: The size in bytes of physical memory.
+  type: number
+- contextPath: CarbonBlackEDR.Sensor.build_id
+  description: The sensor version installed on this endpoint. From the /api/builds/ endpoint.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.uptime
+  description: Endpoint uptime in seconds.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.is_isolating
+  description: Boolean representing sensor-reported isolation status.
+  type: boolean
+- contextPath: CarbonBlackEDR.Sensor.event_log_flush_time
+  description: |-
+    If event_log_flush_time is set, the server will instruct the sensor to immediately
+    send all data before this date, ignoring all other throttling mechanisms.
+    To force a host current, set this value to a value far in the future.
+    When the sensor has finished sending its queued data, this value will be null.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.computer_dns_name
+  description: The DNS name of the endpoint on which the sensor is installed.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.emet_report_setting
+  description: The report setting of the EMET associated with the sensor.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.id
+  description: The ID of this sensor.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.emet_process_count
+  description: The number of EMET processes associated with the sensor.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.emet_is_gpo
+  description: Whether the EMET is a GPO.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.power_state
+  description: The sensor power state.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.network_isolation_enabled
+  description: Boolean representing the network isolation request status.
+  type: boolean
+- contextPath: CarbonBlackEDR.Sensor.systemvolume_free_size
+  description: The amount of free bytes on the system volume.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.status
+  description: The sensor status.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.num_eventlog_bytes
+  description: The number of event log bytes.
+  type: number
+- contextPath: CarbonBlackEDR.Sensor.sensor_health_message
+  description: Human-readable string indicating the sensor’s self-reported status.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.build_version_string
+  description: Human-readable string of the sensor version.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.computer_sid
+  description: Machine SID of this host.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.next_checkin_time
+  description: Next expected communication from this computer in server-local time and zone.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.node_id
+  description: The node ID associated with the sensor.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.cookie
+  description: The cookie associated with the sensor.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.emet_exploit_action
+  description: The EMET exploit action associated with the sensor.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.computer_name
+  description: NetBIOS name of this computer.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.license_expiration
+  description: When the license of the sensor expires.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.supports_isolation
+  description: Whether the sensor supports isolation.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.parity_host_id
+  description: The ID of the parity host associated with the sensor.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.supports_2nd_gen_modloads
+  description: Whether the sensor support modload of 2nd generation.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.network_adapters
+  description: A pipe-delimited list of IP,MAC pairs for each network interface.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.sensor_health_status
+  description: Self-reported health score, from 0 to 100. Higher numbers indicate a better health status.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.registration_time
+  description: Time this sensor was originally registered in server-local time and zone.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.restart_queued
+  description: Whether a restart of the sensor is queued.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.notes
+  description: The notes associated with the sensor.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.num_storefiles_bytes
+  description: Number of storefiles bytes associated with the sensor.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.os_environment_id
+  description: The ID of the OS environment of the sensor.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.shard_id
+  description: The ID of the shard associated with the sensor.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.boot_id
+  description: A sequential counter of boots since the sensor was installed.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.last_checkin_time
+  description: Last communication with this computer in server-local time and zone.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.os_type
+  description: The operating system type of the computer.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.group_id
+  description: The sensor group ID this sensor is assigned to.
+  type: string
+- contextPath: CarbonBlackEDR.Sensor.uninstall
+  description: When set, indicates that the sensor will be directed to uninstall on next check-in.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_id
+  description: The endpoint ID.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_name
+  description: The endpoint name.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_type
+  description: The endpoint type.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_status
+  description: The status of the endpoint.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.os_type
+  description: The endpoint OS type.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.ip
+  description: A list of IP addresses.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.users
+  description: A list of users.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.domain
+  description: The endpoint domain.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.alias
+  description: The endpoint's aliases.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.first_seen
+  description: First seen date/time in Epoch (milliseconds).
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.last_seen
+  description: Last seen date/time in Epoch (milliseconds).
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.content_version
+  description: Content version.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.installation_package
+  description: Installation package.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.active_directory
+  description: Active directory.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.install_date
+  description: Install date in Epoch (milliseconds).
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_version
+  description: Endpoint version.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.is_isolated
+  description: Whether the endpoint is isolated.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.group_name
+  description: The name of the group to which the endpoint belongs.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.count
+  description: Number of endpoints returned.
+  type: number
+- contextPath: Account.Domain
+  description: The domain of the account.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyHost.type
+  description: Form of identification element.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyHost.id
+  description: Identification value of the type field.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyHost.score
+  description: The score assigned to the host.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyHost.reasons
+  description: The endpoint risk objects.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.date created
+  description: Date when the incident was created.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.description
+  description: Description of the incident.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.severity
+  description: The severity of the incident.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.status
+  description: The incident status.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.points
+  description: The score.
+  type: string
+- contextPath: Core.Endpoint.endpoint_id
+  description: The endpoint ID.
+  type: string
+- contextPath: Core.Endpoint.endpoint_name
+  description: The endpoint name.
+  type: string
+- contextPath: Core.Endpoint.endpoint_type
+  description: The endpoint type.
+  type: string
+- contextPath: Core.Endpoint.endpoint_status
+  description: The status of the endpoint.
+  type: string
+- contextPath: Core.Endpoint.os_type
+  description: The endpoint OS type.
+  type: string
+- contextPath: Core.Endpoint.ip
+  description: A list of IP addresses.
+  type: string
+- contextPath: Core.Endpoint.users
+  description: A list of users.
+  type: string
+- contextPath: Core.Endpoint.domain
+  description: The endpoint domain.
+  type: string
+- contextPath: Core.Endpoint.alias
+  description: The endpoint's aliases.
+  type: string
+- contextPath: Core.Endpoint.first_seen
+  description: First seen date/time in Epoch (milliseconds).
+  type: string
+- contextPath: Core.Endpoint.last_seen
+  description: Last seen date/time in Epoch (milliseconds).
+  type: string
+- contextPath: Core.Endpoint.content_version
+  description: Content version.
+  type: string
+- contextPath: Core.Endpoint.installation_package
+  description: Installation package.
+  type: string
+- contextPath: Core.Endpoint.active_directory
+  description: Active directory.
+  type: string
+- contextPath: Core.Endpoint.install_date
+  description: Install date in Epoch (milliseconds).
+  type: string
+- contextPath: Core.Endpoint.endpoint_version
+  description: Endpoint version.
+  type: string
+- contextPath: Core.Endpoint.is_isolated
+  description: Whether the endpoint is isolated.
+  type: string
+- contextPath: Core.Endpoint.group_name
+  description: The name of the group to which the endpoint belongs.
+  type: string
+- contextPath: Core.RiskyHost.type
+  description: Form of identification element.
+  type: string
+- contextPath: Core.RiskyHost.id
+  description: Identification value of the type field.
+  type: string
+- contextPath: Core.RiskyHost.score
+  description: The score assigned to the host.
+  type: string
+- contextPath: Core.RiskyHost.reasons.date created
+  description: Date when the incident was created.
+  type: date
+- contextPath: Core.RiskyHost.reasons.description
+  description: Description of the incident.
+  type: string
+- contextPath: Core.RiskyHost.reasons.severity
+  description: The severity of the incident.
+  type: string
+- contextPath: Core.RiskyHost.reasons.status
+  description: The incident status.
+  type: string
+- contextPath: Core.RiskyHost.reasons.points
+  description: The score.
+  type: string
+- contextPath: Domain.Malicious.Vendor
+  description: For malicious domains, the vendor that made the decision.
+  type: string
+- contextPath: Domain.Name
+  description: Bad domain found.
+  type: string
 tests:
 - no test - each enrichment sub-playbook has or will have its own test
 marketplaces:
