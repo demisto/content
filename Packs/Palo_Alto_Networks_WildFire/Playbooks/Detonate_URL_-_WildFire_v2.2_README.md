@@ -1,8 +1,6 @@
-Detonate a webpage or remote file using the WildFire integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
+Detonate a webpage or remote file using the WildFire v2 integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
 The detonation supports the following file types:
 APK, JAR, DOC, DOCX, RTF, OOXLS, XLSX, PPT, PPTX, XML, PE32, PDF, DMG, PKG, RAR, 7Z, JS.
-
-This playbook is deprecated. please use the Detonate URL - WildFire v2.2 instead.
 
 ## Dependencies
 
@@ -10,11 +8,12 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-GenericPolling
+This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-Palo_Alto_Networks_WildFire_v2
+* Palo_Alto_Networks_WildFire_v2
+* WildFire-v2
 
 ### Scripts
 
@@ -22,7 +21,6 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* wildfire-upload-file-url
 * wildfire-report
 * wildfire-upload-url
 
@@ -32,9 +30,9 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| URL | URL of the webpage or file URL to detonate. The URL is taken from the context. | URL.Data | Optional |
+| URL | URL of the webpage or file url to detonate. The URL is taken from the context. | URL.Data | Optional |
 | Interval | Duration for executing the polling \(in minutes\). | 1 | Optional |
-| Timeout | The duration after which to stop polling and to resume the playbook \(in minutes\). | 60 | Optional |
+| Timeout | The duration after which to stop polling and to resume the playbook \(in minutes\). | 8 | Optional |
 | ReportFileType | The resource type to download. Default is PDF. XML is also possible. |  | Optional |
 
 ## Playbook Outputs
@@ -48,17 +46,17 @@ This playbook does not use any scripts.
 | File.Size | File size. | number |
 | File.MD5 | MD5 hash. | string |
 | File.SHA1 | SHA1 hash. | string |
-| File.Type | File type, e.g., "PE". | string |
+| File.Type | File type e.g. "PE". | string |
 | File.SHA256 | SHA256 hash. | string |
-| File.EntryID | The entry ID of the sample. | string |
+| File.EntryID | The Entry ID of the sample. | string |
 | File.Malicious.Vendor | For malicious files, the vendor that determined that the file is malicious. | string |
-| File.Name | File.name. | string |
+| File.Name | Filename. | string |
 | File.Malicious.Description | For malicious files, the reason the vendor determined that the file is malicious. | string |
 | DBotScore.Indicator | The indicator we tested. | string |
 | DBotScore.Type | The type of indicator. | string |
 | DBotScore.Vendor | Vendor used to calculate the score. | string |
 | IP.Address | IPs relevant to the sample. | string |
-| File | The file object. | unknown |
+| File | The File object. | unknown |
 | InfoFile | The report file object. | unknown |
 | InfoFile.EntryID | The EntryID of the report file. | string |
 | InfoFile.Extension | The extension of the report file. | string |
@@ -81,7 +79,11 @@ This playbook does not use any scripts.
 | WildFire.Report.detection_reasons.verdict | Verdict of the detection. | string |
 | WildFire.Report.detection_reasons.artifacts | Artifacts for the detection reasons. | string |
 | WildFire.Report.iocs | Associated IOCs. | string |
+| WildFire.Report.ExtractedURL.URL | The extracted URL. | string |
+| WildFire.Report.ExtractedURL.Verdict | The extracted verdict. | number |
 
 ## Playbook Image
+
 ---
-![Detonate_URL_WildFire-v2](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_URL_WildFire-v2.png)
+
+![Detonate URL - WildFire v2.2](../doc_files/Detonate_URL_-_WildFire_v2.2.png)
