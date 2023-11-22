@@ -1,5 +1,4 @@
 Tessian is an email security platform that allows organizations to protect their users from inbound phishing threats, outbound data loss (both malicious and accidental) and account takeovers.
-This integration was integrated and tested with version xx of Tessian.
 
 ## Configure Tessian on Cortex XSOAR
 
