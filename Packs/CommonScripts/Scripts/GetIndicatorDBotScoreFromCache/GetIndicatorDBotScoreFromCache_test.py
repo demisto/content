@@ -138,3 +138,19 @@ def test_multiple_iocs_with_same_value_but_different_casing(mocker):
 
     indicators_results = return_results_calls[0][0][0]["Contents"]
     assert {i["Indicator"] for i in indicators_results} == expected_found
+
+
+def test_query_values(mocker):
+    """
+    Given:
+        An array of indicator value (Test~.com).
+    When:
+        Running GetIndicatorDBotScoreFromCache script.
+    Then:
+        Ensure all values in the query to demisto.searchIndicators has \".
+    """
+    mocker.patch.object(demisto, "args", return_value={"value": "Test~.com, Test2~.com"})
+    mocker.patch.object(demisto, "searchIndicators")
+    GetIndicatorDBotScoreFromCache.main()
+    demisto.searchIndicators.assert_called_with(query='value:("test~.com" "test2~.com")',
+                                                populateFields='name,score,aggregatedReliability,type,expirationStatus')
