@@ -1248,12 +1248,12 @@ def varonis_threat_models_command(client: Client, args: Dict[str, Any]) -> Comma
     outputs = dict()
     outputs['threat_models'] = filtered_items
 
-    readable_output = tableToMarkdown('Varonis Alerts', mapped_items, headers=['ID', 'Name', 'Category', 'Severity', 'Source'])
+    readable_output = tableToMarkdown('Varonis Threat Models', filtered_items, headers=['ID', 'Name', 'Category', 'Severity', 'Source'])
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Varonis',
-        outputs_key_field='Varonis.Alert.ID',
+        outputs_key_field='Varonis.ThreatModel.ID',
         outputs=outputs
     )
 
@@ -1602,8 +1602,8 @@ def main() -> None:
     args = demisto.args()
 
     if not is_xsoar_env():
-        url = 'https://intb3b67.varonis-preprod.com'
-        apiKey = 'vkey1_511d3e6d197a4ea4ae8cb282921bece3_dXZu1JKQxZFVWRJbHQMFIF8QZe5Dod/fSmDbPrh6kEE='
+        url = 'https://int308a6.varonis-preprod.com/'
+        apiKey = 'vkey1_2069ee4590da45429fa8cacbc6f15669_JAHzjsqVfrvYgRiwe+X2hQse017oyfPSTEzyyJc5A2c='
         command = 'varonis-threat-models'  # 'test-module'|
         # 'varonis-threat-models'|
         # 'varonis-get-alerts'|
@@ -1628,10 +1628,10 @@ def main() -> None:
 
         if command == 'varonis-threat-models':
             args['id'] = "1,2,3"  # List of requested threat model ids
-            args['name'] = None  # "Abnormal service behavior: access to atypical folders,Abnormal service behavior: access to atypical files"  # List of requested threat model names
-            args['category'] = None  # "Exfiltration,Reconnaissance"  # List of requested threat model categories
-            args['severity'] = None  # "3 - Error,4 - Warning"  # List of requested threat model severities
-            args['source'] = None  # "Predefined"  # List of requested threat model sources
+            args['name'] = ""  # "Abnormal service behavior: access to atypical folders,Abnormal service behavior: access to atypical files"  # List of requested threat model names
+            args['category'] = ""  # "Exfiltration,Reconnaissance"  # List of requested threat model categories
+            args['severity'] = ""  # "3 - Error,4 - Warning"  # List of requested threat model severities
+            args['source'] = ""  # "Predefined"  # List of requested threat model sources
             
         elif command == 'varonis-get-alerts':
             args['threat_model_name'] = None  # List of requested threat models
