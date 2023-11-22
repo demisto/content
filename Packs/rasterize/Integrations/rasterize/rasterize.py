@@ -116,13 +116,13 @@ class PychromeEventHandler:
                 # must activate current tab
                 self.browser.activate_tab(self.tab.id)
 
-                try:
-                    # data = self.tab.Page.captureScreenshot()
-                    # with open("%s.png" % time.time(), "wb") as fd:
-                    #     fd.write(base64.b64decode(data['data']))
-                    self.tab_ready.set()
-                finally:
-                    self.tab.stop()
+                # try:
+                # data = self.tab.Page.captureScreenshot()
+                # with open("%s.png" % time.time(), "wb") as fd:
+                #     fd.write(base64.b64decode(data['data']))
+                self.tab_ready.set()
+                # finally:
+                #     self.tab.stop()
 
 
 def pychrome_reap_children():
