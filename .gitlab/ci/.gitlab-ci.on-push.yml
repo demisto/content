@@ -799,10 +799,8 @@ test-upload-flow:
     reports:
       junit:
         - "${ARTIFACTS_FOLDER}/test_playbooks_report.xml"
-        - "${ARTIFACTS_FOLDER}/e2e_tests_result.xml"
     paths:
       - "${ARTIFACTS_FOLDER}/test_playbooks_report.xml"
-      - "${ARTIFACTS_FOLDER}/e2e_tests_result.xml"
       - ${CI_PROJECT_DIR}/artifacts/*  # restoring the default artifacts path from the job default settings
       - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*  # restoring the default artifacts path from the job default settings
 
@@ -812,6 +810,7 @@ test-upload-flow:
   rules:
     - !reference [ .filter-non-nightly-docker-updates-rule, rules ]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+      when: always
     - if: '$NIGHTLY'
       when: always
   extends:
