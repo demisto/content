@@ -75,7 +75,6 @@ from pytmv1.model.enums import Iam
 import demistomock as demisto
 import json
 import TrendMicroVisionOneV3
-from typing import Optional, TypeVar
 
 # import unittest
 from unittest.mock import Mock
@@ -84,14 +83,6 @@ from unittest.mock import Mock
 api_key = "test api key"
 proxy = True
 verify = True
-
-_T = TypeVar("_T")
-
-
-def unwrap(val: Optional[_T]) -> _T:
-    if val is None:
-        raise ValueError("Expected non-null value but received None.")
-    return val
 
 
 # Mock response for enabling or disabling user account

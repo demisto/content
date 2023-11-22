@@ -8,7 +8,7 @@ from CommonServerUserPython import *  # noqa: F401
 import json
 import urllib3
 from datetime import datetime, timezone, timedelta
-from typing import Any, Type, TypeVar, Union
+from typing import Any, TypeVar
 import pytmv1
 from pytmv1 import (
     AccountTask,
@@ -467,10 +467,10 @@ def get_workbench_histories(v1_client: pytmv1.Client, start, end) -> list:
     formatted_start = str(start[: (start.index("."))]) + str(start[-1])
     formatted_end = str(end[: (start.index("."))]) + str(end[-1])
 
-    new_alerts: list[Union[SaeAlert, TiAlert]] = []
+    new_alerts: list[SaeAlert | TiAlert] = []
 
     # filter incidents per user preference
-    def _filter_alerts(alert: Union[SaeAlert, TiAlert]) -> None:
+    def _filter_alerts(alert: SaeAlert | TiAlert) -> None:
         # If incidents of all severities need to be fetched
         if demisto.params().get(INCIDENT_SEVERITY) == ANY:
             new_alerts.append(alert)
@@ -527,13 +527,13 @@ def _is_pytmv1_error(result_code: ResultCode) -> bool:
 
 # Validates object types like ip, url, domain, etc.
 def _get_ot_enum(obj_type: str) -> ObjectType:
-    if not obj_type.upper() in ObjectType.__members__:
+    if obj_type.upper() not in ObjectType.__members__:
         raise RuntimeError(f"Please check object type: {obj_type}")
     return ObjectType[obj_type.upper()]
 
 
 # Use response action type and return task class associated
-def _get_task_type(action: str) -> Type[BaseTaskResp]:
+def _get_task_type(action: str) -> type[BaseTaskResp]:
     task_dict: dict[Any, list[str]] = {
         AccountTaskResp: [
             "enableAccount",
@@ -550,7 +550,7 @@ def _get_task_type(action: str) -> Type[BaseTaskResp]:
     for task, task_values in task_dict.items():
         if action in task_values:
             return task
-    raise ValueError()
+    raise ValueError
 
 
 def run_polling_command(
@@ -1228,7 +1228,7 @@ def quarantine_or_delete_email_message(
     # Required Params
     email_identifiers = json.loads(args[EMAIL_IDENTIFIERS])
     message: list[dict[str, Any]] = []
-    email_tasks: list[Union[EmailMessageIdTask, EmailMessageUIdTask]] = []
+    email_tasks: list[EmailMessageIdTask | EmailMessageUIdTask] = []
 
     if command == QUARANTINE_EMAIL_COMMAND:
         # Create email task list
@@ -1323,7 +1323,7 @@ def restore_email_message(
     # Required Params
     email_identifiers = json.loads(args[EMAIL_IDENTIFIERS])
     message: list[dict[str, Any]] = []
-    email_tasks: list[Union[EmailMessageIdTask, EmailMessageUIdTask]] = []
+    email_tasks: list[EmailMessageIdTask | EmailMessageUIdTask] = []
 
     # Create email task list
     for email in email_identifiers:
