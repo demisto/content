@@ -5,6 +5,8 @@ APK, JAR, DOC, DOCX, RTF, XLS, XLSX, PPT, PPTX, OOXML, PE32, PE, PDF, DMG, PKG, 
 
 Note: Base64 encoded files are currently not supported
 
+This playbook is deprecated. please use the WildFire - Detonate file v2 instead.
+
 ## Dependencies
 
 This playbook uses the following sub-playbooks, integrations, and scripts.
