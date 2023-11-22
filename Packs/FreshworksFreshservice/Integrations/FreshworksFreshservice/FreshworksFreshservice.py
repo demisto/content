@@ -2534,7 +2534,7 @@ def get_request_arguments_per_ticket_type(
             source=ticket_properties.source,
             responder_id=arg_to_number(args.get('responder_id')),
             requester_id=arg_to_number(args.get('requester_id')),
-            problem=get_arg_template(args.get('problem'), 'problem'),   # noqa
+            problem=get_arg_template(args.get('problem'), 'problem'),   # type: ignore[arg-type]
             phone=args.get('phone'),
             name=args.get('name'),
             impact=ticket_properties.impact,
@@ -2545,9 +2545,10 @@ def get_request_arguments_per_ticket_type(
             due_by=args.get('due_by'),
             department_id=arg_to_number(args.get('department_id')),
             custom_fields=update_custom_fields(args),
-            change_initiating_ticket=get_arg_template(args.get('change_initiating_ticket'), 'change_initiating_ticket'), # noqa
+            change_initiating_ticket=get_arg_template(args.get('change_initiating_ticket'),
+                                                      'change_initiating_ticket'),  # type: ignore[arg-type]
             change_initiated_by_ticket=get_arg_template(args.get('change_initiated_by_ticket'),
-                                                        'change_initiated_by_ticket'),  # noq
+                                                        'change_initiated_by_ticket'),  # type: ignore[arg-type]
             cc_emails=argToList(args.get('cc_emails')),
             category=args.get('category'),
             attachments=get_files_to_attach(args),
