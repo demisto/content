@@ -794,7 +794,7 @@ test-upload-flow:
     - .default-job-settings
   script:
     - ./Tests/scripts/test_playbooks_results.sh
-    - ./Tests/scripts/test_end_to_end_results.sh
+    - ./Tests/scripts/test_e2e_results.sh
     - job-done
   artifacts:
     when: always

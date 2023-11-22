@@ -36,9 +36,9 @@ else
 fi
 
 if [[ "${SERVER_TYPE}" == "XSIAM" ]]; then
-  test_path="./Tests/tests_end_to_end/content/xsiam"
+  test_path="./Tests/tests_e2e/content/xsiam"
 elif [[ "${SERVER_TYPE}" == "XSOAR SAAS" ]]; then
-  test_path="./Tests/tests_end_to_end/content/xsoar_saas"
+  test_path="./Tests/tests_e2e/content/xsoar_saas"
 fi
 
 if [[ -n "$test_path" ]]; then
@@ -52,7 +52,7 @@ if [[ -n "$test_path" ]]; then
       echo "Running end-to-end tests on ${CLOUD_CHOSEN_MACHINE_ID} from ${test_path}"
       python3 -m pytest "${test_path}" -v --cloud_machine "${CLOUD_CHOSEN_MACHINE_ID}" --cloud_servers_path "${CLOUD_SERVERS_PATH}" --cloud_servers_api_keys "cloud_api_keys.json" --integration_secrets_path "${SECRET_CONF_PATH}" --disable-warnings --junitxml="${ARTIFACTS_FOLDER_INSTANCE}/e2e_tests_result.xml"
       # since xsiam e2e is in upload and not in nightly, we want to fail the job if its tests failed
-      if [[ "${test_path}" == "./Tests/tests_end_to_end/content/xsiam" ]] && [[ $? -ne 0 ]]; then
+      if [[ "${test_path}" == "./Tests/tests_e2e/content/xsiam" ]] && [[ $? -ne 0 ]]; then
         exit_code=1
       fi
     done

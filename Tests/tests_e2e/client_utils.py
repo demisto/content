@@ -1,6 +1,5 @@
 from contextlib import contextmanager
 
-import pytest
 from demisto_client.demisto_api import IncidentWrapper
 from demisto_client.demisto_api.models.feed_indicator import FeedIndicator
 from demisto_sdk.commands.common.clients import XsoarClient

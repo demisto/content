@@ -9,7 +9,7 @@ from demisto_sdk.commands.common.clients import XsoarSaasClient
 from Tests.tools import get_integration_params
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
-from Tests.tests_end_to_end.client_utils import (
+from Tests.tests_e2e.client_utils import (
     get_integration_instance_name,
     get_fetched_incident,
     save_integration_instance,
@@ -165,7 +165,7 @@ def test_slack_ask(request: SubRequest, xsoar_saas_client: XsoarSaasClient):
         playbook_id_name = "TestSlackAskE2E"
         with save_playbook(
             xsoar_saas_client,
-            playbook_path="Tests/tests_end_to_end/content/xsoar_saas/TestSlackAskE2E.yml",
+            playbook_path="Tests/tests_e2e/content/xsoar_saas/TestSlackAskE2E.yml",
             playbook_id=playbook_id_name,
             playbook_name=playbook_id_name
         ), save_incident(xsoar_saas_client, playbook_id=playbook_id_name) as incident_response:

@@ -7,7 +7,7 @@ import urllib3
 from junitparser import JUnitXml, TestSuite
 from tabulate import tabulate
 
-from Tests.scripts.common import calculate_results_table, END_TO_END_REPORT_FILE_NAME, get_test_results_files, \
+from Tests.scripts.common import calculate_results_table, E2E_RESULT_FILE_NAME, get_test_results_files, \
     TEST_SUITE_CELL_EXPLANATION
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
@@ -38,10 +38,10 @@ def calculate_e2e_tests_results(e2e_tests_results_files: dict[str, Path]):
 
 
 def print_test_e2e_test_summary(artifacts_path: Path) -> bool:
-    e2e_tests_report = artifacts_path / END_TO_END_REPORT_FILE_NAME
+    e2e_tests_report = artifacts_path / E2E_RESULT_FILE_NAME
 
     # iterate over the artifacts path and find all the test playbook result files
-    if not (e2e_tests_result_files_list := get_test_results_files(artifacts_path, END_TO_END_REPORT_FILE_NAME)):
+    if not (e2e_tests_result_files_list := get_test_results_files(artifacts_path, E2E_RESULT_FILE_NAME)):
         # Write an empty report file to avoid failing the build artifacts collection.
         JUnitXml().write(e2e_tests_report.as_posix(), pretty=True)
         logging.error(f"Could not find any e2e test result files in {artifacts_path}")

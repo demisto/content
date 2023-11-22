@@ -1373,7 +1373,7 @@ class E2ETestCollector(TestCollector, ABC):
         in the future when there will be a nightly for xsoar-saas, we will install all nightly packs including e2e tests
         so this logic will be removed
         """
-        pass
+        raise NotImplementedError
 
     def _collect(self) -> CollectionResult | None:
         return CollectionResult.union(

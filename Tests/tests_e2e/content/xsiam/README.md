@@ -16,5 +16,5 @@ In order to run the test locally it is required to set up the environment variab
 export DEMISTO_BASE_URL=<XSIAM_API_URL>
 export DEMISTO_API_KEY=<XSIAM_API_KEY>
 export XSIAM_AUTH_ID=<XSIAM_API_KEY_ID>
-python -m pytest Tests/tests_end_to_end/content/xsiam -v --disable-warnings
+python -m pytest Tests/tests_e2e/content/xsiam -v --disable-warnings
 ```
