@@ -13,7 +13,7 @@ from tabulate import tabulate
 from Tests.scripts.common import get_properties_for_test_suite
 from Tests.scripts.jira_issues import generate_ticket_summary, generate_query_with_summary, \
     find_existing_jira_ticket, JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, JIRA_LABELS, JIRA_ADDITIONAL_FIELDS, \
-    generate_build_markdown_link, convert_jira_time_to_datetime, jira_ticket_to_json_data, jira_file_link
+    generate_build_markdown_link, convert_jira_time_to_datetime, jira_ticket_to_json_data, jira_file_link, jira_sanitize_file_name
 from Tests.scripts.utils import logging_wrapper as logging
 
 TEST_MODELING_RULES_BASE_HEADERS = ["Test Modeling Rule"]
@@ -34,9 +34,10 @@ def create_jira_issue_for_test_modeling_rule(jira_server: JIRA,
     properties = get_properties_for_test_suite(test_suite)
     ci_pipeline_id = properties.get("ci_pipeline_id", "")
     ci_pipeline_id_dash = f"-{ci_pipeline_id}" if ci_pipeline_id else ""
-    junit_file_name = (f"unit-test{ci_pipeline_id_dash}-{properties['start_time']}-{properties['pack_id']}-"
-                       f"{properties['file_name']}.xml")
-    description = generate_description_for_test_modeling_rule(ci_pipeline_id, properties, test_suite, junit_file_name)
+
+    junit_file_name = jira_sanitize_file_name(f"unit-test{ci_pipeline_id_dash}-{properties['pack_id']}-{properties['file_name']}")
+    junit_file_name_with_suffix = f"{junit_file_name}.xml"
+    description = generate_description_for_test_modeling_rule(ci_pipeline_id, properties, test_suite, junit_file_name_with_suffix)
     summary = generate_ticket_summary(get_summary_for_test_modeling_rule(properties))  # type: ignore[arg-type]
     jql_query = generate_query_with_summary(summary)
     search_issues: ResultList[Issue] = jira_server.search_issues(jql_query, maxResults=1)  # type: ignore[assignment]

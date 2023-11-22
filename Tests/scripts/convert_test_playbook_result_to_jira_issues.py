@@ -1,6 +1,5 @@
 import argparse
 import os
-import re
 import sys
 import traceback
 from datetime import datetime, timezone
@@ -20,7 +19,7 @@ from Tests.scripts.jira_issues import JIRA_SERVER_URL, JIRA_VERIFY_SSL, JIRA_API
     JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME, JIRA_LABELS, \
     find_existing_jira_ticket, JIRA_ADDITIONAL_FIELDS, generate_ticket_summary, generate_build_markdown_link, \
     jira_server_information, jira_search_all_by_query, generate_query_by_component_and_issue_type, jira_ticket_to_json_data, \
-    jira_file_link
+    jira_file_link, jira_sanitize_file_name
 from Tests.scripts.test_playbooks_report import calculate_test_playbooks_results, \
     TEST_PLAYBOOKS_BASE_HEADERS, get_jira_tickets_for_playbooks, TEST_PLAYBOOKS_JIRA_BASE_HEADERS, \
     write_test_playbook_to_jira_mapping, TEST_PLAYBOOKS_TO_JIRA_TICKETS_CONVERTED
@@ -105,9 +104,8 @@ def create_jira_issue(jira_server: JIRA,
 
 def get_attachment_file_name(playbook_id: str, build_number: str) -> str:
     build_number_dash = f"-{build_number}" if build_number else ""
-    playbook_id_sanitized = re.sub('[^a-zA-Z0-9-]', '_', playbook_id).lower()
-    junit_file_name = f"test-playbook{build_number_dash}-{playbook_id_sanitized}.xml"
-    return junit_file_name
+    junit_file_name = jira_sanitize_file_name(f"test-playbook{build_number_dash}-{playbook_id}")
+    return f"{junit_file_name}.xml"
 
 
 def main():
