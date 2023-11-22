@@ -254,6 +254,12 @@ script:
       name: status
       required: true
       secret: false
+    - default: false
+      description: Note
+      isArray: false
+      name: note
+      required: false
+      secret: false
     deprecated: false
     description: Update alert status
     execution: false
@@ -278,6 +284,12 @@ script:
       isArray: false
       name: close_reason
       required: true
+      secret: false
+    - default: false
+      description: Note
+      isArray: false
+      name: note
+      required: false
       secret: false
     deprecated: false
     description: Close the alert

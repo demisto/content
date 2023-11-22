@@ -914,6 +914,22 @@ class Client(BaseClient):
             json_data=query,
             headers=self.headers)
 
+    def varonis_add_note_to_alerts(self, query: Dict[str, Any]) -> bool:
+        """Update alert status
+
+        :type query: ``Dict[str, Any]``
+        :param query: "add notes" request body
+
+        :return: Result of execution
+        :rtype: ``bool``
+
+        """
+        return self._http_request(
+            'POST',
+            '/api/alert/alert/AddNoteToAlerts',
+            json_data=query,
+            headers=self.headers)
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -1048,7 +1064,7 @@ def get_rule_ids(client: Client, values: List[str]) -> List[int]:
     return ruleIds
 
 
-def varonis_update_alert(client: Client, close_reason_id: int, status_id: int, alert_ids: list) -> bool:
+def varonis_update_alert(client: Client, close_reason_id: int, status_id: int, alert_ids: list, note: str) -> bool:
     """Update Varonis alert. It creates request and pass it to http client
 
     :type client: ``Client``
@@ -1063,6 +1079,9 @@ def varonis_update_alert(client: Client, close_reason_id: int, status_id: int, a
     :type alert_ids: ``list``
     :param alert_ids: list of alert id(s)
 
+    :type note: ``str``
+    :param note: alert note
+
     :return: Result of execution
     :rtype: ``bool``
 
@@ -1070,13 +1089,21 @@ def varonis_update_alert(client: Client, close_reason_id: int, status_id: int, a
     if len(alert_ids) == 0:
         raise ValueError('alert id(s) not specified')
 
-    query: Dict[str, Any] = {
+    update_status_query: Dict[str, Any] = {
         'AlertGuids': alert_ids,
         'CloseReasonId': close_reason_id,
         'StatusId': status_id
     }
+    update_status_result = client.varonis_update_alert_status(update_status_query)
 
-    return client.varonis_update_alert_status(query)
+    if note:
+        add_note_query: Dict[str, Any] = {
+            'AlertGuids': alert_ids,
+            'Note': note
+        }
+        client.varonis_add_note_to_alerts(add_note_query)
+        print('note added')
+    return update_status_result
 
 
 def convert_incident_alert_to_onprem_format(alert_saas_format):
@@ -1543,6 +1570,7 @@ def varonis_update_alert_status_command(client: Client, args: Dict[str, Any]) ->
         all command arguments, usually passed from ``demisto.args()``.
         ``args['status']`` Alert's new status
         ``args['alert_id']`` Array of alert ids to be updated
+        ``args['note']`` Note for alert
 
     :return: Result of execution
     :rtype: ``bool``
@@ -1554,8 +1582,9 @@ def varonis_update_alert_status_command(client: Client, args: Dict[str, Any]) ->
         raise ValueError(f'status must be one of {statuses}.')
 
     status_id = ALERT_STATUSES[status.lower()]
+    note = args.get('note', None)
 
-    return varonis_update_alert(client, CLOSE_REASONS['none'], status_id, argToList(args.get('alert_id')))
+    return varonis_update_alert(client, CLOSE_REASONS['none'], status_id, argToList(args.get('alert_id')), note)
 
 
 def varonis_close_alert_command(client: Client, args: Dict[str, Any]) -> bool:
@@ -1569,6 +1598,7 @@ def varonis_close_alert_command(client: Client, args: Dict[str, Any]) -> bool:
         all command arguments, usually passed from ``demisto.args()``.
         ``args['close_reason']`` Alert's close reason
         ``args['alert_id']`` Array of alert ids to be closed
+        ``args['note']`` Note for alert
 
     :return: Result of execution
     :rtype: ``bool``
@@ -1580,8 +1610,8 @@ def varonis_close_alert_command(client: Client, args: Dict[str, Any]) -> bool:
         raise ValueError(f'close reason must be one of {close_reasons}')
 
     close_reason_id = CLOSE_REASONS[close_reason.lower()]
-
-    return varonis_update_alert(client, close_reason_id, ALERT_STATUSES['closed'], argToList(args.get('alert_id')))
+    note = args.get('note', None)
+    return varonis_update_alert(client, close_reason_id, ALERT_STATUSES['closed'], argToList(args.get('alert_id')), note)
 
 
 def is_xsoar_env() -> bool:
@@ -1604,7 +1634,7 @@ def main() -> None:
     if not is_xsoar_env():
         url = 'https://int308a6.varonis-preprod.com/'
         apiKey = 'vkey1_2069ee4590da45429fa8cacbc6f15669_JAHzjsqVfrvYgRiwe+X2hQse017oyfPSTEzyyJc5A2c='
-        command = 'varonis-threat-models'  # 'test-module'|
+        command = 'varonis-close-alert'  # 'test-module'|
         # 'varonis-threat-models'|
         # 'varonis-get-alerts'|
         # 'varonis-get-alerted-events'|
@@ -1655,12 +1685,14 @@ def main() -> None:
 
         elif command == 'varonis-update-alert-status':
             args['status'] = 'under investigation'  # Alert's new status
-            args['alert_id'] = "215FF1FE-E25C-4C12-AB16-937BF186ABD9"  # Array of alert ids to be updated
+            args['alert_id'] = "E5E255ED-24FD-4461-A676-A1A980E24397"  # Array of alert ids to be updated
+            args['note'] = "user note"  # Note for alert
 
         elif command == 'varonis-close-alert':
             args['close_reason'] = 'resolved'  # Alert's close reason
-            args['alert_id'] = "215FF1FE-E25C-4C12-AB16-937BF186ABD9"  # Array of alert ids to be closed
-
+            args['alert_id'] = "E5E255ED-24FD-4461-A676-A1A980E24397"  # Array of alert ids to be closed
+            args['note'] = "user note"  # Note for alert
+            
         elif command == 'fetch-incidents':
             pass
 
