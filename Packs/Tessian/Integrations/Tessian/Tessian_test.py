@@ -1,41 +1,100 @@
-"""Base Integration for Cortex XSOAR - Unit Tests file
 
-Pytest Unit Tests: all funcion names must start with "test_"
+import pytest
 
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
+from Tessian import format_url, Client, get_events_command
 
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-You must add at least a Unit Test function for every XSOAR command
-you are implementing with your integration
-"""
-
-import json
+#  region HELPERS
 
 
-def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
-        return json.loads(f.read())
+def create_mock_client():
+    return Client(
+        base_url='https://api.example.com',
+        verify=False,
+        headers={
+            'Authentication': 'API-Token some_api_key'
+        }
+    )
+
+#  endregion
 
 
-# TODO: REMOVE the following dummy unit test function
-def test_baseintegration_dummy():
-    """Tests helloworld-say-hello command function.
+def test_get_events_command(mocker):
+    """
+    Tests the get_events_command function.
 
-    Checks the output of the command function with the expected output.
-
-    No mock is needed here because the say_hello_command does not call
+    No mock is needed here because the get_events_command does not call
     any external API.
     """
-    from BaseIntegration import Client, baseintegration_dummy_command
 
-    client = Client(base_url='some_mock_url', verify=False)
-    args = {
-        'dummy': 'this is a dummy response'
+    #  Mock the client
+    client = create_mock_client()
+    mocker.patch.object(
+        client,
+        'get_events',
+        return_value={
+            'checkpoint': "dummy_checkpoint",
+            'additional_results': True,
+            'results': {
+                "dummy_key": "dummy_value"
+            },
+        }
+    )
+
+    input = {
+        "limit": "10",
+        "after_checkpoint": None,
+        "created_after": None,
     }
-    response = baseintegration_dummy_command(client, args)
 
-    mock_response = util_load_json('test_data/baseintegration-dummy.json')
+    response = get_events_command(client, input)
 
-    assert response.outputs == mock_response
-# TODO: ADD HERE unit tests for every command
+    assert response.outputs == {
+        "checkpoint": "dummy_checkpoint",
+        "additional_results": True,
+    }
+    assert response.raw_response == {
+        "dummy_key": "dummy_value",
+    }
+
+    assert client.assert_called_with(limit=10, after_checkpoint=None, created_after=None)
+
+
+@pytest.mark.parametrize(
+    """
+    input_url, formatted_url
+    """,
+    [
+        pytest.param(
+            'https://test.com',
+            'https://test.com',
+            id='valid url given'
+        ),
+        pytest.param(
+            'http://test.com',
+            'https://test.com',
+            id='http:// prefix given'
+        ),
+        pytest.param(
+            'test.com',
+            'https://test.com',
+            id='no prefix given'
+        ),
+        pytest.param(
+            'https://test.com/',
+            'https://test.com',
+            id='trailing slash given'
+        ),
+        pytest.param(
+            'https://test.com/api/v1/test',
+            'https://test.com',
+            id='trailing url path given'
+        ),
+        pytest.param(
+            'http://test.com/incorrect_api',
+            'https://test.com',
+            id='combination of incorrect prefix and suffix'
+        ),
+    ]
+)
+def test_format_url(input_url, formatted_url):
+    assert formatted_url == format_url(input_url)

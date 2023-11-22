@@ -1,20 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-"""Base Integration for Cortex XSOAR (aka Demisto)
-
-This is an empty Integration with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
-"""
 
 from CommonServerUserPython import *  # noqa
 
@@ -27,7 +12,7 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR & Tessian
 
 ''' CLIENT CLASS '''
 
@@ -42,7 +27,6 @@ class Client(BaseClient):
     For this  implementation, no special attributes defined
     """
 
-    # TODO RETURNS LIST
     def get_events(self, limit: str | None, after_checkpoint: str | None, created_after: str | None) -> dict[str, Any]:
         return self._http_request(
             method='GET',
@@ -59,11 +43,36 @@ class Client(BaseClient):
 
 ''' HELPER FUNCTIONS '''
 
+
+def format_url(url: str) -> str:
+    """
+    This function strips the url to make sure it's in the expected format.
+    We want to be working with a url that looks like this: https://domain.tessian.com
+    """
+
+    #  Remove leading http/https, we do this so that we can add the https:// prefix in the return
+    if url.startswith('http://'):
+        # We should never have insecure portals, but just in case the customer enters their url
+        # with http:// for whatever reason, we'll strip it to add a secure prefix
+        url = url[7:]
+    elif url.startswith('https://'):
+        #  Just strip this so that we can ensure it's not there for the rest of the logic.
+        url = url[8:]
+
+    # Remove trailing slashes
+    if '/' in url:
+        #  We will disregard everything after the trailing slash to obtain the portal URL.
+        # This should cover customers who enter their api url by mistake.
+        url = url.split('/')[0]
+
+    # Add the https:// prefix in the return
+    return f"https://{url}"
+
+
 ''' COMMAND FUNCTIONS '''
 
 
 def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    pass
     limit = args.get('limit', None)
     after_checkpoint = args.get('after_checkpoint', None)
     created_after = args.get('created_after', None)
@@ -116,12 +125,9 @@ def main() -> None:
     :rtype:
     """
 
-    # TODO: make sure you properly handle authentication
-    # api_key = demisto.params().get('credentials', {}).get('password')
-
     # get the service API url
     params = demisto.params()
-    base_url = params.get('url')
+    base_url = format_url(params.get('url'))
     api_key = params.get('api_key')
 
     # if your Client class inherits from BaseClient, SSL verification is

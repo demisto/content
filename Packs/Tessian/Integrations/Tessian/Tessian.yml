@@ -1,25 +1,25 @@
-category: Analytics & SIEM
+category: Data Enrichment & Threat Intelligence
 commonfields:
   id: Tessian
   version: -1
 configuration:
 - display: Portal URL
   name: url
-  additionalinfo: The url that you use to access Tessian.
+  additionalinfo: The URL that you use to access the Tessian Portal. Please include the extension, e.g. "example.tessian-platform.com" or "example.tessian-app.com"
   type: 0
   required: true
 - display: API Key
   name: api_key
-  additionalinfo: The API Key to use for connection to the Tessian API
+  additionalinfo: The API Key to use to connect to the Tessian API. This can be found under "Security Integrations" in your Tessian Portal (/0/admin/integrations/api/tokens)
   type: 9
   required: true
-description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.].'
+description: Tessian is an email security platform that allows organizations to protect their users from inbound phishing threats, outbound data loss (both malicious and accidental) and account takeovers.
 display: Tessian
 name: Tessian
 script:
   commands:
   - name: get_events
-    description: 'get events from Tessian.'
+    description: This command allows you to pull Tessian event data into your XSOAR instance.
     arguments:
     - name: limit
       description: 'The maximum number of events you would like Tessian to return per call.'
@@ -32,10 +32,10 @@ script:
       required: false
     outputs:
     - contextPath: Tessian.EventsOutput.checkpoint
-      description: '[Enter a description of the data returned in this output.].'
+      description: This value can be provided to a subsequent request via the after_checkpoint query parameter to ensure that events from this request are not returned in future responses. This allows clients to paginate through results.
       type: String
     - contextPath: Tessian.EventsOutput.additional_results
-      description: '[Enter a description of the data returned in this output.].'
+      description: True if there may be more events that can be immediately retrieved.
       type: Boolean
 
   runonce: false
