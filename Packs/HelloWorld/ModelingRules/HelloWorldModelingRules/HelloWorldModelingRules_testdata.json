@@ -22,7 +22,7 @@
                 }
             },
             "expected_values": {
-                "_time": null,
+                "_time": "Oct 21st 2023 03:42:05",
                 "xdm.event.id": "1",
                 "xdm.source.user.identifier": "uuid",
                 "xdm.event.description": "This is test description 1",
