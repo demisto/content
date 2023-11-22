@@ -554,8 +554,8 @@ script:
     - description: Object ID of assignee, this is the unique objectid of a user to update assignee of incident Updated key is owner.objectId
       name: assignee_objectid
     - description: Incident labels. Note that all labels will be set as labelType='User'.
-      isArray: true
       name: labels
+      isArray: true
     - description: The subscription ID.
       name: subscription_id
     - description: The resource group name.
@@ -2381,7 +2381,7 @@ script:
     execution: false
     name: azure-sentinel-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.80214
+  dockerimage: demisto/crypto:1.0.0.80694
   isfetch: true
   runonce: false
   script: '-'

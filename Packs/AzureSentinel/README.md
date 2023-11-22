@@ -1,6 +1,8 @@
 Use the Azure Sentinel integration to get and manage incidents and get related entity information for incidents.
 ​
+
 ## What does this pack do?
+
 - Gets a single incident or a list of incidents from Azure Sentinel.
 - Gets a list of watchlists from Azure Sentinel.
 - Creates, updates, or deletes a watchlist in Azure Sentinel.

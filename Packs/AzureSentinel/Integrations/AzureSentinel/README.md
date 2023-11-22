@@ -2429,8 +2429,11 @@ There are no input arguments for this command.
 | AzureSentinel.Subscription.subscriptionPolicies | String | The subscription policies of the resource. | 
 
 #### Command example
+
 ```!azure-sentinel-subscriptions-list```
+
 #### Context Example
+
 ```json
 {
     "AzureSentinel": {
@@ -2455,6 +2458,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Azure Sentinel Subscriptions
+
 >|Subscriptionid|Tenantid|Displayname|State|
 >|---|---|---|---|
 >| 0000000000000 | 000000000000000 | Pay-As-You-Go | Enabled |
@@ -2469,6 +2473,7 @@ There are no input arguments for this command.
 | AzureSentinel.ResourceGroup.location | String | The location of the resource group. | 
 | AzureSentinel.ResourceGroup.tags | Dictionary | The tags of the resource group. | 
 | AzureSentinel.ResourceGroup.properties | dictionary | The properties of the resource group. | 
+
 ### azure-sentinel-resource-group-list
 
 ***
@@ -2498,8 +2503,11 @@ Lists all resource groups.
 | AzureSentinel.ResourceGroup.properties | dictionary | The properties of the resource group. | 
 
 #### Command example
+
 ```!azure-sentinel-resource-group-list```
+
 #### Context Example
+
 ```json
 {
     "AzureSentinel": {
@@ -2532,6 +2540,7 @@ Lists all resource groups.
 #### Human Readable Output
 
 >### Azure Sentinel Resource Groups
+
 >|Name|Location|Tags|
 >|---|---|---|
 >| cloud-shell | eastus |  |

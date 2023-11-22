@@ -331,8 +331,8 @@
                     }
                 ],
                 "type": "custom"
-                    },
-                    {
+            },
+            {
                 "hidden": false,
                 "id": "wvikqjhsl6",
                 "name": "Investigation",
@@ -423,7 +423,9 @@
     "name": "Microsoft Sentinel - default layout",
     "system": false,
     "version": -1,
-	"marketplaces": ["xsoar"],
+    "marketplaces": [
+        "xsoar"
+    ],
     "fromVersion": "6.5.0",
     "description": "This is the default layout for Microsoft Sentinel incidents."
 }

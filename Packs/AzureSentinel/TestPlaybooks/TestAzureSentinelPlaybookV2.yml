@@ -1991,4 +1991,4 @@ inputs:
 outputs: []
 sourceplaybookid: TestAzureSentinelPlaybook
 fromversion: 5.0.0
-description: Testing Azure Sentinel integration
+description: Testing Azure Sentinel integration.

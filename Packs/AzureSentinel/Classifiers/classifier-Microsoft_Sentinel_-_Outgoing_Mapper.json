@@ -89,9 +89,9 @@
                 "firstActivityTimeUtc": {
                     "simple": "starttime"
                 },
-				"tags": {
-					"simple": "tags"
-				},
+                "tags": {
+                    "simple": "tags"
+                },
                 "lastActivityTimeUtc": {
                     "simple": "lastseen"
                 },
