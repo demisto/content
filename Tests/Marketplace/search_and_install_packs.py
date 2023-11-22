@@ -187,6 +187,8 @@ def create_dependencies_data_structure(response_data: dict, dependants_ids: list
             is_required = dependants[dependant].get('level', '') == 'required'
 
             if all((dependant in dependants_ids, is_required, dependency['id'] not in checked_packs)):
+                logging.info(f"dependency['id']: {dependency['id']}")
+                logging.info(f"dependency_data: {dependency}")
                 dependencies_data.append(dependency)
                 next_call_dependants_ids.append(dependency['id'])
                 checked_packs.append(dependency['id'])
