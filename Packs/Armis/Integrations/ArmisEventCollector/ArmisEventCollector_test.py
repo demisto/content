@@ -367,6 +367,11 @@ class TestHelperFunction:
         last_run: dict = {'devices_last_fetch_time': time_in_last_fetch.strftime('%Y-%m-%dT%H:%M:%S')}
         assert should_run_device_fetch(last_run, timedelta(hours=1), datetime.now()) is expected_result
 
+    def test_handle_from_date_argument(self):
+        from ArmisEventCollector import handle_from_date_argument
+        from_date_datetime = handle_from_date_argument('2023-01-01T01:00:00')
+        assert from_date_datetime == datetime(2023, 1, 1, 1, 0, 0)
+
 
 class TestFetchFlow:
 
