@@ -90,7 +90,7 @@ TEST_UPLOAD_BRANCH_SUFFIX="-upload_test_branch-"
 if [[ "${CI_COMMIT_BRANCH}" == *"${TEST_UPLOAD_BRANCH_SUFFIX}"* ]]; then
   # Using bash string pattern matching to search only the last occurrence of the suffix, that's why we use a single '%'.
   SEARCHED_BRANCH_NAME="${CI_COMMIT_BRANCH%"${TEST_UPLOAD_BRANCH_SUFFIX}"*}"
-  echo "Found branch with suffix ${TEST_UPLOAD_BRANCH_SUFFIX} in branch name, using branch name:${SEARCHED_BRANCH_NAME}"
+  echo "Found branch with suffix ${TEST_UPLOAD_BRANCH_SUFFIX} in branch name, using branch name:${SEARCHED_BRANCH_NAME} to clone content-test-conf and infra repositories"
 else
   # default to CI_COMMIT_BRANCH if the suffix is not found.
   SEARCHED_BRANCH_NAME="${CI_COMMIT_BRANCH}"
