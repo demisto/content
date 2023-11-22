@@ -411,8 +411,8 @@ jobs-done-check-nightly:
     - xsoar-saas-prepare-testing-bucket
     - xsiam_server_ga
     - tests_xsoar_server
-    - xsoar_e2e_test_results
-    - xsiam_e2e_test_results
+    - xsoar-test_playbooks_results
+    - xsiam-test_playbooks_results
     - xsiam-test_modeling_rule_results
   tags:
     - gke
@@ -456,8 +456,8 @@ jobs-done-check-on-push:
     - xsiam_server_ga
     - tests_xsoar_server
     - xsoar_ng_server_ga
-    - xsoar_e2e_test_results
-    - xsiam_e2e_test_results
+    - xsoar-test_playbooks_results
+    - xsiam-test_playbooks_results
     - xsiam-test_modeling_rule_results
   tags:
     - gke
@@ -499,8 +499,8 @@ jobs-done-check-on-merge:
     - xsiam_server_ga
     - tests_xsoar_server
     - xsoar_ng_server_ga
-    - xsoar_e2e_test_results
-    - xsiam_e2e_test_results
+    - xsoar-test_playbooks_results
+    - xsiam-test_playbooks_results
     - xsiam-test_modeling_rule_results
   tags:
     - gke
@@ -783,7 +783,7 @@ test-upload-flow:
     - section_end "Verify Created Testing Bucket"
     - job-done
 
-.server_test_e2e_results:
+.server_test_playbooks_results:
   stage: results
   rules:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
@@ -823,7 +823,7 @@ test-upload-flow:
     - ./Tests/scripts/test_modeling_rule_results.sh
     - job-done
 
-xsoar_e2e_test_results:
+xsoar-test_playbooks_results:
   variables:
     SERVER_TYPE: "XSOAR"
     PRODUCT_TYPE: "XSOAR"
@@ -831,7 +831,7 @@ xsoar_e2e_test_results:
     JIRA_ISSUE_TYPE: "XSOAR Dev Bug"
     JIRA_COMPONENT: "Test Failure"
     JIRA_LABELS: '["XSOAR", "nightly"]'
-  extends: .server_test_e2e_results
+  extends: .server_test_playbooks_results
   needs:
     - job: tests_xsoar_server
     - job: xsoar_ng_server_ga
@@ -840,7 +840,7 @@ xsoar_e2e_test_results:
     - tests_xsoar_server
     - xsoar_ng_server_ga
 
-xsiam_e2e_test_results:
+xsiam-test_playbooks_results:
   variables:
     SERVER_TYPE: "XSIAM"
     PRODUCT_TYPE: "XSIAM"
@@ -848,7 +848,7 @@ xsiam_e2e_test_results:
     JIRA_ISSUE_TYPE: "XSOAR Dev Bug"
     JIRA_COMPONENT: "Test Failure"
     JIRA_LABELS: '["XSIAM", "nightly"]'
-  extends: .server_test_e2e_results
+  extends: .server_test_playbooks_results
   needs:
     - xsiam_server_ga
   dependencies:
