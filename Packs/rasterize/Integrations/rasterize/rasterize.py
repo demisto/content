@@ -171,7 +171,7 @@ def pychrome_screenshot_image(path, width, height, wait_time, max_page_load_time
         tab.stop()
         close_tab_response = browser.close_tab(tab)
         demisto.debug(f"{path=}, {close_tab_response=}")
-        # pychrome_reap_children()
+        pychrome_reap_children()
 
 
 def pychrome_screenshot_pdf(path, width, height, wait_time, max_page_load_time, full_screen,
@@ -212,7 +212,7 @@ def pychrome_screenshot_pdf(path, width, height, wait_time, max_page_load_time, 
         tab.stop()
         close_tab_response = browser.close_tab(tab)
         demisto.debug(f"{path=}, {close_tab_response=}")
-        # pychrome_reap_children()
+        pychrome_reap_children()
 
 
 def check_width_and_height(width: int, height: int) -> tuple[int, int]:
