@@ -2,6 +2,7 @@ commonfields:
   id: ValidateErrorExistence
   version: -1
 name: ValidateErrorExistence
+deprecated: true
 script: >-
   res = []
 

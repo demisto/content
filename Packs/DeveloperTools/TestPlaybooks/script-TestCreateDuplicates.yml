@@ -2,6 +2,7 @@ commonfields:
   id: TestCreateDuplicates
   version: -1
 name: TestCreateDuplicates
+deprecated: true
 script: >-
   from datetime import timedelta, datetime
 

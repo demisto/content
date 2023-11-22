@@ -2,6 +2,7 @@ commonfields:
   id: TestXml2JSON
   version: -1
 name: TestXml2JSON
+deprecated: true
 script: >-
   import json
 

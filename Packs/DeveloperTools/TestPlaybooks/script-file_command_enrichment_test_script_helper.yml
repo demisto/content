@@ -2,6 +2,7 @@ commonfields:
   id: file_command_enrichment_test_script_helper
   version: -1
 name: file_command_enrichment_test_script_helper
+deprecated: true
 script: >
   # A17 flight plan pdf file
 

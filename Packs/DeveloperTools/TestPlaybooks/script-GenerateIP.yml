@@ -2,6 +2,7 @@ commonfields:
   id: GenerateIP
   version: -1
 name: GenerateIP
+deprecated: true
 script: >-
   import random
 

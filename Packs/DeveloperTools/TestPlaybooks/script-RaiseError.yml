@@ -2,6 +2,7 @@ commonfields:
   id: RaiseError
   version: -1
 name: RaiseError
+deprecated: true
 script: >-
   contents = demisto.args()["error"]
 

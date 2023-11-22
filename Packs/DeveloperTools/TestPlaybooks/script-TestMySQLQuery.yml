@@ -4,6 +4,7 @@ commonfields: {id: TestMysqlQuery, version: -1}
 enabled: true
 name: TestMysqlQuery
 outputs: []
+deprecated: true
 script: >-
   # Script to testout various mysql queries
 

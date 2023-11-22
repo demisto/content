@@ -2,6 +2,7 @@ commonfields:
   id: TestCreateIncidents
   version: -1
 name: TestCreateIncidents
+deprecated: true
 script: >-
   NUMBER_OF_INCIDENTS = int(demisto.args()['numberOfIncidents'])
 

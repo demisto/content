@@ -2,6 +2,7 @@ commonfields:
   id: GenerateImageFileEntry
   version: -1
 name: GenerateImageFileEntry
+deprecated: true
 script: >-
   import base64
 

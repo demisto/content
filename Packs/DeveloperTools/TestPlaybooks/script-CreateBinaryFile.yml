@@ -2,6 +2,7 @@ commonfields:
   id: CreateBinaryFile
   version: -1
 name: CreateBinaryFile
+deprecated: true
 script: >+
   import os
 

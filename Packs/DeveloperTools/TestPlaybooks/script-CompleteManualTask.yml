@@ -2,6 +2,7 @@ commonfields:
   id: CompleteManualTask
   version: -1
 name: CompleteManualTask
+deprecated: true
 script: >
   args = demisto.args()
 

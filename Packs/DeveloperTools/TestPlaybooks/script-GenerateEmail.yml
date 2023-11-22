@@ -2,6 +2,7 @@ commonfields:
   id: GenerateEmail
   version: -1
 name: GenerateEmail
+deprecated: true
 script: >-
   import string
 

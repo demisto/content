@@ -2,6 +2,7 @@ commonfields:
   id: GetFirstObject
   version: -1
 name: GetFirstObject
+deprecated: true
 script: >
   value = demisto.args()['value']
 
