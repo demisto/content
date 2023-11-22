@@ -88,7 +88,10 @@ script:
       - 'Alerts'
       - 'Activities'
       - 'Devices'
-      required: true
+      required: false
+    - description: Run your own AQL query to fetch events.
+      name: aql
+      required: false
     description: Manual command to fetch and display events. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and exceeding the API request limitation.
     name: armis-get-events
   runonce: false

@@ -51,7 +51,7 @@ class TestClientFunctions:
 
         expected_args = {
             'url_suffix': '/search/', 'method': 'GET',
-            'params': {'aql': 'example_query after:2023-01-01T01:00:00', 'includeTotal':
+            'params': {'aql': 'example_query after:2023-01-01T00:59:00', 'includeTotal':
                        'true', 'length': 2, 'orderBy': 'time', 'from': 1},
             'headers': {'Authorization': 'test_access_token', 'Accept': 'application/json'}
         }
@@ -336,14 +336,13 @@ class TestHelperFunction:
         Then:
             - Set the last_run dictionary with the current time for each event type key.
         """
-        from ArmisEventCollector import set_last_run_with_current_time
+        from ArmisEventCollector import set_last_run_for_last_minute
 
         last_run: dict[Any, Any] = {}
-        event_types: list[str] = ['Alerts', 'Activities']
 
-        set_last_run_with_current_time(last_run, event_types)
+        set_last_run_for_last_minute(last_run)
 
-        assert last_run['alerts_last_fetch_time'] == last_run['activity_last_fetch_time'] == '2023-01-01T01:00:00'
+        assert last_run['alerts_last_fetch_time'] == last_run['activity_last_fetch_time'] == '2023-01-01T00:59:00'
 
     @pytest.mark.parametrize('time_delta_since_last_fetch, expected_result', [
         (2, True),
