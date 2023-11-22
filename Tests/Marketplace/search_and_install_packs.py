@@ -192,9 +192,7 @@ def create_dependencies_data_structure(response_data: dict, dependants_ids: list
                 dependencies_data.append(dependency)
                 next_call_dependants_ids.append(dependency['id'])
                 checked_packs.append(dependency['id'])
-                logging.info = (f"judith test dependencies_data: {dependencies_data}, next_call_dependants_ids:",
-                                f"{next_call_dependants_ids}, checked_packs: {checked_packs} ")
-
+                logging.info = (f"judith test dependencies_data: {dependencies_data}")
     if next_call_dependants_ids:
         create_dependencies_data_structure(response_data, next_call_dependants_ids, dependencies_data, checked_packs)
 
@@ -514,7 +512,6 @@ def search_pack_and_its_dependencies(client: demisto_client,
     try:
         pack_api_data = api_data['packs'][0]
         current_packs_to_install = [pack_api_data]
-        logging.info(f"response_data= {api_data.get('dependencies', [])}")
         create_dependencies_data_structure(response_data=api_data.get('dependencies', []),
                                            dependants_ids=[pack_id],
                                            dependencies_data=dependencies_data,
