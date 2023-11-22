@@ -1,11 +1,9 @@
-Detonate one or more files using the Wildfire integration. This playbook
+Detonate one or more files using the Wildfire v2 integration. This playbook
 returns relevant reports to the War Room and file reputations to the context data.
 The detonation supports the following file types -
 APK, JAR, DOC, DOCX, RTF, XLS, XLSX, PPT, PPTX, OOXML, PE32, PE, PDF, DMG, PKG, RAR, 7Z, JS, ELF, HTA, LNK, VBS, PS1, PERL, PYTHON, SHELL.
 
-Note: Base64 encoded files are currently not supported
-
-This playbook is deprecated. please use the WildFire - Detonate file v2 instead.
+Note: Base64 encoded files are currently not supported.
 
 ## Dependencies
 
@@ -13,7 +11,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* GenericPolling
+This playbook does not use any sub-playbooks.
 
 ### Integrations
 
@@ -25,8 +23,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
-* wildfire-upload
 * wildfire-report
+* wildfire-upload
 
 ## Playbook Inputs
 
@@ -36,7 +34,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | --- | --- | --- | --- |
 | File | File object of the file to detonate. The file is taken from the context. | File | Optional |
 | Interval | The duration for executing the polling \(in minutes\). | 1 | Optional |
-| Timeout | The duration after which to stop polling and to resume the playbook. \(in minutes\) | 15 | Optional |
+| Timeout | The duration after which to stop polling and to resume the playbook. \(in minutes\) | 8 | Optional |
 | ReportFileType | The resource type to download. |  | Optional |
 
 ## Playbook Outputs
@@ -48,7 +46,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | DBotScore.Score | The actual score. | string |
 | DBotScore.Type | The type of the indicator. | string |
 | File.Type | The file type, e.g. "PE". | string |
-| File.Size | The file size | number |
+| File.Size | The file size. | number |
 | File.MD5 | The MD5 hash of the file. | string |
 | File.Name | The filename. | string |
 | File.SHA1 | The SHA1 hash of the file. | string |
@@ -72,9 +70,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | WildFire.Report.MD5 | The MD5 hash of the submission. | string |
 | WildFire.Report.FileType | The type of the submission. | string |
 | WildFire.Report.Size | The size of the submission. | number |
+| WildFire.Report.detection_reasons.description | Reason for the detection verdict. | string |
 
 ## Playbook Image
 
 ---
 
-![WildFire - Detonate file](../doc_files/WildFire_-_Detonate_file.png)
+![WildFire - Detonate file v2](../doc_files/WildFire_-_Detonate_file_v2.png)
