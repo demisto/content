@@ -10,6 +10,7 @@ import pychrome
 import re
 import subprocess
 import tempfile
+import threading
 import time
 import traceback
 from collections.abc import Callable
@@ -156,7 +157,7 @@ def pychrome_screenshot_image(path, width, height, wait_time, max_page_load_time
         tab.Page.enable()
         # tab.call_method("Page.navigate", url=path, _timeout=max_page_load_time)
         page_start_time = int(time.time())
-        tab.Page.navigate(url=urls[i], _timeout=max_page_load_time)
+        tab.Page.navigate(url=path, _timeout=max_page_load_time)
         page_load_time = int(time.time()) - page_start_time
 
         if wait_time > 0:
@@ -192,7 +193,7 @@ def pychrome_screenshot_pdf(path, width, height, wait_time, max_page_load_time, 
         tab.Page.enable()
         # tab.call_method("Page.navigate", url=path, _timeout=max_page_load_time)
         page_start_time = int(time.time())
-        tab.Page.navigate(url=urls[i], _timeout=max_page_load_time)
+        tab.Page.navigate(url=path, _timeout=max_page_load_time)
         page_load_time = int(time.time()) - page_start_time
 
         if wait_time > 0:
@@ -870,6 +871,7 @@ def module_test():  # pragma: no cover
         file_path = f'file://{os.path.realpath(test_file.name)}'
 
         # rasterizing the file
+        args = demisto.args()
         force_selenium_usage = bool(args.get('force_selenium_usage', False))
         rasterize(path=file_path, width=250, height=250, r_mode=DEFAULT_MODE, force_selenium_usage=force_selenium_usage)
 
