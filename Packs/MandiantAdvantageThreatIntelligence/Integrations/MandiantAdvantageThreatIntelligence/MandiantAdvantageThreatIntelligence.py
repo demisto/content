@@ -1321,14 +1321,27 @@ def fetch_reputation(client: MandiantClient, args: dict = None):
     demisto.createIndicators(indicators)
 
     if indicators:
-        markdown = tableToMarkdown('Mandiant Advantage Threat Intelligence',
-                                   indicators)
+        output = []
+        for indicator in indicators:
 
-        return CommandResults(
-            readable_output=markdown,
-            outputs=indicators,
-            outputs_prefix=f"MANDIANTTI.{input_type.upper()}",
-            ignore_auto_extract=True)
+            table = {
+                'Value': indicator['value'],
+                'MScore': indicator["rawJSON"].get("mscore", ''),
+                'Last Seen': indicator["rawJSON"].get("last_seen", '')
+            }
+            indicator_type = indicator["rawJSON"]["type"].lower()
+
+            markdown = tableToMarkdown(f'Mandiant Advantage Threat Intelligence information for {indicator["value"]}\n'
+                                       f'[View on Mandiant Advantage](https://advantage.mandiant.com/indicator/'
+                                       f'{indicator_type}/{indicator["value"]})',
+                                       table)
+
+            output.append(CommandResults(
+                readable_output=markdown,
+                outputs=indicator,
+                outputs_prefix=f"MANDIANTTI.{input_type.upper()}",
+                ignore_auto_extract=True))
+        return output
     else:
         return f"No indicators found matching value {indicator_values}"
 
