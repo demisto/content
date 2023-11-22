@@ -28,7 +28,7 @@ def test_get_events_command(mocker):
 
     #  Mock the client
     client = create_mock_client()
-    mocker.patch.object(
+    client_mock = mocker.patch.object(
         client,
         'get_events',
         return_value={
@@ -56,7 +56,7 @@ def test_get_events_command(mocker):
         "dummy_key": "dummy_value",
     }
 
-    assert client.assert_called_with(limit=10, after_checkpoint=None, created_after=None)
+    assert client_mock.assert_called_with(limit=10, after_checkpoint=None, created_after=None)
 
 
 @pytest.mark.parametrize(
