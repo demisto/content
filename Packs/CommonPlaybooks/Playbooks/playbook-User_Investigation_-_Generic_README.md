@@ -6,7 +6,7 @@ Supported Integrations:
 -QRadar
 -Azure Log Analytics
 -PAN-OS
--XDR By Palo Alto Networks
+-XDR / Core By Palo Alto Networks.
 
 ## Dependencies
 
@@ -14,9 +14,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* SIEM - Search for Failed logins
 * Okta - User Investigation
 * Cortex XDR - Get entity alerts by MITRE tactics
+* Get entity alerts by MITRE tactics
+* SIEM - Search for Failed logins
 
 ### Integrations
 
@@ -24,14 +25,14 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* MathUtil
 * Set
 * CountArraySize
+* MathUtil
 
 ### Commands
 
-* pan-os-get-logs
 * pan-os-query-logs
+* pan-os-get-logs
 
 ## Playbook Inputs
 
@@ -49,7 +50,7 @@ This playbook does not use any integrations.
 | ThreatLogSearch | Whether to search for threat logs from PAN-OS? Can be False or True. | True | Optional |
 | XDRAlertSearch | Whether to search for Related alerts from XDR? Can be False or True. | True | Optional |
 | OktaSearch | Whether to search for logs from Okta? Can be False or True. | True | Optional |
-| XDRUsernameField | Cortex XDR User name Field. |  | Optional |
+| XDRUsernameField | Cortex XDR User name Field. | actor_effective_username | Optional |
 | QRadarSearchTime | The Search Time for the QRadar search query. for example:  Last 1 days | Last 1 days | Optional |
 | AzureSearchTime | The Search Time for the Azure Log Analytics search query. for example: ago\(1d\) | ago(1d) | Optional |
 | ASN | The ASN from which the user logged in. |  | Optional |
@@ -73,7 +74,7 @@ This playbook does not use any integrations.
 | UserApplication |  Applications used by the user from Okta. | unknown |
 | NumOfOktaFailedLogon | Number of failed login from Okta. | unknown |
 | AzureFailedLogonLogs | The result of the Azure Log Analytics search. | unknown |
-| QRadar.Search.Result | The result of the QRadar search  | unknown |
+| QRadar.Search.Result | The result of the QRadar search. | unknown |
 | Splunk.Result | The results of the Splunk search. The results are a JSON array, in which each item is a Splunk event. | unknown |
 | NumOfFailedLogon | Number of failed login. | unknown |
 | NumOfFailedLogonASN | Number of failed login from ASN by all users. | unknown |
