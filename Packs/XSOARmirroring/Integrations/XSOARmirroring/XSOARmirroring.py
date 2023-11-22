@@ -395,7 +395,6 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict[str, Union[
         incident_result['attachment'] = file_attachments
         incidents_result.append(incident_result)
         incident_created_time = dateparser.parse(incident.get('created'), settings={'TIMEZONE': 'Z'})  # type: ignore[arg-type]
-        demisto.debug(f"incident_created_time= {incident_created_time}")
         # Update last run and add incident if the incident is newer than last fetch
         if incident_created_time > latest_created_time:  # type: ignore[operator]
             latest_created_time = incident_created_time
@@ -405,7 +404,6 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict[str, Union[
                 .strftime(XSOAR_DATE_FORMAT),  # type: ignore[union-attr,operator]
                 'last_fetched_incidents': last_fetched_incidents}
     demisto.debug(f'XSOAR Mirroring: Setting next run to: {next_run}')
-    demisto.debug(f"incidents_result: {incidents_result}")
     return next_run, incidents_result
 
 
@@ -845,7 +843,6 @@ def get_and_dedup_incidents(client: Client, last_fetched_incidents: list[Any],
         if len(incidents) == 0:
             break
         for incident in incidents:
-            demisto.debug(f"incident: {incident}")
             if len(new_incidents) >= max_results:
                 break
             incident_id = incident.get("id")
@@ -866,8 +863,6 @@ def get_and_dedup_incidents(client: Client, last_fetched_incidents: list[Any],
                 new_incidents.append(incident)
                 last_fetched_incident_time = incident_creation_time
         page += 1
-        demisto.debug(f"new_incidents: {new_incidents}, last_fetched_incident_time:{last_fetched_incident_time}"),
-        (f"last_fetched_incidents:{last_fetched_incidents}")
     return new_incidents, last_fetched_incidents, last_fetched_incident_time
 
 
