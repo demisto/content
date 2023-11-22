@@ -337,7 +337,7 @@
             {
                 "hidden": false,
                 "id": "gelmysfzqr",
-                "name": "ThreatCommand Layout",
+                "name": "Threat Command Alert Info",
                 "sections": [
                     {
                         "displayType": "CARD",
