@@ -238,7 +238,7 @@ def do_pagination(client: Client, response: dict[str, Any], limit: int = 1) -> d
     response_data = response.get('value') or []
     next_link = response.get('@odata.nextLink')
     while (next_link := response.get('@odata.nextLink')) and len(response_data) < limit:
-        response = client.risky_users_list_request(limit=limit, skip_token=next_link)
+        response = client.risky_users_list_request(skip_token=next_link)
         response_data.extend(response.get('value') or [])
     demisto.debug(f'The limited response contains: {len(response_data[:limit])}')
     return {'value': response_data[:limit], "@odata.context": response.get('@odata.context'), '@odata.nextLink': next_link}
@@ -273,6 +273,9 @@ def risky_users_list_command(client: Client, args: dict[str, str]) -> List[Comma
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
+    page = args.get('page')
+    if page:
+        raise DemistoException("Page argument is deprecated, please use next_token and page_size instead.")
     next_token = args.get('next_token')
     limit = arg_to_number(args.get('limit')) or 50
     risk_state = args.get('risk_state')
@@ -283,7 +286,7 @@ def risky_users_list_command(client: Client, args: dict[str, str]) -> List[Comma
 
     if next_token:
         # the page_size already defined the in the token.
-        raw_response = client.risky_users_list_request(risk_state=risk_state, risk_level=risk_level, skip_token=next_token)
+        raw_response = client.risky_users_list_request(skip_token=next_token)
     elif page_size:
         raw_response = client.risky_users_list_request(risk_state=risk_state, risk_level=risk_level, limit=page_size)
     else:  # there is only a limit
@@ -304,7 +307,7 @@ def risky_users_list_command(client: Client, args: dict[str, str]) -> List[Comma
         raw_response=raw_response))
 
     # We won't display the next_token if the user does not choose to use pagination.
-    if (page_size and next_token_from_request) or (next_token and next_token_from_request):
+    if next_token_from_request and (next_token or page_size):
         command_results.append(CommandResults(
             outputs={'AzureRiskyUsers(true)': {'RiskyUserListNextToken': next_token_from_request}},
             readable_output=tableToMarkdown("Risky Users List Token:", {'next_token': next_token_from_request},

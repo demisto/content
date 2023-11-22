@@ -88,7 +88,7 @@ def test_risky_users_list_command_with_token(requests_mock) -> None:
     mock_response = load_mock_response('list_risky_users.json')
     requests_mock.post(ACCESS_TOKEN_REQUEST_URL, json={})
     requests_mock.get(f"{BASE_URL}/token", json=mock_response)
-    result = risky_users_list_command(mock_client(), {'page_size': '3', "next_token": f"{BASE_URL}/token"})
+    result = risky_users_list_command(mock_client(), {"next_token": f"{BASE_URL}/token"})
     assert result[0].outputs_prefix == 'AzureRiskyUsers.RiskyUser'
     assert result[0].outputs_key_field == 'id'
     assert len(result[0].outputs) == 3
@@ -118,6 +118,7 @@ def test_risky_users_list_command_with_limit(requests_mock) -> None:
     assert result[0].outputs_prefix == 'AzureRiskyUsers.RiskyUser'
     assert result[0].outputs_key_field == 'id'
     assert len(result[0].outputs) == 6
+    assert 'RiskyUserListNextToken' not in result[0].outputs
 
 
 def test_risky_user_get_command(requests_mock) -> None:
