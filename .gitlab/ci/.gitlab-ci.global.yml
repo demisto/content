@@ -246,6 +246,11 @@
   - |
   - section_end "Checkout upload commit content nightly"
 
+.fetch-through-merge-base: &fetch-through-merge-base
+  - section_start "Fetch Through Merge Base"
+  - ./Tests/scripts/fetch_through_merge_base.sh "$LAST_UPLOAD_COMMIT" "origin/master"
+  - ./Tests/scripts/fetch_through_merge_base.sh "$CI_COMMIT_SHA" "origin/master"
+  - section_end "Fetch Through Merge Base"
 
 .default-before-script:
   before_script:
@@ -254,12 +259,13 @@
     - *setup-artifactory
     - *stop_contrib_external_build
     - *create_artifacts_and_server_type_instance_folders
+    - *get_last_upload_commit
+    - *fetch-through-merge-base
     - *clone_and_export_variables
     - *check_build_files_are_up_to_date
     - *install_node_modules
     - *install_venv
     - *get_contribution_pack
-    - *get_last_upload_commit
     - *install_ssh_keys
     - *neo4j-setup
     - *build_parameters
