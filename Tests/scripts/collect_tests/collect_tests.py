@@ -1393,7 +1393,7 @@ class E2ETestCollector(TestCollector, ABC):
         )
 
 
-class XSOARNGE2ETestCollector(E2ETestCollector):
+class XsoarSaasE2ETestCollector(E2ETestCollector):
 
     def get_e2e_packs(self) -> set[str]:
         return {"TAXIIServer", "EDL", "QRadar", "Slack"}
@@ -1477,7 +1477,7 @@ if __name__ == '__main__':
     collector: TestCollector
 
     if os.getenv("CI_COMMIT_BRANCH") == "xsoar_8_end_to_end_tests":
-        collector = XSOARNGE2ETestCollector(marketplace=marketplace, graph=graph)
+        collector = XsoarSaasE2ETestCollector(marketplace=marketplace, graph=graph)
 
     elif os.environ.get("IFRA_ENV_TYPE") == 'Bucket-Upload':
         if args.override_all_packs:
@@ -1494,7 +1494,7 @@ if __name__ == '__main__':
             case (True, (MarketplaceVersions.XSOAR)):
                 collector = XSOARNightlyTestCollector(marketplace=marketplace, graph=graph)
             case (True, MarketplaceVersions.XSOAR_SAAS):
-                collector = XSOARNGE2ETestCollector(marketplace=marketplace, graph=graph)
+                collector = XsoarSaasE2ETestCollector(marketplace=marketplace, graph=graph)
             case True, MarketplaceVersions.MarketplaceV2:
                 collector = XSIAMNightlyTestCollector(graph=graph)
             case True, MarketplaceVersions.XPANSE:
