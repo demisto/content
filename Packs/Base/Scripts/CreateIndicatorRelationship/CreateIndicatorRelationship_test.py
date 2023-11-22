@@ -119,10 +119,6 @@ def test_validate_arguments(mocker):
         'reverse_relationship': '',
         'create_indicator': 'false'
     }
-    mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=False)
-    validate_arguments(args)
-    assert args['entity_a_type'] == 'STIX Malware'
-    assert args['entity_b_type'] == 'STIX Tool'
 
     mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
     validate_arguments(args)

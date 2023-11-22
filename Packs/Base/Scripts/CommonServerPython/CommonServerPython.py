@@ -600,7 +600,7 @@ class FeedIndicatorType(object):
         :return:: Indicator type .
         :rtype: ``str``
         """
-        if is_demisto_version_ge("6.2.0") and indicator_type.startswith(STIX_PREFIX):
+        if indicator_type.startswith(STIX_PREFIX):
             return indicator_type[len(STIX_PREFIX):]
         return indicator_type
 
@@ -2875,10 +2875,7 @@ class Common(object):
 
         @staticmethod
         def get_context_path():
-            if is_demisto_version_ge('5.5.0'):
-                return Common.DBotScore.CONTEXT_PATH
-            else:
-                return Common.DBotScore.CONTEXT_PATH_PRIOR_V5_5
+            return Common.DBotScore.CONTEXT_PATH
 
         def to_context(self):
             dbot_context = {
@@ -6140,16 +6137,15 @@ class ScheduledCommand:
 
     @staticmethod
     def raise_error_if_not_supported():
-        if not is_demisto_version_ge('6.2.0'):
-            raise DemistoException(ScheduledCommand.VERSION_MISMATCH_ERROR)
+        return True
 
     @staticmethod
     def supports_polling():
         """
-        Check if the integration supports polling.
+        Check if the integration supports polling (if server version is greater than 6.2.0).
         Returns: Boolean
         """
-        return True if is_demisto_version_ge('6.2.0') else False
+        return True
 
     def to_results(self):
         """
@@ -8189,6 +8185,60 @@ def is_demisto_version_ge(version, build_number=''):
         return True
 
 
+def is_xsiam_or_xsoar_saas():
+    """Determines whether or not the platform is XSIAM or XSOAR SAAS.
+
+    :return: True iff the platform is XSIAM or XSOAR SAAS.
+    :rtype: ``bool``
+    """
+    return is_demisto_version_ge('8.0.0')
+
+
+def is_xsoar():
+    """Determines whether or not the platform is XSOAR.
+
+    :return: True iff the platform is XSOAR.
+    :rtype: ``bool``
+    """
+    return "xsoar" in demisto.demistoVersion().get("platform")
+
+
+def is_xsoar_on_prem():
+    """Determines whether or not the platform is a XSOAR on-prem.
+
+    :return: True iff the platform is XSOAR on-prem.
+    :rtype: ``bool``
+    """
+    return demisto.demistoVersion().get("platform") == "xsoar" and not is_demisto_version_ge('8.0.0')
+
+
+def is_xsoar_hosted():
+    """Determines whether or not the platform is XSOAR hosted.
+
+    :return: True iff the platform is XSOAR hosted.
+    :rtype: ``bool``
+    """
+    return demisto.demistoVersion().get("platform") == "xsoar_hosted"
+
+
+def is_xsoar_saas():
+    """Determines whether or not the platform is XSOAR SAAS.
+
+    :return: True iff the platform is XSOAR SAAS.
+    :rtype: ``bool``
+    """
+    return demisto.demistoVersion().get("platform") == "xsoar" and is_xsiam_or_xsoar_saas()
+
+
+def is_xsiam():
+    """Determines whether or not the platform is XSIAM.
+
+    :return: True iff the platform is XSIAM.
+    :rtype: ``bool``
+    """
+    return demisto.demistoVersion().get("platform") == "x2"
+
+
 class DemistoHandler(logging.Handler):
     """
         Handler to route logging messages to an IntegrationLogger or demisto.debug if not supplied
@@ -9646,9 +9696,9 @@ class IndicatorsSearcher:
                  sort=None,
                  ):
         # searchAfter is available in searchIndicators from version 6.1.0
-        self._can_use_search_after = is_demisto_version_ge('6.1.0')
+        self._can_use_search_after = True
         # populateFields merged in https://github.com/demisto/server/pull/18398
-        self._can_use_filter_fields = is_demisto_version_ge('6.1.0', build_number='1095800')
+        self._can_use_filter_fields = True
         self._search_after_param = None
         self._page = page
         self._filter_fields = filter_fields
@@ -9716,8 +9766,7 @@ class IndicatorsSearcher:
         else:
             if self.total is None:
                 return False
-            no_more_indicators = (self.total and self._search_after_param is None) if self._can_use_search_after \
-                else self.total <= self.page * self._size
+            no_more_indicators = self.total and self._search_after_param is None
             if no_more_indicators:
                 demisto.debug("IndicatorsSearcher can not fetch anymore indicators")
             return no_more_indicators
@@ -9751,10 +9800,8 @@ class IndicatorsSearcher:
             query=query,
             size=size,
             value=value,
-            searchAfter=self._search_after_param if self._can_use_search_after else None,
-            populateFields=self._filter_fields if self._can_use_filter_fields else None,
-            # use paging as fallback when cannot use search_after
-            page=self.page if not self._can_use_search_after else None,
+            searchAfter=self._search_after_param,
+            populateFields=self._filter_fields,
         )
         demisto.debug('IndicatorsSearcher: page {}, search_args: {}'.format(self._page, search_args))
         if is_demisto_version_ge('6.6.0'):
@@ -9782,8 +9829,6 @@ class AutoFocusKeyRetriever:
     def __init__(self, api_key):
         # demisto.getAutoFocusApiKey() is available from version 6.2.0
         if not api_key:
-            if not is_demisto_version_ge("6.2.0"):  # AF API key is available from version 6.2.0
-                raise DemistoException('For versions earlier than 6.2.0, configure an API Key.')
             try:
                 api_key = demisto.getAutoFocusApiKey()  # is not available on tenants
             except ValueError as err:
@@ -9793,37 +9838,29 @@ class AutoFocusKeyRetriever:
 
 def get_feed_last_run():
     """
-    This function gets the feed's last run: from XSOAR version 6.2.0: using `demisto.getLastRun()`.
-    Before XSOAR version 6.2.0: using `demisto.getIntegrationContext()`.
+    This function gets the feed's last run: using `demisto.getLastRun()`.
     :rtype: ``dict``
     :return: All indicators from the feed's last run
     """
-    if is_demisto_version_ge('6.2.0'):
-        feed_last_run = demisto.getLastRun() or {}
-        if not feed_last_run:
-            integration_ctx = demisto.getIntegrationContext()
-            if integration_ctx:
-                feed_last_run = integration_ctx
-                demisto.setLastRun(feed_last_run)
-                demisto.setIntegrationContext({})
-    else:
-        feed_last_run = demisto.getIntegrationContext() or {}
+    feed_last_run = demisto.getLastRun() or {}
+    if not feed_last_run:
+        integration_ctx = demisto.getIntegrationContext()
+        if integration_ctx:
+            feed_last_run = integration_ctx
+            demisto.setLastRun(feed_last_run)
+            demisto.setIntegrationContext({})
     return feed_last_run
 
 
 def set_feed_last_run(last_run_indicators):
     """
-    This function sets the feed's last run: from XSOAR version 6.2.0: using `demisto.setLastRun()`.
-    Before XSOAR version 6.2.0: using `demisto.setIntegrationContext()`.
+    This function sets the feed's last run: using `demisto.setLastRun()`.
     :type last_run_indicators: ``dict``
     :param last_run_indicators: Indicators to save in "lastRun" object.
     :rtype: ``None``
     :return: None
     """
-    if is_demisto_version_ge('6.2.0'):
-        demisto.setLastRun(last_run_indicators)
-    else:
-        demisto.setIntegrationContext(last_run_indicators)
+    demisto.setLastRun(last_run_indicators)
 
 
 def set_last_mirror_run(last_mirror_run):  # type: (Dict[Any, Any]) -> None
@@ -10587,7 +10624,6 @@ def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, dat
     :rtype: ``Tuple``
     """
     last_run_time = last_run and 'time' in last_run and last_run['time']
-    offset = last_run.get('offset')
     now = get_current_time(timezone)
     if not last_run_time:
         last_run_time = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
@@ -10596,7 +10632,7 @@ def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, dat
     else:
         last_run_time = dateparser.parse(last_run_time, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
 
-    if not offset and look_back and look_back > 0:
+    if look_back and look_back > 0:
         if now - last_run_time < timedelta(minutes=look_back):
             last_run_time = now - timedelta(minutes=look_back)
 

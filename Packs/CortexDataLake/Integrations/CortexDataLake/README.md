@@ -16,11 +16,16 @@ The following screen will appear:
 
 2. In the Palo Alto Networks Cortex XSOAR Playground or War Room, run the ***!GetLicenseID*** command to get the License ID.
 The License ID will be used in Step 4.
-3. In Palo Alto Networks Cortex XSOAR, go to __Settings__ > __ABOUT__ > __License__ and get the value in the license field Customer name. The Customer name will be used in Step 4.
-4. In the Palo Alto Networks HUB, enter the License ID and the Customer name in the screen obtained in Step 1. The License ID and Customer name were obtained in Steps 2 and 3. Click **Start Authorization Process** to get the Authentication Token, Registration ID, and Encryption Key - these three fields will be used in the Palo Alto Networks Cortex v2 integration instance in Step 7 below.
-5. In Palo Alto Networks Cortex XSOAR, navigate to __Settings__ > __Integrations__ > __Servers & Services__.
-6. Search for Cortex Data Lake XSOAR Connector.
-7. Click __Add instance__ to create and configure a new integration instance.
+3. (Cortex XOAR 6.x) Go to __Settings__ > __ABOUT__ > __License__ and get the value in the license field Customer name. 
+   
+   (Cortex xSOAR 8, Administrators only ) Go to __Profile__ > __ABOUT__ and get the value in the license field Customer name.
+
+   The Customer name will be used in Step 4.
+   
+5. In the Palo Alto Networks HUB, enter the License ID and the Customer name in the screen obtained in Step 1. The License ID and Customer name were obtained in Steps 2 and 3. Click **Start Authorization Process** to get the Authentication Token, Registration ID, and Encryption Key - these three fields will be used in the Palo Alto Networks Cortex v2 integration instance in Step 7 below.
+6. In Palo Alto Networks Cortex XSOAR, navigate to __Settings__ > __Integrations__ > __Servers & Services__.
+7. Search for Cortex Data Lake XSOAR Connector.
+8. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
     * __Authentication Token__: Retrieved in the authentication process in Step 4.
     * __Registration ID__: Retrieved in the authentication process in Step 4.
