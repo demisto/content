@@ -24,25 +24,46 @@ needs to be a global administrator or needs to be assigned the Role Management r
 Organization Management role group). The Role Management role allows users to view, create, and modify role groups.
 *Clarification:* The account which is used by the integration, does _not_ require Global Administrator permissions.
 
-1. Login into the [Security & Compliance Center](https://ps.compliance.protection.outlook.com):
+1. Login into the [Compliance Center](https://compliance.microsoft.com/):
 
-2. From the side menu, click **Permissions**.
+2. From the side menu navigate to **Role & Scopes** -> **Permissions** under **Microsoft Purview solutions** click on **Roles**.
 
-   ![side-menu](https://github.com/demisto/content/raw/master/Packs/MicrosoftExchangeOnline/doc_files/security-and-compliance-side-menu.png)
+   ![SecAndComp-roles](../../doc_files/SecAndComp-roles.png)
 
-3. Search for and select the **Data Investigator** role.
+3. Click **Create role group**.
+    
+    ![SecAndComp-add-role](../../doc_files/SecAndComp-add-role.png)
 
-4. Click **Edit role group**. 
+4. Give a name and description (optional). 
 
-   ![roles-edit-1](https://github.com/demisto/content/raw/master/Packs/MicrosoftExchangeOnline/doc_files/security-and-compliance-edit-1.png)
+   ![SecAndComp-role-name](../../doc_files/SecAndComp-role-name.png)
 
-5. Click **Choose Members** and click **Edit**. Add the user you intend to be used in the integration:
+5. Click **Choose roles**.
 
-   ![roles-edit-2](https://github.com/demisto/content/raw/master/Packs/MicrosoftExchangeOnline/doc_files/security-and-compliance-edit-2.png)
-6. Click **Add**.
-   ![roles-edit-3](https://github.com/demisto/content/raw/master/Packs/MicrosoftExchangeOnline/doc_files/security-and-compliance-edit-3.png)
-7. Choose which members to add from the displayed list and click **Add**.
-8. Click **Done**.
+   ![SecAndComp-choose-roles](../../doc_files/SecAndComp-choose-roles.png)
+
+6. Select the following roles:
+   * Case Management
+   * Communication
+   * Compliance Search
+   * Custodian
+   * Data Investigation Management
+   * Export
+   * Hold
+   * Preview
+   * Review
+   * RMS Decrypt
+   * Search And Purge
+
+7. Click **Choose users**.
+
+   ![SecAndComp-choose-users](../../doc_files/SecAndComp-choose-users.png)
+
+8. Select one or more users to add to the role group.
+
+9. Click **Create**.
+
+    ![SecAndComp-create-role](../../doc_files/SecAndComp-create-role.png)
 
 The username and password for the user which you intend to use for the investigation will need to be added to the *UPN/Email* and *Delegated Password* fields of the integration instance configuration.
 
