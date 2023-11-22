@@ -19,7 +19,7 @@ https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/Hel
 from CommonServerUserPython import *  # noqa
 
 import urllib3
-from typing import Any, Optional
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -43,7 +43,7 @@ class Client(BaseClient):
     """
 
     # TODO RETURNS LIST
-    def get_events(self, limit: Optional[str], after_checkpoint: Optional[str], created_after: Optional[str]) -> dict[str, Any]:
+    def get_events(self, limit: str | None, after_checkpoint: str | None, created_after: str | None) -> dict[str, Any]:
         return self._http_request(
             method='GET',
             url_suffix='/api/v1/events',
