@@ -48,10 +48,7 @@ def check_tld(email_address: str) -> bool:
         Boolean: True if it's not a common file extension
 
     """
-    if email_address.split(".")[-1] not in COMMON_FILE_EXT:
-        return True
-    else:
-        return False
+    return email_address.split(".")[-1] not in COMMON_FILE_EXT
 
 
 def refang_email(email_address: str) -> str:
