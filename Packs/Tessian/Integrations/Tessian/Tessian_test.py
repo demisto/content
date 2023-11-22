@@ -41,7 +41,7 @@ def test_get_events_command(mocker):
     )
 
     input = {
-        "limit": "10",
+        "limit": 10,
         "after_checkpoint": None,
         "created_after": None,
     }
