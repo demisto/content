@@ -583,10 +583,15 @@ def is_iocs_to_keep_time():
     In order to remove deleted/expired/filtered indicators. 
     """
     next_iocs_to_keep_time = get_integration_context().get("next_iocs_to_keep_time")
+    
+    if next_iocs_to_keep_time is None:
+        # This is supposed to happen only in the case of appliying the fixed version on a running instance.
+        set_new_iocs_to_keep_time()
+        next_iocs_to_keep_time = get_integration_context().get("next_iocs_to_keep_time")
+
     time_now = datetime.now(timezone.utc)
     if (
-        next_iocs_to_keep_time is not None
-        and time_now.hour in range(1, 3)
+        time_now.hour in range(1, 3)
         and time_now > datetime.strptime(next_iocs_to_keep_time, DEMISTO_TIME_FORMAT).replace(tzinfo=timezone.utc)
     ):
         return True
