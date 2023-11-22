@@ -810,7 +810,9 @@ test-upload-flow:
 .e2e_test_results:
   stage: results
   rules:
+    - !reference [ .filter-non-nightly-docker-updates-rule, rules ]
     - if: '$NIGHTLY'
+      when: always
   extends:
     - .default-job-settings
   needs:
