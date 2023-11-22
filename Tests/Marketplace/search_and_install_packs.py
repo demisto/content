@@ -787,7 +787,7 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
     if not multithreading:
         for pack_id in pack_ids:
             success &= search_pack_and_its_dependencies(pack_id=pack_id, **kwargs)
-
+        logging.info(f"list_packs_and_its_dependency_install_request_body: {list_packs_and_its_dependency_install_request_body}")
         batch_packs_install_request_body = create_batches(list_packs_and_its_dependency_install_request_body)
 
     else:
