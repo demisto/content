@@ -2534,7 +2534,7 @@ def get_request_arguments_per_ticket_type(
             source=ticket_properties.source,
             responder_id=arg_to_number(args.get('responder_id')),
             requester_id=arg_to_number(args.get('requester_id')),
-            problem=get_arg_template(args.get('problem'), 'problem'),
+            problem=get_arg_template(args.get('problem'), 'problem'),   # noqa
             phone=args.get('phone'),
             name=args.get('name'),
             impact=ticket_properties.impact,
@@ -2545,12 +2545,9 @@ def get_request_arguments_per_ticket_type(
             due_by=args.get('due_by'),
             department_id=arg_to_number(args.get('department_id')),
             custom_fields=update_custom_fields(args),
-            change_initiating_ticket=get_arg_template(
-                args.get('change_initiating_ticket'),
-                'change_initiating_ticket'),
-            change_initiated_by_ticket=get_arg_template(
-                args.get('change_initiated_by_ticket'),
-                'change_initiated_by_ticket'),
+            change_initiating_ticket=get_arg_template(args.get('change_initiating_ticket'), 'change_initiating_ticket'), # noqa
+            change_initiated_by_ticket=get_arg_template(args.get('change_initiated_by_ticket'),
+                                                        'change_initiated_by_ticket'),  # noq
             cc_emails=argToList(args.get('cc_emails')),
             category=args.get('category'),
             attachments=get_files_to_attach(args),
@@ -2565,10 +2562,8 @@ def get_request_arguments_per_ticket_type(
     return args_for_request
 
 
-def update_ticket_attachments(
-    client: Client, args_for_request: dict[str, Any],
-    create_response: dict[str, Any],
-    command_operator: str) -> dict[str, Any] | None:
+def update_ticket_attachments(client: Client, args_for_request: dict[str, Any], create_response: dict[str, Any],
+                              command_operator: str) -> dict[str, Any] | None:
     """ Update ticket with attachments when user create ticket with attachments.
 
     Args:
@@ -2695,8 +2690,7 @@ def convert_response_properties(
 
     for item in updated_response:
         for response_key in response_keys:
-            if item.get(
-                response_key) and response_key in predefined_values:
+            if item.get(response_key) and response_key in predefined_values:
                 property_values = reverse_dict(predefined_values[response_key])
                 item[response_key] = property_values.get(item[response_key])
 
@@ -2729,8 +2723,7 @@ def get_args_by_command_name(args: dict[str, Any]) -> tuple:
     output_prefix = entity_name.capitalize()
 
     # checks if command entity consists of two words.
-    if (len(command_name) > MAX_DEFAULT_ARGS_COUNT
-        and not {'task', 'conversation'}.intersection(command_name)):
+    if len(command_name) > MAX_DEFAULT_ARGS_COUNT and not {'task', 'conversation'}.intersection(command_name):
         entity_id_key = f'{entity_name}_{command_name[2]}_id'
         entity_name = f'{entity_name}_{command_name[2]}'
         output_prefix = f'{output_prefix}{command_name[2].capitalize()}'
@@ -2971,7 +2964,7 @@ def build_query(
 
             # Convert str value to int in case it's a predefined values
             if entity_name in ['ticket', 'problem', 'change', 'release'] and \
-                (dict_key := TICKET_PROPERTIES_BY_TYPE[entity_name].get(key)):
+                    (dict_key := TICKET_PROPERTIES_BY_TYPE[entity_name].get(key)):
                 integer_value = dict_key.get(value)
                 correct_value = integer_value if integer_value is not None else correct_value
 
@@ -3069,8 +3062,7 @@ def date_to_epoch_for_fetch(date: datetime | None) -> int:
     return date_to_timestamp(date) // 1000
 
 
-def get_modified_remote_data(
-    client: Client, args: dict[str, Any]) -> GetModifiedRemoteDataResponse:
+def get_modified_remote_data(client: Client, args: dict[str, Any]) -> GetModifiedRemoteDataResponse:
     """
     Queries for incidents that were modified since the last update.
 
@@ -3168,8 +3160,7 @@ def update_remote_system(
             )
             updated_arguments = {}
             for key, value in update_args.items():
-                if key in MIRRORING_COMMON_FIELDS + TICKET_TYPE_TO_ADDITIONAL_MIRRORING_FIELDS[
-                    ticket_type]:
+                if key in MIRRORING_COMMON_FIELDS + TICKET_TYPE_TO_ADDITIONAL_MIRRORING_FIELDS[ticket_type]:
                     update_value = dict_safe_get(TICKET_PROPERTIES_BY_TYPE,
                                                  [ticket_type, key, value],
                                                  value)
@@ -3194,16 +3185,13 @@ def update_remote_system(
         return incident_id
 
 
-def get_remote_data_command(
-    client: Client,
-    args: dict[str, Any],
-    params: dict[str, Any],
-) -> GetRemoteDataResponse:
+def get_remote_data_command(client: Client, args: dict[str, Any], params: dict[str, Any]) -> GetRemoteDataResponse:
     """
     Gets new information about the incidents in the remote system
     and updates existing incidents in Cortex XSOAR.
     Args:
         client: Freshservice API client.
+        params (dict): Integration parameters.
         args (Dict[str, Any]): command arguments.
     Returns:
         List[Dict[str, Any]]: first entry is the incident (which can be completely empty) and the new entries.
@@ -3435,6 +3423,7 @@ def fetch_incidents(client: Client, params: dict):
 
     Args:
         client (Client): An API client object used to retrieve incidents.
+        params (dict): Integration params.
         args (dict): A dictionary of parameters used to configure the function.
             The following keys are supported:
                 - alert types (str): A comma-separated list of alert types to fetch.
@@ -3449,9 +3438,7 @@ def fetch_incidents(client: Client, params: dict):
                     A boolean value indicating whether to fetch ticket tasks along with incidents.
     """
     # use condition statement to avoid mypy error
-    mirror_direction = None if params[
-                                   "mirror_direction"] == 'None' else MIRROR_DIRECTION_MAPPING[
-        params["mirror_direction"]]
+    mirror_direction = None if params["mirror_direction"] == 'None' else MIRROR_DIRECTION_MAPPING[params["mirror_direction"]]
 
     ticket_types, alert_properties = get_alert_properties(params)
     fetch_ticket_task = argToBoolean(params['fetch_ticket_task'])
