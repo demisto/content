@@ -485,7 +485,7 @@ script:
     deprecated: false
     description: Get Varonis threat models
     execution: false
-    name: varonis-threat-models
+    name: varonis-get-threat-models
   dockerimage: demisto/ntlm:1.0.0.78782
   feed: false
   isfetch: true

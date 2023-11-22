@@ -1195,7 +1195,7 @@ def test_module_command(client: Client) -> str:
     return message
 
 
-def varonis_threat_models_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def varonis_get_threat_models_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Get threaat models from Varonis DA
 
     :type client: ``Client``
@@ -1635,7 +1635,7 @@ def main() -> None:
         url = 'https://int308a6.varonis-preprod.com/'
         apiKey = 'vkey1_2069ee4590da45429fa8cacbc6f15669_JAHzjsqVfrvYgRiwe+X2hQse017oyfPSTEzyyJc5A2c='
         command = 'varonis-close-alert'  # 'test-module'|
-        # 'varonis-threat-models'|
+        # 'varonis-get-threat-models'|
         # 'varonis-get-alerts'|
         # 'varonis-get-alerted-events'|
         # 'varonis-update-alert-status'|
@@ -1656,7 +1656,7 @@ def main() -> None:
         if command == 'test-module':
             pass
 
-        if command == 'varonis-threat-models':
+        if command == 'varonis-get-threat-models':
             args['id'] = "1,2,3"  # List of requested threat model ids
             args['name'] = ""  # "Abnormal service behavior: access to atypical folders,Abnormal service behavior: access to atypical files"  # List of requested threat model names
             args['category'] = ""  # "Exfiltration,Reconnaissance"  # List of requested threat model categories
@@ -1719,9 +1719,9 @@ def main() -> None:
 
         client.varonis_authenticate(apiKey)
 
-        if command == 'varonis-threat-models':
+        if command == 'varonis-get-threat-models':
             # This is the call made when pressing the integration Test button.
-            result = varonis_threat_models_command(client, args)
+            result = varonis_get_threat_models_command(client, args)
             return_results(result)
 
         elif command == 'test-module':
