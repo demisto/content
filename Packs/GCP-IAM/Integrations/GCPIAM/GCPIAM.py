@@ -3838,11 +3838,12 @@ def gcp_iam_tagbindings_list_command(client: Client, args: Dict[str, Any]) -> Un
     return command_results
 
 
-def test_module(service_account_key: str) -> None:
+def test_module(service_account_key: str, proxy: bool = False) -> None:
     try:
-        client: Client = Client(client_secret=service_account_key)
+        client: Client = Client(client_secret=service_account_key, proxy=proxy)
         client.gcp_iam_predefined_role_list_request(include_permissions=False, limit=1)
-    except Exception:
+    except Exception as e:
+        demisto.debug(f'Error when running test-module {e}')
         return return_results('Authorization Error: make sure API Service Account Key is valid.')
 
     return_results('ok')
@@ -3861,7 +3862,7 @@ def main() -> None:
 
     try:
         if command == 'test-module':
-            return test_module(service_account_key)
+            return test_module(service_account_key, proxy=proxy)
 
         client: Client = Client(client_secret=service_account_key, proxy=proxy, verify_certificate=verify_certificate)
         commands = {
