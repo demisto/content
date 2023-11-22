@@ -278,9 +278,10 @@
   - git init > /dev/null 2>&1
   - git remote add origin https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_NAMESPACE}/content.git
   - git fetch --depth 1 origin $LAST_UPLOAD_COMMIT
-  - git checkout FETCH_HEAD > /dev/null 2>&1
+  - git checkout FETCH_HEAD >${ARTIFACTS_FOLDER}/logs/add-content-production-to-artifacts.log 2>&1
   - cp -r ./Packs ${ARTIFACTS_FOLDER}/production_packs
   - echo "checked out ${LAST_UPLOAD_COMMIT} which is the last successful upload commit"
+  - job-done
   - section_end "Clone production content and add it to artifacts"
 
 
