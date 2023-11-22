@@ -780,6 +780,18 @@ class TestMergeVersionBlocks:
             "##### Some Other Integration\n"
             "- Updated the Docker image to: other_docker_image:457.",
             "1.0.2", id="Handle 2 different old docker updates"),
+        pytest.param({
+            "1.0.2": "#### Integrations\n"
+                     "##### Some Integration\n"
+                     "- Updated the Docker image to: 456.",
+            "1.0.1": "#### Integrations\n"
+                     "##### Some Integration\n"
+                     "- Updated the Docker image to: 123.",
+        },
+            "#### Integrations\n"
+            "##### Some Integration\n"
+            "- Updated the Docker image to: 456.",
+            "1.0.2", id="Merge docker updates, unsorted dict"),
     ])
     def test_merge_rns_with_several_docker_updates(self, pack_rns: dict, expected_rns: str, expected_version: str):
         """
@@ -788,6 +800,7 @@ class TestMergeVersionBlocks:
             - Case 2: Both containing docker updates and other updates.
             - Case 3: One is combined (docker updates and other updates) and one contains other updates only.
             - Case 4: Both containing 2 integrations with 2 different docker image updates.
+            - Case 5: Same as case 1 but the entities dict is unsorted.
         When: Using merge_version_blocks function.
         Then: Ensure that the merge was done correctly:
             - Only one docker update is present.
