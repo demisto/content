@@ -1358,7 +1358,6 @@ def process_incidents(raw_incidents: list, min_severity: int, latest_created_tim
             last_incident_number = incident.get('IncidentNumber')
     if not raw_incidents:
         # if we don't have any raw incidents, we want to keep the last incident id and update the last_created_time to now
-        last_incident_number = last_incident_number
         latest_created_time = datetime.utcnow()
     next_run = {
         'last_fetch_time': latest_created_time.strftime(DATE_FORMAT),
