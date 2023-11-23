@@ -10,7 +10,7 @@ After configuring the Symantec Cloud SWG Event Collector integration in Cortex X
 
 In addition, data is normalized to the Cortex Data Model (XDM).
 
-The following XQL Queries demonstrates the parsing and XDM modeling for the Symantec Cloud SWG Access Logs:
+The following XQL Queries demonstrate the parsing and XDM modeling for the Symantec Cloud SWG Access Logs:
 
 1. **Raw Field Extraction**
    ```javascript
