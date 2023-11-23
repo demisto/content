@@ -647,7 +647,7 @@ def test_reputation_file(
         client, args={"file": "0cc22fd05a3e771b09b584db0a16aaaa"}
     )
 
-    results_dict = results.to_context()["Contents"][0]
+    results_dict = results[0].to_context()["Contents"]
 
     assert results_dict["score"] == 3
     assert results_dict["type"] == "File"
@@ -686,7 +686,7 @@ def test_reputation_domain(
         client, args={"domain": "some.url.com"}
     )
 
-    results_dict = results.to_context()["Contents"][0]
+    results_dict = results[0].to_context()["Contents"]
 
     assert results_dict["score"] == 3
     assert results_dict["type"] == "Domain"
@@ -715,7 +715,7 @@ def test_reputation_ip(
 
     results = MandiantAdvantageThreatIntelligence.fetch_reputation(client, args={"ip": "154.91.84.82"})
 
-    results_dict = results.to_context()["Contents"][0]
+    results_dict = results[0].to_context()["Contents"]
 
     assert results_dict["score"] == 0
     assert results_dict["type"] == "IP"
@@ -745,7 +745,7 @@ def test_reputation_url(
         client, args={"url": "https://someurl.com"}
     )
 
-    results_dict = results.to_context()["Contents"][0]
+    results_dict = results[0].to_context()["Contents"]
 
     assert results_dict["score"] == 1
     assert results_dict["type"] == "URL"
@@ -771,7 +771,7 @@ def test_reputation_cve(
         client, args={"cve": "CVE-1234-12345"}
     )
 
-    results_dict = results.to_context()["Contents"][0]
+    results_dict = results[0].to_context()["Contents"]
 
     assert results_dict["score"] == 0
     assert results_dict["type"] == "CVE"
@@ -818,7 +818,7 @@ def test_get_actor(client: MandiantAdvantageThreatIntelligence.MandiantClient, r
         client, args={"actor_name": "FAKE_ACT0R"}
     )
 
-    results_dict = results.to_context()["Contents"][0]
+    results_dict = results[0].to_context()["Contents"]
 
     assert results_dict["value"] == "FAKE_ACT0R"
     assert results_dict["type"] == "Threat Actor"
@@ -883,7 +883,7 @@ def test_get_malware(client: MandiantAdvantageThreatIntelligence.MandiantClient,
         client, args={"malware_name": "MALWARE_NAME"}
     )
 
-    results_dict = results.to_context()["Contents"][0]
+    results_dict = results[0].to_context()["Contents"]
 
     assert results_dict["value"] == "MALWARE_NAME"
     assert results_dict["type"] == "Malware"
