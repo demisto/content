@@ -34,7 +34,7 @@
     "modified": "2020-09-09T14:02:27.423018192Z",
     "name": "Failed Instances Category",
     "packID": "",
-    "params": null,
+    "params": {},
     "prevName": "Failing Instances Category",
     "propagationLabels": [
      "all"

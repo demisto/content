@@ -88,7 +88,8 @@ script:
   commands:
   - description: Returns a list of sample events fetched from the stream.
     name: crowdstrike-falcon-streaming-get-sample-events
-  dockerimage: demisto/py3-tools:1.0.0.61931
+  dockerimage: demisto/py3-tools:1.0.0.77497
+  isFetchSamples: true
   longRunning: true
   runonce: false
   script: '-'

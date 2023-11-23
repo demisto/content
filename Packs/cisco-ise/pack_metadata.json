@@ -12,7 +12,12 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "ACS",
+        "ISE",
+        "Access Control System",
+        "Identity Services Engine"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"

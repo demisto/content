@@ -20,7 +20,7 @@ def load_mock_response(file_name: str) -> str:
         str: Mock file content.
 
     """
-    with open(f'test_data/{file_name}', mode='r', encoding='utf-8') as mock_file:
+    with open(f'test_data/{file_name}', encoding='utf-8') as mock_file:
         return mock_file.read()
 
 
@@ -677,8 +677,8 @@ def test_external_dynamic_list_to_xsoar_format(input, expected_output):
     [
         ({'type': 'ip', 'source_url': 'test.com'},
          'test.com'),
-        ({'type': 'predefined_url', 'predefined_url_list': 'panw–auth-portal-exclude-list'},
-         'panw–auth-portal-exclude-list'),
+        ({'type': 'predefined_url', 'predefined_url_list': 'panw-auth-portal-exclude-list'},
+         'panw-auth-portal-exclude-list'),
         ({'type': 'predefined_ip', 'predefined_ip_list': 'panw-torexit-ip-list'},
          'panw-torexit-ip-list')
     ]
@@ -695,7 +695,7 @@ def test_get_url_according_to_type(args, expected_result):
     [
         ({'type': 'ip', 'predefined_url_list': 'test.com'},
          'Please provide the source_url'),
-        ({'type': 'predefined_url', 'source_url': 'panw–auth-portal-exclude-list'},
+        ({'type': 'predefined_url', 'source_url': 'panw-auth-portal-exclude-list'},
          'Please provide the predefined_url_list'),
         ({'type': 'predefined_ip', 'source_url': 'panw-torexit-ip-list'},
          'Please provide the predefined_ip_list')
@@ -771,3 +771,24 @@ def test_get_pagination_params(args, expected_result):
 
     pagination_params = get_pagination_params(args)
     assert pagination_params == expected_result
+
+
+def test_quarantine_host(mocker):
+    """"_summary_"
+    Given:
+        - A host_id to be added to the quarantine list
+    When:
+        - call to quarantine_host_command
+    Then:
+        - Validate the command pass as expected
+    """
+    from PrismaSASE import quarantine_host_command
+    client = create_mocked_client()
+    host_id = 'test_host'
+
+    mocker.patch.object(client, 'get_access_token', return_value='access_token')
+    mocker.patch.object(client, '_http_request', return_value={'host_id': host_id})
+
+    result = quarantine_host_command(client, {'host_id': host_id})
+
+    assert all(msg in result.readable_output for msg in ['Host Quarantined', host_id])

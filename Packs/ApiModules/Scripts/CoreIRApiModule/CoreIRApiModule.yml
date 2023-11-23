@@ -12,5 +12,7 @@ comment: Common Core IR Client, provides generic Infrastructure.
 scripttarget: 0
 dependson: {}
 timeout: 0s
-dockerimage: demisto/python3:3.10.1.27636
+dockerimage: demisto/python3:3.10.13.78960
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

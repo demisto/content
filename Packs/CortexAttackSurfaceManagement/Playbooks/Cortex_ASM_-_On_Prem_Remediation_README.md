@@ -1,7 +1,9 @@
 This playbook adds new block rule(s) to on-prem firewall vendors in order to block internet access for internet exposures.
 
 Conditions:
-This is currently limited to stand-alone firewalls for PAN-OS.
+- Multiple integration instances configured at the same time are not supported (Panorama or standalone NGFW).
+- Multiple rules with the same name in different device-groups not supported (Panorama).
+- !pan-os-list-services will fail if there are no services in a specific device-group (Panorama).
 
 ## Dependencies
 
@@ -33,6 +35,8 @@ This playbook does not use any scripts.
 | RemoteIP | IP address of the service. | alert.remoteip | Required |
 | RemoteProtocol | Protocol of the service. | alert.appid | Required |
 | RemotePort | Port number of the service. | alert.remoteport | Required |
+| DeviceGroup | Device group of the firewall rule to lookup. |  | Optional |
+| SecondaryDeviceGroup | If the rule, address and service are created in the "Shared" location, we need to know what device-groups we can push to because it isn't possible to push to the "Shared" location. |  | Optional |
 
 ## Playbook Outputs
 

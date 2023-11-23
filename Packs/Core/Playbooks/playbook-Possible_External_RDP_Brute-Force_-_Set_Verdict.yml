@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Possible External RDP Brute-Force - Set Verdict
-description: "This playbook creating an array called \"Suspicious Elements\", which is used to count potential security threats. The following elements can be added to the array:\n\n- \"IP Reputation\" - Dbot Score is 2-3 \n- \"Source geolocation\" - RDP Connection made from rare geo-location \n-  Related to campaign - IP address is related to campaign, based on TIM module\n-  Hunting results - the hunt for indicators related to the source IP and the related campaign returned results\n-  XDR Alert search - XDR Alerts that related to the same username and endpoint, and to the MITRE tactics that comes after \"Credential Access\", were found.\n\nThe array will then be outputted and its size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a \"True Positive.\""
+description: "This playbook creating an array called \"Suspicious Elements\", which is used to count potential security threats. The following elements can be added to the array:\n\n- \"IP Reputation\" - DBot Score is 2-3 \n- \"Source geolocation\" - RDP Connection made from rare geo-location \n-  Related to campaign - IP address is related to campaign, based on TIM module\n-  Hunting results - the hunt for indicators related to the source IP and the related campaign returned results\n-  XDR Alert search - XDR Alerts that related to the same username and endpoint, and to the MITRE tactics that comes after \"Credential Access\", were found.\n- Risky User - one or more risky users are involved in the incident, as identified by the Cortex Core - IR integration's ITDR module.\n- Risky Host - one or more risky hosts are involved in the incident, as identified by the Cortex Core - IR integration's ITDR module.\n\nThe array will then be outputted and its size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a \"True Positive.\""
 starttaskid: "0"
 tasks:
   "0":
@@ -24,6 +24,8 @@ tasks:
       - "1"
       - "2"
       - "10"
+      - "12"
+      - "13"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -506,6 +508,168 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 16c9bbda-5247-47c2-81d5-2909757ab287
+    type: condition
+    task:
+      id: 16c9bbda-5247-47c2-81d5-2909757ab287
+      version: -1
+      name: Risky user involved?
+      description: Checks if a risky user is involved in the incident.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.RiskyUser
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -800,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 03fb3ebe-d5d6-4695-81d2-5ceab496655b
+    type: condition
+    task:
+      id: 03fb3ebe-d5d6-4695-81d2-5ceab496655b
+      version: -1
+      name: Risky host involved?
+      description: Checks if a risky user is involved in the incident.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.RiskyHost
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1210,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: f480c89c-1647-44ec-8e9e-d1af77bcb52e
+    type: regular
+    task:
+      id: f480c89c-1647-44ec-8e9e-d1af77bcb52e
+      version: -1
+      name: Add risky user to suspicious elements
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Suspicious_Elements
+      value:
+        simple: Risky User
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -800,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 93f3be3f-29e0-499f-8cc3-ac8fb5e8fa06
+    type: regular
+    task:
+      id: 93f3be3f-29e0-499f-8cc3-ac8fb5e8fa06
+      version: -1
+      name: Add risky host to suspicious elements
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Suspicious_Elements
+      value:
+        simple: Risky Host
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1210,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -516,8 +680,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 535,
-        "width": 2070,
-        "x": -390,
+        "width": 2890,
+        "x": -1210,
         "y": 50
       }
     }
@@ -548,6 +712,60 @@ inputs:
   required: false
   description: The external IP reputation.
   playbookInputQuery:
+- key: RiskyUser
+  value:
+    complex:
+      root: Core.RiskyUser
+      filters:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Core.RiskyUser.risk_level
+            iscontext: true
+          right:
+            value:
+              simple: MED
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: Core.RiskyUser.risk_level
+            iscontext: true
+          right:
+            value:
+              simple: HIGH
+          ignorecase: true
+      accessor: id
+  required: false
+  description: Usernames of users that were found as risky by Cortex Core IR.
+  playbookInputQuery:
+- key: RiskyHost
+  value:
+    complex:
+      root: Core.RiskyHost
+      filters:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Core.RiskyHost.risk_level
+            iscontext: true
+          right:
+            value:
+              simple: MED
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: Core.RiskyHost.risk_level
+            iscontext: true
+          right:
+            value:
+              simple: HIGH
+          ignorecase: true
+      accessor: id
+  required: false
+  description: Hostnames that were found as risky by Cortex Core IR.
+  playbookInputQuery:
 outputs:
 - contextPath: Suspicious_Elements
   description: Array that contains all the suspicious elements.
@@ -556,3 +774,4 @@ tests:
 - No tests (auto formatted)
 marketplaces: ["marketplacev2"]
 fromversion: 6.8.0
+system: true

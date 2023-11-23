@@ -1,0 +1,6 @@
+name: Cisco Umbrella Cloud Security Parsing Rule
+id: Cisco_Umbrella_Cloud_Security_ParsingRule
+fromversion: 8.3.0
+tags: []
+rules: ''
+samples: ''

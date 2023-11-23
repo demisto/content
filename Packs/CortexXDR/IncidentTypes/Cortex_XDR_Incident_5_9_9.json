@@ -22,5 +22,8 @@
 	"weeksR": 0,
 	"fromVersion": "5.0.0",
 	"toVersion": "5.9.9",
-	"layout": "Cortex XDR Incident"
+	"layout": "Cortex XDR Incident",
+	"marketplaces": [
+        "xsoar"
+    ]
 }

@@ -74,7 +74,7 @@ description: Use the Prisma Cloud Compute integration to fetch incidents from yo
 display: Palo Alto Networks - Prisma Cloud Compute
 name: PaloAltoNetworks_PrismaCloudCompute
 script:
-  dockerimage: demisto/python3:3.10.13.75921
+  dockerimage: demisto/python3:3.10.13.78960
   isfetch: true
   runonce: false
   script: "-"
@@ -524,7 +524,7 @@ script:
     description: Get the hosts where a specific container is running.
     arguments:
     - name: id
-      description: Container profile ID. Can be retrieved from the prisma-cloud-compute-profile-container-list command.
+      description: Container profile ID. Can be retrieved from the "prisma-cloud-compute-profile-container-list" command.
       required: true
       defaultValue: ""
     - name: limit
@@ -544,14 +544,14 @@ script:
     description: Get runtime forensics data for a specific container on a specific. host.
     arguments:
     - name: id
-      description: The container ID. Can be retrieved from the prisma-cloud-compute-profile-container-list command.
+      description: The container ID. Can be retrieved from the "prisma-cloud-compute-profile-container-list" command.
       required: true
       defaultValue: ""
     - name: collections
       description: The collections scoping the query.
       defaultValue: ""
     - name: hostname
-      description: The hostname for which data should be fetched.
+      description: The hostname for which data should be fetched. Can be retrieved from the "prisma-cloud-compute-hosts-list" command.
       required: true
       defaultValue: ""
     - name: incident_id
@@ -647,7 +647,7 @@ script:
     description: Get forensics on a specific host.
     arguments:
     - name: id
-      description: The host ID. Can be retrieved from the prisma-cloud-compute-profile-host-list command.
+      description: The host ID. Can be retrieved from the "prisma-cloud-compute-hosts-list" command.
       required: true
       defaultValue: ""
     - name: collections
@@ -836,7 +836,7 @@ script:
       description: The cluster name by which to scope the query.
       defaultValue: ""
     - name: hostname
-      description: Name of a specific defender to retrieve. Can be retrieved from !prisma-cloud-compute-profile-host-list.
+      description: Name of a specific defender to retrieve.
       defaultValue: ""
     - name: type
       description: Indicates the defender types to return (e.g., docker, dockerWindows, cri, etc.).
@@ -980,7 +980,7 @@ script:
       isArray: true
       defaultValue: ""
     - name: collections
-      description: A comma-separated list of collections to filter the results by. Can be retrieved from !prisma-cloud-compute-collections-list.
+      description: A comma-separated list of collections to filter the results by. Can be retrieved from the "prisma-cloud-compute-collections-list" command.
       isArray: true
       defaultValue: ""
     - name: limit
@@ -1008,7 +1008,7 @@ script:
       isArray: true
       defaultValue: ""
     - name: hostname
-      description: A comma-separated list of hostnames to filter the results by. Can be retrieved from !prisma-cloud-compute-profile-host-list.
+      description: A comma-separated list of hostnames to filter the results by. Can be retrieved from the "prisma-cloud-compute-profile-host-list" command.
       isArray: true
       defaultValue: ""
     - name: id
@@ -1245,7 +1245,7 @@ script:
       isArray: true
       defaultValue: ""
     - name: hostname
-      description: A comma-separated list of hostnames to filter the results by. Can be retrieved from !prisma-cloud-compute-profile-host-list.
+      description: A comma-separated list of hostnames to filter the results by. Can be retrieved from the "prisma-cloud-compute-profile-host-list" command.
       isArray: true
       defaultValue: ""
     - name: provider
@@ -1913,7 +1913,7 @@ script:
       description: The defender listening port.
       type: Number
   - arguments:
-    - description: The Defender hostname.
+    - description: The Defender hostname. Can be retrieved from the "prisma-cloud-compute-defenders-list" command.
       name: hostname
     - description: The number of log lines to fetch.
       name: lines
@@ -1934,7 +1934,7 @@ script:
       description: The time of the log.
       type: Date
   - arguments:
-    - description: The Defender hostname.
+    - description: The Defender hostname. Can be retrieved from the "prisma-cloud-compute-defenders-list" command.
       name: hostname
     - description: The number of log lines to fetch.
       name: lines
