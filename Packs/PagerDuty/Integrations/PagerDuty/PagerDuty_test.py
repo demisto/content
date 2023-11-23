@@ -434,7 +434,7 @@ def test_translate_severity(mocker: MockerFixture, severity: str, expected_resul
 def test_paginate_with_limit(mocker: MockerFixture):
     """Tests pagination when limit is equal to max incidents per page (100).
 
-    Verifies that a single API call is made to fetch all incidents when 
+    Verifies that a single API call is made to fetch all incidents when
     the requested limit matches the max incidents per page (100).
     """
     from PagerDuty import pagination_incidents
@@ -456,7 +456,7 @@ def test_paginate_with_limit(mocker: MockerFixture):
 def test_paginate_with_limit_is_more_than_INCIDENT_API_LIMIT(mocker: MockerFixture):
     """Tests pagination when limit is more than max incidents per page (100).
 
-    Verifies that multiple API calls are made to fetch all incidents when 
+    Verifies that multiple API calls are made to fetch all incidents when
     the requested limit exceeds the max incidents per page (100).
 
     When limit is 179 , it should make two calls:
@@ -503,8 +503,8 @@ def test_paginate_with_page_size(mocker: MockerFixture):
 def test_paginate_with_page_size_more_than_INCIDENT_API_LIMIT():
     """Tests pagination_incidents when page size exceeds limit.
 
-    Verifies pagination_incidents raises a DemistoException when a page size 
-    greater than the API limit is provided. The API limit is defined in 
+    Verifies pagination_incidents raises a DemistoException when a page size
+    greater than the API limit is provided. The API limit is defined in
     INCIDENT_API_LIMIT.
     """
     from PagerDuty import pagination_incidents
