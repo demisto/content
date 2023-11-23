@@ -4,7 +4,6 @@ import random
 import string
 import subprocess
 from xml.sax import SAXParseException
-
 import dateparser
 import chardet
 
