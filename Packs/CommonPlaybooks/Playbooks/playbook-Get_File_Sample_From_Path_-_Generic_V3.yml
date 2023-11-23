@@ -37,6 +37,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
     taskid: f81d6908-8ce9-452b-8dde-689f44256933
@@ -62,6 +65,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
     taskid: 906138a1-e3ee-4711-889a-4ebcc8c2a1c6
@@ -90,6 +96,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
     taskid: 6d73fcbe-5c0f-4dec-8fa4-9f0c1dd70a8d
@@ -101,8 +110,7 @@ tasks:
       description: |-
         This playbook retrieves a file from a path on an endpoint using VMware Carbon Black EDR (Live Response API).
         Make sure to provide the Carbon Black sensor ID of the endpoint from which you want to retrieve the file.
-      playbookName: Get File Sample From Path - VMware Carbon Black EDR - Live Response
-        API
+      playbookName: Get File Sample From Path - VMware Carbon Black EDR - Live Response API
       type: playbook
       iscommand: false
       brand: ""
@@ -132,6 +140,9 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
     taskid: 9c4ed95f-7e7e-4dcc-8c09-29a421593849
@@ -140,9 +151,7 @@ tasks:
       id: 9c4ed95f-7e7e-4dcc-8c09-29a421593849
       version: -1
       name: PS Remote Get File Sample From Path
-      description: This playbook leverages the Windows built-in PowerShell and WinRM
-        capabilities to connect to a Windows host to acquire a file as forensic evidence
-        for further analysis.
+      description: This playbook leverages the Windows built-in PowerShell and WinRM capabilities to connect to a Windows host to acquire a file as forensic evidence for further analysis.
       playbookName: PS Remote Get File Sample From Path
       type: playbook
       iscommand: false
@@ -177,6 +186,9 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
     taskid: 4ae1d82e-3106-42b4-848e-67f64641dd08
@@ -205,6 +217,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -234,8 +249,7 @@ inputs:
 - key: Agent_ID
   value: {}
   required: false
-  description: The ID of the agent, or of the endpoint, in the relevant integration
-    (such as EDR).
+  description: The ID of the agent, or of the endpoint, in the relevant integration (such as EDR).
   playbookInputQuery:
 outputs:
 - contextPath: File.Size
@@ -271,6 +285,9 @@ outputs:
 - contextPath: File.SSDeep
   description: File SSDeep.
   type: string
+- contextPath: AcquiredFile
+  description: The acquired file details.
+  type: Unknown
 tests:
 - No tests.
 fromversion: 6.0.0
