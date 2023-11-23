@@ -475,15 +475,6 @@
                                 "listId": "caseinfoid-iyuxpzme1h-caseinfoid-field-changed-caseinfoid-4755caa0-26cd-11ee-b788-251b88613edc",
                                 "sectionItemType": "field",
                                 "startCol": 2
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "vectraxdrentitylastmodificationtimestamp",
-                                "height": 53,
-                                "id": "95cf3540-26cd-11ee-b788-251b88613edc",
-                                "index": 7,
-                                "sectionItemType": "field",
-                                "startCol": 2
                             }
                         ],
                         "maxW": 3,
