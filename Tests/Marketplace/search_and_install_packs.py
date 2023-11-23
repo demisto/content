@@ -535,7 +535,7 @@ def search_pack_and_its_dependencies(client: demisto_client,
                 logging.critical(f"Pack '{pack_id}' depends on pack '{dependency_id}' which is a deprecated pack.")
                 return False
             current_packs_to_install.append(dependency)
-
+    logging.info(f"current_packs_to_install: {current_packs_to_install}")
     with lock:
         if not multithreading:
             if list_packs_and_its_dependency_install_request_body is None:
@@ -556,11 +556,13 @@ def search_pack_and_its_dependencies(client: demisto_client,
 
         else:  # multithreading
             for pack in current_packs_to_install:
+                logging.info(f'pack before install: {pack}')
                 if pack['id'] not in packs_to_install:
                     packs_to_install.append(pack['id'])
                     installation_request_body.append(
                         get_pack_installation_request_data(pack_id=pack['id'],
                                                            pack_version=pack['extras']['pack']['currentVersion']))
+    logging.info(f"packs_to_install: {packs_to_install}")
     return True
 
 
@@ -786,12 +788,14 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
     success = True
     if not multithreading:
         for pack_id in pack_ids:
+            logging.info(f'packs_to_install:: {packs_to_install}')
             success &= search_pack_and_its_dependencies(pack_id=pack_id, **kwargs)
         logging.info(f"list_packs_and_its_dependency_install_request_body: {list_packs_and_its_dependency_install_request_body}")
         batch_packs_install_request_body = create_batches(list_packs_and_its_dependency_install_request_body)
-
+        logging.info(f"batch_packs_install_request_body: {batch_packs_install_request_body}")
     else:
         with ThreadPoolExecutor(max_workers=50) as pool:
+            logging.info(f"next loop packs_to_install: {packs_to_install}")
             futures = [
                 pool.submit(
                     search_pack_and_its_dependencies, pack_id=pack_id, **kwargs
@@ -818,13 +822,11 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
 def create_batches(list_of_packs_and_its_dependency: list):
     """
     Create a list of packs batches to install
-
     Args:
         list_of_packs_and_its_dependency (list): A list containing lists
             where each item is another list of a pack and its dependencies.
         A list of pack batches (lists) to use in installation requests in size less than BATCH_SIZE
     """
-
     batch: list = []
     list_of_batches: list = []
     for packs_to_install_body in list_of_packs_and_its_dependency:
@@ -835,5 +837,4 @@ def create_batches(list_of_packs_and_its_dependency: list):
                 list_of_batches.append(batch)
             batch = packs_to_install_body
     list_of_batches.append(batch)
-
     return list_of_batches
