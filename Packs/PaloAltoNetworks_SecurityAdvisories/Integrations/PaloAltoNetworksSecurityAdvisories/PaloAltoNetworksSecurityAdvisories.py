@@ -181,6 +181,7 @@ def advisory_to_indicator(advisory_dict: dict):
 
     impact = advisory_dict.get("impact", {})
     cvss = impact.get("cvss", {})
+    # score mirrored to both fields so that default cve layout displays with full data
     fields['cvss'] = cvss.get("baseScore", "")
     fields['cvssscore'] = cvss.get("baseScore", "")
     fields['cvssvector'] = cvss.get("vectorString", "")
@@ -188,10 +189,15 @@ def advisory_to_indicator(advisory_dict: dict):
 
     # fields['cvss'] = advisory_dict.get("impact", {}).get("cvss", {}).get("baseScore", "")
     # fields['cvssscore'] = advisory_dict.get("impact", {}).get("cvss", {}).get("baseScore", "")
-    fields['cvedescription'] = advisory_dict.get("description", {}).get("description_data", [])[0].get("value", "")
+    # mirror data in these fields so default CVE layout does not need to be changed
+    fields['cvedescription'] = advisory_dict.get("description", {}).get("description_data", [])[
+        0].get("value", "")  # cvedescription not in default cve layout
+    fields['description'] = advisory_dict.get("description", {}).get("description_data", [])[
+        0].get("value", "")  # description in default cve layout
     # fields['cvssvector'] = advisory_dict.get("impact", {}).get("cvss", {}).get("vectorString", "")
     # fields['sourceoriginalseverity'] = advisory_dict.get("impact", {}).get("cvss", {}).get("baseSeverity", "")
     fields['published'] = advisory_dict.get("CVE_data_meta", {}).get("DATE_PUBLIC", "")
+    fields['name'] = advisory_dict.get("CVE_data_meta", {}).get("TITLE", [])
 
     # if "impact" in advisory_dict and advisory_dict.get("impact", {}).get("cvss", {}).get("version", "") == '3.1':
     if "impact" in advisory_dict and cvss.get("version", "") == '3.1':
