@@ -282,8 +282,8 @@
   - git checkout FETCH_HEAD >${ARTIFACTS_FOLDER}/logs/add-content-production-to-artifacts.log 2>&1
   - cp -r ./Packs ${ARTIFACTS_FOLDER}/production_packs
   - echo "checked out ${LAST_UPLOAD_COMMIT} which is the last successful upload commit"
-  - job-done
   - section_end "Clone production content and add it to artifacts"
+  - job-done
 
 
 .default-job-settings:
