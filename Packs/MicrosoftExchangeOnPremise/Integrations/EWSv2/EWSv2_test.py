@@ -664,3 +664,20 @@ def test_get_time_zone(mocker):
     mocker.patch.object(demisto, 'callingContext', new={'context': {'User': {'timeZone': 'Asia/Jerusalem'}}})
     results = get_time_zone()
     assert results.key == 'Asia/Jerusalem'
+
+
+def test_get_item_as_eml(mocker):
+    from EWSv2 import get_item_as_eml
+    from exchangelib import ItemId, Mailbox
+    from exchangelib.items import Message, ReplyToItem, ForwardItem, ReplyAllToItem
+    from exchangelib.properties import ParentFolderId, ResponseObjects, EffectiveRights, ConversationId
+
+    item = Message(
+        mime_content=b'From: Test Mail <foo@test.com>\r\nTo: Test Mail <foo@test.com>\r\nSubject: Lorem ipsum\r\nThread-Topic: Lorem ipsum\r\nThread-Index: Aa\r\nDate: Tue, 21 Nov 2023 14:02:17 +0000\r\nMessage-ID: <dd.test>\r\nContent-Language: en-US\r\nX-MS-Has-Attach:\r\nX-MS-Exchange-Organization-SCL: -1\r\nX-MS-TNEF-Correlator:\r\nContent-Type: text/plain; charset="us-ascii"\r\nMIME-Version: 1.0\r\n\r\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\r\n',
+        subject='Lorem ipsum')
+    mocker.patch('EWSv2.get_account', return_value='account')
+    mocker.patch('EWSv2.get_item_from_mailbox', return_value=item)
+
+    mocked = mocker.patch('EWSv2.fileResult', side_effect=[''])
+    get_item_as_eml(item_id='item_id', target_mailbox='Inbox')
+    mocked.assert_called_with('Lorem ipsum.eml', b'From: Test Mail <foo@test.com>\nTo: Test Mail <foo@test.com>\nSubject: Lorem ipsum\nThread-Topic: Lorem ipsum\nThread-Index: Aa\nDate: Tue, 21 Nov 2023 14:02:17 +0000\nMessage-ID: <dd.test>\nContent-Language: en-US\nX-MS-Has-Attach: \nX-MS-Exchange-Organization-SCL: -1\nX-MS-TNEF-Correlator: \nContent-Type: text/plain; charset="us-ascii"\nMIME-Version: 1.0\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n')

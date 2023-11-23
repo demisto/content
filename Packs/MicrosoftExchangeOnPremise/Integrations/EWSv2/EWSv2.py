@@ -3,7 +3,7 @@ import hashlib
 import subprocess
 import warnings
 from multiprocessing import Process
-
+import quopri
 import dateparser  # type: ignore
 import exchangelib
 from CommonServerPython import *
@@ -2156,15 +2156,21 @@ def mark_item_as_read(item_ids, operation='read', target_mailbox=None):  # pragm
 def get_item_as_eml(item_id, target_mailbox=None):  # pragma: no cover
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     item = get_item_from_mailbox(account, item_id)
+    demisto.info(f'After get_item_from_mailbox, {item=}')
 
     if item.mime_content:
         # came across an item with bytes attachemnt which failed in the source code, added this to keep functionality
         if isinstance(item.mime_content, bytes):
             email_content = email.message_from_bytes(item.mime_content)
+            demisto.info(f'Was bytes, now {str(email_content)=}')
         else:
             email_content = email.message_from_string(item.mime_content)
+            demisto.info(f'Was string, now {str(email_content)=}')
+
         if item.headers:
+            demisto.info(f'Headers are: {item.headers=}')
             attached_email_headers = []
+            demisto.info(f'{list(email_content.items())=}')
             for h, v in list(email_content.items()):
                 if not isinstance(v, str):
                     try:
@@ -2178,8 +2184,15 @@ def get_item_as_eml(item_id, target_mailbox=None):  # pragma: no cover
                 if (header.name, header.value) not in attached_email_headers and header.name != 'Content-Type':
                     email_content.add_header(header.name, header.value)
 
+        demisto.info(f'Before as_string, {email_content=}')
+        email_content = email_content.as_string()
+        demisto.info(f'After as_string, {email_content=}')
+        email_content = quopri.decodestring(str(email_content))
+        email_content = email_content.replace(b"Content-Transfer-Encoding: quoted-printable", b"")
+        email_content = email_content.replace(b"charset=\"iso-8859-2\"", b"charset=\"utf-8\"").replace(b"charset=utf-8\"", b"charset=\"utf-8\";").replace(b"content=\"text/html;", b"content=\"text/html\";")
+        demisto.info(f'After replacing, {email_content=}')
         eml_name = item.subject if item.subject else 'demisto_untitled_eml'
-        file_result = fileResult(eml_name + ".eml", email_content.as_string())
+        file_result = fileResult(eml_name + ".eml", email_content)
         file_result = file_result if file_result else "Failed uploading eml file to war room"
 
         return file_result
