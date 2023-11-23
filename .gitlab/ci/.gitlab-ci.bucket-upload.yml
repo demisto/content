@@ -170,11 +170,13 @@ xpanse-prepare-testing-bucket-upload-flow:
     - section_start "Install Packs"
     - ./Tests/Marketplace/install_packs.sh || EXIT_CODE=$?
     - section_end "Install Packs"
-    - section_start "Destroy instances"
-    - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir "${ARTIFACTS_FOLDER}" --env-file "${ENV_RESULTS_PATH}" --instance-role "${INSTANCE_ROLE}" || EXIT_CODE=$?
-    - section_end "Destroy instances"
     - job-done
-    - exit "$EXIT_CODE"
+    - exit "${EXIT_CODE}"
+  after_script:
+    - !reference [.default-after-script]
+    - !reference [.install_ssh_keys]
+    - !reference [.ssh-config-setup]
+    - !reference [.destroy_xsoar_instances]
 
 
 install-packs-in-server6_9:

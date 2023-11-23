@@ -200,7 +200,7 @@ validate-content-conf:
       if [[ ${MARKETPLACE_VERSION} = "xsoar" ]]; then
         echo "Creating Instances, only for XSOAR."
         [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
-        time python3 ./gcp/create_instance.py --env-type "$IFRA_ENV_TYPE" --outfile "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json" --creds $CONTENT_BUILD_GCP --zone $GCP_ZONE
+        python3 ./gcp/create_instance.py --env-type "${IFRA_ENV_TYPE}" --outfile "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json" --filter-envs "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_envs.json" --creds "${CONTENT_BUILD_GCP}" --zone "${GCP_ZONE}"
       fi
     - section_end "Create Instances for XSOAR"
     - section_start "Upload Artifacts to GCP" --collapsed
@@ -285,24 +285,17 @@ xpanse-prepare-testing-bucket:
       optional: true
   script:
     - EXIT_CODE=0
-    - section_start "Check if should run Server Master"
+    - section_start "Check if should run Instance role"
+    - export INSTANCES_CREATED_FOR_ROLE=$(cat "${ENV_RESULTS_PATH}" | jq -c "map(select(.Role == \"${INSTANCE_ROLE}\")) | length")
     - |
-      echo "Instance role:${INSTANCE_ROLE} Product type:${PRODUCT_TYPE}"
-      if [ -n "${NIGHTLY}" ] && [ "${INSTANCE_ROLE}" != "Server Master" ]; then
-        echo "Not running the instance flow, not a Server Master instance and we are in a nightly build."
+      echo "Instance role:${INSTANCE_ROLE} Product type:${PRODUCT_TYPE} Instances created for role:${INSTANCES_CREATED_FOR_ROLE}"
+      if [[ "${INSTANCES_CREATED_FOR_ROLE}" -eq 0 ]]; then
+        echo "Instances with role ${INSTANCE_ROLE} were not created, not running the instance flow."
         rm -f "${ARTIFACTS_FOLDER_INSTANCE}/instance_role.txt" # delete the instance_role.txt file so the job will not be collected by slack notifier.
         job-done
         exit 0
       fi
-    - export TEMP=$(cat "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_envs.json" | jq ".\"$INSTANCE_ROLE\"")
-    # If instance was not created
-    - |
-      if [[ "$TEMP" != "true" && -z "${NIGHTLY}" ]]; then
-        echo "Instance with role ${INSTANCE_ROLE} was not created"
-        job-done
-        exit 0
-      fi
-    - section_end "Check if should run Server Master"
+    - section_end "Check if should run Instance role"
     - !reference [.download-demisto-conf]
     - !reference [.secrets-fetch]
     - !reference [.ssh-config-setup]
@@ -339,14 +332,7 @@ xpanse-prepare-testing-bucket:
     - !reference [.default-after-script]
     - !reference [.install_ssh_keys]
     - !reference [.ssh-config-setup]
-    - section_start "Destroy Instances"
-    - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir "${ARTIFACTS_FOLDER}" --env-file "${ENV_RESULTS_PATH}" --instance-role "${INSTANCE_ROLE}"
-    - destroy_instances_exit_code=$?
-    - |
-      if [ "${destroy_instances_exit_code}" -ne 0 ]; then
-        echo "Failed to destroy instances, exit code: ${destroy_instances_exit_code}"
-      fi
-    - section_end "Destroy Instances"
+    - !reference [.destroy_xsoar_instances]
   artifacts:
     when: always
     expire_in: 30 days

@@ -58,11 +58,6 @@ def get_test_results_files(artifacts_path: Path, file_name: str) -> dict[str, Pa
         if (file_path := Path(artifacts_path) / directory / file_name).exists():
             logging.info(f"Found result file: {file_path} for instance role: {instance_role}")
             results_files[instance_role] = file_path
-        else:
-            # Write an empty report file to avoid failing the build artifacts collection.
-            JUnitXml().write(file_path.as_posix(), pretty=True)
-            logging.warning(f"Could not find any test playbook result files in {artifacts_path}, "
-                            "Creating an empty file.")
     return results_files
 
 
