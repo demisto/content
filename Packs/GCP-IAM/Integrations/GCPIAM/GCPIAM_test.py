@@ -1,6 +1,5 @@
 import importlib
 import json
-import os
 from unittest.mock import patch, Mock
 
 import pytest
@@ -30,7 +29,7 @@ def load_mock_response(file_path: str) -> str:
     Returns:
         str: Mock file content.
     """
-    with open(f'test_data/{file_path}', mode='r', encoding='utf-8') as mock_file:
+    with open(f'test_data/{file_path}', encoding='utf-8') as mock_file:
         return json.loads(mock_file.read())
 
 
@@ -70,7 +69,7 @@ def test_the_test_module_with_proxy(mocker, proxy: bool):
         Client, "gcp_iam_predefined_role_list_request", return_value=load_mock_response('role/predefined_role_list.json')
     )
 
-    # make sure an excpetion isn't raised
+    # make sure an exception isn't raised
     test_module("{}", proxy=proxy, disable_ssl_certificate=True)
 
 
@@ -731,8 +730,8 @@ def test_gcp_iam_service_account_create_command(client):
     display_name = "user-1-display-name"
     description = "my poc service"
 
-    command_args = dict(project_name=project_name, service_account_id=service_account_id,
-                        display_name=display_name, description=description)
+    command_args = {"project_name": project_name, "service_account_id": service_account_id,
+                    "display_name": display_name, "description": description}
 
     result = GCP_IAM.gcp_iam_service_account_create_command(client, command_args)
 
@@ -759,8 +758,8 @@ def test_gcp_iam_service_account_update_command(client):
     display_name = "user-1-display-name"
     description = "my poc service"
 
-    command_args = dict(service_account_name=service_account_name, service_account_id=service_account_id,
-                        display_name=display_name, description=description)
+    command_args = {"service_account_name": service_account_name, "service_account_id": service_account_id,
+                    "display_name": display_name, "description": description}
 
     result = GCP_IAM.gcp_iam_service_account_update_command(client, command_args)
 
@@ -784,7 +783,7 @@ def test_gcp_iam_service_account_list_command(client):
 
     project_name = "projects/project-id-1"
 
-    command_args = dict(project_name=project_name)
+    command_args = {"project_name": project_name}
 
     result = GCP_IAM.gcp_iam_service_accounts_get_command(client, command_args)
 
@@ -811,7 +810,7 @@ def test_gcp_iam_service_account_get_command(client):
 
     service_account_name = "projects/project-id-1/serviceAccounts/poc-test12@project-name-1.iam.gserviceaccount.com"
 
-    command_args = dict(service_account_name=service_account_name)
+    command_args = {"service_account_name": service_account_name}
 
     result = GCP_IAM.gcp_iam_service_accounts_get_command(client, command_args)
 
@@ -840,7 +839,7 @@ def test_gcp_iam_service_account_enable_command(client):
 
     service_account_name = "projects/project-id-1/serviceAccounts/poc-test12@project-name-1.iam.gserviceaccount.com"
 
-    command_args = dict(service_account_name=service_account_name)
+    command_args = {"service_account_name": service_account_name}
 
     result = GCP_IAM.gcp_iam_service_account_enable_command(client, command_args)
 
@@ -865,7 +864,7 @@ def test_gcp_iam_service_account_disable_command(client):
 
     service_account_name = "projects/project-id-1/serviceAccounts/poc-test12@project-name-1.iam.gserviceaccount.com"
 
-    command_args = dict(service_account_name=service_account_name)
+    command_args = {"service_account_name": service_account_name}
 
     result = GCP_IAM.gcp_iam_service_account_disable_command(client, command_args)
 
@@ -890,7 +889,7 @@ def test_gcp_iam_service_account_delete_command(client):
 
     service_account_name = "projects/project-id-1/serviceAccounts/poc-test12@project-name-1.iam.gserviceaccount.com"
 
-    command_args = dict(service_account_name=service_account_name)
+    command_args = {"service_account_name": service_account_name}
 
     result = GCP_IAM.gcp_iam_service_account_delete_command(client, command_args)
 
@@ -918,7 +917,7 @@ def test_gcp_iam_service_account_key_create_command(client):
 
     service_account_name = "projects/project-id-1/serviceAccounts/test-2@project-id-1.iam.gserviceaccount.com"
 
-    command_args = dict(service_account_name=service_account_name)
+    command_args = {"service_account_name": service_account_name}
 
     result = GCP_IAM.gcp_iam_service_account_key_create_command(client, command_args)
 
@@ -946,7 +945,7 @@ def test_gcp_iam_service_account_key_list_command(client):
 
     service_account_name = "projects/project-id-1/serviceAccounts/test-2@project-id-1.iam.gserviceaccount.com"
 
-    command_args = dict(service_account_name=service_account_name)
+    command_args = {"service_account_name": service_account_name}
 
     result = GCP_IAM.gcp_iam_service_account_keys_get_command(client, command_args)
 
@@ -977,7 +976,7 @@ def test_gcp_iam_service_account_key_get_command(client):
     key_name = "projects/project-id-1/serviceAccounts/" \
                "integration-test-5@395661807466.iam.gserviceaccount.com/keys/service-account-key-1"
 
-    command_args = dict(key_name=key_name)
+    command_args = {"key_name": key_name}
 
     result = GCP_IAM.gcp_iam_service_account_keys_get_command(client, command_args)
 
@@ -1005,7 +1004,7 @@ def test_gcp_iam_service_account_key_enable_command(client):
     key_name = "projects/project-id-1/serviceAccounts/" \
                "integration-test-5@395661807466.iam.gserviceaccount.com/keys/service-account-key-1"
 
-    command_args = dict(key_name=key_name)
+    command_args = {"key_name": key_name}
 
     result = GCP_IAM.gcp_iam_service_account_key_enable_command(client, command_args)
 
@@ -1031,7 +1030,7 @@ def test_gcp_iam_service_account_key_disable_command(client):
     key_name = "projects/project-id-1/serviceAccounts/" \
                "integration-test-5@395661807466.iam.gserviceaccount.com/keys/service-account-key-1"
 
-    command_args = dict(key_name=key_name)
+    command_args = {"key_name": key_name}
 
     result = GCP_IAM.gcp_iam_service_account_key_disable_command(client, command_args)
 
@@ -1057,7 +1056,7 @@ def test_gcp_iam_service_account_key_delete_command(client):
     key_name = "projects/project-id-1/serviceAccounts/" \
                "integration-test-5@395661807466.iam.gserviceaccount.com/keys/service-account-key-1"
 
-    command_args = dict(key_name=key_name)
+    command_args = {"key_name": key_name}
 
     result = GCP_IAM.gcp_iam_service_account_key_delete_command(client, command_args)
 
@@ -1086,7 +1085,7 @@ def test_gcp_iam_organization_role_create_command(client):
     organization_name = "organizations/xsoar-organization"
     role_id = "xsoar_demo_97"
 
-    command_args = dict(organization_name=organization_name, role_id=role_id)
+    command_args = {"organization_name": organization_name, "role_id": role_id}
 
     result = GCP_IAM.gcp_iam_organization_role_create_command(client, command_args)
 
@@ -1115,7 +1114,7 @@ def test_gcp_iam_project_role_create_command(client):
     project_id = "xsoar-project-5"
     role_id = "test_xsoar_role"
 
-    command_args = dict(project_id=project_id, role_id=role_id)
+    command_args = {"project_id": project_id, "role_id": role_id}
 
     result = GCP_IAM.gcp_iam_project_role_create_command(client, command_args)
 
@@ -1143,7 +1142,7 @@ def test_gcp_iam_organization_role_get_command(client):
 
     role_name = "organizations/xsoar-organization/roles/xsoar_demo_97"
 
-    command_args = dict(role_name=role_name)
+    command_args = {"role_name": role_name}
 
     result = GCP_IAM.gcp_iam_organization_role_get_command(client, command_args)
 
@@ -1175,7 +1174,7 @@ def test_gcp_iam_project_role_get_command(client):
 
     role_name = "projects/xsoar-project-5/roles/test_xsoar_role"
 
-    command_args = dict(role_name=role_name)
+    command_args = {"role_name": role_name}
 
     result = GCP_IAM.gcp_iam_project_role_get_command(client, command_args)
 
@@ -1208,7 +1207,7 @@ def test_gcp_iam_organization_role_list_command(client):
     organization_name = "organizations/xsoar-organization"
     include_permissions = "True"
 
-    command_args = dict(organization_name=organization_name, include_permissions=include_permissions)
+    command_args = {"organization_name": organization_name, "include_permissions": include_permissions}
 
     result = GCP_IAM.gcp_iam_organization_role_list_command(client, command_args)
 
@@ -1237,7 +1236,7 @@ def test_gcp_iam_project_role_list_command(client):
     project_id = "xsoar-project-5"
     include_permissions = "True"
 
-    command_args = dict(project_id=project_id, include_permissions=include_permissions)
+    command_args = {"project_id": project_id, "include_permissions": include_permissions}
 
     result = GCP_IAM.gcp_iam_project_role_list_command(client, command_args)
 
@@ -1266,7 +1265,7 @@ def test_gcp_iam_predefined_role_list_command(client):
 
     include_permissions = "True"
 
-    command_args = dict(include_permissions=include_permissions)
+    command_args = {"include_permissions": include_permissions}
 
     result = GCP_IAM.gcp_iam_predefined_role_list_command(client, command_args)
 
@@ -1294,7 +1293,7 @@ def test_gcp_iam_predefined_role_get_command(client):
 
     role_name = "roles/accessapproval.approver"
 
-    command_args = dict(role_name=role_name)
+    command_args = {"role_name": role_name}
 
     result = GCP_IAM.gcp_iam_predefined_role_get_command(client, command_args)
 
@@ -1324,7 +1323,7 @@ def test_gcp_iam_organization_role_update_command(client):
     role_name = "organizations/xsoar-organization/roles/xsoar_demo_97"
     title = "new title"
     fields_to_update = "title"
-    command_args = dict(role_name=role_name, title=title, fields_to_update=fields_to_update)
+    command_args = {"role_name": role_name, "title": title, "fields_to_update": fields_to_update}
 
     result = GCP_IAM.gcp_iam_organization_role_update_command(client, command_args)
 
@@ -1346,7 +1345,7 @@ def test_gcp_iam_project_role_update_command(client):
     role_name = "projects/xsoar-project-5/roles/test_xsoar_role"
     title = "new title"
     fields_to_update = "title"
-    command_args = dict(role_name=role_name, title=title, fields_to_update=fields_to_update)
+    command_args = {"role_name": role_name, "title": title, "fields_to_update": fields_to_update}
 
     result = GCP_IAM.gcp_iam_project_role_update_command(client, command_args)
 
@@ -1369,7 +1368,7 @@ def test_gcp_iam_organization_role_permission_add_command(client):
 
     role_name = "organizations/xsoar-organization/roles/xsoar_demo_97"
     permissions = "aiplatform.artifacts.get,aiplatform.artifacts.list"
-    command_args = dict(role_name=role_name, permissions=permissions)
+    command_args = {"role_name": role_name, "permissions": permissions}
 
     result = GCP_IAM.gcp_iam_organization_role_permission_add_command(client, command_args)
 
@@ -1392,7 +1391,7 @@ def test_gcp_iam_project_role_permission_add_command(client):
 
     role_name = "projects/xsoar-project-5/roles/test_xsoar_role"
     permissions = "aiplatform.artifacts.get,aiplatform.artifacts.list"
-    command_args = dict(role_name=role_name, permissions=permissions)
+    command_args = {"role_name": role_name, "permissions": permissions}
 
     result = GCP_IAM.gcp_iam_project_role_permission_add_command(client, command_args)
 
@@ -1416,7 +1415,7 @@ def test_gcp_iam_organization_role_permission_remove_command(client):
     role_name = "organizations/xsoar-organization/roles/xsoar_demo_97"
     permissions = "aiplatform.artifacts.get"
 
-    command_args = dict(role_name=role_name, permissions=permissions)
+    command_args = {"role_name": role_name, "permissions": permissions}
 
     result = GCP_IAM.gcp_iam_organization_role_permission_remove_command(client, command_args)
 
@@ -1440,7 +1439,7 @@ def test_gcp_iam_project_role_permission_remove_command(client):
     role_name = "projects/xsoar-project-5/roles/test_xsoar_role"
     permissions = "aiplatform.artifacts.get"
 
-    command_args = dict(role_name=role_name, permissions=permissions)
+    command_args = {"role_name": role_name, "permissions": permissions}
 
     result = GCP_IAM.gcp_iam_project_role_permission_add_command(client, command_args)
 
@@ -1464,7 +1463,7 @@ def test_gcp_iam_organization_role_permission_remove_command_exception(client):
 
     role_name = "organizations/xsoar-organization/roles/xsoar_demo_97"
     permissions = "aiplatform.artifacts.get,aiplatform.artifacts.list"
-    command_args = dict(role_name=role_name, permissions=permissions)
+    command_args = {"role_name": role_name, "permissions": permissions}
 
     with pytest.raises(Exception):
         GCP_IAM.gcp_iam_organization_role_permission_remove_command(client, command_args)
@@ -1487,7 +1486,7 @@ def test_gcp_iam_project_role_permission_remove_command_exception(client):
 
     role_name = "projects/xsoar-project-5/roles/test_xsoar_role"
     permissions = "aiplatform.artifacts.get,aiplatform.artifacts.list"
-    command_args = dict(role_name=role_name, permissions=permissions)
+    command_args = {"role_name": role_name, "permissions": permissions}
 
     with pytest.raises(Exception):
         GCP_IAM.gcp_iam_project_role_permission_remove_command(client, command_args)
@@ -1507,7 +1506,7 @@ def test_gcp_iam_organization_role_delete_command(client):
 
     role_name = "organizations/xsoar-organization/roles/xsoar_demo_97"
 
-    command_args = dict(role_name=role_name)
+    command_args = {"role_name": role_name}
 
     result = GCP_IAM.gcp_iam_organization_role_delete_command(client, command_args)
 
@@ -1532,7 +1531,7 @@ def test_gcp_iam_project_role_delete_command(client):
 
     role_name = "projects/xsoar-project-5/roles/test_xsoar_role"
 
-    command_args = dict(role_name=role_name)
+    command_args = {"role_name": role_name}
 
     result = GCP_IAM.gcp_iam_project_role_delete_command(client, command_args)
 
@@ -1659,7 +1658,7 @@ def test_gcp_iam_folder_iam_member_add_command(client):
     folder_name = "folders/folder-name-1"
     members = "user:user-2@xsoar.com"
     role = "roles/resourcemanager.folderEditor"
-    command_args = dict(folder_name=folder_name, role=role, members=members)
+    command_args = {"folder_name": folder_name, "role": role, "members": members}
 
     result = GCP_IAM.gcp_iam_folder_iam_member_add_command(client, command_args)
 
@@ -1685,7 +1684,7 @@ def test_gcp_iam_folder_iam_member_remove_command(client):
     folder_name = "folders/folder-name-1"
     members = "user:user-1@xsoar.com"
     role = "roles/resourcemanager.folderEditor"
-    command_args = dict(folder_name=folder_name, role=role, members=members)
+    command_args = {"folder_name": folder_name, "role": role, "members": members}
 
     result = GCP_IAM.gcp_iam_folder_iam_member_remove_command(client, command_args)
 
@@ -1725,7 +1724,7 @@ def test_gcp_iam_folder_iam_policy_set_command(client):
 
     folder_name = "folders/folder-name-1"
 
-    command_args = dict(folder_name=folder_name, policy=json.dumps(policy))
+    command_args = {"folder_name": folder_name, "policy": json.dumps(policy)}
 
     result = GCP_IAM.gcp_iam_folder_iam_policy_set_command(client, command_args)
 
@@ -1758,7 +1757,7 @@ def test_gcp_iam_folder_iam_policy_add_command(client):
         "user:user-2@xsoar.com"
     ]
 
-    command_args = dict(folder_name=folder_name, role=role, members=members)
+    command_args = {"folder_name": folder_name, "role": role, "members": members}
 
     result = GCP_IAM.gcp_iam_folder_iam_policy_add_command(client, command_args)
 
@@ -1784,7 +1783,7 @@ def test_gcp_iam_folder_iam_policy_remove_command(client):
     folder_name = "folders/folder-name-1"
     role = "roles/resourcemanager.folderEditor"
 
-    command_args = dict(folder_name=folder_name, role=role)
+    command_args = {"folder_name": folder_name, "role": role}
 
     result = GCP_IAM.gcp_iam_folder_iam_policy_remove_command(client, command_args)
 
@@ -1907,7 +1906,7 @@ def test_gcp_iam_organization_iam_member_add_command(client):
     organization_name = "organizations/xsoar-organization"
     members = "user:user-2@xsoar.com"
     role = "roles/bigquery.user"
-    command_args = dict(organization_name=organization_name, role=role, members=members)
+    command_args = {"organization_name": organization_name, "role": role, "members": members}
 
     result = GCP_IAM.gcp_iam_organization_iam_member_add_command(client, command_args)
 
@@ -1933,7 +1932,7 @@ def test_gcp_iam_organization_iam_member_remove_command(client):
     organization_name = "organizations/xsoar-organization"
     members = "user:user-1@xsoar.com"
     role = "roles/bigquery.user"
-    command_args = dict(organization_name=organization_name, role=role, members=members)
+    command_args = {"organization_name": organization_name, "role": role, "members": members}
 
     result = GCP_IAM.gcp_iam_organization_iam_member_remove_command(client, command_args)
 
@@ -1973,7 +1972,7 @@ def test_gcp_iam_organization_iam_policy_set_command(client):
 
     organization_name = "organizations/xsoar-organization"
 
-    command_args = dict(organization_name=organization_name, policy=json.dumps(policy))
+    command_args = {"organization_name": organization_name, "policy": json.dumps(policy)}
 
     result = GCP_IAM.gcp_iam_organization_iam_policy_set_command(client, command_args)
 
@@ -2006,7 +2005,7 @@ def test_gcp_iam_organization_iam_policy_add_command(client):
         "user:user-2@xsoar.com"
     ]
 
-    command_args = dict(organization_name=organization_name, role=role, members=members)
+    command_args = {"organization_name": organization_name, "role": role, "members": members}
 
     result = GCP_IAM.gcp_iam_organization_iam_policy_add_command(client, command_args)
 
@@ -2032,7 +2031,7 @@ def test_gcp_iam_organization_iam_policy_remove_command(client):
     organization_name = "organizations/xsoar-organization"
     role = "roles/bigquery.user"
 
-    command_args = dict(organization_name=organization_name, role=role)
+    command_args = {"organization_name": organization_name, "role": role}
 
     result = GCP_IAM.gcp_iam_organization_iam_policy_remove_command(client, command_args)
 
