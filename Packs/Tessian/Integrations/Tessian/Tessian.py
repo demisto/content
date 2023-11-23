@@ -88,6 +88,39 @@ def format_url(url: str) -> str:
 ''' COMMAND FUNCTIONS '''
 
 
+def fetch_incidents(client: Client, fetch_limit: int = 200): #  pragma: no cover
+    # Get the last run stored in the integration context
+    last_run = str(demisto.getLastRun())
+
+    if last_run and 'checkpoint' in last_run:
+        checkpoint = last_run.get('checkpoint')
+
+    #  Get the events from the events API
+    events = client.getEvents(
+        limit=fetch_limit,
+        after_checkpoint=checkpoint,
+        created_after=None,
+    )
+
+    #  Convert events to XSOAR incidents
+    incidents = []
+    for event in events["results"]:
+        incident = {
+            'name': event['id'],
+            'occurred': event['created_at'],
+            'rawJSON': json.dumps(event),
+        }
+        incidents.append(incident)
+
+    demisto.setLastRun(
+        {
+            'checkpoint': events["checkpoint"]
+        }
+    )
+
+    demisto.incidents(incidents)
+
+
 def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
     limit = args.get('limit', None)
     after_checkpoint = args.get('after_checkpoint', None)
@@ -96,8 +129,8 @@ def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
     results = client.get_events(limit, after_checkpoint, created_after)
 
     return CommandResults(
-        outputs_prefix='Tessian',
-        outputs_key_field='EventsOutput',
+        outputs_prefix='Tessian.EventsOutput',
+        outputs_key_field='after_checkpoint',
         outputs=results,
         raw_response=results
     )
@@ -112,8 +145,8 @@ def release_from_quarantine_command(client: Client, args: dict[str, Any]) -> Com
     results = client.release_from_quarantine(event_id)
 
     return CommandResults(
-        outputs_prefix='Tessian',
-        outputs_key_field='ReleaseFromQuarantineOutput',
+        outputs_prefix='Tessian.ReleaseFromQuarantineOutput',
+        outputs_key_field='event_id',
         outputs=results,
         raw_response=results
     )
@@ -128,14 +161,14 @@ def delete_from_quarantine_command(client: Client, args: dict[str, Any]) -> Comm
     results = client.delete_from_quarantine(event_id)
 
     return CommandResults(
-        outputs_prefix='Tessian',
-        outputs_key_field='DeleteFromQuarantineOutput',
+        outputs_prefix='Tessian.DeleteFromQuarantineOutput',
+        outputs_key_field='event_id',
         outputs=results,
         raw_response=results
     )
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client) -> str:  #  pragma: no cover
     """
     Tests API connectivity and authentication'
     Returning 'ok' indicates that connection to the service is successful.
@@ -161,7 +194,7 @@ def test_module(client: Client) -> str:
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main() -> None:  #  pragma: no cover
     """main function, parses params and runs command functions
 
     :return:
@@ -172,6 +205,7 @@ def main() -> None:
     params = demisto.params()
     base_url = format_url(params.get('url'))
     api_key = params.get('api_key')
+    fetch_limit = arg_to_number(params.get('fetch_limit', 200))
 
     # if your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
@@ -199,6 +233,8 @@ def main() -> None:
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
             return_results(result)
+        elif demisto.command() == 'fetch-incidents':
+            fetch_incidents(client, fetch_limit)
         elif demisto.command() == 'get_events':
             return_results(get_events_command(client, demisto.args()))
         elif demisto.command() == 'release_from_quarantine':
