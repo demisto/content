@@ -3847,7 +3847,6 @@ def test_module(service_account_key: str, proxy: bool, disable_ssl_certificate: 
         return return_results('Authorization Error: make sure API Service Account Key is valid.')
 
     return_results('ok')
-    return None
 
 
 def main() -> None:
