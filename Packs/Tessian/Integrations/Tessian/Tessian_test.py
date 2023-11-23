@@ -37,10 +37,12 @@ def test_fetch_incidents(mocker):
         return_value={
             'checkpoint': "dummy_checkpoint",
             'additional_results': True,
-            'results': {
-                "id": "dummy_value",
-                "created_at": "dummy_value",
-            },
+            'results': [
+                {
+                    "id": "dummy_value",
+                    "created_at": "dummy_value",
+                },
+            ],
         }
     )
 
@@ -62,9 +64,11 @@ def test_get_events_command(mocker):
         return_value={
             'checkpoint': "dummy_checkpoint",
             'additional_results': True,
-            'results': {
-                "dummy_key": "dummy_value"
-            },
+            'results': [
+                {
+                    "dummy_key": "dummy_value"
+                },
+            ],
         }
     )
 
