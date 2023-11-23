@@ -183,7 +183,7 @@ script:
       isArray: true
     description: Push modified IOCs to Cortex XDR.
     name: xdr-iocs-push
-  - description: Set sync time manually (Do not use this command unless you unredstandard the consequences).
+  - description: Set sync time manually. (Do not use this command unless you understand the consequences.)
     name: xdr-iocs-set-sync-time
     arguments:
     - description: The time of the file creation (use UTC time zone).
