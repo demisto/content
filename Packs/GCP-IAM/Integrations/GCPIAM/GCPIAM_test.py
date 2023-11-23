@@ -1,5 +1,6 @@
 import importlib
 import json
+import os
 from unittest.mock import patch, Mock
 
 import pytest
@@ -41,6 +42,66 @@ def client():
         mocked_client.cloud_resource_manager_service = Mock()
         mocked_client.execute_request = Mock()
     return mocked_client
+
+
+@pytest.mark.parametrize("proxy", [True, False])
+def test_the_test_module_with_proxy(mocker, proxy: bool):
+    """
+     Given:
+      - Case A: proxy = True
+      - Case B: proxy = False
+
+     When:
+      - calling test-module
+
+     Then:
+      - Ensure that the test-module doesn't raise an exception in both cases
+     """
+    class MockedServiceAccountCredentials:
+
+        def authorize(self, value):
+            return value
+
+    from GCPIAM import test_module, service_account, Client
+    mocker.patch.object(
+        service_account.ServiceAccountCredentials, "from_json_keyfile_dict", return_value=MockedServiceAccountCredentials()
+    )
+    mocker.patch.object(
+        Client, "gcp_iam_predefined_role_list_request", return_value=load_mock_response('role/predefined_role_list.json')
+    )
+
+    # make sure an excpetion isn't raised
+    test_module("{}", proxy=proxy, disable_ssl_certificate=True)
+
+
+def test_get_http_client_with_proxy(client):
+    """
+     Given:
+      - configured proxies
+
+     When:
+      - get_http_client_with_proxy method
+
+     Then:
+      - Ensure proxy info is fulfilled for the http client.
+     """
+    http_info = client.get_http_client_with_proxy(proxies={"https": "https://test.com"})
+    assert http_info.proxy_info
+
+
+def test_get_http_client_no_proxies(client):
+    """
+     Given:
+      - proxies that are not configured
+
+     When:
+      - get_http_client_with_proxy method
+
+     Then:
+      - Ensure proxy info is not fulfilled for the http client.
+     """
+    http_info = client.get_http_client_with_proxy(proxies={})
+    assert not http_info.proxy_info
 
 
 def test_gcp_iam_project_list_command(client):
