@@ -190,7 +190,7 @@ script:
     name: gibtia-get-indicators
     deprecated: false
     execution: false
-  dockerimage: demisto/python3:3.10.13.78960
+  dockerimage: demisto/python3:3.10.13.80593
   feed: true
   runonce: false
   script: '-'
