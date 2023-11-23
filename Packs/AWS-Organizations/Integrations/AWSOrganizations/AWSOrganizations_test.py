@@ -1,13 +1,20 @@
 import pytest
 from test_data.data import *  # noqa
 from CommonServerPython import *  # noqa
+from random import randint
 
 # from mypy_boto3_organizations import *
 
 
 class MockOrganizationsClient:  # (OrganizationsClient):
-    def get_paginator(self, _):
-        pass
+
+    list_roots = None
+    list_children = None
+    list_parents = None
+    list_accounts = None
+    list_policies = None
+    list_policies_for_target = None
+    list_targets_for_policy = None
 
     def describe_account(self, **kwargs):
         assert account_get.client_func_kwargs == kwargs
@@ -60,6 +67,10 @@ class MockOrganizationsClient:  # (OrganizationsClient):
 
     def tag_resource(self, **kwargs):
         assert resource_tag_add.client_func_kwargs == kwargs
+        
+    def list_tags_for_resource(self, **kwargs):
+        assert resource_tag_list.client_func_kwargs == kwargs
+        return resource_tag_list.client_func_return
 
 
 def get_mock_paginate(kwargs: dict, return_obj):
@@ -77,64 +88,31 @@ def get_mock_paginate(kwargs: dict, return_obj):
     return mock_paginate
 
 
+def mock_client_func(MaxResults, **kwargs):
+    from_number = kwargs['NextToken'] if 'NextToken' in kwargs else 0
+    to_number = from_number + randint(0, MaxResults)
+    return {
+        'Pages': list(range(from_number, to_number)),
+        'NextToken': to_number
+    }
+
+
 @pytest.mark.parametrize(
-    "paginate_kwargs, expected_kwargs, real_key_to_pages, expected_output, message",
+    "kwargs, expected_output, test_case",
     [
         (
-            {
-                "key_to_pages": "Accounts",
-                "limit": 10,
-                "page_size": -1,
-                "next_token": "token",
-            },
-            {
-                "PaginationConfig": {
-                    "MaxItems": 10,
-                    "PageSize": 10,
-                    "StartingToken": None,
-                }
-            },
-            "Accounts",
-            ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], "next_token"),
-            "Test case: ignore page_size and next_token and when a limit is provided.",
+            {"key_to_pages": "Pages", "limit": "10", "page_size": None, "next_token": None},
+            ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 10),
+            "Test case: ignore page_size and next_token and when they are None.",
         ),
         (
-            {"key_to_pages": "Accounts", "page_size": 10, "next_token": "token"},
-            {
-                "PaginationConfig": {
-                    "MaxItems": 10,
-                    "PageSize": 10,
-                    "StartingToken": "token",
-                }
-            },
-            "Accounts",
-            ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], "next_token"),
-            "Test case: use page_size and next_token correctly.",
-        ),
-        (
-            {
-                "key_to_pages": "Accounts",
-                "page_size": 13,
-                "next_token": "token",
-                "another_arg": "value",
-            },
-            {
-                "PaginationConfig": {
-                    "MaxItems": 13,
-                    "PageSize": 13,
-                    "StartingToken": "token",
-                },
-                "another_arg": "value",
-            },
-            "Accounts",
-            ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], "next_token"),
-            "Test case: check that the args are passed toi the paginator correctly.",
-        ),
-    ],
+            {"key_to_pages": "Pages", "limit": "10", "page_size": "11", "next_token": 11},
+            ([11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21], 22),
+            "Test case: When provided, use page_size and next_token correctly.",
+        )
+    ]
 )
-def test_paginate(
-    paginate_kwargs, expected_kwargs, real_key_to_pages, expected_output, message
-):
+def test_paginate(kwargs, expected_output, test_case):
     """
     Given:
         Pagination args following the XSOAR pagination protocol.
@@ -147,16 +125,9 @@ def test_paginate(
     """
     from AWSOrganizations import paginate
 
-    def mock_paginate(**kwargs):
-        assert kwargs == expected_kwargs, message
-        return (
-            {"NextToken": "next_token", real_key_to_pages: list(range(nums, nums + 5))}
-            for nums in range(0, 1000, 5)
-        )
+    output = paginate(mock_client_func, **kwargs)
 
-    output = paginate(type("Mock", (), {"paginate": mock_paginate}), **paginate_kwargs)
-
-    assert output == expected_output, message
+    assert output == expected_output, test_case
 
 
 def test_build_tags_error():
@@ -462,14 +433,6 @@ def test_resource_tag_add():
 
 def test_resource_tag_list(mocker):
     from AWSOrganizations import resource_tag_list_command
-
-    mocker.patch(
-        "AWSOrganizations.paginate",
-        side_effect=get_mock_paginate(
-            resource_tag_list.client_func_kwargs,
-            resource_tag_list.client_func_return
-        ),
-    )
 
     result = resource_tag_list_command(
         resource_tag_list.command_args, MockOrganizationsClient()

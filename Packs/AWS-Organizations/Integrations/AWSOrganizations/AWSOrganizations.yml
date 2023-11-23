@@ -661,11 +661,6 @@ script:
     - description: The ID of the resource with the tags to list. This value can be retrieved by running the commands "aws-org-root-list", "aws-org-account-list", "aws-org-root-list" or "aws-org-policy-list"
       name: resource_id
       required: true
-    - description: The number of tags to return.
-      name: limit
-      defaultValue: '50'
-    - description: The number of tags to return per page. The maximum is 1000.
-      name: page_size
     - description: The token denoting the next page of tags, as given by the response of the previous run of this command under the context key "AWS.Organizations.TagNextToken".
       name: next_token
     - description: The Amazon Resource Name (ARN) of the role to assume.

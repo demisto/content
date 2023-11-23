@@ -2,7 +2,7 @@ from CommonServerPython import *  # noqa: E402
 import demistomock as demisto  # noqa: E402
 from AWSApiModule import *
 from typing import TYPE_CHECKING
-from botocore.paginate import Paginator
+from collections.abc import Callable
 
 # The following imports are used only for type hints and autocomplete.
 # They are not used at runtime, and are not in the docker image.
@@ -98,43 +98,34 @@ def create_client(args: dict, params: dict) -> 'OrganizationsClient':
 
 
 def paginate(
-    paginator: 'Paginator',
+    client_func: Callable,
     key_to_pages: str, limit=None, page_size=None,
-    next_token=None, size_args_supported=True, **kwargs
+    next_token=None, **kwargs
 ) -> tuple[list, str | None]:
     '''This function exists because AWS doesn't guarantee that the client functions will
     return all results specified in a single call.
     This function also handles the XSOAR pagination conventions such as the limit, page_size and next_token args.
     '''
 
-    max_items = arg_to_number(limit or page_size) or 50
-    pagination_max = min(max_items, MAX_PAGINATION)
-    pagination_config = {
-        'StartingToken': next_token if not limit else None
-    }
-    if size_args_supported:
-        pagination_config.update(
-            {
-                'MaxItems': pagination_max,
-                'PageSize': pagination_max,
-            }
-        )
-
-    iterator = paginator.paginate(
-        **kwargs,
-        PaginationConfig=pagination_config
-    )
-
+    if not page_size and not next_token:
+        next_token = None
+        page_size = limit
+    page_size = arg_to_number(page_size) or 50
     pages: list = []
-    next_token = None
 
-    for response in iterator:
-        pages.extend(response.get(key_to_pages, []))
+    while page_size:
+        response: dict = client_func(
+            **assign_params(NextToken=next_token),
+            MaxResults=min(page_size, MAX_PAGINATION),
+            **kwargs,
+        )
+        page = response.get(key_to_pages, [])
         next_token = response.get('NextToken')
-        if len(pages) >= max_items:
+        pages.extend(page)
+        page_size -= len(page)
+        if next_token is None:
             break
 
-    del pages[max_items:]
     return pages, next_token
 
 
@@ -185,7 +176,7 @@ def test_module(aws_client: 'OrganizationsClient') -> str:
 def root_list_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
 
     roots, next_token = paginate(
-        aws_client.get_paginator('list_roots'),
+        aws_client.list_roots,
         'Roots',
         limit=args.get('limit'),
         next_token=args.get('next_token'),
@@ -207,7 +198,7 @@ def root_list_command(args: dict, aws_client: 'OrganizationsClient') -> CommandR
 def children_list_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
 
     children, next_token = paginate(
-        aws_client.get_paginator('list_children'),
+        aws_client.list_children,
         'Children',
         limit=args.get('limit'),
         next_token=args.get('next_token'),
@@ -239,7 +230,7 @@ def children_list_command(args: dict, aws_client: 'OrganizationsClient') -> Comm
 def parent_list_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
 
     parents, _ = paginate(
-        aws_client.get_paginator('list_parents'),
+        aws_client.list_parents,
         'Parents',
         limit=1,  # at of the time of this writing, an account can have only one parent
         ChildId=args['child_id']
@@ -311,7 +302,7 @@ def account_list_command(args: dict, aws_client: 'OrganizationsClient') -> Comma
     def account_list() -> CommandResults:
 
         accounts, next_token = paginate(
-            aws_client.get_paginator('list_accounts'),
+            aws_client.list_accounts,
             'Accounts',
             limit=args.get('limit'),
             next_token=args.get('next_token'),
@@ -526,7 +517,7 @@ def organization_unit_rename_command(args: dict, aws_client: 'OrganizationsClien
 def policy_list_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
 
     policies, next_token = paginate(
-        aws_client.get_paginator('list_policies'),
+        aws_client.list_policies,
         'Policies',
         limit=args.get('limit'),
         next_token=args.get('next_token'),
@@ -536,7 +527,7 @@ def policy_list_command(args: dict, aws_client: 'OrganizationsClient') -> Comman
 
     return CommandResults(
         outputs=next_token_output_dict(
-            'Policy', next_token, policies, 'Id',
+            'Policy', next_token, policies,
         ),
         readable_output=tableToMarkdown(
             'AWS Organization Policies',
@@ -553,7 +544,7 @@ def policy_list_command(args: dict, aws_client: 'OrganizationsClient') -> Comman
 def target_policy_list_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
 
     policies, next_token = paginate(
-        aws_client.get_paginator('list_policies_for_target'),
+        aws_client.list_policies_for_target,
         'Policies',
         limit=args.get('limit'),
         next_token=args.get('next_token'),
@@ -570,7 +561,6 @@ def target_policy_list_command(args: dict, aws_client: 'OrganizationsClient') ->
                 policy | {'TargetId': args['target_id']}
                 for policy in policies
             ],
-            'Id',
         ),
         readable_output=tableToMarkdown(
             f'AWS Organization *{args["target_id"]}* Policies',
@@ -641,7 +631,7 @@ def policy_attach_command(args: dict, aws_client: 'OrganizationsClient') -> Comm
 def policy_target_list_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
 
     targets, next_token = paginate(
-        aws_client.get_paginator('list_targets_for_policy'),
+        aws_client.list_targets_for_policy,
         'Targets',
         limit=args.get('limit'),
         next_token=args.get('next_token'),
@@ -685,29 +675,24 @@ def resource_tag_add_command(args: dict, aws_client: 'OrganizationsClient') -> C
 
 def resource_tag_list_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
 
-    tags, next_token = paginate(
-        aws_client.get_paginator('list_tags_for_resource'),
-        'Tags',
-        limit=args.get('limit'),
-        next_token=args.get('next_token'),
-        page_size=args.get('page_size'),
-        size_args_supported=False,
-        ResourceId=args['resource_id']
+    tags = aws_client.list_tags_for_resource(
+        ResourceId=args['resource_id'],
+        **assign_params(NextToken=args.get('next_token'))
     )
 
     return CommandResults(
         outputs=next_token_output_dict(
             'Tag',
-            next_token,
+            tags.get('NextToken'),
             [
                 tag | {'ResourceId': args['resource_id']}
-                for tag in tags
+                for tag in tags.get('Tags', [])
             ],
             'Key'
         ),
         readable_output=tableToMarkdown(
             f'AWS Organization *{args["resource_id"]}* Tags',
-            tags, ['Key', 'Value'],
+            tags.get('Tags', []), ['Key', 'Value'],
         )
     )
 

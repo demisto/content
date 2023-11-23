@@ -641,15 +641,15 @@ class resource_tag_add(Data):
 
 
 class resource_tag_list(Data):
-    command_args = {"resource_id": "resource_id"}
-    client_func_kwargs = {"ResourceId": "resource_id"}
-    client_func_return = (
-        [
+    command_args = {"resource_id": "resource_id", "next_token": "next_token"}
+    client_func_kwargs = {"ResourceId": "resource_id", "NextToken": "next_token"}
+    client_func_return = {
+        "Tags": [
             {"Key": "key1", "Value": "value1"},
             {"Key": "key2", "Value": "value2"},
         ],
-        "next_token",
-    )
+        "NextToken": "next_token",
+    }
     context_outputs = [
         [
             {"Key": "key1", "Value": "value1", "ResourceId": "resource_id"},
