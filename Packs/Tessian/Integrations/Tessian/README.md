@@ -43,6 +43,11 @@ This command allows you to pull Tessian event data into your XSOAR instance.
 | Tessian.EventsOutput.additional_results | Boolean | True if there may be more events that can be immediately retrieved. | 
 | Tessian.EventsOutput.results | Unknown | The events returned by this request. | 
 
+#### Command Example
+
+`!tessian-get-evegit pnts limit=100 after_checkpoint="example-value" created_after="2020-02-02T19:00:00Z"`
+
+
 ### tessian-release-from-quarantine
 
 ***
@@ -67,6 +72,11 @@ This command allows you to release a quarantined email from Tessian.
 | Tessian.ReleaseFromQuarantineOutput.results | Unknown | The results of the release action. This is an array of objects mapping the email address of users to the result of the release action. | 
 | Tessian.ReleaseFromQuarantineOutput.event_id | String | The event ID that was submitted for release. | 
 
+#### Command Example
+
+`!tessian-release-from-quarantine event_id="id-from-tessian-get-events"
+`
+
 ### tessian-delete-from-quarantine
 
 ***
@@ -90,3 +100,7 @@ This command allows you to delete a quarantined email from Tessian.
 | Tessian.DeleteFromQuarantineOutput.number_of_actions_succeeded | String | The number of users that the delete from quarantine action was successful for. | 
 | Tessian.DeleteFromQuarantineOutput.results | Unknown | The results of the delete action. This is an array of objects mapping the email address of users to the result of the delete action. | 
 | Tessian.DeleteFromQuarantineOutput.event_id | String | The event ID that was submitted for deletion. | 
+
+#### Command Example
+
+`!tessian-delete-from-quarantine event_id="id-from-tessian-get-events"`
