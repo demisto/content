@@ -56,6 +56,9 @@ script:
     - contextPath: Tessian.ReleaseFromQuarantineOutput.results
       description: The results of the release action. This is an array of objects mapping the email address of users to the result of the release action.
       type: Unknown
+    - contextPath: Tessian.ReleaseFromQuarantineOutput.event_id
+      description: The event ID that was submitted for release.
+      type: String
   - name: tessian-delete-from-quarantine
     description: This command allows you to delete a quarantined email from Tessian.
     arguments:
@@ -72,6 +75,9 @@ script:
     - contextPath: Tessian.DeleteFromQuarantineOutput.results
       description: The results of the delete action. This is an array of objects mapping the email address of users to the result of the delete action.
       type: Unknown
+    - contextPath: Tessian.DeleteFromQuarantineOutput.event_id
+      description: The event ID that was submitted for deletion.
+      type: String
   runonce: false
   script: '-'
   type: python

@@ -115,8 +115,9 @@ def release_from_quarantine_command(client: Client, args: dict[str, Any]) -> Com
         raise ValueError('Event ID is required')
 
     results = client.release_from_quarantine(event_id)
+    results["event_id"] = event_id
 
-    markdown = '### Release from Quarantine Action\n'
+    markdown = f'### Release from Quarantine Action for Event ID: {event_id}\n'
     markdown += f'## Number of Actions Attemped: {results.get("number_of_actions_attempted")}\n'
     markdown += f'## Number of Actions Succeeded: {results.get("number_of_actions_succeeded")}\n'
 
@@ -136,8 +137,9 @@ def delete_from_quarantine_command(client: Client, args: dict[str, Any]) -> Comm
         raise ValueError('Event ID is required')
 
     results = client.delete_from_quarantine(event_id)
+    results["event_id"] = event_id
 
-    markdown = '### Delete from Quarantine Action\n'
+    markdown = f'### Delete from Quarantine Action for Event ID: {event_id}\n'
     markdown += f'## Number of Actions Attemped: {results.get("number_of_actions_attempted")}\n'
     markdown += f'## Number of Actions Succeeded: {results.get("number_of_actions_succeeded")}\n'
     return CommandResults(

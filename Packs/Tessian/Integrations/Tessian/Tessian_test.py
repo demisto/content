@@ -100,7 +100,8 @@ def test_release_from_quarantine_comand(mocker):
                 "user_address": "example@gmail.com",
                 "error": None,
             },
-        ]
+        ],
+        "event_id": "dummy_event_id",
     }
 
 
@@ -140,7 +141,8 @@ def test_delete_from_quarantine_command(mocker):
                 "user_address": "example@gmail.com",
                 "error": None,
             },
-        ]
+        ],
+        "event_id": "dummy_event_id",
     }
 
 

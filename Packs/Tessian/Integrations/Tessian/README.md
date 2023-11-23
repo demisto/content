@@ -65,6 +65,7 @@ This command allows you to release a quarantined email from Tessian.
 | Tessian.ReleaseFromQuarantineOutput.number_of_actions_attempted | String | The number of users that release from quarantine actions were attempted for. | 
 | Tessian.ReleaseFromQuarantineOutput.number_of_actions_succeeded | String | The number of users that the release from quarantine action was successful for. | 
 | Tessian.ReleaseFromQuarantineOutput.results | Unknown | The results of the release action. This is an array of objects mapping the email address of users to the result of the release action. | 
+| Tessian.ReleaseFromQuarantineOutput.event_id | String | The event ID that was submitted for release. | 
 
 ### tessian-delete-from-quarantine
 
@@ -88,3 +89,4 @@ This command allows you to delete a quarantined email from Tessian.
 | Tessian.DeleteFromQuarantineOutput.number_of_actions_attempted | String | The number of users that delete from quarantine actions were attempted for. | 
 | Tessian.DeleteFromQuarantineOutput.number_of_actions_succeeded | String | The number of users that the delete from quarantine action was successful for. | 
 | Tessian.DeleteFromQuarantineOutput.results | Unknown | The results of the delete action. This is an array of objects mapping the email address of users to the result of the delete action. | 
+| Tessian.DeleteFromQuarantineOutput.event_id | String | The event ID that was submitted for deletion. | 
