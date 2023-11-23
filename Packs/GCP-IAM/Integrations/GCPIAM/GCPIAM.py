@@ -20,7 +20,8 @@ class Client:
         proxies = handle_proxy()
 
         if proxy or not disable_ssl_certificate:
-            http_client = credentials.authorize(self.get_http_client_with_proxy(proxies, disable_ssl_certificate=disable_ssl_certificate))
+            http_client = credentials.authorize(self.get_http_client_with_proxy(
+                proxies, disable_ssl_certificate=disable_ssl_certificate))
             self.cloud_identity_service = discovery.build('cloudidentity', 'v1', http=http_client)
             self.cloud_resource_manager_service = discovery.build('cloudresourcemanager', 'v3', http=http_client)
             self.iam_service = discovery.build('iam', 'v1', http=http_client)
@@ -3847,6 +3848,7 @@ def test_module(service_account_key: str, proxy: bool, disable_ssl_certificate: 
         return return_results('Authorization Error: make sure API Service Account Key is valid.')
 
     return_results('ok')
+    return None
 
 
 def main() -> None:
