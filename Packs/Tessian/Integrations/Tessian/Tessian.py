@@ -97,7 +97,7 @@ def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     markdown = '### Tessian Events\n'
     markdown += f'## Checkpoint: {results.get("checkpoint")} | Additional Results: {results.get("additional_results")}\n'
-    markdown += f'# Number of events returned: {results.get("results", []).len()}\n'
+    markdown += f'# Number of events returned: {len(results.get("results", []))}\n'
 
     return CommandResults(
         outputs_prefix='Tessian.EventsOutput',
