@@ -27,7 +27,7 @@ class Client(BaseClient):
     For this  implementation, no special attributes defined
     """
 
-    def get_events(self, limit: str | None, after_checkpoint: str | None, created_after: str | None) -> dict[str, Any]:
+    def get_events(self, limit: int | None, after_checkpoint: str | None, created_after: str | None) -> dict[str, Any]:
         params = assign_params(limit=limit, after_checkpoint=after_checkpoint, created_after=created_after)
 
         return self._http_request(
@@ -88,15 +88,15 @@ def format_url(url: str) -> str:
 ''' COMMAND FUNCTIONS '''
 
 
-def fetch_incidents(client: Client, fetch_limit: int = 200): #  pragma: no cover
+def fetch_incidents(client: Client, fetch_limit: int = 200):  #  pragma: no cover
     # Get the last run stored in the integration context
-    last_run = str(demisto.getLastRun())
+    last_run = demisto.getLastRun()
 
     if last_run and 'checkpoint' in last_run:
         checkpoint = last_run.get('checkpoint')
 
     #  Get the events from the events API
-    events = client.getEvents(
+    events = client.get_events(
         limit=fetch_limit,
         after_checkpoint=checkpoint,
         created_after=None,
@@ -122,7 +122,7 @@ def fetch_incidents(client: Client, fetch_limit: int = 200): #  pragma: no cove
 
 
 def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    limit = args.get('limit', None)
+    limit = int(args.get('limit', None))
     after_checkpoint = args.get('after_checkpoint', None)
     created_after = args.get('created_after', None)
 
@@ -176,7 +176,7 @@ def test_module(client: Client) -> str:  #  pragma: no cover
     """
 
     try:
-        response = client.get_events('2', None, None)
+        response = client.get_events(2, None, None)
 
         success = demisto.get(response, 'success.total')  # Safe access to response['success']['total']
         if success != 1:
@@ -205,7 +205,7 @@ def main() -> None:  #  pragma: no cover
     params = demisto.params()
     base_url = format_url(params.get('url'))
     api_key = params.get('api_key')
-    fetch_limit = arg_to_number(params.get('fetch_limit', 200))
+    fetch_limit = arg_to_number(params.get('fetch_limit')) or 200
 
     # if your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to

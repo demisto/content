@@ -2,7 +2,14 @@
 import pytest
 
 import demistomock as demisto
-from Tessian import format_url, Client, get_events_command, release_from_quarantine_command, delete_from_quarantine_command, fetch_incidents
+from Tessian import (
+    format_url,
+    Client,
+    get_events_command,
+    release_from_quarantine_command,
+    delete_from_quarantine_command,
+    fetch_incidents,
+)
 
 #  region HELPERS
 
