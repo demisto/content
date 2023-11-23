@@ -51,6 +51,13 @@ script:
     - description: The hostname of the machine.
       name: machineName
       required: true
+    - name: page
+      description: The page number of machine records to retrieve (used for pagination) starting from 1. The page size is defined by the "pageSize" argument.
+    - name: pageSize
+      description: The number of machine records per page to retrieve (used for pagination). The page number is defined by the "page" argument.
+    - name: limit
+      description: The maximum number of records to retrieve. If "pageSize" is defined, this argument is ignored.
+      defaultValue: '50'
     description: Get the Machine FQDN and Machine Group Details.
     name: cybereason-fetch-machine-details
     outputs:

@@ -1914,10 +1914,11 @@ def get_sensor_id_command(client: Client, args: dict):
 
 def fetch_machine_details_command(client: Client, args: dict):
     machine_name = str(args.get('machineName'))
-    json_body = {
-        "limit": 1000,
-        "offset": 0
-    }
+    json_body = fetch_machine_details_command_pagination_params(args)
+    # json_body = {
+    #     "limit": 1000,
+    #     "offset": 0
+    # }
     response = client.cybereason_api_call('POST', '/rest/sensors/query', json_body=json_body)
     if dict_safe_get(response, ['sensors']) == []:
         return CommandResults(readable_output=f"Could not find any Sensor ID for the machine: {machine_name}")
@@ -1939,6 +1940,38 @@ def fetch_machine_details_command(client: Client, args: dict):
             outputs_prefix='Cybereason.Sensor',
             outputs_key_field='MachineID',
             outputs=outputs)
+    
+def fetch_machine_details_command_pagination_params(args: dict) -> dict:
+    '''
+        Generate pagination parameters for fetching machine details based on the given arguments.
+
+        This function calculates the 'limit' and 'offset' parameters for pagination
+        based on the provided 'page' and 'pageSize' arguments. If 'page' and 'pageSize'
+        are valid integer values, the function returns a dictionary containing 'limit'
+        and 'offset' calculated accordingly. If 'page' or 'pageSize' are not valid integers,
+        the function falls back to using the 'limit' argument or defaults to 50 with an
+        'offset' of 0.
+
+        Args:
+            args (dict): The demisto.args() dictionary containing the optional arguments for pagination: 'page', 'pageSize', 'limit'.
+
+        Returns:
+            dict: A dictionary containing the calculated 'limit' and 'offset' parameters
+                for pagination.
+    '''
+    page = arg_to_number(args.get('page'))
+    page_size = arg_to_number(args.get('pageSize'))
+    if isinstance(page, int) and isinstance(page_size, int):
+        return {
+            'limit': page_size,
+            'offset': (page - 1) * page_size
+        }
+
+    else:
+        return {
+            'limit': arg_to_number(args.get('limit', 50)),
+            'offset': 0
+        }
 
 
 def main():

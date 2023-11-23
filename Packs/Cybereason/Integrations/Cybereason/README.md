@@ -1581,6 +1581,9 @@ Get the results related to machines.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | machineName | The hostname of the machine. | Required | 
+| page | The page number of machine records to retrieve (used for pagination) starting from 1. The page size is defined by the "pageSize" argument. | Optional | 
+| pageSize | The number of machine records per page to retrieve (used for pagination). The page number is defined by the "page" argument. | Optional | 
+| limit | The maximum number of records to retrieve. If "pageSize" is defined, this argument is ignored. Default is 50. | Optional | 
 
 
 #### Context Output
