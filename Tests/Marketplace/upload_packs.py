@@ -934,6 +934,7 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
             pack_or_dependency_was_uploaded = any(dep_pack.status == PackStatus.SUCCESS.name for dep_pack in
                                                   pack_and_its_dependencies)
             if pack_or_dependency_was_uploaded:
+                logging.debug(f"Starting to collect pack with dependencies for pack '{pack_name}'. {pack_and_its_dependencies=}")
                 pack_with_dep_path = os.path.join(pack.path, "with_dependencies")
                 zip_with_deps_path = os.path.join(pack.path, f"{pack_name}_with_dependencies.zip")
                 upload_path = os.path.join(storage_base_path, pack_name, f"{pack_name}_with_dependencies.zip")
@@ -969,6 +970,8 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
                 else:
                     if pack.status != PackStatus.SUCCESS.name:
                         pack.status = PackStatus.SUCCESS_CREATING_DEPENDENCIES_ZIP_UPLOADING.name
+            else:
+                logging.debug(f"Pack {pack_name} or its dependency packs were not modified")
         except Exception as e:
             logging.error(traceback.format_exc())
             logging.error(f"Failed uploading packs with dependencies: {e}")
@@ -1272,6 +1275,10 @@ def main():
             if not pack.upload_to_storage(pack.zip_path, storage_bucket, storage_base_path):
                 pack.status = PackStatus.FAILED_UPLOADING_PACK.name  # type: ignore[misc]
                 pack.cleanup()
+                continue
+        else:
+            # Signs and zips non-modified packs for the upload_with_dependencies phase
+            if not pack.sign_and_zip_pack(signature_key, uploaded_packs_dir):
                 continue
 
         if not update_index_folder(index_folder_path=index_folder_path, pack=pack, pack_versions_to_keep=pack_versions_to_keep):
