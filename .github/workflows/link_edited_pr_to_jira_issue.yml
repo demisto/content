@@ -1,7 +1,7 @@
 name: Add PR link to Related Jira Issue
 on:
   pull_request:
-    types: [ opened, edited ]
+    types: [ opened, edited, labeled ]
 
 permissions:
   pull-requests: read
