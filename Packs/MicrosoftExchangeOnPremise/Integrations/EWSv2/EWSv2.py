@@ -1101,17 +1101,20 @@ def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=Fal
         if 'effective_rights' in raw_dict:
             raw_dict['effective_rights'] = parse_object_as_dict(raw_dict['effective_rights'])
         return raw_dict
+    demisto.debug(f"[ewsv2-search-mailbox-TEST] {item=}")
 
     raw_dict = parse_object_as_dict_with_serialized_items(item)
-
+    demisto.debug(f"[ewsv2-search-mailbox-TEST] 1 {raw_dict=}")
     if getattr(item, 'attachments', None):
         raw_dict['attachments'] = [parse_attachment_as_dict(item.id, x) for x in item.attachments]
+    demisto.debug(f"[ewsv2-search-mailbox-TEST] 2 {raw_dict=}")
 
     for time_field in ['datetime_sent', 'datetime_created', 'datetime_received', 'last_modified_time',
                        'reminder_due_by']:
         value = getattr(item, time_field, None)
         if value:
             raw_dict[time_field] = value.ewsformat()
+    demisto.debug(f"[ewsv2-search-mailbox-TEST] 3 {raw_dict=}")
 
     for dict_field in ['effective_rights', 'parent_folder_id', 'conversation_id', 'author',
                        'extern_id', 'received_by', 'received_representing', 'reply_to', 'sender', 'folder']:
@@ -1121,25 +1124,30 @@ def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=Fal
                 raw_dict[dict_field] = [parse_object_as_dict(x) for x in value]
             else:
                 raw_dict[dict_field] = parse_object_as_dict(value)
+    demisto.debug(f"[ewsv2-search-mailbox-TEST] 4 {raw_dict=}")
 
     for list_dict_field in ['headers', 'cc_recipients', 'to_recipients']:
         value = getattr(item, list_dict_field, None)
         if value:
             raw_dict[list_dict_field] = [parse_object_as_dict(x) for x in value]
+    demisto.debug(f"[ewsv2-search-mailbox-TEST] 5 {raw_dict=}")
 
     for list_str_field in ["categories"]:
         value = getattr(item, list_str_field, None)
         if value:
             raw_dict[list_str_field] = value
+    demisto.debug(f"[ewsv2-search-mailbox-TEST] 6 {raw_dict=}")
 
     if getattr(item, 'folder', None):
         raw_dict['folder'] = parse_folder_as_json(item.folder)
         folder_path = item.folder.absolute[len(TOIS_PATH):] if item.folder.absolute.startswith(
             TOIS_PATH) else item.folder.absolute
         raw_dict['folder_path'] = folder_path
+    demisto.debug(f"[ewsv2-search-mailbox-TEST] 7 {raw_dict=}")
 
     raw_dict['item_id'] = getattr(item, 'id', None)
     raw_dict['id'] = getattr(item, 'id', None)
+    demisto.debug(f"[ewsv2-search-mailbox-TEST] 8 {raw_dict=}")
 
     if compact_fields:
         new_dict = {}
@@ -1167,12 +1175,15 @@ def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=Fal
             if len(item_attachments) > 0:
                 new_dict['ItemAttachments'] = item_attachments
         raw_dict = new_dict
+    demisto.debug(f"[ewsv2-search-mailbox-TEST] 9 {raw_dict=}")
 
     if camel_case:
         raw_dict = keys_to_camel_case(raw_dict)
+    demisto.debug(f"[ewsv2-search-mailbox-TEST] 10 {raw_dict=}")
 
     if email_address:
         raw_dict[MAILBOX] = email_address
+    demisto.debug(f"[ewsv2-search-mailbox-TEST] got {item=} return {raw_dict=}")
     return raw_dict
 
 
@@ -1658,12 +1669,16 @@ def prepare_args(d):  # pragma: no cover
 def get_limited_number_of_messages_from_qs(qs, limit):  # pragma: no cover
     count = 0
     results = []
+    demisto.debug("[ewsv2-search-mailbox-TEST] get_limited_number_of_messages_from_qs")
     for item in qs:
         if count == limit:
+            demisto.debug(f"[ewsv2-search-mailbox-TEST] {count=} == {limit=}, breaking")
             break
         if isinstance(item, Message):
+            demisto.debug(f"[ewsv2-search-mailbox-TEST] {item=} is Message, appending to results")
             count += 1
             results.append(item)
+    demisto.debug("[ewsv2-search-mailbox-TEST] finished get_limited_number_of_messages_from_qs")
     return results
 
 
@@ -1674,8 +1689,9 @@ def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=1
 
     if message_id and message_id[0] != '<' and message_id[-1] != '>':
         message_id = f'<{message_id}>'
-
+    demisto.debug(f"[ewsv2-search-mailbox-TEST] Searching {message_id=} in mailbox {target_mailbox=}, {folder_path=}, {query=}")
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
+    demisto.debug("[ewsv2-search-mailbox-TEST] got account")
     limit = int(limit)
     if folder_path.lower() == 'inbox':
         folders = [account.inbox]
@@ -1684,7 +1700,7 @@ def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=1
         folders = [get_folder_by_path(account, folder_path, is_public)]
     else:
         folders = account.inbox.parent.walk()  # pylint: disable=E1101
-
+    demisto.debug(f"[ewsv2-search-mailbox-TEST] {list(folders)=}")
     items = []  # type: ignore
     selected_all_fields = (selected_fields == 'all')
 
@@ -1693,22 +1709,26 @@ def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=1
     else:
         restricted_fields = set(argToList(selected_fields))  # type: ignore
         restricted_fields.update(['id', 'message_id'])  # type: ignore
-
+    demisto.debug(f"[ewsv2-search-mailbox-TEST] {restricted_fields=}")
     for folder in folders:
+        demisto.debug(f"[ewsv2-search-mailbox-TEST] Searching items in {folder=}")
         if Message not in folder.supported_item_models:
             continue
         if query:
             items_qs = folder.filter(query).only(*restricted_fields)
         else:
             items_qs = folder.filter(message_id=message_id).only(*restricted_fields)
+        demisto.debug(f"[ewsv2-search-mailbox-TEST] got response {items_qs=}")
         items += get_limited_number_of_messages_from_qs(items_qs, limit)
+        demisto.debug(f"[ewsv2-search-mailbox-TEST] {items=}")
         if len(items) >= limit:
+            demisto.debug(f"[ewsv2-search-mailbox-TEST] {len(items)} >= {limit}, breaking")
             break
 
     items = items[:limit]
     searched_items_result = [parse_item_as_dict(item, account.primary_smtp_address, camel_case=True,
                                                 compact_fields=selected_all_fields) for item in items]
-
+    demisto.debug(f"[ewsv2-search-mailbox-TEST] 1 {searched_items_result=}")
     if not selected_all_fields:
         # we show id as 'itemId' for BC
         restricted_fields.remove('id')
@@ -1716,7 +1736,8 @@ def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=1
         searched_items_result = [
             {k: v for (k, v) in i.items()
              if k in keys_to_camel_case(restricted_fields)} for i in searched_items_result]
-
+    demisto.debug(f"[ewsv2-search-mailbox-TEST] 2 {searched_items_result=}")
+    demisto.debug("[ewsv2-search-mailbox-TEST] returning results")
     return get_entry_for_object('Searched items',
                                 CONTEXT_UPDATE_EWS_ITEM,
                                 searched_items_result,
