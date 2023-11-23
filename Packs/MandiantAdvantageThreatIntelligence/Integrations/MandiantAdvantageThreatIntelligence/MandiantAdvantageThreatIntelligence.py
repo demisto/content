@@ -301,7 +301,7 @@ def get_verdict(mscore: Optional[str]) -> int:
     Returns:
         int: DBotScore
     """
-    if not mscore:
+    if mscore is None:
         return Common.DBotScore.NONE
     mscore_int: int = int(mscore)
     if 0 <= mscore_int <= 20:
@@ -1037,7 +1037,7 @@ def get_new_indicators(
             "start_epoch": int(param_start_date.timestamp()),
             "limit": limit,
             "exclude_osint": exclude_osint,
-            "last_updated": "asc"
+            "sort_by": "last_updated:asc"
         }  # type:ignore
 
     new_indicators_list = client.get_indicators(indicator_type, params=params)
