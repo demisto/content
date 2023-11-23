@@ -1,0 +1,130 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: CIAC-8757
+inputs: []
+name: CIAC-8757
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e2aa5af0-e46e-4f09-802d-c989e9581106
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: e2aa5af0-e46e-4f09-802d-c989e9581106
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: ${incident.id}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: 3b2d3d68-fe7f-4618-8ac7-97cf08e10da8
+      iscommand: false
+      name: Print
+      scriptName: Print
+      type: regular
+      version: -1
+    taskid: 3b2d3d68-fe7f-4618-8ac7-97cf08e10da8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 220
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      closeNotes:
+        simple: Not needed
+      closeReason:
+        simple: Not needed
+      id:
+        simple: ${incident.id}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: f210ce88-7c2c-404d-8623-7aceb36bce6f
+      iscommand: true
+      name: Close
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: f210ce88-7c2c-404d-8623-7aceb36bce6f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 450
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 495,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+tests:
+- Sanity Test - Playbook with mocked integration
+- Sanity Test - Playbook with integration
+- Sanity Test - Playbook with no integration
+fromversion: 6.8.0
