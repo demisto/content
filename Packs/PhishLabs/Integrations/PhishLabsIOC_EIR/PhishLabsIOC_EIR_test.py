@@ -374,6 +374,52 @@ def test_fetch__last_run_not_none(mocker):
 
     assert last_run == {'lastRun': '2023-09-20T03:44:55Z'}
 
+def test_fetch_merge_open_closed(mocker):
+    """Tests the fetch-incidents command function.
+
+    Give: last run to request from
+    When: running fetch command and no incidents returned
+    Then: assert new last run is not None
+    """
+    from PhishLabsIOC_EIR import Client, fetch_incidents_command
+
+    client = Client(
+        base_url="https://test.com/api/v1",
+        verify=False,
+        reliability='A'
+    )
+
+    mocker.patch.object(Client, 'get_incidents', side_effect=[{'metadata': {'count': 2},
+                                                               'incidents': [{'id': '1', 'created': '2023-09-20T03:44:55Z',
+                                                                              'details': {'subClassification': "Test"}},
+                                                                             {'id': '2', 'created': '2023-09-20T03:47:55Z',
+                                                                              'details': {'subClassification': "Test"}}]},
+                                                              {'metadata': {'count': 2},
+                                                               'incidents': [{'id': '4', 'created': '2023-09-20T03:48:55Z',
+                                                                              'details': {'subClassification': "Test"}},
+                                                                             {'id': '5', 'created': '2023-09-20T03:49:55Z',
+                                                                              'details': {'subClassification': "Test"}}]},
+                                                              {'metadata': {'count': 1},
+                                                               'incidents': [{'id': '3', 'created': '2023-09-20T03:45:55Z',
+                                                                              'details': {'subClassification': "Test"}}]},
+                                                              {'metadata': {'count': 1},
+                                                               'incidents': [{'id': '4', 'created': '2023-09-20T03:48:55Z',
+                                                                              'details': {'subClassification': "Test"}}]},
+                                                              {'metadata': {'count': 0},
+                                                               'incidents': []}
+                                                              ])
+
+    incident_report, last_run = fetch_incidents_command(
+        client=client,
+        last_run='2023-09-20T03:44:55Z',
+        fetch_time='3 days',
+        limit='4',
+        subcategories=['Test']
+    )
+
+    assert last_run == {'lastRun': '2023-09-20T03:48:55Z'}
+    assert len(incident_report) == 4
+
 
 def test_get_incidents_with_offset(mocker):
     """

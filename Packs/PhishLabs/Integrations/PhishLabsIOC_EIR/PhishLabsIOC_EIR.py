@@ -25,7 +25,6 @@ INTEGRATION_NAME = 'PhishLabs IOC - EIR'
 INTEGRATION_COMMAND_NAME = 'phishlabs-ioc-eir'
 INTEGRATION_CONTEXT_NAME = 'PhishLabsIOC'
 
-
 class Client(BaseClient):
 
     def __init__(self, base_url, verify=True, proxy=False, auth=None, reliability=DBotScoreReliability.B):
@@ -306,6 +305,45 @@ def test_module_command(client: Client, *_) -> Tuple[None, None, str]:
     raise DemistoException(f'Test module failed, {results}')
 
 
+def fetch_incidents_per_status(client:Client,
+                               created_after: str,
+                               offset:int,
+                               limit_page: int,
+                               sort:str,
+                               direction: str,
+                               limit_incidents: int,
+                               status: str,
+                               raws: List,
+                               incidents_raw: List):
+    """
+
+    Getting both closed and open incidents from Phishlabs for the given timeframe.
+
+    """
+    total: int = 0
+    raw_response = client.get_incidents(created_after=created_after,
+                                        offset=offset,
+                                        limit=limit_page,
+                                        sort=sort,
+                                        direction=direction,
+                                        status=status)
+    while raw_response.get('metadata', {}).get('count') and total < limit_incidents:
+        raws.append(raw_response)
+        incidents_raw += raw_response.get('incidents', [])
+        total += int(raw_response.get('metadata', {}).get('count'))
+        offset += int(raw_response.get('metadata', {}).get('count'))
+        if total >= limit_incidents:
+            break
+        if limit_incidents - total < 50:
+            limit_page = limit_incidents - total
+        raw_response = client.get_incidents(offset=offset,
+                                            created_after=created_after,
+                                            limit=limit_page,
+                                            sort=sort,
+                                            direction=direction,
+                                            status=status)
+    return raws, incidents_raw
+
 @logger
 def fetch_incidents_command(
         client: Client,
@@ -341,36 +379,62 @@ def fetch_incidents_command(
     offset = 0
     limit_incidents = int(limit)
     limit_page = min(50, limit_incidents)
-    raw_response = client.get_incidents(created_after=datetime_new_last_run,
-                                        offset=offset,
-                                        limit=limit_page,
-                                        sort='created_at',
-                                        direction='asc')
-    while raw_response.get('metadata', {}).get('count') and total < limit_incidents:
-        raws.append(raw_response)
-        incidents_raw += raw_response.get('incidents', [])
-        total += int(raw_response.get('metadata', {}).get('count'))
-        offset += int(raw_response.get('metadata', {}).get('count'))
-        if total >= limit_incidents:
-            break
-        if limit_incidents - total < 50:
-            limit_page = limit_incidents - total
-        raw_response = client.get_incidents(offset=offset,
-                                            created_after=datetime_new_last_run,
-                                            limit=limit_page,
-                                            sort='created_at',
-                                            direction='asc')
+    # Fetch open Phishlabs incidents
+    raws, incidents_raw = fetch_incidents_per_status(client=client,
+                                                     created_after=datetime_new_last_run,
+                                                     offset=offset,
+                                                     limit_page=limit_page,
+                                                     limit_incidents=limit_incidents,
+                                                     sort='created_at',
+                                                     direction='asc',
+                                                     status='open',
+                                                     raws=raws,
+                                                     incidents_raw=incidents_raw)
+    # Fetch closed Phishlabs incidents
+    raw, incidents_raw = fetch_incidents_per_status(client=client,
+                                                     created_after=datetime_new_last_run,
+                                                     offset=offset,
+                                                     limit_page=limit_page,
+                                                    limit_incidents=limit_incidents,
+                                                     sort='created_at',
+                                                     direction='asc',
+                                                     status='closed',
+                                                    raws=raws,
+                                                    incidents_raw=incidents_raw)
+
+    # Sort incidents by created time
+    incidents_raw = sorted(incidents_raw, key=lambda inc: datetime.strptime(inc.get('created'), '%Y-%m-%dT%H:%M:%SZ'))
+
+
+
+    processed_incident_ids = set()
+
     # Gather incidents by demisto format
     incidents_report = []
     demisto.debug(f'Got {len(incidents_raw)} incidents from the API.')
     if incidents_raw:
         demisto.debug(f" subcategories are {str(subcategories)}")
-        for incident_raw in incidents_raw:
+        for incident_raw  in incidents_raw:
+            if len(incidents_report) >= limit_incidents:
+                break
+
+            #We need to remove duplicates
+            if incident_raw.get('id') in processed_incident_ids:
+                demisto.debug(f"Skipping duplicate incident with id {incident_raw.get('id')}")
+                continue
+
+            # Mark the incident ID as processed
+            processed_incident_ids.add(incident_raw.get('id'))
+
+            # Take the last touched incident time for last_run object
+            last_created = incident_raw.get('created')
+
             incident_subcategory = incident_raw.get('details', {}).get('subClassification').replace(" ", "")
             demisto.debug(f"Comparing incident with id {incident_raw.get('id')} with sub-category {incident_subcategory}")
             if subcategories and incident_subcategory and incident_subcategory not in subcategories:
                 demisto.debug(f"Couldnt find {incident_subcategory} in subcategories, skipping")
                 continue
+
             # Creates incident entry
             occurred = incident_raw.get('created')
             incidents_report.append({
@@ -379,7 +443,7 @@ def fetch_incidents_command(
                 'rawJSON': json.dumps(incident_raw)
             })
 
-        new_last_run = incidents_raw[-1].get('created')
+        new_last_run = last_created
     else:
         new_last_run = datetime_new_last_run
     # Return results
