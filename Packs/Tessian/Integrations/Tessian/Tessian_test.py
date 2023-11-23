@@ -1,7 +1,6 @@
 
 import pytest
 
-import demistomock as demisto
 from Tessian import (
     format_url,
     Client,
@@ -46,9 +45,12 @@ def test_fetch_incidents(mocker):
         }
     )
 
-    fetch_incidents(client, 100)
+    last_run, incidents = fetch_incidents(client, 100)
 
-    assert demisto.setLastRun.call_args[0][0]['checkpoing'] == 'dummy_checkpoint'
+    assert last_run == {
+        'checkpoint': 'dummy_checkpoint',
+    }
+    assert len(incidents) == 1
 
 
 def test_get_events_command(mocker):
@@ -83,9 +85,11 @@ def test_get_events_command(mocker):
     assert response.outputs == {
         "checkpoint": "dummy_checkpoint",
         "additional_results": True,
-        "results": {
-            "dummy_key": "dummy_value",
-        }
+        "results": [
+            {
+                "dummy_key": "dummy_value",
+            },
+        ],
     }
 
 

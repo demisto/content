@@ -88,10 +88,7 @@ def format_url(url: str) -> str:
 ''' COMMAND FUNCTIONS '''
 
 
-def fetch_incidents(client: Client, fetch_limit: int = 200) -> None:  #  pragma: no cover
-    # Get the last run stored in the integration context
-    last_run = demisto.getLastRun()
-
+def fetch_incidents(client: Client, last_run, fetch_limit: int = 200) -> tuple[dict[str, Any], list[dict]]:  #  pragma: no cover
     checkpoint = None
     if last_run and 'checkpoint' in last_run:
         checkpoint = last_run.get('checkpoint')
@@ -113,13 +110,11 @@ def fetch_incidents(client: Client, fetch_limit: int = 200) -> None:  #  pragma
         }
         incidents.append(incident)
 
-    demisto.setLastRun(
-        {
-            'checkpoint': events["checkpoint"]
-        }
-    )
+    next_run = {
+        'checkpoint': events["checkpoint"]
+    }
 
-    demisto.incidents(incidents)
+    return next_run, incidents
 
 
 def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -234,14 +229,25 @@ def main() -> None:  #  pragma: no cover
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
             return_results(result)
+
         elif demisto.command() == 'fetch-incidents':
-            fetch_incidents(client, fetch_limit)
+            # Get the last run stored in the integration context
+            last_run = demisto.getLastRun()
+
+            next_run, incidents = fetch_incidents(client, last_run, fetch_limit)
+
+            demisto.setLastRun(next_run)
+            demisto.incidents(incidents)
+
         elif demisto.command() == 'get_events':
             return_results(get_events_command(client, demisto.args()))
+
         elif demisto.command() == 'release_from_quarantine':
             return_results(release_from_quarantine_command(client, demisto.args()))
+
         elif demisto.command() == 'delete_from_quarantine':
             return_results(delete_from_quarantine_command(client, demisto.args()))
+
         else:
             raise NotImplementedError(f"Either the command, {demisto.command}, is not supported yet or it does not exist.")
 
