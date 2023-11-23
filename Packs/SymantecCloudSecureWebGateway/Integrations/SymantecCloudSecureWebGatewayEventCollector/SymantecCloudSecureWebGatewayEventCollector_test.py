@@ -25,7 +25,7 @@ from pathlib import Path
 
 @pytest.fixture()
 def client():
-    return Client("https://api.example.com", "user", "pass", False, False)
+    return Client("https://api.example.com", "user", "pass", False, False, None)
 
 
 @pytest.fixture
@@ -66,14 +66,13 @@ def test_get_events_and_write_to_file_system(requests_mock, client):
 
 
 @pytest.mark.parametrize(
-    "args, start_date, expected_start, expected_end",
+    "start_date, expected_start, expected_end",
     [
-        ({}, None, 1577822340000, 1577822400000),
-        ({"since": "2020-01-01T00:00:00Z"}, None, 1577829600000, 1577822400000),
-        ({}, 1600, 1600, 1577822400000),
+        (None, 1577822340000, 1577822400000),
+        (1600, 1600, 1577822400000),
     ],
 )
-def test_get_start_and_end_date(args, start_date, expected_start, expected_end):
+def test_get_start_and_end_date(start_date, expected_start, expected_end):
     """
     Given:
         - No arguments and no stored start date
@@ -88,7 +87,7 @@ def test_get_start_and_end_date(args, start_date, expected_start, expected_end):
         - Case 3: Ensure the start date should be the stored date
     """
     with freeze_time("2020-01-01T00:00:00Z"):
-        start, end = get_start_and_end_date(args, start_date)
+        start, end = get_start_and_end_date(start_date)
 
         assert start == expected_start
         assert end == expected_end
@@ -317,15 +316,15 @@ def test_extract_logs_and_push_to_XSIAM(
           depending on whether events are returned from `parse_events`
     """
     mocker.patch(
-        "SymantecCloudSecureWebGatewayLongRunningEventCollector.extract_logs_from_zip_file",
+        "SymantecCloudSecureWebGatewayEventCollector.extract_logs_from_zip_file",
         side_effect=[[b"event1"]],
     )
     mocker.patch(
-        "SymantecCloudSecureWebGatewayLongRunningEventCollector.parse_events",
+        "SymantecCloudSecureWebGatewayEventCollector.parse_events",
         return_value=(mock_events, ""),
     )
     mock_send_events_to_xsiam = mocker.patch(
-        "SymantecCloudSecureWebGatewayLongRunningEventCollector.send_events_to_xsiam"
+        "SymantecCloudSecureWebGatewayEventCollector.send_events_to_xsiam"
     )
 
     extract_logs_and_push_to_XSIAM(LastRun(), "tmp/tmp", False)
@@ -359,15 +358,15 @@ def test_extract_logs_and_push_to_XSIAM_failure(
           the function `demisto.debug` is called with the expected str
     """
     mocker.patch(
-        "SymantecCloudSecureWebGatewayLongRunningEventCollector.extract_logs_from_zip_file",
+        "SymantecCloudSecureWebGatewayEventCollector.extract_logs_from_zip_file",
         side_effect=[[b"event1"]],
     )
     mocker.patch(
-        "SymantecCloudSecureWebGatewayLongRunningEventCollector.parse_events",
+        "SymantecCloudSecureWebGatewayEventCollector.parse_events",
         side_effect=mock_parse_events,
     )
     mock_send_events_to_xsiam = mocker.patch(
-        "SymantecCloudSecureWebGatewayLongRunningEventCollector.send_events_to_xsiam",
+        "SymantecCloudSecureWebGatewayEventCollector.send_events_to_xsiam",
         side_effect=mock_send_events_to_xsiam,
     )
     mock_assertion = mocker.patch.object(demisto, "debug")

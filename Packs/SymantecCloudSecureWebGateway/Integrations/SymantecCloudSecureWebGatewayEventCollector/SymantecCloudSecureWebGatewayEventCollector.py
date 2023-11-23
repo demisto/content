@@ -16,8 +16,8 @@ disable_warnings()
 
 VENDOR = "symantec"
 PRODUCT = "swg"
-FETCH_SLEEP = 30
-FETCH_SLEEP_UNTIL_BEGINNING_NEXT_HOUR = 180
+DEFAULT_FETCH_SLEEP = 60
+MIN_FETCH_SLEEP = 30
 REGEX_FOR_STATUS = re.compile(r"X-sync-status: (?P<status>.*?)(?=\\r\\n|$)")
 REGEX_FOR_TOKEN = re.compile(r"X-sync-token: (?P<token>.*?)(?=\\r\\n|$)")
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
@@ -64,11 +64,21 @@ class HandlingDuplicates(NamedTuple):
 
 
 class Client(BaseClient):
-    def __init__(self, base_url, username, password, verify, proxy) -> None:
+    def __init__(
+        self,
+        base_url: str,
+        username: str,
+        password: str,
+        verify: bool,
+        proxy: bool,
+        fetch_interval: str | None,
+    ) -> None:
         headers: dict[str, str] = {"X-APIUsername": username, "X-APIPassword": password}
         super().__init__(
             base_url=base_url, verify=verify, proxy=proxy, headers=headers, timeout=180
         )
+
+        self.fetch_sleep = get_fetch_interval(fetch_interval)
 
     def get_logs(self, params: dict[str, Any]):
         """
@@ -84,6 +94,16 @@ class Client(BaseClient):
 
 
 """ HELPER FUNCTIONS """
+
+
+def get_fetch_interval(fetch_interval: str | None) -> int:
+    """Returns the fetch interval in seconds"""
+    fetch_sleep = arg_to_number(fetch_interval)
+    if not fetch_sleep:
+        return DEFAULT_FETCH_SLEEP
+    if fetch_interval < MIN_FETCH_SLEEP:
+        return MIN_FETCH_SLEEP
+    return fetch_sleep
 
 
 def get_events_and_write_to_file_system(
@@ -113,14 +133,11 @@ def get_events_and_write_to_file_system(
     return Path(tmp_file.name)
 
 
-def get_start_and_end_date(
-    args: dict[str, str], start_date: str | None
-) -> tuple[int, int]:
+def get_start_and_end_date(start_date: str | None) -> tuple[int, int]:
     """
     returns `start_date` and `end_date`
 
     Args:
-        args (dict[str, str]): The args when the fetch manually activated by the `symantec-get-events` command
         start_date (str | None): start_date which is stored in the last_run object from the second run onwards
 
     Returns:
@@ -129,15 +146,9 @@ def get_start_and_end_date(
     # set the end_date to the current time
     now = datetime.now().astimezone(pytz.utc)
 
-    # If there is no `start_date` stored in the `last_run` object
-    # and no start time in the args, sets the `start_date` to one
-    # minute before the current time
-    start_date = int(
-        start_date
-        or date_to_timestamp(
-            arg_to_datetime(args.get("since")) or (now - timedelta(minutes=1))
-        )
-    )
+    # If there is no `start_date` stored in the `last_run` object,
+    # sets the `start_date` to one minute before the current time
+    start_date = int(start_date or date_to_timestamp(now - timedelta(minutes=1)))
 
     # convert the end_date to timestamp
     end_date = date_to_timestamp(date_str_or_dt=now)
@@ -194,9 +205,9 @@ def get_the_last_row_that_incomplete(lines: list[bytes], file_size: int) -> byte
 def extract_logs_from_zip_file(file_path: Path) -> Generator[list[bytes], None, None]:
     """Extracts logs from the response ZIP file.
 
-    Tries to open the file path as a ZIP file. 
+    Tries to open the file path as a ZIP file.
     Iterates through contained files looking for gzipped files.
-    Opens each gzipped file and reads it in batches, 
+    Opens each gzipped file and reads it in batches,
     yielding a list of raw log lines for each batch.
 
     Handles BadZipFile exception if file is not a valid ZIP:
@@ -264,8 +275,8 @@ def extract_logs_from_zip_file(file_path: Path) -> Generator[list[bytes], None, 
                 else:  # the file is not gzip
                     demisto.debug(f"The {file.filename} file is not of gzip type")
     except BadZipFile as e:
-        content= file_path.read_bytes()
-        if content.startswith((b'X-sync-status', b'X-sync-token')):  # No logs
+        content = file_path.read_bytes()
+        if content.startswith((b"X-sync-status", b"X-sync-token")):  # No logs
             demisto.debug("No logs returned from the API")
         else:
             raise ValueError(f"The external file type is not of type ZIP, Error: {e}")
@@ -497,25 +508,11 @@ def extract_logs_and_push_to_XSIAM(
     )
 
 
-def delete_tmp_file_from_last_fetch():
-    # Deletes the temporary file from the last fetch if it exists
-    if tmp_file_path := get_integration_context().get("tmp_file_path"):
-        demisto.debug(f"{tmp_file_path=}")  # ????
-        tmp_file_path = Path(tmp_file_path)
-        try:
-            if tmp_file_path.exists():
-                demisto.debug(f"there is a {tmp_file_path=}")  # ????
-                tmp_file_path.unlink()
-                demisto.debug(f"Deleted temporary file: {tmp_file_path}")
-        except Exception as err:
-            demisto.debug(f"Failed to delete temporary file. Error: {err}")
-    demisto.debug("Skipping temporary file deletion")  # ????
 """ FETCH EVENTS """
 
 
 def get_events_command(
     client: Client,
-    args: dict[str, str],
     last_run_model: LastRun,
 ) -> None:
     """ """
@@ -524,11 +521,12 @@ def get_events_command(
     status = "more"
     while status != "done":
         token_expired = last_run_model.token_expired
+
         # Set the fetch times, where the `end_time` is consistently set to the current time.
         # The `start_time` is determined by the `last_run`,
         # and if it does not exist, it is set to one minute prior.
         start_date, end_date = get_start_and_end_date(
-            args=args, start_date=last_run_model.start_date
+            start_date=last_run_model.start_date
         )
 
         # Set the parameters for the API call
@@ -556,11 +554,11 @@ def get_events_command(
                     continue
                 elif e.res is not None and e.res.status_code == 423:
                     demisto.debug(f"API access is blocked: {e}")
-                    time.sleep(FETCH_SLEEP)
+                    time.sleep(client.fetch_sleep)
                     continue
                 elif e.res is not None and e.res.status_code == 429:
                     demisto.debug(f"Crashed on limit of api calls: {e}")
-                    time.sleep(FETCH_SLEEP)
+                    time.sleep(client.fetch_sleep)
                     continue
                 else:
                     demisto.debug(f"Some ERROR: {e=}")
@@ -604,18 +602,16 @@ def get_events_command(
 def test_module(client: Client):
     start_date, end_date = get_start_and_end_date({}, None)
     params: dict[str, Union[str, int]] = {
-            "startDate": start_date,
-            "endDate": end_date,
-            "token": "none",
+        "startDate": start_date,
+        "endDate": end_date,
+        "token": "none",
     }
 
     client.get_logs(params)
     return "ok"
 
 
-def perform_long_running_loop(client: Client, args: dict[str, str]):
-    delete_tmp_file_from_last_fetch()
-
+def perform_long_running_loop(client: Client):
     last_run_obj: LastRun
     while True:
         try:
@@ -626,22 +622,22 @@ def perform_long_running_loop(client: Client, args: dict[str, str]):
                 LastRun(**integration_context) if integration_context else LastRun()
             )
 
-            get_events_command(client, args, last_run_obj)
+            get_events_command(client, last_run_obj)
 
         except Exception as e:
             demisto.debug(f"Failed to fetch logs from API. Error: {e}")
-        time.sleep(FETCH_SLEEP)
+        time.sleep(client.fetch_sleep)
 
 
 def main() -> None:  # pragma: no cover
     params = demisto.params()
-    args = demisto.args()
 
     base_url = params["url"].strip("/")
     username = params["credentials"]["identifier"]
     password = params["credentials"]["password"]
-    verify = not params.get("insecure", False)
-    proxy = params.get("proxy", False)
+    verify = not argToBoolean(params.get("insecure", False))
+    proxy = argToBoolean(params.get("proxy", False))
+    fetch_interval = params.get("fetch_interval")
 
     command = demisto.command()
     try:
@@ -651,13 +647,14 @@ def main() -> None:  # pragma: no cover
             password=password,
             verify=verify,
             proxy=proxy,
+            fetch_interval=fetch_interval,
         )
 
         if command == "test-module":
             return_results(test_module(client))
         if command == "long-running-execution":
             demisto.debug("Starting long running execution")
-            perform_long_running_loop(client, args)
+            perform_long_running_loop(client)
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
 

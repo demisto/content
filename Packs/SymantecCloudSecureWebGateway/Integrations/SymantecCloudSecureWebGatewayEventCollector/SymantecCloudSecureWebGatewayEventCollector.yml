@@ -33,32 +33,17 @@ configuration:
   name: longRunning
   type: 8
   section: Connect
-- display: Fetch interval in seconds
+- display: Fetch interval in seconds, (The minimum threshold is 30 seconds)
   name: fetch_interval
   type: 0
   defaultvalue: 60
   required: true
   section: Collect
 script:
-  commands:
-  - deprecated: false
-    description: Manual command to fetch events and display them.
-    name: symantec-get-events
-    arguments:
-    - name: since
-      description: Occurrence time of the least recent event to include (inclusive).
-      defaultValue: 3 hours
-    - auto: PREDEFINED
-      defaultValue: 'false'
-      description: If true, the command will create events, otherwise it will only display them.
-      name: should_push_events
-      predefined:
-      - 'true'
-      - 'false'
-      required: true
-  dockerimage: demisto/python3:3.10.12.68714
+  commands: []
+  dockerimage: demisto/python3:3.10.13.80593
   longRunning: true
-  script: '-'
+  script: ""
   subtype: python3
   type: python
 tests:
