@@ -1,6 +1,9 @@
-id: Cortex XDR - quarantine file
+id: Cortex XDR - quarantine file v2
 version: -1
-name: Cortex XDR - quarantine file
+contentitemexportablefields:
+  contentitemfields: {}
+name: Cortex XDR - quarantine file v2
+description: This playbook accepts file path, file hash and endpoint id in order to quarantine a selected file and wait until the action is done.
 starttaskid: "0"
 tasks:
   "0":
@@ -18,6 +21,7 @@ tasks:
       '#none#':
       - "2"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -30,70 +34,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "1":
-    id: "1"
-    taskid: 2b930111-1438-4488-8a2c-7f0fac67a84e
-    type: playbook
-    task:
-      id: 2b930111-1438-4488-8a2c-7f0fac67a84e
-      version: -1
-      name: GenericPolling
-      description: |-
-        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
-        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
-        The remote action should have the following structure:
-
-        1. Initiate the operation.
-        2. Poll to check if the operation completed.
-        3. (optional) Get the results of the operation.
-      playbookName: GenericPolling
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      AdditionalPollingCommandArgNames:
-        simple: file_hash,file_path,endpoint_id
-      AdditionalPollingCommandArgValues:
-        simple: ${inputs.file_hash},${inputs.file_path},${inputs.endpoint_id}
-      Ids:
-        simple: Cortex_XDR_-_quarantine_file
-      Interval:
-        simple: "1"
-      PollingCommandArgName:
-        simple: actionId
-      PollingCommandName:
-        simple: xdr-get-quarantine-status
-      Timeout:
-        simple: "10"
-      dt:
-        simple: PaloAltoNetworksXDR.quarantineFiles.status(val.fileHash === '${inputs.file_hash}' && val.endpointId === '${inputs.endpoint_id}' && val.filePath === '${inputs.file_path}' && val.status === false)
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: b8e66e18-fc70-48ce-8cb4-859bd1ce7de6
+    taskid: 1809cbad-2546-4991-8fd5-158ef8df6059
     type: regular
     task:
-      id: b8e66e18-fc70-48ce-8cb4-859bd1ce7de6
+      id: 1809cbad-2546-4991-8fd5-158ef8df6059
       version: -1
       name: Quarantine file
       description: Quarantine a file on selected endpoints. You can select up to 1000 endpoints.
@@ -111,7 +59,12 @@ tasks:
         simple: ${inputs.file_hash}
       file_path:
         simple: ${inputs.file_path}
+      interval_in_seconds:
+        simple: "60"
+      timeout_in_seconds:
+        simple: "600"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -124,6 +77,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: 454d0ef9-46e7-478c-809c-0b0931dce7ce
@@ -137,11 +92,12 @@ tasks:
       brand: ""
       description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 550
         }
       }
     note: false
@@ -149,22 +105,24 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 932eceea-f7db-4839-845b-bba37414536d
+    taskid: 95f7c67b-1956-4f6c-8455-8549fa1b1d86
     type: regular
     task:
-      id: 932eceea-f7db-4839-845b-bba37414536d
+      id: 95f7c67b-1956-4f6c-8455-8549fa1b1d86
       version: -1
       name: Get quarantine status
-      description: Retrieve the quarantine status for a selected file.
+      description: Retrieves the quarantine status for a selected file.
       script: '|||xdr-get-quarantine-status'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "3"
     scriptarguments:
       endpoint_id:
         simple: ${inputs.endpoint_id}
@@ -173,6 +131,7 @@ tasks:
       file_path:
         simple: ${inputs.file_path}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -185,12 +144,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 735,
+        "height": 565,
         "width": 380,
         "x": 50,
         "y": 50
@@ -214,8 +175,6 @@ inputs:
   description: The file's location in the system.
   playbookInputQuery:
 outputs: []
-fromversion: 5.0.0
-description: 'Deprecated. Use Cortex XDR - quarantine file v2 instead.'
 tests:
-- No tests (deprecated)
-deprecated: true
+- No tests (auto formatted)
+fromversion: 6.10.0
