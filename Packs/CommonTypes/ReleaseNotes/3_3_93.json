@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "**Important Note**: The following incident field: **LastMirroredInTime** moved to this pack from 'Cortex XDR By Palo Alto Networks' pack. Please update the 'Cortex XDR By Palo Alto Networks' pack before updating this pack"
+}
