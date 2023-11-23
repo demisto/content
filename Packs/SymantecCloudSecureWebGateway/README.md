@@ -1,12 +1,12 @@
-# Symantec Cloud Secure Web Gateway
+# Symantec Cloud Secure Web Gateway (SWG)
 
 <~XSIAM>
 
 ## Cortex XSIAM SIEM Content
 
-This pack includes Cortex XSIAM SIEM content for parsing and modeling the access logs that are received from Symantec Cloud SWG (Secure Web Gateway) via the Symantec Cloud SWG (Secure Web Gateway) Event Collector integration. 
+This pack includes Cortex XSIAM SIEM content for parsing and modeling the access logs that are ingested via the Symantec Cloud SWG Event Collector integration. 
 
-After configuring the Symantec Cloud SWG Event Collector integration in Cortex XSIAM, the Symantec Cloud SWG access logs are searchable in XQL Search using the **symantec_swg_raw** dataset. 
+After configuring the Symantec Cloud SWG Event Collector integration in Cortex XSIAM, the access logs are searchable in XQL Search using the **symantec_swg_raw** dataset. 
 
 In addition, data is normalized to the Cortex Data Model (XDM).
 
