@@ -1904,3 +1904,15 @@ def test_handle_message(item: dict | results.Message, expected: bool):
     Tests that passing a results.Message object returns True
     """
     assert splunk.handle_message(item) is expected
+
+
+def test_splunk_submit_event_hec_command(mocker):
+    text = "a msg without Success."
+    class MockRes():
+        def __init__(self, text):
+            self.text = text
+    mocker.patch.object(splunk, "splunk_submit_event_hec", return_value = MockRes(text))
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
+    splunk.splunk_submit_event_hec_command(params={"hec_url": "mock_url"}, args={})
+    err_msg = return_error_mock.call_args[0][0]
+    assert err_msg == f"Could not send event to Splunk {text}"
