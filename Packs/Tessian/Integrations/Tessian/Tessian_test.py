@@ -33,7 +33,7 @@ def test_get_events_command(mocker):
     client = create_mock_client()
     mocker.patch.object(
         client,
-        'get_events',
+        'tessian-get-events',
         return_value={
             'checkpoint': "dummy_checkpoint",
             'additional_results': True,
@@ -73,7 +73,7 @@ def test_release_from_quarantine_comand(mocker):
     client = create_mock_client()
     mocker.patch.object(
         client,
-        'release_from_quarantine',
+        'tessian-release-from-quarantine',
         return_value={
             "number_of_actions_attempted": 1,
             "number_of_actions_succeeded": 1,
@@ -113,7 +113,7 @@ def test_delete_from_quarantine_command(mocker):
     client = create_mock_client()
     mocker.patch.object(
         client,
-        'delete_from_quarantine',
+        'tessian-delete-from-quarantine',
         return_value={
             "number_of_actions_attempted": 1,
             "number_of_actions_succeeded": 1,

@@ -18,17 +18,17 @@ display: Tessian
 name: Tessian
 script:
   commands:
-  - name: get_events
+  - name: tessian-get-events
     description: This command allows you to pull Tessian event data into your XSOAR instance.
     arguments:
     - name: limit
-      description: 'The maximum number of events you would like Tessian to return per call.'
+      description: The maximum number of events you would like Tessian to return per call. The maximum value is 100.
       required: false
     - name: after_checkpoint
-      description: 'If provided, this parameter must be set to the checkpoint returned by a previous request to this endpoint. When provided, events from the previous request will not be included in the response from this request. If the new checkpoint returned by this request is used in yet another call to this endpoint events from both previous requests will not be included in the response (and so on). By making a number of consecutive requests to this endpoint where the checkpoint from the previous request is provided, clients can get all events from the Tessian platform, even when there are many more than can be returned in a single request. This process is often referred to as pagination. If an event is updated, it will no longer be excluded from subsequent requests.'
+      description: If provided, this parameter must be set to the checkpoint returned by a previous request to this endpoint. When provided, events from the previous request will not be included in the response from this request. If the new checkpoint returned by this request is used in yet another call to this endpoint events from both previous requests will not be included in the response (and so on). By making a number of consecutive requests to this endpoint where the checkpoint from the previous request is provided, clients can get all events from the Tessian platform, even when there are many more than can be returned in a single request. This process is often referred to as pagination. If an event is updated, it will no longer be excluded from subsequent requests.
       required: false
     - name: created_after
-      description: Only include events that were created after this time.
+      description: Only include events that were created after this time. For example, 2020-02-02T19:00:00Z.
       required: false
     outputs:
     - contextPath: Tessian.EventsOutput.checkpoint
@@ -40,7 +40,7 @@ script:
     - contextPath: Tessian.EventsOutput.results
       description: The events returned by this request.
       type: Unknown
-  - name: release_from_quarantine
+  - name: tessian-release-from-quarantine
     description: This command allows you to release a quarantined email from Tessian.
     arguments:
     - name: event_id
@@ -56,7 +56,7 @@ script:
     - contextPath: Tessian.ReleaseFromQuarantineOutput.results
       description: The results of the release action. This is an array of objects mapping the email address of users to the result of the release action.
       type: Unknown
-  - name: delete_from_quarantine
+  - name: tessian-delete-from-quarantine
     description: This command allows you to delete a quarantined email from Tessian.
     arguments:
     - name: event_id

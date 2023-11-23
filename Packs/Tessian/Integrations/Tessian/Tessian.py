@@ -95,11 +95,16 @@ def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     results = client.get_events(limit, after_checkpoint, created_after)
 
+    markdown = '### Tessian Events\n'
+    markdown += f'## Checkpoint: {results.get("checkpoint")} | Additional Results: {results.get("additional_results")}\n'
+    markdown += f'# Number of events returned: {results.get("results", []).len()}\n'
+
     return CommandResults(
         outputs_prefix='Tessian.EventsOutput',
-        outputs_key_field='after_checkpoint',
+        outputs_key_field='checkpoint',
         outputs=results,
-        raw_response=results
+        raw_response=results,
+        readable_output=markdown,
     )
 
 
@@ -111,11 +116,16 @@ def release_from_quarantine_command(client: Client, args: dict[str, Any]) -> Com
 
     results = client.release_from_quarantine(event_id)
 
+    markdown = '### Release from Quarantine Action\n'
+    markdown += f'## Number of Actions Attemped: {results.get("number_of_actions_attempted")}\n'
+    markdown += f'## Number of Actions Succeeded: {results.get("number_of_actions_succeeded")}\n'
+
     return CommandResults(
         outputs_prefix='Tessian.ReleaseFromQuarantineOutput',
         outputs_key_field='event_id',
         outputs=results,
-        raw_response=results
+        raw_response=results,
+        readable_output=markdown,
     )
 
 
@@ -127,11 +137,15 @@ def delete_from_quarantine_command(client: Client, args: dict[str, Any]) -> Comm
 
     results = client.delete_from_quarantine(event_id)
 
+    markdown = '### Delete from Quarantine Action\n'
+    markdown += f'## Number of Actions Attemped: {results.get("number_of_actions_attempted")}\n'
+    markdown += f'## Number of Actions Succeeded: {results.get("number_of_actions_succeeded")}\n'
     return CommandResults(
         outputs_prefix='Tessian.DeleteFromQuarantineOutput',
         outputs_key_field='event_id',
         outputs=results,
-        raw_response=results
+        raw_response=results,
+        readable_output=markdown,
     )
 
 
@@ -147,7 +161,7 @@ def test_module(client: Client) -> str:  #  pragma: no cover
 
         success = demisto.get(response, 'success.total')  # Safe access to response['success']['total']
         if success != 1:
-            return f'Unexpected result from the service: success={success} (expected success=1)'
+            return f'Unexpected result from the service: success={success} (expected success=1), response={str(response)}'
 
         return 'ok'
     except Exception as e:
@@ -170,6 +184,7 @@ def main() -> None:  #  pragma: no cover
 
     # get the service API url
     params = demisto.params()
+    args = demisto.args()
     base_url = format_url(params.get('url'))
     api_key = params.get('api_key')
 
@@ -200,14 +215,14 @@ def main() -> None:  #  pragma: no cover
             result = test_module(client)
             return_results(result)
 
-        elif demisto.command() == 'get_events':
-            return_results(get_events_command(client, demisto.args()))
+        elif demisto.command() == 'tessian-get-events':
+            return_results(get_events_command(client, args))
 
-        elif demisto.command() == 'release_from_quarantine':
-            return_results(release_from_quarantine_command(client, demisto.args()))
+        elif demisto.command() == 'tessian-release-from-quarantine':
+            return_results(release_from_quarantine_command(client, args))
 
-        elif demisto.command() == 'delete_from_quarantine':
-            return_results(delete_from_quarantine_command(client, demisto.args()))
+        elif demisto.command() == 'tessian-delete-from-quarantine':
+            return_results(delete_from_quarantine_command(client, args))
 
         else:
             raise NotImplementedError(f"Either the command, {demisto.command}, is not supported yet or it does not exist.")

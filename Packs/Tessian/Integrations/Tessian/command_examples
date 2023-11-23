@@ -1,0 +1,3 @@
+!tessian-get-events limit=100 after_checkpoint="example-value" created_after="2020-02-02T19:00:00Z"
+!tessian-release-from-quarantine event_id="id-from-tessian-get-events"
+!tessian-delete-from-quarantine event_id="id-from-tessian-get-events"
