@@ -566,6 +566,136 @@ def test_module(client: Client) -> str:
     client.get_audit_logs_request(limit=10)
     return 'ok'
 
+ASSETS = 'assets'
+EVENTS = 'events'
+DATA_TYPES = [ASSETS, EVENTS]
+def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
+                         chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type="events"):
+    """
+    Send the fetched events or assets into the XDR data-collector private api.
+
+    :type data: ``Union[str, list]``
+    :param data: The data to send to XSIAM server. Should be of the following:
+        1. List of strings or dicts where each string or dict represents an event or asset.
+        2. String containing raw events separated by a new line.
+
+    :type vendor: ``str``
+    :param vendor: The vendor corresponding to the integration that originated the events.
+
+    :type product: ``str``
+    :param product: The product corresponding to the integration that originated the events.
+
+    :type data_format: ``str``
+    :param data_format: Should only be filled in case the 'events' parameter contains a string of raw
+        events in the format of 'leef' or 'cef'. In other cases the data_format will be set automatically.
+
+    :type url_key: ``str``
+    :param url_key: The param dict key where the integration url is located at. the default is 'url'.
+
+    :type num_of_attempts: ``int``
+    :param num_of_attempts: The num of attempts to do in case there is an api limit (429 error codes)
+
+    :type chunk_size: ``int``
+    :param chunk_size: Advanced - The maximal size of each chunk size we send to API. Limit of 9 MB will be inforced.
+
+    :type data_type: ``str``
+    :param data_type: Type of events to send to Xsiam, events, assets or assets_snapshots.
+
+    :return: None
+    :rtype: ``None``
+    """
+    data_size = 0
+    params = demisto.params()
+    url = params.get(url_key)
+    calling_context = demisto.callingContext.get('context', {})
+    instance_name = calling_context.get('IntegrationInstance', '')
+    collector_name = calling_context.get('IntegrationBrand', '')
+    items_count = len(data) if isinstance(data, list) else 1
+    if data_type not in DATA_TYPES:
+        demisto.debug("data type must be one of these values: {types}".format(types=DATA_TYPES))
+        return
+
+    if not data:
+        demisto.debug('send_data_to_xsiam function received no {data_type}, '
+                      'skipping the API call to send {data} to XSIAM'.format(data_type=data_type, data=data_type))
+        demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
+        return
+
+    # only in case we have data to send to XSIAM we continue with this flow.
+    # Correspond to case 1: List of strings or dicts where each string or dict represents an one event or asset or snapshot.
+    if isinstance(data, list):
+        # In case we have list of dicts we set the data_format to json and parse each dict to a stringify each dict.
+        if isinstance(data[0], dict):
+            data = [json.dumps(item) for item in data]
+            data_format = 'json'
+        # Separating each event with a new line
+        data = '\n'.join(data)
+    elif not isinstance(data, str):
+        raise DemistoException('Unsupported type: {data} for the {data_type} parameter.'
+                               ' Should be a string or list.'.format(data=type(data), data_type=data_type))
+    if not data_format:
+        data_format = 'text'
+
+    xsiam_api_token = demisto.getLicenseCustomField('Http_Connector.token')
+    xsiam_domain = demisto.getLicenseCustomField('Http_Connector.url')
+    xsiam_url = 'https://api-{xsiam_domain}'.format(xsiam_domain=xsiam_domain)
+    headers = {
+        'authorization': xsiam_api_token,
+        'format': data_format,
+        'product': product,
+        'vendor': vendor,
+        'content-encoding': 'gzip',
+        'collector-name': collector_name,
+        'instance-name': instance_name,
+        'final-reporting-device': url,
+        'collector_type': ASSETS if data_type == ASSETS else EVENTS
+    }
+    if data_type == ASSETS:
+        headers['snapshot_id'] = str(round(time.time() * 1000))
+        headers['total_items_count'] = str(items_count)
+
+    header_msg = 'Error sending new {data_type} into XSIAM.\n'.format(data_type = data_type)
+
+    def data_error_handler(res):
+        """
+        Internal function to parse the XSIAM API errors
+        """
+        try:
+            response = res.json()
+            error = res.reason
+            if response.get('error').lower() == 'false':
+                xsiam_server_err_msg = response.get('error')
+                error += ": " + xsiam_server_err_msg
+
+        except ValueError:
+            if res.text:
+                error = '\n{}'.format(res.text)
+            else:
+                error = "Received empty response from the server"
+
+        api_call_info = (
+            'Parameters used:\n'
+            '\tURL: {xsiam_url}\n'
+            '\tHeaders: {headers}\n\n'
+            'Response status code: {status_code}\n'
+            'Error received:\n\t{error}'
+        ).format(xsiam_url=xsiam_url, headers=json.dumps(headers, indent=8), status_code=res.status_code, error=error)
+
+        demisto.error(header_msg + api_call_info)
+        raise DemistoException(header_msg + error, DemistoException)
+
+    client = BaseClient(base_url=xsiam_url)
+    data_chunks = split_data_to_chunks(data, chunk_size)
+    for data_chunk in data_chunks:
+        data_size += len(data_chunk)
+        data_chunk = '\n'.join(data_chunk)
+        zipped_data = gzip.compress(data_chunk.encode('utf-8'))  # type: ignore[AttributeError,attr-defined]
+        xsiam_api_call_with_retries(client=client, events_error_handler=data_error_handler,
+                                    error_msg=header_msg, headers=headers,
+                                    num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
+                                    zipped_data=zipped_data, is_json_response=True)
+
+    demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
 
 ''' MAIN FUNCTION '''
 
