@@ -82,7 +82,7 @@ script:
       required: false
     - auto: PREDEFINED
       defaultValue: 'Alerts'
-      description: The type of event to fetch. Alerts, Activities or Devices. Default is Alerts.
+      description: The type of event to fetch. 
       name: event_type
       predefined:
       - 'Alerts'

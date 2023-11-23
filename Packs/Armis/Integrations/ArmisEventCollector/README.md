@@ -41,7 +41,7 @@ Manual command to fetch and display events. This command is used for developing/
 | --- | --- | --- |
 | should_push_events | Set this argument to true in order to create events, otherwise the command will only display them. Possible values are: true, false. Default is false. | Required | 
 | from_date | The date from which to fetch events. The format should be YYYY-MM-DD or YYYY-MM-DDT:HH:MM:SS. If not specified, the current date will be used. | Optional | 
-| event_type | The type of event to fetch. Alerts, Activities or Devices. Default is Alerts. Possible values are: Alerts, Activities, Devices. Default is Alerts. | Optional | 
+| event_type | The type of event to fetch. Possible values are: Alerts, Activities, Devices. Default is Alerts. | Optional | 
 | aql | Run your own AQL query to fetch events. | Optional | 
 
 #### Context Output
