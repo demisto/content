@@ -426,10 +426,15 @@ def fetch_incidents(service: client.Service, mapper: UserMappingObject, comment_
             # In "Pull from instance" in Classification & Mapping the last run object is empty, integration context
             # will not be empty because of the enrichment mechanism. In regular enriched fetch, we use dummy data
             # in the last run object to avoid entering this case
+            demisto.debug('running fetch_incidents_for_mapping')
+
             fetch_incidents_for_mapping(integration_context)
         else:
+            demisto.debug('running run_enrichment_mechanism')
             run_enrichment_mechanism(service, integration_context, mapper, comment_tag_to_splunk, comment_tag_from_splunk)
     else:
+        demisto.debug('enrichments not enabled running fetch_notables')
+
         fetch_notables(service=service, enrich_notables=False, mapper=mapper, comment_tag_to_splunk=comment_tag_to_splunk,
                        comment_tag_from_splunk=comment_tag_from_splunk)
 
@@ -911,7 +916,7 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
         ):
             status, earliest_offset, latest_offset = get_drilldown_timeframe(notable_data, raw_dict)
             if status:
-                kwargs = {"count": num_enrichment_events, "exec_mode": "normal"}
+                kwargs = {"max_count": num_enrichment_events, "exec_mode": "normal"}
                 if latest_offset:
                     kwargs['latest_time'] = latest_offset
                 if earliest_offset:
@@ -952,7 +957,7 @@ def identity_enrichment(service: client.Service, notable_data, num_enrichment_ev
         fields=["user", "src_user"],
         add_backslash=True,
     ):
-        kwargs = {"count": num_enrichment_events, "exec_mode": "normal"}
+        kwargs = {"max_count": num_enrichment_events, "exec_mode": "normal"}
         query = f'| inputlookup identity_lookup_expanded where {users}'
         demisto.debug(f"Identity query for notable {notable_data[EVENT_ID]}: {query}")
         try:
@@ -982,7 +987,7 @@ def asset_enrichment(service: client.Service, notable_data, num_enrichment_event
         prefix="asset",
         fields=["src", "dest", "src_ip", "dst_ip"],
     ):
-        kwargs = {"count": num_enrichment_events, "exec_mode": "normal"}
+        kwargs = {"max_count": num_enrichment_events, "exec_mode": "normal"}
         query = f'| inputlookup append=T asset_lookup_by_str where {assets} \
                 | inputlookup append=t asset_lookup_by_cidr where {assets} \
                 | rename _key as asset_id \
@@ -1050,13 +1055,17 @@ def handle_submitted_notable(service: client.Service, notable: Notable, enrichme
                 try:
                     job = client.Job(service=service, sid=enrichment.id)
                     if job.is_done():
-                        demisto.debug(f'Handling open {enrichment.type} enrichment for notable {notable.id}')
+                        demisto.debug(f'Handling {enrichment.type=} for notable {notable.id}')
                         for item in results.JSONResultsReader(job.results(output_mode=OUTPUT_MODE_JSON)):
                             if handle_message(item):
                                 continue
                             enrichment.data.append(item)
                         enrichment.status = Enrichment.SUCCESSFUL
+                        demisto.debug(f'{notable.id} {enrichment.type} status is successful. {len(enrichment.data)=}')
+                    else:
+                        demisto.debug(f'Enrichment {enrichment.type} for notable {notable.id} is still not done')
                 except Exception as e:
+
                     demisto.error(
                         f"Caught an exception while retrieving {enrichment.type}\
                         enrichment results for notable {notable.id}: {str(e)}"
