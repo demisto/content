@@ -107,9 +107,8 @@ script:
   - arguments:
     - description: User ID to use Teams as (can be principal ID (email address)).
       name: user_id
-    - description: The title of the chat.
+    - description: The title of the chat. Supported only for "group" type.
       name: subject
-      required: true
     - auto: PREDEFINED
       default: true
       defaultValue: group
@@ -301,13 +300,13 @@ script:
     name: msgraph-teams-generate-login-url
     arguments: []
   - description: Run this command if for some reason you need to rerun the authentication process.
-    execution: false
     name: msgraph-teams-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.68914
+  dockerimage: demisto/crypto:1.0.0.80694
   script: ''
   subtype: python3
   type: python
+  runonce: false
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
