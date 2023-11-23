@@ -363,7 +363,7 @@ class account_close(Data):
     client_func_kwargs = {
         "AccountId": "account_id"
     }
-    readable_output = """### Account closed
+    readable_output = """### AWS Account Closed
 |AccountId|
 |---|
 | account_id |

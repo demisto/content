@@ -440,7 +440,7 @@ def account_create_command(args: dict, aws_client: 'OrganizationsClient') -> Pol
 )
 def account_close_command(args: dict, aws_client: 'OrganizationsClient') -> PollResult:  # TODO: test
 
-    if not args['is_closed']:
+    if not argToBoolean(args['is_closed']):
         aws_client.close_account(
             AccountId=args['account_id']
         )
@@ -453,7 +453,7 @@ def account_close_command(args: dict, aws_client: 'OrganizationsClient') -> Poll
     return PollResult(
         response=CommandResults(
             readable_output=tableToMarkdown(
-                'Account closed',
+                'AWS Account Closed',
                 {'AccountId': args['account_id']}
             )
         ),
