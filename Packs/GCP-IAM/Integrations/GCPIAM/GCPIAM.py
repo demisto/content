@@ -20,7 +20,7 @@ class Client:
         proxies = handle_proxy()
 
         if proxy or not disable_ssl_certificate:
-            http_client = credentials.authorize(self.get_http_client_with_proxy(proxies, verify_certificate=disable_ssl_certificate))
+            http_client = credentials.authorize(self.get_http_client_with_proxy(proxies, disable_ssl_certificate=disable_ssl_certificate))
             self.cloud_identity_service = discovery.build('cloudidentity', 'v1', http=http_client)
             self.cloud_resource_manager_service = discovery.build('cloudresourcemanager', 'v3', http=http_client)
             self.iam_service = discovery.build('iam', 'v1', http=http_client)
@@ -32,7 +32,7 @@ class Client:
             self.iam_service = discovery.build('iam', 'v1', credentials=credentials)
             self.iam_credentials = discovery.build('iamcredentials', 'v1', credentials=credentials)
 
-    def get_http_client_with_proxy(self, proxies: dict, verify_certificate: bool = False):
+    def get_http_client_with_proxy(self, proxies: dict, disable_ssl_certificate: bool = False):
         proxy_info = None
         if proxies:
             if not proxies or not proxies['https']:
@@ -47,7 +47,7 @@ class Client:
                 proxy_port=parsed_proxy.port,
                 proxy_user=parsed_proxy.username,
                 proxy_pass=parsed_proxy.password)
-        return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=verify_certificate)
+        return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=disable_ssl_certificate)
 
     def gcp_iam_tagbindings_list_request(self, parent: str, limit: int = None) -> dict:
         """
