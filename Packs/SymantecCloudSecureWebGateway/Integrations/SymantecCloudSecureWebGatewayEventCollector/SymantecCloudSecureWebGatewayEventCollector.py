@@ -539,7 +539,7 @@ def get_events_command(
                     # for handling duplicates in next fetch
                     demisto.debug(f"The token has expired: {e}")
                     last_run_model = LastRun(
-                        start_date=start_date,
+                        start_date=str(start_date),
                         token="none",
                         time_of_last_fetched_event=last_run_model.time_of_last_fetched_event,
                         events_suspected_duplicates=last_run_model.events_suspected_duplicates,

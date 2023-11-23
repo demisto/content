@@ -35,18 +35,18 @@ def tmp_zip_file(tmpdir):
         file_contents += b"Hello, this is some data for the gzip file.\n"
 
     # Create a zip file
-    zip_file_name = Path( tmpdir / 'example.zip')
-    with zipfile.ZipFile(zip_file_name, 'w') as zip_file:
+    zip_file_name = Path(tmpdir / "example.zip")
+    with zipfile.ZipFile(zip_file_name, "w") as zip_file:
         # Create and add gzip files to the zip file
         for i in range(0, 4):  # Create three gzip files for demonstration
-            gzip_file_name = Path(f'file{i}.gz')
-        
-            with gzip.open(gzip_file_name, 'wb') as f:
+            gzip_file_name = Path(f"file{i}.gz")
+
+            with gzip.open(gzip_file_name, "wb") as f:
                 f.write(file_contents)
-        
+
             # Add the gzip file to the zip file
             zip_file.write(gzip_file_name)
-        
+
             # Remove the temporary gzip file
             gzip_file_name.unlink()
     return zip_file_name
@@ -532,11 +532,11 @@ def test_parse_events_with_duplicates(
     "content",
     [
         b"X-sync-status: test_status\n\rX-sync-token: test_token\n\r",
-        b"X-sync-token: test_token\n\rX-sync-status: test_status\n\r"
-    ]
+        b"X-sync-token: test_token\n\rX-sync-status: test_status\n\r",
+    ],
 )
 def test_extract_logs_from_zip_file_without_logs(mocker, content: bytes):
-    '''
+    """
     Given:
         - content of the zip file when it does not contain any logs.
     When:
@@ -544,11 +544,9 @@ def test_extract_logs_from_zip_file_without_logs(mocker, content: bytes):
     Then:
         - Ensure demisto.debug is called with "No logs returned from the API" message
           and no exceptions are raised.
-    '''
+    """
     mock_demisto_debug = mocker.patch.object(demisto, "debug")
-    with tempfile.NamedTemporaryFile(
-        mode="wb", delete=False
-    ) as tmp_file:
+    with tempfile.NamedTemporaryFile(mode="wb", delete=False) as tmp_file:
         tmp_file.write(content)
     path = Path(tmp_file.name)
     for _ in extract_logs_from_zip_file(path):
