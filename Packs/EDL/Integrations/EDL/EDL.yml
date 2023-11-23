@@ -18,7 +18,7 @@ configuration:
   name: indicators_query
   type: 0
   section: Collect
-  advanced: true
+  advanced: false
   required: false
 - additionalinfo: The format of the exported list.
   defaultvalue: PAN-OS (text)
@@ -62,6 +62,9 @@ configuration:
   type: 0
   section: Connect
   required: false
+  hidden:
+  - marketplacev2
+  - xsoar_saas
 - additionalinfo: (For Cortex XSOAR 6.x) For use with HTTPS - the certificate that the service should use. (For Cortex XSOAR 8 and Cortex XSIAM) Custom certificates are not supported.
   display: Certificate (Required for HTTPS)
   name: certificate
@@ -82,6 +85,9 @@ configuration:
   type: 9
   section: Connect
   required: false
+  hidden:
+  - marketplacev2
+  - xsoar_saas
 - additionalinfo: If selected, the comment "# Empty list" is added to an empty list.
   defaultvalue: 'true'
   display: Add comment to empty list
@@ -251,8 +257,8 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- additionalinfo: 'This parameter will be deprecated from September 2023. Make sure to adjust your default queries accordingly..'
-  display: 'Advanced: Use Legacy Queries (Deprecated)'
+- additionalinfo: 'When enabled, the integration queries the server using full queries (overwrites the "Exported Fields" parameter). Advanced configuration to be used only if instructed by Cortex XSOAR Support, or you have encountered log errors in the form of: msgpack: invalid code.'
+  display: 'Advanced: Use Legacy Queries'
   name: use_legacy_query
   type: 8
   section: Collect
@@ -428,7 +434,7 @@ script:
       - 'False'
       - 'True'
     description: Updates values stored in the List (only available On-Demand).
-  dockerimage: demisto/flask-nginx:1.0.0.75066
+  dockerimage: demisto/flask-nginx:1.0.0.79973
   longRunning: true
   longRunningPort: true
   script: '-'

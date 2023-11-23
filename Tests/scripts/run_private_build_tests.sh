@@ -14,9 +14,8 @@ code_2=0
 
 echo "starting configure_and_test_integration_instances"
 
-python3 ./Tests/private_build/configure_and_test_integration_instances_private.py -u "$USERNAME" -p "$PASSWORD" -c "$CONF_PATH" -s "$SECRET_CONF_PATH" -g "$GIT_SHA1" --ami_env "${INSTANCE_ROLE}" -n $IS_NIGHTLY --branch "$BRANCH_NAME" --build-number "$GITHUB_RUN_NUMBER" -pr true --test_pack_path '/home/runner/work/content-private/content-private/content/artifacts/packs'
+python3 ./Tests/private_build/configure_and_test_integration_instances_private.py -u "$USERNAME" -p "$PASSWORD" -c "$CONF_PATH" -s "$SECRET_CONF_PATH" -g "$GIT_SHA1" --ami_env "${INSTANCE_ROLE}" -n $IS_NIGHTLY --branch "$BRANCH_NAME" --build-number "$GITHUB_RUN_NUMBER" -pr true --test_pack_path "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs"
 code_1=$?
-
 
 if [ $code_1 -ne 1 ] ; then
   if [ -n "${NON_AMI_RUN}" ]; then

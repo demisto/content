@@ -456,6 +456,7 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
 | Process.Path | String | The file system path to the binary file. | 
 | Process.Start Time | String | The timestamp of the process start time. | 
 | Process.CommandLine | String | The full command line \(including arguments\). | 
+| Process.is_malicious | boolean | Whether the artifact is malicious, as decided by the Wildfire verdict. | 
 | IP.Address | String | IP address. | 
 | IP.Geo.Country | String | The country in which the IP address is located. | 
 | Domain.Name | String | The domain name, for example: "google.com". | 
@@ -689,7 +690,8 @@ Builtin Roles with this permission includes: "Privileged Responder", "Viewer" an
 | status | A comma-separated list of endpoints statuses to filter. Valid values are: connected, disconnected, lost, uninstalled, windows, linux, macos, android, isolated, unisolated. | Optional |
 | endpoint_id_list | A comma-separated list of endpoint IDs. | Optional | 
 | dist_name | A comma-separated list of distribution package names or installation package names.<br/>Example: dist_name1,dist_name2. | Optional | 
-| ip_list | A comma-separated list of IP addresses.<br/>Example: 8.8.8.8,1.1.1.1. | Optional | 
+| ip_list | A comma-separated list of private IP addresses.<br/>Example: Example: 10.1.1.1,192.168.1.1. | Optional | 
+| public_ip_list | A comma-separated list of public IP addresses that correlate to the last IPv4 address from which the Cortex XDR agent connected (know as `Last Origin IP`).<br/>Example: 8.8.8.8,1.1.1.1. | Optional | 
 | group_name | The group name to which the agent belongs.<br/>Example: group_name1,group_name2. | Optional | 
 | platform | The endpoint platform. Valid values are\: "windows", "linux", "macos", or "android". . Possible values are: windows, linux, macos, android. | Optional | 
 | alias_name | A comma-separated list of alias names.<br/>Examples: alias_name1,alias_name2. | Optional | 
