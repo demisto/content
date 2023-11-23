@@ -9,6 +9,7 @@ The AWS Organizations pack enables you to:
 - Move accounts between organizational units
 - Manage policies for accounts
 - Invite new accounts to join the organization
+- Tag resources across the organization 
 
 #### Use Cases
 
@@ -21,3 +22,7 @@ The AWS Organizations pack enables you to:
 - **Account governance** - Organize accounts into logical OUs based on environment type, compliance level, etc.
 
 - **Offboarding accounts** - Disable and prepare accounts for removal from the organization.
+  
+- **Managing policies** - List and attach policies to the organization's resources.
+
+- **Tagging resources** - List and add tags to the organization's resources.
