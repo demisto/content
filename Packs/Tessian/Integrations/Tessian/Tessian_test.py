@@ -7,7 +7,6 @@ from Tessian import (
     get_events_command,
     release_from_quarantine_command,
     delete_from_quarantine_command,
-    fetch_incidents,
 )
 
 #  region HELPERS
@@ -23,34 +22,6 @@ def create_mock_client():
     )
 
 #  endregion
-
-
-def test_fetch_incidents(mocker):
-    """
-    Tests the fetch_incidents function.
-    """
-    client = create_mock_client()
-    mocker.patch.object(
-        client,
-        'get_events',
-        return_value={
-            'checkpoint': "dummy_checkpoint",
-            'additional_results': True,
-            'results': [
-                {
-                    "id": "dummy_value",
-                    "created_at": "dummy_value",
-                },
-            ],
-        }
-    )
-
-    last_run, incidents = fetch_incidents(client, 100)
-
-    assert last_run == {
-        'checkpoint': 'dummy_checkpoint',
-    }
-    assert len(incidents) == 1
 
 
 def test_get_events_command(mocker):

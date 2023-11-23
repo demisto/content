@@ -88,35 +88,6 @@ def format_url(url: str) -> str:
 ''' COMMAND FUNCTIONS '''
 
 
-def fetch_incidents(client: Client, last_run, fetch_limit: int = 200) -> tuple[dict[str, Any], list[dict]]:  #  pragma: no cover
-    checkpoint = None
-    if last_run and 'checkpoint' in last_run:
-        checkpoint = last_run.get('checkpoint')
-
-    #  Get the events from the events API
-    events = client.get_events(
-        limit=fetch_limit,
-        after_checkpoint=checkpoint,
-        created_after=None,
-    )
-
-    #  Convert events to XSOAR incidents
-    incidents = []
-    for event in events["results"]:
-        incident = {
-            "name": event["id"],
-            "occurred": event["created_at"],
-            "rawJSON": json.dumps(event),
-        }
-        incidents.append(incident)
-
-    next_run = {
-        'checkpoint': events["checkpoint"]
-    }
-
-    return next_run, incidents
-
-
 def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
     limit = int(args.get('limit', None))
     after_checkpoint = args.get('after_checkpoint', None)
@@ -201,7 +172,6 @@ def main() -> None:  #  pragma: no cover
     params = demisto.params()
     base_url = format_url(params.get('url'))
     api_key = params.get('api_key')
-    fetch_limit = arg_to_number(params.get('fetch_limit')) or 200
 
     # if your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
@@ -229,15 +199,6 @@ def main() -> None:  #  pragma: no cover
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
             return_results(result)
-
-        elif demisto.command() == 'fetch-incidents':
-            # Get the last run stored in the integration context
-            last_run = demisto.getLastRun()
-
-            next_run, incidents = fetch_incidents(client, last_run, fetch_limit)
-
-            demisto.setLastRun(next_run)
-            demisto.incidents(incidents)
 
         elif demisto.command() == 'get_events':
             return_results(get_events_command(client, demisto.args()))
