@@ -143,7 +143,7 @@ def test_multiple_iocs_with_same_value_but_different_casing(mocker):
 def test_query_values(mocker):
     """
     Given:
-        An array of indicator value (Test~.com).
+        An array of indicator value (Test~.com, Test2~.com).
     When:
         Running GetIndicatorDBotScoreFromCache script.
     Then:
@@ -152,5 +152,5 @@ def test_query_values(mocker):
     mocker.patch.object(demisto, "args", return_value={"value": "Test~.com, Test2~.com"})
     mocker.patch.object(demisto, "searchIndicators")
     GetIndicatorDBotScoreFromCache.main()
-    demisto.searchIndicators.assert_called_with(query='value:("test~.com" "test2~.com")',
+    demisto.searchIndicators.assert_called_with(query=('value:("test~.com" "test2~.com")' or 'value:("test2~.com" "test~.com")'),
                                                 populateFields='name,score,aggregatedReliability,type,expirationStatus')
