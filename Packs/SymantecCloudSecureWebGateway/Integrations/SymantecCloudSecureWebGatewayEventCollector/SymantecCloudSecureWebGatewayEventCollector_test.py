@@ -5,11 +5,14 @@ from freezegun import freeze_time
 import pytest
 
 from SymantecCloudSecureWebGatewayEventCollector import (
+    DEFAULT_FETCH_SLEEP,
+    MIN_FETCH_SLEEP,
     HandlingDuplicates,
     LastRun,
     extract_logs_and_push_to_XSIAM,
     get_events_and_write_to_file_system,
     Client,
+    get_fetch_interval,
     get_size_gzip_file,
     get_start_and_end_date,
     get_start_date_for_next_fetch,
@@ -568,3 +571,23 @@ def test_extract_logs_from_zip_file_with_logs(tmp_zip_file: Path):
     for logs in extract_logs_from_zip_file(tmp_zip_file):
         events.extend(logs)
     assert len(events) == 40
+
+
+@pytest.mark.parametrize(
+    "fetch_interval, expected_fetch_interval",
+    [
+        (None, DEFAULT_FETCH_SLEEP),
+        ("20", MIN_FETCH_SLEEP),
+        ("100", 100),
+    ]
+)
+def test_get_fetch_interval(fetch_interval: str | None, expected_fetch_interval: int):
+    '''
+    Given:
+        - fetch_interval as str or None
+    When:
+        - run `get_fetch_interval` function
+    Then:
+        - Ensure function returns expected fetch interval
+    '''
+    assert get_fetch_interval(fetch_interval) == expected_fetch_interval
