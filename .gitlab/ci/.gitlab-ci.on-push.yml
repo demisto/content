@@ -671,7 +671,6 @@ xsoar_ng_server_ga:
         CLOUD_MACHINES_TYPE: "testing"
         GCS_LOCKS_PATH: "content-locks/locks-xsoar-ng-testing"
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-      when: always
   variables:
     CLOUD_MACHINES_TYPE: "build"
     CLOUD_MACHINES_COUNT: 1
