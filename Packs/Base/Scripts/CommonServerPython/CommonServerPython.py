@@ -8185,6 +8185,60 @@ def is_demisto_version_ge(version, build_number=''):
         return True
 
 
+def is_xsiam_or_xsoar_saas():
+    """Determines whether or not the platform is XSIAM or XSOAR SAAS.
+
+    :return: True iff the platform is XSIAM or XSOAR SAAS.
+    :rtype: ``bool``
+    """
+    return is_demisto_version_ge('8.0.0')
+
+
+def is_xsoar():
+    """Determines whether or not the platform is XSOAR.
+
+    :return: True iff the platform is XSOAR.
+    :rtype: ``bool``
+    """
+    return "xsoar" in demisto.demistoVersion().get("platform")
+
+
+def is_xsoar_on_prem():
+    """Determines whether or not the platform is a XSOAR on-prem.
+
+    :return: True iff the platform is XSOAR on-prem.
+    :rtype: ``bool``
+    """
+    return demisto.demistoVersion().get("platform") == "xsoar" and not is_demisto_version_ge('8.0.0')
+
+
+def is_xsoar_hosted():
+    """Determines whether or not the platform is XSOAR hosted.
+
+    :return: True iff the platform is XSOAR hosted.
+    :rtype: ``bool``
+    """
+    return demisto.demistoVersion().get("platform") == "xsoar_hosted"
+
+
+def is_xsoar_saas():
+    """Determines whether or not the platform is XSOAR SAAS.
+
+    :return: True iff the platform is XSOAR SAAS.
+    :rtype: ``bool``
+    """
+    return demisto.demistoVersion().get("platform") == "xsoar" and is_xsiam_or_xsoar_saas()
+
+
+def is_xsiam():
+    """Determines whether or not the platform is XSIAM.
+
+    :return: True iff the platform is XSIAM.
+    :rtype: ``bool``
+    """
+    return demisto.demistoVersion().get("platform") == "x2"
+
+
 class DemistoHandler(logging.Handler):
     """
         Handler to route logging messages to an IntegrationLogger or demisto.debug if not supplied
@@ -10570,7 +10624,6 @@ def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, dat
     :rtype: ``Tuple``
     """
     last_run_time = last_run and 'time' in last_run and last_run['time']
-    offset = last_run.get('offset')
     now = get_current_time(timezone)
     if not last_run_time:
         last_run_time = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
@@ -10579,7 +10632,7 @@ def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, dat
     else:
         last_run_time = dateparser.parse(last_run_time, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
 
-    if not offset and look_back and look_back > 0:
+    if look_back and look_back > 0:
         if now - last_run_time < timedelta(minutes=look_back):
             last_run_time = now - timedelta(minutes=look_back)
 

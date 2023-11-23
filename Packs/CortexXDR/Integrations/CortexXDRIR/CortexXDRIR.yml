@@ -562,11 +562,14 @@ script:
     - contextPath: Process.CommandLine
       description: The full command line (including arguments).
       type: String
+    - contextPath: Process.is_malicious
+      description: Whether the artifact is malicious, as decided by the Wildfire verdict.
+      type: boolean
     - contextPath: IP.Address
       description: IP address.
       type: String
     - contextPath: IP.Geo.Country
-      description: The country in which the IP address is located.
+      description: 'The country in which the IP address is located.'
       type: String
     - contextPath: Domain.Name
       description: 'The domain name, for example: "google.com".'
@@ -777,10 +780,15 @@ script:
       isArray: true
       name: dist_name
     - description: |-
-        A comma-separated list of IP addresses.
-        Example: 8.8.8.8,1.1.1.1.
+        A comma-separated list of private IP addresses.
+        Example: 10.1.1.1,192.168.1.1.
       isArray: true
       name: ip_list
+    - description: |-
+        A comma-separated list of public IP addresses that correlate to the last IPv4 address from which the Cortex XDR agent connected (know as `Last Origin IP`).
+        Example: 8.8.8.8,1.1.1.1.
+      isArray: true
+      name: public_ip_list
     - description: |-
         The group name to which the agent belongs.
         Example: group_name1,group_name2.
@@ -798,19 +806,20 @@ script:
     - description: |-
         A comma-separated list of alias names.
         Examples: alias_name1,alias_name2.
-      isArray: true
       name: alias_name
-    - auto: PREDEFINED
-      description: Specifies whether the endpoint was isolated or unisolated.
+      isArray: true
+    - description: |-
+        Specifies whether the endpoint was isolated or unisolated.
       name: isolate
+      auto: PREDEFINED
       predefined:
       - isolated
       - unisolated
     - description: |-
         Hostname
         Example: hostname1,hostname2.
-      isArray: true
       name: hostname
+      isArray: true
     - description: |-
         All the agents that were first seen after {first_seen_gte}.
         Supported values:
@@ -842,19 +851,19 @@ script:
     - defaultValue: '0'
       description: Page number (for pagination). The default is 0 (the first page).
       name: page
-    - defaultValue: '30'
-      description: Maximum number of endpoints to return per page. The default and maximum is 30.
+    - description: Maximum number of endpoints to return per page. The default and maximum is 30.
       name: limit
+      defaultValue: '30'
     - auto: PREDEFINED
       description: Specifies whether to sort endpoints by the first time or last time they were seen. Can be "first_seen" or "last_seen".
       name: sort_by
       predefined:
       - first_seen
       - last_seen
-    - auto: PREDEFINED
-      defaultValue: asc
+    - name: sort_order
       description: The order by which to sort results. Can be "asc" (ascending) or "desc" ( descending). Default set to asc.
-      name: sort_order
+      auto: PREDEFINED
+      defaultValue: asc
       predefined:
       - asc
       - desc
@@ -2728,8 +2737,8 @@ script:
       auto: PREDEFINED
       defaultValue: 'true'
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     description: Returns information about each alert ID.
     name: xdr-get-cloud-original-alerts
     outputs:
@@ -3463,7 +3472,7 @@ script:
       isArray: true
     name: xdr-remove-user-role
     description: Remove one or more users from a role.
-  dockerimage: demisto/python3:3.10.13.78960
+  dockerimage: demisto/python3:3.10.13.80014
   isfetch: true
   script: ''
   subtype: python3

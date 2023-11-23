@@ -17,7 +17,7 @@ def test_untag_device_success(requests_mock):
             'expiration_utc': time.ctime(time.time() + 10000)
         }
     }
-    requests_mock.post('https://test.com/api/v1/access_token/?secret_key=secret-example', json=mock_token)
+    requests_mock.post('https://test.com/api/v1/access_token/', json=mock_token)
 
     requests_mock.delete('https://test.com/api/v1/devices/1/tags/', json={})
 
@@ -34,7 +34,7 @@ def test_untag_device_failure(requests_mock):
             'expiration_utc': time.ctime(time.time() + 10000)
         }
     }
-    requests_mock.post('https://test.com/api/v1/access_token/?secret_key=secret-example', json=mock_token)
+    requests_mock.post('https://test.com/api/v1/access_token/', json=mock_token)
 
     requests_mock.delete('https://test.com/api/v1/devices/1/tags/', json={}, status_code=400)
 
@@ -51,7 +51,7 @@ def test_tag_device(requests_mock):
             'expiration_utc': time.ctime(time.time() + 10000)
         }
     }
-    requests_mock.post('https://test.com/api/v1/access_token/?secret_key=secret-example', json=mock_token)
+    requests_mock.post('https://test.com/api/v1/access_token/', json=mock_token)
 
     requests_mock.post('https://test.com/api/v1/devices/1/tags/', json={})
 
@@ -68,7 +68,7 @@ def test_update_alert_status(requests_mock):
             'expiration_utc': time.ctime(time.time() + 10000)
         }
     }
-    requests_mock.post('https://test.com/api/v1/access_token/?secret_key=secret-example', json=mock_token)
+    requests_mock.post('https://test.com/api/v1/access_token/', json=mock_token)
 
     requests_mock.patch('https://test.com/api/v1/alerts/1/', json={})
 
@@ -85,7 +85,7 @@ def test_search_alerts(requests_mock):
             'expiration_utc': time.ctime(time.time() + 10000)
         }
     }
-    requests_mock.post('https://test.com/api/v1/access_token/?secret_key=secret-example', json=mock_token)
+    requests_mock.post('https://test.com/api/v1/access_token/', json=mock_token)
 
     url = 'https://test.com/api/v1/search/?aql='
     url += '+'.join([
@@ -173,7 +173,7 @@ def test_search_alerts_by_aql(requests_mock):
             'expiration_utc': time.ctime(time.time() + 10000)
         }
     }
-    requests_mock.post('https://test.com/api/v1/access_token/?secret_key=secret-example', json=mock_token)
+    requests_mock.post('https://test.com/api/v1/access_token/', json=mock_token)
 
     url = 'https://test.com/api/v1/search/?aql='
     url += '+'.join([
@@ -255,7 +255,7 @@ def test_search_devices(requests_mock):
             'expiration_utc': time.ctime(time.time() + 10000)
         }
     }
-    requests_mock.post('https://test.com/api/v1/access_token/?secret_key=secret-example', json=mock_token)
+    requests_mock.post('https://test.com/api/v1/access_token/', json=mock_token)
 
     url = 'https://test.com/api/v1/search/?aql=in%3Adevices+timeFrame%3A%223+days%22+deviceId%3A%281%29'
     mock_results = {
@@ -333,7 +333,7 @@ def test_search_devices_by_aql(requests_mock):
             'expiration_utc': time.ctime(time.time() + 10000)
         }
     }
-    requests_mock.post('https://test.com/api/v1/access_token/?secret_key=secret-example', json=mock_token)
+    requests_mock.post('https://test.com/api/v1/access_token/', json=mock_token)
 
     url = 'https://test.com/api/v1/search/?aql=in%3Adevices+timeFrame%3A%223+days%22+deviceId%3A%281%29'
     mock_results = {
