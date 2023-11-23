@@ -540,6 +540,7 @@ def search_pack_and_its_dependencies(client: demisto_client,
         if not multithreading:
             if list_packs_and_its_dependency_install_request_body is None:
                 list_packs_and_its_dependency_install_request_body = []
+            logging.info(f"collected_dependencies: {collected_dependencies}")
             if pack_and_its_dependencies := {
                 p['id']: p
                 for p in current_packs_to_install
@@ -552,8 +553,9 @@ def search_pack_and_its_dependencies(client: demisto_client,
                     for pack in list(pack_and_its_dependencies.values())
                 ]
                 packs_to_install.extend([pack['id'] for pack in pack_and_its_dependencies_as_list])
+                logging.info(f"pack_and_its_dependencies_as_list:: {pack_and_its_dependencies_as_list}")
                 list_packs_and_its_dependency_install_request_body.append(pack_and_its_dependencies_as_list)
-
+                logging.info(f"list_packs_and_its_dependency_install_request_body:: {list_packs_and_its_dependency_install_request_body}")
         else:  # multithreading
             for pack in current_packs_to_install:
                 logging.info(f'pack before install: {pack}')
