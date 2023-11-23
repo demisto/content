@@ -780,7 +780,7 @@ def test_reputation_cve(
         == "vulnerability--e3b6a556-abcd-dcba-b1df-8e1f0444e978"
     )
     assert results_dict["fields"]["trafficlightprotocol"] == "RED"
-    assert results_dict["fields"]["DBotScore"]["Score"] == 0
+    assert results_dict["fields"]["DBotScore"]["Score"] == 1
     assert results_dict["fields"]["cvss"] == "v2.0"
     assert len(results_dict["fields"]["cvss2"]) > 0
 

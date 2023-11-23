@@ -1,13 +1,7 @@
 id: Cortex XDR device control violations
 version: -1
 name: Cortex XDR device control violations
-description: "Queries Cortex XDR for device control violations for the specified hosts,\
-  \ IP address, or XDR endpoint ID. It then communicates via email with the involved\
-  \ users to understand the nature of the incident and if the user connected the device.\
-  \ \nAll the collected data will be displayed in the XDR device control incident\
-  \ layout.\nThis playbook can also be associated with Cortex XDR device control violation\
-  \ job to periodically query and investigate XDR device control violations. In this\
-  \ configuration, the playbook will only communicate with the involved users."
+description: "Queries Cortex XDR for device control violations for the specified hosts, IP address, or XDR endpoint ID. It then communicates via email with the involved users to understand the nature of the incident and if the user connected the device. \nAll the collected data will be displayed in the XDR device control incident layout.\nThis playbook can also be associated with Cortex XDR device control violation job to periodically query and investigate XDR device control violations. In this configuration, the playbook will only communicate with the involved users."
 starttaskid: "0"
 tasks:
   "0":
@@ -45,8 +39,7 @@ tasks:
       id: 3b9e0236-4004-482e-8c5b-5084d95a532d
       version: -1
       name: Get endpoint device control violations
-      description: Gets a list of device control violations filtered by selected fields.
-        You can retrieve up to 100 violations.
+      description: Gets a list of device control violations filtered by selected fields. You can retrieve up to 100 violations.
       script: '|||xdr-get-endpoint-device-control-violations'
       type: regular
       iscommand: true
@@ -243,9 +236,7 @@ tasks:
       id: 256b3ed5-14c2-4e5f-8ae2-bc937b86b8ce
       version: -1
       name: Get user email address
-      description: Retrieves detailed information about a user account. The user can
-        be specified by name, email address, or as an Active Directory Distinguished
-        Name (DN). If no filter is specified, all users are returned.
+      description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
       script: '|||ad-get-user'
       type: regular
       iscommand: true
@@ -564,3 +555,5 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 5.5.0
+marketplaces:
+- xsoar
