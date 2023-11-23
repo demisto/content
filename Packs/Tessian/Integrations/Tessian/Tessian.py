@@ -92,6 +92,7 @@ def fetch_incidents(client: Client, fetch_limit: int = 200):  #  pragma: no cov
     # Get the last run stored in the integration context
     last_run = demisto.getLastRun()
 
+    checkpoint = None
     if last_run and 'checkpoint' in last_run:
         checkpoint = last_run.get('checkpoint')
 
