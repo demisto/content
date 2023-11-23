@@ -58,7 +58,7 @@ script:
       name: limit
     description: Gets events from NetBox.
     name: netbox-get-events
-  dockerimage: demisto/python3:3.10.13.73190
+  dockerimage: demisto/python3:3.10.13.80014
   isfetchevents: true
   script: '-'
   subtype: python3

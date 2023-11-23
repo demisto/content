@@ -357,7 +357,8 @@ class PackStatus(enum.Enum):
     """
     SUCCESS = "Successfully uploaded pack data to gcs"
     SUCCESS_CREATING_DEPENDENCIES_ZIP_UPLOADING = "Successfully uploaded pack while creating dependencies zip"
-    FAILED_LOADING_USER_METADATA = "Failed in loading user-defined pack metadata"
+    FAILED_LOADING_PACK_METADATA = "Failed in loading user-defined pack metadata"
+    FAILED_ENHANCING_PACK_ATTRIBUTES = "Failed in enhancing pack's object attributes"
     FAILED_IMAGES_UPLOAD = "Failed to upload pack integration images to gcs"
     FAILED_AUTHOR_IMAGE_UPLOAD = "Failed to upload pack author image to gcs"
     FAILED_PREVIEW_IMAGES_UPLOAD = "Failed to upload pack preview images to gcs"
@@ -432,7 +433,8 @@ RN_HEADER_TO_ID_SET_KEYS = {
     'Triggers Recommendations': 'Triggers',
     'Wizards': 'Wizards',
     'XDRC Templates': 'XDRCTemplates',
-    'Layout Rules': 'LayoutRules'
+    'Layout Rules': 'LayoutRules',
+    'Packs': 'Packs'
 }
 
 # the format is defined in issue #19786, may change in the future
