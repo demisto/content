@@ -101,13 +101,14 @@ def get_fetch_interval(fetch_interval: str | None) -> int:
     fetch_sleep = arg_to_number(fetch_interval)
     if not fetch_sleep:
         return DEFAULT_FETCH_SLEEP
-    if fetch_interval < MIN_FETCH_SLEEP:
+    if fetch_sleep < MIN_FETCH_SLEEP:
         return MIN_FETCH_SLEEP
     return fetch_sleep
 
 
 def get_events_and_write_to_file_system(
-    client: Client, params: dict, last_run_model: LastRun
+    client: Client,
+    params: dict,
 ) -> Path:
     """
     Writing the events that come from the API to a temporary file.
@@ -117,15 +118,6 @@ def get_events_and_write_to_file_system(
     with client.get_logs(params) as res, tempfile.NamedTemporaryFile(
         mode="wb", delete=False
     ) as tmp_file:
-        # Sets the integration context with the last_run and tmp file path
-        # if the run crashes before the tmp file is removed,
-        # the subsequent run will begin by deleting the tmp file.
-        set_integration_context(
-            {"last_run": last_run_model._asdict(), "tmp_file_path": tmp_file.name}
-        )
-        demisto.debug(
-            f"set the tmp file path to integration context {tmp_file.name}"
-        )  # ????
         # Write the chunks from the response to the tmp file
         for chunk in res.iter_content(chunk_size=MAX_CHUNK_SIZE_TO_WRITE):
             tmp_file.write(chunk)
@@ -515,8 +507,6 @@ def get_events_command(
     client: Client,
     last_run_model: LastRun,
 ) -> None:
-    """ """
-
     # Make API call in streaming to fetch events and writing to a temporary file on the disk.
     status = "more"
     while status != "done":
@@ -538,11 +528,15 @@ def get_events_command(
 
         try:
             tmp_file_path = get_events_and_write_to_file_system(
-                client, params, last_run_model
+                client,
+                params,
             )
         except DemistoException as e:
             try:
                 if e.res is not None and e.res.status_code == 410:
+                    # In case the token is expiring
+                    # Update last run model with expired_token = True
+                    # for handling duplicates in next fetch
                     demisto.debug(f"The token has expired: {e}")
                     last_run_model = LastRun(
                         start_date=start_date,
@@ -567,7 +561,6 @@ def get_events_command(
                 demisto.debug(f"Some ERROR: {e=} after the error: {err}")
                 raise e
         except Exception as err:
-            demisto.debug(f"Some ERROR: {err}")
             raise err
         status, new_token = get_status_and_token_from_file_system(tmp_file_path)
 
@@ -600,7 +593,7 @@ def get_events_command(
 
 
 def test_module(client: Client):
-    start_date, end_date = get_start_and_end_date({}, None)
+    start_date, end_date = get_start_and_end_date(None)
     params: dict[str, Union[str, int]] = {
         "startDate": start_date,
         "endDate": end_date,
@@ -626,6 +619,7 @@ def perform_long_running_loop(client: Client):
 
         except Exception as e:
             demisto.debug(f"Failed to fetch logs from API. Error: {e}")
+            raise e
         time.sleep(client.fetch_sleep)
 
 

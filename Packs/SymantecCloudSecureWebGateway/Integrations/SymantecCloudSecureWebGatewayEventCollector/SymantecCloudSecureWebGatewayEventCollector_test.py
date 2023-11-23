@@ -58,7 +58,7 @@ def test_get_events_and_write_to_file_system(requests_mock, client):
     )
 
     params = {}
-    tmp_file_path = get_events_and_write_to_file_system(client, params, LastRun())
+    tmp_file_path = get_events_and_write_to_file_system(client, params)
 
     # validate file exists and has expected content
     assert tmp_file_path.exists()

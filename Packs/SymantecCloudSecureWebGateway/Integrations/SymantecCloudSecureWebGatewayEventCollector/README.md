@@ -1,9 +1,9 @@
 Palo Alto Networks Symantec Cloud Secure Web Gateway Event Collector integration for XSIAM.
 
-## Configure Symantec Cloud Secure Web Gateway Event Collector Long Running on Cortex XSOAR
+## Configure Symantec Cloud Secure Web Gateway Event Collector on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Symantec Cloud Secure Web Gateway Event Collector Long Running.
+2. Search for Symantec Cloud Secure Web Gateway Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Required** |
