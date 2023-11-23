@@ -12,6 +12,7 @@ class EVENT_TYPE:
     """
     This class defines an Event used to dynamically store different types of events data.
     """
+
     def __init__(self, unique_id_key, aql_query, type, order_by, dataset_name):
         self.unique_id_key = unique_id_key
         self.aql_query = aql_query
@@ -429,11 +430,11 @@ def events_to_command_results(events: dict[str, list], event_type) -> CommandRes
     Returns:
         CommandResults: CommandResults containing table of fetched events.
     """
-    events = events[event_type] if events else []
+    events_output = events[event_type] if events else []
     product = f'{PRODUCT}_{event_type}' if event_type != 'alerts' else PRODUCT
-    return CommandResults(raw_response=events,
+    return CommandResults(raw_response=events_output,
                           readable_output=tableToMarkdown(name=f'{VENDOR} {product} events',
-                                                          t=events,
+                                                          t=events_output,
                                                           removeNull=True))
 
 
