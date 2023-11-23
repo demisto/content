@@ -1,6 +1,6 @@
 {
     "name": "Symantec Cloud Secure Web Gateway",
-    "description": "",
+    "description": "Symantec Cloud Secure Web Gateway (SWG) is a cutting-edge cybersecurity solution designed to provide robust protection and control over internet traffic within organizations. Leveraging advanced threat intelligence, real-time content analysis, and secure web access policies, Symantec Cloud SWG ensures a secure and compliant online environment for users.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
@@ -12,7 +12,11 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": ["wss", "swg", "web security service"],
+    "keywords": [
+        "wss",
+        "swg",
+        "web security service"
+    ],
     "marketplaces": [
         "marketplacev2"
     ]

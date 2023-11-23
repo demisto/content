@@ -68,8 +68,8 @@ def test_get_events_and_write_to_file_system(requests_mock, client):
 @pytest.mark.parametrize(
     "start_date, expected_start, expected_end",
     [
-        (None, 1577822340000, 1577822400000),
-        (1600, 1600, 1577822400000),
+        (None, 1577836740000, 1577836800000),
+        (1600, 1600, 1577836800000),
     ],
 )
 def test_get_start_and_end_date(start_date, expected_start, expected_end):
@@ -201,7 +201,7 @@ def test_is_duplicate(id_, cur_time, last_time, dup_ids, expected):
 @pytest.mark.parametrize(
     "start_time, time_of_last_fetched_event, expected",
     [
-        (0, "2020-01-01 00:00:00", 1577829600000),
+        (0, "2020-01-01 00:00:00", 1577836800000),
         (1000, "invalid", 1000),
         (1000, None, 1000),
     ],
