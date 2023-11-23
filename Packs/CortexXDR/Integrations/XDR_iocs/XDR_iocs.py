@@ -340,7 +340,8 @@ def sync(client: Client):
 def iocs_to_keep(client: Client):
     """
     Creats a file of all the indicators from xsoar we want to keep in XDR. 
-    All the indicators not send to XDR with the file will be deleted from XDR. 
+    All the indicators not send to XDR with the file will be deleted from XDR.
+    This is to sync the expired/deleted/no more under filter IOC.
     """
     demisto.debug("executing iocs_to_keep")
     if datetime.utcnow().hour not in range(1, 3):
@@ -583,7 +584,7 @@ def is_iocs_to_keep_time():
     In order to remove deleted/expired/filtered indicators. 
     """
     next_iocs_to_keep_time = get_integration_context().get("next_iocs_to_keep_time")
-    
+
     if next_iocs_to_keep_time is None:
         # This is supposed to happen only in the case of appliying the fixed version on a running instance.
         set_new_iocs_to_keep_time()
