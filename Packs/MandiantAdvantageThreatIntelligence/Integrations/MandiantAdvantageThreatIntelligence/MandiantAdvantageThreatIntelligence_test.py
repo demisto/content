@@ -818,7 +818,7 @@ def test_get_actor(client: MandiantAdvantageThreatIntelligence.MandiantClient, r
         client, args={"actor_name": "FAKE_ACT0R"}
     )
 
-    results_dict = results[0].to_context()["Contents"]
+    results_dict = results.to_context()["Contents"][0]
 
     assert results_dict["value"] == "FAKE_ACT0R"
     assert results_dict["type"] == "Threat Actor"
@@ -883,7 +883,7 @@ def test_get_malware(client: MandiantAdvantageThreatIntelligence.MandiantClient,
         client, args={"malware_name": "MALWARE_NAME"}
     )
 
-    results_dict = results[0].to_context()["Contents"]
+    results_dict = results.to_context()["Contents"][0]
 
     assert results_dict["value"] == "MALWARE_NAME"
     assert results_dict["type"] == "Malware"
