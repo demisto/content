@@ -3,7 +3,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: EWS v2
+  id: EWS v2 - More Logs
   version: -1
 configuration:
 - display: Email address
@@ -123,8 +123,8 @@ configuration:
   advanced: true
   required: false
 description: Exchange Web Services and Office 365 (mail).
-display: EWS v2
-name: EWS v2
+display: EWS v2 - More Logs
+name: EWS v2 - More Logs
 script:
   commands:
   - arguments:
