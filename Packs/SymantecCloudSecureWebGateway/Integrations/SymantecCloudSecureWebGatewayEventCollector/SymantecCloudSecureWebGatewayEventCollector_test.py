@@ -1,7 +1,10 @@
 import gzip
+import tempfile
+import zipfile
 from freezegun import freeze_time
 import pytest
-from SymantecCloudSecureWebGatewayLongRunningEventCollector import (
+
+from SymantecCloudSecureWebGatewayEventCollector import (
     HandlingDuplicates,
     LastRun,
     extract_logs_and_push_to_XSIAM,
@@ -14,6 +17,7 @@ from SymantecCloudSecureWebGatewayLongRunningEventCollector import (
     get_the_last_row_that_incomplete,
     management_next_fetch,
     parse_events,
+    extract_logs_from_zip_file,
 )
 import demistomock as demisto
 from pathlib import Path
@@ -22,6 +26,30 @@ from pathlib import Path
 @pytest.fixture()
 def client():
     return Client("https://api.example.com", "user", "pass", False, False)
+
+
+@pytest.fixture
+def tmp_zip_file(tmpdir):
+    file_contents = b""
+    for _ in range(0, 10):
+        file_contents += b"Hello, this is some data for the gzip file.\n"
+
+    # Create a zip file
+    zip_file_name = Path( tmpdir / 'example.zip')
+    with zipfile.ZipFile(zip_file_name, 'w') as zip_file:
+        # Create and add gzip files to the zip file
+        for i in range(0, 4):  # Create three gzip files for demonstration
+            gzip_file_name = Path(f'file{i}.gz')
+        
+            with gzip.open(gzip_file_name, 'wb') as f:
+                f.write(file_contents)
+        
+            # Add the gzip file to the zip file
+            zip_file.write(gzip_file_name)
+        
+            # Remove the temporary gzip file
+            gzip_file_name.unlink()
+    return zip_file_name
 
 
 def test_get_events_and_write_to_file_system(requests_mock, client):
@@ -499,3 +527,47 @@ def test_parse_events_with_duplicates(
     assert events == expected_events
     assert max_value == expected_max_value
     assert new_events_suspected_duplicates == expected_new_events_suspected_duplicates
+
+
+@pytest.mark.parametrize(
+    "content",
+    [
+        b"X-sync-status: test_status\n\rX-sync-token: test_token\n\r",
+        b"X-sync-token: test_token\n\rX-sync-status: test_status\n\r"
+    ]
+)
+def test_extract_logs_from_zip_file_without_logs(mocker, content: bytes):
+    '''
+    Given:
+        - content of the zip file when it does not contain any logs.
+    When:
+        - run `extract_logs_from_zip_file` function.
+    Then:
+        - Ensure demisto.debug is called with "No logs returned from the API" message
+          and no exceptions are raised.
+    '''
+    mock_demisto_debug = mocker.patch.object(demisto, "debug")
+    with tempfile.NamedTemporaryFile(
+        mode="wb", delete=False
+    ) as tmp_file:
+        tmp_file.write(content)
+    path = Path(tmp_file.name)
+    for _ in extract_logs_from_zip_file(path):
+        pass
+    mock_demisto_debug.assert_called_with("No logs returned from the API")
+
+
+def test_extract_logs_from_zip_file_with_logs(tmp_zip_file: Path):
+    """
+    Given:
+        - zip file with multiple gzip files containing logs
+    When:
+        - run extract_logs_from_zip_file function
+    Then:
+        - Ensure generator yields contents of each gzip file
+    """
+
+    events: list[bytes] = []
+    for logs in extract_logs_from_zip_file(tmp_zip_file):
+        events.extend(logs)
+    assert len(events) == 40

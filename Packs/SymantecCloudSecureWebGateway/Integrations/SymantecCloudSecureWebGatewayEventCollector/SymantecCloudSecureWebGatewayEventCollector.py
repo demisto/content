@@ -4,9 +4,7 @@ import demistomock as demisto
 from urllib3 import disable_warnings
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
-from requests import Response
 from zipfile import ZipFile, BadZipFile
-from io import BytesIO
 from gzip import GzipFile
 import gzip
 import pytz
@@ -16,8 +14,8 @@ import os
 
 disable_warnings()
 
-VENDOR = "symantec_long_running"
-PRODUCT = "swg_test"
+VENDOR = "symantec"
+PRODUCT = "swg"
 FETCH_SLEEP = 30
 FETCH_SLEEP_UNTIL_BEGINNING_NEXT_HOUR = 180
 REGEX_FOR_STATUS = re.compile(r"X-sync-status: (?P<status>.*?)(?=\\r\\n|$)")
@@ -196,9 +194,14 @@ def get_the_last_row_that_incomplete(lines: list[bytes], file_size: int) -> byte
 def extract_logs_from_zip_file(file_path: Path) -> Generator[list[bytes], None, None]:
     """Extracts logs from the response ZIP file.
 
-    Iterates through the ZIP file, looking for gzipped files.
-    Opens each gzipped file and reads it in batches,
+    Tries to open the file path as a ZIP file. 
+    Iterates through contained files looking for gzipped files.
+    Opens each gzipped file and reads it in batches, 
     yielding a list of raw log lines for each batch.
+
+    Handles BadZipFile exception if file is not a valid ZIP:
+        - Checks if file content indicates no logs returned from API
+        - Otherwise raises ValueError that file is not a ZIP
 
     Args:
         file_path: Path to the ZIP file containing gzipped log files.
@@ -261,22 +264,11 @@ def extract_logs_from_zip_file(file_path: Path) -> Generator[list[bytes], None, 
                 else:  # the file is not gzip
                     demisto.debug(f"The {file.filename} file is not of gzip type")
     except BadZipFile as e:
-        # try:
-        #     # checks whether no events returned
-        #     if response.content.decode().startswith("X-sync"):
-        #         demisto.debug("No events returned from the api")
-        #     else:
-        #         demisto.debug(
-        #             f"The external file type is not of type ZIP, Error: {e},"
-        #             # "the response.content is {}".format(response.content)
-        #         )
-        # except Exception:
-        #     demisto.debug(
-        #         f"The external file type is not of type ZIP, Error: {e},"
-        #         # "the response.content is {}".format(response.content)
-        #     )
-        demisto.debug(f"The external file type is not of type ZIP, Error: {e}")
-        raise ValueError(f"The external file type is not of type ZIP, Error: {e}")
+        content= file_path.read_bytes()
+        if content.startswith((b'X-sync-status', b'X-sync-token')):  # No logs
+            demisto.debug("No logs returned from the API")
+        else:
+            raise ValueError(f"The external file type is not of type ZIP, Error: {e}")
     except Exception as e:
         raise ValueError(f"There is no specific error for the crash, Error: {e}")
 
