@@ -73,7 +73,7 @@ script:
       hidden: true
     - description: Amount of results per request. Value can be between 1 and 500. When only page_size is given, the first page results will be fetched.
       name: page_size
-    - description: The URL for the next set of items to return during pagination. (Can be retrieved this URL from a previous call).
+    - description: The URL for the next set of items to return during pagination. (This URL can be retrieved from a previous call).
       name: next_token
     - auto: PREDEFINED
       description: Sets the Risk Level to retrieve.
