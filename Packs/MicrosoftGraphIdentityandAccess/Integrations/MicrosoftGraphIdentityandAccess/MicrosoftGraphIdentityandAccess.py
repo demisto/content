@@ -175,7 +175,7 @@ class Client:  # pragma: no cover
             https://docs.microsoft.com/en-us/graph/api/riskyuser-dismiss?view=graph-rest-1.0&tabs=http
         """
         return self.ms_client.http_request(
-            'POST', 'v1.0/identityProtection/riskyUsers/dismiss', json_data=data, return_empty_response=True)
+            'POST', 'v1.0/identityProtection/riskyUsers/dismiss', json_data=data)
 
     def list_ip_named_location(self, limit: str, page: str, odata: str) -> list:
         """Get a list of all IP named locations
@@ -564,7 +564,9 @@ def azure_ad_identity_protection_risky_users_dismiss_command(ms_client: Client, 
         'userIds': user_ids
     }
     try:
-        ms_client.dismiss_users(data)
+        demisto.debug(f"Calling dismiss users with data: {data}")
+        res = ms_client.dismiss_users(data)
+        demisto.debug(str(res))
         return CommandResults(
             raw_response={},
             ignore_auto_extract=True,
