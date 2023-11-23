@@ -88,7 +88,7 @@ def format_url(url: str) -> str:
 ''' COMMAND FUNCTIONS '''
 
 
-def fetch_incidents(client: Client, fetch_limit: int = 200):  #  pragma: no cover
+def fetch_incidents(client: Client, fetch_limit: int = 200) -> None:  #  pragma: no cover
     # Get the last run stored in the integration context
     last_run = demisto.getLastRun()
 
@@ -107,9 +107,9 @@ def fetch_incidents(client: Client, fetch_limit: int = 200):  #  pragma: no cov
     incidents = []
     for event in events["results"]:
         incident = {
-            'name': event['id'],
-            'occurred': event['created_at'],
-            'rawJSON': json.dumps(event),
+            "name": event["id"],
+            "occurred": event["created_at"],
+            "rawJSON": json.dumps(event),
         }
         incidents.append(incident)
 

@@ -38,7 +38,8 @@ def test_fetch_incidents(mocker):
             'checkpoint': "dummy_checkpoint",
             'additional_results': True,
             'results': {
-                "dummy_key": "dummy_value"
+                "id": "dummy_value",
+                "created_at": "dummy_value",
             },
         }
     )
