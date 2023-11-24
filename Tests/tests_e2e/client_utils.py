@@ -42,7 +42,8 @@ def save_integration_instance(
     integration_params: dict,
     integration_id: str,
     is_long_running: bool = False,
-    instance_name: str | None = None
+    instance_name: str | None = None,
+    should_run_test_module: bool = True
 ):
     """
     Creates an integration instance
@@ -53,6 +54,7 @@ def save_integration_instance(
         integration_id (str): name of the integration ID to create the instance
         is_long_running (bool): whether the integration is long-running or not.
         instance_name (str): the instance name to create to integration
+        should_run_test_module (bool): whether to run the test-module for the integration
 
     Yields:
         the raw api response of the newly created integration instance
@@ -65,7 +67,8 @@ def save_integration_instance(
             instance_name=name,
             integration_instance_config=integration_params,
             integration_log_level="Verbose",
-            is_long_running=is_long_running
+            is_long_running=is_long_running,
+            should_test=should_run_test_module
         )
         logging.info(
             f'Created integration instance {integration_id} with name {name} as long-running-integration={is_long_running}')
