@@ -97,11 +97,11 @@ script:
   commands:
   - arguments:
     - defaultValue: '5'
-      description: Maximum number of Reports to return
+      description: Maximum number of Reports to return.
       name: limit
     - auto: PREDEFINED
       defaultValue: file_creation_date
-      description: Criteria to order Threat Reports
+      description: Criteria to order Threat Reports.
       name: order_by
       predefined:
       - created_at
@@ -111,7 +111,7 @@ script:
     - auto: PREDEFINED
       default: true
       defaultValue: desc
-      description: Ordering of results
+      description: Ordering of results.
       name: order
       predefined:
       - asc
