@@ -1,5 +1,5 @@
 from BaseMapper import BaseMapper
-from CommonServerPython import Dict, List, Optional, datetime
+from CommonServerPython import *
 from EventAttributes import EventAttributes
 from EventItem import EventItem
 

@@ -1,4 +1,4 @@
-from CommonServerPython import Any, Dict, List
+from CommonServerPython import *
 
 
 from typing import Any, Dict, List

@@ -1,18 +1,1457 @@
+from typing import Dict, List
+from CommonServerUserPython import *  # noqa
+from typing import Any, Dict, List
+from CommonServerPython import *
+from typing import List
+import json
+import fnmatch
+from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+import requests
+import demistomock as demisto
+import traceback
+from CommonServerUserPython import *
+from typing import Dict, Any, List, Tuple
+
+
+class ThreatModelAttributes:
+    Id = "ruleID"
+    Name = "ruleName"
+    Category = "ruleArea"
+    Source = "ruleSource"
+    Severity = "severity"
+
+    Columns = [Id, Name, Category, Source, Severity]
+
+
+
+
+
+class AlertItem:
+    def __init__(self, row: dict):
+        self.row = row
+        # self.ID: str = None
+        # self.Name: str = None
+        # self.Time: datetime = None
+        # self.Severity: str = None
+        # self.SeverityId: int = None
+        # self.Category: str = None
+        # self.Country: Optional[List[str]] = None
+        # self.State: Optional[List[str]] = None
+        # self.Status: str = None
+        # self.StatusId: int = None
+        # self.CloseReason: str = None
+        # self.BlacklistLocation: Optional[bool] = None
+        # self.AbnormalLocation: Optional[List[str]] = None
+        # self.NumOfAlertedEvents: int = None
+        # self.UserName: Optional[List[str]] = None
+        # self.SamAccountName: Optional[List[str]] = None
+        # self.PrivilegedAccountType: Optional[List[str]] = None
+        # self.ContainMaliciousExternalIP: Optional[bool] = None
+        # self.IPThreatTypes: Optional[List[str]] = None
+        # self.Asset: Optional[List[str]] = None
+        # self.AssetContainsFlaggedData: Optional[List[Optional[bool]]] = None
+        # self.AssetContainsSensitiveData: Optional[List[Optional[bool]]] = None
+        # self.Platform: Optional[List[str]] = None
+        # self.FileServerOrDomain: Optional[List[str]] = None
+        # self.EventUTC: Optional[datetime] = None
+        # self.DeviceName: Optional[List[str]] = None
+        # self.IngestTime: datetime = None
+
+        # self.Url: str = None
+        pass
+
+    def __getitem__(self, key: str) -> Any:
+        if hasattr(self.row, key):
+            return getattr(self.row, key)
+        raise KeyError(f"{key} not found in AlertItem")
+
+    def to_dict(self) -> Dict[str, Any]:
+        return self.row
+        
+
+class RequestParams:
+    def __init__(self):
+        self.searchSource = None
+        self.searchSourceName = None
+
+    def set_search_source(self, search_source):
+        self.searchSource = search_source
+        return self
+
+    def set_search_source_name(self, search_source_name):
+        self.searchSourceName = search_source_name
+        return self
+
+    def __repr__(self):
+        return f"Search Source: {self.searchSource}, Search Source Name: {self.searchSourceName}"
+
+class Filters:
+    def __init__(self):
+        self.filterOperator = None
+        self.filters = []
+
+    def set_filter_operator(self, filter_operator):
+        self.filterOperator = filter_operator
+        return self
+
+    def add_filter(self, filter_):
+        self.filters.append(filter_)
+        return self
+
+    def __repr__(self):
+        return f"Filter Operator: {self.filterOperator}, Filters: {self.filters}"
+
+
+
+class Query:
+    def __init__(self):
+        self.entityName = None
+        self.filter = Filters()
+
+    def set_entity_name(self, entity_name):
+        self.entityName = entity_name
+        return self
+
+    def set_filter(self, filter_):
+        self.filter = filter_
+        return self
+
+    def __repr__(self):
+        return f"Entity Name: {self.entityName}, Filter: {self.filter}"
+
+
+
+
+
+class EventItem:
+    def __init__(self, row: dict):
+        self.row = row
+        # self.Id: Optional[str] = None
+        # self.AlertId: Optional[List[str]] = None
+        # self.Type: Optional[str] = None
+        # self.TimeUTC: Optional[datetime] = None
+        # self.Status: Optional[str] = None
+        # self.Description: Optional[str] = None
+        # self.Country: Optional[str] = None
+        # self.State: Optional[str] = None
+        # self.BlacklistedLocation: Optional[bool] = None
+        # self.EventOperation: Optional[str] = None
+        # self.ByUserAccount: Optional[str] = None
+        # self.ByUserAccountType: Optional[str] = None
+        # self.ByUserAccountDomain: Optional[str] = None
+        # self.BySamAccountName: Optional[str] = None
+        # self.Filer: Optional[str] = None
+        # self.Platform: Optional[str] = None
+        # self.SourceIP: Optional[str] = None
+        # self.ExternalIP: Optional[str] = None
+        # self.DestinationIP: Optional[str] = None
+        # self.SourceDevice: Optional[str] = None
+        # self.DestinationDevice: Optional[str] = None
+        # self.IsDisabledAccount: Optional[bool] = None
+        # self.IsLockoutAccount: Optional[bool] = None
+        # self.IsStaleAccount: Optional[bool] = None
+        # self.IsMaliciousIP: Optional[bool] = None
+        # self.ExternalIPThreatTypes: Optional[List[str]] = None
+        # self.ExternalIPReputation: Optional[str] = None
+        # self.OnObjectName: Optional[str] = None
+        # self.OnObjectType: Optional[str] = None
+        # self.OnSamAccountName: Optional[str] = None
+        # self.IsSensitive: Optional[bool] = None
+        # self.OnAccountIsDisabled: Optional[bool] = None
+        # self.OnAccountIsLockout: Optional[bool] = None
+        # self.Path: Optional[str] = None
+
+    def __getitem__(self, key: str) -> Any:
+        if hasattr(self.row, key):
+            return getattr(self.row, key)
+        raise KeyError(f"{key} not found in AlertItem")
+
+    def to_dict(self) -> Dict[str, Any]:
+        return self.row
+
+
+
+class AlertAttributes:
+    Alert_ID = "Alert.ID"
+    Alert_Rule_Name = "Alert.Rule.Name"
+    Alert_Rule_ID = "Alert.Rule.ID"
+    Alert_TimeUTC = "Alert.TimeUTC"
+    Alert_Rule_Severity_Name = "Alert.Rule.Severity.Name"
+    Alert_Rule_Severity_ID = "Alert.Rule.Severity.ID"
+    Alert_Rule_Category_Name = "Alert.Rule.Category.Name"
+    Alert_Rule_Category_ID = "Alert.Rule.Category.ID"
+    Alert_Location_CountryName = "Alert.Location.CountryName"
+    Alert_Location_CountryID = "Alert.Location.CountryID"
+    Alert_Location_SubdivisionName = "Alert.Location.SubdivisionName"
+    Alert_Location_SubdivisionID = "Alert.Location.SubdivisionID"
+    Alert_Status_Name = "Alert.Status.Name"
+    Alert_Status_ID = "Alert.Status.ID"
+    Alert_EventsCount = "Alert.EventsCount"
+    Alert_Initial_Event_TimeUTC = "Alert.Initial.Event.TimeUTC"
+    Alert_Initial_Event_TimeLocal = "Alert.Initial.Event.TimeLocal"
+    Alert_User_Name = "Alert.User.Name"
+    Alert_User_SidID = "Alert.User.SidID"
+    Alert_User_Identity_ID = "Alert.User.Identity.ID"
+    Alert_User_Identity_Name = "Alert.User.Identity.Name"
+    Alert_User_IsFlagged = "Alert.User.IsFlagged"
+    Alert_User_AccountType_ID = "Alert.User.AccountType.ID"
+    Alert_User_AccountType_Name = "Alert.User.AccountType.Name"
+    Alert_User_AccountType_AggregatedName = "Alert.User.AccountType.AggregatedName"
+    Alert_User_AccountType_AggregatedID = "Alert.User.AccountType.AggregatedID"
+    Alert_User_SamAccountName = "Alert.User.SamAccountName"
+    Alert_User_AccountType_Name = "Alert.User.AccountType.Name"
+    Alert_Device_HostName = "Alert.Device.HostName"
+    Alert_Device_IsMaliciousExternalIP = "Alert.Device.IsMaliciousExternalIP"
+    Alert_Device_ExternalIPThreatTypesName = "Alert.Device.ExternalIPThreatTypesName"
+    Alert_Device_ExternalIPThreatTypesID = "Alert.Device.ExternalIPThreatTypesID"
+    Alert_Data_IsFlagged = "Alert.Data.IsFlagged"
+    Alert_Data_IsSensitive = "Alert.Data.IsSensitive"
+    Alert_Filer_Name = "Alert.Filer.Name"
+    Alert_Filer_ID = "Alert.Filer.ID"
+    Alert_Filer_Platform_Name = "Alert.Filer.Platform.Name"
+    Alert_Filer_Platform_ID = "Alert.Filer.Platform.ID"
+    Alert_Asset_Path = "Alert.Asset.Path"
+    Alert_Asset_ID = "Alert.Asset.ID"
+    Alert_CloseReason_Name = "Alert.CloseReason.Name"
+    Alert_CloseReason_ID = "Alert.CloseReason.ID"
+    Alert_Location_AbnormalLocation = "Alert.Location.AbnormalLocation"
+    Alert_Location_AbnormalLocationID = "Alert.Location.AbnormalLocationID"
+    Alert_Location_BlacklistedLocation = "Alert.Location.BlacklistedLocation"
+    Alert_MitreTactic_Name = "Alert.MitreTactic.Name"
+    Alert_MitreTactic_ID = "Alert.MitreTactic.ID"
+    Alert_Time = "Alert.Time"
+    Alert_AggregationFilter = "Alert.AggregationFilter"
+    Alert_IngestTime = "Alert.IngestTime"
+
+    Columns = [
+        Alert_Rule_Name, Alert_Rule_Severity_Name, Alert_TimeUTC, Alert_Rule_Category_Name, Alert_User_Name, Alert_Status_Name, 
+        Alert_ID, Alert_Rule_ID, Alert_Rule_Severity_ID, Alert_Location_CountryName, Alert_Location_SubdivisionName, 
+        Alert_Status_ID, Alert_EventsCount, Alert_Initial_Event_TimeUTC, Alert_User_SamAccountName, Alert_User_AccountType_Name, 
+        Alert_Device_HostName, Alert_Device_IsMaliciousExternalIP, Alert_Device_ExternalIPThreatTypesName, Alert_Data_IsFlagged, 
+        Alert_Data_IsSensitive, Alert_Filer_Platform_Name, Alert_Asset_Path, Alert_Filer_Name, Alert_CloseReason_Name, 
+        Alert_Location_BlacklistedLocation, Alert_Location_AbnormalLocation, Alert_User_SidID,
+        Alert_IngestTime
+
+    ]
+
+    ExtraColumns = [
+        Alert_Location_CountryID,
+        Alert_Location_SubdivisionID,
+        Alert_User_Identity_ID,
+        Alert_User_Identity_Name,
+        Alert_User_IsFlagged,
+        Alert_User_AccountType_ID,
+        Alert_User_AccountType_AggregatedName,
+        Alert_User_AccountType_AggregatedID,
+        Alert_Device_ExternalIPThreatTypesID,
+        Alert_Filer_ID,
+        Alert_Filer_Platform_ID,
+        Alert_Asset_ID,
+        Alert_CloseReason_ID,
+        Alert_Location_AbnormalLocationID,
+        Alert_MitreTactic_Name,
+        Alert_MitreTactic_ID,
+        Alert_Time
+    ]
+
+    def get_fields(self, extra_fields: list[str]) -> list[str]:
+        output = self.Columns.copy()
+
+        if extra_fields:
+            for pattern in extra_fields:
+                match_columns = fnmatch.filter(self.ExtraColumns, pattern)
+                output.extend([item for item in match_columns if item not in output])
+        
+        return output
+
+
+class Rows:
+    def __init__(self):
+        self.columns = []
+        self.filter = []
+        self.grouping = None
+        self.ordering = []
+
+    def add_column(self, column):
+        self.columns.append(column)
+        return self
+
+    def add_filter(self, filter_):
+        self.filter.append(filter_)
+        return self
+
+    def set_grouping(self, grouping):
+        self.grouping = grouping
+        return self
+
+    def add_ordering(self, ordering):
+        self.ordering.append(ordering)
+        return self
+
+    def __repr__(self):
+        return f"Columns: {self.columns}, Filter: {self.filter}, Grouping: {self.grouping}, Ordering: {self.ordering}"
+
+
+
+
+
+class BaseMapper:
+    @staticmethod
+    def convert_json_to_key_value(json_data) -> List[Dict[str, Any]]:
+        data = json_data
+        result = []
+        for row in data["rows"]:
+            obj = {}
+            for col, val in zip(data["columns"], row):
+                obj[col] = val
+            result.append(obj)
+        return result
+
+
+
+
+
+class SearchRequest:
+    def __init__(self):
+        self.query = Query()
+        self.rows = Rows()
+        self.requestParams = RequestParams()
+
+    def set_query(self, query):
+        self.query = query
+        return self
+
+    def set_rows(self, rows):
+        self.rows = rows
+        return self
+
+    def set_request_params(self, request_params):
+        self.requestParams = request_params
+        return self
+
+    def __repr__(self):
+        return f"Query: {self.query}, Rows: {self.rows}, Request Params: {self.requestParams}"
+
+    def to_json(self):
+        dataJSON = json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+        return dataJSON
+
+class FilterValue:
+    def __init__(self, value):
+        self = value
+        # self.displayValue = value.get("displayValue", None)
+
+    def __repr__(self):
+        return f"{self.value}"
+
+class FilterCondition:
+    def __init__(self):
+        self.path = None
+        self.operator = None
+        self.values = []
+
+    def set_path(self, path):
+        self.path = path
+        return self
+
+    def set_operator(self, operator):
+        self.operator = operator
+        return self
+
+    def add_value(self, value):
+        self.values.append(value)  # FilterValue(value)
+        return self
+
+    def __repr__(self):
+        return f"{self.path} {self.operator} {self.values}"
+
+
+
+
+
+class SearchAlertObjectMapper(BaseMapper):
+    def map(self, json_data):
+        key_valued_objects = self.convert_json_to_key_value(json_data)
+
+        mapped_items = []
+        for obj in key_valued_objects:
+            mapped_items.append(self.map_item(obj).to_dict())
+
+        return mapped_items
+
+    def map_item(self, row: dict) -> AlertItem:
+        alert_item = AlertItem(row)
+        # alert_item.ID = row[AlertAttributes.Id]
+        # alert_item.Name = row[AlertAttributes.RuleName]
+        # alert_item.Time = row[AlertAttributes.Time]
+        # alert_item.Severity = row[AlertAttributes.RuleSeverityName]
+        # alert_item.SeverityId = int(row[AlertAttributes.RuleSeverityId])
+        # alert_item.Category = row[AlertAttributes.RuleCategoryName]
+        # alert_item.Country = self.multi_value_to_string_list(row[AlertAttributes.LocationCountryName])
+        # alert_item.State = self.multi_value_to_string_list(row[AlertAttributes.LocationSubdivisionName])
+        # alert_item.Status = row[AlertAttributes.StatusName]
+        # alert_item.StatusId = int(row[AlertAttributes.StatusId])
+        # alert_item.CloseReason = row[AlertAttributes.CloseReasonName]
+        # alert_item.BlacklistLocation = self.get_bool_value(row, AlertAttributes.LocationBlacklistedLocation)
+        # alert_item.AbnormalLocation = self.multi_value_to_string_list(row[AlertAttributes.LocationAbnormalLocation])
+        # alert_item.NumOfAlertedEvents = int(row[AlertAttributes.EventsCount])
+        # alert_item.UserName = self.multi_value_to_string_list(row[AlertAttributes.UserName])
+        # alert_item.SamAccountName = self.multi_value_to_string_list(row[AlertAttributes.UserSamAccountName])
+        # alert_item.PrivilegedAccountType = self.multi_value_to_string_list(row[AlertAttributes.UserAccountTypeName])
+        # alert_item.ContainMaliciousExternalIP = self.get_bool_value(row, AlertAttributes.DeviceIsMaliciousExternalIp)
+        # alert_item.IPThreatTypes = self.multi_value_to_string_list(row[AlertAttributes.DeviceExternalIpThreatTypesName])
+        # alert_item.Asset = self.multi_value_to_string_list(row[AlertAttributes.AssetPath])
+        # alert_item.AssetContainsFlaggedData = self.multi_value_to_boolean_list(row[AlertAttributes.DataIsFlagged])
+        # alert_item.AssetContainsSensitiveData = self.multi_value_to_boolean_list(row[AlertAttributes.DataIsSensitive])
+        # alert_item.Platform = self.multi_value_to_string_list(row[AlertAttributes.FilerPlatformName])
+        # alert_item.FileServerOrDomain = self.multi_value_to_string_list(row[AlertAttributes.FilerName])
+        # alert_item.DeviceName = self.multi_value_to_string_list(row[AlertAttributes.DeviceHostname])
+        # alert_item.IngestTime = row[AlertAttributes.IngestTime]
+        # alert_item.EventUTC = self.get_date_value(row, AlertAttributes.InitialEventUtcTime)
+
+        return alert_item
+
+    def multi_value_to_string_list(self, multi_value: str) -> Optional[List[str]]:
+        if not multi_value or multi_value.isspace():
+            return None
+        return [value.strip() for value in multi_value.split(',')]
+
+    def multi_value_to_boolean_list(self, multi_value: str) -> Optional[List[Optional[bool]]]:
+        if not multi_value or multi_value.isspace():
+            return None
+        return [self.convert_to_boolean(value) for value in multi_value.split(',')]
+
+    def get_bool_value(self, row: dict, name: str) -> Optional[bool]:
+        return self.convert_to_boolean(row.get(name))
+
+    def convert_to_boolean(self, bool_str: str) -> Optional[bool]:
+        if bool_str is None:
+            return None
+        bool_str = bool_str.lower().strip()
+        if bool_str in ["yes", "1"]:
+            return True
+        if bool_str in ["no", "0"]:
+            return False
+        return bool_str.lower() in ['true', 'false'] and bool(bool_str)
+
+    def get_date_value(self, row: dict, name: str) -> Optional[datetime]:
+        date_str = row.get(name)
+        if date_str is None:
+            return None
+        try:
+            return datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%SZ")
+        except ValueError:
+            return None
+
+
+MAX_DAYS_BACK = 180
+THREAT_MODEL_ENUM_ID = 5821
+ALERT_STATUSES = {'new': 1, 'under investigation': 2, 'closed': 3, 'action required': 4, 'auto-resolved': 5}
+ALERT_SEVERITIES = {'high': 0, 'medium': 1, 'low': 2}
+
+
+
+class Client(BaseClient):
+    """Client class to interact with the service API
+
+    This Client implements API calls, and does not contain any Demisto logic.
+    Should only do requests and return data.
+    It inherits from BaseClient defined in CommonServer Python.
+    Most calls use _http_request() that handles proxy, SSL verification, etc.
+    For this HelloWorld implementation, no special attributes defined
+    """
+
+    def __init__(self, base_url, verify=True, proxy=False, ok_codes=tuple(), headers=None, auth=None):
+        super().__init__(base_url, verify, proxy, ok_codes, headers, auth)
+        self._session.verify = verify
+        if not verify and self._session.adapters['https://']:
+            if hasattr(self._session.adapters['https://'], "context"):
+                self._session.adapters['https://'].context.check_hostname = verify
+
+        self.headers: Dict[str, Any] = {}
+        self.headers["authorization"] = None
+        self.headers["content-type"] = 'application/json'
+
+    def varonis_authenticate(self, apiKey: str) -> Dict[str, Any]:
+        headers = {
+            'x-api-key': apiKey
+        }
+        response = self._http_request('POST', url_suffix='/api/authentication/api_keys/token',
+                                      data='grant_type=varonis_custom', headers=headers)
+        token = response['access_token']
+        token_type = response['token_type']
+        self._expires_in = response['expires_in']
+
+        demisto.debug(f'Token expires in {self._expires_in}')
+
+        self.headers["authorization"] = f'{token_type} {token}'
+        return response
+
+    def varonis_get_alerts(self, threat_model_names: Optional[List[str]],
+                           alertIds: Optional[List[str]], start_time: Optional[datetime],
+                           end_time: Optional[datetime], ingest_time_from: Optional[datetime],
+                           ingest_time_to: Optional[datetime], device_names: Optional[List[str]],
+                           user_names: Optional[List[str]],
+                           last_days: Optional[int],
+                           alert_statuses: Optional[List[str]],
+                           alert_severities: Optional[List[str]],
+                           extra_fields: Optional[List[str]],
+                           descending_order: bool) -> List[Dict[str, Any]]:
+        """Get alerts
+
+        :type threat_model_names: ``Optional[List[str]]``
+        :param threat_model_names: List of threat models to filter by
+
+        :type alertIds: ``Optional[List[str]]``
+        :param alertIds: List of alertIds to filter by
+
+        :type start_time: ``Optional[datetime]``
+        :param start_time: Start time of the range of alerts
+
+        :type end_time: ``Optional[datetime]``
+        :param end_time: End time of the range of alerts
+
+        :type ingest_time_from: ``Optional[datetime]``
+        :param ingest_time_from: Start ingest time of the range of alerts
+
+        :type ingest_time_to: ``Optional[datetime]``
+        :param ingest_time_to: End ingest time of the range of alerts
+
+        :type device_names: ``Optional[List[str]]``
+        :param device_names: List of device names to filter by
+
+        :type user_names: ``Optional[List[str]]``
+        :param user_names: List of user names to filter by
+
+        :type last_days: ``Optional[List[int]]``
+        :param last_days: Number of days you want the search to go back to
+
+        :type alert_statuses: ``Optional[List[str]]``
+        :param alert_statuses: List of alert statuses to filter by
+
+        :type alert_severities: ``Optional[List[str]]``
+        :param alert_severities: List of alert severities to filter by
+
+        :type extra_fields: ``Optional[List[str]]``
+        :param extra_fields: List of extra fields to include in the response
+
+        :type descendingOrder: ``bool``
+        :param descendingOrder: Indicates whether alerts should be ordered in newest to oldest order
+
+        :return: Alerts
+        :rtype: ``List[Dict[str, Any]]``
+        """
+
+        search_request = SearchRequest()\
+            .set_query(
+            Query().set_entity_name("Alert")
+            .set_filter(Filters().set_filter_operator(0))
+        )\
+            .set_rows(
+                Rows()
+                .set_grouping("")
+        )\
+            .set_request_params(
+                RequestParams().set_search_source(1).set_search_source_name("MainTab")
+        )
+
+        alert_attributes = AlertAttributes()
+        for column in alert_attributes.get_fields(extra_fields):
+            search_request.rows.add_column(column)
+
+        filter_condition = FilterCondition()\
+            .set_path("Alert.AggregationFilter")\
+            .set_operator("Equals")\
+            .add_value({"Alert.AggregationFilter": 1})\
+
+        search_request.query.filter.add_filter(filter_condition)
+
+        if ingest_time_from and ingest_time_to:
+            ingest_time_condition = FilterCondition().set_path("Alert.IngestTime")\
+                .set_operator("Between")\
+                .add_value({"Alert.IngestTime": ingest_time_from.isoformat(
+                ), "Alert.IngestTime0": ingest_time_to.isoformat()})  # "displayValue": ingest_time_from.isoformat(),
+            search_request.query.filter.add_filter(ingest_time_condition)
+        else:
+            days_back = MAX_DAYS_BACK
+            if start_time is None and end_time is None and last_days is None:
+                last_days = days_back
+            elif start_time is None and end_time is not None:
+                start_time = end_time - timedelta(days=days_back)
+            elif end_time is None and start_time is not None:
+                end_time = start_time + timedelta(days=days_back)
+
+            time_condition = FilterCondition().set_path("Alert.TimeUTC")
+            if start_time and end_time:
+                time_condition = time_condition\
+                    .set_operator("Between")\
+                    .add_value({"Alert.TimeUTC": start_time.isoformat(
+                    ), "Alert.TimeUTC0": end_time.isoformat()})  # "displayValue": start_time.isoformat(),
+            if last_days:
+                time_condition\
+                    .set_operator("LastDays")\
+                    .add_value({"Alert.TimeUTC": last_days, "displayValue": last_days})
+            search_request.query.filter.add_filter(time_condition)
+
+        if threat_model_names and len(threat_model_names) > 0:
+            rule_condition = FilterCondition()\
+                .set_path("Alert.Rule.Name")\
+                .set_operator("In")
+            for threat_model_name in threat_model_names:
+                rule_condition.add_value({"Alert.Rule.Name": threat_model_name, "displayValue": "New"})
+            search_request.query.filter.add_filter(rule_condition)
+
+        if alertIds and len(alertIds) > 0:
+            alert_condition = FilterCondition()\
+                .set_path("Alert.ID")\
+                .set_operator("In")
+            for alertId in alertIds:
+                alert_condition.add_value({"Alert.ID": alertId, "displayValue": "New"})
+            search_request.query.filter.add_filter(alert_condition)
+
+        if device_names and len(device_names) > 0:
+            device_condition = FilterCondition()\
+                .set_path("Alert.Device.HostName")\
+                .set_operator("In")
+            for device_name in device_names:
+                device_condition.add_value({"Alert.Device.HostName": device_name, "displayValue": device_name})
+            search_request.query.filter.add_filter(device_condition)
+
+        if user_names and len(user_names) > 0:
+            user_condition = FilterCondition()\
+                .set_path("Alert.User.Identity.Name")\
+                .set_operator("In")
+            for user_name in user_names:
+                user_condition.add_value({"Alert.User.Identity.Name": user_name, "displayValue": user_name})
+            search_request.query.filter.add_filter(user_condition)
+
+        if alert_statuses and len(alert_statuses) > 0:
+            status_condition = FilterCondition()\
+                .set_path("Alert.Status.ID")\
+                .set_operator("In")
+            for status in alert_statuses:
+                status_id = ALERT_STATUSES[status.lower()]
+                status_condition.add_value({"Alert.Status.ID": status_id, "displayValue": status})
+            search_request.query.filter.add_filter(status_condition)
+
+        if alert_severities and len(alert_severities) > 0:
+            severity_condition = FilterCondition()\
+                .set_path("Alert.Rule.Severity.ID")\
+                .set_operator("In")
+            for severity in alert_severities:
+                severity_id = ALERT_SEVERITIES[severity.lower()]
+                severity_condition.add_value({"Alert.Rule.Severity.ID": severity_id, "displayValue": severity})
+            search_request.query.filter.add_filter(severity_condition)
+
+        if descending_order:
+            search_request.rows.add_ordering({"path": "Alert.Time", "sortOrder": "Desc"})
+
+        dataJSON = search_request.to_json()
+
+        create_search = None
+        create_search = self._http_request(
+            'POST',
+            '/app/dataquery/api/search/v2/search',
+            data=dataJSON,
+            headers=self.headers
+        )
+
+        url = create_search[0]["location"]
+        json_data = self._http_request(
+            method='GET',
+            url_suffix=f'/app/dataquery/api/search/{url}',
+            headers=self.headers,
+            status_list_to_retry=[304, 405, 206],
+            retries=10
+        )
+
+        mapper = SearchAlertObjectMapper()
+        alerts = mapper.map(json_data)
+        return alerts
+
+    def varonis_get_alerted_events(self, alertIds: List[str], start_time: Optional[datetime], end_time: Optional[datetime],
+                                   last_days: Optional[int], extra_fields: Optional[List[str]],
+                                   descending_order: bool) -> List[Dict[str, Any]]:
+        """Get alerted events
+
+        :type alertIds: ``List[str]``
+        :param alertIds: List of alert ids
+
+        :type start_time: ``Optional[datetime]``
+        :param start_time: Start time of the range of alerts
+
+        :type end_time: ``Optional[datetime]``
+        :param end_time: End time of the range of alerts
+
+        :type count: ``int``
+        :param count: Alerted events count
+
+        :type descendingOrder: ``bool``
+        :param descendingOrder: Indicates whether events should be ordered in newest to oldest order
+
+        :type extra_fields: ``Optional[List[str]]``
+        :param extra_fields: List of extra fields to include in the response
+
+        :return: Alerted events
+        :rtype: ``List[Dict[str, Any]]``
+        """
+
+        days_back = MAX_DAYS_BACK
+        if start_time is None and end_time is None and last_days is None:
+            last_days = days_back
+        elif start_time is None and end_time is not None:
+            start_time = end_time - timedelta(days=days_back)
+        elif end_time is None and start_time is not None:
+            end_time = start_time + timedelta(days=days_back)
+
+        search_request = SearchRequest()\
+            .set_query(
+            Query()
+            .set_entity_name("Event")
+            .set_filter(Filters().set_filter_operator(0))
+        )\
+            .set_rows(Rows().set_grouping(""))\
+            .set_request_params(RequestParams().set_search_source(1).set_search_source_name("MainTab"))
+
+        event_attributes = EventAttributes()
+        for column in event_attributes.get_fields(extra_fields):
+            search_request.rows.add_column(column)
+
+        if alertIds and len(alertIds) > 0:
+            time_condition = FilterCondition()\
+                .set_path("Event.Alert.ID")\
+                .set_operator("In")
+            for alertId in alertIds:
+                time_condition.add_value({"Event.Alert.ID": alertId, "displayValue": alertId})
+
+            search_request.query.filter.add_filter(time_condition)
+
+        time_condition = FilterCondition().set_path("Event.TimeUTC")
+        if start_time and end_time:
+            time_condition = time_condition\
+                .set_operator("Between")\
+                .add_value({"Event.TimeUTC": start_time.isoformat(
+                ), "Event.TimeUTC0": end_time.isoformat()})  # "displayValue": start_time.isoformat(),
+        if last_days:
+            time_condition\
+                .set_operator("LastDays")\
+                .add_value({"Event.TimeUTC": last_days, "displayValue": last_days})
+        search_request.query.filter.add_filter(time_condition)
+
+        if descending_order:
+            search_request.rows.add_ordering({"path": "Event.Time", "sortOrder": "Desc"})
+
+        dataJSON = search_request.to_json()
+
+        create_search = self._http_request(
+            'POST',
+            '/app/dataquery/api/search/v2/search',
+            data=dataJSON,
+            headers=self.headers
+        )
+
+        url = create_search[0]["location"]
+        json_data = self._http_request(
+            method='GET',
+            url_suffix=f'/app/dataquery/api/search/{url}',
+            headers=self.headers,
+            status_list_to_retry=[304, 405, 206],
+            retries=10
+        )
+
+        mapper = SearchEventObjectMapper()
+        events = mapper.map(json_data)
+        return events
+
+    def varonis_get_enum(self, enum_id: int) -> List[Any]:
+        """Gets an enum by enum_id. Usually needs for retrieving object required for a search
+
+        :type enum_id: ``int``
+        :param enum_id: Id of enum stored in database
+
+        :return: The list of objects required for a search filter
+        :rtype: ``List[Any]``
+        """
+        response = self._http_request('GET', f'/api/entitymodel/enum/{enum_id}', headers=self.headers)
+        return response
+
+    def varonis_update_alert_status(self, query: Dict[str, Any]) -> bool:
+        """Update alert status
+
+        :type query: ``Dict[str, Any]``
+        :param query: Update request body
+
+        :return: Result of execution
+        :rtype: ``bool``
+
+        """
+        return self._http_request(
+            'POST',
+            '/api/alert/alert/SetStatusToAlerts',
+            json_data=query,
+            headers=self.headers)
+
+    def varonis_add_note_to_alerts(self, query: Dict[str, Any]) -> bool:
+        """Update alert status
+
+        :type query: ``Dict[str, Any]``
+        :param query: "add notes" request body
+
+        :return: Result of execution
+        :rtype: ``bool``
+
+        """
+        return self._http_request(
+            'POST',
+            '/api/alert/alert/AddNoteToAlerts',
+            json_data=query,
+            headers=self.headers)
+
+
+
+class EventAttributes:
+    Event_StatusReason_Name = "Event.StatusReason.Name"
+    Event_StatusReason_ID = "Event.StatusReason.ID"
+    Event_Location_BlacklistedLocation = "Event.Location.BlacklistedLocation"
+    Event_Location_Subdivision_Name = "Event.Location.Subdivision.Name"
+    Event_Location_Subdivision_ID = "Event.Location.Subdivision.ID"
+    Event_Location_Country_Name = "Event.Location.Country.Name"
+    Event_Location_Country_ID = "Event.Location.Country.ID"
+    Event_Filer_Platform_Name = "Event.Filer.Platform.Name"
+    Event_Filer_Platform_ID = "Event.Filer.Platform.ID"
+    Event_OnResource_Stats_ExposureLevel_Name = "Event.OnResource.Stats.ExposureLevel.Name"
+    Event_OnResource_Stats_ExposureLevel_ID = "Event.OnResource.Stats.ExposureLevel.ID"
+    Event_ByAccount_Identity_Followup_Flag_Name = "Event.ByAccount.Identity.Followup.Flag.Name"
+    Event_ByAccount_Identity_Followup_Flag_ID = "Event.ByAccount.Identity.Followup.Flag.ID"
+    Event_ByAccount_SamAccountName = "Event.ByAccount.SamAccountName"
+    Event_ByAccount_SidID = "Event.ByAccount.SidID"
+    Event_ByAccount_Type_Name = "Event.ByAccount.Type.Name"
+    Event_ByAccount_Type_ID = "Event.ByAccount.Type.ID"
+    Event_ByAccount_DistinguishedName = "Event.ByAccount.DistinguishedName"
+    Event_OnAccount_Domain_Name = "Event.OnAccount.Domain.Name"
+    Event_OnAccount_Domain_ID = "Event.OnAccount.Domain.ID"
+    Event_OnAccount_Identity_Followup_Flag_Name = "Event.OnAccount.Identity.Followup.Flag.Name"
+    Event_OnAccount_Identity_Followup_Flag_ID = "Event.OnAccount.Identity.Followup.Flag.ID"
+    Event_Time = "Event.Time"
+    Event_Operation_Name = "Event.Operation.Name"
+    Event_Operation_ID = "Event.Operation.ID"
+    Event_EndTime = "Event.EndTime"
+    Event_Type_Name = "Event.Type.Name"
+    Event_Type_ID = "Event.Type.ID"
+    Event_ByAccount_Identity_Name = "Event.ByAccount.Identity.Name"
+    Event_ByAccount_Identity_ID = "Event.ByAccount.Identity.ID"
+    Event_OnAccount_DNSDomain_Name = "Event.OnAccount.DNSDomain.Name"
+    Event_OnAccount_DNSDomain_ID = "Event.OnAccount.DNSDomain.ID"
+    Event_OnAccount_Identity_Name = "Event.OnAccount.Identity.Name"
+    Event_OnAccount_Identity_ID = "Event.OnAccount.Identity.ID"
+    Event_OnObjectName = "Event.OnObjectName"
+    Event_OnResource_Path = "Event.OnResource.Path"
+    Event_OnResource_EntityIdx = "Event.OnResource.EntityIdx"
+    Event_ByAccount_Domain_Name = "Event.ByAccount.Domain.Name"
+    Event_ByAccount_Domain_ID = "Event.ByAccount.Domain.ID"
+    Event_ByAccount_DNSDomain_Name = "Event.ByAccount.DNSDomain.Name"
+    Event_ByAccount_DNSDomain_ID = "Event.ByAccount.DNSDomain.ID"
+    Event_OnResource_IsSensitive = "Event.OnResource.IsSensitive"
+    Event_Status_Name = "Event.Status.Name"
+    Event_Status_ID = "Event.Status.ID"
+    Event_Filer_Name = "Event.Filer.Name"
+    Event_Filer_ID = "Event.Filer.ID"
+    Event_OnResource_ObjectType_Name = "Event.OnResource.ObjectType.Name"
+    Event_OnResource_ObjectType_ID = "Event.OnResource.ObjectType.ID"
+    Event_Device_UserAgent = "Event.Device.UserAgent"
+    Event_CorrelationId = "Event.CorrelationId"
+    Event_ByAccount_Identity_Followup_Notes = "Event.ByAccount.Identity.Followup.Notes"
+    Event_OnAccount_Identity_Followup_Notes = "Event.OnAccount.Identity.Followup.Notes"
+    Event_OnResource_Followup_Flag_Name = "Event.OnResource.Followup.Flag.Name"
+    Event_OnResource_Followup_Flag_ID = "Event.OnResource.Followup.Flag.ID"
+    Event_ByAccount_Identity_Department = "Event.ByAccount.Identity.Department"
+    Event_OnAccount_Identity_Department = "Event.OnAccount.Identity.Department"
+    Event_IP = "Event.IP"
+    Event_ByAccount_Identity_Manager_Name = "Event.ByAccount.Identity.Manager.Name"
+    Event_ByAccount_Identity_Manager_ID = "Event.ByAccount.Identity.Manager.ID"
+    Event_OnAccount_Identity_Manager_Name = "Event.OnAccount.Identity.Manager.Name"
+    Event_OnAccount_Identity_Manager_ID = "Event.OnAccount.Identity.Manager.ID"
+    Event_ByAccount_IsDisabled = "Event.ByAccount.IsDisabled"
+    Event_ByAccount_IsStale = "Event.ByAccount.IsStale"
+    Event_OnAccount_IsStale = "Event.OnAccount.IsStale"
+    Event_Device_Name = "Event.Device.Name"
+    Event_ByAccount_LastLogonTime = "Event.ByAccount.LastLogonTime"
+    Event_OnAccount_LastLogonTime = "Event.OnAccount.LastLogonTime"
+    Event_OnResource_File_Type = "Event.OnResource.File.Type"
+    Event_OnResource_AccessDate = "Event.OnResource.AccessDate"
+    Event_OnResource_ModifyDate = "Event.OnResource.ModifyDate"
+    Event_OnResource_FSOwner_Name = "Event.OnResource.FSOwner.Name"
+    Event_OnResource_FSOwner_SidID = "Event.OnResource.FSOwner.SidID"
+    Event_OnResource_Classification_TotalHitCount = "Event.OnResource.Classification.TotalHitCount"
+    Event_OnMail_ItemType_Name = "Event.OnMail.ItemType.Name"
+    Event_OnMail_ItemType_ID = "Event.OnMail.ItemType.ID"
+    Event_OnMail_Recipient = "Event.OnMail.Recipient"
+    Event_OnResource_CreateDate = "Event.OnResource.CreateDate"
+    Event_OnMail_Source = "Event.OnMail.Source"
+    Event_OnResource_PathDepth = "Event.OnResource.PathDepth"
+    Event_OnResource_NumberOfNestedFiles = "Event.OnResource.NumberOfNestedFiles"
+    Event_Alert_Rule_Name = "Event.Alert.Rule.Name"
+    Event_Alert_Rule_ID = "Event.Alert.Rule.ID"
+    Event_OnResource_SizeFolder = "Event.OnResource.SizeFolder"
+    Event_Alert_Rule_Category_Name = "Event.Alert.Rule.Category.Name"
+    Event_Alert_Rule_Category_ID = "Event.Alert.Rule.Category.ID"
+    Event_OnResource_SizeFolderAndSubFolders = "Event.OnResource.SizeFolderAndSubFolders"
+    Event_Alert_Rule_Severity_Name = "Event.Alert.Rule.Severity.Name"
+    Event_Alert_Rule_Severity_ID = "Event.Alert.Rule.Severity.ID"
+    Event_OnResource_NumberOfFiles = "Event.OnResource.NumberOfFiles"
+    Event_Alert_Time = "Event.Alert.Time"
+    Event_Alert_TimeUTC = "Event.Alert.TimeUTC"
+    Event_TimeUTC = "Event.TimeUTC"
+    Event_OnResource_NumberOfFilesInSubFolders = "Event.OnResource.NumberOfFilesInSubFolders"
+    Event_Alert_ID = "Event.Alert.ID"
+    Event_OnResource_NumberOfNestedFolders = "Event.OnResource.NumberOfNestedFolders"
+    Event_Description = "Event.Description"
+    Event_OnResource_SizePhysicalSDTFile = "Event.OnResource.SizePhysicalSDTFile"
+    Event_EventsCount = "Event.EventsCount"
+    Event_OnResource_SizePhysicalNestedFoldersFiles = "Event.OnResource.SizePhysicalNestedFoldersFiles"
+    Event_ByAccount_PasswordStatus_Name = "Event.ByAccount.PasswordStatus.Name"
+    Event_ByAccount_PasswordStatus_ID = "Event.ByAccount.PasswordStatus.ID"
+    Event_OnResource_SizePhysicalFiles = "Event.OnResource.SizePhysicalFiles"
+    Event_ByAccount_AccountExpirationDate = "Event.ByAccount.AccountExpirationDate"
+    Event_OnResource_SizeSubFolders = "Event.OnResource.SizeSubFolders"
+    Event_OnAccount_IsDisabled = "Event.OnAccount.IsDisabled"
+    Event_OnResource_NumberOfNestedObjects = "Event.OnResource.NumberOfNestedObjects"
+    Event_OnAccount_IsLockout = "Event.OnAccount.IsLockout"
+    Event_UploadSize = "Event.UploadSize"
+    Event_DownloadSize = "Event.DownloadSize"
+    Event_OnAccount_PasswordStatus_Name = "Event.OnAccount.PasswordStatus.Name"
+    Event_OnAccount_PasswordStatus_ID = "Event.OnAccount.PasswordStatus.ID"
+    Event_SessionDuration = "Event.SessionDuration"
+    Event_OnAccount_AccountExpirationDate = "Event.OnAccount.AccountExpirationDate"
+    Event_ConnectionType_Name = "Event.ConnectionType.Name"
+    Event_ConnectionType_ID = "Event.ConnectionType.ID"
+    Event_ClientType_Name = "Event.ClientType.Name"
+    Event_ClientType_ID = "Event.ClientType.ID"
+    Event_AgentVersion = "Event.AgentVersion"
+    Event_ByAccount_VPNGroups = "Event.ByAccount.VPNGroups"
+    Event_ByAccount_IsLockout = "Event.ByAccount.IsLockout"
+    Event_DC_HostName = "Event.DC.HostName"
+    Event_Direction_Name = "Event.Direction.Name"
+    Event_Direction_ID = "Event.Direction.ID"
+    Event_OnAccount_SamAccountName = "Event.OnAccount.SamAccountName"
+    Event_OnAccount_SidID = "Event.OnAccount.SidID"
+    Event_ByAccount_PrivilegedAccountType_Name = "Event.ByAccount.PrivilegedAccountType.Name"
+    Event_ByAccount_PrivilegedAccountType_ID = "Event.ByAccount.PrivilegedAccountType.ID"
+    Event_DNSFlags = "Event.DNSFlags"
+    Event_CollectionMethod_Name = "Event.CollectionMethod.Name"
+    Event_CollectionMethod_ID = "Event.CollectionMethod.ID"
+    Event_OnAccount_AccountType_Name = "Event.OnAccount.AccountType.Name"
+    Event_OnAccount_AccountType_ID = "Event.OnAccount.AccountType.ID"
+    Event_DNSRecordType = "Event.DNSRecordType"
+    Event_OnResource_Classification_CategorySummary = "Event.OnResource.Classification.CategorySummary"
+    Event_ByAccount_Identity_Affiliation_Name = "Event.ByAccount.Identity.Affiliation.Name"
+    Event_ByAccount_Identity_Affiliation_ID = "Event.ByAccount.Identity.Affiliation.ID"
+    Event_OnAccount_Application_ID = "Event.OnAccount.Application.ID"
+    Event_TransportLayer_Name = "Event.TransportLayer.Name"
+    Event_TransportLayer_ID = "Event.TransportLayer.ID"
+    Event_OnAccount_Application_Name = "Event.OnAccount.Application.Name"
+    Event_OnAccount_Identity_Affiliation_Name = "Event.OnAccount.Identity.Affiliation.Name"
+    Event_OnAccount_Identity_Affiliation_ID = "Event.OnAccount.Identity.Affiliation.ID"
+    Event_Destination_URL_Reputation_Name = "Event.Destination.URL.Reputation.Name"
+    Event_Destination_URL_Reputation_ID = "Event.Destination.URL.Reputation.ID"
+    Event_HttpMethod_Name = "Event.HttpMethod.Name"
+    Event_HttpMethod_ID = "Event.HttpMethod.ID"
+    Event_OnAccount_PublisherName = "Event.OnAccount.PublisherName"
+    Event_Destination_IP = "Event.Destination.IP"
+    Event_Destination_URL_Categorization_Name = "Event.Destination.URL.Categorization.Name"
+    Event_Destination_URL_Categorization_ID = "Event.Destination.URL.Categorization.ID"
+    Event_OnAccount_IsPublisherVerified = "Event.OnAccount.IsPublisherVerified"
+    Event_Destination_DeviceName = "Event.Destination.DeviceName"
+    Event_ByAccount_Application_ID = "Event.ByAccount.Application.ID"
+    Event_Destination_Domain = "Event.Destination.Domain"
+    Event_ByAccount_Application_Name = "Event.ByAccount.Application.Name"
+    Event_Device_ExternalIP_IP = "Event.Device.ExternalIP.IP"
+    Event_ByAccount_PublisherName = "Event.ByAccount.PublisherName"
+    Event_ByAccount_IsPublisherVerified = "Event.ByAccount.IsPublisherVerified"
+    Event_Device_OperatingSystem = "Event.Device.OperatingSystem"
+    Event_SourcePort = "Event.SourcePort"
+    Event_SourceZone = "Event.SourceZone"
+    Event_App = "Event.App"
+    Event_Device_ExternalIP_ThreatTypes_Name = "Event.Device.ExternalIP.ThreatTypes.Name"
+    Event_Device_ExternalIP_ThreatTypes_ID = "Event.Device.ExternalIP.ThreatTypes.ID"
+    Event_Destination_Port = "Event.Destination.Port"
+    Event_Destination_Zone = "Event.Destination.Zone"
+    Event_NAT_Source_Address = "Event.NAT.Source.Address"
+    Event_NAT_Destination_Address = "Event.NAT.Destination.Address"
+    Event_NAT_Source_Port = "Event.NAT.Source.Port"
+    Event_NAT_Destination_Port = "Event.NAT.Destination.Port"
+    Event_Protocol_Name = "Event.Protocol.Name"
+    Event_Protocol_ID = "Event.Protocol.ID"
+    Event_ApplicationProtocol_Name = "Event.ApplicationProtocol.Name"
+    Event_ApplicationProtocol_ID = "Event.ApplicationProtocol.ID"
+    Event_Device_ExternalIP_IsMalicious = "Event.Device.ExternalIP.IsMalicious"
+    Event_Device_ExternalIP_Reputation_Name = "Event.Device.ExternalIP.Reputation.Name"
+    Event_Device_ExternalIP_Reputation_ID = "Event.Device.ExternalIP.Reputation.ID"
+    Event_ByAccount_IsMailboxOwner = "Event.ByAccount.IsMailboxOwner"
+    Event_StatusReasonCodeName = "Event.StatusReasonCodeName"
+    Event_StatusReasonCode = "Event.StatusReasonCode"
+    Event_Authentication_TicketEncryption_Name = "Event.Authentication.TicketEncryption.Name"
+    Event_Authentication_TicketEncryption_ID = "Event.Authentication.TicketEncryption.ID"
+    Event_OnGPO_NewVersion = "Event.OnGPO.NewVersion"
+    Event_Authentication_PreAuthenticationType = "Event.Authentication.PreAuthenticationType"
+    Event_OnGPO_Settings_NewValue = "Event.OnGPO.Settings.NewValue"
+    Event_Authentication_Protocol_Name = "Event.Authentication.Protocol.Name"
+    Event_Authentication_Protocol_ID = "Event.Authentication.Protocol.ID"
+    Event_OnGPO_Settings_OldValue = "Event.OnGPO.Settings.OldValue"
+    Event_OrgOpCode = "Event.OrgOpCode"
+    Event_OnGPO_Settings_Name = "Event.OnGPO.Settings.Name"
+    Event_ByAccount_ExpirationStatus_Name = "Event.ByAccount.ExpirationStatus.Name"
+    Event_ByAccount_ExpirationStatus_ID = "Event.ByAccount.ExpirationStatus.ID"
+    Event_OnGPO_Settings_Path = "Event.OnGPO.Settings.Path"
+    Event_OnAccount_ExpirationStatus_Name = "Event.OnAccount.ExpirationStatus.Name"
+    Event_OnAccount_ExpirationStatus_ID = "Event.OnAccount.ExpirationStatus.ID"
+    Event_OnGPO_ConfigurationType_Name = "Event.OnGPO.ConfigurationType.Name"
+    Event_OnGPO_ConfigurationType_ID = "Event.OnGPO.ConfigurationType.ID"
+    Event_Trustee_Identity_Name = "Event.Trustee.Identity.Name"
+    Event_Trustee_Identity_ID = "Event.Trustee.Identity.ID"
+    Event_OnMail_Mailbox_Type_Name = "Event.OnMail.Mailbox.Type.Name"
+    Event_OnMail_Mailbox_Type_ID = "Event.OnMail.Mailbox.Type.ID"
+    Event_Trustee_DNSDomain_Name = "Event.Trustee.DNSDomain.Name"
+    Event_Trustee_DNSDomain_ID = "Event.Trustee.DNSDomain.ID"
+    Event_Trustee_Type_Name = "Event.Trustee.Type.Name"
+    Event_Trustee_Type_ID = "Event.Trustee.Type.ID"
+    Event_Trustee_Application_ID = "Event.Trustee.Application.ID"
+    Event_Trustee_Application_Name = "Event.Trustee.Application.Name"
+    Event_Trustee_PublisherName = "Event.Trustee.PublisherName"
+    Event_Trustee_IsPublisherVerified = "Event.Trustee.IsPublisherVerified"
+    Event_Permission_IsDirectChange = "Event.Permission.IsDirectChange"
+    Event_Permission_ChangedPermissionFlags = "Event.Permission.ChangedPermissionFlags"
+    Event_Trustee_Identity_Affiliation_Name = "Event.Trustee.Identity.Affiliation.Name"
+    Event_Trustee_Identity_Affiliation_ID = "Event.Trustee.Identity.Affiliation.ID"
+    Event_LogonType = "Event.LogonType"
+    Event_Authentication_Package = "Event.Authentication.Package"
+    Event_ImpersonationLevel = "Event.ImpersonationLevel"
+    Event_OnMail_AttachmentName = "Event.OnMail.AttachmentName"
+    Event_OnMail_WithAttachments = "Event.OnMail.WithAttachments"
+    Event_OnResource_ClassificationLabels_Summary = "Event.OnResource.ClassificationLabels.Summary"
+    Event_OnMail_HasOutOfOrganizationReciever = "Event.OnMail.HasOutOfOrganizationReciever"
+    Event_Type_Activity_Name = "Event.Type.Activity.Name"
+    Event_Type_Activity_ID = "Event.Type.Activity.ID"
+    Event_InfoTags_Name = "Event.InfoTags.Name"
+    Event_InfoTags_ID = "Event.InfoTags.ID"
+    Event_Authentication_TicketOptions = "Event.Authentication.TicketOptions"
+    Event_OnMail_Headers_SentDate = "Event.OnMail.Headers.SentDate"
+    Event_OnMail_Headers_AuthenticationResults_Spf_Passed = "Event.OnMail.Headers.AuthenticationResults.Spf.Passed"
+    Event_OnMail_Headers_AuthenticationResults_Dkim_Passed = "Event.OnMail.Headers.AuthenticationResults.Dkim.Passed"
+    Event_OnMail_Headers_AuthenticationResults_Dmarc_Passed = "Event.OnMail.Headers.AuthenticationResults.Dmarc.Passed"
+    Event_OnMail_Headers_XOriginalSender = "Event.OnMail.Headers.XOriginalSender"
+    Event_OnMail_Headers_ReceivedServerIP = "Event.OnMail.Headers.ReceivedServerIP"
+    Event_OnResource_Classification_Summary = "Event.OnResource.Classification.Summary"
+    Event_OnMail_Date = "Event.OnMail.Date"
+    Event_OnResource_ShareAccessPaths = "Event.OnResource.ShareAccessPaths"
+    Event_Permission_Before = "Event.Permission.Before"
+    Event_Permission_After = "Event.Permission.After"
+    Event_Permission_Type = "Event.Permission.Type"
+    Event_OnResource_LocalMappedPath = "Event.OnResource.LocalMappedPath"
+    Event_Session_BrowserType = "Event.Session.BrowserType"
+    Event_Session_TrustDomain_Type = "Event.Session.TrustDomain.Type"
+    Event_Session_AzureAuthentication_Requirement = "Event.Session.AzureAuthentication.Requirement"
+    Event_Session_AzureAuthentication_ConditionalAccessStatus = "Event.Session.AzureAuthentication.ConditionalAccessStatus"
+    Event_Session_AzureAuthentication_TokenIssuerType = "Event.Session.AzureAuthentication.TokenIssuerType"
+    Event_Session_AzureAuthentication_Method = "Event.Session.AzureAuthentication.Method"
+    Event_Session_AzureAuthentication_MethodDetail = "Event.Session.AzureAuthentication.MethodDetail"
+    Event_Session_AzureAuthentication_Step = "Event.Session.AzureAuthentication.Step"
+    Event_Session_AzureAuthentication_ResultDetail = "Event.Session.AzureAuthentication.ResultDetail"
+    Event_Session_AzureAuthentication_ReasonDetails = "Event.Session.AzureAuthentication.ReasonDetails"
+    Event_Device_TrustType = "Event.Device.TrustType"
+    Event_Session_AzureAuthentication_Status_Name = "Event.Session.AzureAuthentication.Status.Name"
+    Event_Session_AzureAuthentication_Status_ID = "Event.Session.AzureAuthentication.Status.ID"
+    Event_Device_ManagedStatus_Name = "Event.Device.ManagedStatus.Name"
+    Event_Device_ManagedStatus_ID = "Event.Device.ManagedStatus.ID"
+    Event_ID = "Event.ID"
+    Event_IsAlerted = "Event.IsAlerted"
+
+    Columns = [
+        Event_Type_Name, Event_Description, Event_Filer_Platform_Name, Event_ByAccount_Identity_Name, Event_OnObjectName,
+        Event_Alert_ID, Event_ID, Event_TimeUTC,
+        Event_Status_Name, Event_Location_Country_Name,
+        Event_Location_Subdivision_Name, Event_Location_BlacklistedLocation,
+        Event_Operation_Name, Event_ByAccount_Type_Name,
+        Event_ByAccount_Domain_Name, Event_ByAccount_SamAccountName,
+        Event_Filer_Name, Event_IP, Event_Device_ExternalIP_IP,
+        Event_Destination_IP, Event_Device_Name, Event_Destination_DeviceName,
+        Event_ByAccount_IsDisabled, Event_ByAccount_IsStale, Event_ByAccount_IsLockout,
+        Event_Device_ExternalIP_ThreatTypes_Name, Event_Device_ExternalIP_IsMalicious,
+        Event_Device_ExternalIP_Reputation_Name,
+        Event_OnResource_ObjectType_Name, Event_OnAccount_SamAccountName,
+        Event_OnResource_IsSensitive, Event_OnAccount_IsDisabled,
+        Event_OnAccount_IsLockout, Event_OnResource_Path
+    ]
+
+    ExtraColumns = [
+        Event_StatusReason_Name,
+        Event_StatusReason_ID,
+        Event_Location_Subdivision_ID,
+        Event_Location_Country_ID,
+        Event_Filer_Platform_ID,
+        Event_OnResource_Stats_ExposureLevel_Name,
+        Event_OnResource_Stats_ExposureLevel_ID,
+        Event_ByAccount_Identity_Followup_Flag_Name,
+        Event_ByAccount_Identity_Followup_Flag_ID,
+        Event_ByAccount_SidID,
+        Event_ByAccount_Type_ID,
+        Event_ByAccount_DistinguishedName,
+        Event_OnAccount_Domain_Name,
+        Event_OnAccount_Domain_ID,
+        Event_OnAccount_Identity_Followup_Flag_Name,
+        Event_OnAccount_Identity_Followup_Flag_ID,
+        Event_Time,
+        Event_Operation_ID,
+        Event_EndTime,
+        Event_Type_ID,
+        Event_ByAccount_Identity_ID,
+        Event_OnAccount_DNSDomain_Name,
+        Event_OnAccount_DNSDomain_ID,
+        Event_OnAccount_Identity_Name,
+        Event_OnAccount_Identity_ID,
+        Event_OnResource_EntityIdx,
+        Event_ByAccount_Domain_ID,
+        Event_ByAccount_DNSDomain_Name,
+        Event_ByAccount_DNSDomain_ID,
+        Event_Status_ID,
+        Event_Filer_ID,
+        Event_OnResource_ObjectType_ID,
+        Event_Device_UserAgent,
+        Event_CorrelationId,
+        Event_ByAccount_Identity_Followup_Notes,
+        Event_OnAccount_Identity_Followup_Notes,
+        Event_OnResource_Followup_Flag_Name,
+        Event_OnResource_Followup_Flag_ID,
+        Event_ByAccount_Identity_Department,
+        Event_OnAccount_Identity_Department,
+        Event_ByAccount_Identity_Manager_Name,
+        Event_ByAccount_Identity_Manager_ID,
+        Event_OnAccount_Identity_Manager_Name,
+        Event_OnAccount_Identity_Manager_ID,
+        Event_OnAccount_IsStale,
+        Event_ByAccount_LastLogonTime,
+        Event_OnAccount_LastLogonTime,
+        Event_OnResource_File_Type,
+        Event_OnResource_AccessDate,
+        Event_OnResource_ModifyDate,
+        Event_OnResource_FSOwner_Name,
+        Event_OnResource_FSOwner_SidID,
+        Event_OnResource_Classification_TotalHitCount,
+        Event_OnMail_ItemType_Name,
+        Event_OnMail_ItemType_ID,
+        Event_OnMail_Recipient,
+        Event_OnResource_CreateDate,
+        Event_OnMail_Source,
+        Event_OnResource_PathDepth,
+        Event_OnResource_NumberOfNestedFiles,
+        Event_Alert_Rule_Name,
+        Event_Alert_Rule_ID,
+        Event_OnResource_SizeFolder,
+        Event_Alert_Rule_Category_Name,
+        Event_Alert_Rule_Category_ID,
+        Event_OnResource_SizeFolderAndSubFolders,
+        Event_Alert_Rule_Severity_Name,
+        Event_Alert_Rule_Severity_ID,
+        Event_OnResource_NumberOfFiles,
+        Event_Alert_Time,
+        Event_Alert_TimeUTC,
+        Event_OnResource_NumberOfFilesInSubFolders,
+        Event_OnResource_NumberOfNestedFolders,
+        Event_OnResource_SizePhysicalSDTFile,
+        Event_EventsCount,
+        Event_OnResource_SizePhysicalNestedFoldersFiles,
+        Event_ByAccount_PasswordStatus_Name,
+        Event_ByAccount_PasswordStatus_ID,
+        Event_OnResource_SizePhysicalFiles,
+        Event_ByAccount_AccountExpirationDate,
+        Event_OnResource_SizeSubFolders,
+        Event_OnResource_NumberOfNestedObjects,
+        Event_UploadSize,
+        Event_DownloadSize,
+        Event_OnAccount_PasswordStatus_Name,
+        Event_OnAccount_PasswordStatus_ID,
+        Event_SessionDuration,
+        Event_OnAccount_AccountExpirationDate,
+        Event_ConnectionType_Name,
+        Event_ConnectionType_ID,
+        Event_ClientType_Name,
+        Event_ClientType_ID,
+        Event_AgentVersion,
+        Event_ByAccount_VPNGroups,
+        Event_DC_HostName,
+        Event_Direction_Name,
+        Event_Direction_ID,
+        Event_OnAccount_SidID,
+        Event_ByAccount_PrivilegedAccountType_Name,
+        Event_ByAccount_PrivilegedAccountType_ID,
+        Event_DNSFlags,
+        Event_CollectionMethod_Name,
+        Event_CollectionMethod_ID,
+        Event_OnAccount_AccountType_Name,
+        Event_OnAccount_AccountType_ID,
+        Event_DNSRecordType,
+        Event_OnResource_Classification_CategorySummary,
+        Event_ByAccount_Identity_Affiliation_Name,
+        Event_ByAccount_Identity_Affiliation_ID,
+        Event_OnAccount_Application_ID,
+        Event_TransportLayer_Name,
+        Event_TransportLayer_ID,
+        Event_OnAccount_Application_Name,
+        Event_OnAccount_Identity_Affiliation_Name,
+        Event_OnAccount_Identity_Affiliation_ID,
+        Event_Destination_URL_Reputation_Name,
+        Event_Destination_URL_Reputation_ID,
+        Event_HttpMethod_Name,
+        Event_HttpMethod_ID,
+        Event_OnAccount_PublisherName,
+        Event_Destination_URL_Categorization_Name,
+        Event_Destination_URL_Categorization_ID,
+        Event_OnAccount_IsPublisherVerified,
+        Event_ByAccount_Application_ID,
+        Event_Destination_Domain,
+        Event_ByAccount_Application_Name,
+        Event_ByAccount_PublisherName,
+        Event_ByAccount_IsPublisherVerified,
+        Event_Device_OperatingSystem,
+        Event_SourcePort,
+        Event_SourceZone,
+        Event_App,
+        Event_Device_ExternalIP_ThreatTypes_ID,
+        Event_Destination_Port,
+        Event_Destination_Zone,
+        Event_NAT_Source_Address,
+        Event_NAT_Destination_Address,
+        Event_NAT_Source_Port,
+        Event_NAT_Destination_Port,
+        Event_Protocol_Name,
+        Event_Protocol_ID,
+        Event_ApplicationProtocol_Name,
+        Event_ApplicationProtocol_ID,
+        Event_Device_ExternalIP_Reputation_ID,
+        Event_ByAccount_IsMailboxOwner,
+        Event_StatusReasonCodeName,
+        Event_StatusReasonCode,
+        Event_Authentication_TicketEncryption_Name,
+        Event_Authentication_TicketEncryption_ID,
+        Event_OnGPO_NewVersion,
+        Event_Authentication_PreAuthenticationType,
+        Event_OnGPO_Settings_NewValue,
+        Event_Authentication_Protocol_Name,
+        Event_Authentication_Protocol_ID,
+        Event_OnGPO_Settings_OldValue,
+        Event_OrgOpCode,
+        Event_OnGPO_Settings_Name,
+        Event_ByAccount_ExpirationStatus_Name,
+        Event_ByAccount_ExpirationStatus_ID,
+        Event_OnGPO_Settings_Path,
+        Event_OnAccount_ExpirationStatus_Name,
+        Event_OnAccount_ExpirationStatus_ID,
+        Event_OnGPO_ConfigurationType_Name,
+        Event_OnGPO_ConfigurationType_ID,
+        Event_Trustee_Identity_Name,
+        Event_Trustee_Identity_ID,
+        Event_OnMail_Mailbox_Type_Name,
+        Event_OnMail_Mailbox_Type_ID,
+        Event_Trustee_DNSDomain_Name,
+        Event_Trustee_DNSDomain_ID,
+        Event_Trustee_Type_Name,
+        Event_Trustee_Type_ID,
+        Event_Trustee_Application_ID,
+        Event_Trustee_Application_Name,
+        Event_Trustee_PublisherName,
+        Event_Trustee_IsPublisherVerified,
+        Event_Permission_IsDirectChange,
+        Event_Permission_ChangedPermissionFlags,
+        Event_Trustee_Identity_Affiliation_Name,
+        Event_Trustee_Identity_Affiliation_ID,
+        Event_LogonType,
+        Event_Authentication_Package,
+        Event_ImpersonationLevel,
+        Event_OnMail_AttachmentName,
+        Event_OnMail_WithAttachments,
+        Event_OnResource_ClassificationLabels_Summary,
+        Event_OnMail_HasOutOfOrganizationReciever,
+        Event_Type_Activity_Name,
+        Event_Type_Activity_ID,
+        Event_InfoTags_Name,
+        Event_InfoTags_ID,
+        Event_Authentication_TicketOptions,
+        Event_OnMail_Headers_SentDate,
+        Event_OnMail_Headers_AuthenticationResults_Spf_Passed,
+        Event_OnMail_Headers_AuthenticationResults_Dkim_Passed,
+        Event_OnMail_Headers_AuthenticationResults_Dmarc_Passed,
+        Event_OnMail_Headers_XOriginalSender,
+        Event_OnMail_Headers_ReceivedServerIP,
+        Event_OnResource_Classification_Summary,
+        Event_OnMail_Date,
+        Event_OnResource_ShareAccessPaths,
+        Event_Permission_Before,
+        Event_Permission_After,
+        Event_Permission_Type,
+        Event_OnResource_LocalMappedPath,
+        Event_Session_BrowserType,
+        Event_Session_TrustDomain_Type,
+        Event_Session_AzureAuthentication_Requirement,
+        Event_Session_AzureAuthentication_ConditionalAccessStatus,
+        Event_Session_AzureAuthentication_TokenIssuerType,
+        Event_Session_AzureAuthentication_Method,
+        Event_Session_AzureAuthentication_MethodDetail,
+        Event_Session_AzureAuthentication_Step,
+        Event_Session_AzureAuthentication_ResultDetail,
+        Event_Session_AzureAuthentication_ReasonDetails,
+        Event_Device_TrustType,
+        Event_Session_AzureAuthentication_Status_Name,
+        Event_Session_AzureAuthentication_Status_ID,
+        Event_Device_ManagedStatus_Name,
+        Event_Device_ManagedStatus_ID,
+        Event_IsAlerted
+    ]
+
+    def get_fields(self, extra_fields: list[str]) -> list[str]:
+        output = self.Columns.copy()
+
+        if extra_fields:
+            for pattern in extra_fields:
+                match_columns = fnmatch.filter(self.ExtraColumns, pattern)
+                output.extend([item for item in match_columns if item not in output])
+        
+        return output
+
+
+
+
+
+class SearchEventObjectMapper(BaseMapper):
+    def map(self, json_data):
+        key_valued_objects = self.convert_json_to_key_value(json_data)
+
+        mapped_items = []
+        for obj in key_valued_objects:
+            mapped_items.append(self.map_item(obj).to_dict())
+
+        return mapped_items
+
+    def map_item(self, row: Dict[str, str]) -> EventItem:
+        event_item = EventItem(row)
+
+        #event_item.AlertId = self.multi_value_to_guid_array(row, EventAttributes.EventAlertId)
+        # event_item.Id = row.get(EventAttributes.EventGuid, '')
+        # event_item.Type = row.get(EventAttributes.EventTypeName)
+        # event_item.TimeUTC = self.get_date_value(row, EventAttributes.EventTimeUtc)
+        # event_item.Status = row.get(EventAttributes.EventStatusName)
+        # event_item.Description = row.get(EventAttributes.EventDescription)
+        # event_item.Country = row.get(EventAttributes.EventLocationCountryName)
+        # event_item.State = row.get(EventAttributes.EventLocationSubdivisionName)
+        # event_item.BlacklistedLocation = self.get_bool_value(row, EventAttributes.EventLocationBlacklistedLocation)
+        # event_item.EventOperation = row.get(EventAttributes.EventOperationName)
+        # event_item.ByUserAccount = row.get(EventAttributes.EventByAccountIdentityName)
+        # event_item.ByUserAccountType = row.get(EventAttributes.EventByAccountTypeName)
+        # event_item.ByUserAccountDomain = row.get(EventAttributes.EventByAccountDomainName)
+        # event_item.BySamAccountName = row.get(EventAttributes.EventByAccountSamAccountName)
+        # event_item.Filer = row.get(EventAttributes.EventFilerName)
+        # event_item.Platform = row.get(EventAttributes.EventFilerPlatformName)
+        # event_item.SourceIP = row.get(EventAttributes.EventIp)
+        # event_item.ExternalIP = row.get(EventAttributes.EventDeviceExternalIp)
+        # event_item.DestinationIP = row.get(EventAttributes.EventDestinationIp)
+        # event_item.SourceDevice = row.get(EventAttributes.EventDeviceName)
+        # event_item.DestinationDevice = row.get(EventAttributes.EventDestinationDeviceName)
+        # event_item.IsDisabledAccount = self.get_bool_value(row, EventAttributes.EventByAccountIsDisabled)
+        # event_item.IsLockoutAccount = self.get_bool_value(row, EventAttributes.EventByAccountIsLockout)
+        # event_item.IsStaleAccount = self.get_bool_value(row, EventAttributes.EventByAccountIsStale)
+        # event_item.IsMaliciousIP = self.get_bool_value(row, EventAttributes.EventDeviceExternalIpIsMalicious)
+        # event_item.ExternalIPThreatTypes = self.multi_value_to_array(
+        #     row.get(EventAttributes.EventDeviceExternalIpThreatTypesName, ''))
+        # event_item.ExternalIPReputation = row.get(EventAttributes.EventDeviceExternalIpReputationName)
+        # event_item.OnObjectName = row.get(EventAttributes.EventOnObjectName)
+        # event_item.OnObjectType = row.get(EventAttributes.EventOnResourceObjectTypeName)
+        # event_item.OnSamAccountName = row.get(EventAttributes.EventOnAccountSamAccountName)
+        # event_item.IsSensitive = self.get_bool_value(row, EventAttributes.EventOnResourceIsSensitive)
+        # event_item.OnAccountIsDisabled = self.get_bool_value(row, EventAttributes.EventOnAccountIsDisabled)
+        # event_item.OnAccountIsLockout = self.get_bool_value(row, EventAttributes.EventOnAccountIsLockout)
+        # event_item.Path = row.get(EventAttributes.EventOnResourcePath)
+
+        return event_item
+
+    def multi_value_to_guid_array(self, row: Dict[str, str], field: str) -> Optional[List[str]]:
+        value = row.get(field)
+        if value:
+            return [v for v in value.split(',')]
+        return None
+
+    def get_bool_value(self, row: Dict[str, str], name: str) -> Optional[bool]:
+        value = row.get(name)
+        if value:
+            value = value.lower()
+            if value == 'yes':
+                return True
+            if value == 'no':
+                return False
+            if value == 'true':
+                return True
+            if value == 'false':
+                return False
+        return None
+
+    def get_date_value(self, row: Dict[str, str], name: str) -> Optional[datetime]:
+        value = row.get(name)
+        if value:
+            try:
+                return datetime.fromisoformat(value)
+            except ValueError:
+                return None
+        return None
+
+    def multi_value_to_array(self, multi_value: str) -> Optional[List[str]]:
+        if multi_value:
+            return [v.strip() for v in multi_value.split(',') if v.strip()]
+        return None
+
+
+
+
+
+class ThreatModelItem:
+    def __init__(self):
+        self.Id: Optional[str] = None
+        self.Name: Optional[List[str]] = None
+        self.Category: Optional[str] = None
+        self.Severity: Optional[str] = None
+        self.Source: Optional[str] = None
+
+    def __getitem__(self, key: str) -> Any:
+        if hasattr(self, key):
+            return getattr(self, key)
+        raise KeyError(f"{key} not found in EventItem")
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {key: value for key, value in self.__dict__.items() if value is not None}
+
+
+
+class ThreatModelObjectMapper(BaseMapper):
+    def map(self, json_data):
+        key_valued_objects = json_data
+
+        mapped_items = []
+        for obj in key_valued_objects:
+            mapped_items.append(self.map_item(obj).to_dict())
+
+        return mapped_items
+
+    def map_item(self, row: dict) -> ThreatModelItem:
+        threat_model_item = ThreatModelItem()
+        threat_model_item.ID = row[ThreatModelAttributes.Id]
+        threat_model_item.Name = row[ThreatModelAttributes.Name]
+        threat_model_item.Category = row[ThreatModelAttributes.Category]
+        threat_model_item.Source = row[ThreatModelAttributes.Source]
+        threat_model_item.Severity = row[ThreatModelAttributes.Severity]
+
+        return threat_model_item
+
 """Varonis Data Security Platform integration
 """
 
-from AlertAttributes import AlertAttributes
-from Client import Client
-from EventAttributes import EventAttributes
-from ThreatModelObjectMapper import ThreatModelObjectMapper
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
 
-import requests
-import traceback
-import json
-from typing import Dict, Any, List, Tuple
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member

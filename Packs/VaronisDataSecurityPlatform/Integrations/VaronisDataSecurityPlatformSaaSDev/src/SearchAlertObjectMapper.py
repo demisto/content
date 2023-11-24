@@ -1,7 +1,7 @@
 from AlertAttributes import AlertAttributes
 from AlertItem import AlertItem
 from BaseMapper import BaseMapper
-from CommonServerPython import List, Optional, datetime
+from CommonServerPython import *
 
 
 from typing import List

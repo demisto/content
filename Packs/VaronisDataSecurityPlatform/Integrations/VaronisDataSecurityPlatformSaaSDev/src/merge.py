@@ -2,7 +2,7 @@ import os
 import shutil
 
 
-def merge_files(file_list, output_file):
+def merge_files(source_directory, file_list, output_file):
     """
     Merge multiple Python files into a single file.
 
@@ -17,7 +17,7 @@ def merge_files(file_list, output_file):
     
     for file_path in file_list:
         cur_class = os.path.splitext(file_path)[0]
-        with open(file_path, 'r') as file:
+        with open(f'{source_directory}/{file_path}', 'r') as file:
             actual_lines = []
             lines = file.readlines()
             actual_lines.append('\r\n')
@@ -40,6 +40,12 @@ def merge_files(file_list, output_file):
     for mod_name, mod_code in sorted_modules:
         new_all_lines.append(merged_content[mod_name])
     
+    try:
+        if os.path.exists(output_file):
+            os.remove(output_file)
+    except OSError as e:
+        print(f"Error: {output_file} : {e.strerror}")
+
     with open(output_file, 'w') as file:
         file.writelines(''.join(new_all_lines))
     print(f"Merged files into {output_file}")
@@ -79,9 +85,9 @@ def sort_modules(modules):
 
 import os
 
-def list_python_files_in_current_directory():
+def list_python_files(current_directory):
     # Get the current working directory
-    current_directory = os.getcwd()
+    #current_directory = os.getcwd()
     
     # List all files and directories in the current directory
     all_files_and_dirs = { f for f in os.listdir(current_directory)
@@ -144,22 +150,15 @@ def delete_all_in_directory(directory):
 
         print(f"Deleted {item}")
 
-# Call the function and print the list of Python files
-source_files, files_to_copy = list_python_files_in_current_directory()
+# Specify the output file name
+source_directory = f'{os.getcwd()}/src/'
+target_directory = f'{os.getcwd()}'
+source_files, files_to_copy = list_python_files(source_directory)
 print("Python files in the current directory:")
 for file in source_files:
     print(file)
-
-
-# Specify the output file name
-source_directory = current_directory = os.getcwd()
-target_directory = 'publish'
-if not os.path.exists(target_directory):
-    # If it doesn't exist, create it
-    os.makedirs(target_directory)
-
 output_file_name = f'{target_directory}/VaronisDataSecurityPlatformSaaS.py'
 
-delete_all_in_directory(target_directory)
-merge_files(source_files, output_file_name)
+#delete_all_in_directory(target_directory)
+merge_files(source_directory, source_files, output_file_name)
 copy_files(files_to_copy, source_directory, target_directory)
