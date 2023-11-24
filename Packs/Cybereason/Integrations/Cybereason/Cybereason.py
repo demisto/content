@@ -2103,7 +2103,7 @@ def main():
         elif demisto.command() == 'cybereason-get-sensor-id':
             return_results(get_sensor_id_command(client, args))
 
-        elif demisto.command() == 'cybereason-fetch-machine-details':
+        elif demisto.command() == 'cybereason-get-machine-details':
             return_results(fetch_machine_details_command(client, args))
 
         else:

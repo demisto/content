@@ -59,7 +59,7 @@ script:
       description: The maximum number of records to retrieve. If "pageSize" is defined, this argument is ignored.
       defaultValue: '50'
     description: Get the Machine FQDN and Machine Group Details.
-    name: cybereason-fetch-machine-details
+    name: cybereason-get-machine-details
     outputs:
     - contextPath: Cybereason.Sensor.MachineID
       description: Sensor ID of machine.
