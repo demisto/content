@@ -3,6 +3,7 @@
 
 from AlertAttributes import AlertAttributes
 from Client import Client
+from EventAttributes import EventAttributes
 from ThreatModelObjectMapper import ThreatModelObjectMapper
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
@@ -624,6 +625,7 @@ def varonis_get_alerted_events_command(client: Client, args: Dict[str, Any]) -> 
         ``args['start_time']`` Start time of the range of events
         ``args['end_time']`` End time of the range of events
         ``args['last_days']`` Number of days you want the search to go back to
+        ``args['extra_fields']`` Extra fields
         ``args['descending_order']`` Indicates whether events should be ordered in newest to oldest order
 
     :return:
@@ -635,6 +637,7 @@ def varonis_get_alerted_events_command(client: Client, args: Dict[str, Any]) -> 
     start_time = args.get('start_time', None)
     end_time = args.get('end_time', None)
     last_days = args.get('last_days', None)
+    extra_fields = args.get('extra_fields', None)
     descending_order = args.get('descending_order', True)
 
     alertIds = try_convert(alertIds, lambda x: argToList(x))
@@ -648,22 +651,17 @@ def varonis_get_alerted_events_command(client: Client, args: Dict[str, Any]) -> 
         lambda x: datetime.fromisoformat(x),
         ValueError(f'end_time should be in iso format, but it is {start_time}.')
     )
+    extra_fields = try_convert(extra_fields, lambda x: argToList(x))
 
     events = client.varonis_get_alerted_events(alertIds=alertIds, start_time=start_time, end_time=end_time,
                                                last_days=last_days,
+                                               extra_fields=extra_fields,
                                                descending_order=descending_order)
     outputs = dict()
     outputs['Event'] = events
 
-    readable_output = tableToMarkdown('Varonis Alerted Events', events, headers=[
-                                      "Type", "Description", "Platform", "Filer", "ByUserAccount", "OnObjectName",
-                                      "Id", "AlertId", "TimeUTC", "Status", "Country", "State", "BlacklistedLocation",
-                                      "EventOperation", "ByUserAccountType", "ByUserAccountDomain", "BySamAccountName",
-                                      "SourceIP", "ExternalIP", "DestinationIP", "SourceDevice", "DestinationDevice",
-                                      "IsDisabledAccount", "IsLockoutAccount", "IsStaleAccount", "IsMaliciousIP",
-                                      "ExternalIPThreatTypes", "ExternalIPReputation", "OnObjectType", "OnSamAccountName",
-                                      "IsSensitive", "OnAccountIsDisabled", "OnAccountIsLockout", "Path",
-                                      ])
+    event_attributes = EventAttributes()
+    readable_output = tableToMarkdown('Varonis Alerted Events', events, headers=event_attributes.get_fields(extra_fields))
 
     return CommandResults(
         readable_output=readable_output,
@@ -748,7 +746,7 @@ def main() -> None:
     if not is_xsoar_env():
         url = 'https://int94cf8.varonis-preprod.com/'
         apiKey = 'vkey1_45108cd087db4433b77328b2447cabff_RA/zyLNp4IRw+5benTJGNrCWzVPgZcBeYfIvYQ76X7Y='
-        command = 'varonis-get-alerts'  # 'test-module'|
+        command = 'varonis-get-alerted-events'  # 'test-module'|
         # 'varonis-get-threat-models'|
         # 'varonis-get-alerts'|
         # 'varonis-get-alerted-events'|
@@ -792,11 +790,11 @@ def main() -> None:
             args['descending_order'] = None  # Indicates whether alerts should be ordered in newest to oldest order
 
         elif command == 'varonis-get-alerted-events':
-            args['alert_id'] = "982B74C2-C98E-4631-B034-1F1E3910C1C0"  # Array of alert ids
+            args['alert_id'] = "55ED0AC6-95A4-4AD9-98AB-341D90690CDA"  # Array of alert ids
             args['start_time'] = None  # Start time of the range of events
             args['end_time'] = None  # End time of the range of events
             args['last_days'] = None  # Number of days you want the search to go back to
-            args['extra_fields'] = None  # extra fields 
+            args['extra_fields'] = "Event.Session*,Event.OnMail*"  # extra fields 
             args['descending_order'] = None  # Indicates whether events should be ordered in newest to oldest order
 
         elif command == 'varonis-update-alert-status':

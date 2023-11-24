@@ -100,6 +100,9 @@ class Client(BaseClient):
         :type alert_severities: ``Optional[List[str]]``
         :param alert_severities: List of alert severities to filter by
 
+        :type extra_fields: ``Optional[List[str]]``
+        :param extra_fields: List of extra fields to include in the response
+
         :type descendingOrder: ``bool``
         :param descendingOrder: Indicates whether alerts should be ordered in newest to oldest order
 
@@ -235,7 +238,8 @@ class Client(BaseClient):
         return alerts
 
     def varonis_get_alerted_events(self, alertIds: List[str], start_time: Optional[datetime], end_time: Optional[datetime],
-                                   last_days: Optional[int], descending_order: bool) -> List[Dict[str, Any]]:
+                                   last_days: Optional[int], extra_fields: Optional[List[str]],
+                                   descending_order: bool) -> List[Dict[str, Any]]:
         """Get alerted events
 
         :type alertIds: ``List[str]``
@@ -252,6 +256,9 @@ class Client(BaseClient):
 
         :type descendingOrder: ``bool``
         :param descendingOrder: Indicates whether events should be ordered in newest to oldest order
+
+        :type extra_fields: ``Optional[List[str]]``
+        :param extra_fields: List of extra fields to include in the response
 
         :return: Alerted events
         :rtype: ``List[Dict[str, Any]]``
@@ -274,7 +281,8 @@ class Client(BaseClient):
             .set_rows(Rows().set_grouping(""))\
             .set_request_params(RequestParams().set_search_source(1).set_search_source_name("MainTab"))
 
-        for column in EventAttributes.Columns:
+        event_attributes = EventAttributes()
+        for column in event_attributes.get_fields(extra_fields):
             search_request.rows.add_column(column)
 
         if alertIds and len(alertIds) > 0:
