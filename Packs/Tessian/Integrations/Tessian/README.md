@@ -45,13 +45,13 @@ This command allows you to pull Tessian event data into your XSOAR instance.
 
 #### Command Example
 
-`!tessian-get-evegit pnts limit=100 after_checkpoint="example-value" created_after="2020-02-02T19:00:00Z"`
+`!tessian-get-events limit=100 after_checkpoint="example-value" created_after="2020-02-02T19:00:00Z"`
 
 
 ### tessian-release-from-quarantine
 
 ***
-This command allows you to release a quarantined email from Tessian.
+This command allows you to release a quarantined emails associated with an event from Tessian.
 
 #### Base Command
 
@@ -80,7 +80,7 @@ This command allows you to release a quarantined email from Tessian.
 ### tessian-delete-from-quarantine
 
 ***
-This command allows you to delete a quarantined email from Tessian.
+This command allows you to delete quarantined emails associated with an event from Tessian.
 
 #### Base Command
 
@@ -104,3 +104,31 @@ This command allows you to delete a quarantined email from Tessian.
 #### Command Example
 
 `!tessian-delete-from-quarantine event_id="id-from-tessian-get-events"`
+
+### tessian-delete-from-inbox
+
+***
+This command allows you to delete emails associated with a Tessian event from your inbox.
+
+#### Base Command
+
+`tessian-delete-from-inbox`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| event_id | The ID of the event you would like to delete from inbox. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Tessian.DeleteFromQuarantineOutput.number_of_actions_attempted | String | The number of users that delete from inbox actions were attempted for. | 
+| Tessian.DeleteFromQuarantineOutput.number_of_actions_succeeded | String | The number of users that the delete from inbox action was successful for. | 
+| Tessian.DeleteFromQuarantineOutput.results | Unknown | The results of the delete action. This is an array of objects mapping the email address of users to the result of the delete action. | 
+| Tessian.DeleteFromQuarantineOutput.event_id | String | The event ID that was submitted for deletion. | 
+
+#### Command Example
+
+`!tessian-delete-from-inbox event_id="id-from-tessian-get-events"`

@@ -41,7 +41,7 @@ script:
       description: The events returned by this request.
       type: Unknown
   - name: tessian-release-from-quarantine
-    description: This command allows you to release a quarantined email from Tessian.
+    description: This command allows you to release a quarantined emails associated with an event from Tessian.
     arguments:
     - name: event_id
       description: The ID of the event you would like to release from quarantine.
@@ -60,7 +60,7 @@ script:
       description: The event ID that was submitted for release.
       type: String
   - name: tessian-delete-from-quarantine
-    description: This command allows you to delete a quarantined email from Tessian.
+    description: This command allows you to delete quarantined emails associated with an event from Tessian.
     arguments:
     - name: event_id
       description: The ID of the event you would like to delete from quarantine.
@@ -71,6 +71,25 @@ script:
       type: String
     - contextPath: Tessian.DeleteFromQuarantineOutput.number_of_actions_succeeded
       description: The number of users that the delete from quarantine action was successful for.
+      type: String
+    - contextPath: Tessian.DeleteFromQuarantineOutput.results
+      description: The results of the delete action. This is an array of objects mapping the email address of users to the result of the delete action.
+      type: Unknown
+    - contextPath: Tessian.DeleteFromQuarantineOutput.event_id
+      description: The event ID that was submitted for deletion.
+      type: String
+  - name: tessian-delete-from-inbox
+    description: This command allows you to delete emails associated with a Tessian event from your inbox.
+    arguments:
+    - name: event_id
+      description: The ID of the event you would like to delete from inbox.
+      required: true
+    outputs:
+    - contextPath: Tessian.DeleteFromQuarantineOutput.number_of_actions_attempted
+      description: The number of users that delete from inbox actions were attempted for.
+      type: String
+    - contextPath: Tessian.DeleteFromQuarantineOutput.number_of_actions_succeeded
+      description: The number of users that the delete from inbox action was successful for.
       type: String
     - contextPath: Tessian.DeleteFromQuarantineOutput.results
       description: The results of the delete action. This is an array of objects mapping the email address of users to the result of the delete action.

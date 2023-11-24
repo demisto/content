@@ -7,6 +7,7 @@ from Tessian import (
     get_events_command,
     release_from_quarantine_command,
     delete_from_quarantine_command,
+    delete_from_inbox_command,
 )
 
 #  region HELPERS
@@ -132,6 +133,47 @@ def test_delete_from_quarantine_command(mocker):
     }
 
     response = delete_from_quarantine_command(client, input)
+
+    assert response.outputs == {
+        "number_of_actions_attempted": 1,
+        "number_of_actions_succeeded": 1,
+        "results": [
+            {
+                "user_address": "example@gmail.com",
+                "error": None,
+            },
+        ],
+        "event_id": "dummy_event_id",
+    }
+
+
+def test_delete_from_inbox_command(mocker):
+    """
+    Tests the delete_from_inbox_command function.
+    """
+
+    #  Mock the client
+    client = create_mock_client()
+    mocker.patch.object(
+        client,
+        'delete_from_inbox',
+        return_value={
+            "number_of_actions_attempted": 1,
+            "number_of_actions_succeeded": 1,
+            "results": [
+                {
+                    "user_address": "example@gmail.com",
+                    "error": None,
+                }
+            ]
+        }
+    )
+
+    input = {
+        "event_id": "dummy_event_id",
+    }
+
+    response = delete_from_inbox_command(client, input)
 
     assert response.outputs == {
         "number_of_actions_attempted": 1,

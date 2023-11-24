@@ -56,6 +56,15 @@ class Client(BaseClient):
             ok_codes=(200,)
         )
 
+    def delete_from_inbox(self, event_id: str) -> dict[str, Any]:
+        return self._http_request(
+            method='POST',
+            url_suffix='/api/v1/remediation/delete_from_inbox',
+            json_data={"event_id": event_id},
+            resp_type='json',
+            ok_codes=(200,)
+        )
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -151,6 +160,28 @@ def delete_from_quarantine_command(client: Client, args: dict[str, Any]) -> Comm
     )
 
 
+def delete_from_inbox_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    event_id = args.get('event_id', None)
+
+    if event_id is None:
+        raise ValueError('Event ID is required')
+
+    results = client.delete_from_inbox(event_id)
+    results["event_id"] = event_id
+
+    markdown = f'### Delete from Inbox Action for Event ID: {event_id}\n'
+    markdown += f'## Number of Actions Attemped: {results.get("number_of_actions_attempted")}\n'
+    markdown += f'## Number of Actions Succeeded: {results.get("number_of_actions_succeeded")}\n'
+
+    return CommandResults(
+        outputs_prefix='Tessian.DeleteFromInboxOutput',
+        outputs_key_field='event_id',
+        outputs=results,
+        raw_response=results,
+        readable_output=markdown,
+    )
+
+
 def test_module(client: Client) -> str:  #  pragma: no cover
     """
     Tests API connectivity and authentication'
@@ -226,6 +257,8 @@ def main() -> None:  #  pragma: no cover
         elif demisto.command() == 'tessian-delete-from-quarantine':
             return_results(delete_from_quarantine_command(client, args))
 
+        elif demisto.command() == 'tessian-delete-from-inbox':
+            return_results(delete_from_inbox_command(client, args))
         else:
             raise NotImplementedError(f"Either the command, {demisto.command}, is not supported yet or it does not exist.")
 
