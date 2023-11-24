@@ -99,6 +99,7 @@ def test_taxii2_server_returns_indicators(
         integration_params = get_integration_params(
             request.config.option.integration_secrets_path, instance_name="taxii2server-e2e"
         )
+        integration_params["longRunningPort"] = "8000"
         with save_integration_instance(
             xsoar_saas_client,
             integration_params=integration_params,
