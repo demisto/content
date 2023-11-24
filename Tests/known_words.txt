@@ -114,6 +114,7 @@ Classifiers
 SentinelOne
 URLs
 unisolate
+tooltip
 MSDE
 CrowdStrike
 FAQ

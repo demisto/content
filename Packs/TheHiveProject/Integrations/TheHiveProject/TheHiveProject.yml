@@ -69,6 +69,14 @@ configuration:
   name: fetch_closed
   type: 8
   required: false
+- additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.
+  defaultvalue: 0
+  display: 'Advanced: Time in minutes to look back when fetching incidents and detections'
+  name: look_back
+  type: 0
+  advanced: true
+  required: false
+
 script:
   script: ''
   type: python
@@ -333,7 +341,7 @@ script:
     - contextPath: TheHive.Cases.tasks.logs.createdBy
       description: The user who created the log.
       type: string
-    description: Get a case
+    description: Get a case.
   - name: thehive-search-cases
     deprecated: true
     arguments:
@@ -347,7 +355,7 @@ script:
       - "1"
       - "2"
       - "3"
-      description: 'Severity of the case (default = 2: medium)'
+      description: 'Severity of the case (default = 2: medium).'
     - name: startDate
       description: Datetime the case was started on, for example, 2018-06-29 08:15:27.243860.
     - name: owner
@@ -517,7 +525,7 @@ script:
     - contextPath: TheHive.Cases.tasks.logs.createdBy
       description: The user who created the log.
       type: string
-    description: Search cases
+    description: Search cases.
   - name: thehive-update-case
     arguments:
     - name: id
@@ -708,7 +716,7 @@ script:
     - contextPath: TheHive.Cases.tasks.logs.createdBy
       description: The user who created the log.
       type: string
-    description: Update a case
+    description: Update a case.
   - name: thehive-create-case
     arguments:
     - name: title
@@ -885,17 +893,17 @@ script:
     - contextPath: TheHive.Cases.tasks.logs.createdBy
       description: The user who created the log.
       type: string
-    description: Create a new case
+    description: Create a new case.
   - name: thehive-create-task
     arguments:
     - name: id
       required: true
-      description: Case ID
+      description: Case ID.
     - name: title
       required: true
       description: Title of the case.
     - name: description
-      description: Description
+      description: Description.
     - name: startDate
       description: Datetime the task was started on, for example, 2018-06-29 08:15:27.243860.
     outputs:
@@ -926,26 +934,26 @@ script:
     - contextPath: TheHive.Tasks.order
       description: The order of the task.
       type: int
-    description: Create a new task
+    description: Create a new task.
   - name: thehive-remove-case
     arguments:
     - name: id
       required: true
-      description: Case ID
+      description: Case ID.
     - name: permanent
       auto: PREDEFINED
       predefined:
       - "false"
       - "true"
-      description: Permanently removes the case (cannot be undone)
+      description: Permanently removes the case (cannot be undone).
       defaultValue: "false"
-    description: Removes a case
+    description: Removes a case.
   - name: thehive-get-linked-cases
     deprecated: true
     arguments:
     - name: id
       required: true
-      description: Case ID
+      description: Case ID.
     outputs:
     - contextPath: TheHive.Cases._routing
       description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
@@ -1038,7 +1046,7 @@ script:
     - contextPath: TheHive.Cases.tasks.group
       description: Group of the task.
       type: string
-    description: Get linked cases
+    description: Get linked cases.
   - name: thehive-merge-cases
     arguments:
     - name: firstCaseID
@@ -1172,18 +1180,18 @@ script:
     - contextPath: TheHive.Cases.tasks.logs.createdBy
       description: The user who created the log.
       type: string
-    description: Merges 2 cases
+    description: Merges 2 cases.
   - name: thehive-get-case-tasks
     arguments:
     - name: id
       required: true
-      description: Case ID
-    description: Get the tasks of a case
+      description: Case ID.
+    description: Get the tasks of a case.
   - name: thehive-get-task
     arguments:
     - name: id
       required: true
-      description: Task ID
+      description: Task ID.
     outputs:
     - contextPath: TheHive.Tasks._routing
       description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.
@@ -1260,16 +1268,16 @@ script:
     arguments:
     - name: id
       required: true
-      description: Attachmenmt ID
+      description: Attachmenmt ID.
     - name: name
       required: true
-      description: Attachment Name
+      description: Attachment Name.
     description: Retrieves an attachment from a log.
   - name: thehive-update-task
     arguments:
     - name: id
       required: true
-      description: Task ID
+      description: Task ID.
     - name: title
       description: Title of the task.
     - name: status
@@ -1301,7 +1309,7 @@ script:
     - name: id
       required: true
       description: User ID.
-    description: Get a single user
+    description: Get a single user.
   - name: thehive-create-local-user
     arguments:
     - name: login
@@ -1318,13 +1326,13 @@ script:
       description: Password.
     - name: profile
       description: Profile name (only used with TheHive Project v4 and onwards).
-    description: Create a new user
+    description: Create a new user.
   - name: thehive-block-user
     arguments:
     - name: id
       required: true
       description: User ID.
-    description: Block a user
+    description: Block a user.
   - name: thehive-list-observables
     arguments:
     - name: id
@@ -1437,7 +1445,7 @@ script:
   - name: get-modified-remote-data
     arguments: []
     description: Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available from version 6.1.
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.80014
   isfetch: true
   subtype: python3
   ismappable: true

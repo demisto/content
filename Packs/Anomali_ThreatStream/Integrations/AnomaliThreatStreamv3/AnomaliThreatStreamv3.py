@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 import emoji
 
 import traceback
@@ -176,7 +178,7 @@ INTELLIGENCE_TYPE_TO_CONTEXT = {'actor': 'Actor',
 
 
 class Client(BaseClient):
-    def __init__(self, base_url, user_name, api_key, verify, proxy, reliability, should_create_relationships):
+    def __init__(self, base_url, user_name, api_key, verify, proxy, reliability, should_create_relationships, remote_api):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, ok_codes=(200, 201, 202))
         self.reliability = reliability
         self.should_create_relationships = should_create_relationships
@@ -184,6 +186,7 @@ class Client(BaseClient):
             'username': user_name,
             'api_key': api_key
         }
+        self.remote_api = remote_api
 
     def http_request(self, method,
                      url_suffix, params=None,
@@ -585,7 +588,7 @@ def get_generic_threat_context(indicator, indicator_mapping=DEFAULT_INDICATOR_MA
     """
 
     context = {indicator_mapping[k]: v for (k, v) in indicator.items()
-               if k in indicator_mapping.keys()}
+               if k in indicator_mapping}
     context['Tags'] = get_tags(indicator)
     context['Severity'] = demisto.get(indicator, 'meta.severity') or 'low'
     return context
@@ -595,11 +598,11 @@ def parse_network_elem(element_list, context_prefix):
     """
         Parses the network elements list and returns a new dictionary.
     """
-    return list(map(lambda e: {
+    return [{
         F'{context_prefix}Source': e.get('src', ''),
         F'{context_prefix}Destination': e.get('dst', ''),
         F'{context_prefix}Port': e.get('dport', ''),
-    }, element_list))
+    } for e in element_list]
 
 
 def parse_network_lists(network):
@@ -720,7 +723,7 @@ def test_module(client: Client):
     """
     Performs basic get request to get item samples
     """
-    client.http_request('GET', 'v2/intelligence/', params=dict(limit=1))
+    client.http_request('GET', 'v2/intelligence/', params={'limit': 1})
     return 'ok'
 
 
@@ -755,7 +758,7 @@ def get_ip_reputation(client: Client, score_calc: DBotScoreCalculator, ip, statu
     # Convert the tags objects into s string for the human readable.
     threat_context = get_generic_threat_context(indicator)
     tags_csv = ', '.join(threat_context.get('Tags', []))
-    human_readable = tableToMarkdown(f'IP reputation for: {ip}', threat_context | dict(Tags=tags_csv))
+    human_readable = tableToMarkdown(f'IP reputation for: {ip}', threat_context | {'Tags': tags_csv})
 
     # build relationships
     relationships = create_relationships(
@@ -1736,7 +1739,12 @@ def get_intelligence_information(client: Client, indicator, ioc_type, intelligen
 
     value = indicator.get('value')
     url = f"v1/{intelligence_type}/associated_with_intelligence/"
-    intelligences = client.http_request('GET', url, params={'value': value}).get('objects', [])
+    params = {'value': value}
+
+    if client.remote_api:
+        params['remote_api'] = 'true'
+
+    intelligences = client.http_request('GET', url, params=params).get('objects', [])
     relationships: List[EntityRelationship] = []
     entity_b_type = INTELLIGENCE_TYPE_TO_ENTITY_TYPE[intelligence_type]
 
@@ -1759,7 +1767,7 @@ def get_intelligence_information(client: Client, indicator, ioc_type, intelligen
 
 def create_human_readable(intelligence_outputs):  # pragma: no cover
     table = ''
-    for intelligence in intelligence_outputs.keys():
+    for intelligence in intelligence_outputs:
         table += tableToMarkdown(f'{intelligence} details:', intelligence_outputs[intelligence], headers=['name', 'id'])
 
     return table
@@ -1784,7 +1792,7 @@ def get_domain_reputation(client: Client, score_calc: DBotScoreCalculator, domai
         returns the indicator with highest confidence score.
     """
     # get the indicator
-    params = dict(value=domain, type=DBotScoreType.DOMAIN, status=status, limit=0)
+    params = {'value': domain, 'type': DBotScoreType.DOMAIN, 'status': status, 'limit': 0}
     indicator = search_worst_indicator_by_params(client, params)
     if not indicator:
         return create_indicator_result_with_dbotscore_unknown(indicator=domain,
@@ -1794,7 +1802,7 @@ def get_domain_reputation(client: Client, score_calc: DBotScoreCalculator, domai
     # Convert the tags objects into s string for the human readable.
     threat_context = get_generic_threat_context(indicator)
     tags_csv = ', '.join(threat_context.get('Tags', []))
-    human_readable = tableToMarkdown(f'Domain reputation for: {domain}', threat_context | dict(Tags=tags_csv))
+    human_readable = tableToMarkdown(f'Domain reputation for: {domain}', threat_context | {'Tags': tags_csv})
 
     # build relationships
     relationships = create_relationships(
@@ -1865,7 +1873,7 @@ def get_file_reputation(client: Client, score_calc: DBotScoreCalculator, file, s
         returns the indicator with highest severity score.
     """
     # get the indicator
-    params = dict(value=file, type="md5", status=status, limit=0)
+    params = {'value': file, 'type': "md5", 'status': status, 'limit': 0}
     indicator = search_worst_indicator_by_params(client, params)
     if not indicator:
         return create_indicator_result_with_dbotscore_unknown(indicator=file,
@@ -1880,7 +1888,7 @@ def get_file_reputation(client: Client, score_calc: DBotScoreCalculator, file, s
 
     # Convert the tags objects into s string for the human readable.
     tags_csv = ', '.join(threat_context.get('Tags', []))
-    human_readable = tableToMarkdown(f'File reputation for: {file}', threat_context | dict(Tags=tags_csv))
+    human_readable = tableToMarkdown(f'File reputation for: {file}', threat_context | {'Tags': tags_csv})
 
     # build relationships
     relationships = create_relationships(
@@ -1953,7 +1961,7 @@ def get_url_reputation(client: Client, score_calc: DBotScoreCalculator, url, sta
     """
 
     # get the indicator
-    params = dict(value=url, type=DBotScoreType.URL, status=status, limit=0)
+    params = {'value': url, 'type': DBotScoreType.URL, 'status': status, 'limit': 0}
     indicator = search_worst_indicator_by_params(client, params)
     if not indicator:
         return create_indicator_result_with_dbotscore_unknown(indicator=url,
@@ -1963,7 +1971,7 @@ def get_url_reputation(client: Client, score_calc: DBotScoreCalculator, url, sta
     # Convert the tags objects into s string for the human readable.
     threat_context = get_generic_threat_context(indicator)
     tags_csv = ', '.join(threat_context.get('Tags', []))
-    human_readable = tableToMarkdown(f'URL reputation for: {url}', threat_context | dict(Tags=tags_csv))
+    human_readable = tableToMarkdown(f'URL reputation for: {url}', threat_context | {'Tags': tags_csv})
 
     # build relationships
     relationships = create_relationships(
@@ -2019,7 +2027,7 @@ def get_email_reputation(client: Client, score_calc: DBotScoreCalculator, email,
         Checks the reputation of given email address from ThreatStream and
         returns the indicator with highest confidence score.
     """
-    params = dict(value=email, type=DBotScoreType.EMAIL, status=status, limit=0)
+    params = {'value': email, 'type': DBotScoreType.EMAIL, 'status': status, 'limit': 0}
     indicator = search_worst_indicator_by_params(client, params)
     if not indicator:
         return NO_INDICATORS_FOUND_MSG.format(searchable_value=email)
@@ -2032,7 +2040,7 @@ def get_email_reputation(client: Client, score_calc: DBotScoreCalculator, email,
 
     # Convert the tags objects into s string for the human readable.
     tags_csv = ', '.join(threat_context.get('Tags', []))
-    human_readable = tableToMarkdown(f'Email reputation for: {email}', threat_context | dict(Tags=tags_csv))
+    human_readable = tableToMarkdown(f'Email reputation for: {email}', threat_context | {'Tags': tags_csv})
 
     # build relationships
     relationships = create_relationships(
@@ -2208,7 +2216,7 @@ def get_model_list(client: Client, model, limit="50", page=None, page_size=None)
     """
     # if limit=0 don't put to context
     params = return_params_of_pagination_or_limit(arg_to_number(page), arg_to_number(page_size), arg_to_number(limit))
-    params.update(dict(skip_intelligence="true", skip_associations="true", order_by='-created_ts'))
+    params.update({'skip_intelligence': "true", 'skip_associations': "true", 'order_by': '-created_ts'})
     url = f"v1/{model}/"
     if model == 'attack pattern':
         url = 'v1/attackpattern/'
@@ -2246,7 +2254,7 @@ def get_model_description(client: Client, model, id):
     """
         Returns a description of Threat Model as html file to the war room.
     """
-    params = dict(skip_intelligence="true", skip_associations="true")
+    params = {'skip_intelligence': "true", 'skip_associations': "true"}
     response = client.http_request("GET", F"v1/{model}/{id}", params=params, resp_type='response')
     if response.status_code == 404:
         return f'No description found for Threat Model {model.title()} with id {id}'
@@ -2459,6 +2467,7 @@ def get_report(client: Client, report_id):
             readable_output=readable_output,
             raw_response=report
         )
+    return None
 
 
 def add_tag_to_model(client: Client, model_id, tags, model="intelligence"):
@@ -2597,6 +2606,7 @@ def main():
     api_key = params.get('credentials', {}).get('password')
     server_url = params.get('url', '').strip('/')
     reliability = params.get('integrationReliability', DBotScoreReliability.B)
+
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
     else:
@@ -2664,6 +2674,7 @@ def main():
             proxy=params.get('proxy', False),
             reliability=reliability,
             should_create_relationships=params.get('create_relationships', True),
+            remote_api=argToBoolean(params.get('remote_api', 'false'))
         )
         args = prepare_args(demisto.args(), command, params)
         if command == 'test-module':

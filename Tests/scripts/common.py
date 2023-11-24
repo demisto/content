@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import Any
 
+import pandas as pd
 from jira import Issue
 from junitparser import TestSuite, JUnitXml
 
@@ -15,6 +16,8 @@ PRIVATE_NIGHTLY = 'Private Nightly'
 TEST_NATIVE_CANDIDATE = 'Test Native Candidate'
 SECURITY_SCANS = 'Security Scans'
 BUILD_MACHINES_CLEANUP = 'Build Machines Cleanup'
+UNIT_TESTS_WORKFLOW_SUBSTRINGS = {'lint', 'unit', 'demisto sdk nightly', TEST_NATIVE_CANDIDATE.lower()}
+
 WORKFLOW_TYPES = {
     CONTENT_NIGHTLY,
     CONTENT_PR,
@@ -29,7 +32,7 @@ WORKFLOW_TYPES = {
 BUCKET_UPLOAD_BRANCH_SUFFIX = '-upload_test_branch'
 TOTAL_HEADER = "Total"
 NOT_AVAILABLE = "N/A"
-TEST_SUITE_JIRA_HEADERS: list[str] = ["Jira\nTicket", "Jira Ticket\nResolution"]
+TEST_SUITE_JIRA_HEADERS: list[str] = ["Jira\nTicket", "Jira\nTicket\nResolution"]
 TEST_SUITE_DATA_CELL_HEADER = "S/F/E/T"
 TEST_SUITE_CELL_EXPLANATION = "(Table headers: Skipped/Failures/Errors/Total)"
 NO_COLOR_ESCAPE_CHAR = "\033[0m"
@@ -90,9 +93,9 @@ class TestSuiteStatistics:
         return red_text(res_str) if show_as_error else green_text(res_str)
 
     def __str__(self):
-        return (f"{self.show_with_color(self.skipped)} / "
-                f"{self.show_with_color(self.failures, self.failures > 0)} / "
-                f"{self.show_with_color(self.errors, self.errors > 0)} / "
+        return (f"{self.show_with_color(self.skipped)}/"
+                f"{self.show_with_color(self.failures, self.failures > 0)}/"
+                f"{self.show_with_color(self.errors, self.errors > 0)}/"
                 f"{self.show_with_color(self.tests, self.errors + self.failures > 0)}")
 
 
@@ -105,7 +108,7 @@ def calculate_results_table(jira_tickets_for_result: dict[str, Issue],
                             without_jira: bool = False,
                             with_skipped: bool = False,
                             multiline_headers: bool = True,
-                            transpose: bool = False) -> tuple[list[str], list[str], list[list[Any]], JUnitXml, int]:
+                            transpose: bool = False) -> tuple[list[str], list[list[Any]], JUnitXml, int]:
     xml = JUnitXml()
     headers_multiline_char = "\n" if multiline_headers else " "
     headers = [h.replace("\n", headers_multiline_char) for h in base_headers]
@@ -115,11 +118,13 @@ def calculate_results_table(jira_tickets_for_result: dict[str, Issue],
     fixed_headers_length = len(headers)
     server_versions_list: list[str] = sorted(server_versions)
     for server_version in server_versions_list:
+        server_version_header = server_version.replace(' ', headers_multiline_char)
         headers.append(
-            server_version if transpose else f"{server_version}{headers_multiline_char}({TEST_SUITE_DATA_CELL_HEADER})"
+            server_version_header
+            if transpose else f"{server_version_header}{headers_multiline_char}{TEST_SUITE_DATA_CELL_HEADER}"
         )
         column_align.append("center")
-    tabulate_data = []
+    tabulate_data = [headers]
     total_row: list[Any] = ([""] * fixed_headers_length + [TestSuiteStatistics(no_color)
                                                            for _ in range(len(server_versions_list))])
     total_errors = 0
@@ -180,7 +185,11 @@ def calculate_results_table(jira_tickets_for_result: dict[str, Issue],
         total_row[0] = (green_text(TOTAL_HEADER) if total_errors == 0 else red_text(TOTAL_HEADER)) \
             if not no_color else TOTAL_HEADER
         tabulate_data.append(total_row)
-    return headers, column_align, tabulate_data, xml, total_errors
+
+    if transpose:
+        tabulate_data = pd.DataFrame(tabulate_data, index=None).transpose().to_numpy()
+
+    return column_align, tabulate_data, xml, total_errors
 
 
 def get_all_failed_results(results: dict[str, dict[str, Any]]) -> dict[str, dict[str, Any]]:
@@ -192,3 +201,10 @@ def get_all_failed_results(results: dict[str, dict[str, Any]]) -> dict[str, dict
                 break
 
     return failed_results
+
+
+def replace_escape_characters(sentence: str, replace_with: str = " ") -> str:
+    escape_chars = ["\n", "\r", "\b", "\f", "\t"]
+    for escape_char in escape_chars:
+        sentence = sentence.replace(escape_char, replace_with)
+    return sentence

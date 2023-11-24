@@ -67,10 +67,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: ee5711c0-603e-4de7-8bea-b19f6f61e124
+    taskid: b8926391-3158-4b4e-880e-4c25beb4752f
     type: condition
     task:
-      id: ee5711c0-603e-4de7-8bea-b19f6f61e124
+      id: b8926391-3158-4b4e-880e-4c25beb4752f
       version: -1
       name: Select cloud provider
       description: Checks the cloud provider.
@@ -121,6 +121,11 @@ tasks:
             value:
               simple: active
           ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.username
+            iscontext: true
     - label: Azure
       condition:
       - - operator: isEqualString
@@ -196,6 +201,11 @@ tasks:
             value:
               simple: active
           ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.username
+            iscontext: true
     - label: GCP
       condition:
       - - operator: isEqualString
@@ -249,6 +259,11 @@ tasks:
             value:
               simple: active
           ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.username
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -1128,7 +1143,7 @@ outputs:
     Arn
     CreateDate
     Path
-    PasswordLastUsed
+    PasswordLastUsed.
   type: unknown
 - contextPath: AWS.IAM.Users.AccessKeys
   description: |-
@@ -1136,7 +1151,7 @@ outputs:
     AccessKeyId
     Status
     CreateDate
-    UserName
+    UserName.
   type: unknown
 - contextPath: GCPIAM
   description: GCP IAM information.
@@ -1172,7 +1187,30 @@ outputs:
 - contextPath: MSGraphGroup
   description: MSGraph group information.
   type: unknown
+- contextPath: MSGraph.identityProtection.RiskyUserHistory
+  description: Risky user history.
+  type: unknown
+- contextPath: MSGraph.identityProtection.RiskyUserHistory.userPrincipalName
+  description: Risky user principal name.
+- contextPath: MSGraph.identityProtection.RiskyUserHistory.userDisplayName
+  description: Risky user display name.
+- contextPath: MSGraph.identityProtection.RiskyUserHistory.riskDetail
+  description: Reason why the user is considered a risky user. The possible values are limited to none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, and unknownFutureValue.
+- contextPath: MSGraph.identityProtection.RiskyUserHistory.riskstate
+  description: State of the user's risk. The possible values are none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised, and unknownFutureValue.
+- contextPath: MSGraph.identityProtection.RiskyUserHistory.riskLevel
+  description: Risk level of the detected risky user. The possible values are low, medium, high, hidden, none, and unknownFutureValue.
+- contextPath: MSGraph.identityProtection.RiskyUserHistory.riskLastUpdatedDateTime
+  description: The date and time that the risky user was last updated. The DateTimeOffset type represents date and time information using the ISO 8601 format and is always in UTC time.
+- contextPath: MSGraph.identityProtection.RiskyUserHistory.isProcessing
+  description: Indicates whether a user's risky state is being processed by the backend.
+- contextPath: MSGraph.identityProtection.RiskyUserHistory.isDeleted
+  description: Indicates whether the user is deleted.
+- contextPath: MSGraph.identityProtection.RiskyUserHistory.id
+  description: Unique ID of the risky user.
 quiet: true
 tests:
 - No tests (auto formatted)
 fromversion: 6.8.0
+contentitemexportablefields:
+  contentitemfields: {}
