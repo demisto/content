@@ -25,7 +25,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   '1':
@@ -58,7 +57,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   '2':
@@ -80,7 +78,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   '3':
@@ -116,7 +113,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   '4':
@@ -145,7 +141,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
 view: "{\n  \"linkLabelsPosition\": {\n    \"3_2_#default#\": 0.37\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1045,\n      \"width\": 970,\n      \"x\": 450,\n      \"y\": 50\n    }\n  }\n}"
