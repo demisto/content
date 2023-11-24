@@ -39,18 +39,6 @@ SAM_ACCOUNT_NAME_KEY = 'SAMAccountName'
 EMAIL_KEY = 'Email'
 
 
-''' MODELS '''
-
-
-''' MAPPERS '''
-
-
-''' CLIENT CLASS '''
-
-
-''' HELPER FUNCTIONS '''
-
-
 def convert_to_demisto_severity(severity: Optional[str]) -> int:
     """Maps Varonis severity to Cortex XSOAR severity
 
@@ -746,7 +734,7 @@ def main() -> None:
     if not is_xsoar_env():
         url = 'https://int94cf8.varonis-preprod.com/'
         apiKey = 'vkey1_45108cd087db4433b77328b2447cabff_RA/zyLNp4IRw+5benTJGNrCWzVPgZcBeYfIvYQ76X7Y='
-        command = 'varonis-get-alerted-events'  # 'test-module'|
+        command = 'test-module'  # 'test-module'|
         # 'varonis-get-threat-models'|
         # 'varonis-get-alerts'|
         # 'varonis-get-alerted-events'|
