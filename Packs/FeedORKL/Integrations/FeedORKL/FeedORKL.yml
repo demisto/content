@@ -116,7 +116,7 @@ script:
       predefined:
       - asc
       - desc
-    description: Retrieves latest Threat Reports from ORKL
+    description: Retrieves latest Threat Reports from ORKL.
     name: orkl-get-reports
   dockerimage: demisto/python3:3.10.13.80593
   feed: true
