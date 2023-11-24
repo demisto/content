@@ -1,3 +1,5 @@
+import json
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import pathlib
@@ -5,7 +7,7 @@ from collections import namedtuple
 
 
 import urllib3
-from typing import Dict, Any
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -23,7 +25,7 @@ class Client(BaseClient):
         headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
         super().__init__(base_url, headers=headers, verify=self.verify, proxy=self.proxy)
 
-    def http_request(self, file_path: str, response_type: str = 'json') -> Union[dict, str, list]:
+    def http_request(self, file_path: str, response_type: str = 'json') -> Union[dict, str, list]:  # pragma: no cover
         try:
             data = self._http_request(
                 method='GET',
@@ -65,6 +67,8 @@ def fetch_incidents_command(client):
     for incident in incidents:
         if 'attachment' in incident:
             _add_attachments(client, incident)
+        if 'entry_id_attachment' in incident:
+            incident.setdefault('attachment', []).extend(incident['entry_id_attachment'])
 
     # clear the integration contex from already seen incidents
     set_integration_context({'incidents': []})
@@ -90,7 +94,7 @@ def _add_attachments(client, incident: dict):
         })
 
 
-def create_test_incident_from_file_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def create_test_incident_from_file_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     This function will get the incidents and save the formatted incidents to instance context, for the fetch.
     """
@@ -103,6 +107,37 @@ def create_test_incident_from_file_command(client: Client, args: Dict[str, Any])
                                               client=client)
     set_integration_context({'incidents': ready_incidents})
     return CommandResults(readable_output=f'Loaded {len(ready_incidents)} incidents from file.')
+
+
+def create_test_incident_from_json_command(args):
+    """
+    This function will get the incidents and save the formatted incidents to instance context, for the fetch.
+    """
+    incidents_entry_id = args.get('incident_entry_id')
+    incidents_json = args.get('incident_raw_json')
+    if (not incidents_entry_id and not incidents_json) or (incidents_entry_id and incidents_json):
+        raise DemistoException('Please insert entry_id or incident_raw_json, and not both')
+
+    if incidents_entry_id:
+        incidents_file_path = demisto.getFilePath(incidents_entry_id)
+        with open(incidents_file_path['path'], 'rb') as incidents_file:
+            incidents = json.load(incidents_file)
+    elif incidents_json:
+        incidents = json.loads(incidents_json)
+
+    attachment_path = argToList(args.get('attachment_paths'))
+    attachment_entry_ids = argToList(args.get('attachment_entry_ids'))
+
+    if not incidents:
+        raise ValueError('Incidents were not specified')
+
+    if not isinstance(incidents, list):
+        incidents = [incidents]
+
+    ready_incidents = parse_incidents(incidents, attachment_path, attachment_entry_ids)
+
+    set_integration_context({'incidents': ready_incidents})
+    return CommandResults(readable_output=f'Loaded {len(ready_incidents)} incidents from json.')
 
 
 def get_incidents_from_file(client: Client, incidents_path: str, attachment_path: List[str] = None):
@@ -119,7 +154,9 @@ def get_incidents_from_file(client: Client, incidents_path: str, attachment_path
     return ready_incidents
 
 
-def parse_incidents(incidents: List[dict], attachment_path: List[str] = None) -> List[dict]:
+def parse_incidents(incidents: List[dict],
+                    attachment_path: List[str] = None,
+                    attachment_entry_ids: List[str] = None) -> List[dict]:
     """
     This function will take a list of incidents and make them in the format of XSoar format,
      as a preparation for the fetch command.
@@ -141,6 +178,12 @@ def parse_incidents(incidents: List[dict], attachment_path: List[str] = None) ->
         if attachment_path:
             parsed_incident['attachment'] = attachment_path
 
+        if attachment_entry_ids:
+            for attachment_entry_id in attachment_entry_ids:
+                attachment = demisto.getFilePath(attachment_entry_id)
+                parsed_incident.setdefault('entry_id_attachment', []).append({'path': attachment.get('file'),
+                                                                              'name': attachment.get('name')})
+
         ready_incidents.append(parsed_incident)
     return ready_incidents
 
@@ -152,6 +195,7 @@ def main() -> None:  # pragma: no cover
     try:
         params = demisto.params()
         command = demisto.command()
+        args = demisto.args()
 
         demisto.debug(f'Command being called is {command}')
         client = Client(
@@ -168,7 +212,10 @@ def main() -> None:  # pragma: no cover
             return_results(result)
 
         elif command == 'create-test-incident-from-file':
-            return_results(create_test_incident_from_file_command(client, demisto.args()))
+            return_results(create_test_incident_from_file_command(client, args))
+
+        elif command == 'create-test-incident-from-raw-json':
+            return_results(create_test_incident_from_json_command(args))
 
     # Log exceptions and return errors
     except Exception as e:
