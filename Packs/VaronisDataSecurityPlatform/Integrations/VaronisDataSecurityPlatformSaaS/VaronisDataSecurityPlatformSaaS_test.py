@@ -1,10 +1,11 @@
 import json
 import io
+from SearchAlertObjectMapper import SearchAlertObjectMapper
 import demistomock as demisto
 from pytest_mock import MockerFixture
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
-from VaronisDataSecurityPlatformSaaS import Client, SearchAlertObjectMapper
+from Client import Client
 
 
 def util_load_json(path):

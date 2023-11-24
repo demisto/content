@@ -127,6 +127,12 @@ script:
       required: false
       secret: false
     - default: false
+      description: Extra fields
+      isArray: false
+      name: extra_fields
+      required: false
+      secret: false
+    - default: false
       description: Indicates whether alerts should be ordered in newest to oldest order
       isArray: false
       name: descending_order
@@ -320,6 +326,12 @@ script:
       name: last_days
       required: false
       secret: false  
+    - default: false
+      description: Extra fields
+      isArray: false
+      name: extra_fields
+      required: false
+      secret: false
     - default: false
       description: Indicates whether events should be ordered in newest to oldest order
       isArray: false
