@@ -9,14 +9,8 @@ permissions:
 jobs:
   add_pr_link_to_related_jira_issue:
     runs-on: ubuntu-latest
-    if: github.repository == 'demisto/content' && github.event.pull_request.head.repo.fork == false && github.actor != 'dependabot[bot]' && contains(github.event.pull_request.labels.*.name, 'Contribution') == false
+    if: github.repository == 'demisto/content' && github.event.pull_request.head.repo.fork == false && github.actor != 'dependabot[bot]' && !contains(github.event.pull_request.labels.*.name, 'Contribution')
     steps:
-      - name: Print PR Labels
-        run: |
-          echo "Labels on the pull request:"
-          for label in ${{ github.event.pull_request.labels.*.name }}; do
-            echo "- $label"
-          done
       - name: Checkout
         uses: actions/checkout@v4
       - name: Setup Python
