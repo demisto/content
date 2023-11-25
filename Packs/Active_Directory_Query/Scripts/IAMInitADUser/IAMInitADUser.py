@@ -9,9 +9,6 @@ TEXT_FILE_NAME = "AD_Password"  # File name for the text file (within the zip fi
 EMAIL_ZIP_NAME = "AD_Password"  # File name to use for the zip file when attaching it to the email
 
 
-# The script uses polling since generating a file and using it within the same script does not work on engines and XSOAR 8.0.
-# To resolve this, we use polling to generate the zip file, and then call the script recursively with the zip file's name.
-
 def find_file_entry_id(file_name: str) -> str:
     """
     Find the entry ID of a file in the context by its name.
@@ -66,11 +63,9 @@ def generate_password(password_generation_script: str, min_lcase: str, max_lcase
             "max_symbols": max_symbols
         }
 
-        demisto.debug(f'Executing {password_generation_script} with the following arguments: {script_params}')
         pwd_generation_script_output = demisto.executeCommand(password_generation_script, script_params)
 
     else:
-        demisto.debug(f'Executing {password_generation_script} without any arguments.')
         pwd_generation_script_output = demisto.executeCommand(password_generation_script, {})
 
     if is_error(pwd_generation_script_output):
