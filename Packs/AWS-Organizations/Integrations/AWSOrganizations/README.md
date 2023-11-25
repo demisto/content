@@ -476,6 +476,7 @@ Creates an organizational unit (OU) within a root or parent OU. An OU is a conta
 ### aws-org-organization-unit-rename
 
 ***
+Renames the specified organizational unit (OU). The ID and ARN don’t change. The child OUs and accounts remain in place, and any attached policies of the OU remain attached.
 
 #### Base Command
 
@@ -610,6 +611,7 @@ Retrieves the list of all policies in an organization of a specified type.
 ### aws-org-policy-get
 
 ***
+Retrieves information about a policy.
 
 #### Base Command
 
@@ -984,7 +986,6 @@ Creates an AWS Account that is automatically a member of the organization.
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
-| hide_polling_output | . | Optional | 
 
 #### Context Output
 
@@ -1101,8 +1102,6 @@ Closes an AWS member account within an organization.
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
-| is_closed | whether the initial API call to close the account has been executed. | Optional | 
-| hide_polling_output | . | Optional | 
 
 #### Context Output
 

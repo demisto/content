@@ -438,7 +438,7 @@ def account_create_command(args: dict, aws_client: 'OrganizationsClient') -> Pol
     poll_message='Closing account:',
     requires_polling_arg=False
 )
-def account_close_command(args: dict, aws_client: 'OrganizationsClient') -> PollResult:  # TODO: test
+def account_close_command(args: dict, aws_client: 'OrganizationsClient') -> PollResult:
 
     if not argToBoolean(args['is_closed']):
         aws_client.close_account(
