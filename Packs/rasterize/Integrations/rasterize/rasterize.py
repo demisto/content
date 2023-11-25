@@ -93,7 +93,9 @@ def ensure_chrome_running():  # pragma: no cover
         is_chrome_headless_running_res = is_chrome_headless_running()
         chromes_count = len(is_chrome_headless_running_res)
         demisto.debug(f'Found {chromes_count} chromes running')
-        while chromes_count != 1:
+        max_retries = 3
+        retry_count = 1
+        while chromes_count != 1 and retry_count != max_retries:
             if chromes_count == 0:
                 start_chrome_headless_out = subprocess.check_output(['bash', '/start_chrome_headless.sh'],
                                                                     stderr=subprocess.STDOUT, universal_newlines=True)
@@ -106,6 +108,10 @@ def ensure_chrome_running():  # pragma: no cover
                     demisto.debug(f'kill {currrent_process_line_splitted[1]}, output: {kill_out}')
             is_chrome_headless_running_res = is_chrome_headless_running()
             chromes_count = len(is_chrome_headless_running_res)
+            retry_count += 1
+        if retry_count == max_retries:
+            demisto.info(f'Max retries ({max_retries}) reached, chrome headless is not running correctly')
+            return False
         return True
     except Exception as ex:
         demisto.info(f'Exception running chrome headless, {ex}')
@@ -143,7 +149,7 @@ class PychromeEventHandler:
                         # finally:
                         #     self.tab.stop()
                 except Exception as e:  # pragma: no cover
-                    demisto.info(f'Failed stop loading the page: {tab=}, {frameId=}')
+                    demisto.info(f'Failed stop loading the page: {self.tab=}, {frameId=}')
         finally:
             self.tab_ready.set()
 
@@ -448,9 +454,7 @@ def rasterize(path: str, width: int, height: int, r_type: RasterizeType = Raster
     demisto.debug(f'Rasterizing, {chrome_headless_running=}, using mode: {r_mode}')
     page_load_time = max_page_load_time if max_page_load_time > 0 else DEFAULT_PAGE_LOAD_TIME
 
-    # TODO Support force_selenium_usage
-    force_selenium_usage = False
-    if chrome_headless_running or force_selenium_usage:  # pragma: no cover
+    if chrome_headless_running or not force_selenium_usage:  # pragma: no cover
         demisto.debug(f'Using pychrome for rasterizing {path}')
         if r_type == RasterizeType.PNG or str(r_type).lower() == 'png':
             return pychrome_screenshot_image(path, width=width, height=height, wait_time=wait_time,
