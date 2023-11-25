@@ -181,7 +181,7 @@ def pychrome_screenshot_image(path, width, height, wait_time, max_page_load_time
 
     try:
         tab.start()
-        # tab.Page.stopLoading()
+        tab.Page.stopLoading()
         # tab.call_method("Network.enable")
         tab.Page.enable()
         # tab.call_method("Page.navigate", url=path, _timeout=max_page_load_time)
