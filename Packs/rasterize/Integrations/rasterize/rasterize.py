@@ -85,11 +85,28 @@ class RasterizeType(Enum):
 
 def ensure_chrome_running():  # pragma: no cover
     try:
-        command = ['bash', '/start_chrome_headless.sh']
-        with open(os.devnull, "w") as fnull:
-            result = subprocess.call(command, stdout=fnull, stderr=fnull)
-            demisto.debug(f'start_chrome_headless output: {result}')
-            return is_chrome_headless_running()
+        # command = ['bash', '/start_chrome_headless.sh']
+        # with open(os.devnull, "w") as fnull:
+        #     result = subprocess.call(command, stdout=fnull, stderr=fnull)
+        #     demisto.debug(f'start_chrome_headless output: {result}')
+        #     return is_chrome_headless_running()
+        is_chrome_headless_running_res = is_chrome_headless_running()
+        chromes_count = len(is_chrome_headless_running_res)
+        demisto.debug(f'Found {chromes_count} chromes running')
+        while chromes_count != 1:
+            if chromes_count == 0:
+                start_chrome_headless_out = subprocess.check_output(['bash', '/start_chrome_headless.sh'],
+                                                                    stderr=subprocess.STDOUT, universal_newlines=True)
+                demisto.debug(f'start_chrome_headless output: {start_chrome_headless_out}')
+            else:
+                for currrent_process_line in is_chrome_headless_running_res:
+                    currrent_process_line_splitted = currrent_process_line.split()
+                    kill_out = subprocess.check_output(['kill', '-9', currrent_process_line_splitted[1]],
+                                                                        stderr=subprocess.STDOUT, universal_newlines=True)
+                    demisto.debug(f'kill {currrent_process_line_splitted[1]}, output: {kill_out}')
+            is_chrome_headless_running_res = is_chrome_headless_running()
+            chromes_count = len(is_chrome_headless_running_res)
+        return True
     except Exception as ex:
         demisto.info(f'Exception running chrome headless, {ex}')
     return False
@@ -109,28 +126,36 @@ class PychromeEventHandler:
             self.start_frame = frameId
 
     def frame_stopped_loading(self, frameId):
-        if self.start_frame == frameId:
-            self.tab.Page.stopLoading()
+        try:
+            if self.start_frame == frameId:
+                try:
+                    self.tab.Page.stopLoading()
 
-            with self.screen_lock:
-                # must activate current tab
-                self.browser.activate_tab(self.tab.id)
+                    with self.screen_lock:
+                        # must activate current tab
+                        self.browser.activate_tab(self.tab.id)
 
-                # try:
-                # data = self.tab.Page.captureScreenshot()
-                # with open("%s.png" % time.time(), "wb") as fd:
-                #     fd.write(base64.b64decode(data['data']))
-                self.tab_ready.set()
-                # finally:
-                #     self.tab.stop()
+                        # try:
+                        #   data = self.tab.Page.captureScreenshot()
+                        #   with open("%s.png" % time.time(), "wb") as fd:
+                        #     fd.write(base64.b64decode(data['data']))
+                        #   self.tab_ready.set()
+                        # finally:
+                        #     self.tab.stop()
+                except Exception as e:  # pragma: no cover
+                    demisto.info(f'Failed stop loading the page: {tab=}, {frameId=}')
+        finally:
+            self.tab_ready.set()
 
 
 def pychrome_reap_children():
     try:
         zombies, ps_out = find_zombie_processes()
+        demisto.debug(f'pychrome_reap_children, {ps_out=}')
         if zombies:  # pragma: no cover
             demisto.info(f'Found zombie processes will waitpid: {ps_out}')
             for pid in zombies:
+                demisto.debug(f'Found zombie process: {pid}')
                 waitres = os.waitpid(int(pid), os.WNOHANG)[1]
                 demisto.info(f'waitpid result: {waitres}')
         else:
@@ -150,7 +175,7 @@ def pychrome_screenshot_image(path, width, height, wait_time, max_page_load_time
 
     try:
         tab.start()
-        tab.Page.stopLoading()
+        # tab.Page.stopLoading()
         # tab.call_method("Network.enable")
         tab.Page.enable()
         # tab.call_method("Page.navigate", url=path, _timeout=max_page_load_time)
@@ -168,7 +193,10 @@ def pychrome_screenshot_image(path, width, height, wait_time, max_page_load_time
         demisto.info(message)
         return_error(message)
     finally:
-        tab.stop()
+        try:
+            tab.stop()
+        except pychrome.RuntimeException:
+            pass
         close_tab_response = browser.close_tab(tab)
         demisto.debug(f"{path=}, {close_tab_response=}")
         pychrome_reap_children()
@@ -209,7 +237,10 @@ def pychrome_screenshot_pdf(path, width, height, wait_time, max_page_load_time, 
         demisto.info(message)
         return_error(message)
     finally:
-        tab.stop()
+        try:
+            tab.stop()
+        except pychrome.RuntimeException:
+            pass
         close_tab_response = browser.close_tab(tab)
         demisto.debug(f"{path=}, {close_tab_response=}")
         pychrome_reap_children()
@@ -354,7 +385,9 @@ def is_chrome_headless_running():  # pragma: no cover
                                   "headless",
                                   "--remote-debugging-port=9222"]
     lines = ps_out.splitlines()
-    return [f for f in lines if all(c in f for c in chrome_headless_substrings)]
+    ret_value = [f for f in lines if all(c in f for c in chrome_headless_substrings)]
+    demisto.debug(f'is_chrome_headless_running: {ret_value}')
+    return ret_value
 
 
 def quit_driver_and_display_and_reap_children(driver, display):
