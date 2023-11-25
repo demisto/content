@@ -449,7 +449,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3870
+          "y": 4220
         }
       }
     note: false
@@ -614,10 +614,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: c6aef3fb-67f8-416e-89d7-084713d4ea6d
+    taskid: 51d32d55-0663-4c10-86bf-f969a51badaa
     type: regular
     task:
-      id: c6aef3fb-67f8-416e-89d7-084713d4ea6d
+      id: 51d32d55-0663-4c10-86bf-f969a51badaa
       version: -1
       name: aws-org-policy-list
       description: Retrieves the list of all policies in an organization of a specified type.
@@ -627,10 +627,10 @@ tasks:
       brand: AWS - Organizations
     nexttasks:
       '#none#':
-      - "27"
+      - "28"
     scriptarguments:
       policy_type:
-        simple: Tag Policy
+        simple: Service Control Policy
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -785,7 +785,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3695
+          "y": 4045
         }
       }
     note: false
@@ -810,12 +810,49 @@ tasks:
       brand: AWS - Organizations
     nexttasks:
       '#none#':
-      - "26"
+      - "29"
     scriptarguments:
       policy_type:
         simple: Tag Policy
       target_id:
         simple: ${AWS.Organizations.Root.Id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: a5da64b4-1006-4cfb-860c-7c514add6dce
+    type: regular
+    task:
+      id: a5da64b4-1006-4cfb-860c-7c514add6dce
+      version: -1
+      name: aws-org-policy-attach
+      description: Attaches a policy to a root, an organizational unit (OU), or an individual account.
+      script: AWS - Organizations|||aws-org-policy-attach
+      type: regular
+      iscommand: true
+      brand: AWS - Organizations
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      policy_id:
+        simple: ${AWS.Organizations.Policy.Id}
+      target_id:
+        simple: ${AWS.Organizations.OrganizationUnit.Id}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -832,12 +869,50 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: d6fc83a7-5355-4400-8b82-4645dd83eeb6
+    type: condition
+    task:
+      id: d6fc83a7-5355-4400-8b82-4645dd83eeb6
+      version: -1
+      name: Is policy attached?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: AWS.Organizations.TargetPolicy.Id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3885,
+        "height": 4235,
         "width": 380,
         "x": 50,
         "y": 50
