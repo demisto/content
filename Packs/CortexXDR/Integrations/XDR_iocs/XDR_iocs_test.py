@@ -1005,12 +1005,19 @@ def test_create_validation_errors_response(validation_errors, expected_str):
     ('2020-01-01T04:00:00Z', '2020-01-01T01:00:00Z', False),
     ('2020-01-02T02:00:00Z', '2020-01-01T01:00:00Z', True),
     ('2020-01-02T04:00:00Z', '2020-01-01T01:00:00Z', False),
-    ('2020-01-01T01:05:00Z', None, True),
 ])
 def test_is_iocs_to_keep_time(current_time, next_iocs_to_keep_time, should_run_iocs_to_keep, mocker):
     mocker.patch.object(demisto, 'getIntegrationContext', return_value={"next_iocs_to_keep_time": next_iocs_to_keep_time})
     with freeze_time(current_time):
         assert is_iocs_to_keep_time() == should_run_iocs_to_keep
+
+
+def test_is_iocs_to_keep_time_without_integration_context(mocker):
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=[{"next_iocs_to_keep_time": None},
+                                                                       {"next_iocs_to_keep_time": None},
+                                                                       {"next_iocs_to_keep_time": '2020-01-02T01:05:00Z'}])
+    with freeze_time('2020-01-02T04:00:00Z'):
+        assert not is_iocs_to_keep_time()
 
 
 @pytest.mark.parametrize('random_int,expected_next_time', [
