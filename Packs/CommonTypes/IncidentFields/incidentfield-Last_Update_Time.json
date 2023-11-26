@@ -38,7 +38,7 @@
         "FreshworksFreshservice Change Request",
         "Graph Security Alert",
         "CrowdStrike Falcon IDP Detection",
-        "Cyberint"
+        "Cyberint Incident"
     ],
     "breachScript": "",
     "caseInsensitive": true,
