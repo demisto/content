@@ -70,7 +70,7 @@ def test_the_test_module_with_proxy(mocker, proxy: bool):
     )
 
     # make sure an exception isn't raised
-    test_module("{}", proxy=proxy, disable_ssl_certificate=True)
+    test_module("{}", proxy=proxy, verify_certificate=False)
 
 
 def test_get_http_client_with_proxy(client):

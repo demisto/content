@@ -11,7 +11,7 @@ from urllib.parse import urlparse
 
 
 class Client:
-    def __init__(self, client_secret: str, proxy: bool = False, disable_ssl_certificate: bool = False):
+    def __init__(self, client_secret: str, proxy: bool = False, verify_certificate: bool = False):
         client_secret = json.loads(client_secret)
         scopes = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/cloud-identity',
                   'https://www.googleapis.com/auth/iam', ]
@@ -19,9 +19,9 @@ class Client:
 
         proxies = handle_proxy()
 
-        if proxy or not disable_ssl_certificate:
+        if proxy or verify_certificate:
             http_client = credentials.authorize(self.get_http_client_with_proxy(
-                proxies, disable_ssl_certificate=disable_ssl_certificate))
+                proxies, disable_ssl_certificate=not verify_certificate))
             self.cloud_identity_service = discovery.build('cloudidentity', 'v1', http=http_client)
             self.cloud_resource_manager_service = discovery.build('cloudresourcemanager', 'v3', http=http_client)
             self.iam_service = discovery.build('iam', 'v1', http=http_client)
@@ -3839,9 +3839,9 @@ def gcp_iam_tagbindings_list_command(client: Client, args: Dict[str, Any]) -> Un
     return command_results
 
 
-def test_module(service_account_key: str, proxy: bool, disable_ssl_certificate: bool) -> None:
+def test_module(service_account_key: str, proxy: bool, verify_certificate: bool) -> None:
     try:
-        client: Client = Client(client_secret=service_account_key, proxy=proxy, disable_ssl_certificate=disable_ssl_certificate)
+        client: Client = Client(client_secret=service_account_key, proxy=proxy, verify_certificate=verify_certificate)
         client.gcp_iam_predefined_role_list_request(include_permissions=False, limit=1)
     except Exception as e:
         demisto.error(f'Error when running test-module {e}')
@@ -3856,7 +3856,7 @@ def main() -> None:
     args: Dict[str, Any] = demisto.args()
 
     service_account_key = params['credentials']['password']
-    disable_ssl_certificate: bool = argToBoolean(params.get('insecure', False))
+    verify_certificate: bool = not argToBoolean(params.get('insecure', False))
     proxy: bool = params.get('proxy', False)
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
@@ -3864,9 +3864,9 @@ def main() -> None:
     try:
 
         if command == 'test-module':
-            return test_module(service_account_key, proxy=proxy, disable_ssl_certificate=disable_ssl_certificate)
+            return test_module(service_account_key, proxy=proxy, verify_certificate=verify_certificate)
 
-        client: Client = Client(client_secret=service_account_key, proxy=proxy, disable_ssl_certificate=disable_ssl_certificate)
+        client: Client = Client(client_secret=service_account_key, proxy=proxy, verify_certificate=verify_certificate)
 
         commands = {
             'gcp-iam-projects-get': gcp_iam_projects_get_command,
