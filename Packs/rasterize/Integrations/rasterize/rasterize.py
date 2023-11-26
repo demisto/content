@@ -112,7 +112,7 @@ def ensure_chrome_running():  # pragma: no cover
                     currrent_process_line_splitted = currrent_process_line.split()
                     demisto.debug(f'ensure_chrome_running, killing {currrent_process_line_splitted[1]=}')
                     kill_out = subprocess.check_output(['kill', '-9', currrent_process_line_splitted[1]],
-                                                                        stderr=subprocess.STDOUT, universal_newlines=True)
+                                                       stderr=subprocess.STDOUT, universal_newlines=True)
                     demisto.debug(f'kill {currrent_process_line_splitted[1]}, output: {kill_out}')
             is_chrome_headless_running_res = is_chrome_headless_running()
             chromes_count = len(is_chrome_headless_running_res)
@@ -436,13 +436,13 @@ def pychrome_close_all_tabs_but_one():
         return
 
     opened_tabs = browser.list_tab()
-    for tab in range(1, len(opened_tabs) - 1):
+    for current_tab in range(1, len(opened_tabs) - 1):
         try:
-            tab.stop()
+            opened_tabs[current_tab].stop()
         except pychrome.RuntimeException:
             pass
 
-        browser.close_tab(tab)
+        browser.close_tab(current_tab)
 
     time.sleep(1)
     demisto.debug(f'{browser.list_tab()=}')
