@@ -101,7 +101,7 @@ class TestCommands:
 def test_poll_collection(mocker):
     """
     Given:
-        - A collection of indicators in STIX format.
+        - A collection of indicators in STIX format where there are more than one indicator for some blocks.
 
     When:
         - fetch_indicators_command is running.
