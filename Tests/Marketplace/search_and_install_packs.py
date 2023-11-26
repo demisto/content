@@ -335,7 +335,7 @@ def install_packs_private(client: demisto_client,
 def get_error_ids(body: str) -> dict[int, str]:
     with contextlib.suppress(json.JSONDecodeError):
         response_info = json.loads(body)
-        return {error["id"]: error.get("details", "") for error in response_info.get("errors", []) if "id" in error}
+        return {error["id"]: error.get("detail", "") for error in response_info.get("errors", []) if "id" in error}
     return {}
 
 
