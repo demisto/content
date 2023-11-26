@@ -5,7 +5,7 @@ from CommonServerPython import *
 import urllib3
 import jmespath
 from typing import List, Dict, Union, Optional, Callable, Tuple
-from datetime import datetime, timedelta
+from datetime import datetime
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -113,7 +113,7 @@ class Client:
     def build_iterator(self, feed: dict, feed_name: str, **kwargs) -> Tuple[List, bool]:
         url = feed.get('url', self.url)
 
-        if True:
+        if is_demisto_version_ge('6.5.0'):
             prefix_feed_name = get_formatted_feed_name(feed_name)  # Support for AWS feed
 
             # Set the If-None-Match and If-Modified-Since headers
@@ -166,19 +166,24 @@ class Client:
 
         except ValueError as VE:
             raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {VE}')
-        if True:
+        if is_demisto_version_ge('6.5.0'):
             return result, get_no_update_value(r, feed_name)
         return result, True
 
 
 def has_passed_time_threshold(timestamp_str: str, hours_threshold: int):
-    # Convert the input timestamp string to a datetime object
+    """
+    Check if more than the given hours_threshold have passed since the timestamp
+    Args:
+        timestamp_str (str): The timestamp string.
+        hours_threshold (int): The threshold in hours.
+    Returns:
+        boolean: True if the threshold has passed, False otherwise.
+    """
     timestamp = datetime.strptime(timestamp_str, '%a, %d %b %Y %H:%M:%S %Z')
-
-    # Calculate the current time
     current_time = datetime.utcnow()
 
-    # Check if more than the given hours have passed since the timestamp
+    # Check if more than the given hours_threshold have passed since the timestamp
     time_difference = current_time - timestamp
     return time_difference.total_seconds() > hours_threshold * 60 * 60
 
@@ -204,9 +209,8 @@ def get_no_update_value(response: requests.Response, feed_name: str) -> bool:
     etag = response.headers.get('ETag')
     last_modified = response.headers.get('Last-Modified')
     current_time = datetime.utcnow()
-    format_time = current_time.strftime("%a, %d %b %Y %H:%M:%S GMT")
     # Save the current time as the last updated time. This will be used to check if the indicators have been updated in XSOAR.
-    last_updated = format_time
+    last_updated = current_time.strftime("%a, %d %b %Y %H:%M:%S GMT")
 
     if not etag and not last_modified:
         demisto.debug('Last-Modified and Etag headers are not exists,'
@@ -459,7 +463,7 @@ def feed_main(params, feed_name, prefix):
                                                              create_relationships)
 
             # check if the version is higher than 6.5.0 so we can use noUpdate parameter
-            if True:
+            if is_demisto_version_ge('6.5.0'):
                 if not indicators:
                     demisto.createIndicators(indicators, noUpdate=no_update)
                 else:
