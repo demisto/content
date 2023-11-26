@@ -800,14 +800,14 @@ def add_user_to_project_command(user_email, project_key, role_name):
     return jira_req('POST', url, json.dumps(json_data)).text
 
 
-def edit_issue_command(issue_id, mirroring=False, headers=None, status=None, transition=None, **kwargs):
+def edit_issue_command(issue_id, mirroring=False, headers=None, status=None, transition=None, resolution=None, **kwargs):
     issue = get_issue_fields(mirroring=mirroring, **kwargs)
     if status and transition:
         return_error("Please provide only status or transition, but not both.")
     elif status:
-        edit_status(issue_id, status, issue)
+        edit_status(issue_id, status, issue, resolution)
     elif transition:
-        edit_transition(issue_id, transition, issue)
+        edit_transition(issue_id, transition, issue, resolution)
     else:
         url = f'rest/api/latest/issue/{issue_id}/'
         jira_req('PUT', url, json.dumps(issue))
@@ -901,7 +901,7 @@ def __create_value_by_type(type, value):
         raise DemistoException(f"Command only support string or array-typed fields. Field given is typed {type}")
 
 
-def edit_status(issue_id, status, issue):
+def edit_status(issue_id, status, issue, resolution=None):
     # check for all authorized transitions available for this user
     # if the requested transition is available, execute it.
     if not issue:
@@ -913,6 +913,11 @@ def edit_status(issue_id, status, issue):
         if transition.lower() == status.lower():
             url = f'rest/api/latest/issue/{issue_id}/transitions?expand=transitions.fields'
             issue['transition'] = {"id": str(j_res.get('transitions')[i].get('id'))}
+            if resolution:
+                if issue.get('fields'):
+                    issue['fields'].update({"resolution": {'name': resolution}})
+                else:
+                    issue['fields'] = {"resolution": {'name': resolution}}
             return jira_req('POST', url, json.dumps(issue))
 
     return_error(f'Status "{status}" not found. \nValid statuses are: {statuses} \n')
@@ -929,7 +934,7 @@ def list_transitions_data_for_issue(issue_id):
     return jira_req('GET', url, resp_type='json')
 
 
-def edit_transition(issue_id, transition_name, issue):
+def edit_transition(issue_id, transition_name, issue, resolution=None):
     """
     This function changes a transition for a given issue.
     :param issue_id: The ID of the issue.
@@ -944,6 +949,11 @@ def edit_transition(issue_id, transition_name, issue):
         if transition.get('name') == transition_name:
             url = f'rest/api/latest/issue/{issue_id}/transitions?expand=transitions.fields'
             issue['transition'] = {"id": transition.get("id")}
+            if resolution:
+                if issue.get('fields'):
+                    issue['fields'].update({"resolution": {'name': resolution}})
+                else:
+                    issue['fields'] = {"resolution": {'name': resolution}}
             return jira_req('POST', url, json.dumps(issue))
 
     return_error(f'Transitions "{transition_name}" not found. \nValid transitions are: {transitions_data} \n')
