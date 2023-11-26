@@ -58,6 +58,10 @@ def jira_sanitize_file_name(file_name: str) -> str:
     return re.sub(r'[^\w-]+', '-', file_name).lower()
 
 
+def jira_color_text(text: str, color: str) -> str:
+    return f"{{color:{color}}}{text}{{color}}"
+
+
 def find_existing_jira_ticket(jira_server: JIRA,
                               now: datetime,
                               max_days_to_reopen: int,

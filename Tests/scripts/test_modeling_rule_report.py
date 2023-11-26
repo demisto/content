@@ -10,10 +10,11 @@ from jira.client import ResultList
 from junitparser import TestSuite, JUnitXml
 from tabulate import tabulate
 
-from Tests.scripts.common import get_properties_for_test_suite
+from Tests.scripts.common import get_properties_for_test_suite, ERROR_TO_COLOR_NAME, ERROR_TO_MSG
 from Tests.scripts.jira_issues import generate_ticket_summary, generate_query_with_summary, \
     find_existing_jira_ticket, JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, JIRA_LABELS, JIRA_ADDITIONAL_FIELDS, \
-    generate_build_markdown_link, convert_jira_time_to_datetime, jira_ticket_to_json_data, jira_file_link, jira_sanitize_file_name
+    generate_build_markdown_link, convert_jira_time_to_datetime, jira_ticket_to_json_data, jira_file_link, \
+    jira_sanitize_file_name, jira_color_text
 from Tests.scripts.utils import logging_wrapper as logging
 
 TEST_MODELING_RULES_BASE_HEADERS = ["Test Modeling Rule"]
@@ -86,16 +87,17 @@ def generate_description_for_test_modeling_rule(ci_pipeline_id: str,
                                                 junit_file_name: str,
                                                 ) -> str:
     build_markdown_link = generate_build_markdown_link(ci_pipeline_id)
-    table = tabulate(tabular_data=[
-        ["Total", test_suite.tests],
-        ["Failed", test_suite.failures],
-        ["Errors", test_suite.errors],
-        ["Skipped", test_suite.skipped],
-        ["Successful", test_suite.tests - test_suite.failures - test_suite.errors - test_suite.skipped],
+    table = tabulate(tablefmt="jira", headers=["Tests", "Result"], tabular_data=[
+        ["Successful", jira_color_text(test_suite.tests, ERROR_TO_COLOR_NAME[test_suite.tests == 0])],
+        ["Failed", jira_color_text(test_suite.failures, ERROR_TO_COLOR_NAME[test_suite.failures > 0])],
+        ["Errors", jira_color_text(test_suite.errors, ERROR_TO_COLOR_NAME[test_suite.errors > 0])],
+        ["Skipped", test_suite.skipped],  # no color for skipped.
         ["Duration", f"{test_suite.time}s"]
-    ], tablefmt="jira", headers=["Tests", "Result"])
+    ])
+    failed = test_suite.failures > 0 or test_suite.errors > 0
+    msg = jira_color_text(ERROR_TO_MSG[failed], ERROR_TO_COLOR_NAME[failed])
     description = f"""
-        *{properties['pack_id']}* - *{properties['file_name']}* failed in {build_markdown_link}
+        *{properties['pack_id']}* - *{properties['file_name']}* {msg} in {build_markdown_link}
         Test Results file: {jira_file_link(junit_file_name)}
 
         {table}

@@ -14,12 +14,12 @@ from junitparser import JUnitXml
 from tabulate import tabulate
 
 from Tests.scripts.common import calculate_results_table, get_all_failed_results, \
-    get_test_results_files, TEST_PLAYBOOKS_REPORT_FILE_NAME, TEST_SUITE_CELL_EXPLANATION
+    get_test_results_files, TEST_PLAYBOOKS_REPORT_FILE_NAME, TEST_SUITE_CELL_EXPLANATION, ERROR_TO_COLOR_NAME, ERROR_TO_MSG
 from Tests.scripts.jira_issues import JIRA_SERVER_URL, JIRA_VERIFY_SSL, JIRA_API_KEY, \
     JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME, JIRA_LABELS, \
     find_existing_jira_ticket, JIRA_ADDITIONAL_FIELDS, generate_ticket_summary, generate_build_markdown_link, \
     jira_server_information, jira_search_all_by_query, generate_query_by_component_and_issue_type, jira_ticket_to_json_data, \
-    jira_file_link, jira_sanitize_file_name
+    jira_file_link, jira_sanitize_file_name, jira_color_text
 from Tests.scripts.test_playbooks_report import calculate_test_playbooks_results, \
     TEST_PLAYBOOKS_BASE_HEADERS, get_jira_tickets_for_playbooks, TEST_PLAYBOOKS_JIRA_BASE_HEADERS, \
     write_test_playbook_to_jira_mapping, TEST_PLAYBOOKS_TO_JIRA_TICKETS_CONVERTED
@@ -47,10 +47,14 @@ def options_handler() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def generate_description(playbook_id: str, build_number: str, junit_file_name: str, table_data: Any, failed: bool) -> str:
+def generate_description_for_test_playbook(playbook_id: str,
+                                           build_number: str,
+                                           junit_file_name: str,
+                                           table_data: Any,
+                                           failed: bool) -> str:
     build_markdown_link = generate_build_markdown_link(build_number)
     table = tabulate(table_data, headers="firstrow", tablefmt="jira")
-    msg = "failed" if failed else "succeeded"
+    msg = jira_color_text(ERROR_TO_MSG[failed], ERROR_TO_COLOR_NAME[failed])
     description = f"""
         *{playbook_id}* {msg} in {build_markdown_link}
         Test Results file: {jira_file_link(junit_file_name)}
@@ -72,7 +76,7 @@ def create_jira_issue(jira_server: JIRA,
                       failed: bool,
                       ) -> Issue:
     summary = generate_ticket_summary(playbook_id)
-    description = generate_description(playbook_id, build_number, junit_file_name, table_data, failed)
+    description = generate_description_for_test_playbook(playbook_id, build_number, junit_file_name, table_data, failed)
     jira_issue, link_to_issue, use_existing_issue = find_existing_jira_ticket(jira_server, now, max_days_to_reopen, jira_issue)
 
     if jira_issue is not None:
