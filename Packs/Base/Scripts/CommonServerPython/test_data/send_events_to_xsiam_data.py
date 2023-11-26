@@ -119,7 +119,7 @@ Parameters used:
         "collector-name": "test_brand",
         "instance-name": "test_integration_instance",
         "final-reporting-device": "www.test_url.com",
-        "collector_type": "events"
+        "collector-type": "events"
 }}
 
 Response status code: {status_code}
@@ -139,9 +139,9 @@ Parameters used:
         "collector-name": "test_brand",
         "instance-name": "test_integration_instance",
         "final-reporting-device": "www.test_url.com",
-        "collector_type": "assets",
-        "snapshot_id": "123000",
-        "total_items_count": "2"
+        "collector-type": "assets",
+        "snapshot-id": "123000",
+        "total-items-count": "2"
 }}
 
 Response status code: {status_code}

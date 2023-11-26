@@ -11341,11 +11341,11 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         'collector-name': collector_name,
         'instance-name': instance_name,
         'final-reporting-device': url,
-        'collector_type': ASSETS if data_type == ASSETS else EVENTS
+        'collector-type': ASSETS if data_type == ASSETS else EVENTS
     }
     if data_type == ASSETS:
-        headers['snapshot_id'] = str(round(time.time() * 1000))
-        headers['total_items_count'] = str(items_count)
+        headers['snapshot-id'] = str(round(time.time() * 1000))
+        headers['total-items-count'] = str(items_count)
 
     header_msg = 'Error sending new {data_type} into XSIAM.\n'.format(data_type = data_type)
 
