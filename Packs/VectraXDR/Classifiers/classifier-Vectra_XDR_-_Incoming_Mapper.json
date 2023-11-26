@@ -1,0 +1,428 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Vectra XDR - Incoming Mapper",
+    "mapping": {
+        "Vectra XDR Entity": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Vectra XDR Entity IP": {
+                    "complex": {
+                        "filters": [],
+                        "root": "ip",
+                        "transformers": []
+                    }
+                },
+                "Incident Link": {
+                    "complex": {
+                        "filters": [],
+                        "root": "url",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "/api/v3.3"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    }
+                },
+                "Tags": {
+                    "complex": {
+                        "filters": [],
+                        "root": "tags",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    }
+                },
+                "Vectra XDR Entity Account Type": {
+                    "complex": {
+                        "filters": [],
+                        "root": "account_type",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    }
+                },
+                "Vectra XDR Entity Assignment Assigned By": {
+                    "complex": {
+                        "accessor": "username",
+                        "filters": [],
+                        "root": "assignment_details.assigned_by",
+                        "transformers": []
+                    }
+                },
+                "Vectra XDR Entity Assignment Assigned Date": {
+                    "complex": {
+                        "accessor": "date_assigned",
+                        "filters": [],
+                        "root": "assignment_details",
+                        "transformers": []
+                    }
+                },
+                "Vectra XDR Entity Assignment Assigned to": {
+                    "complex": {
+                        "accessor": "username",
+                        "filters": [],
+                        "root": "assignment_details.assigned_to",
+                        "transformers": []
+                    }
+                },
+                "Vectra XDR Entity Assignment Details": {
+                    "complex": {
+                        "filters": [],
+                        "root": "assignment_details",
+                        "transformers": []
+                    }
+                },
+                "Vectra XDR Entity Assignment ID": {
+                    "complex": {
+                        "accessor": "id",
+                        "filters": [],
+                        "root": "assignment_details",
+                        "transformers": []
+                    }
+                },
+                "Vectra XDR Entity Assignment Outcome": {
+                    "complex": {
+                        "accessor": "title",
+                        "filters": [],
+                        "root": "assignment_details.outcome",
+                        "transformers": []
+                    }
+                },
+                "Vectra XDR Entity Assignment Resolved By": {
+                    "complex": {
+                        "accessor": "username",
+                        "filters": [],
+                        "root": "assignment_details.resolved_by",
+                        "transformers": []
+                    }
+                },
+                "Vectra XDR Entity Assignment Resolved Date": {
+                    "complex": {
+                        "accessor": "date_resolved",
+                        "filters": [],
+                        "root": "assignment_details",
+                        "transformers": []
+                    }
+                },
+                "Vectra XDR Entity Attack Profile": {
+                    "complex": {
+                        "filters": [],
+                        "root": "attack_profile",
+                        "transformers": []
+                    }
+                },
+                "Vectra XDR Entity Attack Rating": {
+                    "complex": {
+                        "filters": [],
+                        "root": "attack_rating",
+                        "transformers": []
+                    }
+                },
+                "Vectra XDR Entity Detection Details": {
+                    "complex": {
+                        "filters": [],
+                        "root": "detection_details",
+                        "transformers": [
+                            {
+                                "operator": "StringifyArray"
+                            }
+                        ]
+                    }
+                },
+                "Vectra XDR Entity Filter Tags": {
+                    "complex": {
+                        "filters": [],
+                        "root": "filter_tags",
+                        "transformers": []
+                    }
+                },
+                "Vectra XDR Entity Host Type": {
+                    "complex": {
+                        "filters": [],
+                        "root": "host_type",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    }
+                },
+                "Vectra XDR Entity ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "id",
+                        "transformers": []
+                    }
+                },
+                "Vectra XDR Entity Importance": {
+                    "complex": {
+                        "filters": [],
+                        "root": "importance",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "0,1,2"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Low,Medium,High"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                },
+                "Vectra XDR Entity Last Detection Timestamp": {
+                    "complex": {
+                        "filters": [],
+                        "root": "last_detection_timestamp",
+                        "transformers": []
+                    }
+                },
+                "Vectra XDR Entity Last Modification Timestamp": {
+                    "complex": {
+                        "filters": [],
+                        "root": "last_modified_timestamp",
+                        "transformers": []
+                    }
+                },
+                "Vectra XDR Entity Name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "name",
+                        "transformers": []
+                    }
+                },
+                "Vectra XDR Entity Notes": {
+                    "complex": {
+                        "filters": [],
+                        "root": "notes",
+                        "transformers": [
+                            {
+                                "operator": "StringifyArray"
+                            }
+                        ]
+                    }
+                },
+                "Vectra XDR Entity Priority Status": {
+                    "complex": {
+                        "filters": [],
+                        "root": "is_prioritized",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "condition": {
+                                        "isContext": false
+                                    },
+                                    "conditionB": {
+                                        "isContext": false
+                                    },
+                                    "conditionInBetween": {
+                                        "isContext": false
+                                    },
+                                    "else": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Prioritized"
+                                        }
+                                    },
+                                    "equals": {
+                                        "isContext": false
+                                    },
+                                    "lhs": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "is_prioritized"
+                                        }
+                                    },
+                                    "lhsB": {
+                                        "isContext": false
+                                    },
+                                    "options": {
+                                        "isContext": false
+                                    },
+                                    "optionsB": {
+                                        "isContext": false
+                                    },
+                                    "rhs": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "true"
+                                        }
+                                    },
+                                    "rhsB": {
+                                        "isContext": false
+                                    },
+                                    "then": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Not Prioritized"
+                                        }
+                                    }
+                                },
+                                "operator": "If-Then-Else"
+                            }
+                        ]
+                    }
+                },
+                "Vectra XDR Entity State": {
+                    "complex": {
+                        "filters": [],
+                        "root": "state",
+                        "transformers": []
+                    }
+                },
+                "Vectra XDR Entity Type": {
+                    "complex": {
+                        "filters": [],
+                        "root": "type",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "account,host"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Account,Host"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                },
+                "Vectra XDR Entity Urgency Score": {
+                    "complex": {
+                        "filters": [],
+                        "root": "urgency_score",
+                        "transformers": []
+                    }
+                },
+                "Vectra XDR Entity Velocity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "velocity_contrib",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "0,1,2"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Low,Medium,High"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                },
+                "dbotMirrorDirection": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mirror_direction",
+                        "transformers": []
+                    }
+                },
+                "dbotMirrorId": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mirror_id",
+                        "transformers": [
+                            {
+                                "operator": "Stringify"
+                            }
+                        ]
+                    }
+                },
+                "dbotMirrorInstance": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mirror_instance",
+                        "transformers": []
+                    }
+                },
+                "dbotMirrorTags": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mirror_tags",
+                        "transformers": []
+                    }
+                },
+				"severity": {
+					"complex": {
+						"filters": [],
+						"root": "urgency_score_based_severity",
+						"transformers": []
+					}
+				}
+            }
+        }
+    },
+    "name": "Vectra XDR - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.8.0"
+}
