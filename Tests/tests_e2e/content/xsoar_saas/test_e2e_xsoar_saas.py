@@ -7,7 +7,7 @@ import requests
 from demisto_client.demisto_api.models.feed_indicator import FeedIndicator
 from demisto_client.demisto_api.rest import ApiException
 from demisto_sdk.commands.common.clients import XsoarSaasClient
-from Tests.tools import get_integration_params
+from Tests.tools import get_integration_params, get_json_response
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.tests_e2e.client_utils import (
@@ -85,13 +85,6 @@ def test_taxii2_server_returns_indicators(
         - make sure that taxii2-server collect the indicators from xsoar
         - make sure that indicators are returned in the response of taxii2 server instance
     """
-
-    def get_json_response(_response: requests.Response) -> dict:
-        try:
-            return _response.json()
-        except ValueError as e:
-            raise ValueError(f'Could not parse {_response.text}, error: {e}')
-
     feed_indicators = [
         FeedIndicator(value=value, type=_type, score=score) for value, _type, score in
         [("1.1.1.1", "IP", 0), ("2.2.2.2", "IP", 0), ("3.3.3.3", "IP", 0)]
