@@ -24,11 +24,11 @@ class TestStixDecode:
         xml_files_names = get_files_in_dir(self.FILE_PATH, 'xml')
         for xml_f_name in xml_files_names:
             file_path = f'{self.FILE_PATH}/{xml_f_name}'
-            with open(file_path, 'r') as xml_f:
+            with open(file_path) as xml_f:
                 stix_str = xml_f.read()
                 res = StixDecode.decode(stix_str)
                 res_path = f'{file_path.rstrip(".xml")}-result.json'
-                with open(res_path, 'r') as res_f:
+                with open(res_path) as res_f:
                     expected_res = json.load(res_f)
                     assert expected_res == list(res[1])
 
@@ -89,7 +89,7 @@ class TestUtilFunctions:
 class TestCommands:
     def test_fetch_indicators(self, mocker):
         client = TAXIIClient(collection='a collection')
-        with open('FeedTAXII_test/TestCommands/raw_indicators.json', 'r') as f:
+        with open('FeedTAXII_test/TestCommands/raw_indicators.json') as f:
             raw_indicators = json.load(f)
             mocker.patch.object(client, 'build_iterator', return_value=raw_indicators)
             res = fetch_indicators_command(client)
@@ -137,7 +137,7 @@ def test_tags_parameter(mocker, tags):
     - Validate the tags supplied exists in the indicators
     """
     client = TAXIIClient(collection='a collection', feedTags=json.dumps(tags))
-    with open('FeedTAXII_test/TestCommands/raw_indicators.json', 'r') as f:
+    with open('FeedTAXII_test/TestCommands/raw_indicators.json') as f:
         raw_indicators = json.load(f)
         mocker.patch.object(client, 'build_iterator', return_value=raw_indicators)
         res = fetch_indicators_command(client)
