@@ -40,7 +40,7 @@ This integration was integrated and tested with Recorded Future Feed
     | URL | 2 Hours. |
     | Vulnerability | 2 Hours. |
 4. Per instance configuration, it is recommended to use either `connectApi` or `fusion` as a service for chosen indicator type, and not both, as most of the data between both services is duplicated.
-5. The feed size can be change according to the chosen indicator type:
+5. The feed size can be changed according to the chosen indicator type:
     - IP - As of September 24, 2020, this risk list includes over 5.9k records.
     - Domain - Due to additional sources of malicious domains added recently, the number of high risk domains collected and analyzed in Recorded Future has dramatically increased.  As a result, now cap this risklist at 100,000 domains.
     - Hash - In the second half of 2018, improvements and enhancements to our hash collection and analysis processes led to a dramatic increase in risky hashes that meet the above criteria.  As a result, now cap this risklist at 100,000 hashes.
@@ -97,4 +97,4 @@ To limit the 'connectApi' service indicators list.
 
 ### Troubleshooting
 
-If indicators expire unexpectedly, please ensure that the feed is not receiving more than 100,000 indicators per fetch. As it is discouraged to use "large" as a risk rule, we currently receive indicators in a single large CSV file containing up to 100,000 indicators. If Recorded Future has additional indicators to send, the CSV will be sorted in descending order based on the highest score. Consequently, some indicators may not pass through, leading to their expiration, particularly if the expiration is configured as "When removed from the feed" and they were present in our system from previous fetches.
+If indicators expire unexpectedly, ensure that the feed is not receiving more than 100,000 indicators per fetch. As it is discouraged to use "large" as a risk rule, we currently receive indicators in a single large CSV file containing up to 100,000 indicators. If Recorded Future has additional indicators to send, the CSV will be sorted in descending order based on the highest score. Consequently, some indicators may not pass through, leading to their expiration, particularly if the expiration is configured as "When removed from the feed" and they were present in our system from previous fetches.
