@@ -2,6 +2,7 @@
     {
         "Name": "root",
         "ShortName": "root",
-        "VClusterID": 0
+        "VClusterID": 0,
+        "VDOM": "root"
     }
 ]

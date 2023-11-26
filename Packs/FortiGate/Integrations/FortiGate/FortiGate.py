@@ -1763,22 +1763,20 @@ UUID_MAPPING = Mapping(["uuid"], ["UUID"])
 
 
 @logger
-def handle_list_command(
-    list_command: Callable[..., dict[str, Any]],
-    args: dict[str, Any],
+def handle_list_response(
+    raw_response: list[dict[str, Any]] | dict[str, Any],
     mappings: list[Mapping],
     title: str,
     outputs_prefix: str,
     headers: list[str],
+    format_fields: list[str] | None = None,
     custom_table_builder: Callable[[list[dict[str, Any]]], list[dict[str, Any]]] | None = None,
-    outputs_key_field: str = "Name",
-    identifier_field: str = "name",
+    outputs_key_field: str | None = None,
 ) -> CommandResults:
-    """Handles the list command.
+    """Handles the response from the API of a list command.
 
     Args:
-        list_command (Callable[..., dict[str, Any]]): The list command to handle.
-        args (dict[str, Any]): The arguments to pass to the list command.
+        raw_response (list[dict[str, Any]] | dict[str, Any]): The raw response from the API.
         mappings (list[Mapping]): Mappings for adjust the response specifying:
             - old_keys (list[str]): required.
             - new_keys (list[str]): required.
@@ -1787,28 +1785,17 @@ def handle_list_command(
         title (str): The title of the table to display.
         outputs_prefix (str): The prefix to use for the outputs.
         headers (list[str]): The headers of the table to display.
+        format_fields (list[str] | None, optional): Fields to format the readable output.
+            Defaults to None.
         custom_table_builder (Callable[[list[dict[str, Any]]], list[dict[str, Any]]] | None): A custom table builder
             to use for the outputs.
             Defaults to None.
-        outputs_key_field (str): The key field to use for the outputs.
-            Defaults to "Name".
-        identifier_field (str): The identifier key of the firewall object to delete.
-            Defaults to "name".
+        outputs_key_field (str | None, optional): The key field to use for the outputs.
+            Defaults to None.
 
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    vdom = args.get("vdom", DEFAULT_VDOM)
-    format_fields = argToList(args.get("format_fields"))
-
-    raw_response = list_command(
-        args.get(identifier_field),
-        vdom=vdom,
-        filter_field=args.get("filter_field"),
-        filter_value=args.get("filter_value"),
-        format_fields=format_fields,
-    )
-
     # Handle VDOM == *
     responses = raw_response if isinstance(raw_response, list) else [raw_response]
     outputs = []
@@ -1885,9 +1872,18 @@ def list_firewall_address_ipv4s_command(client: Client, args: dict[str, Any]) ->
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    return handle_list_command(
-        list_command=client.list_firewall_address_ipv4s,
-        args=args,
+    format_fields = argToList(args.get("format_fields"))
+
+    raw_response = client.list_firewall_address_ipv4s(
+        name=args.get("name", ""),
+        vdom=args.get("vdom", DEFAULT_VDOM),
+        filter_field=args.get("filter_field"),
+        filter_value=args.get("filter_value"),
+        format_fields=format_fields,
+    )
+
+    return handle_list_response(
+        raw_response=raw_response,
         mappings=[
             ALLOW_ROUTING_MAPPING,
             ASSOCIATED_INTERFACE_MAPPING,
@@ -1924,11 +1920,13 @@ def list_firewall_address_ipv4s_command(client: Client, args: dict[str, Any]) ->
             "Details",
             "Interface",
             "Type",
-            "Comment",
+            "Comments",
             "Routable",
         ],
+        format_fields=format_fields,
         custom_table_builder=build_address_table,
         outputs_prefix=ADDRESS_CONTEXT,
+        outputs_key_field="Name",
     )
 
 
@@ -2106,9 +2104,18 @@ def list_firewall_address_ipv6s_command(client: Client, args: dict[str, Any]) ->
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    return handle_list_command(
-        list_command=client.list_firewall_address_ipv6s,
-        args=args,
+    format_fields = argToList(args.get("format_fields"))
+
+    raw_response = client.list_firewall_address_ipv6s(
+        name=args.get("name", ""),
+        vdom=args.get("vdom", DEFAULT_VDOM),
+        filter_field=args.get("filter_field"),
+        filter_value=args.get("filter_value"),
+        format_fields=format_fields,
+    )
+
+    return handle_list_response(
+        raw_response=raw_response,
         mappings=[
             CACHE_TTL_MAPPING,
             COMMENT_MAPPING,
@@ -2139,10 +2146,12 @@ def list_firewall_address_ipv6s_command(client: Client, args: dict[str, Any]) ->
             "Name",
             "Details",
             "Type",
-            "Comment",
+            "Comments",
         ],
+        format_fields=format_fields,
         custom_table_builder=build_address_table,
         outputs_prefix=ADDRESS6_CONTEXT,
+        outputs_key_field="Name",
     )
 
 
@@ -2322,9 +2331,18 @@ def list_firewall_address_ipv4_multicasts_command(client: Client, args: dict[str
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    return handle_list_command(
-        list_command=client.list_firewall_address_ipv4_multicasts,
-        args=args,
+    format_fields = argToList(args.get("format_fields"))
+
+    raw_response = client.list_firewall_address_ipv4_multicasts(
+        name=args.get("name", ""),
+        vdom=args.get("vdom", DEFAULT_VDOM),
+        filter_field=args.get("filter_field"),
+        filter_value=args.get("filter_value"),
+        format_fields=format_fields,
+    )
+
+    return handle_list_response(
+        raw_response=raw_response,
         mappings=[
             ASSOCIATED_INTERFACE_MAPPING,
             COMMENT_MAPPING,
@@ -2341,11 +2359,13 @@ def list_firewall_address_ipv4_multicasts_command(client: Client, args: dict[str
             "Details",
             "Interface",
             "Type",
-            "Comment",
+            "Comments",
             "Routable",
         ],
+        format_fields=format_fields,
         custom_table_builder=build_address_table,
         outputs_prefix=ADDRESS_MULTICAST_CONTEXT,
+        outputs_key_field="Name",
     )
 
 
@@ -2505,9 +2525,18 @@ def list_firewall_address_ipv6_multicasts_command(client: Client, args: dict[str
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    return handle_list_command(
-        list_command=client.list_firewall_address_ipv6_multicasts,
-        args=args,
+    format_fields = argToList(args.get("format_fields"))
+
+    raw_response = client.list_firewall_address_ipv6_multicasts(
+        name=args.get("name", ""),
+        vdom=args.get("vdom", DEFAULT_VDOM),
+        filter_field=args.get("filter_field"),
+        filter_value=args.get("filter_value"),
+        format_fields=format_fields,
+    )
+
+    return handle_list_response(
+        raw_response=raw_response,
         mappings=[
             COMMENT_MAPPING,
             IP6_MAPPING,
@@ -2518,10 +2547,12 @@ def list_firewall_address_ipv6_multicasts_command(client: Client, args: dict[str
         headers=[
             "Name",
             "Details",
-            "Comment",
+            "Comments",
         ],
+        format_fields=format_fields,
         custom_table_builder=build_address_table,
         outputs_prefix=ADDRESS6_MULTICAST_CONTEXT,
+        outputs_key_field="Name",
     )
 
 
@@ -2653,9 +2684,18 @@ def list_firewall_address_ipv4_groups_command(client: Client, args: dict[str, An
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    return handle_list_command(
-        list_command=client.list_firewall_address_ipv4_groups,
-        args=args,
+    format_fields = argToList(args.get("format_fields"))
+
+    raw_response = client.list_firewall_address_ipv4_groups(
+        name=args.get("groupName", ""),
+        vdom=args.get("vdom", DEFAULT_VDOM),
+        filter_field=args.get("filter_field"),
+        filter_value=args.get("filter_value"),
+        format_fields=format_fields,
+    )
+
+    return handle_list_response(
+        raw_response=raw_response,
         mappings=[
             ALLOW_ROUTING_MAPPING,
             CATEGORY_MAPPING,
@@ -2672,13 +2712,15 @@ def list_firewall_address_ipv4_groups_command(client: Client, args: dict[str, An
         title="Firewall Address IPv4 Groups",
         headers=[
             "Name",
-            "Comment",
+            "Details",
             "Type",
-            "Member",
-            "ExcludeMember",
+            "Comments",
+            "Exclude Members",
+            "Routable",
         ],
+        format_fields=format_fields,
         outputs_prefix=ADDRESS_GROUP_CONTEXT,
-        identifier_field="groupName",
+        outputs_key_field="Name",
     )
 
 
@@ -2750,9 +2792,18 @@ def list_firewall_address_ipv6_groups_command(client: Client, args: dict[str, An
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    return handle_list_command(
-        list_command=client.list_firewall_address_ipv6_groups,
-        args=args,
+    format_fields = argToList(args.get("format_fields"))
+
+    raw_response = client.list_firewall_address_ipv6_groups(
+        name=args.get("name", ""),
+        vdom=args.get("vdom", DEFAULT_VDOM),
+        filter_field=args.get("filter_field"),
+        filter_value=args.get("filter_value"),
+        format_fields=format_fields,
+    )
+
+    return handle_list_response(
+        raw_response=raw_response,
         mappings=[
             COMMENT_MAPPING,
             FABRIC_OBJECT_MAPPING,
@@ -2764,12 +2815,12 @@ def list_firewall_address_ipv6_groups_command(client: Client, args: dict[str, An
         title="Firewall Address IPv6 Groups",
         headers=[
             "Name",
-            "UUID",
-            "Comment",
-            "Type",
-            "Member",
+            "Details",
+            "Comments",
         ],
+        format_fields=format_fields,
         outputs_prefix=ADDRESS6_GROUP_CONTEXT,
+        outputs_key_field="Name",
     )
 
 
@@ -2841,9 +2892,18 @@ def list_firewall_services_command(client: Client, args: dict[str, Any]) -> Comm
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    return handle_list_command(
-        list_command=client.list_firewall_services,
-        args=args,
+    format_fields = argToList(args.get("format_fields"))
+
+    raw_response = client.list_firewall_services(
+        name=args.get("serviceName", ""),
+        vdom=args.get("vdom", DEFAULT_VDOM),
+        filter_field=args.get("filter_field"),
+        filter_value=args.get("filter_value"),
+        format_fields=format_fields,
+    )
+
+    return handle_list_response(
+        raw_response=raw_response,
         mappings=[
             Mapping(["application "], ["Application"]),
             Mapping(["app-category"], ["AppCategory"]),
@@ -2883,8 +2943,9 @@ def list_firewall_services_command(client: Client, args: dict[str, Any]) -> Comm
             "ICMPCode",
             "ICMPType",
         ],
+        format_fields=format_fields,
         outputs_prefix=SERVICE_CONTEXT,
-        identifier_field="serviceName",
+        outputs_key_field="Name",
     )
 
 
@@ -2956,9 +3017,18 @@ def list_firewall_service_groups_command(client: Client, args: dict[str, Any]) -
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    return handle_list_command(
-        list_command=client.list_firewall_service_groups,
-        args=args,
+    format_fields = argToList(args.get("format_fields"))
+
+    raw_response = client.list_firewall_service_groups(
+        name=args.get("name", ""),
+        vdom=args.get("vdom", DEFAULT_VDOM),
+        filter_field=args.get("filter_field"),
+        filter_value=args.get("filter_value"),
+        format_fields=format_fields,
+    )
+
+    return handle_list_response(
+        raw_response=raw_response,
         mappings=[
             COMMENT_MAPPING,
             FABRIC_OBJECT_MAPPING,
@@ -2973,7 +3043,9 @@ def list_firewall_service_groups_command(client: Client, args: dict[str, Any]) -
             "Proxy",
             "Members",
         ],
+        format_fields=format_fields,
         outputs_prefix=SERVICE_GROUP_CONTEXT,
+        outputs_key_field="Name",
     )
 
 
@@ -3207,34 +3279,30 @@ def list_system_vdoms_command(client: Client, args: dict[str, Any]) -> CommandRe
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    response = client.list_system_vdoms(
+    format_fields = argToList(args.get("format_fields"))
+
+    raw_response = client.list_system_vdoms(
         filter_field=args.get("filter_field"),
         filter_value=args.get("filter_value"),
-        format_fields=argToList(args.get("format_fields")),
+        format_fields=format_fields,
     )
-    mappings = [
-        NAME_MAPPING,
-        Mapping(["short-name"], ["ShortName"]),
-        Mapping(["vcluster-id"], ["VClusterID"]),
-    ]
-    output = remove_empty_elements([map_keys(result, mappings) for result in response["results"]])
-    readable_output = tableToMarkdown(
-        name="Virtual Domains",
-        t=output,
+
+    return handle_list_response(
+        raw_response=raw_response,
+        mappings=[
+            NAME_MAPPING,
+            Mapping(["short-name"], ["ShortName"]),
+            Mapping(["vcluster-id"], ["VClusterID"]),
+        ],
+        title="Virtual Domains",
         headers=[
             "Name",
             "ShortName",
             "VClusterID",
         ],
-        removeNull=True,
-    )
-
-    return CommandResults(
+        format_fields=format_fields,
         outputs_prefix=VDOM_CONTEXT,
         outputs_key_field="Name",
-        outputs=output,
-        readable_output=readable_output,
-        raw_response=response,
     )
 
 
