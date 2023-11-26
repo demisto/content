@@ -93,25 +93,36 @@ def ensure_chrome_running():  # pragma: no cover
         is_chrome_headless_running_res = is_chrome_headless_running()
         chromes_count = len(is_chrome_headless_running_res)
         demisto.debug(f'Found {chromes_count} chromes running')
-        max_retries = 3
+        max_retries = 4
         retry_count = 1
-        while chromes_count != 1 and retry_count != max_retries:
+        while chromes_count != 1 and retry_count < max_retries:
+            demisto.debug(f'ensure_chrome_running, {chromes_count=}, {retry_count=}')
             if chromes_count == 0:
-                start_chrome_headless_out = subprocess.check_output(['bash', '/start_chrome_headless.sh'],
-                                                                    stderr=subprocess.STDOUT, universal_newlines=True)
+                # start_chrome_headless_out = subprocess.check_output(['bash', '/start_chrome_headless.sh'],
+                #                                                     stderr=subprocess.STDOUT, universal_newlines=True)
+                # start_chrome_headless_out = subprocess.call(['bash', '/start_chrome_headless.sh'])
+                # result = subprocess.run(['bash', '/start_chrome_headless.sh'], capture_output=True, check=True, text=True)
+                result = subprocess.Popen(['bash', '/start_chrome_headless.sh'], text=True, stdout=subprocess.DEVNULL,
+                                          stderr=subprocess.DEVNULL)
+                demisto.debug(f'start_chrome_headless, {result=}')
+                start_chrome_headless_out = result.stdout
                 demisto.debug(f'start_chrome_headless output: {start_chrome_headless_out}')
             else:
                 for currrent_process_line in is_chrome_headless_running_res:
                     currrent_process_line_splitted = currrent_process_line.split()
+                    demisto.debug(f'ensure_chrome_running, killing {currrent_process_line_splitted[1]=}')
                     kill_out = subprocess.check_output(['kill', '-9', currrent_process_line_splitted[1]],
                                                                         stderr=subprocess.STDOUT, universal_newlines=True)
                     demisto.debug(f'kill {currrent_process_line_splitted[1]}, output: {kill_out}')
             is_chrome_headless_running_res = is_chrome_headless_running()
             chromes_count = len(is_chrome_headless_running_res)
+            demisto.debug(f'{chromes_count=}')
             retry_count += 1
-        if retry_count == max_retries:
+            time.sleep(1)  # pylint: disable=E9003
+        if chromes_count != 1 and retry_count == max_retries:
             demisto.info(f'Max retries ({max_retries}) reached, chrome headless is not running correctly')
             return False
+        demisto.debug('ensure_chrome_running, returning True')
         return True
     except Exception as ex:
         demisto.info(f'Exception running chrome headless, {ex}')
@@ -132,6 +143,7 @@ class PychromeEventHandler:
             self.start_frame = frameId
 
     def frame_stopped_loading(self, frameId):
+        demisto.debug('frame_stopped_loading')
         if self.start_frame == frameId:
             try:
                 self.tab.Page.stopLoading()
@@ -148,6 +160,7 @@ class PychromeEventHandler:
                     # finally:
                     #     self.tab.stop()
                     self.tab_ready.set()
+                    demisto.debug('frame_stopped_loading, Sent tab_ready.set')
             except Exception as e:  # pragma: no cover
                 demisto.error(f'Failed stop loading the page: {self.tab=}, {frameId=}, {e=}')
 
@@ -178,15 +191,21 @@ def pychrome_screenshot_image(path, width, height, wait_time, max_page_load_time
     tab.Page.frameStoppedLoading = eh.frame_stopped_loading
 
     try:
+        demisto.debug('pychrome_screenshot_image, before tab.start')
         tab.start()
+        demisto.debug('pychrome_screenshot_image, after tab.start')
         tab.Page.stopLoading()
+        demisto.debug('pychrome_screenshot_image, after tab.Page.stopLoading')
         # tab.call_method("Network.enable")
         tab.Page.enable()
+        demisto.debug('pychrome_screenshot_image, after tab.Page.enable')
         # tab.call_method("Page.navigate", url=path, _timeout=max_page_load_time)
         page_start_time = int(time.time())
         if max_page_load_time < 0:
+            demisto.debug('navigate 1')
             tab.Page.navigate(url=path, _timeout=max_page_load_time)
         else:
+            demisto.debug('navigate 2')
             tab.Page.navigate(url=path)
         navigate_time = int(time.time()) - page_start_time
         tab_ready_wait_time = max(1, wait_time - navigate_time + 1)
@@ -391,14 +410,23 @@ def find_zombie_processes():
 
 
 def is_chrome_headless_running():  # pragma: no cover
-    ps_out = subprocess.check_output(['ps', '-ef'],
+    ps_out = subprocess.check_output(['ps', 'auxww'],
                                      stderr=subprocess.STDOUT, universal_newlines=True)
+    lines = ps_out.splitlines()
     chrome_headless_substrings = ["chrom",
                                   "headless",
                                   "--remote-debugging-port=9222"]
-    lines = ps_out.splitlines()
-    ret_value = [f for f in lines if all(c in f for c in chrome_headless_substrings)]
-    demisto.debug(f'is_chrome_headless_running: {ret_value}')
+    demisto.debug(f'is_chrome_headless_running: {len(lines)=}')
+    demisto.debug(f'is_chrome_headless_running: {lines=}')
+    ret_value = []
+    for current_line in lines:
+        found_all_substrings = True
+        for current_substring in chrome_headless_substrings:
+            found_all_substrings = found_all_substrings and (current_substring in current_line)
+        if found_all_substrings:
+            demisto.debug(f'Found is_chrome_headless_running in *{current_line}*')
+            ret_value.append(current_line)
+    demisto.debug(f'is_chrome_headless_running, {ret_value=}')
     return ret_value
 
 
@@ -475,6 +503,7 @@ def rasterize(path: str, width: int, height: int, r_type: RasterizeType = Raster
     :param full_screen: when set to True, the snapshot will take the whole page
     :param r_mode: rasterizing mode see: RasterizeMode enum.
     """
+    demisto.debug('rasterize, before ensure_chrome_running')
     chrome_headless_running = ensure_chrome_running()
     demisto.debug(f'Rasterizing, {chrome_headless_running=}, using mode: {r_mode}')
     page_load_time = max_page_load_time if max_page_load_time > 0 else DEFAULT_PAGE_LOAD_TIME
