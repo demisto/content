@@ -756,7 +756,7 @@ def get_incident_data(args: dict):
     return extract_incidents_data([res.get('incident', {})], INCIDENT)
 
 
-def get_service_keys():
+def get_service_keys() -> dict:
     offset = 0
     url = SERVER_URL + GET_SERVICES_SUFFIX
     res = http_request('GET', url, {"offset": offset})
@@ -764,7 +764,7 @@ def get_service_keys():
     outputs = []
     contexts = []
     while res.get('services', []):
-        services = res.get('services', [])
+        services: list[dict] = res.get('services', [{}])
         for service in services:
             context = {'ID': service.get('id'), 'Name': service.get('name'), 'Status': service.get('status'),
                        'CreatedAt': service.get('created_at')}
@@ -788,10 +788,10 @@ def get_service_keys():
                         integration_data['Vendor'] = vendor_value.get('summary', 'Missing Vendor information')
 
                     integration_list.append(integration_data)
-                    integration_string += (f"Name: {integration_data['Name']},"
-                                           " Vendor: {integration_data['Vendor']},"
-                                           " Key: {integration_data['Key']}\n"
-                                           )
+                    integration_string += (f"Name: {integration_data['Name']}, "
+                                           f"Vendor: {integration_data['Vendor']}, "
+                                           f"Key: {integration_data['Key']}\n"
+                                        )
 
             output = {'Integration': integration_string}
             context['Integration'] = integration_list
