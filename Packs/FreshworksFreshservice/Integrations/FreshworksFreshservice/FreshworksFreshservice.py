@@ -2,7 +2,8 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from http import HTTPStatus
 from collections import namedtuple
-from typing import Any, Callable, Dict, Tuple, Optional, List, Union
+from typing import Any
+from collections.abc import Callable
 import requests
 import base64
 
@@ -386,7 +387,7 @@ TICKET_TYPE_TO_ADDITIONAL_MIRRORING_FIELDS = {
         'planned_start_date', 'planned_end_date'
     ],
     'release':
-    ['agent_id', 'release_type', 'planned_start_date', 'planned_end_date'],
+        ['agent_id', 'release_type', 'planned_start_date', 'planned_end_date'],
 }
 
 TICKET_ID_PREFIX = {
@@ -437,7 +438,7 @@ class Client(BaseClient):
         ticket_filter: str = None,
         include: str = None,
         order_type: str = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ Lists all the Tickets in a Freshservice account.
 
         Args:
@@ -459,18 +460,17 @@ class Client(BaseClient):
             'query': updated_query,
             'updated_since': updated_since,
             'filter': ticket_filter,
-            'include': include or 'tags',
+            'include': include,
             'order_type': order_type,
         })
 
         url_suffix = get_url_suffix(ticket_id)
         url_suffix = '/filter' if updated_query else url_suffix
-
         return self._http_request('GET',
                                   f'api/v2/tickets{url_suffix}',
                                   params=params)
 
-    def freshservice_ticket_create(self, **kwargs) -> Dict[str, Any]:
+    def freshservice_ticket_create(self, **kwargs) -> dict[str, Any]:
         """ Create a new Ticket in a Freshservice account.
 
         Args:
@@ -544,9 +544,9 @@ class Client(BaseClient):
     def freshservice_ticket_update(
         self,
         ticket_id: int,
-        attachments: List[Tuple] = None,
+        attachments: list[tuple] = None,
         **kwargs,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ Update a Ticket in a Freshservice account.
 
         Args:
@@ -637,7 +637,7 @@ class Client(BaseClient):
         page: int = None,
         page_size: int = None,
         task_id: int = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ Retrieve tasks list (or a specific task) on a Ticket with
             the given ID from Freshservice.
 
@@ -669,7 +669,7 @@ class Client(BaseClient):
         title: str,
         description: str,
         status: int = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ Create a new task on a Ticket request in Freshservice.
 
         Args:
@@ -703,7 +703,7 @@ class Client(BaseClient):
         title: str = None,
         description: str = None,
         status: int = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ Update a task on a Ticket request in Freshservice.
 
         Args:
@@ -756,7 +756,7 @@ class Client(BaseClient):
         ticket_id: int,
         page: int = None,
         page_size: int = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ Retrieve all Conversations of a Ticket.
 
         Args:
@@ -782,10 +782,10 @@ class Client(BaseClient):
         body: str,
         from_email: str = None,
         user_id: int = None,
-        cc_emails: List[str] = None,
-        bcc_emails: List[str] = None,
-        files: List[Tuple] = None,
-    ) -> Dict[str, Any]:
+        cc_emails: list[str] = None,
+        bcc_emails: list[str] = None,
+        files: list[tuple] = None,
+    ) -> dict[str, Any]:
         """ Create a new reply for an existing Ticket Conversation.
 
         Args:
@@ -826,10 +826,10 @@ class Client(BaseClient):
         body: str,
         incoming: str = None,
         user_id: int = None,
-        notify_emails: List[str] = None,
+        notify_emails: list[str] = None,
         private: str = None,
-        files: List[Tuple] = None,
-    ) -> Dict[str, Any]:
+        files: list[tuple] = None,
+    ) -> dict[str, Any]:
         """ Create a new note for an existing Ticket Conversation.
 
         Args:
@@ -870,8 +870,8 @@ class Client(BaseClient):
         conversation_id: int,
         body: str,
         name: str = None,
-        files: List[Tuple] = None,
-    ) -> Dict[str, Any]:
+        files: list[tuple] = None,
+    ) -> dict[str, Any]:
         """ Update an existing Conversation on an existing Ticket
             in Freshservice.
 
@@ -924,7 +924,7 @@ class Client(BaseClient):
         problem_id: int = None,
         updated_since: str = None,
         order_type: str = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ Lists all the problems in a Freshservice account.
 
         Args:
@@ -949,7 +949,7 @@ class Client(BaseClient):
             f'api/v2/problems{get_url_suffix(problem_id)}',
             params=params)
 
-    def freshservice_problem_create(self, **kwargs) -> Dict[str, Any]:
+    def freshservice_problem_create(self, **kwargs) -> dict[str, Any]:
         """ Create a new problem request in Freshservice.
 
         Args:
@@ -994,7 +994,7 @@ class Client(BaseClient):
         )
 
     def freshservice_problem_update(self, ticket_id: int,
-                                    **kwargs) -> Dict[str, Any]:
+                                    **kwargs) -> dict[str, Any]:
         """ Update an existing Problem in Freshservice.
 
         Args:
@@ -1062,7 +1062,7 @@ class Client(BaseClient):
         page: int = None,
         page_size: int = None,
         task_id: int = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ Lists all the problem tasks in a Freshservice account.
 
         Args:
@@ -1093,7 +1093,7 @@ class Client(BaseClient):
         title: str,
         description: str,
         status: int = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ Create a new task on a Problem request in Freshservice.
 
         Args:
@@ -1128,7 +1128,7 @@ class Client(BaseClient):
         title: str = None,
         description: str = None,
         status: int = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ Update a task on a problem request in Freshservice.
 
         Args:
@@ -1183,7 +1183,7 @@ class Client(BaseClient):
         change_id: int = None,
         updated_since: str = None,
         order_type: str = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ Lists all the changes in a Freshservice account.
 
         Args:
@@ -1207,7 +1207,7 @@ class Client(BaseClient):
                                   f'api/v2/changes{get_url_suffix(change_id)}',
                                   params=params)
 
-    def freshservice_change_create(self, **kwargs) -> Dict[str, Any]:
+    def freshservice_change_create(self, **kwargs) -> dict[str, Any]:
         """ Create a new change request in Freshservice.
 
         Args:
@@ -1245,7 +1245,7 @@ class Client(BaseClient):
         self,
         ticket_id: int,
         **kwargs,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ Update an existing change request in Freshservice.
 
         Args:
@@ -1309,7 +1309,7 @@ class Client(BaseClient):
         page: int = None,
         page_size: int = None,
         task_id: int = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ Lists all the change tasks in a Freshservice account.
 
         Args:
@@ -1340,7 +1340,7 @@ class Client(BaseClient):
         title: str,
         description: str,
         status: int = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ Create a new task on a change request in Freshservice.
 
         Args:
@@ -1375,7 +1375,7 @@ class Client(BaseClient):
         title: str = None,
         description: str = None,
         status: int = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ Update a task on a change request in Freshservice.
 
         Args:
@@ -1431,7 +1431,7 @@ class Client(BaseClient):
         updated_query: str = None,
         updated_since: str = None,
         order_type: str = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ Lists all the releases in a Freshservice account.
 
         Args:
@@ -1456,7 +1456,7 @@ class Client(BaseClient):
             f'api/v2/releases{get_url_suffix(release_id)}',
             params=params)
 
-    def freshservice_release_create(self, **kwargs) -> Dict[str, Any]:
+    def freshservice_release_create(self, **kwargs) -> dict[str, Any]:
         """ Create a new release request in Freshservice.
 
         Args:
@@ -1497,7 +1497,7 @@ class Client(BaseClient):
         self,
         ticket_id: int,
         **kwargs,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ Update an existing release request in Freshservice.
 
         Args:
@@ -1563,7 +1563,7 @@ class Client(BaseClient):
         page: int = None,
         page_size: int = None,
         task_id: int = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ Lists all the release tasks in a Freshservice account.
 
         Args:
@@ -1594,7 +1594,7 @@ class Client(BaseClient):
         title: str,
         description: str,
         status: int = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ Create a new task on a release request in Freshservice.
 
         Args:
@@ -1629,7 +1629,7 @@ class Client(BaseClient):
         title: str = None,
         description: str = None,
         status: int = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ Update a task on a release request in Freshservice.
 
         Args:
@@ -1683,7 +1683,7 @@ class Client(BaseClient):
         page_size: int = None,
         entity_id_value: int = None,
         updated_query: str = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ Lists all the requesters in a Freshservice account.
 
         Args:
@@ -1710,7 +1710,7 @@ class Client(BaseClient):
         self,
         page: int = None,
         page_size: int = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ Lists all the requesters in a Freshservice account.
 
         Returns:
@@ -1732,7 +1732,7 @@ class Client(BaseClient):
         page_size: int = None,
         entity_id_value: int = None,
         updated_query: str = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ Lists all the Agents in a Freshservice account.
 
         Args:
@@ -1760,7 +1760,7 @@ class Client(BaseClient):
         page: int = None,
         page_size: int = None,
         entity_id_value: int = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ Lists all the Roles in a Freshservice account.
 
         Args:
@@ -1783,7 +1783,7 @@ class Client(BaseClient):
         page: int = None,
         page_size: int = None,
         entity_id_value: int = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ Lists all the Vendors in a Freshservice account.
 
         Args:
@@ -1806,7 +1806,7 @@ class Client(BaseClient):
         page: int = None,
         page_size: int = None,
         entity_id_value: int = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ Lists all the Softwares in a Freshservice account.
 
         Args:
@@ -1831,7 +1831,7 @@ class Client(BaseClient):
         page_size: int = None,
         entity_id_value: int = None,
         updated_query: str = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ Lists all the Assets in a Freshservice account.
 
         Args:
@@ -1860,7 +1860,7 @@ class Client(BaseClient):
         page: int = None,
         page_size: int = None,
         entity_id_value: int = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ Lists all the purchase orders in a Freshservice account.
 
         Args:
@@ -1883,7 +1883,7 @@ class Client(BaseClient):
         page: int = None,
         page_size: int = None,
         entity_id_value: int = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ Lists all the agent groups in a Freshservice account.
 
         Args:
@@ -1907,7 +1907,7 @@ class Client(BaseClient):
         page_size: int = None,
         entity_id_value: int = None,
         updated_query: str = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ Lists all the departments in a Freshservice account.
 
         Args:
@@ -1932,7 +1932,7 @@ class Client(BaseClient):
 
 def list_freshservice_ticket_command(
     client: Client,
-    args: Dict[str, Any],
+    args: dict[str, Any],
 ) -> CommandResults:
     """ Lists all the tickets/ problems/ changes/ releases in a Freshservice account.
 
@@ -1980,7 +1980,7 @@ def list_freshservice_ticket_command(
 
 def create_update_freshservice_ticket_command(
     client: Client,
-    args: Dict[str, Any],
+    args: dict[str, Any],
 ) -> CommandResults:
     """ Create a new or update an existing Ticket/ Problem/ Change/ Release in Freshservice.
 
@@ -2034,7 +2034,7 @@ def create_update_freshservice_ticket_command(
 
 def delete_freshservice_ticket_command(
     client: Client,
-    args: Dict[str, Any],
+    args: dict[str, Any],
 ) -> CommandResults:
     """ Delete an existing Ticket/ Problem/ Change/ Release in Freshservice.
 
@@ -2054,7 +2054,7 @@ def delete_freshservice_ticket_command(
         readable_output = f'{output_prefix} deleted successfully'
     except DemistoException as exc:
         if exc.res is not None and exc.res.status_code in [
-                HTTPStatus.METHOD_NOT_ALLOWED, HTTPStatus.NOT_FOUND
+            HTTPStatus.METHOD_NOT_ALLOWED, HTTPStatus.NOT_FOUND
         ]:
             readable_output = f'{output_prefix} {entity_id_value} does not exist'
         else:
@@ -2066,7 +2066,7 @@ def delete_freshservice_ticket_command(
 
 def list_freshservice_ticket_task_command(
     client: Client,
-    args: Dict[str, Any],
+    args: dict[str, Any],
 ) -> CommandResults:
     """ Retrieve tasks list (or a specific task) on a Ticket/ Problem/ Change/
         Release with the given ID from Freshservice.
@@ -2113,7 +2113,7 @@ def list_freshservice_ticket_task_command(
 
 def create_update_freshservice_ticket_task_command(
     client: Client,
-    args: Dict[str, Any],
+    args: dict[str, Any],
 ) -> CommandResults:
     """ Create or Update task of a Ticket/ Problem/ Change/
         Release with the given ID from Freshservice.
@@ -2173,7 +2173,7 @@ def create_update_freshservice_ticket_task_command(
 
 def delete_freshservice_ticket_task_command(
     client: Client,
-    args: Dict[str, Any],
+    args: dict[str, Any],
 ) -> CommandResults:
     """ Delete task from a Ticket/ Problem/ Change/
         Release with the given ID from Freshservice.
@@ -2197,7 +2197,7 @@ def delete_freshservice_ticket_task_command(
         readable_output = f'{output_prefix} Task deleted successfully'
     except DemistoException as exc:
         if exc.res is not None and exc.res.status_code in [
-                HTTPStatus.METHOD_NOT_ALLOWED, HTTPStatus.NOT_FOUND
+            HTTPStatus.METHOD_NOT_ALLOWED, HTTPStatus.NOT_FOUND
         ]:
             readable_output = f'Task {task_id} does not exist'
         else:
@@ -2209,7 +2209,7 @@ def delete_freshservice_ticket_task_command(
 
 def list_freshservice_ticket_conversation_command(
     client: Client,
-    args: Dict[str, Any],
+    args: dict[str, Any],
 ) -> CommandResults:
     """ Retrieve all Conversations of a Ticket. Conversations consist of
         replies as well as public and private notes added to a ticket.
@@ -2250,7 +2250,7 @@ def list_freshservice_ticket_conversation_command(
 
 def create_freshservice_ticket_conversation_reply_command(
     client: Client,
-    args: Dict[str, Any],
+    args: dict[str, Any],
 ) -> CommandResults:
     """ Create a new reply for an existing Ticket Conversation.
 
@@ -2301,7 +2301,7 @@ def create_freshservice_ticket_conversation_reply_command(
 
 def create_freshservice_ticket_conversation_note_command(
     client: Client,
-    args: Dict[str, Any],
+    args: dict[str, Any],
 ) -> CommandResults:
     """ Create a new note for an existing Ticket Conversation.
 
@@ -2347,7 +2347,7 @@ def create_freshservice_ticket_conversation_note_command(
 
 def update_freshservice_ticket_conversation_command(
     client: Client,
-    args: Dict[str, Any],
+    args: dict[str, Any],
 ) -> CommandResults:
     """ Update an existing Conversation on an existing Ticket in Freshservice.
 
@@ -2391,7 +2391,7 @@ def update_freshservice_ticket_conversation_command(
 
 def delete_freshservice_ticket_conversation_command(
     client: Client,
-    args: Dict[str, Any],
+    args: dict[str, Any],
 ) -> CommandResults:
     """ Delete the Conversation on a Ticket with the
         given ID from Freshservice.
@@ -2410,7 +2410,7 @@ def delete_freshservice_ticket_conversation_command(
         readable_output = 'Conversation deleted successfully'
     except DemistoException as exc:
         if exc.res is not None and exc.res.status_code in [
-                HTTPStatus.METHOD_NOT_ALLOWED, HTTPStatus.NOT_FOUND
+            HTTPStatus.METHOD_NOT_ALLOWED, HTTPStatus.NOT_FOUND
         ]:
             readable_output = 'Conversation does not exist'
         else:
@@ -2422,7 +2422,7 @@ def delete_freshservice_ticket_conversation_command(
 
 def list_freshservice_entities_command(
     client: Client,
-    args: Dict[str, Any],
+    args: dict[str, Any],
 ) -> CommandResults:
     """ Lists all the requesters/ agents/ vendors/ softwares/ assets/
         agent groups/ roles/ purchase orders in a Freshservice account.
@@ -2483,8 +2483,8 @@ def test_module(client: Client) -> str:
         client.freshservice_ticket_list(1, 20)
     except DemistoException as exc:
         if exc.res is not None and exc.res.status_code in [
-                HTTPStatus.UNAUTHORIZED, HTTPStatus.NOT_FOUND,
-                HTTPStatus.FORBIDDEN
+            HTTPStatus.UNAUTHORIZED, HTTPStatus.NOT_FOUND,
+            HTTPStatus.FORBIDDEN
         ]:
             return "Authorization Error: Unknown API key or Freshservice URL"
 
@@ -2497,9 +2497,9 @@ def test_module(client: Client) -> str:
 
 def get_request_arguments_per_ticket_type(
     entity_name: str,
-    args: Dict[str, Any],
+    args: dict[str, Any],
     entity_id_value: str = None,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """ Get the arguments for each ticket type when create or update ticket.
 
     Args:
@@ -2534,7 +2534,7 @@ def get_request_arguments_per_ticket_type(
             source=ticket_properties.source,
             responder_id=arg_to_number(args.get('responder_id')),
             requester_id=arg_to_number(args.get('requester_id')),
-            problem=get_arg_template(args.get('problem'), 'problem'),
+            problem=get_arg_template(args.get('problem'), 'problem'),   # type: ignore[arg-type]
             phone=args.get('phone'),
             name=args.get('name'),
             impact=ticket_properties.impact,
@@ -2545,12 +2545,10 @@ def get_request_arguments_per_ticket_type(
             due_by=args.get('due_by'),
             department_id=arg_to_number(args.get('department_id')),
             custom_fields=update_custom_fields(args),
-            change_initiating_ticket=get_arg_template(
-                args.get('change_initiating_ticket'),
-                'change_initiating_ticket'),
-            change_initiated_by_ticket=get_arg_template(
-                args.get('change_initiated_by_ticket'),
-                'change_initiated_by_ticket'),
+            change_initiating_ticket=get_arg_template(args.get('change_initiating_ticket'),  # type: ignore[arg-type]
+                                                      'change_initiating_ticket'),
+            change_initiated_by_ticket=get_arg_template(args.get('change_initiated_by_ticket'),  # type: ignore[arg-type]
+                                                        'change_initiated_by_ticket'),
             cc_emails=argToList(args.get('cc_emails')),
             category=args.get('category'),
             attachments=get_files_to_attach(args),
@@ -2565,10 +2563,8 @@ def get_request_arguments_per_ticket_type(
     return args_for_request
 
 
-def update_ticket_attachments(
-        client: Client, args_for_request: Dict[str, Any],
-        create_response: Dict[str, Any],
-        command_operator: str) -> Union[Dict[str, Any], None]:
+def update_ticket_attachments(client: Client, args_for_request: dict[str, Any], create_response: dict[str, Any],
+                              command_operator: str) -> dict[str, Any] | None:
     """ Update ticket with attachments when user create ticket with attachments.
 
     Args:
@@ -2591,9 +2587,9 @@ def update_ticket_attachments(
 
 
 def get_arg_template(
-    arg_values: Optional[List[Dict[str, Any]]],
+    arg_values: list[dict[str, Any]],
     arg_name: str,
-) -> Union[Dict[str, Optional[int]], List[Dict[str, Optional[int]]], None]:
+) -> dict[str, int | None] | list[dict[str, int | None]] | None:
     """ Get argument template {'display_id': some_id}.
 
     Args:
@@ -2615,7 +2611,7 @@ def get_arg_template(
     return arg_template
 
 
-def update_custom_fields(args: Dict[str, Any]) -> Dict[Any, Any] | None:
+def update_custom_fields(args: dict[str, Any]) -> dict[Any, Any] | None:
     """ Update custom_fields argument to match Freshservice template.
 
     Args:
@@ -2633,7 +2629,7 @@ def update_custom_fields(args: Dict[str, Any]) -> Dict[Any, Any] | None:
 
 def validate_mandatory_ticket_requester_fields(
     entity_name: str,
-    args: Dict[str, Any],
+    args: dict[str, Any],
     entity_id_value: str = None,
 ):
     """ Validate user specified one of the following:
@@ -2649,17 +2645,17 @@ def validate_mandatory_ticket_requester_fields(
         ValueError: In case user don't specified the required fields.
     """
     if all([
-            entity_name != 'release', not entity_id_value, not any([
-                args.get('requester_id'),
-                args.get('phone'),
-                args.get('email')
-            ])
+        entity_name != 'release', not entity_id_value, not any([
+            args.get('requester_id'),
+            args.get('phone'),
+            args.get('email')
+        ])
     ]):
         raise ValueError(
             'One of the following is mandatory: requester_id, phone, email')
 
 
-def get_files_to_attach(args: Dict[str, Any], ) -> List[Tuple]:
+def get_files_to_attach(args: dict[str, Any], ) -> list[tuple]:
     """ Get array of files to attach in Freshservice.
 
     Args:
@@ -2672,9 +2668,9 @@ def get_files_to_attach(args: Dict[str, Any], ) -> List[Tuple]:
 
 
 def convert_response_properties(
-    updated_response: List[dict] | Dict[str, Any],
-    predefined_values: Dict[str, Dict[str, int]],
-) -> List[dict] | Dict[str, Any]:
+    updated_response: list[dict] | dict[str, Any],
+    predefined_values: dict[str, dict[str, int]],
+) -> list[dict] | dict[str, Any]:
     """ Convert command properties from number to string for
         the XSOAR output.
 
@@ -2695,16 +2691,14 @@ def convert_response_properties(
 
     for item in updated_response:
         for response_key in response_keys:
-            if item.get(
-                    response_key) and response_key in predefined_values.keys():
-
+            if item.get(response_key) and response_key in predefined_values:
                 property_values = reverse_dict(predefined_values[response_key])
                 item[response_key] = property_values.get(item[response_key])
 
     return updated_response
 
 
-def reverse_dict(dict_: Dict[str, Any]) -> Dict[str, Any]:
+def reverse_dict(dict_: dict[str, Any]) -> dict[str, Any]:
     """ Reverse dictionary.
     Args:
         dict_ (dict[str, Any]): Dictionary to reverse.
@@ -2714,7 +2708,7 @@ def reverse_dict(dict_: Dict[str, Any]) -> Dict[str, Any]:
     return {v: k for k, v in dict_.items()}
 
 
-def get_args_by_command_name(args: Dict[str, Any]) -> Tuple:
+def get_args_by_command_name(args: dict[str, Any]) -> tuple:
     """ Return the default command args by the command name.
 
     Args:
@@ -2730,8 +2724,7 @@ def get_args_by_command_name(args: Dict[str, Any]) -> Tuple:
     output_prefix = entity_name.capitalize()
 
     # checks if command entity consists of two words.
-    if (len(command_name) > MAX_DEFAULT_ARGS_COUNT
-            and not {'task', 'conversation'}.intersection(command_name)):
+    if len(command_name) > MAX_DEFAULT_ARGS_COUNT and not {'task', 'conversation'}.intersection(command_name):
         entity_id_key = f'{entity_name}_{command_name[2]}_id'
         entity_name = f'{entity_name}_{command_name[2]}'
         output_prefix = f'{output_prefix}{command_name[2].capitalize()}'
@@ -2753,7 +2746,7 @@ def get_default_seconds(time_in_seconds: int) -> int:
                key=lambda default_time: abs(default_time - time_in_seconds))
 
 
-def get_file(file_id: str) -> Tuple:
+def get_file(file_id: str) -> tuple:
     """ Open file to send data to API.
 
     Args:
@@ -2769,7 +2762,7 @@ def get_file(file_id: str) -> Tuple:
     return file
 
 
-def convert_command_properties(args: Dict[str, Any],
+def convert_command_properties(args: dict[str, Any],
                                ticket_type: str) -> TicketProperties:
     """ Convert command properties from string to number for
         the Freshservice request.
@@ -2824,7 +2817,7 @@ def get_command_request(client: Client, command_entity: str) -> Callable:
         Callable: The request function.
     """
 
-    entities_request_functions: Dict[str, Callable] = {
+    entities_request_functions: dict[str, Callable] = {
         'vendor': client.freshservice_vendor_list,
         'department': client.freshservice_department_list,
         'asset': client.freshservice_asset_list,
@@ -2871,7 +2864,7 @@ def get_command_request(client: Client, command_entity: str) -> Callable:
     return entities_request_functions[command_entity]
 
 
-def get_command_list_args(args: Dict[str, Any],
+def get_command_list_args(args: dict[str, Any],
                           command_response_key: str,
                           command_arg_id: int = None) -> CommandArgs:
     """ Get command arguments according to the command mode: list or get.
@@ -2919,7 +2912,7 @@ def get_command_list_args(args: Dict[str, Any],
         # This condition makes sure the user doesn't provide the
         # entity ID argument in addition to any filter arguments.
         if command_response_key not in [
-                'task', 'conversation'
+            'task', 'conversation'
         ] and len(args.keys()) > MAX_DEFAULT_ARGS_COUNT:
             raise ValueError(
                 'You can specify ID or any other filter arguments, not both')
@@ -2935,7 +2928,7 @@ def get_command_list_args(args: Dict[str, Any],
 
 
 def build_query(
-    non_empty_args: Dict[str, Any],
+    non_empty_args: dict[str, Any],
     entity_name: str,
 ) -> str:
     """ Create a query for Freshservice according their template.
@@ -2963,7 +2956,7 @@ def build_query(
 
         # assign to updated_query only the filter arguments
         elif key not in [
-                'command_name', 'limit', 'page', 'page_size', 'order_type'
+            'command_name', 'limit', 'page', 'page_size', 'order_type'
         ]:
             if key in ['created_at', 'updated_at', 'due_by', 'fr_due_by']:
                 value = convert_date_time(value)
@@ -2971,10 +2964,10 @@ def build_query(
             correct_value = int(value) if 'id' in key else f"'{value}'"
 
             # Convert str value to int in case it's a predefined values
-            if entity_name in ['ticket', 'problem', 'change', 'release']:
-                if dict_key := TICKET_PROPERTIES_BY_TYPE[entity_name].get(key):
-                    integer_value = dict_key.get(value)
-                    correct_value = integer_value if integer_value is not None else correct_value
+            if entity_name in ['ticket', 'problem', 'change', 'release'] and \
+                    (dict_key := TICKET_PROPERTIES_BY_TYPE[entity_name].get(key)):
+                integer_value = dict_key.get(value)
+                correct_value = integer_value if integer_value is not None else correct_value
 
             if updated_query:
                 updated_query += f" AND {key}:{correct_value}"
@@ -3003,9 +2996,9 @@ def convert_date_time(date_time: str) -> str | None:
 
 
 def validate_pagination_arguments(
-    page: Optional[int] = None,
-    page_size: Optional[int] = None,
-    limit: Optional[int] = None,
+    page: int | None = None,
+    page_size: int | None = None,
+    limit: int | None = None,
 ):
     """ Validate pagination arguments according to their default.
 
@@ -3023,12 +3016,12 @@ def validate_pagination_arguments(
         )
     if page is not None and page < MIN_PAGE_NUM:
         raise ValueError(
-            f"page argument must be greater than {MIN_PAGE_NUM-1}.")
+            f"page argument must be greater than {MIN_PAGE_NUM - 1}.")
     if limit is not None and limit <= MIN_LIMIT:
         raise ValueError(f"limit argument must be greater than {MIN_LIMIT}.")
 
 
-def pagination(args: Dict[str, Any]) -> Tuple:
+def pagination(args: dict[str, Any]) -> tuple:
     """ Return the correct limit and offset for the API
         based on the user arguments page, page_size and limit.
 
@@ -3056,7 +3049,7 @@ def pagination(args: Dict[str, Any]) -> Tuple:
     return new_page, new_page_size, pagination_message
 
 
-def date_to_epoch_for_fetch(date: Optional[datetime]) -> int:
+def date_to_epoch_for_fetch(date: datetime | None) -> int:
     """
     Converts datetime object to date in epoch timestamp (in seconds),
     for fetch command.
@@ -3070,8 +3063,7 @@ def date_to_epoch_for_fetch(date: Optional[datetime]) -> int:
     return date_to_timestamp(date) // 1000
 
 
-def get_modified_remote_data(
-        client: Client, args: Dict[str, Any]) -> GetModifiedRemoteDataResponse:
+def get_modified_remote_data(client: Client, args: dict[str, Any]) -> GetModifiedRemoteDataResponse:
     """
     Queries for incidents that were modified since the last update.
 
@@ -3132,7 +3124,7 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
 
 def update_remote_system(
     client: Client,
-    args: Dict[str, Any],
+    args: dict[str, Any],
 ) -> str:
     """
     This command pushes local changes to the remote system.
@@ -3169,8 +3161,7 @@ def update_remote_system(
             )
             updated_arguments = {}
             for key, value in update_args.items():
-                if key in MIRRORING_COMMON_FIELDS + TICKET_TYPE_TO_ADDITIONAL_MIRRORING_FIELDS[
-                        ticket_type]:
+                if key in MIRRORING_COMMON_FIELDS + TICKET_TYPE_TO_ADDITIONAL_MIRRORING_FIELDS[ticket_type]:
                     update_value = dict_safe_get(TICKET_PROPERTIES_BY_TYPE,
                                                  [ticket_type, key, value],
                                                  value)
@@ -3195,16 +3186,13 @@ def update_remote_system(
         return incident_id
 
 
-def get_remote_data_command(
-    client: Client,
-    args: Dict[str, Any],
-    params: Dict[str, Any],
-) -> GetRemoteDataResponse:
+def get_remote_data_command(client: Client, args: dict[str, Any], params: dict[str, Any]) -> GetRemoteDataResponse:
     """
     Gets new information about the incidents in the remote system
     and updates existing incidents in Cortex XSOAR.
     Args:
         client: Freshservice API client.
+        params (dict): Integration parameters.
         args (Dict[str, Any]): command arguments.
     Returns:
         List[Dict[str, Any]]: first entry is the incident (which can be completely empty) and the new entries.
@@ -3262,7 +3250,7 @@ def convert_datetime_to_iso(created_at: str) -> datetime:
     return FormatIso8601(alert_date) + 'Z'
 
 
-def get_alert_properties(args: Dict[str, Any]) -> Tuple:
+def get_alert_properties(args: dict[str, Any]) -> tuple:
     """ Get alert properties.
 
     Args:
@@ -3284,7 +3272,7 @@ def get_alert_properties(args: Dict[str, Any]) -> Tuple:
     return ticket_types, alert_properties
 
 
-def get_last_run(args: Dict[str, Any], ticket_type: str) -> Tuple:
+def get_last_run(args: dict[str, Any], ticket_type: str) -> tuple:
     """ Get last run arguments.
 
     Args:
@@ -3322,7 +3310,7 @@ def get_last_run(args: Dict[str, Any], ticket_type: str) -> Tuple:
     return last_run_id, last_run_datetime, last_run_datetime_str
 
 
-def get_ticket_type_by_alert_id(alert_id: str) -> Tuple:
+def get_ticket_type_by_alert_id(alert_id: str) -> tuple:
     """ Get ticket ID & type from the alert ID.
 
     Args:
@@ -3341,15 +3329,15 @@ def get_ticket_type_by_alert_id(alert_id: str) -> Tuple:
 
 def fetch_relevant_tickets_by_ticket_type(
     client: Client,
-    alert_list: List[dict],
-    alert_properties: List[Tuple],
+    alert_list: list[dict],
+    alert_properties: list[tuple],
     fetch_ticket_task: bool,
     ticket_type: str,
     last_run_id: str,
     last_run_datetime: datetime,
     max_fetch_per_ticket_type: int,
-    mirror_direction: Optional[str],
-) -> Tuple:
+    mirror_direction: str | None,
+) -> tuple:
     """ Fetch only relevant ticket by ticket defined properties.
 
     Args:
@@ -3374,7 +3362,7 @@ def fetch_relevant_tickets_by_ticket_type(
         alert_id = alert.get('id')
 
         # use condition statement to avoid mypy error for alert_time
-        if alert_id != last_run_id and alert_time and last_run_datetime < alert_time:
+        if alert_id != last_run_id and alert_time and last_run_datetime < alert_time:  # noqa: SIM102
 
             # check if alert properties is according to the defined properties.
             if all((alert_property := alert.get(key)) is None
@@ -3402,8 +3390,7 @@ def fetch_relevant_tickets_by_ticket_type(
     return alerts, incidents
 
 
-def parse_incident(alert: dict, entity_name: str,
-                   mirror_direction: Optional[str]) -> dict:
+def parse_incident(alert: dict, entity_name: str, mirror_direction: str | None) -> dict:
     """
     Parse alert to XSOAR Incident.
 
@@ -3437,6 +3424,7 @@ def fetch_incidents(client: Client, params: dict):
 
     Args:
         client (Client): An API client object used to retrieve incidents.
+        params (dict): Integration params.
         args (dict): A dictionary of parameters used to configure the function.
             The following keys are supported:
                 - alert types (str): A comma-separated list of alert types to fetch.
@@ -3451,9 +3439,7 @@ def fetch_incidents(client: Client, params: dict):
                     A boolean value indicating whether to fetch ticket tasks along with incidents.
     """
     # use condition statement to avoid mypy error
-    mirror_direction = None if params[
-        "mirror_direction"] == 'None' else MIRROR_DIRECTION_MAPPING[
-            params["mirror_direction"]]
+    mirror_direction = None if params["mirror_direction"] == 'None' else MIRROR_DIRECTION_MAPPING[params["mirror_direction"]]
 
     ticket_types, alert_properties = get_alert_properties(params)
     fetch_ticket_task = argToBoolean(params['fetch_ticket_task'])
@@ -3519,8 +3505,8 @@ def fetch_incidents(client: Client, params: dict):
 
 
 def main():
-    params: Dict[str, Any] = demisto.params()
-    args: Dict[str, Any] = demisto.args()
+    params: dict[str, Any] = demisto.params()
+    args: dict[str, Any] = demisto.args()
 
     url = params['url']
     api_token = params.get('credentials', {}).get('password')
@@ -3536,83 +3522,83 @@ def main():
         client: Client = Client(url, api_token, verify_certificate, proxy)
         commands = {
             'freshservice-ticket-conversation-list':
-            list_freshservice_ticket_conversation_command,
+                list_freshservice_ticket_conversation_command,
             'freshservice-ticket-conversation-reply-create':
-            create_freshservice_ticket_conversation_reply_command,
+                create_freshservice_ticket_conversation_reply_command,
             'freshservice-ticket-conversation-note-create':
-            create_freshservice_ticket_conversation_note_command,
+                create_freshservice_ticket_conversation_note_command,
             'freshservice-ticket-conversation-update':
-            update_freshservice_ticket_conversation_command,
+                update_freshservice_ticket_conversation_command,
             'freshservice-ticket-conversation-delete':
-            delete_freshservice_ticket_conversation_command,
+                delete_freshservice_ticket_conversation_command,
         }
 
         if command == 'test-module':
             return_results(test_module(client))
         elif command in [
-                'freshservice-ticket-list',
-                'freshservice-problem-list',
-                'freshservice-change-list',
-                'freshservice-release-list',
+            'freshservice-ticket-list',
+            'freshservice-problem-list',
+            'freshservice-change-list',
+            'freshservice-release-list',
         ]:
             return_results(list_freshservice_ticket_command(client, args))
         elif command in [
-                'freshservice-ticket-delete',
-                'freshservice-problem-delete',
-                'freshservice-change-delete',
-                'freshservice-release-delete',
+            'freshservice-ticket-delete',
+            'freshservice-problem-delete',
+            'freshservice-change-delete',
+            'freshservice-release-delete',
         ]:
             return_results(delete_freshservice_ticket_command(client, args))
         elif command in [
-                'freshservice-ticket-update',
-                'freshservice-problem-update',
-                'freshservice-change-update',
-                'freshservice-release-update',
-                'freshservice-ticket-create',
-                'freshservice-problem-create',
-                'freshservice-change-create',
-                'freshservice-release-create',
+            'freshservice-ticket-update',
+            'freshservice-problem-update',
+            'freshservice-change-update',
+            'freshservice-release-update',
+            'freshservice-ticket-create',
+            'freshservice-problem-create',
+            'freshservice-change-create',
+            'freshservice-release-create',
         ]:
             return_results(
                 create_update_freshservice_ticket_command(client, args))
         elif command in [
-                'freshservice-ticket-task-list',
-                'freshservice-problem-task-list',
-                'freshservice-change-task-list',
-                'freshservice-release-task-list',
+            'freshservice-ticket-task-list',
+            'freshservice-problem-task-list',
+            'freshservice-change-task-list',
+            'freshservice-release-task-list',
         ]:
             return_results(list_freshservice_ticket_task_command(client, args))
         elif command in [
-                'freshservice-ticket-task-update',
-                'freshservice-problem-task-update',
-                'freshservice-change-task-update',
-                'freshservice-release-task-update',
-                'freshservice-ticket-task-create',
-                'freshservice-problem-task-create',
-                'freshservice-change-task-create',
-                'freshservice-release-task-create',
+            'freshservice-ticket-task-update',
+            'freshservice-problem-task-update',
+            'freshservice-change-task-update',
+            'freshservice-release-task-update',
+            'freshservice-ticket-task-create',
+            'freshservice-problem-task-create',
+            'freshservice-change-task-create',
+            'freshservice-release-task-create',
         ]:
             return_results(
                 create_update_freshservice_ticket_task_command(client, args))
         elif command in [
-                'freshservice-ticket-task-delete',
-                'freshservice-problem-task-delete',
-                'freshservice-change-task-delete',
-                'freshservice-release-task-delete',
+            'freshservice-ticket-task-delete',
+            'freshservice-problem-task-delete',
+            'freshservice-change-task-delete',
+            'freshservice-release-task-delete',
         ]:
             return_results(
                 delete_freshservice_ticket_task_command(client, args))
         elif command in [
-                'freshservice-requester-list',
-                'freshservice-requester-field-list',
-                'freshservice-agent-list',
-                'freshservice-role-list',
-                'freshservice-vendor-list',
-                'freshservice-software-list',
-                'freshservice-asset-list',
-                'freshservice-purchase-order-list',
-                'freshservice-agent-group-list',
-                'freshservice-department-list',
+            'freshservice-requester-list',
+            'freshservice-requester-field-list',
+            'freshservice-agent-list',
+            'freshservice-role-list',
+            'freshservice-vendor-list',
+            'freshservice-software-list',
+            'freshservice-asset-list',
+            'freshservice-purchase-order-list',
+            'freshservice-agent-group-list',
+            'freshservice-department-list',
         ]:
             return_results(list_freshservice_entities_command(client, args))
         elif command == 'fetch-incidents':
