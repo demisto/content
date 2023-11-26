@@ -512,7 +512,6 @@ def rasterize(path: str, width: int, height: int, r_type: RasterizeType = Raster
     :param full_screen: when set to True, the snapshot will take the whole page
     :param r_mode: rasterizing mode see: RasterizeMode enum.
     """
-    demisto.debug(f'Rasterizing, using mode: {r_mode}')
     page_load_time = max_page_load_time if max_page_load_time > 0 else DEFAULT_PAGE_LOAD_TIME
 
     if chrome_headless_running or not force_selenium_usage:  # pragma: no cover
@@ -528,6 +527,7 @@ def rasterize(path: str, width: int, height: int, r_type: RasterizeType = Raster
                                            max_page_load_time=page_load_time, full_screen=full_screen,
                                            include_url=include_url)
 
+    demisto.debug(f'Rasterizing, using mode: {r_mode}')
     rasterize_funcs: tuple[Callable, ...] = ()
     if r_mode == RasterizeMode.WEBDRIVER_PREFERED:
         rasterize_funcs = (rasterize_webdriver, rasterize_headless_cmd)
