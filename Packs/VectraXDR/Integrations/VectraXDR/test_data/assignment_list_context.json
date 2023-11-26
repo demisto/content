@@ -1,0 +1,218 @@
+{
+  "Vectra.Entity.Assignments(val.assignment_id && val.assignment_id == obj.assignment_id)": [
+    {
+      "id": 214,
+      "assigned_by": {
+        "id": 64,
+        "username": "test.user4@mail.com"
+      },
+      "date_assigned": "2023-08-18T10:55:29Z",
+      "events": [
+        {
+          "assignment_id": 214,
+          "actor": 64,
+          "event_type": "reassigned",
+          "datetime": "2023-08-18T10:56:11Z",
+          "context": {
+            "from": 39,
+            "to": 59,
+            "entity_t_score": 0,
+            "entity_c_score": 0
+          }
+        },
+        {
+          "assignment_id": 214,
+          "actor": 64,
+          "event_type": "created",
+          "datetime": "2023-08-18T10:55:29Z",
+          "context": {
+            "to": 39,
+            "entity_t_score": 0,
+            "entity_c_score": 0
+          }
+        }
+      ],
+      "host_id": 220,
+      "assigned_to": {
+        "id": 59,
+        "username": "test.user2@mail.com"
+      },
+      "assignment_id": 214
+    },
+    {
+      "id": 213,
+      "assigned_by": {
+        "id": 65,
+        "username": "test.user4@mail.com"
+      },
+      "date_assigned": "2023-08-18T09:59:53Z",
+      "events": [
+        {
+          "assignment_id": 213,
+          "actor": 65,
+          "event_type": "reassigned",
+          "datetime": "2023-08-18T10:45:47Z",
+          "context": {
+            "from": 59,
+            "to": 60,
+            "entity_t_score": 0,
+            "entity_c_score": 0
+          }
+        },
+        {
+          "assignment_id": 213,
+          "actor": 65,
+          "event_type": "reassigned",
+          "datetime": "2023-08-18T10:34:35Z",
+          "context": {
+            "from": 60,
+            "to": 59,
+            "entity_t_score": 0,
+            "entity_c_score": 0
+          }
+        },
+        {
+          "assignment_id": 213,
+          "actor": 65,
+          "event_type": "reassigned",
+          "datetime": "2023-08-18T10:33:34Z",
+          "context": {
+            "from": 59,
+            "to": 60,
+            "entity_t_score": 0,
+            "entity_c_score": 0
+          }
+        },
+        {
+          "assignment_id": 213,
+          "actor": 65,
+          "event_type": "reassigned",
+          "datetime": "2023-08-18T10:32:09Z",
+          "context": {
+            "from": 60,
+            "to": 59,
+            "entity_t_score": 0,
+            "entity_c_score": 0
+          }
+        },
+        {
+          "assignment_id": 213,
+          "actor": 65,
+          "event_type": "reassigned",
+          "datetime": "2023-08-18T10:13:21Z",
+          "context": {
+            "from": 59,
+            "to": 60,
+            "entity_t_score": 0,
+            "entity_c_score": 0
+          }
+        },
+        {
+          "assignment_id": 213,
+          "actor": 65,
+          "event_type": "created",
+          "datetime": "2023-08-18T09:59:53Z",
+          "context": {
+            "to": 59,
+            "entity_t_score": 0,
+            "entity_c_score": 0
+          }
+        }
+      ],
+      "account_id": 108,
+      "assigned_to": {
+        "id": 60,
+        "username": "test.user1@mail.com"
+      },
+      "assignment_id": 213
+    },
+    {
+      "id": 212,
+      "assigned_by": {
+        "id": 65,
+        "username": "test.user4@mail.com"
+      },
+      "date_assigned": "2023-08-18T06:29:56Z",
+      "date_resolved": "2023-08-18T06:32:09Z",
+      "events": [
+        {
+          "assignment_id": 212,
+          "actor": 65,
+          "event_type": "resolved",
+          "datetime": "2023-08-18T06:32:09Z",
+          "context": {
+            "entity_t_score": 77,
+            "entity_c_score": 53
+          }
+        },
+        {
+          "assignment_id": 212,
+          "actor": 65,
+          "event_type": "reassigned",
+          "datetime": "2023-08-18T06:31:02Z",
+          "context": {
+            "from": 59,
+            "to": 60,
+            "entity_t_score": 77,
+            "entity_c_score": 53
+          }
+        },
+        {
+          "assignment_id": 212,
+          "actor": 65,
+          "event_type": "created",
+          "datetime": "2023-08-18T06:29:56Z",
+          "context": {
+            "to": 59,
+            "entity_t_score": 77,
+            "entity_c_score": 53
+          }
+        }
+      ],
+      "outcome": {
+        "id": 1,
+        "builtin": true,
+        "user_selectable": true,
+        "title": "Benign True Positive",
+        "category": "benign_true_positive"
+      },
+      "resolved_by": {
+        "id": 65,
+        "username": "test.user4@mail.com"
+      },
+      "account_id": 108,
+      "assigned_to": {
+        "id": 60,
+        "username": "test.user1@mail.com"
+      },
+      "assignment_id": 212
+    },
+    {
+      "id": 211,
+      "assigned_by": {
+        "id": 64,
+        "username": "test.user4@mail.com"
+      },
+      "date_assigned": "2023-08-17T05:47:04Z",
+      "events": [
+        {
+          "assignment_id": 211,
+          "actor": 64,
+          "event_type": "created",
+          "datetime": "2023-08-17T05:47:04Z",
+          "context": {
+            "to": 39,
+            "entity_t_score": 67,
+            "entity_c_score": 39
+          }
+        }
+      ],
+      "account_id": 37,
+      "assigned_to": {
+        "id": 39,
+        "username": "test.user3@mail.com"
+      },
+      "assignment_id": 211
+    }
+  ]
+}
