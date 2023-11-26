@@ -30,7 +30,7 @@ class TestScoreCalculator:
                 'fileThreshold': 1,
                 'ipThreshold': 1,
                 'urlThreshold': 1,
-                'domainThreshold': 0,
+                'domainThreshold': 1,
                 'fileSuspiciousThreshold': 0,
                 'ipSuspiciousThreshold': 0,
                 'urlSuspiciousThreshold': 0,
