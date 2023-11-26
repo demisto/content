@@ -224,23 +224,21 @@
   - section_end "Gitlab CI Build Parameters"
 
 .checkout-upload-commit-content-nightly: &checkout-upload-commit-content-nightly
-  - section_start "Checkout upload commit content nightly"
+  - section_start "Checkout upload commit content nightly" --collapsed
   - | 
     if [[ -n "${NIGHTLY}" && "${CI_COMMIT_BRANCH}" == "master" ]]; then
-      echo "content nightly: checking out to the last successful upload commit $LAST_UPLOAD_COMMIT for the Packs folder"
-      git status
-      git reset $LAST_UPLOAD_COMMIT -- ./Packs  # resets the state of the "Packs" folder to the last successful upload commit, it discards any changes made to the folder since that commit
-      git checkout -- ./Packs  # checks out the "Packs" folder to the state of the last successful upload commit. it ensures that the folder matches the commit's content.
-      git clean -fd ./Packs  # cleans any untracked files and directories in the "Packs" folder. it ensures that only tracked files remain.
-      deleted_files=$(git diff --name-only --diff-filter=D $LAST_UPLOAD_COMMIT..HEAD -- Packs)  # get all the files deleted between the last successful upload commit to the master
-      if [[ -n "${deleted_files}" ]]; then
-        echo "deleted files between last upload commit $LAST_UPLOAD_COMMIT to branch $(git branch --show-current) are $deleted_files"
+      if [[ ! -d "${CI_PROJECT_DIR}/artifacts/production_packs" ]]; then
+        echo "content production packs do not exist in ${CI_PROJECT_DIR}/artifacts"
+        exit 1
       fi
-      for file in $deleted_files; do
-        git checkout HEAD -- "$file"  # restore any deleted files between the master branch and the last successful upload commit.
-      done
-      git status
-      echo "content nightly: successfully reverted the Packs folder to upload commit $LAST_UPLOAD_COMMIT"
+      rm -rf ./Packs
+      echo "copying production Packs folder from ${CI_PROJECT_DIR}/artifacts/production_packs to ./Packs"
+      cp -r ${CI_PROJECT_DIR}/artifacts/production_packs ./Packs
+      git config core.fileMode false  # used to tell git not to identify permission changes on files as changes
+      chmod -R 777 ./Packs  # required for the lint, we use the permissions of the file when running pytest within the containers
+      echo "the Packs changes between upload commit ${LAST_UPLOAD_COMMIT} to master commit ${CI_COMMIT_SHA} is:"
+      git status -- Packs  # show the differences between the upload commit to the master branch for the Packs folder
+      echo "The Packs folder is in the state of commit $LAST_UPLOAD_COMMIT"
     else
       echo "not checking out to the latest upload commit $LAST_UPLOAD_COMMIT because the build is not content nightly"
     fi
@@ -274,11 +272,28 @@
   - *install_node_modules
   - *install_venv
 
+.add-content-production-to-artifacts:
+  - section_start "Clone production content and add it to artifacts" --collapsed
+  - mkdir content_production
+  - cd content_production
+  - git init > /dev/null 2>&1
+  - git remote add origin https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_NAMESPACE}/content.git
+  - git fetch --depth 1 origin $LAST_UPLOAD_COMMIT
+  - git checkout FETCH_HEAD >${ARTIFACTS_FOLDER}/logs/add-content-production-to-artifacts.log 2>&1
+  - cp -r ./Packs ${ARTIFACTS_FOLDER}/production_packs
+  - echo "checked out ${LAST_UPLOAD_COMMIT} which is the last successful upload commit"
+  - section_end "Clone production content and add it to artifacts"
+  - job-done
+
+
 .default-job-settings:
   interruptible: true
   extends:
     - .default-cache
     - .default-before-script
+  needs:
+    - job: cloning-content-repo-last-upload-commit
+      optional: true
 
 .trigger-slack-notification:
   stage: .post
@@ -362,7 +377,6 @@
 .unittests-and-lint-settings:
   tags:
     - gce
-  needs: [ ]
   stage: unittests-and-validations
   artifacts:
     reports:
@@ -459,7 +473,6 @@
   stage: unittests-and-validations
   extends:
     - .default-job-settings
-  needs: []
   variables:
     KUBERNETES_CPU_REQUEST: 1000m
   artifacts:
@@ -514,3 +527,23 @@
     - .default-job-settings
   script:
     - python3 Tests/scripts/check_jobs_done.py --triggering-workflow "${WORKFLOW}" --job-done-files "${PIPELINE_JOBS_FOLDER}"
+
+cloning-content-repo-last-upload-commit:
+  stage: .pre
+  rules:
+    - if: '$NIGHTLY'
+  artifacts:
+    expire_in: 30 days
+    paths:
+      - ${CI_PROJECT_DIR}/artifacts/*
+      - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*
+    when: always
+  before_script:
+    - source .gitlab/helper_functions.sh
+    - *setup-network-certs
+    - *create_artifacts_and_server_type_instance_folders
+    - *get_last_upload_commit
+  variables:
+    ARTIFACTS_FOLDER: ${CI_PROJECT_DIR}/artifacts
+  script:
+    - !reference [.add-content-production-to-artifacts]

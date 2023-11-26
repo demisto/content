@@ -23,6 +23,7 @@ CONTENT_NIGHTLY_JOBS = [
     'xsoar-test_playbooks_results',
     'xsiam-test_playbooks_results',
     'xsiam-test_modeling_rule_results',
+    'cloning-content-repo-last-upload-commit'
 ]
 
 SDK_NIGHTLY_JOBS = [
