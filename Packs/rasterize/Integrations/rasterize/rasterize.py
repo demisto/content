@@ -132,26 +132,24 @@ class PychromeEventHandler:
             self.start_frame = frameId
 
     def frame_stopped_loading(self, frameId):
-        try:
-            if self.start_frame == frameId:
-                try:
-                    self.tab.Page.stopLoading()
+        if self.start_frame == frameId:
+            try:
+                self.tab.Page.stopLoading()
 
-                    with self.screen_lock:
-                        # must activate current tab
-                        self.browser.activate_tab(self.tab.id)
+                with self.screen_lock:
+                    # must activate current tab
+                    demisto.debug(self.browser.activate_tab(self.tab.id))
 
-                        # try:
-                        #   data = self.tab.Page.captureScreenshot()
-                        #   with open("%s.png" % time.time(), "wb") as fd:
-                        #     fd.write(base64.b64decode(data['data']))
-                        #   self.tab_ready.set()
-                        # finally:
-                        #     self.tab.stop()
-                except Exception as e:  # pragma: no cover
-                    demisto.info(f'Failed stop loading the page: {self.tab=}, {frameId=}')
-        finally:
-            self.tab_ready.set()
+                    # try:
+                    #   data = self.tab.Page.captureScreenshot()
+                    #   with open("%s.png" % time.time(), "wb") as fd:
+                    #     fd.write(base64.b64decode(data['data']))
+                    #   self.tab_ready.set()
+                    # finally:
+                    #     self.tab.stop()
+                    self.tab_ready.set()
+            except Exception as e:  # pragma: no cover
+                demisto.error(f'Failed stop loading the page: {self.tab=}, {frameId=}, {e=}')
 
 
 def pychrome_reap_children():
@@ -186,22 +184,25 @@ def pychrome_screenshot_image(path, width, height, wait_time, max_page_load_time
         tab.Page.enable()
         # tab.call_method("Page.navigate", url=path, _timeout=max_page_load_time)
         page_start_time = int(time.time())
-        tab.Page.navigate(url=path, _timeout=max_page_load_time)
+        if max_page_load_time < 0:
+            tab.Page.navigate(url=path, _timeout=max_page_load_time)
+        else:
+            tab.Page.navigate(url=path)
         navigate_time = int(time.time()) - page_start_time
-        tab_ready_wait_time = wait_time - navigate_time + 1
-        demisto.info(f'Waiting {wait_time}-{navigate_time}+1={tab_ready_wait_time} seconds for tab_ready')
+        tab_ready_wait_time = max(1, wait_time - navigate_time + 1)
+        demisto.debug(f'Waiting {wait_time}-{navigate_time}+1={tab_ready_wait_time} seconds for tab_ready')
         tab_ready.wait(tab_ready_wait_time)
         page_load_time = int(time.time()) - page_start_time
         demisto.debug(f'Navigated to {path}, {navigate_time=}, {page_load_time=}')
 
-        if wait_time > 0:
-            wait_time_actual = wait_time - page_load_time + 1
-            demisto.info(f'Waiting for {wait_time}-{page_load_time}+1={wait_time_actual} seconds before taking a screenshot')
-            time.sleep(wait_time_actual)  # pylint: disable=E9003
+        wait_time_actual = max(1, wait_time - page_load_time + 1)
+        demisto.debug(f'Waiting for {wait_time}-{page_load_time}+1={wait_time_actual} seconds before taking a screenshot')
+        time.sleep(wait_time_actual)  # pylint: disable=E9003
+
         return base64.b64decode(tab.Page.captureScreenshot()['data'])
     except pychrome.exceptions.TimeoutException:
         message = f'Timeout of {max_page_load_time} seconds reached while waiting for {path}'
-        demisto.info(message)
+        demisto.error(message)
         return_error(message)
     finally:
         try:
@@ -399,6 +400,25 @@ def is_chrome_headless_running():  # pragma: no cover
     ret_value = [f for f in lines if all(c in f for c in chrome_headless_substrings)]
     demisto.debug(f'is_chrome_headless_running: {ret_value}')
     return ret_value
+
+
+def pychrome_close_all_tabs_but_one():
+    browser = pychrome.Browser(url="http://127.0.0.1:9222")
+    if len(browser.list_tab()) == 1:
+        return
+
+    opened_tabs = browser.list_tab()
+    for tab in range(1, len(opened_tabs) - 1):
+        try:
+            tab.stop()
+        except pychrome.RuntimeException:
+            pass
+
+        browser.close_tab(tab)
+
+    time.sleep(1)
+    demisto.debug(f'{browser.list_tab()=}')
+    # assert len(browser.list_tab()) == 1
 
 
 def quit_driver_and_display_and_reap_children(driver, display):
