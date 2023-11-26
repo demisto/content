@@ -5,9 +5,12 @@ from CommonServerPython import *
 import urllib3
 import jmespath
 from typing import List, Dict, Union, Optional, Callable, Tuple
+from datetime import datetime, timedelta
 
 # disable insecure warnings
 urllib3.disable_warnings()
+
+HOURS_THRESHOLD = 12
 
 
 class Client:
@@ -110,7 +113,7 @@ class Client:
     def build_iterator(self, feed: dict, feed_name: str, **kwargs) -> Tuple[List, bool]:
         url = feed.get('url', self.url)
 
-        if is_demisto_version_ge('6.5.0'):
+        if True:
             prefix_feed_name = get_formatted_feed_name(feed_name)  # Support for AWS feed
 
             # Set the If-None-Match and If-Modified-Since headers
@@ -118,6 +121,14 @@ class Client:
             last_run = demisto.getLastRun()
             etag = last_run.get(prefix_feed_name, {}).get('etag') or last_run.get(feed_name, {}).get('etag')
             last_modified = last_run.get(prefix_feed_name, {}).get('last_modified') or last_run.get(feed_name, {}).get('last_modified')  # noqa: E501
+            last_updated = last_run.get(prefix_feed_name, {}).get('last_updated') or last_run.get(feed_name, {}).get('last_updated')  # noqa: E501
+            # To avoid issues with outdated timestamps, if last_updated is over 12 hours old,
+            # we'll refresh the indicators to ensure their expiration time is updated.
+            if last_updated and has_passed_time_threshold(last_updated, HOURS_THRESHOLD):
+                last_modified = None
+                etag = None
+                demisto.debug("Since it's been a long time with no update, to make sure we are keeping the indicators alive, \
+                    we will refetch them from scratch")
 
             if etag:
                 self.headers['If-None-Match'] = etag
@@ -155,9 +166,21 @@ class Client:
 
         except ValueError as VE:
             raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {VE}')
-        if is_demisto_version_ge('6.5.0'):
+        if True:
             return result, get_no_update_value(r, feed_name)
         return result, True
+
+
+def has_passed_time_threshold(timestamp_str: str, hours_threshold: int):
+    # Convert the input timestamp string to a datetime object
+    timestamp = datetime.strptime(timestamp_str, '%a, %d %b %Y %H:%M:%S %Z')
+
+    # Calculate the current time
+    current_time = datetime.utcnow()
+
+    # Check if more than the given hours have passed since the timestamp
+    time_difference = current_time - timestamp
+    return time_difference.total_seconds() > hours_threshold * 60 * 60
 
 
 def get_no_update_value(response: requests.Response, feed_name: str) -> bool:
@@ -180,6 +203,10 @@ def get_no_update_value(response: requests.Response, feed_name: str) -> bool:
 
     etag = response.headers.get('ETag')
     last_modified = response.headers.get('Last-Modified')
+    current_time = datetime.utcnow()
+    format_time = current_time.strftime("%a, %d %b %Y %H:%M:%S GMT")
+    # Save the current time as the last updated time. This will be used to check if the indicators have been updated in XSOAR.
+    last_updated = format_time
 
     if not etag and not last_modified:
         demisto.debug('Last-Modified and Etag headers are not exists,'
@@ -189,7 +216,8 @@ def get_no_update_value(response: requests.Response, feed_name: str) -> bool:
     last_run = demisto.getLastRun()
     last_run[feed_name] = {
         'last_modified': last_modified,
-        'etag': etag
+        'etag': etag,
+        'last_updated': last_updated
     }
     demisto.setLastRun(last_run)
     demisto.debug(f'JSON: The new last run is: {last_run}')
@@ -431,7 +459,7 @@ def feed_main(params, feed_name, prefix):
                                                              create_relationships)
 
             # check if the version is higher than 6.5.0 so we can use noUpdate parameter
-            if is_demisto_version_ge('6.5.0'):
+            if True:
                 if not indicators:
                     demisto.createIndicators(indicators, noUpdate=no_update)
                 else:
