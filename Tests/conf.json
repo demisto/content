@@ -20,6 +20,9 @@
     "testTimeout": 160,
     "testInterval": 20,
     "tests": [
+
+
+        
         {
             "playbookID": "playbook-AzureLogAnalytics-test",
             "integrations": "Azure Log Analytics",
