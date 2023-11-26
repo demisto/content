@@ -14,7 +14,7 @@ from junitparser import JUnitXml
 from tabulate import tabulate
 
 from Tests.scripts.common import calculate_results_table, get_all_failed_results, \
-    get_test_results_files, TEST_PLAYBOOKS_REPORT_FILE_NAME, TEST_SUITE_CELL_EXPLANATION, ERROR_TO_COLOR_NAME, ERROR_TO_MSG
+    get_test_results_files, TEST_PLAYBOOKS_REPORT_FILE_NAME, TEST_SUITE_CELL_EXPLANATION, FAILED_TO_COLOR_NAME, FAILED_TO_MSG
 from Tests.scripts.jira_issues import JIRA_SERVER_URL, JIRA_VERIFY_SSL, JIRA_API_KEY, \
     JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME, JIRA_LABELS, \
     find_existing_jira_ticket, JIRA_ADDITIONAL_FIELDS, generate_ticket_summary, generate_build_markdown_link, \
@@ -54,7 +54,7 @@ def generate_description_for_test_playbook(playbook_id: str,
                                            failed: bool) -> str:
     build_markdown_link = generate_build_markdown_link(build_number)
     table = tabulate(table_data, headers="firstrow", tablefmt="jira")
-    msg = jira_color_text(ERROR_TO_MSG[failed], ERROR_TO_COLOR_NAME[failed])
+    msg = jira_color_text(FAILED_TO_MSG[failed], FAILED_TO_COLOR_NAME[failed])
     description = f"""
         *{playbook_id}* {msg} in {build_markdown_link}
         Test Results file: {jira_file_link(junit_file_name)}

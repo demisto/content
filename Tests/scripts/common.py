@@ -40,15 +40,15 @@ RED_COLOR = "\033[91m"
 GREEN_COLOR = "\033[92m"
 TEST_PLAYBOOKS_REPORT_FILE_NAME = "test_playbooks_report.xml"
 TEST_MODELING_RULES_REPORT_FILE_NAME = "test_modeling_rules_report.xml"
-ERROR_TO_COLOR_ANSI = {
+FAILED_TO_COLOR_ANSI = {
     True: RED_COLOR,
     False: GREEN_COLOR,
 }
-ERROR_TO_COLOR_NAME = {
+FAILED_TO_COLOR_NAME = {
     True: "red",
     False: "green",
 }
-ERROR_TO_MSG = {
+FAILED_TO_MSG = {
     True: "failed",
     False: "succeeded",
 }
@@ -83,7 +83,7 @@ def get_properties_for_test_suite(test_suite: TestSuite) -> dict[str, str]:
 
 
 def failed_to_ansi_text(text: str, failed: bool) -> str:
-    return f"{ERROR_TO_COLOR_ANSI[failed]}{text}{NO_COLOR_ESCAPE_CHAR}"
+    return f"{FAILED_TO_COLOR_ANSI[failed]}{text}{NO_COLOR_ESCAPE_CHAR}"
 
 
 class TestSuiteStatistics:
