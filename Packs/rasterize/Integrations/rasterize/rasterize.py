@@ -514,18 +514,19 @@ def rasterize(path: str, width: int, height: int, r_type: RasterizeType = Raster
     """
     page_load_time = max_page_load_time if max_page_load_time > 0 else DEFAULT_PAGE_LOAD_TIME
 
-    if chrome_headless_running or not force_selenium_usage:  # pragma: no cover
+    if not force_selenium_usage:  # pragma: no cover
         demisto.debug(f'Using pychrome for rasterizing {path}')
         chrome_headless_running = ensure_chrome_running()
         demisto.debug(f'Using pychrome for rasterizing {path}, {chrome_headless_running=}')
-        if r_type == RasterizeType.PNG or str(r_type).lower() == 'png':
-            return pychrome_screenshot_image(path, width=width, height=height, wait_time=wait_time,
-                                             max_page_load_time=page_load_time, full_screen=full_screen,
-                                             include_url=include_url)
-        if r_type == RasterizeType.PDF or str(r_type).lower() == 'pdf':
-            return pychrome_screenshot_pdf(path, width=width, height=height, wait_time=wait_time,
-                                           max_page_load_time=page_load_time, full_screen=full_screen,
-                                           include_url=include_url)
+        if chrome_headless_running:  # pragma: no cover
+            if r_type == RasterizeType.PNG or str(r_type).lower() == 'png':
+                return pychrome_screenshot_image(path, width=width, height=height, wait_time=wait_time,
+                                                max_page_load_time=page_load_time, full_screen=full_screen,
+                                                include_url=include_url)
+            if r_type == RasterizeType.PDF or str(r_type).lower() == 'pdf':
+                return pychrome_screenshot_pdf(path, width=width, height=height, wait_time=wait_time,
+                                            max_page_load_time=page_load_time, full_screen=full_screen,
+                                            include_url=include_url)
 
     demisto.debug(f'Rasterizing, using mode: {r_mode}')
     rasterize_funcs: tuple[Callable, ...] = ()
