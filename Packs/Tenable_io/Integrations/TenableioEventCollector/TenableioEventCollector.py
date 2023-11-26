@@ -648,11 +648,11 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         'collector-name': collector_name,
         'instance-name': instance_name,
         'final-reporting-device': url,
-        'collector_type': ASSETS if data_type == ASSETS else EVENTS
+        'collector-type': ASSETS if data_type == ASSETS else EVENTS
     }
     if data_type == ASSETS:
-        headers['snapshot_id'] = str(round(time.time() * 1000))
-        headers['total_items_count'] = str(items_count)
+        headers['snapshot-id'] = str(round(time.time() * 1000))
+        headers['total-items-count'] = str(items_count)
 
     header_msg = 'Error sending new {data_type} into XSIAM.\n'.format(data_type = data_type)
 
@@ -781,13 +781,15 @@ def main() -> None:  # pragma: no cover
             assets, new_assets_last_run = fetch_assets_command(client, assets_last_run, max_fetch)
             demisto.debug(f"new lastrun assets: {new_assets_last_run}")
             demisto.setAssetsLastRun(new_assets_last_run)
-
-            send_events_to_xsiam(assets, product=PRODUCT, vendor=VENDOR)
-            demisto.debug(f"done sending {len(assets)} assets to xsiam")
+            # assets = [{"testing assets": "test"}]
+            # send_events_to_xsiam(assets, product=PRODUCT, vendor=VENDOR)
 
             # todo: to be implemented in CSP once we have the api endpoint from xdr
             demisto.updateModuleHealth({'assetsPulled': len(assets)})
-            # send_data_to_xsiam(assets, vendor=VENDOR, product=PRODUCT, data_type=ASSETS)
+
+            demisto.debug("now sending with send_data_to_xsiam")
+            send_data_to_xsiam(assets, vendor=VENDOR, product=PRODUCT, data_type=ASSETS)
+            demisto.debug(f"done sending {len(assets)} assets to xsiam")
 
         elif command == 'tenable-export-assets':
             results = get_assets_command(args, client)
