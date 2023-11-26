@@ -20,9 +20,10 @@ scripttarget: 0
 dependson: {}
 timeout: 0s
 outputs:
-- contextPath: brandInstances
-  description: List of the instances for the given brands.
-  type: Unknown
+- contextPath: yes
+  description: if integration is available.
+- contextPath: no
+  description: if there is no instance for the given brand.
 fromversion: 5.0.0
 dockerimage: demisto/python3:3.10.13.80593
 tests:

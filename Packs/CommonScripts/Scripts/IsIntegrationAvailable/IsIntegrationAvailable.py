@@ -11,7 +11,8 @@ def is_integration_available(brand_name: str, all_instances: Dict[str, dict]) ->
     return CommandResults(
         outputs_prefix='brandInstances',
         outputs=brand_instances,
-        readable_output=readable_output
+        readable_output=readable_output,
+        raw_response=readable_output
     )
 
 
