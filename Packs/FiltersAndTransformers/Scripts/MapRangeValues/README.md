@@ -1,6 +1,6 @@
 This script converts an input value into another value using two lists. The input value or range is searched in the first list (map_from). 
 If it exists, the value at the same index from the second list (map_to) is returned. If there is no match, the original value is returned.
-This script support range values of float numbers, and string.
+This script supports mapping from either ranges of float numbers or text strings.
 
 Example 1:
 
