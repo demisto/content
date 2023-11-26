@@ -857,6 +857,7 @@ outputs:
 - contextPath: Email.Relationships.EntityBType
   description: The type of the destination of the relationship.
 tests:
-- No tests (auto formatted)
-contentitemexportablefields:
-  contentitemfields: {}
+- Email Address Enrichment - Generic v2.1 - Test
+marketplaces:
+  - xsoar
+  - marketplacev2
