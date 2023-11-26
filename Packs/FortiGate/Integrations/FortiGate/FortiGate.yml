@@ -99,7 +99,7 @@ script:
       description: Was service group deleted.
       type: boolean
   - arguments:
-    - description: Service name
+    - description: Service name.
       name: serviceName
     deprecated: true
     description: Deprecated. Use `fortigate-list-firewall-services` instead. Get information about a service from FortiGate Firewall.
@@ -115,9 +115,9 @@ script:
       description: UDP Port range included for the service.
       type: string
   - arguments:
-    - description: Policy name
+    - description: Policy name.
       name: policyName
-    - description: Policy ID
+    - description: Policy ID.
       name: policyID
     deprecated: true
     description: Deprecated. Use `fortigate-list-firewall-policies` instead. Get information about a firewall policy on FortiGate.
@@ -719,7 +719,7 @@ script:
       description: The name of the deleted address.
       type: String
     - contextPath: Frotigate.Address.Deleted
-      description: Whether the address was deleted
+      description: Whether the address was deleted.
       type: Boolean
   - name: fortigate-list-firewall-address-ipv6s
     description: Retrieve firewall IPv6 addresses. Addresses define sources and destinations of network traffic and can be used in many functions such as firewall policies, ZTNA, etc.
@@ -1258,7 +1258,7 @@ script:
       predefined:
       - group
       - folder
-    - name: addresses
+    - name: address
       description: Comma-separated list of address names. Names can be retrieved with the commands `fortigate-list-firewall-address-ipv4s`, `fortigate-list-firewall-address-ipv4-multicasts` and `fortigate-list-firewall-address-ipv4-groups`.
     - name: excluded_addresses
       description: Comma-separated list of address names. Names can be retrieved with the commands `fortigate-list-firewall-address-ipv4s`, `fortigate-list-firewall-address-ipv4-multicasts` and `fortigate-list-firewall-address-ipv4-groups`.
@@ -1286,8 +1286,7 @@ script:
     - name: groupName
       description: Name of the address group to update. Names can be retrieved with the command `fortigate-list-firewall-address-ipv4-groups`.
       required: true
-      isArray: true
-    - name: addresses
+    - name: address
       description: Comma-separated list of address names. Names can be retrieved with the commands `fortigate-list-firewall-address-ipv4s`, `fortigate-list-firewall-address-ipv4-multicasts` and `fortigate-list-firewall-address-ipv4-groups`.
       isArray: true
     - name: excluded_addresses
@@ -1307,13 +1306,15 @@ script:
       predefined:
       - add
       - remove
-      required: true
     outputs:
     - contextPath: Fortigate.AddressGroup.Name
       description: The address group name.
       type: String
-    - contextPath: Fortigate.AddressGroup.Address
+    - contextPath: Fortigate.AddressGroup.Address.Name
       description: The address group members.
+      type: String
+    - contextPath: Frotigate.AddressGroup.UUID
+      description: Universally Unique Identifier.
       type: String
   - name: fortigate-delete-firewall-address-ipv4-group
     description: Delete firewall IPv4 address groups. Address groups are designed for ease of use in the administration of the device.
@@ -1409,7 +1410,6 @@ script:
       predefined:
       - add
       - remove
-      required: true
     outputs:
     - contextPath: Fortigate.Address6Group.Name
       description: The address group name.
@@ -2197,7 +2197,7 @@ script:
       description: The virtual domain name.
       type: String
   - name: fortigate-list-banned-ips
-    description: Retrieve Banned IPs. Banned IPs are IP addresses that have been quarantined for a variety of reasons, such as administrative decisions or due to security alerts from services like intrusion prevention systems (IPS), antivirus (AV), and denial-of-service (DoS) mitigations.
+    description: Retrieve Banned IPs. Banned IPs are IP addresses that have been quarantined for a variety of reasons, such as administrative decisions or due to security alerts from services like intrusion prevention systems (IPS), antivirus (AV), and denial-of-service (DoS) mitigation.
     arguments:
     - name: vdom
       description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
@@ -2210,8 +2210,8 @@ script:
       description: 'Comma-separated fields to format the API call to display certain information. Fields must be written as they are in the `raw_response`, for example: `name` or `comment`.'
       isArray: true
     outputs:
-    - contextPath: Fortigate.BannedIP.IPv6
-      description: The IPv6 address.
+    - contextPath: Fortigate.BannedIP.IsV6
+      description: Whether the IP is IPv4 (0) or IPv6 (1).
       type: Number
     - contextPath: Fortigate.BannedIP.Source
       description: Source of the ban.
