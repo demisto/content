@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repository == 'demisto/content' && github.event.pull_request.head.repo.fork == false && github.actor != 'dependabot[bot]'
     steps:
+      - name: Print repo details
+        uses: echo ${{ github.event.pull_request.head.repo }}
       - name: Checkout
         uses: actions/checkout@v4
       - name: Setup Python
