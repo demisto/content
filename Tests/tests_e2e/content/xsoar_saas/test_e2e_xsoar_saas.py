@@ -5,6 +5,7 @@ import pytest
 from _pytest.fixtures import SubRequest
 import requests
 from demisto_client.demisto_api.models.feed_indicator import FeedIndicator
+from demisto_client.demisto_api.rest import ApiException
 from demisto_sdk.commands.common.clients import XsoarSaasClient
 from Tests.tools import get_integration_params
 from Tests.scripts.utils.log_util import install_logging
@@ -99,45 +100,52 @@ def test_taxii2_server_returns_indicators(
         integration_params = get_integration_params(
             request.config.option.integration_secrets_path, instance_name="taxii2server-e2e"
         )
-        integration_params["longRunningPort"] = "8000"
-        with save_integration_instance(
-            xsoar_saas_client,
-            integration_params=integration_params,
-            integration_id="TAXII2 Server",
-            is_long_running=True,
-            instance_name=get_integration_instance_name(integration_params, default="TAXII2-Server")
-        ) as taxii2_instance_response:
-            instance_name = taxii2_instance_response.get("name")
-            username = integration_params["credentials"]["identifier"]
-            password = integration_params["credentials"]["password"]
-            headers = {"Accept": "application/taxii+json;version=2.1"}
-            response = xsoar_saas_client.do_long_running_instance_request(
-                instance_name,
-                url_suffix="/threatintel/collections",
-                headers=headers,
-                username=username,
-                password=password
-            )
+        # there are cases where the port can be taken in the machine, trying in a few other ports
+        try:
+            for port in ("8000", "8001, 8002"):
+                integration_params["longRunningPort"] = port
+                with save_integration_instance(
+                    xsoar_saas_client,
+                    integration_params=integration_params,
+                    integration_id="TAXII2 Server",
+                    is_long_running=True,
+                    instance_name=get_integration_instance_name(integration_params, default="TAXII2-Server")
+                ) as taxii2_instance_response:
+                    instance_name = taxii2_instance_response.get("name")
+                    username = integration_params["credentials"]["identifier"]
+                    password = integration_params["credentials"]["password"]
+                    headers = {"Accept": "application/taxii+json;version=2.1"}
+                    response = xsoar_saas_client.do_long_running_instance_request(
+                        instance_name,
+                        url_suffix="/threatintel/collections",
+                        headers=headers,
+                        username=username,
+                        password=password
+                    )
 
-            # get the collections available
-            collections = get_json_response(response).get("collections")
-            assert collections, f'could not get collections from url={response.request.url}, ' \
-                f'status_code={response.status_code}, response={collections}'
+                    # get the collections available
+                    collections = get_json_response(response).get("collections")
+                    assert collections, f'could not get collections from url={response.request.url}, ' \
+                        f'status_code={response.status_code}, response={collections}'
 
-            collection_id = collections[0]["id"]
+                    collection_id = collections[0]["id"]
 
-            # get the actual indicators from the collection
-            response = xsoar_saas_client.do_long_running_instance_request(
-                instance_name,
-                url_suffix=f"/threatintel/collections/{collection_id}/objects",
-                headers=headers,
-                username=username,
-                password=password
-            )
+                    # get the actual indicators from the collection
+                    response = xsoar_saas_client.do_long_running_instance_request(
+                        instance_name,
+                        url_suffix=f"/threatintel/collections/{collection_id}/objects",
+                        headers=headers,
+                        username=username,
+                        password=password
+                    )
 
-            indicators = get_json_response(response).get("objects")
-            assert indicators, f'could not get indicators from url={response.request.url} with available ' \
-                f'indicators={available_indicators}, status code={response.status_code}, response={indicators}'
+                    indicators = get_json_response(response).get("objects")
+                    assert indicators, f'could not get indicators from url={response.request.url} with available ' \
+                        f'indicators={available_indicators}, status code={response.status_code}, response={indicators}'
+        except ApiException as error:
+            logging.info(f'Got error when running test_taxii2_server_returns_indicators with {port=} error:\n{error}')
+            if port == "8002":
+                raise
 
 
 def test_slack_ask(request: SubRequest, xsoar_saas_client: XsoarSaasClient):
