@@ -57,4 +57,4 @@ This playbook does not use any sub-playbooks.
 
 ---
 
-![Cortex XDR - Retrieve File Playbook v2](../doc_files/Cortex_XDR_-_Retrieve_File_Playbook_v2.png)
+![Cortex XDR - Retrieve File Playbook v2](../doc_files/Cortex_XDR_-_Retrieve_File_v2.png)
