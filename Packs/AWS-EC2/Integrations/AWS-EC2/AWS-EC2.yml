@@ -3885,7 +3885,7 @@ script:
       type: Unknown
     description: Gets the public IP addresses that have been discovered by IPAM.
     name: aws-ec2-get-ipam-discovered-public-addresses
-  dockerimage: demisto/boto3py3:1.0.0.81005
+  dockerimage: demisto/boto3py3:1.0.0.81074
   runonce: false
   script: '-'
   subtype: python3

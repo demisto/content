@@ -30,6 +30,10 @@ class Boto3Client:
 
     def authorize_security_group_ingress(self, **kwargs):
         pass
+    
+    def describe_ipam_resource_discoveries(self, **kwargs):
+        pass
+    
 
 
 def create_client():
@@ -153,3 +157,91 @@ def test_parse_filter_field(filter, expected_results):
     """
     res = AWS_EC2.parse_filter_field(filter)
     assert res == expected_results
+
+@pytest.mark.parametrize('return_boto, expected_results', [
+    ({'IpamResourceDiscoveries':[]}, 'No Ipam Resource Discoveries were found.'),
+    ({"IpamResourceDiscoveries": {
+                "IpamResourceDiscoveryArn": "arn:aws:ec2::222222222222:ipam-resource-discovery/ipam-res-disco-11111111111111111",
+                "IpamResourceDiscoveryId": "ipam-res-disco-11111111111111111",
+                "IpamResourceDiscoveryRegion": "us-east-1",
+                "IsDefault": True,
+                "OperatingRegions": [
+                    {
+                        "RegionName": "ap-south-1"
+                    },
+                    {
+                        "RegionName": "eu-north-1"
+                    },
+                    {
+                        "RegionName": "eu-west-3"
+                    },
+                    {
+                        "RegionName": "eu-west-2"
+                    },
+                    {
+                        "RegionName": "eu-west-1"
+                    },
+                    {
+                        "RegionName": "ap-northeast-3"
+                    },
+                    {
+                        "RegionName": "ap-northeast-2"
+                    },
+                    {
+                        "RegionName": "ap-northeast-1"
+                    },
+                    {
+                        "RegionName": "ca-central-1"
+                    },
+                    {
+                        "RegionName": "sa-east-1"
+                    },
+                    {
+                        "RegionName": "ap-southeast-1"
+                    },
+                    {
+                        "RegionName": "ap-southeast-2"
+                    },
+                    {
+                        "RegionName": "eu-central-1"
+                    },
+                    {
+                        "RegionName": "us-east-1"
+                    },
+                    {
+                        "RegionName": "us-east-2"
+                    },
+                    {
+                        "RegionName": "us-west-1"
+                    },
+                    {
+                        "RegionName": "us-west-2"
+                    }
+                ],
+                "OwnerId": "222222222222",
+                "State": "create-complete",
+                "Tags": []
+            }}
+, """### Ipam Resource Discoveries
+|IpamResourceDiscoveryArn|IpamResourceDiscoveryId|IpamResourceDiscoveryRegion|IsDefault|OperatingRegions|OwnerId|State|Tags|
+|---|---|---|---|---|---|---|---|
+| arn:aws:ec2::222222222222:ipam-resource-discovery/ipam-res-disco-11111111111111111 | ipam-res-disco-11111111111111111 | us-east-1 | true | {'RegionName': 'ap-south-1'},<br>{'RegionName': 'eu-north-1'},<br>{'RegionName': 'eu-west-3'},<br>{'RegionName': 'eu-west-2'},<br>{'RegionName': 'eu-west-1'},<br>{'RegionName': 'ap-northeast-3'},<br>{'RegionName': 'ap-northeast-2'},<br>{'RegionName': 'ap-northeast-1'},<br>{'RegionName': 'ca-central-1'},<br>{'RegionName': 'sa-east-1'},<br>{'RegionName': 'ap-southeast-1'},<br>{'RegionName': 'ap-southeast-2'},<br>{'RegionName': 'eu-central-1'},<br>{'RegionName': 'us-east-1'},<br>{'RegionName': 'us-east-2'},<br>{'RegionName': 'us-west-1'},<br>{'RegionName': 'us-west-2'} | 222222222222 | create-complete |  |\n""")
+])
+def test_describe_ipam_resource_discoveries_command(mocker, return_boto, expected_results):
+    """
+    Given
+    - authorize-security-group-ingress-command arguments and aws client
+    - Case 1: Valid arguments.
+    - Case 2: Invalid arguments.
+    When
+    - running authorize-security-group-ingress-command.
+    Then
+    - Ensure that the information was parsed correctly
+    - Case 1: Should ensure that the right message was resulted return true.
+    - Case 2: Should ensure that no message was resulted return true.
+    """
+    aws_client = create_client()
+    mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
+    mocker.patch.object(Boto3Client, 'describe_ipam_resource_discoveries', return_value=return_boto)
+    results = AWS_EC2.describe_ipam_resource_discoveries_command({}, aws_client)
+    assert results.readable_output == expected_results
