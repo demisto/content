@@ -192,7 +192,6 @@ def send_email(username: str, user_email: str, incident_id: str, email_recipient
 @polling_function(
     name="IAMInitADUser",
     interval=10,
-    timeout=30,
     requires_polling_arg=False,
 )
 def create_zip_with_password(args: dict, generated_password: str, zip_password: str) -> PollResult:

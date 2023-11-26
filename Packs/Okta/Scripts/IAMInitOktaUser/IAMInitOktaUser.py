@@ -187,7 +187,6 @@ def send_email(username: str, email_recipient: str, email_subject: str,
 @polling_function(
     name="IAMInitOktaUser",
     interval=10,
-    timeout=30,
     requires_polling_arg=False,
 )
 def create_zip_with_password(args: dict, generated_password: str, zip_password: str) -> PollResult:
