@@ -2980,7 +2980,17 @@ def release_hosts_command(args, aws_client):
         demisto.results("The host was successfully released.")
 
 
-def describe_ipam_resource_discoveries_command(args, aws_client):
+def describe_ipam_resource_discoveries_command(args: Dict[str, Any], aws_client: AWSClient) -> CommandResults:
+    """
+    aws-ec2-describe-ipam-resource-discoveries command: Describes IPAM resource discoveries. A resource discovery is an IPAM component that enables IPAM to manage and monitor resources that belong to the owning account.
+
+    Args:
+        client (AWSClient): AWS client to use.
+        args (dict): all command arguments, usually passed from ``demisto.args()``.
+
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains IPAM resource discoveries.
+    """
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('AddressRegion') or args.get('region'),
@@ -3001,8 +3011,8 @@ def describe_ipam_resource_discoveries_command(args, aws_client):
     response = client.describe_ipam_resource_discoveries(**kwargs)
     
     if len(response['IpamResourceDiscoveries']) == 0:
-        return_results('No Ipam Resource Discoveries were found.')
-        return
+        return 'No Ipam Resource Discoveries were found.'
+        
 
     human_readable = tableToMarkdown('Ipam Resource Discoveries', response['IpamResourceDiscoveries'])
     command_results = CommandResults(
@@ -3012,11 +3022,19 @@ def describe_ipam_resource_discoveries_command(args, aws_client):
         raw_response=response,
         readable_output=human_readable,
     )
-    return_results(command_results)
+    return command_results
 
+def describe_ipam_resource_discovery_associations_command(args: Dict[str, Any], aws_client: AWSClient) -> CommandResults:
+    """
+    aws-ec2-describe-ipam-resource-discovery-associations command: Describes resource discovery association with an Amazon VPC IPAM. An associated resource discovery is a resource discovery that has been associated with an IPAM.
 
-def describe_ipam_resource_discovery_associations_command(args, aws_client):
-    #region = args.get('region') if args.get('AddressRegion') else 
+    Args:
+        client (AWSClient): AWS client to use.
+        args (dict): all command arguments, usually passed from ``demisto.args()``.
+
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains IPAM discovery associations.
+    """
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('AddressRegion') or args.get('region'),
@@ -3037,8 +3055,7 @@ def describe_ipam_resource_discovery_associations_command(args, aws_client):
     response = client.describe_ipam_resource_discovery_associations( **kwargs)
     
     if len(response['IpamResourceDiscoveryAssociations']) == 0:
-        return_results('No Ipam Resource Discovery Associations were found.')
-        return
+        return 'No Ipam Resource Discovery Associations were found.'
     
     human_readable = tableToMarkdown('Ipam Resource Discovery Associations', response['IpamResourceDiscoveryAssociations'])
     command_results = CommandResults(
@@ -3048,11 +3065,19 @@ def describe_ipam_resource_discovery_associations_command(args, aws_client):
         raw_response=response,
         readable_output=human_readable,
     )
-    return_results(command_results)
+    return command_results
 
+def get_ipam_discovered_public_addresses_command(args: Dict[str, Any], aws_client: AWSClient) -> CommandResults:
+    """
+    aws-ec2-get-ipam-discovered-public-addresses: Gets the public IP addresses that have been discovered by IPAM.
 
-def get_ipam_discovered_public_addresses_command(args, aws_client):
+    Args:
+        client (AWSClient): AWS client to use.
+        args (dict): all command arguments, usually passed from ``demisto.args()``.
 
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains public IP addresses that have been discovered by IPAM.
+    """
     if (args.get('IpamResourceDiscoveryId') is None) or (args.get('AddressRegion') is None):
         return_error('IpamResourceDiscoveryId and AddressRegion need to be defined')   
     
@@ -3076,8 +3101,7 @@ def get_ipam_discovered_public_addresses_command(args, aws_client):
     response = client.get_ipam_discovered_public_addresses(**kwargs)
     
     if len(response['IpamDiscoveredPublicAddresses']) == 0:
-        return_results('No Ipam Discovered Public Addresseses were found.')
-        return
+        return 'No Ipam Discovered Public Addresseses were found.'
     
     output = json.dumps(response, cls=DatetimeEncoder)
 
@@ -3089,7 +3113,7 @@ def get_ipam_discovered_public_addresses_command(args, aws_client):
         raw_response=json.loads(output),
         readable_output=human_readable,
     )
-    return_results(command_results)
+    return command_results
 
 def main():
     try:
@@ -3339,13 +3363,13 @@ def main():
             release_hosts_command(args, aws_client)
         
         elif command == 'aws-ec2-describe-ipam-resource-discoveries':
-            describe_ipam_resource_discoveries_command(args, aws_client)
+            return_results(describe_ipam_resource_discoveries_command(args, aws_client))
         
         elif command == 'aws-ec2-describe-ipam-resource-discovery-associations':
-            describe_ipam_resource_discovery_associations_command(args, aws_client)
+            return_results(describe_ipam_resource_discovery_associations_command(args, aws_client))
         
         elif command == 'aws-ec2-get-ipam-discovered-public-addresses':
-            get_ipam_discovered_public_addresses_command(args, aws_client)
+            return_results(get_ipam_discovered_public_addresses_command(args, aws_client))
 
     except Exception as e:
         LOG(e)
