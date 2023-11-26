@@ -1,3 +1,5 @@
+import ldap3
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -23,6 +25,7 @@ class LdapClient:
 
     OPENLDAP = 'OpenLDAP'
     ACTIVE_DIRECTORY = 'Active Directory'
+    AUTO = 'Auto'
     GROUPS_TOKEN = 'primaryGroupToken'
     GROUPS_MEMBER = 'memberOf'
     GROUPS_PRIMARY_ID = 'primaryGroupID'
@@ -41,7 +44,6 @@ class LdapClient:
     }
 
     def __init__(self, kwargs):
-        self._ldap_server_vendor = kwargs.get('ldap_server_vendor', self.OPENLDAP)  # OpenLDAP or Active Directory
         self._host = kwargs.get('host')
         self._port = int(kwargs.get('port')) if kwargs.get('port') else None
         self._username = kwargs.get('credentials', {}).get('identifier', '')
@@ -52,6 +54,9 @@ class LdapClient:
         self._fetch_groups = kwargs.get('fetch_groups', True)
         self._verify = not kwargs.get('insecure', False)
         self._ldap_server = self._initialize_ldap_server()
+        self._ldap_server_vendor = kwargs.get('ldap_server_vendor', self.OPENLDAP)  # OpenLDAP or Active Directory
+        if self._ldap_server_vendor == self.AUTO:
+            self._determine_ldap_vendor_auto()
         self._page_size = int(kwargs.get('page_size', 500))
 
         # OpenLDAP only fields:
@@ -151,17 +156,41 @@ class LdapClient:
             demisto.info(f"Initializing LDAP sever with SSL/TLS (unsecure: {not self._verify})."
                          f" port: {self._port or 'default(636)'}")
             tls = self._get_tls_object()
-            return Server(host=self._host, port=self._port, use_ssl=True, tls=tls, connect_timeout=LdapClient.TIMEOUT)
+            server = Server(host=self._host, port=self._port, use_ssl=True, tls=tls, connect_timeout=LdapClient.TIMEOUT)
 
         elif self._connection_type == 'start tls':  # Secure connection (STARTTLS)
             demisto.info(f"Initializing LDAP sever without a secure connection - Start TLS operation will be executed"
                          f" during bind. (unsecure: {not self._verify}). port: {self._port or 'default(389)'}")
             tls = self._get_tls_object()
-            return Server(host=self._host, port=self._port, use_ssl=False, tls=tls, connect_timeout=LdapClient.TIMEOUT)
+            server = Server(host=self._host, port=self._port, use_ssl=False, tls=tls, connect_timeout=LdapClient.TIMEOUT)
 
         else:  # Unsecure (non encrypted connection initialized) - connection type is None
             demisto.info(f"Initializing LDAP sever without a secure connection. port: {self._port or 'default(389)'}")
-            return Server(host=self._host, port=self._port, connect_timeout=LdapClient.TIMEOUT)
+            server = Server(host=self._host, port=self._port, connect_timeout=LdapClient.TIMEOUT)
+
+        return server
+
+    def _determine_ldap_vendor_auto(self):
+        """
+            Determines the LDAP vendor automatically
+        """
+        try:
+            with Connection(self._ldap_server) as conn:
+                conn.search(search_base='',
+                            search_filter='(objectClass=*)',
+                            search_scope=BASE,
+                            attributes=[ldap3.ALL_ATTRIBUTES])
+                entry = conn.entries[0]
+                if 'objectClass' in entry and 'OpenLDAProotDSE' in entry['objectClass'].value:
+                    self._ldap_server_vendor = self.OPENLDAP
+                    demisto.info(f'Determining LDAP vendor is {self._ldap_server_vendor}')
+                else:
+                    # There is no way to determine the AD vendor, and as we support only 2 vendors,
+                    # we can assume the AD vendor by saying that it is not OpenLDAP
+                    self._ldap_server_vendor = self.ACTIVE_DIRECTORY
+                    demisto.info(f'Determining LDAP vendor is {self._ldap_server_vendor}')
+        except Exception as e:
+            raise DemistoException(f'Could not parse LDAP vendor automatically. Try choosing the vendor. Error: str({e})')
 
     @staticmethod
     def _parse_ldap_group_entries(ldap_group_entries: List[dict], groups_identifier_attribute: str) -> List[dict]:

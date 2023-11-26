@@ -13,6 +13,7 @@ configuration:
   options:
   - OpenLDAP
   - Active Directory
+  - Auto
   required: true
   type: 15
   section: Connect
