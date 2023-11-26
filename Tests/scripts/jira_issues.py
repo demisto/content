@@ -55,7 +55,7 @@ def jira_file_link(file_name: str) -> str:
 
 
 def jira_sanitize_file_name(file_name: str) -> str:
-    return re.sub(r'[^\w-]+', '-', file_name).lower()
+    return re.sub(r'[^\w-]', '-', file_name).lower()
 
 
 def jira_color_text(text: str, color: str) -> str:
