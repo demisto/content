@@ -26,7 +26,7 @@ variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
   FEATURE_BRANCH_NAME: "v4.5.0"
   IFRA_ENV_TYPE: "Content-Env"
-  GIT_DEPTH: 1000
+  GIT_DEPTH: 300
   GET_SOURCES_ATTEMPTS: 3  # see https://docs.gitlab.com/ee/ci/runners/configure_runners.html#job-stages-attempts
   GCS_PRODUCTION_BUCKET: "${TEST_XDR_PREFIX}marketplace-dist"
   GCS_PRODUCTION_V2_BUCKET: "${TEST_XDR_PREFIX}marketplace-v2-dist"
