@@ -788,7 +788,7 @@ def main() -> None:  # pragma: no cover
             demisto.updateModuleHealth({'assetsPulled': len(assets)})
 
             demisto.debug("now sending with send_data_to_xsiam")
-            send_data_to_xsiam(assets, vendor=VENDOR, product=PRODUCT, data_type=ASSETS)
+            send_data_to_xsiam(assets, vendor=VENDOR, product=f'{PRODUCT}_assets', data_type=ASSETS)
             demisto.debug(f"done sending {len(assets)} assets to xsiam")
 
         elif command == 'tenable-export-assets':
