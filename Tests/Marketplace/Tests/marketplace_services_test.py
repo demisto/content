@@ -1594,8 +1594,8 @@ class TestFilterChangelog:
                 - Realease notes entries wrapped by tags for XSOAR marketplaces.
             When:
                 - Uploading and preparing the RN for upload.
-            Then: 
-                - Validate that each mp contains the correct entries. 
+            Then:
+                - Validate that each mp contains the correct entries.
         """
         result = dummy_pack.filter_release_notes_by_tags(self.RN_ENTRY_XSOAR_TAGS, upload_marketplace)
         assert result == expected_result
