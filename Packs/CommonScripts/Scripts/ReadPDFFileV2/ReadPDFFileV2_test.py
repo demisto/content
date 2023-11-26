@@ -1,3 +1,4 @@
+from pytest_mock import MockerFixture
 import demistomock as demisto
 import os
 
@@ -27,6 +28,51 @@ def test_urls_are_found_correctly(mocker):
     assert urls == {'http://www.w3.org/1999/xhtml'}
 
 
+def test_run_shell_command_using_owner_password_error():
+    """
+    Given
+        - An encrypted pdf file (where the user and owner password are not the same) and an owner password.
+    When
+        - Trying to decrypt the file with the owner password using the [upw] flag (which specifies a user password).
+    Then
+        - Raise an exception since we need to use the [opw] flag (which specifies an owner password).
+    """
+    from ReadPDFFileV2 import run_shell_command
+    with pytest.raises(PdfInvalidCredentialsException) as e:
+        run_shell_command("pdfinfo", "-upw", '123456!', f'{CWD}/dummy-with-owner-pass.pdf')
+    assert 'Incorrect password' in str(e)
+
+
+def test_run_shell_command_using_owner_password():
+    """
+    Given
+        - An encrypted pdf file (where the user and owner password are not the same) and an owner password.
+    When
+        - Decrypting the file with the owner password using the [opw] flag (which specifies an owner password).
+    Then
+        - Validate that the function did not raise any errors.
+    """
+    from ReadPDFFileV2 import run_shell_command
+    run_shell_command("pdfinfo", "-opw", '123456!', f'{CWD}/dummy-with-owner-pass.pdf')
+
+
+def test_get_pdf_metadata_using_owner_password(mocker: MockerFixture):
+    """
+    Given
+        - An encrypted pdf file (where the user and owner password are not the same) and an owner password.
+    When
+        - Extracting the metadata of the file.
+    Then
+        - Validate that pdfinfo was first called using the [upw] flag, and then the [opw] flag.
+    """
+    from ReadPDFFileV2 import get_pdf_metadata, run_shell_command
+    run_shell_command_mocker = mocker.patch('ReadPDFFileV2.run_shell_command', side_effect=run_shell_command)
+    get_pdf_metadata(file_path=f'{CWD}/dummy-with-owner-pass.pdf', user_or_owner_password='123456!')
+    assert run_shell_command_mocker.call_count == 2
+    assert run_shell_command_mocker.call_args_list[0][0][0:2] == ('pdfinfo', '-upw')
+    assert run_shell_command_mocker.call_args_list[1][0][0:2] == ('pdfinfo', '-opw')
+
+
 def test_incorrect_authentication():
     """
     Given
@@ -41,7 +87,7 @@ def test_incorrect_authentication():
     dec_file_path = f'{CWD}/decrypted.pdf'
 
     with pytest.raises(PdfInvalidCredentialsException) as e:
-        get_pdf_metadata(file_path=file_path, user_password='12')
+        get_pdf_metadata(file_path=file_path, user_or_owner_password='12')
     assert 'Incorrect password' in str(e)
 
     with pytest.raises(PdfInvalidCredentialsException) as e:
@@ -86,7 +132,7 @@ def test_get_pdf_metadata_with_encrypted(mocker, raw_result, expected_result):
     from ReadPDFFileV2 import get_pdf_metadata
     file_path = f'{CWD}/encrypted.pdf'
     mocker.patch('ReadPDFFileV2.run_shell_command', return_value=raw_result)
-    metadata = get_pdf_metadata(file_path, user_password='1234')
+    metadata = get_pdf_metadata(file_path, user_or_owner_password='1234')
     assert metadata == expected_result
 
 

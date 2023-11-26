@@ -32,7 +32,7 @@ WORKFLOW_TYPES = {
 BUCKET_UPLOAD_BRANCH_SUFFIX = '-upload_test_branch'
 TOTAL_HEADER = "Total"
 NOT_AVAILABLE = "N/A"
-TEST_SUITE_JIRA_HEADERS: list[str] = ["Jira\nTicket", "Jira Ticket\nResolution"]
+TEST_SUITE_JIRA_HEADERS: list[str] = ["Jira\nTicket", "Jira\nTicket\nResolution"]
 TEST_SUITE_DATA_CELL_HEADER = "S/F/E/T"
 TEST_SUITE_CELL_EXPLANATION = "(Table headers: Skipped/Failures/Errors/Total)"
 NO_COLOR_ESCAPE_CHAR = "\033[0m"
@@ -58,6 +58,11 @@ def get_test_results_files(artifacts_path: Path, file_name: str) -> dict[str, Pa
         if (file_path := Path(artifacts_path) / directory / file_name).exists():
             logging.info(f"Found result file: {file_path} for instance role: {instance_role}")
             results_files[instance_role] = file_path
+        else:
+            # Write an empty report file to avoid failing the build artifacts collection.
+            JUnitXml().write(file_path.as_posix(), pretty=True)
+            logging.warning(f"Could not find any test playbook result files in {artifacts_path}, "
+                            "Creating an empty file.")
     return results_files
 
 
@@ -93,9 +98,9 @@ class TestSuiteStatistics:
         return red_text(res_str) if show_as_error else green_text(res_str)
 
     def __str__(self):
-        return (f"{self.show_with_color(self.skipped)} / "
-                f"{self.show_with_color(self.failures, self.failures > 0)} / "
-                f"{self.show_with_color(self.errors, self.errors > 0)} / "
+        return (f"{self.show_with_color(self.skipped)}/"
+                f"{self.show_with_color(self.failures, self.failures > 0)}/"
+                f"{self.show_with_color(self.errors, self.errors > 0)}/"
                 f"{self.show_with_color(self.tests, self.errors + self.failures > 0)}")
 
 
@@ -118,8 +123,10 @@ def calculate_results_table(jira_tickets_for_result: dict[str, Issue],
     fixed_headers_length = len(headers)
     server_versions_list: list[str] = sorted(server_versions)
     for server_version in server_versions_list:
+        server_version_header = server_version.replace(' ', headers_multiline_char)
         headers.append(
-            server_version if transpose else f"{server_version}{headers_multiline_char}({TEST_SUITE_DATA_CELL_HEADER})"
+            server_version_header
+            if transpose else f"{server_version_header}{headers_multiline_char}{TEST_SUITE_DATA_CELL_HEADER}"
         )
         column_align.append("center")
     tabulate_data = [headers]
@@ -199,3 +206,10 @@ def get_all_failed_results(results: dict[str, dict[str, Any]]) -> dict[str, dict
                 break
 
     return failed_results
+
+
+def replace_escape_characters(sentence: str, replace_with: str = " ") -> str:
+    escape_chars = ["\n", "\r", "\b", "\f", "\t"]
+    for escape_char in escape_chars:
+        sentence = sentence.replace(escape_char, replace_with)
+    return sentence
