@@ -64,10 +64,10 @@ def test_last_run(last_run_dict, event_types_to_run, expected):
 
 def mock_client():
     return FireEyeETPEventCollector.Client(
-        base_url='test.xom',
+        base_url='test.com',
         verify_certificate=False,
         proxy=False,
-        api_key='api_key',
+        api_key='api-key',
         outbound_traffic=False,
         hide_sensitive=True
     )
