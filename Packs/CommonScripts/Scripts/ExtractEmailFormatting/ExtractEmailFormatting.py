@@ -88,9 +88,9 @@ def extract_email_from_url_query(email_address: str) -> str:
 def main():
     list_results = []
 
-    emails = argToList(demisto.args().get('input'))
-
     try:
+        emails = argToList(demisto.args().get('input'))
+
         clean_emails = [extract_email(address) for address in emails]
 
         list_results = [refang_email(email_address) for email_address in clean_emails]
