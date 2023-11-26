@@ -315,8 +315,8 @@ def get_temp_file() -> str:
 
 def sync(client: Client):
     """
-    Sync command is supposed to run only in first run or the integration context is empty. 
-    Creates the initial sync between xdr and xsoar iocs. 
+    Sync command is supposed to run only in first run or the integration context is empty.
+    Creates the initial sync between xdr and xsoar iocs.
     """
     demisto.debug("executing sync")
     temp_file_path: str = get_temp_file()
@@ -339,7 +339,7 @@ def sync(client: Client):
 
 def iocs_to_keep(client: Client):
     """
-    Creats a file of all the indicators from xsoar we want to keep in XDR. 
+    Creats a file of all the indicators from xsoar we want to keep in XDR.
     All the indicators not send to XDR with the file will be deleted from XDR.
     This is to sync the expired/deleted/no more under filter IOC.
     """
@@ -581,7 +581,7 @@ def set_new_iocs_to_keep_time():
 def is_iocs_to_keep_time():
     """
     This function checks if this is the time to run the iocs_to_keep command.
-    In order to remove deleted/expired/filtered indicators. 
+    In order to remove deleted/expired/filtered indicators.
     """
     next_iocs_to_keep_time = get_integration_context().get("next_iocs_to_keep_time")
 
