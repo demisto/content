@@ -432,36 +432,45 @@ def test_translate_severity(mocker: MockerFixture, severity: str, expected_resul
 
 
 def test_paginate_with_limit(mocker: MockerFixture):
-    """Tests pagination when limit is equal to max incidents per page (100).
-
-    Verifies that a single API call is made to fetch all incidents when
-    the requested limit matches the max incidents per page (100).
+    """This test verifies that the function correctly handles pagination when a limit is provided,
+        making a single API request with the expected parameters and returning the correct results.
+    Given:
+        a test scenario where the `pagination_incidents` function is called with a specified limit,
+    When:
+        the function is invoked with a limit of 79,
+    Then:
+        it should make a single API request with the specified limit and offset 0,
+        and the result should match the mocked API response.
     """
     from PagerDuty import pagination_incidents
 
     re = mocker.patch(
         "PagerDuty.http_request",
         side_effect=[
-            {"incidents": list(range(100))}
+            {"incidents": list(range(79))}
         ],
     )
 
-    result = pagination_incidents({"limit": 100}, "")
+    result = pagination_incidents({"user_ids": "test_id"}, {"limit": 79}, "")
 
-    assert result == list(range(100))
+    assert result == list(range(79))
     assert re.call_count == 1
-    assert re.call_args_list[0].args == ("GET", "", {"limit": 100, "offset": 0})
+    assert re.call_args_list[0].args == ("GET", "", {"user_ids": "test_id", "limit": 79, "offset": 0})
 
 
 def test_paginate_with_limit_is_more_than_INCIDENT_API_LIMIT(mocker: MockerFixture):
-    """Tests pagination when limit is more than max incidents per page (100).
+    """This test ensures that the function correctly handles pagination for large limits,
+        making multiple API calls to retrieve all incidents.
 
-    Verifies that multiple API calls are made to fetch all incidents when
-    the requested limit exceeds the max incidents per page (100).
+    Given:
+        a test scenario where the requested limit exceeds the max incidents per page (100),
+    When:
+        the `pagination_incidents` function is called with a limit of 179,
+    Then:
+        it should make two API calls:
+        - First call with limit 100 and offset 0.
+        - Second call with limit 79 (to fetch the remaining incidents) and offset 100.
 
-    When limit is 179 , it should make two calls:
-        - First call with limit 100 and offset 0
-        - Second call with limit 79 (to fetch remaining incidents) and offset 100
     """
     from PagerDuty import pagination_incidents
 
@@ -473,40 +482,45 @@ def test_paginate_with_limit_is_more_than_INCIDENT_API_LIMIT(mocker: MockerFixtu
         ],
     )
 
-    result = pagination_incidents({"limit": 179}, "")
+    result = pagination_incidents({"user_ids": "test_id"}, {"limit": 179}, "")
 
     assert result == list(range(179))
     assert re.call_count == 2
-    assert re.call_args_list[0].args == ("GET", "", {"limit": 100, "offset": 0})  # first call
-    assert re.call_args_list[1].args == ("GET", "", {"limit": 79, "offset": 100})  # secund call
+    assert re.call_args_list[0].args == ("GET", "", {"user_ids": "test_id", "limit": 100, "offset": 0})  # first call
+    assert re.call_args_list[1].args == ("GET", "", {"user_ids": "test_id", "limit": 79, "offset": 100})  # secund call
 
 
 def test_paginate_with_page_size(mocker: MockerFixture):
-    """Test pagination functionality with page size
-
-    Verifies pagination works correctly when a page size is provided. Mocks the API response to return a single page of results.
-    Asserts the paginated results match the mocked API response, and that the request used the provided limit and offset.
-    When pagination_incidents is called with a page size of 100 and page number 2,
-    it should make a single request to fetch results from offset 100 to 199.
+    """This test verifies that the pagination functionality correctly handles the provided page size
+        and page number, making a single API request with the expected parameters.
+    Given:
+        a test scenario where pagination is performed with a specified page size,
+    When:
+        the `pagination_incidents` function is called with a page size of 100 and page number 2,
+    Then:
+        it should make a single API request to fetch results from offset 100 to 199.
     """
     from PagerDuty import pagination_incidents
 
     re = mocker.patch(
         "PagerDuty.http_request", side_effect=[{"incidents": list(range(100, 200))}]
     )
-    result = pagination_incidents({"page_size": 100, "page": 2}, "")
+    result = pagination_incidents({"user_ids": "test_id"}, {"page_size": 100, "page": 2}, "")
     assert result == list(range(100, 200))
     assert re.call_count == 1
-    assert re.call_args_list[0].args == ('GET', '', {'limit': 100, 'offset': 100, 'page_size': 100, 'page': 2})
+    assert re.call_args_list[0].args == ('GET', '', {'user_ids': 'test_id', 'limit': 100, 'offset': 100})
 
 
 def test_paginate_with_page_size_more_than_INCIDENT_API_LIMIT():
-    """Tests pagination_incidents when page size exceeds limit.
-
-    Verifies pagination_incidents raises a DemistoException when a page size
-    greater than the API limit is provided. The API limit is defined in
-    INCIDENT_API_LIMIT.
+    """This test ensures that the function correctly handles the case where the provided page size exceeds the API limit,
+    raising a DemistoException with the appropriate error message.
+    Given:
+        a test scenario where the `pagination_incidents` function is called with a page size greater than the API limit,
+    When:
+        the function is invoked with a page size of 200 and page number 2,
+    Then:
+        it should raise a DemistoException with the message "The max size for page is 100. Please provide a smaller page size."
     """
     from PagerDuty import pagination_incidents
     with pytest.raises(DemistoException, match="The max size for page is 100. Please provide a smaller page size."):
-        pagination_incidents({"page_size": 200, "page": 2}, "")
+        pagination_incidents({"user_ids": "test_id"}, {"page_size": 200, "page": 2}, "")

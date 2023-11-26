@@ -560,7 +560,7 @@ def configure_status(status='triggered,acknowledged') -> str:
     return status_request
 
 
-def pagination_incidents(param_dict: dict, url: str) -> list[dict]:
+def pagination_incidents(param_dict: dict, pagination_dict: dict, url: str) -> list[dict]:
     """
     Retrieves incident data through paginated requests.
 
@@ -593,8 +593,8 @@ def pagination_incidents(param_dict: dict, url: str) -> list[dict]:
 
     page: list = []
 
-    page_number = arg_to_number(param_dict.get("page"))
-    page_size = arg_to_number(param_dict.get("page_size"))
+    page_number = arg_to_number(pagination_dict.get("page"))
+    page_size = arg_to_number(pagination_dict.get("page_size"))
 
     if page_number is not None and page_size is not None:
         if page_size > INCIDENT_API_LIMIT:
@@ -603,7 +603,7 @@ def pagination_incidents(param_dict: dict, url: str) -> list[dict]:
         offset = (page_number - 1) * page_size
 
     else:
-        limit = arg_to_number(param_dict.get("limit")) or 50
+        limit = arg_to_number(pagination_dict.get("limit")) or 50
         offset = 0
 
         if limit > INCIDENT_API_LIMIT:
@@ -632,15 +632,18 @@ def get_incidents_command(args: dict[str, str]) -> dict:
         "incident_key": args.get("incident_key"),
         "user_ids": argToList(args.get("user_id")),
         "urgencies": args.get("urgencies"),
-        "date_range": args.get("date_range"),
+        "date_range": args.get("date_range")
+    }
+    pagination_args = {
         "page": arg_to_number(args.get("page")),
         "page_size": arg_to_number(args.get("page_size")),
         "limit": arg_to_number(args.get("limit", 50))
-
     }
+    remove_nulls_from_dictionary(pagination_args)
     remove_nulls_from_dictionary(param_dict)
+
     url = SERVER_URL + GET_INCIDENTS_SUFFIX + configure_status(args.get("status", 'triggered,acknowledged'))
-    incidents: list[dict] = pagination_incidents(param_dict, url)
+    incidents: list[dict] = pagination_incidents(param_dict, pagination_args, url)
 
     return extract_incidents_data(incidents, INCIDENTS_LIST)
 
