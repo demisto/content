@@ -1730,7 +1730,7 @@
             ],
             "playbookID": "EWS V2 Send Mail Test 2",
             "memory_threshold": 300,
-            "pid_threshold": 120
+            "pid_threshold": 200
         },
         {
             "integrations": [
@@ -2736,7 +2736,9 @@
             ],
             "instance_names": "active_directory_ninja",
             "fromversion": "5.0.0",
-            "timeout": 700
+            "timeout": 700,
+            "memory_threshold": 300,
+            "pid_threshold": 200
         },
         {
             "playbookID": "Active Directory - Get User Manager Details - Test",
@@ -3064,7 +3066,8 @@
             "integrations": "Rasterize",
             "playbookID": "RasterizeImageTest",
             "fromversion": "5.0.0",
-            "memory_threshold": 150
+            "memory_threshold": 300,
+            "pid_threshold": 200
         },
         {
             "integrations": "Ipstack",
@@ -4723,7 +4726,7 @@
                 "ews_mail_sender_labdemisto"
             ],
             "memory_threshold": 350,
-            "pid_threshold": 80,
+            "pid_threshold": 200,
             "is_mockable": false
         },
         {
@@ -4753,7 +4756,7 @@
                 "incoming_mapper_id": "EWS v2-mapper"
             },
             "memory_threshold": 400,
-            "pid_threshold": 80
+            "pid_threshold": 200
         },
         {
             "playbookID": "Phishing v3 - Get Original Email + Search & Delete - Test",
@@ -5372,6 +5375,7 @@
                 "Rasterize"
             ],
             "memory_threshold": 300,
+            "pid_threshold": 200,
             "toversion": "7.9.9"
         },
         {
