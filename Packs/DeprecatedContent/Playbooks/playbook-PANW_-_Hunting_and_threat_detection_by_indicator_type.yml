@@ -1536,9 +1536,9 @@ tasks:
     type: condition
     task:
       id: 7c07c4aa-f0d0-4b3f-8066-06638dc7dd4d
-      description: Is Cortex Data Lake enabled?
+      description: Is Strata Logging Service enabled?
       version: -1
-      name: Is Cortex Data Lake enabled?
+      name: Is Strata Logging Service enabled?
       type: condition
       iscommand: false
       brand: ""
@@ -1597,9 +1597,9 @@ tasks:
     type: condition
     task:
       id: 9e4934f2-8975-4438-8c67-b0a6defae2b3
-      description: Is Cortex Data Lake enabled?
+      description: Is Strata Logging Service enabled?
       version: -1
-      name: Is Cortex Data Lake enabled?
+      name: Is Strata Logging Service enabled?
       type: condition
       iscommand: false
       brand: ""
@@ -2211,9 +2211,9 @@ tasks:
     type: condition
     task:
       id: 280680d9-fdbe-438a-8a76-59ddcbc7f22c
-      description: Is Cortex Data Lake enabled?
+      description: Is Strata Logging Service enabled?
       version: -1
-      name: Is Cortex Data Lake enabled?
+      name: Is Strata Logging Service enabled?
       type: condition
       iscommand: false
       brand: ""

@@ -1,5 +1,5 @@
 This is a multipurpose playbook used for hunting and threat detection. The playbook receives inputs based on hashes, IP addresses, or domain names provided manually or from outputs by other playbooks. 
-With the received indicators, the playbook leverages data received by PANW products including, Cortex Data Lake, Autofocus and Pan-OS to search for IP addresses, host names and users related to the provided indicators.
+With the received indicators, the playbook leverages data received by PANW products including, Strata Logging Service, Autofocus and Pan-OS to search for IP addresses, host names and users related to the provided indicators.
 The output provided by the playbook facilitates pivoting searches for possibly affected IP addresses or users.
 
 ## Dependencies
