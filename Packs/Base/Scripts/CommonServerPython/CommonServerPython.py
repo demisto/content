@@ -2369,7 +2369,7 @@ def fileResult(filename, data, file_type=None):
     # pylint: enable=undefined-variable
     with open(demisto.investigation()['id'] + '_' + temp, 'wb') as f:
         f.write(data)
-    return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': file_type, 'File': filename, 'FileID': temp}
+    return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': file_type, 'File': filename.replace("../", ""), 'FileID': temp}
 
 
 def hash_djb2(s, seed=5381):
