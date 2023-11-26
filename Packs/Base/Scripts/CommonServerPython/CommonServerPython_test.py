@@ -8560,15 +8560,15 @@ class TestSendEventsToXSIAMTest:
 
             assert arguments_called['headers']['format'] == expected_format
             assert decompressed_data == expected_data
-            assert arguments_called['headers']['collector_type'] == data_type
+            assert arguments_called['headers']['collector-type'] == data_type
         else:
             assert _http_request_mock.call_count == 0
         if data_type == "events":
             demisto.updateModuleHealth.assert_called_with({'eventsPulled': number_of_items})
         elif data_type == "assets":
             demisto.updateModuleHealth.assert_called_with({'assetsPulled': number_of_items})
-            assert arguments_called['headers']['snapshot_id'] == '123000'
-            assert arguments_called['headers']['total_items_count'] == '2'
+            assert arguments_called['headers']['snapshot-id'] == '123000'
+            assert arguments_called['headers']['total-items-count'] == '2'
 
     @pytest.mark.parametrize('error_msg, data_type', [(None, "events"), ({'error': 'error'}, "events"), ('', "events"),
                                                       ({'error': 'error'}, "assets")])
