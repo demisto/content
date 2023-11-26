@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
+from email.utils import parseaddr
 
 ALL_OPTION = 'All'
 NO_CAMPAIGN_INCIDENTS_MSG = 'There is no Campaign Incidents in the Context'
@@ -14,6 +14,76 @@ SELECT_CAMPAIGN_LOWER_INCIDENTS_FIELD_NAME = 'selectlowsimilarityincidents'
 
 COMMAND_SUCCESS = 'The following incidents was successfully {action}: {ids}'
 
+ACTION_LINK = "link"
+ACTION_UNLINK = "unlink"
+
+EMAIL_TO_FIELD = 'emailto'
+EMAIL_CC_FIELD = 'emailcc'
+EMAIL_BCC_FIELD = 'emailbcc'
+RECIPIENTS_COLUMNS = [EMAIL_TO_FIELD, EMAIL_CC_FIELD, EMAIL_BCC_FIELD]
+# Helper Function
+
+
+def _add_campaign_to_incident(campaign_id, incident_id):
+    res = demisto.executeCommand('setIncident', {'id': incident_id,
+                                                 'customFields': {'partofcampaign': campaign_id}})
+    if is_error(res):
+        return_error(f'Failed to add campaign data to incident {incident_id}. Error details:\n{get_error(res)}')
+    demisto.debug(f"Added campaign {campaign_id} to incident {incident_id}")
+
+
+def _link_or_unlink_between_incidents(incident_id: str, linked_incident_id: str, action: str):
+    res = demisto.executeCommand("linkIncidents",
+                                 {"incidentId": incident_id,
+                                     "linkedIncidentIDs": linked_incident_id, "action": action})
+    if isError(res):
+        return_error(COMMAND_ERROR_MSG.format(action=action, ids=linked_incident_id, error=get_error(res)))
+
+
+def _add_incidents_to_campaign(campaign_id: str, incidents_context: Any):
+    res = demisto.executeCommand('SetByIncidentId', {
+        'id': campaign_id,
+        'key': 'EmailCampaign.incidents',
+        'value': incidents_context})
+    if is_error(res):
+        return_error(f'Failed to change current context. Error details:\n{get_error(res)}')
+
+
+def _get_context(incident_id: str):
+    res = demisto.executeCommand('getContext', {'id': incident_id})
+    if isError(res):
+        return_error(f'Error occurred while trying to get the incident context: {get_error(res)}')
+    # if isError(campaign_context):
+    #     return_error(COMMAND_ERROR_MSG.format(action=action, ids=ids,
+    #                                           error=get_error(res)))
+    return res
+
+
+def _parse_incident_context_to_valid_incident_campaign_context(incident_id, fields_to_display):
+    incident_context = _get_context(incident_id)
+    recipients = get_recipients(incident_context)
+    recipientsdomain = extract_domain_from_recipients(recipients)
+    return {"similarity": None,
+            "occurred": demisto.dt(incident_context, "incident.occurred"),
+            "emailfrom": demisto.dt(incident_context, "incident.emailfrom"),
+            "emailfromdomain": demisto.dt(incident_context, "incident.emailfrom").split('@')[1],
+            "name": demisto.dt(incident_context, "incident.name"),
+            "status": demisto.dt(incident_context, "incident.status"),
+            "recipients": recipients,
+            "id": demisto.dt(incident_context, "incident.id"),
+            "severity": demisto.dt(incident_context, "incident.severity"),
+            "recipientsdomain": recipientsdomain
+            }
+
+
+def get_recipients(incident_context: dict):
+    return [recipient for col in RECIPIENTS_COLUMNS for recipient in incident_context.get(col, [])]
+
+
+def extract_domain_from_recipients(recipients):
+    domains = [email.split('@')[1] for email in recipients if '@' in email]
+    return domains
+
 
 def get_custom_field(filed_name: str) -> Any:
     incident: dict = demisto.incidents()[0]
@@ -25,7 +95,6 @@ def get_campaign_incident_ids(context_path: str) -> list[str] | None:
     """
         Collect the campaign incidents ids form the context
 
-        :rtype: ``list``
         :return: list of campaign incident ids if exist, None otherwise
     """
     incident_id = demisto.incidents()[0]['id']
@@ -47,23 +116,18 @@ def get_close_notes():
 
 
 def perform_link_unlink(ids, action):
-    ids = ','.join(ids)
+    ids: str = ','.join(ids)
     campaign_id = demisto.incident()['id']
-    campaign_context = demisto.executeCommand('getContext', {'id': campaign_id})
-    if isError(campaign_context):
-        return_error(COMMAND_ERROR_MSG.format(action=action, ids=ids,
-                                              error=get_error(campaign_context)))
+    campaign_context = _get_context(campaign_id)
+
     campaign_incidents_context = demisto.dt(campaign_context, 'Contents.context.EmailCampaign.incidents')
     if isinstance(campaign_incidents_context, dict | str):
         campaign_incidents_context = [campaign_incidents_context]  # TODO ????
-
-    # [_add_campaign_to_incident(id, campaign_id) for id in ids]
-
-    res = demisto.executeCommand("linkIncidents",
-                                 {"incidentId": demisto.incidents()[0]["id"],
-                                  "linkedIncidentIDs": ids, "action": action})
-    if isError(res):
-        return_error(COMMAND_ERROR_MSG.format(action=action, ids=ids, error=get_error(res)))
+    fields_to_display = demisto.dt(campaign_context, "EmailCampaign.fieldsToDisplay")
+    campaign_incidents_context = [_parse_incident_context_to_valid_incident_campaign_context(id, fields_to_display) for id in ids]
+    [_add_campaign_to_incident(id, campaign_id) for id in ids]
+    _add_incidents_to_campaign(campaign_id, campaign_incidents_context)
+    _link_or_unlink_between_incidents(campaign_id, ids, action)
 
     return COMMAND_SUCCESS.format(action=f'{action}ed', ids=ids)
 
@@ -99,14 +163,6 @@ def perform_unlink_and_reopen(ids, action):
     return COMMAND_SUCCESS.format(action='unlinked & reopen', ids=','.join(ids))
 
 
-def _add_campaign_to_incident(incident_id, campaign_id):
-    res = demisto.executeCommand('setIncident', {'id': incident_id,
-                                                 'customFields': {'partofcampaign': campaign_id}})
-    if is_error(res):
-        return_error(f'Failed to add campaign data to incident {incident_id}. Error details:\n{get_error(res)}')
-    demisto.debug(f"Added campaign {campaign_id} to incident {incident_id}")
-
-
 def _remove_incident_from_lower_similarity_context(incident_context, incident_ids):
     lower_similarity_incident_context = demisto.dt(incident_context,
                                                    'Contents.context.EmailCampaign.LowerSimilarityIncidents')
@@ -125,12 +181,8 @@ def _remove_incident_from_lower_similarity_context(incident_context, incident_id
 def perform_add_to_campaign(ids, action):
     demisto.debug('starting add to campaign')
     campaign_id = demisto.incident()['id']
-    campaign_incident_context = demisto.executeCommand('getContext', {'id': campaign_id})
+    campaign_incident_context = _get_context(campaign_id)
     demisto.debug(f'got incident context: {campaign_incident_context}')
-
-    if isError(campaign_incident_context):
-        return_error(COMMAND_ERROR_MSG.format(action=action, ids=','.join(ids),
-                                              error=get_error(campaign_incident_context)))
 
     incident_context = demisto.dt(campaign_incident_context, 'Contents.context.EmailCampaign.incidents')
     if isinstance(incident_context, dict | str):
