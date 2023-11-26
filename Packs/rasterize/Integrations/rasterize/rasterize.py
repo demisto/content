@@ -251,13 +251,22 @@ def pychrome_screenshot_pdf(path, width, height, wait_time, max_page_load_time, 
         tab.Page.enable()
         # tab.call_method("Page.navigate", url=path, _timeout=max_page_load_time)
         page_start_time = int(time.time())
-        tab.Page.navigate(url=path, _timeout=max_page_load_time)
+        if max_page_load_time < 0:
+            demisto.debug('navigate 1')
+            tab.Page.navigate(url=path, _timeout=max_page_load_time)
+        else:
+            demisto.debug('navigate 2')
+            tab.Page.navigate(url=path)
         navigate_time = int(time.time()) - page_start_time
-        tab_ready.wait(wait_time - navigate_time + 1)
+        tab_ready_wait_time = max(1, wait_time - navigate_time + 1)
+        demisto.debug(f'Waiting {wait_time}-{navigate_time}+1={tab_ready_wait_time} seconds for tab_ready')
+        tab_ready.wait(tab_ready_wait_time)
         page_load_time = int(time.time()) - page_start_time
+        demisto.debug(f'Navigated to {path}, {navigate_time=}, {page_load_time=}')
 
-        if wait_time > 0:
-            time.sleep(wait_time - page_load_time + 1)  # pylint: disable=E9003
+        wait_time_actual = max(1, wait_time - page_load_time + 1)
+        demisto.debug(f'Waiting for {wait_time}-{page_load_time}+1={wait_time_actual} seconds before taking a screenshot')
+        time.sleep(wait_time_actual)  # pylint: disable=E9003
 
         header_template = ''
         if include_url:
@@ -265,7 +274,7 @@ def pychrome_screenshot_pdf(path, width, height, wait_time, max_page_load_time, 
         return base64.b64decode(tab.Page.printToPDF(headerTemplate=header_template)['data'])
     except pychrome.exceptions.TimeoutException:
         message = f'Timeout of {max_page_load_time} seconds reached while waiting for {path}'
-        demisto.info(message)
+        demisto.error(message)
         return_error(message)
     finally:
         try:
