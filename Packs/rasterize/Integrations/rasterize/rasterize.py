@@ -201,7 +201,7 @@ def pychrome_screenshot_image(path, width, height, wait_time, max_page_load_time
         demisto.debug('pychrome_screenshot_image, after tab.Page.enable')
         # tab.call_method("Page.navigate", url=path, _timeout=max_page_load_time)
         page_start_time = int(time.time())
-        if max_page_load_time < 0:
+        if max_page_load_time > 0:
             demisto.debug('navigate 1')
             tab.Page.navigate(url=path, _timeout=max_page_load_time)
         else:

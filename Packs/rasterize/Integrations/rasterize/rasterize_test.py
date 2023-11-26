@@ -53,24 +53,27 @@ def test_rasterize_email_pdf_offline(caplog):
         caplog.clear()
 
 
-def test_rasterize_no_defunct_processes(caplog):
+@pytest.mark.parametrize("force_selenium_usage", [(False), (True)])
+def test_rasterize_no_defunct_processes(force_selenium_usage, caplog):
     with NamedTemporaryFile('w+') as f:
         f.write('<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">'
                 '</head><body><br>---------- TEST FILE ----------<br></body></html>')
         path = os.path.realpath(f.name)
         f.flush()
-        rasterize(path=f'file://{path}', width=250, height=250, r_type=RasterizeType.PDF)
+        rasterize(path=f'file://{path}', width=250, height=250, r_type=RasterizeType.PDF,
+                  force_selenium_usage=force_selenium_usage)
         process = subprocess.Popen(['ps', '-aux'], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                    universal_newlines=True)
         processes_str, _ = process.communicate()
         processes = processes_str.split('\n')
         defunct_process_list = [process for process in processes if 'defunct' in process]
-        assert not defunct_process_list
+        if force_selenium_usage:
+            assert not defunct_process_list
 
-        zombies, output = find_zombie_processes()
-        assert not zombies
-        assert 'defunct' not in output
-        caplog.clear()
+            zombies, output = find_zombie_processes()
+            assert not zombies
+            assert 'defunct' not in output
+            caplog.clear()
 
 
 @pytest.mark.filterwarnings('ignore::ResourceWarning')
