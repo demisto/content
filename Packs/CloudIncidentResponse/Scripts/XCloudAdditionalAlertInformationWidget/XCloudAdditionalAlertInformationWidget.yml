@@ -1,0 +1,19 @@
+commonfields:
+  id: XCloudAdditionalAlertInformationWidget
+  version: -1
+name: XCloudAdditionalAlertInformationWidget
+script: ''
+type: python
+tags:
+- dynamic-section
+comment: This script retrieves additional original alert information from the context.
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.12.63474
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
