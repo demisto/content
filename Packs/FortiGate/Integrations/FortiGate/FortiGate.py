@@ -1843,46 +1843,6 @@ def handle_list_command(
     )
 
 
-@logger
-def handle_delete_command(
-    delete_command: Callable[..., dict[str, Any]],
-    args: dict[str, Any],
-    firewall_object: str,
-    outputs_prefix: str,
-    outputs_key_field: str = "Name",
-    identifier_field: str = "name",
-) -> CommandResults:
-    """Handles the delete command.
-
-    Args:
-        delete_command (Callable[..., dict[str, Any]]): The delete command to handle.
-        vdom (str, optional): The vdom to use for the delete command.
-        firewall_object (str): The name of the firewall object.
-        outputs_prefix (str): The prefix to use for the outputs.
-        outputs_key_field (str): The key field to use for the outputs.
-            Defaults to "Name".
-        identifier_field (str): The identifier key of the firewall object to delete.
-            Defaults to "name".
-
-    Returns:
-        CommandResults: Outputs of the command that represent an entry in warroom.
-    """
-    identifier = args.get(identifier_field)
-    vdom = args.get("vdom", DEFAULT_VDOM)
-
-    response = delete_command(identifier, vdom=vdom)
-    output = {outputs_key_field: identifier, "Deleted": True}
-    readable_output = f"The firewall {firewall_object} '{identifier}' was successfully deleted."
-
-    return CommandResults(
-        outputs_prefix=outputs_prefix,
-        outputs_key_field=outputs_key_field,
-        outputs=output,
-        readable_output=readable_output,
-        raw_response=response,
-    )
-
-
 """ Commands """
 
 
@@ -2117,11 +2077,21 @@ def delete_firewall_address_ipv4_command(client: Client, args: dict[str, Any]) -
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    return handle_delete_command(
-        delete_command=client.delete_firewall_address_ipv4,
-        args=args,
-        firewall_object="address",
+    name = args.get("name", "")
+
+    raw_response = client.delete_firewall_address_ipv4(
+        name=name,
+        vdom=args.get("vdom", DEFAULT_VDOM),
+    )
+    output = {"Name": name, "Deleted": True}
+    readable_output = f"The firewall address '{name}' was successfully deleted."
+
+    return CommandResults(
         outputs_prefix=ADDRESS_CONTEXT,
+        outputs_key_field="Name",
+        outputs=output,
+        readable_output=readable_output,
+        raw_response=raw_response,
     )
 
 
@@ -2323,11 +2293,21 @@ def delete_firewall_address_ipv6_command(client: Client, args: dict[str, Any]) -
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    return handle_delete_command(
-        delete_command=client.delete_firewall_address_ipv6,
-        args=args,
-        firewall_object="address",
+    name = args.get("name", "")
+
+    raw_response = client.delete_firewall_address_ipv6(
+        name=name,
+        vdom=args.get("vdom", DEFAULT_VDOM),
+    )
+    output = {"Name": name, "Deleted": True}
+    readable_output = f"The firewall address '{name}' was successfully deleted."
+
+    return CommandResults(
         outputs_prefix=ADDRESS6_CONTEXT,
+        outputs_key_field="Name",
+        outputs=output,
+        readable_output=readable_output,
+        raw_response=raw_response,
     )
 
 
@@ -2496,11 +2476,21 @@ def delete_firewall_address_ipv4_multicast_command(client: Client, args: dict[st
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    return handle_delete_command(
-        delete_command=client.delete_firewall_address_ipv4_multicast,
-        args=args,
-        firewall_object="address multicast IPv4",
+    name = args.get("name", "")
+
+    raw_response = client.delete_firewall_address_ipv4_multicast(
+        name=name,
+        vdom=args.get("vdom", DEFAULT_VDOM),
+    )
+    output = {"Name": name, "Deleted": True}
+    readable_output = f"The firewall address multicast IPv4 '{name}' was successfully deleted."
+
+    return CommandResults(
         outputs_prefix=ADDRESS_MULTICAST_CONTEXT,
+        outputs_key_field="Name",
+        outputs=output,
+        readable_output=readable_output,
+        raw_response=raw_response,
     )
 
 
@@ -2634,11 +2624,21 @@ def delete_firewall_address_ipv6_multicast_command(client: Client, args: dict[st
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    return handle_delete_command(
-        delete_command=client.delete_firewall_address_ipv6_multicast,
-        args=args,
-        firewall_object="address multicast IPv6",
+    name = args.get("name", "")
+
+    raw_response = client.delete_firewall_address_ipv6_multicast(
+        name=name,
+        vdom=args.get("vdom", DEFAULT_VDOM),
+    )
+    output = {"Name": name, "Deleted": True}
+    readable_output = f"The firewall address multicast IPv6 '{name}' was successfully deleted."
+
+    return CommandResults(
         outputs_prefix=ADDRESS6_MULTICAST_CONTEXT,
+        outputs_key_field="Name",
+        outputs=output,
+        readable_output=readable_output,
+        raw_response=raw_response,
     )
 
 
@@ -2721,11 +2721,21 @@ def delete_firewall_address_ipv4_group_command(client: Client, args: dict[str, A
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    return handle_delete_command(
-        delete_command=client.delete_firewall_address_ipv4_group,
-        args=args,
-        firewall_object="address IPv4 group",
+    name = args.get("name", "")
+
+    raw_response = client.delete_firewall_address_ipv4_group(
+        name=name,
+        vdom=args.get("vdom", DEFAULT_VDOM),
+    )
+    output = {"Name": name, "Deleted": True}
+    readable_output = f"The firewall address IPv4 group '{name}' was successfully deleted."
+
+    return CommandResults(
         outputs_prefix=ADDRESS_GROUP_CONTEXT,
+        outputs_key_field="Name",
+        outputs=output,
+        readable_output=readable_output,
+        raw_response=raw_response,
     )
 
 
@@ -2802,11 +2812,21 @@ def delete_firewall_address_ipv6_group_command(client: Client, args: dict[str, A
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    return handle_delete_command(
-        delete_command=client.delete_firewall_address_ipv6_group,
-        args=args,
-        firewall_object="address IPv6 group",
+    name = args.get("name", "")
+
+    raw_response = client.delete_firewall_address_ipv6_group(
+        name=name,
+        vdom=args.get("vdom", DEFAULT_VDOM),
+    )
+    output = {"Name": name, "Deleted": True}
+    readable_output = f"The firewall address IPv6 group '{name}' was successfully deleted."
+
+    return CommandResults(
         outputs_prefix=ADDRESS6_GROUP_CONTEXT,
+        outputs_key_field="Name",
+        outputs=output,
+        readable_output=readable_output,
+        raw_response=raw_response,
     )
 
 
@@ -2907,11 +2927,21 @@ def delete_firewall_service_command(client: Client, args: dict[str, Any]) -> Com
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    return handle_delete_command(
-        delete_command=client.delete_firewall_service,
-        args=args,
-        firewall_object="service",
+    name = args.get("name", "")
+
+    raw_response = client.delete_firewall_service(
+        name=name,
+        vdom=args.get("vdom", DEFAULT_VDOM),
+    )
+    output = {"Name": name, "Deleted": True}
+    readable_output = f"The firewall service '{name}' was successfully deleted."
+
+    return CommandResults(
         outputs_prefix=SERVICE_CONTEXT,
+        outputs_key_field="Name",
+        outputs=output,
+        readable_output=readable_output,
+        raw_response=raw_response,
     )
 
 
@@ -2986,12 +3016,21 @@ def delete_firewall_service_group_command(client: Client, args: dict[str, Any]) 
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    return handle_delete_command(
-        delete_command=client.delete_firewall_service_group,
-        args=args,
-        firewall_object="service group",
+    name = args.get("groupName", "")
+
+    raw_response = client.delete_firewall_service_group(
+        name=name,
+        vdom=args.get("vdom", DEFAULT_VDOM),
+    )
+    output = {"Name": name, "Deleted": True}
+    readable_output = f"The firewall service group '{name}' was successfully deleted."
+
+    return CommandResults(
         outputs_prefix=SERVICE_GROUP_CONTEXT,
-        identifier_field="groupName",
+        outputs_key_field="Name",
+        outputs=output,
+        readable_output=readable_output,
+        raw_response=raw_response,
     )
 
 
@@ -3139,13 +3178,21 @@ def delete_firewall_policy_command(client: Client, args: dict[str, Any]) -> Comm
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    return handle_delete_command(
-        delete_command=client.delete_firewall_policy,
-        args=args,
-        firewall_object="policy",
+    id_ = args.get("policyID", "")
+
+    raw_response = client.delete_firewall_policy(
+        id_=id_,
+        vdom=args.get("vdom", DEFAULT_VDOM),
+    )
+    output = {"ID": id_, "Deleted": True}
+    readable_output = f"The firewall policy '{id_}' was successfully deleted."
+
+    return CommandResults(
         outputs_prefix=POLICY_CONTEXT,
-        identifier_field="policyID",
         outputs_key_field="ID",
+        outputs=output,
+        readable_output=readable_output,
+        raw_response=raw_response,
     )
 
 
