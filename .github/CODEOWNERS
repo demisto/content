@@ -28,11 +28,6 @@
 /Utils/should_trigger_test_upload.sh @yaakovpraisler
 /Utils/test_upload_flow/* @yaakovpraisler
 
-# Test Collection
-/Tests/scripts/collect_tests @dorschw
-/Tests/scripts/collect_tests/id_set.py @ilaner
-/Tests/conf.json @sapirshuker
-
 # PANW Products
 /Packs/Palo_Alto_Networks_Enterprise_DLP/ @DeanArbel
 /Packs/PAN-OS/Integrations/ @GuyAfik @jlevypaloalto
@@ -93,15 +88,20 @@
 Tests/scripts/test_modeling_rules.sh @daryakoval
 Tests/scripts/lock_cloud_machines.py @daryakoval
 
+# Test Collection
+/Tests/scripts/collect_tests @dorschw
+/Tests/scripts/collect_tests/id_set.py @ilaner
+/Tests/conf.json @sapirshuker
+
 # SDK Related
 .gitlab/ci/.gitlab-ci.sdk-nightly.yml @dorschw
 Utils/trigger_nightly_sdk_build.sh @dorschw
 .pre-commit-config_template.yaml @dorschw @ilaner
 
 # XDR Related
-/Packs/CortexXDR/Integrations/ @dansterenson
-/Packs/Core/Integrations/ @dansterenson
-/Packs/ApiModules/Scripts/CoreIRApiModule/* @dansterenson
+/Packs/CortexXDR/Integrations/ @dansterenson @maimorag
+/Packs/Core/Integrations/ @dansterenson @maimorag
+/Packs/ApiModules/Scripts/CoreIRApiModule/* @dansterenson @maimorag
 
 # Dependencies
 pyproject.toml @ilaner @dorschw
