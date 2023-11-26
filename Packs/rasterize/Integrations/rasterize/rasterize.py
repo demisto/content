@@ -521,12 +521,12 @@ def rasterize(path: str, width: int, height: int, r_type: RasterizeType = Raster
         if chrome_headless_running:  # pragma: no cover
             if r_type == RasterizeType.PNG or str(r_type).lower() == 'png':
                 return pychrome_screenshot_image(path, width=width, height=height, wait_time=wait_time,
-                                                max_page_load_time=page_load_time, full_screen=full_screen,
-                                                include_url=include_url)
+                                                 max_page_load_time=page_load_time, full_screen=full_screen,
+                                                 include_url=include_url)
             if r_type == RasterizeType.PDF or str(r_type).lower() == 'pdf':
                 return pychrome_screenshot_pdf(path, width=width, height=height, wait_time=wait_time,
-                                            max_page_load_time=page_load_time, full_screen=full_screen,
-                                            include_url=include_url)
+                                               max_page_load_time=page_load_time, full_screen=full_screen,
+                                               include_url=include_url)
 
     demisto.debug(f'Rasterizing, using mode: {r_mode}')
     rasterize_funcs: tuple[Callable, ...] = ()
