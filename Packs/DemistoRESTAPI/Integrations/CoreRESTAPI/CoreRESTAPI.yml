@@ -4,7 +4,7 @@ commonfields:
 name: Core REST API
 display: Core REST API
 category: Utilities
-description: Use Core REST APIs.
+description: Use Core REST APIs
 configuration:
 - display: Core Server URL
   name: url
@@ -53,68 +53,68 @@ script:
     - name: uri
       required: true
       default: true
-      description: Request URI (i.e. /incident).
+      description: Request URI (i.e. /incident)
     - name: body
-      description: Body of HTTP POST.
-    description: send HTTP POST request.
+      description: Body of HTTP POST
+    description: send HTTP POST request
     execution: true
   - name: demisto-api-get
     arguments:
     - name: uri
       required: true
       default: true
-      description: Request URI (i.e. /user).
-    description: send HTTP GET requests.
+      description: Request URI (i.e. /user)
+    description: send HTTP GET requests
   - name: demisto-api-put
     arguments:
     - name: uri
       required: true
       default: true
-      description: Request URI (i.e. /user).
+      description: Request URI (i.e. /user)
     - name: body
-      description: Request body.
-    description: send HTTP PUT request.
+      description: Request body
+    description: send HTTP PUT request
     execution: true
   - name: demisto-api-delete
     arguments:
     - name: uri
       required: true
       default: true
-      description: Request URI (i.e. /user).
-    description: send HTTP DELETE request.
+      description: Request URI (i.e. /user)
+    description: send HTTP DELETE request
     execution: true
   - name: demisto-api-download
     arguments:
     - name: uri
       required: true
-      description: Request URI.
+      description: Request URI
     - name: filename
-      description: File name of download.
+      description: File name of download
     - name: description
-      description: Description of file entry.
-    description: Download files from Demisto server.
+      description: Description of file entry
+    description: Download files from Demisto server
   - name: demisto-api-multipart
     arguments:
     - name: uri
       required: true
-      description: Request URI.
+      description: Request URI
     - name: entryID
       required: true
-      description: File entry ID.
+      description: File entry ID
     - name: body
-      description: Request body.
-    description: Send HTTP Multipart request to upload files to Demisto server.
+      description: Request body
+    description: Send HTTP Multipart request to upload files to Demisto server
   - name: demisto-delete-incidents
     arguments:
     - name: ids
       required: true
-      description: IDs of the incidents to delete.
+      description: IDs of the incidents to delete
       isArray: true
     - name: fields
       description: 'Comma separated list of fields to return, case sensitive. Set "all" for all fields. WARNING: Setting all fields may result in big results.'
       isArray: true
       defaultValue: id,name,type,severity,status
-    description: Delete Demisto incidents.
+    description: Delete Demisto incidents
     execution: true
   - name: demisto-api-install-packs
     arguments:
@@ -145,68 +145,64 @@ script:
     - name: uri
       required: true
       default: true
-      description: Request URI (i.e. /incident).
+      description: Request URI (i.e. /incident)
     - name: body
-      description: Body of HTTP POST.
-    description: send HTTP POST request.
+      description: Body of HTTP POST
+    description: send HTTP POST request
     execution: true
   - name: core-api-get
     arguments:
     - name: uri
       required: true
       default: true
-      description: Request URI (i.e. /user).
-    description: send HTTP GET requests.
+      description: Request URI (i.e. /user)
+    description: send HTTP GET requests
   - name: core-api-put
     arguments:
     - name: uri
       required: true
       default: true
-      description: Request URI (i.e. /user).
+      description: Request URI (i.e. /user)
     - name: body
-      description: Request body.
-    description: send HTTP PUT request.
+      description: Request body
+    description: send HTTP PUT request
     execution: true
   - name: core-api-delete
     arguments:
     - name: uri
       required: true
       default: true
-      description: Request URI (i.e. /user).
-    description: send HTTP DELETE request.
+      description: Request URI (i.e. /user)
+    description: send HTTP DELETE request
     execution: true
   - name: core-api-download
     arguments:
     - name: uri
       required: true
-      description: Request URI.
+      description: Request URI
     - name: filename
-      description: File name of download.
+      description: File name of download
     - name: description
-      description: Description of file entry.
-    description: Download files from Core server.
+      description: Description of file entry
+    description: Download files from core server
   - name: core-api-multipart
     arguments:
     - name: uri
       required: true
-      description: Request URI.
+      description: Request URI
     - name: entryID
       required: true
-      description: File entry ID.
+      description: File entry ID
     - name: body
-      description: Request body.
-    description: Send HTTP Multipart request to upload files to Core server.
+      description: Request body
+    description: Send HTTP Multipart request to upload files to core server
   - name: core-delete-incidents
     arguments:
     - name: ids
       required: true
-      description: IDs of the incidents to delete.
+      description: IDs of the incidents to delete
       isArray: true
-    - name: fields
-      description: 'Comma separated list of fields to return, case sensitive. Set "all" for all fields. WARNING: Setting all fields may result in big results.'
-      isArray: true
-      defaultValue: id,name,type,severity,status
-    description: Delete Core incidents.
+    description: Delete core incidents
     execution: true
   - name: core-api-install-packs
     arguments:
@@ -231,45 +227,8 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: Upload packs to the core server from the URL or marketplace.
-  - name: core-api-file-upload
-    arguments:
-    - name: incident_id
-      description: The incident's ID.
-    - name: file_name
-      description: "The new file's name."
-    - name: file_content
-      description: "The new file's content."
-    - name: entry_id
-      description: "The War Room entry ID of the pack zip file."
-    description: Upload to the incident a file that the user provided according to the entry_id or the content of the file.
-  - name: core-api-file-delete
-    arguments:
-    - name: entry_id
-      description: "The War Room entry ID of the file."
-      required: true
-    description: Delete a file from Cortex XSOAR by entry_id.
-  - name: core-api-file-attachment-delete
-    arguments:
-    - name: incident_id
-      required: true
-      description: The incident's ID.
-    - name: file_path
-      required: true
-      description: "The file's path."
-    - name: field_name
-      defaultValue: 'attachment'
-      description: "Name of the field (type attachment) from which to remove the attachment."
-    description: Delete the attachment from the incident and from the Cortex XSOAR server.
-  - name: core-api-file-check
-    arguments:
-    - name: entry_id
-      description: "The War Room entry ID of the file."
-      required: true
-    description: Check if the file exists in Cortex XSOAR by entry_id.
-    outputs:
-    - description: Dictionary with EntryID as the key and boolean if the file exists as a value.
-      contextPath: IsFileExists
+    description: Upload packs to core server from url or the marketplace.
+  runonce: false
 tests:
 - No tests
 fromversion: 5.0.0
