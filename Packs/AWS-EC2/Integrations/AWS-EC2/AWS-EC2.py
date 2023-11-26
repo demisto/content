@@ -2983,7 +2983,7 @@ def release_hosts_command(args, aws_client):
 def describe_ipam_resource_discoveries_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
-        region=args.get('region'),
+        region=args.get('AddressRegion') or args.get('region'),
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -3016,9 +3016,10 @@ def describe_ipam_resource_discoveries_command(args, aws_client):
 
 
 def describe_ipam_resource_discovery_associations_command(args, aws_client):
+    #region = args.get('region') if args.get('AddressRegion') else 
     client = aws_client.aws_session(
         service='ec2',
-        region=args.get('region'),
+        region=args.get('AddressRegion') or args.get('region'),
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
@@ -3051,15 +3052,18 @@ def describe_ipam_resource_discovery_associations_command(args, aws_client):
 
 
 def get_ipam_discovered_public_addresses_command(args, aws_client):
+
+    if (args.get('IpamResourceDiscoveryId') is None) or (args.get('AddressRegion') is None):
+        return_error('IpamResourceDiscoveryId and AddressRegion need to be defined')   
+    
     client = aws_client.aws_session(
         service='ec2',
-        region=args.get('region'),
+        region=args.get('AddressRegion'),
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
     )
-    if (args.get('IpamResourceDiscoveryId') is None) or (args.get('AddressRegion') is None):
-        return_error('IpamResourceDiscoveryId and AddressRegion need to be defined')   
+
     kwargs = {}
     kwargs.update({'IpamResourceDiscoveryId': args.get('IpamResourceDiscoveryId'), 'AddressRegion': args.get('AddressRegion')})
     if (filters := args.get('Filters')) is not None:
