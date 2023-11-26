@@ -2997,9 +2997,22 @@ def describe_ipam_resource_discoveries_command(args, aws_client):
         kwargs.update({'NextToken': next_token})
     if (ipam_ids := args.get('IpamResourceDiscoveryIds')) is not None:
         kwargs.update({'IpamResourceDiscoveryIds': argToList(ipam_ids)})
+    
     response = client.describe_ipam_resource_discoveries(**kwargs)
-    #Add output to context
-    return_results(response)
+    
+    if len(response['IpamResourceDiscoveries']) == 0:
+        return_results('No Ipam Resource Discoveries were found.')
+        return
+
+    human_readable = tableToMarkdown('Ipam Resource Discoveries', response['IpamResourceDiscoveries'])
+    command_results = CommandResults(
+        outputs_prefix="AWS.EC2.IpamResourceDiscoveries",
+        outputs_key_field="IpamResourceDiscoveryId",
+        outputs=response['IpamResourceDiscoveries'],
+        raw_response=response,
+        readable_output=human_readable,
+    )
+    return_results(command_results)
 
 
 def describe_ipam_resource_discovery_associations_command(args, aws_client):
@@ -3019,9 +3032,22 @@ def describe_ipam_resource_discovery_associations_command(args, aws_client):
         kwargs.update({'NextToken': next_token})
     if (ipam_ids := args.get('IpamResourceDiscoveryAssociationIds')) is not None:
         kwargs.update({'IpamResourceDiscoveryAssociationIds': argToList(ipam_ids)})
+    
     response = client.describe_ipam_resource_discovery_associations( **kwargs)
-    #Add output to context
-    return_results(response)
+    
+    if len(response['IpamResourceDiscoveryAssociations']) == 0:
+        return_results('No Ipam Resource Discovery Associations were found.')
+        return
+    
+    human_readable = tableToMarkdown('Ipam Resource Discovery Associations', response['IpamResourceDiscoveryAssociations'])
+    command_results = CommandResults(
+        outputs_prefix="AWS.EC2.IpamResourceDiscoveryAssociations",
+        outputs_key_field="IpamResourceDiscoveryId",
+        outputs=response['IpamResourceDiscoveryAssociations'],
+        raw_response=response,
+        readable_output=human_readable,
+    )
+    return_results(command_results)
 
 
 def get_ipam_discovered_public_addresses_command(args, aws_client):
@@ -3042,10 +3068,24 @@ def get_ipam_discovered_public_addresses_command(args, aws_client):
         kwargs.update({'MaxResults': max_results})
     if (next_token := args.get('NextToken')) is not None:
         kwargs.update({'NextToken': next_token})
+    
     response = client.get_ipam_discovered_public_addresses(**kwargs)
-    #Add output to context
+    
+    if len(response['IpamDiscoveredPublicAddresses']) == 0:
+        return_results('No Ipam Discovered Public Addresseses were found.')
+        return
+    
     output = json.dumps(response, cls=DatetimeEncoder)
-    return_results(json.loads(output))
+
+    human_readable = tableToMarkdown('Ipam Discovered Public Addresses', json.loads(output)['IpamDiscoveredPublicAddresses'])
+    command_results = CommandResults(
+        outputs_prefix="AWS.EC2.IpamDiscoveredPublicAddresses",
+        outputs_key_field="Address",
+        outputs=json.loads(output)['IpamDiscoveredPublicAddresses'],
+        raw_response=json.loads(output),
+        readable_output=human_readable,
+    )
+    return_results(command_results)
 
 def main():
     try:
