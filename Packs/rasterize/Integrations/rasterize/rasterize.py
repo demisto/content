@@ -181,10 +181,8 @@ def pychrome_reap_children():
         demisto.error(f'Failed checking for zombie processes: {e}. Trace: {traceback.format_exc()}')
 
 
-def pychrome_screenshot_image(path, width, height, wait_time, max_page_load_time, full_screen,
+def pychrome_screenshot_image(browser, tab, path, width, height, wait_time, max_page_load_time, full_screen,
                               include_url):  # pragma: no cover
-    browser = pychrome.Browser(url="http://127.0.0.1:9222")
-    tab = browser.new_tab()
     tab_ready = Event()
     eh = PychromeEventHandler(browser, tab, tab_ready)
     tab.Page.frameStartedLoading = eh.frame_started_loading
@@ -233,10 +231,8 @@ def pychrome_screenshot_image(path, width, height, wait_time, max_page_load_time
         pychrome_reap_children()
 
 
-def pychrome_screenshot_pdf(path, width, height, wait_time, max_page_load_time, full_screen,
+def pychrome_screenshot_pdf(browser, tab, path, width, height, wait_time, max_page_load_time, full_screen,
                             include_url):  # pragma: no cover
-    browser = pychrome.Browser(url="http://127.0.0.1:9222")
-    tab = browser.new_tab()
     tab_ready = Event()
     eh = PychromeEventHandler(browser, tab, tab_ready)
     tab.Page.frameStartedLoading = eh.frame_started_loading
@@ -458,6 +454,22 @@ def pychrome_close_all_tabs_but_one():
     # assert len(browser.list_tab()) == 1
 
 
+def pychrome_connect_to_browser():
+    max_retries = 4
+    retry_count = 1
+    while retry_count < max_retries:
+        try:
+            browser = pychrome.Browser(url="http://127.0.0.1:9222")
+            tab = browser.new_tab()
+            if browser and tab:
+                return browser, tab
+        except Exception as e:  # pragma: no cover
+            demisto.error(f"Failed connect to browser, attempt {retry_count}. Error: {e}. Trace: {traceback.format_exc()}")
+        retry_count += 1
+    demisto.error(f"Failed connect to browser after {max_retries} attempts, giving up.")
+    return None, None
+
+
 def quit_driver_and_display_and_reap_children(driver, display):
     """
     Quits the driver's and display's sessions and reaps all of zombie child processes
@@ -518,17 +530,19 @@ def rasterize(path: str, width: int, height: int, r_type: RasterizeType = Raster
         demisto.debug(f'Using pychrome for rasterizing {path}')
         chrome_headless_running = ensure_chrome_running()
         demisto.debug(f'Using pychrome for rasterizing {path}, {chrome_headless_running=}')
-        if chrome_headless_running:  # pragma: no cover
+        browser, tab = pychrome_connect_to_browser()
+        demisto.debug(f'Using pychrome for rasterizing {browser=}, {tab=}')
+        if chrome_headless_running and browser and tab:  # pragma: no cover
             if r_type == RasterizeType.PNG or str(r_type).lower() == 'png':
-                return pychrome_screenshot_image(path, width=width, height=height, wait_time=wait_time,
+                return pychrome_screenshot_image(browser, tab, path, width=width, height=height, wait_time=wait_time,
                                                  max_page_load_time=page_load_time, full_screen=full_screen,
                                                  include_url=include_url)
             if r_type == RasterizeType.PDF or str(r_type).lower() == 'pdf':
-                return pychrome_screenshot_pdf(path, width=width, height=height, wait_time=wait_time,
+                return pychrome_screenshot_pdf(browser, tab, path, width=width, height=height, wait_time=wait_time,
                                                max_page_load_time=page_load_time, full_screen=full_screen,
                                                include_url=include_url)
 
-    demisto.debug(f'Rasterizing, using mode: {r_mode}')
+    demisto.debug(f'Defaulting to rasterizing with Selenium, using mode: {r_mode}')
     rasterize_funcs: tuple[Callable, ...] = ()
     if r_mode == RasterizeMode.WEBDRIVER_PREFERED:
         rasterize_funcs = (rasterize_webdriver, rasterize_headless_cmd)
