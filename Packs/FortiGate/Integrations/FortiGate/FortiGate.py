@@ -8,7 +8,7 @@ import http
 import ipaddress
 import json
 import re
-from typing import Any, Callable, NamedTuple, TypeVar
+from typing import Any, Callable, NamedTuple
 
 import requests
 import urllib3
@@ -1562,21 +1562,6 @@ def validate_mask(mask: int | None = None) -> None:
     """
     if mask is not None and not (MIN_MASK <= mask <= MAX_MASK):
         raise DemistoException(f"Invalid mask: {mask}, valid mask range is: {MIN_MASK}-{MAX_MASK}")
-
-
-def to_optional_boolean(arg: Any) -> bool:
-    """Converts the given argument to a boolean.
-
-    Args:
-        arg (Any): The argument to convert.
-
-    Returns:
-        bool: The converted argument.
-    """
-    if arg is None:
-        return False
-
-    return argToBoolean(arg)
 
 
 def build_address_outputs(args: dict[str, Any]) -> dict[str, Any]:
@@ -3677,8 +3662,8 @@ def main() -> None:
     username: str = params["credentials"]["identifier"]
     password: str = params["credentials"]["password"]
 
-    verify_certificate: bool = not to_optional_boolean(params.get("unsecure", False))
-    proxy: bool = to_optional_boolean(params.get("proxy", False))
+    verify_certificate: bool = not argToBoolean(params.get("unsecure", False))
+    proxy: bool = argToBoolean(params.get("proxy", False))
 
     demisto.debug(f"Command being called is {command}")
 
