@@ -194,7 +194,15 @@ def get_next_start_time(latests_incident_fetched_time, latest_time, were_new_inc
     return latest_incident_datetime.strftime(SPLUNK_TIME_FORMAT)
 
 
-def create_incident_custom_id(incident):
+def create_incident_custom_id(incident: dict[str, Any]):
+    """This is used to create a custom incident ID, when fetching events that are **NOT** notables.
+
+    Args:
+        incident (dict[str, Any]): An incident created from a fetched event.
+
+    Returns:
+        str: The custom incident ID.
+    """
     incident_raw_data = json.loads(incident["rawJSON"])
     fields_to_add = ['_cd', 'index', '_time', '_indextime', '_raw']
     fields_supplied_by_user = demisto.params().get('unique_id_fields', '')
@@ -405,7 +413,8 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_t
     # We didn't get any new incidents or got less than limit,
     # so the next run's earliest time will be the latest_time from this iteration
     if (len(incidents) + num_of_dropped) < FETCH_LIMIT:
-        demisto.debug(f'[SplunkPy] Number of fetched incidents, dropped or not, is less than {FETCH_LIMIT=}. Starting new fetch')
+        demisto.debug(f'[SplunkPy] Number of fetched incidents = {len(incidents)}, dropped = {num_of_dropped}. Sum is less'
+                     f' than {FETCH_LIMIT=}. Starting new fetch')
         next_run_earliest_time = latest_time
         new_last_run = {
             'time': next_run_earliest_time,
@@ -416,7 +425,8 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_t
     # we get limit notables from splunk
     # we should fetch the entire queue with offset - so set the offset, time and latest_time for the next run
     else:
-        demisto.debug(f'[SplunkPy] Number of fetched incidents, dropped or not, is equal to {FETCH_LIMIT=}. Continue pagination')
+        demisto.debug(f'[SplunkPy] Number of fetched incidents = {len(incidents)}, dropped = {num_of_dropped}. Sum is'
+                      f' equal/greater than {FETCH_LIMIT=}. Continue pagination')
         new_last_run = {
             'time': occured_start_time,
             'latest_time': latest_time,
@@ -425,8 +435,8 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_t
         }
     new_last_run['late_indexed_pagination'] = False
     # Need to fetch again this "window" to be sure no "late" indexed events are missed
-    if num_of_dropped == FETCH_LIMIT and '`notable`' in fetch_query:
-        demisto.debug('Need to fetch again this "window" to be sure no "late" indexed events are missed')
+    if num_of_dropped >= FETCH_LIMIT and '`notable`' in fetch_query:
+        demisto.debug('Need to fetch this "window" again to make sure no "late" indexed events are missed')
         new_last_run['late_indexed_pagination'] = True
     # If we are in the process of checking late indexed events, and len(fetch_incidents) == FETCH_LIMIT,
     # that means we need to continue the process of checking late indexed events
