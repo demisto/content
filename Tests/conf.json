@@ -5597,24 +5597,6 @@
             "integrations": "Netcraft V2",
             "playbookID": "Test - Netcraft",
             "timeout": 2400
-        },
-        {
-            "playbookID": "Test Playbook - Cortex XDR - Endpoint Investigation"
-        },
-        {
-            "playbookID": "Test XDR Playbook"
-        },
-        {
-            "playbookID": "Test Playbook - Cortex XDR - Get File Path from alerts by hash"
-        },
-        {
-            "playbookID": "Test Playbook - Cortex XDR - Retrieve File by sha256"
-        },
-        {
-            "playbookID": "Test Playbook - Cortex XDR Malware - Incident Enrichment"
-        },
-        {
-            "playbookID": "Test Playbook - Cortex XDR - False Positive Incident Handling"
         }
     ],
     "skipped_tests": {
