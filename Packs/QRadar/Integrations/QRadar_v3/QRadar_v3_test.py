@@ -12,7 +12,7 @@ import pytz
 from QRadar_v3 import LAST_FETCH_KEY, USECS_ENTRIES, OFFENSE_OLD_NEW_NAMES_MAP, MINIMUM_API_VERSION, REFERENCE_SETS_OLD_NEW_MAP, \
     Client, ASSET_PROPERTIES_NAME_MAP, \
     FULL_ASSET_PROPERTIES_NAMES_MAP, EntryType, EntryFormat, MIRROR_OFFENSE_AND_EVENTS, \
-    MIRRORED_OFFENSES_QUERIED_CTX_KEY, MIRRORED_OFFENSES_FINISHED_CTX_KEY, LAST_MIRROR_KEY, QueryStatus
+    MIRRORED_OFFENSES_QUERIED_CTX_KEY, MIRRORED_OFFENSES_FINISHED_CTX_KEY, LAST_MIRROR_KEY, QueryStatus, LAST_MIRROR_CLOSED_KEY
 from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_outputs, build_headers, \
     get_offense_types, get_offense_closing_reasons, get_domain_names, get_rules_names, enrich_assets_results, \
     get_offense_addresses, get_minimum_id_to_fetch, poll_offense_events, sanitize_outputs, \
@@ -964,7 +964,8 @@ def test_get_modified_remote_data_command(mocker):
                                       'Type': EntryType.NOTE,
                                       'Contents': {
                                           'dbotIncidentClose': True,
-                                          'closeReason': 'From QRadar: False-Positive, Tuned'
+                                          'closeReason': 'False-Positive, Tuned',
+                                          'closeNotes': 'From QRadar: False-Positive, Tuned'
                                       },
                                       'ContentsFormat': EntryFormat.JSON
                                   }])),
@@ -978,8 +979,9 @@ def test_get_modified_remote_data_command(mocker):
                                       'Type': EntryType.NOTE,
                                       'Contents': {
                                           'dbotIncidentClose': True,
-                                          'closeReason': 'From QRadar: This offense was closed with reason: '
-                                                         'False-Positive, Tuned.'
+                                          'closeReason': 'False-Positive, Tuned',
+                                          'closeNotes': 'From QRadar: This offense was closed with reason: '
+                                                         'False-Positive, Tuned.',
                                       },
                                       'ContentsFormat': EntryFormat.JSON
                                   }])),
@@ -994,9 +996,10 @@ def test_get_modified_remote_data_command(mocker):
                                       'Type': EntryType.NOTE,
                                       'Contents': {
                                           'dbotIncidentClose': True,
-                                          'closeReason': 'From QRadar: This offense was closed with reason: '
+                                          'closeReason': 'False-Positive, Tuned',
+                                          'closeNotes': 'From QRadar: This offense was closed with reason: '
                                                          'False-Positive, Tuned. Notes: Closed because it is on our '
-                                                         'white list.'
+                                                         'white list.',
                                       },
                                       'ContentsFormat': EntryFormat.JSON
                                   }]))
@@ -1135,7 +1138,7 @@ def test_get_modified_with_events(mocker):
                     MIRRORED_OFFENSES_FINISHED_CTX_KEY: {'3': '789', '4': '012'}, MIRRORED_OFFENSES_FETCHED_CTX_KEY: {}}
     expected_updated_context = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {'2': '456', '10': '555'},
                                 MIRRORED_OFFENSES_FINISHED_CTX_KEY: {'3': '789', '4': '012', '1': '123'},
-                                LAST_MIRROR_KEY: 3444, MIRRORED_OFFENSES_FETCHED_CTX_KEY: {}}
+                                LAST_MIRROR_KEY: 3444, MIRRORED_OFFENSES_FETCHED_CTX_KEY: {}, LAST_MIRROR_CLOSED_KEY: 3444}
     set_integration_context(context_data)
     status = {'123': {'status': 'COMPLETED'},
               '456': {'status': 'WAIT'},
