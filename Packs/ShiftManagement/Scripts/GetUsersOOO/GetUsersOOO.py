@@ -27,7 +27,7 @@ def main():
 
     users_list = get_users_response[0]['EntryContext']['DemistoUsers']
 
-    if ooo_list in ["Item not found", 'null']:
+    if any(ele in ooo_list for ele in ["Item not found", 'null']):
         users_list = []
     else:
         # get ooo users
