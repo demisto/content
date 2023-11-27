@@ -336,7 +336,7 @@ def pychrome_screenshot_image(browser, tab, path, width, height, wait_time, max_
 def pychrome_screenshot_pdf(browser, tab, path, width, height, wait_time, max_page_load_time, full_screen,
                             include_url):  # pragma: no cover
     pychrome_navigate_to_path(browser, tab, path, width, height, wait_time, max_page_load_time,
-                                                   full_screen)
+                              full_screen)
     header_template = ''
     if include_url:
         header_template = "<span class=url></span>"
