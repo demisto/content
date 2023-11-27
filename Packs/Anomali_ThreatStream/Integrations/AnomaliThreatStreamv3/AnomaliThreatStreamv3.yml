@@ -78,7 +78,7 @@ configuration:
   options:
   - Benign
   - Unknown
-  required: true
+  required: false
   type: 15
   section: Collect
 - defaultvalue: 'false'
