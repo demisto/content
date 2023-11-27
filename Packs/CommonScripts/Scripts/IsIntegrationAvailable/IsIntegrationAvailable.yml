@@ -8,22 +8,23 @@ subtype: python3
 tags:
 - infra
 - Condition
-comment: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+comment: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
 system: true
 args:
 - name: brandname
-  description: Integration's brand name to query
+  description: Integration's brand name to query.
   required: true
   default: true
+  isArray: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
 outputs:
 - contextPath: yes
-  description: if integration is available
+  description: if integration is available.
 - contextPath: no
-  description: if there is no instance for the given brand
+  description: if there is no instance for the given brand.
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.13.80593
 tests:
 - No tests (auto formatted)
