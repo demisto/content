@@ -791,7 +791,7 @@ def get_service_keys() -> dict:
                     integration_string += (f"Name: {integration_data['Name']}, "
                                            f"Vendor: {integration_data['Vendor']}, "
                                            f"Key: {integration_data['Key']}\n"
-                                        )
+                                           )
 
             output = {'Integration': integration_string}
             context['Integration'] = integration_list
