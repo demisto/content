@@ -3,13 +3,13 @@ This content pack allows you to manage AWS Organizations from Cortex XSOAR.
 
 The AWS Organizations pack enables you to:
 
-- List AWS accounts in an organization
-- Get details about specific accounts
-- Create new AWS accounts
-- Move accounts between organizational units
-- Manage policies for accounts
-- Invite new accounts to join the organization
-- Tag resources across the organization 
+- List AWS accounts in an organization.
+- Get details about specific accounts.
+- Create new AWS accounts.
+- Move accounts between organizational units.
+- Manage policies for accounts.
+- Invite new accounts to join the organization.
+- Tag resources across the organization.
 
 #### Use Cases
 

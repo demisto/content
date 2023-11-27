@@ -434,9 +434,9 @@ Creates an organizational unit (OU) within a root or parent OU. An OU is a conta
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The friendly name to assign to the new OU. | Required | 
-| parent_id | The unique identifier (ID) of the parent root or OU to create the new OU in. | Required | 
-| tags | A comma-separated list of tags to attach to the newly created OU. Each tag should be in the format: "key=value". | Required | 
+| name | The friendly name to assign to the new organizational unit. | Required | 
+| parent_id | The unique identifier (ID) of the parent root or organizational unit to create the new organizational unit in. | Required | 
+| tags | A comma-separated list of tags to attach to the newly created organizational unit. Each tag should be in the format: "key=value". | Required | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
@@ -445,9 +445,9 @@ Creates an organizational unit (OU) within a root or parent OU. An OU is a conta
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.Organizations.OrganizationUnit.Id | String | The unique identifier \(ID\) associated with this OU. | 
-| AWS.Organizations.OrganizationUnit.Arn | String | The Amazon Resource Name \(ARN\) of this OU. | 
-| AWS.Organizations.OrganizationUnit.Name | String | The friendly name of this OU. | 
+| AWS.Organizations.OrganizationUnit.Id | String | The unique identifier \(ID\) associated with this organizational unit. | 
+| AWS.Organizations.OrganizationUnit.Arn | String | The Amazon Resource Name \(ARN\) of this organizational unit. | 
+| AWS.Organizations.OrganizationUnit.Name | String | The friendly name of this organizational unit. | 
 
 #### Command example
 ```!aws-org-organization-unit-create name=test parent_id=r-12ab tags="new=true,key=value"```
@@ -487,7 +487,7 @@ Renames the specified organizational unit (OU). The ID and ARN don’t change. T
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | organizational_unit_id | The unique identifier (ID) of the OU to rename. This value can be retrieved by running the command "aws-org-parent-list". | Required | 
-| name | The new name to assign to the OU. | Required | 
+| name | The new name to assign to the organizational unit. | Required | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
@@ -566,7 +566,7 @@ Retrieves the list of all policies in an organization of a specified type.
 | AWS.Organizations.Policy.Name | String | The friendly name of the policy. | 
 | AWS.Organizations.Policy.Description | String | The description of the policy. | 
 | AWS.Organizations.Policy.Type | String | The type of policy. | 
-| AWS.Organizations.Policy.AwsManaged | Boolean | Indicates whether the specified policy is an Amazon Web Services managed policy. If true, the policy can be attached to roots, OUs, or accounts, but cannot be edited. | 
+| AWS.Organizations.Policy.AwsManaged | Boolean | Indicates whether the specified policy is an Amazon Web Services managed policy. If true, the policy can be attached to roots, organizational units, or accounts, but cannot be edited. | 
 | AWS.Organizations.PolicyNextToken | String | If not null, indicates that more output is available than is included in the current response. Use this value as the next_token argument in a subsequent call of the command to get the next part of the output. | 
 
 #### Command example
@@ -635,7 +635,7 @@ Retrieves information about a policy.
 | AWS.Organizations.Policy.Name | String | The friendly name of the policy. | 
 | AWS.Organizations.Policy.Description | String | The description of the policy. | 
 | AWS.Organizations.Policy.Type | String | The type of policy. | 
-| AWS.Organizations.Policy.AwsManaged | Boolean | Indicates whether the specified policy is an Amazon Web Services managed policy. If true, the policy can be attached to roots, OUs, or accounts, but cannot be edited. | 
+| AWS.Organizations.Policy.AwsManaged | Boolean | Indicates whether the specified policy is an Amazon Web Services managed policy. If true, the policy can be attached to roots, organizational units, or accounts, but cannot be edited. | 
 
 #### Command example
 ```!aws-org-policy-get policy_id=p-1234abcd```
@@ -678,7 +678,7 @@ Attaches a policy to a root, an organizational unit (OU), or an individual accou
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | policy_id | The unique identifier (ID) of the policy to attach to the target. This value can be retrieved by running the command "aws-org-policy-list". | Required | 
-| target_id | The unique identifier (ID) of the root, OU, or account to attach the policy to. This value can be retrieved by running the commands "aws-org-root-list" or "aws-org-account-list". | Required | 
+| target_id | The unique identifier (ID) of the root, organizational unit, or account to attach the policy to. This value can be retrieved by running the command "aws-org-root-list" or "aws-org-account-list". | Required | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
@@ -786,7 +786,7 @@ Lists the policies that are directly attached to the specified target root, orga
 | AWS.Organizations.TargetPolicy.Name | String | The friendly name of the policy. | 
 | AWS.Organizations.TargetPolicy.Description | String | The description of the policy. | 
 | AWS.Organizations.TargetPolicy.Type | String | The type of policy. | 
-| AWS.Organizations.TargetPolicy.AwsManaged | Boolean | Indicates whether the specified policy is an Amazon Web Services managed policy. If true, the policy can be attached to roots, OUs, or accounts, but cannot be edited. | 
+| AWS.Organizations.TargetPolicy.AwsManaged | Boolean | Indicates whether the specified policy is an Amazon Web Services managed policy. If true, the policy can be attached to roots, organizational units, or accounts, but cannot be edited. | 
 | AWS.Organizations.TargetId | String | The unique identifier \(ID\) of the target. | 
 | AWS.Organizations.TargetPolicyNextToken | String | If not null, indicates that more output is available than is included in the current response. Use this value as the next_token argument in a subsequent call of the command to get the next part of the output. | 
 
@@ -834,7 +834,7 @@ Lists the policies that are directly attached to the specified target root, orga
 ### aws-org-policy-delete
 
 ***
-Deletes the specified policy from the organization. Before performing this operation, the policy must be detached from all organizational units (OUs), roots, and accounts.'
+Deletes the specified policy from the organization. Before performing this operation, the policy must be detached from all organizational units (OUs), roots, and accounts.
 
 #### Base Command
 
@@ -875,7 +875,7 @@ Adds one or more tags to the specified resource.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource_id | The ID of the resource to add a tag to. This value can be retrieved by running the commands "aws-org-root-list", "aws-org-account-list", "aws-org-root-list" or "aws-org-policy-list". | Required | 
+| resource_id | The ID of the resource to add a tag to. This value can be retrieved by running the command "aws-org-root-list", "aws-org-account-list", "aws-org-root-list", or "aws-org-policy-list". | Required | 
 | tags | A comma-separated list of tags to attach to the resource. Each tag should be in the format: "key=value". | Required | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
@@ -908,7 +908,7 @@ Lists tags that are attached to the specified resource.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource_id | The ID of the resource with the tags to list. This value can be retrieved by running the commands "aws-org-root-list", "aws-org-account-list", "aws-org-root-list" or "aws-org-policy-list". | Required | 
+| resource_id | The ID of the resource with the tags to list. This value can be retrieved by running the command "aws-org-root-list", "aws-org-account-list", "aws-org-root-list", or "aws-org-policy-list". | Required | 
 | next_token | The token denoting the next page of tags, as given by the response of the previous run of this command under the context key "AWS.Organizations.TagNextToken". | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
@@ -980,7 +980,7 @@ Creates an AWS Account that is automatically a member of the organization.
 | iam_user_access_to_billing | If set to ALLOW, the new account enables IAM users to access account billing information if they have the required permissions. If set to DENY, only the root user of the new account can access account billing information. Possible values are: Allow, Deny. Default is Allow. | Optional | 
 | role_name | The name of an IAM role that AWS Organizations automatically pre-configures in the new member account. This role trusts the management account, allowing users in the management account to assume the role, as permitted by the management account administrator. The role has administrator permissions in the new member account. Default is OrganizationAccountAccessRole. | Optional | 
 | tags | A comma-separated list of tags to attach to the newly created account. Each tag should be in the format: "key=value". | Required | 
-| request_id | The Id of the create request that is used for polling. | Optional | 
+| request_id | The ID of the create request that is used for polling. | Optional | 
 | interval_in_seconds | Indicates how long to wait between command executions (in seconds) when the 'polling' argument is true. Minimum value is 10 seconds. Default is 30. | Optional | 
 | timeout | Indicates the time in seconds until the polling sequence times out. Default is 600. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
