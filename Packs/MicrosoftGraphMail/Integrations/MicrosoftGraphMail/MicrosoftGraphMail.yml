@@ -1059,14 +1059,10 @@ script:
       isArray: false
       name: user_id
       required: true
-    - description: limit
+    - description: Maximum number of results to return.
       name: limit
       required: true
       defaultValue: 50
-    - description: all_results.
-      name: all_results
-      required: true
-      defaultValue: 'true'
     description: List email rules for a user's mailbox using Microsoft Graph API.
     name: msgraph-mail-list-rules
     outputs:
@@ -1102,7 +1098,7 @@ script:
       isArray: false
       name: user_id
       required: true
-    - description: rule_id
+    - description: The ID of the rule to retrieve.
       name: rule_id
       required: true
     description: Get details of a specific email rule by ID for a user's mailbox using Microsoft Graph API.
@@ -1140,7 +1136,7 @@ script:
       isArray: false
       name: user_id
       required: true
-    - description: rule_id
+    - description: The ID of the rule to delete.
       name: rule_id
       required: true
     description: Delete a specific email rule by ID for a user's mailbox using Microsoft Graph API.
