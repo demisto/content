@@ -492,10 +492,8 @@ class Pack:
             Metadata.TAGS: list(self._tags or []),
             Metadata.SEARCH_RANK: self._search_rank,
             Metadata.INTEGRATIONS: self._related_integration_images,
+            Metadata.DEPENDENCIES: self._dependencies
         }
-
-        if parse_dependencies:
-            pack_metadata[Metadata.DEPENDENCIES] = self._dependencies
 
         return pack_metadata
 
