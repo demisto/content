@@ -1,0 +1,5811 @@
+id: Test Playbook - Detonate and Analyze File
+version: -1
+name: Test Playbook - Detonate and Analyze File
+description: |-
+  This playbook tests the 'Detonate and Analyze File' playbook which is part of the 'Common Playbooks' pack.
+
+  Following are the tests conducted in the playbook:
+  1- Ensure that the context data was properly extracted.
+  2- Validate playbook outputs.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: eccc2985-8ff3-483c-8a1a-a8a085bd4dce
+    type: start
+    task:
+      id: eccc2985-8ff3-483c-8a1a-a8a085bd4dce
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -440,
+          "y": -6215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: a5c065bd-970f-48d8-8560-da36b6167ae7
+    type: regular
+    task:
+      id: a5c065bd-970f-48d8-8560-da36b6167ae7
+      version: -1
+      name: Delete Context
+      description: The task deletes all of the context data. Having a clean beginning to a test playbook ensures that a test can be sterile and that unrelated issues can be eliminated.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "562"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -440,
+          "y": -6085
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "84":
+    id: "84"
+    taskid: 96e3675c-c036-4b75-8513-46d0aaec246b
+    type: title
+    task:
+      id: 96e3675c-c036-4b75-8513-46d0aaec246b
+      version: -1
+      name: Start Testing
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "270"
+      - "548"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -440,
+          "y": -4630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "202":
+    id: "202"
+    taskid: cf1a72cb-186d-46f8-8371-45c499b88337
+    type: title
+    task:
+      id: cf1a72cb-186d-46f8-8371-45c499b88337
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4740,
+          "y": 2430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "270":
+    id: "270"
+    taskid: 2869f493-ab70-45e1-8005-2e94b9172670
+    type: title
+    task:
+      id: 2869f493-ab70-45e1-8005-2e94b9172670
+      version: -1
+      name: Check Context Data
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "322"
+      - "331"
+      - "359"
+      - "349"
+      - "456"
+      - "452"
+      - "460"
+      - "514"
+      - "526"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -440,
+          "y": -3670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "282":
+    id: "282"
+    taskid: 33d16ef5-2493-4954-8c2c-77267a02cbde
+    type: title
+    task:
+      id: 33d16ef5-2493-4954-8c2c-77267a02cbde
+      version: -1
+      name: Done Verifying 'csfalconx' Context
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "202"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4460,
+          "y": -375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "311":
+    id: "311"
+    taskid: df0d163f-de66-478e-8906-b32a3426e5d6
+    type: regular
+    task:
+      id: df0d163f-de66-478e-8906-b32a3426e5d6
+      version: -1
+      name: Set File Details To Context
+      description: Set multiple keys/values to the context.
+      scriptName: SetMultipleValues
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "566"
+    scriptarguments:
+      keys:
+        simple: Name,SHA256,MD5,SHA1
+      parent:
+        simple: File
+      values:
+        simple: BitTorrent.exe,dc2e64c41388e29306d9f66f13487dc0c742726f432d06f96aa6b675c241e9ad,b4996b23c836fab2ac93b5aced17e448,7f1d79a835d41cfe72abce5388efeedb00c0f673
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -440,
+          "y": -5760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "322":
+    id: "322"
+    taskid: ea3a8041-381b-478b-8314-9cb906cf043b
+    type: title
+    task:
+      id: ea3a8041-381b-478b-8314-9cb906cf043b
+      version: -1
+      name: '''csfalconx'' Context Data'
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "580"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": -850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "331":
+    id: "331"
+    taskid: 00d375c4-655c-4f93-8c28-be5d663f9091
+    type: title
+    task:
+      id: 00d375c4-655c-4f93-8c28-be5d663f9091
+      version: -1
+      name: '''Joe.Analysis'' Context Data'
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "579"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": -200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "348":
+    id: "348"
+    taskid: 772c4460-38a3-4fa7-86c9-0d4d9633c3dd
+    type: title
+    task:
+      id: 772c4460-38a3-4fa7-86c9-0d4d9633c3dd
+      version: -1
+      name: Done Verifying 'Joe.Analysis' Context
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "202"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4460,
+          "y": 285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "349":
+    id: "349"
+    taskid: 201d16d8-95d4-464e-830e-4703e7281e1d
+    type: title
+    task:
+      id: 201d16d8-95d4-464e-830e-4703e7281e1d
+      version: -1
+      name: '''DBotScore'' Context Data'
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "576"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": -1540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "350":
+    id: "350"
+    taskid: ab4df4d2-67dc-4d06-8f5d-1cf2252e72e8
+    type: title
+    task:
+      id: ab4df4d2-67dc-4d06-8f5d-1cf2252e72e8
+      version: -1
+      name: Done Verifying 'DBotScore' Context
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "202"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4470,
+          "y": -1045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "359":
+    id: "359"
+    taskid: baacf537-4865-4a98-8bbd-9fcc1c698bb9
+    type: title
+    task:
+      id: baacf537-4865-4a98-8bbd-9fcc1c698bb9
+      version: -1
+      name: '''InfoFile'' Context Data'
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "578"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "436":
+    id: "436"
+    taskid: 7f03478a-61d5-49bb-8545-995be675df58
+    type: title
+    task:
+      id: 7f03478a-61d5-49bb-8545-995be675df58
+      version: -1
+      name: Done Verifying 'InfoFile' Context
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "202"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2120,
+          "y": 965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "442":
+    id: "442"
+    taskid: 80d23a71-dc3d-442b-8222-9ff83cbfecff
+    type: condition
+    task:
+      id: 80d23a71-dc3d-442b-8222-9ff83cbfecff
+      version: -1
+      name: Verify Tags
+      description: Verify that the 'csfalconx.resource.tags’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "282"
+      '#default#':
+      - "443"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: csfalconx.resource
+                accessor: tags
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": -560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "443":
+    id: "443"
+    taskid: dbcdf6ea-740d-429d-8af4-b6b8d67e79cb
+    type: regular
+    task:
+      id: dbcdf6ea-740d-429d-8af4-b6b8d67e79cb
+      version: -1
+      name: Verify Context Error - Tags
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'csfalconx.resource.tags' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'csfalconx.resource.tags' context key.
+          2- The 'CrowdStrike Falcon Intelligence Sandbox Detonate and Analyze File' sub-playbook outputs have been modified and no longer contain the 'csfalconx.resource.tags' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": -375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "444":
+    id: "444"
+    taskid: facf39f7-6605-4701-8447-40b41fb40609
+    type: condition
+    task:
+      id: facf39f7-6605-4701-8447-40b41fb40609
+      version: -1
+      name: Verify SHA256
+      description: Verify that the 'csfalconx.resource.sha256’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "282"
+      '#default#':
+      - "445"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: csfalconx.resource
+                accessor: sha256
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": -560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "445":
+    id: "445"
+    taskid: 268023ff-f596-45fc-8c94-fd7b6e4469a3
+    type: regular
+    task:
+      id: 268023ff-f596-45fc-8c94-fd7b6e4469a3
+      version: -1
+      name: Verify Context Error - SHA256
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'csfalconx.resource.sha256' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'csfalconx.resource.sha256' context key.
+          2- The 'CrowdStrike Falcon Intelligence Sandbox Detonate and Analyze File' sub-playbook outputs have been modified and no longer contain the 'csfalconx.resource.sha256' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": -375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "446":
+    id: "446"
+    taskid: d0de794a-3acc-4065-8f58-81f6c1067278
+    type: condition
+    task:
+      id: d0de794a-3acc-4065-8f58-81f6c1067278
+      version: -1
+      name: Verify File Name
+      description: Verify that the 'csfalconx.resource.file_name’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "282"
+      '#default#':
+      - "447"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: csfalconx.resource
+                accessor: file_name
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": -560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "447":
+    id: "447"
+    taskid: 5dd6a11f-c9a5-47e3-83b7-4c76cbaa4e48
+    type: regular
+    task:
+      id: 5dd6a11f-c9a5-47e3-83b7-4c76cbaa4e48
+      version: -1
+      name: Verify Context Error - File Name
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'csfalconx.resource.file_name' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'csfalconx.resource.file_name' context key.
+          2- The 'CrowdStrike Falcon Intelligence Sandbox Detonate and Analyze File' sub-playbook outputs have been modified and no longer contain the 'csfalconx.resource.file_name' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": -375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "448":
+    id: "448"
+    taskid: abd2e761-0ee4-4f9c-8835-22b829766a20
+    type: condition
+    task:
+      id: abd2e761-0ee4-4f9c-8835-22b829766a20
+      version: -1
+      name: Verify Sandbox
+      description: Verify that the 'csfalconx.resource.sandbox’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "282"
+      '#default#':
+      - "449"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: csfalconx.resource
+                accessor: sandbox
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": -560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "449":
+    id: "449"
+    taskid: bce3c38d-3e63-4e72-8a29-857a6aea5982
+    type: regular
+    task:
+      id: bce3c38d-3e63-4e72-8a29-857a6aea5982
+      version: -1
+      name: Verify Context Error - Sandbox
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'csfalconx.resource.sandbox' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'csfalconx.resource.sandbox' context key.
+          2- The 'CrowdStrike Falcon Intelligence Sandbox Detonate and Analyze File' sub-playbook outputs have been modified and no longer contain the 'csfalconx.resource.sandbox' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": -375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "450":
+    id: "450"
+    taskid: a8c6877f-12cb-42a1-8192-dbf66eda19fc
+    type: condition
+    task:
+      id: a8c6877f-12cb-42a1-8192-dbf66eda19fc
+      version: -1
+      name: Verify Intel
+      description: Verify that the 'csfalconx.resource.intel’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "282"
+      '#default#':
+      - "451"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: csfalconx.resource
+                accessor: intel
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1320,
+          "y": -560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "451":
+    id: "451"
+    taskid: b6f7705e-e830-44e8-8242-9773d19eb279
+    type: regular
+    task:
+      id: b6f7705e-e830-44e8-8242-9773d19eb279
+      version: -1
+      name: Verify Context Error - Intel
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'csfalconx.resource.intel' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'csfalconx.resource.intel' context key.
+          2- The 'CrowdStrike Falcon Intelligence Sandbox Detonate and Analyze File' sub-playbook outputs have been modified and no longer contain the 'csfalconx.resource.intel' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1320,
+          "y": -375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "452":
+    id: "452"
+    taskid: 19f190fa-4910-4e08-89b5-f01e38b68389
+    type: title
+    task:
+      id: 19f190fa-4910-4e08-89b5-f01e38b68389
+      version: -1
+      name: '''AttackPattern'' Context Data'
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "574"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": -2860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "455":
+    id: "455"
+    taskid: c2e8d594-1f90-4485-85a9-5b22787cddc0
+    type: title
+    task:
+      id: c2e8d594-1f90-4485-85a9-5b22787cddc0
+      version: -1
+      name: Done Verifying 'AttackPattern' Context
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "202"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4470,
+          "y": -2375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "456":
+    id: "456"
+    taskid: b0729ceb-18df-4124-856d-db78af70c30e
+    type: title
+    task:
+      id: b0729ceb-18df-4124-856d-db78af70c30e
+      version: -1
+      name: '''WildFire'' Context Data'
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "572"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": -3530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "457":
+    id: "457"
+    taskid: bcb976b4-0a93-40a0-8118-eb6233dc3ea4
+    type: condition
+    task:
+      id: bcb976b4-0a93-40a0-8118-eb6233dc3ea4
+      version: -1
+      name: Verify Report
+      description: Verify that the 'WildFire.Report’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "459"
+      '#default#':
+      - "458"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: WildFire
+                accessor: Report
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": -3230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "458":
+    id: "458"
+    taskid: bfa689da-12e7-4a32-8e91-7c57a6264b55
+    type: regular
+    task:
+      id: bfa689da-12e7-4a32-8e91-7c57a6264b55
+      version: -1
+      name: Verify Context Error - Report
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'WildFire.Report' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'WildFire.Report' context key.
+          2- The 'Wildfire Detonate and Analyze File' sub-playbook outputs have been modified and no longer contain the 'XWildFire.Report' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": -3045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "459":
+    id: "459"
+    taskid: 332399bc-e7d9-4a08-88ea-820a38cd5f49
+    type: title
+    task:
+      id: 332399bc-e7d9-4a08-88ea-820a38cd5f49
+      version: -1
+      name: Done Verifying 'WildFire' Context
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "202"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4470,
+          "y": -3055
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "460":
+    id: "460"
+    taskid: 31e78e4e-f9c0-461c-8189-4011426fd89f
+    type: title
+    task:
+      id: 31e78e4e-f9c0-461c-8189-4011426fd89f
+      version: -1
+      name: '''MITREATTACK'' Context Data'
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "575"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": -2190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "461":
+    id: "461"
+    taskid: 9690039f-c22a-401e-812a-675791b24c44
+    type: condition
+    task:
+      id: 9690039f-c22a-401e-812a-675791b24c44
+      version: -1
+      name: Verify MITREATTACK
+      description: Verify that the 'MITREATTACK’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "463"
+      '#default#':
+      - "462"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MITREATTACK
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": -1900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "462":
+    id: "462"
+    taskid: d8bf8983-4af5-41d5-8664-944fec227e26
+    type: regular
+    task:
+      id: d8bf8983-4af5-41d5-8664-944fec227e26
+      version: -1
+      name: Verify Context Error - MITREATTACK
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'MITREATTACK' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'MITREATTACK' context key.
+          2- The 'Mitre Attack - Extract Technique Information From ID' sub-playbook outputs have been modified and no longer contain the 'MITREATTACK' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": -1715
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "463":
+    id: "463"
+    taskid: 80a2219d-20a2-40b3-8f32-8f3eb118b972
+    type: title
+    task:
+      id: 80a2219d-20a2-40b3-8f32-8f3eb118b972
+      version: -1
+      name: Done Verifying 'MITREATTACK' Context
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "202"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4480,
+          "y": -1715
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "464":
+    id: "464"
+    taskid: 165fac17-01c1-42b9-8306-bb2c75632289
+    type: condition
+    task:
+      id: 165fac17-01c1-42b9-8306-bb2c75632289
+      version: -1
+      name: Verify Vendor
+      description: Verify that the 'DBotScore.Vendor’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "350"
+      '#default#':
+      - "465"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Vendor
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": -1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "465":
+    id: "465"
+    taskid: 487a65f7-6b27-44be-8c90-2974c2ddeb4e
+    type: regular
+    task:
+      id: 487a65f7-6b27-44be-8c90-2974c2ddeb4e
+      version: -1
+      name: Verify Context Error - Vendor
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'DBotScore.Vendor' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'DBotScore.Vendor' context key.
+          2- The 'Detonate File - JoeSecurity V2' sub-playbook outputs have been modified and no longer contain the 'DBotScore.Vendor' context key.
+          3- The 'File' input configuration was changed for the 'Detonate File - JoeSecurity V2' sub-playbook.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": -1045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "466":
+    id: "466"
+    taskid: 28461a6d-58b6-4122-88b1-36403eeb901b
+    type: condition
+    task:
+      id: 28461a6d-58b6-4122-88b1-36403eeb901b
+      version: -1
+      name: Verify Indicator
+      description: Verify that the 'DBotScore.Indicator’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "350"
+      '#default#':
+      - "467"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Indicator
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": -1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "467":
+    id: "467"
+    taskid: d09a6370-e8ab-478f-80eb-11e482221664
+    type: regular
+    task:
+      id: d09a6370-e8ab-478f-80eb-11e482221664
+      version: -1
+      name: Verify Context Error - Indicator
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'DBotScore.Indicator' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'DBotScore.Indicator' context key.
+          2- The 'Detonate File - JoeSecurity V2' sub-playbook outputs have been modified and no longer contain the 'DBotScore.Indicator' context key.
+          3- The 'File' input configuration was changed for the 'Detonate File - JoeSecurity V2' sub-playbook.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": -1045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "468":
+    id: "468"
+    taskid: c4a6a933-6796-475b-855e-2956cdd6beea
+    type: condition
+    task:
+      id: c4a6a933-6796-475b-855e-2956cdd6beea
+      version: -1
+      name: Verify Type
+      description: Verify that the 'DBotScore.Type’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "350"
+      '#default#':
+      - "469"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Type
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": -1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "469":
+    id: "469"
+    taskid: 209fabfc-b5e6-4a1b-8117-c814d557a06f
+    type: regular
+    task:
+      id: 209fabfc-b5e6-4a1b-8117-c814d557a06f
+      version: -1
+      name: Verify Context Error - Type
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'DBotScore.Type' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'DBotScore.Vendor' context key.
+          2- The 'Detonate File - JoeSecurity V2' sub-playbook outputs have been modified and no longer contain the 'DBotScore.Type' context key.
+          3- The 'File' input configuration was changed for the 'Detonate File - JoeSecurity V2' sub-playbook.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": -1045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "470":
+    id: "470"
+    taskid: 6cefa188-3b20-432d-848a-6ca31360e67e
+    type: condition
+    task:
+      id: 6cefa188-3b20-432d-848a-6ca31360e67e
+      version: -1
+      name: Verify Score
+      description: Verify that the 'DBotScore.Score’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "350"
+      '#default#':
+      - "471"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Score
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": -1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "471":
+    id: "471"
+    taskid: a801e5d2-3d1c-4630-81f5-64773ba373b5
+    type: regular
+    task:
+      id: a801e5d2-3d1c-4630-81f5-64773ba373b5
+      version: -1
+      name: Verify Context Error - Score
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'DBotScore.Score' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'DBotScore.Score' context key.
+          2- The 'Detonate File - JoeSecurity V2' sub-playbook outputs have been modified and no longer contain the 'DBotScore.Score' context key.
+          3- The 'File' input configuration was changed for the 'Detonate File - JoeSecurity V2' sub-playbook.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": -1045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "472":
+    id: "472"
+    taskid: 64e771ac-7191-463b-8937-e539346c4d98
+    type: condition
+    task:
+      id: 64e771ac-7191-463b-8937-e539346c4d98
+      version: -1
+      name: Verify Malicious
+      description: Verify that the 'DBotScore.Malicious’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "350"
+      '#default#':
+      - "473"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Malicious
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": -1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "473":
+    id: "473"
+    taskid: 77153286-8744-46e0-8a45-874b18cc1b13
+    type: regular
+    task:
+      id: 77153286-8744-46e0-8a45-874b18cc1b13
+      version: -1
+      name: Verify Context Error - Malicious
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'DBotScore.Malicious' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'DBotScore.Malicious' context key.
+          2- The 'Detonate File - JoeSecurity V2' sub-playbook outputs have been modified and no longer contain the 'DBotScore.Malicious' context key.
+          3- The 'File' input configuration was changed for the 'Detonate File - JoeSecurity V2' sub-playbook.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": -1045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "474":
+    id: "474"
+    taskid: 0095e37c-432b-4919-815a-281300cfd117
+    type: condition
+    task:
+      id: 0095e37c-432b-4919-815a-281300cfd117
+      version: -1
+      name: Verify Malicious Vendor
+      description: Verify that the 'DBotScore.Malicious.Vendor’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "475"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: DBotScore.Malicious
+                accessor: Vendor
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1720,
+          "y": -1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "475":
+    id: "475"
+    taskid: 2d51ce82-1456-4789-891e-36d36b6f892d
+    type: regular
+    task:
+      id: 2d51ce82-1456-4789-891e-36d36b6f892d
+      version: -1
+      name: Verify Context Error - Malicious Vendor
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'DBotScore.Malicious.Vendor' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'DBotScore.Malicious.Vendor' context key.
+          2- The 'Detonate File - JoeSecurity V2' sub-playbook outputs have been modified and no longer contain the 'DBotScore.Malicious.Vendor' context key.
+          3- The 'File' input configuration was changed for the 'Detonate File - JoeSecurity V2' sub-playbook.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1720,
+          "y": -1045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "476":
+    id: "476"
+    taskid: 582e67a1-737b-49b6-8500-508e473b83d7
+    type: condition
+    task:
+      id: 582e67a1-737b-49b6-8500-508e473b83d7
+      version: -1
+      name: Verify Malicious Detections
+      description: Verify that the 'DBotScore.Malicious.Detections’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "477"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: DBotScore.Malicious
+                accessor: Detections
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2110,
+          "y": -1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "477":
+    id: "477"
+    taskid: 07add571-8ac1-41a6-8bbf-3d8eb69ed1eb
+    type: regular
+    task:
+      id: 07add571-8ac1-41a6-8bbf-3d8eb69ed1eb
+      version: -1
+      name: Verify Context Error - Malicious Detections
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'DBotScore.Malicious.Detections' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'DBotScore.Malicious.Detections' context key.
+          2- The 'Detonate File - JoeSecurity V2' sub-playbook outputs have been modified and no longer contain the 'DBotScore.Malicious.Detections' context key.
+          3- The 'File' input configuration was changed for the 'Detonate File - JoeSecurity V2' sub-playbook.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2110,
+          "y": -1045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "478":
+    id: "478"
+    taskid: b36e2c08-6617-435e-8256-5f95405ff9a0
+    type: condition
+    task:
+      id: b36e2c08-6617-435e-8256-5f95405ff9a0
+      version: -1
+      name: Verify Malicious SHA1
+      description: Verify that the 'DBotScore.Malicious.SHA1’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "479"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: DBotScore.Malicious
+                accessor: SHA1
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2500,
+          "y": -1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "479":
+    id: "479"
+    taskid: 75cffd2a-08e1-4dae-840c-6cf402893b47
+    type: regular
+    task:
+      id: 75cffd2a-08e1-4dae-840c-6cf402893b47
+      version: -1
+      name: Verify Context Error - Malicious SHA1
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'DBotScore.Malicious.SHA1' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'DBotScore.Malicious.SHA1' context key.
+          2- The 'Detonate File - JoeSecurity V2' sub-playbook outputs have been modified and no longer contain the 'DBotScore.Malicious.SHA1' context key.
+          3- The 'File' input configuration was changed for the 'Detonate File - JoeSecurity V2' sub-playbook.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2500,
+          "y": -1045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "480":
+    id: "480"
+    taskid: d6059250-bfca-422c-8376-c0e825d0e142
+    type: condition
+    task:
+      id: d6059250-bfca-422c-8376-c0e825d0e142
+      version: -1
+      name: Verify ID
+      description: Verify that the 'Joe.Analysis.ID’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "348"
+      '#default#':
+      - "481"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Joe.Analysis
+                accessor: ID
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "481":
+    id: "481"
+    taskid: c9d9c8af-8051-4243-8116-ebc8cbc746f5
+    type: regular
+    task:
+      id: c9d9c8af-8051-4243-8116-ebc8cbc746f5
+      version: -1
+      name: Verify Context Error - ID
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Joe.Analysis.ID' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'Joe.Analysis.ID' context key.
+          2- The 'Detonate File - JoeSecurity V2' sub-playbook outputs have been modified and no longer contain the 'Joe.Analysis.ID' context key.
+          3- The 'File' input configuration was changed for the 'Detonate File - JoeSecurity V2' sub-playbook.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "482":
+    id: "482"
+    taskid: 53d3fd77-5fdf-45d8-8382-8364240f7123
+    type: condition
+    task:
+      id: 53d3fd77-5fdf-45d8-8382-8364240f7123
+      version: -1
+      name: Verify Status
+      description: Verify that the 'Joe.Analysis.Status’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "348"
+      '#default#':
+      - "483"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Joe.Analysis
+                accessor: Status
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "483":
+    id: "483"
+    taskid: 2a374307-ac82-4139-8a5e-7bfb8d604766
+    type: regular
+    task:
+      id: 2a374307-ac82-4139-8a5e-7bfb8d604766
+      version: -1
+      name: Verify Context Error - Status
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Joe.Analysis.Status' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'Joe.Analysis.Status' context key.
+          2- The 'Detonate File - JoeSecurity V2' sub-playbook outputs have been modified and no longer contain the 'Joe.Analysis.Status' context key.
+          3- The 'File' input configuration was changed for the 'Detonate File - JoeSecurity V2' sub-playbook.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "484":
+    id: "484"
+    taskid: 7e0e7cac-cbe8-4973-854e-3f7e84646879
+    type: condition
+    task:
+      id: 7e0e7cac-cbe8-4973-854e-3f7e84646879
+      version: -1
+      name: Verify Comments
+      description: Verify that the 'Joe.Analysis.Comments’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "348"
+      '#default#':
+      - "485"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Joe.Analysis
+                accessor: Comments
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "485":
+    id: "485"
+    taskid: f6f17cfb-7a85-4b54-8029-8d7406f18591
+    type: regular
+    task:
+      id: f6f17cfb-7a85-4b54-8029-8d7406f18591
+      version: -1
+      name: Verify Context Error - Comments
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Joe.Analysis.Comments' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'Joe.Analysis.Comments' context key.
+          2- The 'Detonate File - JoeSecurity V2' sub-playbook outputs have been modified and no longer contain the 'Joe.Analysis.Comments' context key.
+          3- The 'File' input configuration was changed for the 'Detonate File - JoeSecurity V2' sub-playbook.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": 285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "486":
+    id: "486"
+    taskid: 530b4387-4bd7-4efa-80ef-bf74da4211ab
+    type: condition
+    task:
+      id: 530b4387-4bd7-4efa-80ef-bf74da4211ab
+      version: -1
+      name: Verify Time
+      description: Verify that the 'Joe.Analysis.Time’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "348"
+      '#default#':
+      - "487"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Joe.Analysis
+                accessor: Time
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "487":
+    id: "487"
+    taskid: 5a8e34b0-b0da-4b65-84e5-2867e4aa3213
+    type: regular
+    task:
+      id: 5a8e34b0-b0da-4b65-84e5-2867e4aa3213
+      version: -1
+      name: Verify Context Error - Time
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Joe.Analysis.Time' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'Joe.Analysis.Time' context key.
+          2- The 'Detonate File - JoeSecurity V2' sub-playbook outputs have been modified and no longer contain the 'Joe.Analysis.Time' context key.
+          3- The 'File' input configuration was changed for the 'Detonate File - JoeSecurity V2' sub-playbook.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "488":
+    id: "488"
+    taskid: 63aa3e5a-3bd1-4749-88ce-6756feb2a5a9
+    type: condition
+    task:
+      id: 63aa3e5a-3bd1-4749-88ce-6756feb2a5a9
+      version: -1
+      name: Verify Runs
+      description: Verify that the 'Joe.Analysis.Runs’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "348"
+      '#default#':
+      - "489"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Joe.Analysis
+                accessor: Runs
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1320,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "489":
+    id: "489"
+    taskid: 40f595dc-a851-45f4-83fd-0978c3bddf65
+    type: regular
+    task:
+      id: 40f595dc-a851-45f4-83fd-0978c3bddf65
+      version: -1
+      name: Verify Context Error - Runs
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Joe.Analysis.Runs' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'Joe.Analysis.Runs' context key.
+          2- The 'Detonate File - JoeSecurity V2' sub-playbook outputs have been modified and no longer contain the 'Joe.Analysis.Runs' context key.
+          3- The 'File' input configuration was changed for the 'Detonate File - JoeSecurity V2' sub-playbook.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1320,
+          "y": 285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "490":
+    id: "490"
+    taskid: 0a7cf752-c846-49bd-8c0f-2f8ef4c47fd5
+    type: condition
+    task:
+      id: 0a7cf752-c846-49bd-8c0f-2f8ef4c47fd5
+      version: -1
+      name: Verify Result
+      description: Verify that the 'Joe.Analysis.Result’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "348"
+      '#default#':
+      - "491"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Joe.Analysis
+                accessor: Result
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1710,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "491":
+    id: "491"
+    taskid: 0d5d138d-b8b7-4b0c-8746-3cc67ab98bf2
+    type: regular
+    task:
+      id: 0d5d138d-b8b7-4b0c-8746-3cc67ab98bf2
+      version: -1
+      name: Verify Context Error - Result
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Joe.Analysis.Result' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'Joe.Analysis.Result' context key.
+          2- The 'Detonate File - JoeSecurity V2' sub-playbook outputs have been modified and no longer contain the 'Joe.Analysis.Result' context key.
+          3- The 'File' input configuration was changed for the 'Detonate File - JoeSecurity V2' sub-playbook.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1710,
+          "y": 285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "492":
+    id: "492"
+    taskid: 4191523f-00a3-4c50-8f81-ffdd626bbd4e
+    type: condition
+    task:
+      id: 4191523f-00a3-4c50-8f81-ffdd626bbd4e
+      version: -1
+      name: Verify Errors
+      description: Verify that the 'Joe.Analysis.Errors’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "348"
+      '#default#':
+      - "493"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Joe.Analysis
+                accessor: Errors
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2100,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "493":
+    id: "493"
+    taskid: 2d86693b-7a66-43c0-8c57-61624e980d74
+    type: regular
+    task:
+      id: 2d86693b-7a66-43c0-8c57-61624e980d74
+      version: -1
+      name: Verify Context Error - Errors
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Joe.Analysis.Errors' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'Joe.Analysis.Errors' context key.
+          2- The 'Detonate File - JoeSecurity V2' sub-playbook outputs have been modified and no longer contain the 'Joe.Analysis.Errors' context key.
+          3- The 'File' input configuration was changed for the 'Detonate File - JoeSecurity V2' sub-playbook.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2100,
+          "y": 285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "494":
+    id: "494"
+    taskid: a31f8ce2-9574-4bce-855d-c7c32ae3dbff
+    type: condition
+    task:
+      id: a31f8ce2-9574-4bce-855d-c7c32ae3dbff
+      version: -1
+      name: Verify Systems
+      description: Verify that the 'Joe.Analysis.Systems’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "348"
+      '#default#':
+      - "495"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Joe.Analysis
+                accessor: Systems
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2490,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "495":
+    id: "495"
+    taskid: d8559575-05eb-4e6f-84f4-639012a4bb66
+    type: regular
+    task:
+      id: d8559575-05eb-4e6f-84f4-639012a4bb66
+      version: -1
+      name: Verify Context Error - Systems
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Joe.Analysis.Systems' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'Joe.Analysis.Systems' context key.
+          2- The 'Detonate File - JoeSecurity V2' sub-playbook outputs have been modified and no longer contain the 'Joe.Analysis.Systems' context key.
+          3- The 'File' input configuration was changed for the 'Detonate File - JoeSecurity V2' sub-playbook.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2490,
+          "y": 285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "496":
+    id: "496"
+    taskid: b25dbf9c-f40c-47d8-88d5-e0032e98ace3
+    type: condition
+    task:
+      id: b25dbf9c-f40c-47d8-88d5-e0032e98ace3
+      version: -1
+      name: Verify MD5
+      description: Verify that the 'Joe.Analysis.MD5’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "348"
+      '#default#':
+      - "497"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Joe.Analysis
+                accessor: MD5
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2880,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "497":
+    id: "497"
+    taskid: 2764a491-d2d3-4702-85ba-51d33bda66ba
+    type: regular
+    task:
+      id: 2764a491-d2d3-4702-85ba-51d33bda66ba
+      version: -1
+      name: Verify Context Error - MD5
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Joe.Analysis.MD5' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'Joe.Analysis.MD5' context key.
+          2- The 'Detonate File - JoeSecurity V2' sub-playbook outputs have been modified and no longer contain the 'Joe.Analysis.MD5' context key.
+          3- The 'File' input configuration was changed for the 'Detonate File - JoeSecurity V2' sub-playbook.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2880,
+          "y": 285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "498":
+    id: "498"
+    taskid: 9e65786c-6a0f-4609-8815-61dddf4f784d
+    type: condition
+    task:
+      id: 9e65786c-6a0f-4609-8815-61dddf4f784d
+      version: -1
+      name: Verify SHA1
+      description: Verify that the 'Joe.Analysis.SHA1’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "348"
+      '#default#':
+      - "499"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Joe.Analysis
+                accessor: SHA1
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3270,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "499":
+    id: "499"
+    taskid: 965edb52-e9f9-4297-884a-ad33ffb03935
+    type: regular
+    task:
+      id: 965edb52-e9f9-4297-884a-ad33ffb03935
+      version: -1
+      name: Verify Context Error - SHA1
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Joe.Analysis.SHA1' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'Joe.Analysis.SHA1' context key.
+          2- The 'Detonate File - JoeSecurity V2' sub-playbook outputs have been modified and no longer contain the 'Joe.Analysis.SHA1' context key.
+          3- The 'File' input configuration was changed for the 'Detonate File - JoeSecurity V2' sub-playbook.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3270,
+          "y": 285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "500":
+    id: "500"
+    taskid: c4856ceb-a15e-44bc-81b0-9db4e7be2f00
+    type: condition
+    task:
+      id: c4856ceb-a15e-44bc-81b0-9db4e7be2f00
+      version: -1
+      name: Verify SHA256
+      description: Verify that the 'Joe.Analysis.SHA256’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "348"
+      '#default#':
+      - "501"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Joe.Analysis
+                accessor: SHA256
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3660,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "501":
+    id: "501"
+    taskid: 756d3251-b12c-42a5-884a-264316375951
+    type: regular
+    task:
+      id: 756d3251-b12c-42a5-884a-264316375951
+      version: -1
+      name: Verify Context Error - SHA256
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Joe.Analysis.SHA256' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'Joe.Analysis.SHA256' context key.
+          2- The 'Detonate File - JoeSecurity V2' sub-playbook outputs have been modified and no longer contain the 'Joe.Analysis.SHA256' context key.
+          3- The 'File' input configuration was changed for the 'Detonate File - JoeSecurity V2' sub-playbook.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3660,
+          "y": 285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "502":
+    id: "502"
+    taskid: 6fa5598a-2817-4936-8b2c-c86ee5835414
+    type: condition
+    task:
+      id: 6fa5598a-2817-4936-8b2c-c86ee5835414
+      version: -1
+      name: Verify Sample Name
+      description: Verify that the 'Joe.Analysis.SampleName’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "348"
+      '#default#':
+      - "503"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Joe.Analysis
+                accessor: SampleName
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4050,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "503":
+    id: "503"
+    taskid: 7af5d46b-dd74-42bc-834f-0dd8da4d2543
+    type: regular
+    task:
+      id: 7af5d46b-dd74-42bc-834f-0dd8da4d2543
+      version: -1
+      name: Verify Context Error - Sample Name
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Joe.Analysis.SampleName' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'Joe.Analysis.SampleName' context key.
+          2- The 'Detonate File - JoeSecurity V2' sub-playbook outputs have been modified and no longer contain the 'Joe.Analysis.SampleName' context key.
+          3- The 'File' input configuration was changed for the 'Detonate File - JoeSecurity V2' sub-playbook.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4050,
+          "y": 285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "504":
+    id: "504"
+    taskid: 951dd99d-2fcb-4812-8ec9-6b5d067ab3b1
+    type: condition
+    task:
+      id: 951dd99d-2fcb-4812-8ec9-6b5d067ab3b1
+      version: -1
+      name: Verify Name
+      description: Verify that the 'InfoFile.Name’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "436"
+      '#default#':
+      - "505"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: InfoFile
+                accessor: Name
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "505":
+    id: "505"
+    taskid: 9e37363d-65f3-4f8d-88a1-61e0687e7c40
+    type: regular
+    task:
+      id: 9e37363d-65f3-4f8d-88a1-61e0687e7c40
+      version: -1
+      name: Verify Context Error - Name
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'InfoFile.Name' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'InfoFile.Name' context key.
+          2- The 'Detonate File - JoeSecurity V2' sub-playbook outputs have been modified and no longer contain the 'InfoFile.Name' context key.
+          3- The 'File' input configuration was changed for the 'Detonate File - JoeSecurity V2' sub-playbook.
+          4- The 'EntryID' input configuration was changed for the 'rasterize-pdf' automation used in the 'Enrich Mitre Attack Techniques information' task.
+          5- The 'rasterize-pdf' automation outputs have been modified and no longer contain the 'InfoFile.Name' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "506":
+    id: "506"
+    taskid: 749b4f20-18c9-44c5-89fa-28824d18e911
+    type: condition
+    task:
+      id: 749b4f20-18c9-44c5-89fa-28824d18e911
+      version: -1
+      name: Verify Entry ID
+      description: Verify that the 'InfoFile.EntryID’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "436"
+      '#default#':
+      - "507"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: InfoFile
+                accessor: EntryID
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "507":
+    id: "507"
+    taskid: 740c443c-37b9-45f1-8e35-19e654d100c0
+    type: regular
+    task:
+      id: 740c443c-37b9-45f1-8e35-19e654d100c0
+      version: -1
+      name: Verify Context Error - Entry ID
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'InfoFile.EntryID' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'InfoFile.EntryID' context key.
+          2- The 'Detonate File - JoeSecurity V2' sub-playbook outputs have been modified and no longer contain the 'InfoFile.EntryID' context key.
+          3- The 'File' input configuration was changed for the 'Detonate File - JoeSecurity V2' sub-playbook.
+          4- The 'EntryID' input configuration was changed for the 'rasterize-pdf' automation used in the 'Enrich Mitre Attack Techniques information' task.
+          5- The 'rasterize-pdf' automation outputs have been modified and no longer contain the 'InfoFile.EntryID' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "508":
+    id: "508"
+    taskid: b68b7623-c84d-4482-877b-f4e530aa6916
+    type: condition
+    task:
+      id: b68b7623-c84d-4482-877b-f4e530aa6916
+      version: -1
+      name: Verify Size
+      description: Verify that the 'InfoFile.Size’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "436"
+      '#default#':
+      - "509"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: InfoFile
+                accessor: Size
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "509":
+    id: "509"
+    taskid: 43ad3ccc-b27a-4b4c-816a-f778f077341d
+    type: regular
+    task:
+      id: 43ad3ccc-b27a-4b4c-816a-f778f077341d
+      version: -1
+      name: Verify Context Error - Size
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'InfoFile.Size' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'InfoFile.Size' context key.
+          2- The 'Detonate File - JoeSecurity V2' sub-playbook outputs have been modified and no longer contain the 'InfoFile.Size' context key.
+          3- The 'File' input configuration was changed for the 'Detonate File - JoeSecurity V2' sub-playbook.
+          4- The 'EntryID' input configuration was changed for the 'rasterize-pdf' automation used in the 'Enrich Mitre Attack Techniques information' task.
+          5- The 'rasterize-pdf' automation outputs have been modified and no longer contain the 'InfoFile.Size' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": 965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "510":
+    id: "510"
+    taskid: 13d3870d-9ad0-437f-89b3-2108ef3d86bc
+    type: condition
+    task:
+      id: 13d3870d-9ad0-437f-89b3-2108ef3d86bc
+      version: -1
+      name: Verify Type
+      description: Verify that the 'InfoFile.Type’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "436"
+      '#default#':
+      - "511"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: InfoFile
+                accessor: Type
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "511":
+    id: "511"
+    taskid: 9791ab43-307a-41ea-839b-16e7c0274a94
+    type: regular
+    task:
+      id: 9791ab43-307a-41ea-839b-16e7c0274a94
+      version: -1
+      name: Verify Context Error - Type
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'InfoFile.Type' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'InfoFile.Type' context key.
+          2- The 'Detonate File - JoeSecurity V2' sub-playbook outputs have been modified and no longer contain the 'InfoFile.Type' context key.
+          3- The 'File' input configuration was changed for the 'Detonate File - JoeSecurity V2' sub-playbook.
+          4- The 'EntryID' input configuration was changed for the 'rasterize-pdf' automation used in the 'Enrich Mitre Attack Techniques information' task.
+          5- The 'rasterize-pdf' automation outputs have been modified and no longer contain the 'InfoFile.Type' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "512":
+    id: "512"
+    taskid: 2f83bf2b-8096-4914-8362-eda97a35abec
+    type: condition
+    task:
+      id: 2f83bf2b-8096-4914-8362-eda97a35abec
+      version: -1
+      name: Verify Info
+      description: Verify that the 'InfoFile.Info’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "436"
+      '#default#':
+      - "513"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: InfoFile
+                accessor: Info
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1320,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "513":
+    id: "513"
+    taskid: a9fec969-d78c-4727-8ecf-cae50617b10c
+    type: regular
+    task:
+      id: a9fec969-d78c-4727-8ecf-cae50617b10c
+      version: -1
+      name: Verify Context Error - Info
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'InfoFile.Info' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'InfoFile.Info' context key.
+          2- The 'Detonate File - JoeSecurity V2' sub-playbook outputs have been modified and no longer contain the 'InfoFile.Info' context key.
+          3- The 'File' input configuration was changed for the 'Detonate File - JoeSecurity V2' sub-playbook.
+          4- The 'EntryID' input configuration was changed for the 'rasterize-pdf' automation used in the 'Enrich Mitre Attack Techniques information' task.
+          5- The 'rasterize-pdf' automation outputs have been modified and no longer contain the 'InfoFile.Info' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1320,
+          "y": 965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "514":
+    id: "514"
+    taskid: 88f143e2-ad24-4a88-83a0-3cce5afeaa78
+    type: title
+    task:
+      id: 88f143e2-ad24-4a88-83a0-3cce5afeaa78
+      version: -1
+      name: '''File'' Context Data'
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "577"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 1135
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "515":
+    id: "515"
+    taskid: d7b352b1-abd4-4fb1-8829-d7a6cbc5f864
+    type: title
+    task:
+      id: d7b352b1-abd4-4fb1-8829-d7a6cbc5f864
+      version: -1
+      name: Done Verifying 'File' Context
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "202"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1720,
+          "y": 1625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "516":
+    id: "516"
+    taskid: 2c539d3b-a91b-4131-8c51-2d818e4a66e0
+    type: condition
+    task:
+      id: 2c539d3b-a91b-4131-8c51-2d818e4a66e0
+      version: -1
+      name: Verify Extension
+      description: Verify that the 'File.Extension’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "515"
+      '#default#':
+      - "517"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Extension
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "517":
+    id: "517"
+    taskid: c2369941-4f11-4b81-88ed-d3c2421b9195
+    type: regular
+    task:
+      id: c2369941-4f11-4b81-88ed-d3c2421b9195
+      version: -1
+      name: Verify Context Error - Extension
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'File.Extension' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'File.Extension' context key.
+          2- The 'Detonate File - JoeSecurity V2' sub-playbook outputs have been modified and no longer contain the 'File.Extension' context key.
+          3- The 'File' input configuration was changed for the 'Detonate File - JoeSecurity V2' sub-playbook.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 1625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "518":
+    id: "518"
+    taskid: 7c6d57c6-ba2d-4cca-8bb0-3fb4c0ae4bb1
+    type: condition
+    task:
+      id: 7c6d57c6-ba2d-4cca-8bb0-3fb4c0ae4bb1
+      version: -1
+      name: Verify MD5
+      description: Verify that the 'File.MD5’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "515"
+      '#default#':
+      - "519"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                accessor: MD5
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "519":
+    id: "519"
+    taskid: 873c5f09-9c80-408d-8622-24ead235ee5e
+    type: regular
+    task:
+      id: 873c5f09-9c80-408d-8622-24ead235ee5e
+      version: -1
+      name: Verify Context Error - MD5
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'File.MD5' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'File.MD5' context key.
+          2- The 'Detonate File - JoeSecurity V2' sub-playbook outputs have been modified and no longer contain the 'File.MD5' context key.
+          3- The 'File' input configuration was changed for the 'Detonate File - JoeSecurity V2' sub-playbook.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 1625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "520":
+    id: "520"
+    taskid: c481cab9-3db9-49ef-8373-cf80a39ae4b5
+    type: condition
+    task:
+      id: c481cab9-3db9-49ef-8373-cf80a39ae4b5
+      version: -1
+      name: Verify Name
+      description: Verify that the 'File.Name’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "515"
+      '#default#':
+      - "521"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Name
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "521":
+    id: "521"
+    taskid: f4c4d94b-2371-4343-87f5-aa55a815ff5d
+    type: regular
+    task:
+      id: f4c4d94b-2371-4343-87f5-aa55a815ff5d
+      version: -1
+      name: Verify Context Error - Name
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'File.Name' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'File.Name' context key.
+          2- The 'Detonate File - JoeSecurity V2' sub-playbook outputs have been modified and no longer contain the 'File.Name' context key.
+          3- The 'File' input configuration was changed for the 'Detonate File - JoeSecurity V2' sub-playbook.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": 1625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "522":
+    id: "522"
+    taskid: 60ec926b-e2cb-4dcb-8550-eb36d301e829
+    type: condition
+    task:
+      id: 60ec926b-e2cb-4dcb-8550-eb36d301e829
+      version: -1
+      name: Verify SHA1
+      description: Verify that the 'File.SHA1’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "515"
+      '#default#':
+      - "523"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                accessor: SHA1
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "523":
+    id: "523"
+    taskid: 6be19481-2560-4186-8464-fd2d6333531e
+    type: regular
+    task:
+      id: 6be19481-2560-4186-8464-fd2d6333531e
+      version: -1
+      name: Verify Context Error - SHA1
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'File.SHA1' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'File.SHA1' context key.
+          2- The 'Detonate File - JoeSecurity V2' sub-playbook outputs have been modified and no longer contain the 'File.SHA1' context key.
+          3- The 'File' input configuration was changed for the 'Detonate File - JoeSecurity V2' sub-playbook.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 1625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "524":
+    id: "524"
+    taskid: 2853b822-0496-44c8-8053-75ebc666c8c4
+    type: condition
+    task:
+      id: 2853b822-0496-44c8-8053-75ebc666c8c4
+      version: -1
+      name: Verify SHA256
+      description: Verify that the 'File.SHA256’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "515"
+      '#default#':
+      - "525"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                accessor: SHA256
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1320,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "525":
+    id: "525"
+    taskid: b72f5d51-cca3-4646-815e-890c92e1997d
+    type: regular
+    task:
+      id: b72f5d51-cca3-4646-815e-890c92e1997d
+      version: -1
+      name: Verify Context Error - SHA256
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'File.SHA256' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'File.SHA256' context key.
+          2- The 'Detonate File - JoeSecurity V2' sub-playbook outputs have been modified and no longer contain the 'File.SHA256' context key.
+          3- The 'File' input configuration was changed for the 'Detonate File - JoeSecurity V2' sub-playbook.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1320,
+          "y": 1625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "526":
+    id: "526"
+    taskid: 7127e143-1b46-4112-8823-01c3d798eb46
+    type: title
+    task:
+      id: 7127e143-1b46-4112-8823-01c3d798eb46
+      version: -1
+      name: '''ExtractedIndicators'' Context Data'
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "573"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 1790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "527":
+    id: "527"
+    taskid: 09f6bec3-2930-4c85-82c4-1363ea266287
+    type: title
+    task:
+      id: 09f6bec3-2930-4c85-82c4-1363ea266287
+      version: -1
+      name: Done Verifying 'ExtractedIndicators' Context
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "202"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "528":
+    id: "528"
+    taskid: 4e5852b1-080b-4f1c-88fd-c576630687a8
+    type: condition
+    task:
+      id: 4e5852b1-080b-4f1c-88fd-c576630687a8
+      version: -1
+      name: Verify Extracted Indicators
+      description: Verify that the 'ExtractedIndicators’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "527"
+      '#default#':
+      - "529"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ExtractedIndicators
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 2080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "529":
+    id: "529"
+    taskid: 8b696c49-1caa-469e-8c18-018445db808a
+    type: regular
+    task:
+      id: 8b696c49-1caa-469e-8c18-018445db808a
+      version: -1
+      name: Verify Context Error - Extracted Indicators
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'ExtractedIndicators' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'ExtractedIndicators' context key.
+          2- The 'entryID' input configuration was changed for the 'extractIndicators' automation used in the 'Extract Indicators from the Report' task.
+          3- The 'extractIndicators' automation outputs have been modified and no longer contain the 'ExtractedIndicators' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "530":
+    id: "530"
+    taskid: d1ba1da0-39bd-4d6e-88f6-24aa4ff394e3
+    type: condition
+    task:
+      id: d1ba1da0-39bd-4d6e-88f6-24aa4ff394e3
+      version: -1
+      name: Verify STIXID
+      description: Verify that the 'AttackPattern.STIXID’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "455"
+      '#default#':
+      - "531"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: AttackPattern
+                accessor: STIXID
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": -2560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "531":
+    id: "531"
+    taskid: aba77cdc-cab9-412e-8a34-04bbb33c30ad
+    type: regular
+    task:
+      id: aba77cdc-cab9-412e-8a34-04bbb33c30ad
+      version: -1
+      name: Verify Context Error - STIXID
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'AttackPattern.STIXID' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'AttackPattern.STIXID' context key.
+          2- The 'Mitre Attack - Extract Technique Information From ID' sub-playbook outputs have been modified and no longer contain the 'AttackPattern.STIXID' context key.
+          3- The 'TechniqueID' input configuration was changed for the 'Mitre Attack - Extract Technique Information From ID' sub-playbook.
+          4- The 'attack_pattern' input configuration was changed for the 'attack-pattern' automation used in the 'Enrich Mitre Attack Techniques information' task.
+          5- The 'attack-pattern' automation outputs have been modified and no longer contain the 'AttackPattern.STIXID' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": -2375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "532":
+    id: "532"
+    taskid: aa28dfa2-03fc-4d52-84d0-8b7835c4712b
+    type: condition
+    task:
+      id: aa28dfa2-03fc-4d52-84d0-8b7835c4712b
+      version: -1
+      name: Verify Kill Chain Phases
+      description: Verify that the 'AttackPattern.KillChainPhases’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "455"
+      '#default#':
+      - "533"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: AttackPattern
+                accessor: KillChainPhases
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": -2560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "533":
+    id: "533"
+    taskid: c4d5b243-54c3-4ada-8f06-10c80bca2bb6
+    type: regular
+    task:
+      id: c4d5b243-54c3-4ada-8f06-10c80bca2bb6
+      version: -1
+      name: Verify Context Error - Kill Chain Phases
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'AttackPattern.KillChainPhases' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'AttackPattern.KillChainPhases' context key.
+          2- The 'Mitre Attack - Extract Technique Information From ID' sub-playbook outputs have been modified and no longer contain the 'AttackPattern.KillChainPhases' context key.
+          3- The 'TechniqueID' input configuration was changed for the 'Mitre Attack - Extract Technique Information From ID' sub-playbook.
+          4- The 'attack_pattern' input configuration was changed for the 'attack-pattern' automation used in the 'Enrich Mitre Attack Techniques information' task.
+          5- The 'attack-pattern' automation outputs have been modified and no longer contain the 'AttackPattern.KillChainPhases' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": -2375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "534":
+    id: "534"
+    taskid: 18843eb0-88b5-480b-8b66-3ade3cf1a645
+    type: condition
+    task:
+      id: 18843eb0-88b5-480b-8b66-3ade3cf1a645
+      version: -1
+      name: Verify First Seen By Source
+      description: Verify that the 'AttackPattern.FirstSeenBySource’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "455"
+      '#default#':
+      - "535"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: AttackPattern
+                accessor: FirstSeenBySource
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": -2560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "535":
+    id: "535"
+    taskid: 839f24ba-30fd-42e7-874d-4bdc7eb949a4
+    type: regular
+    task:
+      id: 839f24ba-30fd-42e7-874d-4bdc7eb949a4
+      version: -1
+      name: Verify Context Error - First Seen By Source
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'AttackPattern.FirstSeenBySource' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'AttackPattern.FirstSeenBySource' context key.
+          2- The 'Mitre Attack - Extract Technique Information From ID' sub-playbook outputs have been modified and no longer contain the 'AttackPattern.FirstSeenBySource' context key.
+          3- The 'TechniqueID' input configuration was changed for the 'Mitre Attack - Extract Technique Information From ID' sub-playbook.
+          4- The 'attack_pattern' input configuration was changed for the 'attack-pattern' automation used in the 'Enrich Mitre Attack Techniques information' task.
+          5- The 'attack-pattern' automation outputs have been modified and no longer contain the 'AttackPattern.FirstSeenBySource' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": -2375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "536":
+    id: "536"
+    taskid: 67d9f68d-41d3-465a-8d1a-a6a5dfa89686
+    type: condition
+    task:
+      id: 67d9f68d-41d3-465a-8d1a-a6a5dfa89686
+      version: -1
+      name: Verify Description
+      description: Verify that the 'AttackPattern.Description’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "455"
+      '#default#':
+      - "537"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: AttackPattern
+                accessor: Description
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": -2560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "537":
+    id: "537"
+    taskid: 17f334a4-70a2-4dfe-877d-c2d1b04715b1
+    type: regular
+    task:
+      id: 17f334a4-70a2-4dfe-877d-c2d1b04715b1
+      version: -1
+      name: Verify Context Error - STIXID
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'AttackPattern.Description' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'AttackPattern.Description' context key.
+          2- The 'Mitre Attack - Extract Technique Information From ID' sub-playbook outputs have been modified and no longer contain the 'AttackPattern.Description' context key.
+          3- The 'TechniqueID' input configuration was changed for the 'Mitre Attack - Extract Technique Information From ID' sub-playbook.
+          4- The 'attack_pattern' input configuration was changed for the 'attack-pattern' automation used in the 'Enrich Mitre Attack Techniques information' task.
+          5- The 'attack-pattern' automation outputs have been modified and no longer contain the 'AttackPattern.Description' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": -2375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "538":
+    id: "538"
+    taskid: d9b7f650-1b41-403f-81cb-bc9a73c4d3d3
+    type: condition
+    task:
+      id: d9b7f650-1b41-403f-81cb-bc9a73c4d3d3
+      version: -1
+      name: Verify Operating System References
+      description: Verify that the 'AttackPattern.OperatingSystemRefs’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "455"
+      '#default#':
+      - "539"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: AttackPattern
+                accessor: OperatingSystemRefs
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": -2560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "539":
+    id: "539"
+    taskid: e5a98c66-5961-4005-810f-7e019a7b4479
+    type: regular
+    task:
+      id: e5a98c66-5961-4005-810f-7e019a7b4479
+      version: -1
+      name: Verify Context Error - Operating System References
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'AttackPattern.OperatingSystemRefs' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'AttackPattern.OperatingSystemRefs' context key.
+          2- The 'Mitre Attack - Extract Technique Information From ID' sub-playbook outputs have been modified and no longer contain the 'AttackPattern.OperatingSystemRefs' context key.
+          3- The 'TechniqueID' input configuration was changed for the 'Mitre Attack - Extract Technique Information From ID' sub-playbook.
+          4- The 'attack_pattern' input configuration was changed for the 'attack-pattern' automation used in the 'Enrich Mitre Attack Techniques information' task.
+          5- The 'attack-pattern' automation outputs have been modified and no longer contain the 'AttackPattern.OperatingSystemRefs' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": -2375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "540":
+    id: "540"
+    taskid: 7e02630f-5cb6-410e-8636-f17b67bd73e1
+    type: condition
+    task:
+      id: 7e02630f-5cb6-410e-8636-f17b67bd73e1
+      version: -1
+      name: Verify Publications
+      description: Verify that the 'AttackPattern.Publications’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "455"
+      '#default#':
+      - "541"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: AttackPattern
+                accessor: Publications
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1720,
+          "y": -2560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "541":
+    id: "541"
+    taskid: 0c8dcbb4-06b7-408b-87fa-41c199671b80
+    type: regular
+    task:
+      id: 0c8dcbb4-06b7-408b-87fa-41c199671b80
+      version: -1
+      name: Verify Context Error - Publications
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'AttackPattern.Publications' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'AttackPattern.Publications' context key.
+          2- The 'Mitre Attack - Extract Technique Information From ID' sub-playbook outputs have been modified and no longer contain the 'AttackPattern.Publications' context key.
+          3- The 'TechniqueID' input configuration was changed for the 'Mitre Attack - Extract Technique Information From ID' sub-playbook.
+          4- The 'attack_pattern' input configuration was changed for the 'attack-pattern' automation used in the 'Enrich Mitre Attack Techniques information' task.
+          5- The 'attack-pattern' automation outputs have been modified and no longer contain the 'AttackPattern.Publications' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1720,
+          "y": -2375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "542":
+    id: "542"
+    taskid: 34a1fed2-3eeb-441c-8720-50bae0ebf1a5
+    type: condition
+    task:
+      id: 34a1fed2-3eeb-441c-8720-50bae0ebf1a5
+      version: -1
+      name: Verify MITRE ID
+      description: Verify that the 'AttackPattern.MITREID’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "455"
+      '#default#':
+      - "543"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: AttackPattern
+                accessor: MITREID
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2110,
+          "y": -2560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "543":
+    id: "543"
+    taskid: 75559586-719f-4baa-8819-c3010204fc9f
+    type: regular
+    task:
+      id: 75559586-719f-4baa-8819-c3010204fc9f
+      version: -1
+      name: Verify Context Error - MITRE ID
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'AttackPattern.MITREID' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'AttackPattern.MITREID' context key.
+          2- The 'Mitre Attack - Extract Technique Information From ID' sub-playbook outputs have been modified and no longer contain the 'AttackPattern.MITREID' context key.
+          3- The 'TechniqueID' input configuration was changed for the 'Mitre Attack - Extract Technique Information From ID' sub-playbook.
+          4- The 'attack_pattern' input configuration was changed for the 'attack-pattern' automation used in the 'Enrich Mitre Attack Techniques information' task.
+          5- The 'attack-pattern' automation outputs have been modified and no longer contain the 'AttackPattern.MITREID' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2110,
+          "y": -2375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "544":
+    id: "544"
+    taskid: db0ddadf-d7d9-46e7-85a0-70bb2974ed8b
+    type: condition
+    task:
+      id: db0ddadf-d7d9-46e7-85a0-70bb2974ed8b
+      version: -1
+      name: Verify Tags
+      description: Verify that the 'AttackPattern.Tags’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "455"
+      '#default#':
+      - "545"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: AttackPattern
+                accessor: Tags
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2500,
+          "y": -2560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "545":
+    id: "545"
+    taskid: 28eca5e8-e72f-40b4-8bbb-0bec8dabc2d6
+    type: regular
+    task:
+      id: 28eca5e8-e72f-40b4-8bbb-0bec8dabc2d6
+      version: -1
+      name: Verify Context Error - Tags
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'AttackPattern.Tags' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'AttackPattern.Tags' context key.
+          2- The 'Mitre Attack - Extract Technique Information From ID' sub-playbook outputs have been modified and no longer contain the 'AttackPattern.Tags' context key.
+          3- The 'TechniqueID' input configuration was changed for the 'Mitre Attack - Extract Technique Information From ID' sub-playbook.
+          4- The 'attack_pattern' input configuration was changed for the 'attack-pattern' automation used in the 'Enrich Mitre Attack Techniques information' task.
+          5- The 'attack-pattern' automation outputs have been modified and no longer contain the 'AttackPattern.Tags' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2500,
+          "y": -2375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "546":
+    id: "546"
+    taskid: 208d41dd-b8d4-432c-8c91-222b92f1a447
+    type: condition
+    task:
+      id: 208d41dd-b8d4-432c-8c91-222b92f1a447
+      version: -1
+      name: Verify Extension
+      description: Verify that the 'InfoFile.Extension’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "436"
+      '#default#':
+      - "547"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: InfoFile
+                accessor: Extension
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1710,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "547":
+    id: "547"
+    taskid: fbf3f12a-36db-452c-8607-4c54e3ad63a0
+    type: regular
+    task:
+      id: fbf3f12a-36db-452c-8607-4c54e3ad63a0
+      version: -1
+      name: Verify Context Error - Extension
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'InfoFile.Extension' context key was not populated.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- The 'Detonate and Analyze File - Generic' playbook outputs have been modified and no longer contain the 'InfoFile.Extension' context key.
+          2- The 'EntryID' input configuration was changed for the 'rasterize-pdf' automation used in the 'Enrich Mitre Attack Techniques information' task.
+          3- The 'rasterize-pdf' automation outputs have been modified and no longer contain the 'InfoFile.Extension' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1710,
+          "y": 965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "548":
+    id: "548"
+    taskid: 1a7fb9db-8bb5-421a-8a82-2746368c5d90
+    type: title
+    task:
+      id: 1a7fb9db-8bb5-421a-8a82-2746368c5d90
+      version: -1
+      name: Check Incident Evidences
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "552"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": -4490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "549":
+    id: "549"
+    taskid: a2424728-b868-4c1c-8895-364c245d5a5c
+    type: condition
+    task:
+      id: a2424728-b868-4c1c-8895-364c245d5a5c
+      version: -1
+      name: Verify Incident Evidence - JSON Format Sandbox Report
+      description: Ensure the Joe Sandbox report JSON format has been marked as evidence and its description is set to 'Joe Sandbox report - JSON format'.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "551"
+      '#default#':
+      - "550"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Entries
+                accessor: Evidence
+            iscontext: true
+          right:
+            value:
+              simple: Joe Sandbox report - Json Format
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 580,
+          "y": -4020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "550":
+    id: "550"
+    taskid: 65f82f4e-239b-4801-8d5b-1b0c09d7d8ab
+    type: regular
+    task:
+      id: 65f82f4e-239b-4801-8d5b-1b0c09d7d8ab
+      version: -1
+      name: Verify Incident Evidence Error - JSON Format Sandbox Report
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Get a full report from Joe Sandbox - JSON' task results were not marked as evidence.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- A change has been made to the settings of the 'Get a full report from Joe Sandbox - JSON' task, and the results are no longer marked as evidence.
+          2- The evidence description for 'Get a full report from Joe Sandbox - JSON' task results has been changed and no longer refers to 'Joe Sandbox report - Json Format'.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 580,
+          "y": -3825
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "551":
+    id: "551"
+    taskid: 82d55aab-ea41-4b02-8b3b-4f3bf23059a4
+    type: title
+    task:
+      id: 82d55aab-ea41-4b02-8b3b-4f3bf23059a4
+      version: -1
+      name: Done Verifying Incident Evidences
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "202"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4480,
+          "y": -3835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "552":
+    id: "552"
+    taskid: 79c5ce00-f41a-4ebd-841a-483341a95bc6
+    type: regular
+    task:
+      id: 79c5ce00-f41a-4ebd-841a-483341a95bc6
+      version: -1
+      name: Get Entries
+      description: Collect entries matching to the conditions in the war room
+      scriptName: GetEntries
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "553"
+    scriptarguments:
+      categories:
+        simple: evidence
+      id:
+        complex:
+          root: CreatedIncidentID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": -4360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "553":
+    id: "553"
+    taskid: 24b4c78c-d33e-446d-8d2e-c502ed12cb16
+    type: regular
+    task:
+      id: 24b4c78c-d33e-446d-8d2e-c502ed12cb16
+      version: -1
+      name: Get Evidence Entries Info
+      description: Publish entries to incident's context
+      scriptName: PublishEntriesToContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "549"
+      - "554"
+      - "556"
+    scriptarguments:
+      ids:
+        complex:
+          root: Entry
+          accessor: ID
+      out:
+        simple: Entries.Evidence
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": -4190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "554":
+    id: "554"
+    taskid: e7e42620-fe4a-4f2f-88b0-18bbc9d15875
+    type: condition
+    task:
+      id: e7e42620-fe4a-4f2f-88b0-18bbc9d15875
+      version: -1
+      name: Verify Incident Evidence - PDF Format Sandbox Report
+      description: Ensure the Joe Sandbox report PDF format has been marked as evidence and its description is set to 'Joe Sandbox report - PDF format'.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "551"
+      '#default#':
+      - "555"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Entries
+                accessor: Evidence
+            iscontext: true
+          right:
+            value:
+              simple: Joe Sandbox report - PDF Format
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": -4015
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "555":
+    id: "555"
+    taskid: 2df41c82-0ee2-4597-8a4d-8ab367bb24a4
+    type: regular
+    task:
+      id: 2df41c82-0ee2-4597-8a4d-8ab367bb24a4
+      version: -1
+      name: Verify Incident Evidence Error - PDF Format Sandbox Report
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Get a full report from Joe Sandbox - PDF' task results were not marked as evidence.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- A change has been made to the settings of the 'Get a full report from Joe Sandbox - PDF' task, and the results are no longer marked as evidence.
+          2- The evidence description for 'Get a Full Report from Joe Sandbox - PDF' task results has been changed and no longer refers to 'Joe Sandbox report - PDF format'.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": -3825
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "556":
+    id: "556"
+    taskid: ad7e88ef-ac68-4a4f-8cf8-b8a6672b0dc9
+    type: condition
+    task:
+      id: ad7e88ef-ac68-4a4f-8cf8-b8a6672b0dc9
+      version: -1
+      name: Verify Incident Evidence - Image File Sandbox Report
+      description: Check that the image file report for Joe Sandbox is marked as evidence and its description is set to 'Joe Security Sandbox report'.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "551"
+      '#default#':
+      - "557"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Entries
+                accessor: Evidence
+            iscontext: true
+          right:
+            value:
+              simple: Joe Security Sandbox report
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": -4015
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "557":
+    id: "557"
+    taskid: 20b5726b-b968-4a2c-8f4f-8d2491c2acb8
+    type: regular
+    task:
+      id: 20b5726b-b968-4a2c-8f4f-8d2491c2acb8
+      version: -1
+      name: Verify Incident Evidence Error - Image File Sandbox Report
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Rasterize PDF' task results were not marked as evidence.
+          This may indicate that one or more of the following changes have been made to the 'Detonate and Analyze File - Generic' playbook:
+          1- A change has been made to the settings of the 'Rasterize PDF' task, and the results are no longer marked as evidence.
+          2- The evidence description for 'Rasterize PDF' task results has been changed and no longer refers to 'Joe Security Sandbox report'.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": -3825
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "562":
+    id: "562"
+    taskid: 4032b9dd-5e6b-4391-8406-312ba33866e4
+    type: regular
+    task:
+      id: 4032b9dd-5e6b-4391-8406-312ba33866e4
+      version: -1
+      name: Create New Incident For Testing
+      description: commands.local.cmd.create.inc
+      script: Builtin|||createNewIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "311"
+    scriptarguments:
+      description:
+        simple: Test Incident for Detonate and Analyze File playbook
+      name:
+        simple: Test Incident for Detonate and Analyze File playbook
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -440,
+          "y": -5920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "566":
+    id: "566"
+    taskid: 8e1918e1-50bc-46ff-81e7-393427aac817
+    type: regular
+    task:
+      id: 8e1918e1-50bc-46ff-81e7-393427aac817
+      version: -1
+      name: Set File Details To Incident Context
+      description: |-
+        Works the same as the 'Set' command, but can work across incidents by specifying 'id' as an argument.
+        Sets a value into the context with the given context key. Doesn't append by default.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetByIncidentId
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "567"
+    scriptarguments:
+      append:
+        simple: "true"
+      id:
+        complex:
+          root: CreatedIncidentID
+      key:
+        simple: File
+      value:
+        complex:
+          root: File
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -440,
+          "y": -5600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "567":
+    id: "567"
+    taskid: 6f09e1d9-bdc5-4e5b-8350-11f01fc2dd70
+    type: regular
+    task:
+      id: 6f09e1d9-bdc5-4e5b-8350-11f01fc2dd70
+      version: -1
+      name: Get Command And Results Entries
+      description: Collect entries matching to the conditions in the war room
+      scriptName: GetEntries
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "568"
+    scriptarguments:
+      categories:
+        simple: commandAndResults
+      id:
+        complex:
+          root: CreatedIncidentID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -440,
+          "y": -5435
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "568":
+    id: "568"
+    taskid: 62655883-032b-450e-8436-cbb09e254037
+    type: regular
+    task:
+      id: 62655883-032b-450e-8436-cbb09e254037
+      version: -1
+      name: Set File Entry.ID To Context
+      description: |-
+        Works the same as the 'Set' command, but can work across incidents by specifying 'id' as an argument.
+        Sets a value into the context with the given context key. Doesn't append by default.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetByIncidentId
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "569"
+    scriptarguments:
+      append:
+        simple: "true"
+      id:
+        complex:
+          root: CreatedIncidentID
+      key:
+        simple: File.EntryID
+      value:
+        complex:
+          root: Entry
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Entry.Category
+                iscontext: true
+              right:
+                value:
+                  simple: artifact
+              ignorecase: true
+          accessor: ID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -440,
+          "y": -5275
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "569":
+    id: "569"
+    taskid: 0ba38469-b80e-4e94-8143-5efa84eb0541
+    type: regular
+    task:
+      id: 0ba38469-b80e-4e94-8143-5efa84eb0541
+      version: -1
+      name: Set Test Playbook for New Incident
+      description: commands.local.cmd.set.playbook
+      script: Builtin|||setPlaybook
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "570"
+    scriptarguments:
+      incidentId:
+        complex:
+          root: CreatedIncidentID
+      name:
+        simple: Detonate and Analyze File - Generic_copy
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -440,
+          "y": -5110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "570":
+    id: "570"
+    taskid: 20655167-a673-4023-8c93-c34a90289066
+    type: regular
+    task:
+      id: 20655167-a673-4023-8c93-c34a90289066
+      version: -1
+      name: Wait For The Playbook to Complete Its Execution
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "571"
+    scriptarguments:
+      seconds:
+        simple: "20"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -440,
+          "y": -4950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "571":
+    id: "571"
+    taskid: 4e047f01-1fcf-44aa-85a7-fec428dfc107
+    type: regular
+    task:
+      id: 4e047f01-1fcf-44aa-85a7-fec428dfc107
+      version: -1
+      name: Close The Incedent
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "84"
+    scriptarguments:
+      closeReason:
+        simple: Closed By 'Test Playbook - Detonate and Analyze File'
+      id:
+        complex:
+          root: CreatedIncidentID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -440,
+          "y": -4790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "572":
+    id: "572"
+    taskid: 1228948d-4113-4528-8beb-079fd73bcb73
+    type: regular
+    task:
+      id: 1228948d-4113-4528-8beb-079fd73bcb73
+      version: -1
+      name: Get the 'WildFire' context key
+      description: Gets a value from the specified incident's context.
+      scriptName: GetByIncidentId
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "457"
+    scriptarguments:
+      get_key:
+        simple: WildFire
+      incident_id:
+        complex:
+          root: CreatedIncidentID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": -3400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "573":
+    id: "573"
+    taskid: 247ab1e1-ced1-4352-8b5a-d504273fed4f
+    type: regular
+    task:
+      id: 247ab1e1-ced1-4352-8b5a-d504273fed4f
+      version: -1
+      name: Get the 'ExtractedIndicators' context key
+      description: Gets a value from the specified incident's context.
+      scriptName: GetByIncidentId
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "528"
+    scriptarguments:
+      get_key:
+        simple: ExtractedIndicators
+      incident_id:
+        complex:
+          root: CreatedIncidentID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 1920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "574":
+    id: "574"
+    taskid: c88a9595-26b9-47e9-8428-46a2de46cfd5
+    type: regular
+    task:
+      id: c88a9595-26b9-47e9-8428-46a2de46cfd5
+      version: -1
+      name: Get the 'AttackPattern' context key
+      description: Gets a value from the specified incident's context.
+      scriptName: GetByIncidentId
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "530"
+      - "532"
+      - "534"
+      - "536"
+      - "538"
+      - "540"
+      - "542"
+      - "544"
+    scriptarguments:
+      get_key:
+        simple: AttackPattern
+      incident_id:
+        complex:
+          root: CreatedIncidentID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": -2730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "575":
+    id: "575"
+    taskid: 9f4476c4-176e-41ba-83e7-a88af1196dd3
+    type: regular
+    task:
+      id: 9f4476c4-176e-41ba-83e7-a88af1196dd3
+      version: -1
+      name: Get the 'MITREATTACK' context key
+      description: Gets a value from the specified incident's context.
+      scriptName: GetByIncidentId
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "461"
+    scriptarguments:
+      get_key:
+        simple: MITREATTACK
+      incident_id:
+        complex:
+          root: CreatedIncidentID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": -2060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "576":
+    id: "576"
+    taskid: 870947aa-1a7a-41e5-8ba6-59bf0a2a1d8c
+    type: regular
+    task:
+      id: 870947aa-1a7a-41e5-8ba6-59bf0a2a1d8c
+      version: -1
+      name: Get the 'DBotScore' context key
+      description: Gets a value from the specified incident's context.
+      scriptName: GetByIncidentId
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "464"
+      - "466"
+      - "468"
+      - "470"
+      - "472"
+      - "474"
+      - "476"
+      - "478"
+    scriptarguments:
+      get_key:
+        simple: DBotScore
+      incident_id:
+        complex:
+          root: CreatedIncidentID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": -1405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "577":
+    id: "577"
+    taskid: 6d61a16e-553e-4db9-80ca-36252fe61567
+    type: regular
+    task:
+      id: 6d61a16e-553e-4db9-80ca-36252fe61567
+      version: -1
+      name: Get the 'File' context key
+      description: Gets a value from the specified incident's context.
+      scriptName: GetByIncidentId
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "516"
+      - "518"
+      - "520"
+      - "522"
+      - "524"
+    scriptarguments:
+      get_key:
+        simple: File
+      incident_id:
+        complex:
+          root: CreatedIncidentID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 1265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "578":
+    id: "578"
+    taskid: 4d0ec10d-4424-401b-8437-0ca2bb22a644
+    type: regular
+    task:
+      id: 4d0ec10d-4424-401b-8437-0ca2bb22a644
+      version: -1
+      name: Get the 'InfoFile' context key
+      description: Gets a value from the specified incident's context.
+      scriptName: GetByIncidentId
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "504"
+      - "506"
+      - "508"
+      - "510"
+      - "512"
+      - "546"
+    scriptarguments:
+      get_key:
+        simple: InfoFile
+      incident_id:
+        complex:
+          root: CreatedIncidentID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 605
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "579":
+    id: "579"
+    taskid: 214e1b72-957d-4feb-8163-5fdb3351441f
+    type: regular
+    task:
+      id: 214e1b72-957d-4feb-8163-5fdb3351441f
+      version: -1
+      name: Get the 'Joe.Analysis' context key
+      description: Gets a value from the specified incident's context.
+      scriptName: GetByIncidentId
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "480"
+      - "482"
+      - "484"
+      - "486"
+      - "488"
+      - "490"
+      - "492"
+      - "494"
+      - "496"
+      - "498"
+      - "500"
+      - "502"
+    scriptarguments:
+      get_key:
+        simple: Joe.Analysis
+      incident_id:
+        complex:
+          root: CreatedIncidentID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": -70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "580":
+    id: "580"
+    taskid: 1032e40a-bb4e-4491-8d9f-e0dd0b734b2b
+    type: regular
+    task:
+      id: 1032e40a-bb4e-4491-8d9f-e0dd0b734b2b
+      version: -1
+      name: Get the 'csfalconx' context key
+      description: Gets a value from the specified incident's context.
+      scriptName: GetByIncidentId
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "442"
+      - "444"
+      - "446"
+      - "448"
+      - "450"
+    scriptarguments:
+      get_key:
+        simple: csfalconx
+      incident_id:
+        complex:
+          root: CreatedIncidentID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": -730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "442_282_ Verified": 0.1,
+      "444_282_ Verified": 0.11,
+      "446_282_ Verified": 0.12,
+      "448_282_ Verified": 0.1,
+      "450_282_ Verified": 0.1,
+      "457_459_ Verified": 0.1,
+      "461_463_ Verified": 0.1,
+      "464_350_ Verified": 0.11,
+      "466_350_ Verified": 0.1,
+      "468_350_ Verified": 0.1,
+      "470_350_ Verified": 0.12,
+      "472_350_ Verified": 0.34,
+      "480_348_ Verified": 0.1,
+      "482_348_ Verified": 0.1,
+      "484_348_ Verified": 0.1,
+      "486_348_ Verified": 0.11,
+      "488_348_ Verified": 0.11,
+      "490_348_ Verified": 0.12,
+      "492_348_ Verified": 0.1,
+      "494_348_ Verified": 0.1,
+      "496_348_ Verified": 0.13,
+      "498_348_ Verified": 0.12,
+      "500_348_ Verified": 0.15,
+      "502_348_ Verified": 0.31,
+      "504_436_ Verified": 0.1,
+      "506_436_ Verified": 0.11,
+      "508_436_ Verified": 0.1,
+      "510_436_ Verified": 0.16,
+      "512_436_ Verified": 0.43,
+      "516_515_ Verified": 0.1,
+      "518_515_ Verified": 0.11,
+      "520_515_ Verified": 0.1,
+      "522_515_ Verified": 0.17,
+      "524_515_ Verified": 0.32,
+      "530_455_ Verified": 0.1,
+      "532_455_ Verified": 0.1,
+      "534_455_ Verified": 0.11,
+      "536_455_ Verified": 0.11,
+      "538_455_ Verified": 0.1,
+      "540_455_ Verified": 0.1,
+      "542_455_ Verified": 0.17,
+      "544_455_ Verified": 0.1,
+      "546_436_ Verified": 0.42,
+      "549_551_ Verified": 0.1,
+      "554_551_ Verified": 0.1,
+      "556_551_ Verified": 0.1
+    },
+    "paper": {
+      "dimensions": {
+        "height": 8710,
+        "width": 5560,
+        "x": -440,
+        "y": -6215
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.5.0

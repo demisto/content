@@ -21,6 +21,15 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "Test Playbook - Detonate and Analyze File",
+            "timeout": 800,
+            "integrations": [
+                "Joe Security",
+                "CrowdStrike Falcon Sandbox V2",
+                "WildFire-v2"
+            ]
+        },
+        {
             "playbookID": "playbook-AzureLogAnalytics-test",
             "integrations": "Azure Log Analytics",
             "instance_name" : "Azure_Log_Analytics_client_cred",
