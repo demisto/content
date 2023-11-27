@@ -179,7 +179,7 @@ tasks:
       - "4"
     scriptarguments:
       message:
-        simple: Not all files retrieved.
+        simple: Missing files from the retrieve task. Please check the `Retrieve file details` task outputs for more information.
     separatecontext: false
     continueonerrortype: ""
     view: |-
