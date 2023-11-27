@@ -630,6 +630,8 @@ class Client(BaseClient):
                                                                   client_id=oauth_params.get('client_id', ''),
                                                                   client_secret=oauth_params.get('client_secret', ''),
                                                                   url=oauth_params.get('url', ''),
+                                                                  authentication_url=oauth_params.get('authentication_url'),
+                                                                  authentication_scope=oauth_params.get('authentication_scope'),
                                                                   verify=oauth_params.get('verify', False),
                                                                   proxy=oauth_params.get('proxy', False),
                                                                   headers=oauth_params.get('headers', ''))
@@ -2302,10 +2304,11 @@ def login_command(client: Client, args: dict[str, Any]) -> tuple[str, dict[Any, 
                         'select the `Use OAuth Login` checkbox in the instance configuration before running this '
                         'command.')
 
-    username = args.get('username', '')
-    password = args.get('password', '')
+    username = args['username']
+    password = args['password']
+
     try:
-        client.snow_client.login(username, password)
+        client.snow_client.login(username=username, password=password)
         hr = '### Logged in successfully.\n A refresh token was saved to the integration context. This token will be ' \
              'used to generate a new access token once the current one expires.'
     except Exception as e:
@@ -2984,6 +2987,8 @@ def main():
             },
             'client_id': client_id,
             'client_secret': client_secret,
+            'authentication_url': params.get('authentication_url'),
+            'authentication_scope': params.get('scope'),
             'url': params.get('url'),
             'headers': {
                 'Content-Type': 'application/json',

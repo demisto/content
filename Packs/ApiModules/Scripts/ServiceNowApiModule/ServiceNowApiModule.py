@@ -1,6 +1,7 @@
 from CommonServerPython import *
 from CommonServerUserPython import *
 
+from typing import Union
 
 OAUTH_URL = '/oauth_token.do'
 
@@ -8,7 +9,8 @@ OAUTH_URL = '/oauth_token.do'
 class ServiceNowClient(BaseClient):
 
     def __init__(self, credentials: dict, use_oauth: bool = False, client_id: str = '', client_secret: str = '',
-                 url: str = '', verify: bool = False, proxy: bool = False, headers: dict = None):
+                 url: str = '', authentication_url: Union[str, None] = None, authentication_scope: Union[str, None] = None,
+                 verify: bool = False, proxy: bool = False, headers: dict = None):
         """
         ServiceNow Client class. The class can use either basic authorization with username and password, or OAuth2.
         Args:
@@ -17,13 +19,23 @@ class ServiceNowClient(BaseClient):
             - client_secret - the client secret of the application of the user.
             - url: the instance url of the user, i.e: https://<instance>.service-now.com.
                    NOTE - url should be given without an API specific suffix as it is also used for the OAuth process.
+            - authentication_url: A third-party identity provider URL to use for authentication.
+            - authentication_scope: A scope to use for generated tokens.
             - verify: Whether the request should verify the SSL certificate.
             - proxy: Whether to run the integration using the system proxy.
             - headers: The request headers, for example: {'Accept`: `application/json`}. Can be None.
             - use_oauth: a flag indicating whether the user wants to use OAuth 2.0 or basic authorization.
         """
         self.auth = None
+
+        self.authentication_url = authentication_url
+        # Username and password are assigned in the login command
+        self.authentication_username: Union[str, None] = None
+        self.authentication_password: Union[str, None] = None
+        self.authentication_scope = authentication_scope
+
         self.use_oauth = use_oauth
+
         if self.use_oauth:  # if user selected the `Use OAuth` box use OAuth authorization, else use basic authorization
             self.client_id = client_id
             self.client_secret = client_secret
@@ -50,10 +62,10 @@ class ServiceNowClient(BaseClient):
                 self._headers.update({
                     'Authorization': 'Bearer ' + access_token
                 })
-            res = super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, resp_type='response',
-                                        headers=headers, json_data=json_data, params=params, data=data, files=files,
-                                        ok_codes=ok_codes, return_empty_response=return_empty_response, auth=auth,
-                                        timeout=timeout)
+            res = self._http_request(method=method, url_suffix=url_suffix, full_url=full_url, resp_type='response',
+                                     headers=headers, json_data=json_data, params=params, data=data, files=files,
+                                     ok_codes=ok_codes, return_empty_response=return_empty_response, auth=auth,
+                                     timeout=timeout)
             if res.status_code in [200, 201]:
                 try:
                     return res.json()
@@ -88,35 +100,45 @@ class ServiceNowClient(BaseClient):
         """
         Generate a refresh token using the given client credentials and save it in the integration context.
         """
-        data = {
-            'client_id': self.client_id,
-            'client_secret': self.client_secret,
-            'username': username,
-            'password': password,
-            'grant_type': 'password'
-        }
-        try:
+        # If using a custom IdP for authentication, we pull tokens from there and there's no refresh token
+        if self.authentication_url:
+            self.authentication_username = username
+            self.authentication_password = password
+
+            self.get_access_token()
+
+        else:
+            data = {
+                'client_id': self.client_id,
+                'client_secret': self.client_secret,
+                'username': username,
+                'password': password,
+                'grant_type': 'password',
+            }
+
             headers = {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
-            res = super()._http_request(method='POST', url_suffix=OAUTH_URL, resp_type='response', headers=headers,
-                                        data=data)
+
             try:
-                res = res.json()
-            except ValueError as exception:
-                raise DemistoException('Failed to parse json object from response: {}'.format(res.content), exception)
-            if 'error' in res:
-                return_error(
-                    f'Error occurred while creating an access token. Please check the Client ID, Client Secret '
-                    f'and that the given username and password are correct.\n{res}')
-            if res.get('refresh_token'):
-                refresh_token = {
-                    'refresh_token': res.get('refresh_token')
-                }
-                set_integration_context(refresh_token)
-        except Exception as e:
-            return_error(f'Login failed. Please check the instance configuration and the given username and password.\n'
-                         f'{e.args[0]}')
+                res = self._http_request(method='POST', url_suffix=OAUTH_URL, resp_type='response', headers=headers,
+                                         data=data)
+                try:
+                    res = res.json()
+                except ValueError as exception:
+                    raise DemistoException('Failed to parse json object from response: {}'.format(res.content), exception)
+                if 'error' in res:
+                    return_error(
+                        f'Error occurred while creating an access token. Please check the Client ID, Client Secret '
+                        f'and that the given username and password are correct.\n{res}')
+                if res.get('refresh_token'):
+                    refresh_token = {
+                        'refresh_token': res.get('refresh_token')
+                    }
+                    set_integration_context(refresh_token)
+            except Exception as e:
+                return_error(f'Login failed. Please check the instance configuration and the given username and password.\n'
+                             f'{e.args[0]}')
 
     def get_access_token(self):
         """
@@ -126,47 +148,115 @@ class ServiceNowClient(BaseClient):
         ok_codes = (200, 201, 401)
         previous_token = get_integration_context()
 
-        # Check if there is an existing valid access token
-        if previous_token.get('access_token') and previous_token.get('expiry_time') > date_to_timestamp(datetime.now()):
-            return previous_token.get('access_token')
+        # Check if there is an existing & valid access token
+        if 'access_token' in previous_token and previous_token['expiry_time'] > date_to_timestamp(datetime.now()):
+            return previous_token['access_token']
+
+        # If using a custom IdP for authentication, we pull tokens from there and there's no refresh token
+        if self.authentication_url:
+            return self._get_access_token_idp()
+
+        headers = {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        }
+
+        data = {
+            'client_id': self.client_id,
+            'client_secret': self.client_secret,
+        }
+
+        # Check if a refresh token exists. If not, raise an exception indicating to call the login function first.
+        if 'refresh_token' in previous_token:
+            data['refresh_token'] = previous_token['refresh_token']
+            data['grant_type'] = 'refresh_token'
+
         else:
-            data = {'client_id': self.client_id,
-                    'client_secret': self.client_secret}
+            raise Exception('Could not create an access token. User might be not logged in. '
+                            "Try running the 'servicenow-oauth-login' command first.")
 
-            # Check if a refresh token exists. If not, raise an exception indicating to call the login function first.
-            if previous_token.get('refresh_token'):
-                data['refresh_token'] = previous_token.get('refresh_token')
-                data['grant_type'] = 'refresh_token'
-            else:
-                raise Exception('Could not create an access token. User might be not logged in. Try running the'
-                                ' oauth-login command first.')
-
+        try:
+            res = self._http_request(method='POST', url_suffix=OAUTH_URL, resp_type='response',
+                                     headers=headers, data=data, ok_codes=ok_codes)
             try:
-                headers = {
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                res = res.json()
+
+            except ValueError as exception:
+                raise DemistoException(f'Failed to parse json object from response: {res.content}', exception)
+
+            if 'error' in res:
+                return_error(
+                    'Error occurred while creating an access token. Please check the Client ID, '
+                    'Client Secret and try to run again the login command to generate a new refresh token '
+                    f'as it may have expired.\n{res}'
+                )
+
+            if 'access_token' in res:
+                expiry_time = date_to_timestamp(datetime.now(), date_format='%Y-%m-%dT%H:%M:%S')
+                expiry_time += res.get('expires_in', 0) * 1000 - 10
+                new_token = {
+                    'access_token': res['access_token'],
+                    'refresh_token': res.get('refresh_token'),
+                    'expiry_time': expiry_time
                 }
-                res = super()._http_request(method='POST', url_suffix=OAUTH_URL, resp_type='response', headers=headers,
-                                            data=data, ok_codes=ok_codes)
-                try:
-                    res = res.json()
-                except ValueError as exception:
-                    raise DemistoException('Failed to parse json object from response: {}'.format(res.content),
-                                           exception)
-                if 'error' in res:
-                    return_error(
-                        f'Error occurred while creating an access token. Please check the Client ID, Client Secret '
-                        f'and try to run again the login command to generate a new refresh token as it '
-                        f'might have expired.\n{res}')
-                if res.get('access_token'):
-                    expiry_time = date_to_timestamp(datetime.now(), date_format='%Y-%m-%dT%H:%M:%S')
-                    expiry_time += res.get('expires_in', 0) * 1000 - 10
-                    new_token = {
-                        'access_token': res.get('access_token'),
-                        'refresh_token': res.get('refresh_token'),
-                        'expiry_time': expiry_time
-                    }
-                    set_integration_context(new_token)
-                    return res.get('access_token')
-            except Exception as e:
-                return_error(f'Error occurred while creating an access token. Please check the instance configuration.'
-                             f'\n\n{e.args[0]}')
+                set_integration_context(new_token)
+                return res['access_token']
+
+        except Exception as e:
+            return_error(f'Error occurred while creating an access token. Please check the instance configuration.'
+                         f'\n\n{e.args[0]}')
+
+    def _get_access_token_idp(self):
+        """
+        Get an access token that was previously created if it is still valid,
+        or generate a new access token from the client id, client secret and refresh token if not from an IdP.
+        """
+        if not all((self.authentication_username, self.authentication_password)):
+            raise Exception('Could not create an access token. User might be not logged in. '
+                            "Try running the 'servicenow-oauth-login' command first.")
+
+        ok_codes = (200, 201, 401)
+
+        headers = {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        }
+
+        data = {
+            'client_id': self.client_id,
+            'client_secret': self.client_secret,
+            'username': self.authentication_username,
+            'password': self.authentication_password,
+            'grant_type': 'password',
+        }
+
+        if self.authentication_scope:
+            data['scope'] = self.authentication_scope
+
+        try:
+            res = self._http_request(method='POST', full_url=self.authentication_url, resp_type='response',
+                                     headers=headers, data=data, ok_codes=ok_codes)
+            try:
+                res = res.json()
+
+            except ValueError as exception:
+                raise DemistoException(f'Failed to parse json object from response: {res.content}', exception)
+
+            if 'error' in res:
+                return_error(
+                    'Error occurred while creating an access token. Please check the Client ID, '
+                    'Client Secret and try to run again the login command to generate a new refresh token '
+                    f'as it may have expired.\n{res}'
+                )
+
+            if 'access_token' in res:
+                expiry_time = date_to_timestamp(datetime.now(), date_format='%Y-%m-%dT%H:%M:%S')
+                expiry_time += res.get('expires_in', 0) * 1000 - 10
+                new_token = {
+                    'access_token': res['access_token'],
+                    'expiry_time': expiry_time
+                }
+                set_integration_context(new_token)
+                return res['access_token']
+
+        except Exception as e:
+            return_error(f'Error occurred while creating an access token. Please check the instance configuration.'
+                         f'\n\n{e.args[0]}')
