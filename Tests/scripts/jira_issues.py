@@ -1,5 +1,6 @@
 import json
 import os
+import re
 from collections import defaultdict
 from datetime import datetime, timedelta
 from distutils.util import strtobool
@@ -51,6 +52,14 @@ def convert_jira_time_to_datetime(jira_time: str) -> datetime:
 
 def jira_file_link(file_name: str) -> str:
     return f"[^{file_name}]"
+
+
+def jira_sanitize_file_name(file_name: str) -> str:
+    return re.sub(r'[^\w-]', '-', file_name).lower()
+
+
+def jira_color_text(text: str, color: str) -> str:
+    return f"{{color:{color}}}{text}{{color}}"
 
 
 def find_existing_jira_ticket(jira_server: JIRA,
