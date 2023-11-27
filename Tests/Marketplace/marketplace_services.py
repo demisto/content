@@ -1713,6 +1713,7 @@ class Pack:
             self._dependencies = pack_metadata.get(Metadata.DEPENDENCIES, {})
             self._certification = pack_metadata.get(Metadata.CERTIFICATION, "")
 
+            logging.debug(f"Loaded dependencies = {self._dependencies}")
             if 'xsoar' in self.marketplaces:
                 self.marketplaces.append('xsoar_saas')
 
