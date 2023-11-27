@@ -310,13 +310,5 @@ outputs:
   description: The file type, as determined by libmagic (same as displayed in the file entries).
   type: String
 tests:
-- Test XDR Playbook execute script commands
-- Test Playbook - Cortex XDR - Endpoint Investigation
-- Test XDR Playbook
-- Test Playbook - Cortex XDR - Get File Path from alerts by hash
-- Test Playbook - Cortex XDR - Retrieve File by sha256
-- Test Playbook - Cortex XDR Malware - Incident Enrichment
-- Cortex XDR - IOC - Test
-- Test Playbook - Cortex XDR - False Positive Incident Handling
 - Test XDR Playbook retrieve file command
 fromversion: 6.10.0
