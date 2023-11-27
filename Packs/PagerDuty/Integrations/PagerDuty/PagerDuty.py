@@ -630,8 +630,8 @@ def get_incidents_command(args: dict[str, str]) -> dict:
         "until": args.get("until"),
         "sortBy": args.get("sortBy"),
         "incident_key": args.get("incident_key"),
-        "user_ids": argToList(args.get("user_id")),
-        "urgencies": args.get("urgencies"),
+        "user_ids[]": argToList(args.get("user_id")),
+        "urgencies[]": args.get("urgencies"),
         "date_range": args.get("date_range")
     }
     pagination_args = {
