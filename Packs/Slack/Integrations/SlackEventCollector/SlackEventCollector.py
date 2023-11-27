@@ -1,5 +1,4 @@
 import demistomock as demisto  # noqa: F401
-import requests
 from CommonServerPython import *  # noqa: F401
 import urllib3
 
@@ -54,7 +53,6 @@ class Client(BaseClient):
         If `first_id` exists in the lastRun obj, finds it in the response and
         returns only the subsequent events (that weren't collected yet).
         """
-        restart_fetch = False
         query_params['cursor'] = last_run.pop('cursor', None)
         try:
             _, events, cursor = self.get_logs(query_params)
@@ -62,13 +60,13 @@ class Client(BaseClient):
             if hasattr(e.res, 'status_code'):
                 if e.res.status_code == 400:
                     demisto.debug('was returned: Error in API call [400] - Bad Request')
-                    _, events, cursor = self.handle_pagination_first_batch_bad_cursor(query_params, last_run)
-                else: demisto.raise_exception(e.res)
+                    events, cursor = self.handle_pagination_first_batch_bad_cursor(query_params, last_run)
+                else:
+                    raise Exception(e.res)
 
         if last_run.get('first_id'):
             for idx, event in enumerate(events):
                 if event.get('id') == last_run['first_id']:
-                    restart_fetch = False
                     events = events[idx:]
                     break
             last_run.pop('first_id', None)  # removing to make sure it won't be used in future runs
@@ -76,9 +74,9 @@ class Client(BaseClient):
 
     def handle_pagination_first_batch_bad_cursor(self, query_params: dict, last_run: dict) -> tuple[list, str | None]:
         """
-        Makes the first logs API call in the current fetch run.
-        If `first_id` exists in the lastRun obj, finds it in the response and
-        returns only the subsequent events (that weren't collected yet).
+        When we receive a "bad request" error
+        We try to rerun the request without the cursor
+        and go through the pages until we reach the first_id
         """
         restart_fetch = True
         query_params.pop('cursor')
@@ -91,7 +89,6 @@ class Client(BaseClient):
                         events = events[idx:]
                         break
                 query_params['cursor'] = cursor
-
         last_run.pop('first_id', None)  # removing to make sure it won't be used in future runs
         return events, cursor
 
