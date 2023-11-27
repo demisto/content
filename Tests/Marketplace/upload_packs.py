@@ -1231,7 +1231,7 @@ def main():
     for pack in packs_objects_list:
         logging.debug(f"Starts iterating over pack '{pack.name}' which is{' not ' if not pack.is_modified else ' '}modified")
 
-        if not pack.load_pack_metadata():
+        if not pack.load_pack_metadata(index_folder_path):
             pack.status = PackStatus.FAILED_LOADING_PACK_METADATA.value  # type: ignore[misc]
             pack.cleanup()
             continue

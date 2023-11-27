@@ -1685,7 +1685,7 @@ class Pack:
         latest_toversion = latest_toversion if latest_toversion != MAX_TOVERSION else ''
         return latest_fromversion, latest_toversion
 
-    def load_pack_metadata(self):
+    def load_pack_metadata(self, index_folder_path: str):
         """ Loads user defined metadata and stores part of it's data in defined properties fields.
 
         Returns:
@@ -1707,6 +1707,12 @@ class Pack:
                 # part of old packs are initialized with empty list
                 pack_metadata = {} if isinstance(pack_metadata, list) else pack_metadata
 
+
+            if (dependencies := pack_metadata.get(Metadata.DEPENDENCIES, {})) and index_folder_path:
+                for dependency_name in dependencies:
+                    dependency_metadata = load_json(os.path.join(index_folder_path, dependency_name, Pack.METADATA))
+                    dependencies[dependency_name]["minVersion"] = dependency_metadata.get(Metadata.CURRENT_VERSION, "")
+            logging.debug(f"Loaded dependency = {dependencies}")
             # store important user metadata fields
             self.support_type = pack_metadata.get(Metadata.SUPPORT, Metadata.XSOAR_SUPPORT)
             self.current_version = pack_metadata.get(Metadata.CURRENT_VERSION, '')
@@ -1719,7 +1725,7 @@ class Pack:
             self._marketplaces = pack_metadata.get(Metadata.MARKETPLACES, ['xsoar', 'marketplacev2'])
             self._modules = pack_metadata.get(Metadata.MODULES, [])
             self._tags = set(pack_metadata.get(Metadata.TAGS) or [])
-            self._dependencies = pack_metadata.get(Metadata.DEPENDENCIES, {})
+            self._dependencies = dependencies
             self._certification = pack_metadata.get(Metadata.CERTIFICATION, "")
 
             if 'xsoar' in self.marketplaces:
@@ -1756,7 +1762,7 @@ class Pack:
         logging.debug(f"Removed the following test dependencies for pack '{self._pack_name}': {removed_test_deps}")
 
     def enhance_pack_attributes(self, index_folder_path, packs_dependencies_mapping, marketplace='xsoar',
-                                statistics_handler=None, remove_test_deps=False):
+                                statistics_handler=None, remove_test_deps=False, upload_specific_pack: bool = False):
         """
         Enhances the pack object attributes for the metadata file.
 
@@ -1778,6 +1784,9 @@ class Pack:
             self.set_pack_dependencies(packs_dependencies_mapping, marketplace=marketplace)
             if remove_test_deps:
                 self.remove_test_dependencies()
+
+            if upload_specific_pack:
+                ...
 
             if statistics_handler:
                 self._pack_statistics_handler = mp_statistics.PackStatisticsHandler(
