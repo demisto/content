@@ -508,13 +508,13 @@ def test_fetch_last_emails_max_fetch(max_fetch, expected_result):
 
 @pytest.mark.parametrize("mime_content, expected_data, expected_attachmentSHA256", [
     (b'\xc400',
-     '\nÄ00',
+     '\r\nÄ00',
      '90daab88e6fac673e12acbbe28879d8d2b60fc2f524f1c2ff02fccb8e3e526a8'),
     ("Hello, this is a sample email with non-ASCII characters: é, ñ, ü.",
-     "\nHello, this is a sample email with non-ASCII characters: é, ñ, ü.",
+     "\r\nHello, this is a sample email with non-ASCII characters: é, ñ, ü.",
      "228d032fb728b3f86c49084b7d99ec37e913789415789084cd44fd94ea4647b7"),
     ("Hello, this is a sample email with ASCII characters",
-     "\nHello, this is a sample email with ASCII characters",
+     "\r\nHello, this is a sample email with ASCII characters",
      "84f8a0dec6732c2341eeb7b05ebdbe919e7092bcaf6505fbd6cda495d89b55d6")
 ])
 def test_parse_incident_from_item(mocker, mime_content, expected_data, expected_attachmentSHA256):
@@ -533,6 +533,7 @@ def test_parse_incident_from_item(mocker, mime_content, expected_data, expected_
     """
     mock_file_result = mocker.patch('EWSO365.fileResult')
     message = Message(
+        datetime_received=EWSDate(year=2021, month=1, day=25),
         datetime_created=EWSDate(year=2021, month=1, day=25),
         to_recipients=[],
         attachments=[
@@ -569,6 +570,7 @@ def test_parse_incident_from_item_with_attachments():
               b'nUT26MNdeTzcQSwK679doIz5Avpv8Ps2H/aBkBamwRNOCJBkl7iCHyy+04yRj3ghikw3u/ufIFHi0sQ7QG95mO1PVPLibv9A=='
 
     message = Message(
+        datetime_received=EWSDate(year=2021, month=1, day=25),
         datetime_created=EWSDate(year=2021, month=1, day=25),
         to_recipients=[],
         attachments=[
