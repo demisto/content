@@ -1,4 +1,5 @@
 import demistomock as demisto  # noqa: F401
+import requests
 from CommonServerPython import *  # noqa: F401
 import urllib3
 
@@ -34,12 +35,14 @@ def prepare_query_params(params: dict) -> dict:
 
 class Client(BaseClient):
     def get_logs(self, query_params: dict) -> tuple[dict, list, str | None]:
+        demisto.debug(f'{query_params=}')
         raw_response = self._http_request(
             method='GET',
             url_suffix='logs',
             params=query_params,
             retries=2,
         )
+        demisto.debug(f'{raw_response=}')
         events = raw_response.get('entries', [])
         cursor = raw_response.get('response_metadata', {}).get('next_cursor')
 
@@ -51,14 +54,45 @@ class Client(BaseClient):
         If `first_id` exists in the lastRun obj, finds it in the response and
         returns only the subsequent events (that weren't collected yet).
         """
+        restart_fetch = False
         query_params['cursor'] = last_run.pop('cursor', None)
-        _, events, cursor = self.get_logs(query_params)
+        try:
+            _, events, cursor = self.get_logs(query_params)
+        except DemistoException as e:
+            if hasattr(e.res, 'status_code'):
+                if e.res.status_code == 400:
+                    demisto.debug('was returned: Error in API call [400] - Bad Request')
+                    _, events, cursor = self.handle_pagination_first_batch_bad_cursor(query_params, last_run)
+                else: demisto.raise_exception(e.res)
+
         if last_run.get('first_id'):
             for idx, event in enumerate(events):
                 if event.get('id') == last_run['first_id']:
+                    restart_fetch = False
                     events = events[idx:]
                     break
             last_run.pop('first_id', None)  # removing to make sure it won't be used in future runs
+        return events, cursor
+
+    def handle_pagination_first_batch_bad_cursor(self, query_params: dict, last_run: dict) -> tuple[list, str | None]:
+        """
+        Makes the first logs API call in the current fetch run.
+        If `first_id` exists in the lastRun obj, finds it in the response and
+        returns only the subsequent events (that weren't collected yet).
+        """
+        restart_fetch = True
+        query_params.pop('cursor')
+        while restart_fetch:
+            _, events, cursor = self.get_logs(query_params)
+            if last_run.get('first_id'):
+                for idx, event in enumerate(events):
+                    if event.get('id') == last_run['first_id']:
+                        restart_fetch = False
+                        events = events[idx:]
+                        break
+                query_params['cursor'] = cursor
+
+        last_run.pop('first_id', None)  # removing to make sure it won't be used in future runs
         return events, cursor
 
     def get_logs_with_pagination(self, query_params: dict, last_run: dict) -> list[dict]:
@@ -214,6 +248,8 @@ def main() -> None:  # pragma: no cover
 
         elif command == 'fetch-events':
             last_run = demisto.getLastRun()
+            demisto.debug(f'last run is: {last_run}')
+
             events, last_run = fetch_events_command(client, params, last_run)
 
             send_events_to_xsiam(
@@ -222,6 +258,7 @@ def main() -> None:  # pragma: no cover
                 product=PRODUCT
             )
             demisto.setLastRun(last_run)
+            demisto.debug(f'Last run set to: {last_run}')
 
     except Exception as e:
         return_error(f'Failed to execute {command} command.\nError:\n{e}')
