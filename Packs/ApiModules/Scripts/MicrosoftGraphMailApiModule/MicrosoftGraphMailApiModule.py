@@ -941,7 +941,8 @@ class MsGraphMailBaseClient(MicrosoftClient):
         else:
             return_empty_response = True
             params = {}
-            assert rule_id is not None, "rule_id is required in order to delete the rule"
+            if rule_id is None:
+                raise ValueError("rule_id is required in order to delete the rule")
 
         url = f"{f'/users/{user_id}' if user_id else '/me'}/mailFolders/inbox/messageRules{f'/{rule_id}' if rule_id else ''}"
         return self.http_request(action.upper(), url, return_empty_response=return_empty_response, params=params)
