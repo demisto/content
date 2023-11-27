@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from datetime import date
+from AWSApiModule import AWSClient
 
 import json
 import urllib3.util
@@ -2980,7 +2981,7 @@ def release_hosts_command(args, aws_client):
         demisto.results("The host was successfully released.")
 
 
-def describe_ipam_resource_discoveries_command(args: Dict[str, Any], aws_client) -> CommandResults:
+def describe_ipam_resource_discoveries_command(args: Dict[str, Any], aws_client: AWSClient) -> CommandResults:
     """
     aws-ec2-describe-ipam-resource-discoveries command: Describes IPAM resource discoveries. A resource discovery is an IPAM
     component that enables IPAM to manage and monitor resources that belong to the owning account.
@@ -3026,7 +3027,7 @@ def describe_ipam_resource_discoveries_command(args: Dict[str, Any], aws_client)
     return command_results
 
 
-def describe_ipam_resource_discovery_associations_command(args: Dict[str, Any], aws_client) -> CommandResults:
+def describe_ipam_resource_discovery_associations_command(args: Dict[str, Any], aws_client: AWSClient) -> CommandResults:
     """
     aws-ec2-describe-ipam-resource-discovery-associations command: Describes resource discovery association with an Amazon VPC
     IPAM. An associated resource discovery is a resource discovery that has been associated with an IPAM.
@@ -3072,7 +3073,7 @@ def describe_ipam_resource_discovery_associations_command(args: Dict[str, Any], 
     return command_results
 
 
-def get_ipam_discovered_public_addresses_command(args: Dict[str, Any], aws_client) -> CommandResults:
+def get_ipam_discovered_public_addresses_command(args: Dict[str, Any], aws_client: AWSClient) -> CommandResults:
     """
     aws-ec2-get-ipam-discovered-public-addresses: Gets the public IP addresses that have been discovered by IPAM.
 
