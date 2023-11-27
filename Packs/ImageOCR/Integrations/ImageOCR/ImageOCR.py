@@ -1,7 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
 import subprocess
-import traceback
 
 TESSERACT_EXE = 'tesseract'
 
@@ -60,7 +59,7 @@ def extract_text_command(args: dict, instance_languages: list) -> tuple[list, li
             )
         except subprocess.CalledProcessError as cpe:
             errors.append(
-                f"An error occurred while trying to process {entry_id=}:\n"
+                f"An error occurred while trying to process {entry_id=}: "
                 f"Failed {cpe.cmd} execution. Return status: {cpe.returncode}.\n"
                 f"Error:\n{cpe.stderr}"
             )
@@ -99,7 +98,7 @@ def main() -> None:
         else:
             raise NotImplementedError(f'Command {command} was not implemented.')
     except Exception as err:
-        return_error(f"Failed with error(s): {err}\n\nTrace:\n{traceback.format_exc()}")
+        return_error(f"Failed with error(s): {err}")
 
 
 # python2 uses __builtin__ python3 uses builtins
