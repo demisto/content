@@ -11,19 +11,19 @@ configuration:
   name: credentials
   type: 9
   required: false
-- additionalinfo: URL of a 3rd-party identity provider that provides authentication tokens. If used, make sure 'Use OAuth Login' is selected.
-  display: Authentication URL
-  name: authentication_url
-  type: 0
-  required: false
 - additionalinfo: Select this checkbox if to use OAuth 2.0 authentication.
   display: Use OAuth Login
   name: use_oauth
   type: 8
   required: false
+- additionalinfo: URL of a 3rd-party identity provider that provides authentication tokens. If used, make sure 'Use OAuth Login' is selected.
+  display: Authentication URL
+  name: authentication_url
+  type: 0
+  required: false
 - additionalinfo: Relevant only when Authentication URL is provided.
-  display: API Auth Scope
-  name: scope
+  display: API Authentication Scope
+  name: authentication_scope
   type: 0
   required: false
 - additionalinfo: 'The ticket type can be: incident, problem, change_request, sc_request, sc_task or sc_req_item.'

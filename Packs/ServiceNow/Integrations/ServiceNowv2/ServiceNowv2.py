@@ -2988,7 +2988,7 @@ def main():
             'client_id': client_id,
             'client_secret': client_secret,
             'authentication_url': params.get('authentication_url'),
-            'authentication_scope': params.get('scope'),
+            'authentication_scope': params.get('authentication_scope'),
             'url': params.get('url'),
             'headers': {
                 'Content-Type': 'application/json',
