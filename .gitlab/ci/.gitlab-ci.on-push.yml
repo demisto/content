@@ -254,12 +254,20 @@ xpanse-prepare-testing-bucket:
 .run_tests:
   - section_start "Run Tests"
   - |
-    if [[ -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" ]]; then	
-      cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" Tests/conf.json
+    if [[ -n "${NIGHTLY}" && $SERVER_TYPE == "XSOAR SAAS" ]]; then 
+      if [[ $TEST_XDR_ENV ]]; then
+        cat "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
+      else
+        echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
+      fi
+      ./Tests/scripts/run_e2e_tests.sh || EXIT_CODE=$?
+    else
+      if [[ -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" ]]; then	
+        cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" Tests/conf.json
+      fi
+      ./Tests/scripts/run_tests.sh || EXIT_CODE=$?
+      rm -f Tests/conf.json
     fi
-  - |
-    ./Tests/scripts/run_tests.sh || EXIT_CODE=$?
-  - rm -f Tests/conf.json
   - section_end "Run Tests"
 
 .test_content_on_xsoar_server_instances_base:
@@ -562,6 +570,7 @@ slack-notify-on-merge:
         echo "Not running the instance flow, no tests to run were found."
         ./Tests/scripts/run_tests.sh --generate-empty-result-file
         ./Tests/scripts/test_modeling_rules.sh --generate-empty-result-file
+        ./Tests/scripts/run_e2e_tests.sh --generate-empty-result-file
         job-done
         exit $EXIT_CODE
       fi
@@ -667,6 +676,7 @@ xsoar_ng_server_ga:
         CLOUD_MACHINES_TYPE: "testing"
         GCS_LOCKS_PATH: "content-locks/locks-xsoar-ng-testing"
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+    - if: '$NIGHTLY'
       when: always
   variables:
     CLOUD_MACHINES_TYPE: "build"
@@ -695,8 +705,10 @@ xsoar_ng_server_ga:
     reports:
       junit:
         - "${ARTIFACTS_FOLDER_INSTANCE}/test_playbooks_report.xml"
+        - "${ARTIFACTS_FOLDER_INSTANCE}/e2e_tests_result.xml"
     paths:
       - "${ARTIFACTS_FOLDER_INSTANCE}/test_playbooks_report.xml"
+      - "${ARTIFACTS_FOLDER_INSTANCE}/e2e_tests_result.xml"
       - ${CI_PROJECT_DIR}/artifacts/*  # restoring the default artifacts path from the job default settings
       - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*  # restoring the default artifacts path from the job default settings
 
@@ -774,6 +786,33 @@ test-upload-flow:
       - ${CI_PROJECT_DIR}/artifacts/*  # restoring the default artifacts path from the job default settings
       - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*  # restoring the default artifacts path from the job default settings
 
+
+.e2e_test_results:
+  stage: results
+  rules:
+    - !reference [ .filter-non-nightly-docker-updates-rule, rules ]
+    - if: '$NIGHTLY'
+      when: always
+  extends:
+    - .default-job-settings
+  needs:
+    - job: xsoar_ng_server_ga
+      optional: true
+  script:
+    - ./Tests/scripts/test_e2e_results.sh
+    - job-done
+  artifacts:
+    when: always
+    expire_in: 30 days
+    reports:
+      junit:
+        - "${ARTIFACTS_FOLDER}/e2e_tests_result.xml"
+    paths:
+      - "${ARTIFACTS_FOLDER}/e2e_tests_result.xml"
+      - ${CI_PROJECT_DIR}/artifacts/*  # restoring the default artifacts path from the job default settings
+      - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*  # restoring the default artifacts path from the job default settings
+
+
 .test_modeling_rule_results:
   stage: results
   rules:
@@ -817,6 +856,17 @@ xsiam-test_playbooks_results:
     - xsiam_server_ga
   dependencies:
     - xsiam_server_ga
+
+xsoar-saas_test_e2e_results:
+  variables:
+    SERVER_TYPE: "XSOAR"
+    PRODUCT_TYPE: "XSOAR SAAS"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+  extends: .e2e_test_results
+  needs:
+    - xsoar_ng_server_ga
+  dependencies:
+    - xsoar_ng_server_ga
 
 xsiam-test_modeling_rule_results:
   variables:

@@ -65,12 +65,14 @@ class CollectionReason(str, Enum):
     XSIAM_COMPONENT_CHANGED = 'xsiam component was changed'
     README_FILE_CHANGED = 'readme file was changed'
     PACK_CHOSEN_TO_UPLOAD = 'pack chosen to upload'
+    PACK_TEST_E2E = "pack was chosen to be tested in e2e tests"
 
 
 REASONS_ALLOWING_NO_ID_SET_OR_CONF = {
     # these may be used without an id_set or conf.json object, see _validate_collection.
     CollectionReason.DUMMY_OBJECT_FOR_COMBINING,
-    CollectionReason.ALWAYS_INSTALLED_PACKS
+    CollectionReason.ALWAYS_INSTALLED_PACKS,
+    CollectionReason.PACK_TEST_E2E
 }
 
 
@@ -354,6 +356,7 @@ class TestCollector(ABC):
         """
 
     def collect(self) -> CollectionResult | None:
+        logger.info(f'Collecting using class {self}')
         result: CollectionResult | None = self._collect()
 
         if not result:
@@ -1361,6 +1364,41 @@ class XSOARNightlyTestCollector(NightlyTestCollector):
         ))
 
 
+class E2ETestCollector(TestCollector, ABC):
+
+    @abstractmethod
+    def get_e2e_packs(self) -> set[str]:
+        """
+        Implement this abstract method to collect relevant packs for xsoar/xsoar-saas/xsiam,
+        in the future when there will be a nightly for xsoar-saas, we will install all nightly packs including e2e tests
+        so this logic will be removed
+        """
+        raise NotImplementedError
+
+    def _collect(self) -> CollectionResult | None:
+        return CollectionResult.union(
+            [
+                CollectionResult(
+                    test=None,
+                    modeling_rule_to_test=None,
+                    pack=pack,
+                    reason=CollectionReason.PACK_TEST_E2E,
+                    version_range=None,
+                    reason_description="e2e tests",
+                    conf=None,
+                    id_set=None,
+                    only_to_install=True
+                ) for pack in self.get_e2e_packs()
+            ]
+        )
+
+
+class XsoarSaasE2ETestCollector(E2ETestCollector):
+
+    def get_e2e_packs(self) -> set[str]:
+        return {"TAXIIServer", "EDL", "QRadar", "Slack"}
+
+
 def output(result: CollectionResult | None):
     """
     writes to both log and files
@@ -1453,8 +1491,10 @@ if __name__ == '__main__':
         match (nightly, marketplace):
             case False, _:  # not nightly
                 collector = BranchTestCollector(branch_name, marketplace, service_account, graph=graph)
-            case (True, (MarketplaceVersions.XSOAR | MarketplaceVersions.XSOAR_SAAS)):
+            case (True, (MarketplaceVersions.XSOAR)):
                 collector = XSOARNightlyTestCollector(marketplace=marketplace, graph=graph)
+            case (True, MarketplaceVersions.XSOAR_SAAS):
+                collector = XsoarSaasE2ETestCollector(marketplace=marketplace, graph=graph)
             case True, MarketplaceVersions.MarketplaceV2:
                 collector = XSIAMNightlyTestCollector(graph=graph)
             case True, MarketplaceVersions.XPANSE:

@@ -1,4 +1,4 @@
-from demisto_sdk.commands.test_content.xsiam_tools.xsiam_client import XsiamApiClient
+from demisto_sdk.commands.common.clients import XsiamClient
 
 
 def create_filter(size=50, show_installed=True, with_collection_type=False):
@@ -31,7 +31,7 @@ def create_filter(size=50, show_installed=True, with_collection_type=False):
     return filter
 
 
-def test_check_number_of_packs_in_marketplace(xsiam_client: XsiamApiClient):
+def test_check_number_of_packs_in_marketplace(xsiam_client: XsiamClient):
     """
     Given
     - XSIAM tenant
@@ -44,12 +44,12 @@ def test_check_number_of_packs_in_marketplace(xsiam_client: XsiamApiClient):
     - ensure there are more than 900 packs in the marketplace
     """
     search_all_packs_filter = create_filter(size=1)
-    results = xsiam_client.search_marketplace(search_all_packs_filter)
+    results = xsiam_client.search_marketplace_packs(search_all_packs_filter)
 
     assert results['total'] > 900
 
 
-def test_check_number_of_collector_packs_in_marketplace(xsiam_client: XsiamApiClient):
+def test_check_number_of_collector_packs_in_marketplace(xsiam_client: XsiamClient):
     """
     Given
     - XSIAM tenant
@@ -62,6 +62,6 @@ def test_check_number_of_collector_packs_in_marketplace(xsiam_client: XsiamApiCl
     - ensure there are more than 120
     """
     collection_packs_filter = create_filter(size=1, with_collection_type=True)
-    results = xsiam_client.search_marketplace(collection_packs_filter)
+    results = xsiam_client.search_marketplace_packs(collection_packs_filter)
 
     assert results['total'] > 120
