@@ -1,6 +1,6 @@
 {
     "name": "CommunityCommonDashboards",
-    "description": "Single dashboard for upper management view of XSOAR status and trends: Incidents, Indicators, SLAs, and XSOAR server resources.",
+    "description": "A pack that contains community dashboards",
     "support": "community",
     "currentVersion": "1.0.0",
     "author": "Randy Uhrlaub",
