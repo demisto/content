@@ -100,7 +100,7 @@ script:
       required: true
       description: The SQL query statements to be executed.
     - name: QueryLimit
-      defaultvalue: 50
+      defaultValue: 50
       description: A limit (number) to use for the query. If the keyword 'LIMIT' exists within 'QueryString', this parameter will be ignored.
     - name: ClientRequestToken
       description: A unique case-sensitive string used to ensure the request to create the query is idempotent (executes only once). If another StartQueryExecution request is received, the same response is returned and another query is not created.
@@ -162,8 +162,8 @@ script:
       defaultValue: 'true'
       name: polling
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     - name: interval_in_seconds
       description: Interval in seconds between each poll (only if polling is set to true).
       defaultValue: '10'
