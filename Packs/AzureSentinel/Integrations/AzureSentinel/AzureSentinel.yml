@@ -561,7 +561,7 @@ script:
     - description: The resource group name.
       name: resource_group_name
     - auto: PREDEFINED
-      description: If set to true the assignee will be removed and incident will remain unassigned.
+      description: If set to true the assignee will be removed and the incident will remain unassigned. Overrides the other arguments related to the assignee.
       name: unassign
       predefined:
       - 'false'
