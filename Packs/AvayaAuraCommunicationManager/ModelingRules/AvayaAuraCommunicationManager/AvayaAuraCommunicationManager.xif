@@ -1,0 +1,55 @@
+[MODEL: dataset="avaya_communication_manager_raw"]
+
+/* 
+HTTP/web access log.
+    The HTTP web access log lists the activity performed at the Web interface. These are all the requests made of the Web servers SSL module. The SSL request log indicates all pages requested or placed in secure mode.
+    https://documentation.avaya.com/bundle/AvayaAuraMaintenanceProceduresforCM_R10.1/page/HttpWebAccessLog.html
+    https://documentation.avaya.com/bundle/AvayaAuraMaintenanceProceduresforCM_R10.1/page/CommandHistoryLogFormatForWebActivity.html
+*/   
+alter process_name = arrayindex(regextract(_raw_log, "(?:\S+\s+){4}(\w+)") , 0),
+      event_name = arrayindex(regextract(_raw_log, "(?:\S+\s+){5}(\S+)") , 0)
+| filter event_name = "web"
+| alter syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\s*\w+"), 0))
+| alter syslog_facility = floor(divide(syslog_priority, 8))
+| alter syslog_severity = to_string(subtract(syslog_priority, multiply(syslog_facility, 8)))
+| alter 
+    hostname = arrayindex(regextract(_raw_log, "^<\d+>\w+\s+\d{1,2}\s+\S+\s+(\S+)"), 0),
+    process_id = arrayindex(regextract(_raw_log, "\[(\d+)\]"), 0),
+    message = arrayindex(regextract(_raw_log, "<\d+>.+ \S+ \S+: (.+)"), 0)
+| alter 
+    user_ip = arrayindex(regextract(message, "web\s+(\S+)"), 0), // The IP address of the user accessing the server.
+    user_uid = arrayindex(regextract(message, "web\s+\S+\s+(\d+)"), 0), // The ID number of the user establishing the web session.
+    user_uname = coalesce(arrayindex(regextract(message, "web\s+\S+\s+\d+\s+(\w+)"), 0), 
+            arrayindex(regextract(message, "web\s+\S+\s{2}(\w+)"), 0)),
+    profile = coalesce(arrayindex(regextract(message, "web\s+\S+\s+\d+\s+\w+\s+(\d+)"), 0),  // The access profile number assigned to the user.
+            arrayindex(regextract(message, "web\s+\S+\s{2}\S+\s+(\d+)"), 0)),
+    action_r_status = coalesce(arrayindex(regextract(message, "web\s+\S+\s+\d+\s+\w+\s+\S+\s+([sfv]):?\S*\s+"), 0),  // The status of the action: s: the action was a success. f: the action was a failure other than for a security reason. The letter f could be followed by a colon and an ASCII error code. v: the action was a failure due to a security violation.
+            arrayindex(regextract(message, "web\s+\S+\s{2}\S+\s+\S+\s+([sfv]):?\S*\s+"), 0)),
+    action_r_status_reason = coalesce(arrayindex(regextract(message, "web\s+\S+\s+\d+\s+\w+\s+\S+\s+[sfv]:(\S+)\s+"), 0),  // The status of the action: s: the action was a success. f: the action was a failure other than for a security reason. The letter f could be followed by a colon and an ASCII error code. v: the action was a failure due to a security violation.
+            arrayindex(regextract(message, "web\s+\S+\s{2}\S+\s+\S+\s+[sfv]:(\S+)\s+"), 0)),
+    accessed_web_page = coalesce(arrayindex(regextract(message, "web\s+\S+\s+\d+\s+\w+\s+\S+\s+[sfv\-]:?\S*\s+([^\|]+)"), 0),  
+            arrayindex(regextract(message, "web\s+\S+\s{2}\S+\s+\S+\s+[sfv\-]:?\S*\s+([^\|]+)"), 0)),
+    accessed_field_name = arrayindex(regextract(message, "\|\s*(.+?)\s*\|"), 0),
+    accessed_field_value = arrayindex(regextract(message, "\|[^\|]+\|\s*(.+)"), 0)
+
+
+| alter 
+    user_ipv4 = if(user_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", user_ip),
+    user_ipv6 = if(user_ip ~= "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}", user_ip)
+
+| alter 
+    xdm.alert.severity = syslog_severity,
+    xdm.event.log_level = if(syslog_severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY, syslog_severity = "1", XDM_CONST.LOG_LEVEL_ALERT, syslog_severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, syslog_severity = "3", XDM_CONST.LOG_LEVEL_ERROR, syslog_severity = "4", XDM_CONST.LOG_LEVEL_WARNING, syslog_severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, syslog_severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, syslog_severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, syslog_severity),
+    xdm.event.outcome = if(action_r_status = "s", XDM_CONST.OUTCOME_SUCCESS, action_r_status in ("f", "v"), XDM_CONST.OUTCOME_FAILED),
+    xdm.event.outcome_reason = action_r_status_reason,
+    xdm.event.type = event_name,
+    xdm.source.ipv4 = user_ipv4,
+    xdm.source.ipv6 = user_ipv6,
+    xdm.source.process.name = process_name,
+    xdm.source.process.pid = to_integer(process_id),
+    xdm.source.user.groups = if(profile != null, arraycreate(profile)),
+    xdm.source.user.identifier = user_uid,
+    xdm.source.user.username = user_uname,
+    xdm.target.resource.id = accessed_field_name,
+    xdm.target.resource.name = accessed_web_page,
+    xdm.target.resource.value = accessed_field_value;

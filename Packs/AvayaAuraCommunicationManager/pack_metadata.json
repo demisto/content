@@ -1,0 +1,18 @@
+{
+    "name": "Avaya Aura Communication Manager",
+    "description": "The Avaya Aura Communication Manager is an extensible IP telephony platform that supports both SIP-only and non-SIP environments, providing over 700 PBX features and advanced productivity and mobility features",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "marketplacev2"
+    ]
+}
