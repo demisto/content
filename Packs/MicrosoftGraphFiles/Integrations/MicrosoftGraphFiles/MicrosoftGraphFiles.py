@@ -3,11 +3,8 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 from MicrosoftApiModule import *  # noqa: E402
 
-""" IMPORTS """
-import urllib3
 from urllib.parse import parse_qs, urlparse
-# Disable insecure warnings
-urllib3.disable_warnings()
+
 
 """ GLOBALS/PARAMS """
 
