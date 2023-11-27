@@ -218,8 +218,9 @@ class Client(BaseClient):
                     etag = last_run.get(url, {}).get('etag')
                     last_modified = last_run.get(url, {}).get('last_modified')
                     last_updated = last_run.get(url, {}).get('last_updated')
-                    # To avoid issues with outdated timestamps, if last_updated is over X hours old,
+                    # To avoid issues with indicators expiring, if 'last_updated' is over X hours old,
                     # we'll refresh the indicators to ensure their expiration time is updated.
+                    # For further details, refer to : https://confluence-dc.paloaltonetworks.com/display/DemistoContent/Json+Api+Module     # noqa: E501
                     if last_updated and has_passed_time_threshold(last_updated, HOURS_THRESHOLD):
                         last_modified = None
                         etag = None
