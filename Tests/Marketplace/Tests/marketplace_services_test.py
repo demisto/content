@@ -17,13 +17,13 @@ from pathlib import Path
 
 # pylint: disable=no-member
 
-
 from Tests.Marketplace.marketplace_services import Pack, input_to_list, get_valid_bool, convert_price, \
     get_updated_server_version, load_json, \
     store_successful_and_failed_packs_in_ci_artifacts, is_ignored_pack_file, \
     is_the_only_rn_in_block, get_pull_request_numbers_from_file, remove_old_versions_from_changelog
 from Tests.Marketplace.marketplace_constants import Changelog, PackStatus, PackFolders, Metadata, GCPConfig, BucketUploadFlow, \
-    PackTags
+    PackTags, XSOAR_START_TAG, XSOAR_END_TAG, XSOAR_SAAS_START_TAG, XSOAR_SAAS_END_TAG, XSOAR_ON_PREM_TAG, \
+    XSOAR_ON_PREM_END_TAG, XSOAR_MP, XSIAM_MP, XSOAR_SAAS_MP
 
 CHANGELOG_DATA_INITIAL_VERSION = {
     "1.0.0": {
@@ -1554,6 +1554,50 @@ class TestFilterChangelog:
                                                        mp2=self.TAG_BY_MP[upload_marketplace])
         result = dummy_pack.filter_release_notes_by_tags(release_notes, upload_marketplace)
 
+        assert result == expected_result
+
+    RN_ENTRY_XSOAR_TAGS = f"""#### Integrations
+- General entry
+{XSOAR_START_TAG}
+- Entry for all xsoar marketplaces.
+{XSOAR_END_TAG}
+{XSOAR_SAAS_START_TAG}
+- Entry only for xsoar_saas.
+{XSOAR_SAAS_END_TAG}
+{XSOAR_ON_PREM_TAG}
+- Entry only for xsoar on prem.
+{XSOAR_ON_PREM_END_TAG}
+"""
+
+    XSOAR_MP_RES = """#### Integrations
+- General entry\n
+- Entry for all xsoar marketplaces.\n\n
+- Entry only for xsoar on prem.\n
+"""
+
+    XSOAR_SAAS_MP_RES = """#### Integrations
+- General entry\n
+- Entry for all xsoar marketplaces.\n\n
+- Entry only for xsoar_saas.\n
+"""
+
+    XSIAM_MP_RES = """#### Integrations
+- General entry
+"""
+
+    @pytest.mark.parametrize('upload_marketplace, expected_result', [(XSOAR_MP, XSOAR_MP_RES),
+                                                                     (XSOAR_SAAS_MP, XSOAR_SAAS_MP_RES),
+                                                                     (XSIAM_MP, XSIAM_MP_RES)])
+    def test_filter_for_xsoar_tags(self, dummy_pack: Pack, upload_marketplace, expected_result):
+        """
+            Given:
+                - Realease notes entries wrapped by tags for XSOAR marketplaces.
+            When:
+                - Uploading and preparing the RN for upload.
+            Then:
+                - Validate that each mp contains the correct entries.
+        """
+        result = dummy_pack.filter_release_notes_by_tags(self.RN_ENTRY_XSOAR_TAGS, upload_marketplace)
         assert result == expected_result
 
     @pytest.mark.parametrize('id_set, expected_result', [
