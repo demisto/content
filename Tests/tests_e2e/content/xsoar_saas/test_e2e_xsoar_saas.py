@@ -3,7 +3,6 @@ from datetime import datetime
 
 import pytest
 from _pytest.fixtures import SubRequest
-import requests
 from demisto_client.demisto_api.models.feed_indicator import FeedIndicator
 from demisto_client.demisto_api.rest import ApiException
 from demisto_sdk.commands.common.clients import XsoarSaasClient
