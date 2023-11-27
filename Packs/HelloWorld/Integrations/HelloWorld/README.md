@@ -19,6 +19,7 @@ This is the Hello World integration for getting started.
     | First fetch time |  | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
+    | Incidents Fetch Interval |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -76,7 +77,7 @@ Lists the example alerts as it would be fetched from the API.
 | --- | --- | --- |
 | alert_id | Filter by alert item ID. If not provided, all IDs will be retrieved. | Optional | 
 | limit | How many alerts to fetch. Default is 10. | Optional | 
-| severity | The severity  by which to filter the alerts. | Optional | 
+| severity | The severity by which to filter the alerts. | Optional | 
 
 #### Context Output
 
@@ -264,6 +265,7 @@ Return IP information and reputation.
 | IP.Relationships.EntityAType | string | The type of the source of the relationship. | 
 | IP.Relationships.EntityBType | string | The type of the destination of the relationship. | 
 
+### helloworld-new-cmd
 #### Command example
 ```!ip ip="8.8.8.8"```
 #### Context Example
@@ -677,7 +679,10 @@ Return IP information and reputation.
 ```
 
 #### Human Readable Output
+***
+New command to test out https://jira-dc.paloaltonetworks.com/browse/CIAC-4657
 
+#### Base Command
 >### IP (Sample Data)
 >|id|ip|links|type|
 >|---|---|---|---|
@@ -687,3 +692,15 @@ Return IP information and reputation.
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| EMERALD-ONION |  | NA | US | :jarm: | ***harmless***: 72<br/>***malicious***: 5<br/>***suspicious***: 2<br/>***timeout***: 0<br/>***undetected***: 8 |  | :cidr: | ARIN |  | ***values***:  | ***harmless***: 0<br/>***malicious***: 1 |  |
 
+`helloworld-new-cmd`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --| --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --| --- | --- |
+| HelloWorld.NewCmd | unknown |  | 

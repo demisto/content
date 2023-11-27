@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+
 """HelloWorld Integration for Cortex XSOAR (aka Demisto)
 
 This integration is a good example on you can build a Cortex XSOAR Integration
@@ -232,8 +233,6 @@ import json
 from typing import Any
 
 import dateparser
-
-from CommonServerUserPython import *
 
 
 ''' CONSTANTS '''
@@ -1000,6 +999,15 @@ def main() -> None:  # pragma: no cover
 
         elif command == 'helloworld-say-hello':
             return_results(say_hello_command(client, args))
+
+        elif command == "helloworld-new-cmd":
+            return_results(
+                CommandResults(
+                    outputs_prefix='HelloWorld.NewCmd',
+                    outputs={"result": "test out https://jira-dc.paloaltonetworks.com/browse/CIAC-4657"},
+                    readable_output="## test out https://jira-dc.paloaltonetworks.com/browse/CIAC-4657"
+                )
+            )
 
         else:
             raise NotImplementedError(f'Command {command} is not implemented')
