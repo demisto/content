@@ -139,36 +139,6 @@ def get_integration_instance_name(integration_params: dict, default: str) -> str
     )
 
 
-@retry(times=30, delay=5)
-def is_incident_state_as_expected(client: XsoarClient, incident_id: str, expected_state: str = "closed") -> bool:
-    """
-    Validates whether an incident has reached into an expected state
-
-    Args:
-        client (XsoarClient): xsoar client (saas/on-prem/xsiam).
-        incident_id (dict): the incident ID
-        expected_state (str): the expected state that the incident should be
-
-    Returns:
-        bool: True if the playbook reached to the expected state, raises exception if not.
-    """
-    incident_status = {
-        0: "new",  # pending
-        1: "in_progress",  # active
-        2: "closed",  # done
-        3: "acknowledged"  # archived
-    }
-
-    incident_response = client.search_incidents(incident_ids=incident_id)
-    # status 2 means the incident is closed.
-    incident = incident_response["data"][0]
-    incident_status = incident_status.get(incident.get("status"))
-    if incident_status == expected_state:
-        return True
-    incident_name = incident.get("name")
-    raise Exception(f'incident {incident_name} status is {incident_status} and is not in state {expected_state}')
-
-
 @contextmanager
 def get_fetched_incident(
     client: XsoarClient,

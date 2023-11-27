@@ -49,7 +49,9 @@ def get_cloud_machine_credentials(request):
 def xsiam_client(request) -> XsiamClient:
     xsiam_url, api_key, api_key_id = get_cloud_machine_credentials(request)
     return get_client_from_config(
-        XsiamClientConfig(base_api_url=xsiam_url, api_key=api_key, auth_id=api_key_id, token='test', collector_token='test')
+        XsiamClientConfig(
+            base_api_url=xsiam_url, api_key=api_key, auth_id=api_key_id, token='test', collector_token='test', verify_ssl=False
+        )
     )
 
 
@@ -57,5 +59,5 @@ def xsiam_client(request) -> XsiamClient:
 def xsoar_saas_client(request) -> XsoarSaasClient:
     xsoar_saas_url, api_key, api_key_id = get_cloud_machine_credentials(request)
     return get_client_from_config(
-        XsoarSaasClientConfig(base_api_url=xsoar_saas_url, api_key=api_key, auth_id=api_key_id)
+        XsoarSaasClientConfig(base_api_url=xsoar_saas_url, api_key=api_key, auth_id=api_key_id, verify_ssl=False)
     )

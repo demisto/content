@@ -13,7 +13,6 @@ from Tests.tests_e2e.client_utils import (
     get_integration_instance_name,
     get_fetched_incident,
     save_integration_instance,
-    is_incident_state_as_expected,
     save_incident,
     save_playbook,
     save_indicators
