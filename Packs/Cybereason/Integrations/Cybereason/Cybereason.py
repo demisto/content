@@ -1912,9 +1912,9 @@ def get_sensor_id_command(client: Client, args: dict):
         return CommandResults(readable_output=f"Available Sensor IDs are {output}")
 
 
-def fetch_machine_details_command(client: Client, args: dict):
+def get_machine_details_command(client: Client, args: dict):
     machine_name = str(args.get('machineName'))
-    json_body = fetch_machine_details_command_pagination_params(args)
+    json_body = get_machine_details_command_pagination_params(args)
     response = client.cybereason_api_call('POST', '/rest/sensors/query', json_body=json_body)
     if dict_safe_get(response, ['sensors']) == []:
         return CommandResults(readable_output=f"Could not find any Sensor ID for the machine: {machine_name}")
@@ -1938,7 +1938,7 @@ def fetch_machine_details_command(client: Client, args: dict):
             outputs=outputs)
 
 
-def fetch_machine_details_command_pagination_params(args: dict) -> dict:
+def get_machine_details_command_pagination_params(args: dict) -> dict:
     '''
         Generate pagination parameters for fetching machine details based on the given arguments.
 
@@ -2104,7 +2104,7 @@ def main():
             return_results(get_sensor_id_command(client, args))
 
         elif demisto.command() == 'cybereason-get-machine-details':
-            return_results(fetch_machine_details_command(client, args))
+            return_results(get_machine_details_command(client, args))
 
         else:
             raise NotImplementedError(f'Command {demisto.command()} is not implemented.')
