@@ -627,7 +627,7 @@ class TestCollector(ABC):
                 reason = CollectionReason.MODELING_RULE_TEST_DATA_CHANGED
             elif file_type == FileType.MODELING_RULE_XIF:
                 reason = CollectionReason.MODELING_RULE_XIF_CHANGED
-            elif file_type == FileType.ASSETSMODELING_RULE:
+            elif file_type == FileType.ASSETS_MODELING_RULE:
                 reason = CollectionReason.MODELING_RULE_CHANGED
             elif file_type == FileType.ASSETS_MODELING_RULE_SCHEMA:
                 reason = CollectionReason.MODELING_RULE_SCHEMA_CHANGED
