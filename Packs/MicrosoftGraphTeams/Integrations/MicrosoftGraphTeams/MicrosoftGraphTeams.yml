@@ -81,7 +81,7 @@ script:
     - description: An OData query. See README for OData usage examples.
       name: odata
     - defaultValue: "20"
-      description: Limit chats to fetch in one request
+      description: Limit chats to fetch in one request.
       name: limit
     description: Retrieve the list of chats that the user is part of.
     name: msgraph-teams-list-chats
@@ -227,7 +227,7 @@ script:
     - auto: PREDEFINED
       default: true
       defaultValue: "true"
-      description: Allowing sharing of the whole history of the chat
+      description: Allowing sharing of the whole history of the chat.
       name: share_history
       predefined:
       - "true"
@@ -242,7 +242,7 @@ script:
       required: true
     - default: true
       defaultValue: "50"
-      description: Limit messages to fetch in one request
+      description: Limit messages to fetch in one request.
       name: limit
     description: Retrieve the list of messages in a chat.
     name: msgraph-teams-list-messages
