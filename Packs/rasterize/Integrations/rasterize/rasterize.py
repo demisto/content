@@ -95,15 +95,10 @@ def ensure_chrome_running():  # pragma: no cover
         while chromes_count != 1 and retry_count < max_retries:
             demisto.debug(f'ensure_chrome_running, {chromes_count=}, {retry_count=}')
             if chromes_count == 0:
-                # start_chrome_headless_out = subprocess.check_output(['bash', '/start_chrome_headless.sh'],
-                #                                                     stderr=subprocess.STDOUT, universal_newlines=True)
-                # start_chrome_headless_out = subprocess.call(['bash', '/start_chrome_headless.sh'])
-                # result = subprocess.run(['bash', '/start_chrome_headless.sh'], capture_output=True, check=True, text=True)
-                result = subprocess.Popen(['bash', '/start_chrome_headless.sh'], text=True, stdout=subprocess.DEVNULL,
-                                          stderr=subprocess.DEVNULL)
-                time.sleep(1)  # pylint: disable=E9003
-                demisto.debug(f'start_chrome_headless, {result=}')
-                start_chrome_headless_out = result.stdout
+                start_chrome_headless_out = subprocess.run(['bash', '/start_chrome_headless.sh'],
+                                                           text=True,
+                                                           stdout=subprocess.DEVNULL,
+                                                           stderr=subprocess.DEVNULL).stdout
                 demisto.debug(f'start_chrome_headless output: {start_chrome_headless_out}')
             else:
                 for currrent_process_line in is_chrome_headless_running_res:
@@ -179,22 +174,123 @@ def pychrome_reap_children():
         demisto.error(f'Failed checking for zombie processes: {e}. Trace: {traceback.format_exc()}')
 
 
-def pychrome_screenshot_image(browser, tab, path, width, height, wait_time, max_page_load_time, full_screen,
-                              include_url):  # pragma: no cover
+# def pychrome_screenshot_image(browser, tab, path, width, height, wait_time, max_page_load_time, full_screen,
+#                               include_url):  # pragma: no cover
+#     tab_ready = Event()
+#     eh = PychromeEventHandler(browser, tab, tab_ready)
+#     tab.Page.frameStartedLoading = eh.frame_started_loading
+#     tab.Page.frameStoppedLoading = eh.frame_stopped_loading
+
+#     try:
+#         demisto.debug('pychrome_screenshot_image, before tab.start')
+#         tab.start()
+#         demisto.debug('pychrome_screenshot_image, after tab.start')
+#         tab.Page.stopLoading()
+#         demisto.debug('pychrome_screenshot_image, after tab.Page.stopLoading')
+#         # tab.call_method("Network.enable")
+#         tab.Page.enable()
+#         demisto.debug('pychrome_screenshot_image, after tab.Page.enable')
+#         # tab.call_method("Page.navigate", url=path, _timeout=max_page_load_time)
+#         page_start_time = int(time.time())
+#         if max_page_load_time > 0:
+#             demisto.debug('navigate 1')
+#             tab.Page.navigate(url=path, _timeout=max_page_load_time)
+#         else:
+#             demisto.debug('navigate 2')
+#             tab.Page.navigate(url=path)
+#         navigate_time = int(time.time()) - page_start_time
+#         tab_ready_wait_time = max(1, wait_time - navigate_time + 1)
+#         demisto.debug(f'Waiting {wait_time}-{navigate_time}+1={tab_ready_wait_time} seconds for tab_ready')
+#         tab_ready.wait(tab_ready_wait_time)
+#         page_load_time = int(time.time()) - page_start_time
+#         demisto.debug(f'Navigated to {path}, {navigate_time=}, {page_load_time=}')
+
+#         wait_time_actual = max(1, wait_time - page_load_time + 1)
+#         demisto.debug(f'Waiting for {wait_time}-{page_load_time}+1={wait_time_actual} seconds before taking a screenshot')
+#         time.sleep(wait_time_actual)  # pylint: disable=E9003
+
+#         return base64.b64decode(tab.Page.captureScreenshot()['data'])
+#     except pychrome.exceptions.TimeoutException:
+#         message = f'Timeout of {max_page_load_time} seconds reached while waiting for {path}'
+#         demisto.error(message)
+#         return_error(message)
+#     finally:
+#         try:
+#             tab.stop()
+#         except pychrome.RuntimeException:
+#             pass
+#         close_tab_response = browser.close_tab(tab)
+#         demisto.debug(f"{path=}, {close_tab_response=}")
+#         pychrome_reap_children()
+
+
+# def pychrome_screenshot_pdf(browser, tab, path, width, height, wait_time, max_page_load_time, full_screen,
+#                             include_url):  # pragma: no cover
+#     tab_ready = Event()
+#     eh = PychromeEventHandler(browser, tab, tab_ready)
+#     tab.Page.frameStartedLoading = eh.frame_started_loading
+#     tab.Page.frameStoppedLoading = eh.frame_stopped_loading
+
+#     # tab.set_listener("Network.requestWillBeSent", request_will_be_sent)
+
+#     try:
+#         tab.start()
+#         tab.Page.stopLoading()
+#         # tab.call_method("Network.enable")
+#         tab.Page.enable()
+#         # tab.call_method("Page.navigate", url=path, _timeout=max_page_load_time)
+#         page_start_time = int(time.time())
+#         if max_page_load_time < 0:
+#             demisto.debug('navigate 1')
+#             tab.Page.navigate(url=path, _timeout=max_page_load_time)
+#         else:
+#             demisto.debug('navigate 2')
+#             tab.Page.navigate(url=path)
+#         navigate_time = int(time.time()) - page_start_time
+#         tab_ready_wait_time = max(1, wait_time - navigate_time + 1)
+#         demisto.debug(f'Waiting {wait_time}-{navigate_time}+1={tab_ready_wait_time} seconds for tab_ready')
+#         tab_ready.wait(tab_ready_wait_time)
+#         page_load_time = int(time.time()) - page_start_time
+#         demisto.debug(f'Navigated to {path}, {navigate_time=}, {page_load_time=}')
+
+#         wait_time_actual = max(1, wait_time - page_load_time + 1)
+#         demisto.debug(f'Waiting for {wait_time}-{page_load_time}+1={wait_time_actual} seconds before taking a screenshot')
+#         time.sleep(wait_time_actual)  # pylint: disable=E9003
+
+#         header_template = ''
+#         if include_url:
+#             header_template = "<span class=url></span>"
+#         return base64.b64decode(tab.Page.printToPDF(headerTemplate=header_template)['data'])
+#     except pychrome.exceptions.TimeoutException:
+#         message = f'Timeout of {max_page_load_time} seconds reached while waiting for {path}'
+#         demisto.error(message)
+#         return_error(message)
+#     finally:
+#         try:
+#             tab.stop()
+#         except pychrome.RuntimeException:
+#             pass
+#         close_tab_response = browser.close_tab(tab)
+#         demisto.debug(f"{path=}, {close_tab_response=}")
+#         pychrome_reap_children()
+
+
+def pychrome_navigate_to_path(browser, tab, path, width, height, wait_time, max_page_load_time, full_screen,
+                              ):  # pragma: no cover
     tab_ready = Event()
     eh = PychromeEventHandler(browser, tab, tab_ready)
     tab.Page.frameStartedLoading = eh.frame_started_loading
     tab.Page.frameStoppedLoading = eh.frame_stopped_loading
 
     try:
-        demisto.debug('pychrome_screenshot_image, before tab.start')
+        demisto.debug('pychrome_navigate_to_path, before tab.start')
         tab.start()
-        demisto.debug('pychrome_screenshot_image, after tab.start')
+        demisto.debug('pychrome_navigate_to_path, after tab.start')
         tab.Page.stopLoading()
-        demisto.debug('pychrome_screenshot_image, after tab.Page.stopLoading')
+        demisto.debug('pychrome_navigate_to_path, after tab.Page.stopLoading')
         # tab.call_method("Network.enable")
         tab.Page.enable()
-        demisto.debug('pychrome_screenshot_image, after tab.Page.enable')
+        demisto.debug('pychrome_navigate_to_path, after tab.Page.enable')
         # tab.call_method("Page.navigate", url=path, _timeout=max_page_load_time)
         page_start_time = int(time.time())
         if max_page_load_time > 0:
@@ -213,71 +309,46 @@ def pychrome_screenshot_image(browser, tab, path, width, height, wait_time, max_
         wait_time_actual = max(1, wait_time - page_load_time + 1)
         demisto.debug(f'Waiting for {wait_time}-{page_load_time}+1={wait_time_actual} seconds before taking a screenshot')
         time.sleep(wait_time_actual)  # pylint: disable=E9003
-
-        return base64.b64decode(tab.Page.captureScreenshot()['data'])
     except pychrome.exceptions.TimeoutException:
         message = f'Timeout of {max_page_load_time} seconds reached while waiting for {path}'
         demisto.error(message)
         return_error(message)
-    finally:
-        try:
-            tab.stop()
-        except pychrome.RuntimeException:
-            pass
-        close_tab_response = browser.close_tab(tab)
-        demisto.debug(f"{path=}, {close_tab_response=}")
-        pychrome_reap_children()
 
 
-def pychrome_screenshot_pdf(browser, tab, path, width, height, wait_time, max_page_load_time, full_screen,
-                            include_url):  # pragma: no cover
-    tab_ready = Event()
-    eh = PychromeEventHandler(browser, tab, tab_ready)
-    tab.Page.frameStartedLoading = eh.frame_started_loading
-    tab.Page.frameStoppedLoading = eh.frame_stopped_loading
-
-    # tab.set_listener("Network.requestWillBeSent", request_will_be_sent)
+def pychrome_screenshot_image(browser, tab, path, width, height, wait_time, max_page_load_time, full_screen
+                              ):  # pragma: no cover
+    browser, tab, page = pychrome_navigate_to_path(browser, tab, path, width, height, wait_time, max_page_load_time,
+                                                   full_screen, include_url)
+    ret_value = base64.b64decode(tab.Page.captureScreenshot()['data'])
 
     try:
-        tab.start()
-        tab.Page.stopLoading()
-        # tab.call_method("Network.enable")
-        tab.Page.enable()
-        # tab.call_method("Page.navigate", url=path, _timeout=max_page_load_time)
-        page_start_time = int(time.time())
-        if max_page_load_time < 0:
-            demisto.debug('navigate 1')
-            tab.Page.navigate(url=path, _timeout=max_page_load_time)
-        else:
-            demisto.debug('navigate 2')
-            tab.Page.navigate(url=path)
-        navigate_time = int(time.time()) - page_start_time
-        tab_ready_wait_time = max(1, wait_time - navigate_time + 1)
-        demisto.debug(f'Waiting {wait_time}-{navigate_time}+1={tab_ready_wait_time} seconds for tab_ready')
-        tab_ready.wait(tab_ready_wait_time)
-        page_load_time = int(time.time()) - page_start_time
-        demisto.debug(f'Navigated to {path}, {navigate_time=}, {page_load_time=}')
+        tab.stop()
+    except pychrome.RuntimeException:
+        pass
+    close_tab_response = browser.close_tab(tab)
+    demisto.debug(f"{path=}, {close_tab_response=}")
+    pychrome_reap_children()
 
-        wait_time_actual = max(1, wait_time - page_load_time + 1)
-        demisto.debug(f'Waiting for {wait_time}-{page_load_time}+1={wait_time_actual} seconds before taking a screenshot')
-        time.sleep(wait_time_actual)  # pylint: disable=E9003
+    return ret_value
 
-        header_template = ''
-        if include_url:
-            header_template = "<span class=url></span>"
-        return base64.b64decode(tab.Page.printToPDF(headerTemplate=header_template)['data'])
-    except pychrome.exceptions.TimeoutException:
-        message = f'Timeout of {max_page_load_time} seconds reached while waiting for {path}'
-        demisto.error(message)
-        return_error(message)
-    finally:
-        try:
-            tab.stop()
-        except pychrome.RuntimeException:
-            pass
-        close_tab_response = browser.close_tab(tab)
-        demisto.debug(f"{path=}, {close_tab_response=}")
-        pychrome_reap_children()
+def pychrome_screenshot_pdf(browser, tab, path, width, height, wait_time, max_page_load_time, full_screen,
+                              include_url):  # pragma: no cover
+    browser, tab, page = pychrome_navigate_to_path(browser, tab, path, width, height, wait_time, max_page_load_time,
+                                                   full_screen, include_url)
+    header_template = ''
+    if include_url:
+        header_template = "<span class=url></span>"
+    ret_value = base64.b64decode(tab.Page.printToPDF(headerTemplate=header_template)['data'])
+
+    try:
+        tab.stop()
+    except pychrome.RuntimeException:
+        pass
+    close_tab_response = browser.close_tab(tab)
+    demisto.debug(f"{path=}, {close_tab_response=}")
+    pychrome_reap_children()
+
+    return ret_value
 
 
 def check_width_and_height(width: int, height: int) -> tuple[int, int]:
@@ -535,7 +606,7 @@ def rasterize(path: str, width: int, height: int, r_type: RasterizeType = Raster
             if r_type == RasterizeType.PNG or str(r_type).lower() == 'png':
                 return pychrome_screenshot_image(browser, tab, path, width=width, height=height, wait_time=wait_time,
                                                  max_page_load_time=page_load_time, full_screen=full_screen,
-                                                 include_url=include_url)
+                                                 )
             if r_type == RasterizeType.PDF or str(r_type).lower() == 'pdf':
                 return pychrome_screenshot_pdf(browser, tab, path, width=width, height=height, wait_time=wait_time,
                                                max_page_load_time=page_load_time, full_screen=full_screen,
