@@ -315,7 +315,7 @@ script:
       name: tags
       isArray: true
       required: true
-    - description: The Id of the create request that is used for polling.
+    - description: The ID of the create request that is used for polling.
       name: request_id
       hidden: true
     - defaultValue: '30'
@@ -385,13 +385,13 @@ script:
     outputs: []
   - name: aws-org-organization-unit-create
     arguments:
-    - description: The friendly name to assign to the new OU.
+    - description: The friendly name to assign to the new organizational unit.
       name: name
       required: true
-    - description: The unique identifier (ID) of the parent root or OU to create the new OU in.
+    - description: The unique identifier (ID) of the parent root or organizational unit to create the new organizational unit in.
       name: parent_id
       required: true
-    - description: 'A comma-separated list of tags to attach to the newly created OU. Each tag should be in the format: "key=value"'
+    - description: 'A comma-separated list of tags to attach to the newly created organizational unit. Each tag should be in the format: "key=value"'
       name: tags
       isArray: true
       required: true
@@ -404,13 +404,13 @@ script:
     description: Creates an organizational unit (OU) within a root or parent OU. An OU is a container for accounts that enables the organization of accounts to apply policies according to business requirements. The number of levels deep that OUs can be nested is dependent upon the policy types enabled for that root. For service control policies, the limit is five.
     outputs:
     - contextPath: AWS.Organizations.OrganizationUnit.Id
-      description: The unique identifier (ID) associated with this OU.
+      description: The unique identifier (ID) associated with this organizational unit.
       type: String
     - contextPath: AWS.Organizations.OrganizationUnit.Arn
-      description: The Amazon Resource Name (ARN) of this OU.
+      description: The Amazon Resource Name (ARN) of this organizational unit.
       type: String
     - contextPath: AWS.Organizations.OrganizationUnit.Name
-      description: The friendly name of this OU.
+      description: The friendly name of this organizational unit.
       type: String
   - name: aws-org-organization-unit-delete
     arguments:
@@ -430,7 +430,7 @@ script:
     - description: The unique identifier (ID) of the OU to rename. This value can be retrieved by running the command "aws-org-parent-list".
       name: organizational_unit_id
       required: true
-    - description: The new name to assign to the OU.
+    - description: The new name to assign to the organizational unit.
       name: name
       required: true
     - description: The Amazon Resource Name (ARN) of the role to assume.
@@ -483,7 +483,7 @@ script:
       description: The type of policy.
       type: String
     - contextPath: AWS.Organizations.Policy.AwsManaged
-      description: Indicates whether the specified policy is an Amazon Web Services managed policy. If true, the policy can be attached to roots, OUs, or accounts, but cannot be edited.
+      description: Indicates whether the specified policy is an Amazon Web Services managed policy. If true, the policy can be attached to roots, organizational units, or accounts, but cannot be edited.
       type: Boolean
     - contextPath: AWS.Organizations.PolicyNextToken
       description: If not null, indicates that more output is available than is included in the current response. Use this value as the next_token argument in a subsequent call of the command to get the next part of the output.
@@ -533,7 +533,7 @@ script:
       description: The type of policy.
       type: String
     - contextPath: AWS.Organizations.TargetPolicy.AwsManaged
-      description: Indicates whether the specified policy is an Amazon Web Services managed policy. If true, the policy can be attached to roots, OUs, or accounts, but cannot be edited.
+      description: Indicates whether the specified policy is an Amazon Web Services managed policy. If true, the policy can be attached to roots, organizational units, or accounts, but cannot be edited.
       type: Boolean
     - contextPath: AWS.Organizations.TargetId
       description: The unique identifier (ID) of the target.
@@ -570,7 +570,7 @@ script:
       description: The type of policy.
       type: String
     - contextPath: AWS.Organizations.Policy.AwsManaged
-      description: Indicates whether the specified policy is an Amazon Web Services managed policy. If true, the policy can be attached to roots, OUs, or accounts, but cannot be edited.
+      description: Indicates whether the specified policy is an Amazon Web Services managed policy. If true, the policy can be attached to roots, organizational units, or accounts, but cannot be edited.
       type: Boolean
   - name: aws-org-policy-delete
     arguments:
@@ -583,14 +583,14 @@ script:
       name: roleSessionName
     - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-    description: Deletes the specified policy from the organization. Before performing this operation, the policy must be detached from all organizational units (OUs), roots, and accounts.'
+    description: Deletes the specified policy from the organization. Before performing this operation, the policy must be detached from all organizational units (OUs), roots, and accounts.
     outputs: []
   - name: aws-org-policy-attach
     arguments:
     - description: The unique identifier (ID) of the policy to attach to the target. This value can be retrieved by running the command "aws-org-policy-list".
       name: policy_id
       required: true
-    - description: The unique identifier (ID) of the root, OU, or account to attach the policy to. This value can be retrieved by running the commands "aws-org-root-list" or "aws-org-account-list"
+    - description: The unique identifier (ID) of the root, organizational unit, or account to attach the policy to. This value can be retrieved by running the command "aws-org-root-list" or "aws-org-account-list"
       name: target_id
       required: true
     - description: The Amazon Resource Name (ARN) of the role to assume.
@@ -641,7 +641,7 @@ script:
       type: String
   - name: aws-org-resource-tag-add
     arguments:
-    - description: The ID of the resource to add a tag to. This value can be retrieved by running the commands "aws-org-root-list", "aws-org-account-list", "aws-org-root-list" or "aws-org-policy-list"
+    - description: The ID of the resource to add a tag to. This value can be retrieved by running the command "aws-org-root-list", "aws-org-account-list", "aws-org-root-list", or "aws-org-policy-list".
       name: resource_id
       required: true
     - description: 'A comma-separated list of tags to attach to the resource. Each tag should be in the format: "key=value"'
@@ -658,7 +658,7 @@ script:
     outputs: []
   - name: aws-org-resource-tag-list
     arguments:
-    - description: The ID of the resource with the tags to list. This value can be retrieved by running the commands "aws-org-root-list", "aws-org-account-list", "aws-org-root-list" or "aws-org-policy-list"
+    - description: The ID of the resource with the tags to list. This value can be retrieved by running the command "aws-org-root-list", "aws-org-account-list", "aws-org-root-list". or "aws-org-policy-list".
       name: resource_id
       required: true
     - description: The token denoting the next page of tags, as given by the response of the previous run of this command under the context key "AWS.Organizations.TagNextToken".
