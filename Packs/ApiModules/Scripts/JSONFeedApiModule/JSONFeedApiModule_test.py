@@ -3,6 +3,7 @@ from CommonServerPython import *
 import pytest
 import requests_mock
 import demistomock as demisto
+import requests
 
 
 def test_json_feed_no_config():
@@ -465,3 +466,36 @@ def test_json_feed_with_config_mapping_with_aws_feed_with_update(mocker):
         assert demisto.debug.call_args[0][0] == 'New indicators fetched - the Last-Modified value has been updated,' \
             ' createIndicators will be executed with noUpdate=False.'
         assert "AMAZON$$CIDR" in last_run.call_args[0][0]
+
+
+@pytest.mark.parametrize('has_passed_time_threshold_response, expected_result', [
+    (True, {}),
+    (False, {'If-None-Match': 'etag', 'If-Modified-Since': '2023-05-29T12:34:56Z'})
+])
+def test_build_iterator__with_and_without_passed_time_threshold(mocker, has_passed_time_threshold_response, expected_result):
+    """
+    Given
+    - A boolean result from the has_passed_time_threshold function
+    When
+    - Running build_iterator method.
+    Then
+    - Ensure the next request headers will be as expected:
+        case 1: has_passed_time_threshold_response is True, no headers will be added
+        case 2: has_passed_time_threshold_response is False, headers containing 'last_modified' and 'etag' will be added
+    """
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.5.0"})
+    mock_session = mocker.patch.object(requests, 'get')
+    mocker.patch('JSONFeedApiModule.jmespath.search')
+    mocker.patch('JSONFeedApiModule.has_passed_time_threshold', return_value=has_passed_time_threshold_response)
+    mocker.patch('demistomock.getLastRun', return_value={
+        'https://api.github.com/meta': {
+            'etag': 'etag',
+            'last_modified': '2023-05-29T12:34:56Z',
+            'last_updated': 'Mon, 27 Nov 2023 09:12:06 GMT'
+        }})
+    client = Client(
+        url='https://api.github.com/meta',
+        credentials={'identifier': 'user', 'password': 'password'})
+
+    client.build_iterator(feed={}, feed_name="https://api.github.com/meta")
+    assert mock_session.call_args[1].get('headers') == expected_result
