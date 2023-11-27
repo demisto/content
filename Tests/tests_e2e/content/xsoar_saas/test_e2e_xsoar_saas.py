@@ -227,4 +227,4 @@ def test_qradar_mirroring(request: SubRequest, xsoar_saas_client: XsoarSaasClien
             assert context.get("QRadar", {}).get("Offense", {}).get("Status") == "CLOSED"
 
             # make sure the incident gets closed after closing it in Qradar
-            assert xsoar_saas_client.poll_incident_state(incident_id, expected_states=(IncidentState.CLOSED,))
+            assert xsoar_saas_client.poll_incident_state(incident_id, expected_states=(IncidentState.CLOSED,), timeout=300)
