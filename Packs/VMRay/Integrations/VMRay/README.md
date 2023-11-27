@@ -154,7 +154,8 @@ Submits a URL for analysis.
 | url |  The URL to analyze. For example: <https://demisto.com>. . | Required | 
 | shareable | Whether the analysis is shareable. Possible values are: true, false. | Optional | 
 | max_jobs | Maximum number of jobs to create (number). Default is 1. | Optional | 
-| tags | A CSV list of tags to add to the sample. | Optional | 
+| tags | A CSV list of tags to add to the sample. | Optional |
+| net_scheme_name | The network scheme to use. | Optional |
 
 #### Context Output
 

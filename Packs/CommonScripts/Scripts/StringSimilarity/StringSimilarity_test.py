@@ -5,21 +5,21 @@ from unittest.mock import patch
 
 
 @pytest.mark.parametrize("first_string, second_string, similarity_threshold, expected_result", [
-    ("hello", "hello", 0.9, {
+    (["hello"], ["hello"], 0.9, [{
         "StringA": "hello",
         "StringB": "hello",
         "SimilarityScore": 1.0,
-    }),
-    ("deeply", "deeply", 0.6, {
+    }]),
+    (["deeply"], ["deeply"], 0.6, [{
         "StringA": "deeply",
         "StringB": "deeply",
         "SimilarityScore": 1.0,
-    }),
-    ("testing", "test", 0.7, {
+    }]),
+    (["testing"], ["test"], 0.7, [{
         "StringA": "testing",
         "StringB": "test",
         "SimilarityScore": 0.7272727272727273,
-    }),
+    }]),
     ("a", "b", 0.1, {
      None})
 ])
@@ -62,7 +62,7 @@ def test_main_with_no_similarity_match(mocker):
     similarity_threshold = 0.1
     first_string = "hello"
     second_string = "world"
-    expected_results = {'StringA': 'hello', 'StringB': 'world', 'SimilarityScore': 0.2}
+    expected_results = [{'StringA': 'hello', 'StringB': 'world', 'SimilarityScore': 0.2}]
     # Mock demisto.getArg function to return the input arguments
     with patch.object(demisto, 'getArg') as mocked_getArg:
         mocked_getArg.side_effect = lambda arg_name: {
