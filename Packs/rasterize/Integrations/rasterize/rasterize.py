@@ -953,7 +953,7 @@ def get_common_args(args: dict):
     w = int(args.get('width', DEFAULT_W).rstrip('px'))
     h = int(args.get('height', DEFAULT_H).rstrip('px'))
     r_mode = RasterizeMode(args.get('mode', DEFAULT_MODE))
-    globel force_selenium_usage
+    global force_selenium_usage
     force_selenium_usage = args.get('force_selenium_usage', False)
     return w, h, r_mode
 
