@@ -72,12 +72,12 @@ configuration:
   required: true
   type: 15
   section: Collect
-- defaultvalue: Good
+- defaultvalue: Benign
   display: Default DBOT score for indicators with low Confidence.
   name: indicator_default_score
   options:
-  - Good
-  - None
+  - Benign
+  - Unknown
   required: true
   type: 15
   section: Collect

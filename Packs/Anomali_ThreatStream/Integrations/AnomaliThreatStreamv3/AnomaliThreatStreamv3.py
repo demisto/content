@@ -497,7 +497,7 @@ class DBotScoreCalculator:
         }
 
         indicator_default_score = params.get('indicator_default_score')
-        if indicator_default_score and indicator_default_score == 'None':
+        if indicator_default_score and indicator_default_score == 'Unknown':
             self.default_score = Common.DBotScore.NONE
         else:
             self.default_score = Common.DBotScore.GOOD
