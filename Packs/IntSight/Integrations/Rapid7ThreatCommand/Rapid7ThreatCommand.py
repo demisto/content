@@ -13,6 +13,9 @@ DEFAULT_INTERVAL = 30
 DEFAULT_TIMEOUT = 600
 ISO_8601_FORMAT = "%Y-%m-%dT%H:%M:%S.000Z"
 INTEGRATION_ENTRY_CONTEXT = "ThreatCommand"
+BACKOFF_FACTOR = 15  # Consider its double.
+RETRIES = 3  # One retry is completed right away, so it should be viewed as a minor attempt.
+STATUS_LIST_TO_RETRY = [429] + [i for i in range(500, 600)]
 
 
 class Headers(list, Enum):
@@ -159,7 +162,7 @@ class ReadableErrors(str, Enum):
     NOT_FOUND = "The object does not exist."
     WRONG_PARAMETERS = "Wrong parameters."
     NO_CONTENT = "No content - there is no data to show."
-    UNAUTHORIZED = "Authorization Error: make sure API key is correctly set"
+    UNAUTHORIZED = "Authorization Error: Make sure that the Account ID and API key are correctly set."
     ENRICH_FAIL = 'Enrichment failed. Status is "{0}"".'
     INSERT_VALUE = "Please insert {0}."
     NO_IOCS = "Please insert at least one IOC."
@@ -197,6 +200,8 @@ class ReadableErrors(str, Enum):
     TAG_EXIST = "The tag is already exist."
     INVALID_EMAIL = "The email is invalid."
     IOC_NOT_EXIST = "The IOC does not exist."
+    FIRST_FETCH_NOT_EXIST = "Failed to get first fetch time."
+    MAX_FETCH_INVALID = "Maximum incidents per fetch must be a positive integer ranging from 1 to 200."
 
 
 ERROR_RESPONSE_MAPPER: dict[str, str] = {
@@ -512,15 +517,12 @@ class Parser:
             "related_threat_ids": obj.get("RelatedThreatIDs"),
         }
 
-    def alert_fetch_parser(
-        self, obj: dict[str, Any], attachments: List[Optional[dict[str, Any]]]
-    ) -> dict[str, Any]:
+    def alert_fetch_parser(self, obj: dict[str, Any]) -> dict[str, Any]:
         """
         Parse complete Alert response from the API to fetch XSOAR outputs.
 
         Args:
             obj (dict[str, Any]): Alert response from the API.
-            attachments (List[Optional[dict[str, Any]]]): Alert attachments.
 
         Returns:
             dict[str, Any]: fetch XSOAR outputs.
@@ -563,11 +565,10 @@ class Parser:
                 ],
                 "is_closed": dict_safe_get(obj, ["Closed", "IsClosed"]),
                 "sub_type": dict_safe_get(obj, ["Details", "SubType"]),
-                "attachments": attachments,
             }
         )
 
-    def parse_incident(self, alert: dict, attachments: List[dict[str, Any]]) -> dict:
+    def parse_incident(self, alert: dict) -> dict:
         """
         Parse alert to XSOAR Incident.
         Args:
@@ -579,7 +580,6 @@ class Parser:
             "name": alert.get("id"),
             "occurred": alert.get("found_date"),
             "rawJSON": json.dumps(alert),
-            "attachment": attachments,
         }
         return incident
 
@@ -997,7 +997,11 @@ class Client(BaseClient):
             Response | dict[str,Any]: API response from Threat Command API.
         """
         kwargs["error_handler"] = self.error_handler
-        res = super()._http_request(*args, **kwargs)
+        demisto.debug(f'Making API request at {kwargs.get("method")} {kwargs.get("url_suffix")} '
+                      f'with params:{kwargs.get("params")} and body:{kwargs.get("json_data")}')
+        res = super()._http_request(backoff_factor=BACKOFF_FACTOR, retries=RETRIES,  # type: ignore
+                                    status_list_to_retry=STATUS_LIST_TO_RETRY, raise_on_status=True,  # type: ignore
+                                    *args, **kwargs)  # type: ignore
         if isinstance(res, dict):
             if (
                 res.get("Success") is False
@@ -1022,13 +1026,13 @@ class Client(BaseClient):
             DemistoException: Error response.
             DemistoException: Error response.
         """
+        error_str = f"Status Code: {res.status_code}, Message: {res.text}"
         if isinstance(res, Response):
-            raise DemistoException(
-                ERROR_RESPONSE_MAPPER.get(res.content.decode())
-                or ERROR_CODE_MAPPER.get(res.status_code)
-                or res.text
-            )
-        raise DemistoException(message=res.text)
+            if ERROR_RESPONSE_MAPPER.get(res.content.decode()):
+                raise DemistoException(ERROR_RESPONSE_MAPPER.get(res.content.decode()))
+            if ERROR_CODE_MAPPER.get(res.status_code):
+                raise DemistoException(f"Status Code: {res.status_code}, {ERROR_CODE_MAPPER.get(res.status_code)}")
+        raise DemistoException(message=error_str)
 
     def list_cyber_term_cve(self, cyber_term_id: str) -> dict[str, Any]:
         """
@@ -1438,22 +1442,22 @@ class Client(BaseClient):
 
         Args:
             limit (int): Limit for pagination.
-            is_closed (bool): Wether the alert is closed.
-            offset (str | None): Offest for pagination.
+            is_closed (bool): Whether the alert is closed.
+            offset (str | None): Offset for pagination.
             last_updated_from (str | None): Last updated from date for filter.
             last_updated_to (str | None): Last updated to date for filter.
             alert_type (List[str] | None): Alert types for filter.
             severity (List[str] | None): Alert severities for filter.
             source_type (List[str] | None): Alert source types for filter.
             network_type (List[str] | None): Alert network types for filter.
-            matched_asset_value (List[str] | None): Alert mached asset values for filter.
+            matched_asset_value (List[str] | None): Alert matched asset values for filter.
             source_date_from (str | None): Source date from for filter.
             source_date_to (str | None): Source date to for filter.
             found_date_from (str | None): Found date from for filter.
             found_date_to (str | None): Found date from for filter.
             assigned (bool | None): Assigned user for filter.
-            is_flagged (bool | None): Wether the alert is flagged.
-            has_ioc (bool | None): Wheter the alert has IOCs.
+            is_flagged (bool | None): Whether the alert is flagged.
+            has_ioc (bool | None): Whether the alert has IOCs.
 
         Returns:
             dict[str, Any]: API response from Threat Command API.
@@ -1636,7 +1640,7 @@ class Client(BaseClient):
         Args:
             alert_id (str): Alert ID.
             user_id (str): User ID.
-            is_mssp (bool): Wether to user is MSSP.
+            is_mssp (bool): Whether to user is MSSP.
 
         Returns:
             Response: API response from Threat Command API.
@@ -1905,7 +1909,7 @@ class Client(BaseClient):
         Args:
             alert_id (str): Alert ID.
             target (str): Target.
-            close_alert_after_success (bool): Wether to close after succuss.
+            close_alert_after_success (bool): Whether to close after success.
 
         Returns:
             Response: API response from Threat Command API.
@@ -4030,9 +4034,19 @@ def get_alert_csv_command(
             readable_output=ReadableOutputs.ALERT_NO_CSV.value.format(alert_id)
         )
     csv_file = fileResult(filename=f"{alert_id}.csv", data=csv_response.content, file_type=EntryType.ENTRY_INFO_FILE)
+    decoded_content = csv_response.content.decode()
+    tab_based_content = list(csv.DictReader(decoded_content.splitlines(), delimiter="\t"))
+    content = list(csv.DictReader(decoded_content.splitlines(), delimiter=","))
+    if tab_based_content and content and (len(tab_based_content[0]) > len(content[0])):
+        content = tab_based_content
+    outputs = {"alert_id": alert_id, 'content': content}
     return [
         CommandResults(
-            readable_output=ReadableOutputs.ALERT_CSV.value.format(alert_id)
+            readable_output=ReadableOutputs.ALERT_CSV.value.format(alert_id),
+            outputs_prefix=f"{INTEGRATION_ENTRY_CONTEXT}.CSV",
+            outputs_key_field='alert_id',
+            outputs=outputs,
+            raw_response=outputs,
         ),
         csv_file,
     ]
@@ -4333,7 +4347,7 @@ def get_dbotscore(
         reliability (str): Reliability of the source providing the intelligence data.
         indicator (str, optional): Indicator response.
             Defaults to None.
-        is_known_ioc (bool, optional): Wether the IOC is known to Threat Command.
+        is_known_ioc (bool, optional): Whether the IOC is known to Threat Command.
             Defaults to None.
     Returns:
         Common.DBotScore: DBot Score according to the disposition.
@@ -5047,66 +5061,30 @@ def minimum_severity_handler(severity: str | None) -> List[str]:
     return ["High", "Medium", "Low"]
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client, params: Dict) -> str:
     """
     Test module.
 
     Args:
         client (Client): Threat Command client.
+        params (Dict): Integration parameters.
 
     Returns:
         str: Output message.
     """
     try:
+        if params.get('isFetch'):
+            first_fetch = arg_to_datetime(params.get("first_fetch"), arg_name="First fetch timestamp")
+            max_fetch = arg_to_number(params["max_fetch"])
+            if not max_fetch or not isinstance(max_fetch, int) or max_fetch < 1 or max_fetch > 200:
+                raise ValueError(ReadableErrors.MAX_FETCH_INVALID.value)
+            if not isinstance(first_fetch, datetime):
+                raise ValueError(ReadableErrors.FIRST_FETCH_NOT_EXIST.value)
         client.list_system_modules()
     except Exception as error:
+        demisto.debug(str(error))
         return f"Error: {error}"
     return "ok"
-
-
-def fetch_csv_handler(csv_response: Response, alert_id: str) -> dict[str, Any] | None:
-    """
-    Handle CSV response.
-
-    Args:
-        csv_response (Response): CSV file response.
-        alert_id (str): Alert ID.
-
-    Returns:
-        dict[str, Any] | None: CSV attachment.
-    """
-    if csv_response.status_code != HTTPStatus.OK:
-        return None
-    decoded_content = csv_response.content.decode()
-    csv_data = list(csv.DictReader(decoded_content.splitlines(), delimiter=","))
-    return fetch_attachment_parser(
-        file_name=f"{alert_id}.csv", data=csv_response.content, content=csv_data
-    )
-
-
-def fetch_attachment_parser(
-    file_name: str, data: bytes, content: List[dict[str, Any]] | None = None
-) -> dict[str, Any]:
-    """
-    Prase attachment response to XSOAR incident.
-
-    Args:
-        file_name (str): File name.
-        data (bytes): The data to add.
-        content (List[dict[str, Any]] | None, optional): CSV dictionary. Defaults to None.
-
-    Returns:
-        dict[str, Any]: Parsed attachment dictionary.
-    """
-    image_data = fileResult(filename=file_name, data=data)
-    return remove_empty_elements(
-        {
-            "path": image_data["FileID"],
-            "name": file_name,
-            "showMediaFile": True,
-            "content": content,
-        }
-    )
 
 
 def fetch_incidents(
@@ -5115,6 +5093,7 @@ def fetch_incidents(
     first_fetch: str,
     max_fetch: int,
     alert_types: List[str] | None,
+    network_types: List[str] | None,
     alert_severities: List[str] | None,
     source_types: List[str] | None,
     fetch_csv: bool | None,
@@ -5134,11 +5113,12 @@ def fetch_incidents(
         max_fetch (int): Max number of incidents to fetch in a single run.
 
         alert_types (List[str], optional): Alert types to filter by.
+        network_types (List[str], optional): Network types to filter by.
         alert_severities (List[str], optional): Alert severities to filter by.
-        source_types (List[str], optional): Alert source types to filter by..
-        fetch_csv (bool, optional): Wether to fetch CSV file if exist.
-        is_closed (bool): Wether to fetch closed alerts.
-        fetch_attachments (bool, optional): Wether to fetch images if exist.
+        source_types (List[str], optional): Alert source types to filter by.
+        fetch_csv (bool, optional): Whether to fetch CSV file if exist.
+        is_closed (bool): Whether to fetch closed alerts.
+        fetch_attachments (bool, optional): Whether to fetch images if exist.
     Returns:
         Tuple[Dict[str, Any], List[dict]]:
             next_run: Contains information that will be used in the next run.
@@ -5151,6 +5131,7 @@ def fetch_incidents(
             datetime.fromisoformat(offset_time.replace("Z", "+00:00"))
             offset = f"{offset_time}::{offset_id}"
         except ValueError:
+            demisto.debug(f'Error occurred while transforming offset time "{offset_time}" from last run.')
             offset = None
 
     list_response = client.list_alert(
@@ -5158,37 +5139,26 @@ def fetch_incidents(
         limit=max_fetch,
         last_updated_from=first_fetch,
         alert_type=alert_types,
+        network_type=network_types,
         severity=alert_severities,
         source_type=source_types,
         is_closed=is_closed,
     )
     if not list_response.get("content"):
+        demisto.debug(f'Alerts not found with the provided parameters and with the offset "{offset}".')
         return last_run, []
 
     alert_ids = [alert["_id"] for alert in list_response["content"]]
+    alert_ids_list = ', '.join(alert_ids)
+    demisto.debug(
+        f'List of alert IDs "{alert_ids_list}" found with the provided parameters and with the offset "{offset}".')
     for alert_id in alert_ids:
         alert_details = client.get_alert(alert_id=alert_id)
-        attachments = []
-        if fetch_csv is True:
-            csv_response = client.get_alert_csv(alert_id=alert_id)
-            attachments.append(
-                fetch_csv_handler(csv_response=csv_response, alert_id=alert_id)
-            )
-        if fetch_attachments is True:
-            for img in alert_details.get("Details", {}).get("Images", []):
-                attachments.append(
-                    fetch_attachment_parser(
-                        file_name=f"{img}.png", data=client.get_alert_image(img).content
-                    )
-                )
-        incident = client.parser.alert_fetch_parser(
-            alert_details, attachments=attachments
-        )
-        incidents.append(
-            client.parser.parse_incident(
-                alert=incident, attachments=remove_empty_elements(attachments)
-            )
-        )
+        incident = client.parser.alert_fetch_parser(alert_details)
+        incident["fetch_csv"] = fetch_csv
+        incident["fetch_attachments"] = fetch_attachments
+        incidents.append(client.parser.parse_incident(alert=incident))
+
     offset_date = list_response["content"][-1].get("updateDate")
     offset_id = list_response["content"][-1].get("_id")
     next_run = {"time": offset_date, "last_id": offset_id}
@@ -5217,6 +5187,7 @@ def main() -> None:
         )
 
     command = demisto.command()
+    demisto.debug(f'The command being called is {command}.')
     commands: Dict[str, Callable] = {
         "threat-command-cyber-term-list": list_cyber_term_command,
         "threat-command-cyber-term-cve-list": list_cyber_term_cve_command,
@@ -5289,7 +5260,7 @@ def main() -> None:
             proxy=proxy,
         )
         if command == "test-module":
-            return_results(test_module(client))
+            return_results(test_module(client, params))
         elif command in polling_commands:
             return_results(polling_commands[command](args, client, execution_metrics))
         elif command in commands:
@@ -5297,7 +5268,12 @@ def main() -> None:
         elif command == "fetch-incidents":
             first_fetch = arg_to_datetime(params.get("first_fetch"))
             max_fetch = arg_to_number(params["max_fetch"])
+            if isinstance(max_fetch, int) and max_fetch > 200:
+                demisto.debug(f"The max fetch value is {max_fetch}, which is greater than the maximum allowed value "
+                              "of 200. Setting it to 200.")
+                max_fetch = 200
             alert_types = argToList(params.get("alert_types"))
+            network_types = argToList(params.get("network_types"))
             alert_severities = minimum_severity_handler(params.get("alert_severity"))
             source_types = argToList(params.get("source_types"))
             is_closed = argToBoolean(params["fetch_closed_incidents"])
@@ -5307,7 +5283,7 @@ def main() -> None:
                 raise ValueError("max_fetch must be a positive integer.")
 
             if not isinstance(first_fetch, datetime):
-                raise ValueError("Failed to get first fetch time.")
+                raise ValueError(ReadableErrors.FIRST_FETCH_NOT_EXIST.value)
 
             first_fetch_time = first_fetch.strftime(ISO_8601_FORMAT)
 
@@ -5318,12 +5294,14 @@ def main() -> None:
                 first_fetch=first_fetch_time,
                 max_fetch=max_fetch,
                 alert_types=alert_types,
+                network_types=network_types,
                 alert_severities=alert_severities,
                 source_types=source_types,
                 is_closed=is_closed,
                 fetch_csv=fetch_csv,
                 fetch_attachments=fetch_attachments,
             )
+            demisto.info(f'Fetched {len(incidents)} new incidents.')
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
         else:
