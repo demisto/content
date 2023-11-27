@@ -357,7 +357,7 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, auto_d
     config = client.feed_url_to_config or {}
 
     # set noUpdate flag in createIndicators command True only when all the results from all the urls are True.
-    no_update = all([next(iter(item.values())).get('no_update', False) for item in iterator])
+    no_update = all(next(iter(item.values())).get('no_update', False) for item in iterator)
 
     for url_to_reader in iterator:
         for url, reader in url_to_reader.items():

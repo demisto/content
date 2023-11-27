@@ -83,7 +83,7 @@ class Client:
 
         if isinstance(self.post_data, str):
             content_type_header = 'Content-Type'
-            if content_type_header.lower() not in [k.lower() for k in self.headers.keys()]:
+            if content_type_header.lower() not in [k.lower() for k in self.headers]:
                 self.headers[content_type_header] = 'application/x-www-form-urlencoded'
 
     @staticmethod

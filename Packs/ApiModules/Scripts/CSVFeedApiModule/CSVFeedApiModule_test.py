@@ -1,6 +1,5 @@
 import requests_mock
 from CSVFeedApiModule import *
-import io
 import pytest
 
 
@@ -243,7 +242,7 @@ class TestTagsParam:
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -535,5 +534,5 @@ def test_build_iterator__with_and_without_passed_time_threshold(mocker, has_pass
         credentials={'identifier': 'user', 'password': 'password'})
 
     client.build_iterator()
-    assert mock_session.call_args[0][0].headers.get('If-None-Match') == expected_result.get(('If-None-Match'))
-    assert mock_session.call_args[0][0].headers.get('If-Modified-Since') == expected_result.get(('If-Modified-Since'))
+    assert mock_session.call_args[0][0].headers.get('If-None-Match') == expected_result.get('If-None-Match')
+    assert mock_session.call_args[0][0].headers.get('If-Modified-Since') == expected_result.get('If-Modified-Since')
