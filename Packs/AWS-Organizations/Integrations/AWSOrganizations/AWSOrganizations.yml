@@ -8,12 +8,12 @@ configuration:
 - display: Role Arn
   name: role_arn
   type: 0
-  additionalinfo: An identifier for the assumed role session.
   section: Connect
+  additionalinfo: The Amazon Resource Name (ARN) of the role to assume.
 - display: Role Session Name
   name: role_session_name
   type: 0
-  additionalinfo: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+  additionalinfo: An identifier for the assumed role session.
   section: Connect
 - display: Role Session Duration
   name: role_session_duration

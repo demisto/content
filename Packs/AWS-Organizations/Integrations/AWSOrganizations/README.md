@@ -1,6 +1,6 @@
 Manage Amazon Web Services accounts and their resources.
 
-## Configure AWS-Organizations on Cortex XSOAR
+## Configure AWS - Organizations on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for AWS-Organizations.
