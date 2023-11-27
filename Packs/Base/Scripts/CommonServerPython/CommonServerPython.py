@@ -2369,6 +2369,19 @@ def fileResult(filename, data, file_type=None):
     # pylint: enable=undefined-variable
     with open(demisto.investigation()['id'] + '_' + temp, 'wb') as f:
         f.write(data)
+
+    # when there is ../ in the filename, xsoar thinks that path of the file is in the previous folder(s) and because of that
+    # xsoar returns empty files to war-rooms
+    if isinstance(filename, str):
+        replaced_filename = filename.replace("../", "")
+        if filename != replaced_filename:
+            filename = replaced_filename
+            demisto.debug(
+                "replaced {filename} with new file name {replaced_file_name}".format(
+                    filename=filename, replaced_file_name=replaced_filename
+                )
+            )
+
     return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': file_type, 'File': filename, 'FileID': temp}
 
 
