@@ -364,15 +364,15 @@ def get_update_incident_request_data(client: AzureSentinelClient, args: Dict[str
         severity = demisto.get(fetched_incident_data, 'properties.severity')
     if not status:
         status = demisto.get(fetched_incident_data, 'properties.status')
-    if assignee_objectid:
+    if unassign == 'true':
+        owner = {}
+    elif assignee_objectid:
         owner = {'objectId': assignee_objectid}
     else:
         if user_principal_name:
             owner = {'userPrincipalName': user_principal_name}
         if assignee_email:
             owner['email'] = assignee_email
-    if unassign == 'true':
-        owner = {}
 
     existing_labels = demisto.get(fetched_incident_data, 'properties.labels')
     if not labels:  # not provided as arg
