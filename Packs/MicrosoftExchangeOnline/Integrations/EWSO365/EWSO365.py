@@ -2138,7 +2138,8 @@ def parse_incident_from_item(item):     # pragma: no cover
                     email_policy = SMTP if mime_content.isascii() else SMTPUTF8
                     if isinstance(mime_content, str) and not mime_content.isascii():
                         mime_content = mime_content.encode()
-                    attached_email = email.message_from_bytes(mime_content, policy=email_policy) if isinstance(mime_content, bytes) \
+                    attached_email = email.message_from_bytes(mime_content, policy=email_policy) \
+                        if isinstance(mime_content, bytes) \
                         else email.message_from_string(mime_content, policy=email_policy)
                     if attachment.item.headers:
                         # compare header keys case-insensitive
