@@ -1,7 +1,13 @@
 polling_threshold = 300;
 
-if (parseInt(args.seconds) >= polling_threshold &&
-    (isDemistoVersionGE('8.0.0') || getDemistoVersion().platform === 'x2')) {
+if (isDemistoVersionGE('8.4.0', 649563)) {
+    config_threshold = executeCommand('getServerConfig', {key: 'content.automation.sleep.threshold.seconds'});
+    if (config_threshold[0] && !isError(config_threshold[0])) {
+        polling_threshold = parseInt(config_threshold[0].Contents);
+    }
+}
+
+if (parseInt(args.seconds) >= polling_threshold) {
     // Polling implementation
     return {
         Type: entryTypes.note,
