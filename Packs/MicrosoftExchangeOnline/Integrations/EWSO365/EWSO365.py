@@ -2022,7 +2022,7 @@ def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):      # pra
                 if (
                         header.name.lower(),
                         header.value,
-                ) not in attached_email_headers and header.name != "Content-Type":
+                ) not in attached_email_headers and header.name.lower() != "content-type":
                     email_content.add_header(header.name, header.value)
 
         eml_name = item.subject if item.subject else "demisto_untitled_eml"
@@ -2157,7 +2157,7 @@ def parse_incident_from_item(item):     # pragma: no cover
                             if (
                                     (header.name.lower(), header.value)
                                     not in attached_email_headers
-                                    and header.name.lower() != "Content-Type"
+                                    and header.name.lower() != "content-type"
                             ):
                                 attached_email.add_header(header.name, header.value)
                     attached_email_bytes = attached_email.as_bytes()
