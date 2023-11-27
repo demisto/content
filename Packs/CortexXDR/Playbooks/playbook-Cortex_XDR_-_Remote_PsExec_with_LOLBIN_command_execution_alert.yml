@@ -1,7 +1,9 @@
 id: Cortex XDR Remote PsExec with LOLBIN command execution alert
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Cortex XDR Remote PsExec with LOLBIN command execution alert
-description: "V The \"Remote PsExec-like LOLBIN Command Execution\" playbook is designed to address and respond to alerts indicating suspicious activities related to remote PsExec-like LOLBIN command execution from an unsigned non-standard source. \nThe playbook aims to efficiently:\n\n- Get the alert data and check if the execution is blocked. If not will terminate the process (manually by default).\n- Enrich any entities and indicators from the alert and find any related campaigns.\n- Perform command analysis to provide insights and a verdict for the executed command.\n- Perform further endpoint investigation using Cortex XDR.\n- Checks for any malicious verdicts found to raise the severity of the alert.\n- Perform automatic/manual remediation response by blocking any malicious indicators found.\n\nThe playbook is designed to run as a sub-playbook in ‘Cortex XDR Incident Handling - v3 & Cortex XDR Alerts Handling’.\nIt depends on the data from the parent playbooks and cannot be used as a standalone version."
+description: "The \"Remote PsExec-like LOLBIN Command Execution\" playbook is designed to address and respond to alerts indicating suspicious activities related to remote PsExec-like LOLBIN command execution from an unsigned non-standard source. \nThe playbook aims to efficiently:\n\n- Get the alert data and check if the execution is blocked. If not will terminate the process (manually by default).\n- Enrich any entities and indicators from the alert and find any related campaigns.\n- Perform command analysis to provide insights and a verdict for the executed command.\n- Perform further endpoint investigation using Cortex XDR.\n- Checks for any malicious verdicts found to raise the severity of the alert.\n- Perform automatic/manual remediation response by blocking any malicious indicators found.\n\nThe playbook is designed to run as a sub-playbook in ‘Cortex XDR Incident Handling - v3 & Cortex XDR Alerts Handling’.\nIt depends on the data from the parent playbooks and cannot be used as a standalone version."
 starttaskid: "0"
 tasks:
   "0":
@@ -24,7 +26,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -480
+          "y": -630
         }
       }
     note: false
@@ -55,7 +57,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 230
+          "y": 80
         }
       }
     note: false
@@ -159,7 +161,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 370
+          "y": 220
         }
       }
     note: false
@@ -218,7 +220,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -310
+          "y": -460
         }
       }
     note: false
@@ -264,7 +266,7 @@ tasks:
       {
         "position": {
           "x": 770,
-          "y": -140
+          "y": -290
         }
       }
     note: false
@@ -310,7 +312,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 700
+          "y": 550
         }
       }
     note: false
@@ -344,8 +346,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 900,
-          "y": 1220
+          "x": 860,
+          "y": 1210
         }
       }
     note: false
@@ -375,8 +377,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 900,
-          "y": 1380
+          "x": 860,
+          "y": 1370
         }
       }
     note: false
@@ -437,7 +439,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 550
+          "y": 400
         }
       }
     note: false
@@ -571,8 +573,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 900,
-          "y": 1520
+          "x": 860,
+          "y": 1510
         }
       }
     note: false
@@ -650,10 +652,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: f7f4ff17-5b9a-4586-8d4c-40c135b8ad4f
+    taskid: 1e5d04a4-a812-404f-8b80-dfbbd3c0a54f
     type: playbook
     task:
-      id: f7f4ff17-5b9a-4586-8d4c-40c135b8ad4f
+      id: 1e5d04a4-a812-404f-8b80-dfbbd3c0a54f
       version: -1
       name: Threat Hunting - Generic
       description: "This playbook enables threat hunting for IOCs in your enterprise. It currently supports the following integrations: \n- Splunk\n- Qradar\n- Pan-os \n- Cortex data lake \n- Autofocus\n- Microsoft 365 Defender"
@@ -663,7 +665,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "29"
+      - "38"
     scriptarguments:
       IPAddress:
         complex:
@@ -688,7 +690,7 @@ tasks:
           transformers:
           - operator: uniq
       QRadarTimeFrame:
-        simple: LAST 7 DAYS
+        simple: LAST 2 HOURS
       SHA1:
         complex:
           root: incident.xdralerts
@@ -724,7 +726,7 @@ tasks:
           transformers:
           - operator: uniq
       SplunkEarliestTime:
-        simple: -7d@d
+        simple: -2h@h
       SplunkLatestTime:
         simple: now
     separatecontext: true
@@ -738,7 +740,7 @@ tasks:
       {
         "position": {
           "x": 860,
-          "y": 700
+          "y": 550
         }
       }
     note: false
@@ -809,7 +811,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 700
+          "y": 550
         }
       }
     note: false
@@ -821,10 +823,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 37bb6108-77d2-441c-8473-b381374f3faa
+    taskid: 78d53b81-5139-4ba5-857c-e1b528e51023
     type: regular
     task:
-      id: 37bb6108-77d2-441c-8473-b381374f3faa
+      id: 78d53b81-5139-4ba5-857c-e1b528e51023
       version: -1
       name: Terminate suspicious process
       description: Initiates a new endpoint script execution of shell commands.
@@ -878,13 +880,17 @@ tasks:
                 iscontext: true
               ignorecase: true
           accessor: endpoint_id
+      incident_id:
+        complex:
+          root: incident
+          accessor: xdrincidentid
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 770,
-          "y": 60
+          "y": -90
         }
       }
     note: false
@@ -924,7 +930,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 870
+          "y": 720
         }
       }
     note: false
@@ -934,19 +940,120 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 4ae1580e-1525-4ce0-8fb7-1c4612150ea8
+    type: condition
+    task:
+      id: 4ae1580e-1525-4ce0-8fb7-1c4612150ea8
+      version: -1
+      name: Has hunt results?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Splunk
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PANWHunting
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: QRadar
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Microsoft365Defender
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 904f04ae-eafb-497e-8618-0fa580e18bea
+    type: regular
+    task:
+      id: 904f04ae-eafb-497e-8618-0fa580e18bea
+      version: -1
+      name: Tag the threat hunting results as Evidence
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      entryIDs:
+        complex:
+          root: lastCompletedTaskEntries
+      tags:
+        simple: Found additional evidence
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
       "10_1_Yes": 0.29,
       "29_15_Malicious": 0.54,
-      "29_22_#default#": 0.18
+      "29_22_#default#": 0.18,
+      "38_39_yes": 0.59
     },
     "paper": {
       "dimensions": {
-        "height": 2235,
-        "width": 1230,
+        "height": 2385,
+        "width": 1190,
         "x": 50,
-        "y": -480
+        "y": -630
       }
     }
   }
