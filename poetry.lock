@@ -1475,7 +1475,7 @@ build = ["gsutil (==5.17)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "clients_add_logs"
-resolved_reference = "5c67fa995e3feb65a467d60b0889c3bebd009904"
+resolved_reference = "49d60b2b2c4894251a39a310b56cd89867125c1d"
 
 [[package]]
 name = "deprecated"
