@@ -40,4 +40,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Cortex XDR - quarantine file](../doc_files/Cortex_XDR_-_quarantine_file.png)
+![Cortex XDR - quarantine file](../doc_files/Cortex_XDR_-_quarantine_file_v2.png)
