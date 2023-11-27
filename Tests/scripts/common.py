@@ -40,6 +40,18 @@ RED_COLOR = "\033[91m"
 GREEN_COLOR = "\033[92m"
 TEST_PLAYBOOKS_REPORT_FILE_NAME = "test_playbooks_report.xml"
 TEST_MODELING_RULES_REPORT_FILE_NAME = "test_modeling_rules_report.xml"
+FAILED_TO_COLOR_ANSI = {
+    True: RED_COLOR,
+    False: GREEN_COLOR,
+}
+FAILED_TO_COLOR_NAME = {
+    True: "red",
+    False: "green",
+}
+FAILED_TO_MSG = {
+    True: "failed",
+    False: "succeeded",
+}
 
 
 def get_instance_directories(artifacts_path: Path) -> dict[str, Path]:
@@ -65,12 +77,8 @@ def get_properties_for_test_suite(test_suite: TestSuite) -> dict[str, str]:
     return {prop.name: prop.value for prop in test_suite.properties()}
 
 
-def green_text(text: str) -> str:
-    return f"{GREEN_COLOR}{text}{NO_COLOR_ESCAPE_CHAR}"
-
-
-def red_text(text: str) -> str:
-    return f"{RED_COLOR}{text}{NO_COLOR_ESCAPE_CHAR}"
+def failed_to_ansi_text(text: str, failed: bool) -> str:
+    return f"{FAILED_TO_COLOR_ANSI[failed]}{text}{NO_COLOR_ESCAPE_CHAR}"
 
 
 class TestSuiteStatistics:
@@ -90,10 +98,10 @@ class TestSuiteStatistics:
         res_str = str(res)
         if self.no_color or show_as_error is None:
             return res_str
-        return red_text(res_str) if show_as_error else green_text(res_str)
+        return failed_to_ansi_text(res_str, show_as_error)
 
     def __str__(self):
-        return (f"{self.show_with_color(self.skipped)}/"
+        return (f"{self.show_with_color(self.skipped)}/"  # no color for skipped.
                 f"{self.show_with_color(self.failures, self.failures > 0)}/"
                 f"{self.show_with_color(self.errors, self.errors > 0)}/"
                 f"{self.show_with_color(self.tests, self.errors + self.failures > 0)}")
@@ -171,7 +179,7 @@ def calculate_results_table(jira_tickets_for_result: dict[str, Issue],
             if no_color:
                 row_result_color = row_result
             else:
-                row_result_color = red_text(row_result) if errors_count else green_text(row_result)
+                row_result_color = failed_to_ansi_text(row_result, errors_count > 0)
             row.insert(0, row_result_color)
             tabulate_data.append(row)
 
@@ -182,8 +190,7 @@ def calculate_results_table(jira_tickets_for_result: dict[str, Issue],
         else:
             logging.debug(f"Skipping {result} since all the test suites were skipped")
     if add_total_row:
-        total_row[0] = (green_text(TOTAL_HEADER) if total_errors == 0 else red_text(TOTAL_HEADER)) \
-            if not no_color else TOTAL_HEADER
+        total_row[0] = TOTAL_HEADER if no_color else failed_to_ansi_text(TOTAL_HEADER, total_errors > 0)
         tabulate_data.append(total_row)
 
     if transpose:
