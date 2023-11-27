@@ -17,14 +17,14 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* Exists
 * IsEmailAddressInternal
 * EmailDomainSquattingReputation
+* Exists
 
 ### Commands
 
-* ad-get-user
 * email
+* ad-get-user
 
 ## Playbook Inputs
 
@@ -34,7 +34,7 @@ This playbook does not use any integrations.
 | --- | --- | --- | --- |
 | InternalDomains | A CSV list of internal domains. The list will be used to determine whether an email address is internal or external. |  | Optional |
 | Email | The email addresses to enrich. | Account.Email.Address | Optional |
-| Domain | The domains associated with the incident. These domains will be checked for domain-squatting. | Account.Email.Domain | Optional |
+| Domain | The domains associated with the incident. These domains will be checked for domain-squatting. |  | Optional |
 | UseReputationCommand | Define if you would like to use the \!email command.<br/>Note: This input should be used whenever there is no auto-extract enabled in the investigation flow.<br/>Possible values: True / False.<br/>The default value is false. | False | Required |
 
 ## Playbook Outputs

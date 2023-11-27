@@ -662,13 +662,13 @@ tasks:
     task:
       brand: ""
       description: Checks if an email address was compromised.
-      id: 336b3b30-2cc3-450f-803e-94a05f4ff705
+      id: 156ef5ee-88a6-4fd7-8636-b6e9c678f5e3
       iscommand: true
       name: Check Reputation
       script: '|||email'
       type: regular
       version: -1
-    taskid: 336b3b30-2cc3-450f-803e-94a05f4ff705
+    taskid: 156ef5ee-88a6-4fd7-8636-b6e9c678f5e3
     timertriggers: []
     type: regular
     view: |-
@@ -716,12 +716,7 @@ inputs:
   description: The email addresses to enrich.
   playbookInputQuery:
 - key: Domain
-  value:
-    complex:
-      root: Account.Email
-      transformers:
-      - operator: uniq
-      accessor: Domain
+  value: {}
   required: false
   description: The domains associated with the incident. These domains will be checked for domain-squatting.
   playbookInputQuery:
