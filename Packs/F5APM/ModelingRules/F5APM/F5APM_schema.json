@@ -1,6 +1,6 @@
 {
     "f5_apm_raw": {
-        "cefName": {
+        "_raw_log": {
             "type": "string",
             "is_array": false
         }
