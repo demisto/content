@@ -212,10 +212,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: acf9688d-53da-45b4-8520-d78b01a5f91f
+    taskid: 8b80f93a-be58-4f02-8568-23e5f4437b9f
     type: regular
     task:
-      id: acf9688d-53da-45b4-8520-d78b01a5f91f
+      id: 8b80f93a-be58-4f02-8568-23e5f4437b9f
       version: -1
       name: Determine whether the IP address is internal or external
       description: "Checks if the IP address is in the internal IP address ranges.\nIf internal, sets the \"InRange\" attribute to \"yes\".\nIf external, sets the \"InRange\" attribute to \"no\". "
@@ -252,24 +252,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    fieldMapping:
-    - incidentfield: Detected External IPs
-      output:
-        complex:
-          root: IP
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: IP.InRange
-                iscontext: true
-              right:
-                value:
-                  simple: "No"
-              ignorecase: true
-          accessor: Address
-          transformers:
-          - operator: uniq
   "34":
     id: "34"
     taskid: 607dafbe-8ee1-47ad-810a-dacf03842673
@@ -723,7 +705,8 @@ inputs:
   description: The IP address to enrich.
   playbookInputQuery:
 - key: InternalRange
-  value: {}
+  value:
+    simple: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16"
   required: false
   description: 'A CSV list of IP address ranges (in CIDR notation). Use this list to check if an IP address is found within a set of IP address ranges. For example: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided, will use default list provided in the IsIPInRanges script (the known IPv4 private address ranges).'
   playbookInputQuery:

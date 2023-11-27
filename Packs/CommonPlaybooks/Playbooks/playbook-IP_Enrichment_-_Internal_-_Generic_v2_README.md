@@ -32,7 +32,7 @@ This playbook does not use any commands.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | IP | The IP address to enrich. | IP.Address | Optional |
-| InternalRange | A CSV list of IP address ranges \(in CIDR notation\). Use this list to check if an IP address is found within a set of IP address ranges. <br/>For example: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). If no list is provided, will use default list provided in the IsIPInRanges script \(the known IPv4 private address ranges\). |  | Optional |
+| InternalRange | A CSV list of IP address ranges \(in CIDR notation\). Use this list to check if an IP address is found within a set of IP address ranges. <br/>For example: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). If no list is provided, will use default list provided in the IsIPInRanges script \(the known IPv4 private address ranges\). | 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16 | Optional |
 | ResolveIP | Whether to convert the IP address to a hostname using a DNS query \(True/False\).<br/>The default value is true. | True | Required |
 
 ## Playbook Outputs
