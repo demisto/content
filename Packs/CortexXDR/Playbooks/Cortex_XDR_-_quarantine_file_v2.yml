@@ -19,7 +19,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "2"
+      - "6"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -54,11 +54,20 @@ tasks:
       - "5"
     scriptarguments:
       endpoint_id_list:
-        simple: ${inputs.endpoint_id}
+        complex:
+          root: inputs.endpoint_id
+          transformers:
+          - operator: uniq
       file_hash:
-        simple: ${inputs.file_hash}
+        complex:
+          root: inputs.file_hash
+          transformers:
+          - operator: uniq
       file_path:
-        simple: ${inputs.file_path}
+        complex:
+          root: inputs.file_path
+          transformers:
+          - operator: uniq
       interval_in_seconds:
         simple: "60"
       timeout_in_seconds:
@@ -69,7 +78,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 395
         }
       }
     note: false
@@ -97,7 +106,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 550
+          "y": 730
         }
       }
     note: false
@@ -125,18 +134,74 @@ tasks:
       - "3"
     scriptarguments:
       endpoint_id:
-        simple: ${inputs.endpoint_id}
+        complex:
+          root: inputs.endpoint_id
       file_hash:
-        simple: ${inputs.file_hash}
+        complex:
+          root: inputs.file_hash
       file_path:
-        simple: ${inputs.file_path}
+        complex:
+          root: inputs.file_path
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 30c0aca5-fc22-4bea-8523-c53a065fb330
+    type: condition
+    task:
+      id: 30c0aca5-fc22-4bea-8523-c53a065fb330
+      version: -1
+      name: Are the inputs were provided?
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.file_hash
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.file_path
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.endpoint_id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 190
         }
       }
     note: false
@@ -151,7 +216,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 565,
+        "height": 745,
         "width": 380,
         "x": 50,
         "y": 50

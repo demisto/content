@@ -1,4 +1,4 @@
-Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints.
+This playbook retrieves files from selected endpoints. You can retrieve up to 20 files, from 10 endpoints.
 Inputs for this playbook are:
 - A comma-separated list of endpoint IDs.
 - A comma-separated list of file paths for your operating system, either Windows, Linux, or Mac. At least one file path is required.

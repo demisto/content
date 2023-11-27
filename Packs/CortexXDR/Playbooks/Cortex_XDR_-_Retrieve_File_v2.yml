@@ -4,7 +4,7 @@ contentitemexportablefields:
   contentitemfields: {}
 name: Cortex XDR - Retrieve File v2
 description: |-
-  Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints.
+  This playbook retrieves files from selected endpoints. You can retrieve up to 20 files, from 10 endpoints.
   Inputs for this playbook are:
   - A comma-separated list of endpoint IDs.
   - A comma-separated list of file paths for your operating system, either Windows, Linux, or Mac. At least one file path is required.
@@ -23,7 +23,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "8"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -60,29 +60,39 @@ tasks:
       endpoint_ids:
         complex:
           root: inputs.endpoint_ids
+          transformers:
+          - operator: uniq
       generic_file_path:
         complex:
           root: inputs.file_path
+          transformers:
+          - operator: uniq
       interval_in_seconds:
         simple: "60"
       linux_file_paths:
         complex:
           root: inputs.linux_file_paths
+          transformers:
+          - operator: uniq
       mac_file_paths:
         complex:
           root: inputs.mac_file_paths
+          transformers:
+          - operator: uniq
       timeout_in_seconds:
         simple: "600"
       windows_file_paths:
         complex:
           root: inputs.windows_file_paths
+          transformers:
+          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 195
+          "y": 395
         }
       }
     note: false
@@ -110,7 +120,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 905
+          "y": 1095
         }
       }
     note: false
@@ -141,17 +151,19 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
-              simple: File
+              simple: PaloAltoNetworksXDR.RetrievedFiles.status
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 560
+          "y": 750
         }
       }
     note: false
@@ -186,7 +198,7 @@ tasks:
       {
         "position": {
           "x": 10,
-          "y": 730
+          "y": 920
         }
       }
     note: false
@@ -223,7 +235,63 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 375
+          "y": 565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: e5d73a46-72d1-4e69-854e-3e28963904ff
+    type: condition
+    task:
+      id: e5d73a46-72d1-4e69-854e-3e28963904ff
+      version: -1
+      name: Is there any file path to retrieve?
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.file_path
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.windows_file_paths
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.linux_file_paths
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.mac_file_paths
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 200
         }
       }
     note: false
@@ -240,7 +308,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 920,
+        "height": 1110,
         "width": 635,
         "x": 10,
         "y": 50
