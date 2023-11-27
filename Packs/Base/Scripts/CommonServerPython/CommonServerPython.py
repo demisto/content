@@ -11350,7 +11350,7 @@ def replace_spaces_in_credential(credential):
     return credential
 
 
-def has_passed_time_threshold(timestamp_str: str, hours_threshold: int = 12) -> bool:
+def has_passed_time_threshold(timestamp_str, hours_threshold):
     """
     Check if more than the given hours_threshold have passed since the timestamp
     Args:
