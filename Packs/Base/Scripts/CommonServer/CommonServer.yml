@@ -7,7 +7,7 @@ type: javascript
 tags:
 - infra
 - server
-comment: Common code that will be merged into each server script when it runs
+comment: Common code that will be merged into each server script when it runs.
 system: true
 scripttarget: 0
 dependson: {}
