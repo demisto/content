@@ -149,7 +149,6 @@ class MsGraphClient:
         if type == "group":
             json_data = {
                 'chatType': type,
-                'topic': subject,
                 'members': self._build_members_input(user_id, members)
             }
         else:
