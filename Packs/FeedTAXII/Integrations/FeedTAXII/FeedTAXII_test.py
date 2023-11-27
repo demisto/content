@@ -142,3 +142,21 @@ def test_tags_parameter(mocker, tags):
         mocker.patch.object(client, 'build_iterator', return_value=raw_indicators)
         res = fetch_indicators_command(client)
         assert tags == list(res[0]['fields'].keys())
+
+
+def test_request_headers(mocker):
+    """
+    Given:
+        - A Taxii11 utills class
+
+    When:
+        - fetching headers
+
+    Then:
+        - Validate the headers contain the expected header
+    """
+    from FeedTAXII import Taxii11
+    Taxii11_utills = Taxii11()
+    headers = Taxii11_utills.headers()
+    assert "Accept" in headers
+    assert headers["Accept"] == "application/xml"
