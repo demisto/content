@@ -252,6 +252,7 @@ case_incidents_with_different_times = (
         ],
         # expected incidents_last_fetch_ids result
         ["5"],
+        dateparser.parse("2023-09-26T15:17:45Z")
     ),
 )
 
@@ -282,6 +283,7 @@ case_incidents_with_the_same_times = (
         ],
         # expected incidents_last_fetch_ids result
         ["1", "2", "3", "4", "5"],
+        dateparser.parse("2023-09-26T15:13:45Z")
     ),
 )
 
@@ -297,6 +299,7 @@ case_with_empty_response_with_incidents_last_fetch_ids = (
         [],
         # expected incidents_last_fetch_ids result
         ["1", "2", "3", "4", "5"],
+        dateparser.parse("2023-09-26T15:13:41Z")
     ),
 )
 
@@ -312,6 +315,7 @@ case_with_empty_response_without_incidents_last_fetch_ids = (
         [],
         # expected incidents_last_fetch_ids result
         [],
+        dateparser.parse("2023-09-26T15:13:41Z")
     ),
 )
 
@@ -346,6 +350,7 @@ case_with_more_then_one_API_call_with_incidents_last_fetch_ids = (
         ],
         # expected incidents_last_fetch_ids result
         ["6"],
+        dateparser.parse("2023-09-26T15:13:46Z")
     ),
 )
 
@@ -370,6 +375,7 @@ case_with_an_incident_that_was_fetched = (
         ],
         # expected incidents_last_fetch_ids result
         ["3"],
+        dateparser.parse("2023-09-26T15:13:43Z")
     ),
 )
 
@@ -384,6 +390,7 @@ case_with_an_incident_that_was_fetched_and_there_are_more_with_the_same_time = (
             {"id": "3", "version": 8, "created": "2023-09-26T15:13:41Z"},
         ],
         [],
+        dateparser.parse("2023-09-26T15:13:41Z")
     ],
     5,  # max fetch
     ["1"],  # incidents_last_fetch_ids
@@ -395,6 +402,32 @@ case_with_an_incident_that_was_fetched_and_there_are_more_with_the_same_time = (
         ],
         # expected incidents_last_fetch_ids result
         ["1", "2", "3"],
+        dateparser.parse("2023-09-26T15:13:41Z")
+    ),
+)
+
+case_incidents_not_utc_time = (
+    "2023-11-09T03:25:05.000000Z",
+    # responses from search_incidents
+    [
+        [
+            {"id": "1", "version": 8, "created": "2023-11-09T06:25:06.828698605+03:00"},
+            {"id": "2", "version": 8, "created": "2023-11-09T06:26:06.828698605+03:00"},
+        ],
+        [],
+    ],  # max fetch
+    5,  # incidents_last_fetch_ids
+    [],
+    (
+        # expected incident result
+        [
+            {"id": "1", "version": 8, "created": "2023-11-09T06:25:06.828698605+03:00"},
+            {"id": "2", "version": 8, "created": "2023-11-09T06:26:06.828698605+03:00"},
+
+        ],
+        # expected incidents_last_fetch_ids result
+        ["2"],
+        dateparser.parse("2023-11-09T03:26:06.828698605Z")
     ),
 )
 
@@ -409,6 +442,7 @@ case_with_an_incident_that_was_fetched_and_there_are_more_with_the_same_time = (
         case_with_more_then_one_API_call_with_incidents_last_fetch_ids,
         case_with_an_incident_that_was_fetched,
         case_with_an_incident_that_was_fetched_and_there_are_more_with_the_same_time,
+        case_incidents_not_utc_time,
     ],
 )
 def test_dedup_incidents_with_seconds_timestamp(
