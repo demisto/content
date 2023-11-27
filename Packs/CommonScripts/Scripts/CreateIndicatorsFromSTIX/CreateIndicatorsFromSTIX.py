@@ -68,8 +68,8 @@ def create_indicators_loop(args, indicators):
         result = CommandResults(
             readable_output=f"Create Indicators From STIX: {len(indicators) - len(errors)} indicators were created.",
             relationships=relationships_objects,
-            outputs_prefix = 'StixIndicators',
-            outputs = context_data
+            outputs_prefix='StixIndicators',
+            outputs=context_data
         )
     else:
         result = CommandResults(
