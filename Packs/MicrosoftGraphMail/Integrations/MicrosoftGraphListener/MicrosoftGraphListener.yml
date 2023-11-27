@@ -822,7 +822,7 @@ script:
       name: parent_folder_id
       required: true
     - defaultValue: '20'
-      description: The maximum number of mail folder lists to return. 
+      description: The maximum number of mail folder lists to return.
       name: limit
     - description: Flag for the rate limit retry.
       name: ran_once_flag
@@ -883,7 +883,7 @@ script:
       description: Indicates the order in which the rule is executed, among other rules.
       type: Number
   - arguments:
-    - description:  The ID of the rule to retrieve.
+    - description: The ID of the rule to retrieve.
       name: rule_id
       required: true
     description: Get details of a specific email rule by ID for a user's mailbox using Microsoft Graph API.
@@ -922,7 +922,7 @@ script:
       required: true
     description: Delete a specific email rule by ID for a user's mailbox using Microsoft Graph API.
     name: msgraph-mail-delete-rule
-  dockerimage: demisto/crypto:1.0.0.79610
+  dockerimage: demisto/crypto:1.0.0.80694
   isfetch: true
   script: ''
   type: python
