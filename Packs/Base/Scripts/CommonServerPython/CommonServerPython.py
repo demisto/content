@@ -11337,6 +11337,22 @@ def replace_spaces_in_credential(credential):
     return credential
 
 
+def has_passed_time_threshold(timestamp_str: str, hours_threshold: int = 12) -> bool:
+    """
+    Check if more than the given hours_threshold have passed since the timestamp
+    Args:
+        timestamp_str (str): The timestamp string.
+        hours_threshold (int): The threshold in hours.
+    Returns:
+        boolean: True if the threshold has passed, False otherwise.
+    """
+    timestamp = datetime.strptime(timestamp_str, '%a, %d %b %Y %H:%M:%S %Z')
+    current_time = datetime.utcnow()
+    time_difference = current_time - timestamp
+
+    return time_difference.total_seconds() > hours_threshold * 60 * 60
+
+
 ###########################################
 #     DO NOT ADD LINES AFTER THIS ONE     #
 ###########################################

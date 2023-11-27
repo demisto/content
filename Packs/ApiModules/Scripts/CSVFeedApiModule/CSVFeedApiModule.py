@@ -7,7 +7,6 @@ import csv
 import gzip
 import urllib3
 from typing import Optional, Pattern, Dict, Any, Tuple, Union, List
-from datetime import datetime
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -143,6 +142,7 @@ class Client(BaseClient):
                 etag = last_run.get(url, {}).get('etag')
                 last_modified = last_run.get(url, {}).get('last_modified')
                 last_updated = last_run.get(url, {}).get('last_updated')
+                # To avoid issues with outdated timestamps, if last_updated is over X hours old,
                 # we'll refresh the indicators to ensure their expiration time is updated.
                 if last_updated and has_passed_time_threshold(last_updated, HOURS_THRESHOLD):
                     last_modified = None
@@ -238,23 +238,6 @@ class Client(BaseClient):
             response_content = raw_response.content
 
         return response_content.decode(self.encoding).split('\n')
-
-
-def has_passed_time_threshold(timestamp_str: str, hours_threshold: int):
-    """
-    Check if more than the given hours_threshold have passed since the timestamp
-    Args:
-        timestamp_str (str): The timestamp string.
-        hours_threshold (int): The threshold in hours.
-    Returns:
-        boolean: True if the threshold has passed, False otherwise.
-    """
-    timestamp = datetime.strptime(timestamp_str, '%a, %d %b %Y %H:%M:%S %Z')
-    current_time = datetime.utcnow()
-
-    # Check if more than the given hours_threshold have passed since the timestamp
-    time_difference = current_time - timestamp
-    return time_difference.total_seconds() > hours_threshold * 60 * 60
 
 
 def get_no_update_value(response: requests.models.Response, url: str) -> bool:

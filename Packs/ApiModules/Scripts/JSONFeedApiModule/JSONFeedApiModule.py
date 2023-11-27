@@ -5,7 +5,6 @@ from CommonServerPython import *
 import urllib3
 import jmespath
 from typing import List, Dict, Union, Optional, Callable, Tuple
-from datetime import datetime
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -122,7 +121,7 @@ class Client:
             etag = last_run.get(prefix_feed_name, {}).get('etag') or last_run.get(feed_name, {}).get('etag')
             last_modified = last_run.get(prefix_feed_name, {}).get('last_modified') or last_run.get(feed_name, {}).get('last_modified')  # noqa: E501
             last_updated = last_run.get(prefix_feed_name, {}).get('last_updated') or last_run.get(feed_name, {}).get('last_updated')  # noqa: E501
-            # To avoid issues with outdated timestamps, if last_updated is over 12 hours old,
+            # To avoid issues with outdated timestamps, if last_updated is over X hours old,
             # we'll refresh the indicators to ensure their expiration time is updated.
             if last_updated and has_passed_time_threshold(last_updated, HOURS_THRESHOLD):
                 last_modified = None
@@ -169,23 +168,6 @@ class Client:
         if is_demisto_version_ge('6.5.0'):
             return result, get_no_update_value(r, feed_name)
         return result, True
-
-
-def has_passed_time_threshold(timestamp_str: str, hours_threshold: int):
-    """
-    Check if more than the given hours_threshold have passed since the timestamp
-    Args:
-        timestamp_str (str): The timestamp string.
-        hours_threshold (int): The threshold in hours.
-    Returns:
-        boolean: True if the threshold has passed, False otherwise.
-    """
-    timestamp = datetime.strptime(timestamp_str, '%a, %d %b %Y %H:%M:%S %Z')
-    current_time = datetime.utcnow()
-
-    # Check if more than the given hours_threshold have passed since the timestamp
-    time_difference = current_time - timestamp
-    return time_difference.total_seconds() > hours_threshold * 60 * 60
 
 
 def get_no_update_value(response: requests.Response, feed_name: str) -> bool:
