@@ -38,6 +38,7 @@ repos:
   - id: ruff
     args: [ "--fix" ]
     args:nightly: [ "--config=nightly_ruff.toml" ]
+    args:ci: [ "--config=nightly_ruff.toml" ]
 
 - repo: https://github.com/pre-commit/mirrors-autopep8
   rev: "v2.0.4"
@@ -49,8 +50,10 @@ repos:
   - id: pylint-in-docker
     name: pylint-in-docker
     description: Run pylint on the code in content packs
-    docker_image:nightly: from-yml
-    docker_image: native:ga,from-yml,native:dev,native:maintenance
+    docker_image:nightly: native:ga,native:maintenance,from-yml
+    docker_image:ci: native:ga,from-yml,native:dev,native:maintenance
+    docker_image:native: native:ga,from-yml,native:dev,native:maintenance
+    docker_image: from-yml
     entry: pylint
     files: Packs\/.*\.py$
     exclude: (_test\.py)|(.vulture_whitelist\.py)$
@@ -102,6 +105,7 @@ repos:
   - id: sourcery
     args: [ --no-summary, --diff, "git diff HEAD", "--fix" ]
     args:nightly: [ --no-summary, --diff, "git diff HEAD" ]
+    args:ci: [ --no-summary, --diff, "git diff HEAD" ]
     skip: true
 
 - repo: https://github.com/pre-commit/mirrors-mypy
