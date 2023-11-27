@@ -72,7 +72,7 @@ class RasterizeMode(Enum):
 
 
 DEFAULT_MODE = RasterizeMode(demisto.params().get('rasterize_mode', RasterizeMode.WEBDRIVER_PREFERED))
-
+force_selenium_usage = False
 
 class RasterizeType(Enum):
     PNG = 'png'
@@ -596,6 +596,7 @@ def rasterize(path: str, width: int, height: int, r_type: RasterizeType = Raster
     """
     page_load_time = max_page_load_time if max_page_load_time > 0 else DEFAULT_PAGE_LOAD_TIME
 
+    global force_selenium_usage
     if (not offline_mode) and (not force_selenium_usage):  # pragma: no cover
         demisto.debug(f'Using pychrome for rasterizing {path}')
         chrome_headless_running = ensure_chrome_running()
@@ -952,7 +953,8 @@ def get_common_args(args: dict):
     w = int(args.get('width', DEFAULT_W).rstrip('px'))
     h = int(args.get('height', DEFAULT_H).rstrip('px'))
     r_mode = RasterizeMode(args.get('mode', DEFAULT_MODE))
-    self.force_selenium_usage = args.get('force_selenium_usage', False)
+    globel force_selenium_usage
+    force_selenium_usage = args.get('force_selenium_usage', False)
     return w, h, r_mode
 
 
