@@ -1,4 +1,4 @@
-[MODEL: dataset = "vmware_carbon_black_cloud_raw"] //Alerts-API
+[MODEL: dataset = "vmware_carbon_black_cloud_raw"]
 alter  
     event_type = if(to_string(flagged) != null, "audit log", to_string(severity) != null, "alert log", null)
 | filter event_type in("alert log")
