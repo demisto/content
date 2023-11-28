@@ -749,7 +749,7 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
 
-    def get_threat_notes_request(self, threatid: str):
+    def get_threat_notes_request(self, threatid):
         endpoint_url = f'threats/{threatid}/notes'
         response = self._http_request(method='GET', url_suffix=endpoint_url)
         return response.get('data', {})
