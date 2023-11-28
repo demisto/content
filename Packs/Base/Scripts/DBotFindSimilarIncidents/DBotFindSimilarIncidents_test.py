@@ -1,9 +1,10 @@
 # from CommonServerPython import *
+import pytest
 from DBotFindSimilarIncidents import normalize_command_line, main, demisto, keep_high_level_field, \
     preprocess_incidents_field, PREFIXES_TO_REMOVE, check_list_of_dict, REGEX_IP, match_one_regex, \
     SIMILARITY_COLUNM_NAME_INDICATOR, SIMILARITY_COLUNM_NAME, euclidian_similarity_capped, find_incorrect_fields, \
     MESSAGE_NO_INCIDENT_FETCHED, MESSAGE_INCORRECT_FIELD, MESSAGE_WARNING_TRUNCATED, COLUMN_ID, COLUMN_TIME, \
-    TAG_SCRIPT_INDICATORS
+    TAG_SCRIPT_INDICATORS, Model
 
 import json
 import numpy as np
@@ -344,3 +345,40 @@ def test_build_message_of_values():
 
     baz = ['baz1', 'baz2']
     assert build_message_of_values([foo, bar, baz]) == "foo_value; bar_value; ['baz1', 'baz2']"
+
+@pytest.fixture
+def sample_data():
+    # Create sample data for testing
+    data = {'created':["2019-02-20T15:47:23.962164+02:00"],
+                'Name':["t"],
+                'Id':[["123"]],
+                'test':[None],
+                'xdralerts':['N/A'],
+                "test2":[""]}
+    return pd.DataFrame(data)
+
+fields_to_match = ['created', 'Name', 'test', 'Id','test2','xdralerts']
+expected_results = ['created']
+def test_remove_empty_or_short_fields(sample_data):
+    """
+    Given:
+        - sample_data: a dataframe with a column of strings
+    When: 
+        - calling remove_empty_or_short_fields function
+    Then:
+        - assert that the function removes empty or short or None or 'N/A' or list objects fields
+    """
+    # Create an instance of Model
+    my_instance = Model({})
+    my_instance.incident_to_match = sample_data
+    
+    my_instance.field_for_command_line = fields_to_match
+    my_instance.field_for_potential_exact_match = fields_to_match
+    my_instance.field_for_json = fields_to_match
+
+    
+    my_instance.remove_empty_or_short_fields()
+    assert my_instance.field_for_command_line == expected_results
+    assert my_instance.field_for_potential_exact_match == expected_results
+    assert my_instance.field_for_json == expected_results
+

@@ -392,15 +392,15 @@ class Model:
         self.field_for_json = p_field_for_json
 
     def predict(self):
-        self.remove_empty_field()
+        self.remove_empty_or_short_fields()
         self.get_score()
         self.compute_final_score()
         return self.prepare_for_display(), self.field_for_command_line + self.field_for_potential_exact_match + \
             self.field_for_json
 
-    def remove_empty_field(self):
+    def remove_empty_or_short_fields(self):
         """
-        Remove field where value if empty or unusable or does not exist in the incident...
+        Remove field where value if empty or ot shorter than 2 characters or unusable or does not exist in the incident...
         :return:
         """
         remove_list = []
@@ -410,6 +410,7 @@ class Model:
                     or (not isinstance(self.incident_to_match[field].values[0], str) and not isinstance(
                     self.incident_to_match[field].values[0], list)) \
                     or self.incident_to_match[field].values[0] == 'None' \
+                    or len (self.incident_to_match[field].values[0]) < 2 \
                     or self.incident_to_match[field].values[0] == 'N/A':
                 remove_list.append(field)
         self.field_for_command_line = [x for x in self.field_for_command_line if x not in remove_list]
@@ -418,6 +419,7 @@ class Model:
         for field in self.field_for_potential_exact_match:
             if field not in self.incident_to_match.columns or not self.incident_to_match[field].values[
                 0] or not isinstance(self.incident_to_match[field].values[0], str) or \
+                    len(self.incident_to_match[field].values[0]) < 2 or \
                     self.incident_to_match[field].values[0] == 'None' or self.incident_to_match[field].values[
                     0] == 'N/A':
                 remove_list.append(field)
@@ -426,7 +428,9 @@ class Model:
         remove_list = []
         for field in self.field_for_json:
             if field not in self.incident_to_match.columns or not self.incident_to_match[field].values[
-                0] or self.incident_to_match[field].values[0] == 'None' or self.incident_to_match[field].values[
+                0] or self.incident_to_match[field].values[0] == 'None' \
+                    or len(self.incident_to_match[field].values[0]) < 2 \
+            or self.incident_to_match[field].values[
                     0] == 'N/A' or all(not x for x in self.incident_to_match[field].values[0]):
                 remove_list.append(field)
         self.field_for_json = [x for x in self.field_for_json if x not in remove_list]
