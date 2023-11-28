@@ -3,7 +3,7 @@
 This pack includes Cortex XSIAM content.
 
 ## Configuration on Server Side
-Follow the below workflow in ordewr to configure F5 APM to forward logs in Syslog format.
+Follow the below workflow to configure F5 APM to forward logs in Syslog format.
 
 ### Creating a pool of remote logging servers
 Create a pool of remote log servers which will include the IP address of the Broker VM.
