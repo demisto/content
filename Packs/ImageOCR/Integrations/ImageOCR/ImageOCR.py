@@ -1,13 +1,11 @@
 import demistomock as demisto
 from CommonServerPython import *
 import subprocess
-import traceback
-from typing import List
 
 TESSERACT_EXE = 'tesseract'
 
 
-def list_languages() -> List[str]:
+def list_languages() -> list[str]:
     lang_out = subprocess.check_output([TESSERACT_EXE, '--list-langs'], universal_newlines=True)
     if not lang_out:  # something went wrong
         raise ValueError('No output from --list-langs')
@@ -17,13 +15,13 @@ def list_languages() -> List[str]:
     return sorted(lines[1:])  # ignore first line
 
 
-def extract_text(image_path: str, languages: List[str] = None) -> str:
+def extract_text(image_path: str, languages: list[str] = None) -> str:
     exe_params = [TESSERACT_EXE, image_path, 'stdout']
     if languages:
         exe_params.extend(['-l', '+'.join(languages)])
     res = subprocess.run(exe_params, capture_output=True, check=True, text=True)
     if res.stderr:
-        demisto.debug('tesseract returned ok but stderr contains warnings: {}'.format(res.stderr))
+        demisto.debug(f'tesseract returned ok but stderr contains warnings: {res.stderr}')
     return res.stdout
 
 
@@ -35,26 +33,40 @@ def list_languages_command() -> CommandResults:
     )
 
 
-def extract_text_command(args: dict, instance_languages: list) -> CommandResults:
+def extract_text_command(args: dict, instance_languages: list) -> tuple[list, list]:
     langs = argToList(args.get('langs')) or instance_languages
-    demisto.debug("Using langs settings: {}".format(langs))
+    demisto.debug(f"Using langs settings: {langs}")
+    results, errors = [], []
 
-    entry_id = args.get('entryid')
-    file_path = demisto.getFilePath(entry_id)
-    if not file_path:
-        raise DemistoException("Couldn't find entry id: {}".format(entry_id))
+    entry_ids = argToList(args.get('entryid'))
+    for entry_id in entry_ids:
+        try:
+            file_path = demisto.getFilePath(entry_id)
+            if not file_path:
+                raise DemistoException(f"Couldn't find entry id: {entry_id}")
 
-    demisto.debug('Extracting text from file: {}'.format(file_path))
-    res = extract_text(file_path['path'], langs)
-    file_entry = {'EntryID': entry_id, 'Text': res}
+            demisto.debug(f'Extracting text from file: {file_path}')
+            res = extract_text(file_path['path'], langs)
+            file_entry = {'EntryID': entry_id, 'Text': res}
+            results.append(
+                CommandResults(
+                    readable_output=f"## Image OCR Extracted Text for Entry ID {entry_id}\n\n" + res,
+                    outputs_prefix='File',
+                    outputs_key_field='EntryID',
+                    outputs=file_entry,
+                    raw_response=res,
+                )
+            )
+        except subprocess.CalledProcessError as cpe:
+            errors.append(
+                f"An error occurred while trying to process {entry_id=}: "
+                f"Failed {cpe.cmd} execution. Return status: {cpe.returncode}.\n"
+                f"Error:\n{cpe.stderr}"
+            )
+        except Exception as e:
+            errors.append(f"An error occurred while trying to process {entry_id=}: {e}")
 
-    return CommandResults(
-        readable_output="## Image OCR Extracted Text\n\n" + res,
-        outputs_prefix='File',
-        outputs_key_field='EntryID',
-        outputs=file_entry,
-        raw_response=res
-    )
+    return results, errors
 
 
 def run_test_module(instance_languages: list) -> str:
@@ -63,10 +75,10 @@ def run_test_module(instance_languages: list) -> str:
         if instance_languages:
             for language in instance_languages:
                 if language not in supported_langs:
-                    raise DemistoException('Unsupported language configured: {}'.format(language))
+                    raise DemistoException(f'Unsupported language configured: {language}')
         return 'ok'
     except Exception as exception:
-        raise Exception('Failed testing {}: {}'.format(TESSERACT_EXE, str(exception)))
+        raise Exception(f'Failed testing {TESSERACT_EXE}: {exception}')
 
 
 def main() -> None:
@@ -79,13 +91,14 @@ def main() -> None:
         elif command == 'image-ocr-list-languages':
             return_results(list_languages_command())
         elif command == 'image-ocr-extract-text':
-            return_results(extract_text_command(args, instance_languages))
+            results, errors = extract_text_command(args, instance_languages)
+            return_results(results)
+            if errors:
+                raise DemistoException("\n".join(errors))
         else:
             raise NotImplementedError(f'Command {command} was not implemented.')
-    except subprocess.CalledProcessError as cpe:
-        return_error("Failed {} execution. Return status: {}.\nError:\n{}".format(cpe.cmd, cpe.returncode, cpe.stderr))
     except Exception as err:
-        return_error("Failed with error: {}\n\nTrace:\n{}".format(str(err), traceback.format_exc()))
+        return_error(f"Failed with error(s): {err}")
 
 
 # python2 uses __builtin__ python3 uses builtins
