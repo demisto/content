@@ -61,7 +61,7 @@ Create log settings to enable event logging for access system events or URL filt
    - Log Allowed Events
    - Log Blocked Events
    - Log Confirmed Events
-11. Assign the log setting you have created to the access profiles you want their logs to be sent to cortex XSIAM.
+11. Assign the log setting you have created to the access profiles you want their logs to be sent to Cortex XSIAM.
     - Select **Access Profiles** from the left pane.
     - Move access profiles between the **Available** and the **Selected** lists.
 12. Click **OK**.
