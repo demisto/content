@@ -52,7 +52,7 @@ Create log settings to enable event logging for access system events or URL filt
 4. Select both of the following options:
    - Enable access system logs
    - Enable URL request logs
-5. To configure settings for access system logging, select Access System Logs from the left pane.
+5. To configure settings for access system logging, select **Access System Logs** from the left pane.
 6. For access system logging, from the **Log Publisher** list, select the log publisher you created in the previous step.
 7. Make sure that the log level for the access system logging is left as **Notice** (default).
 8. To configure settings for URL request logging, select URl Request Logs from the left pane.
