@@ -1,0 +1,103 @@
+category: Analytics & SIEM
+commonfields:
+  id: CyberArkEPMEventCollector
+  version: -1
+configuration:
+- additionalinfo: 'SAML example: https://login.epm.cyberark.com/SAML/Logon'
+  display: SAML/EPM Logon URL
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- display: Set name
+  name: set_name
+  required: true
+  type: 0
+- additionalinfo: Required for local(EPM) authentication only
+  display: Application ID
+  name: application_id
+  required: false
+  type: 0
+- additionalinfo: 'Required for SAML authentication only, Example for PAN OKTA: https://paloaltonetworks.okta.com/api/v1/authn'
+  display: Authentication URL
+  name: authentication_url
+  required: false
+  type: 0
+- additionalinfo: 'Required for SAML authentication only, Example for PAN OKTA: https://paloaltonetworks.okta.com/home/[APP_NAME]/[APP_ID]'
+  display: Application URL
+  name: application_url
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: '5000'
+  display: Maximum number of events per fetch
+  name: max_fetch
+  required: false
+  type: 0
+description: CyberArk EPM Event Collector fetches events.
+display: CyberArk EPM Event Collector
+name: CyberArkEPMEventCollector
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: If true, the command will create events, otherwise it will only
+        display them.
+      isArray: false
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+      secret: false
+    - default: false
+      description: Maximum number of results to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Date to return results from.
+      isArray: false
+      name: since_datetime
+      required: false
+      secret: false
+    - default: false
+      description: Offset which events to return.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets activity logs from Qualys.
+    execution: false
+    name: qualys-get-activity-logs
+  dockerimage: demisto/python3:3.10.12.66339
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+marketplaces:
+- marketplacev2
+sectionOrder:
+- Connect
+- Collect
+fromversion: 8.2.0
