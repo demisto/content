@@ -34,6 +34,7 @@ from Tests.scripts.collect_tests.utils import (ContentItem, Machine,
                                                find_yml_content_type, to_tuple, hotfix_detect_old_script_yml,
                                                FilesToCollect)
 from Tests.scripts.collect_tests.version_range import VersionRange
+from demisto_sdk.commands.content_graph.objects.base_content import BaseContent
 
 PATHS = PathManager(Path(__file__).absolute().parents[3])
 PACK_MANAGER = PackManager(PATHS)
@@ -486,11 +487,15 @@ class TestCollector(ABC):
         """
 
         self._validate_path(path)
+        item_object = BaseContent.from_path(path)
+      
         if is_integration:
             self.__validate_skipped_integration(id_, path)
             self.__validate_deprecated_integration(path)
-        pack_marketplaces = PACK_MANAGER.get_pack_metadata(pack_id).marketplaces
-        self.__validate_marketplace_compatibility(marketplaces or pack_marketplaces or (), path)
+      
+        # pack_marketplaces = PACK_MANAGER.get_pack_metadata(pack_id).marketplaces
+        marketplaces = tuple(item_object.marketplaces) if item_object else (marketplaces or ())
+        self.__validate_marketplace_compatibility(marketplaces, path)
         self.__validate_support_level_is_xsoar(pack_id, version_range)
 
     def _validate_path(self, path: Path):
