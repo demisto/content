@@ -57,12 +57,11 @@ class Client(BaseClient):
         try:
             _, events, cursor = self.get_logs(query_params)
         except DemistoException as e:
-            if hasattr(e.res, 'status_code'):
-                if e.res.status_code == 400:
-                    demisto.debug('was returned: Error in API call [400] - Bad Request')
-                    events, cursor = self.handle_pagination_first_batch_bad_cursor(query_params, last_run)
-                else:
-                    raise Exception(e.res)
+            if 'bad request' in str(e.res):
+                demisto.debug('was returned: Error in API call [400] - Bad Request')
+                events, cursor = self.handle_pagination_first_batch_bad_cursor(query_params, last_run)
+            else:
+                raise Exception(e.res)
 
         if last_run.get('first_id'):
             for idx, event in enumerate(events):
