@@ -40,7 +40,7 @@ jobs:
         DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
       run: |
         source .venv/bin/activate
-        demisto-sdk pre-commit -g --unit-test --validate --no-secrets --show-diff-on-failure --verbose --mode=ci --sdk-ref 452579c7dfe356a366eaaf91fa4b9dec67bc5836
+        demisto-sdk pre-commit -g --unit-test --validate --no-secrets --show-diff-on-failure --verbose --mode=ci
     - name: Publish Test Report
       uses: mikepenz/action-junit-report@v3
       if: always() # always run even if the previous step fails
@@ -55,7 +55,7 @@ jobs:
         annotate_only: true
 
     - name: "Check coverage.xml exists"
-      if: always()
+
       id: check_files
       uses: andstor/file-existence-action@v2
       with:
@@ -63,7 +63,7 @@ jobs:
       
 
     - name: Code Coverage Report
-      if: always() && steps.check_files.outputs.files_exists == 'true'
+      if: steps.check_files.outputs.files_exists == 'true'
       uses: irongut/CodeCoverageSummary@v1.3.0
       with:
         filename: "coverage.xml"
@@ -74,30 +74,11 @@ jobs:
         
 
     - name: Append coverage to summary
-      if: always() && steps.check_files.outputs.files_exists == 'true'
+      if: always()
       id: append-coverage
       run: |
         cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY || echo "Missing coverage report"
 
-    - name: Save coverage report as artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: coverage-report
-        path: coverage_report
-
-    - name: Set Artifact URL
-      if: always() && steps.check_files.outputs.files_exists == 'true'
-      run: echo "ARTIFACT_URL=https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/coverage-report/html/index.html" >> $GITHUB_OUTPUT
-      id: set_artifact_url
-    
-    - name: Comment on PR with Coverage Artifact URL
-      if: always() && steps.check_files.outputs.files_exists == 'true'
-      run: |
-        gh pr comment ${{ github.event.number }} --body "Coverage results: [View Coverage Report](${{ steps.set_artifact_url.outputs.ARTIFACT_URL }})"
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    
-      
   pre-commit-community-level:
     runs-on: ubuntu-latest
     if: "contains(github.event.pull_request.labels.*.name, 'Community Support Level')"
