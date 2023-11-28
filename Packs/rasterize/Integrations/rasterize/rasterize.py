@@ -81,7 +81,36 @@ class RasterizeType(Enum):
     JSON = 'json'
 
 
-def ensure_chrome_running():  # pragma: no cover
+def get_active_chrome_processes_count():
+    try:
+        return len(get_running_chrome_processes())
+    except Exception as ex:
+        demisto.info(f'Error getting Chrome processes: {ex}')
+        return 0
+
+
+def start_chrome_headless():
+    try:
+        subprocess.run(['bash', '/start_chrome_headless.sh'],
+                       text=True, stdout=subprocess.DEVNULL,
+                       stderr=subprocess.DEVNULL)
+        demisto.debug('Chrome headless started')
+    except Exception as ex:
+        demisto.info(f'Error starting Chrome headless: {ex}')
+
+
+def kill_all_chrome_processes():
+    try:
+        chrome_processes = get_running_chrome_processes()
+        for process in chrome_processes:
+            pid = process.split()[1]  # Assuming second element is the PID
+            subprocess.run(['kill', '-9', pid], capture_output=True, text=True)
+            demisto.debug(f'Killed Chrome process with PID: {pid}')
+    except Exception as ex:
+        demisto.info(f'Error killing Chrome processes: {ex}')
+
+
+def ensure_chrome_running_OLD():  # pragma: no cover
     try:
         # command = ['bash', '/start_chrome_headless.sh']
         # with open(os.devnull, "w") as fnull:
@@ -123,6 +152,27 @@ def ensure_chrome_running():  # pragma: no cover
     return False
 
 
+def ensure_chrome_running():
+    max_retries = 4
+    retry_interval_seconds = 1
+
+    for _ in range(max_retries):
+        count = get_active_chrome_processes_count()
+
+        if count == 1:
+            demisto.debug('One Chrome instance running. Returning True.')
+            return True
+        elif count == 0:
+            start_chrome_headless()
+        else:  # clean environment in case more than one browser is active
+            kill_all_chrome_processes()
+
+        time.sleep(retry_interval_seconds)
+
+    demisto.info(f'Max retries ({max_retries}) reached, Chrome headless is not running correctly')
+    return False
+
+
 class PychromeEventHandler:
     screen_lock = threading.Lock()
 
@@ -145,135 +195,28 @@ class PychromeEventHandler:
                 with self.screen_lock:
                     # must activate current tab
                     demisto.debug(self.browser.activate_tab(self.tab.id))
-
-                    # try:
-                    #   data = self.tab.Page.captureScreenshot()
-                    #   with open("%s.png" % time.time(), "wb") as fd:
-                    #     fd.write(base64.b64decode(data['data']))
-                    #   self.tab_ready.set()
-                    # finally:
-                    #     self.tab.stop()
                     self.tab_ready.set()
                     demisto.debug('frame_stopped_loading, Sent tab_ready.set')
             except Exception as e:  # pragma: no cover
                 demisto.error(f'Failed stop loading the page: {self.tab=}, {frameId=}, {e=}')
 
 
-def pychrome_reap_children():
+def pychrome_reap_children():  # pragma: no cover
     try:
         zombies, ps_out = find_zombie_processes()
-        demisto.debug(f'pychrome_reap_children, {ps_out=}')
-        if zombies:  # pragma: no cover
-            demisto.info(f'Found zombie processes will waitpid: {ps_out}')
+        if zombies:
+            demisto.info(f'Found zombie processes: {zombies}')
             for pid in zombies:
-                demisto.debug(f'Found zombie process: {pid}')
-                waitres = os.waitpid(int(pid), os.WNOHANG)[1]
-                demisto.info(f'waitpid result: {waitres}')
+                demisto.debug(f'Reaping zombie process: {pid}')
+                wait_res = os.waitpid(int(pid), os.WNOHANG)[1]
+                if wait_res == 0:
+                    demisto.info(f'Zombie process {pid} reaped successfully.')
+                else:
+                    demisto.warn(f'Failed to reap zombie process {pid}. Status: {wait_res}')
         else:
-            demisto.debug(f'No zombie processes found for ps output: {ps_out}')
-    except Exception as e:  # pragma: no cover
+            demisto.debug('No zombie processes found.')
+    except Exception as e:
         demisto.error(f'Failed checking for zombie processes: {e}. Trace: {traceback.format_exc()}')
-
-
-# def pychrome_screenshot_image(browser, tab, path, width, height, wait_time, max_page_load_time, full_screen,
-#                               include_url):  # pragma: no cover
-#     tab_ready = Event()
-#     eh = PychromeEventHandler(browser, tab, tab_ready)
-#     tab.Page.frameStartedLoading = eh.frame_started_loading
-#     tab.Page.frameStoppedLoading = eh.frame_stopped_loading
-
-#     try:
-#         demisto.debug('pychrome_screenshot_image, before tab.start')
-#         tab.start()
-#         demisto.debug('pychrome_screenshot_image, after tab.start')
-#         tab.Page.stopLoading()
-#         demisto.debug('pychrome_screenshot_image, after tab.Page.stopLoading')
-#         # tab.call_method("Network.enable")
-#         tab.Page.enable()
-#         demisto.debug('pychrome_screenshot_image, after tab.Page.enable')
-#         # tab.call_method("Page.navigate", url=path, _timeout=max_page_load_time)
-#         page_start_time = int(time.time())
-#         if max_page_load_time > 0:
-#             demisto.debug('navigate 1')
-#             tab.Page.navigate(url=path, _timeout=max_page_load_time)
-#         else:
-#             demisto.debug('navigate 2')
-#             tab.Page.navigate(url=path)
-#         navigate_time = int(time.time()) - page_start_time
-#         tab_ready_wait_time = max(1, wait_time - navigate_time + 1)
-#         demisto.debug(f'Waiting {wait_time}-{navigate_time}+1={tab_ready_wait_time} seconds for tab_ready')
-#         tab_ready.wait(tab_ready_wait_time)
-#         page_load_time = int(time.time()) - page_start_time
-#         demisto.debug(f'Navigated to {path}, {navigate_time=}, {page_load_time=}')
-
-#         wait_time_actual = max(1, wait_time - page_load_time + 1)
-#         demisto.debug(f'Waiting for {wait_time}-{page_load_time}+1={wait_time_actual} seconds before taking a screenshot')
-#         time.sleep(wait_time_actual)  # pylint: disable=E9003
-
-#         return base64.b64decode(tab.Page.captureScreenshot()['data'])
-#     except pychrome.exceptions.TimeoutException:
-#         message = f'Timeout of {max_page_load_time} seconds reached while waiting for {path}'
-#         demisto.error(message)
-#         return_error(message)
-#     finally:
-#         try:
-#             tab.stop()
-#         except pychrome.RuntimeException:
-#             pass
-#         close_tab_response = browser.close_tab(tab)
-#         demisto.debug(f"{path=}, {close_tab_response=}")
-#         pychrome_reap_children()
-
-
-# def pychrome_screenshot_pdf(browser, tab, path, width, height, wait_time, max_page_load_time, full_screen,
-#                             include_url):  # pragma: no cover
-#     tab_ready = Event()
-#     eh = PychromeEventHandler(browser, tab, tab_ready)
-#     tab.Page.frameStartedLoading = eh.frame_started_loading
-#     tab.Page.frameStoppedLoading = eh.frame_stopped_loading
-
-#     # tab.set_listener("Network.requestWillBeSent", request_will_be_sent)
-
-#     try:
-#         tab.start()
-#         tab.Page.stopLoading()
-#         # tab.call_method("Network.enable")
-#         tab.Page.enable()
-#         # tab.call_method("Page.navigate", url=path, _timeout=max_page_load_time)
-#         page_start_time = int(time.time())
-#         if max_page_load_time < 0:
-#             demisto.debug('navigate 1')
-#             tab.Page.navigate(url=path, _timeout=max_page_load_time)
-#         else:
-#             demisto.debug('navigate 2')
-#             tab.Page.navigate(url=path)
-#         navigate_time = int(time.time()) - page_start_time
-#         tab_ready_wait_time = max(1, wait_time - navigate_time + 1)
-#         demisto.debug(f'Waiting {wait_time}-{navigate_time}+1={tab_ready_wait_time} seconds for tab_ready')
-#         tab_ready.wait(tab_ready_wait_time)
-#         page_load_time = int(time.time()) - page_start_time
-#         demisto.debug(f'Navigated to {path}, {navigate_time=}, {page_load_time=}')
-
-#         wait_time_actual = max(1, wait_time - page_load_time + 1)
-#         demisto.debug(f'Waiting for {wait_time}-{page_load_time}+1={wait_time_actual} seconds before taking a screenshot')
-#         time.sleep(wait_time_actual)  # pylint: disable=E9003
-
-#         header_template = ''
-#         if include_url:
-#             header_template = "<span class=url></span>"
-#         return base64.b64decode(tab.Page.printToPDF(headerTemplate=header_template)['data'])
-#     except pychrome.exceptions.TimeoutException:
-#         message = f'Timeout of {max_page_load_time} seconds reached while waiting for {path}'
-#         demisto.error(message)
-#         return_error(message)
-#     finally:
-#         try:
-#             tab.stop()
-#         except pychrome.RuntimeException:
-#             pass
-#         close_tab_response = browser.close_tab(tab)
-#         demisto.debug(f"{path=}, {close_tab_response=}")
-#         pychrome_reap_children()
 
 
 def pychrome_navigate_to_path(browser, tab, path, width, height, wait_time, max_page_load_time, full_screen,
@@ -467,7 +410,7 @@ def init_driver(offline_mode=False, include_url=False):
     return driver
 
 
-def find_zombie_processes():
+def find_zombie_processes_OLD():
     """find zombie proceses
     Returns:
         ([process ids], raw ps output) -- return a tuple of zombie process ids and raw ps output
@@ -482,6 +425,28 @@ def find_zombie_processes():
             pinfo = line.split()
             if pinfo[2] == 'Z' and pinfo[1] == pid:  # zombie process
                 zombies.append(pinfo[0])
+    return zombies, ps_out
+
+
+def find_zombie_processes():
+    """
+    Description: Find zombie processes that are children of the current process.
+
+    Returns:
+        tuple: A tuple containing a list of zombie process IDs and the raw output of the ps command.
+    """
+    try:
+        ps_out = subprocess.check_output(['ps', '-e', '-o', 'pid,ppid,state,stime,cmd'],
+                                         stderr=subprocess.STDOUT,
+                                         text=True)
+
+    except subprocess.CalledProcessError as e:
+        return [], f'Error executing ps command: {e.output}'
+
+    lines = ps_out.splitlines()
+    pid = str(os.getpid())
+    zombies = [line.split()[0] for line in lines[1:] if line.split()[2] == 'Z' and line.split()[1] == pid]
+
     return zombies, ps_out
 
 
@@ -504,6 +469,27 @@ def is_chrome_headless_running():  # pragma: no cover
             ret_value.append(current_line)
     demisto.debug(f'is_chrome_headless_running, {ret_value=}')
     return ret_value
+
+
+def get_running_chrome_processes() -> list[str]:
+    try:
+        processes = subprocess.check_output(['ps', 'auxww'],
+                                            stderr=subprocess.STDOUT,
+                                            text=True).splitlines()
+
+        chrome_identifiers = ["chrom", "headless", "--remote-debugging-port=9222"]
+        chrome_processes = [process for process in processes
+                            if all(identifier in process for identifier in chrome_identifiers)]
+
+        demisto.debug(f'Detected {len(chrome_processes)} Chrome processes running')
+        return chrome_processes
+
+    except subprocess.CalledProcessError as e:
+        demisto.info(f'Error fetching process list: {e.output}')
+        return []
+    except Exception as e:
+        demisto.info(f'Unexpected error: {e}')
+        return []
 
 
 def pychrome_close_all_tabs_but_one():
