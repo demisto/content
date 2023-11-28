@@ -57,7 +57,7 @@ Create log settings to enable event logging for access system events or URL filt
 7. Make sure that the log level for the access system logging is left as **Notice** (default).
 8. To configure settings for URL request logging, select URl Request Logs from the left pane.
 9. For URL request logging, from the **Log Publisher** list, select the log publisher you created in the previous step.
-10. Select all the checkbox options:
+10. Select all of the following options:
    - Log Allowed Events
    - Log Blocked Events
    - Log Confirmed Events
