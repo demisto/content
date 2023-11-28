@@ -1168,6 +1168,9 @@
     "group": "incident",
     "id": "Cyberint Incident Layout",
     "name": "Cyberint Incident Layout",
+    "marketplaces": [
+        "xsoar"
+    ],
     "system": false,
     "version": -1,
     "fromVersion": "6.10.0"
