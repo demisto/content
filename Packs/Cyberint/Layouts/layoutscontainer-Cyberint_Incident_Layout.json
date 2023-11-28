@@ -1,4 +1,5 @@
 {
+    "description": "Cyberint incident layout",
     "details": {
         "sections": [
             {
@@ -637,7 +638,7 @@
                                 "fieldId": "cyberintcreatedby",
                                 "height": 53,
                                 "id": "4dcd84c0-7c04-11eb-be8b-1b6b5950a0fc",
-                                "index": 4,
+                                "index": 5,
                                 "listId": "gyt4oyoflh-26cdff80-7c04-11eb-be8b-1b6b5950a0fc",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -647,20 +648,20 @@
                                 "fieldId": "cyberintcategory",
                                 "height": 53,
                                 "id": "43348180-7c04-11eb-be8b-1b6b5950a0fc",
-                                "index": 5,
+                                "index": 6,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "cyberintticketid",
                                 "height": 53,
                                 "id": "deb1bbd0-7c06-11eb-be8b-1b6b5950a0fc",
-                                "index": 6,
+                                "index": 7,
+                                "listId": "gyt4oyoflh-f50d43a0-7c05-11eb-be8b-1b6b5950a0fc",
                                 "sectionItemType": "field",
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "gyt4oyoflh-f50d43a0-7c05-11eb-be8b-1b6b5950a0fc"
+                                "startCol": 0
                             },
                             {
                                 "dropEffect": "move",
@@ -668,7 +669,7 @@
                                 "fieldId": "cyberintdescription",
                                 "height": 53,
                                 "id": "cf44c250-7c06-11eb-be8b-1b6b5950a0fc",
-                                "index": 7,
+                                "index": 8,
                                 "listId": "caseinfoid-gyt4oyoflh-caseinfoid-gyt4oyoflh-26cdff80-7c04-11eb-be8b-1b6b5950a0fc",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -723,7 +724,7 @@
                                 "fieldId": "cyberintcreateddate",
                                 "height": 53,
                                 "id": "50183810-7c04-11eb-be8b-1b6b5950a0fc",
-                                "index": 4,
+                                "index": 5,
                                 "listId": "gyt4oyoflh-26cdff80-7c04-11eb-be8b-1b6b5950a0fc",
                                 "sectionItemType": "field",
                                 "startCol": 1
@@ -734,7 +735,7 @@
                                 "fieldId": "cyberinttype",
                                 "height": 53,
                                 "id": "ad063d00-7c05-11eb-be8b-1b6b5950a0fc",
-                                "index": 5,
+                                "index": 6,
                                 "listId": "gyt4oyoflh-26cdff80-7c04-11eb-be8b-1b6b5950a0fc",
                                 "sectionItemType": "field",
                                 "startCol": 1
@@ -765,15 +766,15 @@
                                 "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
                                 "endCol": 1,
                                 "fieldId": "cyberinttargetedbrand",
                                 "height": 53,
                                 "id": "5cb5be00-9d5c-11ed-8f36-ab5d128aea6b",
                                 "index": 1,
+                                "listId": "caseinfoid-gyt4oyoflh-caseinfoid-gyt4oyoflh-f50d43a0-7c05-11eb-be8b-1b6b5950a0fc",
                                 "sectionItemType": "field",
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "caseinfoid-gyt4oyoflh-caseinfoid-gyt4oyoflh-f50d43a0-7c05-11eb-be8b-1b6b5950a0fc"
+                                "startCol": 0
                             },
                             {
                                 "endCol": 2,
@@ -813,14 +814,44 @@
                             },
                             {
                                 "endCol": 2,
+                                "fieldId": "cyberintalertdata",
+                                "filters": [
+                                    [
+                                        {
+                                            "ignoreCase": false,
+                                            "left": {
+                                                "isContext": true,
+                                                "value": {
+                                                    "simple": "cyberintalertdata"
+                                                }
+                                            },
+                                            "operator": "notContainsString",
+                                            "right": {
+                                                "isContext": false,
+                                                "value": {
+                                                    "simple": "tool_name"
+                                                }
+                                            },
+                                            "type": "markdown"
+                                        }
+                                    ]
+                                ],
+                                "height": 106,
+                                "id": "45feb900-8cfd-11ee-a0be-8bb38b509369",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
                                 "fieldId": "cyberinttargetedvector",
                                 "height": 53,
                                 "id": "73950280-9d60-11ed-b3d3-65a739574b9a",
                                 "index": 1,
+                                "listId": "caseinfoid-gyt4oyoflh-caseinfoid-gyt4oyoflh-f50d43a0-7c05-11eb-be8b-1b6b5950a0fc",
                                 "sectionItemType": "field",
-                                "startCol": 1,
-                                "dropEffect": "move",
-                                "listId": "caseinfoid-gyt4oyoflh-caseinfoid-gyt4oyoflh-f50d43a0-7c05-11eb-be8b-1b6b5950a0fc"
+                                "startCol": 1
                             }
                         ],
                         "maxW": 3,
@@ -875,15 +906,15 @@
                         "i": "caseinfoid-gyt4oyoflh-caseinfoid-gyt4oyoflh-e3bcd230-7c07-11eb-be8b-1b6b5950a0fc",
                         "items": [
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "cyberintattachments",
                                 "height": 106,
                                 "id": "ee363f80-7c07-11eb-be8b-1b6b5950a0fc",
                                 "index": 0,
+                                "listId": "caseinfoid-gyt4oyoflh-caseinfoid-gyt4oyoflh-e3bcd230-7c07-11eb-be8b-1b6b5950a0fc",
                                 "sectionItemType": "field",
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "caseinfoid-gyt4oyoflh-caseinfoid-gyt4oyoflh-e3bcd230-7c07-11eb-be8b-1b6b5950a0fc"
+                                "startCol": 0
                             }
                         ],
                         "maxW": 3,
@@ -1104,8 +1135,8 @@
                         "y": 4
                     }
                 ],
-                "type": "custom",
-                "showEmptyFields": false
+                "showEmptyFields": false,
+                "type": "custom"
             },
             {
                 "id": "warRoom",
@@ -1137,11 +1168,7 @@
     "group": "incident",
     "id": "Cyberint Incident Layout",
     "name": "Cyberint Incident Layout",
+    "system": false,
     "version": -1,
-    "fromVersion": "6.0.0",
-    "description": "Cyberint incident layout",
-    "marketplaces": [
-        "xsoar"
-    ],
-    "system": false
+    "fromVersion": "6.10.0"
 }

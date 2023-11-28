@@ -12,6 +12,23 @@
                 "Alert Name": {
                     "simple": "title"
                 },
+                "CyberInt Alert Data": {
+					"complex": {
+						"filters": [],
+						"root": "alert_data",
+						"transformers": [
+							{
+								"args": {
+									"headers": {},
+									"is_auto_json_transform": {},
+									"json_transform_properties": {},
+									"title": {}
+								},
+								"operator": "JsonToTable"
+							}
+						]
+					}
+				},
                 "CyberInt Alert ID": {
                     "simple": "ref_id"
                 },
