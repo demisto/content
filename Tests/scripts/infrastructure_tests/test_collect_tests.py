@@ -668,7 +668,7 @@ def test_invalid_content_item(mocker, monkeypatch):
 def test_release_note_config_in_only_install_pack():
     """
     Makes sure the FileType.RELEASE_NOTES_CONFIG is in ONLY_INSTALL_PACK_FILE_TYPES,
-    as we have a special treatment for it under __collect_single.
+    as we have a special treatment for it under __collect_single .
     If this test fails, and you deliberatly removed it from the list, make sure to remove the special case (`except KeyError`...)
     """
     assert FileType.RELEASE_NOTES_CONFIG in ONLY_INSTALL_PACK_FILE_TYPES
