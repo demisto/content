@@ -719,8 +719,7 @@ inputs:
     The default value is true.
   playbookInputQuery:
 - key: UseReputationCommand
-  value:
-    simple: "False"
+  value: {}
   required: true
   description: |-
     Define if you would like to use the !IP command.

@@ -18,8 +18,8 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* IPToHost
 * IsIPInRanges
+* IPToHost
 
 ### Commands
 
