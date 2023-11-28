@@ -289,45 +289,97 @@ def return_err_or_warn(msg):  # pragma: no cover
 def rasterize_image_command():
     args = demisto.args()
     entry_id = args.get('EntryID')
-    w, h, r_mode = get_common_args(args)
-    file_name = args.get('file_name', entry_id)
-    full_screen = argToBoolean(demisto.args().get('full_screen', False))
+    width, height = get_common_args(demisto.args())
+    width, height = check_width_and_height(width, height)  # Check that the width and height meet the safeguard limit
 
-    w, h = check_width_and_height(w, h)  # Check that the width and height meet the safeguard limit
+    file_name = args.get('file_name', entry_id)
 
     file_path = demisto.getFilePath(entry_id).get('path')
     file_name = f'{file_name}.pdf'
 
     with open(file_path, 'rb') as f:
-        output = rasterize(path=f'file://{os.path.realpath(f.name)}', width=w, height=h, r_type=RasterizeType.PDF,
-                           full_screen=full_screen, r_mode=r_mode)
+        output = rasterize(path=f'file://{os.path.realpath(f.name)}', width=width, height=height, rasterize_type=RasterizeType.PDF)
         res = fileResult(filename=file_name, data=output, file_type=entryTypes['entryInfoFile'])
         demisto.results(res)
 
 
 def rasterize_email_command():  # pragma: no cover
     html_body = demisto.args().get('htmlBody')
-    w, h, r_mode = get_common_args(demisto.args())
+    width, height = get_common_args(demisto.args())
+    width, height = check_width_and_height(width, height)  # Check that the width and height meet the safeguard limit
+
     offline = demisto.args().get('offline', 'false') == 'true'
-    r_type = RasterizeType(demisto.args().get('type', 'png').lower())
+    rasterize_type = RasterizeType(demisto.args().get('type', 'png').lower())
     file_name = demisto.args().get('file_name', 'email')
     html_load = int(demisto.args().get('max_page_load_time', DEFAULT_PAGE_LOAD_TIME))
-    full_screen = argToBoolean(demisto.args().get('full_screen', False))
 
-    w, h = check_width_and_height(w, h)  # Check that the width and height meet the safeguard limit
-
-    file_name = f'{file_name}.{"pdf" if r_type == RasterizeType.PDF else "png"}'  # type: ignore
+    file_name = f'{file_name}.{"pdf" if rasterize_type == RasterizeType.PDF else "png"}'  # type: ignore
     with open('htmlBody.html', 'w', encoding='utf-8-sig') as f:
         f.write(f'<html style="background:white";>{html_body}</html>')
     path = f'file://{os.path.realpath(f.name)}'
 
-    output = rasterize(path=path, r_type=r_type, width=w, height=h, offline_mode=offline,
-                       max_page_load_time=html_load, full_screen=full_screen, r_mode=r_mode)
+    output = rasterize(path=path, rasterize_type=rasterize_type, width=width, height=height, offline_mode=offline,
+                       max_page_load_time=html_load)
     res = fileResult(filename=file_name, data=output)
     if r_type == RasterizeType.PNG:
         res['Type'] = entryTypes['image']
 
     demisto.results(res)
+
+
+def convert_pdf_to_jpeg(path: str, max_pages: str, password: str, horizontal: bool = False):
+    """
+    Converts a PDF file into a jpeg image
+    :param path: file's path
+    :param max_pages: max pages to render,
+    :param password: PDF password
+    :param horizontal: if True, will combine the pages horizontally
+    :return: A list of stream of combined images
+    """
+    demisto.debug(f'Loading file at Path: {path}')
+    input_pdf = PdfReader(open(path, "rb"), strict=False, password=password)
+    pages = len(input_pdf.pages) if max_pages == "*" else min(int(max_pages), len(input_pdf.pages))
+
+    with tempfile.TemporaryDirectory() as output_folder:
+        demisto.debug('Converting PDF')
+        convert_from_path(
+            pdf_path=path,
+            fmt='jpeg',
+            first_page=1,
+            last_page=pages,
+            output_folder=output_folder,
+            userpw=password,
+            output_file='converted_pdf_'
+        )
+        demisto.debug('Converting PDF - COMPLETED')
+
+        demisto.debug('Combining all pages')
+        images = []
+        for page in sorted(os.listdir(output_folder)):
+            if os.path.isfile(os.path.join(output_folder, page)) and 'converted_pdf_' in page:
+                images.append(Image.open(os.path.join(output_folder, page)))
+        min_shape = min([(np.sum(page_.size), page_.size) for page_ in images])[1]  # get the minimal width
+
+        # Divide the list of images into separate lists with constant length (20),
+        # due to the limitation of images in jpeg format (max size ~65,000 pixels).
+        # Create a list of lists (length == 20) of images to combine each list (20 images) to one image
+        images_matrix = [images[i:i + PAGES_LIMITATION] for i in range(0, len(images), PAGES_LIMITATION)]
+
+        outputs = []
+        for images_list in images_matrix:
+            if horizontal:
+                # this line takes a ton of memory and doesnt release all of it
+                imgs_comb = np.hstack([np.asarray(image.resize(min_shape)) for image in images_list])
+            else:
+                imgs_comb = np.vstack([np.asarray(image.resize(min_shape)) for image in images_list])
+
+            imgs_comb = Image.fromarray(imgs_comb)
+            output = BytesIO()
+            imgs_comb.save(output, 'JPEG')  # type: ignore
+            demisto.debug('Combining all pages - COMPLETED')
+            outputs.append(output.getvalue())
+
+        return outputs
 
 
 def rasterize_pdf_command():  # pragma: no cover
@@ -356,19 +408,19 @@ def rasterize_pdf_command():  # pragma: no cover
 def rasterize_html_command():
     args = demisto.args()
     entry_id = args.get('EntryID')
-    w, h, r_mode = get_common_args(demisto.args())
-    r_type = args.get('type', 'png')
+    width, height = get_common_args(demisto.args())
+    width, height = check_width_and_height(width, height)  # Check that the width and height meet the safeguard limit
+    rasterize_type = args.get('type', 'png')
 
     file_name = args.get('file_name', 'email')
-    full_screen = argToBoolean(demisto.args().get('full_screen', False))
     wait_time = int(args.get('wait_time', 0))
 
     file_name = f'{file_name}.{"pdf" if r_type.lower() == "pdf" else "png"}'  # type: ignore
     file_path = demisto.getFilePath(entry_id).get('path')
     os.rename(f'./{file_path}', 'file.html')
 
-    output = rasterize(path=f"file://{os.path.realpath('file.html')}", width=w, height=h, r_type=r_type,
-                       full_screen=full_screen, wait_time=wait_time)
+    output = rasterize(path=f"file://{os.path.realpath('file.html')}", width=width, height=height,
+                       rasterize_type=rasterize_type, wait_time=wait_time)
 
     res = fileResult(filename=file_name, data=output)
     if r_type == 'png':
@@ -427,8 +479,6 @@ def get_common_args(args: dict):
     """
     width = int(args.get('width', DEFAULT_WIDTH).rstrip('px'))
     height = int(args.get('height', DEFAULT_HEIGHT).rstrip('px'))
-    global force_selenium_usage
-    force_selenium_usage = args.get('force_selenium_usage', False)
     return width, height
 
 
@@ -457,10 +507,6 @@ def main():  # pragma: no cover
 
     except Exception as ex:
         return_err_or_warn(f'Unexpected exception: {ex}\nTrace:{traceback.format_exc()}')
-    finally:
-        if is_debug_mode():
-            with open(DRIVER_LOG) as log:
-                demisto.debug('Driver log:' + log.read())
 
 
 if __name__ in ["__builtin__", "builtins", '__main__']:
