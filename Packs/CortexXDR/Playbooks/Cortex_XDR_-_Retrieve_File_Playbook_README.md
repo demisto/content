@@ -10,7 +10,7 @@ GenericPolling
 
 ### Integrations
 
-* CortexXDRIR
+CortexXDRIR
 
 ### Scripts
 
