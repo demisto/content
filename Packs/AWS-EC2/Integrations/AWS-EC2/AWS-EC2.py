@@ -3007,7 +3007,7 @@ def describe_ipam_resource_discoveries_command(args: Dict[str, Any], aws_client:
     if (filters := args.get('Filters')) is not None:
         kwargs.update({'Filters': parse_filter_field(filters)})
     if (max_results := args.get('MaxResults')) is not None:
-        kwargs.update({'MaxResults': max_results})
+        kwargs.update({'MaxResults': int(max_results)})
     if (next_token := args.get('NextToken')) is not None:
         kwargs.update({'NextToken': next_token})
     if (ipam_ids := args.get('IpamResourceDiscoveryIds')) is not None:
@@ -3053,7 +3053,7 @@ def describe_ipam_resource_discovery_associations_command(args: Dict[str, Any], 
     if (filters := args.get('Filters')) is not None:
         kwargs.update({'Filters': parse_filter_field(filters)})
     if (max_results := args.get('MaxResults')) is not None:
-        kwargs.update({'MaxResults': max_results})
+        kwargs.update({'MaxResults': int(max_results)})
     if (next_token := args.get('NextToken')) is not None:
         kwargs.update({'NextToken': next_token})
     if (ipam_ids := args.get('IpamResourceDiscoveryAssociationIds')) is not None:
@@ -3103,7 +3103,7 @@ def get_ipam_discovered_public_addresses_command(args: Dict[str, Any], aws_clien
     if (filters := args.get('Filters')) is not None:
         kwargs.update({'Filters': parse_filter_field(filters)})
     if (max_results := args.get('MaxResults')) is not None:
-        kwargs.update({'MaxResults': max_results})
+        kwargs.update({'MaxResults': int(max_results)})
     if (next_token := args.get('NextToken')) is not None:
         kwargs.update({'NextToken': next_token})
 
