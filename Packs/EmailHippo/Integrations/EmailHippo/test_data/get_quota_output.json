@@ -1,0 +1,9 @@
+{
+    "licenseKey": "abc123",
+    "accountId": 1000,
+    "quotaUsed": 4,
+    "quotaRemaining": 96,
+    "nextQuotaResetDate": "2023-12-26T00:00:00",
+    "reportedDate": "2023-11-27T13:35:09.519314Z",
+    "errorSummary": "Valid"
+}
