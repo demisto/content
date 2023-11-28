@@ -284,7 +284,7 @@ Returns domain information and reputation.
 | Domain.Admin.Phone | String | The phone number of the domain administrator. | 
 | Domain.Tech.Country | String | The country of tech administrator. | 
 | Domain.Tech.Name | String | The name of the tech administrator. | 
-| Domain.Tech.Email | String | The email of tech administrator. | 
+| Domain.Tech.Email | String | The email of the tech administrator. | 
 | Domain.Tech.Organization | String | The organization of the tech administrator. | 
 | Domain.WHOIS.NameServers | String | A CSV string of name servers, for example 'ns1.bla.com, ns2.bla.com'. | 
 | Domain.WHOIS.CreationDate | Date | The creation date of the domain. Format is ISO8601 \(i.e. '2020-04-30T10:35:00.000Z'\). | 
