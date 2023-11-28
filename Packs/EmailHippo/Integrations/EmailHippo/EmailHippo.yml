@@ -4,16 +4,16 @@ commonfields:
 name: Email Hippo
 display: Email Hippo
 category: Data Enrichment & Threat Intelligence
-description: "This is the Email Hippo integration for verify email sources as fake emails that were used as part of phishing attacks.\n."
+description: "This is the Email Hippo integration used to verify email sources as fake emails that were used as part of phishing attacks.\n."
 configuration:
 - section: Connect
-  display: MORE Server URL (e.g. https://api.hippoapi.com)
+  display: MORE Server URL (e.g., https://api.hippoapi.com)
   name: more_server_url
   defaultvalue: https://api.hippoapi.com
   type: 0
   required: true
 - section: Connect
-  display: Email Hippo WHOIS Server URL (e.g. https://api.whoishippo.com)
+  display: Email Hippo WHOIS Server URL (e.g., https://api.whoishippo.com)
   name: whois_server_url
   defaultvalue: https://api.whoishippo.com
   type: 0
@@ -53,7 +53,7 @@ configuration:
   defaultvalue: 'true'
   type: 8
   required: false
-  additionalinfo: Create relationships between indicators as part of Enrichment.
+  additionalinfo: Create relationships between indicators as part of enrichment.
 - section: Connect
   advanced: true
   display: Trust any certificate (not secure)
@@ -78,13 +78,13 @@ script:
     - contextPath: EmailHippo.Quota.quotaRemaining
       description: The remaining quota.
       type: String
-    description: Get the Email quota from the API.
+    description: Get the email quota from the API.
   - name: email
     arguments:
     - name: email
       required: true
       isArray: true
-      description: The email address to validate (CSV).
+      description: A comma-separated list of email addresses to validate.
       default: true
     outputs:
     - contextPath: DBotScore.Indicator
@@ -111,7 +111,7 @@ script:
     - contextPath: EmailHippo.Email.Address
       description: The email address of the indicator.
       type: String
-    description: Return Email information and reputation.
+    description: Return email information and reputation.
   - name: domain
     arguments:
     - name: domain
@@ -138,13 +138,13 @@ script:
       description: The name of the domain that was checked.
       type: String
     - contextPath: Domain.NameServers
-      description: Name servers of the domain.
+      description: Name of the servers of the domain.
       type: String
     - contextPath: Domain.UpdatedDate
       description: The date that the domain was last updated.
       type: Date
     - contextPath: Domain.CreationDate
-      description: The creation date of the domain. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
+      description: The creation date of the domain. Format is ISO8601 (i.e., '2020-04-30T10:35:00.000Z').
       type: Date
     - contextPath: Domain.Registrar.Name
       description: The name of the registrar.
@@ -153,7 +153,7 @@ script:
       description: The email address of the contact for reporting abuse.
       type: String
     - contextPath: Domain.Registrar.AbusePhone
-      description: The phone number of contact for reporting abuse.
+      description: The phone number of the contact for reporting abuse.
       type: String
     - contextPath: Domain.Admin.Country
       description: The country of the domain administrator.
