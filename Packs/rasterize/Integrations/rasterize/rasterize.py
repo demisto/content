@@ -10,7 +10,7 @@ import tempfile
 import threading
 import time
 import traceback
-from collections.abc import Callable
+# from collections.abc import Callable
 from enum import Enum
 # from io import BytesIO
 # from pathlib import Path
@@ -19,7 +19,7 @@ from threading import Event
 # import numpy as np
 # from pdf2image import convert_from_path
 # from PIL import Image
-# from PyPDF2 import PdfReader
+from PyPDF2 import PdfReader
 # from selenium import webdriver
 # from pyvirtualdisplay import Display
 # from selenium.common.exceptions import (InvalidArgumentException,
@@ -236,7 +236,10 @@ def rasterize(path: str,
               wait_time: int = DEFAULT_WAIT_TIME,
               offline_mode: bool = False,
               timeout: int = DEFAULT_PAGE_LOAD_TIME,
-              include_url: bool = False):
+              include_url: bool = False,
+              width=DEFAULT_WIDTH,
+              height=DEFAULT_HEIGHT,
+              ):
     """
     Capturing a snapshot of a path (url/file), using Chrome Driver
     :param offline_mode: when set to True, will block any outgoing communication
@@ -320,9 +323,9 @@ def rasterize_email_command():  # pragma: no cover
     path = f'file://{os.path.realpath(f.name)}'
 
     output = rasterize(path=path, rasterize_type=rasterize_type, width=width, height=height, offline_mode=offline,
-                       max_page_load_time=html_load)
+                       timeout=html_load)
     res = fileResult(filename=file_name, data=output)
-    if r_type == RasterizeType.PNG:
+    if rasterize_type == RasterizeType.PNG:
         res['Type'] = entryTypes['image']
 
     demisto.results(res)
@@ -416,7 +419,7 @@ def rasterize_html_command():
     file_name = args.get('file_name', 'email')
     wait_time = int(args.get('wait_time', 0))
 
-    file_name = f'{file_name}.{"pdf" if r_type.lower() == "pdf" else "png"}'  # type: ignore
+    file_name = f'{file_name}.{"pdf" if rasterize_type.lower() == "pdf" else "png"}'  # type: ignore
     file_path = demisto.getFilePath(entry_id).get('path')
     os.rename(f'./{file_path}', 'file.html')
 
@@ -424,7 +427,7 @@ def rasterize_html_command():
                        rasterize_type=rasterize_type, wait_time=wait_time)
 
     res = fileResult(filename=file_name, data=output)
-    if r_type == 'png':
+    if rasterize_type == 'png':
         res['Type'] = entryTypes['image']
     return_results(res)
 
@@ -455,7 +458,7 @@ def rasterize_command():  # pragma: no cover
 
     if not (url.startswith('http')):
         url = f'http://{url}'
-    file_name = f'{file_name}.{"pdf" if r_type == RasterizeType.PDF else "png"}'  # type: ignore
+    file_name = f'{file_name}.{"pdf" if rasterize_type == RasterizeType.PDF else "png"}'  # type: ignore
 
     output = rasterize(path=url, rasterize_type=rasterize_type, wait_time=wait_time, timeout=page_load, include_url=include_url)
 

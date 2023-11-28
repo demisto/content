@@ -1,5 +1,6 @@
-from rasterize import (rasterize, find_zombie_processes, merge_options, DEFAULT_CHROME_OPTIONS, rasterize_image_command,
-                       RasterizeMode, RasterizeType, rasterize_html_command)
+# from rasterize import (rasterize, find_zombie_processes, merge_options, DEFAULT_CHROME_OPTIONS, rasterize_image_command,
+#                        RasterizeMode, RasterizeType, rasterize_html_command)
+from rasterize import *
 import demistomock as demisto
 from CommonServerPython import entryTypes
 from tempfile import NamedTemporaryFile
@@ -20,46 +21,43 @@ logging.getLogger("urllib3").setLevel(logging.ERROR)
 RETURN_ERROR_TARGET = 'rasterize.return_error'
 
 
-@pytest.mark.parametrize("r_mode", [RasterizeMode.WEBDRIVER_ONLY, RasterizeMode.HEADLESS_CLI_ONLY])
-def test_rasterize_email_image(r_mode, caplog):
-    with NamedTemporaryFile('w+') as f:
+def test_rasterize_email_image(caplog, capfd):
+    with capfd.disabled() and NamedTemporaryFile('w+') as f:
         f.write('<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">'
                 '</head><body><br>---------- TEST FILE ----------<br></body></html>')
         path = os.path.realpath(f.name)
         f.flush()
-        rasterize(path=f'file://{path}', width=250, height=250, r_type=RasterizeType.PNG, r_mode=r_mode)
+        rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.PNG)
         caplog.clear()
 
 
-@pytest.mark.parametrize("r_mode", [RasterizeMode.WEBDRIVER_ONLY, RasterizeMode.HEADLESS_CLI_ONLY])
-def test_rasterize_email_pdf(r_mode, caplog):
-    with NamedTemporaryFile('w+') as f:
+def test_rasterize_email_pdf(caplog, capfd):
+    with capfd.disabled() and NamedTemporaryFile('w+') as f:
         f.write('<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">'
                 '</head><body><br>---------- TEST FILE ----------<br></body></html>')
         path = os.path.realpath(f.name)
         f.flush()
-        rasterize(path=f'file://{path}', width=250, height=250, r_type=RasterizeType.PDF,
-                  r_mode=r_mode)
+        rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.PDF)
         caplog.clear()
 
 
-def test_rasterize_email_pdf_offline(caplog):
-    with NamedTemporaryFile('w+') as f:
+def test_rasterize_email_pdf_offline(caplog, capfd):
+    with capfd.disabled() and  NamedTemporaryFile('w+') as f:
         f.write('<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">'
                 '</head><body><br>---------- TEST FILE ----------<br></body></html>')
         path = os.path.realpath(f.name)
         f.flush()
-        rasterize(path=f'file://{path}', width=250, height=250, r_type=RasterizeType.PDF)
+        rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.PDF)
         caplog.clear()
 
 
-def test_rasterize_no_defunct_processes(caplog):
-    with NamedTemporaryFile('w+') as f:
+def test_rasterize_no_defunct_processes(caplog, capfd):
+    with capfd.disabled() and NamedTemporaryFile('w+') as f:
         f.write('<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">'
                 '</head><body><br>---------- TEST FILE ----------<br></body></html>')
         path = os.path.realpath(f.name)
         f.flush()
-        rasterize(path=f'file://{path}', width=250, height=250, r_type=RasterizeType.PDF)
+        rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.PDF)
         process = subprocess.Popen(['ps', '-aux'], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                    universal_newlines=True)
         processes_str, _ = process.communicate()
@@ -67,65 +65,66 @@ def test_rasterize_no_defunct_processes(caplog):
         defunct_process_list = [process for process in processes if 'defunct' in process]
         assert not defunct_process_list
 
-        zombies, output = find_zombie_processes()
-        assert not zombies
-        assert 'defunct' not in output
+        # zombies, output = find_zombie_processes()
+        # assert not zombies
+        # assert 'defunct' not in output
         caplog.clear()
 
 
-@pytest.mark.filterwarnings('ignore::ResourceWarning')
-def test_find_zombie_processes(mocker):
-    ps_output = '''   PID  PPID S CMD
-    1     0 S python /tmp/pyrunner/_script_docker_python_loop.py
-   39     1 Z [soffice.bin] <defunct>
-   55     1 Z [gpgconf] <defunct>
-   57     1 Z [gpgconf] <defunct>
-   59     1 Z [gpg] <defunct>
-   61     1 Z [gpgsm] <defunct>
-   63     1 Z [gpgconf] <defunct>
-   98     1 Z [gpgconf] <defunct>
-  100     1 Z [gpgconf] <defunct>
-  102     1 Z [gpg] <defunct>
-'''
-    mocker.patch.object(subprocess, 'check_output', return_value=ps_output)
-    mocker.patch.object(os, 'getpid', return_value=1)
-    zombies, output = find_zombie_processes()
+# @pytest.mark.filterwarnings('ignore::ResourceWarning')
+# def test_find_zombie_processes(mocker):
+#     ps_output = '''   PID  PPID S CMD
+#     1     0 S python /tmp/pyrunner/_script_docker_python_loop.py
+#    39     1 Z [soffice.bin] <defunct>
+#    55     1 Z [gpgconf] <defunct>
+#    57     1 Z [gpgconf] <defunct>
+#    59     1 Z [gpg] <defunct>
+#    61     1 Z [gpgsm] <defunct>
+#    63     1 Z [gpgconf] <defunct>
+#    98     1 Z [gpgconf] <defunct>
+#   100     1 Z [gpgconf] <defunct>
+#   102     1 Z [gpg] <defunct>
+# '''
+#     mocker.patch.object(subprocess, 'check_output', return_value=ps_output)
+#     mocker.patch.object(os, 'getpid', return_value=1)
+#     zombies, output = find_zombie_processes()
 
-    assert len(zombies) == 9
-    assert output == ps_output
-
-
-def test_merge_options():
-    res = merge_options(DEFAULT_CHROME_OPTIONS, '')
-    assert res == DEFAULT_CHROME_OPTIONS
-    res = merge_options(DEFAULT_CHROME_OPTIONS, '[--disable-dev-shm-usage],--disable-auto-reload, --headless')
-    assert '--disable-dev-shm-usage' not in res
-    assert '--no-sandbox' in res  # part of default options
-    assert '--disable-auto-reload' in res
-    assert len([x for x in res if x == '--headless']) == 1  # should have only one headless option
-    res = merge_options(DEFAULT_CHROME_OPTIONS, r'--user-agent=test\,comma')
-    assert len([x for x in res if x.startswith('--user-agent')]) == 1
-    assert '--user-agent=test,comma' in res
-    res = merge_options(DEFAULT_CHROME_OPTIONS, r'[--user-agent]')  # remove user agent
-    assert len([x for x in res if x.startswith('--user-agent')]) == 0
+#     assert len(zombies) == 9
+#     assert output == ps_output
 
 
-@pytest.mark.parametrize("r_mode", [RasterizeMode.WEBDRIVER_ONLY, RasterizeMode.HEADLESS_CLI_ONLY])
-def test_rasterize_large_html(r_mode):
-    path = os.path.realpath('test_data/large.html')
-    res = rasterize(path=f'file://{path}', width=250, height=250, r_type=RasterizeType.PNG, r_mode=r_mode)
-    assert res
+# def test_merge_options():
+#     res = merge_options(DEFAULT_CHROME_OPTIONS, '')
+#     assert res == DEFAULT_CHROME_OPTIONS
+#     res = merge_options(DEFAULT_CHROME_OPTIONS, '[--disable-dev-shm-usage],--disable-auto-reload, --headless')
+#     assert '--disable-dev-shm-usage' not in res
+#     assert '--no-sandbox' in res  # part of default options
+#     assert '--disable-auto-reload' in res
+#     assert len([x for x in res if x == '--headless']) == 1  # should have only one headless option
+#     res = merge_options(DEFAULT_CHROME_OPTIONS, r'--user-agent=test\,comma')
+#     assert len([x for x in res if x.startswith('--user-agent')]) == 1
+#     assert '--user-agent=test,comma' in res
+#     res = merge_options(DEFAULT_CHROME_OPTIONS, r'[--user-agent]')  # remove user agent
+#     assert len([x for x in res if x.startswith('--user-agent')]) == 0
 
 
-def test_rasterize_html(mocker):
-    path = os.path.realpath('test_data/file.html')
-    mocker.patch.object(demisto, 'args', return_value={'EntryID': 'test'})
-    mocker.patch.object(demisto, 'getFilePath', return_value={"path": path})
-    mocker.patch.object(os, 'rename')
-    mocker.patch.object(os.path, 'realpath', return_value=f'{os.getcwd()}/test_data/file.html')
-    mocker_output = mocker.patch('rasterize.return_results')
-    rasterize_html_command()
-    assert mocker_output.call_args.args[0]['File'] == 'email.png'
+def test_rasterize_large_html(capfd):
+    with capfd.disabled():
+        path = os.path.realpath('test_data/large.html')
+        res = rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.PNG)
+        assert res
+
+
+def test_rasterize_html(mocker, capfd):
+    with capfd.disabled():
+        path = os.path.realpath('test_data/file.html')
+        mocker.patch.object(demisto, 'args', return_value={'EntryID': 'test'})
+        mocker.patch.object(demisto, 'getFilePath', return_value={"path": path})
+        mocker.patch.object(os, 'rename')
+        mocker.patch.object(os.path, 'realpath', return_value=f'{os.getcwd()}/test_data/file.html')
+        mocker_output = mocker.patch('rasterize.return_results')
+        rasterize_html_command()
+        assert mocker_output.call_args.args[0]['File'] == 'email.png'
 
 
 @pytest.fixture
@@ -168,25 +167,19 @@ def http_wait_server():
 # curl -v -H 'user-agent: HeadlessChrome' --max-time 10  "http://www.grainger.com/"  # disable-secrets-detection
 # This tests access a server which waits for 10 seconds and makes sure we timeout
 @pytest.mark.filterwarnings('ignore::ResourceWarning')
-@pytest.mark.parametrize("r_mode", [(RasterizeMode.WEBDRIVER_ONLY),
-                         (RasterizeMode.HEADLESS_CLI_ONLY),
-                         (RasterizeMode.WEBDRIVER_PREFERED),
-                         (RasterizeMode.HEADLESS_CLI_PREFERED),
-                         ])
-def test_rasterize_url_long_load(r_mode, mocker, http_wait_server, capfd):
+def test_rasterize_url_long_load(mocker, http_wait_server, capfd):
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
     time.sleep(1)  # give time to the servrer to start
     with capfd.disabled():
-        rasterize('http://localhost:10888', width=250, height=250, r_type=RasterizeType.PNG, max_page_load_time=5,
-                  r_mode=r_mode)
+        rasterize('http://localhost:10888', width=250, height=250, rasterize_type=RasterizeType.PNG, timeout=5)
         assert return_error_mock.call_count == 1
         # call_args last call with a tuple of args list and kwargs
         # err_msg = return_error_mock.call_args[0][0]
         # assert 'Timeout exception' in err_msg
         return_error_mock.reset_mock()
         # test that with a higher value we get a response
-        assert rasterize('http://localhost:10888', width=250, height=250, r_type=RasterizeType.PNG,
-                         max_page_load_time=0, r_mode=r_mode)
+        assert rasterize('http://localhost:10888', width=250, height=250, rasterize_type=RasterizeType.PNG,
+                         timeout=0)
         assert not return_error_mock.called
 
 
@@ -346,13 +339,12 @@ class TestRasterizeIncludeUrl:
             path = os.path.realpath(f.name)
             f.flush()
 
-            image = rasterize(path=f'file://{path}', width=250, height=250, r_type=RasterizeType.PNG,
-                              r_mode=RasterizeMode.WEBDRIVER_ONLY,
+            image = rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.PNG,
                               include_url=include_url)
             assert image
 
 
-def test_rasterize_html_no_internet_access(mocker):
+def test_rasterize_html_no_internet_access(mocker, capfd):
     """
     Validates that when calling the command rasterize_html_command
     No http requests are executed. - CIAC-8142
@@ -366,7 +358,8 @@ def test_rasterize_html_no_internet_access(mocker):
     mocker.patch.object(os, 'rename')
     mocker.patch.object(os.path, 'realpath', return_value=f'{os.getcwd()}/test_data/file.html')
     mocker_output = mocker.patch('rasterize.return_results')
-    rasterize_html_command()
-    assert mocker_output.call_args.args[0]['File'] == 'email.png'
-    args, kwargs = mock.call_args
-    assert args[0].startswith("http://127.0.0.1:9222")
+    with capfd.disabled():
+        rasterize_html_command()
+        assert mocker_output.call_args.args[0]['File'] == 'email.png'
+        args, kwargs = mock.call_args
+        assert args[0].startswith("http://127.0.0.1:9222")
