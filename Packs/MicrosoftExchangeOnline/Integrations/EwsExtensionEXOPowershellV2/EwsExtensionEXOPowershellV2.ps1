@@ -9,6 +9,7 @@
 #>
 Import-Module ExchangeOnlineManagement
 
+
 # Disable PowerShell progress bars, as they aren't helpful in a non-interactive script
 $Global:ProgressPreference = 'SilentlyContinue'
 

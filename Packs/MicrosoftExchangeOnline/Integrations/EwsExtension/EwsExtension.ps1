@@ -8,6 +8,7 @@ $script:JUNK_RULE_ENTRY_CONTEXT = "$script:INTEGRATION_ENTRY_CONTEXT.Rule.Junk(v
 $script:MESSAGE_TRACE_ENTRY_CONTEXT = "$script:INTEGRATION_ENTRY_CONTEXT.MessageTrace(val.MessageId && val.MessageId == obj.MessageId)"
 
 
+
 #### HELPER FUNCTIONS ####
 
 function UpdateIntegrationContext([OAuth2DeviceCodeClient]$client) {

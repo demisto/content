@@ -6,6 +6,7 @@ $script:INTEGRATION_ENTRY_CONTEX = "O365.SecurityAndCompliance.ContentSearch"
 $script:SEARCH_ENTRY_CONTEXT = "$script:INTEGRATION_ENTRY_CONTEX.Search(val.Name && val.Name == obj.Name)"
 $script:SEARCH_ACTION_ENTRY_CONTEXT = "$script:INTEGRATION_ENTRY_CONTEX.SearchAction(val.Name && val.Name == obj.Name)"
 
+
 #### HELPER FUNCTIONS ####
 
 function UpdateIntegrationContext([OAuth2DeviceCodeClient]$client){

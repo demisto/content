@@ -9,6 +9,8 @@ $script:INTEGRATION_ENTRY_CASE_HOLD_RULE = "O365.SecurityAndCompliance.CaseHoldR
 $script:SEARCH_ENTRY_CONTEXT = "$script:INTEGRATION_ENTRY_CONTEX.Search(val.Name && val.Name == obj.Name)"
 $script:SEARCH_ACTION_ENTRY_CONTEXT = "$script:INTEGRATION_ENTRY_CONTEX.SearchAction(val.Name && val.Name == obj.Name)"
 
+
+
 <# IMPORTANT NOTICE
 # When conencting to ExchangeOnline - only needed command between CreateSession
 # and DisconnectSession and let also the `finally` term to disconnect (it will do nothing if everything is fine).
