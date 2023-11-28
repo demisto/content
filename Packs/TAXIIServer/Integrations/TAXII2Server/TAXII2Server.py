@@ -1410,7 +1410,6 @@ def create_entity_b_stix_objects(relationships: list[dict[str, Any]], iocs_value
     entity_b_objects: list[dict[str, Any]] = []
     entity_b_values = ""
     for relationship in relationships:
-        demisto.debug(f'{relationship=}')
         if relationship:
             if (relationship.get('CustomFields') or {}).get('revoked', False):
                 continue
