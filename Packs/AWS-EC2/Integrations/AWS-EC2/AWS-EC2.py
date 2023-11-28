@@ -3143,9 +3143,9 @@ def main():
 
         validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
                         aws_secret_access_key)
-        aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
-                               aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
-                               retries, sts_endpoint_url=sts_endpoint_url, endpoint_url=endpoint_url)
+        aws_client: 'EC2Client' = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
+                                            aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate,
+                                            timeout, retries, sts_endpoint_url=sts_endpoint_url, endpoint_url=endpoint_url)
 
         command = demisto.command()
         args = demisto.args()
@@ -3373,13 +3373,13 @@ def main():
             release_hosts_command(args, aws_client)
 
         elif command == 'aws-ec2-describe-ipam-resource-discoveries':
-            return_results(describe_ipam_resource_discoveries_command(args, aws_client: "EC2Client"))
+            return_results(describe_ipam_resource_discoveries_command(args, aws_client))
 
         elif command == 'aws-ec2-describe-ipam-resource-discovery-associations':
-            return_results(describe_ipam_resource_discovery_associations_command(args, aws_client: "EC2Client"))
+            return_results(describe_ipam_resource_discovery_associations_command(args, aws_client))
 
         elif command == 'aws-ec2-get-ipam-discovered-public-addresses':
-            return_results(get_ipam_discovered_public_addresses_command(args, aws_client: "EC2Client"))
+            return_results(get_ipam_discovered_public_addresses_command(args, aws_client))
 
     except Exception as e:
         LOG(e)
