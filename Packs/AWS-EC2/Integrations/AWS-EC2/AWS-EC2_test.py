@@ -34,6 +34,12 @@ class Boto3Client:
     def describe_ipam_resource_discoveries(self, **kwargs):
         pass
 
+    def describe_ipam_resource_discovery_associations(self, **kwargs):
+        pass
+
+    def get_ipam_discovered_public_addresses(self, **kwargs):
+        pass
+
 
 def create_client():
     aws_client_args = {
@@ -198,4 +204,108 @@ def test_describe_ipam_resource_discoveries_command(mocker, return_boto, expecte
     mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, 'describe_ipam_resource_discoveries', return_value=return_boto)
     results = AWS_EC2.describe_ipam_resource_discoveries_command({}, aws_client)
+    assert results.readable_output == expected_results
+
+
+@pytest.mark.parametrize('return_boto, expected_results', [
+    ({'IpamResourceDiscoveryAssociations': []}, 'No Ipam Resource Discovery Associations were found.'),
+    ({"IpamResourceDiscoveryAssociations":
+        {
+            "IpamArn": "arn:aws:ec2::222222222222:ipam/ipam-11111111111111111",
+            "IpamId": "ipam-11111111111111111",
+            "IpamRegion": "us-east-1",
+            "IpamResourceDiscoveryAssociationArn": "example:arn",
+            "IpamResourceDiscoveryAssociationId": "ipam-res-disco-assoc-11111111111111111",
+            "IpamResourceDiscoveryId": "ipam-res-disco-11111111111111111",
+            "IsDefault": True,
+            "OwnerId": "222222222222",
+            "ResourceDiscoveryStatus": "active",
+            "State": "associate-complete",
+            "Tags": []
+        }
+      }, "### Ipam Resource Discovery Associations\n"
+         "|IpamArn|IpamId|IpamRegion|IpamResourceDiscoveryAssociationArn|IpamResourceDiscoveryAssociationId|"
+         "IpamResourceDiscoveryId|IsDefault|OwnerId|ResourceDiscoveryStatus|State|Tags|\n"
+         "|---|---|---|---|---|---|---|---|---|---|---|\n"
+         "| arn:aws:ec2::222222222222:ipam/ipam-11111111111111111 | ipam-11111111111111111 | us-east-1 | example:arn | ipam-"
+         "res-disco-assoc-11111111111111111 | ipam-res-disco-11111111111111111 | true | 222222222222 | active | associate-comp"
+         "lete |  |\n")
+])
+def test_describe_ipam_resource_discovery_associations_command(mocker, return_boto, expected_results):
+    """
+    Given
+    - aws-ec2-describe-ipam-resource-discovery-associations arguments and aws client
+    - Case 1: no information returned.
+    - Case 2: Information returned.
+    When
+    - running aws-ec2-describe-ipam-resource-discovery-associations command.
+    Then
+    - Ensure that the information was parsed correctly
+    - Case 1: Should ensure that generic "nothing found" message returned.
+    - Case 2: Should ensure that information on resource was returned.
+    """
+    aws_client = create_client()
+    mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
+    mocker.patch.object(Boto3Client, 'describe_ipam_resource_discovery_associations', return_value=return_boto)
+    results = AWS_EC2.describe_ipam_resource_discovery_associations_command({}, aws_client)
+    assert results.readable_output == expected_results
+
+
+@pytest.mark.parametrize('return_boto, expected_results', [
+    ({'IpamDiscoveredPublicAddresses': []}, 'No Ipam Discovered Public Addresseses were found.'),
+    ({"IpamDiscoveredPublicAddresses":
+        {
+            "Address": "1.1.1.1",
+            "AddressAllocationId": "eipalloc-11111111111111111",
+            "AddressOwnerId": "222222222222",
+            "AddressRegion": "us-east-1",
+            "AddressType": "amazon-owned-eip",
+            "AssociationStatus": "associated",
+            "InstanceId": "i-11111111111111111",
+            "IpamResourceDiscoveryId": "ipam-res-disco-11111111111111111",
+            "NetworkBorderGroup": "us-east-1",
+            "NetworkInterfaceDescription": "",
+            "NetworkInterfaceId": "eni-11111111111111111",
+            "PublicIpv4PoolId": "amazon",
+            "SampleTime": "2023-11-26T02:00:45",
+            "SecurityGroups": [
+                {
+                    "GroupId": "sg-11111111111111111",
+                    "GroupName": "example_sg"
+                }
+            ],
+            "SubnetId": "subnet-11111111111111111",
+            "Tags": {
+                "EipTags": []
+            },
+            "VpcId": "vpc-11111111111111111"
+        }
+      }, "### Ipam Discovered Public Addresses\n"
+         "|Address|AddressAllocationId|AddressOwnerId|AddressRegion|AddressType|AssociationStatus|InstanceId|IpamResourceDiscover"
+         "yId|NetworkBorderGroup|NetworkInterfaceDescription|NetworkInterfaceId|PublicIpv4PoolId|SampleTime|SecurityGroups|Subnet"
+         "Id|Tags|VpcId|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n"
+         "| 1.1.1.1 | eipalloc-11111111111111111 | 222222222222 | us-east-1 | amazon-owned-eip | associated | i-11111111111111111"
+         " | ipam-res-disco-11111111111111111 | us-east-1 |  | eni-11111111111111111 | amazon | 2023-11-26T02:00:45 | {'GroupId':"
+         " 'sg-11111111111111111', 'GroupName': 'example_sg'} | subnet-11111111111111111 | EipTags:  | vpc-11111111111111111 |\n")
+])
+def test_get_ipam_discovered_public_addresses_command(mocker, return_boto, expected_results):
+    """
+    Given
+    - aws-ec2-get-ipam-discovered-public-addresses arguments and aws client
+    - Case 1: no information returned.
+    - Case 2: Information returned.
+    When
+    - running aws-ec2-get-ipam-discovered-public-addresses command.
+    Then
+    - Ensure that the information was parsed correctly
+    - Case 1: Should ensure that generic "nothing found" message returned.
+    - Case 2: Should ensure that information on resource was returned.
+    """
+    aws_client = create_client()
+    mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
+    mocker.patch.object(Boto3Client, 'get_ipam_discovered_public_addresses', return_value=return_boto)
+    args = {"IpamResourceDiscoveryId": "ipam-res-disco-11111111111111111",
+            "AddressRegion": "us-east-1",
+            "Filters": "Name=address,Values=1.1.1.1"}
+    results = AWS_EC2.get_ipam_discovered_public_addresses_command(args, aws_client)
     assert results.readable_output == expected_results
