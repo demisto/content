@@ -126,7 +126,7 @@ def get_query_execution_command(args: dict, client):
             raw_response=raw_response,
             readable_output=tableToMarkdown('AWS Athena Query Execution', response),
         ),
-        continue_to_poll=(response['Status']['State'] in ('QUEUED', 'RUNNING')),
+        continue_to_poll=argToBoolean(args.get('polling', True)) and response['Status']['State'] in ('QUEUED', 'RUNNING'),
         args_for_next_run=args,
     )
 
