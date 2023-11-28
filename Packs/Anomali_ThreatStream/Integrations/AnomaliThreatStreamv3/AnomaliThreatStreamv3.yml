@@ -73,7 +73,7 @@ configuration:
   type: 15
   section: Collect
 - defaultvalue: Benign
-  display: Default DBOT score for indicators with low Confidence
+  display: Default DBOT score for indicators with low confidence
   name: indicator_default_score
   options:
   - Benign
