@@ -1,4 +1,9 @@
+from collections.abc import Callable
+from unittest.mock import MagicMock
 import pytest
+from pytest_mock import MockerFixture
+from requests_mock import MockerCore
+from pathlib import Path
 import json
 import CommonServerPython
 import demistomock as demisto
@@ -6,14 +11,14 @@ from MicrosoftGraphFiles import remove_identity_key, url_validation, parse_key_t
     download_file_command, list_sharepoint_sites_command, list_drive_content_command, create_new_folder_command, \
     list_drives_in_site_command, MsGraphClient, upload_new_file_command
 
-with open("test_data/response.json", "rb") as test_data:
-    commands_responses = json.load(test_data)
 
-with open("test_data/test_inputs.json", "rb") as test_data:
-    arguments = json.load(test_data)
+def util_load_json(path: str) -> dict:
+    return json.loads(Path(path).read_text())
 
-with open("test_data/expected_results.json", "rb") as test_data:
-    commands_expected_results = json.load(test_data)
+
+COMMANDS_RESPONSES = util_load_json("test_data/response.json")
+ARGUMENTS = util_load_json("test_data/test_inputs.json")
+COMMANDS_EXPECTED_RESULTS = util_load_json("test_data/expected_results.json")
 
 EXCLUDE_LIST = ["eTag"]
 
@@ -31,7 +36,7 @@ client_mocker = MsGraphClient(
     base_url='url', verify='use_ssl', proxy='proxy', self_deployed='self_deployed', ok_codes=(1, 2, 3))
 
 
-def test_remove_identity_key_with_valid_application_input():
+def test_remove_identity_key_with_valid_application_input() -> None:
     """
     Given:
         - Dictionary with three nested objects which the creator type is "application"
@@ -41,14 +46,14 @@ def test_remove_identity_key_with_valid_application_input():
         - Dictionary to remove to first key and add it as an item in the dictionary
     """
     res = remove_identity_key(
-        arguments["remove_identifier_data_application_type"]["CreatedBy"]
+        ARGUMENTS["remove_identifier_data_application_type"]["CreatedBy"]
     )
     assert len(res.keys()) > 1
-    assert res.get("Type")
+    assert res["Type"]
     assert res["ID"] == "test"
 
 
-def test_remove_identity_key_with_valid_user_input():
+def test_remove_identity_key_with_valid_user_input() -> None:
     """
     Given:
         - Dictionary with three nested objects which the creator type is "user" and system account
@@ -58,14 +63,14 @@ def test_remove_identity_key_with_valid_user_input():
         - Dictionary to remove to first key and add it as an item in the dictionary
     """
     res = remove_identity_key(
-        arguments["remove_identifier_data_user_type"]["CreatedBy"]
+        ARGUMENTS["remove_identifier_data_user_type"]["CreatedBy"]
     )
     assert len(res.keys()) > 1
-    assert res.get("Type")
+    assert res["Type"]
     assert res.get("ID") is None
 
 
-def test_remove_identity_key_with_valid_empty_input():
+def test_remove_identity_key_with_valid_empty_input() -> None:
     """
     Given:
         - Dictionary with three nested objects
@@ -74,11 +79,10 @@ def test_remove_identity_key_with_valid_empty_input():
     Then
         - Dictionary to remove to first key and add it as an item in the dictionary
     """
-    res = remove_identity_key("")
-    assert res == ""
+    assert remove_identity_key("") == ""
 
 
-def test_remove_identity_key_with_invalid_object():
+def test_remove_identity_key_with_invalid_object() -> None:
     """
     Given:
         - Dictionary with three nested objects
@@ -92,7 +96,7 @@ def test_remove_identity_key_with_invalid_object():
     assert res == source
 
 
-def test_url_validation_with_valid_link():
+def test_url_validation_with_valid_link() -> None:
     """
     Given:
         - Link to more results for list commands
@@ -101,11 +105,11 @@ def test_url_validation_with_valid_link():
     Then
         - Returns True if next link url is valid
     """
-    res = url_validation(arguments["valid_next_link_url"])
-    assert res == arguments["valid_next_link_url"]
+    res = url_validation(ARGUMENTS["valid_next_link_url"])
+    assert res == ARGUMENTS["valid_next_link_url"]
 
 
-def test_url_validation_with_empty_string():
+def test_url_validation_with_empty_string() -> None:
     """
     Given:
         - Empty string as next link url
@@ -114,12 +118,11 @@ def test_url_validation_with_empty_string():
     Then
         - Returns Demisto error
     """
-    next_link_url = ""
     with pytest.raises(CommonServerPython.DemistoException):
-        url_validation(next_link_url)
+        url_validation("")
 
 
-def test_url_validation_with_invalid_url():
+def test_url_validation_with_invalid_url() -> None:
     """
     Given:
         - invalid string as next link url
@@ -130,10 +133,10 @@ def test_url_validation_with_invalid_url():
     """
 
     with pytest.raises(CommonServerPython.DemistoException):
-        url_validation(arguments["invalid_next_link_url"])
+        url_validation(ARGUMENTS["invalid_next_link_url"])
 
 
-def test_parse_key_to_context_exclude_keys_from_list():
+def test_parse_key_to_context_exclude_keys_from_list() -> None:
     """
     Given:
         - Raw response from graph api
@@ -143,23 +146,23 @@ def test_parse_key_to_context_exclude_keys_from_list():
         - Exclude from output unwanted keys
     """
     parsed_response = parse_key_to_context(
-        commands_responses["list_drive_children"]["value"][0]
+        COMMANDS_RESPONSES["list_drive_children"]["value"][0]
     )
     assert parsed_response.get("eTag", True) is True
     assert parsed_response.get("ETag", True) is True
 
 
 @pytest.mark.parametrize(
-    "command, args, response, expected_result",
+    "command, args, response",
     [
         (
             download_file_command,
-            {"object_type": "drives", "object_type_id": "123", "item_id": "232"}, File,
-            commands_expected_results["download_file"]
+            {"object_type": "drives", "object_type_id": "123", "item_id": "232"},
+            File
         ),
     ],
 )  # noqa: E124
-def test_download_file(command, args, response, expected_result, mocker):
+def test_download_file(mocker: MockerFixture, command: Callable, args: dict, response: File) -> None:
     """
     Given:
         - Location to where to upload file to Graph Api
@@ -169,7 +172,7 @@ def test_download_file(command, args, response, expected_result, mocker):
         - return FileResult object
     """
     mocker.patch.object(client_mocker.ms_client, "http_request", return_value=response)
-    result = command(client_mocker, args)
+    result: dict = command(client_mocker, args)
     assert "Contents" in list(result.keys())
 
 
@@ -179,12 +182,12 @@ def test_download_file(command, args, response, expected_result, mocker):
         (
             delete_file_command,
             {"object_type": "drives", "object_type_id": "123", "item_id": "232"},
-            commands_responses["download_file"],
-            commands_expected_results["download_file"],
+            COMMANDS_RESPONSES["download_file"],
+            COMMANDS_EXPECTED_RESULTS["download_file"],
         )
     ],
-)  # noqa: E124
-def test_delete_file(command, args, response, expected_result, mocker):
+)
+def test_delete_file(mocker: MockerFixture, command: Callable, args: dict, response: str, expected_result: str) -> None:
     """
     Given:
         - Location to where to upload file to Graph Api
@@ -194,7 +197,7 @@ def test_delete_file(command, args, response, expected_result, mocker):
         - return FileResult object
     """
     mocker.patch.object(client_mocker.ms_client, "http_request", return_value=response)
-    human_readable, result = command(client_mocker, args)
+    _, result = command(client_mocker, args)
     assert expected_result == result
 
 
@@ -204,12 +207,12 @@ def test_delete_file(command, args, response, expected_result, mocker):
         (
             list_sharepoint_sites_command,
             {},
-            commands_responses["list_tenant_sites"],
-            commands_expected_results["list_tenant_sites"],
+            COMMANDS_RESPONSES["list_tenant_sites"],
+            COMMANDS_EXPECTED_RESULTS["list_tenant_sites"],
         )
     ],
-)  # noqa: E124
-def test_list_tenant_sites(command, args, response, expected_result, mocker):
+)
+def test_list_tenant_sites(mocker: MockerFixture, command: Callable, args: dict, response: dict, expected_result: dict) -> None:
     """
     Given:
         - Location to where to upload file to Graph Api
@@ -229,12 +232,12 @@ def test_list_tenant_sites(command, args, response, expected_result, mocker):
         (
             list_drive_content_command,
             {"object_type": "sites", "object_type_id": "12434", "item_id": "123"},
-            commands_responses["list_drive_children"],
-            commands_expected_results["list_drive_children"],
+            COMMANDS_RESPONSES["list_drive_children"],
+            COMMANDS_EXPECTED_RESULTS["list_drive_children"],
         )
     ],
-)  # noqa: E124
-def test_list_drive_content(command, args, response, expected_result, mocker):
+)
+def test_list_drive_content(mocker: MockerFixture, command: Callable, args: dict, response: dict, expected_result: dict) -> None:
     """
     Given:
         - Location to where to upload file to Graph Api
@@ -259,12 +262,12 @@ def test_list_drive_content(command, args, response, expected_result, mocker):
                 "parent_id": "1234",
                 "folder_name": "name",
             },
-            commands_responses["create_new_folder"],
-            commands_expected_results["create_new_folder"],
+            COMMANDS_RESPONSES["create_new_folder"],
+            COMMANDS_EXPECTED_RESULTS["create_new_folder"],
         )
     ],
-)  # noqa: E124
-def test_create_name_folder(command, args, response, expected_result, mocker):
+)
+def test_create_name_folder(mocker: MockerFixture, command: Callable, args: dict, response: dict, expected_result: dict) -> None:
     """
     Given:
         - Location to where to upload file to Graph Api
@@ -284,12 +287,12 @@ def test_create_name_folder(command, args, response, expected_result, mocker):
         (
             list_drives_in_site_command,
             {"site_id": "site_id"},
-            commands_responses["list_drives_in_a_site"],
-            commands_expected_results["list_drives_in_a_site"],
+            COMMANDS_RESPONSES["list_drives_in_a_site"],
+            COMMANDS_EXPECTED_RESULTS["list_drives_in_a_site"],
         )
     ],
-)  # noqa: E124
-def test_list_drives_in_site(command, args, response, expected_result, mocker):
+)
+def test_list_drives_in_site(mocker: MockerFixture, command: Callable, args: dict, response: dict, expected_result: dict) -> None:
     """
     Given:
         - Location to where to upload file to Graph Api
@@ -303,7 +306,7 @@ def test_list_drives_in_site(command, args, response, expected_result, mocker):
     assert expected_result == result[1]
 
 
-def expected_upload_headers():
+def expected_upload_headers() -> list:
     return [
         {'Content-Length': '327680', 'Content-Range': 'bytes 0-327679/7450762',
          'Content-Type': 'application/octet-stream'},
@@ -354,10 +357,10 @@ def expected_upload_headers():
     ]
 
 
-def validate_upload_attachments_flow(create_upload_mock, upload_query_mock):
+def validate_upload_attachments_flow(create_upload_mock: MagicMock, upload_query_mock: MagicMock) -> bool:
     """
     Validates that the upload flow is working as expected, each piece of headers is sent as expected.
-     """
+    """
     if not create_upload_mock.called:
         return False
 
@@ -373,7 +376,7 @@ def validate_upload_attachments_flow(create_upload_mock, upload_query_mock):
     return True
 
 
-def self_deployed_client():
+def self_deployed_client() -> MsGraphClient:
     return MsGraphClient(tenant_id="tenant_id", auth_id="auth_id", enc_key='enc_key', app_name='app_name',
                          base_url='url', verify='use_ssl', proxy='proxy', self_deployed='self_deployed', ok_codes=(1, 2, 3))
 
@@ -498,7 +501,7 @@ return_context = {
 
 
 @pytest.mark.parametrize('client, args', UPLOAD_LARGE_FILE_COMMAND_ARGS)
-def test_upload_command_with_upload_session(mocker, client, args):
+def test_upload_command_with_upload_session(mocker: MockerFixture, client: MsGraphClient, args: dict) -> None:
     """
         Given:
             - An image to upload with a size bigger than 3.
@@ -521,7 +524,7 @@ def test_upload_command_with_upload_session(mocker, client, args):
 
 
 @pytest.mark.parametrize('client, args', UPLOAD_LARGE_FILE_COMMAND_ARGS)
-def test_upload_command_without_upload_session(mocker, client, args):
+def test_upload_command_without_upload_session(mocker: MockerFixture, client: MsGraphClient, args: dict) -> None:
     """
         Given:
             - An image to upload (file size lower than 3).
@@ -550,7 +553,7 @@ def test_upload_command_without_upload_session(mocker, client, args):
 
 
 @pytest.mark.parametrize(argnames='client_id', argvalues=['test_client_id', None])
-def test_test_module_command_with_managed_identities(mocker, requests_mock, client_id):
+def test_test_module_command_with_managed_identities(mocker: MockerFixture, requests_mock: MockerCore, client_id: str | None):
     """
         Given:
             - Managed Identities client id for authentication.

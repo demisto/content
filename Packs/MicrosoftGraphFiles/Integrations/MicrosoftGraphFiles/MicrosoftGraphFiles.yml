@@ -295,7 +295,7 @@ script:
       description: URL to download the file's content.
       type: String
     - contextPath: MsGraphFiles.ReplacedFiles.Size
-      description: File's size
+      description: File's size.
       type: Number
     - contextPath: MsGraphFiles.ReplacedFiles.Id
       description: The file ID.
@@ -349,7 +349,7 @@ script:
       description: Unique identifier of the item in the drive.
       type: String
     - contextPath: Msgraphfiles.CreatedFolder.ParentReference.Path
-      description: The path to the item
+      description: The path to the item.
       type: String
     - contextPath: Msgraphfiles.CreatedFolder.LastModifiedDateTime
       description: Timestamp of when the item was last modified.
@@ -538,7 +538,7 @@ script:
       description: The OData query.
       type: String
   - arguments:
-    - description: Keyword used to search for sites across a SharePoint tenant. If a keyword is not provided, it returns all sites)
+    - description: Keyword used to search for sites across a SharePoint tenant. If a keyword is not provided, it returns all sites).
       name: keyword
     description: Returns a list of the tenant sites.
     name: msgraph-list-sharepoint-sites
@@ -639,7 +639,7 @@ script:
     execution: false
     name: msgraph-files-auth-reset
     arguments: []
-  dockerimage: demisto/python_pancloud:1.0.0.66801
+  dockerimage: demisto/python_pancloud:1.0.0.77747
   script: ''
   subtype: python3
   type: python

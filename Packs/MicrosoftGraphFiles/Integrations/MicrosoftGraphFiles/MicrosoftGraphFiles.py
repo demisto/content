@@ -3,11 +3,8 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 from MicrosoftApiModule import *  # noqa: E402
 
-""" IMPORTS """
-import urllib3
 from urllib.parse import parse_qs, urlparse
-# Disable insecure warnings
-urllib3.disable_warnings()
+
 
 """ GLOBALS/PARAMS """
 
@@ -24,7 +21,7 @@ RESPONSE_KEYS_DICTIONARY = {
 EXCLUDE_LIST = ["eTag", "cTag", "quota"]
 
 
-def parse_key_to_context(obj):
+def parse_key_to_context(obj: dict) -> dict:
     """Parse graph api data as received from Microsoft Graph API into Demisto's conventions
 
     Args:
@@ -41,7 +38,7 @@ def parse_key_to_context(obj):
             continue
         new_key = RESPONSE_KEYS_DICTIONARY.get(key, key)
         parsed_obj[new_key] = value
-        if type(value) == dict:
+        if isinstance(value, dict):
             parsed_obj[new_key] = parse_key_to_context(value)
 
     under_score_obj = createContext(parsed_obj, keyTransform=camel_case_to_underscore)
@@ -59,7 +56,7 @@ def parse_key_to_context(obj):
     return context_entry
 
 
-def remove_identity_key(source):
+def remove_identity_key(source: Any) -> dict:
     """
     this function removes identity key (application, device or user) from LastModifiedBy and CreatedBy keys and
     convert it to "type" key.
@@ -67,7 +64,7 @@ def remove_identity_key(source):
     :return: camel case dictionary with identity key as type.
     """
     if not isinstance(source, dict):
-        LOG("Input is not dictionary. Exist function.")
+        demisto.debug("Input is not dictionary. Exist function.")
         return source
 
     dict_keys = list(source.keys())
@@ -86,7 +83,7 @@ def remove_identity_key(source):
     return new_source
 
 
-def url_validation(url):
+def url_validation(url: str) -> str:
     """
     this function tests if a user provided a valid next link url
     :param url: next_link_url from graph api
@@ -97,7 +94,7 @@ def url_validation(url):
     url_parameters = parse_qs(parsed_url.query)
     if not url_parameters.get("$skiptoken") or not url_parameters["$skiptoken"]:
         raise DemistoException(
-            f"Url: {url} is not valid. Please provide another one. missing $skiptoken"
+            f"Url: {url} is not valid. Please provide another one. missing kiptoken"
         )
     return url
 
@@ -121,7 +118,7 @@ class MsGraphClient:
             command_prefix="msgraph-files",
         )
 
-    def list_sharepoint_sites(self, keyword):
+    def list_sharepoint_sites(self, keyword: str) -> dict:
         """
         This function lists the tenant sites
         :return: graph api raw response
@@ -132,7 +129,7 @@ class MsGraphClient:
             params={"search": keyword},
         )
 
-    def list_drives_in_site(self, site_id=None, limit=None, next_page_url=None):
+    def list_drives_in_site(self, site_id=None, limit=None, next_page_url=None) -> dict:
         """
         Returns the list of Drive resources available for a target Site
         :param site_id: selected Site ID.
@@ -249,7 +246,7 @@ class MsGraphClient:
         demisto.debug(f'response of "upload_file_with_upload_session": {response_file_upload}')
         return response_file_upload
 
-    def delete_file(self, object_type, object_type_id, item_id):
+    def delete_file(self, object_type: str, object_type_id: str, item_id: str) -> str:
         """
         Delete a DriveItem by using its ID
         :param object_type: ms graph resource.
@@ -260,7 +257,7 @@ class MsGraphClient:
         if object_type == "drives":
             uri = f"{object_type}/{object_type_id}/items/{item_id}"
 
-        elif object_type in ["groups", "sites", "users"]:
+        elif object_type in {"groups", "sites", "users"}:
             uri = f"{object_type}/{object_type_id}/drive/items/{item_id}"
 
         # send request
@@ -328,10 +325,10 @@ class MsGraphClient:
             attachment_size=file_size
         )
         demisto.debug(f"start_chunk_idx:{start_chunk_index}, end_chunk_idx:{end_chunk_index}")
-        while response.status_code != 201 and response.status_code != 200:  # the api returns 201 when the file is created
+        while response.status_code not in [201, 200]:  # the api returns 201 when the file is created
             start_chunk_index = end_chunk_index
             next_chunk = end_chunk_index + self.MAX_ATTACHMENT_UPLOAD
-            end_chunk_index = next_chunk if next_chunk <= file_size else file_size
+            end_chunk_index = min(next_chunk, file_size)
             chunk_data = file_data[start_chunk_index: end_chunk_index]
             demisto.debug(f"start_chunk_idx:{start_chunk_index}, end_chunk_idx:{end_chunk_index}")
             response = self.upload_attachment(
@@ -479,7 +476,7 @@ def module_test(client: MsGraphClient, *_):
     return 'ok'
 
 
-def download_file_command(client: MsGraphClient, args):
+def download_file_command(client: MsGraphClient, args: dict):
     """
     This function runs download file command
     :return: FileResult object
@@ -509,7 +506,7 @@ def list_drive_content_human_readable_object(parsed_drive_items):
     return human_readable_content_obj
 
 
-def list_drive_content_command(client: MsGraphClient, args):
+def list_drive_content_command(client: MsGraphClient, args: dict):
     """
     This function runs list drive children command
     :return: human_readable, context, result
@@ -555,23 +552,22 @@ def list_drive_content_command(client: MsGraphClient, args):
     return human_readable, context, result
 
 
-def list_share_point_sites_human_readable_object(parsed_drive_items):
-    human_readable_content_obj = {
+def list_share_point_sites_human_readable_object(parsed_drive_items: dict) -> dict:
+    return {
         "Name": parsed_drive_items.get("Name"),
         "ID": parsed_drive_items.get("ID"),
         "CreatedDateTime": parsed_drive_items.get("CreatedDateTime"),
         "LastModifiedDateTime": parsed_drive_items.get("LastModifiedDateTime"),
         "WebUrl": parsed_drive_items.get("WebUrl"),
     }
-    return human_readable_content_obj
 
 
-def list_sharepoint_sites_command(client: MsGraphClient, args):
+def list_sharepoint_sites_command(client: MsGraphClient, args: dict) -> tuple[str, dict, dict]:
     """
     This function runs list tenant site command
     :return: human_readable, context, result
     """
-    keyword = args.get("keyword") if args.get("keyword") else "*"
+    keyword = args.get("keyword", "*")
     result = client.list_sharepoint_sites(keyword)
     parsed_sites_items = [parse_key_to_context(item) for item in result["value"]]
 
@@ -608,7 +604,7 @@ def list_drives_human_readable_object(parsed_drive_items):
     return human_readable_content_obj
 
 
-def list_drives_in_site_command(client: MsGraphClient, args):
+def list_drives_in_site_command(client: MsGraphClient, args: dict) -> tuple[str, dict, dict]:
     """
     This function run the list drives in site command
     :return: human_readable, context, result
@@ -630,7 +626,7 @@ def list_drives_in_site_command(client: MsGraphClient, args):
     ]
 
     context_entry = {
-        "OdataContext": result.get("@odata.context", None),
+        "OdataContext": result.get("@odata.context"),
         "Value": parsed_drive_items,
     }
 
@@ -646,15 +642,15 @@ def list_drives_in_site_command(client: MsGraphClient, args):
     return human_readable, context, result
 
 
-def replace_an_existing_file_command(client: MsGraphClient, args):
+def replace_an_existing_file_command(client: MsGraphClient, args: dict) -> tuple[str, dict, dict]:
     """
     This function runs the replace existing file command
     :return: human_readable, context, result
     """
-    object_type = args.get("object_type")
-    item_id = args.get("item_id")
-    entry_id = args.get("entry_id")
-    object_type_id = args.get("object_type_id")
+    object_type = args["object_type"]
+    item_id = args["item_id"]
+    entry_id = args["entry_id"]
+    object_type_id = args["object_type_id"]
     file_data, file_size, file_name = read_file(entry_id)
     if file_size < client.MAX_ATTACHMENT_SIZE:
         result = client.replace_existing_file(
@@ -670,9 +666,9 @@ def replace_an_existing_file_command(client: MsGraphClient, args):
     human_readable_content = {
         "ID": context_entry.get("ID"),
         "Name": context_entry.get("Name"),
-        "CreatedBy": context_entry.get("CreatedBy").get("DisplayName"),
-        "CreatedDateTime": context_entry.get("CreatedDateTime"),
-        "LastModifiedBy": context_entry.get("LastModifiedBy").get("DisplayName"),
+        "CreatedBy": context_entry.get("CreatedBy", {}).get("DisplayName"),
+        "CreatedDateTime": context_entry.get("CreatedDateTime", {}),
+        "LastModifiedBy": context_entry.get("LastModifiedBy", {}).get("DisplayName"),
         "Size": context_entry.get("Size"),
         "WebUrl": context_entry.get("WebUrl"),
     }
@@ -708,20 +704,22 @@ def read_file(attach_id: str) -> tuple[bytes, int, str]:
             file_size = os.path.getsize(file_info['path'])
             return file_data_read, file_size, file_info['name']
     except Exception as e:
-        raise Exception(f'Unable to read and decode in base 64 file with id {attach_id}', e)
+        raise Exception(
+            f'Unable to read and decode in base 64 file with id {attach_id}', e
+        ) from e
 
 
-def upload_new_file_command(client: MsGraphClient, args):
+def upload_new_file_command(client: MsGraphClient, args: dict):
     """
     This function uploads new file to graph api
     :return: human_readable, context, result
     """
-    object_type = args.get("object_type")
-    object_type_id = args.get("object_type_id")
-    parent_id = args.get("parent_id")
-    entry_id = args.get("entry_id")
-    file_data, file_size, file_name = read_file(entry_id)
-    file_name = args.get("file_name", file_name)
+    object_type = args["object_type"]
+    object_type_id = args["object_type_id"]
+    parent_id = args["parent_id"]
+    entry_id = args["entry_id"]
+    file_data, file_size, _ = read_file(entry_id)
+    file_name = args["file_name"]
 
     if file_size < client.MAX_ATTACHMENT_SIZE:
         result = client.upload_new_file(
@@ -736,9 +734,9 @@ def upload_new_file_command(client: MsGraphClient, args):
     human_readable_content = {
         "ID": context_entry.get("ID"),
         "Name": context_entry.get("Name"),
-        "CreatedBy": context_entry.get("CreatedBy").get("DisplayName"),
+        "CreatedBy": context_entry.get("CreatedBy", {}).get("DisplayName"),
         "CreatedDateTime": context_entry.get("CreatedDateTime"),
-        "LastModifiedBy": context_entry.get("LastModifiedBy").get("DisplayName"),
+        "LastModifiedBy": context_entry.get("LastModifiedBy", {}).get("DisplayName"),
         "Size": context_entry.get("Size"),
         "WebUrl": context_entry.get("WebUrl"),
     }
@@ -752,7 +750,7 @@ def upload_new_file_command(client: MsGraphClient, args):
     return human_readable, context, result
 
 
-def create_new_folder_command(client: MsGraphClient, args):
+def create_new_folder_command(client: MsGraphClient, args: dict):
     """
     This function runs create new folder command
     :return: human_readable, context, result
@@ -771,10 +769,10 @@ def create_new_folder_command(client: MsGraphClient, args):
     human_readable_content = {
         "ID": context_entry.get("ID"),
         "Name": context_entry.get("Name"),
-        "CreatedBy": context_entry.get("CreatedBy").get("DisplayName"),
+        "CreatedBy": context_entry.get("CreatedBy", {}).get("DisplayName"),
         "CreatedDateTime": context_entry.get("CreatedDateTime"),
         "ChildCount": context_entry.get("Folder"),
-        "LastModifiedBy": context_entry.get("LastModifiedBy").get("DisplayName"),
+        "LastModifiedBy": context_entry.get("LastModifiedBy", {}).get("DisplayName"),
         "Size": context_entry.get("Size"),
         "WebUrl": context_entry.get("WebUrl"),
     }
@@ -791,14 +789,14 @@ def create_new_folder_command(client: MsGraphClient, args):
     return human_readable, context, result
 
 
-def delete_file_command(client: MsGraphClient, args):
+def delete_file_command(client: MsGraphClient, args: dict) -> tuple[str, str]:
     """
     runs delete file command
     :return: raw response and action result test
     """
-    object_type = args.get("object_type")
-    item_id = args.get("item_id")
-    object_type_id = args.get("object_type_id")
+    object_type = args["object_type"]
+    item_id = args["item_id"]
+    object_type_id = args["object_type_id"]
 
     text = client.delete_file(object_type, object_type_id, item_id)
 
@@ -813,6 +811,9 @@ def delete_file_command(client: MsGraphClient, args):
 
 def main():
     params: dict = demisto.params()
+    args = demisto.args()
+    command = demisto.command()
+
     base_url: str = params.get('host', '').rstrip('/') + '/v1.0/'
     tenant = params.get('credentials_tenant_id', {}).get('password') or params.get('tenant_id')
     auth_id = params.get('credentials_auth_id', {}).get('password') or params.get('auth_id')
@@ -839,38 +840,36 @@ def main():
                                certificate_thumbprint=certificate_thumbprint, private_key=private_key,
                                managed_identities_client_id=managed_identities_client_id)
 
-        LOG(f"Command being called is {demisto.command()}")
+        demisto.debug(f"Command being called is {command}")
 
-        if demisto.command() == "test-module":
+        if command == "test-module":
             # This is the call made when pressing the integration Test button.
             result = module_test(client)
             demisto.results(result)
-        elif demisto.command() == "msgraph-delete-file":
-            readable_output, raw_response = delete_file_command(client, demisto.args())
+        elif command == "msgraph-delete-file":
+            readable_output, raw_response = delete_file_command(client, args)
             return_outputs(readable_output=readable_output, raw_response=raw_response)
-        elif demisto.command() == "msgraph-list-sharepoint-sites":
-            return_outputs(*list_sharepoint_sites_command(client, demisto.args()))
-        elif demisto.command() == "msgraph-download-file":
+        elif command == "msgraph-list-sharepoint-sites":
+            return_outputs(*list_sharepoint_sites_command(client, args))
+        elif command == "msgraph-download-file":
             # it has to be demisto.results instead of return_outputs.
             # because fileResult contains 'content': '' and if that key is empty return_outputs returns error.
-            demisto.results(download_file_command(client, demisto.args()))
-        elif demisto.command() == "msgraph-list-drive-content":
-            return_outputs(*list_drive_content_command(client, demisto.args()))
-        elif demisto.command() == "msgraph-create-new-folder":
-            return_outputs(*create_new_folder_command(client, demisto.args()))
-        elif demisto.command() == "msgraph-replace-existing-file":
-            return_outputs(*replace_an_existing_file_command(client, demisto.args()))
-        elif demisto.command() == "msgraph-list-drives-in-site":
-            return_outputs(*list_drives_in_site_command(client, demisto.args()))
-        elif demisto.command() == "msgraph-upload-new-file":
-            return_outputs(*upload_new_file_command(client, demisto.args()))
-        elif demisto.command() == "msgraph-files-auth-reset":
+            demisto.results(download_file_command(client, args))
+        elif command == "msgraph-list-drive-content":
+            return_outputs(*list_drive_content_command(client, args))
+        elif command == "msgraph-create-new-folder":
+            return_outputs(*create_new_folder_command(client, args))
+        elif command == "msgraph-replace-existing-file":
+            return_outputs(*replace_an_existing_file_command(client, args))
+        elif command == "msgraph-list-drives-in-site":
+            return_outputs(*list_drives_in_site_command(client, args))
+        elif command == "msgraph-upload-new-file":
+            return_outputs(*upload_new_file_command(client, args))
+        elif command == "msgraph-files-auth-reset":
             return_results(reset_auth())
     # Log exceptions
-    except Exception as err:
-        return_error(
-            f"Failed to execute {demisto.command()} command. Error: {str(err)}", err
-        )
+    except Exception as e:
+        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
