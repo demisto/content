@@ -6810,7 +6810,13 @@ class CommandResults:
     :type replace_existing: ``bool``
     :param replace_existing: Replace the context value at outputs_prefix if it exists.
             Works only if outputs_prefix is a path to a nested value i.e., contains a period.
-            Used primarily for next tokens.
+            For example, the "next token" result should always be overwritten. This response can be returned as follows:
+            >>> CommandResults(
+            >>>     readable_output=f'Next Token: {next_token}',
+            >>>     outputs=next_token,
+            >>>     outputs_prefix='Path.To.NextToken',
+            >>>     replace_existing=True,
+            >>> )
 
     :return: None
     :rtype: ``None``
