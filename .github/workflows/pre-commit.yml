@@ -8,7 +8,7 @@ jobs:
     permissions:
       checks: write
       pull-requests: write
-
+      contents: write
     steps:
     - name: Install poetry
       uses: Gr1N/setup-poetry@v8
@@ -33,7 +33,11 @@ jobs:
       with:
         path: ~/.cache/pre-commit
         key: ${{ runner.os }}-pre-commit
-
+    - name: Cache Docker images.
+      uses: ScribeMD/docker-cache@0.3.6
+      with:
+        key: docker-${{ runner.os }}-${{ hashFiles(paths) }}
+      
     - name: run pre-commit
       env:
         DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
@@ -86,6 +90,11 @@ jobs:
       uses: py-cov-action/python-coverage-comment-action@v3
       with:
           GITHUB_TOKEN: ${{ github.token }}
+    - uses: actions/cache/save@v3
+      if: always()
+      with:
+        path: ~/.cache/pre-commit
+        key: ${{ runner.os }}-pre-commit
       
   pre-commit-community-level:
     runs-on: ubuntu-latest
@@ -161,3 +170,5 @@ jobs:
       id: append-coverage
       run: |
         cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY || echo "Missing coverage report"
+
+    
