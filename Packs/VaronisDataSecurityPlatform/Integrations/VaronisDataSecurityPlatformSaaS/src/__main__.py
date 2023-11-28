@@ -216,11 +216,14 @@ def convert_incident_alert_to_onprem_format(alert_saas_format):
 
     # todo: fix when it will be converted to array
     output["Locations"] = []
-    countries = [] if alert_saas_format.get("Country") is None else alert_saas_format.get("Country")
-    states = [] if alert_saas_format.get("State") is None else alert_saas_format.get("State")
+    countries = [] if alert_saas_format.get(AlertAttributes.Alert_Location_CountryName) is None else alert_saas_format.get(
+        AlertAttributes.Alert_Location_CountryName).split(',')
+    states = [] if alert_saas_format.get(AlertAttributes.Alert_Location_SubdivisionName) is None else alert_saas_format.get(
+        AlertAttributes.Alert_Location_SubdivisionName).split(',')
     blacklist_locations = [] if alert_saas_format.get(
-        "BlacklistLocation") is None else [alert_saas_format.get("BlacklistLocation")]
-    abnormal_locations = [] if alert_saas_format.get("AbnormalLocation") is None else alert_saas_format.get("AbnormalLocation")
+        AlertAttributes.Alert_Location_BlacklistedLocation) is None else alert_saas_format.get(AlertAttributes.Alert_Location_BlacklistedLocation).split(',')
+    abnormal_locations = [] if alert_saas_format.get(
+        AlertAttributes.Alert_Location_AbnormalLocation) is None else alert_saas_format.get(AlertAttributes.Alert_Location_AbnormalLocation).split(',')
     for i in range(len(countries)):
         entry = {
             "Country": "" if len(countries) <= i else countries[i],
@@ -232,9 +235,9 @@ def convert_incident_alert_to_onprem_format(alert_saas_format):
 
     # todo: fix when it will be converted to array
     output["Sources"] = []
-    platforms = [] if alert_saas_format.get("Platform") is None else alert_saas_format.get("Platform")
+    platforms = [] if alert_saas_format.get(AlertAttributes.Alert_Filer_Platform_Name) is None else alert_saas_format.get(AlertAttributes.Alert_Filer_Platform_Name).split(',')
     file_server_or_Domain = [] if alert_saas_format.get(
-        "FileServerOrDomain") is None else alert_saas_format.get("FileServerOrDomain")
+        "FileServerOrDomain") is None else alert_saas_format.get("FileServerOrDomain").split(',')
     for i in range(len(platforms)):
         entry = {
             "Platform": "" if len(platforms) <= i else platforms[i],
@@ -244,8 +247,8 @@ def convert_incident_alert_to_onprem_format(alert_saas_format):
 
     # todo: fix when it will be converted to array
     output["Devices"] = []
-    device_names = [] if alert_saas_format.get("DeviceName") is None else alert_saas_format.get("DeviceName")
-    assets = [] if alert_saas_format.get("Asset") is None else alert_saas_format.get("Asset")
+    device_names = [] if alert_saas_format.get(AlertAttributes.Alert_Device_HostName) is None else alert_saas_format.get(AlertAttributes.Alert_Device_HostName).split(',')
+    assets = [] if alert_saas_format.get(AlertAttributes.Alert_Asset_Path) is None else alert_saas_format.get(AlertAttributes.Alert_Asset_Path).split(',')
     for i in range(len(device_names)):
         entry = {
             "Name": "" if len(device_names) <= i else device_names[i],
@@ -254,11 +257,11 @@ def convert_incident_alert_to_onprem_format(alert_saas_format):
         output["Devices"].append(entry)
 
     output["Users"] = []
-    user_names = [] if alert_saas_format.get("UserName") is None else alert_saas_format["UserName"]
-    sam_account_names = [] if alert_saas_format.get("SamAccountName") is None else alert_saas_format["SamAccountName"]
+    user_names = [] if alert_saas_format.get(AlertAttributes.Alert_User_Name) is None else alert_saas_format[AlertAttributes.Alert_User_Name].split(',')
+    sam_account_names = [] if alert_saas_format.get(AlertAttributes.Alert_User_SamAccountName) is None else alert_saas_format[AlertAttributes.Alert_User_SamAccountName].split(',')
     privileged_account_types = [] if alert_saas_format.get(
-        "PrivilegedAccountType") is None else alert_saas_format["PrivilegedAccountType"]
-    departments = [] if alert_saas_format.get("Department") is None else alert_saas_format["Department"]
+        AlertAttributes.Alert_User_AccountType_AggregatedName) is None else alert_saas_format[AlertAttributes.Alert_User_AccountType_AggregatedName].split(',')
+    departments = [] if alert_saas_format.get("Department") is None else alert_saas_format["Department"].split(',')
     for i in range(len(user_names)):
         entry = {
             "Name": "" if len(user_names) <= i else user_names[i],
@@ -380,7 +383,8 @@ def varonis_get_threat_models_command(client: Client, args: Dict[str, Any]) -> C
     outputs = dict()
     outputs['threat_models'] = filtered_items
 
-    readable_output = tableToMarkdown('Varonis Threat Models', filtered_items, headers=['ID', 'Name', 'Category', 'Severity', 'Source'])
+    readable_output = tableToMarkdown('Varonis Threat Models', filtered_items, headers=[
+                                      'ID', 'Name', 'Category', 'Severity', 'Source'])
 
     return CommandResults(
         readable_output=readable_output,
@@ -449,23 +453,24 @@ def fetch_incidents_command(client: Client, last_run: Dict[str, datetime], first
                                        ingest_time_from=last_fetched_ingest_time,
                                        ingest_time_to=ingest_time_to,
                                        alert_statuses=statuses, alert_severities=severities,
+                                       extra_fields=None,
                                        descending_order=True)
 
     demisto.debug(f'varonis_get_alerts returned: {len(alerts)} alerts')
 
     for alert in alerts:
-        ingestTime_str = alert['IngestTime']
+        ingestTime_str = alert[AlertAttributes.Alert_IngestTime]
         ingestTime = try_convert(
-            alert['IngestTime'],
+            alert[AlertAttributes.Alert_IngestTime],
             lambda x: datetime.fromisoformat(x),
             ValueError(f'IngestTime should be in iso format, but it is {ingestTime_str}.')
         )
 
         if not last_fetched_ingest_time or ingestTime > last_fetched_ingest_time:
             last_fetched_ingest_time = ingestTime + timedelta(minutes=1)
-        guid = alert['ID']
-        name = alert['Name']
-        alert_time = alert['Time']
+        guid = alert[AlertAttributes.Alert_ID]
+        name = alert[AlertAttributes.Alert_Rule_Name]
+        alert_time = alert[AlertAttributes.Alert_Time]
         enrich_with_url(alert, client._base_url, guid)
 
         alert_converted = convert_incident_alert_to_onprem_format(alert)
@@ -475,7 +480,7 @@ def fetch_incidents_command(client: Client, last_run: Dict[str, datetime], first
             'occurred': f'{alert_time}Z',
             'rawJSON': json.dumps(alert_converted),
             'type': 'Varonis DSP Incident',
-            'severity': convert_to_demisto_severity(alert_converted['Severity']),
+            'severity': convert_to_demisto_severity(alert_converted[AlertAttributes.Alert_Rule_Severity_Name]),
         }
 
         incidents.append(incident)
@@ -732,9 +737,9 @@ def main() -> None:
     args = demisto.args()
 
     if not is_xsoar_env():
-        url = 'https://int94cf8.varonis-preprod.com/'
-        apiKey = 'vkey1_45108cd087db4433b77328b2447cabff_RA/zyLNp4IRw+5benTJGNrCWzVPgZcBeYfIvYQ76X7Y='
-        command = 'test-module'  # 'test-module'|
+        url = 'https://intaf7c2.varonis-preprod.com/'
+        apiKey = 'vkey1_71388e9cc4734983b77d445563fdc536_oJrXRx73YESL5PdVWhLNjbCZTwvjNBKutwuRn59iKw4='
+        command = 'fetch-incidents'  # 'test-module'|
         # 'varonis-get-threat-models'|
         # 'varonis-get-alerts'|
         # 'varonis-get-alerted-events'|
@@ -758,11 +763,12 @@ def main() -> None:
 
         if command == 'varonis-get-threat-models':
             args['id'] = "1,2,3"  # List of requested threat model ids
-            args['name'] = ""  # "Abnormal service behavior: access to atypical folders,Abnormal service behavior: access to atypical files"  # List of requested threat model names
+            # "Abnormal service behavior: access to atypical folders,Abnormal service behavior: access to atypical files"  # List of requested threat model names
+            args['name'] = ""
             args['category'] = ""  # "Exfiltration,Reconnaissance"  # List of requested threat model categories
             args['severity'] = ""  # "3 - Error,4 - Warning"  # List of requested threat model severities
             args['source'] = ""  # "Predefined"  # List of requested threat model sources
-            
+
         elif command == 'varonis-get-alerts':
             args['threat_model_name'] = None  # List of requested threat models
             args['ingest_time_from'] = None  # Start ingest time of the range of alerts
@@ -774,7 +780,7 @@ def main() -> None:
             args['device_name'] = None  # List of device names
             args['user_name'] = "varadm"  # List of device names
             args['last_days'] = None  # Number of days you want the search to go back to
-            args['extra_fields'] = "Alert.User*,Alert.Location*"  # extra fields 
+            args['extra_fields'] = "Alert.User*,Alert.Location*"  # extra fields
             args['descending_order'] = None  # Indicates whether alerts should be ordered in newest to oldest order
 
         elif command == 'varonis-get-alerted-events':
@@ -782,7 +788,7 @@ def main() -> None:
             args['start_time'] = None  # Start time of the range of events
             args['end_time'] = None  # End time of the range of events
             args['last_days'] = None  # Number of days you want the search to go back to
-            args['extra_fields'] = "Event.Session*,Event.OnMail*"  # extra fields 
+            args['extra_fields'] = "Event.Session*,Event.OnMail*"  # extra fields
             args['descending_order'] = None  # Indicates whether events should be ordered in newest to oldest order
 
         elif command == 'varonis-update-alert-status':
@@ -794,7 +800,7 @@ def main() -> None:
             args['close_reason'] = 'resolved'  # Alert's close reason
             args['alert_id'] = "E5E255ED-24FD-4461-A676-A1A980E24397"  # Array of alert ids to be closed
             args['note'] = "user note"  # Note for alert
-            
+
         elif command == 'fetch-incidents':
             pass
 

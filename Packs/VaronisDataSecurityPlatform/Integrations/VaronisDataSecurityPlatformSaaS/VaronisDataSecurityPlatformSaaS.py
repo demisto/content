@@ -1,16 +1,16 @@
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from typing import Dict, List
-from CommonServerUserPython import *  # noqa
-from typing import List
-import fnmatch
+from CommonServerUserPython import *
 from typing import Dict, Any, List, Tuple
+from CommonServerUserPython import *  # noqa
+from typing import Any, Dict, List
+from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+import traceback
 import json
 import demistomock as demisto
-from typing import Any, Dict, List
 import requests
-import traceback
-from CommonServerUserPython import *
 from CommonServerPython import *
+import fnmatch
+from typing import List
 
 
 
@@ -109,102 +109,6 @@ class AlertAttributes:
         return output
 
 
-class ThreatModelAttributes:
-    Id = "ruleID"
-    Name = "ruleName"
-    Category = "ruleArea"
-    Source = "ruleSource"
-    Severity = "severity"
-
-    Columns = [Id, Name, Category, Source, Severity]
-
-class RequestParams:
-    def __init__(self):
-        self.searchSource = None
-        self.searchSourceName = None
-
-    def set_search_source(self, search_source):
-        self.searchSource = search_source
-        return self
-
-    def set_search_source_name(self, search_source_name):
-        self.searchSourceName = search_source_name
-        return self
-
-    def __repr__(self):
-        return f"Search Source: {self.searchSource}, Search Source Name: {self.searchSourceName}"
-
-class FilterValue:
-    def __init__(self, value):
-        self = value
-        # self.displayValue = value.get("displayValue", None)
-
-    def __repr__(self):
-        return f"{self.value}"
-
-class FilterCondition:
-    def __init__(self):
-        self.path = None
-        self.operator = None
-        self.values = []
-
-    def set_path(self, path):
-        self.path = path
-        return self
-
-    def set_operator(self, operator):
-        self.operator = operator
-        return self
-
-    def add_value(self, value):
-        self.values.append(value)  # FilterValue(value)
-        return self
-
-    def __repr__(self):
-        return f"{self.path} {self.operator} {self.values}"
-
-class Rows:
-    def __init__(self):
-        self.columns = []
-        self.filter = []
-        self.grouping = None
-        self.ordering = []
-
-    def add_column(self, column):
-        self.columns.append(column)
-        return self
-
-    def add_filter(self, filter_):
-        self.filter.append(filter_)
-        return self
-
-    def set_grouping(self, grouping):
-        self.grouping = grouping
-        return self
-
-    def add_ordering(self, ordering):
-        self.ordering.append(ordering)
-        return self
-
-    def __repr__(self):
-        return f"Columns: {self.columns}, Filter: {self.filter}, Grouping: {self.grouping}, Ordering: {self.ordering}"
-
-
-
-
-
-class BaseMapper:
-    @staticmethod
-    def convert_json_to_key_value(json_data) -> List[Dict[str, Any]]:
-        data = json_data
-        result = []
-        for row in data["rows"]:
-            obj = {}
-            for col, val in zip(data["columns"], row):
-                obj[col] = val
-            result.append(obj)
-        return result
-
 
 
 
@@ -256,234 +160,17 @@ class AlertItem:
 
 
 
-class SearchAlertObjectMapper(BaseMapper):
-    def map(self, json_data):
-        key_valued_objects = self.convert_json_to_key_value(json_data)
-
-        mapped_items = []
-        for obj in key_valued_objects:
-            mapped_items.append(self.map_item(obj).to_dict())
-
-        return mapped_items
-
-    def map_item(self, row: dict) -> AlertItem:
-        alert_item = AlertItem(row)
-        # alert_item.ID = row[AlertAttributes.Id]
-        # alert_item.Name = row[AlertAttributes.RuleName]
-        # alert_item.Time = row[AlertAttributes.Time]
-        # alert_item.Severity = row[AlertAttributes.RuleSeverityName]
-        # alert_item.SeverityId = int(row[AlertAttributes.RuleSeverityId])
-        # alert_item.Category = row[AlertAttributes.RuleCategoryName]
-        # alert_item.Country = self.multi_value_to_string_list(row[AlertAttributes.LocationCountryName])
-        # alert_item.State = self.multi_value_to_string_list(row[AlertAttributes.LocationSubdivisionName])
-        # alert_item.Status = row[AlertAttributes.StatusName]
-        # alert_item.StatusId = int(row[AlertAttributes.StatusId])
-        # alert_item.CloseReason = row[AlertAttributes.CloseReasonName]
-        # alert_item.BlacklistLocation = self.get_bool_value(row, AlertAttributes.LocationBlacklistedLocation)
-        # alert_item.AbnormalLocation = self.multi_value_to_string_list(row[AlertAttributes.LocationAbnormalLocation])
-        # alert_item.NumOfAlertedEvents = int(row[AlertAttributes.EventsCount])
-        # alert_item.UserName = self.multi_value_to_string_list(row[AlertAttributes.UserName])
-        # alert_item.SamAccountName = self.multi_value_to_string_list(row[AlertAttributes.UserSamAccountName])
-        # alert_item.PrivilegedAccountType = self.multi_value_to_string_list(row[AlertAttributes.UserAccountTypeName])
-        # alert_item.ContainMaliciousExternalIP = self.get_bool_value(row, AlertAttributes.DeviceIsMaliciousExternalIp)
-        # alert_item.IPThreatTypes = self.multi_value_to_string_list(row[AlertAttributes.DeviceExternalIpThreatTypesName])
-        # alert_item.Asset = self.multi_value_to_string_list(row[AlertAttributes.AssetPath])
-        # alert_item.AssetContainsFlaggedData = self.multi_value_to_boolean_list(row[AlertAttributes.DataIsFlagged])
-        # alert_item.AssetContainsSensitiveData = self.multi_value_to_boolean_list(row[AlertAttributes.DataIsSensitive])
-        # alert_item.Platform = self.multi_value_to_string_list(row[AlertAttributes.FilerPlatformName])
-        # alert_item.FileServerOrDomain = self.multi_value_to_string_list(row[AlertAttributes.FilerName])
-        # alert_item.DeviceName = self.multi_value_to_string_list(row[AlertAttributes.DeviceHostname])
-        # alert_item.IngestTime = row[AlertAttributes.IngestTime]
-        # alert_item.EventUTC = self.get_date_value(row, AlertAttributes.InitialEventUtcTime)
-
-        return alert_item
-
-    def multi_value_to_string_list(self, multi_value: str) -> Optional[List[str]]:
-        if not multi_value or multi_value.isspace():
-            return None
-        return [value.strip() for value in multi_value.split(',')]
-
-    def multi_value_to_boolean_list(self, multi_value: str) -> Optional[List[Optional[bool]]]:
-        if not multi_value or multi_value.isspace():
-            return None
-        return [self.convert_to_boolean(value) for value in multi_value.split(',')]
-
-    def get_bool_value(self, row: dict, name: str) -> Optional[bool]:
-        return self.convert_to_boolean(row.get(name))
-
-    def convert_to_boolean(self, bool_str: str) -> Optional[bool]:
-        if bool_str is None:
-            return None
-        bool_str = bool_str.lower().strip()
-        if bool_str in ["yes", "1"]:
-            return True
-        if bool_str in ["no", "0"]:
-            return False
-        return bool_str.lower() in ['true', 'false'] and bool(bool_str)
-
-    def get_date_value(self, row: dict, name: str) -> Optional[datetime]:
-        date_str = row.get(name)
-        if date_str is None:
-            return None
-        try:
-            return datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%SZ")
-        except ValueError:
-            return None
-
-
-
-
-
-class EventItem:
-    def __init__(self, row: dict):
-        self.row = row
-        # self.Id: Optional[str] = None
-        # self.AlertId: Optional[List[str]] = None
-        # self.Type: Optional[str] = None
-        # self.TimeUTC: Optional[datetime] = None
-        # self.Status: Optional[str] = None
-        # self.Description: Optional[str] = None
-        # self.Country: Optional[str] = None
-        # self.State: Optional[str] = None
-        # self.BlacklistedLocation: Optional[bool] = None
-        # self.EventOperation: Optional[str] = None
-        # self.ByUserAccount: Optional[str] = None
-        # self.ByUserAccountType: Optional[str] = None
-        # self.ByUserAccountDomain: Optional[str] = None
-        # self.BySamAccountName: Optional[str] = None
-        # self.Filer: Optional[str] = None
-        # self.Platform: Optional[str] = None
-        # self.SourceIP: Optional[str] = None
-        # self.ExternalIP: Optional[str] = None
-        # self.DestinationIP: Optional[str] = None
-        # self.SourceDevice: Optional[str] = None
-        # self.DestinationDevice: Optional[str] = None
-        # self.IsDisabledAccount: Optional[bool] = None
-        # self.IsLockoutAccount: Optional[bool] = None
-        # self.IsStaleAccount: Optional[bool] = None
-        # self.IsMaliciousIP: Optional[bool] = None
-        # self.ExternalIPThreatTypes: Optional[List[str]] = None
-        # self.ExternalIPReputation: Optional[str] = None
-        # self.OnObjectName: Optional[str] = None
-        # self.OnObjectType: Optional[str] = None
-        # self.OnSamAccountName: Optional[str] = None
-        # self.IsSensitive: Optional[bool] = None
-        # self.OnAccountIsDisabled: Optional[bool] = None
-        # self.OnAccountIsLockout: Optional[bool] = None
-        # self.Path: Optional[str] = None
-
-    def __getitem__(self, key: str) -> Any:
-        if hasattr(self.row, key):
-            return getattr(self.row, key)
-        raise KeyError(f"{key} not found in AlertItem")
-
-    def to_dict(self) -> Dict[str, Any]:
-        return self.row
-
-
-
-
-
-class ThreatModelItem:
-    def __init__(self):
-        self.Id: Optional[str] = None
-        self.Name: Optional[List[str]] = None
-        self.Category: Optional[str] = None
-        self.Severity: Optional[str] = None
-        self.Source: Optional[str] = None
-
-    def __getitem__(self, key: str) -> Any:
-        if hasattr(self, key):
-            return getattr(self, key)
-        raise KeyError(f"{key} not found in EventItem")
-
-    def to_dict(self) -> Dict[str, Any]:
-        return {key: value for key, value in self.__dict__.items() if value is not None}
-
-
-
-class ThreatModelObjectMapper(BaseMapper):
-    def map(self, json_data):
-        key_valued_objects = json_data
-
-        mapped_items = []
-        for obj in key_valued_objects:
-            mapped_items.append(self.map_item(obj).to_dict())
-
-        return mapped_items
-
-    def map_item(self, row: dict) -> ThreatModelItem:
-        threat_model_item = ThreatModelItem()
-        threat_model_item.ID = row[ThreatModelAttributes.Id]
-        threat_model_item.Name = row[ThreatModelAttributes.Name]
-        threat_model_item.Category = row[ThreatModelAttributes.Category]
-        threat_model_item.Source = row[ThreatModelAttributes.Source]
-        threat_model_item.Severity = row[ThreatModelAttributes.Severity]
-
-        return threat_model_item
-
-class Filters:
-    def __init__(self):
-        self.filterOperator = None
-        self.filters = []
-
-    def set_filter_operator(self, filter_operator):
-        self.filterOperator = filter_operator
-        return self
-
-    def add_filter(self, filter_):
-        self.filters.append(filter_)
-        return self
-
-    def __repr__(self):
-        return f"Filter Operator: {self.filterOperator}, Filters: {self.filters}"
-
-
-
-class Query:
-    def __init__(self):
-        self.entityName = None
-        self.filter = Filters()
-
-    def set_entity_name(self, entity_name):
-        self.entityName = entity_name
-        return self
-
-    def set_filter(self, filter_):
-        self.filter = filter_
-        return self
-
-    def __repr__(self):
-        return f"Entity Name: {self.entityName}, Filter: {self.filter}"
-
-
-
-
-
-class SearchRequest:
-    def __init__(self):
-        self.query = Query()
-        self.rows = Rows()
-        self.requestParams = RequestParams()
-
-    def set_query(self, query):
-        self.query = query
-        return self
-
-    def set_rows(self, rows):
-        self.rows = rows
-        return self
-
-    def set_request_params(self, request_params):
-        self.requestParams = request_params
-        return self
-
-    def __repr__(self):
-        return f"Query: {self.query}, Rows: {self.rows}, Request Params: {self.requestParams}"
-
-    def to_json(self):
-        dataJSON = json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
-        return dataJSON
+class BaseMapper:
+    @staticmethod
+    def convert_json_to_key_value(json_data) -> List[Dict[str, Any]]:
+        data = json_data
+        result = []
+        for row in data["rows"]:
+            obj = {}
+            for col, val in zip(data["columns"], row):
+                obj[col] = val
+            result.append(obj)
+        return result
 
 
 MAX_DAYS_BACK = 180
@@ -1363,6 +1050,239 @@ class EventAttributes:
 
 
 
+class EventItem:
+    def __init__(self, row: dict):
+        self.row = row
+        # self.Id: Optional[str] = None
+        # self.AlertId: Optional[List[str]] = None
+        # self.Type: Optional[str] = None
+        # self.TimeUTC: Optional[datetime] = None
+        # self.Status: Optional[str] = None
+        # self.Description: Optional[str] = None
+        # self.Country: Optional[str] = None
+        # self.State: Optional[str] = None
+        # self.BlacklistedLocation: Optional[bool] = None
+        # self.EventOperation: Optional[str] = None
+        # self.ByUserAccount: Optional[str] = None
+        # self.ByUserAccountType: Optional[str] = None
+        # self.ByUserAccountDomain: Optional[str] = None
+        # self.BySamAccountName: Optional[str] = None
+        # self.Filer: Optional[str] = None
+        # self.Platform: Optional[str] = None
+        # self.SourceIP: Optional[str] = None
+        # self.ExternalIP: Optional[str] = None
+        # self.DestinationIP: Optional[str] = None
+        # self.SourceDevice: Optional[str] = None
+        # self.DestinationDevice: Optional[str] = None
+        # self.IsDisabledAccount: Optional[bool] = None
+        # self.IsLockoutAccount: Optional[bool] = None
+        # self.IsStaleAccount: Optional[bool] = None
+        # self.IsMaliciousIP: Optional[bool] = None
+        # self.ExternalIPThreatTypes: Optional[List[str]] = None
+        # self.ExternalIPReputation: Optional[str] = None
+        # self.OnObjectName: Optional[str] = None
+        # self.OnObjectType: Optional[str] = None
+        # self.OnSamAccountName: Optional[str] = None
+        # self.IsSensitive: Optional[bool] = None
+        # self.OnAccountIsDisabled: Optional[bool] = None
+        # self.OnAccountIsLockout: Optional[bool] = None
+        # self.Path: Optional[str] = None
+
+    def __getitem__(self, key: str) -> Any:
+        if hasattr(self.row, key):
+            return getattr(self.row, key)
+        raise KeyError(f"{key} not found in AlertItem")
+
+    def to_dict(self) -> Dict[str, Any]:
+        return self.row
+
+class FilterCondition:
+    def __init__(self):
+        self.path = None
+        self.operator = None
+        self.values = []
+
+    def set_path(self, path):
+        self.path = path
+        return self
+
+    def set_operator(self, operator):
+        self.operator = operator
+        return self
+
+    def add_value(self, value):
+        self.values.append(value)  # FilterValue(value)
+        return self
+
+    def __repr__(self):
+        return f"{self.path} {self.operator} {self.values}"
+
+class FilterValue:
+    def __init__(self, value):
+        self = value
+        # self.displayValue = value.get("displayValue", None)
+
+    def __repr__(self):
+        return f"{self.value}"
+
+class Filters:
+    def __init__(self):
+        self.filterOperator = None
+        self.filters = []
+
+    def set_filter_operator(self, filter_operator):
+        self.filterOperator = filter_operator
+        return self
+
+    def add_filter(self, filter_):
+        self.filters.append(filter_)
+        return self
+
+    def __repr__(self):
+        return f"Filter Operator: {self.filterOperator}, Filters: {self.filters}"
+
+
+
+class Query:
+    def __init__(self):
+        self.entityName = None
+        self.filter = Filters()
+
+    def set_entity_name(self, entity_name):
+        self.entityName = entity_name
+        return self
+
+    def set_filter(self, filter_):
+        self.filter = filter_
+        return self
+
+    def __repr__(self):
+        return f"Entity Name: {self.entityName}, Filter: {self.filter}"
+
+class RequestParams:
+    def __init__(self):
+        self.searchSource = None
+        self.searchSourceName = None
+
+    def set_search_source(self, search_source):
+        self.searchSource = search_source
+        return self
+
+    def set_search_source_name(self, search_source_name):
+        self.searchSourceName = search_source_name
+        return self
+
+    def __repr__(self):
+        return f"Search Source: {self.searchSource}, Search Source Name: {self.searchSourceName}"
+
+class Rows:
+    def __init__(self):
+        self.columns = []
+        self.filter = []
+        self.grouping = None
+        self.ordering = []
+
+    def add_column(self, column):
+        self.columns.append(column)
+        return self
+
+    def add_filter(self, filter_):
+        self.filter.append(filter_)
+        return self
+
+    def set_grouping(self, grouping):
+        self.grouping = grouping
+        return self
+
+    def add_ordering(self, ordering):
+        self.ordering.append(ordering)
+        return self
+
+    def __repr__(self):
+        return f"Columns: {self.columns}, Filter: {self.filter}, Grouping: {self.grouping}, Ordering: {self.ordering}"
+
+
+
+
+
+class SearchAlertObjectMapper(BaseMapper):
+    def map(self, json_data):
+        key_valued_objects = self.convert_json_to_key_value(json_data)
+
+        mapped_items = []
+        for obj in key_valued_objects:
+            mapped_items.append(self.map_item(obj).to_dict())
+
+        return mapped_items
+
+    def map_item(self, row: dict) -> AlertItem:
+        alert_item = AlertItem(row)
+        # alert_item.ID = row[AlertAttributes.Id]
+        # alert_item.Name = row[AlertAttributes.RuleName]
+        # alert_item.Time = row[AlertAttributes.Time]
+        # alert_item.Severity = row[AlertAttributes.RuleSeverityName]
+        # alert_item.SeverityId = int(row[AlertAttributes.RuleSeverityId])
+        # alert_item.Category = row[AlertAttributes.RuleCategoryName]
+        # alert_item.Country = self.multi_value_to_string_list(row[AlertAttributes.LocationCountryName])
+        # alert_item.State = self.multi_value_to_string_list(row[AlertAttributes.LocationSubdivisionName])
+        # alert_item.Status = row[AlertAttributes.StatusName]
+        # alert_item.StatusId = int(row[AlertAttributes.StatusId])
+        # alert_item.CloseReason = row[AlertAttributes.CloseReasonName]
+        # alert_item.BlacklistLocation = self.get_bool_value(row, AlertAttributes.LocationBlacklistedLocation)
+        # alert_item.AbnormalLocation = self.multi_value_to_string_list(row[AlertAttributes.LocationAbnormalLocation])
+        # alert_item.NumOfAlertedEvents = int(row[AlertAttributes.EventsCount])
+        # alert_item.UserName = self.multi_value_to_string_list(row[AlertAttributes.UserName])
+        # alert_item.SamAccountName = self.multi_value_to_string_list(row[AlertAttributes.UserSamAccountName])
+        # alert_item.PrivilegedAccountType = self.multi_value_to_string_list(row[AlertAttributes.UserAccountTypeName])
+        # alert_item.ContainMaliciousExternalIP = self.get_bool_value(row, AlertAttributes.DeviceIsMaliciousExternalIp)
+        # alert_item.IPThreatTypes = self.multi_value_to_string_list(row[AlertAttributes.DeviceExternalIpThreatTypesName])
+        # alert_item.Asset = self.multi_value_to_string_list(row[AlertAttributes.AssetPath])
+        # alert_item.AssetContainsFlaggedData = self.multi_value_to_boolean_list(row[AlertAttributes.DataIsFlagged])
+        # alert_item.AssetContainsSensitiveData = self.multi_value_to_boolean_list(row[AlertAttributes.DataIsSensitive])
+        # alert_item.Platform = self.multi_value_to_string_list(row[AlertAttributes.FilerPlatformName])
+        # alert_item.FileServerOrDomain = self.multi_value_to_string_list(row[AlertAttributes.FilerName])
+        # alert_item.DeviceName = self.multi_value_to_string_list(row[AlertAttributes.DeviceHostname])
+        # alert_item.IngestTime = row[AlertAttributes.IngestTime]
+        # alert_item.EventUTC = self.get_date_value(row, AlertAttributes.InitialEventUtcTime)
+
+        return alert_item
+
+    def multi_value_to_string_list(self, multi_value: str) -> Optional[List[str]]:
+        if not multi_value or multi_value.isspace():
+            return None
+        return [value.strip() for value in multi_value.split(',')]
+
+    def multi_value_to_boolean_list(self, multi_value: str) -> Optional[List[Optional[bool]]]:
+        if not multi_value or multi_value.isspace():
+            return None
+        return [self.convert_to_boolean(value) for value in multi_value.split(',')]
+
+    def get_bool_value(self, row: dict, name: str) -> Optional[bool]:
+        return self.convert_to_boolean(row.get(name))
+
+    def convert_to_boolean(self, bool_str: str) -> Optional[bool]:
+        if bool_str is None:
+            return None
+        bool_str = bool_str.lower().strip()
+        if bool_str in ["yes", "1"]:
+            return True
+        if bool_str in ["no", "0"]:
+            return False
+        return bool_str.lower() in ['true', 'false'] and bool(bool_str)
+
+    def get_date_value(self, row: dict, name: str) -> Optional[datetime]:
+        date_str = row.get(name)
+        if date_str is None:
+            return None
+        try:
+            return datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%SZ")
+        except ValueError:
+            return None
+
+
+
+
+
 class SearchEventObjectMapper(BaseMapper):
     def map(self, json_data):
         key_valued_objects = self.convert_json_to_key_value(json_data)
@@ -1447,6 +1367,86 @@ class SearchEventObjectMapper(BaseMapper):
         if multi_value:
             return [v.strip() for v in multi_value.split(',') if v.strip()]
         return None
+
+
+
+
+
+class SearchRequest:
+    def __init__(self):
+        self.query = Query()
+        self.rows = Rows()
+        self.requestParams = RequestParams()
+
+    def set_query(self, query):
+        self.query = query
+        return self
+
+    def set_rows(self, rows):
+        self.rows = rows
+        return self
+
+    def set_request_params(self, request_params):
+        self.requestParams = request_params
+        return self
+
+    def __repr__(self):
+        return f"Query: {self.query}, Rows: {self.rows}, Request Params: {self.requestParams}"
+
+    def to_json(self):
+        dataJSON = json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+        return dataJSON
+
+class ThreatModelAttributes:
+    Id = "ruleID"
+    Name = "ruleName"
+    Category = "ruleArea"
+    Source = "ruleSource"
+    Severity = "severity"
+
+    Columns = [Id, Name, Category, Source, Severity]
+
+
+
+
+
+class ThreatModelItem:
+    def __init__(self):
+        self.Id: Optional[str] = None
+        self.Name: Optional[List[str]] = None
+        self.Category: Optional[str] = None
+        self.Severity: Optional[str] = None
+        self.Source: Optional[str] = None
+
+    def __getitem__(self, key: str) -> Any:
+        if hasattr(self, key):
+            return getattr(self, key)
+        raise KeyError(f"{key} not found in EventItem")
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {key: value for key, value in self.__dict__.items() if value is not None}
+
+
+
+class ThreatModelObjectMapper(BaseMapper):
+    def map(self, json_data):
+        key_valued_objects = json_data
+
+        mapped_items = []
+        for obj in key_valued_objects:
+            mapped_items.append(self.map_item(obj).to_dict())
+
+        return mapped_items
+
+    def map_item(self, row: dict) -> ThreatModelItem:
+        threat_model_item = ThreatModelItem()
+        threat_model_item.ID = row[ThreatModelAttributes.Id]
+        threat_model_item.Name = row[ThreatModelAttributes.Name]
+        threat_model_item.Category = row[ThreatModelAttributes.Category]
+        threat_model_item.Source = row[ThreatModelAttributes.Source]
+        threat_model_item.Severity = row[ThreatModelAttributes.Severity]
+
+        return threat_model_item
 
 """Varonis Data Security Platform integration
 """
@@ -1655,11 +1655,14 @@ def convert_incident_alert_to_onprem_format(alert_saas_format):
 
     # todo: fix when it will be converted to array
     output["Locations"] = []
-    countries = [] if alert_saas_format.get("Country") is None else alert_saas_format.get("Country")
-    states = [] if alert_saas_format.get("State") is None else alert_saas_format.get("State")
+    countries = [] if alert_saas_format.get(AlertAttributes.Alert_Location_CountryName) is None else alert_saas_format.get(
+        AlertAttributes.Alert_Location_CountryName).split(',')
+    states = [] if alert_saas_format.get(AlertAttributes.Alert_Location_SubdivisionName) is None else alert_saas_format.get(
+        AlertAttributes.Alert_Location_SubdivisionName).split(',')
     blacklist_locations = [] if alert_saas_format.get(
-        "BlacklistLocation") is None else [alert_saas_format.get("BlacklistLocation")]
-    abnormal_locations = [] if alert_saas_format.get("AbnormalLocation") is None else alert_saas_format.get("AbnormalLocation")
+        AlertAttributes.Alert_Location_BlacklistedLocation) is None else alert_saas_format.get(AlertAttributes.Alert_Location_BlacklistedLocation).split(',')
+    abnormal_locations = [] if alert_saas_format.get(
+        AlertAttributes.Alert_Location_AbnormalLocation) is None else alert_saas_format.get(AlertAttributes.Alert_Location_AbnormalLocation).split(',')
     for i in range(len(countries)):
         entry = {
             "Country": "" if len(countries) <= i else countries[i],
@@ -1671,9 +1674,9 @@ def convert_incident_alert_to_onprem_format(alert_saas_format):
 
     # todo: fix when it will be converted to array
     output["Sources"] = []
-    platforms = [] if alert_saas_format.get("Platform") is None else alert_saas_format.get("Platform")
+    platforms = [] if alert_saas_format.get(AlertAttributes.Alert_Filer_Platform_Name) is None else alert_saas_format.get(AlertAttributes.Alert_Filer_Platform_Name).split(',')
     file_server_or_Domain = [] if alert_saas_format.get(
-        "FileServerOrDomain") is None else alert_saas_format.get("FileServerOrDomain")
+        "FileServerOrDomain") is None else alert_saas_format.get("FileServerOrDomain").split(',')
     for i in range(len(platforms)):
         entry = {
             "Platform": "" if len(platforms) <= i else platforms[i],
@@ -1683,8 +1686,8 @@ def convert_incident_alert_to_onprem_format(alert_saas_format):
 
     # todo: fix when it will be converted to array
     output["Devices"] = []
-    device_names = [] if alert_saas_format.get("DeviceName") is None else alert_saas_format.get("DeviceName")
-    assets = [] if alert_saas_format.get("Asset") is None else alert_saas_format.get("Asset")
+    device_names = [] if alert_saas_format.get(AlertAttributes.Alert_Device_HostName) is None else alert_saas_format.get(AlertAttributes.Alert_Device_HostName).split(',')
+    assets = [] if alert_saas_format.get(AlertAttributes.Alert_Asset_Path) is None else alert_saas_format.get(AlertAttributes.Alert_Asset_Path).split(',')
     for i in range(len(device_names)):
         entry = {
             "Name": "" if len(device_names) <= i else device_names[i],
@@ -1693,11 +1696,11 @@ def convert_incident_alert_to_onprem_format(alert_saas_format):
         output["Devices"].append(entry)
 
     output["Users"] = []
-    user_names = [] if alert_saas_format.get("UserName") is None else alert_saas_format["UserName"]
-    sam_account_names = [] if alert_saas_format.get("SamAccountName") is None else alert_saas_format["SamAccountName"]
+    user_names = [] if alert_saas_format.get(AlertAttributes.Alert_User_Name) is None else alert_saas_format[AlertAttributes.Alert_User_Name].split(',')
+    sam_account_names = [] if alert_saas_format.get(AlertAttributes.Alert_User_SamAccountName) is None else alert_saas_format[AlertAttributes.Alert_User_SamAccountName].split(',')
     privileged_account_types = [] if alert_saas_format.get(
-        "PrivilegedAccountType") is None else alert_saas_format["PrivilegedAccountType"]
-    departments = [] if alert_saas_format.get("Department") is None else alert_saas_format["Department"]
+        AlertAttributes.Alert_User_AccountType_AggregatedName) is None else alert_saas_format[AlertAttributes.Alert_User_AccountType_AggregatedName].split(',')
+    departments = [] if alert_saas_format.get("Department") is None else alert_saas_format["Department"].split(',')
     for i in range(len(user_names)):
         entry = {
             "Name": "" if len(user_names) <= i else user_names[i],
@@ -1819,7 +1822,8 @@ def varonis_get_threat_models_command(client: Client, args: Dict[str, Any]) -> C
     outputs = dict()
     outputs['threat_models'] = filtered_items
 
-    readable_output = tableToMarkdown('Varonis Threat Models', filtered_items, headers=['ID', 'Name', 'Category', 'Severity', 'Source'])
+    readable_output = tableToMarkdown('Varonis Threat Models', filtered_items, headers=[
+                                      'ID', 'Name', 'Category', 'Severity', 'Source'])
 
     return CommandResults(
         readable_output=readable_output,
@@ -1888,23 +1892,24 @@ def fetch_incidents_command(client: Client, last_run: Dict[str, datetime], first
                                        ingest_time_from=last_fetched_ingest_time,
                                        ingest_time_to=ingest_time_to,
                                        alert_statuses=statuses, alert_severities=severities,
+                                       extra_fields=None,
                                        descending_order=True)
 
     demisto.debug(f'varonis_get_alerts returned: {len(alerts)} alerts')
 
     for alert in alerts:
-        ingestTime_str = alert['IngestTime']
+        ingestTime_str = alert[AlertAttributes.Alert_IngestTime]
         ingestTime = try_convert(
-            alert['IngestTime'],
+            alert[AlertAttributes.Alert_IngestTime],
             lambda x: datetime.fromisoformat(x),
             ValueError(f'IngestTime should be in iso format, but it is {ingestTime_str}.')
         )
 
         if not last_fetched_ingest_time or ingestTime > last_fetched_ingest_time:
             last_fetched_ingest_time = ingestTime + timedelta(minutes=1)
-        guid = alert['ID']
-        name = alert['Name']
-        alert_time = alert['Time']
+        guid = alert[AlertAttributes.Alert_ID]
+        name = alert[AlertAttributes.Alert_Rule_Name]
+        alert_time = alert[AlertAttributes.Alert_Time]
         enrich_with_url(alert, client._base_url, guid)
 
         alert_converted = convert_incident_alert_to_onprem_format(alert)
@@ -1914,7 +1919,7 @@ def fetch_incidents_command(client: Client, last_run: Dict[str, datetime], first
             'occurred': f'{alert_time}Z',
             'rawJSON': json.dumps(alert_converted),
             'type': 'Varonis DSP Incident',
-            'severity': convert_to_demisto_severity(alert_converted['Severity']),
+            'severity': convert_to_demisto_severity(alert_converted[AlertAttributes.Alert_Rule_Severity_Name]),
         }
 
         incidents.append(incident)
@@ -2171,9 +2176,9 @@ def main() -> None:
     args = demisto.args()
 
     if not is_xsoar_env():
-        url = 'https://int94cf8.varonis-preprod.com/'
-        apiKey = 'vkey1_45108cd087db4433b77328b2447cabff_RA/zyLNp4IRw+5benTJGNrCWzVPgZcBeYfIvYQ76X7Y='
-        command = 'test-module'  # 'test-module'|
+        url = 'https://intaf7c2.varonis-preprod.com/'
+        apiKey = 'vkey1_71388e9cc4734983b77d445563fdc536_oJrXRx73YESL5PdVWhLNjbCZTwvjNBKutwuRn59iKw4='
+        command = 'fetch-incidents'  # 'test-module'|
         # 'varonis-get-threat-models'|
         # 'varonis-get-alerts'|
         # 'varonis-get-alerted-events'|
@@ -2197,11 +2202,12 @@ def main() -> None:
 
         if command == 'varonis-get-threat-models':
             args['id'] = "1,2,3"  # List of requested threat model ids
-            args['name'] = ""  # "Abnormal service behavior: access to atypical folders,Abnormal service behavior: access to atypical files"  # List of requested threat model names
+            # "Abnormal service behavior: access to atypical folders,Abnormal service behavior: access to atypical files"  # List of requested threat model names
+            args['name'] = ""
             args['category'] = ""  # "Exfiltration,Reconnaissance"  # List of requested threat model categories
             args['severity'] = ""  # "3 - Error,4 - Warning"  # List of requested threat model severities
             args['source'] = ""  # "Predefined"  # List of requested threat model sources
-            
+
         elif command == 'varonis-get-alerts':
             args['threat_model_name'] = None  # List of requested threat models
             args['ingest_time_from'] = None  # Start ingest time of the range of alerts
@@ -2213,7 +2219,7 @@ def main() -> None:
             args['device_name'] = None  # List of device names
             args['user_name'] = "varadm"  # List of device names
             args['last_days'] = None  # Number of days you want the search to go back to
-            args['extra_fields'] = "Alert.User*,Alert.Location*"  # extra fields 
+            args['extra_fields'] = "Alert.User*,Alert.Location*"  # extra fields
             args['descending_order'] = None  # Indicates whether alerts should be ordered in newest to oldest order
 
         elif command == 'varonis-get-alerted-events':
@@ -2221,7 +2227,7 @@ def main() -> None:
             args['start_time'] = None  # Start time of the range of events
             args['end_time'] = None  # End time of the range of events
             args['last_days'] = None  # Number of days you want the search to go back to
-            args['extra_fields'] = "Event.Session*,Event.OnMail*"  # extra fields 
+            args['extra_fields'] = "Event.Session*,Event.OnMail*"  # extra fields
             args['descending_order'] = None  # Indicates whether events should be ordered in newest to oldest order
 
         elif command == 'varonis-update-alert-status':
@@ -2233,7 +2239,7 @@ def main() -> None:
             args['close_reason'] = 'resolved'  # Alert's close reason
             args['alert_id'] = "E5E255ED-24FD-4461-A676-A1A980E24397"  # Array of alert ids to be closed
             args['note'] = "user note"  # Note for alert
-            
+
         elif command == 'fetch-incidents':
             pass
 
