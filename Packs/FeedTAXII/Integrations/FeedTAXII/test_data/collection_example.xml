@@ -78,6 +78,37 @@
             </stix:STIX_Package>
         </taxii_11:Content>
         <taxii_11:Timestamp_Label>2021-10-20T06:43:08.843260+00:00</taxii_11:Timestamp_Label>
+        <taxii_11:Content_Binding binding_id="id"/>
+        <taxii_11:Content>
+            <stix:STIX_Package xmlns:cyboxCommon="http://example.org/common-2" xmlns:cybox="http://example.org/cybox-2" xmlns:cyboxVocabs="http://example.org/default_vocabularies-2" xmlns:URIObj="http://example.org/objects#URIObject-2" xmlns:marking="http://example.org/Marking-1" xmlns:simpleMarking="http://example.org/extensions/MarkingStructure#Simple-1" xmlns:tlpMarking="http://example.org/extensions/MarkingStructure#TLP-1" xmlns:TOUMarking="http://example.org/extensions/MarkingStructure#Terms_Of_Use-1" xmlns:opensource="http://hailataxii.com" xmlns:edge="http://example.org/" xmlns:stixCommon="http://example.org/common-1" xmlns:stixVocabs="http://example.org/default_vocabularies-1" xmlns:stix="http://example.org/stix-1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="edge:Package-65bdcda9-54f2-47aa-a473-5176d4c2c1d8" version="1.1.1" timestamp="2021-10-20T06:43:08.841901+00:00">
+                <stix:STIX_Header>
+                    <stix:Handling>
+                        <marking:Marking>
+                            <marking:Controlled_Structure>../../../../descendant-or-self::node()</marking:Controlled_Structure>
+                            <marking:Marking_Structure xsi:type="tlpMarking:TLPMarkingStructureType" color="WHITE"/>
+                            <marking:Marking_Structure xsi:type="TOUMarking:TermsOfUseMarkingStructureType">
+                                <TOUMarking:Terms_Of_Use>TBD</TOUMarking:Terms_Of_Use>
+                            </marking:Marking_Structure>
+                            <marking:Marking_Structure xsi:type="simpleMarking:SimpleMarkingStructureType">
+                                <simpleMarking:Statement>Unclassified (Public)</simpleMarking:Statement>
+                            </marking:Marking_Structure>
+                        </marking:Marking>
+                    </stix:Handling>
+                </stix:STIX_Header>
+                <stix:Observables cybox_major_version="2" cybox_minor_version="1" cybox_update_version="0">
+                    <cybox:Observable id="opensource:Observable-335290e0-3496-4644-bdaa-25b323814b45" sighting_count="1">
+                        <cybox:Title>URL: http://test.org/?n...</cybox:Title>
+                        <cybox:Description>URL: http://test.org/?n| isOnline:yes| dateVerified:2021-10-19T04:13:43+00:00</cybox:Description>
+                        <cybox:Object id="opensource:URI-d63ca0ba-3e0d-490e-914d-3271a66dc805">
+                            <cybox:Properties xsi:type="URIObj:URIObjectType" type="URL">
+                                <URIObj:Value condition="Equals">http://test.org/?n</URIObj:Value>
+                            </cybox:Properties>
+                        </cybox:Object>
+                    </cybox:Observable>
+                </stix:Observables>
+            </stix:STIX_Package>
+        </taxii_11:Content>
+        <taxii_11:Timestamp_Label>2021-10-20T06:43:08.843260+00:00</taxii_11:Timestamp_Label>
     </taxii_11:Content_Block>
     <taxii_11:Content_Block xmlns:taxii="http://taxii.mitre.org/messages/taxii_xml_binding-1" xmlns:taxii_11="http://taxii.mitre.org/messages/taxii_xml_binding-1.1" xmlns:tdq="http://taxii.mitre.org/query/taxii_default_query-1">
         <taxii_11:Content_Binding binding_id="id"/>
