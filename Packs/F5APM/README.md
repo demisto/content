@@ -68,6 +68,8 @@ Create log settings to enable event logging for access system events or URL filt
 
 For more information, refer to F5 BIG-IP APM formal [docs](https://techdocs.f5.com/en-us/bigip-17-0-0/big-ip-access-policy-manager-third-party-integration/logging-and-reporting.html#GUID-3A9514E3-33CC-43AB-840F-17624F4CA180).
 
+Note:
+Consider [suppressing sending SSL access and request messages to remote syslog servers](https://my.f5.com/manage/s/article/K16932).
 
 ## Collect Events from Vendor
 In order to use the collector, use the [Broker VM](#broker-vm) option.
