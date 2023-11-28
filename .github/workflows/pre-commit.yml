@@ -89,8 +89,8 @@ jobs:
       uses: MishaKav/pytest-coverage-comment@main
       with:
         pytest-coverage-path: coverage_report/coverage.txt
-        junitxml-path: coverage_report/coverage.xml
-        
+        pytest-xml-coverage-path: coverage_report/coverage.xml
+
     - uses: actions/cache/save@v3
       if: always()
       with:
