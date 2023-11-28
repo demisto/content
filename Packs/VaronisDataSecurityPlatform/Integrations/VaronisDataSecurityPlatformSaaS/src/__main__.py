@@ -214,6 +214,17 @@ def varonis_update_alert(client: Client, close_reason_id: int, status_id: int, a
 def convert_incident_alert_to_onprem_format(alert_saas_format):
     output = alert_saas_format
 
+    output["Category"] = alert_saas_format.get(AlertAttributes.Alert_Rule_Category_Name)
+    output["Guid"] = alert_saas_format.get(AlertAttributes.Alert_ID)
+    output["Name"] = alert_saas_format.get(AlertAttributes.Alert_Rule_Name)
+    output["Status"] = alert_saas_format.get(AlertAttributes.Alert_Status_Name)
+    output["IPThreatTypes"] = alert_saas_format.get(AlertAttributes.Alert_Device_ExternalIPThreatTypesName)
+    output["CloseReason"] = alert_saas_format.get(AlertAttributes.Alert_CloseReason_Name)
+    output["NumOfAlertedEvents"] = alert_saas_format.get(AlertAttributes.Alert_EventsCount)
+    output["ContainsFlaggedData"] = alert_saas_format.get(AlertAttributes.Alert_Data_IsFlagged)
+    output["ContainMaliciousExternalIP"] = alert_saas_format.get(AlertAttributes.Alert_Device_IsMaliciousExternalIP)
+    output["ContainsSensitiveData"] = alert_saas_format.get(AlertAttributes.Alert_Data_IsSensitive)
+
     # todo: fix when it will be converted to array
     output["Locations"] = []
     countries = [] if alert_saas_format.get(AlertAttributes.Alert_Location_CountryName) is None else alert_saas_format.get(
@@ -233,11 +244,11 @@ def convert_incident_alert_to_onprem_format(alert_saas_format):
         }
         output["Locations"].append(entry)
 
-    # todo: fix when it will be converted to array
     output["Sources"] = []
-    platforms = [] if alert_saas_format.get(AlertAttributes.Alert_Filer_Platform_Name) is None else alert_saas_format.get(AlertAttributes.Alert_Filer_Platform_Name).split(',')
+    platforms = [] if alert_saas_format.get(AlertAttributes.Alert_Filer_Platform_Name) is None else alert_saas_format.get(
+        AlertAttributes.Alert_Filer_Platform_Name).split(',')
     file_server_or_Domain = [] if alert_saas_format.get(
-        "FileServerOrDomain") is None else alert_saas_format.get("FileServerOrDomain").split(',')
+        AlertAttributes.Alert_Filer_Name) is None else alert_saas_format.get(AlertAttributes.Alert_Filer_Name).split(',')
     for i in range(len(platforms)):
         entry = {
             "Platform": "" if len(platforms) <= i else platforms[i],
@@ -245,10 +256,11 @@ def convert_incident_alert_to_onprem_format(alert_saas_format):
         }
         output["Sources"].append(entry)
 
-    # todo: fix when it will be converted to array
     output["Devices"] = []
-    device_names = [] if alert_saas_format.get(AlertAttributes.Alert_Device_HostName) is None else alert_saas_format.get(AlertAttributes.Alert_Device_HostName).split(',')
-    assets = [] if alert_saas_format.get(AlertAttributes.Alert_Asset_Path) is None else alert_saas_format.get(AlertAttributes.Alert_Asset_Path).split(',')
+    device_names = [] if alert_saas_format.get(AlertAttributes.Alert_Device_HostName) is None else alert_saas_format.get(
+        AlertAttributes.Alert_Device_HostName).split(',')
+    assets = [] if alert_saas_format.get(AlertAttributes.Alert_Asset_Path) is None else alert_saas_format.get(
+        AlertAttributes.Alert_Asset_Path).split(',')
     for i in range(len(device_names)):
         entry = {
             "Name": "" if len(device_names) <= i else device_names[i],
@@ -257,10 +269,12 @@ def convert_incident_alert_to_onprem_format(alert_saas_format):
         output["Devices"].append(entry)
 
     output["Users"] = []
-    user_names = [] if alert_saas_format.get(AlertAttributes.Alert_User_Name) is None else alert_saas_format[AlertAttributes.Alert_User_Name].split(',')
-    sam_account_names = [] if alert_saas_format.get(AlertAttributes.Alert_User_SamAccountName) is None else alert_saas_format[AlertAttributes.Alert_User_SamAccountName].split(',')
+    user_names = [] if alert_saas_format.get(
+        AlertAttributes.Alert_User_Name) is None else alert_saas_format[AlertAttributes.Alert_User_Name].split(',')
+    sam_account_names = [] if alert_saas_format.get(
+        AlertAttributes.Alert_User_SamAccountName) is None else alert_saas_format[AlertAttributes.Alert_User_SamAccountName].split(',')
     privileged_account_types = [] if alert_saas_format.get(
-        AlertAttributes.Alert_User_AccountType_AggregatedName) is None else alert_saas_format[AlertAttributes.Alert_User_AccountType_AggregatedName].split(',')
+        AlertAttributes.Alert_User_AccountType_Name) is None else alert_saas_format[AlertAttributes.Alert_User_AccountType_Name].split(',')
     departments = [] if alert_saas_format.get("Department") is None else alert_saas_format["Department"].split(',')
     for i in range(len(user_names)):
         entry = {
@@ -594,7 +608,6 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
         for alert in alerts:
             enrich_with_url(alert, client._base_url, alert[alert_attributes.Alert_ID])
 
-    # readable_output = tableToMarkdown('Varonis Alerts', alerts)
     readable_output = tableToMarkdown('Varonis Alerts', alerts, headers=alert_attributes.get_fields(extra_fields))
 
     return CommandResults(
@@ -737,9 +750,9 @@ def main() -> None:
     args = demisto.args()
 
     if not is_xsoar_env():
-        url = 'https://intaf7c2.varonis-preprod.com/'
-        apiKey = 'vkey1_71388e9cc4734983b77d445563fdc536_oJrXRx73YESL5PdVWhLNjbCZTwvjNBKutwuRn59iKw4='
-        command = 'fetch-incidents'  # 'test-module'|
+        url = 'https://int7e12c.varonis-preprod.com/'
+        apiKey = 'vkey1_c218f21f3cfb466ba03e2a94a8a1a4a2_vYJKiCKw1oz7uRogJImenjl2AlIzDQ7u8mrPP02VT2A='
+        command = 'varonis-get-alerts'  # 'test-module'|
         # 'varonis-get-threat-models'|
         # 'varonis-get-alerts'|
         # 'varonis-get-alerted-events'|
