@@ -49,7 +49,7 @@ Create log settings to enable event logging for access system events or URL filt
 1. Navigate to **Access** > **Overview** > **Event Logs** > **Settings**.
 2. Click **Create** for a new APM log setting.
 3. In the **Name** field, type "XSIAM".
-4. Select both of the checkbox options:
+4. Select both of the following options:
    - Enable access system logs
    - Enable URL request logs
 5. To configure settings for access system logging, select Access System Logs from the left pane.
