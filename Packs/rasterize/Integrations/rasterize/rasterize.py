@@ -72,7 +72,6 @@ class TabLifecycleManager:
     def __enter__(self):
         self.tab = self.browser.new_tab()
         self.tab.start()
-        self.tab.Page.stopLoading()
         self.tab.Page.enable()
         return self.tab
 
@@ -99,8 +98,6 @@ class PychromeEventHandler:
         demisto.debug('frame_stopped_loading')
         if self.start_frame == frameId:
             try:
-                self.tab.Page.stopLoading()
-
                 with self.screen_lock:
                     # must activate current tab
                     demisto.debug(self.browser.activate_tab(self.tab.id))
