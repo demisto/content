@@ -298,7 +298,8 @@ def rasterize_image_command():
     file_name = f'{file_name}.pdf'
 
     with open(file_path, 'rb') as f:
-        output = rasterize(path=f'file://{os.path.realpath(f.name)}', width=width, height=height, rasterize_type=RasterizeType.PDF)
+        output = rasterize(path=f'file://{os.path.realpath(f.name)}', width=width, height=height,
+                           rasterize_type=RasterizeType.PDF)
         res = fileResult(filename=file_name, data=output, file_type=entryTypes['entryInfoFile'])
         demisto.results(res)
 
