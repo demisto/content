@@ -321,27 +321,29 @@ class EventCollector:
     ) -> tuple[list[dict], datetime]:
         res_count = 0
         res = []
-        # formatting to iso z format without microsecconds due to api lack of support, api response should be already in format.
-        iso_start_time = f"{datetime.strftime(start_time.astimezone(timezone.utc), '%Y-%m-%dT%H:%M:%S%z')}Z"
+
         results_left = True
 
         while results_left and res_count < event_type.client_max_fetch:
+            demisto.debug(f"Converting {start_time=} to string")
+            # formatting to iso z format without microseconds due to api lack of support,
+            # api response should be already in format.
+            iso_start_time = f"{datetime.strftime(start_time.astimezone(timezone.utc), '%Y-%m-%dT%H:%M:%S%z')}Z"
+
             demisto.debug(
-                f"{LOG_LINE} getting user activity: {results_left=}, {res_count=}, {start_time=}"
+                f"{LOG_LINE} getting user activity: {results_left=}, {res_count=}, {iso_start_time=}"
             )
 
-            current_batch = self.client.get_activity_log(
-                iso_start_time,  # type: ignore
-                min(event_type.api_max, event_type.client_max_fetch - res_count),
-            )
+            current_batch = self.client.get_activity_log(iso_start_time, min(
+                event_type.api_max, event_type.client_max_fetch - res_count))
             current_batch_data = current_batch.get("data", [])
+
+            demisto.debug(f"{LOG_LINE} raw: {current_batch_data}")
+
             if current_batch_data:
                 dedup_data = list(
-                    filter(
-                        lambda item: get_activity_log_id(item) not in fetched_ids,
-                        current_batch_data,
-                    )
-                )
+                    filter(lambda item: get_activity_log_id(item) not in fetched_ids,
+                           current_batch_data))
                 if dedup_data:
                     demisto.debug(
                         f"Fetching {len(dedup_data)} alerts from {len(current_batch_data)} found in API for {event_type.name}"
@@ -353,16 +355,17 @@ class EventCollector:
                         {get_activity_log_id(item) for item in dedup_data}
                     )
 
-                    # Getting last item's modification date, assuming desc order - not official info.
-                    iso_start_time = demisto.get(
-                        current_batch_data[0], "attributes.time"
-                    )
+                    # Getting last item's modification date, Cannot assume desc order.
+                    events_times: list[str] = [demisto.get(
+                        item, "attributes.time") for item in dedup_data if demisto.get(item, "attributes.time")]  # type: ignore
+                    start_time = max(map(parse_special_iso_format, events_times))
+
                 else:
                     results_left = False
             else:
                 results_left = False
 
-        return res, parse_special_iso_format(iso_start_time)  # type: ignore
+        return res, start_time
 
     def fetch_email_trace(
         self, event_type: EventType, start_time: datetime, fetched_ids: set = set()
