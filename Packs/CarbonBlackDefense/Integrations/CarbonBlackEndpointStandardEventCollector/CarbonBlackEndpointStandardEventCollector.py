@@ -18,6 +18,7 @@ MAX_ALERTS_LOOP = 10
 
 # Constants used by Response Objects
 ALERT_TIMESTAMP = 'backend_timestamp'
+ALERT_DETECTION_TIMESTAMP = 'detection_timestamp'
 AUDIT_TIMESTAMP = 'eventTime'
 ALERT_ID = 'id'
 AUDIT_ID = 'eventId'
@@ -100,7 +101,8 @@ def get_alerts_and_audit_logs(client: Client, add_audit_logs: bool, last_run: di
         alerts, last_run = get_alerts_to_limit(client, last_run)
         if add_audit_logs:
             try:
-                audit_logs = prepare_audit_logs_result(audit_logs_future.result(), last_run.get(LAST_AUDIT_IDS), client.max_audit_logs)
+                audit_logs = prepare_audit_logs_result(
+                    audit_logs_future.result(), last_run.get(LAST_AUDIT_IDS), client.max_audit_logs)
             except Exception as e:
                 demisto.error(f'Failed getting audit logs. Error: {e}')
     return alerts, audit_logs
@@ -168,7 +170,7 @@ def prepare_alerts_result(alerts, last_run):
     new_alerts = []
     for alert in alerts:
         if alert[ALERT_ID] not in last_run_ids:
-            alert['_time'] = alert[ALERT_TIMESTAMP]
+            alert['_time'] = alert[ALERT_DETECTION_TIMESTAMP]
             new_alerts.append(alert)
     alerts = new_alerts
     return alerts
@@ -193,6 +195,7 @@ def get_events(client: Client, last_run: dict, add_audit_logs: bool,
 def test_module(client: Client) -> str:
     client.get_alerts(datetime.now().strftime(DATE_FORMAT), 1, 1)
     return 'ok'
+
 
 ''' MAIN FUNCTION '''
 
