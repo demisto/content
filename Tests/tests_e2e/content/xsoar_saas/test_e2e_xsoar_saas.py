@@ -94,7 +94,7 @@ def test_taxii2_server_returns_indicators(
         )
         # there are cases where the port can be taken in the machine, trying in a few other ports
         try:
-            for port in ("8000", "8001, 8002"):
+            for port in ("8000", "8001", "8002"):
                 integration_params["longRunningPort"] = port
                 with save_integration_instance(
                     xsoar_saas_client,
