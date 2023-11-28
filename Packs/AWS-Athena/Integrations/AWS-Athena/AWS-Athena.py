@@ -48,7 +48,15 @@ def parse_rows_response(rows_data: list[dict]) -> list[dict]:
     return result_data
 
 
-def start_query_execution_command(args: dict, client):
+def test_module_command(client) -> str | CommandResults:
+    response = client.list_named_queries()
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        return 'ok'
+
+    else:
+        raise DemistoException(f'Error: {response}')
+
+def start_query_command(args: dict, client):
     query_string: str = args['QueryString']
     query_limit: str | None = args.get('QueryLimit')
 
@@ -107,16 +115,8 @@ def stop_query_command(args: dict, client):
 def get_query_execution_command(args: dict, client):
     query_execution_id: str = args['QueryExecutionId']
     raw_response = client.get_query_execution(QueryExecutionId=query_execution_id)
-
-    try:
-        raw_response = json.loads(json.dumps(raw_response, cls=DatetimeEncoder))
-
-    except ValueError as e:
-        return_error('Could not parse the received response.')
-        demisto.debug(f'Error:\n{e}\n'
-                      f'Response:\n{raw_response}')
-
-    response = raw_response['QueryExecution']
+    parsed_response = json.loads(json.dumps(raw_response, cls=DatetimeEncoder))['QueryExecution']
+    response = parsed_response['QueryExecution']
 
     return PollResult(
         response=CommandResults(
@@ -182,24 +182,19 @@ def main():  # pragma: no cover
 
         result: str | CommandResults
 
-        if demisto.command() == 'test-module':
-            response = client.list_named_queries()
-            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-                result = 'ok'
+        if command == 'test-module':
+            result = test_module_command(client)
 
-            else:
-                result = CommandResults(readable_output=f'Error: {response}')
+        elif command == 'aws-athena-start-query':
+            result = start_query_command(args=args, client=client)
 
-        elif demisto.command() == 'aws-athena-start-query':
-            result = start_query_execution_command(args=args, client=client)
-
-        elif demisto.command() == 'aws-athena-stop-query':
+        elif command == 'aws-athena-stop-query':
             result = stop_query_command(args=args, client=client)
 
-        elif demisto.command() == 'aws-athena-get-query-execution':
+        elif command == 'aws-athena-get-query-execution':
             result = get_query_execution_command(args=args, client=client)
 
-        elif demisto.command() == 'aws-athena-get-query-results':
+        elif command == 'aws-athena-get-query-results':
             result = get_query_results_command(args=args, client=client)
 
         else:
@@ -209,7 +204,6 @@ def main():  # pragma: no cover
 
     except Exception as e:
         return_error(f'Error: {e}')
-        demisto.error(f'Error: {e}\n\nTraceback:\n{traceback.format_exc()}')
 
 
 from AWSApiModule import *  # noqa: E402
