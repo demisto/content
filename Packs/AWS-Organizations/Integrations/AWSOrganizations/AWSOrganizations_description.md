@@ -11,4 +11,6 @@ on your AWS environment.
 2. Attach a role to the instance profile.
 3. Configure the necessary IAM roles that the AWS integration can assume.
 
-For detailed instructions, see the [AWS Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication).
+For detailed instructions, see [AWS Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication).
+
+For AWS Organizations quotas, guidelines and restrictions, see [AWS Organizations Quotas](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_reference_limits.html).

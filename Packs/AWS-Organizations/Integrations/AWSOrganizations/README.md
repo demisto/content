@@ -1,4 +1,5 @@
 Manage Amazon Web Services accounts and their resources.
+For AWS Organizations quotas, guidelines and restrictions, see the [AWS Organizations Quotas](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_reference_limits.html) page.
 
 ## Configure AWS - Organizations on Cortex XSOAR
 

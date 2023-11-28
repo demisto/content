@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 ''' CONSTANTS '''
 
 SERVICE_NAME = 'organizations'
-REGION = 'eu-central-1'
+REGION = 'us-east-1'
 MAX_PAGINATION = 20
 POLICY_TYPE_MAP: dict[str, 'PolicyTypeType'] = {
     'Service Control Policy': 'SERVICE_CONTROL_POLICY',
