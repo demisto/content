@@ -45,7 +45,7 @@
                 "is_array": false
         },
             "device_id": {
-                "type": "integer",
+                "type": "int",
                 "is_array": false
         },
             "device_name": {
