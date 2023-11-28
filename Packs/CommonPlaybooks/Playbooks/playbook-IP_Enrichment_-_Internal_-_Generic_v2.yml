@@ -376,10 +376,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 737bdd83-8d01-472a-896f-4fd704ff67bd
+    taskid: 0434e878-9f2b-4801-8506-6e365f2d1470
     type: playbook
     task:
-      id: 737bdd83-8d01-472a-896f-4fd704ff67bd
+      id: 0434e878-9f2b-4801-8506-6e365f2d1470
       version: -1
       name: Endpoint Enrichment - Generic v2.1
       playbookName: Endpoint Enrichment - Generic v2.1
@@ -417,8 +417,6 @@ tasks:
           accessor: Hostname
           transformers:
           - operator: uniq
-      UseReputationCommand:
-        simple: "False"
     separatecontext: true
     loop:
       iscommand: false
