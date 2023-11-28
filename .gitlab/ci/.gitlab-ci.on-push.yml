@@ -678,6 +678,10 @@ xsoar_ng_server_ga:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
     - if: '$NIGHTLY'
       when: always
+      variables:
+        CLOUD_MACHINES_TYPE: "nightly"
+        CLOUD_MACHINES_COUNT: 1
+        GCS_LOCKS_PATH: "content-locks/locks-xsoar-ng-nightly"
   variables:
     CLOUD_MACHINES_TYPE: "build"
     CLOUD_MACHINES_COUNT: 1
