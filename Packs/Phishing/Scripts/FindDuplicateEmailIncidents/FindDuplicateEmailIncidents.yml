@@ -65,9 +65,9 @@ args:
   name: exsitingIncidentsLookback
 comment: Can be used to find duplicate emails for incidents of type phishing, including  malicious, spam, and legitimate emails.
 commonfields:
-  id: FindDuplicateEmailIncidents_dev
+  id: FindDuplicateEmailIncidents
   version: -1
-name: FindDuplicateEmailIncidents_dev
+name: FindDuplicateEmailIncidents
 outputs:
 - contextPath: duplicateIncident
   description: The oldest duplicate incident found with the highest similarity to the current incident.
@@ -109,7 +109,7 @@ tags:
 - phishing
 timeout: 600ns
 type: python
-dockerimage: demisto/sklearn:1.0.0.78931
+dockerimage: demisto/sklearn:1.0.0.80783
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0
