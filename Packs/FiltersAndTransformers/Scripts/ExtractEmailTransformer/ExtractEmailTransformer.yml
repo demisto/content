@@ -13,7 +13,9 @@ args:
 tags:
 - transformer
 timeout: '0'
-type: javascript
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.10.12.63474
 fromversion: 6.1.0
 tests:
-- ExtractEmailTransformer_Test
+- No tests (auto formatted)
