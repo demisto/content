@@ -17,7 +17,7 @@
                 "is_array": false
         },
             "severity": {
-                "type": "integer",
+                "type": "int",
                 "is_array": false
         },
             "reason": {
@@ -61,7 +61,7 @@
                 "is_array": false
         },
             "device_policy_id": {
-                "type": "integer",
+                "type": "int",
                 "is_array": false
         },
             "device_os": {
@@ -101,7 +101,7 @@
                 "is_array": false
         },
             "process_pid": {
-                "type": "integer",
+                "type": "int",
                 "is_array": false
         },
             "process_name": {
@@ -129,7 +129,7 @@
                 "is_array": false
         },     
             "parent_pid": {
-                "type": "integer",
+                "type": "int",
                 "is_array": false
         },
             "ml_classification_final_verdict": {
