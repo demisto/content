@@ -1,2 +1,5 @@
 [virtualenvs]
 in-project = true
+
+[tool.poetry.dependencies]
+demisto-sdk = { git = "https://github.com/demisto/demisto-sdk/pull/3828", branch = "devbug/CIAC-8955/replace-ec3-user-in-demisto-sdk" }
