@@ -773,9 +773,11 @@ script:
   - arguments:
     - description: Deprecated. Use the `cve` argument instead.
       name: cve_id
+      isArray: true
     - default: true
-      description: CVE ID.
+      description: CVE IDs.
       name: cve
+      isArray: true
     - description: Maximum number of entries to return. A high number of entries might affect performance. The default value is "20".
       name: max_size
     description: Returns CVE information by CVE ID.

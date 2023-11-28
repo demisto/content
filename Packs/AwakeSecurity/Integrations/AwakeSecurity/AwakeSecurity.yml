@@ -354,8 +354,9 @@ script:
   - name: domain
     arguments:
     - name: domain
+      isArray: true
       required: true
-      description: The domain name
+      description: The domain names.
     - name: lookback_minutes
       description: How many minutes of history to query from the current time. Default is 480
       defaultValue: "480"
@@ -431,7 +432,8 @@ script:
     arguments:
     - name: ip
       required: true
-      description: The IP address
+      description: The IP addresses.
+      isArray: true
     - name: lookback_minutes
       description: How many minutes of history to query from the current time. Default is 480
       defaultValue: "480"
@@ -473,7 +475,8 @@ script:
   - name: email
     arguments:
     - name: email
-      description: The email address
+      description: The email addresses.
+      isArray: true
     - name: lookback_minutes
       description: How many minutes of history to query from the current time. Default is 480
       defaultValue: "480"

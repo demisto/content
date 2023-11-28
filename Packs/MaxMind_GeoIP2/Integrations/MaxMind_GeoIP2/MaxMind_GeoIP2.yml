@@ -80,7 +80,8 @@ script:
     arguments:
     - name: ip
       required: true
-      description: IP Address to be queried
+      description: IP Addresses to be queried.
+      isArray: true
     outputs:
     - contextPath: IP.Address
       description: The IP address

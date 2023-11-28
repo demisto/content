@@ -135,9 +135,10 @@ script:
       type: String
   - arguments:
     - default: true
-      description: The IP address of the host.
+      description: The IP addresses of the host.
       name: ip
       required: true
+      isArray: true
     description: Returns all services that have been found on the IP address of the searched host.
     name: ip
     outputs:
