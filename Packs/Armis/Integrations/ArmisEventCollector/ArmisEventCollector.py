@@ -81,8 +81,6 @@ class Client(BaseClient):
             after = datetime.now() - timedelta(minutes=1)
         if event_type == 'alerts':
             params['aql'] += f' after:{after.strftime(DATE_FORMAT)}'  # add 'after' date filter to AQL query in the desired format
-        else:
-            params['aql'] += ' timeFrame:"7 days"'
         raw_response = self._http_request(url_suffix='/search/', method='GET', params=params, headers=self._headers)
         results = raw_response.get('data', {}).get('results', [])
 
