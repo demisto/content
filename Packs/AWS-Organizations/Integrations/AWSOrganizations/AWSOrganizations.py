@@ -152,10 +152,8 @@ def dict_values_to_str(d: dict, *keys) -> dict:
     return d
 
 
-def build_tags(tags: str) -> list:
+def build_tags(tags: str | None) -> list:
     '''Turns the tags provided by the args in the format "key=value" into the format expected by AWS'''
-    if not tags:
-        return []
     result = []
     for tag in argToList(tags):
         key, eq, value = tag.partition('=')
