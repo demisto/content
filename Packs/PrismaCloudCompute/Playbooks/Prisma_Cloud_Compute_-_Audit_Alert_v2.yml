@@ -1,5 +1,6 @@
 id: Prisma Cloud Compute - Audit Alert v2
 fromversion: 6.0.0
+toversion: 6.9.9
 name: Prisma Cloud Compute - Audit Alert v2
 description: Default playbook for parsing and enrichment of Prisma Cloud Compute audit alerts.
 starttaskid: "0"

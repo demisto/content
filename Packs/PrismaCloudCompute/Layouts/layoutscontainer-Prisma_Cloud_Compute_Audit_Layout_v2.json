@@ -8,7 +8,7 @@
                     {
                         "displayType": "ROW",
                         "h": 3,
-                        "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                        "i": "caseinfoid-5hwygcoqct-caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
                         "items": [
                             {
@@ -77,9 +77,18 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "externallink",
-                                "height": 53,
+                                "height": 22,
                                 "id": "953e82a0-0bc8-11ed-a263-1f3efd1f9f94",
                                 "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "itemowneremail",
+                                "height": 22,
+                                "id": "9b8fc660-8c4f-11ee-bbb6-c30980c106c7",
+                                "index": 7,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -97,7 +106,7 @@
                         "displayType": "ROW",
                         "h": 1,
                         "hideName": false,
-                        "i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+                        "i": "caseinfoid-5hwygcoqct-caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -111,7 +120,7 @@
                     {
                         "displayType": "CARD",
                         "h": 2,
-                        "i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+                        "i": "caseinfoid-5hwygcoqct-caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
                         "items": [
                             {
                                 "endCol": 1,
@@ -168,7 +177,7 @@
                         "displayType": "CARD",
                         "h": 4,
                         "hideName": false,
-                        "i": "caseinfoid-87506010-3532-11ea-82bb-d3789631c89f",
+                        "i": "caseinfoid-5hwygcoqct-caseinfoid-87506010-3532-11ea-82bb-d3789631c89f",
                         "items": [
                             {
                                 "dropEffect": "move",
@@ -388,7 +397,7 @@
                         "displayType": "ROW",
                         "h": 4,
                         "hideName": false,
-                        "i": "caseinfoid-d8e8a170-fe17-11ec-8186-47081b53acb3",
+                        "i": "caseinfoid-5hwygcoqct-caseinfoid-d8e8a170-fe17-11ec-8186-47081b53acb3",
                         "items": [
                             {
                                 "args": {
@@ -433,7 +442,7 @@
                                 "index": 2,
                                 "listId": "caseinfoid-d8e8a170-fe17-11ec-8186-47081b53acb3",
                                 "name": "Add Hash to Prisma Blocklist",
-                                "scriptId": "AbuseIPDB|||abuseipdb-check-cidr-block",
+                                "scriptId": "PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-custom-feeds-malware-add",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             },
@@ -446,7 +455,7 @@
                                 "id": "a3505c10-02cc-11ed-8b4c-2f2d4e09d112",
                                 "index": 3,
                                 "name": "Add IP to Prisma Malicious Feed",
-                                "scriptId": "PaloAltoNetworks_PrismaCloudCompute_additional_remediation|||prisma-cloud-compute-custom-feeds-ip-add",
+                                "scriptId": "PaloAltoNetworks_PrismaCloudCompute|||prisma-cloud-compute-custom-feeds-ip-add",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             },
@@ -507,7 +516,7 @@
                         "displayType": "ROW",
                         "h": 3,
                         "hideName": false,
-                        "i": "caseinfoid-eb8780f0-13c3-11ed-b41b-4554c60a8ab0",
+                        "i": "caseinfoid-5hwygcoqct-caseinfoid-eb8780f0-13c3-11ed-b41b-4554c60a8ab0",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
@@ -520,7 +529,7 @@
                     },
                     {
                         "h": 1,
-                        "i": "caseinfoid-e997d400-13c5-11ed-b41b-4554c60a8ab0",
+                        "i": "caseinfoid-5hwygcoqct-caseinfoid-e997d400-13c5-11ed-b41b-4554c60a8ab0",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
@@ -545,7 +554,7 @@
                         "h": 4,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
-                        "i": "caseinfoid-e142a090-12a4-11ed-88ab-4930fc56fe30",
+                        "i": "caseinfoid-dhendfrlpj-0q4qlmgwhw-caseinfoid-e142a090-12a4-11ed-88ab-4930fc56fe30",
                         "items": [
                             {
                                 "dropEffect": "move",
@@ -566,11 +575,13 @@
                         "static": false,
                         "w": 3,
                         "x": 0,
-                        "y": 0
+                        "y": 0,
+                        "maxH": null,
+                        "minW": 3
                     },
                     {
                         "h": 2,
-                        "i": "caseinfoid-fed49770-139a-11ed-9e27-77adfaad2f98",
+                        "i": "caseinfoid-dhendfrlpj-0q4qlmgwhw-caseinfoid-fed49770-139a-11ed-9e27-77adfaad2f98",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
@@ -580,11 +591,13 @@
                         "type": "linkedIncidents",
                         "w": 3,
                         "x": 0,
-                        "y": 6
+                        "y": 6,
+                        "maxH": null,
+                        "minW": 3
                     },
                     {
                         "h": 2,
-                        "i": "caseinfoid-d6dee3d0-13c5-11ed-b41b-4554c60a8ab0",
+                        "i": "caseinfoid-dhendfrlpj-0q4qlmgwhw-caseinfoid-d6dee3d0-13c5-11ed-b41b-4554c60a8ab0",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
@@ -596,7 +609,9 @@
                         "type": "indicators",
                         "w": 3,
                         "x": 0,
-                        "y": 4
+                        "y": 4,
+                        "maxH": null,
+                        "minW": 3
                     }
                 ],
                 "type": "custom"
@@ -604,14 +619,14 @@
             {
                 "hidden": false,
                 "id": "0q4qlmgwhw",
-                "name": "Container Forensics",
+                "name": "Forensics",
                 "sections": [
                     {
                         "displayType": "ROW",
                         "h": 3,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
-                        "i": "caseinfoid-0f8e5a10-d89b-11eb-9760-61d435d58ac8",
+                        "i": "caseinfoid-0q4qlmgwhw-caseinfoid-0q4qlmgwhw-caseinfoid-0f8e5a10-d89b-11eb-9760-61d435d58ac8",
                         "items": [
                             {
                                 "endCol": 6,
@@ -630,13 +645,15 @@
                         "static": false,
                         "w": 3,
                         "x": 0,
-                        "y": 9
+                        "y": 9,
+                        "maxH": null,
+                        "minW": 3
                     },
                     {
                         "h": 3,
-                        "i": "caseinfoid-1c0b5f90-d89b-11eb-9760-61d435d58ac8",
+                        "i": "caseinfoid-0q4qlmgwhw-caseinfoid-0q4qlmgwhw-caseinfoid-1c0b5f90-d89b-11eb-9760-61d435d58ac8",
                         "items": [],
-                        "maxW": 3,
+                        "maxW": 2,
                         "minH": 1,
                         "moved": false,
                         "name": "Backups and Forensic Bundles",
@@ -655,13 +672,15 @@
                         "type": "invTimeline",
                         "w": 2,
                         "x": 0,
-                        "y": 6
+                        "y": 6,
+                        "maxH": null,
+                        "minW": 2
                     },
                     {
                         "h": 3,
-                        "i": "caseinfoid-ef91b030-de04-11eb-a516-758ed2571769",
+                        "i": "caseinfoid-0q4qlmgwhw-caseinfoid-0q4qlmgwhw-caseinfoid-ef91b030-de04-11eb-a516-758ed2571769",
                         "items": [],
-                        "maxW": 3,
+                        "maxW": 1,
                         "minH": 1,
                         "moved": false,
                         "name": "Incident Files",
@@ -679,11 +698,13 @@
                         "type": "invTimeline",
                         "w": 1,
                         "x": 2,
-                        "y": 6
+                        "y": 6,
+                        "maxH": null,
+                        "minW": 1
                     },
                     {
                         "h": 6,
-                        "i": "caseinfoid-64377ab0-0383-11ed-a1a9-9bbd9b77de53",
+                        "i": "caseinfoid-0q4qlmgwhw-caseinfoid-0q4qlmgwhw-caseinfoid-64377ab0-0383-11ed-a1a9-9bbd9b77de53",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
@@ -699,7 +720,9 @@
                         "type": "invTimeline",
                         "w": 3,
                         "x": 0,
-                        "y": 0
+                        "y": 0,
+                        "maxH": null,
+                        "minW": 3
                     }
                 ],
                 "type": "custom"
@@ -730,7 +753,7 @@
                             }
                         ],
                         "h": 3,
-                        "i": "caseinfoid-c2691c80-d894-11eb-9526-0138f2c993e4",
+                        "i": "5hwygcoqct-caseinfoid-c2691c80-d894-11eb-9526-0138f2c993e4",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
@@ -742,14 +765,16 @@
                         "type": "indicators",
                         "w": 3,
                         "x": 0,
-                        "y": 3
+                        "y": 3,
+                        "maxH": null,
+                        "minW": 3
                     },
                     {
                         "displayType": "ROW",
                         "h": 3,
                         "hideItemTitleOnlyOne": true,
                         "hideName": true,
-                        "i": "caseinfoid-e1b77c30-d894-11eb-9526-0138f2c993e4",
+                        "i": "5hwygcoqct-caseinfoid-e1b77c30-d894-11eb-9526-0138f2c993e4",
                         "items": [
                             {
                                 "endCol": 4,
@@ -761,26 +786,28 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxW": 3,
+                        "maxW": 2,
                         "minH": 1,
                         "moved": false,
                         "name": "Image Compliance Issues",
                         "static": false,
                         "w": 2,
                         "x": 0,
-                        "y": 0
+                        "y": 0,
+                        "maxH": null,
+                        "minW": 2
                     },
                     {
                         "description": "The following actions can quickly generate an HTML summary report of the compliance and vulnerability issues for this incident and email it off to the appropriate team",
                         "displayType": "ROW",
                         "h": 3,
                         "hideName": false,
-                        "i": "caseinfoid-a94cb6d0-fe18-11ec-8186-47081b53acb3",
+                        "i": "5hwygcoqct-caseinfoid-a94cb6d0-fe18-11ec-8186-47081b53acb3",
                         "items": [
                             {
                                 "args": {
                                     "table": {
-                                        "simple": "${Indicators}"
+                                        "simple": "${CVEReport}"
                                     },
                                     "title": {
                                         "simple": "Prisma  Cloud Compute CVEs"
@@ -799,7 +826,7 @@
                             {
                                 "args": {
                                     "table": {
-                                        "simple": "${PrismaCloudCompute.Images.ComplianceIssues}"
+                                        "simple": "${PrismaCloudCompute.ReportsImagesScan.complianceIssues}"
                                     },
                                     "title": {
                                         "simple": "Compliance Issues"
@@ -816,14 +843,16 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxW": 3,
+                        "maxW": 1,
                         "minH": 1,
                         "moved": false,
                         "name": "Actions",
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 0
+                        "y": 0,
+                        "maxH": null,
+                        "minW": 1
                     }
                 ],
                 "type": "custom"
@@ -837,7 +866,7 @@
                         "h": 8,
                         "i": "caseinfoid-68931570-fe19-11ec-8186-47081b53acb3",
                         "items": [],
-                        "maxW": 3,
+                        "maxW": 2,
                         "minH": 1,
                         "moved": false,
                         "name": "External Alerting Policy",
@@ -856,7 +885,9 @@
                         "type": "invTimeline",
                         "w": 2,
                         "x": 0,
-                        "y": 0
+                        "y": 0,
+                        "maxH": null,
+                        "minW": 2
                     },
                     {
                         "description": "Use this section to update the WaaS container policy which triggered this incident.",
@@ -906,14 +937,16 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxW": 3,
+                        "maxW": 1,
                         "minH": 1,
                         "moved": false,
                         "name": "Actions",
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 0
+                        "y": 0,
+                        "maxH": null,
+                        "minW": 1
                     }
                 ],
                 "type": "custom"
@@ -950,7 +983,7 @@
     "name": "Prisma Cloud Compute Audit Layout v2",
     "system": false,
     "version": -1,
-    "description": "",
     "fromVersion": "6.0.0",
+    "description": "",
     "marketplaces": ["xsoar"]
 }

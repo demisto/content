@@ -1,0 +1,331 @@
+id: Prisma Cloud Compute - Get Container Events
+version: -1
+name: Prisma Cloud Compute - Get Container Events
+description: |-
+  This is a sub-playbook of the "Prisma Cloud Compute - Audit Alert v2" playbook.
+  - Get container WAAS events
+  - Get runtime container events and set it to layout.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 95667218-5270-4610-89e9-e2b90d70e92c
+    type: start
+    task:
+      id: 95667218-5270-4610-89e9-e2b90d70e92c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: ea1b2caa-8097-4df5-85e5-2b12e3893e3e
+    type: regular
+    task:
+      id: ea1b2caa-8097-4df5-85e5-2b12e3893e3e
+      version: -1
+      name: 'Get runtime container audits '
+      description: Retrieves all container audit events when a runtime sensor such as process, network, file system, or system call detects an activity that deviates from the predictive model.
+      script: '|||prisma-cloud-compute-runtime-container-audit-events-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      hostname:
+        complex:
+          root: inputs.hostname
+      image_name:
+        complex:
+          root: inputs.ImageName
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 642.5,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 7236fc1d-127f-489b-8265-0f37e5f24a3e
+    type: regular
+    task:
+      id: 7236fc1d-127f-489b-8265-0f37e5f24a3e
+      version: -1
+      name: Set Audits to Layout
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      extend-context:
+        simple: AuditTable=.
+      ignore-outputs:
+        simple: "true"
+      prismaaudittable:
+        complex:
+          root: AuditTable
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 642.5,
+          "y": 685
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Prisma Cloud Compute Audit Table
+      output:
+        simple: ${AuditTable}
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 60377930-c3ae-414f-8b94-5e187b293dc9
+    type: condition
+    task:
+      id: 60377930-c3ae-414f-8b94-5e187b293dc9
+      description: ""
+      version: -1
+      name: App Firewall event?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.AuditAlertType
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: inputs.AuditAlertType
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AppFirewall
+                    ignorecase: true
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: ff311a55-637f-46eb-856c-5bedee359410
+    type: regular
+    task:
+      id: ff311a55-637f-46eb-856c-5bedee359410
+      version: -1
+      name: Get container WAAS events
+      description: Get the audits for the firewall container policies.
+      script: '|||prisma-cloud-compute-get-audit-firewall-container-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      ImageName:
+        complex:
+          root: PrismaCloudCompute.AuditAlert
+          accessor: image
+      audit_type:
+        simple: '*'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 685
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 27e1a57f-3a6e-467b-8e85-d0532e74588c
+    type: regular
+    task:
+      id: 27e1a57f-3a6e-467b-8e85-d0532e74588c
+      version: -1
+      name: Save Audits to Table
+      description: Convert an array to a nice table display (usually, from the context).
+      scriptName: ToTable
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      data:
+        complex:
+          root: PrismaCloudCompute
+          accessor: RuntimeContainerAuditEvents
+          transformers:
+          - operator: IgnoreFieldsFromJson
+            args:
+              fields:
+                value:
+                  simple: collections
+              json_object:
+                value:
+                  simple: PrismaCloudCompute.RuntimeContainerAuditEvents
+                iscontext: true
+      extend-context:
+        simple: AuditTable=.
+      ignore-outputs:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 642.5,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: b718f3c6-0b95-4078-8053-f45975714bb0
+    type: title
+    task:
+      id: b718f3c6-0b95-4078-8053-f45975714bb0
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 400,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "3_4_yes": 0.48
+    },
+    "paper": {
+      "dimensions": {
+        "height": 785,
+        "width": 822.5,
+        "x": 200,
+        "y": 180
+      }
+    }
+  }
+inputs:
+- key: hostname
+  value: {}
+  required: false
+  description: The hostname to retrieve events for. Relevant only for audit events.
+  playbookInputQuery:
+- key: ImageName
+  value: {}
+  required: false
+  description: The image name to retrieve events for.
+  playbookInputQuery:
+- key: AuditAlertType
+  value: {}
+  required: false
+  description: The type of the audit alert. Will be used to determine whether to retrieve WAAS events or not.
+  playbookInputQuery:
+outputs: []
+quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

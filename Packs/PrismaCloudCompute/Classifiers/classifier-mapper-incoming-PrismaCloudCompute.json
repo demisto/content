@@ -77,6 +77,10 @@
 					"complex": null,
 					"simple": "message"
 				},
+                "Prisma Cloud Compute Namespaces": {
+					"complex": null,
+					"simple": "namespaces"
+				},
 				"Prisma Cloud Compute Raw Alert JSON": {
 					"complex": null,
 					"simple": "rawJSONAlert"
@@ -178,6 +182,10 @@
 				"Prisma Cloud Compute Message": {
 					"complex": null,
 					"simple": "message"
+				},
+                "Prisma Cloud Compute Namespaces": {
+					"complex": null,
+					"simple": "namespaces"
 				},
 				"Prisma Cloud Compute Raw Alert JSON": {
 					"complex": null,
