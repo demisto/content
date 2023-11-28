@@ -287,8 +287,8 @@ Returns domain information and reputation.
 | Domain.Tech.Email | String | The email of the tech administrator. | 
 | Domain.Tech.Organization | String | The organization of the tech administrator. | 
 | Domain.WHOIS.NameServers | String | A CSV string of name servers, for example 'ns1.bla.com, ns2.bla.com'. | 
-| Domain.WHOIS.CreationDate | Date | The creation date of the domain. Format is ISO8601 \(i.e. '2020-04-30T10:35:00.000Z'\). | 
-| Domain.WHOIS.UpdatedDate | Date | The date when the domain was last updated. Format is ISO8601 \(i.e. '2020-04-30T10:35:00.000Z'\). | 
+| Domain.WHOIS.CreationDate | Date | The creation date of the domain. Format is ISO8601 \(i.e., '2020-04-30T10:35:00.000Z'\). | 
+| Domain.WHOIS.UpdatedDate | Date | The date when the domain was last updated. Format is ISO8601 \(i.e., '2020-04-30T10:35:00.000Z'\). | 
 | Domain.WHOIS.ExpirationDate | Date | The expiration date of the domain. | 
 
 #### Command example
