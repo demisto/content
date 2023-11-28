@@ -78,8 +78,11 @@ jobs:
       id: append-coverage
       run: |
         cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY || echo "Missing coverage report"
+        echo COVERAGE_SUMMARY=$(cat code-coverage-results.md) >> $GITHUB_OUTPUT
 
     - name: Save coverage report as artifact
+      if: always() && steps.check_files.outputs.files_exists == 'true'
+
       uses: actions/upload-artifact@v2
       with:
         name: coverage-report
@@ -93,7 +96,7 @@ jobs:
     - name: Comment on PR with Coverage Artifact URL
       if: always() && steps.check_files.outputs.files_exists == 'true'
       run: |
-        gh pr comment ${{ github.event.number }} --body "Coverage results: [View Coverage Report](${{ steps.set_artifact_url.outputs.ARTIFACT_URL }})"
+        gh pr comment ${{ github.event.number }} --body "Coverage results: \n ${{ steps.append-coverage.outputs.COVERAGE }} \n [View Coverage Report](${{ steps.set_artifact_url.outputs.ARTIFACT_URL }})"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
