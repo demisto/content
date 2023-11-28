@@ -12,6 +12,7 @@ Import-Module ExchangeOnlineManagement
 # Disable PowerShell progress bars, as they aren't helpful in a non-interactive script
 $Global:ProgressPreference = 'SilentlyContinue'
 
+
 $script:INTEGRATION_NAME = "EWS extension"
 $script:COMMAND_PREFIX = "ews"
 $script:INTEGRATION_ENTRY_CONTEXT = "EWS"

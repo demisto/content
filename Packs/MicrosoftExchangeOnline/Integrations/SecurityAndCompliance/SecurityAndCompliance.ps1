@@ -1,5 +1,6 @@
 . $PSScriptRoot\CommonServerPowerShell.ps1
 
+
 $script:INTEGRATION_NAME = "Security And Compliance"
 $script:COMMAND_PREFIX = "o365-sc"
 $script:INTEGRATION_ENTRY_CONTEX = "O365.SecurityAndCompliance.ContentSearch"
