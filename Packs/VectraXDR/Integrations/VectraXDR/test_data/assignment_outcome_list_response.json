@@ -1,0 +1,42 @@
+{
+    "count": 5,
+    "next": null,
+    "previous": null,
+    "results": [
+        {
+            "id": 1,
+            "builtin": true,
+            "user_selectable": true,
+            "title": "Benign True Positive",
+            "category": "benign_true_positive"
+        },
+        {
+            "id": 2,
+            "builtin": true,
+            "user_selectable": true,
+            "title": "Malicious True Positive",
+            "category": "malicious_true_positive"
+        },
+        {
+            "id": 3,
+            "builtin": true,
+            "user_selectable": true,
+            "title": "False Positive",
+            "category": "false_positive"
+        },
+        {
+            "id": 6,
+            "builtin": false,
+            "user_selectable": true,
+            "title": "Custom outcome",
+            "category": "benign_true_positive"
+        },
+        {
+            "id": 7,
+            "builtin": false,
+            "user_selectable": true,
+            "title": "Custom outcome1",
+            "category": "benign_true_positive"
+        }
+    ]
+}
