@@ -1619,9 +1619,7 @@ class TestFilterChangelog:
 - Fixed contextPath outputs for the ***nxos-facts*** command.
 - Updated the Docker image to: *demisto/ansible-runner:1.0.0.24037*."""
 
-    res3 = {'Integrations': {'Ansible Cisco NXOS': '- Documentation and metadata improvements. \n'
-                             '- Fixed contextPath outputs for the ***nxos-facts*** command.\n'
-                             '- Updated the Docker image to: *demisto/ansible-runner:1.0.0.24037*.\n'}}
+    res3 = {'Integrations': {'Ansible Cisco NXOS': '- Documentation and metadata improvements.\n- Fixed contextPath outputs for the ***nxos-facts*** command.\n- Updated the Docker image to: *demisto/ansible-runner:1.0.0.24037*.\n'}}  # noqa: E501
 
     TEST4 = """#### Integrations
 ##### Akamai WAF
@@ -1660,29 +1658,12 @@ class TestFilterChangelog:
 - Added the following argument to the ***akamai-activate-papi-property*** command:
    - *note*
 """
+
+    res4 = {'Integrations': {'Akamai WAF': '- Added 8 new commmands:\n  - ***akamai-get-production-deployment***\n  - ***akamai-get-change-history***\n  - ***akamai-modify-appsec-config-selected-hosts***\n  - ***akamai-patch-papi-property-rule-siteshield***\n  - ***akamai-update-appsec-config-version-notes***\n  - ***akamai-new-or-renew-match-target***\n  - ***akamai-patch-papi-property-rule-generic***\n  - ***akamai-get-papi-property-rule***\n\n- Added the following arguments to the ***akamai-create-enrollment*** command:\n   - *clone_dns_names*\n   - *exclude_sans*\n   - *change_management*\n   - *network_configuration_geography*\n   - *ra*\n   - *validation_type*\n   - *enable_multi_stacked_certificates*\n   - *network_configuration_quic_enabled*\n   - *network_configuration_secure_network*\n   - *network_configuration_sni_only*\n   - *indicator_type*\n   - *active_only*\n   - *confidence*\n   - *threat_assess_score*\n\n- Added the following arguments to the ***akamai-update-property*** command:\n   - *property_comments*\n   - *dc1_id*\n   - *dc2_id*\n\n- Added the following argument to the ***akamai-activate-papi-property*** command:\n   - *note*\n'}}  # noqa: E501
+
     Test5 = """#### Incident Fields"""
 
     res5 = {'Incident Fields': {'[special_msg]': '\n'}}
-
-    res4 = {'Integrations': {'Akamai WAF': '- Added 8 new commmands:\n'
-                             '  - ***akamai-get-production-deployment***\n'
-                             '  - ***akamai-get-change-history***\n'
-                             '  - ***akamai-modify-appsec-config-selected-hosts***\n'
-                             '  - ***akamai-patch-papi-property-rule-siteshield***\n'
-                             '  - ***akamai-update-appsec-config-version-notes***\n'
-                             '  - ***akamai-new-or-renew-match-target***\n'
-                             '  - ***akamai-patch-papi-property-rule-generic***\n'
-                             '  - ***akamai-get-papi-property-rule***\n'
-                             '     \n- Added the following arguments to the ***akamai-create-enrollment*** command:\n'
-                             '   - *clone_dns_names*\n   - *exclude_sans*\n   - *change_management*\n'
-                             '   - *network_configuration_geography*\n   - *ra*\n   - *validation_type*\n'
-                             '   - *enable_multi_stacked_certificates*\n   - *network_configuration_quic_enabled*\n'
-                             '   - *network_configuration_secure_network*\n   - *network_configuration_sni_only*\n'
-                             '   - *indicator_type*\n   - *active_only*\n   - *confidence*\n   - *threat_assess_score*\n'
-                             '    \n- Added the following arguments to the ***akamai-update-property*** command:\n'
-                             '   - *property_comments*\n   - *dc1_id*\n   - *dc2_id*\n'
-                             '    \n- Added the following argument to the ***akamai-activate-papi-property*** command:\n'
-                             '   - *note*\n'}}
 
     @pytest.mark.parametrize('test, res', [(TEST1, res1), (TEST2, res2), (TEST3, res3), (TEST4, res4), (Test5, res5)])
     def test_get_relese_notes_dict(self, dummy_pack: Pack, test, res):
