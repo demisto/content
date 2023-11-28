@@ -15,7 +15,7 @@ This pack includes XSIAM content.
 ![Server Screenshot](https://raw.githubusercontent.com/demisto/content/b33523bbb3666eb18c779b09d38fbf14e4764075/Packs/MicrosoftIISWebServer/doc_imgs/IISLogging.png)
 
 **Pay Attention:**
-The following are the currently supported log schemas:
+The following are the currently supported log schema structures:
 *  Network
 ``` bash
   date time s-sitename s-computername s-ip cs-method cs-uri-stem cs-uri-query s-port cs-username c-ip cs-version cs(User-Agent) cs(Cookie) cs(Referer) cs-host sc-status sc-substatus sc-win32-status sc-bytes cs-bytes time-taken
