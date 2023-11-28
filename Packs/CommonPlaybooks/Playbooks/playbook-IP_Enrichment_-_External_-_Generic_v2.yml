@@ -7,6 +7,7 @@ description: |-
 
   - Resolve IP addresses to hostnames (DNS).
   - Provide threat information.
+  - IP address reputation using !ip command.
   - Separate internal and external addresses.
 starttaskid: "0"
 tasks:
@@ -29,7 +30,7 @@ tasks:
       {
         "position": {
           "x": 102.5,
-          "y": 49
+          "y": 59
         }
       }
     note: false
@@ -97,7 +98,7 @@ tasks:
       {
         "position": {
           "x": 102.5,
-          "y": 590
+          "y": 550
         }
       }
     note: false
@@ -125,7 +126,7 @@ tasks:
       {
         "position": {
           "x": -600,
-          "y": 1860
+          "y": 1720
         }
       }
     note: false
@@ -151,14 +152,13 @@ tasks:
     nexttasks:
       '#none#':
       - "36"
-      - "41"
       - "44"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 102.5,
-          "y": 1150
+          "y": 1090
         }
       }
     note: false
@@ -212,10 +212,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 583bdb15-2ba1-4818-8040-960105e9c247
+    taskid: 8b80f93a-be58-4f02-8568-23e5f4437b9f
     type: regular
     task:
-      id: 583bdb15-2ba1-4818-8040-960105e9c247
+      id: 8b80f93a-be58-4f02-8568-23e5f4437b9f
       version: -1
       name: Determine whether the IP address is internal or external
       description: "Checks if the IP address is in the internal IP address ranges.\nIf internal, sets the \"InRange\" attribute to \"yes\".\nIf external, sets the \"InRange\" attribute to \"no\". "
@@ -286,7 +286,7 @@ tasks:
       {
         "position": {
           "x": 102.5,
-          "y": 800
+          "y": 750
         }
       }
     note: false
@@ -345,7 +345,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 970
+          "y": 920
         }
       }
     note: false
@@ -375,8 +375,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 102.5,
-          "y": 1290
+          "x": 460,
+          "y": 1230
         }
       }
     note: false
@@ -438,8 +438,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 102.5,
-          "y": 1453
+          "x": 460,
+          "y": 1363
         }
       }
     note: false
@@ -452,10 +452,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 28f08e7d-3a2f-495a-8dbb-4bb08f2675be
+    taskid: 19fff3fe-0e05-4ccf-80ad-c1938b9a7806
     type: regular
     task:
-      id: 28f08e7d-3a2f-495a-8dbb-4bb08f2675be
+      id: 19fff3fe-0e05-4ccf-80ad-c1938b9a7806
       version: -1
       name: Get IP report from VirusTotal Private API
       description: |
@@ -488,8 +488,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 102.5,
-          "y": 1670
+          "x": 460,
+          "y": 1540
         }
       }
     note: false
@@ -520,7 +520,7 @@ tasks:
       {
         "position": {
           "x": -600,
-          "y": 970
+          "y": 920
         }
       }
     note: false
@@ -528,150 +528,6 @@ tasks:
     ignoreworker: false
     continueonerrortype: ""
     skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "41":
-    id: "41"
-    taskid: 8828c9f9-9144-42ab-8c98-7479e8f19a04
-    type: title
-    task:
-      id: 8828c9f9-9144-42ab-8c98-7479e8f19a04
-      version: -1
-      name: Enrich Using Threat Crowd
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "42"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 500,
-          "y": 1290
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    continueonerrortype: ""
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "42":
-    id: "42"
-    taskid: bfd335eb-f565-4abd-87d2-6299336bc89b
-    type: condition
-    task:
-      id: bfd335eb-f565-4abd-87d2-6299336bc89b
-      version: -1
-      name: Is ThreatCrowd enabled?
-      description: Checks if there is an active instance of the ThreatCrowd integration enabled.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "24"
-      "yes":
-      - "43"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Threat Crowd
-                    ignorecase: true
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                    ignorecase: true
-                accessor: brand
-            iscontext: true
-          ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 500,
-          "y": 1453
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    continueonerrortype: ""
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "43":
-    id: "43"
-    taskid: 017faa3e-752d-4339-8b22-5c35442bff75
-    type: regular
-    task:
-      id: 017faa3e-752d-4339-8b22-5c35442bff75
-      version: -1
-      name: Get IP report from ThreatCrowd
-      description: |
-        Retrieves a report for a given IP address.
-      script: '|||threat-crowd-ip'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "24"
-    scriptarguments:
-      ip:
-        complex:
-          root: IP
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: IP.InRange
-                iscontext: true
-              right:
-                value:
-                  simple: "no"
-          accessor: Address
-          transformers:
-          - operator: uniq
-    reputationcalc: 1
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 500,
-          "y": 1670
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    continueonerrortype: ""
-    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -695,8 +551,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -300,
-          "y": 1290
+          "x": -250,
+          "y": 1230
         }
       }
     note: false
@@ -708,10 +564,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: e47282e7-f860-4707-883f-623837a431b9
+    taskid: 9a9bf2b6-1c82-42a7-8e51-d78fef292cd6
     type: regular
     task:
-      id: e47282e7-f860-4707-883f-623837a431b9
+      id: 9a9bf2b6-1c82-42a7-8e51-d78fef292cd6
       version: -1
       name: Check Reputation
       description: Checks the reputation of an IP address using all available integrations.
@@ -727,23 +583,39 @@ tasks:
         complex:
           root: IP.Address
           filters:
-          - - operator: IsNotInCidrRanges
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: IP.InRange
+                iscontext: true
+              right:
+                value:
+                  simple: "no"
+              ignorecase: true
+          - - operator: containsGeneral
               left:
                 value:
                   simple: IP.Address
                 iscontext: true
               right:
                 value:
-                  simple: 192.168.0.0/16,172.16.0.0/12,10.0.0.0/8
+                  simple: inputs.IP
+                iscontext: true
           transformers:
-            - operator: uniq
+          - operator: uniq
+      extended_data:
+        complex:
+          root: inputs.extended_data
+      threat_model_association:
+        complex:
+          root: inputs.threat_model_association
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -300,
-          "y": 1670
+          "x": -250,
+          "y": 1540
         }
       }
     note: false
@@ -787,8 +659,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -300,
-          "y": 1453
+          "x": -250,
+          "y": 1363
         }
       }
     note: false
@@ -802,23 +674,22 @@ view: |-
   {
     "linkLabelsPosition": {
       "15_34_yes": 0.58,
-      "15_39_#default#": 0.51,
+      "15_39_#default#": 0.49,
       "28_29_yes": 0.68,
       "28_39_#default#": 0.35,
       "34_27_#default#": 0.49,
       "34_35_yes": 0.53,
       "37_24_#default#": 0.28,
       "37_38_yes": 0.52,
-      "42_24_#default#": 0.2,
-      "42_43_yes": 0.51,
-      "46_24_#default#": 0.53
+      "46_24_#default#": 0.68,
+      "46_45_yes": 0.56
     },
     "paper": {
       "dimensions": {
-        "height": 1876,
-        "width": 1480,
+        "height": 1726,
+        "width": 1440,
         "x": -600,
-        "y": 49
+        "y": 59
       }
     }
   }
@@ -843,7 +714,9 @@ inputs:
   value:
     simple: "True"
   required: true
-  description: Whether to convert the IP address to a hostname using a DNS query (True/False).
+  description: |-
+    Whether to convert the IP address to a hostname using a DNS query (True/False).
+    The default value is true.
   playbookInputQuery:
 - key: UseReputationCommand
   value:
@@ -853,6 +726,25 @@ inputs:
     Define if you would like to use the !IP command.
     Note: This input should be used whenever there is no auto-extract enabled in the investigation flow.
     Possible values: True / False.
+    The default value is false.
+  playbookInputQuery:
+- key: extended_data
+  value:
+    simple: "False"
+  required: false
+  description: |-
+    Define whether you want the generic reputation command to return extended data (last_analysis_results).
+    Possible values: True / False.
+    The default value is false.
+  playbookInputQuery:
+- key: threat_model_association
+  value:
+    simple: "False"
+  required: false
+  description: |-
+    Define whether you wish to enhance generic reputation command to include additional information such as Threat Bulletins, Attack patterns, Actors, Campaigns, TTPs, vulnerabilities, etc. Note: If set to true, additional 6 API calls will be performed.
+    Possible values: True / False.
+    The default value is false.
   playbookInputQuery:
 outputs:
 - contextPath: IP
@@ -867,17 +759,74 @@ outputs:
 - contextPath: Endpoint.Hostname
   description: The hostname to enrich.
   type: string
-- contextPath: Endpoint.OS
-  description: Endpoint operating system.
-  type: string
 - contextPath: Endpoint.IP
   description: A list of endpoint IP addresses.
-- contextPath: Endpoint.MAC
-  description: A list of endpoint MAC addresses.
-- contextPath: Endpoint.Domain
-  description: Endpoint domain name.
+  type: string
+- contextPath: IP.Address
+  description: The IP Address
+  type: string
+- contextPath: IP.InRange
+  description: Is the IP is in the input ranges? (could be 'yes' or 'no)
+  type: string
+- contextPath: DBotScore.Indicator
+  description: The indicator that was tested.
+  type: string
+- contextPath: DBotScore.Type
+  description: The indicator type.
+  type: string
+- contextPath: DBotScore.Vendor
+  description: The vendor used to calculate the score.
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score.
+  type: string
+- contextPath: IP.ASN
+  description: The Autonomous System (AS) number associated with the indicator.
+  type: string
+- contextPath: IP.Tags
+  description: List of IP tags.
+  type: string
+- contextPath: IP.ThreatTypes
+  description: Threat types associated with the IP.
+  type: string
+- contextPath: IP.Geo.Country
+  description: The country associated with the indicator.
+  type: string
+- contextPath: IP.Geo.Location
+  description: The longitude and latitude of the IP address.
+  type: string
+- contextPath: IP.Malicious.Vendor
+  description: The vendor that reported the indicator as malicious.
+  type: string
+- contextPath: IP.Malicious.Description
+  description: For malicious IPs, the reason that the vendor made the decision
+  type: string
+- contextPath: IP.VirusTotal.DownloadedHashes
+  description: Latest files that are detected by at least one antivirus solution and were downloaded by VirusTotal from the IP address
+  type: string
+- contextPath: IP.VirusTotal.UnAVDetectedDownloadedHashes
+  description: Latest files that are not detected by any antivirus solution and were downloaded by VirusTotal from the IP address provided
+  type: string
+- contextPath: IP.VirusTotal.DetectedURLs
+  description: Latest URLs hosted in this IP address detected by at least one URL scanner
+  type: string
+- contextPath: IP.VirusTotal.CommunicatingHashes
+  description: Latest detected files that communicate with this IP address
+  type: string
+- contextPath: IP.VirusTotal.UnAVDetectedCommunicatingHashes
+  description: Latest undetected files that communicate with this IP address
+  type: string
+- contextPath: IP.VirusTotal.Resolutions.hostname
+  description: The following domains resolved to the given IP
+  type: string
+- contextPath: IP.VirusTotal.ReferrerHashes
+  description: Latest detected files that embed this IP address in their strings
+  type: string
+- contextPath: IP.VirusTotal.UnAVDetectedReferrerHashes
+  description: Latest undetected files that embed this IP address in their strings
+  type: string
+- contextPath: IP.VirusTotal.Resolutions.last_resolved
+  description: The last time the following domains resolved to the given IP
   type: string
 tests:
-- No tests (auto formatted)
-contentitemexportablefields:
-  contentitemfields: {}
+- IP Enrichment - Generic v2 - Test
