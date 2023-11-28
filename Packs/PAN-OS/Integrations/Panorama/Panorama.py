@@ -416,7 +416,7 @@ def parse_pan_os_un_committed_data(dictionary, keys_to_remove):
             dictionary[key] = dictionary[key]['#text']
         elif isinstance(dictionary[key], list) and isinstance(dictionary[key][0], dict) \
                 and dictionary[key][0].get('#text'):
-            dictionary[key] = [text.get('#text') for text in dictionary[key]]
+            dictionary[key] = [text.get('#text') for text in dictionary[key] if isinstance(text, dict)]
 
     for value in dictionary.values():
         if isinstance(value, dict):
