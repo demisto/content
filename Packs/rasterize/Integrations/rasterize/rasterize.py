@@ -262,6 +262,8 @@ def rasterize(path: str,
             if rasterize_type == RasterizeType.PDF:
                 return screenshot_pdf(browser, tab, path, wait_time=wait_time, timeout=timeout, include_url=include_url)
 
+            # TODO Handle
+            return ''
     else:
         message = f'Could not use local Chrome for rasterize command'
         demisto.error(message)

@@ -42,7 +42,7 @@ def test_rasterize_email_pdf(caplog, capfd):
 
 
 def test_rasterize_email_pdf_offline(caplog, capfd):
-    with capfd.disabled() and  NamedTemporaryFile('w+') as f:
+    with capfd.disabled() and NamedTemporaryFile('w+') as f:
         f.write('<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">'
                 '</head><body><br>---------- TEST FILE ----------<br></body></html>')
         path = os.path.realpath(f.name)
