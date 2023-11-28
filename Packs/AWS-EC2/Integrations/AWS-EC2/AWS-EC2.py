@@ -3373,13 +3373,13 @@ def main():
             release_hosts_command(args, aws_client)
 
         elif command == 'aws-ec2-describe-ipam-resource-discoveries':
-            return_results(describe_ipam_resource_discoveries_command(args, aws_client))
+            return_results(describe_ipam_resource_discoveries_command(args, aws_client: "EC2Client"))
 
         elif command == 'aws-ec2-describe-ipam-resource-discovery-associations':
-            return_results(describe_ipam_resource_discovery_associations_command(args, aws_client))
+            return_results(describe_ipam_resource_discovery_associations_command(args, aws_client: "EC2Client"))
 
         elif command == 'aws-ec2-get-ipam-discovered-public-addresses':
-            return_results(get_ipam_discovered_public_addresses_command(args, aws_client))
+            return_results(get_ipam_discovered_public_addresses_command(args, aws_client: "EC2Client"))
 
     except Exception as e:
         LOG(e)
