@@ -32,7 +32,7 @@ Create a formatted logging destination to specify that log messages are sent to 
 2. Click **Create**.
 3. In the **Name** field, type "XSIAM".
 4. From the **Type** list, select **Remote Syslog**.
-5. From the **Syslog Format** list, select a format for the logs (for APM logs, only the BSD Syslog format is supported).
+5. From the **Syslog Format** list, select a format for the logs.
 6. From the **High-Speed Log Destination** list, select the destination that you created in the previous step.
 7. Click **Finished**.
 
