@@ -3831,7 +3831,7 @@ script:
   - arguments:
     - description: A comma-separated list of the resource discovery association IDs.
       name: IpamResourceDiscoveryAssociationIds
-    - description: One or more filters Separated by ';'. See AWS documentation for details & filter options.
+    - description: One or more filters Separated by ';'. See AWS documentation for details & filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html). (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html)..
       name: Filters
     - description: The maximum number of results to return in a single call. Specify a value between 5 and 1000.
       name: MaxResults
@@ -3858,7 +3858,7 @@ script:
     - description: The Amazon Web Services region for the IP address.
       name: AddressRegion
       required: true
-    - description: One or more filters Separated by ';'. See AWS documentation for details & filter options.
+    - description: One or more filters Separated by ';'. See AWS documentation for details & filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html).
       name: Filters
     - description: The maximum number of results to return in a single call. Specify a value between 5 and 1000.
       name: MaxResults

@@ -3361,7 +3361,7 @@ Describes resource discovery association with an Amazon VPC IPAM. An associated 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | IpamResourceDiscoveryAssociationIds | A comma-separated list of the resource discovery association IDs. | Optional | 
-| Filters | One or more filters Separated by ';'. See AWS documentation for details &amp; filter options. | Optional | 
+| Filters | One or more filters Separated by ';'. See AWS documentation for details &amp; filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html). | Optional | 
 | MaxResults | The maximum number of results to return in a single call. Specify a value between 5 and 1000. | Optional | 
 | NextToken | The token for the next set of results. | Optional | 
 | AddressRegion | The Amazon Web Services region for the IP address. | Optional | 
@@ -3422,7 +3422,7 @@ Gets the public IP addresses that have been discovered by IPAM.
 | --- | --- | --- |
 | IpamResourceDiscoveryId | An IPAM resource discovery ID. | Required | 
 | AddressRegion | The Amazon Web Services Region for the IP address. | Required | 
-| Filters | One or more filters Separated by ';'. See AWS documentation for details &amp; filter options. | Optional | 
+| Filters | One or more filters Separated by ';'. See AWS documentation for details &amp; filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html). | Optional | 
 | MaxResults | The maximum number of results to return in a single call. Specify a value between 5 and 1000. | Optional | 
 | NextToken | The token for the next set of results. | Optional | 
 
