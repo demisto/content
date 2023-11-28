@@ -354,7 +354,7 @@ def fetch_events(client: Client,
             client.update_access_token()
             fetch_by_event_type(EVENT_TYPES['Alerts'], events, next_run, client,
                                 max_fetch, last_run, fetch_start_time)
-    if events:
+    if events and events.get('alerts'):
         # Initialize blank set of alert IDs
         alert_ids = set()
         # Add IDs for all alerts to fetch activities and devices for
