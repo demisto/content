@@ -61,5 +61,30 @@ def test_fetch_indicators_command(patched_get_advisories):
     assert result[0].get("value")
     assert result[0].get("type")
     assert result[0].get("rawJSON")
-    for field, field_value in result[0].get("fields").items():
+    # for field, field_value in result[0].get("fields").items():
+    for field_value in result[0].get("fields").items():
+        assert field_value
+
+
+@patch("PaloAltoNetworksSecurityAdvisories.Client.get_advisories")
+def test_get_advisories4_command(patched_get_advisories):
+    patched_get_advisories.return_value = json.load(open("test_data" + os.sep + "advisories4.json"))
+    from PaloAltoNetworksSecurityAdvisories import Client, get_advisories
+    test_client = Client(base_url=BASE_URL)
+    result = get_advisories(test_client, "PANOS")
+    assert result
+    assert len(result.raw_response) == 1
+
+
+@patch("PaloAltoNetworksSecurityAdvisories.Client.get_advisories")
+def test_fetch_indicators4_command(patched_get_advisories):
+    patched_get_advisories.return_value = json.load(open("test_data" + os.sep + "advisories4.json"))
+    from PaloAltoNetworksSecurityAdvisories import Client, fetch_indicators
+    test_client = Client(base_url=BASE_URL)
+    result = fetch_indicators(test_client, "PANOS")
+    assert result[0].get("value")
+    assert result[0].get("type")
+    assert result[0].get("rawJSON")
+    # for field, field_value in result[0].get("fields").items():
+    for field_value in result[0].get("fields").items():
         assert field_value

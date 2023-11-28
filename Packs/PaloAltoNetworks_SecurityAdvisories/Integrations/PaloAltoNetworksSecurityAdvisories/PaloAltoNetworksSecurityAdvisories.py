@@ -8,7 +8,7 @@ OUTPUT_PREFIX = "PANSecurityAdvisory."
 
 
 class Client(BaseClient):
-    """The client that conects to the advisories API"""
+    """The client that connects to the advisories API"""
     PRODUCTS_ENDPOINT = "/products"
     ADVISORIES_ENDPOINT = "/advisories"
 
@@ -170,6 +170,20 @@ def advisory_to_indicator(advisory_dict: dict):
 
     fields = {}
 
+    if "problemtype" in advisory_dict:
+        tags = []  # holds cwe information as tags
+        # the dict that holds the advisory information fo CWE data
+        cwe_str = advisory_dict.get('problemtype', {}).get('problemtype_data', [])[0].get('description', [])[0].get('value', "")
+
+        if cwe_str and cwe_str.startswith('CWE-'):
+            # split this string after the CWE-\d* first space
+            # CWE-754 Improper Check for Unusual or Exceptional Conditions
+            cwe = cwe_str.split(" ", 1)
+
+            tags.append(cwe[0])
+            # tags.append(cwe_description)
+            fields['tags'] = tags
+
     if "references" in advisory_dict:
         references: list = advisory_dict.get('references', {}).get('reference_data', [])
         fields['publications'] = [
@@ -199,7 +213,6 @@ def advisory_to_indicator(advisory_dict: dict):
     fields['published'] = advisory_dict.get("CVE_data_meta", {}).get("DATE_PUBLIC", "")
     fields['name'] = advisory_dict.get("CVE_data_meta", {}).get("TITLE", [])
 
-    # if "impact" in advisory_dict and advisory_dict.get("impact", {}).get("cvss", {}).get("version", "") == '3.1':
     if "impact" in advisory_dict and cvss.get("version", "") == '3.1':
         fields['cvssversion'] = cvss.get("version", "")
 
@@ -220,9 +233,24 @@ def advisory_to_indicator(advisory_dict: dict):
             )
         fields['cvss3'] = cvss_v3_data
 
-        # fills out the cvsstable in default cve layout
+        # fills out the cvsstable in default cve layout - different table column names
         cvss_data = []
         for k, v in cvss_v3.items():
+            cvss_data.append(
+                {
+                    "metrics": camel_case_to_underscore(k).replace("_", " ").title(),
+                    "value": v
+                }
+            )
+        fields['cvsstable'] = cvss_data
+    elif "impact" in advisory_dict and cvss.get("version", "") == '4.0':
+        # we have a cvss 4.0 format - CVE-2023-38802 as example
+        fields['cvssversion'] = cvss.get("version", "")
+
+        base_metric = advisory_dict.get("impact", {})
+        cvss_v4 = base_metric.get('cvss')
+        cvss_data = []
+        for k, v in cvss_v4.items():
             cvss_data.append(
                 {
                     "metrics": camel_case_to_underscore(k).replace("_", " ").title(),
