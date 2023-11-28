@@ -18,8 +18,8 @@ This playbook does not use any sub-playbooks.
 
 ### Commands
 
-* xdr-get-quarantine-status
 * xdr-file-quarantine
+* xdr-get-quarantine-status
 
 ## Playbook Inputs
 
