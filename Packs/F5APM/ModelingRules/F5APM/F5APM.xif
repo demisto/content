@@ -64,7 +64,7 @@ call f5_APM_General_Fields
 | filter process_name contains "tmsh"
 // Extractions
 | alter
-        // tmsh log format 1 <133>
+        // tmsh log format 1
         user_F1 = arrayindex(regextract(_raw_log, "user=(\w+)"), 0),
         module_F1 = arrayindex(regextract(_raw_log, "module=(\S+)"), 0),
         cmd_line_F1 = arrayindex(regextract(_raw_log, "cmd_data=(.*)$"), 0)
@@ -104,7 +104,7 @@ call f5_APM_General_Fields
 | filter process_name contains "snmpd"
 // Extractions
 | alter
-        // snmpd log format 1 <28>
+        // snmpd log format 1
         source_port_ipv4_F1 = to_integer(arrayindex(regextract(_raw_log, "Connection\sfrom\s[\S]+\s\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:(\d+)"), 0)),
         source_port_ipv6_F1 = to_integer(arrayindex(regextract(_raw_log, "\]:(\d+)"), 0)),
         source_ipv4_F1 = arrayindex(regextract(_raw_log, "Connection\sfrom\s[\S]+\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):"), 0),
@@ -127,7 +127,7 @@ call f5_APM_General_Fields
 | filter process_name contains "apmd"
 // Extractions
 | alter
-        // apmd log format 1 <141>
+        // apmd log format 1
         policy_F1 = arrayindex(regextract(_raw_log, "\d+\:\d\:\s\/?.*?\/([^\:\.]+)[\:\.]"), 0),
         session_id_F1 =  arrayindex(regextract(_raw_log, "\/[\S]+\:(\w+)\:\s"), 0),
         userName_F1 = arrayindex(regextract(_raw_log, "Username \'(\w+)\'"), 0),
