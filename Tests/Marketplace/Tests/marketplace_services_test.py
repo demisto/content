@@ -1599,23 +1599,6 @@ class TestFilterChangelog:
         """
         result = dummy_pack.filter_release_notes_by_tags(self.RN_ENTRY_XSOAR_TAGS, upload_marketplace)
         assert result == expected_result
-    
-    RELEASE_NOTES_HELLO_WORLD_SAAS = """#### Incident Fields
-<~XSOAR_SAAS>
-- New: **HelloWorld SaaS**
-</~XSOAR_SAAS>"""
-
-    def test_filter_for_xsoar_tags_hello_world(self, dummy_pack: Pack):
-        """
-            Given:
-                - Realease notes entries wrapped by tags for XSOAR marketplaces.
-            When:
-                - Uploading and preparing the RN for upload.
-            Then:
-                - Validate that each mp contains the correct entries.
-        """
-        result = dummy_pack.filter_release_notes_by_tags(self.RELEASE_NOTES_HELLO_WORLD_SAAS, XSOAR_MP)
-        assert result == 'expected_result'
 
     TEST1 = """#### Integrations
 ##### ServiceNow v2
@@ -1632,11 +1615,13 @@ class TestFilterChangelog:
 
     TEST3 = """#### Integrations
 ##### Ansible Cisco NXOS
-- Documentation and metadata improvements. 
+- Documentation and metadata improvements.
 - Fixed contextPath outputs for the ***nxos-facts*** command.
 - Updated the Docker image to: *demisto/ansible-runner:1.0.0.24037*."""
 
-    res3 = {'Integrations': {'Ansible Cisco NXOS': '- Documentation and metadata improvements. \n- Fixed contextPath outputs for the ***nxos-facts*** command.\n- Updated the Docker image to: *demisto/ansible-runner:1.0.0.24037*.\n'}}
+    res3 = {'Integrations': {'Ansible Cisco NXOS': '- Documentation and metadata improvements. \n'
+                             '- Fixed contextPath outputs for the ***nxos-facts*** command.\n'
+                             '- Updated the Docker image to: *demisto/ansible-runner:1.0.0.24037*.\n'}}
 
     TEST4 = """#### Integrations
 ##### Akamai WAF
@@ -1650,7 +1635,7 @@ class TestFilterChangelog:
   - ***akamai-new-or-renew-match-target***
   - ***akamai-patch-papi-property-rule-generic***
   - ***akamai-get-papi-property-rule***
-     
+
 - Added the following arguments to the ***akamai-create-enrollment*** command:
    - *clone_dns_names*
    - *exclude_sans*
@@ -1666,12 +1651,12 @@ class TestFilterChangelog:
    - *active_only*
    - *confidence*
    - *threat_assess_score*
-    
+
 - Added the following arguments to the ***akamai-update-property*** command:
    - *property_comments*
    - *dc1_id*
    - *dc2_id*
-    
+
 - Added the following argument to the ***akamai-activate-papi-property*** command:
    - *note*
 """
@@ -1679,19 +1664,37 @@ class TestFilterChangelog:
 
     res5 = {'Incident Fields': {'[special_msg]': '\n'}}
 
-    res4 = {'Integrations': {'Akamai WAF': '- Added 8 new commmands:\n  - ***akamai-get-production-deployment***\n  - ***akamai-get-change-history***\n  - ***akamai-modify-appsec-config-selected-hosts***\n  - ***akamai-patch-papi-property-rule-siteshield***\n  - ***akamai-update-appsec-config-version-notes***\n  - ***akamai-new-or-renew-match-target***\n  - ***akamai-patch-papi-property-rule-generic***\n  - ***akamai-get-papi-property-rule***\n     \n- Added the following arguments to the ***akamai-create-enrollment*** command:\n   - *clone_dns_names*\n   - *exclude_sans*\n   - *change_management*\n   - *network_configuration_geography*\n   - *ra*\n   - *validation_type*\n   - *enable_multi_stacked_certificates*\n   - *network_configuration_quic_enabled*\n   - *network_configuration_secure_network*\n   - *network_configuration_sni_only*\n   - *indicator_type*\n   - *active_only*\n   - *confidence*\n   - *threat_assess_score*\n    \n- Added the following arguments to the ***akamai-update-property*** command:\n   - *property_comments*\n   - *dc1_id*\n   - *dc2_id*\n    \n- Added the following argument to the ***akamai-activate-papi-property*** command:\n   - *note*\n'}}
+    res4 = {'Integrations': {'Akamai WAF': '- Added 8 new commmands:\n'
+                             '  - ***akamai-get-production-deployment***\n'
+                             '  - ***akamai-get-change-history***\n'
+                             '  - ***akamai-modify-appsec-config-selected-hosts***\n'
+                             '  - ***akamai-patch-papi-property-rule-siteshield***\n'
+                             '  - ***akamai-update-appsec-config-version-notes***\n'
+                             '  - ***akamai-new-or-renew-match-target***\n'
+                             '  - ***akamai-patch-papi-property-rule-generic***\n'
+                             '  - ***akamai-get-papi-property-rule***\n'
+                             '     \n- Added the following arguments to the ***akamai-create-enrollment*** command:\n'
+                             '   - *clone_dns_names*\n   - *exclude_sans*\n   - *change_management*\n'
+                             '   - *network_configuration_geography*\n   - *ra*\n   - *validation_type*\n'
+                             '   - *enable_multi_stacked_certificates*\n   - *network_configuration_quic_enabled*\n'
+                             '   - *network_configuration_secure_network*\n   - *network_configuration_sni_only*\n'
+                             '   - *indicator_type*\n   - *active_only*\n   - *confidence*\n   - *threat_assess_score*\n'
+                             '    \n- Added the following arguments to the ***akamai-update-property*** command:\n'
+                             '   - *property_comments*\n   - *dc1_id*\n   - *dc2_id*\n'
+                             '    \n- Added the following argument to the ***akamai-activate-papi-property*** command:\n'
+                             '   - *note*\n'}}
 
     @pytest.mark.parametrize('test, res', [(TEST1, res1), (TEST2, res2), (TEST3, res3), (TEST4, res4), (Test5, res5)])
     def test_get_relese_notes_dict(self, dummy_pack: Pack, test, res):
         """
             This test was added after changing the rexgex - ENTITY_TYPE_SECTION_REGEX
-            to check same results before and after change. 
+            to check same results before and after change.
             Given:
-                - Release notes after before and after filter. 
-            When: 
-                - Preparing the release notes in the upload after the tags were filtered out. 
-            Then: 
-                - Validate that the release notes dict is build properly. 
+                - Release notes after before and after filter.
+            When:
+                - Preparing the release notes in the upload after the tags were filtered out.
+            Then:
+                - Validate that the release notes dict is build properly.
         """
         assert dummy_pack.get_release_notes_dict('3.0.1', test) == res
 
@@ -1725,7 +1728,7 @@ class TestFilterChangelog:
         ({Changelog.RELEASE_NOTES: '#### Integrations\n##### Display Name\n- Some entry 1.\n- Some entry 2.'},
          'xsoar', {"integrations": [{'id': {'display_name': 'Display Name'}}]},
          '#### Integrations\n##### Display Name\n- Some entry 1.\n- Some entry 2.'),
-          ({Changelog.RELEASE_NOTES: """#### Incident Fields
+        ({Changelog.RELEASE_NOTES: """#### Incident Fields
 <~XSOAR_SAAS>
 - New: **HelloWorld SaaS**
 </~XSOAR_SAAS>"""},
