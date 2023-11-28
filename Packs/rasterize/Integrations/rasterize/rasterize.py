@@ -485,8 +485,8 @@ def get_width_height(args: dict):
     :param args: dict to get args from
     :return: width, height, rasterize mode
     """
-    width = int(args.get('width', DEFAULT_WIDTH).rstrip('px'))
-    height = int(args.get('height', DEFAULT_HEIGHT).rstrip('px'))
+    width = int(args.get('width', f"{DEFAULT_WIDTH} px").rstrip('px'))
+    height = int(args.get('height', f"{DEFAULT_HEIGHT} px").rstrip('px'))
 
     # Check that the width and height meet the safeguard limit
     width = min(width, MAX_FULLSCREEN_WIDTH)
