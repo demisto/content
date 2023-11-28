@@ -84,6 +84,7 @@ jobs:
       if: always() && steps.check_files.outputs.files_exists == 'true'
 
       uses: actions/upload-artifact@v2
+      if: always() && steps.check_files.outputs.files_exists == 'true'
       with:
         name: coverage-report
         path: coverage_report
