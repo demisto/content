@@ -84,12 +84,13 @@ jobs:
         cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY || echo "Missing coverage report"
         echo COVERAGE_SUMMARY=$(cat code-coverage-results.md) >> $GITHUB_OUTPUT
 
-    - name: Coverage comment
+    - name: Pytest coverage comment
       if: always() && steps.check_files.outputs.files_exists == 'true'
-      id: coverage_comment
-      uses: py-cov-action/python-coverage-comment-action@v3
+      uses: MishaKav/pytest-coverage-comment@main
       with:
-          GITHUB_TOKEN: ${{ github.token }}
+        pytest-coverage-path: coverage_report/coverage.txt
+        junitxml-path: coverage_report/coverage.xml
+        
     - uses: actions/cache/save@v3
       if: always()
       with:
