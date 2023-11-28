@@ -2976,7 +2976,8 @@
         },
         {
             "playbookID": "FormattingPerformance - Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "toversion": "7.9.9"
         },
         {
             "integrations": "AWS - EC2",
