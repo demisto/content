@@ -110,44 +110,7 @@ def kill_all_chrome_processes():
         demisto.info(f'Error killing Chrome processes: {ex}')
 
 
-def ensure_chrome_running_OLD():  # pragma: no cover
-    try:
-        is_chrome_headless_running_res = is_chrome_headless_running()
-        chromes_count = len(is_chrome_headless_running_res)
-        demisto.debug(f'Found {chromes_count} chromes running')
-        max_retries = 4
-        retry_count = 1
-        while chromes_count != 1 and retry_count < max_retries:
-            demisto.debug(f'ensure_chrome_running, {chromes_count=}, {retry_count=}')
-            if chromes_count == 0:
-                start_chrome_headless_out = subprocess.run(['bash', '/start_chrome_headless.sh'],
-                                                           text=True,
-                                                           stdout=subprocess.DEVNULL,
-                                                           stderr=subprocess.DEVNULL).stdout
-                demisto.debug(f'start_chrome_headless output: {start_chrome_headless_out}')
-            else:
-                for currrent_process_line in is_chrome_headless_running_res:
-                    currrent_process_line_splitted = currrent_process_line.split()
-                    demisto.debug(f'ensure_chrome_running, killing {currrent_process_line_splitted[1]=}')
-                    kill_out = subprocess.check_output(['kill', '-9', currrent_process_line_splitted[1]],
-                                                       stderr=subprocess.STDOUT, universal_newlines=True)
-                    demisto.debug(f'kill {currrent_process_line_splitted[1]}, output: {kill_out}')
-            time.sleep(1)  # pylint: disable=E9003
-            is_chrome_headless_running_res = is_chrome_headless_running()
-            chromes_count = len(is_chrome_headless_running_res)
-            demisto.debug(f'{chromes_count=}')
-            retry_count += 1
-        if chromes_count != 1 and retry_count == max_retries:
-            demisto.info(f'Max retries ({max_retries}) reached, chrome headless is not running correctly')
-            return False
-        demisto.debug('ensure_chrome_running, returning True')
-        return True
-    except Exception as ex:
-        demisto.info(f'Exception running chrome headless, {ex}')
-    return False
-
-
-def ensure_chrome_running():
+def ensure_chrome_running():  # pragma: no cover
     max_retries = 4
     retry_interval_seconds = 1
 
@@ -162,7 +125,7 @@ def ensure_chrome_running():
         else:  # clean environment in case more than one browser is active
             kill_all_chrome_processes()
 
-        time.sleep(retry_interval_seconds)
+        time.sleep(retry_interval_seconds)  # pylint: disable=E9003
 
     demisto.info(f'Max retries ({max_retries}) reached, Chrome headless is not running correctly')
     return False
@@ -403,24 +366,6 @@ def init_driver(offline_mode=False, include_url=False):
 
     demisto.debug('Creating chrome driver - COMPLETED')
     return driver
-
-
-def find_zombie_processes_OLD():
-    """find zombie proceses
-    Returns:
-        ([process ids], raw ps output) -- return a tuple of zombie process ids and raw ps output
-    """
-    ps_out = subprocess.check_output(['ps', '-e', '-o', 'pid,ppid,state,stime,cmd'],
-                                     stderr=subprocess.STDOUT, universal_newlines=True)
-    lines = ps_out.splitlines()
-    pid = str(os.getpid())
-    zombies = []
-    if len(lines) > 1:
-        for line in lines[1:]:
-            pinfo = line.split()
-            if pinfo[2] == 'Z' and pinfo[1] == pid:  # zombie process
-                zombies.append(pinfo[0])
-    return zombies, ps_out
 
 
 def find_zombie_processes():
