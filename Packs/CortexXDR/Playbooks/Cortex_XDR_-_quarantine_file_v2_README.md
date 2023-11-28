@@ -10,11 +10,11 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-CortexXDRIR
+* CortexXDRIR
 
 ### Scripts
 
-PrintErrorEntry
+* PrintErrorEntry
 
 ### Commands
 
@@ -34,7 +34,13 @@ PrintErrorEntry
 ## Playbook Outputs
 
 ---
-There are no outputs for this playbook.
+
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.quarantineFiles.status.status | The status of the quarantine. | unknown |
+| PaloAltoNetworksXDR.quarantineFiles.actionIds.endpointIdList.fileHash | The file hash SHA256. | unknown |
+| PaloAltoNetworksXDR.quarantineFiles.actionIds.endpointIdList.filePath | The path of the file. | unknown |
+| PaloAltoNetworksXDR.quarantineFiles.actionIds.actionId | The action id. | unknown |
 
 ## Playbook Image
 

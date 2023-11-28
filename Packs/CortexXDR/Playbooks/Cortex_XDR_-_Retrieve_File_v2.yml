@@ -151,14 +151,11 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotEqualString
+      - - operator: isNotExists
           left:
             value:
               simple: PaloAltoNetworksXDR.RetrievedFiles.status
             iscontext: true
-          right:
-            value:
-              simple: FAILD
           ignorecase: true
     continueonerrortype: ""
     view: |-

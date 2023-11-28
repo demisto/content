@@ -77,8 +77,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 385
+          "x": -270,
+          "y": 375
         }
       }
     note: false
@@ -106,7 +106,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1100
+          "y": 1090
         }
       }
     note: false
@@ -153,8 +153,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 560
+          "x": -270,
+          "y": 550
         }
       }
     note: false
@@ -177,6 +177,8 @@ tasks:
       description: ''
       brand: ""
     nexttasks:
+      '#default#':
+      - "3"
       "yes":
       - "2"
     separatecontext: false
@@ -251,8 +253,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 730
+          "x": -270,
+          "y": 720
         }
       }
     note: false
@@ -286,7 +288,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -240,
+          "x": -270,
           "y": 920
         }
       }
@@ -302,9 +304,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1115,
-        "width": 670,
-        "x": -240,
+        "height": 1105,
+        "width": 700,
+        "x": -270,
         "y": 50
       }
     }
@@ -325,7 +327,19 @@ inputs:
   required: true
   description: The file's location in the system.
   playbookInputQuery:
-outputs: []
+outputs:
+- contextPath: PaloAltoNetworksXDR.quarantineFiles.status.status
+  description: 'The status of the quarantine.'
+  type: unknown
+- contextPath: PaloAltoNetworksXDR.quarantineFiles.actionIds.endpointIdList.fileHash
+  description: The file hash SHA256.
+  type: unknown
+- contextPath: PaloAltoNetworksXDR.quarantineFiles.actionIds.endpointIdList.filePath
+  description: The path of the file.
+  type: unknown
+- contextPath: PaloAltoNetworksXDR.quarantineFiles.actionIds.actionId
+  description: The action id.
+  type: unknown
 tests:
 - No tests (auto formatted)
 fromversion: 6.10.0

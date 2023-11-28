@@ -13,11 +13,11 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-CortexXDRIR
+* CortexXDRIR
 
 ### Scripts
 
-PrintErrorEntry
+* PrintErrorEntry
 
 ### Commands
 
