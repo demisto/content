@@ -94,7 +94,7 @@ def url_validation(url: str) -> str:
     url_parameters = parse_qs(parsed_url.query)
     if not url_parameters.get("$skiptoken") or not url_parameters["$skiptoken"]:
         raise DemistoException(
-            f"Url: {url} is not valid. Please provide another one. missing kiptoken"
+            f"Url: {url} is not valid. Please provide another one. missing $skiptoken"
         )
     return url
 
