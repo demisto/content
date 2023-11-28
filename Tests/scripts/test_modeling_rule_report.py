@@ -10,10 +10,11 @@ from jira.client import ResultList
 from junitparser import TestSuite, JUnitXml
 from tabulate import tabulate
 
-from Tests.scripts.common import get_properties_for_test_suite
+from Tests.scripts.common import get_properties_for_test_suite, FAILED_TO_COLOR_NAME, FAILED_TO_MSG
 from Tests.scripts.jira_issues import generate_ticket_summary, generate_query_with_summary, \
     find_existing_jira_ticket, JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, JIRA_LABELS, JIRA_ADDITIONAL_FIELDS, \
-    generate_build_markdown_link, convert_jira_time_to_datetime, jira_ticket_to_json_data, jira_file_link
+    generate_build_markdown_link, convert_jira_time_to_datetime, jira_ticket_to_json_data, jira_file_link, \
+    jira_sanitize_file_name, jira_color_text
 from Tests.scripts.utils import logging_wrapper as logging
 
 TEST_MODELING_RULES_BASE_HEADERS = ["Test Modeling Rule"]
@@ -34,9 +35,10 @@ def create_jira_issue_for_test_modeling_rule(jira_server: JIRA,
     properties = get_properties_for_test_suite(test_suite)
     ci_pipeline_id = properties.get("ci_pipeline_id", "")
     ci_pipeline_id_dash = f"-{ci_pipeline_id}" if ci_pipeline_id else ""
-    junit_file_name = (f"unit-test{ci_pipeline_id_dash}-{properties['start_time']}-{properties['pack_id']}-"
-                       f"{properties['file_name']}.xml")
-    description = generate_description_for_test_modeling_rule(ci_pipeline_id, properties, test_suite, junit_file_name)
+
+    junit_file_name = jira_sanitize_file_name(f"unit-test{ci_pipeline_id_dash}-{properties['pack_id']}-{properties['file_name']}")
+    junit_file_name_with_suffix = f"{junit_file_name}.xml"
+    description = generate_description_for_test_modeling_rule(ci_pipeline_id, properties, test_suite, junit_file_name_with_suffix)
     summary = generate_ticket_summary(get_summary_for_test_modeling_rule(properties))  # type: ignore[arg-type]
     jql_query = generate_query_with_summary(summary)
     search_issues: ResultList[Issue] = jira_server.search_issues(jql_query, maxResults=1)  # type: ignore[assignment]
@@ -85,16 +87,17 @@ def generate_description_for_test_modeling_rule(ci_pipeline_id: str,
                                                 junit_file_name: str,
                                                 ) -> str:
     build_markdown_link = generate_build_markdown_link(ci_pipeline_id)
-    table = tabulate(tabular_data=[
-        ["Total", test_suite.tests],
-        ["Failed", test_suite.failures],
-        ["Errors", test_suite.errors],
-        ["Skipped", test_suite.skipped],
-        ["Successful", test_suite.tests - test_suite.failures - test_suite.errors - test_suite.skipped],
+    table = tabulate(tablefmt="jira", headers=["Tests", "Result"], tabular_data=[
+        ["Successful", jira_color_text(test_suite.tests, FAILED_TO_COLOR_NAME[test_suite.tests == 0])],
+        ["Failed", jira_color_text(test_suite.failures, FAILED_TO_COLOR_NAME[test_suite.failures > 0])],
+        ["Errors", jira_color_text(test_suite.errors, FAILED_TO_COLOR_NAME[test_suite.errors > 0])],
+        ["Skipped", test_suite.skipped],  # no color for skipped.
         ["Duration", f"{test_suite.time}s"]
-    ], tablefmt="jira", headers=["Tests", "Result"])
+    ])
+    failed = test_suite.failures > 0 or test_suite.errors > 0
+    msg = jira_color_text(FAILED_TO_MSG[failed], FAILED_TO_COLOR_NAME[failed])
     description = f"""
-        *{properties['pack_id']}* - *{properties['file_name']}* failed in {build_markdown_link}
+        *{properties['pack_id']}* - *{properties['file_name']}* {msg} in {build_markdown_link}
         Test Results file: {jira_file_link(junit_file_name)}
 
         {table}
