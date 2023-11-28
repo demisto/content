@@ -14,7 +14,7 @@ CortexXDRIR
 
 ### Scripts
 
-* PrintErrorEntry
+PrintErrorEntry
 
 ### Commands
 
