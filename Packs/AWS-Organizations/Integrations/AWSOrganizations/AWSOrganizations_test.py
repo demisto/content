@@ -67,7 +67,7 @@ class MockOrganizationsClient:  # (OrganizationsClient):
 
     def tag_resource(self, **kwargs):
         assert resource_tag_add.client_func_kwargs == kwargs
-        
+
     def list_tags_for_resource(self, **kwargs):
         assert resource_tag_list.client_func_kwargs == kwargs
         return resource_tag_list.client_func_return

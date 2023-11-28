@@ -1,14 +1,17 @@
-from CommonServerPython import *  # noqa: E402
-import demistomock as demisto  # noqa: E402
-from AWSApiModule import *
 from typing import TYPE_CHECKING
 from collections.abc import Callable
+from CommonServerPython import *  # noqa
+import demistomock as demisto  # noqa
+from AWSApiModule import *  # noqa
 
 # The following imports are used only for type hints and autocomplete.
 # They are not used at runtime, and are not in the docker image.
 if TYPE_CHECKING:
-    from mypy_boto3_organizations import *  # noqa
-    from mypy_boto3_organizations.literals import *  # noqa
+    from mypy_boto3_organizations import OrganizationsClient
+    from mypy_boto3_organizations.literals import (
+        PolicyTypeType,
+        CreateAccountFailureReasonType
+    )
 
 ''' CONSTANTS '''
 
@@ -152,7 +155,7 @@ def dict_values_to_str(d: dict, *keys) -> dict:
 def build_tags(tags: str) -> list:
     '''Turns the tags provided by the args in the format "key=value" into the format expected by AWS'''
     if not tags:
-        return None
+        return []
     result = []
     for tag in argToList(tags):
         key, eq, value = tag.partition('=')
