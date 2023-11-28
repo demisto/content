@@ -2976,7 +2976,8 @@
         },
         {
             "playbookID": "FormattingPerformance - Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "toversion": "7.9.9"
         },
         {
             "integrations": "AWS - EC2",
@@ -4675,7 +4676,7 @@
         {
             "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_File",
             "fromversion": "6.1.0",
-            "memory_threshold": 150,
+            "memory_threshold": 200,
             "integrations": [
                 "CrowdStrike Falcon X"
             ],
@@ -5330,7 +5331,13 @@
             "playbookID": "FormatURL-Test"
         },
         {
+            "playbookID": "TestGetErrorsFromEntry"
+        },
+        {
             "playbookID": "IPToHost - Test"
+        },
+        {
+            "playbookID": "TestIsInCidrRanges"
         },
         {
             "playbookID": "NetskopeAPIv1 Test",

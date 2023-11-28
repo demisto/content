@@ -60,9 +60,9 @@ def print_test_playbooks_summary(artifacts_path: Path, without_jira: bool) -> bo
 
     # iterate over the artifacts path and find all the test playbook result files
     if not (test_playbooks_result_files_list := get_test_results_files(artifacts_path, TEST_PLAYBOOKS_REPORT_FILE_NAME)):
+        logging.error(f"Could not find any test playbook result files in {artifacts_path}, writing an empty report file")
         # Write an empty report file to avoid failing the build artifacts collection.
         JUnitXml().write(test_playbooks_report.as_posix(), pretty=True)
-        logging.error(f"Could not find any test playbook result files in {artifacts_path}")
         return True
 
     logging.info(f"Found {len(test_playbooks_result_files_list)} test playbook result files")
