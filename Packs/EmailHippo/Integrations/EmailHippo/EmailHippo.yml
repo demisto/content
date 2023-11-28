@@ -168,13 +168,13 @@ script:
       description: The phone number of the domain administrator.
       type: String
     - contextPath: Domain.Tech.Country
-      description: The country of tech administrator.
+      description: The country of the tech administrator.
       type: String
     - contextPath: Domain.Tech.Name
       description: The name of the tech administrator.
       type: String
     - contextPath: Domain.Tech.Email
-      description: The email of tech administrator.
+      description: The email of the tech administrator.
       type: String
     - contextPath: Domain.Tech.Organization
       description: The organization of the tech administrator.
@@ -183,15 +183,15 @@ script:
       description: A CSV string of name servers, for example 'ns1.bla.com, ns2.bla.com'.
       type: String
     - contextPath: Domain.WHOIS.CreationDate
-      description: The creation date of the domain. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
+      description: The creation date of the domain. Format is ISO8601 (i.e., '2020-04-30T10:35:00.000Z').
       type: Date
     - contextPath: Domain.WHOIS.UpdatedDate
-      description: The date when the domain was last updated. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
+      description: The date when the domain was last updated. Format is ISO8601 (i.e., '2020-04-30T10:35:00.000Z').
       type: Date
     - contextPath: Domain.WHOIS.ExpirationDate
       description: The expiration date of the domain.
       type: Date
-    description: Returns Domain information and reputation.
+    description: Returns domain information and reputation.
   dockerimage: demisto/python3:3.10.13.80593
   runonce: false
   subtype: python3
