@@ -269,7 +269,7 @@ def rasterize(path: str,
                 return "Error"
 
     else:
-        message = f'Could not use local Chrome for rasterize command'
+        message = 'Could not use local Chrome for rasterize command'
         demisto.error(message)
         return_error(message)
 
@@ -321,18 +321,17 @@ def rasterize_email_command():  # pragma: no cover
     demisto.results(res)
 
 
-def convert_pdf_to_jpeg(path: str, max_pages: str, password: str, horizontal: bool = False):
+def convert_pdf_to_jpeg(path: str, max_pages: str, password: str):
     """
     Converts a PDF file into a jpeg image
     :param path: file's path
     :param max_pages: max pages to render,
     :param password: PDF password
-    :param horizontal: if True, will combine the pages horizontally
     :return: A list of stream of combined images
     """
     demisto.debug(f'Loading file at Path: {path}')
-    with PdfReader(open(path, "rb"), strict=False, password=password) as input_pdf:
-        pages = len(input_pdf.pages) if max_pages == "*" else min(int(max_pages), len(input_pdf.pages))
+    input_pdf = PdfReader(open(path, "rb"), strict=False, password=password)
+    pages = len(input_pdf.pages) if max_pages == "*" else min(int(max_pages), len(input_pdf.pages))
 
     with tempfile.TemporaryDirectory() as output_folder:
         demisto.debug('Converting PDF')
@@ -347,56 +346,18 @@ def convert_pdf_to_jpeg(path: str, max_pages: str, password: str, horizontal: bo
         )
         demisto.debug('Converting PDF - COMPLETED')
 
-        demisto.debug('Combining all pages')
         images = []
         for page in sorted(os.listdir(output_folder)):
             if os.path.isfile(os.path.join(output_folder, page)) and 'converted_pdf_' in page:
-                current_image = Image.open(os.path.join(output_folder, page))
-                # TODO: get min width
-                images.append(current_image)
+                images.append(Image.open(os.path.join(output_folder, page)))
 
-        # TODO: redundant + BUG
-        min_shape = min(
-            [
-                (np.sum(page_.size), page_.size) for page_ in images
-            ]
-        )[1]  # get the minimal width
-
-        # Divide the list of images into separate lists with constant length (20),
-        # due to the limitation of images in jpeg format (max size ~65,000 pixels).
-        # Create a list of lists (length == 20) of images to combine each list (20 images) to one image
-        images_matrix = [images[i:i + PAGES_LIMITATION] for i in range(0, len(images), PAGES_LIMITATION)]
-
-        outputs = []
-        for images_list in images_matrix:
-            if horizontal:
-                # this line takes a ton of memory and doesnt release all of it
-                imgs_comb = np.hstack([np.asarray(image.resize(min_shape)) for image in images_list])
-                # # Combine images horizontally
-                # total_width = sum(img.size[0] for img in images_list)
-                # combined_image = Image.new('RGB', (total_width, min_shape[1]))
-                # x_offset = 0
-                # for img in images_list:
-                #     img = img.resize(min_shape, Image.ANTIALIAS)
-                #     combined_image.paste(img, (x_offset, 0))
-                #     x_offset += img.size[0]
-            else:
-                imgs_comb = np.vstack([np.asarray(image.resize(min_shape)) for image in images_list])
-
-            imgs_comb = Image.fromarray(imgs_comb)
-            output = BytesIO()
-            imgs_comb.save(output, 'JPEG')  # type: ignore
-            demisto.debug('Combining all pages - COMPLETED')
-            outputs.append(output.getvalue())
-
-        return outputs
+        return images
 
 
 def rasterize_pdf_command():  # pragma: no cover
     entry_id = demisto.args().get('EntryID')
     password = demisto.args().get('pdfPassword')
     max_pages = demisto.args().get('maxPages', 30)
-    horizontal = demisto.args().get('horizontal', 'false') == 'true'
     file_name = demisto.args().get('file_name', 'image')
 
     file_path = demisto.getFilePath(entry_id).get('path')
@@ -404,7 +365,7 @@ def rasterize_pdf_command():  # pragma: no cover
     file_name = f'{file_name}.jpeg'
 
     with open(file_path, 'rb') as f:
-        images = convert_pdf_to_jpeg(path=os.path.realpath(f.name), max_pages=max_pages, password=password, horizontal=horizontal)
+        images = convert_pdf_to_jpeg(path=os.path.realpath(f.name), max_pages=max_pages, password=password)
         results = []
 
         for image in images:
