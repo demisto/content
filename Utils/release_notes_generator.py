@@ -20,7 +20,7 @@ PACKS_RN_FILES_FORMAT = '*/ReleaseNotes/*.md'
 
 EMPTY_LINES_REGEX = re.compile(r'\s*-\s*\n')
 IGNORED_LINES_REGEX = re.compile(r'<!-[\W\w]*?-->')
-ENTITY_TYPE_SECTION_REGEX = re.compile(r'^#### ([\w ]+)$\n([\w\W]*?)(?=^#### )|^#### ([\w ]+)$\n([\w\W]*)', re.M)
+ENTITY_TYPE_SECTION_REGEX = re.compile(r'^#### ([\w ]+)([\w\W]*?)(?=^#### )|^#### ([\w ]+)([\w\W]*)', re.M)
 ENTITY_SECTION_REGEX = re.compile(r'^##### (.+)$\n([\w\W]*?)(?=^##### )|^##### (.+)$\n([\w\W]*)|'
                                   r'^- \*\*(.+)\*\*$\n([\w\W]*)', re.M)
 PACK_GENERAL_NOTES_REGEX = re.compile(r'^## (.+)$\n([\w\W]*?)(?=^#### )|^## ([\w ]+)$\n([\w\W]*)', re.M)
