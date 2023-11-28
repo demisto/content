@@ -85,7 +85,7 @@ jobs:
         name: coverage-report
         path: coverage_report
     - name: Set Artifact URL
-      run: echo "ARTIFACT_URL=https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/coverage-report"
+      run: echo "ARTIFACT_URL=https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/coverage-report/html/index.html"
       id: set_artifact_url
     
     - name: Comment on PR with Coverage Artifact URL
