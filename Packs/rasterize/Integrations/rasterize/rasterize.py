@@ -112,11 +112,6 @@ def kill_all_chrome_processes():
 
 def ensure_chrome_running_OLD():  # pragma: no cover
     try:
-        # command = ['bash', '/start_chrome_headless.sh']
-        # with open(os.devnull, "w") as fnull:
-        #     result = subprocess.call(command, stdout=fnull, stderr=fnull)
-        #     demisto.debug(f'start_chrome_headless output: {result}')
-        #     return is_chrome_headless_running()
         is_chrome_headless_running_res = is_chrome_headless_running()
         chromes_count = len(is_chrome_headless_running_res)
         demisto.debug(f'Found {chromes_count} chromes running')
