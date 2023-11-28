@@ -346,17 +346,17 @@ six = "*"
 
 [[package]]
 name = "boto3"
-version = "1.29.7"
+version = "1.33.1"
 description = "The AWS SDK for Python"
 optional = false
 python-versions = ">= 3.7"
 files = [
-    {file = "boto3-1.29.7-py3-none-any.whl", hash = "sha256:96e9890ebe7cd823b5f4976dd676e112c000c6528c28e20a2f274590589dd18b"},
-    {file = "boto3-1.29.7.tar.gz", hash = "sha256:1eb4c548118b5fc5e018dee956fd33e6fb249cd1f2def85f1bba816aef4d9f3e"},
+    {file = "boto3-1.33.1-py3-none-any.whl", hash = "sha256:fa5aa92d16763cb906fb4a83d6eba887342202a980bea07862af5ba40827aa5a"},
+    {file = "boto3-1.33.1.tar.gz", hash = "sha256:1fe5fa75ff0f0c29a6f55e818d149d33571731e692a7b785ded7a28ac832cae8"},
 ]
 
 [package.dependencies]
-botocore = ">=1.32.7,<1.33.0"
+botocore = ">=1.33.1,<1.34.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.8.0,<0.9.0"
 
@@ -772,13 +772,13 @@ xray = ["mypy-boto3-xray (>=1.29.0,<1.30.0)"]
 
 [[package]]
 name = "botocore"
-version = "1.32.7"
+version = "1.33.1"
 description = "Low-level, data-driven core of boto 3."
 optional = false
 python-versions = ">= 3.7"
 files = [
-    {file = "botocore-1.32.7-py3-none-any.whl", hash = "sha256:58b33d02cafa23461c8a9d211b30e8cded992380a84de409379fd02811fa3e11"},
-    {file = "botocore-1.32.7.tar.gz", hash = "sha256:c6795c731b04c8e3635588c44cfd1a4462fc5987859195522c96812cf3eceff9"},
+    {file = "botocore-1.33.1-py3-none-any.whl", hash = "sha256:c744b90980786c610dd9ad9c50cf2cdde3f1c4634b954a33613f6f8a1865a1de"},
+    {file = "botocore-1.33.1.tar.gz", hash = "sha256:d22d29916905e5f0670b91f07688e92b2c4a2075f9a474d6edbe7d22040d8fbf"},
 ]
 
 [package.dependencies]
@@ -794,13 +794,13 @@ crt = ["awscrt (==0.19.17)"]
 
 [[package]]
 name = "botocore-stubs"
-version = "1.32.7"
+version = "1.33.1"
 description = "Type annotations and code completion for botocore"
 optional = false
 python-versions = ">=3.7,<4.0"
 files = [
-    {file = "botocore_stubs-1.32.7-py3-none-any.whl", hash = "sha256:00b280010560125018a0d7d6ad9240400ee66fae97c30ed0f7eb1001afdc9519"},
-    {file = "botocore_stubs-1.32.7.tar.gz", hash = "sha256:91996b81b78d0c3bdea399e429a9bec9e986f2faaa636396dc1f3a504f7e9aa6"},
+    {file = "botocore_stubs-1.33.1-py3-none-any.whl", hash = "sha256:6ca3d7bb7e1405918936246ae64afb9964808de3809d32f119e1f693b8b61b9f"},
+    {file = "botocore_stubs-1.33.1.tar.gz", hash = "sha256:13428933c5c0061b83d8a0ebaa23172999d5793ebea2ee8f4209c519e2b9f51d"},
 ]
 
 [package.dependencies]
@@ -1475,7 +1475,7 @@ build = ["gsutil (==5.17)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "clients_add_logs"
-resolved_reference = "233a0e79d97bb0f5fecc4185170a733a7bea29bd"
+resolved_reference = "57f5c92f658797cef6c334f30e574d46503cbfbe"
 
 [[package]]
 name = "deprecated"
