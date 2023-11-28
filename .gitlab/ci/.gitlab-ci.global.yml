@@ -547,3 +547,11 @@ cloning-content-repo-last-upload-commit:
     ARTIFACTS_FOLDER: ${CI_PROJECT_DIR}/artifacts
   script:
     - !reference [.add-content-production-to-artifacts]
+
+pre_job:
+  stage: .pre
+  script:
+    - section_start "check_build_files_are_up_to_date and stop_contrib_external_build"
+    - *stop_contrib_external_build
+    - *check_build_files_are_up_to_date
+    - section_end "check_build_files_are_up_to_date and stop_contrib_external_build"
