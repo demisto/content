@@ -1,6 +1,7 @@
 ## Notes
 1. It is highly recommended to not create multiple instances of the same indicator type, even when fetching both from fusion and connectApi. Creating multiple instances with same indicator type will lead to duplicate indicators being fetched which can cause performance issues for the server.
-2. Recommended interval for fetching indicators according to Recorded Future documentation:
+2. Because of restrictions on the API side, it is strongly advisable to maintain the number of indicators below 100,000 per instance. Exceeding this limit may result in unforeseen expiration of indicators beyond that threshold.
+3. Recommended interval for fetching indicators according to Recorded Future documentation:
 
 | **Indicator Type** | **Recommended Fetch Interval**
 | --- | --- |
