@@ -1,8 +1,8 @@
-id: Cortex XDR - quarantine file v2
+id: Cortex XDR - Quarantine File v2
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: Cortex XDR - quarantine file v2
+name: Cortex XDR - Quarantine File v2
 description: This playbook accepts file path, file hash and endpoint id in order to quarantine a selected file and wait until the action is done.
 starttaskid: "0"
 tasks:
@@ -78,7 +78,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 395
+          "y": 385
         }
       }
     note: false
@@ -106,7 +106,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 730
+          "y": 1100
         }
       }
     note: false
@@ -131,17 +131,23 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "7"
     scriptarguments:
       endpoint_id:
         complex:
           root: inputs.endpoint_id
+          transformers:
+          - operator: uniq
       file_hash:
         complex:
           root: inputs.file_hash
+          transformers:
+          - operator: uniq
       file_path:
         complex:
           root: inputs.file_path
+          transformers:
+          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -171,8 +177,6 @@ tasks:
       description: ''
       brand: ""
     nexttasks:
-      '#default#':
-      - "3"
       "yes":
       - "2"
     separatecontext: false
@@ -211,14 +215,96 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: b3e8248f-e49d-48ba-81be-4c4541c0a90a
+    type: condition
+    task:
+      id: b3e8248f-e49d-48ba-81be-4c4541c0a90a
+      version: -1
+      name: 'Is the quarantine was successful? '
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.quarantineFiles.status
+                accessor: status
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 9345a04e-0504-48fc-8bea-babe94ae0234
+    type: regular
+    task:
+      id: 9345a04e-0504-48fc-8bea-babe94ae0234
+      version: -1
+      name: 'Print error message '
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      message:
+        simple: 'The quarantine task was not successful. '
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 745,
-        "width": 380,
-        "x": 50,
+        "height": 1115,
+        "width": 670,
+        "x": -240,
         "y": 50
       }
     }

@@ -14,7 +14,7 @@ CortexXDRIR
 
 ### Scripts
 
-This playbook does not use any scripts.
+PrintErrorEntry
 
 ### Commands
 
@@ -40,4 +40,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Cortex XDR - quarantine file v2](../doc_files/Cortex_XDR_-_quarantine_file_v2.png)
+![Cortex XDR - Quarantine File v2](../doc_files/Cortex_XDR_-_Quarantine_File_v2.png)
