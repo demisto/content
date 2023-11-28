@@ -87,9 +87,9 @@ List the roots that are defined in the current organization.
 #### Human Readable Output
 
 >### AWS Organization Roots
->|Arn|Id|Name|
+>|Id|Arn|Name|
 >|---|---|---|
->| arn:aws:organizations::111222333444:root/o-abcde12345/r-ab12 | r-ab12 | Root |
+>| r-ab12 | arn:aws:organizations::111222333444:root/o-abcde12345/r-ab12 | Root |
 
 
 ### aws-org-children-list
@@ -250,9 +250,9 @@ This command can be called only from the organization's management account or by
 #### Human Readable Output
 
 >### AWS Organization Unit
->|Arn|Id|Name|
+>|Id|Arn|Name|
 >|---|---|---|
->| arn:aws:organizations::111222333444:ou/o-abcde12345/ou-ab12-abcd1234 | ou-ab12-abcd1234 | Name OU |
+>| ou-ab12-abcd1234 | arn:aws:organizations::111222333444:ou/o-abcde12345/ou-ab12-abcd1234 | Name OU |
 
 
 ### aws-org-account-list
@@ -435,8 +435,8 @@ Creates an organizational unit (OU) within a root or parent OU. An OU is a conta
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | The friendly name to assign to the new organizational unit. | Required | 
-| parent_id | The unique identifier (ID) of the parent root or organizational unit to create the new organizational unit in. | Required | 
-| tags | A comma-separated list of tags to attach to the newly created organizational unit. Each tag should be in the format: "key=value". | Required | 
+| parent_id | The unique identifier (ID) of the parent root or organizational unit to create the new organizational unit in. This value can be retrieved by running the command "aws-org-root-list". | Required | 
+| tags | A comma-separated list of tags to attach to the newly created organizational unit. Each tag should be in the format: "key=value". | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
@@ -496,14 +496,11 @@ Renames the specified organizational unit (OU). The ID and ARN don’t change. T
 
 There is no context output for this command.
 #### Command example
-```!aws-org-organization-unit-rename name=renamed organizational_unit_id=ou-ab12-abcd1234```
+```!aws-org-organization-unit-rename name=new_name organizational_unit_id=ou-ab12-abcd1234```
 
 #### Human Readable Output
 
->### AWS Organization Unit Renamed
->|Name|OrganizationalUnitId|
->|---|---|
->| renamed | ou-ab12-abcd1234 |
+>AWS organization unit *ou-ab12-abcd1234* successfully renamed to *new_name*.
 
 ### aws-org-organization-unit-delete
 
@@ -531,10 +528,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->### AWS Organization Unit Deleted
->|OrganizationalUnitId|
->|---|
->| ou-ab12-abcd1234 |
+>AWS organizational unit *ou-ab12-abcd1234* deleted successfully.
 
 ### aws-org-policy-list
 
@@ -691,10 +685,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->### AWS Organization Policy Attached
->|PolicyId|
->|---|
->| p-1234abcd |
+>AWS Organizations policy *p-1234abcd* successfully attached.
 
 ### aws-org-policy-target-list
 
@@ -857,10 +848,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->### AWS Organization Policy Deleted
->|PolicyId|
->|---|
->| p-1234abcd |
+>AWS Organizations policy *p-1234abcd* successfully deleted.
 
 ### aws-org-resource-tag-add
 
@@ -890,10 +878,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->### AWS Organization Resource Tagged
->|ResourceId|
->|---|
->| ou-ab12-abcd1234 |
+>AWS Organizations resource *ou-ab12-abcd1234* successfully tagged.
 
 ### aws-org-resource-tag-list
 
@@ -979,7 +964,7 @@ Creates an AWS Account that is automatically a member of the organization.
 | email | The email address of the owner to assign to the new member account. This email address must not already be associated with another Amazon Web Services account. Use a valid email address to complete account creation. | Required | 
 | iam_user_access_to_billing | If set to ALLOW, the new account enables IAM users to access account billing information if they have the required permissions. If set to DENY, only the root user of the new account can access account billing information. Possible values are: Allow, Deny. Default is Allow. | Optional | 
 | role_name | The name of an IAM role that AWS Organizations automatically pre-configures in the new member account. This role trusts the management account, allowing users in the management account to assume the role, as permitted by the management account administrator. The role has administrator permissions in the new member account. Default is OrganizationAccountAccessRole. | Optional | 
-| tags | A comma-separated list of tags to attach to the newly created account. Each tag should be in the format: "key=value". | Required | 
+| tags | A comma-separated list of tags to attach to the newly created account. Each tag should be in the format: "key=value". | Optional | 
 | request_id | The ID of the create request that is used for polling. | Optional | 
 | interval_in_seconds | Indicates how long to wait between command executions (in seconds) when the 'polling' argument is true. Minimum value is 10 seconds. Default is 30. | Optional | 
 | timeout | Indicates the time in seconds until the polling sequence times out. Default is 600. | Optional | 
@@ -1057,15 +1042,13 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->### AWS Account Moved
->|AccountId|
->|---|
->| 111222333444 |
+>AWS account *111222333444* moved successfully.
 
 ### aws-org-account-remove
 
 ***
 Removes an account from the organization.
+For more information on this action: https://docs.aws.amazon.com/organizations/latest/APIReference/API_RemoveAccountFromOrganization.html
 
 #### Base Command
 
@@ -1083,6 +1066,14 @@ Removes an account from the organization.
 #### Context Output
 
 There is no context output for this command.
+
+#### Command example
+```!aws-org-account-remove account_id=111222333444```
+
+#### Human Readable Output
+
+>AWS account *111222333444* removed successfully.
+
 ### aws-org-account-close
 
 ***
@@ -1113,7 +1104,4 @@ There is no context output for this command.
 
 >Closing account:
 
->### AWS Account Closed
->|AccountId|
->|---|
->| 111222333444 |
+>AWS account *111222333444* closed successfully.

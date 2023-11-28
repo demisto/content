@@ -151,6 +151,8 @@ def dict_values_to_str(d: dict, *keys) -> dict:
 
 def build_tags(tags: str) -> list:
     '''Turns the tags provided by the args in the format "key=value" into the format expected by AWS'''
+    if not tags:
+        return None
     result = []
     for tag in argToList(tags):
         key, eq, value = tag.partition('=')
@@ -189,7 +191,7 @@ def root_list_command(args: dict, aws_client: 'OrganizationsClient') -> CommandR
         ),
         readable_output=tableToMarkdown(
             'AWS Organization Roots',
-            roots, ['Arn', 'Id', 'Name'],
+            roots, ['Id', 'Arn', 'Name'],
             removeNull=True,
         )
     )
@@ -263,6 +265,7 @@ def organization_unit_get_command(args: dict, aws_client: 'OrganizationsClient')
         readable_output=tableToMarkdown(
             'AWS Organization Unit',
             ou.get('OrganizationalUnit', {}),
+            ['Id', 'Arn', 'Name'],
             removeNull=True,
         )
     )
@@ -354,10 +357,7 @@ def account_remove_command(args: dict, aws_client: 'OrganizationsClient') -> Com
     )
 
     return CommandResults(
-        readable_output=tableToMarkdown(
-            'AWS Account Removed',
-            {'AccountId': args['account_id']}
-        )
+        readable_output=f'AWS account *{args["account_id"]}* removed successfully.'
     )
 
 
@@ -370,10 +370,7 @@ def account_move_command(args: dict, aws_client: 'OrganizationsClient') -> Comma
     )
 
     return CommandResults(
-        readable_output=tableToMarkdown(
-            'AWS Account Moved',
-            {'AccountId': args['account_id']}
-        )
+        readable_output=f'AWS account *{args["account_id"]}* moved successfully.'
     )
 
 
@@ -392,7 +389,7 @@ def account_create_command(args: dict, aws_client: 'OrganizationsClient') -> Pol
             AccountName=args['account_name'],
             RoleName=args['role_name'],
             IamUserAccessToBilling=args['iam_user_access_to_billing'].upper(),
-            Tags=build_tags(args['tags'])
+            **assign_params(Tags=build_tags(args.get('tags')))
         )
         args['request_id'] = account['CreateAccountStatus']['Id']
         return account['CreateAccountStatus']
@@ -452,10 +449,7 @@ def account_close_command(args: dict, aws_client: 'OrganizationsClient') -> Poll
 
     return PollResult(
         response=CommandResults(
-            readable_output=tableToMarkdown(
-                'AWS Account Closed',
-                {'AccountId': args['account_id']}
-            )
+            readable_output=f'AWS account *{args["account_id"]}* closed successfully.'
         ),
         continue_to_poll=(dict_safe_get(account, ['Account', 'Status']) != 'SUSPENDED'),
     )
@@ -466,7 +460,7 @@ def organization_unit_create_command(args: dict, aws_client: 'OrganizationsClien
     ou = aws_client.create_organizational_unit(
         ParentId=args['parent_id'],
         Name=args['name'],
-        Tags=build_tags(args['tags'])
+        **assign_params(Tags=build_tags(args.get('tags')))
     )
 
     return CommandResults(
@@ -489,10 +483,7 @@ def organization_unit_delete_command(args: dict, aws_client: 'OrganizationsClien
     )
 
     return CommandResults(
-        readable_output=tableToMarkdown(
-            'AWS Organization Unit Deleted',
-            {'OrganizationalUnitId': args['organizational_unit_id']}
-        )
+        readable_output=f'AWS organizational unit *{args["organizational_unit_id"]}* deleted successfully.'
     )
 
 
@@ -504,13 +495,7 @@ def organization_unit_rename_command(args: dict, aws_client: 'OrganizationsClien
     )
 
     return CommandResults(
-        readable_output=tableToMarkdown(
-            'AWS Organization Unit Renamed',
-            {
-                'OrganizationalUnitId': args['organizational_unit_id'],
-                'Name': args['name']
-            }
-        )
+        readable_output=f'AWS organization unit *{args["organizational_unit_id"]}* successfully renamed to *{args["name"]}*.'
     )
 
 
@@ -606,10 +591,7 @@ def policy_delete_command(args: dict, aws_client: 'OrganizationsClient') -> Comm
     )
 
     return CommandResults(
-        readable_output=tableToMarkdown(
-            'AWS Organization Policy Deleted',
-            {'PolicyId': args['policy_id']}
-        )
+        readable_output=f'AWS Organizations policy *{args["policy_id"]}* successfully deleted.'
     )
 
 
@@ -621,10 +603,7 @@ def policy_attach_command(args: dict, aws_client: 'OrganizationsClient') -> Comm
     )
 
     return CommandResults(
-        readable_output=tableToMarkdown(
-            'AWS Organization Policy Attached',
-            {'PolicyId': args['policy_id']}
-        )
+        readable_output=f'AWS Organizations policy *{args["policy_id"]}* successfully attached.'
     )
 
 
@@ -666,10 +645,7 @@ def resource_tag_add_command(args: dict, aws_client: 'OrganizationsClient') -> C
     )
 
     return CommandResults(
-        readable_output=tableToMarkdown(
-            'AWS Organization Resource Tagged',
-            {'ResourceId': args['resource_id']}
-        )
+        readable_output=f'AWS Organizations resource *{args["resource_id"]}* successfully tagged.'
     )
 
 

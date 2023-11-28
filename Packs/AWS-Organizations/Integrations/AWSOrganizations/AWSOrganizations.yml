@@ -267,7 +267,7 @@ script:
       name: roleSessionName
     - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-    description: Removes an account from the organization.
+    description: 'Removes an account from the organization. For more information on this action: https://docs.aws.amazon.com/organizations/latest/APIReference/API_RemoveAccountFromOrganization.html'
     outputs: []
   - name: aws-org-account-move
     arguments:
@@ -311,10 +311,9 @@ script:
     - defaultValue: OrganizationAccountAccessRole
       description: The name of an IAM role that AWS Organizations automatically pre-configures in the new member account. This role trusts the management account, allowing users in the management account to assume the role, as permitted by the management account administrator. The role has administrator permissions in the new member account.
       name: role_name
-    - description: 'A comma-separated list of tags to attach to the newly created account. Each tag should be in the format: "key=value"'
+    - description: 'A comma-separated list of tags to attach to the newly created account. Each tag should be in the format: "key=value".'
       name: tags
       isArray: true
-      required: true
     - description: The ID of the create request that is used for polling.
       name: request_id
       hidden: true
@@ -388,13 +387,12 @@ script:
     - description: The friendly name to assign to the new organizational unit.
       name: name
       required: true
-    - description: The unique identifier (ID) of the parent root or organizational unit to create the new organizational unit in.
+    - description: The unique identifier (ID) of the parent root or organizational unit to create the new organizational unit in. This value can be retrieved by running the command "aws-org-root-list".
       name: parent_id
       required: true
-    - description: 'A comma-separated list of tags to attach to the newly created organizational unit. Each tag should be in the format: "key=value"'
+    - description: 'A comma-separated list of tags to attach to the newly created organizational unit. Each tag should be in the format: "key=value".'
       name: tags
       isArray: true
-      required: true
     - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
     - description: An identifier for the assumed role session.
@@ -590,7 +588,7 @@ script:
     - description: The unique identifier (ID) of the policy to attach to the target. This value can be retrieved by running the command "aws-org-policy-list".
       name: policy_id
       required: true
-    - description: The unique identifier (ID) of the root, organizational unit, or account to attach the policy to. This value can be retrieved by running the command "aws-org-root-list" or "aws-org-account-list"
+    - description: The unique identifier (ID) of the root, organizational unit, or account to attach the policy to. This value can be retrieved by running the command "aws-org-root-list" or "aws-org-account-list".
       name: target_id
       required: true
     - description: The Amazon Resource Name (ARN) of the role to assume.
@@ -644,7 +642,7 @@ script:
     - description: The ID of the resource to add a tag to. This value can be retrieved by running the command "aws-org-root-list", "aws-org-account-list", "aws-org-root-list", or "aws-org-policy-list".
       name: resource_id
       required: true
-    - description: 'A comma-separated list of tags to attach to the resource. Each tag should be in the format: "key=value"'
+    - description: 'A comma-separated list of tags to attach to the resource. Each tag should be in the format: "key=value".'
       name: tags
       isArray: true
       required: true
@@ -658,7 +656,7 @@ script:
     outputs: []
   - name: aws-org-resource-tag-list
     arguments:
-    - description: The ID of the resource with the tags to list. This value can be retrieved by running the command "aws-org-root-list", "aws-org-account-list", "aws-org-root-list". or "aws-org-policy-list".
+    - description: The ID of the resource with the tags to list. This value can be retrieved by running the command "aws-org-root-list", "aws-org-account-list", "aws-org-root-list" or "aws-org-policy-list".
       name: resource_id
       required: true
     - description: The token denoting the next page of tags, as given by the response of the previous run of this command under the context key "AWS.Organizations.TagNextToken".

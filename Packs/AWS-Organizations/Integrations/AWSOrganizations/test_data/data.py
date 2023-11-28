@@ -82,10 +82,10 @@ class root_list(Data):
         {"RootNextToken": "next_token"},
     ]
     readable_output = """### AWS Organization Roots
-|Arn|Id|Name|
+|Id|Arn|Name|
 |---|---|---|
-| arn_1 | id_1 | name_1 |
-| arn_2 | id_2 | name_2 |
+| id_1 | arn_1 | name_1 |
+| id_2 | arn_2 | name_2 |
 """
 
 
@@ -241,9 +241,9 @@ class organization_unit_get(Data):
     }
     context_outputs = {"Id": "id", "Arn": "arn", "Name": "name"}
     readable_output = """### AWS Organization Unit
-|Arn|Id|Name|
+|Id|Arn|Name|
 |---|---|---|
-| arn | id | name |
+| id | arn | name |
 """
 
 
@@ -279,11 +279,7 @@ class organization_get(Data):
 class account_remove(Data):
     command_args = {"account_id": "account_id"}
     client_func_kwargs = {"AccountId": "account_id"}
-    readable_output = """### AWS Account Removed
-|AccountId|
-|---|
-| account_id |
-"""
+    readable_output = 'AWS account *account_id* removed successfully.'
 
 
 class account_move(Data):
@@ -297,11 +293,7 @@ class account_move(Data):
         "SourceParentId": "source_parent_id",
         "DestinationParentId": "destination_parent_id",
     }
-    readable_output = """### AWS Account Moved
-|AccountId|
-|---|
-| account_id |
-"""
+    readable_output = 'AWS account *account_id* moved successfully.'
 
 
 class account_create_initial_call(Data):
@@ -363,11 +355,7 @@ class account_close(Data):
     client_func_kwargs = {
         "AccountId": "account_id"
     }
-    readable_output = """### AWS Account Closed
-|AccountId|
-|---|
-| account_id |
-"""
+    readable_output = 'AWS account *account_id* closed successfully.'
 
 
 class organization_unit_create(Data):
@@ -398,11 +386,7 @@ class organization_unit_create(Data):
 class organization_unit_delete(Data):
     command_args = {"organizational_unit_id": "organizational_unit_id"}
     client_func_kwargs = {"OrganizationalUnitId": "organizational_unit_id"}
-    readable_output = """### AWS Organization Unit Deleted
-|OrganizationalUnitId|
-|---|
-| organizational_unit_id |
-"""
+    readable_output = 'AWS organizational unit *organizational_unit_id* deleted successfully.'
 
 
 class organization_unit_rename(Data):
@@ -411,11 +395,7 @@ class organization_unit_rename(Data):
         "OrganizationalUnitId": "organizational_unit_id",
         "Name": "name",
     }
-    readable_output = """### AWS Organization Unit Renamed
-|Name|OrganizationalUnitId|
-|---|---|
-| name | organizational_unit_id |
-"""
+    readable_output = 'AWS organization unit *organizational_unit_id* successfully renamed to *name*.'
 
 
 class policy_list(Data):
@@ -560,21 +540,13 @@ class policy_get(Data):
 class policy_delete(Data):
     command_args = {"policy_id": "policy_id"}
     client_func_kwargs = {"PolicyId": "policy_id"}
-    readable_output = """### AWS Organization Policy Deleted
-|PolicyId|
-|---|
-| policy_id |
-"""
+    readable_output = 'AWS Organizations policy *policy_id* successfully deleted.'
 
 
 class policy_attach(Data):
     command_args = {"policy_id": "policy_id", "target_id": "target_id"}
     client_func_kwargs = {"PolicyId": "policy_id", "TargetId": "target_id"}
-    readable_output = """### AWS Organization Policy Attached
-|PolicyId|
-|---|
-| policy_id |
-"""
+    readable_output = 'AWS Organizations policy *policy_id* successfully attached.'
 
 
 class policy_target_list(Data):
@@ -633,11 +605,7 @@ class resource_tag_add(Data):
             {"Key": "key2", "Value": "value2"},
         ],
     }
-    readable_output = """### AWS Organization Resource Tagged
-|ResourceId|
-|---|
-| resource_id |
-"""
+    readable_output = "AWS Organizations resource *resource_id* successfully tagged."
 
 
 class resource_tag_list(Data):
