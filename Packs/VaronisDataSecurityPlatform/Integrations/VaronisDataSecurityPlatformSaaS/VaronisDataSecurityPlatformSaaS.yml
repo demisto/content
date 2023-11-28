@@ -146,27 +146,27 @@ script:
     - contextPath: Varonis.Alert.ID
       description: Varonis ID for alert
       type: Number
-    - contextPath: Varonis.Alert.Name
+    - contextPath: Varonis.Alert.Rule.Name
       description: Name of retrieved alert
       type: String
-    - contextPath: Varonis.Alert.Time
+    - contextPath: Varonis.Alert.TimeUTC
       description: When was the alert triggered
       type: Date
-    - contextPath: Varonis.Alert.Severity
+    - contextPath: Varonis.Alert.Rule.Severity.Name
       description: Alert severity
       type: String
-    - contextPath: Varonis.Alert.Category
+    - contextPath: Varonis.Alert.Rule.Category.Name
       description: "Alert category.\nOptions are:\n- Reconnaissance \n- Intrusion\
         \ \n- Exploitation \n- Privilege Escalation \n- Lateral Movement "
       type: String
-    - contextPath: Varonis.Alert.Country
+    - contextPath: Varonis.Alert.Location.CountryName
       description: Name of the country from which the event occurred
       type: String
-    - contextPath: Varonis.Alert.State
+    - contextPath: Varonis.Alert.Location.SubdivisionName
       description: Name of the state or regional subdivision from which the event
         occurred
       type: String
-    - contextPath: Varonis.Alert.Status
+    - contextPath: Varonis.Alert.Status.Name
       description: |-
         Alert state. Options are:
         - New
@@ -175,7 +175,7 @@ script:
         - Action Required
         - Auto-Resolved
       type: String
-    - contextPath: Varonis.Alert.CloseReason
+    - contextPath: Varonis.Alert.CloseReason.Name
       description: |-
         Reason the alert was closed. Options are:
         - Resolved
@@ -185,27 +185,27 @@ script:
         - Legitimate activity
         - Other
       type: String
-    - contextPath: Varonis.Alert.BlacklistLocation
+    - contextPath: Varonis.Alert.Location.BlacklistedLocation
       description: Whether any of the geographical locations from which an alerted
         activity originated was on the blacklist at the time the activity occurred
       type: Boolean
-    - contextPath: Varonis.Alert.AbnormalLocation
+    - contextPath: Varonis.Alert.Location.AbnormalLocation
       description: Whether any of the geographical locations from which an alerted
         activity originated is new or abnormal to the organization, the user and peers,
         or only the user
       type: Boolean
-    - contextPath: Varonis.Alert.NumOfAlertedEvents
+    - contextPath: Varonis.Alert.EventsCount
       description: Number of events with alerts
       type: Number
-    - contextPath: Varonis.Alert.UserName
+    - contextPath: Varonis.Alert.User.Name
       description: Name of the users triggered alerts
       type: String
-    - contextPath: Varonis.Alert.SamAccountName
+    - contextPath: Varonis.Alert.User.SamAccountName
       description: |-
         Logon name used to support clients and servers running earlier versions of Windows operating system, such as Windows NT 4.0.
         In the dashboards (other than the Alert dashboard), this is the SAM account name of the user or group
       type: String
-    - contextPath: Varonis.Alert.PrivilegedAccountType
+    - contextPath: Varonis.Alert.User.AccountType.Name
       description: |-
         Privileged account. Options are:
         - Service accounts
@@ -215,30 +215,30 @@ script:
     - contextPath: Varonis.Alert.Department
       description: User`s department
       type: String
-    - contextPath: Varonis.Alert.ContainsFlaggedData
+    - contextPath: Varonis.Alert.Data.IsFlagged
       description: Whether the data affected by the alerted events has global flags
       type: Boolean
-    - contextPath: Varonis.Alert.ContainsSensitiveData
+    - contextPath: Varonis.Alert.Data.IsSensitive
       description: Filters according to whether the resource on which the event was
         performed is sensitive (including subfolders)
       type: Boolean
-    - contextPath: Varonis.Alert.Platform
+    - contextPath: Varonis.Alert.Filer.Platform.Name
       description: Type of platform on which the server resides. For example, Windows,
         Exchange, or SharePoint
       type: String
-    - contextPath: Varonis.Alert.Asset
+    - contextPath: Varonis.Alert.Asset.Path
       description: Path of the alerted asset
       type: String
-    - contextPath: Varonis.Alert.FileServerOrDomain
+    - contextPath: Varonis.Alert.Filer.Name
       description: Associated file server/domain
       type: String
-    - contextPath: Varonis.Alert.DeviceName
+    - contextPath: Varonis.Alert.Device.HostName
       description: Name of the device from which the user generated the event
       type: String
-    - contextPath: Varonis.Alert.ContainMaliciousExternalIP
+    - contextPath: Varonis.Alert.Device.IsMaliciousExternalIP
       description: Whether the alert contains IPs known to be malicious
       type: Boolean
-    - contextPath: Varonis.Alert.IPThreatTypes
+    - contextPath: Varonis.Alert.Device.ExternalIPThreatTypesName
       description: Whether the alert contains IPs known to be malicious
       type: String
   - arguments:
