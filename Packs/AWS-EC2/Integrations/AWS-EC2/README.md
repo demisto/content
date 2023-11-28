@@ -3255,7 +3255,7 @@ Describes IPAM resource discoveries. A resource discovery is an IPAM component t
 | Filters | One or more filters Separated by ';'. See AWS documentation for details &amp; filter options. | Optional | 
 | MaxResults | The maximum number of results to return in a single call. Specify a value between 5 and 1000. | Optional | 
 | NextToken | The token for the next set of results. | Optional | 
-| AddressRegion | The Amazon Web Services Region for the IP address. | Optional | 
+| AddressRegion | The Amazon Web Services region for the IP address. | Optional | 
 
 #### Context Output
 
@@ -3263,7 +3263,7 @@ Describes IPAM resource discoveries. A resource discovery is an IPAM component t
 | --- | --- | --- |
 | AWS.EC2.IpamResourceDiscoveries.IpamResourceDiscoveryId | String | The resource discovery ID. | 
 | AWS.EC2.IpamResourceDiscoveries.OwnerId | String | The ID of the owner. | 
-| AWS.EC2.IpamResourceDiscoveries.IpamResourceDiscoveryRegion | String | The resource discovery Region. | 
+| AWS.EC2.IpamResourceDiscoveries.IpamResourceDiscoveryRegion | String | The resource discovery region. | 
 
 #### Command example
 ```!aws-ec2-describe-ipam-resource-discoveries```
@@ -3364,7 +3364,7 @@ Describes resource discovery association with an Amazon VPC IPAM. An associated 
 | Filters | One or more filters Separated by ';'. See AWS documentation for details &amp; filter options. | Optional | 
 | MaxResults | The maximum number of results to return in a single call. Specify a value between 5 and 1000. | Optional | 
 | NextToken | The token for the next set of results. | Optional | 
-| AddressRegion | The Amazon Web Services Region for the IP address. | Optional | 
+| AddressRegion | The Amazon Web Services region for the IP address. | Optional | 
 
 #### Context Output
 
@@ -3372,7 +3372,7 @@ Describes resource discovery association with an Amazon VPC IPAM. An associated 
 | --- | --- | --- |
 | AWS.EC2.IpamResourceDiscoveryAssociations.IpamResourceDiscoveryAssociationId | String | The resource discovery association ID. | 
 | AWS.EC2.IpamResourceDiscoveryAssociations.IpamResourceDiscoveryId | String | The resource discovery ID. | 
-| AWS.EC2.IpamResourceDiscoveryAssociations.IpamRegion | String | The IPAM home Region. | 
+| AWS.EC2.IpamResourceDiscoveryAssociations.IpamRegion | String | The IPAM home region. | 
 
 #### Command example
 ```!aws-ec2-describe-ipam-resource-discovery-associations```

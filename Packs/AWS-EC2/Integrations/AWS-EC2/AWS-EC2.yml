@@ -3814,7 +3814,7 @@ script:
       name: MaxResults
     - description: The token for the next set of results.
       name: NextToken
-    - description: The Amazon Web Services Region for the IP address.
+    - description: The Amazon Web Services region for the IP address.
       name: AddressRegion
     outputs:
     - contextPath: AWS.EC2.IpamResourceDiscoveries.IpamResourceDiscoveryId
@@ -3824,7 +3824,7 @@ script:
       description: The ID of the owner.
       type: String
     - contextPath: AWS.EC2.IpamResourceDiscoveries.IpamResourceDiscoveryRegion
-      description: The resource discovery Region.
+      description: The resource discovery region.
       type: String
     description: Describes IPAM resource discoveries. A resource discovery is an IPAM component that enables IPAM to manage and monitor resources that belong to the owning account.
     name: aws-ec2-describe-ipam-resource-discoveries
@@ -3837,7 +3837,7 @@ script:
       name: MaxResults
     - description: The token for the next set of results.
       name: NextToken
-    - description: The Amazon Web Services Region for the IP address.
+    - description: The Amazon Web Services region for the IP address.
       name: AddressRegion
     outputs:
     - contextPath: AWS.EC2.IpamResourceDiscoveryAssociations.IpamResourceDiscoveryAssociationId
@@ -3847,7 +3847,7 @@ script:
       description: The resource discovery ID.
       type: String
     - contextPath: AWS.EC2.IpamResourceDiscoveryAssociations.IpamRegion
-      description: The IPAM home Region.
+      description: The IPAM home region.
       type: String
     description: Describes resource discovery association with an Amazon VPC IPAM. An associated resource discovery is a resource discovery that has been associated with an IPAM.
     name: aws-ec2-describe-ipam-resource-discovery-associations
@@ -3855,7 +3855,7 @@ script:
     - description: An IPAM resource discovery ID.
       name: IpamResourceDiscoveryId
       required: true
-    - description: The Amazon Web Services Region for the IP address.
+    - description: The Amazon Web Services region for the IP address.
       name: AddressRegion
       required: true
     - description: One or more filters Separated by ';'. See AWS documentation for details & filter options.
