@@ -12,13 +12,13 @@ import time
 import traceback
 # from collections.abc import Callable
 from enum import Enum
-# from io import BytesIO
+from io import BytesIO
 # from pathlib import Path
 from threading import Event
 
-# import numpy as np
-# from pdf2image import convert_from_path
-# from PIL import Image
+import numpy as np
+from pdf2image import convert_from_path
+from PIL import Image
 from PyPDF2 import PdfReader
 # from selenium import webdriver
 # from pyvirtualdisplay import Display
@@ -51,6 +51,8 @@ DEFAULT_RETRY_WAIT_IN_SECONDS = 1
 MAX_FULLSCREEN_WIDTH = 8000
 MAX_FULLSCREEN_HEIGHT = 8000
 DEFAULT_WIDTH, DEFAULT_HEIGHT = '600', '800'
+
+PAGES_LIMITATION = 20
 
 LOCAL_CHROME_URL = "http://127.0.0.1:9222"
 
