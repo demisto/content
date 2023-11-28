@@ -170,7 +170,7 @@ def pychrome_reap_children():  # pragma: no cover
                 if wait_res == 0:
                     demisto.info(f'Zombie process {pid} reaped successfully.')
                 else:
-                    demisto.warn(f'Failed to reap zombie process {pid}. Status: {wait_res}')
+                    demisto.error(f'Failed to reap zombie process {pid}. Status: {wait_res}')
         else:
             demisto.debug('No zombie processes found.')
     except Exception as e:
