@@ -84,7 +84,7 @@ def get_existing_incidents(input_args, current_incident_type):
     incidents_query_res = demisto.executeCommand('GetIncidentsByQuery', get_incidents_args)
     if is_error(incidents_query_res):
         return_error(get_error(incidents_query_res))
-    incidents_query_contents = {}
+    incidents_query_contents = '{}'
     for res in incidents_query_res:
         if res['Contents']:
             incidents_query_contents = res['Contents']
