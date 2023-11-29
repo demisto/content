@@ -74,6 +74,7 @@ class MockOrganizationsClient:  # (OrganizationsClient):
 
 
 def get_mock_paginate(kwargs: dict, return_obj):
+
     def mock_paginate(
         paginator,
         key_to_pages,
@@ -95,6 +96,32 @@ def mock_client_func(MaxResults, **kwargs):
         'Pages': list(range(from_number, to_number)),
         'NextToken': to_number
     }
+
+
+def test_create_client(mocker):
+
+    from AWSOrganizations import create_client, AWSClient
+
+    mock_session = mocker.patch.object(AWSClient, 'aws_session')
+
+    create_client(
+        {
+            'roleArn': 'arn:aws:iam::123456789012:role/test-role-args',
+            'roleSessionName': 'test-session-args',
+            'roleSessionDuration': 1000,
+        },
+        {
+            'retries': 2,
+        }
+    )
+
+    mock_session.assert_called_once_with(
+        service='organizations',
+        region='us-east-1',
+        role_arn='arn:aws:iam::123456789012:role/test-role-args',
+        role_session_name='test-session-args',
+        role_session_duration=1000
+    )
 
 
 @pytest.mark.parametrize(
