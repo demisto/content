@@ -251,10 +251,8 @@
     - source .gitlab/helper_functions.sh
     - *setup-network-certs
     - *setup-artifactory
-    - *stop_contrib_external_build
     - *create_artifacts_and_server_type_instance_folders
     - *clone_and_export_variables
-    - *check_build_files_are_up_to_date
     - *install_node_modules
     - *install_venv
     - *get_contribution_pack
@@ -551,8 +549,6 @@ cloning-content-repo-last-upload-commit:
 pre_job:
   stage: .pre
   script:
-    - section_start "check_build_files_are_up_to_date and stop_contrib_external_build"
     - *create_artifacts_and_server_type_instance_folders
     - *stop_contrib_external_build
     - *check_build_files_are_up_to_date
-    - section_end "check_build_files_are_up_to_date and stop_contrib_external_build"
