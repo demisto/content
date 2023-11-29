@@ -35,7 +35,7 @@ You can configure the specific vendor and product for this instance.
 3. When configuring the Syslog Collector, set the following parameters:
    | Parameter     | Value    
    | :---          | :---                    
-   | `Protocol`    | Select the protocol in correspondence to the protocol that was defined for syslog forwarding on Avaya Aura Communication Manager - **UDP**, **TCP** or **Secure TCP** if the syslog forwarding on the Communication Manager was defined with the *TLS*.  
+   | `Protocol`    | Select the protocol in correspondence to the protocol that was defined for syslog forwarding on Avaya Aura Communication Manager - **UDP**, **TCP** or **Secure TCP** if the syslog forwarding on the Communication Manager was defined with *TLS*.  
    | `Port`        | Enter the syslog service port that Cortex XSIAM Broker VM should listen on for receiving forwarded events from Avaya Aura Communication Manager. 
    | `Vendor`      | Enter **Avaya**. 
    | `Product`     | Enter **Communicaton_Manager**. 
