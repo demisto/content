@@ -743,6 +743,7 @@ def generate_threat_incidents(client, threats, current_iso_format_time):
             "dbotMirrorId": str(threat["threatId"]),
             "name": "Threat",
             "occurred": current_iso_format_time,
+            "details": "Threat",
             "rawJSON": json.dumps(threat_details) if threat_details else {}
         }
         incidents.append(incident)
