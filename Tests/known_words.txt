@@ -247,3 +247,5 @@ sdk
 RFC
 datetime
 HSTS
+SaaS
+saas
