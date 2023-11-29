@@ -5778,7 +5778,8 @@
         "Microsoft Defender Advanced Threat Protection - Test dev": "Issue CIAC-7514",
         "Microsoft Defender Advanced Threat Protection - Test self deployed": "Issue CIAC-7527",
         "Microsoft Defender Advanced Threat Protection - Test": "Issue CIAC-7527",
-        "OpsGenieV3TestPlaybook": "Issue CIAC-7649"
+        "OpsGenieV3TestPlaybook": "Issue CIAC-7649",
+        "ThreatStream-Test": "Issue CRTX-96526"
     },
     "skipped_integrations": {
         "CiscoWSAv2": "No instance - No license",
