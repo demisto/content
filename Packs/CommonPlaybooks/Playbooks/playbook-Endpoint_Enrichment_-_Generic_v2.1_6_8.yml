@@ -174,6 +174,21 @@ tasks:
       "yes":
       - "9"
     separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
     conditions:
     - label: "yes"
       condition:
@@ -198,21 +213,6 @@ tasks:
             value:
               simple: active
           ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1220,
-          "y": 690
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "9":
     id: "9"
     taskid: 5e114375-db3d-4267-8f4d-0a411d4bb076
@@ -248,7 +248,6 @@ tasks:
     reputationcalc: 1
     continueonerror: true
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -263,6 +262,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "10":
     id: "10"
     taskid: 42f088e2-cb74-485a-8318-0dae68cde0f0
@@ -281,6 +281,21 @@ tasks:
       "yes":
       - "38"
     separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2300,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
     conditions:
     - label: "yes"
       condition:
@@ -305,21 +320,6 @@ tasks:
             value:
               simple: active
           ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 2300,
-          "y": 690
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "16":
     id: "16"
     taskid: d9d617d9-2efd-466e-8ce7-190f8db83b95
@@ -511,7 +511,8 @@ tasks:
       id: 23c75906-3b4e-42e8-8e32-c883d5f06fb3
       version: -1
       name: Get host information from Active Directory
-      description: Retrieves detailed information about a computer account. The computer can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filters are provided, all computers are returned.
+      description: |-
+        Retrieves detailed information about a computer account. The computer can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filters are provided, all computers are returned.
       script: '|||ad-get-computer'
       type: regular
       iscommand: true
@@ -720,14 +721,14 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      ip:
-        complex:
-          root: inputs.IPAddress
-          transformers:
-          - operator: uniq
       name:
         complex:
           root: inputs.Hostname
+          transformers:
+          - operator: uniq
+      ip:
+        complex:
+          root: inputs.IPAddress
           transformers:
           - operator: uniq
     separatecontext: false
@@ -847,22 +848,29 @@ tasks:
     isautoswitchedtoquietmode: false
     continueonerrortype: ""
   "35":
+    continueonerrortype: ""
     id: "35"
-    taskid: f2dbaff5-7c92-47ad-80cc-991bfd80ff98
-    type: title
-    task:
-      id: f2dbaff5-7c92-47ad-80cc-991bfd80ff98
-      version: -1
-      name: Endpoint Reputation
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "36"
+    note: false
+    quietmode: 0
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f2dbaff5-7c92-47ad-80cc-991bfd80ff98
+      iscommand: false
+      name: Endpoint Reputation
+      type: title
+      version: -1
+      description: ''
+    taskid: f2dbaff5-7c92-47ad-80cc-991bfd80ff98
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -870,45 +878,45 @@ tasks:
           "y": 550
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "36":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.UseReputationCommand
+          operator: isEqualString
+          right:
+            value:
+              simple: "True"
+      label: "yes"
+    continueonerrortype: ""
     id: "36"
-    taskid: 50fed99c-1eb9-4a6f-85d0-f9d5ee74bc5a
-    type: condition
-    task:
-      id: 50fed99c-1eb9-4a6f-85d0-f9d5ee74bc5a
-      version: -1
-      name: Should use !endpoint command?
-      description: Check if should run endpoint reputation command
-      type: condition
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#default#':
       - "4"
       "yes":
       - "37"
+    note: false
+    quietmode: 0
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.UseReputationCommand
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 50fed99c-1eb9-4a6f-85d0-f9d5ee74bc5a
+      iscommand: false
+      name: Should use !endpoint command?
+      description: Check if should run endpoint reputation command
+      type: condition
+      version: -1
+    taskid: 50fed99c-1eb9-4a6f-85d0-f9d5ee74bc5a
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -916,29 +924,17 @@ tasks:
           "y": 690
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "37":
+    continueonerrortype: ""
     id: "37"
-    taskid: 32b679b9-f8fc-4beb-8455-8ed5642c583a
-    type: regular
-    task:
-      id: 32b679b9-f8fc-4beb-8455-8ed5642c583a
-      version: -1
-      name: Check Reputation
-      description: Returns information about an endpoint.
-      script: '|||endpoint'
-      type: regular
-      iscommand: true
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "4"
+    note: false
+    quietmode: 0
     scriptarguments:
       hostname:
         complex:
@@ -956,7 +952,19 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: true
+    task:
+      brand: ""
+      description: Returns information about an endpoint.
+      id: 32b679b9-f8fc-4beb-8455-8ed5642c583a
+      iscommand: true
+      name: Check Reputation
+      script: '|||endpoint'
+      type: regular
+      version: -1
+    taskid: 32b679b9-f8fc-4beb-8455-8ed5642c583a
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -964,13 +972,6 @@ tasks:
           "y": 860
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "38":
     id: "38"
     taskid: 37d0e116-73c9-42ff-865d-319ae727a315

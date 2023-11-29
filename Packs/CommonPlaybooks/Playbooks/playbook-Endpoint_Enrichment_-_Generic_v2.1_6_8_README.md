@@ -29,15 +29,15 @@ This playbook does not use any integrations.
 ### Commands
 
 * endpoint
-* xdr-get-endpoints
-* extrahop-devices-search
-* ad-get-computer
-* cb-edr-sensors-list
 * cs-falcon-search-device
 * core-list-risky-hosts
+* ad-get-computer
 * core-get-endpoints
-* xdr-list-risky-hosts
+* xdr-get-endpoints
+* extrahop-devices-search
 * epo-find-system
+* xdr-list-risky-hosts
+* cb-edr-sensors-list
 
 ## Playbook Inputs
 
