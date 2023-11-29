@@ -6915,8 +6915,9 @@ def test_prettify_rules():
         '@uuid': '11111-111-111-11',
         'source': {'@loc': 'test',
                    'member': [{'@loc': 'test', '#text': 'text'},
-                              'Failing str']}}
-    assert prettify_rules(test_rule)
+                              'Failing String']}}
+    prettier_rules = prettify_rules(test_rule)
+    assert 'Failing String' in prettier_rules[0].get('Source')
 
 
 @pytest.mark.parametrize('include_shared', ['No', 'Yes'])
