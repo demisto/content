@@ -53,6 +53,11 @@
   - section_end "Copy env results to artifacts folder"
 
 .prepare_for_test_content: &prepare_for_test_content
+
+  - section_start "Test-playbook To Test" --collapsed
+  - echo "Sanity Test - Playbook with no integration\nSanity Test - Playbook with Unmockable Whois Integration" > "./artifacts/filter_file.txt"
+  - section_end "Test-playbook To Test"
+
   - section_start "Install Packs" --collapsed
   - cat "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_file.txt"
   - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
