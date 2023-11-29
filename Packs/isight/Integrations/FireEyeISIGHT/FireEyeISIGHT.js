@@ -133,9 +133,8 @@ var basicSearchIP = function(ip) {
     var results = new Array(urls.length)
     for (var i = 0; i < ips.length; i++) {
         var records = basicSearch('ip', ips[i]);
-
         if (!records) {
-            return {
+            results[i] = {
                 Type: entryTypes.note,
                 Contents: "No items match your search",
                 ContentsFormat: formats.text,
@@ -150,21 +149,22 @@ var basicSearchIP = function(ip) {
                 }
             };
         }
-
-        var res = createContextReportsAndScore(records);
-        var context = {
-            DBotScore: {Indicator: ip, Type: 'IP', Vendor: VENDOR_NAME, Score: res.dbotScore},
-            'Report(val.ID && val.ID == obj.ID)': res.reports,
-            'IP.Address': ips[i]
-        };
-
-        if (res.dbotScore > 2) {
-            addMalicious(context, outputPaths.ip,{
-                Address: ips[i],
-                Malicious: {Vendor: VENDOR_NAME, Description: 'IP was identified as ' + res.highetsRecordType}
-            });
+        else{
+            var res = createContextReportsAndScore(records);
+            var context = {
+                DBotScore: {Indicator: ip, Type: 'IP', Vendor: VENDOR_NAME, Score: res.dbotScore},
+                'Report(val.ID && val.ID == obj.ID)': res.reports,
+                'IP.Address': ips[i]
+            };
+    
+            if (res.dbotScore > 2) {
+                addMalicious(context, outputPaths.ip,{
+                    Address: ips[i],
+                    Malicious: {Vendor: VENDOR_NAME, Description: 'IP was identified as ' + res.highetsRecordType}
+                });
+            }
+            results[i] = createTableEntry("Results:", records, records, context);
         }
-        results[i] = screateTableEntry("Results:", records, records, context);
     }
     return results
 }
