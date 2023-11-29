@@ -1,5 +1,6 @@
 RSA NetWitness Platform provides systems Logs, Network, and endpoint visibility for real-time collection, detection, and automated response with the XSOAR Enterprise platform.
 
+"Adding a comment to check cortex xsoar github pr process"
 This integration was integrated and tested with version 12.2 of RSANetWitness.
 
 The integration supports version 11.5 and higher.
