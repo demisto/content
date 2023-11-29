@@ -6,11 +6,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-GenericPolling
+* GenericPolling
 
 ### Integrations
 
-CortexXDRIR
+* CortexXDRIR
 
 ### Scripts
 
@@ -40,4 +40,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Cortex XDR - quarantine file](../doc_files/Cortex_XDR_-_Quarantine_File.png)
+![Cortex XDR - quarantine file](../doc_files/Cortex_XDR_-_quarantine_file.png)
