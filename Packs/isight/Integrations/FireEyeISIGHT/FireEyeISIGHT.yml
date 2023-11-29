@@ -4,7 +4,7 @@ commonfields:
 name: FireEye iSIGHT
 display: FireEye iSIGHT
 category: Data Enrichment & Threat Intelligence
-description: FireEye cyber threat intelligence
+description: FireEye cyber threat intelligence.
 configuration:
 - display: Public Key
   name: publicKey
@@ -93,7 +93,7 @@ script:
     - contextPath: Report.publishDate
       description: Report publish date.
     - contextPath: Report.intelligenceType
-      description: Report intelligence type (overview, vulnerability, malware, threat)
+      description: Report intelligence type (overview, vulnerability, malware, threat).
     description: basic search reports by ip.
   - name: domain
     arguments:
