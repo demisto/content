@@ -1,2 +1,0 @@
-[INGEST:vendor="hello", product="world", target_dataset="hello_world_raw", no_hit = keep]
-alter _time = created_time;
