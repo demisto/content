@@ -25,7 +25,7 @@ from demisto_sdk.commands.test_content.TestContentClasses import BuildContext
 from demisto_sdk.commands.test_content.constants import SSH_USER
 from demisto_sdk.commands.test_content.mock_server import MITMProxy, run_with_mock, RESULT
 from demisto_sdk.commands.test_content.tools import update_server_configuration, is_redhat_instance
-demisto_sdk.commands.validate.old_validate_manager import OldValidateManager
+from demisto_sdk.commands.validate.old_validate_manager import OldValidateManager
 from packaging.version import Version
 from ruamel import yaml
 
