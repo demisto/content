@@ -10,10 +10,8 @@ import threading
 import time
 import traceback
 from enum import Enum
-from io import BytesIO
 from threading import Event
 
-import numpy as np
 from pdf2image import convert_from_path
 from PIL import Image
 from PyPDF2 import PdfReader
@@ -107,19 +105,20 @@ class PychromeEventHandler:
 
 # endregion
 
+
 def get_parent_processes(processes=[], current_process=None) -> list[str]:
     str_to_search = f"{current_process}|grep -v grep |grep -v 'ps -ef'" if current_process else 'grep'
     demisto.debug(f'get_parent_processes, {str_to_search=}')
     cmd = f"ps -ef|grep {str_to_search}"
-    ps = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    ps = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)  # noqa: S602
     output = ps.communicate()
 
     for current_line in output:
         if current_line:
             demisto.debug(f'get_parent_processes, decoding {current_line=}')
-            current_line = current_line.decode("utf-8")
-            demisto.debug(f'get_parent_processes, {current_line=}')
-            if current_line:
+            current_line_decoded = current_line.decode("utf-8")
+            demisto.debug(f'get_parent_processes, {current_line_decoded=}')
+            if current_line_decoded:
                 current_line_splitted = current_line.split()
                 if len(current_line_splitted) > 2:
                     parent_pid = current_line_splitted[2]
@@ -251,14 +250,14 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout):  # prag
         return_error(message)
 
 
-def screenshot_image(browser, tab, path, wait_time, timeout):  # pragma: no cover
-    navigate_to_path(browser, tab, path, wait_time, timeout)
+def screenshot_image(browser, tab, path, wait_time, navigation_timeout):  # pragma: no cover
+    navigate_to_path(browser, tab, path, wait_time, navigation_timeout)
     ret_value = base64.b64decode(tab.Page.captureScreenshot()['data'])
     return ret_value
 
 
-def screenshot_pdf(browser, tab, path, wait_time, timeout, include_url):  # pragma: no cover
-    navigate_to_path(browser, tab, path, wait_time, timeout)
+def screenshot_pdf(browser, tab, path, wait_time, navigation_timeout, include_url):  # pragma: no cover
+    navigate_to_path(browser, tab, path, wait_time, navigation_timeout)
     header_template = ''
     if include_url:
         header_template = "<span class=url></span>"
@@ -271,7 +270,7 @@ def rasterize(path: str,
               rasterize_type: RasterizeType = RasterizeType.PNG,
               wait_time: int = DEFAULT_WAIT_TIME,
               offline_mode: bool = False,
-              timeout: int = DEFAULT_PAGE_LOAD_TIME,
+              navigation_timeout: int = DEFAULT_PAGE_LOAD_TIME,
               include_url: bool = False,
               width=DEFAULT_WIDTH,
               height=DEFAULT_HEIGHT,
@@ -282,7 +281,7 @@ def rasterize(path: str,
     :param path: file path, or website url
     :param rasterize_type: result type: .png/.pdf
     :param wait_time: time in seconds to wait before taking a screenshot
-    :param timeout: amount of time to wait for a page load to complete before throwing an error
+    :param navigation_timeout: amount of time to wait for a page load to complete before throwing an error
     :param include_url: should the URL be included in the output image/PDF
     :param width: window width
     :param height: window height
@@ -296,12 +295,13 @@ def rasterize(path: str,
             else:
                 tab.call_method("Network.enable")
             # tab.call_method("Browser.Bounds.width=600")
+            tab.call_method("Emulation.setVisibleSize", width=width, height=height)
 
             if rasterize_type == RasterizeType.PNG:
-                return screenshot_image(browser, tab, path, wait_time=wait_time, timeout=timeout)
+                return screenshot_image(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout)
 
             elif rasterize_type == RasterizeType.PDF:
-                return screenshot_pdf(browser, tab, path, wait_time=wait_time, timeout=timeout, include_url=include_url)
+                return screenshot_pdf(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout, include_url=include_url)
             else:
                 message = 'Unsupported rasterization type {rasterize_type}'
                 demisto.error(message)
@@ -341,7 +341,7 @@ def rasterize_email_command():  # pragma: no cover
     offline = demisto.args().get('offline', 'false') == 'true'
     rasterize_type = RasterizeType(demisto.args().get('type', 'png').lower())
     file_name = demisto.args().get('file_name', 'email')
-    timeout = int(demisto.args().get('max_page_load_time', DEFAULT_PAGE_LOAD_TIME))
+    navigation_timeout = int(demisto.args().get('max_page_load_time', DEFAULT_PAGE_LOAD_TIME))
     file_name = f'{file_name}.{rasterize_type}'
 
     with open('htmlBody.html', 'w', encoding='utf-8-sig') as f:
@@ -350,7 +350,7 @@ def rasterize_email_command():  # pragma: no cover
     path = f'file://{os.path.realpath(f.name)}'
 
     output = rasterize(path=path, rasterize_type=rasterize_type, width=width, height=height, offline_mode=offline,
-                       timeout=timeout)
+                       navigation_timeout=navigation_timeout)
 
     res = fileResult(filename=file_name, data=output)
 
@@ -456,7 +456,7 @@ def rasterize_command():  # pragma: no cover
     width, height = get_width_height(demisto.args())
     rasterize_type = RasterizeType(demisto.args().get('type', 'png').lower())
     wait_time = int(demisto.args().get('wait_time', 0))
-    page_load = int(demisto.args().get('max_page_load_time', DEFAULT_PAGE_LOAD_TIME))
+    navigation_timeout = int(demisto.args().get('max_page_load_time', DEFAULT_PAGE_LOAD_TIME))
     file_name = demisto.args().get('file_name', 'url')
     include_url = argToBoolean(demisto.args().get('include_url', False))
 
@@ -464,7 +464,8 @@ def rasterize_command():  # pragma: no cover
         url = f'http://{url}'
     file_name = f'{file_name}.{"pdf" if rasterize_type == RasterizeType.PDF else "png"}'  # type: ignore
 
-    output = rasterize(path=url, rasterize_type=rasterize_type, wait_time=wait_time, timeout=page_load, include_url=include_url)
+    output = rasterize(path=url, rasterize_type=rasterize_type, wait_time=wait_time, navigation_timeout=navigation_timeout,
+                       include_url=include_url)
 
     if rasterize_type == RasterizeType.JSON:
         return_results(CommandResults(raw_response=output, readable_output="Successfully rasterize url: " + url))

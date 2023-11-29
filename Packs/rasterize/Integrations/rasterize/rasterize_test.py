@@ -171,7 +171,7 @@ def test_rasterize_url_long_load(mocker, http_wait_server, capfd):
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
     time.sleep(1)  # give time to the servrer to start
     with capfd.disabled():
-        rasterize('http://localhost:10888', width=250, height=250, rasterize_type=RasterizeType.PNG, timeout=5)
+        rasterize('http://localhost:10888', width=250, height=250, rasterize_type=RasterizeType.PNG, navigation_timeout=5)
         assert return_error_mock.call_count == 1
         # call_args last call with a tuple of args list and kwargs
         # err_msg = return_error_mock.call_args[0][0]
@@ -179,7 +179,7 @@ def test_rasterize_url_long_load(mocker, http_wait_server, capfd):
         return_error_mock.reset_mock()
         # test that with a higher value we get a response
         assert rasterize('http://localhost:10888', width=250, height=250, rasterize_type=RasterizeType.PNG,
-                         timeout=0)
+                         navigation_timeout=0)
         assert not return_error_mock.called
 
 
@@ -201,19 +201,19 @@ TEST_DATA = [
     (
         'test_data/many_pages.pdf',
         21,
-        2,
+        21,
         None
     ),
     (
         'test_data/many_pages.pdf',
         20,
-        1,
+        20,
         None
     ),
     (
         'test_data/many_pages.pdf',
         '*',
-        3,
+        51,
         None
     ),
     (
