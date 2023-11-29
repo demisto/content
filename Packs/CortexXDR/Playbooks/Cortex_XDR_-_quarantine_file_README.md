@@ -6,7 +6,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* GenericPolling
+GenericPolling
 
 ### Integrations
 
@@ -18,8 +18,8 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* xdr-file-quarantine
 * xdr-get-quarantine-status
+* xdr-file-quarantine
 
 ## Playbook Inputs
 
