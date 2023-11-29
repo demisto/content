@@ -12,7 +12,7 @@ from freezegun import freeze_time
 from EWSO365 import (ExpandGroup, GetSearchableMailboxes, EWSClient, fetch_emails_as_incidents,
                      add_additional_headers, fetch_last_emails, find_folders,
                      get_expanded_group, get_searchable_mailboxes, handle_html,
-                     handle_transient_files, parse_incident_from_item, parse_item_as_dict)
+                     handle_transient_files, parse_incident_from_item, parse_item_as_dict, get_item_as_eml)
 
 with open("test_data/commands_outputs.json") as f:
     COMMAND_OUTPUTS = json.load(f)
@@ -713,3 +713,58 @@ def test_categories_parse_item_as_dict():
 
     return_value = parse_item_as_dict(message)
     assert return_value.get("categories") == ['Purple category', 'Orange category']
+
+@pytest.mark.parametrize("subject, expected_file_name", [
+    ("test_subject", "test_subject.eml"),
+    ("", "demisto_untitled_eml.eml"),
+    ("another subject", "another subject.eml")
+])
+def test_get_item_as_eml(subject, expected_file_name, mocker):
+    """
+    Given
+        1. An Item Exists in the Target Mailbox
+        2. That Item Can be Retrieved By Item ID
+    When
+        - Requesting Item As EML
+
+    Then
+        - Item is converted to an EML with the correct filename and headers intact.
+
+    """
+    content = b'MIME-Version: 1.0\r\n' \
+              b'Message-ID:\r\n' \
+              b' <message-test-idRANDOMVALUES@testing.com>' \
+              b'Content-Type: text/plain; charset="us-ascii"\r\n' \
+              b'X-FAKE-Header: HVALue\r\n' \
+              b'X-Who-header: whovALUE\r\n' \
+              b'\r\nHello'
+
+    # headers set in the Item
+    item_headers = [
+        # these headers may have different casing than what exists in the raw content
+        MessageHeader(name="Mime-Version", value="1.0"),
+        MessageHeader(name="Content-Type", value="text/plain; charset=\"us-ascii\""),
+        MessageHeader(name="X-Fake-Header", value="HVALue"),
+        MessageHeader(name="X-WHO-header", value="whovALUE"),
+        # This is an extra header logged by exchange in the item -> add to the output
+        MessageHeader(name="X-EXTRA-Missed-Header", value="EXTRA")
+    ]
+    expected_data = 'MIME-Version: 1.0\r\nMessage-ID:  <message-test-idRANDOMVALUES@testing.com>\r\nX-FAKE-Header: HVALue\r\nX-Who-header: whovALUE\r\nX-EXTRA-Missed-Header: EXTRA\r\n\r\nHello'
+
+    class MockEWSClient:
+
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def get_account(self, target_mailbox):
+            return "Account"
+
+        def get_item_from_mailbox(self, account, item_id):
+
+            return Item(mime_content=content, headers=item_headers, subject=subject)
+    mock_file_result = mocker.patch('EWSO365.fileResult')
+
+    get_item_as_eml(MockEWSClient(), "item", "account@test.com")
+
+    mock_file_result.assert_called_once_with(expected_file_name, expected_data)
+
