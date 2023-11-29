@@ -319,7 +319,7 @@ script:
     - description: 'comma separated string containing Hostname, IP, macAddress or agentGuid of the endpoint(s) to query.'
       name: endpoint
       required: true
-    - description: Query Operator for querying endpoint(s).
+    - description: 'Operator used to build request header query that allows you to retrieve a subset of the collected endpoint(s). e.g. endpointName eq sample-host `or` macAddress eq 00:11:22:33:44:55.'
       name: query_op
       required: true
       auto: PREDEFINED
@@ -360,9 +360,16 @@ script:
       description: Product code of the Trend Micro product installed on the endpoint.
       type: string
   - arguments:
-    - description: 'Statement that allows you to retrieve a subset of the collected endpoint activity data.'
+    - description: 'Statement that allows you to retrieve a subset of the collected endpoint activity data. e.g. {"endpointName":"sample-host","macAddress":"00:11:22:33:44:55"}. Complete list of supported fields (https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1endpointActivities/get).'
       name: fields
       required: true
+    - description: Operator used to build request header query that allows you to retrieve a subset of the collected endpoint activity data. e.g. endpointName:sample-host `or` src:192.169.1.1.
+      name: query_op
+      auto: PREDEFINED
+      predefined:
+      - and
+      - or
+      default: true
     - description: 'Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made.'
       name: start
     - description: 'Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made.'
@@ -371,13 +378,6 @@ script:
       name: top
     - description: 'List of fields to include in the search results. If no fields are specified, the query returns all supported fields.'
       name: select
-    - description: Query Operator.
-      name: query_op
-      auto: PREDEFINED
-      predefined:
-      - and
-      - or
-      default: true
     description: Displays search results from the Endpoint Activity Data source that match the parameters provided.
     name: trendmicro-visionone-get-endpoint-activity-data
     outputs:
@@ -511,22 +511,22 @@ script:
       description: Log unique identity.
       type: string
   - arguments:
-    - description: 'Statement that allows you to retrieve a subset of the collected endpoint activity data.'
+    - description: 'Statement that allows you to retrieve a subset of the collected endpoint activity data. e.g. {"endpointName":"sample-host","macAddress":"00:11:22:33:44:55"}. Complete list of supported fields (https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1endpointActivities/get).'
       name: fields
       required: true
-    - description: 'Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made.'
-      name: start
-    - description: 'Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made.'
-      name: end
-    - description: 'List of fields to include in the search results. If no fields are specified, the query returns all supported fields.'
-      name: select
-    - description: Query Operator.
+    - description: 'Operator used to build request header query that allows you to retrieve a subset of the collected endpoint activity data. e.g. endpointName:sample-host `or` src:192.169.1.1..'
       name: query_op
       auto: PREDEFINED
       predefined:
       - and
       - or
       default: true
+    - description: 'Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made.'
+      name: start
+    - description: 'Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made.'
+      name: end
+    - description: 'List of fields to include in the search results. If no fields are specified, the query returns all supported fields.'
+      name: select
     description: Displays total count of search results from the Endpoint Activity Data source that match the parameters provided.
     name: trendmicro-visionone-get-endpoint-activity-data-count
     outputs:
@@ -534,9 +534,16 @@ script:
       description: Total count for endpoint activity queried.
       type: string
   - arguments:
-    - description: 'Statement that allows you to retrieve a subset of the collected email activity data.'
+    - description: 'Statement that allows you to retrieve a subset of the collected email activity data. e.g. {"mailMsgSubject":"spam","mailSenderIp":"192.169.1.1"}. Complete list of supported fields (https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1emailActivities/get).'
       name: fields
       required: true
+    - description: Operator used to build request header query that allows you to retrieve a subset of the collected email activity data. e.g. mailMsgSubject:spam `and` mailSenderIp:192.169.1.1..'
+      name: query_op
+      auto: PREDEFINED
+      predefined:
+      - and
+      - or
+      default: true
     - description: 'Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made.'
       name: start
     - description: 'Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made.'
@@ -545,13 +552,6 @@ script:
       name: top
     - description: 'List of fields to include in the search results. If no fields are specified, the query returns all supported fields.'
       name: select
-    - description: Query Operator.
-      name: query_op
-      auto: PREDEFINED
-      predefined:
-      - and
-      - or
-      default: true
     description: Displays search results from the Email Activity Data source that match the parameters provided.
     name: trendmicro-visionone-get-email-activity-data
     outputs:
@@ -601,22 +601,22 @@ script:
       description: Real link in email message.
       type: string
   - arguments:
-    - description: 'Statement that allows you to retrieve a subset of the collected email activity data.'
+    - description: 'Statement that allows you to retrieve a subset of the collected email activity data. e.g. {"mailMsgSubject":"spam","mailSenderIp":"192.169.1.1"}. Complete list of supported fields (https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1emailActivities/get).'
       name: fields
       required: true
-    - description: 'Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made.'
-      name: start
-    - description: 'Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made.'
-      name: end
-    - description: 'List of fields to include in the search results. If no fields are specified, the query returns all supported fields.'
-      name: select
-    - description: Query Operator.
+    - description: 'Operator used to build request header query that allows you to retrieve a subset of the collected email activity data. e.g. mailMsgSubject:spam `and` mailSenderIp:192.169.1.1..'
       name: query_op
       auto: PREDEFINED
       predefined:
       - and
       - or
       default: true
+    - description: 'Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made.'
+      name: start
+    - description: 'Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made.'
+      name: end
+    - description: 'List of fields to include in the search results. If no fields are specified, the query returns all supported fields.'
+      name: select
     description: Displays search results from the Email Activity Data source that match the parameters provided.
     name: trendmicro-visionone-get-email-activity-data-count
     outputs:

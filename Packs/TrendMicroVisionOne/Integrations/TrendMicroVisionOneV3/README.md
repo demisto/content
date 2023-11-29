@@ -376,10 +376,10 @@ Retrieves information about a specific endpoint.
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                      | **Required** |
-| ----------------- | ---------------------------------------------------------------------------------------------------- | ------------ |
-| endpoint          | comma separated string containing Hostname, IP, macAddress or agentGuid of the endpoint(s) to query. | Required     |
-| query_op          | Query Operator for querying endpoint(s). Possible values are: and, or.                               | Required     |
+| **Argument Name** | **Description**                                                                                                                                                                                                     | **Required** |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| endpoint          | comma separated string containing Hostname, IP, macAddress or agentGuid of the endpoint(s) to query.                                                                                                                | Required     |
+| query_op          | Operator used to build request header query that allows you to retrieve a subset of the collected endpoint(s). e.g. endpointName eq sample-host `or` macAddress eq 00:11:22:33:44:55. Possible values are: and, or. | Required     |
 
 #### Context Output
 
@@ -407,14 +407,14 @@ Displays search results from the Endpoint Activity Data source that match the pa
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                                                                                     | **Required** |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
-| fields            | Statement that allows you to retrieve a subset of the collected endpoint activity data.                                                                             | Required     |
-| start             | Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made. | Optional     |
-| end               | Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made.       | Optional     |
-| top               | Number of records displayed on a page.                                                                                                                              | Optional     |
-| select            | List of fields to include in the search results. If no fields are specified, the query returns all supported fields.                                                | Optional     |
-| query_op          | Query Operator. Possible values are: and, or.                                                                                                                       | Optional     |
+| **Argument Name** | **Description**                                                                                                                                                                                                                                                                                         | **Required** |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| fields            | Statement that allows you to retrieve a subset of the collected endpoint activity data. e.g. {"endpointName":"sample-host","macAddress":"00:11:22:33:44:55"}. Complete list of supported fields (https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1endpointActivities/get). | Required     |
+| query_op          | Operator used to build request header query that allows you to retrieve a subset of the collected endpoint activity data. e.g. endpointName:sample-host `or` src:192.169.1.1. Possible values are: and, or.                                                                                             | Optional     |
+| start             | Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made.                                                                                                                                     | Optional     |
+| end               | Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made.                                                                                                                                           | Optional     |
+| top               | Number of records displayed on a page.                                                                                                                                                                                                                                                                  | Optional     |
+| select            | List of fields to include in the search results. If no fields are specified, the query returns all supported fields.                                                                                                                                                                                    | Optional     |
 
 #### Context Output
 
@@ -475,13 +475,13 @@ Displays total count of search results from the Endpoint Activity Data source th
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                                                                                     | **Required** |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
-| fields            | Statement that allows you to retrieve a subset of the collected endpoint activity data.                                                                             | Required     |
-| start             | Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made. | Optional     |
-| end               | Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made.       | Optional     |
-| select            | List of fields to include in the search results. If no fields are specified, the query returns all supported fields.                                                | Optional     |
-| query_op          | Query Operator. Possible values are: and, or.                                                                                                                       | Optional     |
+| **Argument Name** | **Description**                                                                                                                                                                                                                                                                                         | **Required** |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| fields            | Statement that allows you to retrieve a subset of the collected endpoint activity data. e.g. {"endpointName":"sample-host","macAddress":"00:11:22:33:44:55"}. Complete list of supported fields (https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1endpointActivities/get). | Required     |
+| query_op          | Operator used to build request header query that allows you to retrieve a subset of the collected endpoint activity data. e.g. endpointName:sample-host `or` src:192.169.1.1.. Possible values are: and, or.                                                                                            | Optional     |
+| start             | Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made.                                                                                                                                     | Optional     |
+| end               | Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made.                                                                                                                                           | Optional     |
+| select            | List of fields to include in the search results. If no fields are specified, the query returns all supported fields.                                                                                                                                                                                    | Optional     |
 
 #### Context Output
 
@@ -500,14 +500,14 @@ Displays search results from the Email Activity Data source that match the param
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                                                                                     | **Required** |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
-| fields            | Statement that allows you to retrieve a subset of the collected email activity data.                                                                                | Required     |
-| start             | Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made. | Optional     |
-| end               | Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made.       | Optional     |
-| top               | Number of records displayed on a page.                                                                                                                              | Optional     |
-| select            | List of fields to include in the search results. If no fields are specified, the query returns all supported fields.                                                | Optional     |
-| query_op          | Query Operator. Possible values are: and, or.                                                                                                                       | Optional     |
+| **Argument Name** | **Description**                                                                                                                                                                                                                                                                          | **Required** |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| fields            | Statement that allows you to retrieve a subset of the collected email activity data. e.g. {"mailMsgSubject":"spam","mailSenderIp":"192.169.1.1"}. Complete list of supported fields (https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1emailActivities/get). | Required     |
+| query_op          | Operator used to build request header query that allows you to retrieve a subset of the collected email activity data. e.g. mailMsgSubject:spam `and` mailSenderIp:192.169.1.1..'. Possible values are: and, or.                                                                         | Optional     |
+| start             | Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made.                                                                                                                      | Optional     |
+| end               | Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made.                                                                                                                            | Optional     |
+| top               | Number of records displayed on a page.                                                                                                                                                                                                                                                   | Optional     |
+| select            | List of fields to include in the search results. If no fields are specified, the query returns all supported fields.                                                                                                                                                                     | Optional     |
 
 #### Context Output
 
@@ -540,13 +540,13 @@ Displays search results from the Email Activity Data source that match the param
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                                                                                     | **Required** |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
-| fields            | Statement that allows you to retrieve a subset of the collected email activity data.                                                                                | Required     |
-| start             | Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made. | Optional     |
-| end               | Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made.       | Optional     |
-| select            | List of fields to include in the search results. If no fields are specified, the query returns all supported fields.                                                | Optional     |
-| query_op          | Query Operator. Possible values are: and, or.                                                                                                                       | Optional     |
+| **Argument Name** | **Description**                                                                                                                                                                                                                                                                          | **Required** |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| fields            | Statement that allows you to retrieve a subset of the collected email activity data. e.g. {"mailMsgSubject":"spam","mailSenderIp":"192.169.1.1"}. Complete list of supported fields (https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1emailActivities/get). | Required     |
+| query_op          | Operator used to build request header query that allows you to retrieve a subset of the collected email activity data. e.g. mailMsgSubject:spam `and` mailSenderIp:192.169.1.1.. Possible values are: and, or.                                                                           | Optional     |
+| start             | Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made.                                                                                                                      | Optional     |
+| end               | Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made.                                                                                                                            | Optional     |
+| select            | List of fields to include in the search results. If no fields are specified, the query returns all supported fields.                                                                                                                                                                     | Optional     |
 
 #### Context Output
 
