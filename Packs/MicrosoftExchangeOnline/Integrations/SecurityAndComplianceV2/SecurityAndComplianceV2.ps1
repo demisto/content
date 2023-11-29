@@ -1627,7 +1627,7 @@ function NewSearchActionCommand([SecurityAndComplianceClient]$client, [hashtable
         # Handle the scenario if a search is not found:
         $human_readable = "Failed to retrieve search for the name: $($kwargs.search_name)"
         $entry_context = @{
-            $script:SEARCH_ENTRY_CONTEXT = @{
+            $script:SEARCH_ACTION_ENTRY_CONTEXT = @{
                 "SearchStatus" = "NotFound"
                 "Name" = $kwargs.search_name
             }
