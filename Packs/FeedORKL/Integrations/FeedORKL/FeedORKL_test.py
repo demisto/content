@@ -1,7 +1,9 @@
 import json
+import unittest
 from importlib import import_module
 from test_data.feed_data import RESPONSE_DATA
-from FeedORKL import Client, fetch_indicator_command, get_reports_command
+from unittest.mock import patch
+from FeedORKL import Client, fetch_indicator_command, get_reports_command, test_module, DemistoException
 
 FeedORKL = import_module('FeedORKL')
 main = FeedORKL.main
@@ -66,3 +68,40 @@ def test_get_reports_command(requests_mock):
     }
     reports = get_reports_command(client=client, limit=params.get('limit'), order_by='created_at', order='desc')
     assert reports.readable_output == expected_human_readable
+
+
+class TestTestModule(unittest.TestCase):
+
+    def setUp(self):
+        self.client = Client(verify=False)
+
+    @patch.object(Client, 'fetch_indicators')
+    def test_test_module_success(self, mock_fetch):
+        # Arrange
+        mock_fetch.return_value = {'data': ['some data']}
+
+        # Act
+        result = test_module(self.client)
+
+        # Assert
+        self.assertEqual(result, 'ok')
+
+    @patch.object(Client, 'fetch_indicators')
+    def test_test_module_no_data(self, mock_fetch):
+        # Arrange
+        mock_fetch.return_value = {}
+
+        # Act
+        result = test_module(self.client)
+
+        # Assert
+        self.assertTrue(result.startswith('Test Command Error:'))
+
+    @patch.object(Client, 'fetch_indicators')
+    def test_test_module_exception(self, mock_fetch):
+        # Arrange
+        mock_fetch.side_effect = DemistoException("API Error")
+
+        # Act and Assert
+        with self.assertRaises(DemistoException):
+            test_module(self.client)
