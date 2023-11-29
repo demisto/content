@@ -642,15 +642,6 @@ script:
       description: The name of the address to update. Names can be retrieved with the command `fortigate-list-firewall-address-ipv4s`.
       required: true
       default: true
-    - name: type
-      description: The type of the address to update.
-      auto: PREDEFINED
-      predefined:
-      - Subnet
-      - IP Range
-      - FQDN
-      - Geography
-      - Device (Mac Address)
     - name: vdom
       description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
       defaultValue: root

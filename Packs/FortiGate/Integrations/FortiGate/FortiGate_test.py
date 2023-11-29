@@ -3,9 +3,8 @@ import os
 from typing import Any, Callable
 
 import CommonServerPython
-import pytest
-
 import FortiGate
+import pytest
 
 TEST_DATA = "test_data"
 BASE_URL = "https://www.example.com"
@@ -199,6 +198,22 @@ def test_validate_mask_error(mask: int):
         FortiGate.validate_mask(mask)
 
     assert "Invalid mask" in str(e_info.value)
+
+
+@pytest.mark.parametrize(
+    "given,expected",
+    [
+        ("camelCase", "camel-case"),
+        ("PascalCase", "pascal-case"),
+        ("snake_case", "snake-case"),
+        ("kebab-case", "kebab-case"),
+        ("CONSTANT_CASE", "constant-case"),
+        ("Title Case", "title-case"),
+    ],
+)
+def test_to_kebab_case(given: str, expected: str):
+    assert FortiGate.to_kebab_case(given) == expected
+
 
 
 @pytest.mark.parametrize(

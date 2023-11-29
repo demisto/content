@@ -218,6 +218,9 @@ class Client(BaseClient):
         if field and value:
             return f"{to_kebab_case(field)}=@{value}"
 
+        if field or value:
+            raise DemistoException("'filter_field' and 'filter_vlaue' must be set together.")
+
         return None
 
     def _get_format(self, fields: list[str] | None) -> str | None:
@@ -1329,11 +1332,8 @@ def map_keys(old_dict: dict[str, Any], mappings: list[Mapping]) -> dict[str, Any
             value = mapping.value_changer(value)
 
         for new_key in mapping.new_keys:
-            if new_key == mapping.new_keys[-1]:
-                current_dict[new_key] = value
-            else:
-                current_dict[new_key] = current_dict.get(new_key, {})
-
+            # If last key add value to dict, else create nested dict
+            current_dict[new_key] = value if new_key == mapping.new_keys[-1] else current_dict.get(new_key, {})
             current_dict = current_dict[new_key]
 
     return new_dict
@@ -1503,50 +1503,49 @@ def create_addr_string(list_of_addr_data_dicts):
     return addr_string
 
 
-def validate_mac_addresses(mac_addresses: list[str | None] | None = None) -> None:
+def validate_mac_addresses(mac_addresses: list[str] | None = None) -> None:
     """Validates the given list of MAC addresses.
 
     Args:
-        mac_addresses (list[str | None] | None, optional): The list of MAC addresses to validate.
+        mac_addresses (list[str] | None, optional): The list of MAC addresses to validate.
             Defaults to None.
 
     Raises:
         DemistoException: If any of the MAC addresses is invalid.
     """
     for mac_address_range in mac_addresses or []:
-        if mac_address_range:
-            for mac_address in mac_address_range.split("-"):
-                if not is_mac_address(mac_address):
-                    raise DemistoException(f"Invalid MAC address: {mac_address}")
+        for mac_address in mac_address_range.split("-"):
+            if not is_mac_address(mac_address):
+                raise DemistoException(f"Invalid MAC address: {mac_address}")
 
 
-def validate_ipv4_addresses(ipv4_addresses: list[str | None] | None = None) -> None:
+def validate_ipv4_addresses(ipv4_addresses: list[str] | None = None) -> None:
     """Validates the given list of IPv4 addresses.
 
     Args:
-        ipv4_addresses (list[str | None] | None, optional): The list of IPv4 addresses to validate.
+        ipv4_addresses (list[str] | None, optional): The list of IPv4 addresses to validate.
             Defaults to None.
 
     Raises:
         DemistoException: If any of the IPv4 addresses is invalid.
     """
     for ipv4_address in ipv4_addresses or []:
-        if ipv4_address and not is_ip_valid(ipv4_address):
+        if not is_ip_valid(ipv4_address):
             raise DemistoException(f"Invalid IPv4 address: {ipv4_address}")
 
 
-def validate_ipv6_networks(ipv6_networks: list[str | None] | None = None) -> None:
+def validate_ipv6_networks(ipv6_networks: list[str] | None = None) -> None:
     """Validates the given list of IPv6 networks.
 
     Args:
-        ipv6_networks (list[str | None] | None, optional): The list of IPv6 networks to validate.
+        ipv6_networks (list[str] | None, optional): The list of IPv6 networks to validate.
             Defaults to None.
 
     Raises:
         DemistoException: If any of the IPv6 networks is invalid.
     """
     for ipv6_network in ipv6_networks or []:
-        if ipv6_network and not is_ipv6_network_valid(ipv6_network):
+        if not is_ipv6_network_valid(ipv6_network):
             raise DemistoException(f"Invalid IPv6 address: {ipv6_network}")
 
 
@@ -1682,6 +1681,7 @@ def validate_address_type(
             Defaults to "root".
         is_ipv6 (bool, optional): Whether the address is IPv6.
             Defaults to False.
+        api_to_gui (dict[str, Any]): The dictionary mapping the API types to the GUI types.
 
     Raises:
         DemistoException: If the type of the address is not compatible with the requested type.
@@ -1803,7 +1803,7 @@ def handle_list_response(
     for response in responses:
         response_results = response.get("results", [])
         response_vdom = response.get("vdom")
-        outputs = [map_keys(result, mappings) | {"VDOM": response_vdom} for result in response_results]
+        outputs += [map_keys(result, mappings) | {"VDOM": response_vdom} for result in response_results]
 
     outputs = remove_empty_elements(outputs)
 
@@ -1998,7 +1998,6 @@ def update_firewall_address_ipv4_command(client: Client, args: dict[str, Any]) -
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
     name = args.get("name", "")
-    type_ = ADDRESS_GUI_TO_API_TYPE.get(args.get("type", ""))
     vdom = args.get("vdom", DEFAULT_VDOM)
     comment = args.get("comment")
     associated_interface = args.get("associated_interface")
@@ -2010,8 +2009,9 @@ def update_firewall_address_ipv4_command(client: Client, args: dict[str, Any]) -
     fqdn = args.get("fqdn")
     country = country.upper() if (country := args.get("country")) else None
     mac_addresses = argToList(args.get("mac_addresses"))
+    type_ = None
 
-    if not type_ and any(
+    if any(
         [
             address,
             mask,
@@ -2024,8 +2024,6 @@ def update_firewall_address_ipv4_command(client: Client, args: dict[str, Any]) -
         ]
     ):
         type_ = get_address_type(args)
-
-    if type_:
         validate_address_type(
             get_request=client.list_firewall_address_ipv4s,
             name=name,
@@ -2226,7 +2224,6 @@ def update_firewall_address_ipv6_command(client: Client, args: dict[str, Any]) -
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
     name = args.get("name", "")
-    type_ = ADDRESS6_GUI_TO_API_TYPE.get(args.get("type", ""))
     vdom = args.get("vdom", DEFAULT_VDOM)
     comment = args.get("comment")
     address = args.get("address")
@@ -2237,8 +2234,9 @@ def update_firewall_address_ipv6_command(client: Client, args: dict[str, Any]) -
     country = country.upper() if (country := args.get("country")) else None
     mac_addresses = argToList(args.get("mac_addresses"))
     sdn_connector = args.get("sdn_connector")
+    type_ = None
 
-    if not type_ and any(
+    if any(
         [
             address,
             mask is not None,
@@ -2251,8 +2249,6 @@ def update_firewall_address_ipv6_command(client: Client, args: dict[str, Any]) -
         ]
     ):
         type_ = get_address_type(args, True)
-
-    if type_:
         validate_address_type(
             get_request=client.list_firewall_address_ipv6s,
             name=name,
@@ -2437,24 +2433,24 @@ def update_firewall_address_ipv4_multicast_command(client: Client, args: dict[st
     first_ip = args.get("first_ip")
     final_ip = args.get("final_ip")
 
+    subnet = None
     multicast_fields = [type_, first_ip, final_ip]
 
-    if any(multicast_fields):
-        if all(multicast_fields):
-            validate_address_type(
-                get_request=client.list_firewall_address_ipv4_multicasts,
-                name=name,
-                input_type=type_,
-                api_to_gui=reverse_dict(ADDRESS_MULTICAST_GUI_TO_API_TYPE),
-                vdom=vdom,
-            )
-        else:
-            raise DemistoException(
-                "All multicast fields (`type`, `first_ip`, `final_ip`) must be provided to update any."
-            )
+    if all(multicast_fields):
+        validate_address_type(
+            get_request=client.list_firewall_address_ipv4_multicasts,
+            name=name,
+            input_type=type_,
+            api_to_gui=reverse_dict(ADDRESS_MULTICAST_GUI_TO_API_TYPE),
+            vdom=vdom,
+        )
+
+        if type_ == "broadcastmask":
+            subnet = f"{first_ip} {final_ip}"
+    elif any(multicast_fields):
+        raise DemistoException("All multicast fields (`type`, `first_ip`, `final_ip`) must be provided to update any.")
 
     validate_ipv4_addresses([first_ip, final_ip])
-    subnet = f"{first_ip} {final_ip}" if type_ == "broadcastmask" else None
 
     response = client.update_firewall_address_ipv4_multicast(
         name=name,
