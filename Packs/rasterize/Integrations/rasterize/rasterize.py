@@ -253,12 +253,13 @@ def rasterize(path: str,
     """
 
     if ensure_chrome_running():
-        if offline_mode:
-            # TODO: handle offline mode
-            pass
-
         browser = pychrome.Browser(url=LOCAL_CHROME_URL)
         with TabLifecycleManager(browser) as tab:
+            if offline_mode:
+                tab.Network.disable()
+            else:
+                tab.Network.ensable()
+
             if rasterize_type == RasterizeType.PNG:
                 return screenshot_image(browser, tab, path, wait_time=wait_time, timeout=timeout)
 
