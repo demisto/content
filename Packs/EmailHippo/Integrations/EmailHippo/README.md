@@ -1,4 +1,4 @@
-This is the Email Hippo integration for verify email sources as fake emails that were used as part of phishing attacks.
+This is the Email Hippo integration used to verify email sources as fake emails that were used as part of phishing attacks.
 .
 This integration was integrated and tested with version 2.0.1551 of Email Hippo.
 
@@ -10,12 +10,12 @@ This integration was integrated and tested with version 2.0.1551 of Email Hippo.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | MORE Server URL (e.g. https://api.hippoapi.com) |  | True |
-    | Email Hippo WHOIS Server URL (e.g. https://api.whoishippo.com) |  | True |
+    | MORE Server URL (e.g., https://api.hippoapi.com) |  | True |
+    | Email Hippo WHOIS Server URL (e.g., https://api.whoishippo.com) |  | True |
     | MORE API Key |  | True |
     | WHOIS API Key |  | True |
     | Source Reliability | Reliability of the source providing the intelligence data. | False |
-    | Create relationships | Create relationships between indicators as part of Enrichment. | False |
+    | Create relationships | Create relationships between indicators as part of enrichment. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
 
@@ -29,7 +29,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### email-hippo-email-quota-get
 
 ***
-Get the Email quota from the API.
+Get the email quota from the API.
 
 #### Base Command
 
@@ -75,7 +75,7 @@ There are no input arguments for this command.
 ### email
 
 ***
-Return Email information and reputation.
+Return email information and reputation.
 
 #### Base Command
 
@@ -85,7 +85,7 @@ Return Email information and reputation.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| email | The email address to validate (CSV). | Required | 
+| email | A comma-separated list of email addresses to validate. | Required | 
 
 #### Context Output
 
@@ -250,7 +250,7 @@ Return Email information and reputation.
 ### domain
 
 ***
-Returns Domain information and reputation.
+Returns domain information and reputation.
 
 #### Base Command
 
@@ -272,23 +272,23 @@ Returns Domain information and reputation.
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | Domain.Name | String | The name of the domain that was checked. | 
-| Domain.NameServers | String | Name servers of the domain. | 
+| Domain.NameServers | String | Name of the servers of the domain. | 
 | Domain.UpdatedDate | Date | The date that the domain was last updated. | 
-| Domain.CreationDate | Date | The creation date of the domain. Format is ISO8601 \(i.e. '2020-04-30T10:35:00.000Z'\). | 
+| Domain.CreationDate | Date | The creation date of the domain. Format is ISO8601 \(i.e.,'2020-04-30T10:35:00.000Z'\). | 
 | Domain.Registrar.Name | String | The name of the registrar. | 
 | Domain.Registrar.AbuseEmail | String | The email address of the contact for reporting abuse. | 
-| Domain.Registrar.AbusePhone | String | The phone number of contact for reporting abuse. | 
+| Domain.Registrar.AbusePhone | String | The phone number of the contact for reporting abuse. | 
 | Domain.Admin.Country | String | The country of the domain administrator. | 
 | Domain.Admin.Email | String | The email address of the domain administrator. | 
 | Domain.Admin.Name | String | The name of the domain administrator. | 
 | Domain.Admin.Phone | String | The phone number of the domain administrator. | 
 | Domain.Tech.Country | String | The country of tech administrator. | 
 | Domain.Tech.Name | String | The name of the tech administrator. | 
-| Domain.Tech.Email | String | The email of tech administrator. | 
+| Domain.Tech.Email | String | The email of the tech administrator. | 
 | Domain.Tech.Organization | String | The organization of the tech administrator. | 
 | Domain.WHOIS.NameServers | String | A CSV string of name servers, for example 'ns1.bla.com, ns2.bla.com'. | 
-| Domain.WHOIS.CreationDate | Date | The creation date of the domain. Format is ISO8601 \(i.e. '2020-04-30T10:35:00.000Z'\). | 
-| Domain.WHOIS.UpdatedDate | Date | The date when the domain was last updated. Format is ISO8601 \(i.e. '2020-04-30T10:35:00.000Z'\). | 
+| Domain.WHOIS.CreationDate | Date | The creation date of the domain. Format is ISO8601 \(i.e., '2020-04-30T10:35:00.000Z'\). | 
+| Domain.WHOIS.UpdatedDate | Date | The date when the domain was last updated. Format is ISO8601 \(i.e., '2020-04-30T10:35:00.000Z'\). | 
 | Domain.WHOIS.ExpirationDate | Date | The expiration date of the domain. | 
 
 #### Command example

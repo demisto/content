@@ -1,5 +1,5 @@
 ## Email Hippo
-- You can obtain your MOER API Key by sign in [Email Hippo portal](https://app.emailhippo.com/).
+- You can obtain your MORE API key by signing in to the [Email Hippo portal](https://app.emailhippo.com/).
   - MORE API Key: MORE -> API Keys.
   - WHOIS API Key: WHOIS -> API Keys.
 
