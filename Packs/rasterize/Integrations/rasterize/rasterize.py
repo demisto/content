@@ -110,7 +110,7 @@ def get_parent_processes(processes=[], current_process=None) -> list[str]:
     str_to_search = f"{current_process}|grep -v grep |grep -v 'ps -ef'" if current_process else 'grep'
     demisto.debug(f'get_parent_processes, {str_to_search=}')
     cmd = f"ps -ef|grep {str_to_search}"
-    ps = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)  # noqa: S602
+    ps = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)  # noqa: B602
     output = ps.communicate()
 
     for current_line in output:
@@ -119,7 +119,7 @@ def get_parent_processes(processes=[], current_process=None) -> list[str]:
             current_line_decoded = current_line.decode("utf-8")
             demisto.debug(f'get_parent_processes, {current_line_decoded=}')
             if current_line_decoded:
-                current_line_splitted = current_line.split()
+                current_line_splitted = current_line_decoded.split()
                 if len(current_line_splitted) > 2:
                     parent_pid = current_line_splitted[2]
                     demisto.debug(f'Found parent process {parent_pid}')
@@ -301,7 +301,8 @@ def rasterize(path: str,
                 return screenshot_image(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout)
 
             elif rasterize_type == RasterizeType.PDF:
-                return screenshot_pdf(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout, include_url=include_url)
+                return screenshot_pdf(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout,
+                                      include_url=include_url)
             else:
                 message = 'Unsupported rasterization type {rasterize_type}'
                 demisto.error(message)
