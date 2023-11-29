@@ -26,8 +26,8 @@ import yaml
 from google.cloud import storage
 
 import Tests.Marketplace.marketplace_statistics as mp_statistics
-from Tests.Marketplace.marketplace_constants import PackFolders, Metadata, GCPConfig, BucketUploadFlow, PACKS_FOLDER, \
-    PackTags, PackIgnored, Changelog, PackStatus, CONTENT_ROOT_PATH, XSOAR_MP, \
+from Tests.Marketplace.marketplace_constants import XSOAR_ON_PREM_MP, XSOAR_SAAS_MP, PackFolders, Metadata, GCPConfig, \
+    BucketUploadFlow, PACKS_FOLDER, PackTags, PackIgnored, Changelog, PackStatus, CONTENT_ROOT_PATH, XSOAR_MP, \
     XSIAM_MP, XPANSE_MP, TAGS_BY_MP, RN_HEADER_TO_ID_SET_KEYS
 from demisto_sdk.commands.common.constants import MarketplaceVersions, MarketplaceVersionToMarketplaceName
 from Tests.scripts.collect_tests.exceptions import NotUnderPackException
@@ -1561,9 +1561,12 @@ class Pack:
         """
 
         def remove_tags_section_from_rn(release_notes, marketplace, upload_marketplace):
-
             start_tag, end_tag = TAGS_BY_MP[marketplace]
-            if start_tag in release_notes and end_tag in release_notes and marketplace != upload_marketplace:
+            if ((start_tag in release_notes and end_tag in release_notes) and (
+                ((upload_marketplace in [XSIAM_MP, XPANSE_MP]) and marketplace != upload_marketplace)
+                or (upload_marketplace == XSOAR_SAAS_MP and marketplace not in [XSOAR_SAAS_MP, XSOAR_MP])
+                or (upload_marketplace == XSOAR_MP and marketplace not in [XSOAR_MP, XSOAR_ON_PREM_MP])
+            )):
                 logging.debug(f"Filtering irrelevant release notes by tags of marketplace "
                               f"{marketplace} for pack {self._pack_name} when uploading to marketplace "
                               f"{upload_marketplace}.")
@@ -1579,11 +1582,17 @@ class Pack:
         # Filters out for XSOAR tags
         release_notes = remove_tags_section_from_rn(release_notes, XSOAR_MP, upload_marketplace)
 
+        # Filters our for XSOAR_SAAS tags
+        release_notes = remove_tags_section_from_rn(release_notes, XSOAR_SAAS_MP, upload_marketplace)
+
+        # Filters our for XSOAR_ON_PREM tags
+        release_notes = remove_tags_section_from_rn(release_notes, XSOAR_ON_PREM_MP, upload_marketplace)
+
         # Filters out for XPANSE tags
         release_notes = remove_tags_section_from_rn(release_notes, XPANSE_MP, upload_marketplace)
 
         logging.debug(f"RN result after filtering for pack {self._pack_name} in marketplace "
-                      f"{upload_marketplace}\n - {release_notes}")
+                      f"{upload_marketplace} -\n {release_notes}")
 
         return release_notes
 
