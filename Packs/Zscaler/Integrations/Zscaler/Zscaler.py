@@ -183,7 +183,7 @@ def login():
             return test_module()
         except AuthorizationError as e:
             demisto.info(
-                "Zscaler encountered an authentication error.\nError: {}".format(str(e))
+                f"Zscaler encountered an authentication error.\nError: {str(e)}"
             )
     ts, key = obfuscateApiKey(API_KEY)
     data = {"username": USERNAME, "timestamp": ts, "password": PASSWORD, "apiKey": key}
@@ -615,7 +615,7 @@ def category_add_url(category_id, url, retaining_parent_category_url):
     if category_data:  # check if the category exists
         url_list = argToList(url)
         all_urls = url_list[:]
-        all_urls.extend(list(map(lambda x: x.strip(), category_data["urls"])))
+        all_urls.extend([x.strip() for x in category_data["urls"]])
         category_data["urls"] = all_urls
         retaining_parent_category_url_list = argToList(retaining_parent_category_url)
         demisto.debug(f'##### {retaining_parent_category_url_list=}')
@@ -711,7 +711,7 @@ def category_remove_url(category_id, url, retaining_parent_category_url):
         if not (url_list, retaining_parent_category_url_list):
             return_error('Either url_list argument or retaining_parent_category_url_list argument must be provided.')
         if updated_urls == category_data["urls"]:
-            return     return_error("Could not find given URL in the category.")
+            return return_error("Could not find given URL in the category.")
         add_or_remove_urls_from_category(
             REMOVE, url_list, category_data, retaining_parent_category_url_list)  # remove the urls from list
         category_data["urls"] = updated_urls
@@ -918,7 +918,7 @@ def sandbox_report_command():
     res = sandbox_report(md5, details)
 
     report = "Full Details" if details == "full" else "Summary"
-    ctype = demisto.get(res, "{}.Classification.Type".format(report))
+    ctype = demisto.get(res, f"{report}.Classification.Type")
     dbot_score = (
         3
         if ctype == "MALICIOUS"
@@ -941,21 +941,21 @@ def sandbox_report_command():
 
     human_readable_report = ec["DBotScore"].copy()
     human_readable_report["Detected Malware"] = str(
-        demisto.get(res, "{}.Classification.DetectedMalware".format(report))
+        demisto.get(res, f"{report}.Classification.DetectedMalware")
     )
     human_readable_report["Zscaler Score"] = demisto.get(
-        res, "{}.Classification.Score".format(report)
+        res, f"{report}.Classification.Score"
     )
     human_readable_report["Category"] = demisto.get(
-        res, "{}.Classification.Category".format(report)
+        res, f"{report}.Classification.Category"
     )
     ec[outputPaths["file"]] = {
         "MD5": md5,
         "Zscaler": {
             "DetectedMalware": demisto.get(
-                res, "{}.Classification.DetectedMalware".format(report)
+                res, f"{report}.Classification.DetectedMalware"
             ),
-            "FileType": demisto.get(res, "{}.File Properties.File Type".format(report)),
+            "FileType": demisto.get(res, f"{report}.File Properties.File Type"),
         },
     }
     if dbot_score == 3:
@@ -998,7 +998,7 @@ def login_command():
             )
             logout()
         except Exception as e:
-            demisto.info("Zscaler logout failed with: {}".format(str(e)))
+            demisto.info(f"Zscaler logout failed with: {str(e)}")
     login()
     return CommandResults(readable_output="Zscaler session created successfully.")
 
@@ -1049,15 +1049,15 @@ def get_users_command(args):
     pageSize = args.get("pageSize")
     pageNo = args.get("page", 1)
     if name is not None:
-        cmd_url = "/users?page={}&pageSize={}&name={}".format(pageNo, pageSize, name)
+        cmd_url = f"/users?page={pageNo}&pageSize={pageSize}&name={name}"
     else:
-        cmd_url = "/users?page={}&pageSize={}".format(pageNo, pageSize)
+        cmd_url = f"/users?page={pageNo}&pageSize={pageSize}"
     response = http_request("GET", cmd_url).json()
 
     if len(response) < 10:
-        human_readable = tableToMarkdown("Users ({})".format(len(response)), response)
+        human_readable = tableToMarkdown(f"Users ({len(response)})", response)
     else:
-        human_readable = "Retrieved {} users".format(len(response))
+        human_readable = f"Retrieved {len(response)} users"
 
     entry = {
         "Type": entryTypes["note"],
@@ -1079,15 +1079,15 @@ def get_departments_command(args):
             pageNo, pageSize, name
         )
     else:
-        cmd_url = "/departments?page={}&pageSize={}".format(pageNo, pageSize)
+        cmd_url = f"/departments?page={pageNo}&pageSize={pageSize}"
     response = http_request("GET", cmd_url).json()
 
     if len(response) < 10:
         human_readable = tableToMarkdown(
-            "Departments ({})".format(len(response)), response
+            f"Departments ({len(response)})", response
         )
     else:
-        human_readable = "Retrieved {} departments".format(len(response))
+        human_readable = f"Retrieved {len(response)} departments"
 
     entry = {
         "Type": entryTypes["note"],
@@ -1105,17 +1105,17 @@ def get_usergroups_command(args):
     pageSize = args.get("pageSize")
     pageNo = args.get("page", 1)
     if name is not None:
-        cmd_url = "/groups?page={}&pageSize={}&search={}".format(pageNo, pageSize, name)
+        cmd_url = f"/groups?page={pageNo}&pageSize={pageSize}&search={name}"
     else:
-        cmd_url = "/groups?page={}&pageSize={}".format(pageNo, pageSize)
+        cmd_url = f"/groups?page={pageNo}&pageSize={pageSize}"
     response = http_request("GET", cmd_url).json()
 
     if len(response) < 10:
         human_readable = tableToMarkdown(
-            "User groups ({})".format(len(response)), response
+            f"User groups ({len(response)})", response
         )
     else:
-        human_readable = "Retrieved {} user groups".format(len(response))
+        human_readable = f"Retrieved {len(response)} user groups"
 
     entry = {
         "Type": entryTypes["note"],
@@ -1131,7 +1131,7 @@ def get_usergroups_command(args):
 def set_user_command(args):
     userId = args.get("id")
     params = json.loads(args.get("user"))
-    cmd_url = "/users/{}".format(userId)
+    cmd_url = f"/users/{userId}"
 
     response = http_request("PUT", cmd_url, json.dumps(params), DEFAULT_HEADERS)
     responseJson = response.json()
@@ -1216,7 +1216,7 @@ def list_ip_destination_groups(args: dict):
     ]
 
     def get_contents(responses: List[dict]):
-        contents = list()
+        contents = []
         for response in responses:
             content = {
                 "ID": int(response.get("id", "")),
@@ -1231,9 +1231,9 @@ def list_ip_destination_groups(args: dict):
         return contents
 
     def get_contents_lite(responses: List[dict]):
-        contents = list()
+        contents = []
         for response in responses:
-            content = dict()
+            content = {}
             for key, value in response.items():
                 if key == "extensions":
                     for extensions_key, extensions_value in value.items():
@@ -1332,7 +1332,7 @@ def list_ip_destination_groups(args: dict):
             )
             return results
     else:
-        responses = list()
+        responses = []
         for ip_group_id in ip_group_ids:
             cmd_url = f"/ipDestinationGroups/{ip_group_id}"
             responses.append(http_request("GET", cmd_url).json())
@@ -1363,10 +1363,10 @@ def edit_ip_destination_group(args: dict):
         "Countries",
         "IpCategories",
     ]
-    payload = dict()
+    payload = {}
     ip_group_id = str(args.get("ip_group_id", "")).strip()
     check_url = f"/ipDestinationGroups/{ip_group_id}"
-    response_data = dict()
+    response_data = {}
     response_data = http_request("GET", check_url).json()
     if response_data.get("id", 0) == 0:
         raise Exception(f"Resource not found with ip_group_id {ip_group_id}")
@@ -1429,7 +1429,7 @@ def delete_ip_destination_groups(args: dict):
 def main():  # pragma: no cover
     command = demisto.command()
 
-    demisto.debug("command is %s" % (command,))
+    demisto.debug(f"command is {command}")
     args = demisto.args()
     if command == "zscaler-login":
         return_results(login_command())

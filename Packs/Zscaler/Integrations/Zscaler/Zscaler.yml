@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: Zscaler Test
+  id: Zscaler
   version: -1
 configuration:
 - display: Cloud Name (i.e., <https://zsapi.zscalertwo.net>)
@@ -81,7 +81,7 @@ configuration:
   required: false
 description: Zscaler is a cloud security solution built for performance and flexible scalability. This integration enables you to manage URL and IP address allow lists and block lists, manage and update categories, get Sandbox reports, create, manage, and update IP destination groups and manually log in, log out, and activate changes in a Zscaler session.
 display: Zscaler Internet Access Test
-name: Zscaler Test
+name: Zscaler
 script:
   commands:
   - arguments:
@@ -292,7 +292,7 @@ script:
       description: The ID of the category.
       type: string
     - contextPath: Zscaler.Category.URL
-      description: The URL of the category
+      description: The URL of the category.
       type: string
     - contextPath: Zscaler.Category.RetainingParentCategory
       description: The URL of the category that are in Retaining Parent category.
@@ -404,7 +404,7 @@ script:
       predefined:
       - url
       - ip
-    - description: Query (Python regular expression) to match against. For example, 8.*.*.8
+    - description: Query (Python regular expression) to match against. For example, 8.*.*.8.
       name: query
     description: Retrieves the Zscaler default block list.
     name: zscaler-get-blacklist
@@ -480,7 +480,7 @@ script:
       description: The number of unique URLs that are currently provisioned for your organization.
       type: Number
   - arguments:
-    - description: Filer by user name
+    - description: Filer by user name.
       name: name
     - description: Specifies the page offset.
       name: page
@@ -488,19 +488,19 @@ script:
       defaultValue: '100'
       description: Specifies the page size.
       name: pageSize
-    description: Get Zscaler users
+    description: Get Zscaler users.
     name: zscaler-get-users
   - arguments:
     - description: The unique identifier for the user.
       name: id
       required: true
-    - description: 'New user information. Docs: https://help.zscaler.com/zia/api#/User%20Management/updateUser'
+    - description: 'New user information. Docs: https://help.zscaler.com/zia/api#/User%20Management/updateUser.'
       name: user
       required: true
     description: Updates the user information for the specified ID.
     name: zscaler-update-user
   - arguments:
-    - description: Filter by department name
+    - description: Filter by department name.
       name: name
     - description: Specifies the page offset.
       name: page
@@ -511,7 +511,7 @@ script:
     description: Get a list of departments. It can be searched by name.
     name: zscaler-get-departments
   - arguments:
-    - description: Filter by group name or comment
+    - description: Filter by group name or comment.
       name: name
     - description: Specifies the page offset.
       name: page
@@ -519,7 +519,7 @@ script:
       defaultValue: '100'
       description: Specifies the page size.
       name: pageSize
-    description: Gets a list of groups
+    description: Gets a list of groups.
     name: zscaler-get-usergroups
   - name: zscaler-create-ip-destination-group
     arguments:
@@ -542,7 +542,7 @@ script:
       isArray: true
       type: textArea
     - name: description
-      description: Additional information about the destination IP group
+      description: Additional information about the destination IP group.
       type: textArea
     - name: ip_categories
       auto: PREDEFINED
@@ -1829,7 +1829,7 @@ script:
       - COUNTRY_JE
       - COUNTRY_BL
       - COUNTRY_MF
-      description: Destination IP address countries. You can identify destinations based on the location of a server. A list of possible values can be found here https://help.zscaler.com/zia/firewall-policies#/ipDestinationGroups/{ipGroupId}-put
+      description: Destination IP address countries. You can identify destinations based on the location of a server. A list of possible values can be found here https://help.zscaler.com/zia/firewall-policies#/ipDestinationGroups/{ipGroupId}-put.
       isArray: true
       type: textArea
     - name: is_non_editable
@@ -1929,7 +1929,7 @@ script:
       description: Destination IP addresses, FQDNs, or wildcard FQDNs added to the group.
       type: string
     - contextPath: Zscaler.IPDestinationGroup.Description
-      description: Additional information about the destination IP group
+      description: Additional information about the destination IP group.
       type: string
     - contextPath: Zscaler.IPDestinationGroup.IpCategories
       description: Destination IP address URL categories. You can identify destinations based on the URL category of the domain.
@@ -1947,7 +1947,7 @@ script:
     description: Deletes the IP destination groups for the specified group ID.
   script: ''
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.13.80593
   type: python
 fromversion: 5.0.0
 tests:

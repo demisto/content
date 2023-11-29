@@ -155,7 +155,7 @@ def test_category_remove_url(mocker):
     """zscaler-category-remove-url"""
     import Zscaler
     run_command_test(command_func=Zscaler.category_remove_url,
-                     args={'url': "demisto.com, dbot.com,www.demisto22.com", 'category_id': 'CUSTOM_1'},
+                     args={'url': "demisto.com, dbot.com,www.demisto22.com", 'category_id': 'CUSTOM_1', 'retaining_parent_category_url': None},
                      response_path='test_data/responses/categories.json',
                      expected_result_path='test_data/results/remove_url.json',
                      mocker=mocker)
@@ -165,7 +165,7 @@ def test_category_remove_ip(mocker):
     """zscaler-category-remove-ip"""
     import Zscaler
     run_command_test(command_func=Zscaler.category_remove_ip,
-                     args={'ip': "1.2.3.4,8.8.8.8", 'category_id': 'CUSTOM_1'},
+                     args={'ip': "1.2.3.4,8.8.8.8", 'category_id': 'CUSTOM_1', 'retaining_parent_category_ip': None},
                      response_path='test_data/responses/categories2.json',
                      expected_result_path='test_data/results/remove_ip.json',
                      mocker=mocker)
