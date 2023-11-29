@@ -775,7 +775,7 @@ script:
       name: cve_id
       isArray: true
     - default: true
-      description: CVE IDs.
+      description: Comma separated list of CVE IDs.
       name: cve
       isArray: true
     - description: Maximum number of entries to return. A high number of entries might affect performance. The default value is "20".

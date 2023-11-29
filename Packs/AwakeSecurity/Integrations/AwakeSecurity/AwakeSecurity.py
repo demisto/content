@@ -102,14 +102,14 @@ def create_result_entry(contents, outerKey, innerKey, humanReadable, dbotScore, 
     if genericContext:
         entryContext.update(genericContext)
 
-    return ({
+    return {
         "Type": entryTypes['note'],
         "ContentsFormat": formats['json'],
         "Contents": json.dumps(machineReadable),
         "HumanReadable": humanReadable,
         "ReadableContentsFormat": formats['markdown'],
         "EntryContext": entryContext,
-    })
+    }
 
 
 def toDBotScore(indicator_type, percentile, lookup_key):
