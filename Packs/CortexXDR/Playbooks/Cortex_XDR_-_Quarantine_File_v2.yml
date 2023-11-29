@@ -341,5 +341,5 @@ outputs:
   description: The action id.
   type: unknown
 tests:
-- Test_XDR_Playbook_quarantine_file_command
+- No tests
 fromversion: 6.10.0
