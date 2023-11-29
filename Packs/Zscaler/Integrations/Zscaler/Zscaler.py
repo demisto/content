@@ -628,7 +628,6 @@ def category_add_url(category_id, url, retaining_parent_category_url):
             "ID": category_id,
             "CustomCategory": category_data.get("customCategory"),
             "URL": category_data.get("urls"),
-            "RetainingParentCategory": retaining_parent_category_url_list
         }
         if category_data.get("description"):  # Custom might not have description
             context["Description"] = category_data["description"]
@@ -674,7 +673,6 @@ def category_add_ip(category_id, ip, retaining_parent_category_ip):
             "ID": category_id,
             "CustomCategory": category_data["customCategory"],
             "URL": category_data["urls"],
-            "RetainingParentCategory": retaining_parent_category_ip_list
         }
         if (
             "description" in category_data and category_data["description"]
@@ -719,7 +717,6 @@ def category_remove_url(category_id, url, retaining_parent_category_url):
             "ID": category_id,
             "CustomCategory": category_data.get("customCategory"),
             "URL": category_data.get("urls"),
-            "RetainingParentCategory": retaining_parent_category_url_list
         }
         if category_data.get("description"):  # Custom might not have description
             context["Description"] = category_data["description"]
@@ -765,7 +762,6 @@ def category_remove_ip(category_id, ip, retaining_parent_category_ip):
             "ID": category_id,
             "CustomCategory": category_data["customCategory"],
             "URL": category_data["urls"],
-            "RetainingParentCategory": retaining_parent_category_ip_list
         }
         if (
             "description" in category_data and category_data["description"]
