@@ -449,7 +449,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4220
+          "y": 4045
         }
       }
     note: false
@@ -785,7 +785,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4045
+          "y": 3870
         }
       }
     note: false
@@ -797,10 +797,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 7bfb4a5d-e251-4ff1-860b-9a3accd408de
+    taskid: 69e163cf-14fd-43ff-8f23-30817c40c004
     type: regular
     task:
-      id: 7bfb4a5d-e251-4ff1-860b-9a3accd408de
+      id: 69e163cf-14fd-43ff-8f23-30817c40c004
       version: -1
       name: aws-org-target-policy-list
       description: Lists the policies that are directly attached to the specified target root, organizational unit (OU), or account.
@@ -810,10 +810,10 @@ tasks:
       brand: AWS - Organizations
     nexttasks:
       '#none#':
-      - "29"
+      - "26"
     scriptarguments:
       policy_type:
-        simple: Tag Policy
+        simple: Service Control Policy
       target_id:
         simple: ${AWS.Organizations.Root.Id}
     separatecontext: false
@@ -869,53 +869,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "29":
-    id: "29"
-    taskid: dea40f84-a1f0-455e-8e33-51e7b64beff2
-    type: condition
-    task:
-      id: dea40f84-a1f0-455e-8e33-51e7b64beff2
-      version: -1
-      name: Is policy attached?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "26"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: in
-          left:
-            value:
-              simple: p-sotkk36n
-          right:
-            value:
-              simple: AWS.Organizations.TargetPolicy.Id
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3870
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 4235,
+        "height": 4060,
         "width": 380,
         "x": 50,
         "y": 50
