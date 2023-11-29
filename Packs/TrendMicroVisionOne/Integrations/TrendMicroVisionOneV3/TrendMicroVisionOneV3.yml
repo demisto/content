@@ -82,9 +82,10 @@ name: Trend Micro Vision One V3
 script:
   commands:
   - arguments:
-    - description: Object containing account_name and optional description.
+    - description: 'List of object(s) containing `account_name` and optional `description`. e.g. [{"account_name":"some-account","description":"enable"}].'
       name: account_identifiers
       required: true
+      isArray: true
     description: Allows the user to sign in to new application and browser sessions. Supported IAM systems -> Azure AD and Active Directory (on-premises).
     name: trendmicro-visionone-enable-user-account
     outputs:
@@ -95,9 +96,10 @@ script:
       description: Task ID generated after enabling user account.
       type: string
   - arguments:
-    - description: Object containing account_name and optional description.
+    - description: 'List of object(s) containing `account_name` and optional `description`. e.g. [{"account_name":"some-account","description":"disable"}].'
       name: account_identifiers
       required: true
+      isArray: true
     description: Signs the user out of all active application and browser sessions, and prevents the user from signing in any new session. Supported IAM systems -> Azure AD and Active Directory (on-premises).
     name: trendmicro-visionone-disable-user-account
     outputs:
@@ -108,9 +110,10 @@ script:
       description: Task ID generated after disabling user account.
       type: string
   - arguments:
-    - description: Object containing account_name and optional description.
+    - description: 'List of object(s) containing `account_name` and optional `description`. e.g. [{"account_name":"some-account","description":"sign-out"}].'
       name: account_identifiers
       required: true
+      isArray: true
     description: Signs the user out of all active application and browser sessions. Supported IAM systems -> Azure AD.
     name: trendmicro-visionone-force-signout
     outputs:
@@ -121,9 +124,10 @@ script:
       description: Task ID generated after signing out user.
       type: string
   - arguments:
-    - description: Object containing account_name and optional description.
+    - description: 'List of object(s) containing `account_name` and optional `description`. e.g. [{"account_name":"some-account","description":"reset"}].'
       name: account_identifiers
       required: true
+      isArray: true
     description: Signs the user out of all active application and browser sessions, and forces the user to create a new password during the next sign-in attempt. Supported IAM systems -> Azure AD and Active Directory (on-premises).
     name: trendmicro-visionone-force-password-reset
     outputs:
@@ -134,9 +138,10 @@ script:
       description: Task ID generated after resetting user password.
       type: string
   - arguments:
-    - description: 'Object made up of object_type (domain,ip,file_sha1,url,sender_mail_address), object_value and description.'
+    - description: 'List of object(s) made up of `object_type` (domain,ip,file_sha1,url,sender_mail_address), `object_value` and optional `description`. e.g. [{"object_type":"domain","object_value":"www.yahoo.com"}].'
       name: block_objects
       required: true
+      isArray: true
     description: Adds a domain, ip, file_sha1, url, sender_mail_address to the User-Defined Suspicious Objects List, which blocks the objects on subsequent detections.
     name: trendmicro-visionone-add-to-block-list
     outputs:
@@ -147,9 +152,10 @@ script:
       description: Task ID generated after adding domain, ip, file_sha1, url, sender_mail_address to the User-Defined Suspicious Objects List.
       type: string
   - arguments:
-    - description: 'Object made up of object_type (domain,ip,file_sha1,url,sender_mail_address), object_value and description.'
+    - description: 'List of object(s) made up of `object_type` (domain,ip,file_sha1,url,sender_mail_address), `object_value` and optional `description`. e.g. [{"object_type":"domain","object_value":"www.yahoo.com"}].'
       name: block_objects
       required: true
+      isArray: true
     description: Removes a domain, ip, file_sha1, url, sender_mail_address from the User-Defined Suspicious Objects List.
     name: trendmicro-visionone-remove-from-block-list
     outputs:
@@ -160,9 +166,10 @@ script:
       description: Task ID generated after removing domain, ip, file_sha1, url, sender_mail_address from the User-Defined Suspicious Objects List.
       type: string
   - arguments:
-    - description: Email Message ID (<mailMsgId>), Mailbox ID and description or Unique Message ID (msgUuid) and description from Trend Micro Vision One message activity data.
+    - description: 'List of object(s) containing `message_id` (<mailMsgId>), `mailbox` (mailbox ID) and `description` or `unique_id` (msgUuid) and optional `description` from Trend Micro Vision One message activity data. e.g. [{"message_id":"xasbjAgs72912-asdjnaj","mailbox":"mailbox-name","description":"quarantine"}].'
       name: email_identifiers
       required: true
+      isArray: true
     description: Moves a message from a mailbox to the quarantine folder.
     name: trendmicro-visionone-quarantine-email-message
     outputs:
@@ -173,9 +180,10 @@ script:
       description: Task ID generated after moving a message from a mailbox to the quarantine folder.
       type: string
   - arguments:
-    - description: Email Message ID (<mailMsgId>), Mailbox ID and description or Unique Message ID (msgUuid) and description from Trend Micro Vision One message activity data.
+    - description: 'List of object(s) containing `message_id` (<mailMsgId>), `mailbox` (mailbox ID) and `description` or `unique_id` (msgUuid) and optional `description` from Trend Micro Vision One message activity data. e.g. [{"message_id":"xasbjAgs72912-asdjnaj","mailbox":"mailbox-name","description":"disable":"delete"}].'
       name: email_identifiers
       required: true
+      isArray: true
     description: Deletes a message from a mailbox.
     name: trendmicro-visionone-delete-email-message
     outputs:
@@ -186,9 +194,10 @@ script:
       description: Task ID generated after deleting a message from a mailbox.
       type: string
   - arguments:
-    - description: 'Email Message ID (<mailMsgId>), Mailbox ID and description or Unique Message ID (msgUuid) and description from Trend Micro Vision One message activity data.'
+    - description: 'List of object(s) containing `message_id` (<mailMsgId>), `mailbox` (mailbox ID) and `description` or `unique_id` (msgUuid) and optional `description` from Trend Micro Vision One message activity data. e.g. [{"message_id":"xasbjAgs72912-asdjnaj","mailbox":"mailbox-name"}].'
       name: email_identifiers
       required: true
+      isArray: true
     description: Restores a quarantined message. Deleted messages cannot be restored.
     name: trendmicro-visionone-restore-email-message
     outputs:
@@ -199,9 +208,10 @@ script:
       description: 'Task ID generated after restoring a message.'
       type: string
   - arguments:
-    - description: 'Object containing endpoint (hostname) and description or agent_guid and description.'
+    - description: 'List of object(s) containing `endpoint` (hostname) and `description` or `agent_guid` and `description`. e.g. [{"endpoint":"test-endpoint","description":"isolate endpoint"}].'
       name: endpoint_identifiers
       required: true
+      isArray: true
     description: Disconnects an endpoint from the network (but allows communication with the managing Trend Micro product).
     name: trendmicro-visionone-isolate-endpoint
     outputs:
@@ -212,9 +222,10 @@ script:
       description: 'Task ID generated after isolating endpoint(s).'
       type: string
   - arguments:
-    - description: 'Object containing endpoint (hostname) and description or agent_guid and description.'
+    - description: 'List of object(s) containing `endpoint` (hostname) and `description` or `agent_guid` and `description`. e.g. [{"endpoint":"test-endpoint","description":"restore endpoint"}].'
       name: endpoint_identifiers
       required: true
+      isArray: true
     description: Restores network connectivity to an endpoint that applied the "isolate endpoint" action.
     name: trendmicro-visionone-restore-endpoint-connection
     outputs:
@@ -225,9 +236,10 @@ script:
       description: Task ID generated after restoring endpoint(s).
       type: string
   - arguments:
-    - description: 'Object consisting of object_type (domain,ip,url,file_sha1,file_sha256,sender_mail_address), object_value and description.'
+    - description: 'List of object(s) consisting of `object_type` (domain,ip,url,file_sha1,file_sha256,sender_mail_address), `object_value` and `description`. e.g. [{"object_type":"ip","object_value":"5.5.5.5"}, {"object_type":"domain","object_value":"www.yahoo.com"}].'
       name: block_objects
       required: true
+      isArray: true
     description: Adds domain, ip, url, file_sha1, file_sha256, sender_mail_address to the Exception List and prevents these objects from being added to the Suspicious Object List.
     name: trendmicro-visionone-add-objects-to-exception-list
     outputs:
@@ -244,9 +256,10 @@ script:
       description: Count of total items present in exception list.
       type: number
   - arguments:
-    - description: 'Object consisting of object_type (domain,ip,url,file_sha1,file_sha256,sender_mail_address), object_value and description.'
+    - description: 'List of object(s) consisting of `object_type` (domain,ip,url,file_sha1,file_sha256,sender_mail_address), `object_value` and `description`. e.g. [{"object_type":"ip","object_value":"5.5.5.5","description":"exception list"}].'
       name: block_objects
       required: true
+      isArray: true
     description: Deletes domain, ip, url, file_sha1, file_sha256, sender_mail_address from the Exception List.
     name: trendmicro-visionone-delete-objects-from-exception-list
     outputs:
@@ -263,9 +276,10 @@ script:
       description: count of item present in exception list.
       type: number
   - arguments:
-    - description: 'Object consisting of object_type (domain,ip,url,file_sha1,file_sha256,sender_mail_address), object_value and scan_action, risk_level, expiry_days and description.'
+    - description: 'List of object(s) consisting of `object_type` (domain,ip,url,file_sha1,file_sha256,sender_mail_address), `object_value`, `scan_action`, `risk_level`, `expiry_days` and `description`. e.g. [{"object_type":"ip","object_value":"5.5.5.5","scan_action":"block","risk_level":"medium","expiry_days":7}].'
       name: block_objects
       required: true
+      isArray: true
     description: Adds domain, ip, url, file_sha1, file_sha256, sender_mail_address to the Suspicious Object List.
     name: trendmicro-visionone-add-objects-to-suspicious-list
     outputs:
@@ -282,9 +296,10 @@ script:
       description: Count of total items present in suspicious object list.
       type: number
   - arguments:
-    - description: 'Object consisting of object_type (domain,ip,url,file_sha1,file_sha256,sender_mail_address) and object_value.'
+    - description: 'List of object(s) consisting of `object_type` (domain,ip,url,file_sha1,file_sha256,sender_mail_address) and `object_value`. e.g. [{"object_type":"ip","object_value":"5.5.5.5"}].'
       name: block_objects
       required: true
+      isArray: true
     description: Deletes domain, ip, url, file_sha1, file_sha256, sender_mail_address from the Suspicious Object List.
     name: trendmicro-visionone-delete-objects-from-suspicious-list
     outputs:
@@ -609,9 +624,10 @@ script:
       description: Total count of email activity.
       type: string
   - arguments:
-    - description: 'Object consisting of endpoint (hostname) or agent_guid, file_sha1, filename and description.'
+    - description: 'List of object(s) consisting of `endpoint` (hostname) or `agent_guid`, `file_sha1`, `filename` and `description`. e.g. [{"endpoint":"test-endpoint","file_sha1":"fb5608fa03de204a12fe1e9e5275e4a682107471","filename":"test.txt","description":"terminate process"}].'
       name: process_identifiers
       required: true
+      isArray: true
     outputs:
     - contextPath: VisionOne.Terminate_Process.status
       description: Status of request to terminate process.
@@ -711,9 +727,10 @@ script:
     description: Retrieves the sandbox submission analysis result.
     name: trendmicro-visionone-get-file-analysis-result
   - arguments:
-    - description: 'Object containing endpoint (hostname) or agent_guid, file_path and description.'
+    - description: 'List of object(s) containing `endpoint` (hostname) or `agent_guid`, `file_path` and `description`. e.g. [{"endpoint":"test-endpoint","file_path":"C:/test_dir/test.txt","filename":"test.txt","description":"collect file"}].'
       name: collect_files
       required: true
+      isArray: true
     description: Compresses a file on an endpoint in a password-protected archive and then sends the archive to the XDR service platform.
     name: trendmicro-visionone-collect-forensic-file
     outputs:

@@ -6,19 +6,19 @@ Trend Micro Vision One is a purpose-built threat defense platform that provides 
 2. Search for Trend Micro Vision One V3..
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter**                                   | **Description**                                            | **Required** |
-    | ----------------------------------------------- | ---------------------------------------------------------- | ------------ |
-    | API URL (e.g. <https://api.xdr.trendmicro.com>) | The base url for the Trend Micro Vision One API            | True         |
-    | API Key                                         | The API token to access data                               | True         |
-    | Fetch incidents                                 |                                                            | False        |
-    | Incidents Fetch Interval                        |                                                            | False        |
-    | Incident type                                   |                                                            | False        |
-    | Sync On First Run (days)                        |                                                            | False        |
-    | Max Incidents                                   |                                                            | False        |
-    | Use system proxy settings                       |                                                            | False        |
-    | Trust any certificate (not secure)              |                                                            | False        |
-    | Source Reliability                              | Reliability of the source providing the intelligence data. | False        |
-    | Severity                                        | Severity of the incident being fetched.                    | False        |
+    | **Parameter**                                 | **Description**                                            | **Required** |
+    | --------------------------------------------- | ---------------------------------------------------------- | ------------ |
+    | API URL (e.g. https://api.xdr.trendmicro.com) | The base url for the Trend Micro Vision One API            | True         |
+    | API Key                                       | The API token to access data                               | True         |
+    | Fetch incidents                               |                                                            | False        |
+    | Incidents Fetch Interval                      |                                                            | False        |
+    | Incident type                                 |                                                            | False        |
+    | Sync On First Run (days)                      |                                                            | False        |
+    | Max Incidents                                 |                                                            | False        |
+    | Use system proxy settings                     |                                                            | False        |
+    | Trust any certificate (not secure)            |                                                            | False        |
+    | Source Reliability                            | Reliability of the source providing the intelligence data. | False        |
+    | Severity                                      | Severity of the incident being fetched.                    | False        |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -38,9 +38,9 @@ Allows the user to sign in to new application and browser sessions. Supported IA
 
 #### Input
 
-| **Argument Name**   | **Description**                                          | **Required** |
-| ------------------- | -------------------------------------------------------- | ------------ |
-| account_identifiers | Object containing account_name and optional description. | Required     |
+| **Argument Name**   | **Description**                                                                                                                        | **Required** |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| account_identifiers | List of object(s) containing `account_name` and optional `description`. e.g. [{"account_name":"some-account","description":"enable"}]. | Required     |
 
 #### Context Output
 
@@ -60,9 +60,9 @@ Signs the user out of all active application and browser sessions, and prevents 
 
 #### Input
 
-| **Argument Name**   | **Description**                                          | **Required** |
-| ------------------- | -------------------------------------------------------- | ------------ |
-| account_identifiers | Object containing account_name and optional description. | Required     |
+| **Argument Name**   | **Description**                                                                                                                         | **Required** |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| account_identifiers | List of object(s) containing `account_name` and optional `description`. e.g. [{"account_name":"some-account","description":"disable"}]. | Required     |
 
 #### Context Output
 
@@ -82,9 +82,9 @@ Signs the user out of all active application and browser sessions. Supported IAM
 
 #### Input
 
-| **Argument Name**   | **Description**                                          | **Required** |
-| ------------------- | -------------------------------------------------------- | ------------ |
-| account_identifiers | Object containing account_name and optional description. | Required     |
+| **Argument Name**   | **Description**                                                                                                                          | **Required** |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| account_identifiers | List of object(s) containing `account_name` and optional `description`. e.g. [{"account_name":"some-account","description":"sign-out"}]. | Required     |
 
 #### Context Output
 
@@ -104,9 +104,9 @@ Signs the user out of all active application and browser sessions, and forces th
 
 #### Input
 
-| **Argument Name**   | **Description**                                          | **Required** |
-| ------------------- | -------------------------------------------------------- | ------------ |
-| account_identifiers | Object containing account_name and optional description. | Required     |
+| **Argument Name**   | **Description**                                                                                                                       | **Required** |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| account_identifiers | List of object(s) containing `account_name` and optional `description`. e.g. [{"account_name":"some-account","description":"reset"}]. | Required     |
 
 #### Context Output
 
@@ -126,9 +126,9 @@ Adds a domain, ip, file_sha1, url, sender_mail_address to the User-Defined Suspi
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                            | **Required** |
-| ----------------- | ---------------------------------------------------------------------------------------------------------- | ------------ |
-| block_objects     | Object made up of object_type (domain,ip,file_sha1,url,sender_mail_address), object_value and description. | Required     |
+| **Argument Name** | **Description**                                                                                                                                                                                      | **Required** |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| block_objects     | List of object(s) made up of `object_type` (domain,ip,file_sha1,url,sender_mail_address), `object_value` and optional `description`. e.g. [{"object_type":"domain","object_value":"www.yahoo.com"}]. | Required     |
 
 #### Context Output
 
@@ -148,9 +148,9 @@ Removes a domain, ip, file_sha1, url, sender_mail_address from the User-Defined 
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                            | **Required** |
-| ----------------- | ---------------------------------------------------------------------------------------------------------- | ------------ |
-| block_objects     | Object made up of object_type (domain,ip,file_sha1,url,sender_mail_address), object_value and description. | Required     |
+| **Argument Name** | **Description**                                                                                                                                                                                      | **Required** |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| block_objects     | List of object(s) made up of `object_type` (domain,ip,file_sha1,url,sender_mail_address), `object_value` and optional `description`. e.g. [{"object_type":"domain","object_value":"www.yahoo.com"}]. | Required     |
 
 #### Context Output
 
@@ -170,9 +170,9 @@ Moves a message from a mailbox to the quarantine folder.
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                                                                                    | **Required** |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------ |
-| email_identifiers | Email Message ID (&lt;mailMsgId&gt;), Mailbox ID and description or Unique Message ID (msgUuid) and description from Trend Micro Vision One message activity data. | Required     |
+| **Argument Name** | **Description**                                                                                                                                                                                                                                                                                                   | **Required** |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| email_identifiers | List of object(s) containing `message_id` (&lt;mailMsgId&gt;), `mailbox` (mailbox ID) and `description` or `unique_id` (msgUuid) and optional `description` from Trend Micro Vision One message activity data. e.g. [{"message_id":"xasbjAgs72912-asdjnaj","mailbox":"mailbox-name","description":"quarantine"}]. | Required     |
 
 #### Context Output
 
@@ -192,9 +192,9 @@ Deletes a message from a mailbox.
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                                                                                    | **Required** |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------ |
-| email_identifiers | Email Message ID (&lt;mailMsgId&gt;), Mailbox ID and description or Unique Message ID (msgUuid) and description from Trend Micro Vision One message activity data. | Required     |
+| **Argument Name** | **Description**                                                                                                                                                                                                                                                                                                         | **Required** |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| email_identifiers | List of object(s) containing `message_id` (&lt;mailMsgId&gt;), `mailbox` (mailbox ID) and `description` or `unique_id` (msgUuid) and optional `description` from Trend Micro Vision One message activity data. e.g. [{"message_id":"xasbjAgs72912-asdjnaj","mailbox":"mailbox-name","description":"disable":"delete"}]. | Required     |
 
 #### Context Output
 
@@ -214,9 +214,9 @@ Restores a quarantined message. Deleted messages cannot be restored.
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                                                                                    | **Required** |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------ |
-| email_identifiers | Email Message ID (&lt;mailMsgId&gt;), Mailbox ID and description or Unique Message ID (msgUuid) and description from Trend Micro Vision One message activity data. | Required     |
+| **Argument Name** | **Description**                                                                                                                                                                                                                                                                        | **Required** |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| email_identifiers | List of object(s) containing `message_id` (&lt;mailMsgId&gt;), `mailbox` (mailbox ID) and `description` or `unique_id` (msgUuid) and optional `description` from Trend Micro Vision One message activity data. e.g. [{"message_id":"xasbjAgs72912-asdjnaj","mailbox":"mailbox-name"}]. | Required     |
 
 #### Context Output
 
@@ -236,9 +236,9 @@ Disconnects an endpoint from the network (but allows communication with the mana
 
 #### Input
 
-| **Argument Name**    | **Description**                                                                      | **Required** |
-| -------------------- | ------------------------------------------------------------------------------------ | ------------ |
-| endpoint_identifiers | Object containing endpoint (hostname) and description or agent_guid and description. | Required     |
+| **Argument Name**    | **Description**                                                                                                                                                               | **Required** |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| endpoint_identifiers | List of object(s) containing `endpoint` (hostname) and `description` or `agent_guid` and `description`. e.g. [{"endpoint":"test-endpoint","description":"isolate endpoint"}]. | Required     |
 
 #### Context Output
 
@@ -258,9 +258,9 @@ Restores network connectivity to an endpoint that applied the "isolate endpoint"
 
 #### Input
 
-| **Argument Name**    | **Description**                                                                      | **Required** |
-| -------------------- | ------------------------------------------------------------------------------------ | ------------ |
-| endpoint_identifiers | Object containing endpoint (hostname) and description or agent_guid and description. | Required     |
+| **Argument Name**    | **Description**                                                                                                                                                               | **Required** |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| endpoint_identifiers | List of object(s) containing `endpoint` (hostname) and `description` or `agent_guid` and `description`. e.g. [{"endpoint":"test-endpoint","description":"restore endpoint"}]. | Required     |
 
 #### Context Output
 
@@ -280,9 +280,9 @@ Adds domain, ip, url, file_sha1, file_sha256, sender_mail_address to the Excepti
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                                           | **Required** |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------- | ------------ |
-| block_objects     | Object consisting of object_type (domain,ip,url,file_sha1,file_sha256,sender_mail_address), object_value and description. | Required     |
+| **Argument Name** | **Description**                                                                                                                                                                                                                                           | **Required** |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| block_objects     | List of object(s) consisting of `object_type` (domain,ip,url,file_sha1,file_sha256,sender_mail_address), `object_value` and `description`. e.g. [{"object_type":"ip","object_value":"5.5.5.5"}, {"object_type":"domain","object_value":"www.yahoo.com"}]. | Required     |
 
 #### Context Output
 
@@ -304,9 +304,9 @@ Deletes domain, ip, url, file_sha1, file_sha256, sender_mail_address from the Ex
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                                           | **Required** |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------- | ------------ |
-| block_objects     | Object consisting of object_type (domain,ip,url,file_sha1,file_sha256,sender_mail_address), object_value and description. | Required     |
+| **Argument Name** | **Description**                                                                                                                                                                                                                 | **Required** |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| block_objects     | List of object(s) consisting of `object_type` (domain,ip,url,file_sha1,file_sha256,sender_mail_address), `object_value` and `description`. e.g. [{"object_type":"ip","object_value":"5.5.5.5","description":"exception list"}]. | Required     |
 
 #### Context Output
 
@@ -328,9 +328,9 @@ Adds domain, ip, url, file_sha1, file_sha256, sender_mail_address to the Suspici
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                                                                                    | **Required** |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------ |
-| block_objects     | Object consisting of object_type (domain,ip,url,file_sha1,file_sha256,sender_mail_address), object_value and scan_action, risk_level, expiry_days and description. | Required     |
+| **Argument Name** | **Description**                                                                                                                                                                                                                                                                                          | **Required** |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| block_objects     | List of object(s) consisting of `object_type` (domain,ip,url,file_sha1,file_sha256,sender_mail_address), `object_value`, `scan_action`, `risk_level`, `expiry_days` and `description`. e.g. [{"object_type":"ip","object_value":"5.5.5.5","scan_action":"block","risk_level":"medium","expiry_days":7}]. | Required     |
 
 #### Context Output
 
@@ -352,9 +352,9 @@ Deletes domain, ip, url, file_sha1, file_sha256, sender_mail_address from the Su
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                              | **Required** |
-| ----------------- | ------------------------------------------------------------------------------------------------------------ | ------------ |
-| block_objects     | Object consisting of object_type (domain,ip,url,file_sha1,file_sha256,sender_mail_address) and object_value. | Required     |
+| **Argument Name** | **Description**                                                                                                                                                                   | **Required** |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| block_objects     | List of object(s) consisting of `object_type` (domain,ip,url,file_sha1,file_sha256,sender_mail_address) and `object_value`. e.g. [{"object_type":"ip","object_value":"5.5.5.5"}]. | Required     |
 
 #### Context Output
 
@@ -565,9 +565,9 @@ Terminates a process that is running on an endpoint.
 
 #### Input
 
-| **Argument Name**   | **Description**                                                                              | **Required** |
-| ------------------- | -------------------------------------------------------------------------------------------- | ------------ |
-| process_identifiers | Object consisting of endpoint (hostname) or agent_guid, file_sha1, filename and description. | Required     |
+| **Argument Name**   | **Description**                                                                                                                                                                                                                                                       | **Required** |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| process_identifiers | List of object(s) consisting of `endpoint` (hostname) or `agent_guid`, `file_sha1`, `filename` and `description`. e.g. [{"endpoint":"test-endpoint","file_sha1":"fb5608fa03de204a12fe1e9e5275e4a682107471","filename":"test.txt","description":"terminate process"}]. | Required     |
 
 #### Context Output
 
@@ -651,9 +651,9 @@ Compresses a file on an endpoint in a password-protected archive and then sends 
 
 #### Input
 
-| **Argument Name** | **Description**                                                                 | **Required** |
-| ----------------- | ------------------------------------------------------------------------------- | ------------ |
-| collect_files     | Object containing endpoint (hostname) or agent_guid, file_path and description. | Required     |
+| **Argument Name** | **Description**                                                                                                                                                                                                               | **Required** |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| collect_files     | List of object(s) containing `endpoint` (hostname) or `agent_guid`, `file_path` and `description`. e.g. [{"endpoint":"test-endpoint","file_path":"C:/test_dir/test.txt","filename":"test.txt","description":"collect file"}]. | Required     |
 
 #### Context Output
 

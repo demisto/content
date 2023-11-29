@@ -658,7 +658,9 @@ def enable_or_disable_user_account(
     :rtype: ``dict`
     """
     # Required Params
-    account_identifiers = json.loads(args[ACCOUNT_IDENTIFIERS])
+    account_identifiers = args[ACCOUNT_IDENTIFIERS]
+    if isinstance(account_identifiers, str):
+        account_identifiers = json.loads(args[ACCOUNT_IDENTIFIERS])
     account_tasks: list[AccountTask] = []
     message: list[dict[str, Any]] = []
 
@@ -730,7 +732,9 @@ def force_sign_out(
     :rtype: ``dict`
     """
     # Required Params
-    account_identifiers = json.loads(args[ACCOUNT_IDENTIFIERS])
+    account_identifiers = args[ACCOUNT_IDENTIFIERS]
+    if isinstance(account_identifiers, str):
+        account_identifiers = json.loads(args[ACCOUNT_IDENTIFIERS])
     account_tasks: list[AccountTask] = []
     message: list[dict[str, Any]] = []
 
@@ -782,7 +786,9 @@ def force_password_reset(
     :rtype: ``dict`
     """
     # Required Params
-    account_identifiers = json.loads(args[ACCOUNT_IDENTIFIERS])
+    account_identifiers = args[ACCOUNT_IDENTIFIERS]
+    if isinstance(account_identifiers, str):
+        account_identifiers = json.loads(args[ACCOUNT_IDENTIFIERS])
     account_tasks: list[AccountTask] = []
     message: list[dict[str, Any]] = []
 
@@ -1107,7 +1113,9 @@ def add_or_remove_from_block_list(
     :rtype: ``dict`
     """
     # Required Params
-    block_objects = json.loads(args[BLOCK_OBJECTS])
+    block_objects = args[BLOCK_OBJECTS]
+    if isinstance(block_objects, str):
+        block_objects = json.loads(args[BLOCK_OBJECTS])
     block_tasks: list[ObjectTask] = []
     message: list[dict[str, Any]] = []
 
@@ -1226,7 +1234,9 @@ def quarantine_or_delete_email_message(
     :rtype: ``dict`
     """
     # Required Params
-    email_identifiers = json.loads(args[EMAIL_IDENTIFIERS])
+    email_identifiers = args[EMAIL_IDENTIFIERS]
+    if isinstance(email_identifiers, str):
+        email_identifiers = json.loads(args[EMAIL_IDENTIFIERS])
     message: list[dict[str, Any]] = []
     email_tasks: list[EmailMessageIdTask | EmailMessageUIdTask] = []
 
@@ -1321,7 +1331,9 @@ def restore_email_message(
     :rtype: ``dict`
     """
     # Required Params
-    email_identifiers = json.loads(args[EMAIL_IDENTIFIERS])
+    email_identifiers = args[EMAIL_IDENTIFIERS]
+    if isinstance(email_identifiers, str):
+        email_identifiers = json.loads(args[EMAIL_IDENTIFIERS])
     message: list[dict[str, Any]] = []
     email_tasks: list[EmailMessageIdTask | EmailMessageUIdTask] = []
 
@@ -1386,7 +1398,9 @@ def isolate_or_restore_connection(
     :rtype: ``dict`
     """
     # Required Params
-    endpoint_identifiers = json.loads(args[ENDPOINT_IDENTIFIERS])
+    endpoint_identifiers = args[ENDPOINT_IDENTIFIERS]
+    if isinstance(endpoint_identifiers, str):
+        endpoint_identifiers = json.loads(args[ENDPOINT_IDENTIFIERS])
     message: list[dict[str, Any]] = []
     endpt_tasks: list[EndpointTask] = []
 
@@ -1474,7 +1488,9 @@ def terminate_process(
     :rtype: ``dict`
     """
     # Required Params
-    process_identifiers = json.loads(args[PROCESS_IDENTIFIERS])
+    process_identifiers = args[PROCESS_IDENTIFIERS]
+    if isinstance(process_identifiers, str):
+        process_identifiers = json.loads(args[PROCESS_IDENTIFIERS])
     process_tasks: list[ProcessTask] = []
     message: list[dict[str, Any]] = []
 
@@ -1543,7 +1559,9 @@ def add_or_delete_from_exception_list(
     :rtype: ``dict`
     """
     # Required Params
-    block_objects = json.loads(args[BLOCK_OBJECTS])
+    block_objects = args[BLOCK_OBJECTS]
+    if isinstance(block_objects, str):
+        block_objects = json.loads(args[BLOCK_OBJECTS])
     excp_tasks: list[ObjectTask] = []
     message: dict[str, Any] = {}
 
@@ -1624,7 +1642,9 @@ def add_to_suspicious_list(
     :rtype: ``dict`
     """
     # Required Params
-    block_objects = json.loads(args[BLOCK_OBJECTS])
+    block_objects = args[BLOCK_OBJECTS]
+    if isinstance(block_objects, str):
+        block_objects = json.loads(args[BLOCK_OBJECTS])
 
     suspicious_tasks: list[SuspiciousObjectTask] = []
     message: dict[str, Any] = {}
@@ -1686,7 +1706,9 @@ def delete_from_suspicious_list(
     :rtype: ``dict`
     """
     # Required Params
-    block_objects = json.loads(args[BLOCK_OBJECTS])
+    block_objects = args[BLOCK_OBJECTS]
+    if isinstance(block_objects, str):
+        block_objects = json.loads(args[BLOCK_OBJECTS])
 
     suspicious_tasks: list[ObjectTask] = []
     message: dict[str, Any] = {}
@@ -1860,7 +1882,9 @@ def collect_file(
     :rtype: ``dict`
     """
     # Required Params
-    collect_files = json.loads(args[COLLECT_FILES])
+    collect_files = args[COLLECT_FILES]
+    if isinstance(collect_files, str):
+        collect_files = json.loads(args[COLLECT_FILES])
     # Create file task list
     file_tasks: list[FileTask] = []
     message: list[dict[str, Any]] = []
