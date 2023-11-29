@@ -190,7 +190,13 @@
             "memory_threshold": 500
         },
         {
-            "playbookID": "SetIfEmpty - non-ascii chars - Test"
+            "playbookID": "SetIfEmpty_Test"
+        },
+        {
+            "playbookID": "IsEmailAddressInternal_Test"
+        },
+        {
+            "playbookID": "SetAndHandleEmpty_Test"
         },
         {
             "integrations": "Tripwire",
