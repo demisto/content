@@ -38,7 +38,7 @@ ARTIFACTS_FOLDER_XPANSE_SERVER_TYPE = ARTIFACTS_FOLDER_XPANSE / "server_type_XPA
 ARTIFACTS_FOLDER_XSIAM_SERVER_TYPE = ARTIFACTS_FOLDER_XSIAM / "server_type_XSIAM"
 GITLAB_SERVER_URL = os.getenv('CI_SERVER_URL', 'https://code.pan.run')  # disable-secrets-detection
 GITLAB_PROJECT_ID = os.getenv('CI_PROJECT_ID') or 2596  # the default is the id of the content repo in code.pan.run
-CONTENT_CHANNEL = 'dmst-build-test'
+CONTENT_CHANNEL = 'test_slack_notifier_when_master_is_broken'
 SLACK_USERNAME = 'Content GitlabCI'
 SLACK_WORKSPACE_NAME = os.getenv('SLACK_WORKSPACE_NAME', '')
 GITHUB_TOKEN = os.getenv('GITHUB_TOKEN', '')
@@ -470,7 +470,8 @@ def main():
 
     pipeline_url, pipeline_failed_jobs = collect_pipeline_data(gitlab_client, project_id, pipeline_id)
     slack_msg_data = construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs, pull_request)
-
+    #slack_msg_data= [
+#{'fallback': 'Nothing 'color': 'warning', 'title': 'Koby, if you see this, you can understand that I did not get to this last week...'}]
     with contextlib.suppress(Exception):
         output_file = ROOT_ARTIFACTS_FOLDER / 'slack_msg.json'
         logging.info(f'Writing Slack message to {output_file}')
