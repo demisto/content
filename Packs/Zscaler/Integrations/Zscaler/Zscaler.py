@@ -743,7 +743,7 @@ def category_remove_url(category_id, url, retaining_parent_category_url):
         return return_error("Category could not be found.")
 
 
-def category_remove_ip(category_id, ip):
+def category_remove_ip(category_id, ip, retaining_parent_category_ip):
     categories = get_categories()
     found_category = False
     for category in categories:
@@ -757,11 +757,15 @@ def category_remove_ip(category_id, ip):
         if updated_ips == category_data["urls"]:
             return return_error("Could not find given IP in the category.")
         category_data["urls"] = updated_ips
-        response = category_ioc_update(category_data)
+        retaining_parent_category_ip_list = argToList(retaining_parent_category_ip)
+        if not (ip_list, retaining_parent_category_ip_list):
+            return_error('Either ip_list argument or retaining_parent_category_ip_list argument must be provided.')
+        response = category_ioc_update(category_data, retaining_parent_category_ip_list)
         context = {
             "ID": category_id,
             "CustomCategory": category_data["customCategory"],
             "URL": category_data["urls"],
+            "RetainingParentCategory": retaining_parent_category_ip_list
         }
         if (
             "description" in category_data and category_data["description"]
@@ -1467,7 +1471,7 @@ def main():  # pragma: no cover
                     category_remove_url(args.get("category-id"), args.get("url"), args.get('retaining-parent-category-url')))
             elif command == "zscaler-category-remove-ip":
                 return_results(
-                    category_remove_ip(args.get("category-id"), args.get("ip"))
+                    category_remove_ip(args.get("category-id"), args.get("ip"), args.get('retaining-parent-category-ip'))
                 )
             elif command == "zscaler-get-categories":
                 return_results(get_categories_command(args))
