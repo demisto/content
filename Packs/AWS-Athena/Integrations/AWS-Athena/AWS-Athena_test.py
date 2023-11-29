@@ -47,7 +47,7 @@ def test_start_query_command(mocker):
                            "cast(date_format(current_timestamp - INTERVAL '0' day, '%Y%m%d%H') as varchar) LIMIT 25",
             'OutputLocation': 's3://athena-queries-test',
             }
-    result = AWS_Athena.start_query_execution_command(args, client)
+    result = AWS_Athena.start_query_command(args, client)
 
     expected_context = load_test_data('expected_context', 'start_query_command')
     assert result.outputs == expected_context

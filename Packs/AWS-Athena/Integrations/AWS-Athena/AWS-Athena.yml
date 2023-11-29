@@ -157,21 +157,7 @@ script:
     - name: QueryExecutionId
       required: true
       description: The unique ID of the query execution.
-    - auto: PREDEFINED
-      description: Whether to use polling for getting query execution data. If set to true, the command will poll for the query execution data as long as the 'state' value is 'QUEUED' or 'RUNNING'.
-      defaultValue: 'true'
-      name: polling
-      predefined:
-      - 'true'
-      - 'false'
-    - name: interval_in_seconds
-      description: Interval in seconds between each poll (only if polling is set to true).
-      defaultValue: '10'
-    - name: timeout_in_seconds
-      description: Timeout in seconds for each poll (only if polling is set to true).
-      defaultValue: '300'
     description: Returns information about a single execution of a query if you have access to the workgroup in which the query ran.
-    polling: true
     outputs:
     - contextPath: AWS.Athena.Query.QueryExecutionId
       description: The unique identifier for each query execution.

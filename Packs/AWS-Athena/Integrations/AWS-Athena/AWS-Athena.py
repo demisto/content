@@ -56,6 +56,7 @@ def test_module_command(client) -> str | CommandResults:
     else:
         raise DemistoException(f'Error: {response}')
 
+
 def start_query_command(args: dict, client):
     query_string: str = args['QueryString']
     query_limit: str | None = args.get('QueryLimit')
@@ -106,28 +107,18 @@ def stop_query_command(args: dict, client):
         raise DemistoException(f"Failed to stop query '{query_execution_id}'.")
 
 
-@polling_function(
-    name=demisto.command(),
-    interval=arg_to_number(demisto.args().get('interval_in_seconds', 10)),
-    timeout=arg_to_number(demisto.args().get('timeout_in_seconds', 300)),
-    requires_polling_arg=True,
-)
 def get_query_execution_command(args: dict, client):
     query_execution_id: str = args['QueryExecutionId']
     raw_response = client.get_query_execution(QueryExecutionId=query_execution_id)
     parsed_response = json.loads(json.dumps(raw_response, cls=DatetimeEncoder))['QueryExecution']
     response = parsed_response['QueryExecution']
 
-    return PollResult(
-        response=CommandResults(
-            outputs_prefix='AWS.Athena.Query',
-            outputs_key_field='QueryExecutionId',
-            outputs=response,
-            raw_response=raw_response,
-            readable_output=tableToMarkdown('AWS Athena Query Execution', response),
-        ),
-        continue_to_poll=argToBoolean(args.get('polling', True)) and response['Status']['State'] in ('QUEUED', 'RUNNING'),
-        args_for_next_run=args,
+    return CommandResults(
+        outputs_prefix='AWS.Athena.Query',
+        outputs_key_field='QueryExecutionId',
+        outputs=response,
+        raw_response=raw_response,
+        readable_output=tableToMarkdown('AWS Athena Query Execution', response),
     )
 
 
