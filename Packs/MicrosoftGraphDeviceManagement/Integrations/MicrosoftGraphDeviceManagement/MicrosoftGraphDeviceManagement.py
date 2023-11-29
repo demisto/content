@@ -33,10 +33,10 @@ HEADERS: dict = {
 
 class MsGraphClient:
     def __init__(self, self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, azure_cloud, use_ssl, proxy,
-                 ok_codes, certificate_thumbprint, private_key,
+                 ok_codes, certificate_thumbprint, private_key, version: str = 'v1.0',
                  managed_identities_client_id: Optional[str] = None):
         self.azure_cloud = azure_cloud or AZURE_WORLDWIDE_CLOUD
-        self.base_url = urljoin(self.azure_cloud.endpoints.microsoft_graph_resource_id, '/v1.0')
+        self.base_url = urljoin(self.azure_cloud.endpoints.microsoft_graph_resource_id, f'/{version}')
         self.ms_client = MicrosoftClient(self_deployed=self_deployed, tenant_id=tenant_id, auth_id=auth_and_token_url,
                                          enc_key=enc_key, app_name=app_name, base_url=self.base_url, verify=use_ssl,
                                          proxy=proxy, ok_codes=ok_codes, certificate_thumbprint=certificate_thumbprint,
@@ -57,8 +57,10 @@ class MsGraphClient:
         raw_response = self.ms_client.http_request('GET', url_suffix)
         return raw_response.get('value', []), raw_response
 
-    def get_managed_device(self, device_id: str) -> tuple[Any, str]:
+    def get_managed_device(self, device_id: str, beta_version: bool = False) -> tuple[Any, str]:
         url_suffix: str = f'/deviceManagement/managedDevices/{device_id}'
+        if beta_version:
+            url_suffix += "$select=id,hardwareinformation,physicalMemoryInBytes'"
         return self.ms_client.http_request('GET', url_suffix), device_id
 
     def make_action(self, device_id: str, action: str, body: str = None) -> None:
@@ -270,7 +272,8 @@ def find_managed_devices_command(client: MsGraphClient, args: dict) -> None:
 
 def get_managed_device_command(client: MsGraphClient, args: dict) -> None:
     device_id: str = str(args.get('device_id'))
-    raw_response, device_id = client.get_managed_device(device_id)
+    beta_version: bool = argToBoolean(args.get('beta_version', False))
+    raw_response, device_id = client.get_managed_device(device_id, beta_version)
     device: dict = build_device_object(raw_response)
     entry_context: dict = {'MSGraphDeviceManagement.Device(val.ID === obj.ID)': device}
     device_name: str = device.get('Name', '')
@@ -419,6 +422,7 @@ def main():
     ok_codes: tuple = (200, 201, 202, 204)
     use_ssl: bool = not params.get('insecure', False)
     proxy: bool = params.get('proxy', False)
+    version: str = params.get('version', 'v1.0')
     certificate_thumbprint: str = params.get('credentials_certificate_thumbprint', {}).get(
         'password') or params.get('certificate_thumbprint', '')
     private_key: str = params.get('private_key', '')
@@ -435,7 +439,8 @@ def main():
     client: MsGraphClient = MsGraphClient(self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, azure_cloud,
                                           use_ssl, proxy, ok_codes, certificate_thumbprint=certificate_thumbprint,
                                           private_key=private_key,
-                                          managed_identities_client_id=managed_identities_client_id)
+                                          managed_identities_client_id=managed_identities_client_id,
+                                          version=version)
 
     command: str = demisto.command()
     LOG(f'Command being called is {command}')
@@ -447,6 +452,10 @@ def main():
         elif command == 'msgraph-list-managed-devices':
             list_managed_devices_command(client, args)
         elif command == 'msgraph-get-managed-device-by-id':
+            get_managed_device_command(client, args)
+        elif command == 'msgraph-get-managed-device-by-id-beta':
+            if version == 'beta':
+                args['beta_version'] = True
             get_managed_device_command(client, args)
         elif command == 'msgraph-device-disable-lost-mode':
             disable_lost_mode_command(client, args)
