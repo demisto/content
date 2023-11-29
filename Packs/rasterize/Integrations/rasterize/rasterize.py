@@ -40,7 +40,7 @@ DEFAULT_PAGE_LOAD_TIME = int(demisto.params().get('max_page_load_time', 180))
 
 # TODO: decide if we want to reuse it in several places
 DEFAULT_RETRIES_COUNT = 4
-DEFAULT_RETRY_WAIT_IN_SECONDS = 1
+DEFAULT_RETRY_WAIT_IN_SECONDS = 3
 PAGES_LIMITATION = 20
 
 # Consts for custom width and height
@@ -107,18 +107,53 @@ class PychromeEventHandler:
 
 # endregion
 
+def get_parent_processes(processes=[], current_process=None) -> list[str]:
+    str_to_search = f"{current_process}|grep -v grep |grep -v 'ps -ef'" if current_process else 'grep'
+    demisto.debug(f'get_parent_processes, {str_to_search=}')
+    cmd = f"ps -ef|grep {str_to_search}"
+    ps = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    output = ps.communicate()
+
+    for current_line in output:
+        if current_line:
+            demisto.debug(f'get_parent_processes, decoding {current_line=}')
+            current_line = current_line.decode("utf-8")
+            demisto.debug(f'get_parent_processes, {current_line=}')
+            if current_line:
+                current_line_splitted = current_line.split()
+                if len(current_line_splitted) > 2:
+                    parent_pid = current_line_splitted[2]
+                    demisto.debug(f'Found parent process {parent_pid}')
+                    if parent_pid == '1':
+                        demisto.debug(f'get_parent_processes, Found root pid (1), returning {processes}')
+                        return processes
+                    processes.append(parent_pid)
+                    get_parent_processes(processes=processes, current_process=parent_pid)
+    demisto.debug(f'get_parent_processes, returning {processes}')
+    return processes
+
 
 def get_running_chrome_processes() -> list[str]:
     try:
-        processes = subprocess.check_output(['ps', 'auxww'],
+        processes = subprocess.check_output(['ps', '-ef'],
                                             stderr=subprocess.STDOUT,
                                             text=True).splitlines()
 
-        chrome_identifiers = ["chrom", "headless", "--remote-debugging-port=9222"]
-        chrome_processes = [process for process in processes
-                            if all(identifier in process for identifier in chrome_identifiers)]
+        parent_processes = get_parent_processes()
 
-        demisto.debug(f'Detected {len(chrome_processes)} Chrome processes running')
+        chrome_identifiers = ["chrom", "headless", "--remote-debugging-port=9222"]
+        chrome_processes = []
+        for current_process in processes:
+            if current_process and all(identifier in current_process for identifier in chrome_identifiers):
+                demisto.debug(f'get_running_chrome_processes, {current_process=}')
+                process_splitted = current_process.split()
+                demisto.debug(f'get_running_chrome_processes, {process_splitted=}')
+                if (len(process_splitted) > 2) and (process_splitted[2] in parent_processes):
+                    demisto.debug(f'get_running_chrome_processes, Found a matching chrome: {current_process=}')
+                    chrome_processes.append(current_process)
+
+        demisto.debug(f'get_running_chrome_processes, Detected {len(chrome_processes)} Chrome processes running')
+
         return chrome_processes
 
     except subprocess.CalledProcessError as e:
@@ -150,10 +185,12 @@ def start_chrome_headless():
 def kill_all_chrome_processes():
     try:
         chrome_processes = get_running_chrome_processes()
+        demisto.debug(f'kill_all_chrome_processes, {chrome_processes=}')
         for process in chrome_processes:
             pid = process.split()[1]  # Assuming second element is the PID
-            subprocess.run(['kill', '-9', pid], capture_output=True, text=True)
-            demisto.debug(f'Killed Chrome process with PID: {pid}')
+            # subprocess.run(['kill', '-9', pid], capture_output=True, text=True)
+            # demisto.debug(f'Killed Chrome process with PID: {pid}')
+            demisto.debug(f'Not killing chrome process with PID: {pid}')
     except Exception as ex:
         demisto.info(f'Error killing Chrome processes: {ex}')
 
@@ -161,6 +198,7 @@ def kill_all_chrome_processes():
 def ensure_chrome_running():  # pragma: no cover
     for _ in range(DEFAULT_RETRIES_COUNT):
         count = get_active_chrome_processes_count()
+        demisto.debug('ensure_chrome_running, {count=}')
 
         if count == 1:
             demisto.debug('One Chrome instance running. Returning True.')
@@ -216,7 +254,6 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout):  # prag
 def screenshot_image(browser, tab, path, wait_time, timeout):  # pragma: no cover
     navigate_to_path(browser, tab, path, wait_time, timeout)
     ret_value = base64.b64decode(tab.Page.captureScreenshot()['data'])
-    # TODO: should we try and kill zombie chrome processes (see 'pychrome_reap_children' in rasterize)
     return ret_value
 
 
@@ -226,7 +263,6 @@ def screenshot_pdf(browser, tab, path, wait_time, timeout, include_url):  # prag
     if include_url:
         header_template = "<span class=url></span>"
     ret_value = base64.b64decode(tab.Page.printToPDF(headerTemplate=header_template)['data'])
-    # TODO: should we try and kill zombie chrome processes (see 'pychrome_reap_children' in rasterize)
     return ret_value
 
 
@@ -259,6 +295,7 @@ def rasterize(path: str,
                 tab.call_method("Network.disable")
             else:
                 tab.call_method("Network.enable")
+            # tab.call_method("Browser.Bounds.width=600")
 
             if rasterize_type == RasterizeType.PNG:
                 return screenshot_image(browser, tab, path, wait_time=wait_time, timeout=timeout)
@@ -266,8 +303,9 @@ def rasterize(path: str,
             elif rasterize_type == RasterizeType.PDF:
                 return screenshot_pdf(browser, tab, path, wait_time=wait_time, timeout=timeout, include_url=include_url)
             else:
-                # TODO: handle unsupported
-                return "Error"
+                message = 'Unsupported rasterization type {rasterize_type}'
+                demisto.error(message)
+                return_error(message)
 
     else:
         message = 'Could not use local Chrome for rasterize command'

@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: Rasterize
+  id: Rasterize_headless
   version: -1
 configuration:
 - defaultvalue: 'false'
@@ -39,8 +39,8 @@ configuration:
   type: 8
   required: false
 description: Converts URLs, PDF files, and emails to an image file or PDF file.
-display: Rasterize
-name: Rasterize
+display: Rasterize_headless
+name: Rasterize_headless
 script:
   commands:
   - arguments:
@@ -311,7 +311,7 @@ script:
     - contextPath: InfoFile.Type
       description: The type of the image/pdf file.
       type: string
-  dockerimage: demisto/chromium:119.0.6045.81375
+  dockerimage: devdemisto/chromium:119.0.6045.81622
   runonce: false
   script: '-'
   subtype: python3
