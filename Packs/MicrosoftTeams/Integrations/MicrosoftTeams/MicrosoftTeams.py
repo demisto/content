@@ -134,6 +134,7 @@ def handle_teams_proxy_and_ssl():
     return proxies, use_ssl
 
 PROXIES, USE_SSL = handle_teams_proxy_and_ssl()
+demisto.debug(f"ssl is: {USE_SSL}\nProxies are: {PROXIES}")
 
 ''' HELPER FUNCTIONS '''
 
