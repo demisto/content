@@ -665,21 +665,30 @@ def is_default_folder(folder_path, is_public):  # pragma: no cover
 
 def get_folder_by_path(account, path, is_public=False):  # pragma: no cover
     # handle exchange folder id
+    logging.debug(f"[TEST] - get_folder_by_path: {account=}, {path=}, {is_public=}")
     if len(path) == 120:
         folders_map = account.root._folders_map
         if path in folders_map:
             return account.root._folders_map[path]
 
     if is_public:
+        logging.debug(f"[TEST] - if {is_public=}")
         folder_result = account.public_folders_root
     elif path == 'AllItems':
+        logging.debug(f"[TEST] - elif {path=}")
         folder_result = account.root
     else:
+        logging.debug("[TEST] - else...")
         folder_result = account.inbox.parent  # Top of Information Store
+    logging.debug(f"[TEST] - {folder_result=}, {type(folder_result)=}, {account.inbox=}, {type(account.inbox)=}")
     path = path.replace("/", "\\")
     path = path.split('\\')
+    logging.debug(f"[TEST] - {path=}")
     for sub_folder_name in path:
+        logging.debug(f"[TEST] - {sub_folder_name=}")
+        logging.debug(f"[TEST] - {folder_result.children=}, {type(folder_result.children)=}")
         folder_filter_by_name = [x for x in folder_result.children if x.name.lower() == sub_folder_name.lower()]
+        logging.debug(f"[TEST] - {folder_filter_by_name=}")
         if len(folder_filter_by_name) == 0:
             raise Exception("No such folder %s" % path)
         folder_result = folder_filter_by_name[0]
