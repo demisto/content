@@ -733,12 +733,7 @@ def get_a_list_of_unanalyzed_abuse_mailbox_campaigns_command(client, args):
 def generate_threat_incidents(client, threats, current_iso_format_time):
     incidents = []
     for threat in threats:
-        threat_details = None
-        try:
-            threat_details = client.get_details_of_a_threat_request(threat["threatId"])
-        except Exception as e:
-            logging.error(f"Failed to fetch details for threat {threat}: {e}")
-
+        threat_details = client.get_details_of_a_threat_request(threat["threatId"])
         incident = {
             "dbotMirrorId": str(threat["threatId"]),
             "name": "Threat",
@@ -747,20 +742,13 @@ def generate_threat_incidents(client, threats, current_iso_format_time):
             "rawJSON": json.dumps(threat_details) if threat_details else {}
         }
         incidents.append(incident)
-
     return incidents
 
 
 def generate_abuse_campaign_incidents(client, campaigns, current_iso_format_time):
     incidents = []
     for campaign in campaigns:
-        campaign_details = None
-        try:
-            campaign_details = client.get_details_of_an_abuse_mailbox_campaign_request(campaign["campaignId"])
-            logging.info(f"this is the campaign details {campaign_details}")
-        except Exception as e:
-            logging.error(f"Failed to fetch details for campaign {campaign}: {e}")
-
+        campaign_details = client.get_details_of_an_abuse_mailbox_campaign_request(campaign["campaignId"])
         incident = {"dbotMirrorId": str(campaign["campaignId"]), "name": "Abuse Campaign", "occurred": current_iso_format_time,
                     'details': "Abuse Campaign", "rawJSON": json.dumps(campaign_details) if campaign_details else {}}
         incidents.append(incident)
@@ -770,12 +758,7 @@ def generate_abuse_campaign_incidents(client, campaigns, current_iso_format_time
 def generate_account_takeover_cases_incidents(client, cases, current_iso_format_time):
     incidents = []
     for case in cases:
-        case_details = None
-        try:
-            case_details = client.get_details_of_an_abnormal_case_request(case["caseId"])
-        except Exception as e:
-            logging.error(f"Failed to fetch details for case {case}: {e}")
-
+        case_details = client.get_details_of_an_abnormal_case_request(case["caseId"])
         incident = {"dbotMirrorId": str(case["caseId"]), "name": "Account Takeover Case", "occurred": current_iso_format_time,
                     'details': case['description'], "rawJSON": json.dumps(case_details) if case_details else {}}
         incidents.append(incident)
