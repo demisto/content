@@ -3,8 +3,6 @@ from test_data.data import *  # noqa
 from CommonServerPython import *  # noqa
 from random import randint
 
-# from mypy_boto3_organizations import *
-
 
 class MockOrganizationsClient:  # (OrganizationsClient):
 
