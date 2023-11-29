@@ -1,0 +1,33 @@
+{
+  "trigger_id": "39f9b9dce947a6af186c75c72709c716",
+  "playbook_id": "Prisma Cloud Remediation - AWS CloudTrail Misconfiguration v2",
+  "suggestion_reason": "Recommended for Cloud IAM user access alerts",
+  "description": "This trigger is responsible for handling AWS CloudTrail Misconfiguration alerts",
+  "trigger_name": "AWS CloudTrail Misconfiguration",
+  "alerts_filter": {
+    "filter": {
+      "OR": [
+        {
+            "SEARCH_FIELD": "alert_name",
+            "SEARCH_TYPE": "CONTAINS",
+            "SEARCH_VALUE": "AWS CloudTrail is not enabled on the account"
+        },
+        {
+            "SEARCH_FIELD": "alert_name",
+            "SEARCH_TYPE": "CONTAINS",
+            "SEARCH_VALUE": "AWS CloudTrail is not enabled with multi trail and not capturing all management events"
+        },
+        {
+            "SEARCH_FIELD": "alert_name",
+            "SEARCH_TYPE": "CONTAINS",
+            "SEARCH_VALUE": "AWS CloudTrail log validation is not enabled in all regions"
+        },
+        {
+            "SEARCH_FIELD": "alert_name",
+            "SEARCH_TYPE": "CONTAINS",
+            "SEARCH_VALUE": "AWS CloudTrail trail logs is not integrated with CloudWatch Log"
+        }
+      ]
+    }
+  }
+}
