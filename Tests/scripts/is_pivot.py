@@ -103,14 +103,11 @@ def is_pivot(single_pipeline_id, list_of_pipelines, commits):
     # previous pipeline (n), then it is a negative pivot
     in_order, pivot_commit = are_pipelines_in_order_as_commits(commits, current_pipeline.sha, previous_pipeline.sha)
     if in_order:
-        msg = ""
         if previous_pipeline.status == 'success' and current_pipeline.status == 'failed':
-            msg = "you broke"
+            return True, pivot_commit
         elif previous_pipeline.status == 'failed' and current_pipeline.status == 'success':
-            msg = "you fixed"
-        name, email, pr = shame(pivot_commit)
-        return f"Sent an email to {email} \nHi {name}, {msg} the build. That was done in this PR: {pr}"
-    return "No change, or unexpected order"
+            return False, pivot_commit
+    return None, None
 
 
 def main(args):
