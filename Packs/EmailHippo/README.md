@@ -1,4 +1,4 @@
-Email Hippo is an email intelligence and data services provider that deliver accurate cloud-based email validation and domain profiling. 
+Email Hippo is an email intelligence and data services provider that delivers accurate cloud-based email validation and domain profiling. 
  
 
 ## What does this pack do?
