@@ -400,7 +400,7 @@ class Model:
 
     def remove_empty_or_short_fields(self):
         """
-        Remove field where value if empty or ot shorter than 2 characters or unusable or does not exist in the incident...
+        Remove field where value is empty or is shorter than 2 characters or unusable or does not exist in the incident.
         :return:
         """
         remove_list = []
@@ -430,8 +430,8 @@ class Model:
             if field not in self.incident_to_match.columns or not self.incident_to_match[field].values[
                 0] or self.incident_to_match[field].values[0] == 'None' \
                     or len(self.incident_to_match[field].values[0]) < 2 \
-                or self.incident_to_match[field].values[
-                    0] == 'N/A' or all(not x for x in self.incident_to_match[field].values[0]):
+                        or self.incident_to_match[field].values[0] == 'N/A' \
+                            or all(not x for x in self.incident_to_match[field].values[0]):
                 remove_list.append(field)
         self.field_for_json = [x for x in self.field_for_json if x not in remove_list]
 

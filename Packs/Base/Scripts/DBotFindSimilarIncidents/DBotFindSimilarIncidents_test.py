@@ -367,7 +367,7 @@ def test_remove_empty_or_short_fields(sample_data):
     """
     Given:
         - sample_data: a dataframe with a column of strings
-    When: 
+    When:
         - calling remove_empty_or_short_fields function
     Then:
         - assert that the function removes empty or short or None or 'N/A' or list objects fields
