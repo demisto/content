@@ -3,7 +3,7 @@
     "description": "A pack that contains community dashboards",
     "support": "community",
     "currentVersion": "1.0.0",
-    "author": "",
+    "author": "Randy Uhrlaub",
     "url": "",
     "email": "",
     "created": "2023-11-02T16:10:44Z",
@@ -15,5 +15,5 @@
         "xsoar",
         "marketplacev2"
     ],
-    "githubUser": []
+    "githubUser": ["rurhrlaub"]
 }
