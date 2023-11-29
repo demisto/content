@@ -17,7 +17,7 @@
     "keywords": [],
     "itemPrefix": [
         "Prisma Cloud Compute"
-    ]
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
