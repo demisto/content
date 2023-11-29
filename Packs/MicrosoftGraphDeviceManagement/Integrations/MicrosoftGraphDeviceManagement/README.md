@@ -51,6 +51,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### msgraph-get-managed-device-by-id
 ***
 Get managed devices
+ - Please notice that by default physicalMemoryInBytes will return 0 since Microsoft haven't updated the v1.0 schema with that information yet.
 
 ##### Required Permissions
 DeviceManagementManagedDevices.ReadWrite.All, DeviceManagementManagedDevices.Read.All
