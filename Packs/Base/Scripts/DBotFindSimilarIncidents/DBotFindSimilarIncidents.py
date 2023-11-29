@@ -432,8 +432,8 @@ class Model:
                     or len(self.incident_to_match[field].values[0]) < 2 \
                         or self.incident_to_match[field].values[0] == 'N/A' \
                             or all(not x for x in self.incident_to_match[field].values[0]):
-                remove_list.append(field)
-        self.field_for_json = [x for x in self.field_for_json if x not in remove_list]
+                                remove_list.append(field)
+                                self.field_for_json = [x for x in self.field_for_json if x not in remove_list]
 
     def get_score(self):
         """
