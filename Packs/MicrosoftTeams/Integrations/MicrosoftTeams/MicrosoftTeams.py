@@ -119,6 +119,7 @@ class ErrorHandler:
 DEMISTO_LOGGER: Handler = Handler()
 ERROR_LOGGER: ErrorHandler = ErrorHandler()
 
+
 def handle_teams_proxy_and_ssl():
     proxies = None
     use_ssl = not PARAMS.get('insecure', False)
@@ -132,6 +133,7 @@ def handle_teams_proxy_and_ssl():
         }
         use_ssl = True
     return proxies, use_ssl
+
 
 PROXIES, USE_SSL = handle_teams_proxy_and_ssl()
 
@@ -644,7 +646,7 @@ def get_graph_access_token() -> str:
     if access_token and valid_until and epoch_seconds() < valid_until:
         demisto.debug('Using access token from integration context')
         return access_token
-    tenant_id: str = integration_context.get('tenant_id', '')
+    tenant_id: str = integration_context.get('tenant_id') or demisto.params().get("tenant_id")
     if not tenant_id:
         raise ValueError(
             'Did not receive tenant ID from Microsoft Teams, verify the messaging endpoint is configured correctly. '
