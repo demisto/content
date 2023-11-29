@@ -1,6 +1,6 @@
 {
     "name": "Email Hippo",
-    "description": "Use this free tool to verify email sources as fake emails that were used as part of phishing attacks.",
+    "description": "Use this tool to verify email sources as fake emails that were used as part of phishing attacks.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
