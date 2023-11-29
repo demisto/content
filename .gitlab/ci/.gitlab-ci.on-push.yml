@@ -416,6 +416,8 @@ fan-in-on-push:
     - echo "fan in on push"
   variables:
     master_branch_name: master
+  needs:
+    - job: pre_job
 
 jobs-done-check-on-push:
   rules:
@@ -534,6 +536,8 @@ slack-notify-on-push:
     JIRA_API_KEY: $JIRA_API_KEY
     JIRA_PROJECT_ID: $JIRA_PROJECT_ID
     JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME: $JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME
+  needs:
+    - job: pre_job
 
 slack-notify-on-merge:
   rules:
