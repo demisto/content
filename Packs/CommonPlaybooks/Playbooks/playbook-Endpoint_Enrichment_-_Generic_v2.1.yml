@@ -1,24 +1,29 @@
 id: Endpoint Enrichment - Generic v2.1
 version: -1
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
 name: Endpoint Enrichment - Generic v2.1
 description: |-
   Enrich an endpoint by hostname using one or more integrations.
   Supported integrations:
   - Active Directory Query v2
-  - McAfee ePO v2
-  - VMware Carbon Black EDR v2
+  - McAfee ePolicy Orchestrator
+  - Carbon Black Enterprise Response v2
   - Cylance Protect v2
-  - CrowdStrike Falcon
+  - CrowdStrike Falcon Host
   - ExtraHop Reveal(x)
+
   - Endpoint reputation using !endpoint command
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 5d8bc3f1-e96b-40fa-8846-71e940ade57c
+    taskid: 29bcd70f-1953-4061-84ce-4cde781ad9f7
     type: start
     task:
-      id: 5d8bc3f1-e96b-40fa-8846-71e940ade57c
+      id: 29bcd70f-1953-4061-84ce-4cde781ad9f7
       version: -1
       name: ""
       iscommand: false
@@ -32,7 +37,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 80
+          "y": 50
         }
       }
     note: false
@@ -45,10 +50,10 @@ tasks:
     continueonerrortype: ""
   "1":
     id: "1"
-    taskid: 4216831d-f79c-4d16-86bb-88acdd8ad889
+    taskid: 54895e0d-9904-4e62-8f45-ebd0d17ad5c9
     type: title
     task:
-      id: 4216831d-f79c-4d16-86bb-88acdd8ad889
+      id: 54895e0d-9904-4e62-8f45-ebd0d17ad5c9
       version: -1
       name: Endpoint Products
       type: title
@@ -59,15 +64,71 @@ tasks:
       '#none#':
       - "16"
       - "18"
+      - "19"
       - "20"
       - "30"
-      - "19"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1240,
+          "x": 1750,
           "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "2":
+    id: "2"
+    taskid: c9799048-288a-40cc-8d2f-c561d0ea2f6b
+    type: condition
+    task:
+      id: c9799048-288a-40cc-8d2f-c561d0ea2f6b
+      version: -1
+      name: Is McAfee ePolicy Orchestrator enabled?
+      description: Checks if there is an active instance of the McAfee ePolicy Orchestrator integration enabled.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "5"
+    scriptarguments:
+      value:
+        complex:
+          root: modules
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: brand
+                iscontext: true
+              right:
+                value:
+                  simple: epo
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: state
+                iscontext: true
+              right:
+                value:
+                  simple: active
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 890
         }
       }
     note: false
@@ -80,10 +141,10 @@ tasks:
     continueonerrortype: ""
   "3":
     id: "3"
-    taskid: 92b19661-ae54-4500-87c3-3fdb3931b9ed
+    taskid: efeca58b-3c8f-40aa-8c2e-f9e84257b1bb
     type: condition
     task:
-      id: 92b19661-ae54-4500-87c3-3fdb3931b9ed
+      id: efeca58b-3c8f-40aa-8c2e-f9e84257b1bb
       version: -1
       name: Is there an endpoint to enrich?
       description: Checks whether there is at least one endpoint to enrich (by hostname).
@@ -110,8 +171,6 @@ tasks:
               complex:
                 root: inputs.Hostname
             iscontext: true
-          right:
-            value: {}
     view: |-
       {
         "position": {
@@ -129,10 +188,10 @@ tasks:
     continueonerrortype: ""
   "4":
     id: "4"
-    taskid: c42af673-7dd1-47a6-8195-1e37336ff497
+    taskid: ea90c16b-6985-4f28-816f-78608df3fe51
     type: title
     task:
-      id: c42af673-7dd1-47a6-8195-1e37336ff497
+      id: ea90c16b-6985-4f28-816f-78608df3fe51
       version: -1
       name: Done
       type: title
@@ -144,7 +203,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1040
+          "y": 1600
         }
       }
     note: false
@@ -155,15 +214,55 @@ tasks:
     isoversize: false
     isautoswitchedtoquietmode: false
     continueonerrortype: ""
+  "5":
+    id: "5"
+    taskid: 44a06d71-1772-47af-8d41-8c6dbdd149e7
+    type: regular
+    task:
+      id: 44a06d71-1772-47af-8d41-8c6dbdd149e7
+      version: -1
+      name: Get host information from McAfee ePO
+      description: Gets host information from McAfee ePolicy Orchestrator.
+      script: epo|||epo-find-system
+      type: regular
+      iscommand: true
+      brand: epo
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      searchText:
+        complex:
+          root: inputs.Hostname
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 1115
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "8":
     id: "8"
-    taskid: 9cce37ca-a502-4467-815a-cb6df17d0361
+    taskid: 9fa921fa-d196-40ba-8419-ed0c4f838ab8
     type: condition
     task:
-      id: 9cce37ca-a502-4467-815a-cb6df17d0361
+      id: 9fa921fa-d196-40ba-8419-ed0c4f838ab8
       version: -1
       name: Is Carbon Black Enterprise Response enabled?
       description: Checks if there is an active instance of the Carbon Black Enterprise Response integration enabled.
+      scriptName: Exists
       type: condition
       iscommand: false
       brand: ""
@@ -172,12 +271,34 @@ tasks:
       - "4"
       "yes":
       - "9"
+    scriptarguments:
+      value:
+        complex:
+          root: modules
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: brand
+                iscontext: true
+              right:
+                value:
+                  simple: carbonblack-v2
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: state
+                iscontext: true
+              right:
+                value:
+                  simple: active
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1240,
-          "y": 685
+          "x": 1300,
+          "y": 720
         }
       }
     note: false
@@ -188,43 +309,19 @@ tasks:
     isoversize: false
     isautoswitchedtoquietmode: false
     continueonerrortype: ""
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: containsGeneral
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: VMware Carbon Black EDR v2
-                    ignorecase: true
-                accessor: state
-            iscontext: true
-          right:
-            value:
-              simple: active
-          ignorecase: true
   "9":
     id: "9"
-    taskid: d671c767-d358-4dc4-8a7b-d6134164d80b
+    taskid: 79f17c3a-2456-47d9-8e68-cc3d84ef01bd
     type: regular
     task:
-      id: d671c767-d358-4dc4-8a7b-d6134164d80b
+      id: 79f17c3a-2456-47d9-8e68-cc3d84ef01bd
       version: -1
       name: Get host information from Carbon Black Enterprise Response
-      description: List the CarbonBlack sensors
-      script: '|||cb-edr-sensors-list'
+      description: Gets host information from Carbon Black Enterprise Response.
+      script: carbonblack-v2|||cb-sensor-info
       type: regular
       iscommand: true
-      brand: ""
+      brand: carbonblack-v2
     nexttasks:
       '#none#':
       - "4"
@@ -234,24 +331,14 @@ tasks:
           root: inputs.Hostname
           transformers:
           - operator: uniq
-      id:
-        complex:
-          root: inputs.EndpointID
-          transformers:
-          - operator: uniq
-      ip:
-        complex:
-          root: inputs.IPAddress
-          transformers:
-          - operator: uniq
     reputationcalc: 1
     continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1430,
-          "y": 865
+          "x": 1300,
+          "y": 1056
         }
       }
     note: false
@@ -264,13 +351,14 @@ tasks:
     continueonerrortype: ""
   "10":
     id: "10"
-    taskid: d8864849-9fdf-47af-8af0-d59d858bf712
+    taskid: 216aed2b-2f34-4c5e-8c54-60b978218896
     type: condition
     task:
-      id: d8864849-9fdf-47af-8af0-d59d858bf712
+      id: 216aed2b-2f34-4c5e-8c54-60b978218896
       version: -1
-      name: Is CrowdStrike Falcon enabled?
+      name: Is CrowdStrike Falcon Host enabled?
       description: Checks if there is an active instance of the CrowdStrike Falcon Host integration enabled.
+      scriptName: Exists
       type: condition
       iscommand: false
       brand: ""
@@ -279,12 +367,34 @@ tasks:
       - "4"
       "yes":
       - "27"
+    scriptarguments:
+      value:
+        complex:
+          root: modules
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: brand
+                iscontext: true
+              right:
+                value:
+                  simple: FalconHost
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: state
+                iscontext: true
+              right:
+                value:
+                  simple: active
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 2340,
-          "y": 685
+          "x": 2620,
+          "y": 720
         }
       }
     note: false
@@ -295,36 +405,12 @@ tasks:
     isoversize: false
     isautoswitchedtoquietmode: false
     continueonerrortype: ""
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: CrowdstrikeFalcon
-                    ignorecase: true
-                accessor: state
-            iscontext: true
-          right:
-            value:
-              simple: active
-          ignorecase: true
   "16":
     id: "16"
-    taskid: ccb1a811-251b-4f71-874c-73d8f3b3fd9e
+    taskid: d9d617d9-2efd-466e-8ce7-190f8db83b95
     type: title
     task:
-      id: ccb1a811-251b-4f71-874c-73d8f3b3fd9e
+      id: d9d617d9-2efd-466e-8ce7-190f8db83b95
       version: -1
       name: McAfee ePolicy Orchestrator
       type: title
@@ -338,8 +424,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 690,
-          "y": 555
+          "x": 800,
+          "y": 575
         }
       }
     note: false
@@ -352,10 +438,10 @@ tasks:
     continueonerrortype: ""
   "18":
     id: "18"
-    taskid: d93aac28-18bc-48bb-8d0a-9a8a07e6f8c0
+    taskid: 6cf08862-644d-479e-89ce-f9e173a8c562
     type: title
     task:
-      id: d93aac28-18bc-48bb-8d0a-9a8a07e6f8c0
+      id: 6cf08862-644d-479e-89ce-f9e173a8c562
       version: -1
       name: Carbon Black Enterprise Response
       type: title
@@ -369,8 +455,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1240,
-          "y": 555
+          "x": 1300,
+          "y": 575
         }
       }
     note: false
@@ -383,10 +469,10 @@ tasks:
     continueonerrortype: ""
   "19":
     id: "19"
-    taskid: 9d2d0dcc-a4f6-47ac-81a0-31e5406c5819
+    taskid: 471d3862-a05c-42b1-871d-c1faa2fbb7a9
     type: title
     task:
-      id: 9d2d0dcc-a4f6-47ac-81a0-31e5406c5819
+      id: 471d3862-a05c-42b1-871d-c1faa2fbb7a9
       version: -1
       name: Cylance Protect v2
       type: title
@@ -400,8 +486,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 270,
-          "y": 555
+          "x": 1750,
+          "y": 575
         }
       }
     note: false
@@ -414,12 +500,12 @@ tasks:
     continueonerrortype: ""
   "20":
     id: "20"
-    taskid: 78b9bcb2-51b2-4e8f-85eb-e28c46497274
+    taskid: 5d371f29-3a4c-43c5-8f71-b383db2e5320
     type: title
     task:
-      id: 78b9bcb2-51b2-4e8f-85eb-e28c46497274
+      id: 5d371f29-3a4c-43c5-8f71-b383db2e5320
       version: -1
-      name: CrowdStrike Falcon
+      name: CrowdStrike Falcon Host
       type: title
       iscommand: false
       brand: ""
@@ -431,8 +517,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2340,
-          "y": 555
+          "x": 2620,
+          "y": 575
         }
       }
     note: false
@@ -445,10 +531,10 @@ tasks:
     continueonerrortype: ""
   "22":
     id: "22"
-    taskid: 57c2ab1a-8886-4b78-8a1a-a60c86033247
+    taskid: f7f190b9-5a39-4d8a-83a5-77d5a023f0d4
     type: condition
     task:
-      id: 57c2ab1a-8886-4b78-8a1a-a60c86033247
+      id: f7f190b9-5a39-4d8a-83a5-77d5a023f0d4
       version: -1
       name: Is Active Directory Query v2 enabled?
       description: Checks if there is an active instance of the Active Directory Query v2 integration enabled.
@@ -490,8 +576,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -180,
-          "y": 685
+          "x": -600,
+          "y": 610
         }
       }
     note: false
@@ -504,18 +590,19 @@ tasks:
     continueonerrortype: ""
   "23":
     id: "23"
-    taskid: 179f3f07-0cd9-4868-89c1-a1054e81a52c
+    taskid: 23c75906-3b4e-42e8-8e32-c883d5f06fb3
     type: regular
     task:
-      id: 179f3f07-0cd9-4868-89c1-a1054e81a52c
+      id: 23c75906-3b4e-42e8-8e32-c883d5f06fb3
       version: -1
       name: Get host information from Active Directory
       description: |-
-        Retrieves detailed information about a computer account. The computer can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filters are provided, all computers are returned.
-      script: '|||ad-get-computer'
+        Uses Active Directory to retrieve detailed information about the computer of the account specified. The computer can be specified by name, email address, or as an Active Directory Distinguished Name (DN).
+        If no filters are specified, returns all computers.
+      script: Active Directory Query v2|||ad-get-computer
       type: regular
       iscommand: true
-      brand: ""
+      brand: Active Directory Query v2
     nexttasks:
       '#none#':
       - "4"
@@ -530,8 +617,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -370,
-          "y": 865
+          "x": -600,
+          "y": 890
         }
       }
     note: false
@@ -544,10 +631,10 @@ tasks:
     continueonerrortype: ""
   "24":
     id: "24"
-    taskid: 42e595af-2f63-4026-8b87-3c07624f87bb
+    taskid: 9706cc39-d338-44cd-8ee1-efc5ea95b04d
     type: title
     task:
-      id: 42e595af-2f63-4026-8b87-3c07624f87bb
+      id: 9706cc39-d338-44cd-8ee1-efc5ea95b04d
       version: -1
       name: Active Directory
       type: title
@@ -561,8 +648,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -180,
-          "y": 555
+          "x": -600,
+          "y": 410
         }
       }
     note: false
@@ -575,10 +662,10 @@ tasks:
     continueonerrortype: ""
   "26":
     id: "26"
-    taskid: 5ebd44d1-d270-41ee-8e57-9867f83728f2
+    taskid: d973a016-35b6-4e7c-88a5-9f4c60190224
     type: playbook
     task:
-      id: 5ebd44d1-d270-41ee-8e57-9867f83728f2
+      id: d973a016-35b6-4e7c-88a5-9f4c60190224
       version: -1
       name: Endpoint Enrichment - Cylance Protect v2
       description: Enriches endpoints using the Cylance Protect v2 integration.
@@ -604,8 +691,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 270,
-          "y": 685
+          "x": 1750,
+          "y": 1056
         }
       }
     note: false
@@ -618,14 +705,102 @@ tasks:
     continueonerrortype: ""
   "27":
     id: "27"
-    taskid: 7e378065-9111-4663-80c2-05738f102a8e
+    taskid: f74a190a-1427-4557-8cf1-ff7865da3042
     type: regular
     task:
-      id: 7e378065-9111-4663-80c2-05738f102a8e
+      id: f74a190a-1427-4557-8cf1-ff7865da3042
       version: -1
-      name: Crowdstrike Search device
-      description: Searches for a device that matches the query.
-      script: '|||cs-falcon-search-device'
+      name: Get Crowdstrike device ID
+      description: Gets the Crowdstrike Falcon Host device ID that corresponds to the endpoint that is being enriched. The device ID is necessary to get information about the endpoint.
+      script: '|||cs-device-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      filter:
+        complex:
+          root: inputs.Hostname
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: hostname:"
+              suffix:
+                value:
+                  simple: '"'
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2620,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "28":
+    id: "28"
+    taskid: 9c60a60d-b2f3-4707-8b0f-690891e080d0
+    type: condition
+    task:
+      id: 9c60a60d-b2f3-4707-8b0f-690891e080d0
+      version: -1
+      name: Was a device ID found?
+      description: Checks whether a Crowdstrike device ID was found for the hostname that is being enriched.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: FalconHostDevices
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2620,
+          "y": 1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "29":
+    id: "29"
+    taskid: 9681a79e-1d5e-462c-8e65-ec0bfe1bb7d8
+    type: regular
+    task:
+      id: 9681a79e-1d5e-462c-8e65-ec0bfe1bb7d8
+      version: -1
+      name: Get host information from Crowdstrike Falcon Host
+      description: Gets details for one or more devices, according to device ID.
+      script: '|||cs-device-details'
       type: regular
       iscommand: true
       brand: ""
@@ -633,14 +808,9 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      hostname:
-        complex:
-          root: inputs.Hostname
-          transformers:
-          - operator: uniq
       ids:
         complex:
-          root: inputs.EndpointID
+          root: FalconHostDevices
           transformers:
           - operator: uniq
     reputationcalc: 1
@@ -648,8 +818,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2530,
-          "y": 865
+          "x": 2620,
+          "y": 1430
         }
       }
     note: false
@@ -662,10 +832,10 @@ tasks:
     continueonerrortype: ""
   "30":
     id: "30"
-    taskid: f113d54c-ffcf-4ba2-856c-2fd5f99577e0
+    taskid: ec344482-77f7-42b5-8ee4-34317afd1179
     type: title
     task:
-      id: f113d54c-ffcf-4ba2-856c-2fd5f99577e0
+      id: ec344482-77f7-42b5-8ee4-34317afd1179
       version: -1
       name: ExtraHop Reveal(x)
       type: title
@@ -679,8 +849,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1790,
-          "y": 555
+          "x": 2180,
+          "y": 575
         }
       }
     note: false
@@ -693,10 +863,10 @@ tasks:
     continueonerrortype: ""
   "31":
     id: "31"
-    taskid: 50412bea-e908-43d0-8bdc-6b0db02d3a1e
+    taskid: 58c8b4be-657c-45f6-8eca-5a01da85f1f3
     type: condition
     task:
-      id: 50412bea-e908-43d0-8bdc-6b0db02d3a1e
+      id: 58c8b4be-657c-45f6-8eca-5a01da85f1f3
       version: -1
       name: Is ExtraHop Reveal(x) enabled?
       description: Checks if there is an active instance of the ExtraHop Reveal(x) integration enabled.
@@ -735,8 +905,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1790,
-          "y": 685
+          "x": 2180,
+          "y": 720
         }
       }
     note: false
@@ -749,14 +919,14 @@ tasks:
     continueonerrortype: ""
   "32":
     id: "32"
-    taskid: e121fc71-0235-4200-887b-edac7b850530
+    taskid: 344e1330-e5f8-4292-83df-7a4fba147ebf
     type: regular
     task:
-      id: e121fc71-0235-4200-887b-edac7b850530
+      id: 344e1330-e5f8-4292-83df-7a4fba147ebf
       version: -1
       name: Get host information from ExtraHop Reveal(x)
-      description: Search for devices in ExtraHop Reveal(x).
-      script: '|||extrahop-devices-search'
+      description: Get host information from ExtraHop Reveal(x).
+      script: '|||extrahop-device-search'
       type: regular
       iscommand: true
       brand: ""
@@ -765,21 +935,13 @@ tasks:
       - "4"
     scriptarguments:
       name:
-        complex:
-          root: inputs.Hostname
-          transformers:
-          - operator: uniq
-      ip:
-        complex:
-          root: inputs.IPAddress
-          transformers:
-          - operator: uniq
+        simple: ${inputs.Hostname}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1980,
-          "y": 865
+          "x": 2180,
+          "y": 1056
         }
       }
     note: false
@@ -792,19 +954,19 @@ tasks:
     continueonerrortype: ""
   "33":
     id: "33"
-    taskid: 34805647-c328-4162-8cb0-c5a33798795c
+    taskid: cb25c554-4bce-4f19-8bf1-974a6a51c57d
     type: condition
     task:
-      id: 34805647-c328-4162-8cb0-c5a33798795c
+      id: cb25c554-4bce-4f19-8bf1-974a6a51c57d
       version: -1
       name: is Mcafee ePolicy Orchestrator v2 enabled
-      description: "Checks if there is an active Mcafee ePolicy Orchestrator v2 integration instance enabled."
+      description: "Gets a value and returns it. This is to be used in playbook conditional tasks - get a value from incident field, label or context, and act accordingly. \nIf an array is returned. the first value will be the decision making value."
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "4"
+      - "2"
       "yes":
       - "34"
     separatecontext: false
@@ -838,8 +1000,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 690,
-          "y": 685
+          "x": 800,
+          "y": 720
         }
       }
     note: false
@@ -852,34 +1014,31 @@ tasks:
     continueonerrortype: ""
   "34":
     id: "34"
-    taskid: e5b3981a-5a9a-4d8e-8241-ecea85df5f26
+    taskid: 06214be3-c325-4805-8b3f-ad0a3bce4872
     type: regular
     task:
-      id: e5b3981a-5a9a-4d8e-8241-ecea85df5f26
+      id: 06214be3-c325-4805-8b3f-ad0a3bce4872
       version: -1
       name: Get- host information from McAfee ePO v2
       description: Finds systems in the McAfee ePO system tree.
-      script: '|||epo-find-system'
+      script: McAfee ePO v2|||epo-find-system
       type: regular
       iscommand: true
-      brand: ""
+      brand: McAfee ePO v2
     nexttasks:
       '#none#':
       - "4"
     scriptarguments:
       searchText:
-        complex:
-          root: inputs.Hostname
-          transformers:
-          - operator: uniq
+        simple: ${inputs.Hostname}
       verbose:
         simple: "false"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 880,
-          "y": 865
+          "x": 800,
+          "y": 880
         }
       }
     note: false
@@ -905,20 +1064,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: cab0144b-8e4d-4bfb-8074-93827792779e
+      id: f2dbaff5-7c92-47ad-80cc-991bfd80ff98
       iscommand: false
       name: Endpoint Reputation
       type: title
       version: -1
       description: ''
-    taskid: cab0144b-8e4d-4bfb-8074-93827792779e
+    taskid: f2dbaff5-7c92-47ad-80cc-991bfd80ff98
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
-          "x": -720,
-          "y": 555
+          "x": -1050,
+          "y": 410
         }
       }
   "36":
@@ -951,20 +1110,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 715335ab-613a-47c1-8913-6c607918b32c
+      id: 50fed99c-1eb9-4a6f-85d0-f9d5ee74bc5a
       iscommand: false
       name: Should use !endpoint command?
       description: Check if should run endpoint reputation command
       type: condition
       version: -1
-    taskid: 715335ab-613a-47c1-8913-6c607918b32c
+    taskid: 50fed99c-1eb9-4a6f-85d0-f9d5ee74bc5a
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": -720,
-          "y": 685
+          "x": -1050,
+          "y": 620
         }
       }
   "37":
@@ -982,37 +1141,31 @@ tasks:
       hostname:
         complex:
           root: inputs.Hostname
-          transformers:
-          - operator: uniq
       id:
         complex:
           root: inputs.EndpointID
-          transformers:
-          - operator: uniq
       ip:
         complex:
           root: inputs.IPAddress
-          transformers:
-          - operator: uniq
     separatecontext: false
     skipunavailable: true
     task:
       brand: ""
       description: Returns information about an endpoint.
-      id: 790ca805-369a-4082-869f-920477efaacb
+      id: 79880978-7c28-4aaf-83b3-7f8ea42da67f
       iscommand: true
       name: Check Reputation
       script: '|||endpoint'
       type: regular
       version: -1
-    taskid: 790ca805-369a-4082-869f-920477efaacb
+    taskid: 79880978-7c28-4aaf-83b3-7f8ea42da67f
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": -920,
-          "y": 865
+          "x": -1050,
+          "y": 885
         }
       }
 view: |-
@@ -1021,24 +1174,26 @@ view: |-
       "10_27_yes": 0.69,
       "10_4_#default#": 0.1,
       "22_23_yes": 0.54,
-      "22_4_#default#": 0.31,
+      "22_4_#default#": 0.15,
+      "28_29_yes": 0.69,
+      "28_4_#default#": 0.12,
+      "2_4_#default#": 0.43,
+      "2_5_yes": 0.64,
       "31_32_yes": 0.64,
       "31_4_#default#": 0.1,
-      "33_4_#default#": 0.1,
       "36_37_yes": 0.49,
-      "36_4_#default#": 0.13,
       "3_1_yes": 0.3,
       "3_24_yes": 0.41,
-      "3_4_#default#": 0.23,
-      "8_4_#default#": 0.1,
+      "3_4_#default#": 0.12,
+      "8_4_#default#": 0.15,
       "8_9_yes": 0.62
     },
     "paper": {
       "dimensions": {
-        "height": 1025,
-        "width": 3830,
-        "x": -920,
-        "y": 80
+        "height": 1615,
+        "width": 4050,
+        "x": -1050,
+        "y": 50
       }
     }
   }
@@ -1057,7 +1212,6 @@ inputs:
     Define if you would like to use the !endpoint command.
     Note: This input should be used whenever there is no auto-extract enabled in the investigation flow.
     Possible values: True / False.
-    The default value is false.
   key: UseReputationCommand
   playbookInputQuery:
   required: true
@@ -1067,22 +1221,12 @@ inputs:
   key: IPAddress
   playbookInputQuery:
   required: false
-  value:
-    complex:
-      root: Endpoint
-      accessor: IPAddress
-      transformers:
-      - operator: uniq
+  value: {}
 - description: The endpoint ID of the endpoint to enrich.
   key: EndpointID
   playbookInputQuery:
   required: false
-  value:
-    complex:
-      root: Endpoint
-      accessor: ID
-      transformers:
-      - operator: uniq
+  value: {}
 outputs:
 - contextPath: Endpoint
   description: The endpoint object of the endpoint that was enriched.
@@ -1093,6 +1237,8 @@ outputs:
 - contextPath: Endpoint.OS
   description: The operating systems running on the endpoints that were enriched.
   type: string
+- contextPath: Endpoint.IP
+  description: A list of the IP addresses of the endpoints.
 - contextPath: Endpoint.MAC
   description: A list of the MAC addresses of the endpoints that were enriched.
 - contextPath: Endpoint.Domain
@@ -1204,229 +1350,28 @@ outputs:
   description: Groups for which the computer is listed as a member.
 - contextPath: ActiveDirectory.ComputersPageCookie
   description: An opaque string received in a paged search, used for requesting subsequent entries.
-- contextPath: Endpoint.OSVersion
-  description: The endpoint operation system version.
-- contextPath: Endpoint.Processor
-  description: Processor model.
-- contextPath: Endpoint.Processors
-  description: Number of processors.
-- contextPath: Endpoint.Memory
-  description: The amount of memory in the endpoint.
-- contextPath: McAfee.ePO.Endpoint.ParentID
-  description: Endpoint parent ID.
-- contextPath: McAfee.ePO.Endpoint.ComputerName
-  description: Endpoint computer name.
-- contextPath: McAfee.ePO.Endpoint.Description
-  description: Endpoint description.
-- contextPath: McAfee.ePO.Endpoint.SystemDescription
-  description: Endpoint system description.
-- contextPath: McAfee.ePO.Endpoint.TimeZone
-  description: Endpoint time zone.
-- contextPath: McAfee.ePO.Endpoint.DefaultLangID
-  description: Endpoint default language ID.
-- contextPath: McAfee.ePO.Endpoint.UserName
-  description: Endpoint username.
-- contextPath: McAfee.ePO.Endpoint.Domain
-  description: Endpoint domain name.
-- contextPath: McAfee.ePO.Endpoint.Hostname
-  description: Endpoint IP host name.
-- contextPath: McAfee.ePO.Endpoint.IPV6
-  description: Endpoint IPv6 address.
-- contextPath: McAfee.ePO.Endpoint.IPAddress
-  description: Endpoint IP address.
-- contextPath: McAfee.ePO.Endpoint.IPSubnet
-  description: Endpoint IP subnet.
-- contextPath: McAfee.ePO.Endpoint.IPSubnetMask
-  description: Endpoint IP subnet mask.
-- contextPath: McAfee.ePO.Endpoint.IPV4x
-  description: Endpoint IPV4x address.
-- contextPath: McAfee.ePO.Endpoint.IPXAddress
-  description: Endpoint IPX address.
-- contextPath: McAfee.ePO.Endpoint.SubnetAddress
-  description: Endpoint subnet address.
-- contextPath: McAfee.ePO.Endpoint.SubnetMask
-  description: Endpoint subnet mask.
-- contextPath: McAfee.ePO.Endpoint.NetAddress
-  description: Endpoint net address.
-- contextPath: McAfee.ePO.Endpoint.OSType
-  description: Endpoint OS type.
-- contextPath: McAfee.ePO.Endpoint.OSVersion
-  description: Endpoint OS version.
-- contextPath: McAfee.ePO.Endpoint.OSServicePackVer
-  description: Endpoint OS service pack version.
-- contextPath: McAfee.ePO.Endpoint.OSBuildNum
-  description: Endpoint OS build number.
-- contextPath: McAfee.ePO.Endpoint.OSPlatform
-  description: Endpoint OS platform.
-- contextPath: McAfee.ePO.Endpoint.OSOEMID
-  description: Endpoint OS OEM ID.
-- contextPath: McAfee.ePO.Endpoint.Processor
-  description: Endpoint CPU type.
-- contextPath: McAfee.ePO.Endpoint.CPUSpeed
-  description: Endpoint CPU speed.
-- contextPath: McAfee.ePO.Endpoint.Processors
-  description: Number of CPUs in the endpoint.
-- contextPath: McAfee.ePO.Endpoint.CPUSerialNum
-  description: Endpoint CPU serial number.
-- contextPath: McAfee.ePO.Endpoint.Memory
-  description: The total amount of physical memory in the endpoint.
-- contextPath: McAfee.ePO.Endpoint.FreeMemory
-  description: The amount of free memory in the endpoint.
-- contextPath: McAfee.ePO.Endpoint.FreeDiskSpace
-  description: The amount of free disk space in the endpoint.
-- contextPath: McAfee.ePO.Endpoint.TotalDiskSpace
-  description: The total amount of disk space in the endpoint.
-- contextPath: McAfee.ePO.Endpoint.UserProperty1
-  description: Endpoint user property 1.
-- contextPath: McAfee.ePO.Endpoint.UserProperty2
-  description: Endpoint user property 2.
-- contextPath: McAfee.ePO.Endpoint.UserProperty3
-  description: Endpoint user property 3.
-- contextPath: McAfee.ePO.Endpoint.UserProperty4
-  description: Endpoint user property 4.
-- contextPath: McAfee.ePO.Endpoint.SysvolFreeSpace
-  description: The amount of system volume free space in the endpoint.
-- contextPath: McAfee.ePO.Endpoint.SysvolTotalSpace
-  description: The total amount of system volume space in the endpoint.
-- contextPath: McAfee.ePO.Endpoint.Tags
-  description: Endpoint ePO tags.
-- contextPath: McAfee.ePO.Endpoint.ExcludedTags
-  description: Endpoint EPO excluded tags.
-- contextPath: McAfee.ePO.Endpoint.LastUpdate
-  description: The date the endpoint was last updated.
-- contextPath: McAfee.ePO.Endpoint.ManagedState
-  description: Endpoint managed state.
-- contextPath: McAfee.ePO.Endpoint.AgentGUID
-  description: Endpoint agent GUID.
-- contextPath: McAfee.ePO.Endpoint.AgentVersion
-  description: Endpoint agent version.
-- contextPath: McAfee.ePO.Endpoint.AutoID
-  description: Endpoint auto ID.
-- contextPath: CarbonBlackEDR.Sensor.systemvolume_total_size
-  description: The size, in bytes, of system volume of endpoint on which sensor in installed.
-- contextPath: CarbonBlackEDR.Sensor.emet_telemetry_path
-  description: The path of emet telemtry associated with the sensor.
-- contextPath: CarbonBlackEDR.Sensor.os_environment_display_string
-  description: Human-readable string of the installed OS.
-- contextPath: CarbonBlackEDR.Sensor.emet_version
-  description: The emet version associated with the sensor.
-- contextPath: CarbonBlackEDR.Sensor.emet_dump_flags
-  description: The flags of emet dump associated with the sensor.
-- contextPath: CarbonBlackEDR.Sensor.clock_delta
-  description: The clock delta associated with the sensor.
-- contextPath: CarbonBlackEDR.Sensor.supports_cblr
-  description: Whether the sensor supports cblr.
-- contextPath: CarbonBlackEDR.Sensor.sensor_uptime
-  description: The uptime of the process.
-- contextPath: CarbonBlackEDR.Sensor.last_update
-  description: When the sensor last updated.
-- contextPath: CarbonBlackEDR.Sensor.physical_memory_size
-  description: The size in bytes of physical memory.
-- contextPath: CarbonBlackEDR.Sensor.build_id
-  description: The sensor version installed on this endpoint. From the /api/builds/ endpoint.
-- contextPath: CarbonBlackEDR.Sensor.uptime
-  description: Endpoint uptime in seconds.
-- contextPath: CarbonBlackEDR.Sensor.is_isolating
-  description: Boolean representing sensor-reported isolation status.
-- contextPath: CarbonBlackEDR.Sensor.event_log_flush_time
-  description: |-
-    If event_log_flush_time is set, the server will instruct the sensor to immediately
-    send all data before this date, ignoring all other throttling mechansims.
-    To force a host current, set this value to a value far in the future.
-    When the sensor has finished sending it’s queued data, this value will be null.
-- contextPath: CarbonBlackEDR.Sensor.computer_dns_name
-  description: The DNS name of the endpoint on which the sensor is installed.
-- contextPath: CarbonBlackEDR.Sensor.emet_report_setting
-  description: The report setting of EMET associated with sensor.
-- contextPath: CarbonBlackEDR.Sensor.id
-  description: The sensor id of this sensor.
-- contextPath: CarbonBlackEDR.Sensor.emet_process_count
-  description: The number of EMET processes associated with the sensor.
-- contextPath: CarbonBlackEDR.Sensor.emet_is_gpo
-  description: Whther the EMET is gpo.
-- contextPath: CarbonBlackEDR.Sensor.power_state
-  description: The sensor power state.
-- contextPath: CarbonBlackEDR.Sensor.network_isolation_enabled
-  description: Boolean representing network isolation request status.
-- contextPath: CarbonBlackEDR.Sensor.systemvolume_free_size
-  description: The bytes free on the system volume.
-- contextPath: CarbonBlackEDR.Sensor.status
-  description: The sensor status.
-- contextPath: CarbonBlackEDR.Sensor.num_eventlog_bytes
-  description: Number bytes of eventlog.
-- contextPath: CarbonBlackEDR.Sensor.sensor_health_message
-  description: Human-readable string indicating sensor’s self-reported status.
-- contextPath: CarbonBlackEDR.Sensor.build_version_string
-  description: Human-readable string of the sensor version.
-- contextPath: CarbonBlackEDR.Sensor.computer_sid
-  description: Machine SID of this host.
-- contextPath: CarbonBlackEDR.Sensor.next_checkin_time
-  description: Next expected communication from this computer in server-local time and zone.
-- contextPath: CarbonBlackEDR.Sensor.node_id
-  description: The node ID associated with the sensor.
-- contextPath: CarbonBlackEDR.Sensor.cookie
-  description: The cookie associated with the sensor.
-- contextPath: CarbonBlackEDR.Sensor.emet_exploit_action
-  description: The EMET exploit action associated with the sensor.
-- contextPath: CarbonBlackEDR.Sensor.computer_name
-  description: NetBIOS name of this computer.
-- contextPath: CarbonBlackEDR.Sensor.license_expiration
-  description: When the licene of the sensor expires.
-- contextPath: CarbonBlackEDR.Sensor.supports_isolation
-  description: Whther sensor supports isolation.
-- contextPath: CarbonBlackEDR.Sensor.parity_host_id
-  description: The ID of the parity host associated with the sensor.
-- contextPath: CarbonBlackEDR.Sensor.supports_2nd_gen_modloads
-  description: Whether the sensor support modload of 2nd generation.
-- contextPath: CarbonBlackEDR.Sensor.network_adapters
-  description: A pipe-delimited list list of IP,MAC pairs for each network interface.
-- contextPath: CarbonBlackEDR.Sensor.sensor_health_status
-  description: self-reported health score, from 0 to 100. Higher numbers are better.
-- contextPath: CarbonBlackEDR.Sensor.registration_time
-  description: Time this sensor originally registered in server-local time and zone.
-- contextPath: CarbonBlackEDR.Sensor.restart_queued
-  description: Whether a restart of the sensot is queued.
-- contextPath: CarbonBlackEDR.Sensor.notes
-  description: The notes associated with the sensor.
-- contextPath: CarbonBlackEDR.Sensor.num_storefiles_bytes
-  description: Number of storefiles bytes associated with the sensor.
-- contextPath: CarbonBlackEDR.Sensor.os_environment_id
-  description: The ID of the os enviroment of the sensor.
-- contextPath: CarbonBlackEDR.Sensor.shard_id
-  description: The ID of the shard associated with the sensor.
-- contextPath: CarbonBlackEDR.Sensor.boot_id
-  description: A sequential counter of boots since the sensor was installed.
-- contextPath: CarbonBlackEDR.Sensor.last_checkin_time
-  description: Last communication with this computer in server-local time and zone.
-- contextPath: CarbonBlackEDR.Sensor.os_type
-  description: The operating system type of the computer.
-- contextPath: CarbonBlackEDR.Sensor.group_id
-  description: The sensor group id this sensor is assigned to.
-- contextPath: CarbonBlackEDR.Sensor.display
-  description: Deprecated.
-- contextPath: CarbonBlackEDR.Sensor.uninstall
-  description: when set, indicates sensor will be directed to uninstall on next checkin.
-- contextPath: CrowdStrike.Device.ID
-  description: The ID of the device.
-- contextPath: CrowdStrike.Device.LocalIP
-  description: The local IP address of the device.
-- contextPath: CrowdStrike.Device.ExternalIP
-  description: The external IP address of the device.
-- contextPath: CrowdStrike.Device.Hostname
-  description: The host name of the device.
-- contextPath: CrowdStrike.Device.OS
-  description: The operating system of the device.
-- contextPath: CrowdStrike.Device.MacAddress
-  description: The MAC address of the device.
-- contextPath: CrowdStrike.Device.FirstSeen
-  description: The first time the device was seen.
-- contextPath: CrowdStrike.Device.LastSeen
-  description: The last time the device was seen.
-- contextPath: CrowdStrike.Device.PolicyType
-  description: The policy type of the device.
-- contextPath: CrowdStrike.Device.Status
-  description: The device status.
 tests:
+- Field polling test
+- test-domain-indicator
+- Calculate Severity - Generic v2 - Test
+- Wait Until Datetime - Test
+- Calculate Severity - Standard - Test
+- Extract Indicators From File - Generic v2 - Test
+- URL Enrichment - Generic v2 - Test
+- File Enrichment - Generic v2 - Test
+- Domain Enrichment - Generic v2 - Test
+- Account Enrichment - Generic v2.1 - Test
+- IP Enrichment - Generic v2 - Test
+- Get endpoint details - Generic - test
+- Detonate URL - Generic Test
+- Email Address Enrichment - Generic v2.1 - Test
+- Generic Polling Test
+- Send Investigation Summary Reports - Test
+- Detonate File - No Files test
+- Test Convert file hash to corresponding hashes
+- Detonate File - Generic Test
 - Endpoint Enrichment - Generic v2.1 - Test
+- Isolate and unisolate endpoint - test
+- Block IP - Generic V3_Test
 fromversion: 5.0.0
 toversion: 6.7.9

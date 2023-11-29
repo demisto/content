@@ -1,11 +1,12 @@
 Enrich an endpoint by hostname using one or more integrations.
 Supported integrations:
 - Active Directory Query v2
-- McAfee ePO v2
-- VMware Carbon Black EDR v2
+- McAfee ePolicy Orchestrator
+- Carbon Black Enterprise Response v2
 - Cylance Protect v2
-- CrowdStrike Falcon
+- CrowdStrike Falcon Host
 - ExtraHop Reveal(x)
+
 - Endpoint reputation using !endpoint command
 
 ## Dependencies
@@ -18,7 +19,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Integrations
 
-This playbook does not use any integrations.
+* McAfee ePO v2
+* carbonblack-v2
+* Active Directory Query v2
+* epo
 
 ### Scripts
 
@@ -26,12 +30,13 @@ This playbook does not use any integrations.
 
 ### Commands
 
-* epo-find-system
+* cb-sensor-info
+* extrahop-device-search
 * endpoint
+* cs-device-details
+* cs-device-search
 * ad-get-computer
-* cs-falcon-search-device
-* cb-edr-sensors-list
-* extrahop-devices-search
+* epo-find-system
 
 ## Playbook Inputs
 
@@ -40,9 +45,9 @@ This playbook does not use any integrations.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | Hostname | The hostname of the endpoint to enrich. | Endpoint.Hostname | Optional |
-| UseReputationCommand | Define if you would like to use the \!endpoint command.<br/>Note: This input should be used whenever there is no auto-extract enabled in the investigation flow.<br/>Possible values: True / False.<br/>The default value is false. | False | Required |
-| IPAddress | The IP address of the endpoint to enrich. | Endpoint.IPAddress | Optional |
-| EndpointID | The endpoint ID of the endpoint to enrich. | Endpoint.ID | Optional |
+| UseReputationCommand | Define if you would like to use the \!endpoint command.<br/>Note: This input should be used whenever there is no auto-extract enabled in the investigation flow.<br/>Possible values: True / False. | False | Required |
+| IPAddress | The IP address of the endpoint to enrich. |  | Optional |
+| EndpointID | The endpoint ID of the endpoint to enrich. |  | Optional |
 
 ## Playbook Outputs
 
@@ -53,6 +58,7 @@ This playbook does not use any integrations.
 | Endpoint | The endpoint object of the endpoint that was enriched. | unknown |
 | Endpoint.Hostname | The hostnames of the endpoints that were enriched. | string |
 | Endpoint.OS | The operating systems running on the endpoints that were enriched. | string |
+| Endpoint.IP | A list of the IP addresses of the endpoints. | unknown |
 | Endpoint.MAC | A list of the MAC addresses of the endpoints that were enriched. | unknown |
 | Endpoint.Domain | The domain names of the endpoints that were enriched. | string |
 | CylanceProtectDevice | The device information about the hostname that was enriched using Cylance Protect v2. | unknown |
@@ -94,115 +100,6 @@ This playbook does not use any integrations.
 | ActiveDirectory.Computers.name | The computer name. | unknown |
 | Endpoint.Groups | Groups for which the computer is listed as a member. | unknown |
 | ActiveDirectory.ComputersPageCookie | An opaque string received in a paged search, used for requesting subsequent entries. | unknown |
-| Endpoint.OSVersion | The endpoint operation system version. | unknown |
-| Endpoint.Processor | Processor model. | unknown |
-| Endpoint.Processors | Number of processors. | unknown |
-| Endpoint.Memory | The amount of memory in the endpoint. | unknown |
-| McAfee.ePO.Endpoint.ParentID | Endpoint parent ID. | unknown |
-| McAfee.ePO.Endpoint.ComputerName | Endpoint computer name. | unknown |
-| McAfee.ePO.Endpoint.Description | Endpoint description. | unknown |
-| McAfee.ePO.Endpoint.SystemDescription | Endpoint system description. | unknown |
-| McAfee.ePO.Endpoint.TimeZone | Endpoint time zone. | unknown |
-| McAfee.ePO.Endpoint.DefaultLangID | Endpoint default language ID. | unknown |
-| McAfee.ePO.Endpoint.UserName | Endpoint username. | unknown |
-| McAfee.ePO.Endpoint.Domain | Endpoint domain name. | unknown |
-| McAfee.ePO.Endpoint.Hostname | Endpoint IP host name. | unknown |
-| McAfee.ePO.Endpoint.IPV6 | Endpoint IPv6 address. | unknown |
-| McAfee.ePO.Endpoint.IPAddress | Endpoint IP address. | unknown |
-| McAfee.ePO.Endpoint.IPSubnet | Endpoint IP subnet. | unknown |
-| McAfee.ePO.Endpoint.IPSubnetMask | Endpoint IP subnet mask. | unknown |
-| McAfee.ePO.Endpoint.IPV4x | Endpoint IPV4x address. | unknown |
-| McAfee.ePO.Endpoint.IPXAddress | Endpoint IPX address. | unknown |
-| McAfee.ePO.Endpoint.SubnetAddress | Endpoint subnet address. | unknown |
-| McAfee.ePO.Endpoint.SubnetMask | Endpoint subnet mask. | unknown |
-| McAfee.ePO.Endpoint.NetAddress | Endpoint net address. | unknown |
-| McAfee.ePO.Endpoint.OSType | Endpoint OS type. | unknown |
-| McAfee.ePO.Endpoint.OSVersion | Endpoint OS version. | unknown |
-| McAfee.ePO.Endpoint.OSServicePackVer | Endpoint OS service pack version. | unknown |
-| McAfee.ePO.Endpoint.OSBuildNum | Endpoint OS build number. | unknown |
-| McAfee.ePO.Endpoint.OSPlatform | Endpoint OS platform. | unknown |
-| McAfee.ePO.Endpoint.OSOEMID | Endpoint OS OEM ID. | unknown |
-| McAfee.ePO.Endpoint.Processor | Endpoint CPU type. | unknown |
-| McAfee.ePO.Endpoint.CPUSpeed | Endpoint CPU speed. | unknown |
-| McAfee.ePO.Endpoint.Processors | Number of CPUs in the endpoint. | unknown |
-| McAfee.ePO.Endpoint.CPUSerialNum | Endpoint CPU serial number. | unknown |
-| McAfee.ePO.Endpoint.Memory | The total amount of physical memory in the endpoint. | unknown |
-| McAfee.ePO.Endpoint.FreeMemory | The amount of free memory in the endpoint. | unknown |
-| McAfee.ePO.Endpoint.FreeDiskSpace | The amount of free disk space in the endpoint. | unknown |
-| McAfee.ePO.Endpoint.TotalDiskSpace | The total amount of disk space in the endpoint. | unknown |
-| McAfee.ePO.Endpoint.UserProperty1 | Endpoint user property 1. | unknown |
-| McAfee.ePO.Endpoint.UserProperty2 | Endpoint user property 2. | unknown |
-| McAfee.ePO.Endpoint.UserProperty3 | Endpoint user property 3. | unknown |
-| McAfee.ePO.Endpoint.UserProperty4 | Endpoint user property 4. | unknown |
-| McAfee.ePO.Endpoint.SysvolFreeSpace | The amount of system volume free space in the endpoint. | unknown |
-| McAfee.ePO.Endpoint.SysvolTotalSpace | The total amount of system volume space in the endpoint. | unknown |
-| McAfee.ePO.Endpoint.Tags | Endpoint ePO tags. | unknown |
-| McAfee.ePO.Endpoint.ExcludedTags | Endpoint EPO excluded tags. | unknown |
-| McAfee.ePO.Endpoint.LastUpdate | The date the endpoint was last updated. | unknown |
-| McAfee.ePO.Endpoint.ManagedState | Endpoint managed state. | unknown |
-| McAfee.ePO.Endpoint.AgentGUID | Endpoint agent GUID. | unknown |
-| McAfee.ePO.Endpoint.AgentVersion | Endpoint agent version. | unknown |
-| McAfee.ePO.Endpoint.AutoID | Endpoint auto ID. | unknown |
-| CarbonBlackEDR.Sensor.systemvolume_total_size | The size, in bytes, of system volume of endpoint on which sensor in installed. | unknown |
-| CarbonBlackEDR.Sensor.emet_telemetry_path | The path of emet telemtry associated with the sensor. | unknown |
-| CarbonBlackEDR.Sensor.os_environment_display_string | Human-readable string of the installed OS. | unknown |
-| CarbonBlackEDR.Sensor.emet_version | The emet version associated with the sensor. | unknown |
-| CarbonBlackEDR.Sensor.emet_dump_flags | The flags of emet dump associated with the sensor. | unknown |
-| CarbonBlackEDR.Sensor.clock_delta | The clock delta associated with the sensor. | unknown |
-| CarbonBlackEDR.Sensor.supports_cblr | Whether the sensor supports cblr. | unknown |
-| CarbonBlackEDR.Sensor.sensor_uptime | The uptime of the process. | unknown |
-| CarbonBlackEDR.Sensor.last_update | When the sensor last updated. | unknown |
-| CarbonBlackEDR.Sensor.physical_memory_size | The size in bytes of physical memory. | unknown |
-| CarbonBlackEDR.Sensor.build_id | The sensor version installed on this endpoint. From the /api/builds/ endpoint. | unknown |
-| CarbonBlackEDR.Sensor.uptime | Endpoint uptime in seconds. | unknown |
-| CarbonBlackEDR.Sensor.is_isolating | Boolean representing sensor-reported isolation status. | unknown |
-| CarbonBlackEDR.Sensor.event_log_flush_time | If event_log_flush_time is set, the server will instruct the sensor to immediately<br/>send all data before this date, ignoring all other throttling mechansims.<br/>To force a host current, set this value to a value far in the future.<br/>When the sensor has finished sending it’s queued data, this value will be null. | unknown |
-| CarbonBlackEDR.Sensor.computer_dns_name | The DNS name of the endpoint on which the sensor is installed. | unknown |
-| CarbonBlackEDR.Sensor.emet_report_setting | The report setting of EMET associated with sensor. | unknown |
-| CarbonBlackEDR.Sensor.id | The sensor id of this sensor. | unknown |
-| CarbonBlackEDR.Sensor.emet_process_count | The number of EMET processes associated with the sensor. | unknown |
-| CarbonBlackEDR.Sensor.emet_is_gpo | Whther the EMET is gpo. | unknown |
-| CarbonBlackEDR.Sensor.power_state | The sensor power state. | unknown |
-| CarbonBlackEDR.Sensor.network_isolation_enabled | Boolean representing network isolation request status. | unknown |
-| CarbonBlackEDR.Sensor.systemvolume_free_size | The bytes free on the system volume. | unknown |
-| CarbonBlackEDR.Sensor.status | The sensor status. | unknown |
-| CarbonBlackEDR.Sensor.num_eventlog_bytes | Number bytes of eventlog. | unknown |
-| CarbonBlackEDR.Sensor.sensor_health_message | Human-readable string indicating sensor’s self-reported status. | unknown |
-| CarbonBlackEDR.Sensor.build_version_string | Human-readable string of the sensor version. | unknown |
-| CarbonBlackEDR.Sensor.computer_sid | Machine SID of this host. | unknown |
-| CarbonBlackEDR.Sensor.next_checkin_time | Next expected communication from this computer in server-local time and zone. | unknown |
-| CarbonBlackEDR.Sensor.node_id | The node ID associated with the sensor. | unknown |
-| CarbonBlackEDR.Sensor.cookie | The cookie associated with the sensor. | unknown |
-| CarbonBlackEDR.Sensor.emet_exploit_action | The EMET exploit action associated with the sensor. | unknown |
-| CarbonBlackEDR.Sensor.computer_name | NetBIOS name of this computer. | unknown |
-| CarbonBlackEDR.Sensor.license_expiration | When the licene of the sensor expires. | unknown |
-| CarbonBlackEDR.Sensor.supports_isolation | Whther sensor supports isolation. | unknown |
-| CarbonBlackEDR.Sensor.parity_host_id | The ID of the parity host associated with the sensor. | unknown |
-| CarbonBlackEDR.Sensor.supports_2nd_gen_modloads | Whether the sensor support modload of 2nd generation. | unknown |
-| CarbonBlackEDR.Sensor.network_adapters | A pipe-delimited list list of IP,MAC pairs for each network interface. | unknown |
-| CarbonBlackEDR.Sensor.sensor_health_status | self-reported health score, from 0 to 100. Higher numbers are better. | unknown |
-| CarbonBlackEDR.Sensor.registration_time | Time this sensor originally registered in server-local time and zone. | unknown |
-| CarbonBlackEDR.Sensor.restart_queued | Whether a restart of the sensot is queued. | unknown |
-| CarbonBlackEDR.Sensor.notes | The notes associated with the sensor. | unknown |
-| CarbonBlackEDR.Sensor.num_storefiles_bytes | Number of storefiles bytes associated with the sensor. | unknown |
-| CarbonBlackEDR.Sensor.os_environment_id | The ID of the os enviroment of the sensor. | unknown |
-| CarbonBlackEDR.Sensor.shard_id | The ID of the shard associated with the sensor. | unknown |
-| CarbonBlackEDR.Sensor.boot_id | A sequential counter of boots since the sensor was installed. | unknown |
-| CarbonBlackEDR.Sensor.last_checkin_time | Last communication with this computer in server-local time and zone. | unknown |
-| CarbonBlackEDR.Sensor.os_type | The operating system type of the computer. | unknown |
-| CarbonBlackEDR.Sensor.group_id | The sensor group id this sensor is assigned to. | unknown |
-| CarbonBlackEDR.Sensor.display | Deprecated. | unknown |
-| CarbonBlackEDR.Sensor.uninstall | when set, indicates sensor will be directed to uninstall on next checkin. | unknown |
-| CrowdStrike.Device.ID | The ID of the device. | unknown |
-| CrowdStrike.Device.LocalIP | The local IP address of the device. | unknown |
-| CrowdStrike.Device.ExternalIP | The external IP address of the device. | unknown |
-| CrowdStrike.Device.Hostname | The host name of the device. | unknown |
-| CrowdStrike.Device.OS | The operating system of the device. | unknown |
-| CrowdStrike.Device.MacAddress | The MAC address of the device. | unknown |
-| CrowdStrike.Device.FirstSeen | The first time the device was seen. | unknown |
-| CrowdStrike.Device.LastSeen | The last time the device was seen. | unknown |
-| CrowdStrike.Device.PolicyType | The policy type of the device. | unknown |
-| CrowdStrike.Device.Status | The device status. | unknown |
 
 ## Playbook Image
 
