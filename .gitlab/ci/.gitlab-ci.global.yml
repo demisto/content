@@ -552,6 +552,7 @@ pre_job:
   stage: .pre
   script:
     - section_start "check_build_files_are_up_to_date and stop_contrib_external_build"
+    - *create_artifacts_and_server_type_instance_folders
     - *stop_contrib_external_build
     - *check_build_files_are_up_to_date
     - section_end "check_build_files_are_up_to_date and stop_contrib_external_build"
