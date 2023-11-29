@@ -70,7 +70,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-description: A search engine used for searching Internet-connected devices
+description: A search engine used for searching Internet-connected devices.
 display: Shodan v2
 name: Shodan_v2
 script:
