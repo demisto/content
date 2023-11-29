@@ -32,7 +32,7 @@ filter _raw_log !~= ":\s+>#2,"
     msg_outcome = if(msg ~= "fail|error|unsuccess", "fail", msg ~= "success", "success"),
     pid = coalesce(
         arrayindex(regextract(msg, "pid\s+(\d+)\s+\w+") , 0), // defsat: SAT_auth:session events 
-        arrayindex(regextract(msg, "PID=(\d+)") , 0)), // History events 
+        arrayindex(regextract(msg, "\sPID=(\d+)") , 0)), // History events 
     ppid = arrayindex(regextract(msg, "(?:PPID=|session\s+\d+\s+parent\s+)(\d+)") , 0),  // logmanager: SAT_auth:tui03: & History events 
     protocol = coalesce(
         arrayindex(regextract(msg, "from \S+ port \d+ (\w+)"), 0), //sshd events  
