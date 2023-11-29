@@ -10,16 +10,16 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-CortexXDRIR
+* CortexXDRIR
 
 ### Scripts
 
-PrintErrorEntry
+* PrintErrorEntry
 
 ### Commands
 
-* xdr-file-quarantine
 * xdr-get-quarantine-status
+* xdr-file-quarantine
 
 ## Playbook Inputs
 
