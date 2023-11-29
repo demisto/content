@@ -1,7 +1,7 @@
 {
   "trigger_id": "39f9b9dce947a6af186c75c72709c716",
   "playbook_id": "Prisma Cloud Remediation - AWS CloudTrail Misconfiguration v2",
-  "suggestion_reason": "Recommended for Cloud IAM user access alerts",
+  "suggestion_reason": "Recommended for AWS CloudTrail Misconfiguration alerts",
   "description": "This trigger is responsible for handling AWS CloudTrail Misconfiguration alerts",
   "trigger_name": "AWS CloudTrail Misconfiguration",
   "alerts_filter": {
