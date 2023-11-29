@@ -1,10 +1,9 @@
-from CommonServerPython import *  # noqa: F401
 import demistomock as demisto  # noqa: F401
-
+from CommonServerPython import *  # noqa: F401
 # pylint: disable=E9010, E9011
 import traceback
 
-
+from CommonServerUserPython import *
 import requests
 import re
 import base64
@@ -1503,7 +1502,7 @@ def generate_login_url(client: MicrosoftClient,
 1. Click on the [login URL]({login_url}) to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
 You will be automatically redirected to a link with the following structure:
 ```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
-2. Copy the `AUTH_CODE` (without the `code=` prefix). Do NOT copy the `session_state` parameter.
+2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
 and paste it in your instance configuration under the **Authorization code** parameter.
     """
     return CommandResults(readable_output=result_msg)
