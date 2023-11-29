@@ -25,6 +25,7 @@ If you are upgrading from a previous version of this integration, see [Breaking 
     | Use system proxy settings |  | False |
     | Create relationships | Create relationships between indicators as part of enrichment. | False |
     | Remote API | Gather additional information about the threat model from remote APIs. | False |
+    | Default DBOT score for indicators with low confidence |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
