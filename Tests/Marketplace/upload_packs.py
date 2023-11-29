@@ -15,7 +15,7 @@ from typing import Any
 
 from requests import Response
 
-from Tests.Marketplace.marketplace_services import init_storage_client, Pack, \
+from Tests.Marketplace.marketplace_services import init_storage_client, Pack, is_pack_modified, \
     load_json, get_content_git_client, get_recent_commits_data, store_successful_and_failed_packs_in_ci_artifacts, \
     json_write
 from Tests.Marketplace.marketplace_statistics import StatisticsHandler
@@ -1202,7 +1202,7 @@ def main():
 
     # list of packs to iterate on over and upload/update them in bucket
     all_packs_objects_list = [Pack(pack_id, os.path.join(extract_destination_path, pack_id),
-                                   is_modified=pack_id in pack_ids_to_upload)
+                                   is_modified=is_pack_modified(pack_id, content_repo, index_folder_path, pack_ids_to_upload))
                               for pack_id in os.listdir(extract_destination_path) if pack_id not in IGNORED_FILES]
 
     # if it's not a regular upload-flow, then upload only collected/modified packs
