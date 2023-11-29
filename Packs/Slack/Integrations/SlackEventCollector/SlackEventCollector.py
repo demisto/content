@@ -57,11 +57,11 @@ class Client(BaseClient):
         try:
             _, events, cursor = self.get_logs(query_params)
         except DemistoException as e:
-            if 'bad request' in str(e.res):
+            if 'Bad Request' in str(e):
                 demisto.debug('was returned: Error in API call [400] - Bad Request')
                 events, cursor = self.handle_pagination_first_batch_bad_cursor(query_params, last_run)
             else:
-                raise Exception(e.res)
+                raise Exception(e)
 
         if last_run.get('first_id'):
             for idx, event in enumerate(events):
@@ -77,18 +77,20 @@ class Client(BaseClient):
         We try to rerun the request without the cursor
         and go through the pages until we reach the first_id
         """
-        restart_fetch = True
         query_params.pop('cursor')
-        while restart_fetch:
-            _, events, cursor = self.get_logs(query_params)
-            if last_run.get('first_id'):
-                for idx, event in enumerate(events):
-                    if event.get('id') == last_run['first_id']:
-                        restart_fetch = False
-                        events = events[idx:]
-                        break
+        query_params['latest'] = last_run.get('latest', None)
+        _, events, cursor = self.get_logs(query_params)
+        while last_run.get('first_id'):
+            for idx, event in enumerate(events):
+                if event.get('id') == last_run['first_id']:
+                    events = events[idx:]
+                    last_run.pop('first_id')  # removing to make sure it won't be used in future runs
+                    break
+            else:
                 query_params['cursor'] = cursor
-        last_run.pop('first_id', None)  # removing to make sure it won't be used in future runs
+                _, events, cursor = self.get_logs(query_params)
+
+            continue
         return events, cursor
 
     def get_logs_with_pagination(self, query_params: dict, last_run: dict) -> list[dict]:
@@ -122,7 +124,8 @@ class Client(BaseClient):
                     if len(aggregated_logs) == user_defined_limit:
                         demisto.debug(f'Reached the user-defined limit ({user_defined_limit}) - stopping.')
                         last_run['first_id'] = event.get('id')
-                        cursor = query_params['cursor']
+                        last_run['latest'] = event.get('date_create')
+                        cursor = query_params.get('cursor')
                         break
 
                     aggregated_logs.append(event)
