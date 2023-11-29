@@ -49,7 +49,7 @@ POLICY_CONTEXT = f"{FORTIGATE_CONTEXT}.Policy"
 VDOM_CONTEXT = f"{FORTIGATE_CONTEXT}.VDOM"
 BANNED_IP_CONTEXT = f"{FORTIGATE_CONTEXT}.BannedIP"
 
-AUTHORIZATION_ERROR = "Authorization Error: invalid username or password"
+AUTHORIZATION_ERROR = "Authorization Error: invalid `Account username` or `Password`"
 
 ADDRESS_GUI_TO_API_TYPE = {
     "Subnet": "ipmask",
@@ -104,8 +104,9 @@ class Client(BaseClient):
     def __init__(
         self,
         base_url: str,
-        username: str,
-        password: str,
+        username: str | None = None,
+        password: str | None = None,
+        api_key: str | None = None,
         verify: bool = True,
         proxy: bool = False,
     ) -> None:
@@ -113,8 +114,12 @@ class Client(BaseClient):
 
         Args:
             base_url (str): The base URL of the API.
-            username (str): The account username.
-            password (str): The account password.
+            username (str | None, optional): The account username.
+                Defaults to None.
+            password (str | None, optional): The account password.
+                Defaults to None.
+            api_key (str | None, optional): An API key.
+                Defaults to None.
             verify (bool, optional): Whether to verify the SSL certificate.
                 Defaults to True.
             proxy (bool, optional): Whether to use a proxy.
@@ -128,6 +133,7 @@ class Client(BaseClient):
             base_url=urljoin(base_url, "api/v2"),
             verify=verify,
             proxy=proxy,
+            headers={"Authorization": f"Bearer {api_key}"} if api_key else None,
         )
 
     @staticmethod
@@ -1519,33 +1525,33 @@ def validate_mac_addresses(mac_addresses: list[str] | None = None) -> None:
                 raise DemistoException(f"Invalid MAC address: {mac_address}")
 
 
-def validate_ipv4_addresses(ipv4_addresses: list[str] | None = None) -> None:
+def validate_optional_ipv4_addresses(*ipv4_addresses: str | None) -> None:
     """Validates the given list of IPv4 addresses.
 
     Args:
-        ipv4_addresses (list[str] | None, optional): The list of IPv4 addresses to validate.
+        *ipv4_addresses (str | None): The list of IPv4 addresses to validate.
             Defaults to None.
 
     Raises:
         DemistoException: If any of the IPv4 addresses is invalid.
     """
     for ipv4_address in ipv4_addresses or []:
-        if not is_ip_valid(ipv4_address):
+        if ipv4_address and not is_ip_valid(ipv4_address):
             raise DemistoException(f"Invalid IPv4 address: {ipv4_address}")
 
 
-def validate_ipv6_networks(ipv6_networks: list[str] | None = None) -> None:
+def validate_optional_ipv6_networks(*ipv6_networks: str | None) -> None:
     """Validates the given list of IPv6 networks.
 
     Args:
-        ipv6_networks (list[str] | None, optional): The list of IPv6 networks to validate.
+        *ipv6_networks (str | None): The list of IPv6 networks to validate.
             Defaults to None.
 
     Raises:
         DemistoException: If any of the IPv6 networks is invalid.
     """
     for ipv6_network in ipv6_networks or []:
-        if not is_ipv6_network_valid(ipv6_network):
+        if ipv6_network and not is_ipv6_network_valid(ipv6_network):
             raise DemistoException(f"Invalid IPv6 address: {ipv6_network}")
 
 
@@ -1647,7 +1653,7 @@ def build_address_table(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
         "Name": "Name",
         "Interface": "AssociatedInterface",
         "Type": "Type",
-        "Comment": "Comment",
+        "Comments": "Comment",
         "Routable": "Routable",
     }
 
@@ -1853,8 +1859,12 @@ def test_module(client: Client) -> str:
         client.list_system_vdoms()
 
     except DemistoException as exc:
-        if exc.res is not None and exc.res.status_code == http.HTTPStatus.FORBIDDEN:
-            return AUTHORIZATION_ERROR
+        if exc.res is not None:
+            if exc.res.status_code == http.HTTPStatus.FORBIDDEN:
+                return AUTHORIZATION_ERROR
+
+            if exc.res.status_code == http.HTTPStatus.UNAUTHORIZED:
+                return "Authorization Error: invalid `API Key`"
 
         raise exc
 
@@ -1957,7 +1967,7 @@ def create_firewall_address_ipv4_command(client: Client, args: dict[str, Any]) -
     country = country.upper() if (country := args.get("country")) else None
     mac_addresses = argToList(args.get("mac_addresses"))
 
-    validate_ipv4_addresses([address, mask, start_ip, end_ip])
+    validate_optional_ipv4_addresses(address, mask, start_ip, end_ip)
     validate_mac_addresses(mac_addresses)
     response = client.create_firewall_address_ipv4(
         name=name,
@@ -2032,7 +2042,7 @@ def update_firewall_address_ipv4_command(client: Client, args: dict[str, Any]) -
             vdom=vdom,
         )
 
-    validate_ipv4_addresses([address, mask, start_ip, end_ip])
+    validate_optional_ipv4_addresses(address, mask, start_ip, end_ip)
     validate_mac_addresses(mac_addresses)
 
     response = client.update_firewall_address_ipv4(
@@ -2180,7 +2190,7 @@ def create_firewall_address_ipv6_command(client: Client, args: dict[str, Any]) -
 
     validate_mask(mask)
     subnet = f"{address}/{mask}" if address and mask is not None else None
-    validate_ipv6_networks([subnet, start_ip, end_ip])
+    validate_optional_ipv6_networks(subnet, start_ip, end_ip)
     validate_mac_addresses(mac_addresses)
 
     response = client.create_firewall_address_ipv6(
@@ -2259,7 +2269,7 @@ def update_firewall_address_ipv6_command(client: Client, args: dict[str, Any]) -
 
     validate_mask(mask)
     subnet = f"{address}/{mask}" if address and mask is not None else None
-    validate_ipv6_networks([subnet, start_ip, end_ip])
+    validate_optional_ipv6_networks(subnet, start_ip, end_ip)
     validate_mac_addresses(mac_addresses)
 
     response = client.update_firewall_address_ipv6(
@@ -2384,7 +2394,7 @@ def create_firewall_address_ipv4_multicast_command(client: Client, args: dict[st
     first_ip = args.get("first_ip")
     final_ip = args.get("final_ip")
 
-    validate_ipv4_addresses([first_ip, final_ip])
+    validate_optional_ipv4_addresses(first_ip, final_ip)
     subnet = f"{first_ip} {final_ip}" if type_ == "broadcastmask" else None
 
     response = client.create_firewall_address_ipv4_multicast(
@@ -2450,7 +2460,7 @@ def update_firewall_address_ipv4_multicast_command(client: Client, args: dict[st
     elif any(multicast_fields):
         raise DemistoException("All multicast fields (`type`, `first_ip`, `final_ip`) must be provided to update any.")
 
-    validate_ipv4_addresses([first_ip, final_ip])
+    validate_optional_ipv4_addresses(first_ip, final_ip)
 
     response = client.update_firewall_address_ipv4_multicast(
         name=name,
@@ -2571,7 +2581,7 @@ def create_firewall_address_ipv6_multicast_command(client: Client, args: dict[st
 
     validate_mask(mask)
     subnet = f"{address}/{mask}"
-    validate_ipv6_networks([subnet])
+    validate_optional_ipv6_networks(subnet)
 
     response = client.create_firewall_address_ipv6_multicast(
         name=name,
@@ -2618,7 +2628,7 @@ def update_firewall_address_ipv6_multicast_command(client: Client, args: dict[st
     if address_provided and mask_provided:
         validate_mask(mask)
         subnet = f"{address}/{mask}"
-        validate_ipv6_networks([subnet])
+        validate_optional_ipv6_networks(subnet)
     elif address_provided != mask_provided:
         raise DemistoException("Either both or none of `address` and `mask` must be provided.")
 
@@ -3770,8 +3780,21 @@ def main() -> None:
     command = demisto.command()
 
     base_url: str = params["server"]
-    username: str = params["credentials"]["identifier"]
-    password: str = params["credentials"]["password"]
+
+    username = dict_safe_get(params, ["credentials", "identifier"])
+    password = dict_safe_get(params, ["credentials", "password"])
+    api_key = dict_safe_get(params, ["api_key", "password"])
+
+    if not any([username, password, api_key]):
+        raise DemistoException(
+            "Please provide an authentication method. Either 'API Key' or 'Account username' and 'Password'."
+        )
+
+    if api_key and (username or password):
+        raise DemistoException("Please don't mix 'API Key' with 'Account username' or 'Password'.")
+
+    if bool(username) != bool(password):
+        raise DemistoException("Please provide both 'Account username' and 'Password' or none of them.")
 
     verify_certificate: bool = not argToBoolean(params.get("unsecure", False))
     proxy: bool = argToBoolean(params.get("proxy", False))
@@ -3850,7 +3873,9 @@ def main() -> None:
             verify=verify_certificate,
             proxy=proxy,
         )
-        client.login()
+
+        if username and password:
+            client.login()
 
         results = None
 

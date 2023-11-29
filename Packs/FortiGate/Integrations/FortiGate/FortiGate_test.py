@@ -168,23 +168,23 @@ def test_validate_mac_addresses_error(mac_addresses: list[str]):
 @pytest.mark.parametrize(
     "ipv4_addresses",
     [
-        (["256.256.256.256"]),  # Invalid IPv4 address
+        ("256.256.256.256"),  # Invalid IPv4 address
     ],
 )
-def test_validate_ipv4_addresses_error(ipv4_addresses):
+def test_validate_optional_ipv4_addresses_error(ipv4_addresses):
     with pytest.raises(CommonServerPython.DemistoException) as exc_info:
-        FortiGate.validate_ipv4_addresses(ipv4_addresses)
+        FortiGate.validate_optional_ipv4_addresses(ipv4_addresses)
 
     assert "Invalid IPv4 address" in str(exc_info.value)
 
 
 @pytest.mark.parametrize(
     "ipv6_networks",
-    [(["gggg:gggg:gggg:gggg:gggg:gggg:gggg:gggg"])],
+    [("gggg:gggg:gggg:gggg:gggg:gggg:gggg:gggg")],
 )
-def test_validate_ipv6_networks_error(ipv6_networks: list[str]):
+def test_validate_optional_ipv6_networks_error(ipv6_networks: list[str]):
     with pytest.raises(CommonServerPython.DemistoException) as e_info:
-        FortiGate.validate_ipv6_networks(ipv6_networks)
+        FortiGate.validate_optional_ipv6_networks(ipv6_networks)
 
     assert "Invalid IPv6 address" in str(e_info.value)
 
@@ -214,6 +214,88 @@ def test_validate_mask_error(mask: int):
 def test_to_kebab_case(given: str, expected: str):
     assert FortiGate.to_kebab_case(given) == expected
 
+
+@pytest.mark.parametrize(
+    "items, expected_table",
+    [
+        (
+            [
+                {
+                    "Name": "Router1",
+                    "AssociatedInterface": "eth0",
+                    "StartIP": "0.0.0.0",
+                    "EndIP": "0.0.0.0",
+                }
+            ],
+            [
+                {
+                    "Name": "Router1",
+                    "Interface": "eth0",
+                    "Type": None,
+                    "Comments": None,
+                    "Routable": None,
+                    "Details": "0.0.0.0-0.0.0.0",
+                }
+            ],
+        ),
+        (
+            [
+                {
+                    "Country": "US",
+                }
+            ],
+            [
+                {
+                    "Name": None,
+                    "Interface": None,
+                    "Type": None,
+                    "Comments": None,
+                    "Routable": None,
+                    "Details": "US",
+                }
+            ],
+        ),
+        (
+            [
+                {"FQDN": "example.com"},
+                {"MACAddresses": "00:00:00:00:00:00"},
+            ],
+            [
+                {
+                    "Name": None,
+                    "Interface": None,
+                    "Type": None,
+                    "Comments": None,
+                    "Routable": None,
+                    "Details": "example.com",
+                },
+                {
+                    "Name": None,
+                    "Interface": None,
+                    "Type": None,
+                    "Comments": None,
+                    "Routable": None,
+                    "Details": "00:00:00:00:00:00",
+                },
+            ],
+        ),
+    ],
+)
+def test_build_address_table(items, expected_table):
+    """
+    Scenario:
+    - Test the build_address_table function's ability to correctly format data into a table.
+
+    Given:
+    - A list of dictionaries, each representing an item with address-related data.
+
+    When:
+    - build_address_table is called with these items.
+
+    Then:
+    - Ensure that the function returns a correctly formatted table matching the expected output.
+    """
+    assert FortiGate.build_address_table(items) == expected_table
 
 
 @pytest.mark.parametrize(

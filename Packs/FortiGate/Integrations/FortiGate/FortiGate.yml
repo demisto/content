@@ -9,8 +9,14 @@ configuration:
   type: 0
 - display: Account username
   name: credentials
-  required: true
+  required: false
   type: 9
+- display: API Key
+  name: api_key
+  required: false
+  type: 9
+  hiddenusername: true
+  displaypassword: API Key
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
