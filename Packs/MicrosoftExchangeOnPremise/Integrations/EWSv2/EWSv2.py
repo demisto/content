@@ -2153,6 +2153,17 @@ def mark_item_as_read(item_ids, operation='read', target_mailbox=None):  # pragm
                                 marked_items)
 
 
+def parse_quoted_printable(email_content):
+    if 'Content-Transfer-Encoding: quoted-printable' in email_content:
+        split_email = email_content.split('charset="')
+        charset = 'utf-8'
+        if len(split_email) > 1:
+            charset = split_email[1].split('"')[0] or charset
+        email_content = quopri.decodestring(email_content).decode(charset, errors='ignore')
+        demisto.info(f'After replacing, {email_content=}')
+    return email_content
+
+
 def get_item_as_eml(item_id, target_mailbox=None):  # pragma: no cover
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     item = get_item_from_mailbox(account, item_id)
@@ -2184,13 +2195,9 @@ def get_item_as_eml(item_id, target_mailbox=None):  # pragma: no cover
                 if (header.name, header.value) not in attached_email_headers and header.name != 'Content-Type':
                     email_content.add_header(header.name, header.value)
 
-        demisto.info(f'Before as_string, {email_content=}')
         email_content = email_content.as_string()
         demisto.info(f'After as_string, {email_content=}')
-        email_content = quopri.decodestring(str(email_content))
-        email_content = email_content.replace(b"Content-Transfer-Encoding: quoted-printable", b"")
-        email_content = email_content.replace(b"charset=\"iso-8859-2\"", b"charset=\"utf-8\"").replace(b"charset=utf-8\"", b"charset=\"utf-8\";").replace(b"content=\"text/html;", b"content=\"text/html\";")
-        demisto.info(f'After replacing, {email_content=}')
+        email_content = parse_quoted_printable(email_content)
         eml_name = item.subject if item.subject else 'demisto_untitled_eml'
         file_result = fileResult(eml_name + ".eml", email_content)
         file_result = file_result if file_result else "Failed uploading eml file to war room"
