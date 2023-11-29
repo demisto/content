@@ -178,90 +178,92 @@ def search_command():
 
 
 def ip_command():
-    ip = demisto.args()['ip']
+    ips = argToList(demisto.args()['ip'])
+    results = []
+    for ip in ips:
+        res = http_request('GET', f'/shodan/host/{ip}')
 
-    res = http_request('GET', f'/shodan/host/{ip}')
+        if not res:
+            results.append(CommandResults(readable_output=f'No information available for the following IP: {ip}'))
+        else:
+            hostnames = res.get('hostnames')
+            # It's a list, only if it exists and not empty we take the first value.
+            hostname = hostnames[0] if hostnames else ''
 
-    if not res:
-        demisto.results('No information available for the given IP.')
-    else:
-        hostnames = res.get('hostnames')
-        # It's a list, only if it exists and not empty we take the first value.
-        hostname = hostnames[0] if hostnames else ''
+            location = f'{round(res.get("latitude", 0.0), 3)},{round(res.get("longitude", 0.0), 3)}'
 
-        location = f'{round(res.get("latitude", 0.0), 3)},{round(res.get("longitude", 0.0), 3)}'
+            relationships_list: list[EntityRelationship] = []
 
-        relationships_list: list[EntityRelationship] = []
+            vulns_list = res.get('vulns', [])
+            for v in vulns_list:
+                relationships_list.append(EntityRelationship(
+                    entity_a=ip,
+                    entity_a_type=FeedIndicatorType.IP,
+                    name='related-to',
+                    entity_b=v,
+                    entity_b_type=FeedIndicatorType.CVE,
+                    brand='ShodanV2'))
 
-        vulns_list = res.get('vulns', [])
-        for v in vulns_list:
-            relationships_list.append(EntityRelationship(
-                entity_a=ip,
-                entity_a_type=FeedIndicatorType.IP,
-                name='related-to',
-                entity_b=v,
-                entity_b_type=FeedIndicatorType.CVE,
-                brand='ShodanV2'))
+            dbot_score = Common.DBotScore(
+                indicator=ip,
+                indicator_type=DBotScoreType.IP,
+                reliability=demisto.params().get('integrationReliability'),
+                score=0,
+                integration_name='Shodan_v2'
+            )
 
-        dbot_score = Common.DBotScore(
-            indicator=ip,
-            indicator_type=DBotScoreType.IP,
-            reliability=demisto.params().get('integrationReliability'),
-            score=0,
-            integration_name='Shodan_v2'
-        )
+            ip_details = Common.IP(
+                ip=ip,
+                dbot_score=dbot_score,
+                asn=res.get('asn', ''),
+                hostname=hostname,
+                geo_country=res.get('country_name', ''),
+                geo_latitude=round(res.get("latitude", 0.0), 3),
+                geo_longitude=round(res.get("longitude", 0.0), 3),
+                relationships=relationships_list
+            )
 
-        ip_details = Common.IP(
-            ip=ip,
-            dbot_score=dbot_score,
-            asn=res.get('asn', ''),
-            hostname=hostname,
-            geo_country=res.get('country_name', ''),
-            geo_latitude=round(res.get("latitude", 0.0), 3),
-            geo_longitude=round(res.get("longitude", 0.0), 3),
-            relationships=relationships_list
-        )
+            shodan_ip_details = {
+                'Tag': res.get('tags', []),
+                'Latitude': res.get('latitude', 0.0),
+                'Longitude': res.get('longitude', 0.0),
+                'Org': res.get('org', ''),
+                'ASN': res.get('asn', ''),
+                'ISP': res.get('isp', ''),
+                'LastUpdate': res.get('last_update', ''),
+                'CountryName': res.get('country_name', ''),
+                'Address': ip,
+                'OS': res.get('os', ''),
+                'Port': res.get('ports', []),
+                'Vulnerabilities': vulns_list
+            }
 
-        shodan_ip_details = {
-            'Tag': res.get('tags', []),
-            'Latitude': res.get('latitude', 0.0),
-            'Longitude': res.get('longitude', 0.0),
-            'Org': res.get('org', ''),
-            'ASN': res.get('asn', ''),
-            'ISP': res.get('isp', ''),
-            'LastUpdate': res.get('last_update', ''),
-            'CountryName': res.get('country_name', ''),
-            'Address': ip,
-            'OS': res.get('os', ''),
-            'Port': res.get('ports', []),
-            'Vulnerabilities': vulns_list
-        }
+            title = f'Shodan details for IP {ip}'
 
-        title = f'Shodan details for IP {ip}'
+            human_readable = {
+                'Country': res.get('country_name', ''),
+                'Location': location,
+                'ASN': res.get('asn', ''),
+                'ISP': res.get('isp', ''),
+                'Ports': ', '.join([str(x) for x in res.get('ports', [])]),
+                'Hostname': hostname
+            }
 
-        human_readable = {
-            'Country': res.get('country_name', ''),
-            'Location': location,
-            'ASN': res.get('asn', ''),
-            'ISP': res.get('isp', ''),
-            'Ports': ', '.join([str(x) for x in res.get('ports', [])]),
-            'Hostname': hostname
-        }
+            readable_output = tableToMarkdown(
+                name=title,
+                t=human_readable,
+                removeNull=True
+            )
 
-        readable_output = tableToMarkdown(
-            name=title,
-            t=human_readable,
-            removeNull=True
-        )
-
-        return CommandResults(
-            readable_output=readable_output,
-            raw_response=res,
-            outputs=shodan_ip_details,
-            relationships=relationships_list,
-            outputs_prefix='Shodan.IP',
-            indicator=ip_details
-        )
+            results.append(CommandResults(
+                readable_output=readable_output,
+                raw_response=res,
+                outputs=shodan_ip_details,
+                relationships=relationships_list,
+                outputs_prefix='Shodan.IP',
+                indicator=ip_details
+            ))
+    return results
 
 
 def shodan_search_count_command():
