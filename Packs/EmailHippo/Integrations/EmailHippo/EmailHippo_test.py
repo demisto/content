@@ -1,6 +1,5 @@
 import pytest
 import json
-import dictdiffer
 import EmailHippo
 from EmailHippo import Client, DemistoException
 
@@ -14,28 +13,6 @@ def client():
 def load_test_data(path):
     with open(path) as f:
         return json.load(f)
-
-
-def compare_dicts(title, actual, expected):
-    """compare two dicts and return the diff if they don't.
-
-    Args:
-        actual (dict): The actual dict.
-        expected (dict): The expected dict.
-
-    Returns:
-        Tuple: True or False indicating if dicts match, message if they don't.
-    """
-    diff = list(dictdiffer.diff(expected, actual))
-    if diff:
-        msg = f"Actual {title} are different from the expected.\nDifferences found in the following keys:"
-        for (action, path_list, key) in diff:
-            path = f'{".".join((str(x) for x in path_list))}'
-            if action != 'change':
-                path += f'.{key[0]}'
-            msg += f'\n{path} - was {action}'
-        return False, msg
-    return True, ''
 
 
 class TestHappyPath:
@@ -58,8 +35,7 @@ class TestHappyPath:
 
         assert command_res
         actual_entry_context = command_res[0].to_context()['EntryContext']
-        dict_diff, msg = compare_dicts('email_reputation results', expected_entry_context, actual_entry_context)
-        assert dict_diff, msg
+        assert expected_entry_context == actual_entry_context
         assert all(key in command_res[0].readable_output for key in hr_keys)
 
     def test_domain_reputation_command_success(self, requests_mock, client):
@@ -86,8 +62,7 @@ class TestHappyPath:
 
         assert command_res
         actual_entry_context = command_res[0].to_context()['EntryContext']
-        dict_diff, msg = compare_dicts('domain_reputation results', expected_entry_context, actual_entry_context)
-        assert dict_diff, msg
+        assert expected_entry_context == actual_entry_context
         assert all(key in command_res[0].readable_output for key in hr_keys)
 
     def test_quota_command_success(self, requests_mock, client):
