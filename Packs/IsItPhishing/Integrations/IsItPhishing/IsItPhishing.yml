@@ -70,8 +70,9 @@ script:
     arguments:
     - name: url
       required: true
-      description: URL to be checked if phishing
+      description: Comma separated list of URLs to be checked if phishing
       default: true
+      isArray: true
     - name: force
       description: Set true to analyze URL, or false to check whether URL may cause collateral damage to the end user
       defaultValue: "false"

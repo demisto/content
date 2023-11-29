@@ -73,7 +73,8 @@ script:
     - name: ip
       required: true
       default: true
-      description: ip to search by
+      isArray: true
+      description: A comma separated list of IPs to search by.
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator we tested
@@ -99,7 +100,8 @@ script:
     - name: domain
       required: true
       default: true
-      description: domain to search by
+      isArray: true
+      description: A comma separated list of domains to search by.
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator we tested
@@ -123,7 +125,8 @@ script:
   - name: file
     arguments:
     - name: file
-      description: md5 or sha1 to search by
+      isArray: true
+      description: A comma separated list of md5 or sha1 to search by.
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator we tested
