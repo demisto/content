@@ -73,10 +73,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 5bedd5b1-6e76-439d-84d1-5d36f60c2467
+    taskid: 13cc01c5-7a1a-47d9-8228-917cc2a73914
     type: playbook
     task:
-      id: 5bedd5b1-6e76-439d-84d1-5d36f60c2467
+      id: 13cc01c5-7a1a-47d9-8228-917cc2a73914
       version: -1
       name: IP Enrichment - External - Generic v2
       description: |-
@@ -84,6 +84,7 @@ tasks:
 
         - Resolve IP addresses to hostnames (DNS).
         - Provide threat information.
+        - IP address reputation using !ip command.
         - Separate internal and external addresses.
       playbookName: IP Enrichment - External - Generic v2
       type: playbook
@@ -109,6 +110,12 @@ tasks:
       UseReputationCommand:
         complex:
           root: inputs.UseReputationCommand
+      extended_data:
+        complex:
+          root: inputs.extended_data
+      threat_model_association:
+        complex:
+          root: inputs.threat_model_association
     separatecontext: true
     loop:
       iscommand: false
