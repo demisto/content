@@ -505,10 +505,10 @@ tasks:
   "13":
     id: "13"
     taskid: 320b2294-4133-420c-844c-9fbce6c21bf7
-    description: ""
     type: condition
     task:
       id: 320b2294-4133-420c-844c-9fbce6c21bf7
+      description: ""
       version: -1
       name: Is there a provider?
       type: condition
