@@ -41,8 +41,8 @@ gsutil -m cp -r "gs://$GCS_PRIVATE_PROD_BUCKET/$SOURCE_PATH" "gs://$GCS_PRIVATE_
 echo "Finished copying private bucket successfully."
 
 
-echo "Copying index.zip at: gs://${TEST_XDR_PREFIX}marketplace-dist/content/packs/index.zip to target path: gs://marketplace-ci-build/private/dummy_index/index.zip ..."
-gsutil -m cp "gs://${TEST_XDR_PREFIX}marketplace-dist/content/packs/index.zip" "gs://marketplace-ci-build/private/dummy_index/index.zip" >> "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs/prepare_private_content_packs_for_testing.log" 2>&1
+echo "Copying index.zip at: gs://${TEST_XDR_PREFIX}marketplace-dist/content/packs/index.zip to target path: gs://${TEST_XDR_PREFIX}marketplace-ci-build/private/dummy_index/index.zip ..."
+gsutil -m cp "gs://${TEST_XDR_PREFIX}marketplace-dist/content/packs/index.zip" "gs://${TEST_XDR_PREFIX}marketplace-ci-build/private/dummy_index/index.zip" >> "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs/prepare_private_content_packs_for_testing.log" 2>&1
 echo "Finished copying private index.zip successfully."
 
 
