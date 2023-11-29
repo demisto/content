@@ -1,11 +1,12 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-
 import json
 import random
 import time
-import urllib3
+
 import requests
+import urllib3
+
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -699,23 +700,26 @@ def category_add_ip(category_id, ip, retaining_parent_category_ip):
         return return_error("Category could not be found.")
 
 
-def category_remove_url(category_id, url):
+def category_remove_url(category_id, url, retaining_parent_category_url):
     category_data = get_category_by_id(category_id)  # check if the category exists
     if category_data:
         url_list = argToList(url)
         updated_urls = [
             url for url in category_data["urls"] if url not in url_list
         ]  # noqa
+        retaining_parent_category_url_list = argToList(retaining_parent_category_url)
+        if not (url_list, retaining_parent_category_url_list):
+            return_error('Either url_list argument or retaining_parent_category_url_list argument must be provided.')
         if updated_urls == category_data["urls"]:
-            return return_error("Could not find given URL in the category.")
+            return     return_error("Could not find given URL in the category.")
         add_or_remove_urls_from_category(
-            REMOVE, url_list, category_data
-        )  # remove the urls from list
+            REMOVE, url_list, category_data, retaining_parent_category_url_list)  # remove the urls from list
         category_data["urls"] = updated_urls
         context = {
             "ID": category_id,
             "CustomCategory": category_data.get("customCategory"),
             "URL": category_data.get("urls"),
+            "RetainingParentCategory": retaining_parent_category_url_list
         }
         if category_data.get("description"):  # Custom might not have description
             context["Description"] = category_data["description"]
@@ -1460,8 +1464,7 @@ def main():  # pragma: no cover
                 return_results(category_add_ip(args.get("category-id"), args.get("ip"), args.get('retaining-parent-category-ip')))
             elif command == "zscaler-category-remove-url":
                 return_results(
-                    category_remove_url(args.get("category-id"), args.get("url"))
-                )
+                    category_remove_url(args.get("category-id"), args.get("url"), args.get('retaining-parent-category-url')))
             elif command == "zscaler-category-remove-ip":
                 return_results(
                     category_remove_ip(args.get("category-id"), args.get("ip"))
