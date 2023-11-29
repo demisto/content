@@ -834,10 +834,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: a5da64b4-1006-4cfb-860c-7c514add6dce
+    taskid: 9b9716de-cae8-4e86-8c6c-48c89d27ada7
     type: regular
     task:
-      id: a5da64b4-1006-4cfb-860c-7c514add6dce
+      id: 9b9716de-cae8-4e86-8c6c-48c89d27ada7
       version: -1
       name: aws-org-policy-attach
       description: Attaches a policy to a root, an organizational unit (OU), or an individual account.
@@ -850,7 +850,7 @@ tasks:
       - "27"
     scriptarguments:
       policy_id:
-        simple: ${AWS.Organizations.Policy.Id}
+        simple: p-sotkk36n
       target_id:
         simple: ${AWS.Organizations.OrganizationUnit.Id}
     separatecontext: false
@@ -871,10 +871,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: d6fc83a7-5355-4400-8b82-4645dd83eeb6
+    taskid: dea40f84-a1f0-455e-8e33-51e7b64beff2
     type: condition
     task:
-      id: d6fc83a7-5355-4400-8b82-4645dd83eeb6
+      id: dea40f84-a1f0-455e-8e33-51e7b64beff2
       version: -1
       name: Is policy attached?
       type: condition
@@ -887,8 +887,11 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: in
           left:
+            value:
+              simple: p-sotkk36n
+          right:
             value:
               simple: AWS.Organizations.TargetPolicy.Id
             iscontext: true
