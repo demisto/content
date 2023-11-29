@@ -48,7 +48,7 @@ script:
       description: The filepath of the evidence.
     - name: target_ips
       isArray: true
-      description: Targetips for the collection
+      description: Targetips for the collection.
     - name: search_tag_path
       description: The filepath of the search and tag .
     - name: export_path
