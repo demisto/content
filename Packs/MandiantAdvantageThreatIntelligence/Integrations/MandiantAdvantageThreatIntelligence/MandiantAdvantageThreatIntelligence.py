@@ -180,7 +180,7 @@ class MandiantClient(BaseClient):
             if isinstance(res, str) and res == "redacted":
                 return []
             elif res and isinstance(res, dict):
-                return list(res.keys())
+                return extract_attack_patterns(res, call_result.get("attack-patterns", {}))
             else:
                 return []
         else:
@@ -272,7 +272,16 @@ class MandiantClient(BaseClient):
 
 """ HELPER FUNCTIONS """
 
+def extract_attack_patterns(indicator_patterns: dict, attack_patterns: dict) -> list[str]:
+    output = []
+    for attack_pattern_name, attack_pattern_list in indicator_patterns.items():
+        output.append(attack_pattern_name)
+        for pattern in attack_pattern_list:
+            output.append(attack_patterns.get(pattern.get("id")).get("name"))
+            for subtechnique in pattern.get("sub_techniques", []):
+                output.append(attack_patterns.get(subtechnique.get("id")).get("name"))
 
+    return output
 def get_last_updated(indicator: dict) -> datetime:
     last_updated = arg_to_datetime(indicator.get("last_updated"))
     if not last_updated:
