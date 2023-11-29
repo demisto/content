@@ -152,7 +152,9 @@ def test_fetch_events_with_bad_cursor(mocker):
         {'id': '4', 'date_create': 1521214343},
     ])
 
-    mocker.patch.object(Client, '_http_request', side_effect=[DemistoException(err_msg, res={err_msg}), mock_response1.data, mock_response2.data])
+    mocker.patch.object(Client, '_http_request', side_effect=[DemistoException(err_msg, res={err_msg}),
+                                                              mock_response1.data,
+                                                              mock_response2.data])
     events, last_run = fetch_events_command(Client(base_url=''), params={}, last_run={"first_id": "5"})
 
     assert len(events) == 2
