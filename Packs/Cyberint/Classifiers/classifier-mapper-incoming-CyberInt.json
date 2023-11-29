@@ -130,7 +130,7 @@
                 "CyberInt Related entities": {
                     "simple": "related_entities"
                 },
-                "CyberInt Related entity": {
+                "CyberInt Related Entity": {
                     "simple": "related_entities"
                 },
                 "CyberInt Source": {
@@ -349,7 +349,7 @@
                         "transformers": []
                     }
                 },
-                "CyberInt Related entity": {
+                "CyberInt Related Entity": {
                     "complex": {
                         "filters": [],
                         "root": "related_entities",
