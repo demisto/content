@@ -1,15 +1,5 @@
 id: Cortex XDR - Get entity alerts by MITRE tactics
-version: 92
-contentitemexportablefields:
-  contentitemfields:
-    packID: CortexXDR
-    packName: Cortex XDR by Palo Alto Networks
-    itemVersion: 6.0.2
-    fromServerVersion: 6.5.0
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Cortex XDR - Get entity alerts by MITRE tactics
 description: |-
   This playbook is part of the Cortex XDR by Palo Alto Networks’ pack. This playbook searches alerts related to specific entities from Cortex XDR, on a given timeframe, based on MITRE tactics.
@@ -26,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "50"
@@ -496,6 +487,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -526,6 +518,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -556,6 +549,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -586,6 +580,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -616,6 +611,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -646,6 +642,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -676,6 +673,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "7"
@@ -706,6 +704,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -846,6 +845,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "23"
@@ -876,6 +876,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "24"
@@ -961,6 +962,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "27"
@@ -991,6 +993,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "83"
@@ -1021,6 +1024,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1177,6 +1181,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "61"
@@ -1278,8 +1283,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: "{\n\t\"SEARCH_FIELD\": \"mitre_tactic_id_and_name\",\n\t\"SEARCH_TYPE\":
-                    \"CONTAINS\",\n\t\"SEARCH_VALUE\": \"TA0043\"\n},"
+                  simple: "{\n\t\"SEARCH_FIELD\": \"mitre_tactic_id_and_name\",\n\t\"SEARCH_TYPE\": \"CONTAINS\",\n\t\"SEARCH_VALUE\": \"TA0043\"\n},"
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -1334,8 +1338,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: "{\n\t\"SEARCH_FIELD\": \"mitre_tactic_id_and_name\",\n\t\"SEARCH_TYPE\":
-                    \"CONTAINS\",\n\t\"SEARCH_VALUE\": \"TA0001\"\n},"
+                  simple: "{\n\t\"SEARCH_FIELD\": \"mitre_tactic_id_and_name\",\n\t\"SEARCH_TYPE\": \"CONTAINS\",\n\t\"SEARCH_VALUE\": \"TA0001\"\n},"
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -1398,8 +1401,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: "]\n\t\t},\n\t\t{\n\t\t\t\"SEARCH_FIELD\": \"${inputs.EntityType}\",\n\t\t\t\"SEARCH_TYPE\":
-                    \"CONTAINS\",\n\t\t\t\"SEARCH_VALUE\": \"${inputs.entityID}\"\n\t\t}\n\t]\n}"
+                  simple: "]\n\t\t},\n\t\t{\n\t\t\t\"SEARCH_FIELD\": \"${inputs.EntityType}\",\n\t\t\t\"SEARCH_TYPE\": \"CONTAINS\",\n\t\t\t\"SEARCH_VALUE\": \"${inputs.entityID}\"\n\t\t}\n\t]\n}"
               variable_markers: {}
           - operator: replace
             args:
@@ -1464,8 +1466,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: "{\n\t\"SEARCH_FIELD\": \"mitre_tactic_id_and_name\",\n\t\"SEARCH_TYPE\":
-                    \"CONTAINS\",\n\t\"SEARCH_VALUE\": \"TA0002\"\n},"
+                  simple: "{\n\t\"SEARCH_FIELD\": \"mitre_tactic_id_and_name\",\n\t\"SEARCH_TYPE\": \"CONTAINS\",\n\t\"SEARCH_VALUE\": \"TA0002\"\n},"
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -1520,8 +1521,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: "{\n\t\"SEARCH_FIELD\": \"mitre_tactic_id_and_name\",\n\t\"SEARCH_TYPE\":
-                    \"CONTAINS\",\n\t\"SEARCH_VALUE\": \"TA0003\"\n},"
+                  simple: "{\n\t\"SEARCH_FIELD\": \"mitre_tactic_id_and_name\",\n\t\"SEARCH_TYPE\": \"CONTAINS\",\n\t\"SEARCH_VALUE\": \"TA0003\"\n},"
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -1576,8 +1576,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: "{\n\t\"SEARCH_FIELD\": \"mitre_tactic_id_and_name\",\n\t\"SEARCH_TYPE\":
-                    \"CONTAINS\",\n\t\"SEARCH_VALUE\": \"TA0004\"\n},"
+                  simple: "{\n\t\"SEARCH_FIELD\": \"mitre_tactic_id_and_name\",\n\t\"SEARCH_TYPE\": \"CONTAINS\",\n\t\"SEARCH_VALUE\": \"TA0004\"\n},"
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -1632,8 +1631,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: "{\n\t\"SEARCH_FIELD\": \"mitre_tactic_id_and_name\",\n\t\"SEARCH_TYPE\":
-                    \"CONTAINS\",\n\t\"SEARCH_VALUE\": \"TA0005\"\n},"
+                  simple: "{\n\t\"SEARCH_FIELD\": \"mitre_tactic_id_and_name\",\n\t\"SEARCH_TYPE\": \"CONTAINS\",\n\t\"SEARCH_VALUE\": \"TA0005\"\n},"
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -1688,8 +1686,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: "{\n\t\"SEARCH_FIELD\": \"mitre_tactic_id_and_name\",\n\t\"SEARCH_TYPE\":
-                    \"CONTAINS\",\n\t\"SEARCH_VALUE\": \"TA0006\"\n},"
+                  simple: "{\n\t\"SEARCH_FIELD\": \"mitre_tactic_id_and_name\",\n\t\"SEARCH_TYPE\": \"CONTAINS\",\n\t\"SEARCH_VALUE\": \"TA0006\"\n},"
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -1744,8 +1741,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: "{\n\t\"SEARCH_FIELD\": \"mitre_tactic_id_and_name\",\n\t\"SEARCH_TYPE\":
-                    \"CONTAINS\",\n\t\"SEARCH_VALUE\": \"TA0007\"\n},"
+                  simple: "{\n\t\"SEARCH_FIELD\": \"mitre_tactic_id_and_name\",\n\t\"SEARCH_TYPE\": \"CONTAINS\",\n\t\"SEARCH_VALUE\": \"TA0007\"\n},"
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -1800,8 +1796,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: "{\n\t\"SEARCH_FIELD\": \"mitre_tactic_id_and_name\",\n\t\"SEARCH_TYPE\":
-                    \"CONTAINS\",\n\t\"SEARCH_VALUE\": \"TA0008\"\n},"
+                  simple: "{\n\t\"SEARCH_FIELD\": \"mitre_tactic_id_and_name\",\n\t\"SEARCH_TYPE\": \"CONTAINS\",\n\t\"SEARCH_VALUE\": \"TA0008\"\n},"
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -1856,8 +1851,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: "{\n\t\"SEARCH_FIELD\": \"mitre_tactic_id_and_name\",\n\t\"SEARCH_TYPE\":
-                    \"CONTAINS\",\n\t\"SEARCH_VALUE\": \"TA0009\"\n},"
+                  simple: "{\n\t\"SEARCH_FIELD\": \"mitre_tactic_id_and_name\",\n\t\"SEARCH_TYPE\": \"CONTAINS\",\n\t\"SEARCH_VALUE\": \"TA0009\"\n},"
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -1912,8 +1906,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: "{\n\t\"SEARCH_FIELD\": \"mitre_tactic_id_and_name\",\n\t\"SEARCH_TYPE\":
-                    \"CONTAINS\",\n\t\"SEARCH_VALUE\": \"TA0011\"\n},"
+                  simple: "{\n\t\"SEARCH_FIELD\": \"mitre_tactic_id_and_name\",\n\t\"SEARCH_TYPE\": \"CONTAINS\",\n\t\"SEARCH_VALUE\": \"TA0011\"\n},"
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -1968,8 +1961,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: "{\n\t\"SEARCH_FIELD\": \"mitre_tactic_id_and_name\",\n\t\"SEARCH_TYPE\":
-                    \"CONTAINS\",\n\t\"SEARCH_VALUE\": \"TA0040\"\n},"
+                  simple: "{\n\t\"SEARCH_FIELD\": \"mitre_tactic_id_and_name\",\n\t\"SEARCH_TYPE\": \"CONTAINS\",\n\t\"SEARCH_VALUE\": \"TA0040\"\n},"
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -1995,11 +1987,7 @@ tasks:
       id: 99c13cc5-867e-41ca-889d-a3c1f884e005
       version: -1
       name: Hunt techniques
-      description: "Returns a list of alerts and their metadata, which you can filter
-        by built-in arguments or use the custom_filter to input a JSON filter object.
-        \n Multiple filter arguments will be concatenated using the AND operator,
-        while arguments that support a comma-separated list of values will use an
-        OR operator between each value."
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       script: '|||xdr-get-alerts'
       type: regular
       iscommand: true
@@ -2255,82 +2243,74 @@ inputs:
   value:
     simple: "False"
   required: false
-  description: Set to True to hunt for identified alerts with MITRE Reconnaissance
-    techniques.
-  playbookInputQuery: null
+  description: Set to True to hunt for identified alerts with MITRE Reconnaissance techniques.
+  playbookInputQuery:
 - key: HuntInitialAccessTechniques
   value:
     simple: "False"
   required: false
-  description: Set to True to hunt for identified alerts with MITRE Initial Access
-    techniques.
-  playbookInputQuery: null
+  description: Set to True to hunt for identified alerts with MITRE Initial Access techniques.
+  playbookInputQuery:
 - key: HuntExecutionTechniques
   value:
     simple: "False"
   required: false
   description: Set to True to hunt for identified alerts with MITRE Execution techniques.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: HuntPersistenceTechniques
   value:
     simple: "False"
   required: false
   description: Set to True to hunt for identified alerts with MITRE Persistence techniques.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: HuntPrivilegeEscalationTechniques
   value:
     simple: "False"
   required: false
-  description: Set to True to hunt for identified alerts with MITRE Privilege Escalation
-    techniques.
-  playbookInputQuery: null
+  description: Set to True to hunt for identified alerts with MITRE Privilege Escalation techniques.
+  playbookInputQuery:
 - key: HuntDefenseEvasionTechniques
   value:
     simple: "False"
   required: false
-  description: Set to True to hunt for identified alerts with MITRE Defense Evasion
-    techniques.
-  playbookInputQuery: null
+  description: Set to True to hunt for identified alerts with MITRE Defense Evasion techniques.
+  playbookInputQuery:
 - key: HuntDiscoveryTechniques
   value:
     simple: "False"
   required: false
   description: Set to True to hunt for identified alerts with MITRE Discovery techniques.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: HuntLateralMovementTechniques
   value:
     simple: "False"
   required: false
-  description: Set to True to hunt for identified alerts with MITRE Lateral Movement
-    techniques.
-  playbookInputQuery: null
+  description: Set to True to hunt for identified alerts with MITRE Lateral Movement techniques.
+  playbookInputQuery:
 - key: HuntCollectionTechniques
   value:
     simple: "False"
   required: false
-  description: Set to True to hunt for identified alerts with MITRE Collection techniques
-    .
-  playbookInputQuery: null
+  description: Set to True to hunt for identified alerts with MITRE Collection techniques .
+  playbookInputQuery:
 - key: HuntCnCTechniques
   value:
     simple: "False"
   required: false
-  description: Set to True to hunt for identified alerts with MITRE Command and Control
-    techniques.
-  playbookInputQuery: null
+  description: Set to True to hunt for identified alerts with MITRE Command and Control techniques.
+  playbookInputQuery:
 - key: HuntImpactTechniques
   value:
     simple: "False"
   required: false
   description: Set to True to hunt for identified alerts with MITRE Impact techniques.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: HuntCredentialAccessTechniques
   value:
     simple: "False"
   required: false
-  description: Set to True to hunt for identified alerts with MITRE Credential Access
-    techniques.
-  playbookInputQuery: null
+  description: Set to True to hunt for identified alerts with MITRE Credential Access techniques.
+  playbookInputQuery:
 - key: timeRange
   value:
     simple: 6 hours
@@ -2342,23 +2322,23 @@ inputs:
     * 2 minutes
     * 4 hours
     * 8 days
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: RunAll
   value:
     simple: "True"
   required: false
   description: Whether to run all the sub-tasks for Mitre Tactics.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: EntityType
   value: {}
   required: false
   description: Entity type to search on xdr-get-alerts custom filters.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: entityID
   value: {}
   required: false
   description: Entity value.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: PaloAltoNetworksXDR.Alert
   description: Alerts found.
@@ -2368,3 +2348,5 @@ outputs:
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
+contentitemexportablefields:
+  contentitemfields: {}

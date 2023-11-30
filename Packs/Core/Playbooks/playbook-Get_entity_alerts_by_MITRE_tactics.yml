@@ -1,15 +1,5 @@
 id: Get entity alerts by MITRE tactics
-version: 38
-contentitemexportablefields:
-  contentitemfields:
-    packID: Core
-    packName: Core - Investigation and Response
-    itemVersion: 3.0.0
-    fromServerVersion: 6.8.0
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Get entity alerts by MITRE tactics
 description: |-
   This playbook searches XDR alerts related to specific entities , on a given timeframe, based on MITRE tactics.
@@ -26,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "50"
@@ -56,6 +47,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "64"
@@ -238,6 +230,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "69"
@@ -437,6 +430,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "76"
@@ -644,6 +638,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "98"
@@ -674,6 +669,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "99"
@@ -704,6 +700,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "100"
@@ -734,6 +731,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "107"
@@ -764,6 +762,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "108"
@@ -794,6 +793,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "109"
@@ -824,6 +824,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "110"
@@ -854,6 +855,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "111"
@@ -884,6 +886,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "112"
@@ -914,6 +917,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "113"
@@ -2044,6 +2048,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2071,6 +2076,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "74"
@@ -2090,7 +2096,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
 view: |-
   {
     "linkLabelsPosition": {},
@@ -2107,71 +2112,63 @@ inputs:
 - key: HuntReconnaissanceTechniques
   value: {}
   required: false
-  description: Set to True to hunt for identified alerts with MITRE Reconnaissance
-    techniques.
-  playbookInputQuery: null
+  description: Set to True to hunt for identified alerts with MITRE Reconnaissance techniques.
+  playbookInputQuery:
 - key: HuntInitialAccessTechniques
   value: {}
   required: false
-  description: Set to True to hunt for identified alerts with MITRE Initial Access
-    techniques.
-  playbookInputQuery: null
+  description: Set to True to hunt for identified alerts with MITRE Initial Access techniques.
+  playbookInputQuery:
 - key: HuntExecutionTechniques
   value: {}
   required: false
   description: Set to True to hunt for identified alerts with MITRE Execution techniques.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: HuntPersistenceTechniques
   value: {}
   required: false
   description: Set to True to hunt for identified alerts with MITRE Persistence techniques.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: HuntPrivilegeEscalationTechniques
   value: {}
   required: false
-  description: Set to True to hunt for identified alerts with MITRE Privilege Escalation
-    techniques.
-  playbookInputQuery: null
+  description: Set to True to hunt for identified alerts with MITRE Privilege Escalation techniques.
+  playbookInputQuery:
 - key: HuntDefenseEvasionTechniques
   value: {}
   required: false
-  description: Set to True to hunt for identified alerts with MITRE Defense Evasion
-    techniques.
-  playbookInputQuery: null
+  description: Set to True to hunt for identified alerts with MITRE Defense Evasion techniques.
+  playbookInputQuery:
 - key: HuntDiscoveryTechniques
   value: {}
   required: false
   description: Set to True to hunt for identified alerts with MITRE Discovery techniques.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: HuntLateralMovementTechniques
   value: {}
   required: false
-  description: Set to True to hunt for identified alerts with MITRE Lateral Movement
-    techniques.
-  playbookInputQuery: null
+  description: Set to True to hunt for identified alerts with MITRE Lateral Movement techniques.
+  playbookInputQuery:
 - key: HuntCollectionTechniques
   value: {}
   required: false
-  description: Set to True to hunt for identified alerts with MITRE Collection techniques
-    .
-  playbookInputQuery: null
+  description: Set to True to hunt for identified alerts with MITRE Collection techniques .
+  playbookInputQuery:
 - key: HuntCnCTechniques
   value: {}
   required: false
-  description: Set to True to hunt for identified alerts with MITRE Command and Control
-    techniques.
-  playbookInputQuery: null
+  description: Set to True to hunt for identified alerts with MITRE Command and Control techniques.
+  playbookInputQuery:
 - key: HuntImpactTechniques
   value: {}
   required: false
   description: Set to True to hunt for identified alerts with MITRE Impact techniques.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: HuntCredentialAccessTechniques
   value: {}
   required: false
-  description: Set to True to hunt for identified alerts with MITRE Credential Access
-    techniques.
-  playbookInputQuery: null
+  description: Set to True to hunt for identified alerts with MITRE Credential Access techniques.
+  playbookInputQuery:
 - key: timeRange
   value:
     simple: 6 hours
@@ -2183,30 +2180,31 @@ inputs:
     * 2 minutes
     * 4 hours
     * 8 days
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: RunAll
   value:
     simple: "True"
   required: false
   description: Whether to run all the sub-tasks for Mitre Tactics.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: EntityType
   value: {}
   required: true
-  description: Entity type to search. Entity type can be username, hostname, or any
-    other element that exists in the alert.
-  playbookInputQuery: null
+  description: Entity type to search. Entity type can be username, hostname, or any other element that exists in the alert.
+  playbookInputQuery:
 - key: EntityID
   value: {}
   required: true
   description: Entity value.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: foundIncidents
-  description: Alerts found
+  description: Alerts found.
   type: unknown
-dirtyInputs: true
 tests:
 - No tests (auto formatted)
 marketplaces: ["marketplacev2"]
 fromversion: 6.8.0
+contentitemexportablefields:
+  contentitemfields: {}
+system: true
