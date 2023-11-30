@@ -206,7 +206,6 @@ demisto-sdk-nightly:run-commands-against-instance:
       [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
       python3 ./Tests/scripts/wait_until_server_ready.py  -n ${IS_NIGHTLY} --instance-role "${INSTANCE_ROLE}" || EXIT_CODE=$?
     - section_end "Wait Until Server Ready"
-    - !reference [.download-demisto-conf]
     - !reference [.secrets-fetch]
     - |
       export DEMISTO_BASE_URL="https://$(cat "${ENV_RESULTS_PATH}" | jq -r '.[0].InstanceDNS')"

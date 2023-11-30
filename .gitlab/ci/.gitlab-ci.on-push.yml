@@ -54,7 +54,6 @@ merge-dev-secrets:
   stage: unittests-and-validations
   script:
     - EXIT_CODE=0
-    - !reference [.download-demisto-conf]
     - section_start "Merging and deleting dev secrets"
     - python3 ./Tests/scripts/merge_and_delete_dev_secrets.py -sa "$GSM_SERVICE_ACCOUNT" --gsm_project_id_dev "$GSM_PROJECT_ID_DEV" --gsm_project_id_prod "$GSM_PROJECT_ID" >> "${ARTIFACTS_FOLDER}/logs/merge_secrets.log" 2>&1 || EXIT_CODE=$?
     - job-done
@@ -134,7 +133,6 @@ validate-content-conf:
     EXTRACT_PRIVATE_TESTDATA: "true"
   stage: prepare-testing-bucket
   script:
-    - !reference [.download-demisto-conf]
     - !reference [.create-release-notes-and-common-docs]
     - !reference [.secrets-fetch]
     - section_start "Create or update content graph" --collapsed
@@ -301,7 +299,6 @@ xpanse-prepare-testing-bucket:
         exit 0
       fi
     - section_end "Check if should run Instance role"
-    - !reference [.download-demisto-conf]
     - !reference [.secrets-fetch]
     - !reference [.ssh-config-setup]
     - section_start "Wait Until Server Ready"
@@ -567,7 +564,6 @@ slack-notify-on-merge:
   stage: run-instances
   script:
     - EXIT_CODE=0
-    - !reference [.download-demisto-conf]
     - !reference [.secrets-fetch]
     - section_start "Are there tests to run?" --collapsed
     - |

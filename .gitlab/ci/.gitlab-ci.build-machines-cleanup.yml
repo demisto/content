@@ -17,7 +17,6 @@ build-machines-cleanup:
     - .default-job-settings
   script:
     - EXIT_CODE=0
-    - !reference [.download-demisto-conf]
     - !reference [.lock-machine]
     - !reference [.uninstall-packs-and-reset-bucket-cloud]
     - !reference [.cloud-machine-information]

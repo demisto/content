@@ -1,16 +1,21 @@
 .default-cache:
   cache:
-    key:
-      files:
-        - "poetry.lock"
-        - "package-lock.json"
-      prefix: dev-content
-    paths:
-      - $PIP_CACHE_DIR
-      - .venv/
-      - node_modules/
-      - .npm/
-    policy: pull
+    - key: ci-repos-$CI_COMMIT_SHA
+      paths:
+        - content-test-conf
+        - infra
+      policy: pull
+    - key:
+        files:
+          - "poetry.lock"
+          - "package-lock.json"
+        prefix: dev-content
+      paths:
+        - $PIP_CACHE_DIR
+        - .venv/
+        - node_modules/
+        - .npm/
+      policy: pull
 
 
 .setup-network-certs: &setup-network-certs
@@ -549,11 +554,17 @@ cloning-content-repo-last-upload-commit:
 
 pre_job:
   stage: .pre
+  cache:
+    - key: ci-repos-$CI_COMMIT_SHA
+      paths:
+        - content-test-conf
+        - infra
+      policy: pull-push
   script:
     - source .gitlab/helper_functions.sh
+    - !reference [.download-demisto-conf]
 #    - *setup-network-certs
     - *setup-artifactory
 #    - *create_artifacts_and_server_type_instance_folders
     - *stop_contrib_external_build
     - *check_build_files_are_up_to_date
-    - exit 1
