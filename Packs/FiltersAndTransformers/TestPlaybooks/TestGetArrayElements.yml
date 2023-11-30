@@ -1,0 +1,208 @@
+id: TestGetArrayElements
+inputs: []
+name: TestGetArrayElements
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1c01d694-9326-404e-840c-80e6cf6ebafd
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 1c01d694-9326-404e-840c-80e6cf6ebafd
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      id: 7b15d6fa-cc27-463e-873b-c875e07f9252
+      iscommand: false
+      name: Delete Context
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 7b15d6fa-cc27-463e-873b-c875e07f9252
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: JustAnArray
+      value:
+        simple: '["first_element", "second_element", "last_element"]'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: caf429b3-8ca6-4d13-8f06-9939be8675b2
+      iscommand: false
+      name: Set
+      script: Set
+      type: regular
+      version: -1
+    taskid: caf429b3-8ca6-4d13-8f06-9939be8675b2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: JustAnArray
+                transformers:
+                - operator: FirstArrayElement
+          operator: isEqualString
+          right:
+            value:
+              simple: first_element
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: JustAnArray
+                transformers:
+                - operator: LastArrayElement
+          operator: isEqualString
+          right:
+            value:
+              simple: last_element
+      label: "yes"
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "yes":
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b1c53dfb-990f-401b-8bc3-01a713a5d1ab
+      iscommand: false
+      name: Verify first and last array elements
+      type: condition
+      version: -1
+    taskid: b1c53dfb-990f-401b-8bc3-01a713a5d1ab
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 07baed00-b6ff-4464-8d93-e4de8240c70f
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 07baed00-b6ff-4464-8d93-e4de8240c70f
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

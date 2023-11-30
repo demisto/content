@@ -19,5 +19,5 @@ args:
 scripttarget: 0
 runas: DBotWeakRole
 tests:
-- No test - unit test
+- TestGetArrayElements
 fromversion: 5.0.0
