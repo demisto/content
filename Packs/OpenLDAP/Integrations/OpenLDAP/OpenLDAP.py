@@ -1,12 +1,10 @@
-import ldap3
-
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
 import ssl
-from ldap3 import Server, Connection, Tls, BASE, AUTO_BIND_TLS_BEFORE_BIND, AUTO_BIND_NO_TLS
+from ldap3 import Server, Connection, Tls, BASE, AUTO_BIND_TLS_BEFORE_BIND, AUTO_BIND_NO_TLS, ALL_ATTRIBUTES
 from ldap3.utils.dn import parse_dn
 from ldap3.core.exceptions import LDAPBindError, LDAPInvalidDnError, LDAPSocketOpenError, LDAPInvalidPortError, \
     LDAPSocketReceiveError, LDAPStartTLSError
@@ -56,7 +54,7 @@ class LdapClient:
         self._ldap_server = self._initialize_ldap_server()
         self._ldap_server_vendor = kwargs.get('ldap_server_vendor', self.OPENLDAP)  # OpenLDAP or Active Directory
         if self._ldap_server_vendor == self.AUTO:
-            self._determine_ldap_vendor_auto()
+            self._determine_ldap_vendor_automatically()
         self._page_size = int(kwargs.get('page_size', 500))
 
         # OpenLDAP only fields:
@@ -170,7 +168,7 @@ class LdapClient:
 
         return server
 
-    def _determine_ldap_vendor_auto(self):
+    def _determine_ldap_vendor_automatically(self):
         """
             Determines the LDAP vendor automatically
         """
@@ -179,7 +177,7 @@ class LdapClient:
                 conn.search(search_base='',
                             search_filter='(objectClass=*)',
                             search_scope=BASE,
-                            attributes=[ldap3.ALL_ATTRIBUTES])
+                            attributes=[ALL_ATTRIBUTES])
                 entry = conn.entries[0]
                 if 'objectClass' in entry and 'OpenLDAProotDSE' in entry['objectClass'].value:
                     self._ldap_server_vendor = self.OPENLDAP
@@ -190,7 +188,8 @@ class LdapClient:
                     self._ldap_server_vendor = self.ACTIVE_DIRECTORY
                     demisto.info(f'Determining LDAP vendor is {self._ldap_server_vendor}')
         except Exception as e:
-            raise DemistoException(f'Could not parse LDAP vendor automatically. Try choosing the vendor. Error: str({e})')
+            raise DemistoException(f'Could not parse LDAP vendor automatically. Try to choose the vendor manually. '
+                                   f'Error: str({e})')
 
     @staticmethod
     def _parse_ldap_group_entries(ldap_group_entries: List[dict], groups_identifier_attribute: str) -> List[dict]:
