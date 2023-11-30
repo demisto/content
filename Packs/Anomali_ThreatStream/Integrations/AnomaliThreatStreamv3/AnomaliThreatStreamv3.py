@@ -496,6 +496,12 @@ class DBotScoreCalculator:
 
         }
 
+        indicator_default_score = params.get('indicator_default_score')
+        if indicator_default_score and indicator_default_score == 'Unknown':
+            self.default_score = Common.DBotScore.NONE
+        else:
+            self.default_score = Common.DBotScore.GOOD
+
     def calculate_score(self, ioc_type: str, indicator, threshold=None):
         """
             Calculate the DBot score according the indicator's confidence and thresholds if exist
@@ -506,14 +512,14 @@ class DBotScoreCalculator:
         confidence = indicator.get('confidence', Common.DBotScore.NONE)
         defined_threshold = threshold or self.instance_defined_thresholds.get(ioc_type)
         if defined_threshold:
-            return Common.DBotScore.BAD if confidence >= defined_threshold else Common.DBotScore.GOOD
+            return Common.DBotScore.BAD if confidence >= defined_threshold else self.default_score
         else:
             if confidence > DEFAULT_MALICIOUS_THRESHOLD:
                 return Common.DBotScore.BAD
             if confidence > DEFAULT_SUSPICIOUS_THRESHOLD:
                 return Common.DBotScore.SUSPICIOUS
             else:
-                return Common.DBotScore.GOOD
+                return self.default_score
 
 
 def find_worst_indicator(indicators):
