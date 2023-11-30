@@ -15,9 +15,9 @@ def test_fetch_events_command(requests_mock):
     - Ensure last-fetch id is 2
     """
     base_url = 'https://server_url/'
-    with open(os.path.dirname(__file__) + 'test_data/raw_response.json') as f:
+    with open(os.path.dirname(__file__) + '/test_data/raw_response.json') as f:
         incidents = json.loads(f.read())
-    with open(os.path.dirname(__file__) + 'test_data/expected_result.json') as f:
+    with open(os.path.dirname(__file__) + '/test_data/expected_result.json') as f:
         expected_result = json.loads(f.read())
     requests_mock.get(f'{base_url}api/incidents', json=incidents)
     client = Client(base_url=base_url,
@@ -44,7 +44,7 @@ def test_list_incidents_command(requests_mock):
     - Ensure List Incidents Results in human-readable.
     """
     base_url = 'https://server_url/'
-    with open(os.path.dirname(__file__) + 'test_data/raw_response.json') as f:
+    with open(os.path.dirname(__file__) + '/test_data/raw_response.json') as f:
         incidents = json.loads(f.read())
     requests_mock.get(f'{base_url}api/incidents', json=incidents)
     client = Client(base_url=base_url,

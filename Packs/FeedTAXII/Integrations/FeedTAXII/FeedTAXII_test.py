@@ -90,11 +90,11 @@ class TestUtilFunctions:
 class TestCommands:
     def test_fetch_indicators(self, mocker):
         client = TAXIIClient(collection='a collection')
-        with open(os.path.dirname(__file__) + 'test_data/raw_indicators.json') as f:
+        with open(os.path.dirname(__file__) + '/test_data/raw_indicators.json') as f:
             raw_indicators = json.load(f)
             mocker.patch.object(client, 'build_iterator', return_value=raw_indicators)
             res = fetch_indicators_command(client)
-            with open(os.path.dirname(__file__) + 'test_data/indicators_results.json') as exp_f:
+            with open(os.path.dirname(__file__) + '/test_data/indicators_results.json') as exp_f:
                 expected = json.load(exp_f)
                 assert res == expected
 
@@ -114,14 +114,14 @@ def test_poll_collection(mocker):
     from FeedTAXII import fetch_indicators_command
     client = TAXIIClient(collection='a collection', poll_service='http://example/taxii-data')
 
-    with open(os.path.dirname(__file__) + 'test_data/collection_example.xml', 'rb') as xml_f:
+    with open(os.path.dirname(__file__) + '/test_data/collection_example.xml', 'rb') as xml_f:
         stix_content = xml_f.read()
 
     with requests_mock.Mocker() as m:
         m.post('http://example/taxii-data', content=stix_content)
         res = fetch_indicators_command(client)
 
-    with open(os.path.dirname(__file__) + 'test_data/indicators_example.json') as json_f:
+    with open(os.path.dirname(__file__) + '/test_data/indicators_example.json') as json_f:
         expected_result = json.load(json_f)
 
     assert res == expected_result
@@ -138,7 +138,7 @@ def test_tags_parameter(mocker, tags):
     - Validate the tags supplied exists in the indicators
     """
     client = TAXIIClient(collection='a collection', feedTags=json.dumps(tags))
-    with open(os.path.dirname(__file__) + 'test_data/raw_indicators.json') as f:
+    with open(os.path.dirname(__file__) + '/test_data/raw_indicators.json') as f:
         raw_indicators = json.load(f)
         mocker.patch.object(client, 'build_iterator', return_value=raw_indicators)
         res = fetch_indicators_command(client)

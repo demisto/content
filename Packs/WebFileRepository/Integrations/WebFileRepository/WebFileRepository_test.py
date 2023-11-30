@@ -766,7 +766,7 @@ def test_process_root_post_reset_in_read_only(mocker):
     })
     importlib.reload(WebFileRepository)
 
-    with open(os.path.dirname(__file__) + 'test_data/integration_ctx_common.json') as f:
+    with open(os.path.dirname(__file__) + '/test_data/integration_ctx_common.json') as f:
         MockIntegrationContext(json.load(f), mocker)
 
     # Reset the repository
@@ -883,7 +883,7 @@ def test_process_root_post_delete_in_read_only(mocker):
     })
     importlib.reload(WebFileRepository)
 
-    with open(os.path.dirname(__file__) + 'test_data/integration_ctx_common.json') as f:
+    with open(os.path.dirname(__file__) + '/test_data/integration_ctx_common.json') as f:
         MockIntegrationContext(json.load(f), mocker)
 
     post_data = json.dumps({

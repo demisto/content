@@ -1910,7 +1910,7 @@ def test_blob_zip_get_command(mocker, requests_mock):
         proxy=False,
         auth_type='Device Code')
 
-    with open(os.path.dirname(__file__) + 'test_data/response_content') as content:
+    with open(os.path.dirname(__file__) + '/test_data/response_content') as content:
         response = Response()
         response._content = content
 

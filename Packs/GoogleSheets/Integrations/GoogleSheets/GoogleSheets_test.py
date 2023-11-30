@@ -91,7 +91,7 @@ def test_prepare_result_with_echo(mocker):
                                       {'SheetId': 0, 'Sheet title': "Sheet1"}])
     response = util_load_json('test_data/helper_functions/test_prepare_result_echo/response.json')
     command_result = GoogleSheets.prepare_result(response, {"echo_spreadsheet": "true"}, "")
-    with open(os.path.dirname(__file__) + 'test_data/helper_functions/test_prepare_result_echo/markdown_result.md') as file:
+    with open(os.path.dirname(__file__) + '/test_data/helper_functions/test_prepare_result_echo/markdown_result.md') as file:
         markdown_assert = file.read()
     assert command_result.readable_output == markdown_assert
     assert command_result.outputs == response

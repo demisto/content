@@ -202,7 +202,7 @@ def test_fetch_indicators_command(mocker):
     mocker.patch('FeedRecordedFuture.Client.build_iterator')
     mocker.patch(
         'FeedRecordedFuture.Client.get_batches_from_file',
-        return_value=DictReaderGenerator(DictReader(open(os.path.dirname(__file__) + 'test_data/response.txt')))
+        return_value=DictReaderGenerator(DictReader(open(os.path.dirname(__file__) + '/test_data/response.txt')))
     )
     client_outputs = []
     for output in fetch_indicators_command(client, indicator_type):
@@ -235,7 +235,7 @@ def test_fetch_indicators_risk_threshold_command(mocker):
     mocker.patch('FeedRecordedFuture.Client.build_iterator')
     mocker.patch(
         'FeedRecordedFuture.Client.get_batches_from_file',
-        return_value=DictReaderGenerator(DictReader(open(os.path.dirname(__file__) + 'test_data/response_risk_score.txt')))
+        return_value=DictReaderGenerator(DictReader(open(os.path.dirname(__file__) + '/test_data/response_risk_score.txt')))
     )
     client_outputs = []
     for output in fetch_indicators_command(client, indicator_type):
@@ -395,7 +395,7 @@ def test_duplicated_indicator_in_the_same_batch(mocker):
     mocker.patch(
         'FeedRecordedFuture.Client.get_batches_from_file',
         return_value=DictReaderGenerator(DictReader(open(os.path.dirname(
-            __file__) + 'test_data/response_for_duplicate_indicator_test.txt')))
+            __file__) + '/test_data/response_for_duplicate_indicator_test.txt')))
     )
     client = Client(indicator_type=indicator_type, api_token='123', services=['fusion'])
 

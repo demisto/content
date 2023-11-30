@@ -30,7 +30,7 @@ def equals_object(obj1, obj2) -> bool:
 
 
 def test_1(mocker):
-    with open(os.path.dirname(__file__) + 'test_data/test-1.json') as f:
+    with open(os.path.dirname(__file__) + '/test_data/test-1.json') as f:
         test_list = json.load(f)
 
     for case in test_list:

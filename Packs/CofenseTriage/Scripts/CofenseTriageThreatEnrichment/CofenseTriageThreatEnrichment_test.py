@@ -10,7 +10,7 @@ def test_get_threat_indicator_list_when_valid_response_is_returned(mock_execute_
     """
     from CofenseTriageThreatEnrichment import get_threat_indicator_list
 
-    with open(os.path.dirname(__file__) + "test_data/threat_indicator_response.json") as data:
+    with open(os.path.dirname(__file__) + "/test_data/threat_indicator_response.json") as data:
         mock_response = json.load(data)
 
     mock_execute_command.return_value = mock_response

@@ -1683,7 +1683,7 @@ def test_list_alert_image_command(
         "/v1/data/alerts/get-complete-alert/59490dabe57c281391e11ceb",
     )
     requests_mock.get(url=url, json=json_response, status_code=HTTPStatus.OK)
-    with open(os.path.dirname(__file__) + "test_data/alert/alert_image.png", "rb") as img1:
+    with open(os.path.dirname(__file__) + "/test_data/alert/alert_image.png", "rb") as img1:
         url = urljoin(
             mock_client._base_url,
             "/v1/data/alerts/alert-image/59490d78e57c281391e11cb9",
@@ -2374,7 +2374,7 @@ def test_get_alert_csv_command_with_comma_separated_content(
     """
     from Rapid7ThreatCommand import get_alert_csv_command
 
-    with open(os.path.dirname(__file__) + "test_data/alert/alert_csv.csv", "rb") as csv:
+    with open(os.path.dirname(__file__) + "/test_data/alert/alert_csv.csv", "rb") as csv:
         url = urljoin(
             mock_client._base_url,
             "/v1/data/alerts/csv-file/59490dabe57c281391e11ceb",
@@ -2408,7 +2408,7 @@ def test_get_alert_csv_command_with_tab_separated_content(
     """
     from Rapid7ThreatCommand import get_alert_csv_command
 
-    with open(os.path.dirname(__file__) + "test_data/alert/alert_csv_2.csv", "rb") as csv:
+    with open(os.path.dirname(__file__) + "/test_data/alert/alert_csv_2.csv", "rb") as csv:
         url = urljoin(
             mock_client._base_url,
             "/v1/data/alerts/csv-file/59490dabe57c281391e11ceb",

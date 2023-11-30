@@ -7,13 +7,13 @@ from MicrosoftGraphFiles import remove_identity_key, url_validation, parse_key_t
     download_file_command, list_sharepoint_sites_command, list_drive_content_command, create_new_folder_command, \
     list_drives_in_site_command, MsGraphClient, upload_new_file_command
 
-with open(os.path.dirname(__file__) + "test_data/response.json", "rb") as test_data:
+with open(os.path.dirname(__file__) + "/test_data/response.json", "rb") as test_data:
     commands_responses = json.load(test_data)
 
-with open(os.path.dirname(__file__) + "test_data/test_inputs.json", "rb") as test_data:
+with open(os.path.dirname(__file__) + "/test_data/test_inputs.json", "rb") as test_data:
     arguments = json.load(test_data)
 
-with open(os.path.dirname(__file__) + "test_data/expected_results.json", "rb") as test_data:
+with open(os.path.dirname(__file__) + "/test_data/expected_results.json", "rb") as test_data:
     commands_expected_results = json.load(test_data)
 
 EXCLUDE_LIST = ["eTag"]

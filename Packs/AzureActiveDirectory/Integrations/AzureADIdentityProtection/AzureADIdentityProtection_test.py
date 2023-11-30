@@ -120,7 +120,7 @@ def test_parse_list():
     Then
         - Validate output parsing
     """
-    with open(os.path.dirname(__file__) + 'test_data/risk_detections_response.json') as f:
+    with open(os.path.dirname(__file__) + '/test_data/risk_detections_response.json') as f:
         response = json.load(f)
 
     human_readable_title = "Risks"

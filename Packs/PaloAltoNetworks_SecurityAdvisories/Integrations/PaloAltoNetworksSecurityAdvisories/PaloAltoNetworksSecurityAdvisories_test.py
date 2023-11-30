@@ -44,7 +44,7 @@ def test_client_get_pan_os_advisories():
 
 @patch("PaloAltoNetworksSecurityAdvisories.Client.get_advisories")
 def test_get_advisories_command(patched_get_advisories):
-    patched_get_advisories.return_value = json.load(open(os.path.dirname(__file__) + "test_data" + os.sep + "advisories.json"))
+    patched_get_advisories.return_value = json.load(open(os.path.dirname(__file__) + "/test_data" + os.sep + "advisories.json"))
     from PaloAltoNetworksSecurityAdvisories import Client, get_advisories
     test_client = Client(base_url=BASE_URL)
     result = get_advisories(test_client, "PANOS")
@@ -54,7 +54,7 @@ def test_get_advisories_command(patched_get_advisories):
 
 @patch("PaloAltoNetworksSecurityAdvisories.Client.get_advisories")
 def test_fetch_indicators_command(patched_get_advisories):
-    patched_get_advisories.return_value = json.load(open(os.path.dirname(__file__) + "test_data" + os.sep + "advisories.json"))
+    patched_get_advisories.return_value = json.load(open(os.path.dirname(__file__) + "/test_data" + os.sep + "advisories.json"))
     from PaloAltoNetworksSecurityAdvisories import Client, fetch_indicators
     test_client = Client(base_url=BASE_URL)
     result = fetch_indicators(test_client, "PANOS")

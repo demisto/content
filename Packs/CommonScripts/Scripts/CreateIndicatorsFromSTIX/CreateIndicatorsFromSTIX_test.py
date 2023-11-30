@@ -16,7 +16,7 @@ def test_create_indicators_loop(mocker):
     Then:
         - Validate the indicators extract without errors.
     """
-    with open(os.path.dirname(__file__) + 'test_data/expected_result_example3.json') as json_f:
+    with open(os.path.dirname(__file__) + '/test_data/expected_result_example3.json') as json_f:
         indicators = json.load(json_f)
     mocker.patch.object(demisto, 'executeCommand', return_value=[None])
     results, errors = create_indicators_loop(indicators=indicators)
@@ -35,7 +35,7 @@ def test_parse_indicators_using_stix_parser(mocker):
     Then:
         - Validate the indicators extract without errors.
     """
-    with open(os.path.dirname(__file__) + 'test_data/expected_result_example3.json') as json_f:
+    with open(os.path.dirname(__file__) + '/test_data/expected_result_example3.json') as json_f:
         expected_res = json_f.read()
     mocker.patch.object(demisto, 'executeCommand', return_value=[{'Contents': expected_res, 'Type': 1}])
     mocker.patch('CommonServerPython.is_error', False)

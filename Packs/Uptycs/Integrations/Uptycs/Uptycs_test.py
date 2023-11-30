@@ -123,7 +123,7 @@ def test_uptycs_get_carves_link(mocker, requests_mock):
     test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/carves/{carve_id}/link'
     requests_mock.get(test_url, json=mock_response)
 
-    with open(os.path.dirname(__file__) + 'test_data/blob.tar', 'rb') as file_mock:
+    with open(os.path.dirname(__file__) + '/test_data/blob.tar', 'rb') as file_mock:
         requests_mock.get(mock_response['url'], content=file_mock.read())
 
     result = uptycs_get_carves_file_command()

@@ -118,7 +118,7 @@ INCIDENT_FIELD_INPUT = [
 
 
 def get_fetch_data():
-    with open(os.path.dirname(__file__) + 'test_data/raw_response.json') as f:
+    with open(os.path.dirname(__file__) + '/test_data/raw_response.json') as f:
         file = json.loads(f.read())
         return file.get('result')
 
@@ -383,7 +383,7 @@ def test_get_incident_command_expand_events_false(mocker, requests_mock):
     - Ensure event_ids field is populated as expected
     """
     base_url = 'https://server_url/'
-    with open(os.path.dirname(__file__) + 'test_data/incident_expand_events_false.json') as f:
+    with open(os.path.dirname(__file__) + '/test_data/incident_expand_events_false.json') as f:
         incident = json.loads(f.read())
     requests_mock.get(f'{base_url}api/incidents/3064.json?expand_events=false', json=incident)
     mocker.patch.object(demisto, 'results')
@@ -436,7 +436,7 @@ def test_search_quarantine_command(mocker, requests_mock):
     - Ensure output is success message (at least one success).
     """
     base_url = 'https://server_url/'
-    with open(os.path.dirname(__file__) + 'test_data/incidents.json') as f:
+    with open(os.path.dirname(__file__) + '/test_data/incidents.json') as f:
         incident = json.loads(f.read())
     requests_mock.get(f'{base_url}api/incidents', json=incident)
     mocker.patch('ProofpointThreatResponse.BASE_URL', base_url)

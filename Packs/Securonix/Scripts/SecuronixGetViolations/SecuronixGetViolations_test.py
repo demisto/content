@@ -18,9 +18,9 @@ def test_get_violations_command_when_no_violations(mock_return):
 @patch('SecuronixGetViolations.return_results')
 def test_get_violations_command_when_violations_found(mock_return, mock_context):
     """Test case for successful execution of script when violations found."""
-    with open(os.path.dirname(__file__) + 'test_data/get_violations_response.json') as f:
+    with open(os.path.dirname(__file__) + '/test_data/get_violations_response.json') as f:
         mock_response = json.load(f)
-    with open(os.path.dirname(__file__) + 'test_data/get_violations_response_hr.md') as f:
+    with open(os.path.dirname(__file__) + '/test_data/get_violations_response_hr.md') as f:
         expected_table = f.read()
     mock_context.return_value = mock_response
 
@@ -33,7 +33,7 @@ def test_get_violations_command_when_violations_found(mock_return, mock_context)
 @patch('SecuronixGetViolations.return_results')
 def test_get_violations_command_for_different_violations_count(mock_return, mock_context):
     """Test case for successful execution of script when violations found."""
-    with open(os.path.dirname(__file__) + 'test_data/get_violations_response.json') as f:
+    with open(os.path.dirname(__file__) + '/test_data/get_violations_response.json') as f:
         mock_response = json.load(f).get('Securonix', {}).get('ViolationData', [])
 
     # Test scenario for 1 violation.

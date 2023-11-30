@@ -7,7 +7,7 @@ from GsuiteAuditor import GSuiteClient, activities_list_command
 
 MOCKER_HTTP_METHOD = 'GSuiteApiModule.GSuiteClient.http_request'
 
-with open(os.path.dirname(__file__) + 'test_data/service_account_json.txt') as j:
+with open(os.path.dirname(__file__) + '/test_data/service_account_json.txt') as j:
     TEST_JSON = j.read()
 
 

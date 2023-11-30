@@ -12,7 +12,7 @@ def test_main(mocker):
         Then: Return a successful response
 
     """
-    with open(os.path.dirname(__file__) + 'test_data/qualys_host_list_rawresponse.xml') as f:
+    with open(os.path.dirname(__file__) + '/test_data/qualys_host_list_rawresponse.xml') as f:
         raw_response = f.read()
     mocker.patch.object(demisto, 'args', return_value={})
     mocker.patch.object(demisto, 'getFilePath',
@@ -34,7 +34,7 @@ def test_get_asset_id_for_ip(mocker):
            Then: Return a valid id
 
        """
-    with open(os.path.dirname(__file__) + 'test_data/qualys_host_list_rawresponse.xml') as f:
+    with open(os.path.dirname(__file__) + '/test_data/qualys_host_list_rawresponse.xml') as f:
         raw_response = f.read()
     mocker.patch.object(demisto, 'executeCommand', return_value=[{'Contents': raw_response, 'Type': 'note'}])
     assert get_asset_id_for_ip('1.1.1.1') == '69291564'

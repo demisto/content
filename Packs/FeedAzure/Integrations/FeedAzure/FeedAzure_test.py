@@ -5,7 +5,7 @@ from FeedAzure import Client
 
 @pytest.mark.parametrize('regions_list, services_list', [(['All'], ['All'])])
 def test_download_link_fetching(mocker, regions_list, services_list):
-    with open(os.path.dirname(__file__) + 'test_data/response_mock.txt') as f:
+    with open(os.path.dirname(__file__) + '/test_data/response_mock.txt') as f:
         response = f.read()
         client = Client(regions_list, services_list)
 

@@ -364,7 +364,7 @@ def test_confluence_cloud_user_list_command_when_valid_response_is_returned(requ
     requests_mock.get(BASE_URL + URL_SUFFIX["USER"], json=expected_response, status_code=200)
     expected_context_output = util_load_json("test_data/User/user_list_command_context.json")
 
-    with open(os.path.dirname(__file__) + "test_data/User/user_list_command.md") as f:
+    with open(os.path.dirname(__file__) + "/test_data/User/user_list_command.md") as f:
         expected_readable_output = f.read()
 
     args = {

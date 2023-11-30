@@ -5,7 +5,7 @@ import json
 
 
 def get_fetch_data():
-    with open(os.path.dirname(__file__) + 'test_data/action_results.json') as f:
+    with open(os.path.dirname(__file__) + '/test_data/action_results.json') as f:
         return json.loads(f.read())
 
 

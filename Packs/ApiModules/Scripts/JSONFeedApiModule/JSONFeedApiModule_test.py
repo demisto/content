@@ -7,7 +7,7 @@ import demistomock as demisto
 
 
 def test_json_feed_no_config():
-    with open(os.path.dirname(__file__) + 'test_data/amazon_ip_ranges.json') as ip_ranges_json:
+    with open(os.path.dirname(__file__) + '/test_data/amazon_ip_ranges.json') as ip_ranges_json:
         ip_ranges = json.load(ip_ranges_json)
 
     with requests_mock.Mocker() as m:
@@ -73,7 +73,7 @@ CONFIG_PARAMETERS = [
 
 @pytest.mark.parametrize('config, total_indicators, indicator_with_several_tags', CONFIG_PARAMETERS)
 def test_json_feed_with_config(config, total_indicators, indicator_with_several_tags):
-    with open(os.path.dirname(__file__) + 'test_data/amazon_ip_ranges.json') as ip_ranges_json:
+    with open(os.path.dirname(__file__) + '/test_data/amazon_ip_ranges.json') as ip_ranges_json:
         ip_ranges = json.load(ip_ranges_json)
 
     with requests_mock.Mocker() as m:
@@ -93,7 +93,7 @@ def test_json_feed_with_config(config, total_indicators, indicator_with_several_
 
 
 def test_json_feed_with_config_mapping():
-    with open(os.path.dirname(__file__) + 'test_data/amazon_ip_ranges.json') as ip_ranges_json:
+    with open(os.path.dirname(__file__) + '/test_data/amazon_ip_ranges.json') as ip_ranges_json:
         ip_ranges = json.load(ip_ranges_json)
 
     feed_name_to_config = {
@@ -375,7 +375,7 @@ def test_json_feed_with_config_mapping_with_aws_feed_no_update(mocker):
      remained the same, and continue to have the previous AWS feed config name 'AMAZON'.
      (the last_run object contains an 'AMAZON' entry)
     """
-    with open(os.path.dirname(__file__) + 'test_data/amazon_ip_ranges.json') as ip_ranges_json:
+    with open(os.path.dirname(__file__) + '/test_data/amazon_ip_ranges.json') as ip_ranges_json:
         ip_ranges = json.load(ip_ranges_json)
 
     mocker.patch.object(demisto, 'debug')
@@ -427,7 +427,7 @@ def test_json_feed_with_config_mapping_with_aws_feed_with_update(mocker):
     - Ensure that the correct message displays in demisto.debug, and the last_run object
       contains the new feed config name 'AMAZON$$CIDR'
     """
-    with open(os.path.dirname(__file__) + 'test_data/amazon_ip_ranges.json') as ip_ranges_json:
+    with open(os.path.dirname(__file__) + '/test_data/amazon_ip_ranges.json') as ip_ranges_json:
         ip_ranges = json.load(ip_ranges_json)
 
     mocker.patch.object(demisto, 'debug')

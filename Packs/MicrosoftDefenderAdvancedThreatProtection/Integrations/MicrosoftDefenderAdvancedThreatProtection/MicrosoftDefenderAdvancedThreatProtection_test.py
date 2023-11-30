@@ -16,7 +16,7 @@ from MicrosoftDefenderAdvancedThreatProtection import MsClient, get_future_time,
     create_filters_disjunctions, create_filter, MICROSOFT_DEFENDER_FOR_ENDPOINT_API
 
 ARGS = {'id': '123', 'limit': '2', 'offset': '0'}
-with open(os.path.dirname(__file__) + 'test_data/expected_hunting_queries.json') as expected_json:
+with open(os.path.dirname(__file__) + '/test_data/expected_hunting_queries.json') as expected_json:
     EXPECTED_HUNTING_QUERIES = json.load(expected_json)
 
 

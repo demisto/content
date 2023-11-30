@@ -6,7 +6,7 @@ from FeedCrowdstrikeFalconIntel import Client
 
 
 def get_fetch_data():
-    with open(os.path.dirname(__file__) + 'test_data/test_data.json') as f:
+    with open(os.path.dirname(__file__) + '/test_data/test_data.json') as f:
         return json.loads(f.read())
 
 

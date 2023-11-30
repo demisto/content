@@ -27,7 +27,7 @@ def test_build_iterator(requests_mock):
         - Returns a list of the indicators parsed from the API's response
 
     """
-    with open(os.path.dirname(__file__) + "test_data/api_call_mock.txt") as file:
+    with open(os.path.dirname(__file__) + "/test_data/api_call_mock.txt") as file:
         response = file.read()
     requests_mock.get(URL, text=response)
     expected_ips = {"31.31.194.65", "95.213.205.83", "77.223.124.212"}

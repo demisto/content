@@ -47,7 +47,7 @@ def test_main(mocker):
 
     mocker.patch.object(demisto, 'getFilePath', side_effect=side_effect_demisto_getFilePath)
 
-    with open(os.path.dirname(__file__) + 'test_data/test-1.json') as f:
+    with open(os.path.dirname(__file__) + '/test_data/test-1.json') as f:
         test_list = json.load(f)
 
     for t in test_list:

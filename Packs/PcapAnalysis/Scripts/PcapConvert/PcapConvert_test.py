@@ -16,7 +16,7 @@ def test_main(mocker):
     """
     from PcapConvert import main
 
-    with open(os.path.dirname(__file__) + 'test_data/test-1.json') as f:
+    with open(os.path.dirname(__file__) + '/test_data/test-1.json') as f:
         test_list = json.load(f)
 
     for t in test_list:

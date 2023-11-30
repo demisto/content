@@ -180,7 +180,7 @@ def test_extract_occurred_no_headers():
 
 
 def test_no_date_mail():
-    with open(os.path.dirname(__file__) + 'test_data/email_no_date.json') as f:
+    with open(os.path.dirname(__file__) + '/test_data/email_no_date.json') as f:
         msg = json.load(f)
     client = Client()
     context_gmail, _, _, occurred, is_valid = client.get_email_context(msg, "some_mail")

@@ -419,9 +419,9 @@ class TestCommands:
         def ack_messages(self, a, b):
             return ""
 
-    with open(os.path.dirname(__file__) + "test_data/commands_outputs.json") as f:
+    with open(os.path.dirname(__file__) + "/test_data/commands_outputs.json") as f:
         COMMAND_OUTPUTS = json.load(f)
-    with open(os.path.dirname(__file__) + "test_data/raw_responses.json") as f:
+    with open(os.path.dirname(__file__) + "/test_data/raw_responses.json") as f:
         RAW_RESPONSES = json.load(f)
 
     TEST_COMMANDS_LIST = [

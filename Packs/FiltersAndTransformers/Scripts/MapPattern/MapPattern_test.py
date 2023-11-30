@@ -66,7 +66,7 @@ def side_effect_demisto_dt(obj, dt):
 def test_main(mocker):
     from MapPattern import main
 
-    with open(os.path.dirname(__file__) + 'test_data/test-1.json') as f:
+    with open(os.path.dirname(__file__) + '/test_data/test-1.json') as f:
         test_list = json.load(f)
 
     mocker.patch.object(demisto, 'dt', side_effect=side_effect_demisto_dt)

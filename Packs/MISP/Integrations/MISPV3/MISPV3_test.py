@@ -619,7 +619,7 @@ def test_warninglist_response(mocker):
     from MISPV3 import warninglist_command
     demisto_args = {"value": "8.8.8.8"}
     warninglist_response = util_load_json("test_data/warninglist_response.json")
-    with open(os.path.dirname(__file__) + "test_data/warninglist_outputs.md", encoding="utf-8") as f:
+    with open(os.path.dirname(__file__) + "/test_data/warninglist_outputs.md", encoding="utf-8") as f:
         warninglist_expected_output = f.read()
     mocker.patch("pymisp.ExpandedPyMISP.values_in_warninglist", return_value=warninglist_response)
     assert warninglist_command(demisto_args).to_context()['HumanReadable'] == warninglist_expected_output

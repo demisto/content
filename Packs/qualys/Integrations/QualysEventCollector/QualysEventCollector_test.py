@@ -35,7 +35,7 @@ def test_get_activity_logs_events_command(requests_mock):
     - Ensure Activity Logs Results in human-readable, and number of results reasonable.
     """
     base_url = 'https://server_url/'
-    with open(os.path.dirname(__file__) + 'test_data/activity_logs.csv') as f:
+    with open(os.path.dirname(__file__) + '/test_data/activity_logs.csv') as f:
         logs = f.read()
     requests_mock.get(f'{base_url}api/2.0/fo/activity_log/'
                       f'?action=list&truncation_limit=0&since_datetime=2023-03-01T00%3A00%3A00Z', text=logs)
@@ -64,7 +64,7 @@ def test_get_host_list_detections_events_command(requests_mock):
     - Ensure List Host Detections Results in human-readable, and number of results reasonable.
     """
     base_url = 'https://server_url/'
-    with open(os.path.dirname(__file__) + 'test_data/host_list_detections_raw.xml') as f:
+    with open(os.path.dirname(__file__) + '/test_data/host_list_detections_raw.xml') as f:
         logs = f.read()
     requests_mock.get(f'{base_url}api/2.0/fo/asset/host/vm/detection/'
                       f'?action=list&truncation_limit=0&vm_scan_date_after=2023-03-01T00%3A00%3A00Z', text=logs)
@@ -130,7 +130,7 @@ def test_fetch_logs_events_command(requests_mock, activity_log_last_run, logs_nu
     first_fetch_str = '2022-12-21T03:42:05Z'
     base_url = 'https://server_url/'
     truncation_limit = logs_number
-    with open(os.path.dirname(__file__) + 'test_data/activity_logs.csv') as f:
+    with open(os.path.dirname(__file__) + '/test_data/activity_logs.csv') as f:
         logs = f.read()
         new_logs = f'{BEGIN_RESPONSE_LOGS_CSV}'
         for row in logs.split('\n'):
@@ -190,7 +190,7 @@ def test_fetch_detection_events_command(requests_mock, host_last_run, detections
     first_fetch_str = '2022-12-21T03:42:05Z'
     base_url = 'https://server_url/'
     truncation_limit = 10
-    with open(os.path.dirname(__file__) + 'test_data/host_list_detections_raw.xml') as f:
+    with open(os.path.dirname(__file__) + '/test_data/host_list_detections_raw.xml') as f:
         hosts = f.read()
     requests_mock.get(f'{base_url}api/2.0/fo/asset/host/vm/detection/'
                       f'?action=list&truncation_limit={truncation_limit}'

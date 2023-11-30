@@ -6,7 +6,7 @@ import pytest
 
 from GoogleCalendar import MESSAGES, OUTPUT_PREFIX, GSuiteClient
 
-with open(os.path.dirname(__file__) + 'test_data/service_account_json.txt') as f:
+with open(os.path.dirname(__file__) + '/test_data/service_account_json.txt') as f:
     TEST_JSON = f.read()
 
 MOCKER_HTTP_METHOD = 'GSuiteApiModule.GSuiteClient.http_request'
@@ -109,7 +109,7 @@ def test_acl_add_command_success(mocker_http_request, gsuite_client):
     """
     from GoogleCalendar import acl_add_command
 
-    with open(os.path.dirname(__file__) + 'test_data/acl_add_data.json', encoding='utf-8') as data:
+    with open(os.path.dirname(__file__) + '/test_data/acl_add_data.json', encoding='utf-8') as data:
         expected_res = json.load(data)
     mocker_http_request.return_value = expected_res['Contents']
 
@@ -137,7 +137,7 @@ def test_acl_add_command_wrong_argument(gsuite_client):
     - Ensure command should raise error as expected.
     """
     from GoogleCalendar import acl_add_command
-    with open(os.path.dirname(__file__) + 'test_data/acl_add_data.json', encoding='utf-8') as data:
+    with open(os.path.dirname(__file__) + '/test_data/acl_add_data.json', encoding='utf-8') as data:
         expected_res = json.load(data)
     args = expected_res['wrong_args']
     with pytest.raises(ValueError) as e:
@@ -161,7 +161,7 @@ def test_acl_list_command_success(mocker_http_request, gsuite_client):
     """
     from GoogleCalendar import acl_list_command
 
-    with open(os.path.dirname(__file__) + 'test_data/acl_list_data.json', encoding='utf-8') as data:
+    with open(os.path.dirname(__file__) + '/test_data/acl_list_data.json', encoding='utf-8') as data:
         expected_res = json.load(data)
     mocker_http_request.return_value = expected_res['Contents']
 
@@ -186,7 +186,7 @@ def test_acl_list_command_wrong_argument():
     - Ensure command should raise error as expected.
     """
     from GoogleCalendar import acl_list_command
-    with open(os.path.dirname(__file__) + 'test_data/acl_list_data.json', encoding='utf-8') as data:
+    with open(os.path.dirname(__file__) + '/test_data/acl_list_data.json', encoding='utf-8') as data:
         expected_res = json.load(data)
     args = expected_res['wrong_args']
     with pytest.raises(ValueError) as e:

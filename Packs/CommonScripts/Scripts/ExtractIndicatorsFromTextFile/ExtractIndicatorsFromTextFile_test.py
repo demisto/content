@@ -78,7 +78,7 @@ def test_read_encoded_file(filePath, res):
     # this breaks encoding.
     # instead use encoding script like this -
         import binascii
-        open(os.path.dirname(__file__) + 'test_data/latin-file.txt', mode='w', encoding='latin-1').write('áÈË')
+        open(os.path.dirname(__file__) + '/test_data/latin-file.txt', mode='w', encoding='latin-1').write('áÈË')
 
         Given:
             file path to an encoded file.

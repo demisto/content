@@ -403,7 +403,7 @@ def test_edge_case_cmd_0x20():
 def test_b_process_btype_is_bin():
     bmcc = BMCContainer()
     bmcc.btype = b".BIN"
-    with open(os.path.dirname(__file__) + "test_data/valid_bin.bin", "rb") as f:
+    with open(os.path.dirname(__file__) + "/test_data/valid_bin.bin", "rb") as f:
         bmcc.bdat = f.read()
     assert bmcc.b_process() is True
 

@@ -263,7 +263,7 @@ class TestHelperFunctions:
         """
         from EDL import create_json_out_format, RequestArguments
         returned_output = []
-        with open(os.path.dirname(__file__) + 'test_data/demisto_url_iocs.json') as iocs_json_f:
+        with open(os.path.dirname(__file__) + '/test_data/demisto_url_iocs.json') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
 
             # strips port numbers
@@ -292,7 +292,7 @@ class TestHelperFunctions:
           - assert the result
         """
         from EDL import create_csv_out_format, RequestArguments
-        with open(os.path.dirname(__file__) + 'test_data/demisto_url_iocs.json') as iocs_json_f:
+        with open(os.path.dirname(__file__) + '/test_data/demisto_url_iocs.json') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
             request_args = RequestArguments(query='', drop_invalids=True, url_port_stripping=True,
                                             url_protocol_stripping=True)
@@ -317,7 +317,7 @@ class TestHelperFunctions:
           - assert the result
         """
         from EDL import create_mwg_out_format, RequestArguments
-        with open(os.path.dirname(__file__) + 'test_data/demisto_url_iocs.json') as iocs_json_f:
+        with open(os.path.dirname(__file__) + '/test_data/demisto_url_iocs.json') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
             request_args = RequestArguments(query='', drop_invalids=True, url_port_stripping=True,
                                             url_protocol_stripping=True)
@@ -345,7 +345,7 @@ class TestHelperFunctions:
         """
         from EDL import create_proxysg_out_format, RequestArguments, create_proxysg_all_category_out_format
         files_by_category = {}
-        with open(os.path.dirname(__file__) + 'test_data/demisto_url_iocs.json') as iocs_json_f:
+        with open(os.path.dirname(__file__) + '/test_data/demisto_url_iocs.json') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
 
         request_args = RequestArguments(query='', drop_invalids=True, url_port_stripping=True,

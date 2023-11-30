@@ -155,9 +155,9 @@ def test_paging(mocker, testclient):
     Test the paging functionality works as expected
     """
     # Patch to return list_alerts json data
-    with open(os.path.dirname(__file__) + "test_data/list_alerts_paged.json") as list_alerts_paged:
+    with open(os.path.dirname(__file__) + "/test_data/list_alerts_paged.json") as list_alerts_paged:
         list_alerts_response = json.load(list_alerts_paged)
-    with open(os.path.dirname(__file__) + "test_data/list_alerts_empty.json") as list_alerts_empty:
+    with open(os.path.dirname(__file__) + "/test_data/list_alerts_empty.json") as list_alerts_empty:
         mocker.patch.object(Client, "_http_request", side_effect=[
             list_alerts_response,
             json.load(list_alerts_empty),

@@ -63,7 +63,7 @@ def test_endless_loop_on_failed_response(requests_mock, mocker):
     """
     mocker.patch(RETURN_ERROR_TARGET)
 
-    with open(os.path.dirname(__file__) + 'test_data/capitalne.json') as f:
+    with open(os.path.dirname(__file__) + '/test_data/capitalne.json') as f:
         response_data = json.loads(f.read())
     requests_mock.get(RESULT_URL + 'uuid', status_code=200, json=response_data)
     thread = Thread(target=thread_target)
@@ -113,7 +113,7 @@ def test_format_results_check_lists(mocker):
     from UrlScan import format_results, Client
     client = Client()
 
-    with open(os.path.dirname(__file__) + 'test_data/capitalne.json') as f:
+    with open(os.path.dirname(__file__) + '/test_data/capitalne.json') as f:
         response_data = json.loads(f.read())
 
     mocker.patch('UrlScan.urlscan_submit_request', return_value=(response_data, '', ''))

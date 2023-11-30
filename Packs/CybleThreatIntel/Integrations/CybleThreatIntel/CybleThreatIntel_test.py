@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 import json
 import pytest
 
-input_value = json.load(open(os.path.dirname(__file__) + "test_data/input.json"))
+input_value = json.load(open(os.path.dirname(__file__) + "/test_data/input.json"))
 params = input_value['params']
 args = input_value['args']
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S+00:00"
@@ -46,7 +46,7 @@ def test_get_parse_to_json():
     from CybleThreatIntel import Client
     client = Client(params)
 
-    mock_response_1 = str(open(os.path.dirname(__file__) + "test_data/data.xml").read())
+    mock_response_1 = str(open(os.path.dirname(__file__) + "/test_data/data.xml").read())
     mock_response_3 = load_json_file("data.json")
     val = Client.parse_to_json(client, mock_response_1)
     assert isinstance(val, dict)
@@ -57,7 +57,7 @@ def test_get_taxii(mocker):
     from CybleThreatIntel import Client
     client = Client(params)
 
-    mock_response_1 = str(open(os.path.dirname(__file__) + "test_data/data.xml").read())
+    mock_response_1 = str(open(os.path.dirname(__file__) + "/test_data/data.xml").read())
     mock_response_3 = load_json_file("data.json")
     mocker.patch.object(client, 'fetch', return_value=[mock_response_1])
     val, time = Client.get_taxii(client, args)
@@ -70,7 +70,7 @@ def test_get_taxii_invalid(mocker, capfd):
     from CybleThreatIntel import Client
     client = Client(params)
 
-    mock_response_1 = str(open(os.path.dirname(__file__) + "test_data/data_err.xml").read())
+    mock_response_1 = str(open(os.path.dirname(__file__) + "/test_data/data_err.xml").read())
     mocker.patch.object(client, 'fetch', return_value=[mock_response_1])
     with capfd.disabled():
         try:

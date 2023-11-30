@@ -5,7 +5,7 @@ URL = 'https://docs.microsoft.com/en-us/intune/fundamentals/intune-endpoints'
 
 
 def test_build_iterator(requests_mock):
-    with open(os.path.dirname(__file__) + 'test_data/Microsoft_endpoint_mock.html') as file:
+    with open(os.path.dirname(__file__) + '/test_data/Microsoft_endpoint_mock.html') as file:
         response = file.read()
     requests_mock.get(URL, text=response)
     expected_domain = 'login.microsoftonline.com'
