@@ -1,6 +1,6 @@
 category: Email
 commonfields:
-  id: Microsoft_Graph_Files_copy
+  id: Microsoft_Graph_Files
   version: -1
 configuration:
 - defaultvalue: https://graph.microsoft.com
@@ -80,8 +80,8 @@ configuration:
   type: 8
   required: false
 description: Use the O365 File Management (Onedrive/Sharepoint/Teams) integration to enable your app to get authorized access to files in OneDrive, SharePoint, and MS Teams across your entire organization. This integration requires admin consent.
-display: O365 File Management (Onedrive/Sharepoint/Teams)_copy
-name: Microsoft_Graph_Files_copy
+display: O365 File Management (Onedrive/Sharepoint/Teams)
+name: Microsoft_Graph_Files
 script:
   commands:
   - arguments:
@@ -647,7 +647,7 @@ script:
       name: site_id
     - description: The name of the site. Must provide either site_id or site_name.
       name: site_name
-    - description: The ID of the permission. 
+    - description: The ID of the permission.
       name: permission_id
     - auto: PREDEFINED
       predefined:
