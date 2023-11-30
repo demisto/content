@@ -307,6 +307,7 @@ var installPacks = function(packs_to_install, file_url, entry_id, skip_verify, s
             let pack_url = '{0}{1}/{2}/{3}.zip'.format(marketplace_url,pack_id,pack_version,pack_id)
             installPack(pack_url, undefined, skip_verify, skip_validation)
             logDebug(pack_id + ' pack installed successfully')
+            logDebug(pack_id + ' pack installed successfully')
             installed_packs.push(pack_id)
         }
 
