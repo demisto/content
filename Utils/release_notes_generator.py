@@ -20,7 +20,7 @@ PACKS_RN_FILES_FORMAT = '*/ReleaseNotes/*.md'
 
 EMPTY_LINES_REGEX = re.compile(r'\s*-\s*\n')
 IGNORED_LINES_REGEX = re.compile(r'<!-[\W\w]*?-->')
-ENTITY_TYPE_SECTION_REGEX = re.compile(r'^#### ([\w ]+)$\n([\w\W]*?)(?=^#### )|^#### ([\w ]+)$\n([\w\W]*)', re.M)
+ENTITY_TYPE_SECTION_REGEX = re.compile(r'^#### ([\w ]+)([\w\W]*?)(?=^#### )|^#### ([\w ]+)([\w\W]*)', re.M)
 ENTITY_SECTION_REGEX = re.compile(r'^##### (.+)$\n([\w\W]*?)(?=^##### )|^##### (.+)$\n([\w\W]*)|'
                                   r'^- \*\*(.+)\*\*$\n([\w\W]*)', re.M)
 PACK_GENERAL_NOTES_REGEX = re.compile(r'^## (.+)$\n([\w\W]*?)(?=^#### )|^## ([\w ]+)$\n([\w\W]*)', re.M)
@@ -99,6 +99,27 @@ def get_new_entity_record(entity_path: str) -> tuple[str, str]:
     return name, description
 
 
+def squash_docker_updates(description: str) -> str:
+    """Squash docker updates to the latest update.
+
+    Args:
+        description: The description containing the docker updates.
+
+    Return: a new description containing only the latest docker update at the bottom.
+    """
+    new_description_lines = []
+    latest_docker_update_line = ''
+    for description_line in description.splitlines():
+        if description_line.startswith('- Updated the Docker image to:'):
+            latest_docker_update_line = description_line
+        else:
+            new_description_lines.append(description_line)
+
+    new_description_lines.append(latest_docker_update_line)
+    new_description = '\n'.join(new_description_lines)
+    return new_description
+
+
 def construct_entities_block(entities_data: dict) -> str:
     """
     convert entities information to a pack release note block
@@ -138,11 +159,12 @@ def construct_entities_block(entities_data: dict) -> str:
         if '[special_msg]' in entities_description:
             release_notes += f'{str(entities_description.pop("[special_msg]"))}\n'
         for name, description in entities_description.items():
+            new_description = squash_docker_updates(description)
             if entity_type in ('Connections', 'IncidentTypes', 'IndicatorTypes', 'Layouts', 'IncidentFields',
                                'Incident Types', 'Indicator Types', 'Incident Fields'):
-                release_notes += f'- **{name}**\n{description}\n'
+                release_notes += f'- **{name}**\n{new_description}\n'
             elif description.strip():
-                release_notes += f'##### {name}\n{description}\n'
+                release_notes += f'##### {name}\n{new_description}\n'
 
     return release_notes
 
