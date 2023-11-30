@@ -35,7 +35,7 @@ class Portal():
         else:
             raise ValueError('Bearer is missing')
 
-    class AuthScheme(object):
+    class AuthScheme:
         FES = 'FieldEffectAuth'
         BEARER = 'Bearer'
         KEY = 'FieldEffectKey'
@@ -79,7 +79,7 @@ class Portal():
             url = url.replace('services.', '')
 
         if self.verbose:
-            sys.stdout.write('{} {} '.format(method, url))
+            sys.stdout.write(f'{method} {url} ')
 
         if method == 'GET':
             r = requests.get(url, headers=all_headers, params=query)
@@ -90,7 +90,7 @@ class Portal():
         elif method == 'DELETE':
             r = requests.delete(url, headers=all_headers, params=query)
         else:
-            raise AssertionError('Unsupported HTTP method: {}'.format(method))
+            raise AssertionError(f'Unsupported HTTP method: {method}')
 
         if self.verbose:
             sys.stdout.write(str(r.status_code) + '\n')
