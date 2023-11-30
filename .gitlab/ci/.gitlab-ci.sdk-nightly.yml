@@ -56,6 +56,7 @@
 
   - section_start "Test-playbook To Test" --collapsed
   - echo "Sanity Test - Playbook with no integration\nSanity Test - Playbook with Unmockable Whois Integration" > "./artifacts/filter_file.txt"
+  - echo "Sanity Test - Playbook with no integration\nSanity Test - Playbook with Unmockable Whois Integration" > "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_file.txt"
   - section_end "Test-playbook To Test"
 
   - section_start "Install Packs" --collapsed
@@ -423,9 +424,9 @@ demisto-sdk-nightly:run-end-to-end-tests-xsiam:
 
     - !reference [.export_cloud_machine_constants]
 
-    - !reference [.prepare_for_test_content]
-
     - !reference [.run_end_to_end_tests]
+
+    - !reference [.prepare_for_test_content]
 
     - !reference [.run_test_content]
 
