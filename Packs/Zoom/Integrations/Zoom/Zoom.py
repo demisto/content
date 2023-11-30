@@ -137,6 +137,7 @@ class UserAgentFormatter(AccessFormatter):
 
     def get_user_agent(self, scope: Dict) -> str:
         headers = scope.get('headers', [])
+        demisto.debug("gg")
         user_agent_header = list(filter(lambda header: header[0].decode().lower() == 'user-agent', headers))
         user_agent = ''
         if len(user_agent_header) == 1:

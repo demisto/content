@@ -558,8 +558,10 @@ def search_pack_and_its_dependencies(client: demisto_client,
                     common_elements = {item['id'] for item in sublist}.intersection(item['id'] for item in pack_and_its_dependencies_as_list)
                     logging.info(f"found common element:{common_elements}")
                     if common_elements:
-                        # Append only unique dictionaries from pack_and_its_dependencies_as_list to the sublist
-                        sublist.extend(item for item in pack_and_its_dependencies_as_list if item['id'] not in common_elements)
+                        if common_elements == {'Base'}:
+                            list_packs_and_its_dependency_install_request_body.append([item for item in pack_and_its_dependencies_as_list if item['id'] not in common_elements])
+                        else:
+                            sublist.extend(item for item in pack_and_its_dependencies_as_list if item['id'] not in common_elements)
                         match_found = True
                         break
                 if not match_found:    
@@ -573,7 +575,6 @@ def search_pack_and_its_dependencies(client: demisto_client,
                     installation_request_body.append(
                         get_pack_installation_request_data(pack_id=pack['id'],
                                                            pack_version=pack['extras']['pack']['currentVersion']))
-    logging.info(f"packs_to_install: {packs_to_install}")
     return True
 
 
