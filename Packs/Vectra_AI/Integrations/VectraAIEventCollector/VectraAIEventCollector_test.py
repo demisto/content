@@ -39,8 +39,8 @@ def load_json(path: Path):
         return json.load(f)
 
 
-AUDITS: Dict[str, Any] = load_json(Path("./test_data/audits.json"))
-DETECTIONS: Dict[str, Any] = load_json(Path("./test_data/search_detections.json"))
+AUDITS: Dict[str, Any] = load_json(Path(__file__.parent / "test_data/audits.json"))
+DETECTIONS: Dict[str, Any] = load_json(Path(__file__.parent / "test_data/search_detections.json"))
 
 """ VectraClient Tests """
 
