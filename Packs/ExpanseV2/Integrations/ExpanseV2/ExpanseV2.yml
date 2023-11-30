@@ -187,7 +187,7 @@ configuration:
   advanced: true
   required: false
 description: The Xpanse integration for Cortex XSOAR leverages the Expander API to create incidents from Xpanse issues. It also leverages Xpanse's unparalleled view of the Internet to enrich IPs, domains and certificates using information from assets discovered by Xpanse Expander and risky flows detected by Xpanse Behavior.
-display: Cortex Xpanse
+display: Cortex Xpanse Legacy
 name: ExpanseV2
 script:
   commands:
