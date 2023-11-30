@@ -21,9 +21,9 @@ class Connection:
     def __enter__(self):
         return self
 
-
     def __exit__(self, exc_type, exc_val, exc_tb):
         pass
+
     @staticmethod
     def search(search_base, search_filter, search_scope, attributes):
         return None
