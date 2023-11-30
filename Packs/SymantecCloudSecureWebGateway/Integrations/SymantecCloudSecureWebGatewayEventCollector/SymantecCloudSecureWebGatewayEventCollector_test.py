@@ -21,6 +21,7 @@ from SymantecCloudSecureWebGatewayEventCollector import (
     management_next_fetch,
     parse_events,
     extract_logs_from_zip_file,
+    perform_long_running_loop,
 )
 import demistomock as demisto
 from pathlib import Path
@@ -579,15 +580,59 @@ def test_extract_logs_from_zip_file_with_logs(tmp_zip_file: Path):
         (None, DEFAULT_FETCH_SLEEP),
         ("20", MIN_FETCH_SLEEP),
         ("100", 100),
-    ]
+    ],
 )
 def test_get_fetch_interval(fetch_interval: str | None, expected_fetch_interval: int):
-    '''
+    """
     Given:
         - fetch_interval as str or None
     When:
         - run `get_fetch_interval` function
     Then:
         - Ensure function returns expected fetch interval
-    '''
+    """
     assert get_fetch_interval(fetch_interval) == expected_fetch_interval
+
+
+@pytest.mark.parametrize(
+    "mock_current_time, expected_mock_sleep",
+    [
+        ([0, 10, 10], 1),
+        ([0, DEFAULT_FETCH_SLEEP, 10], 0),
+        ([0, DEFAULT_FETCH_SLEEP + 5, 10], 0),
+    ],
+)
+def test_perform_long_running_loop(
+    mocker, client: Client, mock_current_time: list[int], expected_mock_sleep: int
+):
+    """
+    Given:
+        - client with default value
+    When:
+        - run perform_long_running_loop function
+    Then:
+        - Checks whether the functionality of calculating
+          the sleep time between fetch and fetch works as expected
+    """
+
+    mock_sleep = mocker.patch("time.sleep")
+
+    mocker.patch(
+        "SymantecCloudSecureWebGatewayEventCollector.get_current_time",
+        side_effect=mock_current_time,
+    )
+    mocker.patch(
+        "SymantecCloudSecureWebGatewayEventCollector.get_integration_context",
+        return_value={},
+    )
+    mocker.patch(
+        "SymantecCloudSecureWebGatewayEventCollector.get_events_command",
+        side_effect=[[], Exception],
+    )
+
+    try:
+        perform_long_running_loop(client)
+    except Exception:
+        pass
+
+    assert mock_sleep.call_count == expected_mock_sleep

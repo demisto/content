@@ -11,6 +11,7 @@ import pytz
 from pathlib import Path
 import tempfile
 import os
+from time import time as get_current_time
 
 disable_warnings()
 
@@ -78,7 +79,7 @@ class Client(BaseClient):
             base_url=base_url, verify=verify, proxy=proxy, headers=headers, timeout=180
         )
 
-        self.fetch_sleep = get_fetch_interval(fetch_interval)
+        self.fetch_interval = get_fetch_interval(fetch_interval)
 
     def get_logs(self, params: dict[str, Any]):
         """
@@ -102,7 +103,9 @@ def get_fetch_interval(fetch_interval: str | None) -> int:
     if not fetch_sleep:
         return DEFAULT_FETCH_SLEEP
     if fetch_sleep < MIN_FETCH_SLEEP:
-        demisto.debug(f"Fetch interval is too low, setting it to minimum of {MIN_FETCH_SLEEP} seconds")
+        demisto.debug(
+            f"Fetch interval is too low, setting it to minimum of {MIN_FETCH_SLEEP} seconds"
+        )
         return MIN_FETCH_SLEEP
     return fetch_sleep
 
@@ -549,11 +552,11 @@ def get_events_command(
                     continue
                 elif e.res is not None and e.res.status_code == 423:
                     demisto.debug(f"API access is blocked: {e}")
-                    time.sleep(client.fetch_sleep)
+                    time.sleep(client.fetch_interval)
                     continue
                 elif e.res is not None and e.res.status_code == 429:
                     demisto.debug(f"Crashed on limit of api calls: {e}")
-                    time.sleep(client.fetch_sleep)
+                    time.sleep(client.fetch_interval)
                     continue
                 else:
                     demisto.debug(f"Some ERROR: {e=}")
@@ -594,7 +597,6 @@ def get_events_command(
 
 
 def test_module(client: Client, fetch_interval: str | None) -> None:
-
     # Enforcement for the fetch_interval parameter
     # that will not be less than the minimum time allowed
     if fetch_interval and int(fetch_interval) < MIN_FETCH_SLEEP:
@@ -617,6 +619,8 @@ def test_module(client: Client, fetch_interval: str | None) -> None:
 def perform_long_running_loop(client: Client):
     last_run_obj: LastRun
     while True:
+        # Used to calculate the duration of the fetch run.
+        start_run = get_current_time()
         try:
             integration_context = get_integration_context()
             demisto.debug(f"Starting new fetch with {integration_context=}")
@@ -630,7 +634,17 @@ def perform_long_running_loop(client: Client):
         except Exception as e:
             demisto.debug(f"Failed to fetch logs from API. Error: {e}")
             raise e
-        time.sleep(client.fetch_sleep)
+
+        # Used to calculate the duration of the fetch run.
+        end_run = get_current_time()
+
+        # Calculation of the fetch runtime against `client.fetch_interval`
+        # If the runtime is less than the `client.fetch_interval` time
+        # then it will go to sleep for the time difference
+        # between the `client.fetch_interval` and the fetch runtime
+        # Otherwise, the next fetch will occur immediately
+        if (fetch_sleep := client.fetch_interval - (end_run - start_run)) > 0:
+            time.sleep(fetch_sleep)
 
 
 def main() -> None:  # pragma: no cover
