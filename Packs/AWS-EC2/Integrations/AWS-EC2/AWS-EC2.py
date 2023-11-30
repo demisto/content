@@ -2983,7 +2983,7 @@ def release_hosts_command(args, aws_client):
         demisto.results("The host was successfully released.")
 
 
-def describe_ipam_resource_discoveries_command(args: Dict[str, Any], aws_client: 'EC2Client') -> CommandResults:
+def describe_ipam_resource_discoveries_command(args: Dict[str, Any], client: 'EC2Client') -> CommandResults:
     """
     aws-ec2-describe-ipam-resource-discoveries command: Describes IPAM resource discoveries. A resource discovery is an IPAM
     component that enables IPAM to manage and monitor resources that belong to the owning account.
@@ -2996,13 +2996,6 @@ def describe_ipam_resource_discoveries_command(args: Dict[str, Any], aws_client:
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains IPAM resource
         discoveries.
     """
-    client = aws_client.aws_session(
-        service='ec2',
-        region=args.get('AddressRegion') or args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
     kwargs = {}
     if (filters := args.get('Filters')) is not None:
         kwargs.update({'Filters': parse_filter_field(filters)})
@@ -3029,7 +3022,7 @@ def describe_ipam_resource_discoveries_command(args: Dict[str, Any], aws_client:
     return command_results
 
 
-def describe_ipam_resource_discovery_associations_command(args: Dict[str, Any], aws_client: 'EC2Client') -> CommandResults:
+def describe_ipam_resource_discovery_associations_command(args: Dict[str, Any], client: 'EC2Client') -> CommandResults:
     """
     aws-ec2-describe-ipam-resource-discovery-associations command: Describes resource discovery association with an Amazon VPC
     IPAM. An associated resource discovery is a resource discovery that has been associated with an IPAM.
@@ -3042,13 +3035,6 @@ def describe_ipam_resource_discovery_associations_command(args: Dict[str, Any], 
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains IPAM discovery
         associations.
     """
-    client = aws_client.aws_session(
-        service='ec2',
-        region=args.get('AddressRegion') or args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
     kwargs = {}
     if (filters := args.get('Filters')) is not None:
         kwargs.update({'Filters': parse_filter_field(filters)})
@@ -3075,7 +3061,7 @@ def describe_ipam_resource_discovery_associations_command(args: Dict[str, Any], 
     return command_results
 
 
-def get_ipam_discovered_public_addresses_command(args: Dict[str, Any], aws_client: 'EC2Client') -> CommandResults:
+def get_ipam_discovered_public_addresses_command(args: Dict[str, Any], client: 'EC2Client') -> CommandResults:
     """
     aws-ec2-get-ipam-discovered-public-addresses: Gets the public IP addresses that have been discovered by IPAM.
 
@@ -3089,14 +3075,6 @@ def get_ipam_discovered_public_addresses_command(args: Dict[str, Any], aws_clien
     """
     if (args.get('IpamResourceDiscoveryId') is None) or (args.get('AddressRegion') is None):
         return_error('IpamResourceDiscoveryId and AddressRegion need to be defined')
-
-    client = aws_client.aws_session(
-        service='ec2',
-        region=args.get('AddressRegion'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
 
     kwargs = {}
     kwargs.update({'IpamResourceDiscoveryId': args.get('IpamResourceDiscoveryId'), 'AddressRegion': args.get('AddressRegion')})
@@ -3143,9 +3121,18 @@ def main():
 
         validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
                         aws_secret_access_key)
-        aws_client: 'EC2Client' = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
-                                            aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate,
-                                            timeout, retries, sts_endpoint_url=sts_endpoint_url, endpoint_url=endpoint_url)
+        aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
+                               aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate,
+                               timeout, retries, sts_endpoint_url=sts_endpoint_url, endpoint_url=endpoint_url)
+
+        # required for typing of IPAM commands
+        client: 'EC2Client' = aws_client.aws_session(
+            service='ec2',
+            region=args.get('region'),
+            role_arn=args.get('roleArn'),
+            role_session_name=args.get('roleSessionName'),
+            role_session_duration=args.get('roleSessionDuration'),
+        )
 
         command = demisto.command()
         args = demisto.args()
@@ -3373,13 +3360,13 @@ def main():
             release_hosts_command(args, aws_client)
 
         elif command == 'aws-ec2-describe-ipam-resource-discoveries':
-            return_results(describe_ipam_resource_discoveries_command(args, aws_client))
+            return_results(describe_ipam_resource_discoveries_command(args, client))
 
         elif command == 'aws-ec2-describe-ipam-resource-discovery-associations':
-            return_results(describe_ipam_resource_discovery_associations_command(args, aws_client))
+            return_results(describe_ipam_resource_discovery_associations_command(args, client))
 
         elif command == 'aws-ec2-get-ipam-discovered-public-addresses':
-            return_results(get_ipam_discovered_public_addresses_command(args, aws_client))
+            return_results(get_ipam_discovered_public_addresses_command(args, client))
 
     except Exception as e:
         LOG(e)
