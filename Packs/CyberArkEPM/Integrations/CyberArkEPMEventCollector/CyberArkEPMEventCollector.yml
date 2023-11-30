@@ -13,6 +13,7 @@ configuration:
   required: true
   type: 9
 - display: Set name
+  additionalinfo: A comma-separated list of set names
   name: set_name
   required: true
   type: 0
