@@ -585,6 +585,7 @@ def test_parse_incident_from_item_with_attachments():
     incident = parse_incident_from_item(message)
     assert incident['attachment']
 
+
 def test_parse_incident_from_item_with_eml_attachment_header_integrity(mocker):
 
     """
@@ -641,7 +642,7 @@ def test_parse_incident_from_item_with_eml_attachment_header_integrity(mocker):
         ],
     )
     mock_file_result = mocker.patch('EWSO365.fileResult')
-    incident = parse_incident_from_item(message)
+    parse_incident_from_item(message)
     # assert the fileResult is created with the expected results
     mock_file_result.assert_called_once_with("demisto_untitled_attachment.eml", expected_data)
 
@@ -720,6 +721,7 @@ def test_categories_parse_item_as_dict():
     return_value = parse_item_as_dict(message)
     assert return_value.get("categories") == ['Purple category', 'Orange category']
 
+
 @pytest.mark.parametrize("subject, expected_file_name", [
     ("test_subject", "test_subject.eml"),
     ("", "demisto_untitled_eml.eml"),
@@ -779,4 +781,3 @@ def test_get_item_as_eml(subject, expected_file_name, mocker):
     get_item_as_eml(MockEWSClient(), "item", "account@test.com")
 
     mock_file_result.assert_called_once_with(expected_file_name, expected_data)
-
