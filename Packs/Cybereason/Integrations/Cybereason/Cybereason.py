@@ -1917,8 +1917,10 @@ def get_machine_details_command(client: Client, args: dict):
     json_body = get_machine_details_command_pagination_params(args)
     json_body["filters"] = [{"fieldName": "machineName", "operator": "Equals", "values": [machine_name]}]
     response = client.cybereason_api_call('POST', '/rest/sensors/query', json_body=json_body)
+    empty_output_message = f'No Machine Details found for the given Machine Name: {machine_name}'
+
     if dict_safe_get(response, ['sensors']) == []:
-        return CommandResults(readable_output=f"Could not find any Sensor ID for the machine: {machine_name}")
+        return CommandResults(readable_output=empty_output_message)
     else:
         outputs = []
         for single_sensor in response.get('sensors'):
@@ -1929,7 +1931,6 @@ def get_machine_details_command(client: Client, args: dict):
                 "GroupID": single_sensor.get("groupId"),
                 "GroupName": single_sensor.get("groupName")
             })
-        empty_output_message = 'No Machine Details found for the given Machine Name'
         return CommandResults(
             readable_output=tableToMarkdown(
                 'Machine Details', outputs, headers=SENSOR_HEADERS) if outputs else empty_output_message,
