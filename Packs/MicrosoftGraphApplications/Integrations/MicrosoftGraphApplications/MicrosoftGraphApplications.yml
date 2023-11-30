@@ -523,7 +523,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/crypto:1.0.0.81470
+  dockerimage: demisto/crypto:1.0.0.81835
 fromversion: 5.0.0
 tests:
 - MSGraph Applications Test
