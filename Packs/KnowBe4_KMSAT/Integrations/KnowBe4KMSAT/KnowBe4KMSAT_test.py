@@ -34,7 +34,7 @@ def test_account_info(requests_mock):
     Then
             Make sure the data contains account information
     """
-    mock_response_data = util_load_json("test_data/account_response.json")
+    mock_response_data = util_load_json(os.path.dirname(__file__) + "/test_data/account_response.json")
     from KnowBe4KMSAT import kmsat_account_info_list_command
 
     requests_mock.get(
@@ -490,7 +490,7 @@ def test_get_user_event_types(requests_mock):
             Make sure the data array contains event_types with expected values
     """
 
-    mock_response_data = util_load_json("test_data/user_event_types_response.json")
+    mock_response_data = util_load_json(os.path.dirname(__file__) + "/test_data/user_event_types_response.json")
     from KnowBe4KMSAT import kmsat_user_event_types_list_command
 
     requests_mock.get(
@@ -524,7 +524,7 @@ def test_get_user_events(requests_mock):
             Make sure the data array contains user events
     """
 
-    mock_response_data = util_load_json("test_data/user_events_response.json")
+    mock_response_data = util_load_json(os.path.dirname(__file__) + "/test_data/user_events_response.json")
     from KnowBe4KMSAT import kmsat_user_events_list_command
 
     requests_mock.get(
@@ -562,7 +562,7 @@ def test_get_user_event(requests_mock):
 
     eventId: str = "513f46ac-c3d7-4682-ad0d-0c149c0728a2"
 
-    mock_response_data = util_load_json("test_data/user_event_response.json")
+    mock_response_data = util_load_json(os.path.dirname(__file__) + "/test_data/user_event_response.json")
     from KnowBe4KMSAT import kmsat_user_event_list_command
 
     requests_mock.get(
@@ -630,7 +630,7 @@ def test_get_user_event_status(requests_mock):
 
     eventId: str = "abcdefgh-843c-4fc8-bb2f-decf89876f7b"
 
-    mock_response_data = util_load_json("test_data/user_event_status_response.json")
+    mock_response_data = util_load_json(os.path.dirname(__file__) + "/test_data/user_event_status_response.json")
     from KnowBe4KMSAT import kmsat_user_event_status_list_command
 
     requests_mock.get(
@@ -666,7 +666,7 @@ def test_get_user_event_statuses(requests_mock):
             Make sure the data contains the list of user event requests
     """
 
-    mock_response_data = util_load_json("test_data/user_event_statuses_response.json")
+    mock_response_data = util_load_json(os.path.dirname(__file__) + "/test_data/user_event_statuses_response.json")
     from KnowBe4KMSAT import kmsat_user_event_statuses_list_command
 
     requests_mock.get(

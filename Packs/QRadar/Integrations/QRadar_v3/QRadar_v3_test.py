@@ -61,11 +61,11 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-asset_enrich_data = util_load_json("./test_data/asset_enrich_test.json")
+asset_enrich_data = util_load_json(os.path.dirname(__file__) + "/test_data/asset_enrich_test.json")
 
-command_test_data = util_load_json('./test_data/command_test_data.json')
-ip_command_test_data = util_load_json('./test_data/ips_commands_data.json')
-ctx_test_data = util_load_json('./test_data/integration_context_tests.json')
+command_test_data = util_load_json(os.path.dirname(__file__) + '/test_data/command_test_data.json')
+ip_command_test_data = util_load_json(os.path.dirname(__file__) + '/test_data/ips_commands_data.json')
+ctx_test_data = util_load_json(os.path.dirname(__file__) + '/test_data/integration_context_tests.json')
 
 event_columns_default_value = \
     'QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), ' \

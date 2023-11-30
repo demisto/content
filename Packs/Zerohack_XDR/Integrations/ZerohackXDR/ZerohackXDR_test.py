@@ -46,7 +46,7 @@ def test_get_latest_incident(requests_mock):
         proxy=False,
     )
 
-    mock_response = util_load_json("test_data/get_latest_incident.json")
+    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/get_latest_incident.json")
 
     requests_mock.register_uri(
         "GET", f"{ZEROHACK_XDR_API_BASE_URL}/xdr-api", json=mock_response
@@ -70,7 +70,7 @@ def test_fetch_incidents(requests_mock):
     min_severity = "4"
     severity_levels = ZEROHACK_SEVERITIES[ZEROHACK_SEVERITIES.index(min_severity):]
     max_results_per_severity = 10
-    mock_responses = util_load_json("test_data/fetch_incidents.json")
+    mock_responses = util_load_json(os.path.dirname(__file__) + "/test_data/fetch_incidents.json")
 
     responses_list = []
     for response in mock_responses:
@@ -135,7 +135,7 @@ def test_test_module(requests_mock):
         proxy=False,
     )
 
-    mock_response = util_load_json("test_data/get_latest_incident.json")
+    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/get_latest_incident.json")
 
     requests_mock.register_uri(
         "GET", f"{ZEROHACK_XDR_API_BASE_URL}/xdr-api", json=mock_response

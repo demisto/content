@@ -376,7 +376,7 @@ def test_limit_tag_output(mocker, is_event_level, expected_output, expected_tag_
     """
     mock_misp(mocker)
     from MISPV3 import limit_tag_output_to_id_and_name
-    mock_tag_json = util_load_json("test_data/Attribute_Tags.json")
+    mock_tag_json = util_load_json(os.path.dirname(__file__) + "/test_data/Attribute_Tags.json")
     outputs, tag_list_id = limit_tag_output_to_id_and_name(mock_tag_json, is_event_level)
     assert outputs == expected_output
     assert tag_list_id == expected_tag_list_ids
@@ -424,7 +424,7 @@ def test_event_response_to_markdown_table(mocker):
     """
     mock_misp(mocker)
     from MISPV3 import event_to_human_readable
-    event_response = util_load_json("test_data/event_response_to_md.json")
+    event_response = util_load_json(os.path.dirname(__file__) + "/test_data/event_response_to_md.json")
     md = event_to_human_readable(event_response)[0]
     assert md['Event ID'] == '1'
     assert md['Event Tags'] == ["Tag1", "misp-galaxy:tag2", "misp-galaxy:tag3"]
@@ -452,7 +452,7 @@ def test_attribute_response_to_markdown_table(mocker):
     """
     mock_misp(mocker)
     from MISPV3 import attribute_response_to_markdown_table
-    attribute_response = util_load_json("test_data/attribute_response_to_md.json")
+    attribute_response = util_load_json(os.path.dirname(__file__) + "/test_data/attribute_response_to_md.json")
     md = attribute_response_to_markdown_table(attribute_response)[0]
     assert md['Attribute ID'] == "1"
     assert md['Event ID'] == "2"
@@ -483,7 +483,7 @@ def test_get_events_related_to_scored_tag(mocker, detected_tag, expected_related
     """
     mock_misp(mocker)
     from MISPV3 import get_events_related_to_scored_tag
-    reputation_command_outputs = util_load_json("test_data/reputation_command_outputs.json")
+    reputation_command_outputs = util_load_json(os.path.dirname(__file__) + "/test_data/reputation_command_outputs.json")
     events_to_human_readable = get_events_related_to_scored_tag(reputation_command_outputs.get('Attribute'),
                                                                 detected_tag)
     all_event_ids_found = [event.get('Event_ID') for event in events_to_human_readable]
@@ -504,8 +504,8 @@ def test_parse_response_reputation_command(mocker):
     """
     mock_misp(mocker)
     from MISPV3 import parse_response_reputation_command
-    reputation_response = util_load_json("test_data/reputation_command_response.json")
-    reputation_expected = util_load_json("test_data/reputation_command_outputs.json")
+    reputation_response = util_load_json(os.path.dirname(__file__) + "/test_data/reputation_command_response.json")
+    reputation_expected = util_load_json(os.path.dirname(__file__) + "/test_data/reputation_command_outputs.json")
     malicious_tag_ids = ['279', '131']
     suspicious_tag_ids = ['104']
     attribute_limit = 3
@@ -548,8 +548,8 @@ def test_build_events_search_response(mocker):
     """
     mock_misp(mocker)
     from MISPV3 import build_events_search_response, EVENT_FIELDS
-    search_response = util_load_json("test_data/search_event_by_tag.json")
-    search_expected_output = util_load_json("test_data/search_event_by_tag_outputs.json")
+    search_response = util_load_json(os.path.dirname(__file__) + "/test_data/search_event_by_tag.json")
+    search_expected_output = util_load_json(os.path.dirname(__file__) + "/test_data/search_event_by_tag_outputs.json")
     search_outputs = build_events_search_response(search_response, {'include_feed_correlations': True})
     for actual_event, expected_event in zip(search_outputs, search_expected_output):
         for event_field in EVENT_FIELDS:
@@ -571,8 +571,8 @@ def test_build_events_search_response_without_feed_correlations(mocker):
     """
     mock_misp(mocker)
     from MISPV3 import build_events_search_response, EVENT_FIELDS
-    search_response = util_load_json("test_data/search_event_by_tag.json")
-    search_expected_output = util_load_json("test_data/search_event_by_tag_no_feed_outputs.json")
+    search_response = util_load_json(os.path.dirname(__file__) + "/test_data/search_event_by_tag.json")
+    search_expected_output = util_load_json(os.path.dirname(__file__) + "/test_data/search_event_by_tag_no_feed_outputs.json")
     search_outputs = build_events_search_response(search_response, {'include_feed_correlations': False})
     for actual_event, expected_event in zip(search_outputs, search_expected_output):
         for event_field in EVENT_FIELDS:
@@ -594,8 +594,8 @@ def test_build_attributes_search_response(mocker):
     """
     mock_misp(mocker)
     from MISPV3 import build_attributes_search_response, ATTRIBUTE_FIELDS
-    search_response = util_load_json("test_data/search_attribute_by_type.json")
-    search_expected_output = util_load_json("test_data/search_attribute_by_type_outputs.json")
+    search_response = util_load_json(os.path.dirname(__file__) + "/test_data/search_attribute_by_type.json")
+    search_expected_output = util_load_json(os.path.dirname(__file__) + "/test_data/search_attribute_by_type_outputs.json")
     search_outputs = build_attributes_search_response(search_response)
     for actual_attribute, expected_attribute in zip(search_outputs, search_expected_output):
         for event_field in ATTRIBUTE_FIELDS:
@@ -618,7 +618,7 @@ def test_warninglist_response(mocker):
     mock_misp(mocker)
     from MISPV3 import warninglist_command
     demisto_args = {"value": "8.8.8.8"}
-    warninglist_response = util_load_json("test_data/warninglist_response.json")
+    warninglist_response = util_load_json(os.path.dirname(__file__) + "/test_data/warninglist_response.json")
     with open(os.path.dirname(__file__) + "/test_data/warninglist_outputs.md", encoding="utf-8") as f:
         warninglist_expected_output = f.read()
     mocker.patch("pymisp.ExpandedPyMISP.values_in_warninglist", return_value=warninglist_response)
@@ -636,7 +636,7 @@ def get_response(status_code, mocker, mock_response_key):
             'headers': json.dumps({'key': 'value'})
         }
     )
-    file = util_load_json("test_data/response_mock_add_email_object_test.json")[mock_response_key]
+    file = util_load_json(os.path.dirname(__file__) + "/test_data/response_mock_add_email_object_test.json")[mock_response_key]
 
     def json_func():
         return file
@@ -673,7 +673,7 @@ def test_add_email_object(file_path, expected_output_key, mock_response_key, moc
     mocker.patch.object(pymisp.api.PyMISP, "_prepare_request", return_value=get_response(200, mocker, mock_response_key))
     pymisp.ExpandedPyMISP.global_pythonify = False
     output = add_email_object(demisto_args).outputs
-    expected_output = util_load_json("test_data/response_mock_add_email_object_test.json")[expected_output_key]
+    expected_output = util_load_json(os.path.dirname(__file__) + "/test_data/response_mock_add_email_object_test.json")[expected_output_key]
     assert output == expected_output
 
 

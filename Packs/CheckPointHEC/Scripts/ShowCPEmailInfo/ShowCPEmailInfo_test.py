@@ -10,7 +10,7 @@ def util_load_json(path):
 
 
 def test_get_email_info(mocker):
-    mock_response = util_load_json('./test_data/checkpointhec-get_email_info.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/checkpointhec-get_email_info.json')
 
     def execute_command(name, args):
         if name == 'checkpointhec-get-email-info':
@@ -35,7 +35,7 @@ def test_get_email_info(mocker):
 
 
 def test_dict_to_md():
-    mock_response = util_load_json('./test_data/checkpointhec-get_email_info.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/checkpointhec-get_email_info.json')
     md = dict_to_md(mock_response['responseData'][0]['entityPayload'])
     lines = [
         '|field|value|',

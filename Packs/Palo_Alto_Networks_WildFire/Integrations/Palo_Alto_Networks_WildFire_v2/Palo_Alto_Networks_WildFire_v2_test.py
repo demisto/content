@@ -296,15 +296,15 @@ def test_running_polling_command_success(mocker):
         Return a command results object, without scheduling a new command.
     """
     args = {'url': 'www.google.com'}
-    response_upload = util_load_json('./tests_data/upload_url_response.json')
+    response_upload = util_load_json(os.path.dirname(__file__) + '/tests_data/upload_url_response.json')
     upload_url_data = {'url': 'https://www.demisto.com',
                        'sha256': 'c51a8231d1be07a2545ac99e86a25c5d68f88380b7ebf7ac91501661e6d678bb',
                        'md5': '67632f32e6af123aa8ffd1fe8765a783'}
     mocker.patch('CommonServerPython.ScheduledCommand.raise_error_if_not_supported')
     mocker.patch('Palo_Alto_Networks_WildFire_v2.wildfire_upload_url', return_value=(response_upload, upload_url_data))
-    response_report = util_load_json('./tests_data/report_url_response_success.json')
+    response_report = util_load_json(os.path.dirname(__file__) + '/tests_data/report_url_response_success.json')
     mocker.patch('Palo_Alto_Networks_WildFire_v2.http_request', return_value=response_report)
-    expected_outputs = util_load_json('./tests_data/expected_outputs_upload_url_success.json')
+    expected_outputs = util_load_json(os.path.dirname(__file__) + '/tests_data/expected_outputs_upload_url_success.json')
     command_results = run_polling_command(args, 'wildfire-upload-url', wildfire_upload_url_command,
                                           wildfire_get_report_command, 'URL')
     assert command_results[0].outputs.get('detection_reasons') == expected_outputs.get('detection_reasons')
@@ -323,13 +323,13 @@ def test_running_polling_command_pending(mocker):
         Return a command results object, with scheduling a new command.
     """
     args = {'url': 'wwwdom'}
-    response_upload = util_load_json('./tests_data/upload_url_response.json')
+    response_upload = util_load_json(os.path.dirname(__file__) + '/tests_data/upload_url_response.json')
     upload_url_data = {'url': 'https://www.demisto.com',
                        'sha256': 'c51a8231d1be07a2545ac99e86a25c5d68f88380b7ebf7ac91501661e6d678bb',
                        'md5': '67632f32e6af123aa8ffd1fe8765a783'}
     mocker.patch('CommonServerPython.ScheduledCommand.raise_error_if_not_supported')
     mocker.patch('Palo_Alto_Networks_WildFire_v2.wildfire_upload_url', return_value=(response_upload, upload_url_data))
-    response_report = util_load_json('./tests_data/report_url_response_pending.json')
+    response_report = util_load_json(os.path.dirname(__file__) + '/tests_data/report_url_response_pending.json')
     mocker.patch('Palo_Alto_Networks_WildFire_v2.http_request', return_value=response_report)
     command_results = run_polling_command(args, 'wildfire-upload-url', wildfire_upload_url_command,
                                           wildfire_get_report_command, 'URL')
@@ -350,12 +350,12 @@ def test_running_polling_command_new_search(mocker):
     """
     args = {'upload': 'https://www.demisto.com'}
     mocker.patch('CommonServerPython.ScheduledCommand.raise_error_if_not_supported')
-    response_upload = util_load_json('./tests_data/upload_url_response.json')
+    response_upload = util_load_json(os.path.dirname(__file__) + '/tests_data/upload_url_response.json')
     upload_url_data = {'url': 'https://www.demisto.com',
                        'sha256': 'c51a8231d1be07a2545ac99e86a25c5d68f88380b7ebf7ac91501661e6d678bb',
                        'md5': '67632f32e6af123aa8ffd1fe8765a783'}
     mocker.patch('Palo_Alto_Networks_WildFire_v2.wildfire_upload_url', return_value=(response_upload, upload_url_data))
-    response_report = util_load_json('./tests_data/report_url_response_pending.json')
+    response_report = util_load_json(os.path.dirname(__file__) + '/tests_data/report_url_response_pending.json')
     mocker.patch('Palo_Alto_Networks_WildFire_v2.http_request', return_value=response_report)
     command_results = run_polling_command(args, 'wildfire-upload-url', wildfire_upload_url_command,
                                           wildfire_get_report_command, 'URL')

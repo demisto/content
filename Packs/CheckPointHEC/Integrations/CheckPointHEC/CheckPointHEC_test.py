@@ -112,7 +112,7 @@ def test_test_module(mocker):
         proxy=False
     )
 
-    mock_response = util_load_json('./test_data/checkpointhec-test_api.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/checkpointhec-test_api.json')
     test_api = mocker.patch.object(
         Client,
         '_call_api',
@@ -133,7 +133,7 @@ def test_fetch_incidents(mocker):
         proxy=False
     )
 
-    mock_response = util_load_json('./test_data/checkpointhec-query_events.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/checkpointhec-query_events.json')
     query_events = mocker.patch.object(
         Client,
         '_call_api',
@@ -155,7 +155,7 @@ def test_checkpointhec_get_entity_success(mocker):
         proxy=False
     )
 
-    mock_response = util_load_json('./test_data/checkpointhec-get_entity.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/checkpointhec-get_entity.json')
     get_entity = mocker.patch.object(
         Client,
         '_call_api',
@@ -197,7 +197,7 @@ def test_checkpointhec_get_email_info_success(mocker):
         proxy=False
     )
 
-    mock_response = util_load_json('./test_data/checkpointhec-get_email_info.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/checkpointhec-get_email_info.json')
     get_entity = mocker.patch.object(
         Client,
         '_call_api',
@@ -239,7 +239,7 @@ def test_checkpointhec_get_scan_info_success(mocker):
         proxy=False
     )
 
-    mock_response = util_load_json('./test_data/checkpointhec-get_entity.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/checkpointhec-get_entity.json')
     get_entity = mocker.patch.object(
         Client,
         '_call_api',
@@ -281,7 +281,7 @@ def test_checkpointhec_search_emails(mocker):
         proxy=False
     )
 
-    mock_response = util_load_json('./test_data/checkpointhec-search_emails.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/checkpointhec-search_emails.json')
     search_emails = mocker.patch.object(
         Client,
         '_call_api',
@@ -303,7 +303,7 @@ def test_checkpointhec_send_action(mocker):
         proxy=False
     )
 
-    mock_response = util_load_json('./test_data/checkpointhec-send_action.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/checkpointhec-send_action.json')
     send_action = mocker.patch.object(
         Client,
         '_call_api',
@@ -326,7 +326,7 @@ def test_checkpointhec_get_action_result(mocker):
         proxy=False
     )
 
-    mock_response = util_load_json('./test_data/checkpointhec-get_action_result.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/checkpointhec-get_action_result.json')
     get_task = mocker.patch.object(
         Client,
         '_call_api',
@@ -347,7 +347,7 @@ def test_send_notification(mocker):
         proxy=False
     )
 
-    mock_response = util_load_json('./test_data/checkpointhec-test_api.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/checkpointhec-test_api.json')
     get_task = mocker.patch.object(
         Client,
         '_call_api',

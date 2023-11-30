@@ -403,7 +403,7 @@ def test_get_search_job_command(requests_mock: MockerCore, index: str) -> None:
         it should retrieve the search job information and return a readable output with the expected table.
     """
     authorization_mock(requests_mock)
-    mock_data = util_load_json("test_data/get_search_job.json")[index]
+    mock_data = util_load_json(os.path.dirname(__file__) + "/test_data/get_search_job.json")[index]
     requests_mock.get(BASE_URL_SEARCH_JOB, json=mock_data)
     response = get_search_job_command(CLIENT, {"table_name": TABLE_NAME})
     assert response.readable_output == (

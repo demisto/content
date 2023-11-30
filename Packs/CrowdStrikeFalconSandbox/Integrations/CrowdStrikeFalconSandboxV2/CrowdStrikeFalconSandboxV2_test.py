@@ -327,7 +327,7 @@ def test_crowdstrike_submit_url_command_no_poll(requests_mock):
 
 
 def test_crowdstrike_submit_sample_command(mocker, requests_mock):
-    submit_response = util_load_json("test_data/submission_response.json")
+    submit_response = util_load_json(os.path.dirname(__file__) + "/test_data/submission_response.json")
     requests_mock.post(BASE_URL + '/submit/file', json=submit_response)
     mocker.patch.object(demisto, 'getFilePath',
                         return_value={'id': id, 'path': './test_data/scan_response.json', 'name': 'scan_response.json'})
@@ -350,7 +350,7 @@ def test_crowdstrike_submit_url_command_poll(requests_mock, mocker):
          - submission result returned and polling scan result
        """
     mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
-    submit_response = util_load_json("test_data/submission_response.json")
+    submit_response = util_load_json(os.path.dirname(__file__) + "/test_data/submission_response.json")
     mocker.patch.object(demisto, 'results')
     submit_call = requests_mock.post(BASE_URL + '/submit/url', json=submit_response)
     search_call = requests_mock.post(BASE_URL + '/search/hashes', json=[])

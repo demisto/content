@@ -106,8 +106,8 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-mock_data = util_load_json("test_data/test_commands.json")
-mock_response = util_load_json("test_data/test_client.json")
+mock_data = util_load_json(os.path.dirname(__file__) + "/test_data/test_commands.json")
+mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/test_client.json")
 
 client_get_entities_mock_data = mock_response.get("get_entities", "")
 client_get_datasubject_mock_data = mock_response.get("get_datasubject", "")

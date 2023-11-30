@@ -63,34 +63,34 @@ def set_up_mocker(m, found_incident=True):
     m.post(
         requests_mock.ANY,
         additional_matcher=create_incident_matcher,
-        json=util_load_json("test_data/create_incident.json")
+        json=util_load_json(os.path.dirname(__file__) + "/test_data/create_incident.json")
     )
     m.post(
         requests_mock.ANY,
         additional_matcher=get_severities_matcher,
-        json=util_load_json("test_data/incident_severities.json")
+        json=util_load_json(os.path.dirname(__file__) + "/test_data/incident_severities.json")
     )
     m.post(
         requests_mock.ANY,
         additional_matcher=get_types_matcher,
-        json=util_load_json("test_data/incident_types.json")
+        json=util_load_json(os.path.dirname(__file__) + "/test_data/incident_types.json")
     )
     if found_incident:
         m.post(
             requests_mock.ANY,
             additional_matcher=get_incident_matcher,
-            json=util_load_json("test_data/get_incident.json")
+            json=util_load_json(os.path.dirname(__file__) + "/test_data/get_incident.json")
         )
     else:
         m.post(
             requests_mock.ANY,
             additional_matcher=get_incident_matcher,
-            json=util_load_json("test_data/get_incident_empty.json")
+            json=util_load_json(os.path.dirname(__file__) + "/test_data/get_incident_empty.json")
         )
     m.post(
         requests_mock.ANY,
         additional_matcher=get_actions_matcher,
-        json=util_load_json("test_data/get_actions_for_incident.json")
+        json=util_load_json(os.path.dirname(__file__) + "/test_data/get_actions_for_incident.json")
     )
 
     return BreachRxClient("mock://base_url", "api_key", "secret_key", "org_name", False)

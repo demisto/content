@@ -59,7 +59,7 @@ def test_exception_handler_when_403_error_occurred(status_code, error_msg, reque
     Then
         - raise DemistoException
     """
-    api_error_msg = util_load_json("test_data/error_msg_for_403_error_code.json")
+    api_error_msg = util_load_json(os.path.dirname(__file__) + "/test_data/error_msg_for_403_error_code.json")
     requests_mock.get(BASE_URL, json=api_error_msg, status_code=status_code)
     with capfd.disabled():
         with pytest.raises(DemistoException) as de:
@@ -200,7 +200,7 @@ def test_confluence_cloud_content_delete_command_when_api_returns_error(requests
     """
     from AtlassianConfluenceCloud import confluence_cloud_content_delete_command
 
-    api_error_msg = util_load_json("test_data/content_delete/content_delete_command_bad_request_error.json")
+    api_error_msg = util_load_json(os.path.dirname(__file__) + "/test_data/content_delete/content_delete_command_bad_request_error.json")
     requests_mock.delete(BASE_URL + URL_SUFFIX["CONTENT"] + "/123", json=api_error_msg, status_code=400)
 
     args = {
@@ -360,9 +360,9 @@ def test_confluence_cloud_user_list_command_when_valid_response_is_returned(requ
     """
     from AtlassianConfluenceCloud import confluence_cloud_user_list_command
 
-    expected_response = util_load_json("test_data/User/user_list_command_response.json")
+    expected_response = util_load_json(os.path.dirname(__file__) + "/test_data/User/user_list_command_response.json")
     requests_mock.get(BASE_URL + URL_SUFFIX["USER"], json=expected_response, status_code=200)
-    expected_context_output = util_load_json("test_data/User/user_list_command_context.json")
+    expected_context_output = util_load_json(os.path.dirname(__file__) + "/test_data/User/user_list_command_context.json")
 
     with open(os.path.dirname(__file__) + "/test_data/User/user_list_command.md") as f:
         expected_readable_output = f.read()

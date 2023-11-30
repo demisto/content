@@ -40,8 +40,8 @@ def test_a1000_get_classification_output():
 
 
 def test_url_report_output():
-    test_response = util_load_json("test_data/a1000_url_report.json")
-    test_context = util_load_json("test_data/a1000_url_report_context.json")
+    test_response = util_load_json(os.path.dirname(__file__) + "/test_data/a1000_url_report.json")
+    test_context = util_load_json(os.path.dirname(__file__) + "/test_data/a1000_url_report_context.json")
 
     result = url_report_output(url="http://195.133.11.16/push", response_json=test_response)
 
@@ -49,8 +49,8 @@ def test_url_report_output():
 
 
 def test_domain_report_output():
-    test_response = util_load_json("test_data/a1000_domain_report.json")
-    test_context = util_load_json("test_data/a1000_domain_report_context.json")
+    test_response = util_load_json(os.path.dirname(__file__) + "/test_data/a1000_domain_report.json")
+    test_context = util_load_json(os.path.dirname(__file__) + "/test_data/a1000_domain_report_context.json")
 
     result = domain_report_output(domain="index.hr", response_json=test_response)
 
@@ -58,8 +58,8 @@ def test_domain_report_output():
 
 
 def test_ip_report_output():
-    test_response = util_load_json("test_data/a1000_ip_report.json")
-    test_context = util_load_json("test_data/a1000_ip_report_context.json")
+    test_response = util_load_json(os.path.dirname(__file__) + "/test_data/a1000_ip_report.json")
+    test_context = util_load_json(os.path.dirname(__file__) + "/test_data/a1000_ip_report_context.json")
 
     result = ip_report_output(ip="8.8.4.4", response_json=test_response)
 

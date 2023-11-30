@@ -62,6 +62,6 @@ def test_indicator_generator(requests_mock):
         feed_tags='tag1'
     ))
 
-    expected_result = util_load_json('./test_data/test_indicators_generator_result.json')
+    expected_result = util_load_json(os.path.dirname(__file__) + '/test_data/test_indicators_generator_result.json')
 
     assert result == expected_result

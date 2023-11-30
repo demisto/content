@@ -20,8 +20,8 @@ def test_build_timeline(mocker):
 
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
 
-    entries = util_load_json("test_data/entries.json")
+    entries = util_load_json(os.path.dirname(__file__) + "/test_data/entries.json")
     output = build_timeline(entries)
 
-    mock_markdown_result = util_load_json("test_data/output.json")
+    mock_markdown_result = util_load_json(os.path.dirname(__file__) + "/test_data/output.json")
     assert output == mock_markdown_result

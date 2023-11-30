@@ -611,7 +611,7 @@ def test_query(mocker):
         - 'query' function is called with the provided arguments,
     THEN:
         - Make sure all return-field values are returned to context and human-readable.    """
-    query_data = util_load_json("test_data/query_response.json")
+    query_data = util_load_json(os.path.dirname(__file__) + "/test_data/query_response.json")
     mocker.patch.object(MimecastV2, "http_request", return_value=query_data["response"])
 
     result = MimecastV2.query({"queryXml": QUERY_XML})

@@ -493,7 +493,7 @@ def test_list_inventory_command(mocker: MockerFixture) -> None:
         - The next response, which is the NextToken response,
             is tested in the `test_get_inventory_command_with_next_token_response` function.
     """
-    mock_response: dict = util_load_json("test_data/get_inventory_response.json")
+    mock_response: dict = util_load_json(os.path.dirname(__file__) + "/test_data/get_inventory_response.json")
     mocker.patch.object(MockClient, "get_inventory", return_value=mock_response)
     res = list_inventory_command({"include_inactive_instance": False}, MockClient())
 
@@ -528,7 +528,7 @@ def test_list_inventory_command_with_next_token_response(mocker: MockerFixture) 
     Note: the `test_get_inventory_command` function test checking when the response is not return a Next Token value.
             the res[1] contains the inventory response.
     """
-    mock_response: dict = util_load_json("test_data/get_inventory_response.json")
+    mock_response: dict = util_load_json(os.path.dirname(__file__) + "/test_data/get_inventory_response.json")
     mock_response["NextToken"] = "test_token"
     mocker.patch.object(MockClient, "get_inventory", return_value=mock_response)
     response: list[CommandResults] = list_inventory_command(
@@ -566,7 +566,7 @@ def test_list_inventory_entry_command(mocker: MockerFixture) -> None:
         - The next response, which is the NextToken response,
             is tested in the `test_get_inventory_command_with_next_token_response` function.
     """
-    mock_response: dict = util_load_json("test_data/get_inventory_entry_command.json")
+    mock_response: dict = util_load_json(os.path.dirname(__file__) + "/test_data/get_inventory_entry_command.json")
     mock_list_inventory_entry_request = mocker.patch.object(
         MockClient,
         "list_inventory_entries",
@@ -619,7 +619,7 @@ def test_list_associations_command(mocker: MockerFixture) -> None:
         - The next response, which is the NextToken response,
             is tested in the `test_get_inventory_command_with_next_token_response` function.
     """
-    mock_response: dict = util_load_json("test_data/list_associations.json")
+    mock_response: dict = util_load_json(os.path.dirname(__file__) + "/test_data/list_associations.json")
     mocker.patch.object(MockClient, "list_associations", return_value=mock_response)
     response = list_associations_command({}, MockClient())
     assert response[0].outputs == mock_response["Associations"]
@@ -656,7 +656,7 @@ def test_get_association_command(mocker: MockerFixture) -> None:
         - The next response, which is the NextToken response,
             is tested in the `test_get_inventory_command_with_next_token_response` function.
     """
-    mock_response: dict = util_load_json("test_data/association_description.json")
+    mock_response: dict = util_load_json(os.path.dirname(__file__) + "/test_data/association_description.json")
     mocker.patch.object(MockClient, "describe_association", return_value=mock_response)
     response = get_association_command(
         {"instance_id": "i-0a00aaa000000000a", "document_name": "test_name"},
@@ -739,7 +739,7 @@ def test_list_documents_command(mocker: MockerFixture) -> None:
         - The next response, which is the NextToken response,
             is tested in the `test_get_inventory_command_with_next_token_response` function.
     """
-    mock_response: dict = util_load_json("test_data/list_documents_response.json")
+    mock_response: dict = util_load_json(os.path.dirname(__file__) + "/test_data/list_documents_response.json")
     mocker.patch.object(MockClient, "list_documents", return_value=mock_response)
     response = list_documents_command({}, MockClient())
 
@@ -754,7 +754,7 @@ def test_list_documents_command(mocker: MockerFixture) -> None:
 
 
 def test_get_documents_command(mocker: MockerFixture) -> None:
-    mock_response: dict = util_load_json("test_data/get_document_response.json")
+    mock_response: dict = util_load_json(os.path.dirname(__file__) + "/test_data/get_document_response.json")
     mocker.patch.object(MockClient, "describe_document", return_value=mock_response)
     response = get_document_command({"document_name": "test_name"}, MockClient())
 
@@ -775,7 +775,7 @@ def test_get_automation_execution_command(mocker: MockerFixture) -> None:
     Then:
         it should return the expected CommandResults object with the specified outputs and readable_output.
     """
-    mock_response: dict = util_load_json("test_data/get_automation_execution.json")
+    mock_response: dict = util_load_json(os.path.dirname(__file__) + "/test_data/get_automation_execution.json")
     mocker.patch.object(
         MockClient,
         "get_automation_execution",
@@ -804,7 +804,7 @@ def test_list_automation_executions_command(mocker: MockerFixture) -> None:
     Then:
         it should return the expected CommandResults object with the specified outputs and readable_output.
     """
-    mock_response: dict = util_load_json("test_data/list_automation_executions.json")
+    mock_response: dict = util_load_json(os.path.dirname(__file__) + "/test_data/list_automation_executions.json")
     mocker.patch.object(
         MockClient,
         "describe_automation_executions",
@@ -830,7 +830,7 @@ def test_list_commands_command(mocker: MockerFixture) -> None:
     Then:
         it should return the expected CommandResults object with the specified outputs and readable_output.
     """
-    mock_response: dict = util_load_json("test_data/list_commands_response.json")
+    mock_response: dict = util_load_json(os.path.dirname(__file__) + "/test_data/list_commands_response.json")
     mocker.patch.object(MockClient, "list_commands", return_value=mock_response)
     response = list_commands_command({}, MockClient())
 
@@ -1017,7 +1017,7 @@ def test_run_command_command(
         "target_values": "i-1234567890abcdef0,i-1234567890abcdef1",
         "polling": True,
     }
-    mock_response: dict = util_load_json("test_data/run_command_response.json")
+    mock_response: dict = util_load_json(os.path.dirname(__file__) + "/test_data/run_command_response.json")
     mocker.patch.object(
         ScheduledCommand,
         "raise_error_if_not_supported",

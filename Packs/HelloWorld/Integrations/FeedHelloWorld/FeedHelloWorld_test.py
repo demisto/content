@@ -106,9 +106,9 @@ def test_fetch_indicators(mocker):
 
     """
     client = Client(base_url=URL)
-    mocker.patch.object(Client, 'build_iterator', return_value=util_load_json('./test_data/build_iterator_results.json'))
+    mocker.patch.object(Client, 'build_iterator', return_value=util_load_json(os.path.dirname(__file__) + '/test_data/build_iterator_results.json'))
     results = fetch_indicators_command(client, params={'tlp_color': 'RED'})
-    assert results == util_load_json('./test_data/get_indicators_command_results.json')
+    assert results == util_load_json(os.path.dirname(__file__) + '/test_data/get_indicators_command_results.json')
 
 
 def test_get_indicators_command(mocker):
@@ -123,7 +123,7 @@ def test_get_indicators_command(mocker):
 
     """
     client = Client(base_url=URL)
-    indicators_list = util_load_json('./test_data/build_iterator_results.json')[:10]
+    indicators_list = util_load_json(os.path.dirname(__file__) + '/test_data/build_iterator_results.json')[:10]
     mocker.patch.object(Client, 'build_iterator', return_value=indicators_list)
     results = get_indicators_command(client, params={'tlp_color': 'RED', 'create_relationships': 'false'},
                                      args={'limit': '10'})

@@ -126,7 +126,7 @@ def test_validate_and_prepare_query_for_event_list_failure(args, error_msg):
 def test_convert_events_outputs_to_hr():
     """Test case for convert_events_outputs_to_hr function"""
     from SolarWinds import convert_events_outputs_to_hr
-    expected_response = util_load_json("test_data/test_swis_event_list_success.json")
+    expected_response = util_load_json(os.path.dirname(__file__) + "/test_data/test_swis_event_list_success.json")
     hr_response = convert_events_outputs_to_hr(expected_response["outputs"])
     assert hr_response == expected_response["readable"]
 
@@ -142,7 +142,7 @@ def test_convert_events_outputs_to_hr_no_events():
 def test_swis_event_list_success(http_request, client):
     """Test case for success scenarios of swis-event-list command"""
     from SolarWinds import swis_event_list_command
-    expected_response = util_load_json("test_data/test_swis_event_list_success.json")
+    expected_response = util_load_json(os.path.dirname(__file__) + "/test_data/test_swis_event_list_success.json")
     http_request.return_value = expected_response["http_mock"]
     response = swis_event_list_command(client, {})
     assert response.outputs == expected_response["outputs"]

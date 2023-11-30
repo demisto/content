@@ -72,10 +72,10 @@ def util_load_json(path):
 
 DATADOG_API_CLIENT_MOCK = MagicMock()
 
-TAGS_LIST_RESPONSE = util_load_json("test_data/tag-list.json")
-HOST_TAG_CREATE_RESPONSE = util_load_json("test_data/host-tag-create.json")
-HOST_TAG_GET_RESPONSE = util_load_json("test_data/host-tag-get.json")
-HOST_TAG_UPDATE_RESPONSE = util_load_json("test_data/host-tag-update.json")
+TAGS_LIST_RESPONSE = util_load_json(os.path.dirname(__file__) + "/test_data/tag-list.json")
+HOST_TAG_CREATE_RESPONSE = util_load_json(os.path.dirname(__file__) + "/test_data/host-tag-create.json")
+HOST_TAG_GET_RESPONSE = util_load_json(os.path.dirname(__file__) + "/test_data/host-tag-get.json")
+HOST_TAG_UPDATE_RESPONSE = util_load_json(os.path.dirname(__file__) + "/test_data/host-tag-update.json")
 
 
 class Datadog:

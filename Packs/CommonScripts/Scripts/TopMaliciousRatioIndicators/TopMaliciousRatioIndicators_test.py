@@ -20,8 +20,8 @@ def test_find_indicators_with_mal_ratio(mocker):
 
     mocker.patch.object(demisto, 'args', return_value={})
     mocker.patch.object(demisto, 'executeCommand', side_effect=[
-        util_load_json('./test_data/indicators_found.json'),
-        util_load_json('./test_data/malicious_ratio_result.json')
+        util_load_json(os.path.dirname(__file__) + '/test_data/indicators_found.json'),
+        util_load_json(os.path.dirname(__file__) + '/test_data/malicious_ratio_result.json')
     ])
     widget_table, sorted_indicators = find_indicators_with_mal_ratio(max_indicators=1000, min_number_of_invs=4,
                                                                      max_results=1000,
@@ -44,7 +44,7 @@ def test_find_indicators_with_mal_ratio__no_indicators(mocker):
     """
 
     mocker.patch.object(demisto, 'args', return_value={})
-    mocker.patch.object(demisto, 'executeCommand', return_value=util_load_json('./test_data/no_indicators.json'))
+    mocker.patch.object(demisto, 'executeCommand', return_value=util_load_json(os.path.dirname(__file__) + '/test_data/no_indicators.json'))
     widget_table, sorted_indicators = find_indicators_with_mal_ratio(max_indicators=1000, min_number_of_invs=5,
                                                                      max_results=1000,
                                                                      from_date="30 days ago")
@@ -75,8 +75,8 @@ def test_main(mocker):
                             "maximumNumberOfResults": "1000"
                         })
     mocker.patch.object(demisto, 'executeCommand', side_effect=[
-        util_load_json('./test_data/indicators_found.json'),
-        util_load_json('./test_data/malicious_ratio_result.json')
+        util_load_json(os.path.dirname(__file__) + '/test_data/indicators_found.json'),
+        util_load_json(os.path.dirname(__file__) + '/test_data/malicious_ratio_result.json')
     ])
 
     mocker.patch.object(demisto, 'results')

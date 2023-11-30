@@ -10,8 +10,8 @@ def util_load_json(path):
 def test_get_sub_keys():
     key = 'HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\ProfileList'
     folder_output_key = 'Sid'
-    mock_reg = util_load_json('./test_data/mock_reg_users.json')
-    expected = util_load_json('./test_data/mock_reg_users_result.json')
+    mock_reg = util_load_json(os.path.dirname(__file__) + '/test_data/mock_reg_users.json')
+    expected = util_load_json(os.path.dirname(__file__) + '/test_data/mock_reg_users_result.json')
     actual = reg_parse.get_sub_keys(mock_reg, key, folder_output_key)
     for actual_items in actual:
         for actual_item in actual_items:

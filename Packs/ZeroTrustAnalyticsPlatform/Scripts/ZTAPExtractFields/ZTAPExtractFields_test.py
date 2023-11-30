@@ -9,8 +9,8 @@ def util_load_json(path):
 def test_extract_fields():
     from ZTAPExtractFields import extract_fields
 
-    events = util_load_json("test_data/event.json")
+    events = util_load_json(os.path.dirname(__file__) + "/test_data/event.json")
     output = extract_fields(events)
 
-    mock_markdown_result = util_load_json("test_data/output.json")
+    mock_markdown_result = util_load_json(os.path.dirname(__file__) + "/test_data/output.json")
     assert output == mock_markdown_result

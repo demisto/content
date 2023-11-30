@@ -15,7 +15,7 @@ def test_list_app_findings_command(requests_mock):
 
     Checks the output of the command function with the expected output.
     """
-    mock_response = util_load_json("test_data/test_list_findings.json")
+    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/test_list_findings.json")
     requests_mock.get(
         "https://www.shiftleft.io/orgs/2c089ac1-3378-44d5-94da-9507e84351c3/apps/shiftleft-java-example/findings",
         json=mock_response,

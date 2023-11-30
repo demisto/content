@@ -34,9 +34,9 @@ def test_upload_valid_url(mocker):
 
     """
     client = create_client()
-    mocker.patch.object(client, 'upload_url', return_value=util_load_json('./test_data/upload_url_response.json'))
+    mocker.patch.object(client, 'upload_url', return_value=util_load_json(os.path.dirname(__file__) + '/test_data/upload_url_response.json'))
     results = upload_command(client, {'url': MOCK_URL})
-    raw_response = util_load_json('./test_data/upload_url_response.json')
+    raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/upload_url_response.json')
     raw_response['data']['operation'] = 'upload/url'
     readable_output = tableToMarkdown('Upload Results', remove_empty_elements(raw_response.get('data')),
                                       headers=('id', 'operation', 'created_at', 'status'),
@@ -59,7 +59,7 @@ def test_upload_invalid_url(mocker):
 
     """
     client = create_client()
-    mocker.patch.object(client, 'upload_url', return_value=util_load_json('./test_data/upload_url_bad_url_response.json'))
+    mocker.patch.object(client, 'upload_url', return_value=util_load_json(os.path.dirname(__file__) + '/test_data/upload_url_bad_url_response.json'))
     with pytest.raises(ValueError) as e:
         upload_command(client, {'url': MOCK_URL})
         if not e:
@@ -80,9 +80,9 @@ def test_upload_valid_entry(mocker):
 
     client = create_client()
     mocker.patch.object(client, 'upload_entry_id',
-                        return_value=util_load_json('./test_data/upload_entry_response.json'))
+                        return_value=util_load_json(os.path.dirname(__file__) + '/test_data/upload_entry_response.json'))
     results = upload_command(client, {'entry_id': MOCK_ENTRY_ID})
-    raw_response = util_load_json('./test_data/upload_entry_response.json')
+    raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/upload_entry_response.json')
     raw_response['data']['operation'] = 'upload/entry'
     readable_output = tableToMarkdown('Upload Results',
                                       remove_empty_elements(raw_response.get('data')),

@@ -13,7 +13,7 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-alarms_data = util_load_json("./test_data/alarms_data.json")
+alarms_data = util_load_json(os.path.dirname(__file__) + "/test_data/alarms_data.json")
 
 
 def approximate_compare(time1, time2):

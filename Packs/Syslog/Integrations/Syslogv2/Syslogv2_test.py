@@ -17,7 +17,7 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-rfc_test_data = util_load_json('./test_data/rfc_test_data.json')
+rfc_test_data = util_load_json(os.path.dirname(__file__) + '/test_data/rfc_test_data.json')
 
 
 @pytest.mark.parametrize('test_case, func', [(rfc_test_data['rfc-3164']['case_one_valid'], parse_rfc_3164_format),
@@ -321,7 +321,7 @@ def test_log_message_passes_filter(log_message, message_regex, expected):
     assert log_message_passes_filter(log_message, message_regex) == expected
 
 
-loop_data = util_load_json('./test_data/long_running_loop_data.json')
+loop_data = util_load_json(os.path.dirname(__file__) + '/test_data/long_running_loop_data.json')
 
 
 @pytest.mark.parametrize('test_data, test_name', [(loop_data['rfc-3164'], 'no_regex'),

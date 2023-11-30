@@ -47,7 +47,7 @@ def test_test_module_negative(mocker, client, result, expected):
 
 
 def test_search_query_command_hash_badfile(mocker, client):
-    raw_response = util_load_json("test_data/query_hash_badfile.json")
+    raw_response = util_load_json(os.path.dirname(__file__) + "/test_data/query_hash_badfile.json")
 
     mocker.patch.object(client, "get_search_query", return_value=raw_response)
     response = OPSWAT_Filescan.search_query_command(client, {})
@@ -56,7 +56,7 @@ def test_search_query_command_hash_badfile(mocker, client):
 
 
 def test_search_query_command_hash_cleanfile(mocker, client):
-    raw_response = util_load_json("test_data/query_hash_cleanfile.json")
+    raw_response = util_load_json(os.path.dirname(__file__) + "/test_data/query_hash_cleanfile.json")
 
     mocker.patch.object(client, "get_search_query", return_value=raw_response)
     response = OPSWAT_Filescan.search_query_command(client, {})
@@ -66,7 +66,7 @@ def test_search_query_command_hash_cleanfile(mocker, client):
 
 
 def test_search_query_command_url(mocker, client):
-    raw_response = util_load_json("test_data/query_url_google.json")
+    raw_response = util_load_json(os.path.dirname(__file__) + "/test_data/query_url_google.json")
 
     mocker.patch.object(client, "get_search_query", return_value=raw_response)
     response = OPSWAT_Filescan.search_query_command(client, {})
@@ -118,7 +118,7 @@ def test_scan_command_url_polling(mocker, client):
     from CommonServerPython import ScheduledCommand
 
     args = {'url': 'https://www.google.com'}
-    raw_response = util_load_json("test_data/scan_command_url_response.json")
+    raw_response = util_load_json(os.path.dirname(__file__) + "/test_data/scan_command_url_response.json")
     mocker.patch.object(client, '_http_request', return_value={"flow_id": "1234"})
     mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
 
@@ -147,7 +147,7 @@ def test_scan_command_file_polling(mocker, client):
     from CommonServerPython import ScheduledCommand
 
     args = {'entry_id': 'test_entry_id'}
-    raw_response = util_load_json("test_data/scan_command_zip_response.json")
+    raw_response = util_load_json(os.path.dirname(__file__) + "/test_data/scan_command_zip_response.json")
     mocker.patch.object(client, "post_sample", return_value={"flow_id": "1234"})
     mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
 
@@ -204,7 +204,7 @@ def test_scan_command_file_invalid_password(mocker, client):
     from CommonServerPython import ScheduledCommand
 
     args = {'entry_id': 'test_entry_id'}
-    raw_response = util_load_json("test_data/scan_command_zip_invalid_pass.json")
+    raw_response = util_load_json(os.path.dirname(__file__) + "/test_data/scan_command_zip_invalid_pass.json")
     mocker.patch.object(client, "post_sample", return_value={"flow_id": "1234"})
     mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
 
@@ -220,7 +220,7 @@ def test_scan_command_file_invalid_password(mocker, client):
 
 
 def test_password_validator():
-    raw_response = util_load_json("test_data/scan_command_zip_valid_pass.json")
+    raw_response = util_load_json(os.path.dirname(__file__) + "/test_data/scan_command_zip_valid_pass.json")
     is_valid = OPSWAT_Filescan.is_valid_pass(raw_response)
     assert is_valid
 

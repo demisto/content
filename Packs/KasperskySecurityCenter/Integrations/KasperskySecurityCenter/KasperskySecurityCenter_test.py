@@ -40,9 +40,9 @@ def test_list_hosts(client, requests_mock):
         'filter': wstr_filter,
         'limit': limit,
     }
-    find_hosts_api_response = util_load_json('./test_data/find_response.json')
+    find_hosts_api_response = util_load_json(os.path.dirname(__file__) + '/test_data/find_response.json')
     requests_mock.post(SERVER_URL + '/HostGroup.FindHosts', json=find_hosts_api_response)
-    hosts_items_api_response = util_load_json('./test_data/hosts_list_response.json')
+    hosts_items_api_response = util_load_json(os.path.dirname(__file__) + '/test_data/hosts_list_response.json')
     requests_mock.post(SERVER_URL + '/ChunkAccessor.GetItemsChunk', json=hosts_items_api_response)
 
     result = list_hosts(client=client, args=args)
@@ -76,9 +76,9 @@ def test_get_host(client, requests_mock):
     args = {
         'hostname': hostname,
     }
-    find_hosts_api_response = util_load_json('./test_data/find_response.json')
+    find_hosts_api_response = util_load_json(os.path.dirname(__file__) + '/test_data/find_response.json')
     requests_mock.post(SERVER_URL + '/HostGroup.FindHosts', json=find_hosts_api_response)
-    host_get_api_response = util_load_json('./test_data/host_get_response.json')
+    host_get_api_response = util_load_json(os.path.dirname(__file__) + '/test_data/host_get_response.json')
     requests_mock.post(SERVER_URL + '/ChunkAccessor.GetItemsChunk', json=host_get_api_response)
 
     result = get_host(client=client, args=args)
@@ -106,9 +106,9 @@ def test_list_groups(client, requests_mock):
         - Verify requests are sent as expected
         - Verify command outputs are as expected
     """
-    find_hosts_api_response = util_load_json('./test_data/find_response.json')
+    find_hosts_api_response = util_load_json(os.path.dirname(__file__) + '/test_data/find_response.json')
     requests_mock.post(SERVER_URL + '/HostGroup.FindGroups', json=find_hosts_api_response)
-    groups_items_api_response = util_load_json('./test_data/groups_list_response.json')
+    groups_items_api_response = util_load_json(os.path.dirname(__file__) + '/test_data/groups_list_response.json')
     requests_mock.post(SERVER_URL + '/ChunkAccessor.GetItemsChunk', json=groups_items_api_response)
 
     result = list_groups(client=client, args={})
@@ -145,7 +145,7 @@ def test_add_group(client, requests_mock):
         'name': name,
         'parent_id': parent_id,
     }
-    api_response = util_load_json('./test_data/group_add_response.json')
+    api_response = util_load_json(os.path.dirname(__file__) + '/test_data/group_add_response.json')
     requests_mock.post(SERVER_URL + '/HostGroup.AddGroup', json=api_response)
 
     result = add_group(client=client, args=args)
@@ -173,7 +173,7 @@ def test_delete_group(client, requests_mock):
     args = {
         'group_id': group_id,
     }
-    api_response = util_load_json('./test_data/action_response.json')
+    api_response = util_load_json(os.path.dirname(__file__) + '/test_data/action_response.json')
     requests_mock.post(SERVER_URL + '/HostGroup.RemoveGroup', json=api_response)
 
     result = delete_group(client=client, args=args)
@@ -195,7 +195,7 @@ def test_list_software_applications(client, requests_mock):
         - Verify requests are sent as expected
         - Verify command outputs are as expected
     """
-    api_response = util_load_json('./test_data/software_applications_response.json')
+    api_response = util_load_json(os.path.dirname(__file__) + '/test_data/software_applications_response.json')
     requests_mock.post(SERVER_URL + '/InventoryApi.GetInvProductsList', json=api_response)
 
     result = list_software_applications(client=client)
@@ -215,7 +215,7 @@ def test_list_software_patches(client, requests_mock):
         - Verify requests are sent as expected
         - Verify command outputs are as expected
     """
-    api_response = util_load_json('./test_data/software_patches_response.json')
+    api_response = util_load_json(os.path.dirname(__file__) + '/test_data/software_patches_response.json')
     requests_mock.post(SERVER_URL + '/InventoryApi.GetInvPatchesList', json=api_response)
 
     result = list_software_patches(client=client)
@@ -240,7 +240,7 @@ def test_list_host_software_applications(client, requests_mock):
         'hostname': hostname,
     }
 
-    api_response = util_load_json('./test_data/software_applications_response.json')
+    api_response = util_load_json(os.path.dirname(__file__) + '/test_data/software_applications_response.json')
     requests_mock.post(SERVER_URL + '/InventoryApi.GetHostInvProducts', json=api_response)
 
     result = list_host_software_applications(client=client, args=args)
@@ -268,7 +268,7 @@ def test_list_host_software_patches(client, requests_mock):
         'hostname': hostname,
     }
 
-    api_response = util_load_json('./test_data/software_patches_response.json')
+    api_response = util_load_json(os.path.dirname(__file__) + '/test_data/software_patches_response.json')
     requests_mock.post(SERVER_URL + '/InventoryApi.GetHostInvPatches', json=api_response)
 
     result = list_host_software_patches(client=client, args=args)
@@ -291,7 +291,7 @@ def test_list_policies(client, requests_mock):
         - Verify requests are sent as expected
         - Verify command outputs are as expected
     """
-    api_response = util_load_json('./test_data/policies_list_response.json')
+    api_response = util_load_json(os.path.dirname(__file__) + '/test_data/policies_list_response.json')
     requests_mock.post(SERVER_URL + '/Policy.GetPoliciesForGroup', json=api_response)
 
     result = list_policies(client=client, args={})
@@ -317,7 +317,7 @@ def test_get_policy(client, requests_mock):
         'policy_id': policy_id,
     }
 
-    api_response = util_load_json('./test_data/policies_list_response.json')
+    api_response = util_load_json(os.path.dirname(__file__) + '/test_data/policies_list_response.json')
     requests_mock.post(SERVER_URL + '/Policy.GetPolicyData', json=api_response)
 
     result = get_policy(client=client, args=args)

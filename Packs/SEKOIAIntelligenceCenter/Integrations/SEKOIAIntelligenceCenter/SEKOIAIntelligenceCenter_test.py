@@ -375,7 +375,7 @@ def test_ip_version(client, input, output):
 )
 def test_reputation_command(client, input, command, requests_mock):
 
-    mock_response = util_load_json("test_data/indicator_context_ip.json")
+    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/indicator_context_ip.json")
     requests_mock.get(
         MOCK_URL + "/v2/inthreat/indicators/context",
         json=mock_response,

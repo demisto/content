@@ -43,7 +43,7 @@ def test_build_template(mocker):
         }
     ]
     mocker.patch.object(demisto, "executeCommand", return_value=date_result)
-    args = util_load_json("test_data/args.json")
+    args = util_load_json(os.path.dirname(__file__) + "/test_data/args.json")
     result = build_template(args)
     assert isinstance(result, list)
     for item in result:
@@ -117,8 +117,8 @@ def test_build_report(mocker, alert_id, report_type):
     """
     from GenerateASMReport import build_report
 
-    template = util_load_json("test_data/template.json")
-    sanepdf_raw = util_load_json("test_data/sanepdf_raw.json")
+    template = util_load_json(os.path.dirname(__file__) + "/test_data/template.json")
+    sanepdf_raw = util_load_json(os.path.dirname(__file__) + "/test_data/sanepdf_raw.json")
     mocker.patch.object(demisto, "executeCommand", return_value=sanepdf_raw)
     result = build_report(template, alert_id, report_type)
     assert isinstance(result, dict)

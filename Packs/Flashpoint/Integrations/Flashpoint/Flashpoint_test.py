@@ -469,12 +469,12 @@ class MyTestCase(unittest.TestCase):
         """Test case scenario when valid response is returned."""
         from Flashpoint import flashpoint_alert_list_command
 
-        response = util_load_json("TestData/alert_list_response.json")
+        response = util_load_json(os.path.dirname(__file__) + "/testData/alert_list_response.json")
         mocker.return_value = response
 
-        context = util_load_json("TestData/alert_list.json")
+        context = util_load_json(os.path.dirname(__file__) + "/testData/alert_list.json")
 
-        expected_hr = util_load_json("TestData/alert_hr.json")
+        expected_hr = util_load_json(os.path.dirname(__file__) + "/testData/alert_hr.json")
 
         result = flashpoint_alert_list_command(self.client, {})
 
@@ -646,12 +646,12 @@ class MyTestCase(unittest.TestCase):
         """Test case scenario when valid response is returned."""
         from Flashpoint import flashpoint_compromised_credentials_list_command
 
-        response = util_load_json("TestData/compromised_credentials_list_response.json")
+        response = util_load_json(os.path.dirname(__file__) + "/testData/compromised_credentials_list_response.json")
         mocker.return_value = response
 
-        context = util_load_json("TestData/compromised_credentials_list.json")
+        context = util_load_json(os.path.dirname(__file__) + "/testData/compromised_credentials_list.json")
 
-        expected_hr = util_load_json("TestData/compromised_credentials_hr.json")
+        expected_hr = util_load_json(os.path.dirname(__file__) + "/testData/compromised_credentials_hr.json")
 
         result = flashpoint_compromised_credentials_list_command(self.client, {})
 
@@ -799,7 +799,7 @@ class MyTestCase(unittest.TestCase):
         """Test case scenario when there are duplicate records."""
         from Flashpoint import remove_duplicate_records
 
-        alerts = util_load_json("TestData/fetch_alert_list.json")
+        alerts = util_load_json(os.path.dirname(__file__) + "/testData/fetch_alert_list.json")
         next_run = {
             'alert_ids': [
                 '3d376ab6-a1bd-4acc-84e6-2c385f51a3ea',
@@ -808,7 +808,7 @@ class MyTestCase(unittest.TestCase):
             ]
         }
 
-        expected_alerts = util_load_json("TestData/fetch_alert_list_after_removing_duplication.json")
+        expected_alerts = util_load_json(os.path.dirname(__file__) + "/testData/fetch_alert_list_after_removing_duplication.json")
 
         assert remove_duplicate_records(alerts, "Alerts", next_run) == expected_alerts
 
@@ -924,9 +924,9 @@ class MyTestCase(unittest.TestCase):
             'fetch_count': 0,
             'fetch_sum': 100
         }
-        response = util_load_json("TestData/compromised_credentials_list_response.json")
+        response = util_load_json(os.path.dirname(__file__) + "/testData/compromised_credentials_list_response.json")
         del response['hits']['hits'][0]['_source']['email']
-        expected_incidents = util_load_json("TestData/incidents_compromised_credentials_when_email_not_present.json")
+        expected_incidents = util_load_json(os.path.dirname(__file__) + "/testData/incidents_compromised_credentials_when_email_not_present.json")
 
         _, incidents = prepare_incidents_from_compromised_credentials_data(response, next_run, START_DATE)
 
@@ -940,11 +940,11 @@ class MyTestCase(unittest.TestCase):
             'fetch_count': 0,
             'fetch_sum': 100
         }
-        response = util_load_json("TestData/compromised_credentials_list_response.json")
+        response = util_load_json(os.path.dirname(__file__) + "/testData/compromised_credentials_list_response.json")
 
         del response['hits']['hits'][0]['_source']['email']
         del response['hits']['hits'][0]['_source']['fpid']
-        expected_incidents = util_load_json("TestData/incidents_compromised_credentials_when_fpid_not_present.json")
+        expected_incidents = util_load_json(os.path.dirname(__file__) + "/testData/incidents_compromised_credentials_when_fpid_not_present.json")
 
         _, incidents = prepare_incidents_from_compromised_credentials_data(response, next_run, START_DATE)
 
@@ -954,7 +954,7 @@ class MyTestCase(unittest.TestCase):
         """Test case scenario when the records are more than 10k."""
         from Flashpoint import prepare_incidents_from_compromised_credentials_data
 
-        response = util_load_json("TestData/compromised_credentials_list_response.json")
+        response = util_load_json(os.path.dirname(__file__) + "/testData/compromised_credentials_list_response.json")
 
         total = 10001
         response['hits']['total'] = total
@@ -996,7 +996,7 @@ class MyTestCase(unittest.TestCase):
             'last_timestamp': 1628856457
         }
 
-        response = util_load_json("TestData/compromised_credentials_duplicate_records.json")
+        response = util_load_json(os.path.dirname(__file__) + "/testData/compromised_credentials_duplicate_records.json")
 
         next_run, incidents = prepare_incidents_from_compromised_credentials_data(response, next_run, last_time)
 

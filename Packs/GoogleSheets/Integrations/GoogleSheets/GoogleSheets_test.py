@@ -340,7 +340,7 @@ def test_value_update():
     http = HttpMock('test_data/update_spreadsheet/test_value_update/response.json', {'status': '200'})
     api_key = 'your_api_key'
     service = build('sheets', 'v4', http=http, developerKey=api_key)
-    args = util_load_json("test_data/update_spreadsheet/test_value_update/command_mock.json")
+    args = util_load_json(os.path.dirname(__file__) + "/test_data/update_spreadsheet/test_value_update/command_mock.json")
     command_result = GoogleSheets.value_update_sheets(service, args)
     assert command_result.readable_output == '### Successfully updated sheet values'
 

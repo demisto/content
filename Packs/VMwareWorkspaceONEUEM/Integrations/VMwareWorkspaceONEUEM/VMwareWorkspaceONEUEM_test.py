@@ -87,11 +87,11 @@ def test_vmwuem_device_os_updates_list_command_when_valid_response_is_returned(r
     from VMwareWorkspaceONEUEM import vmwuem_device_os_updates_list_command
     uuid = '3c119913-9341-428f-b8b5-35271550c2df'
 
-    expected_response = util_load_json("test_data/vmwuem_device_osupdates_list_command_response.json")
+    expected_response = util_load_json(os.path.dirname(__file__) + "/test_data/vmwuem_device_osupdates_list_command_response.json")
 
     requests_mock.get(BASE_URL + f'devices/{uuid}/osupdate', json=expected_response)
 
-    expected_context_output = util_load_json("test_data/vmwuem_device_osupdates_list_command_context.json")
+    expected_context_output = util_load_json(os.path.dirname(__file__) + "/test_data/vmwuem_device_osupdates_list_command_context.json")
 
     with open(os.path.dirname(__file__) + "/test_data/vmwuem_device_osupdates_list_command_readable_output.md") as f:
         expected_readable_output = f.read()
@@ -156,11 +156,11 @@ def test_vmwuem_device_osupdates_list_command_when_laptop_device_provided(reques
     from VMwareWorkspaceONEUEM import vmwuem_device_os_updates_list_command
     uuid = '7752a0be-4c0a-429a-97c0-228b1fd6ba0f'
 
-    expected_response = util_load_json("test_data/vmwuem_device_osupdates_list_command_response_laptop.json")
+    expected_response = util_load_json(os.path.dirname(__file__) + "/test_data/vmwuem_device_osupdates_list_command_response_laptop.json")
 
     requests_mock.get(BASE_URL + f'devices/{uuid}/osupdate', json=expected_response)
 
-    expected_context_output = util_load_json("test_data/vmwuem_device_osupdates_list_command_context_laptop.json")
+    expected_context_output = util_load_json(os.path.dirname(__file__) + "/test_data/vmwuem_device_osupdates_list_command_context_laptop.json")
 
     with open(os.path.dirname(__file__) + "/test_data/vmwuem_device_osupdates_list_command_readable_output_laptop.md") as f:
         expected_readable_output = f.read()
@@ -207,8 +207,8 @@ def test_vmuem_devices_search_command_when_valid_response_is_returned(requests_m
     """
     from VMwareWorkspaceONEUEM import vmwuem_devices_search_command
 
-    response = util_load_json("test_data/devices_search_resp.json")
-    ec = util_load_json("test_data/devices_search_ec.json")
+    response = util_load_json(os.path.dirname(__file__) + "/test_data/devices_search_resp.json")
+    ec = util_load_json(os.path.dirname(__file__) + "/test_data/devices_search_ec.json")
     requests_mock.get(BASE_URL + 'devices/search', json=response)
 
     command_results = vmwuem_devices_search_command(client, {})
@@ -224,7 +224,7 @@ def test_vmuem_device_get_command_when_no_records_found_json_response(requests_m
     Test no records found test case for vmuem-device-get when response is json
     """
     from VMwareWorkspaceONEUEM import vmwuem_device_get_command
-    response = util_load_json("test_data/get_device_404_no_records_found_message.json")
+    response = util_load_json(os.path.dirname(__file__) + "/test_data/get_device_404_no_records_found_message.json")
 
     requests_mock.get(BASE_URL + 'devices/{uuid}'.format(uuid="12345678-1234-1234-1234-123456789ABC"),
                       json=response, status_code=404)
@@ -276,8 +276,8 @@ def test_camel_to_pascal():
     Test the function camel_to_pascal for a diverse input
     """
     from VMwareWorkspaceONEUEM import camel_to_pascal
-    camel_dict = util_load_json("test_data/camel_response.json")
-    expected_pascal_dict = util_load_json("test_data/pascal_context.json")
+    camel_dict = util_load_json(os.path.dirname(__file__) + "/test_data/camel_response.json")
+    expected_pascal_dict = util_load_json(os.path.dirname(__file__) + "/test_data/pascal_context.json")
     pascal_dict = camel_to_pascal(camel_dict)
 
     assert expected_pascal_dict == pascal_dict
@@ -289,8 +289,8 @@ def test_vmuem_device_get_command_when_valid_response_is_returned(requests_mock)
     """
     from VMwareWorkspaceONEUEM import vmwuem_device_get_command
 
-    response = util_load_json("test_data/device_get_resp.json")
-    ec = util_load_json("test_data/device_get_ec.json")
+    response = util_load_json(os.path.dirname(__file__) + "/test_data/device_get_resp.json")
+    ec = util_load_json(os.path.dirname(__file__) + "/test_data/device_get_ec.json")
     requests_mock.get(BASE_URL + 'devices/{uuid}'.format(uuid="12345678-1234-1234-1234-123456789ABC"),
                       json=response)
 

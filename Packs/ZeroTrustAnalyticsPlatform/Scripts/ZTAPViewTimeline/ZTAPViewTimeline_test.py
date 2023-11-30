@@ -15,7 +15,7 @@ def test_view_timeline(mocker):
     from ZTAPViewTimeline import view_timeline
 
     ztap_tags = ["ztap", "comment", "escalate"]
-    entries = util_load_json("test_data/entries.json")
+    entries = util_load_json(os.path.dirname(__file__) + "/test_data/entries.json")
     output = view_timeline(entries, ztap_tags)
 
     mock_output = util_load_raw("test_data/output.md")

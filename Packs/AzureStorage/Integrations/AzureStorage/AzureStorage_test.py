@@ -36,7 +36,7 @@ def test_storage_account_list(client, mocker):
         - Verify result outputs
         - Verify result readable outputs
     """
-    api_response = util_load_json('./test_data/storage_account_list_response.json')
+    api_response = util_load_json(os.path.dirname(__file__) + '/test_data/storage_account_list_response.json')
     mocker.patch.object(ASClient, "storage_account_list_request", return_value=api_response)
     result = storage_account_list(client=client, args={}, params={'subscription_id': subscription_id,
                                                                   'resource_group_name': resource_group_name})
@@ -235,7 +235,7 @@ def test_storage_blob_containers_list(client, mocker):
         - Verify result outputs
         - Verify result readable outputs
     """
-    api_response = util_load_json('./test_data/blob_containers_list_response.json')
+    api_response = util_load_json(os.path.dirname(__file__) + '/test_data/blob_containers_list_response.json')
 
     mocker.patch.object(ASClient, "storage_blob_containers_list_request", return_value=api_response)
 

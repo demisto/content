@@ -96,7 +96,7 @@ def test_get_default_server_group_id(requests_mock):
     from Automox import get_default_server_group_id
 
     client = util_mock_client()
-    expected_response = util_load_json("./test_data/automox-groups-list.json")
+    expected_response = util_load_json(os.path.dirname(__file__) + "/test_data/automox-groups-list.json")
 
     requests_mock.get(f"{TEST_URL}/servergroups", json=expected_response)
 
@@ -177,7 +177,7 @@ def test_create_group(requests_mock):
 
     org_id = 1
 
-    expected_response = util_load_json("./test_data/automox-group-create.json")
+    expected_response = util_load_json(os.path.dirname(__file__) + "/test_data/automox-group-create.json")
     requests_mock.post(f"{TEST_URL}/servergroups", json=expected_response)
 
     args = {
@@ -243,7 +243,7 @@ def test_get_vulnerability_sync_batch(requests_mock):
     org_id = 1
     batch_id = 1
 
-    expected_response = util_load_json("./test_data/automox-vulnerability-sync-batch-get.json")
+    expected_response = util_load_json(os.path.dirname(__file__) + "/test_data/automox-vulnerability-sync-batch-get.json")
     requests_mock.get(f"{TEST_URL}/orgs/{org_id}/tasks/batches/{batch_id}", json=expected_response)
 
     args = {
@@ -262,7 +262,7 @@ def test_get_vulnerability_sync_batch(requests_mock):
 def test_list_devices(requests_mock):
     from Automox import list_devices
 
-    expected_response = util_load_json("./test_data/automox-devices-list.json")
+    expected_response = util_load_json(os.path.dirname(__file__) + "/test_data/automox-devices-list.json")
     requests_mock.get(f"{TEST_URL}/servers", json=expected_response)
 
     client = util_mock_client()
@@ -287,7 +287,7 @@ def test_list_groups(requests_mock):
     from Automox import list_groups
     org_id = 1
 
-    expected_response = util_load_json("./test_data/automox-groups-list.json")
+    expected_response = util_load_json(os.path.dirname(__file__) + "/test_data/automox-groups-list.json")
     requests_mock.get(f"{TEST_URL}/servergroups", json=expected_response)
 
     args = {
@@ -308,7 +308,7 @@ def test_list_organization_users(requests_mock):
     from Automox import list_organization_users
     org_id = 1
 
-    expected_response = util_load_json("./test_data/automox-organization-users-list.json")
+    expected_response = util_load_json(os.path.dirname(__file__) + "/test_data/automox-organization-users-list.json")
     requests_mock.get(f"{TEST_URL}/users", json=expected_response)
 
     args = {
@@ -328,7 +328,7 @@ def test_list_organization_users(requests_mock):
 def test_list_organizations(requests_mock):
     from Automox import list_organizations
 
-    expected_response = util_load_json("./test_data/automox-organizations-list.json")
+    expected_response = util_load_json(os.path.dirname(__file__) + "/test_data/automox-organizations-list.json")
     requests_mock.get(f"{TEST_URL}/orgs", json=expected_response)
 
     args = {
@@ -347,7 +347,7 @@ def test_list_policies(requests_mock):
     from Automox import list_policies
     org_id = 1
 
-    expected_response = util_load_json("./test_data/automox-policies-list.json")
+    expected_response = util_load_json(os.path.dirname(__file__) + "/test_data/automox-policies-list.json")
     requests_mock.get(f"{TEST_URL}/policies", json=expected_response)
 
     args = {
@@ -367,7 +367,7 @@ def test_list_vulnerability_sync_batches(requests_mock):
     from Automox import list_vulnerability_sync_batches
     org_id = 1
 
-    expected_response = util_load_json("./test_data/automox-vulnerability-sync-batches-list.json")
+    expected_response = util_load_json(os.path.dirname(__file__) + "/test_data/automox-vulnerability-sync-batches-list.json")
     requests_mock.get(f"{TEST_URL}/orgs/{org_id}/tasks/batches", json=expected_response)
 
     args = {
@@ -388,7 +388,7 @@ def test_list_vulnerability_sync_tasks(requests_mock):
     org_id = 10586
     batch_id = 1
 
-    expected_response = util_load_json("./test_data/automox-vulnerability-sync-tasks-list.json")
+    expected_response = util_load_json(os.path.dirname(__file__) + "/test_data/automox-vulnerability-sync-tasks-list.json")
     requests_mock.get(f"{TEST_URL}/orgs/{org_id}/tasks", json=expected_response)
 
     args = {
@@ -433,7 +433,7 @@ def test_update_device(requests_mock):
     from Automox import update_device
     device_id = 1
 
-    expected_response = util_load_json("./test_data/automox-device-get.json")
+    expected_response = util_load_json(os.path.dirname(__file__) + "/test_data/automox-device-get.json")
     requests_mock.get(f"{TEST_URL}/servers/{device_id}", json=expected_response)
     requests_mock.put(f"{TEST_URL}/servers/{device_id}", status_code=204)
 
@@ -457,7 +457,7 @@ def test_update_group(requests_mock):
     group_id = 1
     name = "Test Group"
 
-    expected_response = util_load_json("./test_data/automox-groups-list.json")
+    expected_response = util_load_json(os.path.dirname(__file__) + "/test_data/automox-groups-list.json")
     requests_mock.get(f"{TEST_URL}/servergroups/{group_id}", json=expected_response)
     requests_mock.put(f"{TEST_URL}/servergroups/{group_id}", status_code=204, json={})
 
@@ -485,7 +485,7 @@ def test_upload_vulnerability_sync_file(requests_mock, mocker):
     csv_file_name = "report.csv"
     task_type = "patch"
 
-    expected_response = util_load_json("./test_data/automox-vulnerability-sync-file-upload.json")
+    expected_response = util_load_json(os.path.dirname(__file__) + "/test_data/automox-vulnerability-sync-file-upload.json")
     requests_mock.post(f"{TEST_URL}/orgs/{org_id}/tasks/{task_type}/batches/upload", json=expected_response)
 
     mock_file = {

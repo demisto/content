@@ -72,7 +72,7 @@ def test_humio_query(requests_mock):
     """Tests that a humio query can be issued"""
     from Humio import Client, humio_query
 
-    mock_response = util_load_json("test_data/query_results.json")
+    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/query_results.json")
     requests_mock.post(
         "https://test.com/api/v1/repositories/sandbox/query", json=mock_response
     )
@@ -120,7 +120,7 @@ def test_humio_poll(requests_mock):
     """Tests that a humio queryjob can be polled"""
     from Humio import Client, humio_poll
 
-    mock_response = util_load_json("test_data/poll_results.json")
+    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/poll_results.json")
     requests_mock.get(
         "https://test.com/api/v1/repositories/sandbox/queryjobs/testid",
         json=mock_response,
@@ -140,7 +140,7 @@ def test_humio_list_alerts(requests_mock):
     """Tests that a humio alerts can be listed"""
     from Humio import Client, humio_list_alerts
 
-    mock_response = util_load_json("test_data/list_alerts_results.json")
+    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/list_alerts_results.json")
     requests_mock.get(
         "https://test.com/api/v1/repositories/sandbox/alerts", json=mock_response
     )
@@ -156,7 +156,7 @@ def test_humio_get_alert_by_id(requests_mock):
     """Tests that a humio alert can be fetched based on its id"""
     from Humio import Client, humio_get_alert_by_id
 
-    mock_response = util_load_json("test_data/get_alert_by_id_results.json")
+    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/get_alert_by_id_results.json")
     requests_mock.get(
         "https://test.com/api/v1/repositories/sandbox/alerts/zNVae7vz-DH7GpeQUPfx1KXMGXGg7bf7",
         json=mock_response,
@@ -173,7 +173,7 @@ def test_humio_create_alert(requests_mock):
     """Tests that a humio alert can be fetched based on its id"""
     from Humio import Client, humio_create_alert
 
-    mock_response = util_load_json("test_data/create_alert_results.json")
+    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/create_alert_results.json")
     requests_mock.post(
         "https://test.com/api/v1/repositories/sandbox/alerts",
         json=mock_response,
@@ -201,7 +201,7 @@ def test_humio_list_notifiers(requests_mock):
     """Tests that a humio alerts can be listed"""
     from Humio import Client, humio_list_notifiers
 
-    mock_response = util_load_json("test_data/list_notifiers_results.json")
+    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/list_notifiers_results.json")
     requests_mock.post(
         "https://test.com/graphql",
         json=mock_response,
@@ -218,7 +218,7 @@ def test_humio_get_notifier_by_id(requests_mock):
     """Tests that a humio alerts can be listed"""
     from Humio import Client, humio_get_notifier_by_id
 
-    mock_response = util_load_json("test_data/notifier_by_id_results.json")
+    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/notifier_by_id_results.json")
     requests_mock.post(
         "https://test.com/graphql",
         json=mock_response,
@@ -240,7 +240,7 @@ def test_fetch_incidents(requests_mock, mocker):
         'queryTimeZoneOffsetMinutes': '0'
     })
 
-    mock_response = util_load_json("test_data/fetch_incidents.json")
+    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/fetch_incidents.json")
     requests_mock.post(
         "http://test.com/api/v1/repositories/sandbox/query",
         json=mock_response,

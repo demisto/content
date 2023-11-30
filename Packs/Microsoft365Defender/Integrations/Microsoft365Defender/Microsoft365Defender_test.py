@@ -23,10 +23,10 @@ def util_load_json(path):
 
 def test_convert_incident():
     from Microsoft365Defender import convert_incident_to_readable
-    empty_incident = util_load_json("./test_data/empty_incident.json")
+    empty_incident = util_load_json(os.path.dirname(__file__) + "/test_data/empty_incident.json")
     assert convert_incident_to_readable(None) == empty_incident
-    raw_incident = util_load_json("./test_data/raw_incident.json")
-    converted_incident = util_load_json("./test_data/converted_incident.json")
+    raw_incident = util_load_json(os.path.dirname(__file__) + "/test_data/raw_incident.json")
+    converted_incident = util_load_json(os.path.dirname(__file__) + "/test_data/converted_incident.json")
     assert convert_incident_to_readable(raw_incident) == converted_incident
 
 
@@ -53,34 +53,34 @@ def check_api_response(results, results_mock):
 
 def test_microsoft_365_defender_incidents_list_command(mocker):
     from Microsoft365Defender import microsoft_365_defender_incidents_list_command
-    client = mock_client(mocker, 'incidents_list', util_load_json('./test_data/incidents_list_response.json'))
+    client = mock_client(mocker, 'incidents_list', util_load_json(os.path.dirname(__file__) + '/test_data/incidents_list_response.json'))
     results = microsoft_365_defender_incidents_list_command(client, {'limit': 10})
-    check_api_response(results, util_load_json('./test_data/incidents_list_results.json'))
+    check_api_response(results, util_load_json(os.path.dirname(__file__) + '/test_data/incidents_list_results.json'))
 
 
 def test_microsoft_365_defender_incident_update_command(mocker):
     from Microsoft365Defender import microsoft_365_defender_incident_update_command
-    client = mock_client(mocker, 'update_incident', util_load_json('./test_data/incident_update_response.json'))
+    client = mock_client(mocker, 'update_incident', util_load_json(os.path.dirname(__file__) + '/test_data/incident_update_response.json'))
     args = {'id': '263', 'tags': 'test1,test2', 'status': 'Active', 'classification': 'Unknown',
             'determination': 'Other', 'assigned_to': ""}
     results = microsoft_365_defender_incident_update_command(client, args)
-    check_api_response(results, util_load_json('./test_data/incident_update_results.json'))
+    check_api_response(results, util_load_json(os.path.dirname(__file__) + '/test_data/incident_update_results.json'))
 
 
 def test_microsoft_365_defender_incident_get_command(mocker):
     from Microsoft365Defender import microsoft_365_defender_incident_get_command
-    client = mock_client(mocker, 'get_incident', util_load_json('./test_data/incident_get_response.json'))
+    client = mock_client(mocker, 'get_incident', util_load_json(os.path.dirname(__file__) + '/test_data/incident_get_response.json'))
     args = {'id': '263'}
     results = microsoft_365_defender_incident_get_command(client, args)
-    check_api_response(results, util_load_json('./test_data/incident_get_results.json'))
+    check_api_response(results, util_load_json(os.path.dirname(__file__) + '/test_data/incident_get_results.json'))
 
 
 def test_microsoft_365_defender_advanced_hunting_command(mocker):
     from Microsoft365Defender import microsoft_365_defender_advanced_hunting_command
-    client = mock_client(mocker, 'advanced_hunting', util_load_json('./test_data/advanced_hunting_response.json'))
+    client = mock_client(mocker, 'advanced_hunting', util_load_json(os.path.dirname(__file__) + '/test_data/advanced_hunting_response.json'))
     args = {'query': 'AlertInfo'}
     results = microsoft_365_defender_advanced_hunting_command(client, args)
-    check_api_response(results, util_load_json('./test_data/advanced_hunting_results.json'))
+    check_api_response(results, util_load_json(os.path.dirname(__file__) + '/test_data/advanced_hunting_results.json'))
 
 
 def fetch_check(mocker, client, last_run, first_fetch_time, fetch_limit, mock_results):
@@ -102,7 +102,7 @@ def test_fetch_incidents(mocker):
                 incidents in the queue
         Forth - tries to fill the queue with new incidents but there are no new ones so returns empty list
     """
-    response_dict = util_load_json('./test_data/fetch_response.json')
+    response_dict = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_response.json')
     client = Client(
         app_id='app_id',
         verify=False,
@@ -116,7 +116,7 @@ def test_fetch_incidents(mocker):
 
     first_fetch_time = "3000 days"
     fetch_limit = 50
-    results = util_load_json('./test_data/fetch_results.json')
+    results = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_results.json')
 
     for current_flow in ['first', 'second', 'third', 'forth']:
         fetch_check(mocker, client, response_dict[f'{current_flow}_last_run'], first_fetch_time, fetch_limit,

@@ -9,7 +9,7 @@ def util_load_json(path):
 def test_authenticate_user(requests_mock):
     from FireMonSecurityManager import Client, authenticate_command
 
-    mock_response = util_load_json("test_data/get_authentication.json")
+    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/get_authentication.json")
     requests_mock.post("https://example.test.com/securitymanager/api/authentication/login", json=mock_response)
 
     client = Client(base_url="https://example.test.com", verify=False, proxy=False, username="test", password="test")
@@ -22,15 +22,15 @@ def test_authenticate_user(requests_mock):
 def test_create_pp_ticket_command(requests_mock):
     from FireMonSecurityManager import Client, create_pp_ticket_command
 
-    mock_response = util_load_json("test_data/get_authentication.json")
+    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/get_authentication.json")
     requests_mock.post("https://example.test.com/securitymanager/api/authentication/login", json=mock_response)
 
-    mock_response = util_load_json("test_data/get_workflows.json")
+    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/get_workflows.json")
     requests_mock.get(
         "https://example.test.com/policyplanner/api/domain/1/workflow/version/latest/all", json=mock_response
     )
 
-    mock_response = util_load_json("test_data/get_pp_ticket.json")
+    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/get_pp_ticket.json")
     requests_mock.post("https://example.test.com/policyplanner/api/domain/1/workflow/3/packet", json=mock_response)
 
     client = Client(base_url="https://example.test.com", verify=False, proxy=False, username="test", password="test")
@@ -49,13 +49,13 @@ def test_create_pp_ticket_command(requests_mock):
 def test_pca_new_command(requests_mock):
     from FireMonSecurityManager import Client, pca_command
 
-    mock_response = util_load_json("test_data/get_authentication.json")
+    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/get_authentication.json")
     requests_mock.post("https://example.test.com/securitymanager/api/authentication/login", json=mock_response)
 
-    mock_response = util_load_json("test_data/get_rule_rec.json")
+    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/get_rule_rec.json")
     requests_mock.post("https://example.test.com/orchestration/api/domain/1/change/rulerec", json=mock_response)
 
-    mock_response = util_load_json("test_data/get_pca.json")
+    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/get_pca.json")
     requests_mock.post("https://example.test.com/orchestration/api/domain/1/change/device/9/pca", json=mock_response)
 
     client = Client(base_url="https://example.test.com", verify=False, proxy=False, username="test", password="test")
@@ -77,10 +77,10 @@ def test_pca_new_command(requests_mock):
 def test_secrule_search_command(requests_mock):
     from FireMonSecurityManager import Client, secmgr_secrule_search_command
 
-    mock_response = util_load_json("test_data/get_authentication.json")
+    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/get_authentication.json")
     requests_mock.post("https://example.test.com/securitymanager/api/authentication/login", json=mock_response)
 
-    mock_response = util_load_json("test_data/get_paged_search_secrule.json")
+    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/get_paged_search_secrule.json")
     requests_mock.get("https://example.test.com/securitymanager/api/siql/secrule/paged-search", json=mock_response)
 
     client = Client(base_url="https://example.test.com", verify=False, proxy=False, username="test", password="test")

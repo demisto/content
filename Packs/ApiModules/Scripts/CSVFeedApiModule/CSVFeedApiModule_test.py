@@ -258,7 +258,7 @@ def test_create_fields_mapping():
     Then:
     - Validate the mapping is done correctly
     """
-    raw_json = util_load_json("test_data/create_field_mapping_test.json")
+    raw_json = util_load_json(os.path.dirname(__file__) + "/test_data/create_field_mapping_test.json")
     mapping = {
         'Value': ('Name', '^([A-Z]{1}[a-z]+)', None),
         'Country': 'Country Name',
