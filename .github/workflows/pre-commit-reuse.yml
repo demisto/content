@@ -1,0 +1,69 @@
+name: pre-commit
+on: 
+  workflow_call:
+
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      pull-requests: write
+      contents: write
+    steps:
+    - name: Install poetry
+      uses: Gr1N/setup-poetry@v8
+
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+        cache: 'poetry'
+    
+    - name: Install dependencies
+      run: poetry install
+
+    - name: Cache Pre commit
+      id: cache-pre-commit
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pre-commit
+        key: ${{ runner.os }}-pre-commit
+    - name: Cache Docker images.
+      uses: ScribeMD/docker-cache@0.3.6
+      with:
+        key: docker-${{ runner.os }}
+      
+    - name: run pre-commit
+      env:
+        DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
+        DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+      run: |
+        source .venv/bin/activate
+        demisto-sdk pre-commit -g --unit-test --validate --no-secrets --show-diff-on-failure --verbose --mode=ci --sdk-ref 1e6641a07a65188be0e227e5f0aed39cf3827c0d
+
+    - name: "Check coverage.xml exists"
+      if: always()
+      id: check_files
+      uses: andstor/file-existence-action@v2
+      with:
+        files: "coverage.xml"
+        
+    - name: Pytest coverage comment
+      if: always() && steps.check_files.outputs.files_exists == 'true'
+      uses: MishaKav/pytest-coverage-comment@main
+      with:
+        pytest-xml-coverage-path: coverage_report/coverage.xml
+        junitxml-path: .report_pytest.xml
+
+    - uses: actions/cache/save@v3
+      if: always()
+      with:
+        path: ~/.cache/pre-commit
+        key: ${{ runner.os }}-pre-commit
+      
