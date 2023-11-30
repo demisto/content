@@ -342,7 +342,7 @@ def test_get_device(mocker):
     contents = demisto_results.call_args[0][0]
     assert sorted(EXPECTED_DEVICE.items()) == sorted(
         contents.get('EntryContext').get('CylanceProtect.Device(val.ID && val.ID === obj.ID)').items()
-        )
+    )
 
 
 def test_get_device_by_hostname(mocker):
@@ -409,7 +409,7 @@ def test_get_device_threats(mocker):
 
     contents = demisto_results.call_args[0][0]
     assert contents.get('EntryContext').get('File')[0].get('SHA256') == \
-           '0F427B33B824110427B2BA7BE20740B45EA4DA41BC1416DD55771EDFB0C18F09'
+        '0F427B33B824110427B2BA7BE20740B45EA4DA41BC1416DD55771EDFB0C18F09'
 
 
 def test_get_policies(mocker):
@@ -431,7 +431,7 @@ def test_get_policies(mocker):
     contents = demisto_results.call_args[0][0]
     assert sorted(EXPECTED_POLICIES.items()) == sorted(
         contents.get('EntryContext').get('CylanceProtect.Policies(val.id && val.id === obj.id)')[0].items()
-        )
+    )
 
 
 def test_create_zone(mocker):
@@ -496,7 +496,7 @@ def test_get_zone(mocker):
     contents = demisto_results.call_args[0][0]
     assert sorted(EXPECTED_ZONES.items()) == sorted(
         contents.get('EntryContext').get('CylanceProtect.Zones(val.Id && val.Id === obj.Id)').items()
-        )
+    )
 
 
 def test_update_zone(mocker):
@@ -541,7 +541,7 @@ def test_get_threat(mocker):
 
     contents = demisto_results.call_args[0][0]
     assert contents.get('EntryContext').get('File')[0].get('SHA256') == \
-           '055D7A25DECF6769BF4FB2F3BC9FD3159C8B42972818177E44975929D97292DE'
+        '055D7A25DECF6769BF4FB2F3BC9FD3159C8B42972818177E44975929D97292DE'
 
 
 def test_get_threats(mocker):

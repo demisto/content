@@ -103,21 +103,21 @@ commands_with_args = {
 
 TEST_REG_VALUES = [
     {'registry_type': f'test_pbREG_SZ_{i}',
-         'registry_name': f'test_val_{i}',
-         'registry_data': f'value_data_{i}'}
+     'registry_name': f'test_val_{i}',
+     'registry_data': f'value_data_{i}'}
     for i in range(10)]
 
 TEST_DIR_LIST = [
     {'size': 25600, 'attributes': ['TEST_ARCHIVE'],
-         'create_time': 123, 'last_access_time': 123,
-         'last_write_time': '1970-01-02T03:46:40.000Z', 'filename': f'test_{i}.xls',
-         'alternate_name': 'test_$9EE1B~1.XLS'}
+     'create_time': 123, 'last_access_time': 123,
+     'last_write_time': '1970-01-02T03:46:40.000Z', 'filename': f'test_{i}.xls',
+     'alternate_name': 'test_$9EE1B~1.XLS'}
     for i in range(10)]
 
 TEST_PROCESSES = [
     {'process_path': f'test_path_{i}', 'process_pid': i,
-         'process_cmdline': f'test_command_line_{i}',
-         'process_username': f'test_user_{i}'}
+     'process_cmdline': f'test_command_line_{i}',
+     'process_username': f'test_user_{i}'}
     for i in range(10)]
 
 SUB_KEY_LEN = 10

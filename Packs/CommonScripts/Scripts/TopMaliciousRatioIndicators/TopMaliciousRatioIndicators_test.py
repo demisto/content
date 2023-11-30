@@ -27,9 +27,9 @@ def test_find_indicators_with_mal_ratio(mocker):
                                                                      max_results=1000,
                                                                      from_date="30 days ago")
     assert widget_table == '{"total": 2, "data": [{"ID": "7570", "Type": "URL", "Malicious Ratio": "0.11", "Value":' \
-           ' "http://8.16.1.2/8.16.1.2", "Last Seen": "2021-11-22T15:15:54.958327+02:00"},' \
-           ' {"ID": "7569", "Type": "Domain", "Malicious Ratio": "0.08", "Value": "gmail.com",' \
-           ' "Last Seen": "2021-11-22T15:15:54.958278+02:00"}]}'
+        ' "http://8.16.1.2/8.16.1.2", "Last Seen": "2021-11-22T15:15:54.958327+02:00"},' \
+        ' {"ID": "7569", "Type": "Domain", "Malicious Ratio": "0.08", "Value": "gmail.com",' \
+        ' "Last Seen": "2021-11-22T15:15:54.958278+02:00"}]}'
     assert len(sorted_indicators) == 2
 
 

@@ -565,7 +565,7 @@ def test_purge_ediscovery_data_command(mocker):
 def test_list_ediscovery_non_custodial_data_source_command_empty_output(mocker):
     mocker.patch.object(client_mocker, 'list_ediscovery_noncustodial_datasources', return_value={'value': []})
     assert list_ediscovery_non_custodial_data_source_command(client_mocker, {}).readable_output == \
-           '### Results:\n**No entries.**\n'
+        '### Results:\n**No entries.**\n'
 
 
 def test_list_ediscovery_case_command(mocker):

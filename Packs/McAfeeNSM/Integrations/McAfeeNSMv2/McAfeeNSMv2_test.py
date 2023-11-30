@@ -1149,16 +1149,16 @@ def test_list_interface_policy_request__with_and_without_intereface_id(mocker, m
 
 @pytest.mark.parametrize('input, output', [(({"from_to_list": [{"FromAddress": "1.1.1.1", "ToAddress": "2.2.2.2"}],
                                              "rule_type": 'IPV_4_ADDRESS_RANGE', "address": [],
-                                              "number":4, "state":"Enabled"},
+                                              "number": 4, "state": "Enabled"},
                                             ('IPv4AddressRange',
                                             {'IPV4RangeList': [{'FromAddress': '1.1.1.1',
                                                                 'ToAddress': '2.2.2.2', 'state': 1}]}))),
                                            (({"from_to_list": [{'FromAddress': None, 'ToAddress': None}],
-                                             "rule_type": 'HOST_IPV_4', "address": ["1.1.1.1"], "number":4, "state":"Disabled"}),
+                                             "rule_type": 'HOST_IPV_4', "address": ["1.1.1.1"], "number": 4, "state": "Disabled"}),
                                            ('HostIPv4', {'hostIPv4AddressList': [{'value': '1.1.1.1', 'state': 0}]})),
                                            (({"from_to_list": [{'FromAddress': None, 'ToAddress': None, 'state': 1}],
                                              "rule_type": 'NETWORK_IPV_6', "address": ['Network IP V.6'],
-                                              "number":6, "state":"Disabled"}),
+                                              "number": 6, "state": "Disabled"}),
                                            ('Network_IPV_6', {'networkIPV6List': [{'value': 'Network IP V.6', 'state': 0}]}))])
 def test_create_body_create_rule_for_v10__with_different_arguments(input, output):
     """

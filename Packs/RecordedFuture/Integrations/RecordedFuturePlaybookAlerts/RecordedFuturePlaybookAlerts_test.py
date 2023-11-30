@@ -1,5 +1,6 @@
+import os
 def create_client():
-        from RecordedFuturePlaybookAlerts import Client, __version__
+    from RecordedFuturePlaybookAlerts import Client, __version__
 
     base_url = 'https://api.recordedfuture.com/gw/xsoar/'
     verify_ssl = True

@@ -48,7 +48,7 @@ def test_set_arguments_for_widget_view_when_riskiqassettype_is_empty():
     arguments = RiskIQDigitalFootprintAssetDetailsWidgetScript.set_arguments_for_widget_view(indicator_data)
     # Assert
     assert arguments\
-           == 'Please provide value in the "RiskIQAsset Type" field to fetch detailed information of the asset.'
+        == 'Please provide value in the "RiskIQAsset Type" field to fetch detailed information of the asset.'
 
 
 def test_set_arguments_for_widget_view_when_riskiqassettype_is_valid():

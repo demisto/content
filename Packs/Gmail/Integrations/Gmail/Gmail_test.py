@@ -15,7 +15,7 @@ MOCK_MAIL_NO_LABELS = {
             {
                 'name': 'Received',
                 'value': 'from 1041831412594 named unknown by gmailapi.google.com with '
-                          u'HTTPREST; Mon, 28 Oct 2019 04:32:15 -0400'
+                u'HTTPREST; Mon, 28 Oct 2019 04:32:15 -0400'
             }, {
                 'name': 'Content-Type',
                 'value': 'mixed; boundary="===============4922146810840031257=="'

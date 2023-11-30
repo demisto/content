@@ -43,7 +43,7 @@ def test_cyren_feed_relationship_normal(mocker):
 
     demisto.executeCommand.assert_any_call("CyrenThreatInDepthRenderRelated",
                                            {"indicator": "{\"some\": \"value\"}",
-                                                "columns": "Indicator Type,Value"})
+                                            "columns": "Indicator Type,Value"})
     assert result.readable_output == "tha output!"
 
 

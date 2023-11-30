@@ -79,32 +79,32 @@ def executeCommand(find_indicators_result=FIND_INDICATORS_NORMAL,
     (
         {},
         {"name": "Cyren Threat InDepth Threat Hunt", "type": "Hunt",
-             "details": "indicator_type: URL\nvalue: http://google.de\n", "owner": "admin"}
+         "details": "indicator_type: URL\nvalue: http://google.de\n", "owner": "admin"}
     ),
     (
         {"assignee": "other.user"},
         {"name": "Cyren Threat InDepth Threat Hunt", "type": "Hunt",
-             "details": "indicator_type: URL\nvalue: http://google.de\n", "owner": "other.user"}
+         "details": "indicator_type: URL\nvalue: http://google.de\n", "owner": "other.user"}
     ),
     (
         {"assignee": "other.user", "incident_type": "My Type"},
         {"name": "Cyren Threat InDepth Threat Hunt", "type": "My Type",
-             "details": "indicator_type: URL\nvalue: http://google.de\n", "owner": "other.user"}
+         "details": "indicator_type: URL\nvalue: http://google.de\n", "owner": "other.user"}
     ),
     (
         {"indicator_type": "ip_reputation"},
         {"name": "Cyren Threat InDepth Threat Hunt", "type": "Hunt",
-             "details": "indicator_type: URL\nvalue: http://google.de\n", "owner": "admin"}
+         "details": "indicator_type: URL\nvalue: http://google.de\n", "owner": "admin"}
     ),
     (
         {"incident_type": "My Type"},
         {"name": "Cyren Threat InDepth Threat Hunt", "type": "My Type",
-             "details": "indicator_type: URL\nvalue: http://google.de\n", "owner": "admin"}
+         "details": "indicator_type: URL\nvalue: http://google.de\n", "owner": "admin"}
     ),
     (
         {"indicator_type": "ip_reputation", "incident_type": "My Type"},
         {"name": "Cyren Threat InDepth Threat Hunt", "type": "My Type",
-             "details": "indicator_type: URL\nvalue: http://google.de\n", "owner": "admin"}
+         "details": "indicator_type: URL\nvalue: http://google.de\n", "owner": "admin"}
     ),
 ])
 def test_create_random_hunt_incident(mocker, args, expected_incident):

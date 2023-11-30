@@ -413,7 +413,7 @@ def test_crowdstrike_analysis_overview_summary_command(requests_mock):
 def test_crowdstrike_analysis_overview_refresh_command(requests_mock):
     call = requests_mock.get(BASE_URL + '/overview/filehash/refresh', status_code=200, json={})
     assert crowdstrike_analysis_overview_refresh_command(client, {'file': 'filehash'}).readable_output == \
-           'The request to refresh the analysis overview was sent successfully.'
+        'The request to refresh the analysis overview was sent successfully.'
     assert call.called
 
 

@@ -48,7 +48,7 @@ def test_get_html_representation_when_dbotscore_is_2(mocker):
 
     html_representation = ChronicleDBotScoreWidgetScript.get_html_representation(2)
     assert html_representation\
-           == "<div style='color:orange; text-align:center;'><h1>2<br/>Suspicious</h1></div>"
+        == "<div style='color:orange; text-align:center;'><h1>2<br/>Suspicious</h1></div>"
 
 
 def test_get_html_representation_when_dbotscore_is_3(mocker):
