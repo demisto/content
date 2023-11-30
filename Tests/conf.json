@@ -23,7 +23,7 @@
         {
             "playbookID": "playbook-AzureLogAnalytics-test",
             "integrations": "Azure Log Analytics",
-            "instance_name" : "Azure_Log_Analytics_client_cred",
+            "instance_name": "Azure_Log_Analytics_client_cred",
             "timeout": 800,
             "is_mockable": false
         },
@@ -6217,4 +6217,3 @@
         "IPv6 extraction test"
     ]
 }
-
