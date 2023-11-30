@@ -1,13 +1,5 @@
 
 const MIN_HOSTED_XSOAR_VERSION = '8.0.0';
-// list was taken from https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR-8-API
-const SYSTEM_ENDPOINTS = [
-  "/public_api/v1/audits/management_logs",
-  "/public_api/v1/rbac/get_roles",
-  "/public_api/v1/rbac/get_user_group",
-  "/public_api/v1/rbac/get_users",
-  "/public_api/v1/rbac/set_user_role"
-]
 
 var serverURL = params.url;
 if (serverURL.slice(-1) === '/') {
@@ -22,14 +14,6 @@ isHosted = function () {
         return true
     }
     return false
-}
-
-// only when using XSIAM or XSOAR >= 8.0 we will add the /xsoar suffix
-// and only when it is not a system endpoint (note: this list does not include all system endpoints!)
-if  (isHosted()) {
-    if ((!serverURL.endsWith('/xsoar')) && (!SYSTEM_ENDPOINTS.includes(args.uri))) {
-        serverURL = serverURL + '/xsoar'
-    }
 }
 
 var marketplace_url = params.marketplace_url? params.marketplace_url : 'https://marketplace.xsoar.paloaltonetworks.com/'
@@ -79,6 +63,14 @@ getAdvancedAuthMethodHeaders = function(key, auth_id, content_type,) {
 
 getRequestURL = function (uri) {
     var requestUrl = serverURL;
+
+    // only when using XSIAM or XSOAR >= 8.0 we will add the /xsoar suffix
+    // and only when it is not a /public_api endpoint.
+    if (isHosted()) {
+        if ((!serverURL.endsWith('/xsoar')) && (!uri.startsWith('/public_api'))) {
+            requestUrl += '/xsoar'
+        }
+    }
     if (params.use_tenant){
         requestUrl += '/' + getTenantAccountName();
     }
