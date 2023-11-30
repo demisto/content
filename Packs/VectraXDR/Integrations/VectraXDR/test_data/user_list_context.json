@@ -1,0 +1,29 @@
+{
+  "Vectra.User(val.user_id && val.user_id == obj.user_id)": [
+    {
+      "id": 59,
+      "user_id": 59,
+      "username": "user.name1",
+      "email": "",
+      "role": "Security Analyst",
+      "last_login_timestamp": "2023-08-22T09:24:44Z",
+      "last_login": "2023-08-22T09:24:44Z"
+    },
+    {
+      "id": 32,
+      "user_id": 32,
+      "username": "user.name2",
+      "email": "",
+      "role": "Super Admin",
+      "last_login_timestamp": "2023-07-02T18:41:19Z",
+      "last_login": "2023-07-02T18:41:19Z"
+    },
+    {
+      "id": 23,
+      "user_id": 23,
+      "username": "vectra_mdr",
+      "email": "",
+      "role": "Vectra MDR"
+    }
+  ]
+}

@@ -167,82 +167,86 @@ There is no context output for this command.
 >Authorization was reset successfully. Run **!azure-risky-users-auth-start** to start the authentication process.
 
 ### azure-risky-users-list
-***
-List all risky users and their properties.
 
+***
+Returns a list of all risky users and their properties.
 
 #### Base Command
 
 `azure-risky-users-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| risk_state | Risk State to retrieve. If not specified, all states will be retrieved. Possible values are: atRisk, confirmedCompromised, remediated, dismissed. | Optional |
-| limit | Limit of results to retrieve. Default is 50. | Optional |
-| page | Page number. Default is 1. | Optional |
-| risk_level | Specify to get only results with the same Risk Level. Possible values are: low, medium, high. | Optional |
-
+| risk_state | Sets the Risk State to retrieve. Possible values are: atRisk, confirmedCompromised, remediated, dismissed. | Optional | 
+| limit | Limit of results to retrieve. Default is 50. | Optional | 
+| page_size | Amount of results per request. Value can be between 1 and 500. When only page_size is given, the first page results will be fetched. | Optional | 
+| next_token | The URL for the next set of items to return during pagination. (This URL can be retrieved from a previous call). | Optional | 
+| risk_level | Sets the Risk Level to retrieve. Possible values are: low, medium, high. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureRiskyUsers.RiskyUser.id | String | Unique ID of the user at risk. |
-| AzureRiskyUsers.RiskyUser.userDisplayName | String | Risky user display name. |
-| AzureRiskyUsers.RiskyUser.userPrincipalName | String | Risky user principal name. |
-| AzureRiskyUsers.RiskyUser.riskLevel | String | Level of the detected risky user. Possible values are: low, medium, high, hidden, none, unknownFutureValue. |
-| AzureRiskyUsers.RiskyUser.riskState | String | State of the user's risk. Possible values are: none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised. |
-| AzureRiskyUsers.RiskyUser.riskLastUpdatedDateTime | Date | The date and time that the risky user was last updated. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: 2014-01-01T00:00:00Z |
-| AzureRiskyUsers.RiskyUser.isDeleted | Boolean | Indicates whether the user is deleted. |
-| AzureRiskyUsers.RiskyUser.isProcessing | Boolean | Indicates whether a user's risky state is being processed by the backend. |
-| AzureRiskyUsers.RiskyUser.riskDetail | String | Details of the detected risk. Possible values are: none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, unknownFutureValue. |
+| AzureRiskyUsers.RiskyUser.id | String | Unique ID of the user at risk. | 
+| AzureRiskyUsers.RiskyUser.userDisplayName | String | Risky user display name. | 
+| AzureRiskyUsers.RiskyUser.userPrincipalName | String | Risky user principal name. | 
+| AzureRiskyUsers.RiskyUser.riskLevel | String | Level of the detected risky user. Possible values are: low, medium, high, hidden, none, unknownFutureValue. | 
+| AzureRiskyUsers.RiskyUser.riskState | String | State of the user's risk. Possible values are: none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised. | 
+| AzureRiskyUsers.RiskyUser.riskLastUpdatedDateTime | Date | The date and time that the risky user was last updated. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: 2014-01-01T00:00:00Z. | 
+| AzureRiskyUsers.RiskyUser.isDeleted | Boolean | Indicates whether the user is deleted. | 
+| AzureRiskyUsers.RiskyUser.isProcessing | Boolean | Indicates whether a user's risky state is being processed by the backend. | 
+| AzureRiskyUsers.RiskyUser.riskDetail | String | Details of the detected risk. Possible values are: none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, unknownFutureValue. | 
+| AzureRiskyUsers.RiskyUserListNextToken | String | A property in the response that contains a URL to the next page of results. | 
 
-
-#### Command Example
-```!azure-risky-users-list limit=2```
-
+#### Command example
+```!azure-risky-users-list page_size=2```
 #### Context Example
 ```json
 {
     "AzureRiskyUsers": {
         "RiskyUser": [
             {
-                "id": "111",
+                "id": "ID_1",
                 "isDeleted": false,
                 "isProcessing": false,
-                "riskDetail": "adminDismissedAllRiskForUser",
-                "riskLastUpdatedDateTime": "2021-08-09T11:47:58.5581222Z",
-                "riskLevel": "none",
-                "riskState": "dismissed",
-                "userDisplayName": "Or Israeli",
-                "userPrincipalName": "ori@test.com"
+                "riskDetail": "none",
+                "riskLastUpdatedDateTime": "2023-06-04T10:12:39.3625926Z",
+                "riskLevel": "medium",
+                "riskState": "atRisk",
+                "userDisplayName": "user Display Name",
+                "userPrincipalName": "User Principal Name"
             },
             {
-                "id": "222",
+                "id": "ID_2",
                 "isDeleted": false,
                 "isProcessing": false,
-                "riskDetail": "userPerformedSecuredPasswordReset",
-                "riskLastUpdatedDateTime": "2020-11-05T18:35:39.2628939Z",
-                "riskLevel": "none",
-                "riskState": "remediated",
-                "userDisplayName": "Elad Israeli",
-                "userPrincipalName": "EladI@test.com"
-            }
-        ]
+                "riskDetail": "none",
+                "riskLastUpdatedDateTime": "2022-02-23T17:50:40.3408199Z",
+                "riskLevel": "high",
+                "riskState": "atRisk",
+                "userDisplayName": "user Display Name",
+                "userPrincipalName": "User Principal Name"
+            },
+        ],
+        "RiskyUserListNextToken": "token",
     }
 }
 ```
 
 #### Human Readable Output
 
->### Risky Users List
->Current page size: 2
->Showing page 1 out others that may exist
+>### Risky Users List:
 >|Id|User Display Name|User Principal Name|Risk Level|Risk State|Risk Detail|Risk Last Updated Date Time|
 >|---|---|---|---|---|---|---|
->| 111 | Or Israeli | ori@test.com | none | dismissed | adminDismissedAllRiskForUser | 2021-08-09T11:47:58.5581222Z |
->| 222 | Elad Israeli | EladI@test.com | none | remediated | userPerformedSecuredPasswordReset | 2020-11-05T18:35:39.2628939Z |
+>| ID_1 | user Display Name | User Principal Name | medium | atRisk | none | 2023-06-04T10:12:39.3625926Z |
+>| ID_2 | user Display Name | User Principal Name | high | atRisk | none | 2022-02-23T17:50:40.3408199Z |
+
+>### Risky Users List Token:
+>|next_token|
+>|---|
+>| token |
 
 
 ### azure-risky-user-get
