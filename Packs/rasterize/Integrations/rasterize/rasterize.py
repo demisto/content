@@ -171,7 +171,7 @@ def kill_all_chrome_processes():
 def ensure_chrome_running():  # pragma: no cover
     for _ in range(DEFAULT_RETRIES_COUNT):
         count = get_active_chrome_processes_count()
-        demisto.debug('ensure_chrome_running, {count=}')
+        demisto.debug(f'ensure_chrome_running, {count=}')
 
         if count == 1:
             demisto.debug('One Chrome instance running. Returning True.')
