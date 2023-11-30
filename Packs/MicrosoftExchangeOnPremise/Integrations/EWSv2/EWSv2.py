@@ -2153,7 +2153,10 @@ def mark_item_as_read(item_ids, operation='read', target_mailbox=None):  # pragm
                                 marked_items)
 
 
-def parse_quoted_printable(email_content):
+def parse_quoted_printable(email_content: str):
+    """
+    Parses email content if this email is encoded in quoted-printable, using quopri.
+    """
     if 'Content-Transfer-Encoding: quoted-printable' in email_content:
         split_email = email_content.split('charset="')
         charset = 'utf-8'
@@ -2195,11 +2198,11 @@ def get_item_as_eml(item_id, target_mailbox=None):  # pragma: no cover
                 if (header.name, header.value) not in attached_email_headers and header.name != 'Content-Type':
                     email_content.add_header(header.name, header.value)
 
-        email_content = email_content.as_string()
-        demisto.info(f'After as_string, {email_content=}')
-        email_content = parse_quoted_printable(email_content)
+        email_content_str = email_content.as_string()
+        demisto.info(f'After as_string, {email_content_str=}')
+        email_content_str = parse_quoted_printable(email_content_str)
         eml_name = item.subject if item.subject else 'demisto_untitled_eml'
-        file_result = fileResult(eml_name + ".eml", email_content)
+        file_result = fileResult(eml_name + ".eml", email_content_str)
         file_result = file_result if file_result else "Failed uploading eml file to war room"
 
         return file_result
