@@ -1,6 +1,6 @@
 category: Email
 commonfields:
-  id: Microsoft_Graph_Files
+  id: Microsoft_Graph_Files_copy
   version: -1
 configuration:
 - defaultvalue: https://graph.microsoft.com
@@ -80,8 +80,8 @@ configuration:
   type: 8
   required: false
 description: Use the O365 File Management (Onedrive/Sharepoint/Teams) integration to enable your app to get authorized access to files in OneDrive, SharePoint, and MS Teams across your entire organization. This integration requires admin consent.
-display: O365 File Management (Onedrive/Sharepoint/Teams)
-name: Microsoft_Graph_Files
+display: O365 File Management (Onedrive/Sharepoint/Teams)_copy
+name: Microsoft_Graph_Files_copy
 script:
   commands:
   - arguments:
@@ -640,43 +640,92 @@ script:
     name: msgraph-files-auth-reset
     arguments: []
   - arguments:
-    - description:
+    - description: The maximum number of results to return. Default is 50.
       name: limit
       defaultValue: 50
-    - description:
+    - description: The ID of the site. Must provide either site_id or site_name.
       name: site_id
-    - description:
+    - description: The name of the site. Must provide either site_id or site_name.
       name: site_name
-    - description:
+    - description: The ID of the permission. 
       name: permission_id
-    - description:
+    - auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether to retrieve all the apps with permission for the site. If true, the "limit" argument will be ignored.
       name: all_results
+      defaultValue: "false"
     name: msgraph-list-site-permissions
-    description: Returns a list of permissions for a site.
+    description: List of apps with permissions for the site, if permission_id is provide it will return the details of that permission.
+    outputs:
+    - contextPath: MsGraphFiles.SitePermission.id
+      description: The unique identifier of the permission among all permissions on the item.
+      type: String
+    - contextPath: MsGraphFiles.SitePermission.roles
+      description: The type of permission, for example, read.
+      type: List
+    - contextPath: MsGraphFiles.SitePermission.grantedToIdentitiesV2.application.id
+      description: Unique identifier for the identity.
+      type: String
+    - contextPath: MsGraphFiles.SitePermission.grantedToIdentitiesV2.application.displayName
+      description: The display name of the identity. The display name might not always be available or up to date.
+      type: String
   - arguments:
-    - description: The site ID or site name.
+    - description: The ID of the site. Must provide either site_id or site_name.
       name: site_id
-    - description:
+    - description: The name of the site. Must provide either site_id or site_name.
       name: site_name
-    - description:
-      name: roles
-    - description:
+    - auto: PREDEFINED
+      predefined:
+      - read
+      - write
+      - owner
+      description: |-
+        read: Provides the ability to read the metadata and contents of the item.
+        write: Provides the ability to read and modify the metadata and contents of the item.
+        owner: Site owners can create and manage lists, libraries, and pages within their site, as well as manage user access and permissions.
+      name: role
+      required: true
+    - description: The ID of the application.
       name: app_id
-    - description:
+      required: true
+    - description: The display name of the application.
       name: display_name
+      required: true
     name: msgraph-create-site-permissions
-    description: Creates a new permission for a site.
+    description: Create a new application permission for a site.
   - arguments:
-    - description: The site ID or site name.
+    - description: The name of the site. Must provide either site_name or site_id.
       name: site_name
-    - description:
+    - description: The ID of the site. Must provide either site_id or site_name.
       name: site_id
-    - description: The permission ID to update.
+    - description: The unique identifier of the permission to update.
       name: permission_id
-    - description:
-      name: roles
+      required: true
+    - auto: PREDEFINED
+      predefined:
+      - read
+      - write
+      - owner
+      description: |-
+        read: Provides the ability to read the metadata and contents of the item.
+        write: Provides the ability to read and modify the metadata and contents of the item.
+        owner: Site owners can create and manage lists, libraries, and pages within their site, as well as manage user access and permissions.
+      name: role
+      required: true
     name: msgraph-update-site-permissions
     description: Updates an existing permission for a site.
+  - arguments:
+    - description: Unique identifier for SharePoint site. Must provide either site_id or site_name.
+      name: site_id
+    - description: The name of the site. Must provide either site_id or site_name.
+      name: site_name
+    - description: The unique identifier of the permission to delete.
+      name: permission_id
+      required: true
+    name: msgraph-delete-site-permissions
+    description: Deletes a app permission from a site.
   dockerimage: demisto/python_pancloud:1.0.0.77747
   script: ''
   subtype: python3

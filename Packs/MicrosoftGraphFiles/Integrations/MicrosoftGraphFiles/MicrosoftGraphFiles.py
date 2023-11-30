@@ -98,7 +98,7 @@ def url_validation(url: str) -> str:
         )
     return url
 
-    
+
 class MsGraphClient:
     """
     Microsoft Graph Client enables authorized access to organization's files in OneDrive, SharePoint, and MS Teams.
@@ -155,35 +155,37 @@ class MsGraphClient:
         return self.ms_client.http_request(method="GET", params=params, url_suffix=url_suffix)
 
     def list_site_permissions(self, site_id: str | None, permission_id: str | None) -> dict:
-            
+
         url_suffix = f"sites/{site_id}/permissions"
         if permission_id:
             url_suffix += f"/{permission_id}"
         return self.ms_client.http_request(method="GET", url_suffix=url_suffix)
-    
-    def get_application(self, app_id: str, ) -> dict[str, Any]:
-        return self.ms_client.http_request(method="GET", url_suffix=f"/applications(appId='{app_id}')")
-        
-    def create_site_permission(self, site_id: str, app_id: str, display_name: str, roles: list[str]) -> dict:
+
+    def create_site_permission(self, site_id: str, app_id: str, display_name: str, role: list[str]) -> dict:
         url_suffix = f"sites/{site_id}/permissions"
         body = {
-                "roles": roles,
-                "grantedToIdentities": [{
-                    "application": {
+            "roles": role,
+            "grantedToIdentities": [{
+                "application": {
                     "id": app_id,
                     "displayName": display_name
-                    }
-                }]
-            }
+                }
+            }]
+        }
         return self.ms_client.http_request(method="POST", url_suffix=url_suffix, json_data=body)
-    
-    def update_site_permission(self, site_id: str, permission_id: str, roles: list[str]) -> dict:
-    
+
+    def update_site_permission(self, site_id: str, permission_id: str, role: list[str]) -> dict:
+
         url_suffix = f"sites/{site_id}/permissions/{permission_id}"
         body = {
-                "roles": roles
-            }
+            "roles": role
+        }
         return self.ms_client.http_request(method="PATCH", url_suffix=url_suffix, json_data=body)
+
+    def delete_site_permission(self, site_id: str, permission_id: str):
+        url_suffix = f"/sites/{site_id}/permissions/{permission_id}"
+        return self.ms_client.http_request(method="DELETE", url_suffix=url_suffix, return_empty_response=True)
+
     def list_drive_content(self, object_type, object_type_id, item_id=None, limit=None, next_page_url=None):
         """
         This command list all the drive's files and folders
@@ -837,69 +839,77 @@ def delete_file_command(client: MsGraphClient, args: dict) -> tuple[str, str]:
 
     return human_readable, text  # == raw response
 
+
 def get_site_id(client: MsGraphClient, site_name: str) -> str:
-    
+
     site_details = client.list_sharepoint_sites(site_name)
     if site_id := site_details.get("value", [{}])[0].get("id"):
         site_id = site_id.split(",")[1]
 
     return site_id
+
+
 def _parse_permission(permission: dict):
-    identities = permission.get("grantedToIdentitiesV2", [{}])
+    identities: list[dict[str, dict[str, str]]] = permission.get("grantedToIdentitiesV2", [{}])
     return {
         "ID": permission.get("id"),
         "Roles": permission.get("roles"),
         "Application Name": [identity.get("application", {}).get("displayName") for identity in identities],
         "Application ID": [identity.get("application", {}).get("id") for identity in identities],
     }
+
+
 def list_site_permissions_command(client: MsGraphClient, args: dict[str, str]) -> CommandResults:
 
     permission_id = args.get("permission_id")
     limit = arg_to_number(args.get("limit", 50))
-    all_results = argToBoolean(args.get("all_results", True))
+    all_results = argToBoolean(args.get("all_results", False))
 
     site_id = args.get("site_id")
     site_name = args.get("site_name")
     if not site_id and site_name:
         site_id = get_site_id(client, site_name)
-    
+
     if not any([site_id, site_name]):
         raise DemistoException("Either site_id or site_name parameter is required")
     results = client.list_site_permissions(site_id, permission_id)
     if permission_id:
+        list_permissions = results
         readable_output = tableToMarkdown(
             name="Site Permission",
             t=_parse_permission(results)
         )
     else:
-        results = results.get("value", [])[:limit]
+        list_permissions = results.get("value", [])
+        list_permissions = list_permissions if all_results else list_permissions[:limit]
         readable_output = tableToMarkdown(
             name="Site Permission",
-            t=[_parse_permission(result) for result in results]
+            t=[_parse_permission(permission) for permission in list_permissions],
+            removeNull=True  # when the permission_id is not provided, return a list of permissions, and the Roles filed is empty.
         )
-              
+
     return CommandResults(
         outputs_prefix="MsGraphFiles.SitePermission",
         outputs_key_field="id",
-        outputs=results,
+        outputs=list_permissions,
         readable_output=readable_output
     )
+
 
 def create_site_permissions_command(client: MsGraphClient, args: dict[str, str]) -> CommandResults:
     site_id = args.get("site_id", '')
     site_name = args.get("site_name")
     app_id = args["app_id"]
-    roles = argToList(args["roles"])
+    role = argToList(args["role"])
     display_name = args["display_name"]
-    # display_name = client.get_application(app_id)["displayName"]
-    
+
     if not any([site_id, site_name]):
         raise DemistoException("Either site_id or site_name parameter is required")
     if not site_id and site_name:
         site_id = get_site_id(client, site_name)
 
-    results = client.create_site_permission(site_id, app_id, display_name, roles)
-    
+    results = client.create_site_permission(site_id, app_id, display_name, role)
+
     return CommandResults(
         outputs_prefix="MsGraphFiles.SitePermission",
         outputs_key_field="id",
@@ -907,23 +917,38 @@ def create_site_permissions_command(client: MsGraphClient, args: dict[str, str])
         readable_output=tableToMarkdown("Site Permission", t=_parse_permission(results))
     )
 
+
 def update_site_permissions_command(client: MsGraphClient, args: dict[str, str]) -> CommandResults:
     site_id = args.get("site_id", '')
     site_name = args.get("site_name")
     permission_id = args["permission_id"]
-    roles = argToList(args["roles"])
+    role = argToList(args["role"])
     if not any([site_id, site_name]):
         raise DemistoException("Either site_id or site_name parameter is required")
     if not site_id and site_name:
         site_id = get_site_id(client, site_name)
-    results = client.update_site_permission(site_id, permission_id, roles)
-    
+    results = client.update_site_permission(site_id, permission_id, role)
+
     return CommandResults(
-        outputs_prefix="MsGraphFiles.SitePermission",   # TODO
-        outputs_key_field="id",
-        outputs=results,
-        readable_output=tableToMarkdown("Site Permission", t=_parse_permission(results))
+        readable_output=f"Permission {permission_id} of site {site_id} was updated successfully with new role {results['roles']}."
     )
+
+
+def delete_site_permission_command(client: MsGraphClient, args: dict[str, str]) -> CommandResults:
+    site_id = args.get("site_id", '')
+    site_name = args.get("site_name")
+    permission_id = args["permission_id"]
+
+    if not any([site_id, site_name]):
+        raise DemistoException("Either site_id or site_name parameter is required")
+    if not site_id and site_name:
+        site_id = get_site_id(client, site_name)
+
+    client.delete_site_permission(site_id, permission_id)
+    return CommandResults(
+        readable_output="Site permission was deleted."
+    )
+
 
 def main():
     params: dict = demisto.params()
@@ -988,6 +1013,8 @@ def main():
             results = create_site_permissions_command(client, args)
         elif command == "msgraph-update-site-permissions":
             results = update_site_permissions_command(client, args)
+        elif command == "msgraph-delete-site-permissions":
+            results = delete_site_permission_command(client, args)
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
         return_results(results)
