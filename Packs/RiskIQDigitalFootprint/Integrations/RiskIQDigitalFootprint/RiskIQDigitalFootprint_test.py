@@ -205,7 +205,7 @@ def test_http_request_proxy_error_based_on_status(mock_base_http_request, client
 
     # Assert
     assert str(e.value) == 'Proxy Error - cannot connect to proxy. Either try clearing the \'Use system proxy\' check-box or check ' \
-        'the host, authentication details and connection details for the proxy.'
+        'the host, authentication details and connection details for the proxy.'  # noqa: E501
 
 
 @patch('RiskIQDigitalFootprint.Client._http_request')
@@ -721,7 +721,7 @@ def test_asset_changes_invalid_range_for_asset_detail_type(client):
                                        'organization': 'dummy', 'type': 'SELF_HOSTED_RESOURCE'})
 
     assert str(e.value) == 'The given value for range is invalid. Only single day changes can be shown for Self Hosted Resource type.' \
-        ' Valid value: 1. This argument supports a single value only.'
+        ' Valid value: 1. This argument supports a single value only.'  # noqa: E501
 
 
 def test_asset_changes_invalid_measure_for_asset_type(client):
@@ -1466,7 +1466,7 @@ def test_add_and_update_asset_invalid_priority(client):
     with pytest.raises(ValueError) as e:
         prepare_single_asset_payload(args, operation='add')
     assert str(e.value) == 'The given value for priority is invalid. Valid Priority levels: High, Medium, Low, None. This argument' \
-        ' supports a single value only.'
+        ' supports a single value only.'  # noqa: E501
 
 
 def test_add_and_update_asset_invalid_enterprise(client):
@@ -1587,7 +1587,7 @@ def test_add_and_update_asset_required_keys(client):
     with pytest.raises(ValueError) as e:
         validate_asset_payload(args, operation='add')
     assert str(e.value) == "Required keys for add asset(s) are ['assets', 'properties']. One or more of them are not present in the" \
-        " asset JSON."
+        " asset JSON."  # noqa: E501
 
 
 def test_add_and_update_asset_required_keys_in_asset(client):
@@ -1648,7 +1648,7 @@ def test_update_asset_required_keys_in_asset_json(client):
     with pytest.raises(ValueError) as e:
         validate_asset_payload(args, operation='update')
     assert str(e.value) == "Required keys for update asset(s) are ['assets', 'properties'] or ['query', 'properties']. One or more of" \
-        " them are not present in the asset JSON."
+        " them are not present in the asset JSON."  # noqa: E501
 
 
 def test_add_and_update_asset_required_keys_in_asset_json(client):
@@ -1675,7 +1675,7 @@ def test_add_and_update_asset_required_keys_in_asset_json(client):
     with pytest.raises(ValueError) as e:
         validate_asset_payload(args, operation='update')
     assert str(e.value) == "Required keys for update asset(s) are ['assets', 'properties'] or ['query', 'properties']. One or more of" \
-        " them are not present in the asset JSON."
+        " them are not present in the asset JSON."  # noqa: E501
 
 
 def task_status(client, resp):

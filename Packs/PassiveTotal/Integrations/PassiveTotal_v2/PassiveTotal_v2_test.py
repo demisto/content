@@ -124,7 +124,7 @@ def test_http_request_proxy_error_based_on_status(mock_base_http_request, client
 
     # Assert
     assert str(e.value) == 'Proxy Error - cannot connect to proxy. Either try clearing the \'Use system proxy\' check-box or check ' \
-        'the host, authentication details and connection details for the proxy.'
+        'the host, authentication details and connection details for the proxy.'  # noqa: E501
 
 
 @patch('PassiveTotal_v2.Client._http_request')
@@ -840,7 +840,7 @@ def test_http_request_connection_error(mock_base_http_request, client):
 
     # Assert
     assert str(e.value) == 'Connectivity failed. Check your internet connection, the API URL or try increasing the HTTP(s) Request' \
-        ' Timeout.'
+        ' Timeout.'  # noqa: E501
 
 
 @patch('PassiveTotal_v2.Client._http_request')
@@ -858,7 +858,7 @@ def test_http_request_connect_timeout_error(mock_base_http_request, client):
 
     # Assert
     assert str(e.value) == 'Connectivity failed. Check your internet connection, the API URL or try increasing the HTTP(s) Request' \
-        ' Timeout.'
+        ' Timeout.'  # noqa: E501
 
 
 @patch('PassiveTotal_v2.Client._http_request')
@@ -943,7 +943,7 @@ def test_domain_reputation_command_success(mocker_http_request, client):
         dummy_custom_context = json.load(f)
     with open(os.path.dirname(__file__) + '/test_data/domain_reputation/domain_reputation_command_readable_output.md') as f:
         dummy_readable_output = f.read()
-    with open(os.path.dirname(__file__) + '/test_data/domain_reputation/domain_reputation_command_reputation_response.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + '/test_data/domain_reputation/domain_reputation_command_reputation_response.json', 'rb') as f:  # noqa: E501
         dummy_custom_reputation_context = json.load(f)
     mocker_http_request.return_value = dummy_response
 
@@ -1725,7 +1725,7 @@ def test_list_third_party_asi_command_when_object_not_present_success(request_mo
     with open(os.path.dirname(__file__) + '/test_data/Attack_Surface/attack_surface_object_not_present.json', 'rb') as f:
         dummy_response = json.load(f)
 
-    with open(os.path.dirname(__file__) + '/test_data/Attack_Surface/third_party_attack_surface_object_not_present_context.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + '/test_data/Attack_Surface/third_party_attack_surface_object_not_present_context.json', 'rb') as f:  # noqa: E501
         dummy_context = json.load(f)
 
     with open(os.path.dirname(__file__) + '/test_data/Attack_Surface/attack_surface_object_not_present.md') as f:
@@ -1911,13 +1911,13 @@ def test_list_my_asi_vulnerable_components_command_success(request_mocker, clien
     """
     from PassiveTotal_v2 import list_my_asi_vulnerable_components_command
 
-    with open(os.path.dirname(__file__) + '/test_data/ASI_VulnerableComponents/asi_vulnerable_components_command_response.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + '/test_data/ASI_VulnerableComponents/asi_vulnerable_components_command_response.json', 'rb') as f:  # noqa: E501
         dummy_response = json.load(f)
 
-    with open(os.path.dirname(__file__) + '/test_data/ASI_VulnerableComponents/asi_vulnerable_components_command_context.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + '/test_data/ASI_VulnerableComponents/asi_vulnerable_components_command_context.json', 'rb') as f:  # noqa: E501
         dummy_context = json.load(f)
 
-    with open(os.path.dirname(__file__) + '/test_data/ASI_VulnerableComponents/asi_vulnerable_components_command_readable_output.md') as f:
+    with open(os.path.dirname(__file__) + '/test_data/ASI_VulnerableComponents/asi_vulnerable_components_command_readable_output.md') as f:  # noqa: E501
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -2052,13 +2052,13 @@ def test_list_my_asi_observations_command_success_object_not_present(request_moc
     """
     from PassiveTotal_v2 import list_my_asi_observations_command
 
-    with open(os.path.dirname(__file__) + '/test_data/ASI_Observations/asi_observation_command_object_not_present_response.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + '/test_data/ASI_Observations/asi_observation_command_object_not_present_response.json', 'rb') as f:  # noqa: E501
         dummy_response = json.load(f)
 
-    with open(os.path.dirname(__file__) + '/test_data/ASI_Observations/asi_observation_command_object_not_present_context.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + '/test_data/ASI_Observations/asi_observation_command_object_not_present_context.json', 'rb') as f:  # noqa: E501
         dummy_context = json.load(f)
 
-    with open(os.path.dirname(__file__) + '/test_data/ASI_Observations/asi_observations_command_object_not_present_readable_output.md') as f:
+    with open(os.path.dirname(__file__) + '/test_data/ASI_Observations/asi_observations_command_object_not_present_readable_output.md') as f:  # noqa: E501
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -2131,7 +2131,7 @@ def test_list_third_party_asi_assets_command_success_object_not_present(request_
     with open(os.path.dirname(__file__) + '/test_data/ASI_Assets/asi_assets_command_object_not_present_response.json', 'rb') as f:
         dummy_response = json.load(f)
 
-    with open(os.path.dirname(__file__) + '/test_data/ASI_Assets/third_party_asi_assets_command_object_not_present_context.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + '/test_data/ASI_Assets/third_party_asi_assets_command_object_not_present_context.json', 'rb') as f:  # noqa: E501
         dummy_context = json.load(f)
 
     with open(os.path.dirname(__file__) + '/test_data/ASI_Assets/asi_assets_command_object_not_present_readable_output.md') as f:
@@ -2187,14 +2187,14 @@ def test_list_third_party_asi_vulnerable_components_command_success(request_mock
     """
     from PassiveTotal_v2 import list_third_party_asi_vulnerable_components_command
 
-    with open(os.path.dirname(__file__) + '/test_data/ASI_VulnerableComponents/asi_vulnerable_components_command_response.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + '/test_data/ASI_VulnerableComponents/asi_vulnerable_components_command_response.json', 'rb') as f:  # noqa: E501
         dummy_response = json.load(f)
 
-    with open(os.path.dirname(__file__) + '/test_data/ASI_VulnerableComponents/third_party_asi_vulnerable_components_command_context.json',
+    with open(os.path.dirname(__file__) + '/test_data/ASI_VulnerableComponents/third_party_asi_vulnerable_components_command_context.json',  # noqa: E501
               'rb') as f:
         dummy_context = json.load(f)
 
-    with open(os.path.dirname(__file__) + '/test_data/ASI_VulnerableComponents/asi_vulnerable_components_command_readable_output.md') as f:
+    with open(os.path.dirname(__file__) + '/test_data/ASI_VulnerableComponents/asi_vulnerable_components_command_readable_output.md') as f:  # noqa: E501
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -2247,7 +2247,7 @@ def test_list_third_party_attack_surface_vulnerabilities_command_success(request
     with open(os.path.dirname(__file__) + '/test_data/ASI_Vulnerability/asi_vulnerability_command_response.json', 'rb') as f:
         dummy_response = json.load(f)
 
-    with open(os.path.dirname(__file__) + '/test_data/ASI_Vulnerability/third_party_asi_vulnerability_command_context.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + '/test_data/ASI_Vulnerability/third_party_asi_vulnerability_command_context.json', 'rb') as f:  # noqa: E501
         dummy_context = json.load(f)
 
     with open(os.path.dirname(__file__) + '/test_data/ASI_Vulnerability/asi_vulnerability_command_readable_output.md') as f:
@@ -2306,7 +2306,7 @@ def test_list_third_party_asi_observations_command_success(request_mocker, clien
     with open(os.path.dirname(__file__) + '/test_data/ASI_Observations/asi_observation_command_response.json', 'rb') as f:
         dummy_response = json.load(f)
 
-    with open(os.path.dirname(__file__) + '/test_data/ASI_Observations/third_party_asi_observation_command_context.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + '/test_data/ASI_Observations/third_party_asi_observation_command_context.json', 'rb') as f:  # noqa: E501
         dummy_context = json.load(f)
 
     with open(os.path.dirname(__file__) + '/test_data/ASI_Observations/asi_observation_command_readable_output.md') as f:
@@ -2347,14 +2347,14 @@ def test_list_third_party_asi_observations_command_success_object_not_present(re
     """
     from PassiveTotal_v2 import list_third_party_asi_observations_command
 
-    with open(os.path.dirname(__file__) + '/test_data/ASI_Observations/asi_observation_command_object_not_present_response.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + '/test_data/ASI_Observations/asi_observation_command_object_not_present_response.json', 'rb') as f:  # noqa: E501
         dummy_response = json.load(f)
 
-    with open(os.path.dirname(__file__) + '/test_data/ASI_Observations/third_party_asi_observation_command_object_not_present_context.json',
+    with open(os.path.dirname(__file__) + '/test_data/ASI_Observations/third_party_asi_observation_command_object_not_present_context.json',  # noqa: E501
               'rb') as f:
         dummy_context = json.load(f)
 
-    with open(os.path.dirname(__file__) + '/test_data/ASI_Observations/asi_observations_command_object_not_present_readable_output.md') as f:
+    with open(os.path.dirname(__file__) + '/test_data/ASI_Observations/asi_observations_command_object_not_present_readable_output.md') as f:  # noqa: E501
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response

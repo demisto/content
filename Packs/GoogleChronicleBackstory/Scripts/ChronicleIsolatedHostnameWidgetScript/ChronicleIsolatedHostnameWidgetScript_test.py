@@ -52,7 +52,7 @@ def test_get_html_representation_when_hostname_is_not_isolated():
 
     html_representation = ChronicleIsolatedHostnameWidgetScript.get_html_representation(DUMMY_HOSTNAME, 'No')
     assert html_representation == "<div style='color:green; text-align:center;'><h1>dummyhost.com<br/>Hostname Not Isolated</h1>" \
-        "</div>"
+        "</div>"  # noqa: E501
 
 
 def test_get_html_representation_when_hostname_is_potentially_isolated():

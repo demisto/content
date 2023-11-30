@@ -62,4 +62,4 @@ def test_get_html_representation_when_ip_is_potentially_blocked():
     html_representation = ChroniclePotentiallyBlockedIPWidgetScript\
         .get_html_representation('0.0.0.0', 'Yes')
     assert html_representation == "<div style='color:orange; text-align:center;'><h1>0.0.0.0<br/>IP Address Potentially Blocked</h1>" \
-        "</div>"
+        "</div>"  # noqa: E501

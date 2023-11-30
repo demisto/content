@@ -139,7 +139,7 @@ def test_create_incident_command_no_description():
         assert create_incident_request.json()['variables']['description'] == """An Incident copied from the Palo Alto Networks XSOAR platform.
             <br>
             <br>
-            XSOAR Incident Name: 1"""
+            XSOAR Incident Name: 1"""  # noqa: E501
 
     assert results.outputs_prefix == "BreachRx.Incident"
     assert results.outputs_key_field == "id"
