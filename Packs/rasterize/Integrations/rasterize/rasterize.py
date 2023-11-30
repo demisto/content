@@ -4,12 +4,12 @@ from CommonServerPython import *  # noqa: F401
 import base64
 import os
 import pychrome
+import requests
 import subprocess
 import tempfile
 import threading
 import time
 import traceback
-import psutil
 from enum import Enum
 from threading import Event
 
@@ -48,9 +48,9 @@ MAX_FULLSCREEN_HEIGHT = 8000
 DEFAULT_WIDTH, DEFAULT_HEIGHT = 600, 800
 
 # Local Chrome
-PORT = "9222"
-LOCAL_HOST = "http://127.0.0.1"
-LOCAL_CHROME_URL = f"{LOCAL_HOST}:{PORT}"
+LOCAL_CHROME_HOST = "127.0.0.1"
+LOCAL_CHROME_PORT = "9222"
+LOCAL_CHROME_URL = f"http://{LOCAL_CHROME_HOST}:{LOCAL_CHROME_PORT}"
 
 
 class RasterizeType(Enum):
@@ -73,12 +73,15 @@ class TabLifecycleManager:
         self.tab = self.browser.new_tab()
         self.tab.start()
         self.tab.Page.enable()
+        demisto.debug(f'TabLifecycleManager, entering tab {self.tab}')
         return self.tab
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if self.tab:
-            self.tab.stop()
+            tab_id = self.tab.id
             self.browser.close_tab(self.tab.id)
+            demisto.debug(f'TabLifecycleManager, exiting, closing tab {tab_id}')
+        demisto.debug(f'TabLifecycleManager, exiting, tabs list:\n{self.browser.list_tab()}')
 
 
 class PychromeEventHandler:
@@ -101,7 +104,7 @@ class PychromeEventHandler:
                 self.tab.Page.stopLoading()
 
                 with self.screen_lock:
-                    # must activate current tab
+                  # must activate current tab
                     demisto.debug(self.browser.activate_tab(self.tab.id))
                     self.tab_ready.set()
                     demisto.debug('frame_stopped_loading, Sent tab_ready.set')
@@ -110,76 +113,37 @@ class PychromeEventHandler:
 
 # endregion
 
-
-def get_running_chrome_processes() -> list[psutil.Process]:
-    chrome_identifiers = ["chrom", "headless", f"--remote-debugging-port={PORT}"]
-    current_process = psutil.Process()
-    child_processes = current_process.children(recursive=True)
-
-    headless_chrome_processes = []
-    for process in child_processes:
-        try:
-            cmdline = process.cmdline()
-            if all(identifier in cmdline for identifier in chrome_identifiers):
-                headless_chrome_processes.append(process)
-        except (psutil.NoSuchProcess, psutil.AccessDenied):
-            continue
-
-    return headless_chrome_processes
-
-
-def get_active_chrome_processes_count():
+def is_chrome_running():
+    browser = pychrome.Browser(url=LOCAL_CHROME_URL)
+    ret_value = True
     try:
-        return len(get_running_chrome_processes())
-    except Exception as ex:
-        demisto.info(f'Error getting Chrome processes: {ex}')
-        return 0
-
-
-def start_chrome_headless():
-    try:
-        subprocess.run(['bash', '/start_chrome_headless.sh'],
-                       text=True, stdout=subprocess.DEVNULL,
-                       stderr=subprocess.DEVNULL)
-        demisto.debug('Chrome headless started')
-    except Exception as ex:
-        demisto.info(f'Error starting Chrome headless: {ex}')
-
-
-def kill_all_chrome_processes():
-    try:
-        chrome_processes = get_running_chrome_processes()
-        demisto.debug(f'kill_all_chrome_processes, Found {len(chrome_processes)} Chrome processes')
-
-        for process in chrome_processes:
-            try:
-                process.terminate()
-                demisto.debug(f'Terminated Chrome process with PID: {process.pid}')
-            except psutil.NoSuchProcess:
-                demisto.debug(f'Chrome process with PID: {process.pid} no longer exists')
-            except psutil.AccessDenied:
-                demisto.debug(f'Access denied when trying to terminate Chrome process with PID: {process.pid}')
-                process.kill()  # Force kill the process
-                demisto.debug(f'Force killed Chrome process with PID: {process.pid}')
-            except Exception as e:
-                demisto.debug(f'Error killing Chrome process with PID: {process.pid}: {e}')
-
-    except Exception as ex:
-        demisto.info(f'Error killing Chrome processes: {ex}')
+        browser.list_tab()
+    except requests.exceptions.ConnectionError as exp:
+        exp_str = str(exp)
+        #  HTTPConnectionPool(host='127.0.0.1', port=9222): Max retries exceeded with url: /json
+        #   (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x1059ccd30>:
+        #    Failed to establish a new connection: [Errno 61] Connection refused'))
+        exception_identifiers = [LOCAL_CHROME_HOST, LOCAL_CHROME_PORT, "Connection refused"]
+        if all(identifier in exp_str for identifier in exception_identifiers):
+            ret_value = False
+    return ret_value
 
 
 def ensure_chrome_running():  # pragma: no cover
     for _ in range(DEFAULT_RETRIES_COUNT):
-        count = get_active_chrome_processes_count()
-        demisto.debug(f'ensure_chrome_running, {count=}')
-
-        if count == 1:
-            demisto.debug('One Chrome instance running. Returning True.')
+        if is_chrome_running():
+            demisto.debug('Chrome is instance running. Returning True.')
             return True
-        elif count == 0:
-            start_chrome_headless()
-        else:  # clean environment in case more than one browser is active
-            kill_all_chrome_processes()
+        else:
+            demisto.debug('Chrome is not running, trying to start it.')
+            try:
+                subprocess.run(['bash', '/start_chrome_headless.sh'],
+                               text=True, stdout=subprocess.DEVNULL,
+                               stderr=subprocess.DEVNULL)
+                demisto.debug('Chrome headless started')
+            except Exception as ex:
+                demisto.info(f'Error starting Chrome headless: {ex}')
+            demisto.debug("Started Chrome")
 
         time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS)  # pylint: disable=E9003
 
@@ -200,7 +164,7 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout):  # prag
     tab_ready_event = setup_tab_event(browser, tab)
 
     try:
-        demisto.debug('Preparing tab for navigation')
+        demisto.debug(f'Preparing tab for navigation to {path=}')
 
         demisto.debug(f'Starting tab navigation to given path: {path}')
 
@@ -217,6 +181,7 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout):  # prag
             return_error(message)
 
         time.sleep(wait_time)  # pylint: disable=E9003
+        demisto.debug(f"navigate_to_path, Navigated to {path=}")
 
     except Exception as ex:
         message = f'Unhandled exception: {ex} thrown while trying to navigate to {path}'
@@ -227,6 +192,7 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout):  # prag
 def screenshot_image(browser, tab, path, wait_time, navigation_timeout):  # pragma: no cover
     navigate_to_path(browser, tab, path, wait_time, navigation_timeout)
     ret_value = base64.b64decode(tab.Page.captureScreenshot()['data'])
+    demisto.debug(f"Captured snapshot, {len(ret_value)=}")
     return ret_value
 
 
@@ -239,7 +205,6 @@ def screenshot_pdf(browser, tab, path, wait_time, navigation_timeout, include_ur
     return ret_value
 
 
-# TODO: support width and height
 def rasterize(path: str,
               rasterize_type: RasterizeType = RasterizeType.PNG,
               wait_time: int = DEFAULT_WAIT_TIME,
