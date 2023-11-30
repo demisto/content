@@ -29,7 +29,6 @@ class AlertAttributes:
     Alert_User_AccountType_AggregatedName = "Alert.User.AccountType.AggregatedName"
     Alert_User_AccountType_AggregatedID = "Alert.User.AccountType.AggregatedID"
     Alert_User_SamAccountName = "Alert.User.SamAccountName"
-    Alert_User_AccountType_Name = "Alert.User.AccountType.Name"
     Alert_Device_HostName = "Alert.Device.HostName"
     Alert_Device_IsMaliciousExternalIP = "Alert.Device.IsMaliciousExternalIP"
     Alert_Device_ExternalIPThreatTypesName = "Alert.Device.ExternalIPThreatTypesName"
@@ -54,11 +53,11 @@ class AlertAttributes:
     Alert_IngestTime = "Alert.IngestTime"
 
     Columns = [
-        Alert_Rule_Name, Alert_Rule_Severity_Name, Alert_TimeUTC, Alert_Rule_Category_Name, Alert_User_Name, Alert_Status_Name, 
-        Alert_ID, Alert_Rule_ID, Alert_Rule_Severity_ID, Alert_Location_CountryName, Alert_Location_SubdivisionName, 
-        Alert_Status_ID, Alert_EventsCount, Alert_Initial_Event_TimeUTC, Alert_User_SamAccountName, Alert_User_AccountType_Name, 
-        Alert_Device_HostName, Alert_Device_IsMaliciousExternalIP, Alert_Device_ExternalIPThreatTypesName, Alert_Data_IsFlagged, 
-        Alert_Data_IsSensitive, Alert_Filer_Platform_Name, Alert_Asset_Path, Alert_Filer_Name, Alert_CloseReason_Name, 
+        Alert_Rule_Name, Alert_Rule_Severity_Name, Alert_TimeUTC, Alert_Rule_Category_Name, Alert_User_Name, Alert_Status_Name,
+        Alert_ID, Alert_Rule_ID, Alert_Rule_Severity_ID, Alert_Location_CountryName, Alert_Location_SubdivisionName,
+        Alert_Status_ID, Alert_EventsCount, Alert_Initial_Event_TimeUTC, Alert_User_SamAccountName, Alert_User_AccountType_Name,
+        Alert_Device_HostName, Alert_Device_IsMaliciousExternalIP, Alert_Device_ExternalIPThreatTypesName, Alert_Data_IsFlagged,
+        Alert_Data_IsSensitive, Alert_Filer_Platform_Name, Alert_Asset_Path, Alert_Filer_Name, Alert_CloseReason_Name,
         Alert_Location_BlacklistedLocation, Alert_Location_AbnormalLocation, Alert_User_SidID,
         Alert_IngestTime
 
@@ -71,11 +70,11 @@ class AlertAttributes:
         Alert_User_Identity_Name,
         Alert_User_IsFlagged,
         Alert_User_AccountType_ID,
-        Alert_User_AccountType_AggregatedName,
-        Alert_User_AccountType_AggregatedID,
         Alert_Device_ExternalIPThreatTypesID,
         Alert_Filer_ID,
         Alert_Filer_Platform_ID,
+        Alert_User_AccountType_AggregatedName,
+        Alert_User_AccountType_AggregatedID,
         Alert_Asset_ID,
         Alert_CloseReason_ID,
         Alert_Location_AbnormalLocationID,

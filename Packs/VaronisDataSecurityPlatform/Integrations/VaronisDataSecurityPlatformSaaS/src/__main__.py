@@ -215,7 +215,7 @@ def convert_incident_alert_to_onprem_format(alert_saas_format):
     output = alert_saas_format
 
     output["Category"] = alert_saas_format.get(AlertAttributes.Alert_Rule_Category_Name)
-    output["Guid"] = alert_saas_format.get(AlertAttributes.Alert_ID)
+    output["ID"] = alert_saas_format.get(AlertAttributes.Alert_ID)
     output["Name"] = alert_saas_format.get(AlertAttributes.Alert_Rule_Name)
     output["Status"] = alert_saas_format.get(AlertAttributes.Alert_Status_Name)
     output["IPThreatTypes"] = alert_saas_format.get(AlertAttributes.Alert_Device_ExternalIPThreatTypesName)
@@ -232,9 +232,11 @@ def convert_incident_alert_to_onprem_format(alert_saas_format):
     states = [] if alert_saas_format.get(AlertAttributes.Alert_Location_SubdivisionName) is None else alert_saas_format.get(
         AlertAttributes.Alert_Location_SubdivisionName).split(',')
     blacklist_locations = [] if alert_saas_format.get(
-        AlertAttributes.Alert_Location_BlacklistedLocation) is None else alert_saas_format.get(AlertAttributes.Alert_Location_BlacklistedLocation).split(',')
+        AlertAttributes.Alert_Location_BlacklistedLocation) is None else alert_saas_format.get(
+            AlertAttributes.Alert_Location_BlacklistedLocation).split(',')
     abnormal_locations = [] if alert_saas_format.get(
-        AlertAttributes.Alert_Location_AbnormalLocation) is None else alert_saas_format.get(AlertAttributes.Alert_Location_AbnormalLocation).split(',')
+        AlertAttributes.Alert_Location_AbnormalLocation) is None else alert_saas_format.get(
+            AlertAttributes.Alert_Location_AbnormalLocation).split(',')
     for i in range(len(countries)):
         entry = {
             "Country": "" if len(countries) <= i else countries[i],
@@ -272,9 +274,11 @@ def convert_incident_alert_to_onprem_format(alert_saas_format):
     user_names = [] if alert_saas_format.get(
         AlertAttributes.Alert_User_Name) is None else alert_saas_format[AlertAttributes.Alert_User_Name].split(',')
     sam_account_names = [] if alert_saas_format.get(
-        AlertAttributes.Alert_User_SamAccountName) is None else alert_saas_format[AlertAttributes.Alert_User_SamAccountName].split(',')
+        AlertAttributes.Alert_User_SamAccountName) is None else alert_saas_format[AlertAttributes.Alert_User_SamAccountName] \
+        .split(',')
     privileged_account_types = [] if alert_saas_format.get(
-        AlertAttributes.Alert_User_AccountType_Name) is None else alert_saas_format[AlertAttributes.Alert_User_AccountType_Name].split(',')
+        AlertAttributes.Alert_User_AccountType_Name) is None else alert_saas_format[AlertAttributes.Alert_User_AccountType_Name] \
+        .split(',')
     departments = [] if alert_saas_format.get("Department") is None else alert_saas_format["Department"].split(',')
     for i in range(len(user_names)):
         entry = {
@@ -750,8 +754,8 @@ def main() -> None:
     args = demisto.args()
 
     if not is_xsoar_env():
-        url = 'https://int7e12c.varonis-preprod.com/'
-        apiKey = 'vkey1_c218f21f3cfb466ba03e2a94a8a1a4a2_vYJKiCKw1oz7uRogJImenjl2AlIzDQ7u8mrPP02VT2A='
+        url = 'https://int00eff.varonis-preprod.com/'
+        apiKey = 'vkey1_3aeb08d117534a2882094f04ee0cdff6_QzWu94W1G9TSBzQsIHsZPw7fKX8pBIVaST9WO9U5teA='
         command = 'varonis-get-alerts'  # 'test-module'|
         # 'varonis-get-threat-models'|
         # 'varonis-get-alerts'|
@@ -793,15 +797,15 @@ def main() -> None:
             args['device_name'] = None  # List of device names
             args['user_name'] = "varadm"  # List of device names
             args['last_days'] = None  # Number of days you want the search to go back to
-            args['extra_fields'] = "Alert.User*,Alert.Location*"  # extra fields
+            args['extra_fields'] = ""  # extra fields
             args['descending_order'] = None  # Indicates whether alerts should be ordered in newest to oldest order
 
         elif command == 'varonis-get-alerted-events':
-            args['alert_id'] = "55ED0AC6-95A4-4AD9-98AB-341D90690CDA"  # Array of alert ids
+            args['alert_id'] = "1AB7D4A7-7BBF-43D2-B1B5-E0E5679C561B"  # Array of alert ids
             args['start_time'] = None  # Start time of the range of events
             args['end_time'] = None  # End time of the range of events
             args['last_days'] = None  # Number of days you want the search to go back to
-            args['extra_fields'] = "Event.Session*,Event.OnMail*"  # extra fields
+            args['extra_fields'] = ""  # extra fields
             args['descending_order'] = None  # Indicates whether events should be ordered in newest to oldest order
 
         elif command == 'varonis-update-alert-status':

@@ -259,13 +259,14 @@ class EventAttributes:
     Event_IsAlerted = "Event.IsAlerted"
 
     Columns = [
-        Event_Type_Name, Event_Description, Event_Filer_Platform_Name, Event_ByAccount_Identity_Name, Event_OnObjectName,
+        Event_Type_Name, Event_Description, Event_Filer_Platform_Name, Event_Filer_Name, Event_ByAccount_SamAccountName,
+        Event_OnObjectName,
         Event_Alert_ID, Event_ID, Event_TimeUTC,
         Event_Status_Name, Event_Location_Country_Name,
         Event_Location_Subdivision_Name, Event_Location_BlacklistedLocation,
         Event_Operation_Name, Event_ByAccount_Type_Name,
-        Event_ByAccount_Domain_Name, Event_ByAccount_SamAccountName,
-        Event_Filer_Name, Event_IP, Event_Device_ExternalIP_IP,
+        Event_ByAccount_Domain_Name, Event_ByAccount_Identity_Name,
+        Event_IP, Event_Device_ExternalIP_IP,
         Event_Destination_IP, Event_Device_Name, Event_Destination_DeviceName,
         Event_ByAccount_IsDisabled, Event_ByAccount_IsStale, Event_ByAccount_IsLockout,
         Event_Device_ExternalIP_ThreatTypes_Name, Event_Device_ExternalIP_IsMalicious,
@@ -506,5 +507,5 @@ class EventAttributes:
             for pattern in extra_fields:
                 match_columns = fnmatch.filter(self.ExtraColumns, pattern)
                 output.extend([item for item in match_columns if item not in output])
-        
+
         return output

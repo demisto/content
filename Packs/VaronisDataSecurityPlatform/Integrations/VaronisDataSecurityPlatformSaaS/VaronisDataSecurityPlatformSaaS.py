@@ -1,17 +1,16 @@
-from typing import Dict, List
-from typing import Dict, Any, List, Tuple
-from CommonServerPython import *
-from typing import Any, Dict, List
-import requests
-from typing import List
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-import fnmatch
-import traceback
-from CommonServerUserPython import *
-import demistomock as demisto
 from CommonServerUserPython import *  # noqa
+import traceback
+import fnmatch
+import requests
 import json
-
+from typing import Dict, List
+import demistomock as demisto
+from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+from CommonServerPython import *
+from typing import List
+from CommonServerUserPython import *
+from typing import Any, Dict, List
+from typing import Dict, Any, List, Tuple
 
 
 
@@ -43,7 +42,6 @@ class AlertAttributes:
     Alert_User_AccountType_AggregatedName = "Alert.User.AccountType.AggregatedName"
     Alert_User_AccountType_AggregatedID = "Alert.User.AccountType.AggregatedID"
     Alert_User_SamAccountName = "Alert.User.SamAccountName"
-    Alert_User_AccountType_Name = "Alert.User.AccountType.Name"
     Alert_Device_HostName = "Alert.Device.HostName"
     Alert_Device_IsMaliciousExternalIP = "Alert.Device.IsMaliciousExternalIP"
     Alert_Device_ExternalIPThreatTypesName = "Alert.Device.ExternalIPThreatTypesName"
@@ -68,11 +66,11 @@ class AlertAttributes:
     Alert_IngestTime = "Alert.IngestTime"
 
     Columns = [
-        Alert_Rule_Name, Alert_Rule_Severity_Name, Alert_TimeUTC, Alert_Rule_Category_Name, Alert_User_Name, Alert_Status_Name, 
-        Alert_ID, Alert_Rule_ID, Alert_Rule_Severity_ID, Alert_Location_CountryName, Alert_Location_SubdivisionName, 
-        Alert_Status_ID, Alert_EventsCount, Alert_Initial_Event_TimeUTC, Alert_User_SamAccountName, Alert_User_AccountType_Name, 
-        Alert_Device_HostName, Alert_Device_IsMaliciousExternalIP, Alert_Device_ExternalIPThreatTypesName, Alert_Data_IsFlagged, 
-        Alert_Data_IsSensitive, Alert_Filer_Platform_Name, Alert_Asset_Path, Alert_Filer_Name, Alert_CloseReason_Name, 
+        Alert_Rule_Name, Alert_Rule_Severity_Name, Alert_TimeUTC, Alert_Rule_Category_Name, Alert_User_Name, Alert_Status_Name,
+        Alert_ID, Alert_Rule_ID, Alert_Rule_Severity_ID, Alert_Location_CountryName, Alert_Location_SubdivisionName,
+        Alert_Status_ID, Alert_EventsCount, Alert_Initial_Event_TimeUTC, Alert_User_SamAccountName, Alert_User_AccountType_Name,
+        Alert_Device_HostName, Alert_Device_IsMaliciousExternalIP, Alert_Device_ExternalIPThreatTypesName, Alert_Data_IsFlagged,
+        Alert_Data_IsSensitive, Alert_Filer_Platform_Name, Alert_Asset_Path, Alert_Filer_Name, Alert_CloseReason_Name,
         Alert_Location_BlacklistedLocation, Alert_Location_AbnormalLocation, Alert_User_SidID,
         Alert_IngestTime
 
@@ -85,11 +83,11 @@ class AlertAttributes:
         Alert_User_Identity_Name,
         Alert_User_IsFlagged,
         Alert_User_AccountType_ID,
-        Alert_User_AccountType_AggregatedName,
-        Alert_User_AccountType_AggregatedID,
         Alert_Device_ExternalIPThreatTypesID,
         Alert_Filer_ID,
         Alert_Filer_Platform_ID,
+        Alert_User_AccountType_AggregatedName,
+        Alert_User_AccountType_AggregatedID,
         Alert_Asset_ID,
         Alert_CloseReason_ID,
         Alert_Location_AbnormalLocationID,
@@ -110,41 +108,9 @@ class AlertAttributes:
 
 
 
-
-
-
 class AlertItem:
     def __init__(self, row: dict):
         self.row = row
-        # self.ID: str = None
-        # self.Name: str = None
-        # self.Time: datetime = None
-        # self.Severity: str = None
-        # self.SeverityId: int = None
-        # self.Category: str = None
-        # self.Country: Optional[List[str]] = None
-        # self.State: Optional[List[str]] = None
-        # self.Status: str = None
-        # self.StatusId: int = None
-        # self.CloseReason: str = None
-        # self.BlacklistLocation: Optional[bool] = None
-        # self.AbnormalLocation: Optional[List[str]] = None
-        # self.NumOfAlertedEvents: int = None
-        # self.UserName: Optional[List[str]] = None
-        # self.SamAccountName: Optional[List[str]] = None
-        # self.PrivilegedAccountType: Optional[List[str]] = None
-        # self.ContainMaliciousExternalIP: Optional[bool] = None
-        # self.IPThreatTypes: Optional[List[str]] = None
-        # self.Asset: Optional[List[str]] = None
-        # self.AssetContainsFlaggedData: Optional[List[Optional[bool]]] = None
-        # self.AssetContainsSensitiveData: Optional[List[Optional[bool]]] = None
-        # self.Platform: Optional[List[str]] = None
-        # self.FileServerOrDomain: Optional[List[str]] = None
-        # self.EventUTC: Optional[datetime] = None
-        # self.DeviceName: Optional[List[str]] = None
-        # self.IngestTime: datetime = None
-
-        # self.Url: str = None
         pass
 
     def __getitem__(self, key: str) -> Any:
@@ -154,8 +120,6 @@ class AlertItem:
 
     def to_dict(self) -> Dict[str, Any]:
         return self.row
-        
-
 
 
 
@@ -296,10 +260,10 @@ class Client(BaseClient):
         search_request.query.filter.add_filter(filter_condition)
 
         if ingest_time_from and ingest_time_to:
-            ingest_time_condition = FilterCondition().set_path("Alert.IngestTime")\
+            ingest_time_condition = FilterCondition().set_path(alert_attributes.Alert_IngestTime)\
                 .set_operator("Between")\
-                .add_value({"Alert.IngestTime": ingest_time_from.isoformat(
-                ), "Alert.IngestTime0": ingest_time_to.isoformat()})  # "displayValue": ingest_time_from.isoformat(),
+                .add_value({alert_attributes.Alert_IngestTime: ingest_time_from.isoformat(
+                ), f"{alert_attributes.Alert_IngestTime}0": ingest_time_to.isoformat()})  # "displayValue": ingest_time_from.isoformat(),
             search_request.query.filter.add_filter(ingest_time_condition)
         else:
             days_back = MAX_DAYS_BACK
@@ -310,66 +274,66 @@ class Client(BaseClient):
             elif end_time is None and start_time is not None:
                 end_time = start_time + timedelta(days=days_back)
 
-            time_condition = FilterCondition().set_path("Alert.TimeUTC")
+            time_condition = FilterCondition().set_path(alert_attributes.Alert_TimeUTC)
             if start_time and end_time:
                 time_condition = time_condition\
                     .set_operator("Between")\
-                    .add_value({"Alert.TimeUTC": start_time.isoformat(
-                    ), "Alert.TimeUTC0": end_time.isoformat()})  # "displayValue": start_time.isoformat(),
+                    .add_value({alert_attributes.Alert_TimeUTC : start_time.isoformat(
+                    ), f"{alert_attributes.Alert_TimeUTC}0": end_time.isoformat()})  # "displayValue": start_time.isoformat(),
             if last_days:
                 time_condition\
                     .set_operator("LastDays")\
-                    .add_value({"Alert.TimeUTC": last_days, "displayValue": last_days})
+                    .add_value({alert_attributes.Alert_TimeUTC: last_days, "displayValue": last_days})
             search_request.query.filter.add_filter(time_condition)
 
         if threat_model_names and len(threat_model_names) > 0:
             rule_condition = FilterCondition()\
-                .set_path("Alert.Rule.Name")\
+                .set_path(alert_attributes.Alert_Rule_Name)\
                 .set_operator("In")
             for threat_model_name in threat_model_names:
-                rule_condition.add_value({"Alert.Rule.Name": threat_model_name, "displayValue": "New"})
+                rule_condition.add_value({alert_attributes.Alert_Rule_Name: threat_model_name, "displayValue": "New"})
             search_request.query.filter.add_filter(rule_condition)
 
         if alertIds and len(alertIds) > 0:
             alert_condition = FilterCondition()\
-                .set_path("Alert.ID")\
+                .set_path(alert_attributes.Alert_ID)\
                 .set_operator("In")
             for alertId in alertIds:
-                alert_condition.add_value({"Alert.ID": alertId, "displayValue": "New"})
+                alert_condition.add_value({alert_attributes.Alert_ID: alertId, "displayValue": "New"})
             search_request.query.filter.add_filter(alert_condition)
 
         if device_names and len(device_names) > 0:
             device_condition = FilterCondition()\
-                .set_path("Alert.Device.HostName")\
+                .set_path(alert_attributes.Alert_Device_HostName)\
                 .set_operator("In")
             for device_name in device_names:
-                device_condition.add_value({"Alert.Device.HostName": device_name, "displayValue": device_name})
+                device_condition.add_value({alert_attributes.Alert_Device_HostName: device_name, "displayValue": device_name})
             search_request.query.filter.add_filter(device_condition)
 
         if user_names and len(user_names) > 0:
             user_condition = FilterCondition()\
-                .set_path("Alert.User.Identity.Name")\
+                .set_path(alert_attributes.Alert_User_Identity_Name)\
                 .set_operator("In")
             for user_name in user_names:
-                user_condition.add_value({"Alert.User.Identity.Name": user_name, "displayValue": user_name})
+                user_condition.add_value({alert_attributes.Alert_User_Identity_Name: user_name, "displayValue": user_name})
             search_request.query.filter.add_filter(user_condition)
 
         if alert_statuses and len(alert_statuses) > 0:
             status_condition = FilterCondition()\
-                .set_path("Alert.Status.ID")\
+                .set_path(alert_attributes.Alert_Status_ID)\
                 .set_operator("In")
             for status in alert_statuses:
                 status_id = ALERT_STATUSES[status.lower()]
-                status_condition.add_value({"Alert.Status.ID": status_id, "displayValue": status})
+                status_condition.add_value({alert_attributes.Alert_Status_ID: status_id, "displayValue": status})
             search_request.query.filter.add_filter(status_condition)
 
         if alert_severities and len(alert_severities) > 0:
             severity_condition = FilterCondition()\
-                .set_path("Alert.Rule.Severity.ID")\
+                .set_path(alert_attributes.Alert_Rule_Severity_ID)\
                 .set_operator("In")
             for severity in alert_severities:
                 severity_id = ALERT_SEVERITIES[severity.lower()]
-                severity_condition.add_value({"Alert.Rule.Severity.ID": severity_id, "displayValue": severity})
+                severity_condition.add_value({alert_attributes.Alert_Rule_Severity_ID: severity_id, "displayValue": severity})
             search_request.query.filter.add_filter(severity_condition)
 
         if descending_order:
@@ -448,27 +412,29 @@ class Client(BaseClient):
 
         if alertIds and len(alertIds) > 0:
             time_condition = FilterCondition()\
-                .set_path("Event.Alert.ID")\
+                .set_path(event_attributes.Event_Alert_ID)\
                 .set_operator("In")
             for alertId in alertIds:
-                time_condition.add_value({"Event.Alert.ID": alertId, "displayValue": alertId})
+                time_condition.add_value({event_attributes.Event_Alert_ID: alertId, "displayValue": alertId})
 
             search_request.query.filter.add_filter(time_condition)
 
-        time_condition = FilterCondition().set_path("Event.TimeUTC")
+        time_condition = FilterCondition().set_path(event_attributes.Event_TimeUTC)
         if start_time and end_time:
             time_condition = time_condition\
                 .set_operator("Between")\
-                .add_value({"Event.TimeUTC": start_time.isoformat(
-                ), "Event.TimeUTC0": end_time.isoformat()})  # "displayValue": start_time.isoformat(),
+                .add_value({event_attributes.Event_TimeUTC: start_time.isoformat(), 
+                            f"{event_attributes.Event_TimeUTC}0": end_time.isoformat()})
+                # "displayValue": start_time.isoformat(), (this line seems to be commented out)
         if last_days:
             time_condition\
                 .set_operator("LastDays")\
-                .add_value({"Event.TimeUTC": last_days, "displayValue": last_days})
+                .add_value({event_attributes.Event_TimeUTC: last_days, "displayValue": last_days})
         search_request.query.filter.add_filter(time_condition)
 
+
         if descending_order:
-            search_request.rows.add_ordering({"path": "Event.Time", "sortOrder": "Desc"})
+            search_request.rows.add_ordering({"path": event_attributes.Event_Time, "sortOrder": "Desc"})
 
         dataJSON = search_request.to_json()
 
@@ -535,7 +501,6 @@ class Client(BaseClient):
             '/api/alert/alert/AddNoteToAlerts',
             json_data=query,
             headers=self.headers)
-
 
 
 class EventAttributes:
@@ -796,13 +761,14 @@ class EventAttributes:
     Event_IsAlerted = "Event.IsAlerted"
 
     Columns = [
-        Event_Type_Name, Event_Description, Event_Filer_Platform_Name, Event_ByAccount_Identity_Name, Event_OnObjectName,
+        Event_Type_Name, Event_Description, Event_Filer_Platform_Name, Event_Filer_Name, Event_ByAccount_SamAccountName,
+        Event_OnObjectName,
         Event_Alert_ID, Event_ID, Event_TimeUTC,
         Event_Status_Name, Event_Location_Country_Name,
         Event_Location_Subdivision_Name, Event_Location_BlacklistedLocation,
         Event_Operation_Name, Event_ByAccount_Type_Name,
-        Event_ByAccount_Domain_Name, Event_ByAccount_SamAccountName,
-        Event_Filer_Name, Event_IP, Event_Device_ExternalIP_IP,
+        Event_ByAccount_Domain_Name, Event_ByAccount_Identity_Name,
+        Event_IP, Event_Device_ExternalIP_IP,
         Event_Destination_IP, Event_Device_Name, Event_Destination_DeviceName,
         Event_ByAccount_IsDisabled, Event_ByAccount_IsStale, Event_ByAccount_IsLockout,
         Event_Device_ExternalIP_ThreatTypes_Name, Event_Device_ExternalIP_IsMalicious,
@@ -1043,7 +1009,7 @@ class EventAttributes:
             for pattern in extra_fields:
                 match_columns = fnmatch.filter(self.ExtraColumns, pattern)
                 output.extend([item for item in match_columns if item not in output])
-        
+
         return output
 
 
@@ -1053,40 +1019,6 @@ class EventAttributes:
 class EventItem:
     def __init__(self, row: dict):
         self.row = row
-        # self.Id: Optional[str] = None
-        # self.AlertId: Optional[List[str]] = None
-        # self.Type: Optional[str] = None
-        # self.TimeUTC: Optional[datetime] = None
-        # self.Status: Optional[str] = None
-        # self.Description: Optional[str] = None
-        # self.Country: Optional[str] = None
-        # self.State: Optional[str] = None
-        # self.BlacklistedLocation: Optional[bool] = None
-        # self.EventOperation: Optional[str] = None
-        # self.ByUserAccount: Optional[str] = None
-        # self.ByUserAccountType: Optional[str] = None
-        # self.ByUserAccountDomain: Optional[str] = None
-        # self.BySamAccountName: Optional[str] = None
-        # self.Filer: Optional[str] = None
-        # self.Platform: Optional[str] = None
-        # self.SourceIP: Optional[str] = None
-        # self.ExternalIP: Optional[str] = None
-        # self.DestinationIP: Optional[str] = None
-        # self.SourceDevice: Optional[str] = None
-        # self.DestinationDevice: Optional[str] = None
-        # self.IsDisabledAccount: Optional[bool] = None
-        # self.IsLockoutAccount: Optional[bool] = None
-        # self.IsStaleAccount: Optional[bool] = None
-        # self.IsMaliciousIP: Optional[bool] = None
-        # self.ExternalIPThreatTypes: Optional[List[str]] = None
-        # self.ExternalIPReputation: Optional[str] = None
-        # self.OnObjectName: Optional[str] = None
-        # self.OnObjectType: Optional[str] = None
-        # self.OnSamAccountName: Optional[str] = None
-        # self.IsSensitive: Optional[bool] = None
-        # self.OnAccountIsDisabled: Optional[bool] = None
-        # self.OnAccountIsLockout: Optional[bool] = None
-        # self.Path: Optional[str] = None
 
     def __getitem__(self, key: str) -> Any:
         if hasattr(self.row, key):
@@ -1095,7 +1027,6 @@ class EventItem:
 
     def to_dict(self) -> Dict[str, Any]:
         return self.row
-
 class FilterCondition:
     def __init__(self):
         self.path = None
@@ -1116,7 +1047,6 @@ class FilterCondition:
 
     def __repr__(self):
         return f"{self.path} {self.operator} {self.values}"
-
 class FilterValue:
     def __init__(self, value):
         self = value
@@ -1124,7 +1054,6 @@ class FilterValue:
 
     def __repr__(self):
         return f"{self.value}"
-
 class Filters:
     def __init__(self):
         self.filterOperator = None
@@ -1142,7 +1071,6 @@ class Filters:
         return f"Filter Operator: {self.filterOperator}, Filters: {self.filters}"
 
 
-
 class Query:
     def __init__(self):
         self.entityName = None
@@ -1158,7 +1086,6 @@ class Query:
 
     def __repr__(self):
         return f"Entity Name: {self.entityName}, Filter: {self.filter}"
-
 class RequestParams:
     def __init__(self):
         self.searchSource = None
@@ -1174,7 +1101,6 @@ class RequestParams:
 
     def __repr__(self):
         return f"Search Source: {self.searchSource}, Search Source Name: {self.searchSourceName}"
-
 class Rows:
     def __init__(self):
         self.columns = []
@@ -1204,7 +1130,6 @@ class Rows:
 
 
 
-
 class SearchAlertObjectMapper(BaseMapper):
     def map(self, json_data):
         key_valued_objects = self.convert_json_to_key_value(json_data)
@@ -1217,67 +1142,8 @@ class SearchAlertObjectMapper(BaseMapper):
 
     def map_item(self, row: dict) -> AlertItem:
         alert_item = AlertItem(row)
-        # alert_item.ID = row[AlertAttributes.Id]
-        # alert_item.Name = row[AlertAttributes.RuleName]
-        # alert_item.Time = row[AlertAttributes.Time]
-        # alert_item.Severity = row[AlertAttributes.RuleSeverityName]
-        # alert_item.SeverityId = int(row[AlertAttributes.RuleSeverityId])
-        # alert_item.Category = row[AlertAttributes.RuleCategoryName]
-        # alert_item.Country = self.multi_value_to_string_list(row[AlertAttributes.LocationCountryName])
-        # alert_item.State = self.multi_value_to_string_list(row[AlertAttributes.LocationSubdivisionName])
-        # alert_item.Status = row[AlertAttributes.StatusName]
-        # alert_item.StatusId = int(row[AlertAttributes.StatusId])
-        # alert_item.CloseReason = row[AlertAttributes.CloseReasonName]
-        # alert_item.BlacklistLocation = self.get_bool_value(row, AlertAttributes.LocationBlacklistedLocation)
-        # alert_item.AbnormalLocation = self.multi_value_to_string_list(row[AlertAttributes.LocationAbnormalLocation])
-        # alert_item.NumOfAlertedEvents = int(row[AlertAttributes.EventsCount])
-        # alert_item.UserName = self.multi_value_to_string_list(row[AlertAttributes.UserName])
-        # alert_item.SamAccountName = self.multi_value_to_string_list(row[AlertAttributes.UserSamAccountName])
-        # alert_item.PrivilegedAccountType = self.multi_value_to_string_list(row[AlertAttributes.UserAccountTypeName])
-        # alert_item.ContainMaliciousExternalIP = self.get_bool_value(row, AlertAttributes.DeviceIsMaliciousExternalIp)
-        # alert_item.IPThreatTypes = self.multi_value_to_string_list(row[AlertAttributes.DeviceExternalIpThreatTypesName])
-        # alert_item.Asset = self.multi_value_to_string_list(row[AlertAttributes.AssetPath])
-        # alert_item.AssetContainsFlaggedData = self.multi_value_to_boolean_list(row[AlertAttributes.DataIsFlagged])
-        # alert_item.AssetContainsSensitiveData = self.multi_value_to_boolean_list(row[AlertAttributes.DataIsSensitive])
-        # alert_item.Platform = self.multi_value_to_string_list(row[AlertAttributes.FilerPlatformName])
-        # alert_item.FileServerOrDomain = self.multi_value_to_string_list(row[AlertAttributes.FilerName])
-        # alert_item.DeviceName = self.multi_value_to_string_list(row[AlertAttributes.DeviceHostname])
-        # alert_item.IngestTime = row[AlertAttributes.IngestTime]
-        # alert_item.EventUTC = self.get_date_value(row, AlertAttributes.InitialEventUtcTime)
 
         return alert_item
-
-    def multi_value_to_string_list(self, multi_value: str) -> Optional[List[str]]:
-        if not multi_value or multi_value.isspace():
-            return None
-        return [value.strip() for value in multi_value.split(',')]
-
-    def multi_value_to_boolean_list(self, multi_value: str) -> Optional[List[Optional[bool]]]:
-        if not multi_value or multi_value.isspace():
-            return None
-        return [self.convert_to_boolean(value) for value in multi_value.split(',')]
-
-    def get_bool_value(self, row: dict, name: str) -> Optional[bool]:
-        return self.convert_to_boolean(row.get(name))
-
-    def convert_to_boolean(self, bool_str: str) -> Optional[bool]:
-        if bool_str is None:
-            return None
-        bool_str = bool_str.lower().strip()
-        if bool_str in ["yes", "1"]:
-            return True
-        if bool_str in ["no", "0"]:
-            return False
-        return bool_str.lower() in ['true', 'false'] and bool(bool_str)
-
-    def get_date_value(self, row: dict, name: str) -> Optional[datetime]:
-        date_str = row.get(name)
-        if date_str is None:
-            return None
-        try:
-            return datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%SZ")
-        except ValueError:
-            return None
 
 
 
@@ -1295,42 +1161,6 @@ class SearchEventObjectMapper(BaseMapper):
 
     def map_item(self, row: Dict[str, str]) -> EventItem:
         event_item = EventItem(row)
-
-        #event_item.AlertId = self.multi_value_to_guid_array(row, EventAttributes.EventAlertId)
-        # event_item.Id = row.get(EventAttributes.EventGuid, '')
-        # event_item.Type = row.get(EventAttributes.EventTypeName)
-        # event_item.TimeUTC = self.get_date_value(row, EventAttributes.EventTimeUtc)
-        # event_item.Status = row.get(EventAttributes.EventStatusName)
-        # event_item.Description = row.get(EventAttributes.EventDescription)
-        # event_item.Country = row.get(EventAttributes.EventLocationCountryName)
-        # event_item.State = row.get(EventAttributes.EventLocationSubdivisionName)
-        # event_item.BlacklistedLocation = self.get_bool_value(row, EventAttributes.EventLocationBlacklistedLocation)
-        # event_item.EventOperation = row.get(EventAttributes.EventOperationName)
-        # event_item.ByUserAccount = row.get(EventAttributes.EventByAccountIdentityName)
-        # event_item.ByUserAccountType = row.get(EventAttributes.EventByAccountTypeName)
-        # event_item.ByUserAccountDomain = row.get(EventAttributes.EventByAccountDomainName)
-        # event_item.BySamAccountName = row.get(EventAttributes.EventByAccountSamAccountName)
-        # event_item.Filer = row.get(EventAttributes.EventFilerName)
-        # event_item.Platform = row.get(EventAttributes.EventFilerPlatformName)
-        # event_item.SourceIP = row.get(EventAttributes.EventIp)
-        # event_item.ExternalIP = row.get(EventAttributes.EventDeviceExternalIp)
-        # event_item.DestinationIP = row.get(EventAttributes.EventDestinationIp)
-        # event_item.SourceDevice = row.get(EventAttributes.EventDeviceName)
-        # event_item.DestinationDevice = row.get(EventAttributes.EventDestinationDeviceName)
-        # event_item.IsDisabledAccount = self.get_bool_value(row, EventAttributes.EventByAccountIsDisabled)
-        # event_item.IsLockoutAccount = self.get_bool_value(row, EventAttributes.EventByAccountIsLockout)
-        # event_item.IsStaleAccount = self.get_bool_value(row, EventAttributes.EventByAccountIsStale)
-        # event_item.IsMaliciousIP = self.get_bool_value(row, EventAttributes.EventDeviceExternalIpIsMalicious)
-        # event_item.ExternalIPThreatTypes = self.multi_value_to_array(
-        #     row.get(EventAttributes.EventDeviceExternalIpThreatTypesName, ''))
-        # event_item.ExternalIPReputation = row.get(EventAttributes.EventDeviceExternalIpReputationName)
-        # event_item.OnObjectName = row.get(EventAttributes.EventOnObjectName)
-        # event_item.OnObjectType = row.get(EventAttributes.EventOnResourceObjectTypeName)
-        # event_item.OnSamAccountName = row.get(EventAttributes.EventOnAccountSamAccountName)
-        # event_item.IsSensitive = self.get_bool_value(row, EventAttributes.EventOnResourceIsSensitive)
-        # event_item.OnAccountIsDisabled = self.get_bool_value(row, EventAttributes.EventOnAccountIsDisabled)
-        # event_item.OnAccountIsLockout = self.get_bool_value(row, EventAttributes.EventOnAccountIsLockout)
-        # event_item.Path = row.get(EventAttributes.EventOnResourcePath)
 
         return event_item
 
@@ -1371,7 +1201,6 @@ class SearchEventObjectMapper(BaseMapper):
 
 
 
-
 class SearchRequest:
     def __init__(self):
         self.query = Query()
@@ -1396,7 +1225,6 @@ class SearchRequest:
     def to_json(self):
         dataJSON = json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
         return dataJSON
-
 class ThreatModelAttributes:
     Id = "ruleID"
     Name = "ruleName"
@@ -1405,7 +1233,6 @@ class ThreatModelAttributes:
     Severity = "severity"
 
     Columns = [Id, Name, Category, Source, Severity]
-
 
 
 
@@ -1427,7 +1254,6 @@ class ThreatModelItem:
         return {key: value for key, value in self.__dict__.items() if value is not None}
 
 
-
 class ThreatModelObjectMapper(BaseMapper):
     def map(self, json_data):
         key_valued_objects = json_data
@@ -1447,7 +1273,6 @@ class ThreatModelObjectMapper(BaseMapper):
         threat_model_item.Severity = row[ThreatModelAttributes.Severity]
 
         return threat_model_item
-
 """Varonis Data Security Platform integration
 """
 
@@ -1654,7 +1479,7 @@ def convert_incident_alert_to_onprem_format(alert_saas_format):
     output = alert_saas_format
 
     output["Category"] = alert_saas_format.get(AlertAttributes.Alert_Rule_Category_Name)
-    output["Guid"] = alert_saas_format.get(AlertAttributes.Alert_ID)
+    output["ID"] = alert_saas_format.get(AlertAttributes.Alert_ID)
     output["Name"] = alert_saas_format.get(AlertAttributes.Alert_Rule_Name)
     output["Status"] = alert_saas_format.get(AlertAttributes.Alert_Status_Name)
     output["IPThreatTypes"] = alert_saas_format.get(AlertAttributes.Alert_Device_ExternalIPThreatTypesName)
@@ -1671,9 +1496,11 @@ def convert_incident_alert_to_onprem_format(alert_saas_format):
     states = [] if alert_saas_format.get(AlertAttributes.Alert_Location_SubdivisionName) is None else alert_saas_format.get(
         AlertAttributes.Alert_Location_SubdivisionName).split(',')
     blacklist_locations = [] if alert_saas_format.get(
-        AlertAttributes.Alert_Location_BlacklistedLocation) is None else alert_saas_format.get(AlertAttributes.Alert_Location_BlacklistedLocation).split(',')
+        AlertAttributes.Alert_Location_BlacklistedLocation) is None else alert_saas_format.get(
+            AlertAttributes.Alert_Location_BlacklistedLocation).split(',')
     abnormal_locations = [] if alert_saas_format.get(
-        AlertAttributes.Alert_Location_AbnormalLocation) is None else alert_saas_format.get(AlertAttributes.Alert_Location_AbnormalLocation).split(',')
+        AlertAttributes.Alert_Location_AbnormalLocation) is None else alert_saas_format.get(
+            AlertAttributes.Alert_Location_AbnormalLocation).split(',')
     for i in range(len(countries)):
         entry = {
             "Country": "" if len(countries) <= i else countries[i],
@@ -1711,9 +1538,11 @@ def convert_incident_alert_to_onprem_format(alert_saas_format):
     user_names = [] if alert_saas_format.get(
         AlertAttributes.Alert_User_Name) is None else alert_saas_format[AlertAttributes.Alert_User_Name].split(',')
     sam_account_names = [] if alert_saas_format.get(
-        AlertAttributes.Alert_User_SamAccountName) is None else alert_saas_format[AlertAttributes.Alert_User_SamAccountName].split(',')
+        AlertAttributes.Alert_User_SamAccountName) is None else alert_saas_format[AlertAttributes.Alert_User_SamAccountName] \
+        .split(',')
     privileged_account_types = [] if alert_saas_format.get(
-        AlertAttributes.Alert_User_AccountType_Name) is None else alert_saas_format[AlertAttributes.Alert_User_AccountType_Name].split(',')
+        AlertAttributes.Alert_User_AccountType_Name) is None else alert_saas_format[AlertAttributes.Alert_User_AccountType_Name] \
+        .split(',')
     departments = [] if alert_saas_format.get("Department") is None else alert_saas_format["Department"].split(',')
     for i in range(len(user_names)):
         entry = {
@@ -2189,8 +2018,8 @@ def main() -> None:
     args = demisto.args()
 
     if not is_xsoar_env():
-        url = 'https://int7e12c.varonis-preprod.com/'
-        apiKey = 'vkey1_c218f21f3cfb466ba03e2a94a8a1a4a2_vYJKiCKw1oz7uRogJImenjl2AlIzDQ7u8mrPP02VT2A='
+        url = 'https://int00eff.varonis-preprod.com/'
+        apiKey = 'vkey1_3aeb08d117534a2882094f04ee0cdff6_QzWu94W1G9TSBzQsIHsZPw7fKX8pBIVaST9WO9U5teA='
         command = 'varonis-get-alerts'  # 'test-module'|
         # 'varonis-get-threat-models'|
         # 'varonis-get-alerts'|
@@ -2232,15 +2061,15 @@ def main() -> None:
             args['device_name'] = None  # List of device names
             args['user_name'] = "varadm"  # List of device names
             args['last_days'] = None  # Number of days you want the search to go back to
-            args['extra_fields'] = "Alert.User*,Alert.Location*"  # extra fields
+            args['extra_fields'] = ""  # extra fields
             args['descending_order'] = None  # Indicates whether alerts should be ordered in newest to oldest order
 
         elif command == 'varonis-get-alerted-events':
-            args['alert_id'] = "55ED0AC6-95A4-4AD9-98AB-341D90690CDA"  # Array of alert ids
+            args['alert_id'] = "1AB7D4A7-7BBF-43D2-B1B5-E0E5679C561B"  # Array of alert ids
             args['start_time'] = None  # Start time of the range of events
             args['end_time'] = None  # End time of the range of events
             args['last_days'] = None  # Number of days you want the search to go back to
-            args['extra_fields'] = "Event.Session*,Event.OnMail*"  # extra fields
+            args['extra_fields'] = ""  # extra fields
             args['descending_order'] = None  # Indicates whether events should be ordered in newest to oldest order
 
         elif command == 'varonis-update-alert-status':

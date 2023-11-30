@@ -207,13 +207,10 @@ script:
       type: String
     - contextPath: Varonis.Alert.User.AccountType.Name
       description: |-
-        Privileged account. Options are:
+        Privileged account associated with the user in the alert. Options are:
         - Service accounts
         - Admin accounts
         - Executive accounts
-      type: String
-    - contextPath: Varonis.Alert.Department
-      description: User`s department
       type: String
     - contextPath: Varonis.Alert.Data.IsFlagged
       description: Whether the data affected by the alerted events has global flags
@@ -241,6 +238,24 @@ script:
     - contextPath: Varonis.Alert.Device.ExternalIPThreatTypesName
       description: Whether the alert contains IPs known to be malicious
       type: String
+    - contextPath: Varonis.Alert.Status.ID
+      description: Id for the status of the alert
+      type: String
+    - contextPath: Varonis.Alert.Rule.ID
+      description: Id for the rule that triggered the alert
+      type: String
+    - contextPath: Varonis.Alert.Rule.Severity.ID
+      description: Severity level identifier
+      type: String
+    - contextPath: Varonis.Alert.Initial.Event.TimeUTC
+      description: UTC time of the initial event that triggered the alert
+      type: Date
+    - contextPath: Varonis.Alert.User.SidID
+      description: Security Identifier (SID) of the user associated with the alert
+      type: String
+    - contextPath: Varonis.Alert.IngestTime
+      description: Time when the alert was ingested into the system
+      type: Date    
   - arguments:
     - default: false
       description: Requested alerts
@@ -343,13 +358,19 @@ script:
     execution: false
     name: varonis-get-alerted-events
     outputs:
-    - contextPath: Varonis.Event.Type
+    - contextPath: Event.ID
+      description: Event ID
+      type: String
+    - contextPath: Event.Alert.ID
+      description: Alert ID
+      type: String
+    - contextPath: Varonis.Event.Type.Name
       description: Event type
       type: String
-    - contextPath: Varonis.Event.UTCTime
-      description: Event time UTC format
+    - contextPath: Varonis.Event.TimeUTC
+      description: Event time in UTC format
       type: Date
-    - contextPath: Varonis.Event.Status
+    - contextPath: Varonis.Event.Status.Name
       description: |-
         Filters according to the status of the event. Options are:
         - Fail
@@ -358,21 +379,19 @@ script:
     - contextPath: Varonis.Event.Description
       description: Description of the activity
       type: String
-    - contextPath: Varonis.Event.Country
+    - contextPath: Varonis.Event.Location.Country.Name
       description: Name of the country from which the event occurred
       type: String
-    - contextPath: Varonis.Event.State
-      description: Name of the state or regional subdivision from which the event
-        occurred
+    - contextPath: Varonis.Event.Location.Subdivision.Name
+      description: Name of the state or regional subdivision from which the event occurred
       type: String
-    - contextPath: Varonis.Event.ExternalIP
-      description: Device external IP
+    - contextPath: Varonis.Event.Device.ExternalIP.IP
+      description: Device external IP address
       type: String
-    - contextPath: Varonis.Event.IsBlacklist
-      description: Whether any of the geographical locations from which an alerted
-        activity originated was on the blacklist at the time the activity occurred
+    - contextPath: Varonis.Event.Location.BlacklistedLocation
+      description: Indicates whether the geographical location from which the event originated was blacklisted
       type: Boolean
-    - contextPath: Varonis.Event.Operation
+    - contextPath: Varonis.Event.Operation.Name
       description: |-
         Type of operation that occurred during the event. Options are:
         - Accessed
@@ -383,85 +402,74 @@ script:
         - Received
         - Requested
       type: String
-    - contextPath: Varonis.Event.ByUserName
+    - contextPath: Varonis.Event.ByAccount.Identity.Name
       description: Name of the user that triggered the event
       type: String
-    - contextPath: Varonis.Event.ByUserUserType
+    - contextPath: Varonis.Event.ByAccount.Type.Name
       description: Type of account, i.e., user or computer
       type: String
-    - contextPath: Varonis.Event.ByUserUserAccountType
-      description: |-
-        Logon name used to support clients and servers running earlier versions of the Windows operating system, such as Windows NT 4.0.
-        In the dashboards (other than the Alert dashboard), this is the SAM account name of the user or group
+    - contextPath: Varonis.Event.ByAccount.SamAccountName
+      description: SAM account name of the user or group for clients and servers running earlier versions of Windows
       type: String
-    - contextPath: Varonis.Event.ByUserDomain
+    - contextPath: Varonis.Event.ByAccount.Domain.Name
       description: Domain of the user that triggered the event
       type: String
-    - contextPath: Varonis.Event.ByUserDisabledAccount
-      description: Whether the account is disabled
+    - contextPath: Varonis.Event.ByAccount.IsDisabled
+      description: Indicates whether the account is disabled
       type: Boolean
-    - contextPath: Varonis.Event.ByUserStaleAccount
-      description: Whether the account is stale
+    - contextPath: Varonis.Event.ByAccount.IsStale
+      description: Indicates whether the account is stale
       type: Boolean
-    - contextPath: Varonis.Event.ByUserLockoutAccounts
-      description: Whether the account is lockout
+    - contextPath: Varonis.Event.ByAccount.IsLockout
+      description: Indicates whether the account is locked out
       type: Boolean
-    - contextPath: Varonis.Event.SourceIP
-      description: Source IP of the device triggered the event
+    - contextPath: Varonis.Event.IP
+      description: Source IP address of the device that triggered the event
       type: String
-    - contextPath: Varonis.Event.IsMaliciousIP
-      description: Whether the IP is known to be malicious
+    - contextPath: Varonis.Event.Device.ExternalIP.IsMalicious
+      description: Indicates whether the external IP is known to be malicious
       type: Boolean
-    - contextPath: Varonis.Event.IPReputation
-      description: Reputation score of the IP. The score is a numeric value from 1-100
+    - contextPath: Varonis.Event.Device.ExternalIP.Reputation.Name
+      description: Reputation score of the external IP, a numeric value from 1-100
       type: Number
-    - contextPath: Varonis.Event.IPThreatType
-      description: List of threat types associated with the IP
+    - contextPath: Varonis.Event.Device.ExternalIP.ThreatTypes.Name
+      description: List of threat types associated with the external IP
       type: String
     - contextPath: Varonis.Event.OnObjectName
-      description: Name of object on which the event was performed
+      description: Name of the object on which the event was performed
       type: String
-    - contextPath: Varonis.Event.ObjectType
-      description: Type of object on which the event was performed
+    - contextPath: Varonis.Event.OnResource.ObjectType.Name
+      description: Type of the object on which the event was performed
       type: String
-    - contextPath: Varonis.Event.Platform
-      description: Type of platform on which the server resides. For example, Windows,
-        Exchange, or SharePoint
+    - contextPath: Varonis.Event.Filer.Platform.Name
+      description: Type of platform on which the server resides, like Windows, Exchange, SharePoint
       type: String
-    - contextPath: Varonis.Event.IsSensitive
-      description: 'Indicates whether the resource on which the event was performed
-        is sensitive '
+    - contextPath: Varonis.Event.OnResource.IsSensitive
+      description: Indicates whether the resource on which the event was performed is sensitive
       type: Boolean
-    - contextPath: Varonis.Event.FileServerOrDomain
-      description: File server of object on which the event was performed
+    - contextPath: Varonis.Event.Filer.Name
+      description: File server of the object on which the event was performed
       type: String
-    - contextPath: Varonis.Event.IsDisabledAccount
-      description: Whether the account is disabled
+    - contextPath: Varonis.Event.OnAccount.IsDisabled
+      description: Indicates whether the account is disabled
       type: Boolean
-    - contextPath: Varonis.Event.IsLockOutAccount
-      description: Whether the account is lockout
+    - contextPath: Varonis.Event.OnAccount.IsLockout
+      description: Indicates whether the account is locked out
       type: Boolean
-    - contextPath: Varonis.Event.SAMAccountName
-      description: |-
-        Logon name used to support clients and servers running earlier versions of the Windows operating system, such as Windows NT 4.0.
-        In the dashboards (other than the Alert dashboard), this is the SAM account name of the user or group
-      type: String
-    - contextPath: Varonis.Event.UserAccountType
-      description: |-
-        Specified type of privileged account. Options are:
-        - Service accounts
-        - Admin accounts
-        - Executive accounts
-        - Test accounts
-      type: String
-    - contextPath: Varonis.Event.DestinationIP
+    - contextPath: Varonis.Event.OnAccount.SamAccountName
+      description: SAM account name of the user or group for clients and servers running earlier versions of Windows
+      type: Boolean
+    - contextPath: Varonis.Event.Destination.IP
       description: Destination IP address within the organization
       type: String
-    - contextPath: Varonis.Event.DestinationDevice
+    - contextPath: Varonis.Event.Device.Name
+      description: Name of the device that triggered the event
+      type: String
+    - contextPath: Event.Destination.DeviceName
       description: Destination host name for relevant services
       type: String
-    - contextPath: Varonis.Event.Path
-      description: Path of asset
+    - contextPath: Varonis.Event.OnResource.Path
+      description: Path of the resource
       type: String
   - arguments:
       - default: false

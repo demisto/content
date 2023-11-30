@@ -10,7 +10,7 @@
                     "simple": "Category"
                 },
                 "Alert ID": {
-                    "simple": "Guid"
+                    "simple": "ID"
                 },
                 "Alert Name": {
                     "simple": "Name"

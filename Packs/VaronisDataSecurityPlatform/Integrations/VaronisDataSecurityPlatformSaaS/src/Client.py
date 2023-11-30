@@ -135,10 +135,10 @@ class Client(BaseClient):
         search_request.query.filter.add_filter(filter_condition)
 
         if ingest_time_from and ingest_time_to:
-            ingest_time_condition = FilterCondition().set_path("Alert.IngestTime")\
+            ingest_time_condition = FilterCondition().set_path(alert_attributes.Alert_IngestTime)\
                 .set_operator("Between")\
-                .add_value({"Alert.IngestTime": ingest_time_from.isoformat(
-                ), "Alert.IngestTime0": ingest_time_to.isoformat()})  # "displayValue": ingest_time_from.isoformat(),
+                .add_value({alert_attributes.Alert_IngestTime: ingest_time_from.isoformat(
+                ), f"{alert_attributes.Alert_IngestTime}0": ingest_time_to.isoformat()})  # "displayValue": ingest_time_from.isoformat(),
             search_request.query.filter.add_filter(ingest_time_condition)
         else:
             days_back = MAX_DAYS_BACK
@@ -149,66 +149,66 @@ class Client(BaseClient):
             elif end_time is None and start_time is not None:
                 end_time = start_time + timedelta(days=days_back)
 
-            time_condition = FilterCondition().set_path("Alert.TimeUTC")
+            time_condition = FilterCondition().set_path(alert_attributes.Alert_TimeUTC)
             if start_time and end_time:
                 time_condition = time_condition\
                     .set_operator("Between")\
-                    .add_value({"Alert.TimeUTC": start_time.isoformat(
-                    ), "Alert.TimeUTC0": end_time.isoformat()})  # "displayValue": start_time.isoformat(),
+                    .add_value({alert_attributes.Alert_TimeUTC : start_time.isoformat(
+                    ), f"{alert_attributes.Alert_TimeUTC}0": end_time.isoformat()})  # "displayValue": start_time.isoformat(),
             if last_days:
                 time_condition\
                     .set_operator("LastDays")\
-                    .add_value({"Alert.TimeUTC": last_days, "displayValue": last_days})
+                    .add_value({alert_attributes.Alert_TimeUTC: last_days, "displayValue": last_days})
             search_request.query.filter.add_filter(time_condition)
 
         if threat_model_names and len(threat_model_names) > 0:
             rule_condition = FilterCondition()\
-                .set_path("Alert.Rule.Name")\
+                .set_path(alert_attributes.Alert_Rule_Name)\
                 .set_operator("In")
             for threat_model_name in threat_model_names:
-                rule_condition.add_value({"Alert.Rule.Name": threat_model_name, "displayValue": "New"})
+                rule_condition.add_value({alert_attributes.Alert_Rule_Name: threat_model_name, "displayValue": "New"})
             search_request.query.filter.add_filter(rule_condition)
 
         if alertIds and len(alertIds) > 0:
             alert_condition = FilterCondition()\
-                .set_path("Alert.ID")\
+                .set_path(alert_attributes.Alert_ID)\
                 .set_operator("In")
             for alertId in alertIds:
-                alert_condition.add_value({"Alert.ID": alertId, "displayValue": "New"})
+                alert_condition.add_value({alert_attributes.Alert_ID: alertId, "displayValue": "New"})
             search_request.query.filter.add_filter(alert_condition)
 
         if device_names and len(device_names) > 0:
             device_condition = FilterCondition()\
-                .set_path("Alert.Device.HostName")\
+                .set_path(alert_attributes.Alert_Device_HostName)\
                 .set_operator("In")
             for device_name in device_names:
-                device_condition.add_value({"Alert.Device.HostName": device_name, "displayValue": device_name})
+                device_condition.add_value({alert_attributes.Alert_Device_HostName: device_name, "displayValue": device_name})
             search_request.query.filter.add_filter(device_condition)
 
         if user_names and len(user_names) > 0:
             user_condition = FilterCondition()\
-                .set_path("Alert.User.Identity.Name")\
+                .set_path(alert_attributes.Alert_User_Identity_Name)\
                 .set_operator("In")
             for user_name in user_names:
-                user_condition.add_value({"Alert.User.Identity.Name": user_name, "displayValue": user_name})
+                user_condition.add_value({alert_attributes.Alert_User_Identity_Name: user_name, "displayValue": user_name})
             search_request.query.filter.add_filter(user_condition)
 
         if alert_statuses and len(alert_statuses) > 0:
             status_condition = FilterCondition()\
-                .set_path("Alert.Status.ID")\
+                .set_path(alert_attributes.Alert_Status_ID)\
                 .set_operator("In")
             for status in alert_statuses:
                 status_id = ALERT_STATUSES[status.lower()]
-                status_condition.add_value({"Alert.Status.ID": status_id, "displayValue": status})
+                status_condition.add_value({alert_attributes.Alert_Status_ID: status_id, "displayValue": status})
             search_request.query.filter.add_filter(status_condition)
 
         if alert_severities and len(alert_severities) > 0:
             severity_condition = FilterCondition()\
-                .set_path("Alert.Rule.Severity.ID")\
+                .set_path(alert_attributes.Alert_Rule_Severity_ID)\
                 .set_operator("In")
             for severity in alert_severities:
                 severity_id = ALERT_SEVERITIES[severity.lower()]
-                severity_condition.add_value({"Alert.Rule.Severity.ID": severity_id, "displayValue": severity})
+                severity_condition.add_value({alert_attributes.Alert_Rule_Severity_ID: severity_id, "displayValue": severity})
             search_request.query.filter.add_filter(severity_condition)
 
         if descending_order:
@@ -287,27 +287,29 @@ class Client(BaseClient):
 
         if alertIds and len(alertIds) > 0:
             time_condition = FilterCondition()\
-                .set_path("Event.Alert.ID")\
+                .set_path(event_attributes.Event_Alert_ID)\
                 .set_operator("In")
             for alertId in alertIds:
-                time_condition.add_value({"Event.Alert.ID": alertId, "displayValue": alertId})
+                time_condition.add_value({event_attributes.Event_Alert_ID: alertId, "displayValue": alertId})
 
             search_request.query.filter.add_filter(time_condition)
 
-        time_condition = FilterCondition().set_path("Event.TimeUTC")
+        time_condition = FilterCondition().set_path(event_attributes.Event_TimeUTC)
         if start_time and end_time:
             time_condition = time_condition\
                 .set_operator("Between")\
-                .add_value({"Event.TimeUTC": start_time.isoformat(
-                ), "Event.TimeUTC0": end_time.isoformat()})  # "displayValue": start_time.isoformat(),
+                .add_value({event_attributes.Event_TimeUTC: start_time.isoformat(), 
+                            f"{event_attributes.Event_TimeUTC}0": end_time.isoformat()})
+                # "displayValue": start_time.isoformat(), (this line seems to be commented out)
         if last_days:
             time_condition\
                 .set_operator("LastDays")\
-                .add_value({"Event.TimeUTC": last_days, "displayValue": last_days})
+                .add_value({event_attributes.Event_TimeUTC: last_days, "displayValue": last_days})
         search_request.query.filter.add_filter(time_condition)
 
+
         if descending_order:
-            search_request.rows.add_ordering({"path": "Event.Time", "sortOrder": "Desc"})
+            search_request.rows.add_ordering({"path": event_attributes.Event_Time, "sortOrder": "Desc"})
 
         dataJSON = search_request.to_json()
 

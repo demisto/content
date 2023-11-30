@@ -19,7 +19,6 @@ def merge_files(source_directory, file_list, output_file):
         with open(f'{source_directory}/{file_path}', 'r') as file:
             module_code = []
             module_code.append(os.linesep)
-            module_code.append(os.linesep)
             file_lines = file.readlines()
             for line in file_lines:
                 if (line.startswith('import') or line.startswith('from')):
