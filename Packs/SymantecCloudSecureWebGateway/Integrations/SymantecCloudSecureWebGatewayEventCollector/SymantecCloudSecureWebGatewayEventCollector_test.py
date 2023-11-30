@@ -617,7 +617,7 @@ def test_perform_long_running_loop(
     mock_sleep = mocker.patch("time.sleep")
 
     mocker.patch(
-        "SymantecCloudSecureWebGatewayEventCollector.get_current_time",
+        "SymantecCloudSecureWebGatewayEventCollector.get_current_time_as_seconds",
         side_effect=mock_current_time,
     )
     mocker.patch(

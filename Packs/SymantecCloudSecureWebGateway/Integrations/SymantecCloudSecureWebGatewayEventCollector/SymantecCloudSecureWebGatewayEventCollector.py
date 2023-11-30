@@ -11,7 +11,7 @@ import pytz
 from pathlib import Path
 import tempfile
 import os
-from time import time as get_current_time
+from time import time as get_current_time_as_seconds
 
 disable_warnings()
 
@@ -595,7 +595,7 @@ def get_events_command(
 """ TEST MODULE """
 
 
-def test_module(client: Client, fetch_interval: str | None) -> None:
+def test_module(client: Client, fetch_interval: str | None) -> str:
     # Enforcement for the fetch_interval parameter
     # that will not be less than the minimum time allowed
     if fetch_interval and int(fetch_interval) < DEFAULT_FETCH_SLEEP:
@@ -619,7 +619,7 @@ def perform_long_running_loop(client: Client):
     last_run_obj: LastRun
     while True:
         # Used to calculate the duration of the fetch run.
-        start_run = get_current_time()
+        start_run = get_current_time_as_seconds()
         try:
             integration_context = get_integration_context()
             demisto.debug(f"Starting new fetch with {integration_context=}")
@@ -635,7 +635,7 @@ def perform_long_running_loop(client: Client):
             raise e
 
         # Used to calculate the duration of the fetch run.
-        end_run = get_current_time()
+        end_run = get_current_time_as_seconds()
 
         # Calculation of the fetch runtime against `client.fetch_interval`
         # If the runtime is less than the `client.fetch_interval` time
