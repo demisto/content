@@ -65,7 +65,7 @@ getRequestURL = function (uri) {
     var requestUrl = serverURL;
 
     // only when using XSIAM or XSOAR >= 8.0 we will add the /xsoar suffix
-    // and only when it is not a system endpoint (note: this list does not include all system endpoints!)
+    // and only when it is not a /public_api endpoint.
     if (isHosted()) {
         if ((!serverURL.endsWith('/xsoar')) && (!uri.startsWith('/public_api'))) {
             requestUrl += '/xsoar'
