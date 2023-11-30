@@ -9,6 +9,7 @@ import tempfile
 import threading
 import time
 import traceback
+import psutil
 from enum import Enum
 from threading import Event
 
@@ -45,7 +46,11 @@ PAGES_LIMITATION = 20
 MAX_FULLSCREEN_WIDTH = 8000
 MAX_FULLSCREEN_HEIGHT = 8000
 DEFAULT_WIDTH, DEFAULT_HEIGHT = 600, 800
-LOCAL_CHROME_URL = "http://127.0.0.1:9222"
+
+# Local Chrome
+PORT = "9222"
+LOCAL_HOST = "http://127.0.0.1"
+LOCAL_CHROME_URL = f"{LOCAL_HOST}:{PORT}"
 
 
 class RasterizeType(Enum):
@@ -106,61 +111,21 @@ class PychromeEventHandler:
 # endregion
 
 
-def get_parent_processes(processes=[], current_process=None) -> list[str]:
-    str_to_search = f"{current_process}|grep -v grep |grep -v 'ps -ef'" if current_process else 'grep'
-    demisto.debug(f'get_parent_processes, {str_to_search=}')
-    cmd = f"ps -ef|grep {str_to_search}"
-    ps = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)  # noqa: B602
-    output = ps.communicate()
+def get_running_chrome_processes() -> list[psutil.Process]:
+    chrome_identifiers = ["chrom", "headless", f"--remote-debugging-port={PORT}"]
+    current_process = psutil.Process()
+    child_processes = current_process.children(recursive=True)
 
-    for current_line in output:
-        if current_line:
-            demisto.debug(f'get_parent_processes, decoding {current_line=}')
-            current_line_decoded = current_line.decode("utf-8")
-            demisto.debug(f'get_parent_processes, {current_line_decoded=}')
-            if current_line_decoded:
-                current_line_splitted = current_line_decoded.split()
-                if len(current_line_splitted) > 2:
-                    parent_pid = current_line_splitted[2]
-                    demisto.debug(f'Found parent process {parent_pid}')
-                    if parent_pid == '1':
-                        demisto.debug(f'get_parent_processes, Found root pid (1), returning {processes}')
-                        return processes
-                    processes.append(parent_pid)
-                    get_parent_processes(processes=processes, current_process=parent_pid)
-    demisto.debug(f'get_parent_processes, returning {processes}')
-    return processes
+    headless_chrome_processes = []
+    for process in child_processes:
+        try:
+            cmdline = process.cmdline()
+            if all(identifier in cmdline for identifier in chrome_identifiers):
+                headless_chrome_processes.append(process)
+        except (psutil.NoSuchProcess, psutil.AccessDenied):
+            continue
 
-
-def get_running_chrome_processes() -> list[str]:
-    try:
-        processes = subprocess.check_output(['ps', '-ef'],
-                                            stderr=subprocess.STDOUT,
-                                            text=True).splitlines()
-
-        parent_processes = get_parent_processes()
-
-        chrome_identifiers = ["chrom", "headless", "--remote-debugging-port=9222"]
-        chrome_processes = []
-        for current_process in processes:
-            if current_process and all(identifier in current_process for identifier in chrome_identifiers):
-                demisto.debug(f'get_running_chrome_processes, {current_process=}')
-                process_splitted = current_process.split()
-                demisto.debug(f'get_running_chrome_processes, {process_splitted=}')
-                if (len(process_splitted) > 2) and (process_splitted[2] in parent_processes):
-                    demisto.debug(f'get_running_chrome_processes, Found a matching chrome: {current_process=}')
-                    chrome_processes.append(current_process)
-
-        demisto.debug(f'get_running_chrome_processes, Detected {len(chrome_processes)} Chrome processes running')
-
-        return chrome_processes
-
-    except subprocess.CalledProcessError as e:
-        demisto.info(f'Error fetching process list: {e.output}')
-        return []
-    except Exception as e:
-        demisto.info(f'Unexpected error: {e}')
-        return []
+    return headless_chrome_processes
 
 
 def get_active_chrome_processes_count():
@@ -184,12 +149,21 @@ def start_chrome_headless():
 def kill_all_chrome_processes():
     try:
         chrome_processes = get_running_chrome_processes()
-        demisto.debug(f'kill_all_chrome_processes, {chrome_processes=}')
+        demisto.debug(f'kill_all_chrome_processes, Found {len(chrome_processes)} Chrome processes')
+
         for process in chrome_processes:
-            pid = process.split()[1]  # Assuming second element is the PID
-            # subprocess.run(['kill', '-9', pid], capture_output=True, text=True)
-            # demisto.debug(f'Killed Chrome process with PID: {pid}')
-            demisto.debug(f'Not killing chrome process with PID: {pid}')
+            try:
+                process.terminate()
+                demisto.debug(f'Terminated Chrome process with PID: {process.pid}')
+            except psutil.NoSuchProcess:
+                demisto.debug(f'Chrome process with PID: {process.pid} no longer exists')
+            except psutil.AccessDenied:
+                demisto.debug(f'Access denied when trying to terminate Chrome process with PID: {process.pid}')
+                process.kill()  # Force kill the process
+                demisto.debug(f'Force killed Chrome process with PID: {process.pid}')
+            except Exception as e:
+                demisto.debug(f'Error killing Chrome process with PID: {process.pid}: {e}')
+
     except Exception as ex:
         demisto.info(f'Error killing Chrome processes: {ex}')
 
