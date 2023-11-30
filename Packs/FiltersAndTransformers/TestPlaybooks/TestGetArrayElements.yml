@@ -58,13 +58,13 @@ tasks:
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
         https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
-      id: 7b15d6fa-cc27-463e-873b-c875e07f9252
+      id: 656783a2-6a11-45c7-84d3-4d6c88674ab6
       iscommand: false
       name: Delete Context
       script: DeleteContext
       type: regular
       version: -1
-    taskid: 7b15d6fa-cc27-463e-873b-c875e07f9252
+    taskid: 656783a2-6a11-45c7-84d3-4d6c88674ab6
     timertriggers: []
     type: regular
     view: |-
@@ -95,13 +95,13 @@ tasks:
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: caf429b3-8ca6-4d13-8f06-9939be8675b2
+      id: 675ca513-2853-4500-8e4d-29a8b1502358
       iscommand: false
       name: Set
       script: Set
       type: regular
       version: -1
-    taskid: caf429b3-8ca6-4d13-8f06-9939be8675b2
+    taskid: 675ca513-2853-4500-8e4d-29a8b1502358
     timertriggers: []
     type: regular
     view: |-
@@ -144,19 +144,19 @@ tasks:
     isoversize: false
     nexttasks:
       "yes":
-      - "4"
+      - "5"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      id: b1c53dfb-990f-401b-8bc3-01a713a5d1ab
+      id: 7b67753b-5600-47ee-8164-79c1df46a36e
       iscommand: false
       name: Verify first and last array elements
       type: condition
       version: -1
-    taskid: b1c53dfb-990f-401b-8bc3-01a713a5d1ab
+    taskid: 7b67753b-5600-47ee-8164-79c1df46a36e
     timertriggers: []
     type: condition
     view: |-
@@ -178,19 +178,105 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 07baed00-b6ff-4464-8d93-e4de8240c70f
+      id: c3387d55-8439-48bf-8d89-90fb93762bac
       iscommand: false
       name: Done
       type: title
       version: -1
-    taskid: 07baed00-b6ff-4464-8d93-e4de8240c70f
+    taskid: c3387d55-8439-48bf-8d89-90fb93762bac
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
           "x": 50,
+          "y": 1070
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: EmptyArray
+      value:
+        simple: '[]'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: ac1445f8-cbce-48b4-8faf-4bfa91c674ef
+      iscommand: false
+      name: Set an empty array
+      script: Set
+      type: regular
+      version: -1
+    taskid: ac1445f8-cbce-48b4-8faf-4bfa91c674ef
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
           "y": 720
+        }
+      }
+  "6":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: EmptyArray
+                transformers:
+                - operator: FirstArrayElement
+          operator: isNotExists
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: EmptyArray
+                transformers:
+                - operator: LastArrayElement
+          operator: isNotExists
+      label: "yes"
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "yes":
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9637ab98-7895-446f-87eb-955af1c374aa
+      iscommand: false
+      name: Verify first and last array elements are not defined
+      type: condition
+      version: -1
+    taskid: 9637ab98-7895-446f-87eb-955af1c374aa
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
         }
       }
 version: -1
@@ -199,7 +285,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 735,
+        "height": 1085,
         "width": 380,
         "x": 50,
         "y": 50
