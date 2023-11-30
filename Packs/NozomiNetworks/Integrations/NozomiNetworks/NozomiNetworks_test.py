@@ -104,10 +104,10 @@ def test_incidents_filtered(requests_mock):
 
     assert lid is not None
     assert lr == 1392048082242
-    assert list(map(lambda i: {
+    assert [{
         'name': f"{i['name'].partition('_')[0]}",
         'severity': i['severity']
-    }, fi)) == [{'name': 'Link RST sent by Slave', 'severity': 2}, {'name': 'New Node', 'severity': 4}]
+    } for i in fi] == [{'name': 'Link RST sent by Slave', 'severity': 2}, {'name': 'New Node', 'severity': 4}]
 
 
 def test_nozomi_alerts_ids_from_demisto_incidents():

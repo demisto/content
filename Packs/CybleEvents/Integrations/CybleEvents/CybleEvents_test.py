@@ -1,3 +1,4 @@
+import os
 from datetime import datetime, timedelta
 import demistomock as demisto
 import json

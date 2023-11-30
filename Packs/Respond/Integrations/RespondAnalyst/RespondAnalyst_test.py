@@ -96,7 +96,7 @@ def test_get_incident_command(requests_mock):
     command_result = get_incident_command(client, args)
 
     assert command_result
-    assert '### Mandiant Automated Defense Alert, Tenant 1 : 6' in getattr(command_result, 'readable_output')
+    assert '### Mandiant Automated Defense Alert, Tenant 1 : 6' in command_result.readable_output
 
 
 def test_fetch_incidents_no_new(mocker, requests_mock):

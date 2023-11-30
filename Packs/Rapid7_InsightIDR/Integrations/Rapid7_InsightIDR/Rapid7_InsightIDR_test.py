@@ -1,5 +1,4 @@
 """InsightIDR Integration for Cortex XSOAR - Unit Tests file"""
-import io
 import json
 
 import pytest
@@ -10,12 +9,12 @@ REGION = 'us'
 
 
 def util_load_json(path) -> dict:
-    with io.open(path, mode='r', encoding='utf-8') as file:
+    with open(path, encoding='utf-8') as file:
         return json.loads(file.read())
 
 
 def util_load_file(path) -> str:
-    with io.open(path, mode='r', encoding='utf-8') as file:
+    with open(path, encoding='utf-8') as file:
         return file.read()
 
 

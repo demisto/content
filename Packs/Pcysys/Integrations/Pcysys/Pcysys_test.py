@@ -6,7 +6,7 @@ from Pcysys import Client, pentera_run_template_command, pentera_get_task_run_st
 
 
 MOCK_PENTERA_FULL_ACTION_REPORT = 'penterascan-5e4530961deb8eda82b08730.csv'
-MOCK_CSV = open('TestData/mock_csv_file', 'r').read()
+MOCK_CSV = open('TestData/mock_csv_file').read()
 MOCK_AUTHENTICATION = {
     "token": "TOKEN",
     "tgt": "TGT"

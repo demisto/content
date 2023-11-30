@@ -1,9 +1,8 @@
-import io
 import json
 
 
 def util_load_json(path) -> dict:
-    with io.open(path, mode='r', encoding='utf-8') as file:
+    with open(path, encoding='utf-8') as file:
         return json.loads(file.read())
 
 

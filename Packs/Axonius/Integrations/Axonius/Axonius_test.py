@@ -89,7 +89,7 @@ def test_get_tags():
     client = DummyConnect()
     args: dict = {"type": "devices"}
     result = run_command(client=client, args=args, command="axonius-get-tags")
-    assert EXPECTED_DEVICE_TAGS == result.outputs
+    assert result.outputs == EXPECTED_DEVICE_TAGS
 
 
 def test_add_tags():

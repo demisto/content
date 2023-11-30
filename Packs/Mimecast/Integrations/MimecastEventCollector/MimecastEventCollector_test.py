@@ -43,7 +43,7 @@ def test_process_audit_data():
     Then:
         - collect all the events in the data section, add a xsiem_classifier, and set page_token for next run if exists
     """
-    assert AUDIT_LOG_AFTER_PROCESS == audit_event_handler.process_audit_response(AUDIT_LOG_RESPONSE)
+    assert audit_event_handler.process_audit_response(AUDIT_LOG_RESPONSE) == AUDIT_LOG_AFTER_PROCESS
     assert audit_event_handler.page_token == '1234'
 
 
@@ -251,7 +251,7 @@ def test_siem_custom_run():
     Then:
         - assert that the stored returned are the events from last run and that the events_from_prev_run has been modified
     """
-    mock_events_from_prev_run: list = [i for i in range(500)]
+    mock_events_from_prev_run: list = list(range(500))
     siem_event_handler.events_from_prev_run = mock_events_from_prev_run
     assert siem_event_handler.run() == mock_events_from_prev_run[:SIEM_LOG_LIMIT]
     assert siem_event_handler.events_from_prev_run == mock_events_from_prev_run[SIEM_LOG_LIMIT:]
@@ -267,7 +267,7 @@ def test_siem_custom_run2(mocker):
         - Checke the events are stored correctly
     """
     mocker.patch.object(MimecastGetSiemEvents, '_iter_events', return_value=[])
-    mock_events_from_prev_run: list = [i for i in range(200)]
+    mock_events_from_prev_run: list = list(range(200))
     siem_event_handler.events_from_prev_run = mock_events_from_prev_run
     assert siem_event_handler.run() == mock_events_from_prev_run[:SIEM_LOG_LIMIT]
     assert siem_event_handler.events_from_prev_run == []
@@ -282,9 +282,9 @@ def test_siem_custom_run3(mocker):
     Then:
         - Check the events are stored correctly
     """
-    iter_events_mock_return_val = [[i for i in range(600, 900)]]
+    iter_events_mock_return_val = [list(range(600, 900))]
     mocker.patch.object(MimecastGetSiemEvents, '_iter_events', return_value=iter_events_mock_return_val)
-    mock_events_from_prev_run: list = [i for i in range(200)]
+    mock_events_from_prev_run: list = list(range(200))
     siem_event_handler.events_from_prev_run = mock_events_from_prev_run.copy()
 
     stored = siem_event_handler.run()

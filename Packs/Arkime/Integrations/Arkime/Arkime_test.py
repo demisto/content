@@ -1,6 +1,5 @@
 import json
-import io
-from typing import Callable
+from collections.abc import Callable
 
 import pytest
 from requests.auth import HTTPDigestAuth
@@ -11,12 +10,12 @@ from CommonServerPython import *
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
 def util_load_csv(path):
-    with open(path, 'r') as f:
+    with open(path) as f:
         lines = f.read()
     the_response = Response()
     the_response._content = str.encode(lines)
@@ -545,18 +544,18 @@ def test_page_size_validness_for_invalid_input(page_size: int, exception_msg_exp
     assert e.value.message == exception_msg_expected
 
 
-response_without_Histo = (dict(items=[
+response_without_Histo = ({'items': [
     {
         "name": "localhost",
         "count": 3527811,
         "map": {},
     }
-], map={}, recordsTotal=6420810, recordsFiltered=3527811), {"items": [{
+], 'map': {}, 'recordsTotal': 6420810, 'recordsFiltered': 3527811}, {"items": [{
     "name": "localhost",
     "count": 3527811,
     "map": {},
 }], "map": {}, "recordsTotal": 6420810, "recordsFiltered": 3527811})
-response_with_Histo = (dict(items=[
+response_with_Histo = ({'items': [
     {
         "name": "localhost",
         "count": 3527811,
@@ -650,7 +649,7 @@ response_with_Histo = (dict(items=[
         "network.packetsHisto": 150692542,
         "totDataBytesHisto": 26114638647,
         "network.bytesHisto": 45699563388
-    }], graph={
+    }], 'graph': {
     "xmin": 1648817940000,
     "xmax": 1649595540000,
     "interval": 3600,
@@ -728,7 +727,7 @@ response_with_Histo = (dict(items=[
         ],
     ],
     "totDataBytesTotal": 26114638647
-}, map={}, recordsTotal=6420810, recordsFiltered=3527811), {"items": [{
+}, 'map': {}, 'recordsTotal': 6420810, 'recordsFiltered': 3527811}, {"items": [{
     "name": "localhost",
     "count": 3527811,
     "graph": {

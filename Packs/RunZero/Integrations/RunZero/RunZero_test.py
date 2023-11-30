@@ -1,5 +1,4 @@
 import json
-import io
 import pytest
 from CommonServerPython import CommandResults
 
@@ -8,12 +7,12 @@ BASE_URL = 'https://console.runzero.com/api/v1.0'
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
 def util_load_file(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return f.read()
 
 
@@ -239,7 +238,7 @@ def test_comment_add(requests_mock):
               'comment': 'My comment2'}
     )
 
-    assert 'My comment2' == actual_commandResult.raw_response[0]['comments']
+    assert actual_commandResult.raw_response[0]['comments'] == 'My comment2'
     assert f'Comment added to {ASSET_ID} successfully.' == actual_commandResult.readable_output
 
 

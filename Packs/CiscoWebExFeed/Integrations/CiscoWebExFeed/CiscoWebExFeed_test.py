@@ -2,13 +2,12 @@ from bs4 import BeautifulSoup
 import bs4
 import pytest
 import CiscoWebExFeed
-import io
 import json
 from CommonServerPython import *  # noqa: F401
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 

@@ -91,7 +91,7 @@ def test_get_vuln_by_asset(mocker, requests_mock):
 
     actual_result = results['EntryContext']['TenableIO.Vulnerabilities']
 
-    for k in actual_result[0].keys():
+    for k in actual_result[0]:
         assert EXPECTED_VULN_BY_ASSET_RESULTS[0][k] == actual_result[0][k]
 
 

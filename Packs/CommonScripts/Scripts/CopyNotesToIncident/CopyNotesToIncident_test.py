@@ -1,6 +1,6 @@
 from CopyNotesToIncident import copy_notes_to_target_incident
 import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
-from typing import List, Dict, Any
+from typing import Any
 import json
 
 MOCK_TARGET_INCIDENT_ID = '99'
@@ -27,7 +27,7 @@ def test_copy_no_note_entries(mocker):
 
     mock_target_entries = mock_source_entries
 
-    def executeCommand(name: str, args: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def executeCommand(name: str, args: dict[str, Any]) -> list[dict[str, Any]]:
         if name == 'getEntries':
             return mock_target_entries
         elif name == 'addEntries':
@@ -65,7 +65,7 @@ def test_copy_all_note_entries(mocker):
 
     mock_target_entries = [e for e in mock_source_entries if isinstance(e, dict) and 'Note' in e and e['Note'] is True]
 
-    def executeCommand(name: str, args: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def executeCommand(name: str, args: dict[str, Any]) -> list[dict[str, Any]]:
         if name == 'getEntries':
             return mock_target_entries
         elif name == 'addEntries':
@@ -114,7 +114,7 @@ def test_copy_tagged_note_entries(mocker):
         )
     ]
 
-    def executeCommand(name: str, args: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def executeCommand(name: str, args: dict[str, Any]) -> list[dict[str, Any]]:
         if name == 'getEntries':
             return mock_target_entries
         elif name == 'addEntries':

@@ -1,3 +1,4 @@
+import os
 import pytest
 import demistomock as demisto
 from QRadarGetOffenseCorrelations import main

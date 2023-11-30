@@ -1,5 +1,4 @@
 import datetime
-import io
 import json
 import pytest
 import demistomock as demisto
@@ -89,7 +88,7 @@ client = Client(
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -274,7 +273,7 @@ def test_get_file_metadata_command(mocker):
                         return_value=util_load_json('test_data/get_metadata_raw_response.json'))
     result = get_file_metadata_command(client,
                                        {'file': 'accc6794951290467e01b7676e8b4ba177076d54f836589ea7d3298cdf6fc995'})
-    assert 3 == result[0].indicator.dbot_score.score
+    assert result[0].indicator.dbot_score.score == 3
     assert hr in result[0].readable_output
     assert outputs[0] == result[0].outputs
 

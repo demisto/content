@@ -1,3 +1,4 @@
+import os
 from CommonServerPython import *
 from ProofpointThreatResponseEventCollector import fetch_events_command, TIME_FORMAT, Client, list_incidents_command
 

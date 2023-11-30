@@ -1,13 +1,12 @@
 from Inception import Client, variant_discovery_command, file_enrichment_command
 import json
-import io
 
 API_KEY = "FAKEAPIKEY"
 TEST_FILE_HASH = "e7762f90024c5366807c7c145d3456f0ac3be086c0ec3557427d3c2c10a2052d"
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 

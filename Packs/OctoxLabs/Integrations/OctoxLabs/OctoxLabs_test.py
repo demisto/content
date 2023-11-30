@@ -8,7 +8,6 @@ You must add at least a Unit Test function for every XSOAR command
 you are implementing with your integration
 """
 
-import io
 import json
 import pytest
 import requests_mock as rm
@@ -25,7 +24,7 @@ def octox_client() -> OctoxLabs:
 
 
 def util_load_json(path):
-    with io.open(path, mode="r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 

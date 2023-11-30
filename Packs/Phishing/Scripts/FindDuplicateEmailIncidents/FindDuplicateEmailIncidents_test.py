@@ -53,6 +53,7 @@ def executeCommand(command, args=None):
         EXISTING_INCIDENT_ID = args['duplicateId']
     if command == 'FormatURL':
         return [{'Contents': [args['input']], 'Type': 'not error'}]
+    return None
 
 
 def results(arg):
@@ -208,7 +209,7 @@ def test_html_text(mocker):
             </body>\
             </html>\
             '.format(text, text2)
-    clean_text = '{}\n{}'.format(text, text2)
+    clean_text = f'{text}\n{text2}'
     existing_incident = create_incident(body=clean_text, emailfrom='mt.kb.user@gmail.com')
     set_existing_incidents_list([existing_incident])
     mocker.patch.object(demisto, 'args', return_value={'fromPolicy': 'Domain'})

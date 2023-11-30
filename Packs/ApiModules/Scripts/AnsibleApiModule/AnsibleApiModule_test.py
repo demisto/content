@@ -1,4 +1,5 @@
 import os
+import os
 import unittest
 
 from AnsibleApiModule import dict2md, rec_ansible_key_strip, generate_ansible_inventory, generic_ansible, \
@@ -165,7 +166,7 @@ def test_generate_ansible_inventory_creds():
     assert winrm_inv.get('all').get('hosts').get('123.123.123.123:45678').get('ansible_connection') == 'winrm'
 
 
-class Object(object):
+class Object:
     pass
 
 
@@ -298,7 +299,7 @@ class TestCleanAnsiCodes(unittest.TestCase):
         result = clean_ansi_codes(input_string)
 
         # Then: The returned string should be cleaned of ANSI codes.
-        self.assertEqual(result, "Hello World!")
+        assert result == "Hello World!"
 
     def test_without_ansi_codes(self):
         # Given: A string without any ANSI escape codes.
@@ -308,4 +309,4 @@ class TestCleanAnsiCodes(unittest.TestCase):
         result = clean_ansi_codes(input_string)
 
         # Then: The returned string should remain unchanged.
-        self.assertEqual(result, "Hello World!")
+        assert result == "Hello World!"

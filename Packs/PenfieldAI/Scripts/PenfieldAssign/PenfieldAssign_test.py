@@ -9,13 +9,12 @@ MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
 """
 import demistomock as demisto
 import json
-import io
 from PenfieldAssign import penfield_assign, main
 # from pytest import *
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 

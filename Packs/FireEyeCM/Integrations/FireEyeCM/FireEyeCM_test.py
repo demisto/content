@@ -1,4 +1,3 @@
-import io
 
 import pytest
 from freezegun import freeze_time
@@ -9,7 +8,7 @@ from test_data.result_constants import QUARANTINED_EMAILS_CONTEXT, GET_ALERTS_CO
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 

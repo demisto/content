@@ -1,5 +1,4 @@
 import json
-import io
 from collections import namedtuple
 from CommonServerPython import DemistoException
 import CreateIncidents
@@ -10,12 +9,12 @@ Attachment = namedtuple('Attachment', ['name', 'content'])
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
 def util_loaf_file(path):
-    with io.open(path, mode='rb') as f:
+    with open(path, mode='rb') as f:
         return f.read()
 
 

@@ -17,7 +17,7 @@ def load_test_data(folder: str, file_name: str) -> dict:
     Returns:
         dict: Dictionary data loaded from the json file.
     """
-    with open(Path(__file__.parent / "test_data") / folder / f"{file_name}.json", "r") as f:
+    with open(Path(__file__.parent / "test_data") / folder / f"{file_name}.json") as f:
         return json.load(f)
 
 
@@ -56,8 +56,7 @@ class TestLongurlInService:
         mock_data.append(mock_data[-1])
 
         def redirect_side_effect() -> dict:
-            for d in mock_data:
-                yield d
+            yield from mock_data
 
         mocker.patch.object(BaseClient, "_http_request", side_effect=redirect_side_effect())
 
@@ -115,8 +114,7 @@ class TestUnshortenMeService:
         mock_data.append(mock_data[-1])
 
         def redirect_side_effect() -> dict:
-            for d in mock_data:
-                yield d
+            yield from mock_data
 
         mocker.patch.object(BaseClient, "_http_request", side_effect=redirect_side_effect())
 
@@ -199,8 +197,7 @@ class TestBuiltInService:
         Then: Ensure the context output is returned as expected, and that redirect_limit is working as expected.
         """
         def redirect_side_effect() -> Response:
-            for response in responses:
-                yield response
+            yield from responses
 
         mocker.patch.object(BaseClient, "_http_request", side_effect=redirect_side_effect())
 

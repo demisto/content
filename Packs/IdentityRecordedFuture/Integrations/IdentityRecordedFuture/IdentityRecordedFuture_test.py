@@ -1,4 +1,4 @@
-import io
+import os
 import os
 import unittest
 import json
@@ -35,7 +35,7 @@ vcr = vcrpy.VCR(
 
 
 def util_load_json(path):
-    with io.open(path, mode="r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
@@ -61,7 +61,7 @@ class RFClientTest(unittest.TestCase):
         response = {1: 1}
         mock_http_request.return_value = response
         result = self.client.whoami()
-        self.assertEqual(response, result)
+        assert response == result
         mock_http_request.assert_called_once_with(
             method="get", url_suffix="info/whoami", timeout=60
         )
@@ -116,7 +116,7 @@ class RFClientTest(unittest.TestCase):
             retries=3,
             status_list_to_retry=STATUS_TO_RETRY,
         )
-        self.assertEqual(result, http_response)
+        assert result == http_response
 
     @patch("IdentityRecordedFuture.return_error")
     @patch("IdentityRecordedFuture.BaseClient._http_request")
@@ -154,8 +154,8 @@ class RFClientTest(unittest.TestCase):
         self.client._call(url_suffix=mock_url_suffix)
         command_results_mock.assert_called_once_with(
             outputs_prefix="",
-            outputs=dict(),
-            raw_response=dict(),
+            outputs={},
+            raw_response={},
             readable_output="No results found.",
             outputs_key_field="",
         )
@@ -183,7 +183,7 @@ class RFActioncTest(unittest.TestCase):
         self.client.identity_search.return_value = some_random_data
         process_result_mock.return_value = some_random_data
         action_result = self.action.identity_search_command()
-        self.assertEqual(some_random_data, action_result)
+        assert some_random_data == action_result
         self.client.identity_search.assert_called_once()
         process_result_mock.assert_called_once_with(response=some_random_data)
 
@@ -194,7 +194,7 @@ class RFActioncTest(unittest.TestCase):
         self.client.identity_lookup.return_value = some_random_data
         process_result_mock.return_value = some_random_data
         action_result = self.action.identity_lookup_command()
-        self.assertEqual(some_random_data, action_result)
+        assert some_random_data == action_result
         self.client.identity_lookup.assert_called_once()
         process_result_mock.assert_called_once_with(response=some_random_data)
 
@@ -205,7 +205,7 @@ class RFActioncTest(unittest.TestCase):
         self.client.password_lookup.return_value = some_random_data
         process_result_mock.return_value = some_random_data
         action_result = self.action.password_lookup_command()
-        self.assertEqual(some_random_data, action_result)
+        assert some_random_data == action_result
         self.client.password_lookup.assert_called_once()
         process_result_mock.assert_called_once_with(response=some_random_data)
 
@@ -213,25 +213,25 @@ class RFActioncTest(unittest.TestCase):
         """Test result processing function with the case when we received 404 error."""
         response = CommandResults()
         result = self.action._process_result_actions(response)
-        self.assertEqual(response, result)
+        assert response == result
 
     def test_process_result_actions_wrong_type(self) -> None:
         """Test result processing function with the case when we received string data."""
         response = "Some bad response from API"
         result = self.action._process_result_actions(response)
-        self.assertIsNone(result)
+        assert result is None
 
     def test_process_result_actions_no_key_value(self) -> None:
         """Test result processing function with the case when we received date without action_result key."""
         response = {}
         result = self.action._process_result_actions(response)
-        self.assertIsNone(result)
+        assert result is None
 
     def test_process_result_actions(self) -> None:
         """Test result processing function with the case when we received good data."""
         response = {"action_result": {"readable_output": "data"}}
         result = self.action._process_result_actions(response)
-        self.assertIsInstance(result, CommandResults)
+        assert isinstance(result, CommandResults)
 
 
 class MainTest(unittest.TestCase):

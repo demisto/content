@@ -107,7 +107,7 @@ def dt_res(context, keys_to_search):
 
             elif isinstance(context_key_value, dict):
                 dict_list_value = []
-                for dict_key in context_key_value.keys():
+                for dict_key in context_key_value:
                     if dict_key == key:
                         if isinstance(context_key_value[dict_key], list):
                             dict_list_value.append(sorted(context_key_value[dict_key]))

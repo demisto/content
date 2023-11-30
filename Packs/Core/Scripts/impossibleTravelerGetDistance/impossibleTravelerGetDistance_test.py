@@ -70,7 +70,7 @@ def test_impossible_traveler_det_distance_bad_dest_coords(mocker):
     with pytest.raises(ValueError) as e:
         verify_coords(BAD_ARGS)
         if not e:
-            assert False
+            raise AssertionError
 
 
 def test_generate_events_dict(mocker):

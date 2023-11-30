@@ -1,4 +1,3 @@
-import io
 import json
 
 import pytest
@@ -17,7 +16,7 @@ BASE_URL = 'https://test.com'
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -28,8 +27,8 @@ client = Client(base_url=BASE_URL,
 
 
 def test_validated_term():
-    assert 'USA' == validated_term('country', 'USA')
-    assert 1 == validated_term('verdict', 'Whitelisted')
+    assert validated_term('country', 'USA') == 'USA'
+    assert validated_term('verdict', 'Whitelisted') == 1
 
 
 def test_validated_search_terms():
@@ -64,7 +63,7 @@ def test_validated_search_terms_bad_arg():
     with pytest.raises(ValueError) as e:
         validated_search_terms(pre_validation)
     if not e:
-        assert False
+        raise AssertionError
     else:
         assert e.value.args[0] == 'Country ISO code should be 3 characters long'
 
@@ -172,7 +171,7 @@ def test_results_in_progress_polling_true_with_file(mocker, requests_mock):
     assert len(scan_result) == len(hash_response_json) + 1
     assert ['SUCCESS', 'SUCCESS'] == [o['state'] for o in scan_result[0].outputs]
     assert ['malicious', 'malicious'] == [o['verdict'] for o in scan_result[0].outputs]
-    assert [False, False] == [o.bwc_fields['url_analysis'] for o in map(lambda x: x.indicator, scan_result[1:])]
+    assert [False, False] == [o.bwc_fields['url_analysis'] for o in (x.indicator for x in scan_result[1:])]
 
 
 def test_results_in_progress_polling_false(requests_mock):
@@ -360,21 +359,23 @@ def test_crowdstrike_submit_url_command_poll(requests_mock, mocker):
     result = crowdstrike_submit_url_command(client, {'url': BASE_URL, 'environmentID': 300, 'comment': 'some comment',
                                                      "polling": True})
 
-    assert submit_call.called and search_call.called and state_call.called
+    assert submit_call.called
+    assert search_call.called
+    assert state_call.called
 
     assert submit_response in [args.args[0]['Contents'] for args in list(demisto.results.call_args_list)]
     assert result.scheduled_command is not None
 
 
 def test_get_api_id_deprecated_env_id():
-    assert 'filename:200' == get_api_id({'environmentId': 200, 'environementID': 100, 'file': 'filename'})
+    assert get_api_id({'environmentId': 200, 'environementID': 100, 'file': 'filename'}) == 'filename:200'
 
 
 def test_get_api_id_onlyfile():
     with pytest.raises(ValueError) as e:
         get_api_id({'file': 'filename', 'environmentId': '', 'JobID': ''})
     if not e:
-        assert False
+        raise AssertionError
     else:
         assert e.value.args[0] == 'Must supply JobID or environmentID and file'
 
@@ -411,9 +412,9 @@ def test_crowdstrike_analysis_overview_summary_command(requests_mock):
 
 def test_crowdstrike_analysis_overview_refresh_command(requests_mock):
     call = requests_mock.get(BASE_URL + '/overview/filehash/refresh', status_code=200, json={})
-    assert 'The request to refresh the analysis overview was sent successfully.' == \
-           crowdstrike_analysis_overview_refresh_command(client, {'file': 'filehash'}).readable_output \
-           and call.called
+    assert crowdstrike_analysis_overview_refresh_command(client, {'file': 'filehash'}).readable_output == \
+           'The request to refresh the analysis overview was sent successfully.'
+    assert call.called
 
 
 def test_crowdstrike_analysis_overview_command(requests_mock):
@@ -447,7 +448,7 @@ def test_crowdstrike_analysis_overview_command(requests_mock):
 
 @freeze_time("2000-10-31")
 def test_get_default_file_name():
-    assert 'CrowdStrike_report_972950400.pdf' == get_default_file_name('pdf')
+    assert get_default_file_name('pdf') == 'CrowdStrike_report_972950400.pdf'
 
 
 @pytest.mark.parametrize('command_name, method_name', [('cs-falcon-sandbox-search', 'crowdstrike_search_command'),
@@ -461,4 +462,5 @@ def test_main(command_name, method_name, mocker):
     mocker.patch.object(demisto, 'args', return_value={})
     env_method_mock = mocker.patch(f'CrowdStrikeFalconSandboxV2.{method_name}', return_value='OK')
     main()
-    assert env_method_mock.called and env_method_mock.return_value == 'OK'
+    assert env_method_mock.called
+    assert env_method_mock.return_value == 'OK'

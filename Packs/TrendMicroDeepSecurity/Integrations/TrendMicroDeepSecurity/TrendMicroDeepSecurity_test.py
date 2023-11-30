@@ -1,12 +1,12 @@
 import json
-from typing import Any, Dict, List, Union
+from typing import Any
 
 from TrendMicroDeepSecurity import Client, convert_args
 
 BASE_URL = "https://test.api.deepsecurity.trendmicro.com"
 
 
-def load_mock_response(filename: str) -> Union[List[Any], Dict[str, Any]]:
+def load_mock_response(filename: str) -> list[Any] | dict[str, Any]:
     return json.loads(open(f"test_data/{filename}.json").read())
 
 

@@ -8,9 +8,9 @@ def executeCommand(name, args=None):
     elif name == 'demisto-api-post' and args and 'uri' in args and args['uri'] == "/settings/integration/search":
         file_name = 'TestData/integration_search.json'
     else:
-        raise ValueError('Unimplemented command called: {}'.format(name))
+        raise ValueError(f'Unimplemented command called: {name}')
 
-    with open(file_name, 'r') as f:
+    with open(file_name) as f:
         raw_data = f.read()
         data = json.loads(raw_data)
         return data

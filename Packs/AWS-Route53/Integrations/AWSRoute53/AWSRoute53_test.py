@@ -246,7 +246,7 @@ def test_waiter_resource_record_sets_changed(mocker):
 
     session = AWSRoute53Client()
     res = AWS_ROUTE53.waiter_resource_record_sets_changed(args, session)
-    assert "success" == res.readable_output
+    assert res.readable_output == "success"
 
 
 def test_test_dns_answer(mocker):

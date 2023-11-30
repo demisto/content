@@ -1,7 +1,6 @@
 from CommonServerPython import *
 
 import json
-import io
 import pytest
 from pytest import raises
 
@@ -14,7 +13,7 @@ TEST_API_KEY = '1.eyJleHAiOiAxNjI1NjYxMDc3fQ=='
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 

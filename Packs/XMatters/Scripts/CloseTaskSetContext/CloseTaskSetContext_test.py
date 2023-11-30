@@ -12,7 +12,7 @@ def test_close_task_set_context(mocker):
             # Success
             return {}
         else:
-            raise ValueError('Unimplemented command called: {}'.format(name))
+            raise ValueError(f'Unimplemented command called: {name}')
 
     mocker.patch.object(demisto, 'args', return_value={
         "entry_id": "waiter",

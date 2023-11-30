@@ -1,6 +1,5 @@
 import json
 import McAfeeNSMv2
-import io
 import pytest
 from McAfeeNSMv2 import Client
 from CommonServerPython import *  # noqa: F401
@@ -12,7 +11,7 @@ def mcafeensmv2_client():
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -1482,4 +1481,5 @@ def test_deploy_polling_message(input, output):
                                                      "push_gam_updates": False,
                                                      "push_ssl_key": False
                                                      })
-    assert res[1] == output[1] and res[0] == output[0]
+    assert res[1] == output[1]
+    assert res[0] == output[0]

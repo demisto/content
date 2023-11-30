@@ -1,4 +1,3 @@
-import io
 from freezegun import freeze_time
 import pytest
 import json
@@ -10,7 +9,7 @@ import demistomock as demisto
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -24,7 +23,7 @@ def client(mocker):
         proxy=False)
 
     mocker.patch.object(Client, 'get_access_token', return_value='access_token')
-    yield client
+    return client
 
 
 @pytest.fixture()

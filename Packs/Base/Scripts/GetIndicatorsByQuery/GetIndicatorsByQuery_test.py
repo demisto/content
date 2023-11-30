@@ -87,7 +87,7 @@ def test_main_populate(mocker):
     entry = main()
     indicators = entry['Contents']
     assert len(indicators) == 2
-    assert set(indicators[0].keys()) == set(['indicator_type', 'testField'])
+    assert set(indicators[0].keys()) == {'indicator_type', 'testField'}
 
 
 def test_main_unpopulate(mocker):

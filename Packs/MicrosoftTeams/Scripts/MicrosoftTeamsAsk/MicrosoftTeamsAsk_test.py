@@ -33,8 +33,9 @@ def execute_command(name, args=None):
             if 'team' in args:
                 expected_script_arguments['team'] = 'TestTeam'
         assert args == expected_script_arguments
+        return None
     else:
-        raise ValueError('Unimplemented command called: {}'.format(name))
+        raise ValueError(f'Unimplemented command called: {name}')
 
 
 def test_microsoft_teams_ask(mocker):

@@ -1,3 +1,4 @@
+import os
 """
 Unit testing for CiscoAMP (Advanced Malware Protection)
 """

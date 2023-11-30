@@ -99,7 +99,7 @@ def test_test_client(requests_mock):
 
 
 def test_fetch_incidents(mocker, requests_mock):
-    requests_mock.get(BASE_URL + 'immediate-threats/ids?from={}'.format(MOCK_TIMESTAMP),
+    requests_mock.get(BASE_URL + f'immediate-threats/ids?from={MOCK_TIMESTAMP}',
                       json=FETCH_INCIDENTS_TEST)
 
     for incident_id in TECHNICAL_INCIDENTS_IDS:

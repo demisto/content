@@ -2,12 +2,11 @@ import pytest
 from freezegun import freeze_time
 from pytest import raises
 from CommonServerPython import *
-import io
 import copy
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -549,7 +548,7 @@ def test_get_incident_original_message_command(requests_mock):
 
     requests_mock.get(
         'https://SymantecDLPV2.com/ProtectManager/webservices/v2/incidents/1234/originalMessage',
-        content='123'.encode()
+        content=b'123'
     )
 
     client = Client(

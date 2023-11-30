@@ -206,8 +206,8 @@ class TestRFClient:
 
         assert result.outputs_prefix == ''
         assert result.outputs_key_field == ''
-        assert result.outputs == dict()
-        assert result.raw_response == dict()
+        assert result.outputs == {}
+        assert result.raw_response == {}
         assert result.readable_output == 'No results found.'
 
     def test_fetch_incidents(self, mocker):
@@ -485,11 +485,11 @@ class TestActions:
         result_actions = actions._process_result_actions(response=response)
         assert result_actions is None
 
-        response = {'data': 'mock', 'result_actions': list()}
+        response = {'data': 'mock', 'result_actions': []}
         result_actions = actions._process_result_actions(response=response)
         assert result_actions is None
 
-        response = {'data': 'mock', 'result_actions': dict()}
+        response = {'data': 'mock', 'result_actions': {}}
         result_actions = actions._process_result_actions(response=response)
         assert result_actions is None
 

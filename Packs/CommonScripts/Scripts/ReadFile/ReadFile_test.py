@@ -40,7 +40,7 @@ def test_extract_indicators_empty_file(mocker):
     with pytest.raises(Exception) as e:
         read_file(args)
         if not e:
-            assert False
+            raise AssertionError
 
 
 def test_read_binary_to_raw_decode_error(mocker):
@@ -63,7 +63,7 @@ def test_read_binary_to_raw_decode_error(mocker):
     with pytest.raises(Exception) as e:
         read_file(args)
         if not e:
-            assert False
+            raise AssertionError
 
 
 def test_read_binary_to_base64(mocker):
@@ -121,7 +121,7 @@ def test_read_binary_to_json_decode_error(mocker):
     with pytest.raises(Exception) as e:
         read_file(args)
         if not e:
-            assert False
+            raise AssertionError
 
 
 def test_read_utf8_to_json(mocker):

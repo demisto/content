@@ -1,6 +1,5 @@
 
 import json
-import io
 from CensysV2 import Client, censys_view_command, censys_search_command
 import pytest
 
@@ -29,7 +28,7 @@ SEARCH_CERTS_OUTPUTS = [{
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 

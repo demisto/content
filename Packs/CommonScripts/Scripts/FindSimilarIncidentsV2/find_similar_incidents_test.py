@@ -176,7 +176,7 @@ def execute_command(command, args=None):
 
 def test_get_incidents_by_keys():
     from FindSimilarIncidentsV2 import get_incidents_by_keys
-    res = get_incidents_by_keys({u'name': u'\U0001f489'}, 'created', '2020-10-07T19:49:37.392378+03:00', '7137', 72,
+    res = get_incidents_by_keys({'name': '\U0001f489'}, 'created', '2020-10-07T19:49:37.392378+03:00', '7137', 72,
                                 False, '1000', 'status:Closed', 'AND')
     assert res == incident_by_keys
 
@@ -192,20 +192,20 @@ def test_build_similar_keys_list():
     """
     from FindSimilarIncidentsV2 import build_incident_fields_query
 
-    int_res = build_incident_fields_query({u'sla': 0})
+    int_res = build_incident_fields_query({'sla': 0})
     assert int_res == ['sla:=0']
 
-    str_res = build_incident_fields_query({u'employeeid': u'1111'})
-    assert str_res == [u'employeeid="1111"']
+    str_res = build_incident_fields_query({'employeeid': '1111'})
+    assert str_res == ['employeeid="1111"']
 
-    list_res = build_incident_fields_query({u'test': [u'name1', 0]})
-    assert list_res == [u'test="name1"', 'test:=0']
+    list_res = build_incident_fields_query({'test': ['name1', 0]})
+    assert list_res == ['test="name1"', 'test:=0']
 
-    list_res = build_incident_fields_query({u'test': []})
+    list_res = build_incident_fields_query({'test': []})
     assert list_res == ['test=[]']
 
-    escape_res = build_incident_fields_query({u'test': u'"C:\\test\\escape\\sequence" test'})
-    assert escape_res == [u'test="\\"C:\\test\\escape\\sequence\\" test"']
+    escape_res = build_incident_fields_query({'test': '"C:\\test\\escape\\sequence" test'})
+    assert escape_res == ['test="\\"C:\\test\\escape\\sequence\\" test"']
 
 
 def test_similar_incidents_fields(mocker):
@@ -494,7 +494,7 @@ def dt_res(context, keys_to_search):
 
             elif isinstance(context_key_value, dict):
                 dict_list_value = []
-                for dict_key in context_key_value.keys():
+                for dict_key in context_key_value:
                     if dict_key == key:
                         if isinstance(context_key_value[dict_key], list):
                             dict_list_value.append(sorted(context_key_value[dict_key]))

@@ -9,7 +9,7 @@ import json
 
 
 def util_load_json(path):
-    with open(path, 'r') as f:
+    with open(path) as f:
         return json.load(f)
 
 

@@ -5,7 +5,7 @@ def test_main(mocker):
     from RegexExtractAll import main
 
     # test basic functionality
-    with open('TestData/data.txt', 'r') as f:
+    with open('TestData/data.txt') as f:
         test_data = f.read()
 
     mocker.patch.object(demisto, 'args', return_value={

@@ -1,7 +1,6 @@
-from typing import Dict
 import pytest
 
-DEMISTO_ARGS: Dict = {"stripSubject": 'True',
+DEMISTO_ARGS: dict = {"stripSubject": 'True',
                       "escapeColons": 'False',
                       "searchThisWeek": 'true',
                       "from": "my_test_mail@test.com",

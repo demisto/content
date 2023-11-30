@@ -1,3 +1,4 @@
+import os
 import json
 from defusedxml import ElementTree
 import pytest

@@ -1,3 +1,4 @@
+import os
 import pytest
 from json import load
 from GroupIBTIA import fetch_incidents_command, Client, transform_function, main, get_available_collections_command

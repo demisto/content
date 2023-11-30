@@ -1,12 +1,11 @@
 import json
-import io
 import pytest
 
 from CommonServerPython import DemistoException, FeedIndicatorType, CommandResults
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -429,7 +428,7 @@ def test_calculate_dbot_score(socradar_score, dbot_score):
 def test_map_indicator_type():
     from SOCRadarThreatFusion import map_indicator_type
 
-    assert FeedIndicatorType.IP == map_indicator_type('ipv4')
+    assert map_indicator_type('ipv4') == FeedIndicatorType.IP
     assert FeedIndicatorType.IPv6 == map_indicator_type('ipv6')
     assert FeedIndicatorType.Domain == map_indicator_type('hostname')
     assert FeedIndicatorType.File == map_indicator_type('hash')

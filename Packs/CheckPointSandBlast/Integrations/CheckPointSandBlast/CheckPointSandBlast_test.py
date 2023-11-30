@@ -1,3 +1,4 @@
+import os
 """
 Unit testing for Check Point Threat Emulation (SandBlast)
 commands: query, upload, download and quota.
@@ -40,7 +41,7 @@ def load_mock_response(file_name: str) -> str | io.TextIOWrapper:
     """
     path = os.path.join('test_data', file_name)
 
-    with io.open(path, mode='r', encoding='utf-8') as mock_file:
+    with open(path, encoding='utf-8') as mock_file:
         if os.path.splitext(file_name)[1] == '.json':
             return json.loads(mock_file.read())
 

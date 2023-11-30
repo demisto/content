@@ -3,7 +3,6 @@ import pytest
 import requests
 import requests_mock
 import sys
-import io
 import demistomock as demisto
 
 IP_ADDRESS = '127.0.0.1'
@@ -209,7 +208,7 @@ def init_tests(mocker):
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 

@@ -1,5 +1,4 @@
 import json
-import io
 
 import pytest
 
@@ -23,7 +22,7 @@ def mock_client(mocker, http_request_result=None):
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -90,9 +89,9 @@ def test_update_rule_command(mocker):
                                                                                  'resource_group_name': 'resourceGroupName'})
     properties = client.http_request.call_args_list[1][1].get('data').get('properties')
     assert 'destinationPortRange' not in properties.keys()
-    assert 'destinationPortRanges' in properties.keys()
+    assert 'destinationPortRanges' in properties
     assert 'sourcePortRanges' not in properties.keys()
-    assert 'sourcePortRange' in properties.keys()
+    assert 'sourcePortRange' in properties
     assert properties.get('protocol') == properties.get('sourceAddressPrefix') == '*'
 
 

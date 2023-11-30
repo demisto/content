@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *  # noqa: F401
 import pytest
-from typing import List, Dict, Any
+from typing import Any
 
 
 def equals_object(obj1, obj2) -> bool:
@@ -17,7 +17,7 @@ def equals_object(obj1, obj2) -> bool:
     elif isinstance(obj1, list):
         # Compare lists (ignore order)
         list2 = list(obj2)
-        for i1, v1 in enumerate(obj1):
+        for _i1, v1 in enumerate(obj1):
             for i2, v2 in enumerate(list2):
                 if equals_object(v1, v2):
                     list2.pop(i2)
@@ -30,10 +30,10 @@ def equals_object(obj1, obj2) -> bool:
 
 
 class GetIndicator:
-    def __init__(self, indicators: List[str]):
+    def __init__(self, indicators: list[str]):
         self.__indicators = indicators
 
-    def get_indicator(self, cmd: str, params: Dict[str, Any]) -> list:
+    def get_indicator(self, cmd: str, params: dict[str, Any]) -> list:
         indicator = params.get('value')
         if indicator in self.__indicators:
             return [{'value': indicator}]

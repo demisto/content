@@ -160,7 +160,7 @@ class TestMain:
         requests_mock.get('/api/dnsdata/v2/dns_event', status_code=401, json={'i dont': 'really care'})
         main()
         return_error_mock.assert_called_once()
-        assert 'authentication error please check your API key and try again.' == return_error_mock.call_args.args[0]
+        assert return_error_mock.call_args.args[0] == 'authentication error please check your API key and try again.'
 
     def test_test_module_happy_flow(self, mocker, return_results_mock, requests_mock):
         demisto_input_mocker(mocker, 'test-module')

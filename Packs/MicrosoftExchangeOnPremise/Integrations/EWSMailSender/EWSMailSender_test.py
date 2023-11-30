@@ -1,3 +1,4 @@
+import os
 import logging
 import demistomock as demisto
 import pytest

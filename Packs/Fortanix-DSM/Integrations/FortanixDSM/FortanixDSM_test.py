@@ -51,13 +51,12 @@ https://xsoar.pan.dev/docs/integrations/unit-testing
 """
 
 import json
-import io
 import pytest
 from CommonServerPython import DemistoException
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -706,7 +705,11 @@ def test_helpers(method):
 
     elif method == 'headers':
         res = get_headers('some_user', 'some_passwd')
-        assert res and isinstance(res, dict) and res['Authorization']
+        assert res
+        assert isinstance(res, dict)
+        assert res['Authorization']
 
         res = get_headers(None, None, None, 'some_bearer')
-        assert res and isinstance(res, dict) and res['Authorization']
+        assert res
+        assert isinstance(res, dict)
+        assert res['Authorization']

@@ -1,6 +1,6 @@
+import os
 """Test file for CyCognito Integration."""
 
-import io
 import json
 import os.path
 from unittest import mock
@@ -32,7 +32,7 @@ def mock_client():
 
 def util_load_json(path):
     """Load a JSON file to python dictionary."""
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -616,8 +616,7 @@ def test_list_issues_command_with_empty_response(requests_mock, mock_client):
     ({"first_seen": "20-20-2022", 'asset_type': 'ip'}, 'Invalid date: "first_seen"="20-20-2022"'),
     ({"last_seen": "20-20-2022", 'asset_type': 'ip'}, 'Invalid date: "last_seen"="20-20-2022"'),
     ({'security_grade': 'dummy', 'asset_type': 'ip'},
-     ERRORS['INVALID_MULTI_SELECT_PARAM'].format('security_grade', list(
-         map(lambda x: x.upper(), AVAILABLE_SECURITY_GRADE)))),
+     ERRORS['INVALID_MULTI_SELECT_PARAM'].format('security_grade', [x.upper() for x in AVAILABLE_SECURITY_GRADE])),
     ({'status': 'dummy', 'asset_type': 'ip'},
      ERRORS['INVALID_MULTI_SELECT_PARAM'].format('status', AVAILABLE_STATUS_TYPES)),
     ({"count": "incorrect_count", 'asset_type': 'ip'}, 'Invalid number: "count"="incorrect_count"'),

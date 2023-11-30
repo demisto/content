@@ -50,6 +50,7 @@ def executeCommand(command, args=None):
     elif command == 'UnEscapeURLs':
         url = args.get('input')
         return [{'Contents': url}]
+    return None
 
 
 def test_regular_malicious_new_domain(mocker):

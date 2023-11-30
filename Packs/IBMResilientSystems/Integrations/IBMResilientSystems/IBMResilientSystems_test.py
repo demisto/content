@@ -78,7 +78,8 @@ def test_update_incident_command(mocker):
 
 
 def no_order_list_equals(l1: list, l2: list):
-    assert len(l1) == len(l2) and all(item in l2 for item in l1)
+    assert len(l1) == len(l2)
+    assert all(item in l2 for item in l1)
 
 
 def test_update_incident_command_with_invalid_json(mocker):

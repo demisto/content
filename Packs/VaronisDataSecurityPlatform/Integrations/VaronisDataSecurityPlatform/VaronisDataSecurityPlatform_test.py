@@ -1,5 +1,4 @@
 import json
-import io
 import demistomock as demisto
 from pytest_mock import MockerFixture
 
@@ -7,7 +6,7 @@ from VaronisDataSecurityPlatform import Client
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -189,7 +188,7 @@ def test_fetch_incidents(mocker: MockerFixture, requests_mock: MockerFixture):
 
 def test_enrich_with_url():
     from VaronisDataSecurityPlatform import enrich_with_url
-    obj = dict()
+    obj = {}
     baseUrl = 'http://test.com'
     id = '1'
     expectedUrl = f'{baseUrl}/#/app/analytics/entity/Alert/{id}'

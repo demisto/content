@@ -8,12 +8,12 @@ ARGS_IS_ENABLED_FILTER = {'instance_status': 'active'}
 ARGS_ALL_FILTERS = {'brand': 'EWS v2, splunk', 'instance_status': 'active'}
 PREPARED_ARGS_ALL_FILTERS = {
     'instance_status': ARGS_ALL_FILTERS['instance_status'],
-    'filter_brand': list(map(lambda x: x.strip(), ARGS_ALL_FILTERS['brand'].split(',')))
+    'filter_brand': [x.strip() for x in ARGS_ALL_FILTERS['brand'].split(',')]
 }
 
 
 def load_json_file(path):
-    with open(path, 'r') as json_file:
+    with open(path) as json_file:
         json_string = json_file.read()
     return json.loads(json_string)
 

@@ -93,6 +93,7 @@ def mock_incident_success_response(method, *args, **kwargs):
         patch_response = Response()
         patch_response.status_code = 204
         return patch_response
+    return None
 
 
 def mock_incident_warning_response(method, *args, **kwargs):
@@ -103,6 +104,7 @@ def mock_incident_warning_response(method, *args, **kwargs):
         return api_response['create_success']
     elif method == 'PATCH':
         raise DemistoException("SOME_ISSUE_WITH_UPDATE")
+    return None
 
 
 def get_no_content_success_response():
@@ -694,7 +696,7 @@ class BmcHelixRemedyForceTestCase(unittest.TestCase):
         mocker_http_request.return_value = success_resp
 
         from BmcHelixRemedyForce import get_service_request_def_id_from_name
-        assert 'ID_FOR_GIVEN_NAME' == get_service_request_def_id_from_name("GIVEN_NAME", self.client)
+        assert get_service_request_def_id_from_name("GIVEN_NAME", self.client) == 'ID_FOR_GIVEN_NAME'
 
     @patch('BmcHelixRemedyForce.Client.http_request')
     def test_get_service_request_def_id_from_name_failure(self, mocker_http_request):
@@ -906,7 +908,7 @@ class BmcHelixRemedyForceTestCase(unittest.TestCase):
 
         resp = get_id_from_incident_number(self.client, '123')
 
-        assert '123456789' == resp
+        assert resp == '123456789'
 
     @patch('BmcHelixRemedyForce.Client.http_request')
     def test_get_id_from_incident_name_failed(self, mocker_http_request):
@@ -2238,7 +2240,7 @@ class BmcHelixRemedyForceTestCase(unittest.TestCase):
         actual_result = bmc_remedy_broadcast_details_get_command(self.client, args)
         for call in req_obj.call_args_list:
             args, kwargs = call
-        assert "https://sample.api.com/services/data/v48.0/query" == args[1]
+        assert args[1] == "https://sample.api.com/services/data/v48.0/query"
         assert actual_result.outputs_prefix == OUTPUT_PREFIX["BROADCAST"]
         assert actual_result.raw_response == fetch_dummy_broadcasts()
         assert actual_result.outputs == self.dummy_broadcasts
@@ -2263,7 +2265,7 @@ class BmcHelixRemedyForceTestCase(unittest.TestCase):
         for call in req_obj.call_args_list:
             args, kwargs = call
 
-        assert "https://sample.api.com/services/data/v48.0/query" == args[1]
+        assert args[1] == "https://sample.api.com/services/data/v48.0/query"
         assert "BMCServiceDesk__Category_ID__c='abc'" in kwargs['params']['q']
         assert actual_result.outputs_prefix == OUTPUT_PREFIX["BROADCAST"]
         assert actual_result.raw_response == fetch_dummy_broadcasts()
@@ -2367,8 +2369,8 @@ class BmcHelixRemedyForceTestCase(unittest.TestCase):
         assert len(response) == 1
         assert 'BASE_URL' + URL_SUFFIX['DOWNLOAD_ATTACHMENT'].format('CONTENT_ID') == response[0].get('Download Link',
                                                                                                       '')
-        assert 'test_doc' == response[0].get('File', '')
-        assert 'TEST USER' == response[0].get('Created By', '')
+        assert response[0].get('File', '') == 'test_doc'
+        assert response[0].get('Created By', '') == 'TEST USER'
 
     @patch('demistomock.params')
     @patch('BmcHelixRemedyForce.Client.http_request')
@@ -2391,7 +2393,7 @@ class BmcHelixRemedyForceTestCase(unittest.TestCase):
         with pytest.raises(DemistoException) as e:
             get_attachments_for_incident(self.client, 'SOME_ID')
 
-        assert 'ERROR_MSG' == str(e.value)
+        assert str(e.value) == 'ERROR_MSG'
 
     @patch('BmcHelixRemedyForce.Client.http_request')
     def test_get_notes_for_incident_success(self, mock_http_res):

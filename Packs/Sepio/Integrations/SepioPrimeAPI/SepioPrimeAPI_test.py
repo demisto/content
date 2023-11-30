@@ -1,5 +1,4 @@
 import json
-import io
 
 
 def util_load_json(path):
@@ -8,7 +7,7 @@ def util_load_json(path):
     path_to_current_file = os.path.realpath(__file__)
     current_directory = os.path.dirname(path_to_current_file)
     path = os.path.join(current_directory, path)
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 

@@ -59,6 +59,6 @@ def test_invalid_base64_file_in_list(mocker):
 
     try:
         Base64ListToFile.base64_list_to_file(args)
-        assert False
+        raise AssertionError
     except Exception:
         assert True

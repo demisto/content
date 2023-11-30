@@ -1,3 +1,4 @@
+import os
 """HelloWorld Feed Integration for Cortex XSOAR - Unit Tests file
 
 This file contains the Unit Tests for the HelloWorld Integration based

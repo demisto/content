@@ -1,7 +1,6 @@
 """GLPI Integration for Cortex XSOAR - Unit Tests file"""
 
 import json
-import io
 import ast
 # from unittest.mock import Mock
 import demistomock as demisto
@@ -15,18 +14,18 @@ from test_data.glpi_fetch_incidents import FETCHINCIDENTS_SEARCHTICKET, FETCHINC
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
 def util_load_mock(path):
-    with open(path, 'r') as f:
+    with open(path) as f:
         data = f.read()
     return ast.literal_eval(data)
 
 
 def util_load_mock_without_ast(path):
-    with open(path, 'r') as f:
+    with open(path) as f:
         return f.read()
 
 

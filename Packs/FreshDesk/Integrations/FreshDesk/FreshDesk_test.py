@@ -1,5 +1,4 @@
 import demistomock as demisto
-import io
 import json
 
 MOCK_PARAMS = {
@@ -12,7 +11,7 @@ MOCK_PARAMS = {
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -126,7 +125,7 @@ def test_ticket_to_incident(mocker):
     """
     mocker.patch.object(demisto, 'params', return_value=MOCK_PARAMS)
     import FreshDesk
-    incident = FreshDesk.ticket_to_incident({'subject': u'\u2013'})
+    incident = FreshDesk.ticket_to_incident({'subject': '\u2013'})
     assert incident == {
         'name': 'Freshdesk Ticket: "?"',
         'occurred': None,

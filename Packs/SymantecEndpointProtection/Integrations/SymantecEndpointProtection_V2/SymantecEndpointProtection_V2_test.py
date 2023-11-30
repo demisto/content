@@ -8,14 +8,14 @@ def mock_demisto(mocker):
 
 def _get_api_response():
     response = "test-data/SEPM-endpoint-api-response.json"
-    with open(response, 'r') as f:
+    with open(response) as f:
         api_response = json.loads(f.read())
     return api_response
 
 
 def _get_expected_output():
     response = "test-data/SEPM-expected-endpoint-extract.json"
-    with open(response, 'r') as f:
+    with open(response) as f:
         api_response = json.loads(f.read())
     return api_response
 

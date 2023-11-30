@@ -3,7 +3,6 @@
 """
 
 import json
-import io
 import copy
 import demistomock as demisto
 import pytest
@@ -18,7 +17,7 @@ def handle_calling_context(mocker):
 
 
 def util_load_json(path):
-    with io.open(path, mode="r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
@@ -1711,7 +1710,7 @@ def test_expanse_get_certificate_by_query(requests_mock):
     assert result[-1].outputs_key_field == "id"
     assert result[-1].outputs == mock_certs["data"][: int(MOCK_LIMIT)]
 
-    certs_sha256 = set([base64.urlsafe_b64decode(c['certificate']['pemSha256']).hex() for c in mock_certs['data']])
+    certs_sha256 = {base64.urlsafe_b64decode(c['certificate']['pemSha256']).hex() for c in mock_certs['data']}
     for indicator in result[:-1]:
         assert isinstance(indicator.indicator, Common.Certificate)
         assert indicator.indicator.sha256 == indicator.indicator.dbot_score.indicator

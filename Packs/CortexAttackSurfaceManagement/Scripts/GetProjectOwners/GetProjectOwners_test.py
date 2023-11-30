@@ -71,7 +71,7 @@ def test_get_iam_policy(mocker):
     # integration enabled; no error thrown
     demisto_execution_mock = mocker.patch.object(demisto, 'executeCommand', return_value=TEST_IAM_POLICY)
     with does_not_raise():
-        assert TEST_IAM_POLICY == get_iam_policy('project-id')
+        assert get_iam_policy('project-id') == TEST_IAM_POLICY
 
     # integration disabled and/or error thrown
     demisto_execution_mock.side_effect = Exception('<Integration Error Msg>')

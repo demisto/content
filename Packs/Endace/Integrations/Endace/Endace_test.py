@@ -180,9 +180,9 @@ def test_applianceurl_arg(arg, monkeypatch):
               'src_host_list': '', 'dest_host_list': '', 'src_port_list': '', 'dest_port_list': ''}])
 def test_endace_get_input_arguments(args):
     app = Endace.EndaceApp(APPLIANCEURL, USERNAME, PASSWORD, INSECURE, HOSTNAME)
-    with pytest.raises(ValueError) as excinfo:
+    with pytest.raises(ValueError):
         app.endace_get_input_arguments(args)
-    assert "Wrong" or "match" in str(excinfo.value)
+    assert True
 
 
 @pytest.mark.parametrize(
@@ -196,9 +196,9 @@ def test_endace_get_search_status_args(args, monkeypatch):
     monkeypatch.setattr(Endace.EndaceApp, "wait_time", 1)
 
     app = Endace.EndaceApp(APPLIANCEURL, USERNAME, PASSWORD, INSECURE, HOSTNAME)
-    with pytest.raises(ValueError) as excinfo:
+    with pytest.raises(ValueError):
         Endace.endace_get_search_status_command(app, args)
-    assert "Wrong" or "match" in str(excinfo.value)
+    assert True
 
 
 '''COMMAND TEST FUNCTIONS'''
@@ -352,9 +352,9 @@ class TestEndaceAPPArchive:
         monkeypatch.setattr(Endace.EndaceApp, "create_archive_task", mock_endaceapp_create_archive_task)
 
         app = Endace.EndaceApp(APPLIANCEURL, USERNAME, PASSWORD, INSECURE, HOSTNAME)
-        with pytest.raises(ValueError or TypeError) as excinfo:
+        with pytest.raises(ValueError or TypeError):
             Endace.endace_create_archive_command(app, input_var)
-        assert "Wrong" or "match" in str(excinfo.value)
+        assert True
 
     @pytest.mark.parametrize(
         "input_var, expected", [(('https://probe-1/vision2/data/archive/',

@@ -31,7 +31,7 @@ def test_get_context_no_incidents_or_context(mocker, incidents, error, context):
     with pytest.raises(DemistoException) as e:
         check_context()
         if not e:
-            assert False
+            raise AssertionError
 
 
 @pytest.mark.parametrize('incidents, context', [(GET_INCIDENTS_RESPONSE, GET_CONTEXT_RESPONSE_WITH_FAILED_TASKS)])

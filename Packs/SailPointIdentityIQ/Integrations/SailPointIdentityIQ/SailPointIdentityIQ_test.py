@@ -1,7 +1,6 @@
 from CommonServerPython import *
 
 import json
-import io
 import pytest
 from unittest import mock
 from unittest.mock import patch
@@ -25,7 +24,7 @@ def util_load_json(path: str):
     """
     Utility to load json data from a local folder.
     """
-    with io.open(path, mode='r', encoding='utf-8') as file:
+    with open(path, encoding='utf-8') as file:
         return json.loads(file.read())
 
 

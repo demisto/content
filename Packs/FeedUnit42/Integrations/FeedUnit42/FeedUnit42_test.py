@@ -1,3 +1,4 @@
+import os
 import pytest
 from FeedUnit42 import Client, get_indicators_command, fetch_indicators, sort_report_objects_by_type, parse_reports, \
     match_relationships, parse_related_indicators, create_mitre_indicator

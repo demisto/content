@@ -25,7 +25,7 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 @pytest.fixture
 def argtest():
     def _argtest(**_kwargs):
-        class TestArgs(object):
+        class TestArgs:
             def __call__(self, *args, **kwargs):
                 self.args = list(args)
                 self.kwargs = kwargs
@@ -57,7 +57,7 @@ def load_mock_response(file_name: str) -> dict:
     Args:
         file_name (str): Name of the mock response JSON file to return.
     """
-    with open(f"test_data/{file_name}", mode="r", encoding="utf-8") as json_file:
+    with open(f"test_data/{file_name}", encoding="utf-8") as json_file:
         return json.loads(json_file.read())
 
 

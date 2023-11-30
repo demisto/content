@@ -1,8 +1,7 @@
 from MatchIPinCIDRIndicators import match_ip_in_cidr_indicators
 import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
-from typing import List, Dict, Any
+from typing import Any
 import json
-import io
 
 MOCK_IP = '44.224.1.1'
 MOCK_QUERY = (
@@ -42,7 +41,7 @@ MOCK_RESULT = [
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -59,7 +58,7 @@ def test_match_ip_in_cidr_indicators(mocker):
     """
     mock_indicator = util_load_json('test_data/indicator.json')
 
-    def executeCommand(name: str, args: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def executeCommand(name: str, args: dict[str, Any]) -> list[dict[str, Any]]:
         if name == 'findIndicators':
             if 'query' not in args or args['query'] != MOCK_QUERY:
                 raise ValueError('Invalid query')

@@ -1,3 +1,4 @@
+import os
 import pytest
 from ServiceDeskPlus_On_Premise import Client, create_request_command, update_request_command, list_requests_command, \
     linked_request_command, get_resolutions_list_command, delete_request_command, assign_request_command, \

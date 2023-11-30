@@ -1,5 +1,4 @@
 import json
-import io
 import demistomock as demisto
 from BoxV2 import Client
 
@@ -11,7 +10,7 @@ def util_load_json(path):
     :param path: str - Path to the JSON file
     :return: dict - A dict representation of the JSON
     """
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 

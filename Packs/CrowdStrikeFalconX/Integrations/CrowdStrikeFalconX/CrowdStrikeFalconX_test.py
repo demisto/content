@@ -249,7 +249,8 @@ def test_running_polling_command_success_for_url(mocker):
     expected_outputs = GET_FULL_REPORT_CONTEXT_EXTENDED
     command_results = run_polling_command(client, args, 'cs-fx-submit-url', send_url_to_sandbox_analysis_command,
                                           get_full_report_command, 'URL')
-    assert isinstance(command_results, list) and len(command_results) == 1
+    assert isinstance(command_results, list)
+    assert len(command_results) == 1
 
     assert command_results[0].outputs == expected_outputs
     assert command_results[0].scheduled_command is None
@@ -279,7 +280,8 @@ def test_running_polling_command_success_for_file(mocker):
     command_results = run_polling_command(client, args, 'cs-fx-submit-uploaded-file',
                                           send_uploaded_file_to_sandbox_analysis_command,
                                           get_full_report_command, 'FILE')
-    assert isinstance(command_results, list) and len(command_results) == 1
+    assert isinstance(command_results, list)
+    assert len(command_results) == 1
     assert command_results[0].outputs == expected_outputs
     assert command_results[0].scheduled_command is None
 
@@ -527,7 +529,8 @@ def test_file_command(requests_mock, mocker, file: str, mocked_address: str, moc
 
     assert id_query_mock.call_count == 1
     assert all(mocked_search.call_count == 1 for mocked_search in search_query_mocks)
-    assert isinstance(command_results, list) and len(command_results) == len(file_ids)
+    assert isinstance(command_results, list)
+    assert len(command_results) == len(file_ids)
 
 
 @pytest.mark.parametrize('mocked_address,ioc_id,mocked_response,command_results_output',

@@ -1,3 +1,4 @@
+import os
 import demistomock as demisto
 from ConcatFormat import main
 import json

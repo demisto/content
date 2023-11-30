@@ -528,10 +528,10 @@ def test_fetch_single_alert(requests_mock):
     requests_mock.get(MOCK_URL + '/v1/events/packetalerts/' + ID, json=MOCK_PKT_ALERT)
     client = Client(MOCK_URL + '/v1/', verify=True, headers=MOCK_HEADERS, auth=('test_user', 'test123'))
     alert_type = "packet"
-    assert MOCK_PKT_ALERT == fetch_single_alert(client, ID, alert_type).raw_response
+    assert fetch_single_alert(client, ID, alert_type).raw_response == MOCK_PKT_ALERT
 
 
 def test_get_woot_alerts(requests_mock):
     client = Client(MOCK_URL + '/v1/', verify=True, headers=MOCK_HEADERS, auth=('test_user', 'test123'))
     requests_mock.post(MOCK_URL + '/v1/events/anomalies', json=ANOMALY_ALERT)
-    assert ANOMALY_ALERT == client.get_woot_alerts('anomaly', MOCK_START, MOCK_END, limit='1').raw_response
+    assert client.get_woot_alerts('anomaly', MOCK_START, MOCK_END, limit='1').raw_response == ANOMALY_ALERT

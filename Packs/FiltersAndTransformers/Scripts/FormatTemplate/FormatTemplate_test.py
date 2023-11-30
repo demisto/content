@@ -1,3 +1,4 @@
+import os
 import demistomock as demisto
 from FormatTemplate import main
 import json

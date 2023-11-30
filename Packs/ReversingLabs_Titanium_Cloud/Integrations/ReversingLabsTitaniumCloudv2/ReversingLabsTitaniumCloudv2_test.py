@@ -26,7 +26,7 @@ def handle_calling_context(mocker):
 
 
 def load_json(file_path):
-    with open(file_path, "r", encoding="utf-8") as file_handle:
+    with open(file_path, encoding="utf-8") as file_handle:
         return json.loads(file_handle.read())
 
 

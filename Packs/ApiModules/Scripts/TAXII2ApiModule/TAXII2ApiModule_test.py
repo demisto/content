@@ -1,3 +1,4 @@
+import os
 from taxii2client.exceptions import TAXIIServiceException, InvalidJSONError
 
 from CommonServerPython import *

@@ -1,3 +1,4 @@
+import os
 import pytest
 from unittest import mock
 
@@ -14,7 +15,7 @@ FILE_ENTRY = {
 
 
 def util_load_json(file_name):
-    with open(os.path.join('test_data', file_name), mode='r',
+    with open(os.path.join('test_data', file_name),
               encoding='utf-8') as mock_file:
         return json.loads(mock_file.read())
 
@@ -1718,8 +1719,8 @@ def test_validate_mandatory_ticket_requester_fields():
             'b': 2,
             'c': 3,
         })
-        assert 'One of the following is mandatory: requester_id, phone, email' == str(
-            error_info.value)
+        assert str(
+            error_info.value) == 'One of the following is mandatory: requester_id, phone, email'
 
 
 def test_fetch_incidents(client, requests_mock):

@@ -614,7 +614,7 @@ class TestArcherV2:
         requests_mock.get(BASE_URL + 'api/core/system/valueslistvalue/valueslist/62', json=VALUE_LIST_RES)
         client = Client(BASE_URL, '', '', '', '', 400)
         field_data = client.get_field_value_list(304, 1)
-        assert VALUE_LIST_FIELD_DATA == field_data
+        assert field_data == VALUE_LIST_FIELD_DATA
 
     @pytest.mark.parametrize('args, expected_response', [(0, RES_DEPTH_0), (1, RES_DEPTH_1), (2, RES_DEPTH_2)])
     def test_get_field_value_list_nested_response(self, requests_mock, args, expected_response):

@@ -1,3 +1,4 @@
+import os
 from FeedOpenCTI import get_indicators_command, fetch_indicators_command, get_indicators
 from test_data.feed_data import RESPONSE_DATA, RESPONSE_DATA_WITHOUT_INDICATORS
 from CommonServerPython import CommandResults

@@ -1,3 +1,4 @@
+import os
 """
 Bitcoin Abuse Integration for Cortex XSOAR - Unit Tests file
 """

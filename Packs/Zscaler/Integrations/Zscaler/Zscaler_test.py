@@ -23,7 +23,7 @@ class ObjectMocker(dict):
 
 
 def run_command_test(command_func, args, response_path, expected_result_path, mocker, result_validator=None):
-    with open(response_path, 'r') as response_f:
+    with open(response_path) as response_f:
         response = ResponseMock(json.load(response_f))
     mocker.patch('Zscaler.http_request', return_value=response)
     if command_func.__name__ in ['url_lookup', 'get_users_command', 'set_user_command',
@@ -36,7 +36,7 @@ def run_command_test(command_func, args, response_path, expected_result_path, mo
     if result_validator:
         assert result_validator(res)
     else:
-        with open(expected_result_path, 'r') as ex_f:
+        with open(expected_result_path) as ex_f:
             expected_result = json.load(ex_f)
             if isinstance(res, CommonServerPython.CommandResults):
                 assert expected_result == res.to_context()

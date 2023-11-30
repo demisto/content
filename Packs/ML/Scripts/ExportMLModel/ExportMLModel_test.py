@@ -2,7 +2,7 @@ from ExportMLModel import main
 
 from CommonServerPython import *
 
-dummy_data = [i for i in range(10)]
+dummy_data = list(range(10))
 
 
 def test_main(mocker):
@@ -16,10 +16,11 @@ def test_main(mocker):
             key_args = ['modelName']
             assert (all(k in args for k in key_args))
             return [{'Contents': dummy_data, 'Type': entryTypes['file']}]
+        return None
 
     def results(result):
         file_id = result['FileID']
-        with open(demisto.investigation()['id'] + '_' + file_id, 'r') as f:
+        with open(demisto.investigation()['id'] + '_' + file_id) as f:
             file_data_str = f.read()
         file_data = json.loads(file_data_str)
         assert (all(x in file_data for x in dummy_data) and all(x in dummy_data for x in file_data))

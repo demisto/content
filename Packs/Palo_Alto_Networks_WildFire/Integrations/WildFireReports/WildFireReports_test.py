@@ -1,3 +1,4 @@
+import os
 import base64
 import pytest
 import demistomock as demisto

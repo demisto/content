@@ -1,5 +1,4 @@
 import json
-import io
 
 import pytest
 
@@ -20,6 +19,7 @@ def generate_connected_components_call(load_file, post_req):
         js = request.json()
         if not js:
             context.status_code = 400
+            return None
         elif js != post_req:
             return []
         else:
@@ -66,7 +66,7 @@ def create_connected_components_mock(requests_mock):
 
 
 def util_load_json(path):
-    with io.open(path, mode="r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 

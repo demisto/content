@@ -1,3 +1,4 @@
+import os
 import pytest
 from Tanium_v2 import Client, get_question_result, get_action_result
 import json

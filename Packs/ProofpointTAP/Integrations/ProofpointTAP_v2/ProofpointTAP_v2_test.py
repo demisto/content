@@ -803,7 +803,7 @@ class TestGetForensics:
         assert len(reports) == 2
         report = reports[0]
         assert all(report)
-        assert self.FORENSICS_REPORT == report
+        assert report == self.FORENSICS_REPORT
 
 
 def load_mock_response(file_name: str) -> str:
@@ -817,7 +817,7 @@ def load_mock_response(file_name: str) -> str:
         str: Mock file content.
 
     """
-    with open(f'test_data/{file_name}', mode='r', encoding='utf-8') as mock_file:
+    with open(f'test_data/{file_name}', encoding='utf-8') as mock_file:
         return mock_file.read()
 
 

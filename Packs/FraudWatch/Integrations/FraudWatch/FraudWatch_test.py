@@ -1,7 +1,6 @@
 """
     FraudWatch - Unit Tests file
 """
-import io
 import json
 from datetime import timezone, timedelta
 from typing import *
@@ -28,7 +27,7 @@ client = Client(
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -338,7 +337,7 @@ def test_fetch_incidents_command():
 
 @pytest.mark.parametrize('args, expected',
                          [
-                             (dict(), (MINIMUM_POSITIVE_VALUE, DEFAULT_PAGE_SIZE_VALUE)),
+                             ({}, (MINIMUM_POSITIVE_VALUE, DEFAULT_PAGE_SIZE_VALUE)),
                              ({'page': 5}, (5, DEFAULT_PAGE_SIZE_VALUE)),
                              ({'limit': 250}, (MINIMUM_POSITIVE_VALUE, 250)),
                              ({'page_size': 20}, (MINIMUM_POSITIVE_VALUE, 20)),

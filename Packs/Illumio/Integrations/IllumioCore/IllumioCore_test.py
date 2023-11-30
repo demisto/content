@@ -1,6 +1,6 @@
+import os
 """Test file for Illumio Integration."""
 
-import io
 import re
 
 import pytest
@@ -96,7 +96,7 @@ def mock_client():
 
 def util_load_json(path):
     """Load a JSON file to python dictionary."""
-    with io.open(path, mode="r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 

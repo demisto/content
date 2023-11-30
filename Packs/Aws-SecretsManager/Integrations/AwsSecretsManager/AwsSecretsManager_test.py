@@ -57,7 +57,7 @@ def test_aws_secrets_manager_secret_list_command(mocker):
                                                       'CreatedDate': None}]})
     mocker.patch.object(demisto, 'results')
 
-    AWS_SECRETSMANAGER.aws_secrets_manager_secret_list_command(aws_client, dict())
+    AWS_SECRETSMANAGER.aws_secrets_manager_secret_list_command(aws_client, {})
 
     results = demisto.results.call_args[0][0]
 

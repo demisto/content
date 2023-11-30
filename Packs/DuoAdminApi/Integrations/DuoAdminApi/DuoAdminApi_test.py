@@ -1,11 +1,10 @@
 import duo_client
-import io
 import json
 import demistomock as demisto
 
 
 def util_load_json(path: str):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 

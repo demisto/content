@@ -1,3 +1,4 @@
+import os
 import requests_mock
 from iDefense_v2 import IDEFENSE_URL_TEMPLATE, Client, domain_command, url_command, ip_command, uuid_command, _calculate_dbot_score                             # noqa: E501
 from CommonServerPython import DemistoException, DBotScoreReliability

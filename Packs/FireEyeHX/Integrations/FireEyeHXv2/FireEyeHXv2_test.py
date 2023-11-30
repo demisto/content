@@ -135,7 +135,6 @@ def test_assign_host_set_policy_command(mocker, demisto_args, return_mocker, exp
     result = assign_host_set_policy_command(Client, demisto_args)
 
     assert result.readable_output == expected_results
-    pass
 
 
 UPSERT_COMMAND_DATA_CASES_LIST_POLICY = [

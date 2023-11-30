@@ -1,7 +1,6 @@
-import io
 import json
 
-import pytest as pytest
+import pytest
 import demistomock as demisto
 
 from CommonServerPython import arg_to_datetime
@@ -9,7 +8,7 @@ from TenableioEventCollector import Client
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 

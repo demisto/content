@@ -1,5 +1,4 @@
 import json
-import io
 import demistomock as demisto
 
 from ArcannaAI import Client, get_jobs, post_event, get_default_job_id, set_default_job_id, get_event_status, \
@@ -9,7 +8,7 @@ client = Client(api_key="dummy", base_url="demisto.con", verify=False, proxy=Fal
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 

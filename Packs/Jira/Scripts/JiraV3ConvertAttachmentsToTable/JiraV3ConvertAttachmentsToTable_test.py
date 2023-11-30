@@ -1,5 +1,5 @@
 CONTEXT_RESULTS = (
-    ([{
+    [{
         "description": "",
         "isTempPath": False,
         "name": "dummy_attachment_content.txt",
@@ -14,7 +14,7 @@ CONTEXT_RESULTS = (
         "path": "8692b825-5f43-4954-bd30-8f2d5aa033e9",
         "showMediaFile": False,
         "type": ""
-    }]))
+    }])
 
 EXPECTED_TABLE = ('|Name|\n|---|\n| dummy_attachment_content.txt |\n| dummy_mirrored_from_xsoar.pdf |\n')
 

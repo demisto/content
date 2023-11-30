@@ -36,7 +36,7 @@ import pytest
 
 
 def load_json(file):
-    with open(file, 'r') as f:
+    with open(file) as f:
         return json.load(f)
 
 

@@ -1,12 +1,11 @@
-import io
 import json
 
 from CommonServerPython import *
-from typing import Dict, Any
+from typing import Any
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -14,7 +13,7 @@ def test_api_success(requests_mock: Any) -> None:
     '''Successful test for the test-api command'''
     from BinalyzeAIR import Client, test_connection
 
-    mock_response: Dict[str, bool] = {
+    mock_response: dict[str, bool] = {
         'statusCode': 200
     }
 
@@ -102,13 +101,13 @@ def test_get_profile_id_custom(requests_mock: Any) -> None:
 
 def test_air_acquire_command(requests_mock: Any) -> None:
     from BinalyzeAIR import Client, air_acquire_command
-    args: Dict[str, Any] = {
+    args: dict[str, Any] = {
         'hostname': 'endpointhostname',
         'profile': "quick",
         'case_id': 'case_id will be here',
         'organization_id': 0
     }
-    headers: Dict[str, Any] = {
+    headers: dict[str, Any] = {
         'Authorization': 'Bearer api_key',
         'User-Agent': 'Binalyze AIR',
         'Content-type': 'application/json',
@@ -143,12 +142,12 @@ def test_air_acquire_command(requests_mock: Any) -> None:
 
 def test_air_isolate_command(requests_mock: Any) -> None:
     from BinalyzeAIR import Client, air_isolate_command
-    args: Dict[str, Any] = {
+    args: dict[str, Any] = {
         'hostname': 'endpointhostname',
         'organization_id': 0,
         'isolation': True
     }
-    headers: Dict[str, Any] = {
+    headers: dict[str, Any] = {
         'Authorization': 'Bearer api_key',
         'User-Agent': 'Binalyze AIR',
         'Content-type': 'application/json',

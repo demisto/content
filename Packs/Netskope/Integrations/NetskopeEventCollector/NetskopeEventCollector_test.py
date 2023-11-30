@@ -1,4 +1,3 @@
-import io
 import json
 import re
 import time
@@ -10,7 +9,7 @@ from NetskopeEventCollector import Client, ALL_SUPPORTED_EVENT_TYPES, RATE_LIMIT
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -79,7 +78,7 @@ def test_get_all_events(requests_mock):
     assert len(events) == 25
     assert events[0].get('event_id') == '1'
     assert events[0].get('_time') == '2023-05-22T10:30:16.000Z'
-    assert all([new_last_run[event_type]['operation'] == 'next' for event_type in ALL_SUPPORTED_EVENT_TYPES])
+    assert all(new_last_run[event_type]['operation'] == 'next' for event_type in ALL_SUPPORTED_EVENT_TYPES)
 
 
 def test_get_events_command(mocker):
@@ -162,4 +161,4 @@ def test_setup_last_run(mocker, last_run_dict, expected_operation_value):
     first_fetch = dateparser.parse('2023-01-01T10:00:00Z')
     mocker.patch.object(dateparser, "parse", return_value=first_fetch)
     last_run = setup_last_run(last_run_dict)
-    assert all([val.get('operation') == expected_operation_value for key, val in last_run.items()])
+    assert all(val.get('operation') == expected_operation_value for key, val in last_run.items())

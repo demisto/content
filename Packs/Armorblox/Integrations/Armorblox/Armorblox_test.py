@@ -13,13 +13,12 @@ you are implementing with your integration
 from CommonServerPython import *
 from Armorblox import Client, get_incident_message_ids, get_remediation_action, get_incidents_list, \
     fetch_incidents_command
-import io
 import json
 
 API_KEY = 'any-api-key'
 TENANT_NAME = 'TestIntegration'
 ARMORBLOX_INCIDENT_API_PATH = "api/v1beta1/organizations/{}/incidents"
-url = "https://{}.armorblox.io/{}".format(TENANT_NAME, ARMORBLOX_INCIDENT_API_PATH.format(TENANT_NAME))
+url = f"https://{TENANT_NAME}.armorblox.io/{ARMORBLOX_INCIDENT_API_PATH.format(TENANT_NAME)}"
 
 
 class MockResponse:
@@ -30,12 +29,12 @@ class MockResponse:
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
 def util_load_response(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return MockResponse(f.read(), 200)
 
 
@@ -111,5 +110,5 @@ def test_fetch_incidents_command(requests_mock):
     requests_mock.get(url + '/6484', json=mock_response_for_incident_id)
     client = Client(api_key=API_KEY, instance_name=TENANT_NAME)
     response = fetch_incidents_command(client)
-    assert ('rawJSON' in response[0].keys()) is True
-    assert ('details' in response[0].keys()) is True
+    assert ('rawJSON' in response[0]) is True
+    assert ('details' in response[0]) is True

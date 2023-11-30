@@ -1,11 +1,10 @@
 import json
-import io
 import demistomock as demisto
 import pytest
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -39,7 +38,8 @@ def test_crowdstrike_indicators_list_command(requests_mock):
     assert len(response.raw_response) == 3
     assert "Indicators from CrowdStrike Falcon Intel" in response.readable_output
     assert "domain_abc" in response.readable_output
-    assert feed_tags[0] and feed_tags[1] in response.raw_response[0]['fields']['tags']
+    assert feed_tags[0]
+    assert feed_tags[1] in response.raw_response[0]['fields']['tags']
 
 
 @pytest.mark.parametrize(

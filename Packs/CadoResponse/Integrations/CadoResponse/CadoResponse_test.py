@@ -1,7 +1,7 @@
 ''' Tests for the Cado Response API Integration for the Cortex XSOAR Platform '''
 
 
-from typing import Any, Dict, List, Union
+from typing import Any
 
 from CommonServerPython import CommandResults, DemistoException
 
@@ -15,7 +15,7 @@ def test_module_command_success(requests_mock: Any) -> None:
 
     from CadoResponse import Client, test_module
 
-    mock_get_response: Dict[str, str] = {
+    mock_get_response: dict[str, str] = {
         'status': 'Running'
     }
 
@@ -43,7 +43,7 @@ def test_module_command_fail(requests_mock: Any) -> None:
 
     from CadoResponse import Client, test_module
 
-    mock_get_response: Dict[str, str] = {
+    mock_get_response: dict[str, str] = {
         'status': 'Down'
     }
 
@@ -71,11 +71,11 @@ def test_create_project_command_success(requests_mock: Any) -> None:
 
     from CadoResponse import Client, create_project_command
 
-    mock_post_response: Dict[str, int] = {
+    mock_post_response: dict[str, int] = {
         'id': 1
     }
 
-    expected_mocked_command_result: Dict[str, Any] = mock_post_response
+    expected_mocked_command_result: dict[str, Any] = mock_post_response
 
     requests_mock.post('https://test.com/api/v2/projects', json=mock_post_response)
 
@@ -87,7 +87,7 @@ def test_create_project_command_success(requests_mock: Any) -> None:
         }
     )
 
-    args: Dict[str, str] = {
+    args: dict[str, str] = {
         'project_name': 'testing-project',
         'project_description': 'This is a testing project'
     }
@@ -106,7 +106,7 @@ def test_get_project_list_command_success(requests_mock: Any) -> None:
 
     from CadoResponse import Client, list_project_command
 
-    mock_get_response: List[Dict[str, Any]] = [
+    mock_get_response: list[dict[str, Any]] = [
         {
             'caseName': 'Project Name',
             'created': '2021-10-18T10:36:33.140305',
@@ -126,7 +126,7 @@ def test_get_project_list_command_success(requests_mock: Any) -> None:
         }
     ]
 
-    expected_mocked_command_result: List[Dict[str, Any]] = mock_get_response
+    expected_mocked_command_result: list[dict[str, Any]] = mock_get_response
 
     requests_mock.get('https://test.com/api/v2/projects', json=mock_get_response)
 
@@ -138,7 +138,7 @@ def test_get_project_list_command_success(requests_mock: Any) -> None:
         }
     )
 
-    args: Dict[str, int] = {
+    args: dict[str, int] = {
         'limit': 1
     }
 
@@ -156,7 +156,7 @@ def test_get_project_single_command_success(requests_mock: Any) -> Any:
 
     from CadoResponse import Client, list_project_command
 
-    mock_get_response: List[Dict[str, Any]] = [
+    mock_get_response: list[dict[str, Any]] = [
         {
             'caseName': 'Project Name',
             'created': '2021-10-18T10:36:33.140305',
@@ -176,7 +176,7 @@ def test_get_project_single_command_success(requests_mock: Any) -> Any:
         }
     ]
 
-    expected_mocked_command_result: List[Dict[str, Any]] = mock_get_response
+    expected_mocked_command_result: list[dict[str, Any]] = mock_get_response
 
     requests_mock.get('https://test.com/api/v2/projects/1', json=mock_get_response)
 
@@ -188,7 +188,7 @@ def test_get_project_single_command_success(requests_mock: Any) -> Any:
         }
     )
 
-    args: Dict[str, int] = {
+    args: dict[str, int] = {
         'project_id': 1
     }
 
@@ -206,7 +206,7 @@ def test_get_project_no_id_command_success(requests_mock: Any) -> Any:
 
     from CadoResponse import Client, list_project_command
 
-    mock_get_response: List[Dict[str, Any]] = [
+    mock_get_response: list[dict[str, Any]] = [
         {
             'caseName': 'Project Name',
             'created': '2021-10-18T10:36:33.140305',
@@ -226,7 +226,7 @@ def test_get_project_no_id_command_success(requests_mock: Any) -> Any:
         }
     ]
 
-    expected_mocked_command_result: List[Dict[str, Any]] = mock_get_response
+    expected_mocked_command_result: list[dict[str, Any]] = mock_get_response
 
     requests_mock.get('https://test.com/api/v2/projects', json=mock_get_response)
 
@@ -238,7 +238,7 @@ def test_get_project_no_id_command_success(requests_mock: Any) -> Any:
         }
     )
 
-    args: Dict = {}
+    args: dict = {}
     mocked_command_result: CommandResults = list_project_command(client, args)
 
     assert mocked_command_result.outputs_prefix == 'CadoResponse.Projects'
@@ -253,7 +253,7 @@ def test_get_project_command_limit_success(requests_mock: Any) -> None:
 
     from CadoResponse import Client, list_project_command
 
-    mock_get_response: List[Dict[str, Any]] = [
+    mock_get_response: list[dict[str, Any]] = [
         {
             'caseName': 'Project Name',
             'created': '2021-10-18T10:36:33.140305',
@@ -290,7 +290,7 @@ def test_get_project_command_limit_success(requests_mock: Any) -> None:
         }
     ]
 
-    expected_mocked_command_result: List[Dict[str, Any]] = [
+    expected_mocked_command_result: list[dict[str, Any]] = [
         {
             'caseName': 'Project Name',
             'created': '2021-10-18T10:36:33.140305',
@@ -320,7 +320,7 @@ def test_get_project_command_limit_success(requests_mock: Any) -> None:
         }
     )
 
-    args: Dict[str, int] = {
+    args: dict[str, int] = {
         'limit': 1
     }
 
@@ -334,7 +334,7 @@ def test_get_project_command_limit_success(requests_mock: Any) -> None:
 def test_get_pipeline_command_success(requests_mock: Any) -> None:
     from CadoResponse import Client, get_pipeline_command
 
-    mock_get_response: Dict[str, Any] = {
+    mock_get_response: dict[str, Any] = {
         'pipelines': [
             {
                 'can_be_terminated': False,
@@ -375,7 +375,7 @@ def test_get_pipeline_command_success(requests_mock: Any) -> None:
         ]
     }
 
-    expected_mocked_command_results: List[Dict[str, Any]] = [
+    expected_mocked_command_results: list[dict[str, Any]] = [
         {
             'can_be_terminated': False,
             'created': '2021-10-20T13:04:21.198423',
@@ -424,7 +424,7 @@ def test_get_pipeline_command_success(requests_mock: Any) -> None:
         }
     )
 
-    args: Dict[str, int] = {
+    args: dict[str, int] = {
         'project_id': 1
     }
 
@@ -438,7 +438,7 @@ def test_get_pipeline_command_success(requests_mock: Any) -> None:
 def test_get_single_pipeline_command_success(requests_mock: Any) -> None:
     from CadoResponse import Client, get_pipeline_command
 
-    mock_get_response: Dict[str, Any] = {
+    mock_get_response: dict[str, Any] = {
         'pipelines': [
             {
                 'can_be_terminated': False,
@@ -479,7 +479,7 @@ def test_get_single_pipeline_command_success(requests_mock: Any) -> None:
         ]
     }
 
-    expected_mocked_command_result: Dict[str, Any] = mock_get_response
+    expected_mocked_command_result: dict[str, Any] = mock_get_response
 
     requests_mock.get('https://test.com/api/v2/tasks/pipelines', json=mock_get_response)
 
@@ -491,7 +491,7 @@ def test_get_single_pipeline_command_success(requests_mock: Any) -> None:
         }
     )
 
-    args: Dict[str, int] = {
+    args: dict[str, int] = {
         'project_id': 1,
         'pipeline_id': 1
     }
@@ -506,7 +506,7 @@ def test_get_single_pipeline_command_success(requests_mock: Any) -> None:
 def test_get_pipeline_command_limit_success(requests_mock: Any) -> None:
     from CadoResponse import Client, get_pipeline_command
 
-    mock_get_response: Dict[str, Any] = {
+    mock_get_response: dict[str, Any] = {
         'pipelines': [
             {
                 'can_be_terminated': False,
@@ -583,7 +583,7 @@ def test_get_pipeline_command_limit_success(requests_mock: Any) -> None:
         ]
     }
 
-    expected_mocked_command_results: List[Dict[str, Any]] = [
+    expected_mocked_command_results: list[dict[str, Any]] = [
         {
             'can_be_terminated': False,
             'created': '2021-10-20T13:04:21.198423',
@@ -632,7 +632,7 @@ def test_get_pipeline_command_limit_success(requests_mock: Any) -> None:
         }
     )
 
-    args: Dict[str, int] = {
+    args: dict[str, int] = {
         'project_id': 1,
         'limit': 1
     }
@@ -647,7 +647,7 @@ def test_get_pipeline_command_limit_success(requests_mock: Any) -> None:
 def test_list_ec2_command_success(requests_mock: Any) -> None:
     from CadoResponse import Client, list_ec2_command
 
-    mock_get_response: Dict[str, Any] = {
+    mock_get_response: dict[str, Any] = {
         'instances': [
             {
                 '_placement': 'us-west-2c',
@@ -667,7 +667,7 @@ def test_list_ec2_command_success(requests_mock: Any) -> None:
         ]
     }
 
-    expected_mocked_command_results: List[Dict[str, Any]] = [
+    expected_mocked_command_results: list[dict[str, Any]] = [
         {
             '_placement': 'us-west-2c',
             '_state': 'stopped',
@@ -695,7 +695,7 @@ def test_list_ec2_command_success(requests_mock: Any) -> None:
         }
     )
 
-    args: Dict[str, Union[int, str]] = {
+    args: dict[str, int | str] = {
         'project_id': 1,
         'region': 'us-west-2'
     }
@@ -710,13 +710,13 @@ def test_list_ec2_command_success(requests_mock: Any) -> None:
 def test_list_s3_command_success(requests_mock: Any) -> None:
     from CadoResponse import Client, list_s3_command
 
-    mock_get_response: Dict[str, List[str]] = {
+    mock_get_response: dict[str, list[str]] = {
         'buckets': [
             'Bucket_name'
         ]
     }
 
-    expected_mocked_command_result: Dict[str, List[str]] = mock_get_response
+    expected_mocked_command_result: dict[str, list[str]] = mock_get_response
 
     requests_mock.get('https://test.com/api/v2/projects/1/imports/s3', json=mock_get_response)
 
@@ -728,7 +728,7 @@ def test_list_s3_command_success(requests_mock: Any) -> None:
         }
     )
 
-    args: Dict[str, int] = {
+    args: dict[str, int] = {
         'project_id': 1,
         'limit': 1
     }
@@ -742,7 +742,7 @@ def test_list_s3_command_success(requests_mock: Any) -> None:
 def test_trigger_ec2_command_success(requests_mock: Any) -> None:
     from CadoResponse import Client, trigger_ec2_command
 
-    mock_post_response: Dict[str, Any] = {
+    mock_post_response: dict[str, Any] = {
         'created': '2021-11-01T13:12:57.046424',
         'evidence_id': 0,
         'name': 'Acquiring ...',
@@ -757,7 +757,7 @@ def test_trigger_ec2_command_success(requests_mock: Any) -> None:
         'user_id': 1
     }
 
-    expected_mocked_command_result: Dict[str, Any] = mock_post_response
+    expected_mocked_command_result: dict[str, Any] = mock_post_response
 
     requests_mock.post('https://test.com/api/v2/projects/1/imports/ec2', json=mock_post_response)
 
@@ -769,7 +769,7 @@ def test_trigger_ec2_command_success(requests_mock: Any) -> None:
         }
     )
 
-    args: Dict[str, Any] = {
+    args: dict[str, Any] = {
         'project_id': 1,
         'instance_id': 'test',
         'region': 'us-east=1',
@@ -791,7 +791,7 @@ def test_trigger_ec2_command_success(requests_mock: Any) -> None:
 def test_trigger_s3_command_success(requests_mock: Any) -> None:
     from CadoResponse import Client, trigger_s3_command
 
-    mock_post_response: Dict[str, Any] = {
+    mock_post_response: dict[str, Any] = {
         'pipelines': [
             {
                 'created': '2021-11-01T13:12:57.046424',
@@ -810,7 +810,7 @@ def test_trigger_s3_command_success(requests_mock: Any) -> None:
         ]
     }
 
-    expected_mocked_command_results: List[Dict[str, Any]] = [
+    expected_mocked_command_results: list[dict[str, Any]] = [
         {
             'created': '2021-11-01T13:12:57.046424',
             'evidence_id': 0,
@@ -837,7 +837,7 @@ def test_trigger_s3_command_success(requests_mock: Any) -> None:
         }
     )
 
-    args: Dict[str, Union[int, str]] = {
+    args: dict[str, int | str] = {
         'project_id': 1,
         'file_name': 'test',
         'bucket': 'test-bucket'
@@ -861,7 +861,7 @@ def test_trigger_s3_command_raises_bucket() -> None:
         }
     )
 
-    args: Dict[str, Union[int, str]] = {
+    args: dict[str, int | str] = {
         'project_id': 1,
         'file_name': 'test',
     }
@@ -881,7 +881,7 @@ def test_trigger_s3_command_raises_file() -> None:
         }
     )
 
-    args: Dict[str, Union[int, str]] = {
+    args: dict[str, int | str] = {
         'project_id': 1,
         'bucket': 'test',
     }

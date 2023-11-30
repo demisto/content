@@ -2,7 +2,6 @@ from CloudConvert import upload_command, Client, convert_command, check_status_c
 from CommonServerPython import remove_empty_elements, tableToMarkdown, string_to_table_header
 import demistomock as demisto
 import json
-import io
 import pytest
 
 
@@ -19,7 +18,7 @@ def create_client():
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -64,7 +63,7 @@ def test_upload_invalid_url(mocker):
     with pytest.raises(ValueError) as e:
         upload_command(client, {'url': MOCK_URL})
         if not e:
-            assert False
+            raise AssertionError
 
 
 def test_upload_valid_entry(mocker):
@@ -112,7 +111,7 @@ def test_upload_invalid_entry(mocker):
     with pytest.raises(ValueError) as e:
         upload_command(client, {'entry_id': MOCK_ENTRY_ID})
         if not e:
-            assert False
+            raise AssertionError
 
 
 def test_convert_valid_format_and_id(mocker):
@@ -164,7 +163,7 @@ def test_convert_invalid_format_or_id(mocker):
             'output_format': 'ff'
         })
         if not e:
-            assert False
+            raise AssertionError
 
 
 def test_check_status_invalid_id(mocker):
@@ -186,7 +185,7 @@ def test_check_status_invalid_id(mocker):
             'task_id': 'ff'
         })
         if not e:
-            assert False
+            raise AssertionError
 
 
 @pytest.mark.parametrize('create_war_room_entry', [True, False])
@@ -285,7 +284,7 @@ def test_download_invalid_id(mocker, download_as):
             'download_as': download_as
         })
         if not e:
-            assert False
+            raise AssertionError
 
 
 @pytest.mark.parametrize('download_as', ['war_room_entry', 'url'])

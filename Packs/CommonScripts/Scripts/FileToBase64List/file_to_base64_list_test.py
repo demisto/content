@@ -1,3 +1,4 @@
+import os
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -18,7 +19,7 @@ def executeCommand(name, args=None):
             }
         ]
     else:
-        raise ValueError('Unimplemented command called: {}'.format(name))
+        raise ValueError(f'Unimplemented command called: {name}')
 
 
 def test_file_to_base64_list(mocker):
@@ -32,7 +33,8 @@ def test_file_to_base64_list(mocker):
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     mocker.patch.object(demisto, 'results')
     result_entry = main()
-    assert 'Success' in result_entry['HumanReadable'] and 'Size' in result_entry['HumanReadable']
+    assert 'Success' in result_entry['HumanReadable']
+    assert 'Size' in result_entry['HumanReadable']
     assert len(result_entry['Contents']) > 0
 
 

@@ -1,3 +1,4 @@
+import os
 from SnmpDetection import snmp_detect
 import json
 import SnmpDetection

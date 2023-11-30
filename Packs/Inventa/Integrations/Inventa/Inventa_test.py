@@ -11,7 +11,6 @@ you are implementing with your integration
 """
 
 import json
-import io
 from pytest import raises
 from Inventa import main, Client, format_pii_entities, generate_datasubject_payload, validate_incident_inputs_command
 import demistomock as demisto
@@ -99,11 +98,11 @@ def mock_args(command_name):
         return mock_arguments_ticket
     if command_name in noarg_cmds:
         return {}
-    raise ValueError('Unimplemented command called: {}'.format(command_name))
+    raise ValueError(f'Unimplemented command called: {command_name}')
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 

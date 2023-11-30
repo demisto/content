@@ -85,31 +85,31 @@ def test_parse_relative_time():
     threshold = 2
     t1 = parse_relative_time("3 days ago")
     t2 = datetime.now() - timedelta(days=3)
-    assert abs((t2 - t1)).total_seconds() < threshold
+    assert abs(t2 - t1).total_seconds() < threshold
 
     t1 = parse_relative_time("3 minutes ago")
     t2 = datetime.now() - timedelta(minutes=3)
-    assert abs((t2 - t1)).total_seconds() < threshold
+    assert abs(t2 - t1).total_seconds() < threshold
 
     t1 = parse_relative_time("1 months ago")
     t2 = datetime.now() - timedelta(minutes=43800)
-    assert abs((t2 - t1)).total_seconds() < threshold
+    assert abs(t2 - t1).total_seconds() < threshold
 
     t1 = parse_relative_time("1 month ago")
     t2 = datetime.now() - timedelta(minutes=43800)
-    assert abs((t2 - t1)).total_seconds() < threshold
+    assert abs(t2 - t1).total_seconds() < threshold
 
     t1 = parse_relative_time("2 weeks ago")
     t2 = datetime.now() - timedelta(weeks=2)
-    assert abs((t2 - t1)).total_seconds() < threshold
+    assert abs(t2 - t1).total_seconds() < threshold
 
     t1 = parse_relative_time("2 week ago")
     t2 = datetime.now() - timedelta(weeks=2)
-    assert abs((t2 - t1)).total_seconds() < threshold
+    assert abs(t2 - t1).total_seconds() < threshold
 
     t1 = parse_relative_time("2 years ago")
     t2 = datetime.now() - timedelta(days=365 * 2)
-    assert abs((t2 - t1)).total_seconds() < threshold
+    assert abs(t2 - t1).total_seconds() < threshold
 
 
 GET_INCIDENTS_COUNTER = 0
@@ -145,7 +145,7 @@ def test_main(mocker):
     assert 'GetIncidentsByQuery' in entry['EntryContext']
     assert 'status' in entry['Contents'][0]
     assert 'context' not in entry['Contents'][0]
-    assert 'testValue' == entry['Contents'][0]['testField']
+    assert entry['Contents'][0]['testField'] == 'testValue'
 
     args['includeContext'] = 'true'
     entry = main()
@@ -154,10 +154,10 @@ def test_main(mocker):
     args['populateFields'] = 'testField,status'
     args['NonEmptyFields'] = 'severity'
     entry = main()
-    assert set(entry['Contents'][0].keys()) == set(['testField', 'status', 'severity', 'id', 'context'])
+    assert set(entry['Contents'][0].keys()) == {'testField', 'status', 'severity', 'id', 'context'}
     args.pop('fromDate')
     entry = main()
-    assert set(entry['Contents'][0].keys()) == set(['testField', 'status', 'severity', 'id', 'context'])
+    assert set(entry['Contents'][0].keys()) == {'testField', 'status', 'severity', 'id', 'context'}
 
 
 def test_skip_python_magic(mocker):
@@ -176,7 +176,7 @@ def test_preprocess_incidents_fields_list():
 
 
 def test_get_demisto_datetme_format():
-    assert "2020-01-01T00:00:00+00:00" == get_demisto_datetme_format("2020-01-01 00:00:00+00:00")
+    assert get_demisto_datetme_format("2020-01-01 00:00:00+00:00") == "2020-01-01T00:00:00+00:00"
 
 
 def test_get_fields_to_populate_arg():

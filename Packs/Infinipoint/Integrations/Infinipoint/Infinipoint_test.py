@@ -1,5 +1,4 @@
 import json
-import io
 from Infinipoint import COMMANDS_CONFIG
 
 BASE_URL = 'https://test.com'
@@ -11,7 +10,7 @@ MAX_INCIDENTS_TO_FETCH = 1000
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 

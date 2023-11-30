@@ -1,4 +1,3 @@
-# coding=utf-8
 
 import pytest
 from RunPollingCommand import prepare_arg_dict
@@ -21,17 +20,17 @@ IDS_ARGS = [
     ),
     # extra args
     (
-        ('ids', ['a', 'b', 'c'], u'arg1', u'value1'),
+        ('ids', ['a', 'b', 'c'], 'arg1', 'value1'),
         {'ids': 'a,b,c', 'arg1': 'value1'},
     ),
     # extra args as unicode lists
     (
-        ('ids', ['a', 'b', 'c'], [u'arg1', u'arg2'], [u'value1', u'value2']),
+        ('ids', ['a', 'b', 'c'], ['arg1', 'arg2'], ['value1', 'value2']),
         {'ids': 'a,b,c', 'arg1': 'value1', 'arg2': 'value2'},
     ),
     # extra args as chane of unicode
     (
-        ('ids', ['a', 'b', 'c'], u'arg1, arg2,arg3', [u'value1', u'value2', u'value3']),
+        ('ids', ['a', 'b', 'c'], 'arg1, arg2,arg3', ['value1', 'value2', 'value3']),
         {'ids': 'a,b,c', 'arg1': 'value1', 'arg2': 'value2', 'arg3': 'value3'},
     ),
     # extra args as string
@@ -55,4 +54,4 @@ def test_prepare_arg_dict(inputs, expected_args):
 
 def test_prepare_arg_dict__error():
     with pytest.raises(ValueError):
-        prepare_arg_dict('ids', 'a', u'arg1', None)
+        prepare_arg_dict('ids', 'a', 'arg1', None)

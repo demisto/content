@@ -1,5 +1,4 @@
 import json
-import io
 from pytest import raises
 
 
@@ -14,7 +13,7 @@ BASE_URL = "https://apiv2.phishup.co"
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 

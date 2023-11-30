@@ -79,7 +79,7 @@ class TestTranslateDict(unittest.TestCase):
         d = {'key1': 'value1', 'key2': 'value2'}
         translator = {'key1': 'key1', 'key2': 'key2'}
         expected = {'key1': 'value1', 'key2': 'value2'}
-        self.assertEqual(mcafee_mar.translate_dict(d, translator), expected)
+        assert mcafee_mar.translate_dict(d, translator) == expected
 
     def test_translate_dict_translation_needed(self):
         """
@@ -89,7 +89,7 @@ class TestTranslateDict(unittest.TestCase):
         d = {'key1': 'value1', 'key2': 'value2'}
         translator = {'key1': 'new_key1', 'key2': 'new_key2'}
         expected = {'new_key1': 'value1', 'new_key2': 'value2'}
-        self.assertEqual(mcafee_mar.translate_dict(d, translator), expected)
+        assert mcafee_mar.translate_dict(d, translator) == expected
 
     def test_translate_dict_partial_translation(self):
         """
@@ -99,7 +99,7 @@ class TestTranslateDict(unittest.TestCase):
         d = {'key1': 'value1', 'key2': 'value2', 'key3': 'value3'}
         translator = {'key1': 'new_key1'}
         expected = {'new_key1': 'value1', 'key2': 'value2', 'key3': 'value3'}
-        self.assertEqual(mcafee_mar.translate_dict(d, translator), expected)
+        assert mcafee_mar.translate_dict(d, translator) == expected
 
     def test_translate_dict_empty_dict(self):
         """
@@ -109,7 +109,7 @@ class TestTranslateDict(unittest.TestCase):
         d = {}
         translator = {'key1': 'new_key1', 'key2': 'new_key2'}
         expected = {}
-        self.assertEqual(mcafee_mar.translate_dict(d, translator), expected)
+        assert mcafee_mar.translate_dict(d, translator) == expected
 
 
 class TestExtractItemOutput(unittest.TestCase):
@@ -125,7 +125,7 @@ class TestExtractItemOutput(unittest.TestCase):
         item = {'output': {'Collector1|Key1': 'value1', 'Collector2|Key2': 'value2'}, 'created_at': '2023-06-20'}
         capitalize = False
         expected = {'created_at': '2023-06-20', 'Key1': 'value1', 'Key2': 'value2'}
-        self.assertEqual(mcafee_mar.extract_item_output(item, capitalize), expected)
+        assert mcafee_mar.extract_item_output(item, capitalize) == expected
 
     def test_extract_item_output_with_capitalize(self):
         """
@@ -135,7 +135,7 @@ class TestExtractItemOutput(unittest.TestCase):
         item = {'output': {'Collector1|Key1': 'value1', 'Collector2|Key2': 'value2'}, 'created_at': '2023-06-20'}
         capitalize = True
         expected = {'created_at': '2023-06-20', 'Key1': 'value1', 'Key2': 'value2'}
-        self.assertEqual(mcafee_mar.extract_item_output(item, capitalize), expected)
+        assert mcafee_mar.extract_item_output(item, capitalize) == expected
 
     def test_extract_item_output_no_pipe_in_key(self):
         """
@@ -145,7 +145,7 @@ class TestExtractItemOutput(unittest.TestCase):
         item = {'output': {'Key1': 'value1', 'Key2': 'value2'}, 'created_at': '2023-06-20'}
         capitalize = False
         expected = {'created_at': '2023-06-20', 'Key1': 'value1', 'Key2': 'value2'}
-        self.assertEqual(mcafee_mar.extract_item_output(item, capitalize), expected)
+        assert mcafee_mar.extract_item_output(item, capitalize) == expected
 
     def test_extract_item_output_empty_output(self):
         """
@@ -155,4 +155,4 @@ class TestExtractItemOutput(unittest.TestCase):
         item = {'output': {}, 'created_at': '2023-06-20'}
         capitalize = False
         expected = {'created_at': '2023-06-20'}
-        self.assertEqual(mcafee_mar.extract_item_output(item, capitalize), expected)
+        assert mcafee_mar.extract_item_output(item, capitalize) == expected

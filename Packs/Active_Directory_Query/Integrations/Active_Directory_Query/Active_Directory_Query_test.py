@@ -1,3 +1,4 @@
+import os
 import demistomock as demisto
 from Active_Directory_Query import main, group_dn
 import socket

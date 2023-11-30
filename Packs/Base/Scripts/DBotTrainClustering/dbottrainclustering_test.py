@@ -107,6 +107,7 @@ def executeCommand(command, args):
         return [{'Contents': {'modelData': model_data,
                               'model': {'type': {'type': ''}}},
                  'Type': 'note'}]
+    return None
 
 
 def test_preprocess_incidents_field():

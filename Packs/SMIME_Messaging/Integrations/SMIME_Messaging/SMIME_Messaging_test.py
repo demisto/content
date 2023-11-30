@@ -1,3 +1,4 @@
+import os
 import pytest
 
 from SMIME_Messaging import Client, sign_email, encrypt_email_body, verify, decrypt_email_body, sign_and_encrypt, \

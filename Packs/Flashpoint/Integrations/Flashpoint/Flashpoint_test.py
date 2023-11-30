@@ -2,7 +2,6 @@
 import demistomock as demisto
 import pytest
 import json
-import io
 import datetime
 import unittest
 from unittest.mock import patch
@@ -37,7 +36,7 @@ START_DATE = '2021-07-18T12:02:45Z'
 
 def util_load_json(path: str) -> dict:
     """Load a json to python dict."""
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 

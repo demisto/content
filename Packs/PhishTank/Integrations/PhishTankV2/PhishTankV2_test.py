@@ -133,7 +133,7 @@ def test_reload(mocker, url, status_code, data, expected_result):
         got_data = reload(client)
         assert got_data == expected_result
     else:
-        assert False
+        raise AssertionError
 
 
 CONTEXT_LIST = [
