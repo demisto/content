@@ -6,7 +6,6 @@ import pytest
 
 from SymantecCloudSecureWebGatewayEventCollector import (
     DEFAULT_FETCH_SLEEP,
-    MIN_FETCH_SLEEP,
     HandlingDuplicates,
     LastRun,
     extract_logs_and_push_to_XSIAM,
@@ -578,7 +577,7 @@ def test_extract_logs_from_zip_file_with_logs(tmp_zip_file: Path):
     "fetch_interval, expected_fetch_interval",
     [
         (None, DEFAULT_FETCH_SLEEP),
-        ("20", MIN_FETCH_SLEEP),
+        ("20", DEFAULT_FETCH_SLEEP),
         ("100", 100),
     ],
 )

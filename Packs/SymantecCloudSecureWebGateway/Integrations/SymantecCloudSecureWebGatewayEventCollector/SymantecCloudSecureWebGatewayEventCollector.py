@@ -17,8 +17,7 @@ disable_warnings()
 
 VENDOR = "symantec"
 PRODUCT = "swg"
-DEFAULT_FETCH_SLEEP = 60
-MIN_FETCH_SLEEP = 30
+DEFAULT_FETCH_SLEEP = 30
 REGEX_FOR_STATUS = re.compile(r"X-sync-status: (?P<status>.*?)(?=\\r\\n|$)")
 REGEX_FOR_TOKEN = re.compile(r"X-sync-token: (?P<token>.*?)(?=\\r\\n|$)")
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
@@ -102,11 +101,11 @@ def get_fetch_interval(fetch_interval: str | None) -> int:
     fetch_sleep = arg_to_number(fetch_interval)
     if not fetch_sleep:
         return DEFAULT_FETCH_SLEEP
-    if fetch_sleep < MIN_FETCH_SLEEP:
+    if fetch_sleep < DEFAULT_FETCH_SLEEP:
         demisto.debug(
-            f"Fetch interval is too low, setting it to minimum of {MIN_FETCH_SLEEP} seconds"
+            f"Fetch interval is too low, setting it to minimum of {DEFAULT_FETCH_SLEEP} seconds"
         )
-        return MIN_FETCH_SLEEP
+        return DEFAULT_FETCH_SLEEP
     return fetch_sleep
 
 
@@ -599,9 +598,9 @@ def get_events_command(
 def test_module(client: Client, fetch_interval: str | None) -> None:
     # Enforcement for the fetch_interval parameter
     # that will not be less than the minimum time allowed
-    if fetch_interval and int(fetch_interval) < MIN_FETCH_SLEEP:
+    if fetch_interval and int(fetch_interval) < DEFAULT_FETCH_SLEEP:
         raise ValueError(
-            f"The minimum fetch interval is {MIN_FETCH_SLEEP} seconds"
+            f"The minimum fetch interval is {DEFAULT_FETCH_SLEEP} seconds"
             "Please increase the fetch_interval value and try again."
         )
 
