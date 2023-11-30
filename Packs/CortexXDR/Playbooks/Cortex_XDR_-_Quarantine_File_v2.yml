@@ -1,0 +1,345 @@
+id: Cortex XDR - Quarantine File v2
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Cortex XDR - Quarantine File v2
+description: "This playbook accepts \"file path\", \"file hash\" and \"endpoint id\" to quarantine a selected file and wait until the action is done. All 3 inputs are required to quarantine a single file. This playbook does not support the quarantine of multiple files.  \n"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 698ce1e6-4540-40bb-8ec4-5dc2decebd93
+    type: start
+    task:
+      id: 698ce1e6-4540-40bb-8ec4-5dc2decebd93
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: bb380542-05bf-42d8-80c4-643931e5f1ea
+    type: regular
+    task:
+      id: bb380542-05bf-42d8-80c4-643931e5f1ea
+      version: -1
+      name: Quarantine file
+      description: Quarantine a file on selected endpoints. You can select up to 1000 endpoints.
+      script: '|||xdr-file-quarantine'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      endpoint_id_list:
+        complex:
+          root: inputs.endpoint_id
+          transformers:
+          - operator: uniq
+      file_hash:
+        complex:
+          root: inputs.file_hash
+          transformers:
+          - operator: uniq
+      file_path:
+        complex:
+          root: inputs.file_path
+          transformers:
+          - operator: uniq
+      interval_in_seconds:
+        simple: "60"
+      timeout_in_seconds:
+        simple: "600"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 454d0ef9-46e7-478c-809c-0b0931dce7ce
+    type: title
+    task:
+      id: 454d0ef9-46e7-478c-809c-0b0931dce7ce
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 89fbf68d-9803-4fbc-88a5-ed5dd3c54297
+    type: regular
+    task:
+      id: 89fbf68d-9803-4fbc-88a5-ed5dd3c54297
+      version: -1
+      name: Get quarantine status
+      description: Retrieves the quarantine status for a selected file.
+      script: '|||xdr-get-quarantine-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      endpoint_id:
+        complex:
+          root: inputs.endpoint_id
+          transformers:
+          - operator: uniq
+      file_hash:
+        complex:
+          root: inputs.file_hash
+          transformers:
+          - operator: uniq
+      file_path:
+        complex:
+          root: inputs.file_path
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 30c0aca5-fc22-4bea-8523-c53a065fb330
+    type: condition
+    task:
+      id: 30c0aca5-fc22-4bea-8523-c53a065fb330
+      version: -1
+      name: Are the inputs were provided?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.file_hash
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.file_path
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.endpoint_id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 98c2a87e-316c-4780-8264-65545d353818
+    type: condition
+    task:
+      id: 98c2a87e-316c-4780-8264-65545d353818
+      version: -1
+      name: 'Is the quarantine was successful? '
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.quarantineFiles.status
+                accessor: status
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 9345a04e-0504-48fc-8bea-babe94ae0234
+    type: regular
+    task:
+      id: 9345a04e-0504-48fc-8bea-babe94ae0234
+      version: -1
+      name: 'Print error message '
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      message:
+        simple: 'The quarantine task was not successful. '
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1105,
+        "width": 700,
+        "x": -270,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: file_hash
+  value: {}
+  required: true
+  description: The file’s hash. Must be a valid SHA256 hash.
+  playbookInputQuery:
+- key: file_path
+  value: {}
+  required: true
+  description: The path for the selected file.
+  playbookInputQuery:
+- key: endpoint_id
+  value: {}
+  required: true
+  description: The file's location in the system.
+  playbookInputQuery:
+outputs:
+- contextPath: PaloAltoNetworksXDR.quarantineFiles.status.status
+  description: 'The status of the quarantine.'
+  type: unknown
+- contextPath: PaloAltoNetworksXDR.quarantineFiles.actionIds.endpointIdList.fileHash
+  description: The file hash SHA256.
+  type: unknown
+- contextPath: PaloAltoNetworksXDR.quarantineFiles.actionIds.endpointIdList.filePath
+  description: The path of the file.
+  type: unknown
+- contextPath: PaloAltoNetworksXDR.quarantineFiles.actionIds.actionId
+  description: The action id.
+  type: unknown
+tests:
+- No tests
+fromversion: 6.10.0

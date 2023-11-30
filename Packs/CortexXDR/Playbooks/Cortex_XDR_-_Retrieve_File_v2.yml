@@ -1,10 +1,13 @@
-id: Cortex XDR - Retrieve File Playbook
+id: Cortex XDR - Retrieve File v2
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: Cortex XDR - Retrieve File Playbook
+name: Cortex XDR - Retrieve File v2
 description: |-
-  Deprecated. Use Cortex XDR - Retrieve File Playbook v2 instead.
+  This playbook retrieves files from selected endpoints. You can retrieve up to 20 files, from 10 endpoints.
+  Inputs for this playbook are:
+  - A comma-separated list of endpoint IDs.
+  - A comma-separated list of file paths for your operating system, either Windows, Linux, or Mac. At least one file path is required.
 starttaskid: "0"
 tasks:
   "0":
@@ -20,8 +23,9 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "8"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -34,14 +38,16 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: b5b9500b-4287-4ed4-85f7-8d65d06975d4
+    taskid: 7cb1327a-ad50-4f2d-8a36-27848573df25
     type: regular
     task:
-      id: b5b9500b-4287-4ed4-85f7-8d65d06975d4
+      id: 7cb1327a-ad50-4f2d-8a36-27848573df25
       version: -1
-      name: xdr-retrieve-files
+      name: Retrieve files
       description: Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints. At least one endpoint ID and one file path are necessary in order to run the command. After running this command, you can use the xdr-action-status-get command with returned action_id, to check the action status.
       script: '|||xdr-file-retrieve'
       type: regular
@@ -49,29 +55,44 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "7"
     scriptarguments:
       endpoint_ids:
         complex:
           root: inputs.endpoint_ids
+          transformers:
+          - operator: uniq
       generic_file_path:
         complex:
           root: inputs.file_path
+          transformers:
+          - operator: uniq
+      interval_in_seconds:
+        simple: "60"
       linux_file_paths:
         complex:
           root: inputs.linux_file_paths
+          transformers:
+          - operator: uniq
       mac_file_paths:
         complex:
           root: inputs.mac_file_paths
+          transformers:
+          - operator: uniq
+      timeout_in_seconds:
+        simple: "600"
       windows_file_paths:
         complex:
           root: inputs.windows_file_paths
+          transformers:
+          - operator: uniq
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 195
+          "y": 395
         }
       }
     note: false
@@ -79,62 +100,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "3":
-    id: "3"
-    taskid: 0cb9b5c1-4c47-42fc-860c-20385870f6c7
-    type: playbook
-    task:
-      id: 0cb9b5c1-4c47-42fc-860c-20385870f6c7
-      version: -1
-      name: GenericPolling
-      description: |-
-        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
-        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
-        The remote action should have the following structure:
-
-        1. Initiate the operation.
-        2. Poll to check if the operation completed.
-        3. (optional) Get the results of the operation.
-      playbookName: GenericPolling
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      AdditionalPollingCommandArgNames: {}
-      AdditionalPollingCommandArgValues: {}
-      Ids:
-        simple: ${PaloAltoNetworksXDR.RetrievedFiles.action_id}
-      Interval:
-        simple: "1"
-      PollingCommandArgName:
-        simple: action_id
-      PollingCommandName:
-        simple: xdr-action-status-get
-      Timeout:
-        simple: "10"
-      dt:
-        simple: PaloAltoNetworksXDR.GetActionStatus(val.status == "PENDING" || val.status == "IN_PROGRESS" || val.status == "PENDING_ABORT" ).action_id
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
     taskid: a2712ae7-1100-4545-85a7-43770ff6fbd7
@@ -148,11 +115,12 @@ tasks:
       brand: ""
       description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 60,
-          "y": 895
+          "x": 265,
+          "y": 1095
         }
       }
     note: false
@@ -160,6 +128,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: 069bc12b-b96b-47ef-86dd-c000cdc518b6
@@ -181,16 +151,18 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotEmpty
+      - - operator: isNotExists
           left:
             value:
-              simple: File
+              simple: PaloAltoNetworksXDR.RetrievedFiles.status
             iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 720
+          "y": 750
         }
       }
     note: false
@@ -198,12 +170,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 1c13cd5a-8e50-4d71-8479-01639acc41b4
+    taskid: 4cf4d095-c993-4db8-8064-f64e2090ba24
     type: regular
     task:
-      id: 1c13cd5a-8e50-4d71-8479-01639acc41b4
+      id: 4cf4d095-c993-4db8-8064-f64e2090ba24
       version: -1
       name: Print Error message
       description: Prints an error entry with a given message.
@@ -211,15 +185,19 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
     scriptarguments:
       message:
-        simple: Not all files retrieved.
+        simple: Missing files from the retrieve task. Please check the `Retrieve file details` task outputs for more information.
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 895
+          "x": 10,
+          "y": 920
         }
       }
     note: false
@@ -227,14 +205,16 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 0564ecf2-66a6-4447-8572-b0854d7f6162
+    taskid: 69b1c551-71fe-4973-8d28-36bf4cce68f0
     type: regular
     task:
-      id: 0564ecf2-66a6-4447-8572-b0854d7f6162
+      id: 69b1c551-71fe-4973-8d28-36bf4cce68f0
       version: -1
-      name: xdr-retrieve-file-details
+      name: Retrieve file details
       description: View the file retrieved by the xdr-retrieve-files command according to the action ID. Before running this command, you can use the xdr-action-status-get command to check if this action completed successfully.
       script: '|||xdr-retrieve-file-details'
       type: regular
@@ -249,11 +229,12 @@ tasks:
           root: PaloAltoNetworksXDR.RetrievedFiles
           accessor: action_id
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 545
+          "y": 565
         }
       }
     note: false
@@ -261,6 +242,64 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: e5d73a46-72d1-4e69-854e-3e28963904ff
+    type: condition
+    task:
+      id: e5d73a46-72d1-4e69-854e-3e28963904ff
+      version: -1
+      name: Is there any file path to retrieve?
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.file_path
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.windows_file_paths
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.linux_file_paths
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.mac_file_paths
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -268,9 +307,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 940,
-        "width": 800,
-        "x": 60,
+        "height": 1110,
+        "width": 635,
+        "x": 10,
         "y": 50
       }
     }
@@ -338,6 +377,5 @@ outputs:
   description: The file type, as determined by libmagic (same as displayed in the file entries).
   type: String
 tests:
-- No tests (deprecated)
-fromversion: 5.0.0
-deprecated: true
+- No tests
+fromversion: 6.10.0
