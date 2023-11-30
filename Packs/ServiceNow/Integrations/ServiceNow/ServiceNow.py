@@ -15,7 +15,7 @@ if not demisto.params().get('proxy', False):
     del os.environ['HTTPS_PROXY']
     del os.environ['http_proxy']
     del os.environ['https_proxy']
-
+demisto.debug("")
 
 def get_server_url():
     url = demisto.params()['url']
