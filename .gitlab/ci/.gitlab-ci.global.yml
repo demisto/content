@@ -62,7 +62,7 @@
   - if [ -f ./items_removed_manually_from_id_set.json ]; then cp ./items_removed_manually_from_id_set.json "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs"; fi
   - section_end "Create ID Set"
 
-.download-demisto-conf:
+.download-demisto-conf: &download-demisto-conf
   - section_start "Download content-test-conf and infra" --collapsed
   - ./Tests/scripts/download_conf_repos.sh 2>&1 | tee --append "${ARTIFACTS_FOLDER}/logs/download_conf_repos.log"
   - section_end "Download content-test-conf and infra"
@@ -562,7 +562,7 @@ pre_job:
       policy: pull-push
   script:
     - source .gitlab/helper_functions.sh
-    - !reference [.download-demisto-conf]
+    - *download-demisto-conf
 #    - *setup-network-certs
     - *setup-artifactory
 #    - *create_artifacts_and_server_type_instance_folders
