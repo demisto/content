@@ -39,13 +39,13 @@ class Client(BaseClient):
 
         if self._is_access_token_valid(integration_context):
             access_token = integration_context.get('access_token')
-            self._save_access_token(access_token)
+            self._set_access_token(access_token)
         else:
             demisto.debug(
                 f"{INTEGRATION_NAME} - Generating a new token (old one isn't valid anymore).")
             self.generate_new_token()
 
-    def _save_access_token(self, access_token: str):
+    def _set_access_token(self, access_token: str):
         self.access_token = access_token
         self._headers = {
             "Authorization": f'bearer {access_token}'}
@@ -65,7 +65,7 @@ class Client(BaseClient):
     def generate_new_token(self):
         token = self.authenticate()
         self.save_jwt_token(token)
-        self._save_access_token(token)
+        self._set_access_token(token)
 
     def save_jwt_token(self, access_token: str):
         expiration = get_jwt_expiration(access_token)
@@ -104,7 +104,6 @@ class Client(BaseClient):
             "limit": limit,
             "offset": offset
         }
-        print(params)
         data = self._http_request(
             method='GET',
             url_suffix=f'/incidents',
@@ -124,7 +123,7 @@ def get_jwt_expiration(token: str):
 def generate_new_token(self):
     token = self.authenticate()
     self.save_jwt_token(token)
-    self._save_access_token(token)
+    self._set_access_token(token)
 
 
 def test_module(client: Client, params: Dict[str, Any]) -> str:
@@ -162,8 +161,7 @@ def add_time_to_events(events):
         list: The events with the _time key.
     """
     if events:
-        for event in events:
-            event['_time'] = event.get('start_time')
+        [event.update({'_time': event['start_time']}) for event in events if 'start_time' in event]
 
 
 def get_events(client, args):
@@ -177,7 +175,7 @@ def get_events(client, args):
     limit = arg_to_number(args.get("limit", 1000))
     offset = int(args.get('offset', 0))
     events = client.get_events(start_time, end_time, limit, offset)
-    hr = tableToMarkdown(name='Test Event', t=events)
+    hr = tableToMarkdown(name='Events', t=events)
     return events, CommandResults(readable_output=hr)
 
 

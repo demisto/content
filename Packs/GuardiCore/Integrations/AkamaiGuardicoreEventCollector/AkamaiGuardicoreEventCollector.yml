@@ -6,7 +6,7 @@ commonfields:
   id: AkamaiGuardicoreEventCollector
   version: -1
 configuration:
-- defaultvalue: https://some_url.com
+- defaultvalue: https://example.guardicore.com/api/v3.0/
   display: Server URL (e.g. https://some_url.com)
   name: url
   required: true
