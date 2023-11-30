@@ -9068,4 +9068,48 @@ class TestIsIntegrationCommandExecution:
     def test_problematic_cases(self, mocker, calling_context_mock):
         mocker.patch.object(demisto, 'callingContext', calling_context_mock)
         assert is_integration_command_execution() == True
-        
+
+
+@pytest.mark.parametrize('time_str,hours_threshold, seconds_threshold, expected_result',
+[("2023-11-29T13:00:44Z", 23, None, True),
+ ("2023-11-30T13:00:34Z", None, 9, True),
+ ("2023-11-30T13:00:34Z", 25, 9, False),
+ ])
+
+@freeze_time("2023-11-30T13:00:44Z")
+def test_has_passed_time_threshold__valid_input(time_str,hours_threshold, seconds_threshold, expected_result):
+    """
+    Given:
+        - A valid time string
+    When:
+        - The has_passed_time_threshold has been called
+    Then:
+        - Assert the function returns the expected result
+        case 1: The time difference is greater than the hours threshold
+        case 2: The time difference is greater than the seconds threshold
+        case 3: The time difference is less than the hours threshold and greator than the seconds threshold
+    """
+    from CommonServerPython import has_passed_time_threshold
+    res = has_passed_time_threshold(timestamp_str=time_str, hours_threshold=hours_threshold, seconds_threshold=seconds_threshold)
+    assert res == expected_result
+    
+    
+@pytest.mark.parametrize('error_type, time_str,hours_threshold, seconds_threshold, expected_result',
+[(ValueError,"invalid_datetime", 23, None, "time data 'invalid_datetime' does not match format '%Y-%m-%dT%H:%M:%SZ'"),
+ (Exception, "2023-11-30T13:00:34Z", None, None, "Either hours_threshold or seconds_threshold must be provided."),
+ ])
+def test_has_passed_time_threshold__invalid_input(error_type, time_str,hours_threshold, seconds_threshold, expected_result):
+    """
+    Given:
+        - An invalid time string or no threshold
+    When:
+        - The has_passed_time_threshold has been called
+    Then:
+        - Assert the function raises the expected exception
+        case 1: The time string is invalid
+        case 2: Neither hours_threshold or seconds_threshold were provided
+    """
+    from CommonServerPython import has_passed_time_threshold
+    with pytest.raises(error_type) as e:
+        has_passed_time_threshold(timestamp_str=time_str, hours_threshold=hours_threshold, seconds_threshold=seconds_threshold)
+    assert str(e.value) == expected_result

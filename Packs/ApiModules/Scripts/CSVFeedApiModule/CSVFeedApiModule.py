@@ -145,7 +145,7 @@ class Client(BaseClient):
                 # To avoid issues with indicators expiring, if 'last_updated' is over X hours old,
                 # we'll refresh the indicators to ensure their expiration time is updated.
                 # For further details, refer to : https://confluence-dc.paloaltonetworks.com/display/DemistoContent/Json+Api+Module     # noqa: E501
-                if last_updated and has_passed_time_threshold(last_updated, HOURS_THRESHOLD):
+                if last_updated and has_passed_time_threshold(timestamp_str=last_updated, hours_threshold=HOURS_THRESHOLD):
                     last_modified = None
                     etag = None
                     demisto.debug("Since it's been a long time with no update, to make sure we are keeping the indicators alive, \
@@ -262,7 +262,7 @@ def get_no_update_value(response: requests.models.Response, url: str) -> bool:
     last_modified = response.headers.get('Last-Modified')
     current_time = datetime.utcnow()
     # Save the current time as the last updated time. This will be used to check if the indicators have been updated in XSOAR.
-    last_updated = current_time.strftime("%a, %d %b %Y %H:%M:%S GMT")
+    last_updated = current_time.strftime(DATE_FORMAT)
 
     if not etag and not last_modified:
         demisto.debug('Last-Modified and Etag headers are not exists,'
