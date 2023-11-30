@@ -24,6 +24,7 @@ XSIAM_MP = "marketplacev2"
 XSOAR_MP = "xsoar"
 XPANSE_MP = "xpanse"
 XSOAR_SAAS_MP = "xsoar_saas"
+XSOAR_ON_PREM_MP = "xsoar_on_prem"
 XSIAM_START_TAG = "<~XSIAM>"
 XSIAM_END_TAG = "</~XSIAM>"
 XSOAR_START_TAG = "<~XSOAR>"
@@ -31,12 +32,16 @@ XSOAR_END_TAG = "</~XSOAR>"
 XPANSE_START_TAG = "<~XPANSE>"
 XPANSE_END_TAG = "</~XPANSE>"
 XSOAR_SAAS_START_TAG = "<~XSOAR_SAAS>"
-XSOAR_SAAS_END_TAG = "<~/XSOAR_SAAS>"
+XSOAR_SAAS_END_TAG = "</~XSOAR_SAAS>"
+XSOAR_ON_PREM_TAG = "<~XSOAR_ON_PREM>"
+XSOAR_ON_PREM_END_TAG = "</~XSOAR_ON_PREM>"
+
 TAGS_BY_MP = {
     XSIAM_MP: (XSIAM_START_TAG, XSIAM_END_TAG),
     XSOAR_MP: (XSOAR_START_TAG, XSOAR_END_TAG),
     XPANSE_MP: (XPANSE_START_TAG, XPANSE_END_TAG),
-    XSOAR_SAAS_MP: (XSOAR_SAAS_START_TAG, XSOAR_SAAS_END_TAG)
+    XSOAR_SAAS_MP: (XSOAR_SAAS_START_TAG, XSOAR_SAAS_END_TAG),
+    XSOAR_ON_PREM_MP: (XSOAR_ON_PREM_TAG, XSOAR_ON_PREM_END_TAG)
 }
 
 
@@ -357,7 +362,8 @@ class PackStatus(enum.Enum):
     """
     SUCCESS = "Successfully uploaded pack data to gcs"
     SUCCESS_CREATING_DEPENDENCIES_ZIP_UPLOADING = "Successfully uploaded pack while creating dependencies zip"
-    FAILED_LOADING_USER_METADATA = "Failed in loading user-defined pack metadata"
+    FAILED_LOADING_PACK_METADATA = "Failed in loading user-defined pack metadata"
+    FAILED_ENHANCING_PACK_ATTRIBUTES = "Failed in enhancing pack's object attributes"
     FAILED_IMAGES_UPLOAD = "Failed to upload pack integration images to gcs"
     FAILED_AUTHOR_IMAGE_UPLOAD = "Failed to upload pack author image to gcs"
     FAILED_PREVIEW_IMAGES_UPLOAD = "Failed to upload pack preview images to gcs"
@@ -374,7 +380,6 @@ class PackStatus(enum.Enum):
     PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD = "Specific pack is not updated in current build"
     FAILED_REMOVING_PACK_SKIPPED_FOLDERS = "Failed to remove pack hidden and skipped folders"
     FAILED_RELEASE_NOTES = "Failed to generate changelog.json"
-    FAILED_DETECTING_MODIFIED_FILES = "Failed in detecting modified files of the pack"
     FAILED_SEARCHING_PACK_IN_INDEX = "Failed in searching pack folder in index"
     FAILED_DECRYPT_PACK = "Failed to decrypt pack: a premium pack," \
                           " which should be encrypted, seems not to be encrypted."
@@ -433,7 +438,8 @@ RN_HEADER_TO_ID_SET_KEYS = {
     'Triggers Recommendations': 'Triggers',
     'Wizards': 'Wizards',
     'XDRC Templates': 'XDRCTemplates',
-    'Layout Rules': 'LayoutRules'
+    'Layout Rules': 'LayoutRules',
+    'Packs': 'Packs'
 }
 
 # the format is defined in issue #19786, may change in the future

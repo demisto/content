@@ -44,7 +44,7 @@ configuration:
   type: 15
   section: Collect
 - additionalinfo: The number of times to try when getting a Rate Limit response.
-  defaultvalue: '3'
+  defaultvalue: '0'
   display: Rate Limit Retry Count
   name: rate_limit_retry_count
   type: 0
@@ -460,12 +460,12 @@ script:
       name: ip
       required: true
     - description: 'The number of times to try when getting a Rate Limit response.'
-      defaultValue: 3
+      defaultValue: 0
       name: rate_limit_retry_count
     - description: 'The number of seconds to wait each iteration when getting a Rate Limit response.'
       defaultValue: 120
       name: rate_limit_wait_seconds
-    - description: 'Whether Rate Limit errors should be supressed or not.'
+    - description: 'Whether Rate Limit errors should be suppressed or not.'
       defaultValue: 'false'
       name: rate_limit_errors_suppressed
     description: Provides data enrichment for ips.
@@ -582,7 +582,7 @@ script:
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
       type: String
-  dockerimage: demisto/ippysocks-py3:1.0.0.75529
+  dockerimage: demisto/ippysocks-py3:1.0.0.81393
   runonce: false
   script: '-'
   subtype: python3

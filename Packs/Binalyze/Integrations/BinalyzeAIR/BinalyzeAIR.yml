@@ -40,7 +40,7 @@ script:
       - '0'
       - '1'
       - '2'
-      description: Organization ID of the endpoint.
+      description: Organization ID of the endpoint. For a custom organization ID, you can specify a custom value outside the predefined set.
     - name: isolation
       required: true
       auto: PREDEFINED
@@ -74,7 +74,7 @@ script:
       - memory-ram-pagefile
       - quick
       - full
-      description: Acquisition profile.
+      description: Acquisition profile. To use a custom acquisition profile, you can specify a custom profile outside the predefined set.
     - name: case_id
       required: true
       description: ID for the case,e.g. C-2022-0001.
@@ -85,19 +85,19 @@ script:
       - '0'
       - '1'
       - '2'
-      description: Organization ID of the endpoint.
+      description: Organization ID of the endpoint. For a custom organization ID, you can specify a custom value outside the predefined set.
     outputs:
     - contextPath: BinalyzeAIR.Acquire.result._id
       description: Acquisition unique task ID.
       type: string
     - contextPath: BinalyzeAIR.Acquire.result.name
-      description: Acquisiton task name.
+      description: Acquisition task name.
       type: string
     - contextPath: BinalyzeAIR.Acquire.result.organizationId
       description: Organization Id of endpoint.
       type: number
     description: Acquire evidence from an endpoint.
-  dockerimage: demisto/python3:3.10.13.75921
+  dockerimage: demisto/python3:3.10.13.80593
   subtype: python3
 fromversion: 6.2.0
 tests:

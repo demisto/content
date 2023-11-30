@@ -63,7 +63,7 @@ def displayTable(contents, fields):
     for field in presentFields:
         # Translate camel-case field names to title-case space-separated words
         tokens = re.findall("[a-zA-Z][A-Z]*[^A-Z]*", field)
-        name = " ".join(map(lambda token: token.title(), tokens))
+        name = " ".join(token.title() for token in tokens)
         line0 += name + " | "
         line1 += "--- | "
     line0 += "\n"
@@ -85,6 +85,10 @@ def displayTable(contents, fields):
 
 
 def returnResults(contents, outerKey, innerKey, humanReadable, dbotScore, genericContext=None):
+    demisto.results(create_result_entry(contents, outerKey, innerKey, humanReadable, dbotScore, genericContext))
+
+
+def create_result_entry(contents, outerKey, innerKey, humanReadable, dbotScore, genericContext=None):
     machineReadable = {
         "AwakeSecurity": contents,
     }
@@ -98,14 +102,14 @@ def returnResults(contents, outerKey, innerKey, humanReadable, dbotScore, generi
     if genericContext:
         entryContext.update(genericContext)
 
-    demisto.results({
+    return {
         "Type": entryTypes['note'],
         "ContentsFormat": formats['json'],
         "Contents": json.dumps(machineReadable),
         "HumanReadable": humanReadable,
         "ReadableContentsFormat": formats['markdown'],
         "EntryContext": entryContext,
-    })
+    }
 
 
 def toDBotScore(indicator_type, percentile, lookup_key):
@@ -182,90 +186,99 @@ def lookupDevice():
 
 
 def lookupDomain():
-    lookup_key = args["domain"]
-    contents = lookup("domain", lookup_key)
-    humanReadableFields = [
-        "notability",
-        "isAlexaTopOneMillion",
-        "isDGA",
-        "intelSources",
-        "numAssociatedDevices",
-        "numAssociatedActivities",
-        "approxBytesTransferred",
-        "protocols",
-        "firstSeen",
-        "lastSeen",
-    ]
-    if "notability" in contents:
-        dbotScore = toDBotScore("domain", contents["notability"], lookup_key)
-    else:
-        dbotScore = {
-            "Vendor": "Awake Security",
-            "Type": 'domain',
-            "Indicator": lookup_key,
-            "Score": 0,
-            "Reliability": demisto.params().get('integrationReliability')
-        }
-    humanReadable = displayTable([contents], humanReadableFields)
-    contents["domain"] = lookup_key
-    genericContext = {"Domain": {"Name": lookup_key}}
-    returnResults(contents, "Domains", "domain", humanReadable, dbotScore, genericContext)
+    lookup_keys = argToList(args["domain"])
+    results = []
+    for lookup_key in lookup_keys:
+        contents = lookup("domain", lookup_key)
+        humanReadableFields = [
+            "notability",
+            "isAlexaTopOneMillion",
+            "isDGA",
+            "intelSources",
+            "numAssociatedDevices",
+            "numAssociatedActivities",
+            "approxBytesTransferred",
+            "protocols",
+            "firstSeen",
+            "lastSeen",
+        ]
+        if "notability" in contents:
+            dbotScore = toDBotScore("domain", contents["notability"], lookup_key)
+        else:
+            dbotScore = {
+                "Vendor": "Awake Security",
+                "Type": 'domain',
+                "Indicator": lookup_key,
+                "Score": 0,
+                "Reliability": demisto.params().get('integrationReliability')
+            }
+        humanReadable = displayTable([contents], humanReadableFields)
+        contents["domain"] = lookup_key
+        genericContext = {"Domain": {"Name": lookup_key}}
+        results.append(create_result_entry(contents, "Domains", "domain", humanReadable, dbotScore, genericContext))
+    demisto.results(results)
 
 
 def lookupEmail():
-    lookup_key = args["email"]
-    contents = lookup("email", lookup_key)
-    humanReadableFields = [
-        "notabilityPercentile",
-        "deviceName",
-        "os",
-        "deviceType",
-        "application",
-        "numberSimilarDevices",
-        "numberSessions",
-        "firstSeen",
-        "lastSeen",
-        "duration",
-        "deviceId",
-    ]
-    if "notabilityPercentile" in contents:
-        dbotScore = toDBotScore("email", contents["notabilityPercentile"], lookup_key)
-    else:
+    lookup_keys = argToList(args["email"])
+    results = []
+    for lookup_key in lookup_keys:
+        contents = lookup("email", lookup_key)
+        humanReadableFields = [
+            "notabilityPercentile",
+            "deviceName",
+            "os",
+            "deviceType",
+            "application",
+            "numberSimilarDevices",
+            "numberSessions",
+            "firstSeen",
+            "lastSeen",
+            "duration",
+            "deviceId",
+        ]
+        if "notabilityPercentile" in contents:
+            dbotScore = toDBotScore("email", contents["notabilityPercentile"], lookup_key)
+        else:
+            dbotScore = {
+                "Vendor": "Awake Security",
+                "Type": 'email',
+                "Indicator": lookup_key,
+                "Score": 0,
+                "Reliability": demisto.params().get('integrationReliability')
+            }
+        humanReadable = displayTable(contents, humanReadableFields)
+        for content in contents:
+            content["email"] = lookup_key
+        results.append(create_result_entry(contents, "Emails", "email", humanReadable, dbotScore))
+    demisto.results(results)
+
+
+def lookupIp():
+    lookup_keys = argToList(args["ip"])
+    results = []
+    for lookup_key in lookup_keys:
+        contents = lookup("ip", lookup_key)
+        humanReadableFields = [
+            "deviceCount",
+            "activityCount",
+            "ipFirstSeen",
+            "ipLastSeen",
+        ]
         dbotScore = {
             "Vendor": "Awake Security",
-            "Type": 'email',
+            "Type": 'ip',
             "Indicator": lookup_key,
             "Score": 0,
             "Reliability": demisto.params().get('integrationReliability')
         }
-    humanReadable = displayTable(contents, humanReadableFields)
-    for content in contents:
-        content["email"] = lookup_key
-    returnResults(contents, "Emails", "email", humanReadable, dbotScore)
-
-
-def lookupIp():
-    lookup_key = args["ip"]
-    contents = lookup("ip", lookup_key)
-    humanReadableFields = [
-        "deviceCount",
-        "activityCount",
-        "ipFirstSeen",
-        "ipLastSeen",
-    ]
-    dbotScore = {
-        "Vendor": "Awake Security",
-        "Type": 'ip',
-        "Indicator": lookup_key,
-        "Score": 0,
-        "Reliability": demisto.params().get('integrationReliability')
-    }
-    # Note: No DBotScore for IP addresses as we do not score them.
-    # Our product scores devices rather than IP addresses.
-    humanReadable = displayTable([contents], humanReadableFields)
-    contents["ip"] = lookup_key
-    genericContext = {"IP": {"Address": lookup_key}}
-    returnResults(contents, "IPs", "ip", humanReadable, dbotScore, genericContext)
+        # Note: No DBotScore for IP addresses as we do not score them.
+        # Our product scores devices rather than IP addresses.
+        humanReadable = displayTable([contents], humanReadableFields)
+        contents["ip"] = lookup_key
+        genericContext = {"IP": {"Address": lookup_key}}
+        results.append(create_result_entry(contents, "IPs", "ip", humanReadable, dbotScore, genericContext))
+    demisto.results(results)
 
 
 def query(lookup_type):
@@ -423,7 +436,7 @@ def fetchIncidents():
         #
         # This is a precaution because incidents sometimes appear in an old time
         # bucket after a delay
-        if 0 < len(matchingThreatBehaviors):
+        if len(matchingThreatBehaviors) > 0:
             lastRun = {"time": endTimeString}
     else:
         demisto.incidents([])

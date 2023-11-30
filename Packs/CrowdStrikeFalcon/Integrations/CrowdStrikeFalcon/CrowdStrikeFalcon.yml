@@ -4696,7 +4696,7 @@ script:
       auto: PREDEFINED
     description: Perform actions on alerts.
     name: cs-falcon-resolve-identity-detection
-  dockerimage: demisto/py3-tools:1.0.0.79743
+  dockerimage: demisto/py3-tools:1.0.0.80944
   isfetch: true
   ismappable: true
   isremotesyncin: true

@@ -32,12 +32,14 @@ def convert_to_html(markdown):
             if column.strip():
                 if i != 1:
                     html += f"<td style='font-family: Lato, Assistant, sans-serif; font-weight: 600; \
-                    font-size: 12px; text-align: left; color: #404142; \
-                    padding: 1px 0px 0px; margin: 0px 5px 0px 0px; contrast: 4.95;'>{column.strip()}</td>"
+                    font-size: 12px; text-align: left;  \
+                    padding: 1px 0px 0px; margin: 0px 5px 0px 0px; contrast: 4.95; ֿֿֿ\
+                    color: var(--xdr-on-background) ;'>{column.strip()}</td>"
                 else:
                     html += f"<td style='font-family: Lato, Assistant, sans-serif; font-weight: 600; \
-                    font-size: 12px; text-align: left; color: #707070; \
-                    padding: 1px 0px 0px; margin: 0px 5px 0px 0px; contrast: 4.95;'>{column.strip()}</td>"
+                    font-size: 12px; text-align: left; \
+                    padding: 1px 0px 0px; margin: 0px 5px 0px 0px; contrast: 4.95; \
+                    color: var(--xdr-on-background-secondary);'>{column.strip()}</td>"
         html += "</tr>"
     html += "</table>"
     return html

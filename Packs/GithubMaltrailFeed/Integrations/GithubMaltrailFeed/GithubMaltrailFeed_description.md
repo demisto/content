@@ -1,0 +1,1 @@
+Fetches Indicators from Github Repo https://github.com/stamparm/maltrail
