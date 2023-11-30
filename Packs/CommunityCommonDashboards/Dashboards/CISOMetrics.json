@@ -1,0 +1,1499 @@
+{
+    "fromDate": "0001-01-01T00:00:00Z",
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "id": "CISOMetrics",
+    "layout": [
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "3c520490-6dcf-11ee-a0c2-094d81188fdb",
+            "id": "3c520490-6dcf-11ee-a0c2-094d81188fdb",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2023-10-03T16:14:01.53825849-05:00",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "5.0.0",
+                "id": "",
+                "isPredefined": false,
+                "itemVersion": "1.2.32",
+                "modified": "2023-10-03T16:15:30.389552591-05:00",
+                "name": "Closed Incidents by Type",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "groupBy": [
+                        "occurred(m)",
+                        "type"
+                    ],
+                    "showGraphValues": false,
+                    "timeFrame": "months",
+                    "valuesFormat": "abbreviated",
+                    "yAxisLabel": "Incidents"
+                },
+                "prevName": "Active Incidents - Pie chart",
+                "propagationLabels": [],
+                "query": "status:closed",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 0,
+                "widgetType": "line"
+            },
+            "x": 0,
+            "y": 7
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "485b60b0-6dcf-11ee-a0c2-094d81188fdb",
+            "id": "485b60b0-6dcf-11ee-a0c2-094d81188fdb",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2023-10-03T16:14:01.53825849-05:00",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "5.0.0",
+                "id": "",
+                "isPredefined": false,
+                "itemVersion": "1.2.32",
+                "modified": "2023-10-03T16:15:30.389552591-05:00",
+                "name": "Total Active Incidents",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "groupBy": [
+                        "type"
+                    ],
+                    "showGraphValues": false,
+                    "showOthers": true
+                },
+                "prevName": "Active Incidents - Pie chart",
+                "propagationLabels": [],
+                "query": "-category:job and -status:archived and -status:closed",
+                "shouldCommit": false,
+                "size": 20,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 0,
+                "widgetType": "pie"
+            },
+            "x": 0,
+            "y": 1
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "0b2cf6e0-743c-11ee-a12d-838f227c7773",
+            "id": "0b2cf6e0-743c-11ee-a12d-838f227c7773",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2023-10-18T13:24:22.661144429-05:00",
+                "dataType": "metrics",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "description": "Average runtime by Incident Type per Playbook (top 5)",
+                "fromServerVersion": "6.2.0",
+                "id": "",
+                "isPredefined": false,
+                "itemVersion": "1.2.34",
+                "modified": "2023-10-18T13:25:27.585562926-05:00",
+                "name": "Average Duration by Incident Type",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "groupBy": [
+                        "incidentType"
+                    ],
+                    "keys": [
+                        "avg|duration"
+                    ],
+                    "referenceLine": {
+                        "type": "avg"
+                    },
+                    "showGraphValues": true,
+                    "showOthers": true,
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "count",
+                            "position": 0
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "data",
+                            "position": 1
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "floatData",
+                            "position": 2
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "groups",
+                            "position": 3
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 4
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "color",
+                            "position": 5
+                        }
+                    ],
+                    "valuesFormat": "minutes",
+                    "xAxisLabel": "Playbook name",
+                    "yAxisLabel": ""
+                },
+                "prevName": "Average runtime by Incident Type per Playbook (top 5)",
+                "propagationLabels": [],
+                "query": "type:playbook",
+                "shouldCommit": false,
+                "size": 20,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 0,
+                "widgetType": "bar"
+            },
+            "x": 6,
+            "y": 1
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "1eca1dd0-7442-11ee-a12d-838f227c7773",
+            "id": "1eca1dd0-7442-11ee-a12d-838f227c7773",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2023-10-18T13:24:22.662974626-05:00",
+                "dataType": "system",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "minutes",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 60,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "description": "CPU usage percentage per engine in the previous 24 hours",
+                "fromServerVersion": "5.0.0",
+                "id": "engine-cpu-line",
+                "isPredefined": true,
+                "itemVersion": "1.2.34",
+                "modified": "2023-10-18T13:25:27.58710448-05:00",
+                "name": "CPU Usage % per Engine (last 24h)",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "groupBy": [
+                        "engine"
+                    ],
+                    "timeFrame": "minutes"
+                },
+                "prevName": "CPU Usage % per Engine (last 24h)",
+                "propagationLabels": [],
+                "query": "engine.cpu",
+                "shouldCommit": false,
+                "size": 1440,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 40,
+                "widgetType": "line"
+            },
+            "x": 9,
+            "y": 7
+        },
+        {
+            "forceRange": false,
+            "h": 1,
+            "i": "31bd30d0-7442-11ee-a12d-838f227c7773",
+            "id": "31bd30d0-7442-11ee-a12d-838f227c7773",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2023-10-18T13:24:22.663980968-05:00",
+                "dataType": "system",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "description": "Elasticsearch CPU Current Usage %",
+                "fromServerVersion": "5.5.0",
+                "id": "es-cpu-current-usage",
+                "isPredefined": true,
+                "itemVersion": "1.2.34",
+                "modified": "2023-10-18T13:25:27.587810837-05:00",
+                "name": "Elastic CPU Current Usage",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#00CD33": {
+                                "value": -1
+                            },
+                            "#FAC100": {
+                                "value": 50
+                            },
+                            "#FF1B15": {
+                                "value": 80
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "currencySign": "%",
+                    "signAlignment": "right"
+                },
+                "prevName": "Elastic CPU Current Usage",
+                "propagationLabels": [],
+                "query": "es-cpu.usedPercent",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 40,
+                "widgetType": "number"
+            },
+            "x": 9,
+            "y": 13
+        },
+        {
+            "forceRange": false,
+            "h": 1,
+            "i": "3590a700-7442-11ee-a12d-838f227c7773",
+            "id": "3590a700-7442-11ee-a12d-838f227c7773",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2023-10-18T13:24:22.664630932-05:00",
+                "dataType": "system",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "description": "Elastic Disk Current Usage %",
+                "fromServerVersion": "5.5.0",
+                "id": "es-disk-current-usage",
+                "isPredefined": true,
+                "itemVersion": "1.2.34",
+                "modified": "2023-10-18T13:25:27.58838383-05:00",
+                "name": "Elastic Disk Current Usage",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#00CD33": {
+                                "value": -1
+                            },
+                            "#FAC100": {
+                                "value": 60
+                            },
+                            "#FF1B15": {
+                                "value": 80
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "currencySign": "%",
+                    "signAlignment": "right"
+                },
+                "prevName": "Elastic Disk Current Usage",
+                "propagationLabels": [],
+                "query": "es-disk.usedPercent",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 40,
+                "widgetType": "number"
+            },
+            "x": 9,
+            "y": 14
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "3d1b58d0-7442-11ee-a12d-838f227c7773",
+            "id": "3d1b58d0-7442-11ee-a12d-838f227c7773",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2023-10-18T13:24:22.66262665-05:00",
+                "dataType": "system",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "minutes",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 60,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "description": "Server CPU usage in the previous 24 hours",
+                "fromServerVersion": "5.0.0",
+                "id": "cpu-percentage-trend",
+                "isPredefined": true,
+                "itemVersion": "1.2.34",
+                "modified": "2023-10-18T13:25:27.586888932-05:00",
+                "name": "Server CPU Usage % (last 24h)",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "timeFrame": "minutes"
+                },
+                "prevName": "Server CPU Usage % (last 24h)",
+                "propagationLabels": [],
+                "query": "cpu.usedPercent",
+                "shouldCommit": false,
+                "size": 1440,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 40,
+                "widgetType": "line"
+            },
+            "x": 9,
+            "y": 4
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "68dd4820-7442-11ee-a12d-838f227c7773",
+            "id": "68dd4820-7442-11ee-a12d-838f227c7773",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2023-10-18T13:24:22.666956238-05:00",
+                "dataType": "system",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "minutes",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 60,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "description": "Memory usage percentage per engine in the previous 24 hours",
+                "fromServerVersion": "5.0.0",
+                "id": "engine-memory-line",
+                "isPredefined": true,
+                "itemVersion": "1.2.34",
+                "modified": "2023-10-18T13:25:27.590235049-05:00",
+                "name": "Memory Usage % per Engine (last 24h)",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "groupBy": [
+                        "engine"
+                    ],
+                    "timeFrame": "minutes"
+                },
+                "prevName": "Memory Usage % per Engine (last 24h)",
+                "propagationLabels": [],
+                "query": "engine.memory",
+                "shouldCommit": false,
+                "size": 1440,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 40,
+                "widgetType": "line"
+            },
+            "x": 9,
+            "y": 10
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "9b739190-7442-11ee-a12d-838f227c7773",
+            "id": "9b739190-7442-11ee-a12d-838f227c7773",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2023-10-18T13:24:22.664427361-05:00",
+                "dataType": "system",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "minutes",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 60,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "description": "Server memory usage % (previous 24 hours)",
+                "fromServerVersion": "5.0.0",
+                "id": "memory-percentage-trend",
+                "isPredefined": true,
+                "itemVersion": "1.2.34",
+                "modified": "2023-10-18T13:25:27.588177182-05:00",
+                "name": "Server Memory Usage % (last 24h)",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "timeFrame": "minutes"
+                },
+                "prevName": "Server Memory Usage % (last 24h)",
+                "propagationLabels": [],
+                "query": "memory.usedPercent",
+                "shouldCommit": false,
+                "size": 1440,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 40,
+                "widgetType": "line"
+            },
+            "x": 9,
+            "y": 1
+        },
+        {
+            "forceRange": false,
+            "h": 1,
+            "i": "cc9674e0-7442-11ee-a12d-838f227c7773",
+            "id": "cc9674e0-7442-11ee-a12d-838f227c7773",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2023-10-18T13:24:22.663831852-05:00",
+                "dataType": "system",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "description": "Elastic JVM Memory Current Usage %",
+                "fromServerVersion": "5.5.0",
+                "id": "es-jvm-memory-current-usage",
+                "isPredefined": true,
+                "itemVersion": "1.2.34",
+                "modified": "2023-10-18T13:25:27.587690397-05:00",
+                "name": "Elastic JVM Memory Current Usage",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#00CD33": {
+                                "value": -1
+                            },
+                            "#FAC100": {
+                                "value": 70
+                            },
+                            "#FF1B15": {
+                                "value": 90
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "currencySign": "%",
+                    "signAlignment": "right"
+                },
+                "prevName": "Elastic JVM Memory Current Usage",
+                "propagationLabels": [],
+                "query": "es-jvm-memory.usedPercent",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 40,
+                "widgetType": "number"
+            },
+            "x": 9,
+            "y": 15
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "2e3685a0-7443-11ee-a12d-838f227c7773",
+            "id": "2e3685a0-7443-11ee-a12d-838f227c7773",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2023-10-18T13:24:22.662094879-05:00",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "6.5.0",
+                "id": "",
+                "isPredefined": false,
+                "itemVersion": "1.2.34",
+                "modified": "2023-10-18T13:25:27.586477948-05:00",
+                "name": "MTT Contain - Average by Incident Severity",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "groupBy": [
+                        "occurred(m)",
+                        "severity"
+                    ],
+                    "timeFrame": "months",
+                    "valuesFormat": "abbreviated",
+                    "yAxisLabel": "Minutes"
+                },
+                "prevName": "MTTC by Severity",
+                "propagationLabels": [],
+                "query": "-category:job and containmentsla.runStatus:ended",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 0,
+                "widgetType": "line"
+            },
+            "x": 6,
+            "y": 13
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "48913210-7443-11ee-a12d-838f227c7773",
+            "id": "48913210-7443-11ee-a12d-838f227c7773",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2023-10-18T13:24:22.665503471-05:00",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "6.5.0",
+                "id": "",
+                "isPredefined": false,
+                "itemVersion": "1.2.34",
+                "modified": "2023-10-18T13:25:27.589079538-05:00",
+                "name": "MTT Detection - Average by Incident Severity",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "groupBy": [
+                        "occurred(m)",
+                        "severity"
+                    ],
+                    "hideLegend": false,
+                    "keys": [
+                        "avg|detectionsla.totalDuration / 60"
+                    ],
+                    "timeFrame": "months",
+                    "valuesFormat": "abbreviated",
+                    "yAxisLabel": "Minutes"
+                },
+                "prevName": "MTTD by Severity",
+                "propagationLabels": [],
+                "query": "-category:job and detectionsla.runStatus:ended",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 0,
+                "widgetType": "line"
+            },
+            "x": 6,
+            "y": 4
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "500faee0-7443-11ee-a12d-838f227c7773",
+            "id": "500faee0-7443-11ee-a12d-838f227c7773",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2023-10-18T13:24:22.667220543-05:00",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "6.5.0",
+                "id": "",
+                "isPredefined": false,
+                "itemVersion": "1.2.34",
+                "modified": "2023-10-18T13:25:27.590482656-05:00",
+                "name": "MTT Remediate - Average by Incident Severity",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "groupBy": [
+                        "occurred(m)",
+                        "severity"
+                    ],
+                    "keys": [
+                        "avg|remediationsla.totalDuration/60"
+                    ],
+                    "timeFrame": "months",
+                    "valuesFormat": "abbreviated",
+                    "yAxisLabel": "Minutes"
+                },
+                "prevName": "MTTR by Severity",
+                "propagationLabels": [],
+                "query": "-category:job and remediationsla.runStatus:ended",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 0,
+                "widgetType": "line"
+            },
+            "x": 6,
+            "y": 16
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "598fef20-7443-11ee-a12d-838f227c7773",
+            "id": "598fef20-7443-11ee-a12d-838f227c7773",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2023-10-18T13:24:22.663551466-05:00",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "6.5.0",
+                "id": "",
+                "isPredefined": false,
+                "itemVersion": "1.2.34",
+                "modified": "2023-10-18T13:25:27.587564615-05:00",
+                "name": "MTT Triage - Average by Incident Severity",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "groupBy": [
+                        "occurred(m)",
+                        "severity"
+                    ],
+                    "hideLegend": false,
+                    "keys": [
+                        "avg|triagesla.totalDuration/60"
+                    ],
+                    "timeFrame": "months",
+                    "valuesFormat": "abbreviated",
+                    "yAxisLabel": "Minutes"
+                },
+                "prevName": "MTTT by Severity",
+                "propagationLabels": [],
+                "query": "-category:job and triagesla.runStatus:ended",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 0,
+                "widgetType": "line"
+            },
+            "x": 6,
+            "y": 10
+        },
+        {
+            "forceRange": false,
+            "h": 1,
+            "i": "87ba5d80-7444-11ee-ab37-21d3e49dda6f",
+            "id": "87ba5d80-7444-11ee-ab37-21d3e49dda6f",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "utilities",
+                "commitMessage": "",
+                "created": "2023-10-18T13:24:22.663367269-05:00",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "5.0.0",
+                "id": "",
+                "isPredefined": false,
+                "itemVersion": "1.2.34",
+                "modified": "2023-10-18T13:25:27.587423693-05:00",
+                "name": "Text Widget",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "text": "# **Incident Status**"
+                },
+                "prevName": "Text Widget",
+                "propagationLabels": [],
+                "query": "",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 0,
+                "widgetType": "text"
+            },
+            "x": 0,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 1,
+            "i": "9e788240-7444-11ee-ab37-21d3e49dda6f",
+            "id": "9e788240-7444-11ee-ab37-21d3e49dda6f",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "utilities",
+                "commitMessage": "",
+                "created": "2023-10-18T13:24:22.663367269-05:00",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "5.0.0",
+                "id": "",
+                "isPredefined": false,
+                "itemVersion": "1.2.34",
+                "modified": "2023-10-18T13:25:27.587423693-05:00",
+                "name": "Text Widget",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "text": "# **Server, Engine, Elasticsearch Status**"
+                },
+                "prevName": "Text Widget",
+                "propagationLabels": [],
+                "query": "",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 0,
+                "widgetType": "text"
+            },
+            "x": 9,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 1,
+            "i": "bcccd510-7445-11ee-ab37-21d3e49dda6f",
+            "id": "bcccd510-7445-11ee-ab37-21d3e49dda6f",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "utilities",
+                "commitMessage": "",
+                "created": "2023-10-18T13:24:22.663367269-05:00",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "5.0.0",
+                "id": "",
+                "isPredefined": false,
+                "itemVersion": "1.2.34",
+                "modified": "2023-10-18T13:25:27.587423693-05:00",
+                "name": "Text Widget",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "text": "# **SLA Status**"
+                },
+                "prevName": "Text Widget",
+                "propagationLabels": [],
+                "query": "",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 0,
+                "widgetType": "text"
+            },
+            "x": 6,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "19bb86c0-773b-11ee-a566-752d8f0faf8a",
+            "id": "19bb86c0-773b-11ee-a566-752d8f0faf8a",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2023-10-18T13:24:22.662927569-05:00",
+                "dataType": "indicators",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "5.0.0",
+                "id": "",
+                "isPredefined": false,
+                "itemVersion": "1.2.34",
+                "modified": "2023-10-18T13:25:27.587065337-05:00",
+                "name": "Active Indicators by Type",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "groupBy": [
+                        "calculatedTime(m)",
+                        "type"
+                    ],
+                    "timeFrame": "months",
+                    "yAxisLabel": "Indicators"
+                },
+                "prevName": "Indicators Activity by Type",
+                "propagationLabels": [],
+                "query": "(expirationStatus:active or expirationStatus:\"\")",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 0,
+                "widgetType": "line"
+            },
+            "x": 3,
+            "y": 4
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "58ce3970-773b-11ee-a566-752d8f0faf8a",
+            "id": "58ce3970-773b-11ee-a566-752d8f0faf8a",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2023-10-18T13:24:22.665613754-05:00",
+                "dataType": "indicators",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "6.2.0",
+                "id": "",
+                "isPredefined": false,
+                "itemVersion": "1.2.34",
+                "modified": "2023-10-18T13:25:27.58916232-05:00",
+                "name": "Total Active Indicators",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "groupBy": [
+                        "score"
+                    ],
+                    "showGraphValues": false,
+                    "showOthers": true,
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Active Indicators by Verdict",
+                "propagationLabels": [],
+                "query": "(expirationStatus:active or expirationStatus:\"\")",
+                "shouldCommit": false,
+                "size": 20,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 0,
+                "widgetType": "pie"
+            },
+            "x": 3,
+            "y": 1
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "9f4bb9e0-773b-11ee-a566-752d8f0faf8a",
+            "id": "9f4bb9e0-773b-11ee-a566-752d8f0faf8a",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2023-10-18T13:24:22.666642493-05:00",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "5.0.0",
+                "id": "",
+                "isPredefined": false,
+                "itemVersion": "1.2.34",
+                "modified": "2023-10-18T13:25:27.590008255-05:00",
+                "name": "Active Incidents by Type",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "groupBy": [
+                        "occurred(m)",
+                        "rawType"
+                    ],
+                    "timeFrame": "months",
+                    "yAxisLabel": "Incidents"
+                },
+                "prevName": "Active Incidents - Line chart",
+                "propagationLabels": [],
+                "query": "-category:job and -status:archived and -status:closed",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 0,
+                "widgetType": "line"
+            },
+            "x": 0,
+            "y": 4
+        },
+        {
+            "forceRange": false,
+            "h": 1,
+            "i": "07f628e0-773c-11ee-a566-752d8f0faf8a",
+            "id": "07f628e0-773c-11ee-a566-752d8f0faf8a",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "utilities",
+                "commitMessage": "",
+                "created": "2023-10-18T13:24:22.663367269-05:00",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "5.0.0",
+                "id": "",
+                "isPredefined": false,
+                "itemVersion": "1.2.34",
+                "modified": "2023-10-18T13:25:27.587423693-05:00",
+                "name": "Text Widget",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "text": "# **Indicator Status**"
+                },
+                "prevName": "Text Widget",
+                "propagationLabels": [],
+                "query": "",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 0,
+                "widgetType": "text"
+            },
+            "x": 3,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "ece14230-7801-11ee-8913-ad9ea3535db6",
+            "id": "ece14230-7801-11ee-8913-ad9ea3535db6",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2023-10-18T13:24:22.662927569-05:00",
+                "dataType": "indicators",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "5.0.0",
+                "id": "",
+                "isPredefined": false,
+                "itemVersion": "1.2.34",
+                "modified": "2023-10-18T13:25:27.587065337-05:00",
+                "name": "Expired Indicators by Type",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "groupBy": [
+                        "calculatedTime(m)",
+                        "type"
+                    ],
+                    "timeFrame": "months",
+                    "yAxisLabel": "Indicators"
+                },
+                "prevName": "Indicators Activity by Type",
+                "propagationLabels": [],
+                "query": "(-expirationStatus:active and -expirationStatus:\"\")",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 0,
+                "widgetType": "line"
+            },
+            "x": 3,
+            "y": 7
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "d2ea8280-7813-11ee-8913-ad9ea3535db6",
+            "id": "d2ea8280-7813-11ee-8913-ad9ea3535db6",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2023-10-18T13:24:22.663551466-05:00",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "6.5.0",
+                "id": "",
+                "isPredefined": false,
+                "itemVersion": "1.2.34",
+                "modified": "2023-10-18T13:25:27.587564615-05:00",
+                "name": "MTT Assign - Average by Incident Severity",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "groupBy": [
+                        "occurred(m)",
+                        "severity"
+                    ],
+                    "hideLegend": false,
+                    "keys": [
+                        "avg|timetoassignment.totalDuration/60"
+                    ],
+                    "timeFrame": "months",
+                    "valuesFormat": "abbreviated",
+                    "yAxisLabel": "Minutes"
+                },
+                "prevName": "MTTT by Severity",
+                "propagationLabels": [],
+                "query": "-category:job and timetoassignment.runStatus:ended",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 0,
+                "widgetType": "line"
+            },
+            "x": 6,
+            "y": 7
+        }
+    ],
+    "name": "CISOMetrics",
+    "period": {
+        "by": "",
+        "byFrom": "days",
+        "byTo": "",
+        "field": "",
+        "fromValue": 30,
+        "toValue": null
+    },
+    "toDate": "0001-01-01T00:00:00Z",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "description": "",
+    "isPredefined": true
+}
