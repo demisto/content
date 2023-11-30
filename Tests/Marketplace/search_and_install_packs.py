@@ -187,8 +187,6 @@ def create_dependencies_data_structure(response_data: dict, dependants_ids: list
             is_required = dependants[dependant].get('level', '') == 'required'
 
             if all((dependant in dependants_ids, is_required, dependency['id'] not in checked_packs)):
-                logging.info(f"dependency['id']: {dependency['id']}")
-                logging.info(f"dependency_data: {dependency}")
                 dependencies_data.append(dependency)
                 next_call_dependants_ids.append(dependency['id'])
                 checked_packs.append(dependency['id'])
@@ -538,23 +536,34 @@ def search_pack_and_its_dependencies(client: demisto_client,
     logging.info(f"current_packs_to_install: {current_packs_to_install}")
     with lock:
         if not multithreading:
+            match_found = False
             if list_packs_and_its_dependency_install_request_body is None:
                 list_packs_and_its_dependency_install_request_body = []
-            logging.info(f"collected_dependencies: {collected_dependencies}")
+            logging.info(f"pack to instal: {packs_to_install}")          
             if pack_and_its_dependencies := {
                 p['id']: p
                 for p in current_packs_to_install
-                if p['id'] not in collected_dependencies
-            }:
-                collected_dependencies += pack_and_its_dependencies
+            }:  
+                logging.info(f"pack_and_its_dependencies: {pack_and_its_dependencies}") 
+                # collected_dependencies += pack_and_its_dependencies
                 pack_and_its_dependencies_as_list = [
                     get_pack_installation_request_data(pack_id=pack['id'],
                                                        pack_version=pack['extras']['pack']['currentVersion'])
                     for pack in list(pack_and_its_dependencies.values())
                 ]
+                logging.info(f"pack_and_its_dependencies_as_list:{pack_and_its_dependencies_as_list}")
                 packs_to_install.extend([pack['id'] for pack in pack_and_its_dependencies_as_list])
-                logging.info(f"pack_and_its_dependencies_as_list:: {pack_and_its_dependencies_as_list}")
-                list_packs_and_its_dependency_install_request_body.append(pack_and_its_dependencies_as_list)
+                for sublist in list_packs_and_its_dependency_install_request_body:
+                    # Check if any dictionary in pack_and_its_dependencies_as_list has a matching 'id' in the sublist
+                    common_elements = {item['id'] for item in sublist}.intersection(item['id'] for item in pack_and_its_dependencies_as_list)
+                    logging.info(f"found common element:{common_elements}")
+                    if common_elements:
+                        # Append only unique dictionaries from pack_and_its_dependencies_as_list to the sublist
+                        sublist.extend(item for item in pack_and_its_dependencies_as_list if item['id'] not in common_elements)
+                        match_found = True
+                        break
+                if not match_found:    
+                    list_packs_and_its_dependency_install_request_body.append(pack_and_its_dependencies_as_list)
                 logging.info(f"list_packs_and_its_dependency_install_request_body:: {list_packs_and_its_dependency_install_request_body}")
         else:  # multithreading
             for pack in current_packs_to_install:
@@ -840,3 +849,11 @@ def create_batches(list_of_packs_and_its_dependency: list):
             batch = packs_to_install_body
     list_of_batches.append(batch)
     return list_of_batches
+
+# if __name__ == '__main__':
+#     with open('/Users/jbabazadeh/dev/demisto/content/Tests/Marketplace/developertools.json', 'r') as f:
+#         api_data =json.loads(f.read())
+#     create_dependencies_data_structure(response_data=api_data.get('dependencies', []),
+#                                        dependants_ids=['DeveloperTools'],
+#                                        dependencies_data=[],
+#                                        checked_packs=['DeveloperTools'])
