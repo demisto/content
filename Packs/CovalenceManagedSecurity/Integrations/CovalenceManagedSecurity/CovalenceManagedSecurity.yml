@@ -37,7 +37,7 @@ configuration:
   type: 0
   required: false
 description: Triggers by triaged alerts from endpoint, cloud, and network security monitoring. Contains event details and easy-to-follow mitigation steps.
-display: Covalence Managed Security (Partner Contribution)
+display: Covalence Managed Security
 name: Covalence Managed Security
 script:
   commands:
@@ -260,7 +260,7 @@ script:
     - contextPath: FESPortal.Aro.type
       description: Type.
       type: String
-  dockerimage: demisto/python3:3.10.13.80593
+  dockerimage: demisto/python3:3.10.13.81631
   isfetch: true
   runonce: false
   script: ''
@@ -269,9 +269,6 @@ script:
   feed: false
   longRunning: false
   longRunningPort: false
-  nativeimage:
-  - '8.3'
-  - '8.4'
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0
