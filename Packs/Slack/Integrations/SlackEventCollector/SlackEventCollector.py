@@ -78,7 +78,7 @@ class Client(BaseClient):
         and go through the pages until we reach the first_id
         """
         query_params.pop('cursor')
-        query_params['latest'] = last_run.get('latest', None)
+        query_params['latest'] = last_run.get('first_created_at', None)
         _, events, cursor = self.get_logs(query_params)
         while last_run.get('first_id'):
             for idx, event in enumerate(events):
@@ -124,7 +124,7 @@ class Client(BaseClient):
                     if len(aggregated_logs) == user_defined_limit:
                         demisto.debug(f'Reached the user-defined limit ({user_defined_limit}) - stopping.')
                         last_run['first_id'] = event.get('id')
-                        last_run['latest'] = event.get('date_create')
+                        last_run['first_created_at'] = event.get('date_create')
                         cursor = query_params.get('cursor')
                         break
 
