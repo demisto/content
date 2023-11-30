@@ -14,26 +14,27 @@ from typing import Any, List, Dict, Union
 warnings.simplefilter("ignore")
 warnings.filterwarnings('ignore', category=UserWarning)
 
+INCIDENT_ALIAS = 'incident' if (demisto.demistoVersion()['platform'] == 'xsoar') else 'alert'
 MESSAGE_NO_FIELDS_USED = "- No field are used to find similarity. Possible reasons: 1) No field selected  " \
-                         " 2) Selected field are empty for this incident  3) Fields are misspelled"
+                         f" 2) Selected field are empty for this {INCIDENT_ALIAS}  3) Fields are misspelled"
 
-MESSAGE_NO_INCIDENT_FETCHED = "- 0 incidents fetched with these exact match for the given dates."
+MESSAGE_NO_INCIDENT_FETCHED = f"- 0 {INCIDENT_ALIAS}s fetched with these exact match for the given dates."
 
-MESSAGE_WARNING_TRUNCATED = "- Incidents fetched have been truncated to %s, please either add incident fields in " \
+MESSAGE_WARNING_TRUNCATED = f"- Incidents fetched have been truncated to %s, please either add {INCIDENT_ALIAS} fields in " \
                             "fieldExactMatch, enlarge the time period or increase the limit argument " \
                             "to more than %s."
 
 MESSAGE_NO_CURRENT_INCIDENT = "- Incident %s does not exist within the given time range. " \
-                              "Please check incidentId value or that you are running the command within an incident."
-MESSAGE_NO_FIELD = "- %s field(s) does not exist in the current incident."
-MESSAGE_INCORRECT_FIELD = "- %s field(s) don't/doesn't exist within the fetched incidents."
+                              f"Please check incidentId value or that you are running the command within an {INCIDENT_ALIAS}."  # What todo about
+MESSAGE_NO_FIELD = f"- %s field(s) does not exist in the current {INCIDENT_ALIAS}."
+MESSAGE_INCORRECT_FIELD = "- %s field(s) don't/doesn't exist within the fetched {INCIDENT_ALIAS}s."
 
-SIMILARITY_COLUNM_NAME = 'similarity incident'
+SIMILARITY_COLUNM_NAME = f'similarity {INCIDENT_ALIAS}'
 SIMILARITY_COLUNM_NAME_INDICATOR = 'similarity indicators'
 IDENTICAL_INDICATOR = 'Identical indicators'
 ORDER_SCORE_WITH_INDICATORS = [SIMILARITY_COLUNM_NAME, SIMILARITY_COLUNM_NAME_INDICATOR]
 ORDER_SCORE_NO_INDICATORS = [SIMILARITY_COLUNM_NAME]
-COLUMN_ID = 'incident ID'
+COLUMN_ID = f'{INCIDENT_ALIAS} ID'
 FIRST_COLUMNS_INCIDENTS_DISPLAY = [COLUMN_ID, 'created', 'name', SIMILARITY_COLUNM_NAME,
                                    SIMILARITY_COLUNM_NAME_INDICATOR,
                                    IDENTICAL_INDICATOR]
@@ -724,8 +725,8 @@ def return_outputs_summary(confidence: float, number_incident_fetched: int, numb
     """
     summary = {
         'Confidence': str(confidence),
-        'Number of incidents fetched with exact match ': number_incident_fetched,
-        'Number of similar incidents found ': number_incidents_found,
+        f'Number of {INCIDENT_ALIAS}s fetched with exact match ': number_incident_fetched,
+        f'Number of similar {INCIDENT_ALIAS}s found ': number_incidents_found,
         'Valid fields used for similarity': ', '.join(fields_used),
     }
     return_outputs(readable_output=global_msg + tableToMarkdown("Summary", summary))
@@ -833,8 +834,8 @@ def return_outputs_similar_incidents_empty():
     Return entry and context for similar incidents if no similar incidents were found
     :return:
     """
-    hr = '### Similar Incident' + '\n'
-    hr += 'No Similar incident were found.'
+    hr = f'### Similar {INCIDENT_ALIAS.capitalize()}' + '\n'
+    hr += f'No Similar {INCIDENT_ALIAS}s were found.'
     return_outputs(readable_output=hr,
                    outputs={'DBotFindSimilarIncidents': create_context_for_incidents()})
 
@@ -924,9 +925,9 @@ def main():
     global_msg += "%s \n" % msg
 
     if incidents:
-        demisto.debug(f'Found {len(incidents)} incidents for {incident_id=}')
+        demisto.debug(f'Found {len(incidents)} {INCIDENT_ALIAS} for {incident_id=}')
     else:
-        demisto.debug(f'No incidents found for {incident_id=}')
+        demisto.debug(f'No {INCIDENT_ALIAS} found for {incident_id=}')
         return_outputs_summary(confidence, 0, 0, [], global_msg)
         return_outputs_similar_incidents_empty()
         return None, global_msg
