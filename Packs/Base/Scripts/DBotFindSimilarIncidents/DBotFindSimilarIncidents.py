@@ -25,7 +25,7 @@ MESSAGE_WARNING_TRUNCATED = f"- Incidents fetched have been truncated to %s, ple
                             "to more than %s."
 
 MESSAGE_NO_CURRENT_INCIDENT = "- Incident %s does not exist within the given time range. " \
-                              f"Please check incidentId value or that you are running the command within an {INCIDENT_ALIAS}."  # What todo about
+                              f"Please check incidentId value or that you are running the command within an {INCIDENT_ALIAS}."  # What todo about incidentId
 MESSAGE_NO_FIELD = f"- %s field(s) does not exist in the current {INCIDENT_ALIAS}."
 MESSAGE_INCORRECT_FIELD = "- %s field(s) don't/doesn't exist within the fetched {INCIDENT_ALIAS}s."
 
@@ -834,10 +834,10 @@ def return_outputs_similar_incidents_empty():
     Return entry and context for similar incidents if no similar incidents were found
     :return:
     """
-    hr = f'### Similar {INCIDENT_ALIAS.capitalize()}' + '\n'
-    hr += f'No Similar {INCIDENT_ALIAS}s were found.'
-    return_outputs(readable_output=hr,
-                   outputs={'DBotFindSimilarIncidents': create_context_for_incidents()})
+    return_outputs(
+        readable_output=f'### Similar {INCIDENT_ALIAS.capitalize()}\nNo Similar {INCIDENT_ALIAS}s were found.',
+        outputs={'DBotFindSimilarIncidents': create_context_for_incidents()}
+    )
 
 
 def enriched_with_indicators_similarity(full_args_indicators_script: Dict, similar_incidents: pd.DataFrame):

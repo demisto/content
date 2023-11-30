@@ -77,7 +77,7 @@ def get_map_from_nested_dict(nested_dict, keys, raise_error=False):
             elif key in nested_dict:
                 result[key] = nested_dict[key]
             else:
-                message = f"Missing key\label\custom\context field for {INCIDENT_ALIAS}: %s" % key
+                message = f"Missing key\label\custom\context field for {INCIDENT_ALIAS}: {key}"
                 if raise_error:
                     return_error(message)
                 else:
@@ -155,7 +155,7 @@ def get_incidents_by_keys(similar_incident_keys, time_field, incident_time, inci
     min_date = incident_time - timedelta(hours=hours_back)
     query = build_incident_query(similar_keys_query, ignore_closed, incident_id, extra_query)
 
-    demisto.debug(f"Find similar {INCIDENT_ALIAS}s based on initial query: %s" % query)
+    demisto.debug(f"Find similar {INCIDENT_ALIAS}s based on initial query: {query}")
 
     get_incidents_argument = {'query': query, 'size': max_number_of_results, 'sort': '%s.desc' % time_field}
 
@@ -334,14 +334,14 @@ def main():
             response = demisto.dt(incident_similar_context, key)
             original_context_map[key] = response
             if not response and RAISE_ERROR_MISSING_VALUES:
-                raise ValueError(f"Error: Missing context key for {INCIDENT_ALIAS}: %s" % key)
+                raise ValueError(f"Error: Missing context key for {INCIDENT_ALIAS}: {key}")
 
     log_message = 'Incident fields with exact match: %s' % exact_match_incident_fields
     if len(exact_match_incident_fields) > 1:
         log_message += ', applied with %s condition' % INCIDENT_FIELDS_APPLIED_CONDITION
     demisto.debug(log_message)
     if len(similar_incident_fields) > 0:
-        demisto.debug(f'Similar {INCIDENT_ALIAS} fields (not exact match): %s' % similar_incident_fields)
+        demisto.debug(f'Similar {INCIDENT_ALIAS} fields (not exact match): {similar_incident_fields}')
     if len(incident_similar_labels) > 0:
         demisto.debug('Similar labels: %s' % incident_similar_labels)
     if len(incident_similar_context) > 0:
