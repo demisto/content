@@ -1,9 +1,8 @@
 import json
-import io
 import os
 
 import pytest
-import unittest.mock as mock
+from unittest import mock
 from CommonServerPython import DemistoException
 
 BASE_URL = "https://{}:17778/SolarWinds/InformationService/v3/Json"
@@ -11,7 +10,7 @@ SERVER_DOMAIN = "dummy.server"
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -26,7 +25,7 @@ def test_test_module_success(client, requests_mock):
     """Test for successful execution of test_module function"""
     from SolarWinds import test_module
     requests_mock.get(BASE_URL.format(SERVER_DOMAIN) + "/Query", json={"results": []}, status_code=200)
-    assert 'ok' == test_module(client, {})
+    assert test_module(client, {}) == 'ok'
 
 
 def test_test_module_authentication_failure(client, requests_mock):

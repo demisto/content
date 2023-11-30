@@ -1,5 +1,4 @@
 import json
-import io
 import time
 import os
 import pytest
@@ -28,7 +27,7 @@ MOCKER_HTTP_METHOD = 'CofenseTriagev3.Client.http_request'
 
 def util_load_json(path: str) -> dict:
     """Load a json to python dict."""
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -260,7 +259,7 @@ def test_cofense_threat_indicator_list_command_when_valid_response_is_returned(m
     context_output = util_load_json(
         os.path.join("test_data", "threat_indicator/threat_indicators_command_context.json"))
 
-    with open(os.path.join("test_data", "threat_indicator/threat_indicators_command_readable_output.md"), 'r') as f:
+    with open(os.path.join("test_data", "threat_indicator/threat_indicators_command_readable_output.md")) as f:
         readable_output = f.read()
 
     # Execute
@@ -506,7 +505,7 @@ def test_cofense_url_list_command_when_valid_response_is_returned(mocked_client)
     context_output = util_load_json(
         os.path.join("test_data", "url/list_url_command_context.json"))
 
-    with open(os.path.join("test_data", "url/list_url_command_readable_output.md"), 'r') as f:
+    with open(os.path.join("test_data", "url/list_url_command_readable_output.md")) as f:
         readable_output = f.read()
 
     # Execute
@@ -638,7 +637,7 @@ def test_cofense_threat_indicator_create_command_when_valid_response_is_returned
     context_output = util_load_json(
         os.path.join("test_data", "threat_indicator/threat_indicators_command_context.json"))
 
-    with open(os.path.join("test_data", "threat_indicator/threat_indicators_command_readable_output.md"), 'r') as f:
+    with open(os.path.join("test_data", "threat_indicator/threat_indicators_command_readable_output.md")) as f:
         readable_output = f.read()
 
     # Execute
@@ -688,8 +687,7 @@ def test_cofense_integration_submission_get_command_when_valid_response_is_retur
     context_output = util_load_json(
         os.path.join("test_data", "integration_submission/integration_submission_context.json"))
 
-    with open(os.path.join("test_data", "integration_submission/integration_submission_command_readable_output.md"),
-              'r') as f:
+    with open(os.path.join("test_data", "integration_submission/integration_submission_command_readable_output.md")) as f:
         readable_output = f.read()
 
     # Execute
@@ -741,7 +739,7 @@ def test_cofense_reporter_list_command_when_valid_response_is_returned(mocked_cl
     context_output = util_load_json(
         os.path.join("test_data", "reporter/reporter_list_context.json"))
 
-    with open(os.path.join("test_data", "reporter/reporter_list.md"), 'r') as f:
+    with open(os.path.join("test_data", "reporter/reporter_list.md")) as f:
         readable_output = f.read()
 
     # Execute
@@ -797,7 +795,7 @@ def test_cofense_attachment_payload_list_command_when_valid_response_is_returned
     context_output = util_load_json(
         os.path.join("test_data", "attachment_payload/attachment_payload_list_context.json"))
 
-    with open(os.path.join("test_data", "attachment_payload/attachment_payload_list.md"), 'r') as f:
+    with open(os.path.join("test_data", "attachment_payload/attachment_payload_list.md")) as f:
         readable_output = f.read()
 
     # Execute
@@ -917,7 +915,7 @@ def test_cofense_threat_indicator_update_command_when_valid_response_is_returned
     context_output = util_load_json(
         os.path.join("test_data", "threat_indicator/threat_indicators_command_context.json"))
 
-    with open(os.path.join("test_data", "threat_indicator/threat_indicators_command_readable_output.md"), 'r') as f:
+    with open(os.path.join("test_data", "threat_indicator/threat_indicators_command_readable_output.md")) as f:
         readable_output = f.read()
 
     # Execute
@@ -1062,7 +1060,7 @@ def test_cofense_report_attachment_payload_list_command_when_valid_response_is_r
     context_output = util_load_json(
         os.path.join("test_data", "report_attachment_payload/report_attachment_payload_list_context.json"))
 
-    with open(os.path.join("test_data", "report_attachment_payload/report_attachment_payload_list.md"), 'r') as f:
+    with open(os.path.join("test_data", "report_attachment_payload/report_attachment_payload_list.md")) as f:
         readable_output = f.read()
 
     # Execute

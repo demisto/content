@@ -24,7 +24,7 @@ def load_mock_response(file_name: str, file_type: str = "json"):
         return ET.tostring(top.getroot(), encoding='utf8').decode("utf-8")
 
     else:
-        with open(f'test_data/{file_name}', mode='r', encoding='utf-8') as mock_file:
+        with open(f'test_data/{file_name}', encoding='utf-8') as mock_file:
             return mock_file.read()
 
 

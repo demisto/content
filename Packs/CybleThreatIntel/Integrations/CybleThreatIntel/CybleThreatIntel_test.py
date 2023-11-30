@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, timezone
 import json
 import pytest
 
-input_value = json.load(open(os.path.dirname(__file__) + "test_data/input.json", "r"))
+input_value = json.load(open(os.path.dirname(__file__) + "test_data/input.json"))
 params = input_value['params']
 args = input_value['args']
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S+00:00"
@@ -15,7 +15,7 @@ def load_json_file(filename):
     :return:
     """
     content = None
-    with open(os.path.dirname(__file__) + "test_data/{0}".format(filename), 'r') as f:
+    with open(os.path.dirname(__file__) + f"test_data/{filename}") as f:
         content = json.load(f)
     return content
 
@@ -45,7 +45,7 @@ def test_get_parse_to_json():
     from CybleThreatIntel import Client
     client = Client(params)
 
-    mock_response_1 = str(open(os.path.dirname(__file__) + "test_data/data.xml", "r").read())
+    mock_response_1 = str(open(os.path.dirname(__file__) + "test_data/data.xml").read())
     mock_response_3 = load_json_file("data.json")
     val = Client.parse_to_json(client, mock_response_1)
     assert isinstance(val, dict)
@@ -56,7 +56,7 @@ def test_get_taxii(mocker):
     from CybleThreatIntel import Client
     client = Client(params)
 
-    mock_response_1 = str(open(os.path.dirname(__file__) + "test_data/data.xml", "r").read())
+    mock_response_1 = str(open(os.path.dirname(__file__) + "test_data/data.xml").read())
     mock_response_3 = load_json_file("data.json")
     mocker.patch.object(client, 'fetch', return_value=[mock_response_1])
     val, time = Client.get_taxii(client, args)
@@ -69,7 +69,7 @@ def test_get_taxii_invalid(mocker, capfd):
     from CybleThreatIntel import Client
     client = Client(params)
 
-    mock_response_1 = str(open(os.path.dirname(__file__) + "test_data/data_err.xml", "r").read())
+    mock_response_1 = str(open(os.path.dirname(__file__) + "test_data/data_err.xml").read())
     mocker.patch.object(client, 'fetch', return_value=[mock_response_1])
     with capfd.disabled():
         try:
@@ -234,9 +234,8 @@ def test_limit_validate_input(capfd):
         "end": "2022-06-13 00:00:00",
         "collection": "phishing_url"
     }
-    with capfd.disabled():
-        with pytest.raises(ValueError, match=f"Limit should be positive, limit: {args.get('limit', 0)}"):
-            validate_input(args=args)
+    with capfd.disabled(), pytest.raises(ValueError, match=f"Limit should be positive, limit: {args.get('limit', 0)}"):
+        validate_input(args=args)
 
 
 def test_sdate_validate_input(capfd):
@@ -249,10 +248,9 @@ def test_sdate_validate_input(capfd):
         "collection": "phishing_url"
     }
 
-    with capfd.disabled():
-        with pytest.raises(ValueError,
-                           match="Invalid date format received"):
-            validate_input(args=args)
+    with capfd.disabled(), pytest.raises(ValueError,
+                                         match="Invalid date format received"):
+        validate_input(args=args)
 
 
 def test_edate_validate_input(capfd):
@@ -265,10 +263,9 @@ def test_edate_validate_input(capfd):
         "collection": "phishing_url"
     }
 
-    with capfd.disabled():
-        with pytest.raises(ValueError,
-                           match="Invalid date format received"):
-            validate_input(args=args)
+    with capfd.disabled(), pytest.raises(ValueError,
+                                         match="Invalid date format received"):
+        validate_input(args=args)
 
 
 @pytest.mark.parametrize(
@@ -284,10 +281,9 @@ def test_date_validate_input(capfd, limit):
         "collection": "phishing_url"
     }
 
-    with capfd.disabled():
-        with pytest.raises(ValueError,
-                           match="Start date cannot be after end date"):
-            validate_input(args=args)
+    with capfd.disabled(), pytest.raises(ValueError,
+                                         match="Start date cannot be after end date"):
+        validate_input(args=args)
 
 
 def test_idate_validate_input(capfd):
@@ -300,9 +296,8 @@ def test_idate_validate_input(capfd):
         "collection": "phishing_url"
     }
 
-    with capfd.disabled():
-        with pytest.raises(ValueError, match="End date must be a date before or equal to current"):
-            validate_input(args=args)
+    with capfd.disabled(), pytest.raises(ValueError, match="End date must be a date before or equal to current"):
+        validate_input(args=args)
 
 
 def test_end_date_validate_input(capfd):
@@ -315,9 +310,8 @@ def test_end_date_validate_input(capfd):
         "collection": "phishing_url"
     }
 
-    with capfd.disabled():
-        with pytest.raises(ValueError, match="Start date must be a date before or equal to current"):
-            validate_input(args=args)
+    with capfd.disabled(), pytest.raises(ValueError, match="Start date must be a date before or equal to current"):
+        validate_input(args=args)
 
 
 def test_collection_validate_input(capfd):
@@ -330,9 +324,8 @@ def test_collection_validate_input(capfd):
         "collection": ""
     }
 
-    with capfd.disabled():
-        with pytest.raises(ValueError, match="Collection Name should be provided: None"):
-            validate_input(args=args)
+    with capfd.disabled(), pytest.raises(ValueError, match="Collection Name should be provided: None"):
+        validate_input(args=args)
 
 
 def test_feed_collection(mocker):

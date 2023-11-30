@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from CommonServerPython import *
 import pytest
 
@@ -14,7 +13,7 @@ def load_mock_response(file_name):
         str: Mock file content.
 
     """
-    with open(os.path.dirname(__file__) + 'test_data/' + file_name, mode='r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/' + file_name) as f:
         return json.loads(f.read())
 
 
