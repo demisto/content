@@ -2,6 +2,8 @@ Detonate a webpage or remote file using the WildFire integration. This playbook 
 The detonation supports the following file types:
 APK, JAR, DOC, DOCX, RTF, OOXLS, XLSX, PPT, PPTX, XML, PE32, PDF, DMG, PKG, RAR, 7Z, JS.
 
+This playbook is deprecated. please use the Detonate URL - WildFire v2.2 instead.
+
 ## Dependencies
 
 This playbook uses the following sub-playbooks, integrations, and scripts.

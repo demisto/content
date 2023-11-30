@@ -4,6 +4,7 @@ var taskStates = {
     completed: 'Completed',
     waiting: 'Waiting',
     error: 'Error',
+    looperror: 'LoopError',
     skipped: 'WillNotBeExecuted',
     blocked: 'Blocked'
 };
@@ -37,8 +38,12 @@ function getAllPlaybookTasks(tasks) {
 }
 
 function getStates(states) {
+    var input_states = states.split(",");
+    if (input_states.includes('error')) {
+        input_states = input_states.concat('loopError')
+    }
     var readyStates = {};
-    var splittedStates = states.split(",").forEach(function(state) {
+    input_states.forEach(function(state) {
         var systemState = taskStates[state.trim().toLowerCase()];
         if (systemState !== null && systemState !== undefined) {
          readyStates[systemState] = true;

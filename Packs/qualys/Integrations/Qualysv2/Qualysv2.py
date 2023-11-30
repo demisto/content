@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Callable, Dict, Tuple
+from collections.abc import Callable
 
 
 import requests
@@ -36,7 +36,7 @@ DATE_ARGUMENTS = {
 }
 
 # Data for parsing and creating output
-COMMANDS_PARSE_AND_OUTPUT_DATA: Dict[str, Dict[Any, Any]] = {
+COMMANDS_PARSE_AND_OUTPUT_DATA: dict[str, dict[Any, Any]] = {
     "qualys-purge-scan-host-data": {
         "table_name": "Deleted report",
         "json_path": ["BATCH_RETURN", "RESPONSE", "BATCH_LIST", "BATCH"],
@@ -528,7 +528,7 @@ COMMANDS_CONTEXT_DATA = {
 }
 
 # Information about the API request of the commands
-COMMANDS_API_DATA: Dict[str, Dict[str, str]] = {
+COMMANDS_API_DATA: dict[str, dict[str, str]] = {
     "qualys-purge-scan-host-data": {
         "api_route": API_SUFFIX + "asset/host/?action=purge",
         "call_method": "POST",
@@ -777,7 +777,7 @@ COMMANDS_API_DATA: Dict[str, Dict[str, str]] = {
 }
 
 # Information about the API tag asset request of the commands
-TAG_ASSET_COMMANDS_API_DATA: Dict[str, Dict[str, Any]] = {
+TAG_ASSET_COMMANDS_API_DATA: dict[str, dict[str, Any]] = {
     "qualys-asset-tag-create": {
         "api_route": urljoin(TAG_API_SUFFIX, "create/am/tag"),
         "call_method": "POST",
@@ -807,7 +807,7 @@ TAG_ASSET_COMMANDS_API_DATA: Dict[str, Dict[str, Any]] = {
 }
 
 # Arguments' names of each command
-COMMANDS_ARGS_DATA: Dict[str, Any] = {
+COMMANDS_ARGS_DATA: dict[str, Any] = {
     "qualys-purge-scan-host-data": {
         "args": [
             "action",
@@ -1337,6 +1337,7 @@ COMMANDS_ARGS_DATA: Dict[str, Any] = {
             "use_ip_nt_range_tags_include", "use_ip_nt_range_tags_exclude",
             "active",
             "scanners_in_network",
+            "fqdn",
             "recurrence",
             "end_after_mins",
             "iscanner_id",
@@ -1474,10 +1475,10 @@ COMMANDS_ARGS_DATA: Dict[str, Any] = {
 }
 
 # Dictionary for arguments used by Qualys API
-args_values: Dict[str, Any] = {}
+args_values: dict[str, Any] = {}
 
 # Dictionary for arguments used internally by this integration
-inner_args_values: Dict[str, Any] = {}
+inner_args_values: dict[str, Any] = {}
 
 """ CLIENT CLASS """
 
@@ -1488,7 +1489,11 @@ class Client(BaseClient):
 
     @staticmethod
     def error_handler(res):
-        err_msg = f"Error in API call [{res.status_code}] - {res.reason}"
+        err_msg = ""
+        if res.status_code == 414 or res.status_code == 520:
+            err_msg += ("If this error was produced by a schedule-scan-create, "
+                        "please execute it again with IP list of less than 5000 characters\n\n")
+        err_msg += f"Error in API call [{res.status_code}] - {res.reason}"
         try:
             simple_response = get_simple_response_from_raw(parse_raw_response(res.text))
             err_msg = f'{err_msg}\nError Code: {simple_response.get("CODE")}\nError Message: {simple_response.get("TEXT")}'
@@ -1496,15 +1501,15 @@ class Client(BaseClient):
             try:
                 # Try to parse json error response
                 error_entry = res.json()
-                err_msg += "\n{}".format(json.dumps(error_entry))
+                err_msg += f"\n{json.dumps(error_entry)}"
                 raise DemistoException(err_msg, res=res)
             except (ValueError, TypeError):
-                err_msg += "\n{}".format(res.text)
+                err_msg += f"\n{res.text}"
                 raise DemistoException(err_msg, res=res)
         raise DemistoException(err_msg, res=res)
 
     @logger
-    def command_http_request(self, command_api_data: Dict[str, str]) -> Union[str, bytes]:
+    def command_http_request(self, command_api_data: dict[str, str]) -> Union[str, bytes]:
         """
         Make a http request to Qualys API
         Args:
@@ -1532,7 +1537,7 @@ class Client(BaseClient):
 
 
 @logger
-def create_ip_list_dict(res_json: Dict[str, Any], type_of_dict: str) -> Dict[str, Any]:
+def create_ip_list_dict(res_json: dict[str, Any], type_of_dict: str) -> dict[str, Any]:
     """
     Creates a dictionary of a range type of ips or single address type of ips
     Args:
@@ -1546,7 +1551,7 @@ def create_ip_list_dict(res_json: Dict[str, Any], type_of_dict: str) -> Dict[str
     if type_of_dict in res_json:
         ips = res_json[type_of_dict]
         # In case a single value returned it can be either a Dict or a str
-        if isinstance(ips, str) or isinstance(ips, Dict):
+        if isinstance(ips, dict | str):
             ips_dict = {"0": ips}
         else:
             for index, ip in enumerate(ips):
@@ -1556,7 +1561,7 @@ def create_ip_list_dict(res_json: Dict[str, Any], type_of_dict: str) -> Dict[str
 
 
 @logger
-def build_ip_and_range_dicts(ips_and_ranges: List[str]) -> List[List[Dict[str, str]]]:
+def build_ip_and_range_dicts(ips_and_ranges: List[str]) -> List[List[dict[str, str]]]:
     """
     Separates the list of ips and ranges to two lists, one of singles ips
     and the other of ranges of ips
@@ -1576,7 +1581,7 @@ def build_ip_and_range_dicts(ips_and_ranges: List[str]) -> List[List[Dict[str, s
 
 
 @logger
-def create_single_host_list(ip_and_range_lists: Dict[str, Union[str, List]]) -> List[str]:
+def create_single_host_list(ip_and_range_lists: dict[str, Union[str, List]]) -> List[str]:
     """
     Creates a single list containing both single ips and ranges of ips
     Args:
@@ -1603,7 +1608,7 @@ def create_single_host_list(ip_and_range_lists: Dict[str, Union[str, List]]) -> 
 
 
 @logger
-def create_ip_list_markdown_table(dicts_of_ranges_and_ips: List[List[Dict[str, str]]]) -> str:
+def create_ip_list_markdown_table(dicts_of_ranges_and_ips: List[List[dict[str, str]]]) -> str:
     """
     Creates two tables one describes a list of ips and the other a list of ranges
     Args:
@@ -1620,7 +1625,7 @@ def create_ip_list_markdown_table(dicts_of_ranges_and_ips: List[List[Dict[str, s
 
 
 @logger
-def create_ip_list_dicts(res_json: Dict[str, Any]) -> List[Dict[str, Any]]:
+def create_ip_list_dicts(res_json: dict[str, Any]) -> List[dict[str, Any]]:
     """
     Creates separate dictionaries of addresses and ranges
     Args:
@@ -1647,7 +1652,7 @@ def create_ip_list_dicts(res_json: Dict[str, Any]) -> List[Dict[str, Any]]:
 
 
 @logger
-def generate_list_dicts(asset_dict: Dict[str, Any]) -> Union[List[Any], Dict]:
+def generate_list_dicts(asset_dict: dict[str, Any]) -> Union[List[Any], dict]:
     """
         Takes a dictionary with a specific structure of a single key containing
         a list of dictionaries and returns the list of dictionaries
@@ -1660,7 +1665,7 @@ def generate_list_dicts(asset_dict: Dict[str, Any]) -> Union[List[Any], Dict]:
 
 
 @logger
-def build_args_dict(args: Optional[Dict[str, str]], command_args_data: Dict[str, Any], is_inner_args: bool) -> None:
+def build_args_dict(args: Optional[dict[str, str]], command_args_data: dict[str, Any], is_inner_args: bool) -> None:
     """
     Takes the arguments needed by the command that were received by the user
     and stores them in the general commands data dictionary
@@ -1699,7 +1704,7 @@ def build_args_dict(args: Optional[Dict[str, str]], command_args_data: Dict[str,
 
 
 @logger
-def is_empty_result(json_response: Dict[str, Any]) -> bool:
+def is_empty_result(json_response: dict[str, Any]) -> bool:
     """
     Checking whether the response object contains no object or only timestamp object,
     both are considered an empty result, otherwise it's not empty
@@ -1729,7 +1734,7 @@ def limit_result(result: List[Any], limit: Union[int, str]) -> List[Any]:
 
 
 @logger
-def calculate_ip_original_amount(result: Dict[str, Any]) -> int:
+def calculate_ip_original_amount(result: dict[str, Any]) -> int:
     """
     Calculating the amount of ip addresses and ranges returned.
     Args:
@@ -1753,7 +1758,7 @@ def calculate_ip_original_amount(result: Dict[str, Any]) -> int:
 
 
 @logger
-def limit_ip_results(result: Dict[str, Any], limit: int) -> Dict[str, Any]:
+def limit_ip_results(result: dict[str, Any], limit: int) -> dict[str, Any]:
     """
     Limiting the results of commands like qualys-ip-list and qualys-excluded-host-list.
     First will limit the single ips and if needed will also limit the ranges of ips list
@@ -1785,7 +1790,7 @@ def limit_ip_results(result: Dict[str, Any], limit: int) -> Dict[str, Any]:
 
 
 @logger
-def validate_required_group(command_data: Dict) -> None:
+def validate_required_group(command_data: dict) -> None:
     """
     Validates that if exactly one of each `required_group` have been given.
     Args:
@@ -1803,7 +1808,7 @@ def validate_required_group(command_data: Dict) -> None:
 
 
 @logger
-def validate_depended_args(command_data: Dict) -> None:
+def validate_depended_args(command_data: dict) -> None:
     """
     Validates that if one arg was given, and other arg is dependant on given arg, that it was given as well.
     Args:
@@ -1823,7 +1828,7 @@ def validate_depended_args(command_data: Dict) -> None:
 
 
 @logger
-def validate_at_most_one_group(command_data: Dict) -> None:
+def validate_at_most_one_group(command_data: dict) -> None:
     """
     Validates that for each group, at most one argument was given.
     Args:
@@ -1859,7 +1864,7 @@ def input_validation(command_name: str) -> None:
     if limit := inner_args_values.get("limit"):
         try:
             if int(limit) < 1:
-                raise ValueError()
+                raise ValueError
         except ValueError as exc:
             raise DemistoException("Limit parameter must be an integer bigger than 0") from exc
 
@@ -1868,7 +1873,7 @@ def input_validation(command_name: str) -> None:
     validate_at_most_one_group(command_data)
 
 
-def generate_asset_tag_xml_request_body(args: Dict[str, str], command_name: str):
+def generate_asset_tag_xml_request_body(args: dict[str, str], command_name: str):
     """generate asset tag xml request body according to passed command
 
     Args:
@@ -1933,7 +1938,7 @@ def generate_asset_tag_xml_request_body(args: Dict[str, str], command_name: str)
     return ET.tostring(ServiceRequest)
 
 
-def handle_asset_tag_request_parameters(args: Dict[str, str], command_name: str) -> None:
+def handle_asset_tag_request_parameters(args: dict[str, str], command_name: str) -> None:
     """Handle 'asset tag' command parameters related to the HTTP request.
     Add 'id' argument to URL suffix if required by the command.
     Generate a request body if required by the command.
@@ -1954,14 +1959,12 @@ def handle_asset_tag_request_parameters(args: Dict[str, str], command_name: str)
     if TAG_ASSET_COMMANDS_API_DATA[command_name].get("request_body"):
         TAG_ASSET_COMMANDS_API_DATA[command_name]["request_body"] = generate_asset_tag_xml_request_body(args, command_name)
 
-    return
-
 
 """ PARSERS """
 
 
 @logger
-def change_dict_keys(new_names_dict: Dict[str, str], output_dict: Dict[str, Any]) -> Dict[str, Any]:
+def change_dict_keys(new_names_dict: dict[str, str], output_dict: dict[str, Any]) -> dict[str, Any]:
     """
     Takes a dictionary and changes the names of the keys
     Args:
@@ -1979,7 +1982,7 @@ def change_dict_keys(new_names_dict: Dict[str, str], output_dict: Dict[str, Any]
 
 
 @logger
-def change_list_dicts_names(command_parse_and_output_data: Dict[str, Any], output: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def change_list_dicts_names(command_parse_and_output_data: dict[str, Any], output: List[dict[str, Any]]) -> List[dict[str, Any]]:
     """
     Changing keys names of a list of dicts
     Args:
@@ -1999,7 +2002,7 @@ def change_list_dicts_names(command_parse_and_output_data: Dict[str, Any], outpu
 
 
 @logger
-def parse_two_keys_dict(json_res: Dict[str, Any]) -> Dict[str, Any]:
+def parse_two_keys_dict(json_res: dict[str, Any]) -> dict[str, Any]:
     """
     Takes a dictionary in a specific format creates a new dictionary
     Args:
@@ -2016,7 +2019,7 @@ def parse_two_keys_dict(json_res: Dict[str, Any]) -> Dict[str, Any]:
 
 
 @logger
-def parse_text_value_pairs_list(multiple_key_list: List[Dict[str, Any]]) -> Dict[str, Any]:
+def parse_text_value_pairs_list(multiple_key_list: List[dict[str, Any]]) -> dict[str, Any]:
     """
     Creates a single dictionary from a list of dictionaries
     Args:
@@ -2030,7 +2033,7 @@ def parse_text_value_pairs_list(multiple_key_list: List[Dict[str, Any]]) -> Dict
     return parsed_dict
 
 
-def parse_raw_response(response: Union[bytes, requests.Response]) -> Dict:
+def parse_raw_response(response: Union[bytes, requests.Response]) -> dict:
     """
     Parses raw response from Qualys.
     Tries to load as JSON. If fails to do so, tries to load as XML.
@@ -2051,7 +2054,7 @@ def parse_raw_response(response: Union[bytes, requests.Response]) -> Dict:
 
 
 @logger
-def get_simple_response_from_raw(raw_response: Any) -> Union[Any, Dict]:
+def get_simple_response_from_raw(raw_response: Any) -> Union[Any, dict]:
     """
     Gets the simple response from a given JSON dict structure returned by Qualys service
     If object is not a dict, returns the response as is.
@@ -2068,7 +2071,7 @@ def get_simple_response_from_raw(raw_response: Any) -> Union[Any, Dict]:
 
 
 @logger
-def format_and_validate_response(response: Union[bytes, requests.Response]) -> Dict[str, Any]:
+def format_and_validate_response(response: Union[bytes, requests.Response]) -> dict[str, Any]:
     """
     first tries to load the response as json if possible, if not will
     try to convert from xml to json, then it validates the response
@@ -2110,7 +2113,7 @@ def handle_asset_tag_result(raw_response: requests.Response, command_name: str):
         raise DemistoException(response_error_details.get("errorMessage"))
 
     elif formatted_response.get("ServiceResponse", {}).get("count") == "0":
-        return
+        return None
 
     elif path_list := COMMANDS_PARSE_AND_OUTPUT_DATA[command_name]["json_path"]:
         if len(path_list) == 0:
@@ -2118,9 +2121,9 @@ def handle_asset_tag_result(raw_response: requests.Response, command_name: str):
         response_requested_value = dict_safe_get(formatted_response, path_list)
 
         if not response_requested_value:
-            raise ValueError()
+            raise ValueError
         return response_requested_value
-    return
+    return None
 
 
 @logger
@@ -2143,7 +2146,7 @@ def handle_general_result(raw_response: requests.Response, command_name: str) ->
     response_requested_value = dict_safe_get(formatted_response, path_list)
 
     if not response_requested_value:
-        raise ValueError()
+        raise ValueError
     return response_requested_value
 
 
@@ -2194,7 +2197,7 @@ def handle_fetch_result(raw_response: Union[bytes, requests.Response], command_n
 
 
 @logger
-def build_one_value_parsed_output(**kwargs) -> Tuple[Dict[str, Any], str]:
+def build_one_value_parsed_output(**kwargs) -> tuple[dict[str, Any], str]:
     """
     creates a dictionary with a single key for command_results outputs field
     and a markdown table with a single value
@@ -2219,7 +2222,7 @@ def build_one_value_parsed_output(**kwargs) -> Tuple[Dict[str, Any], str]:
 
 
 @logger
-def build_single_text_output(**kwargs) -> Tuple[Dict[str, Any], str]:
+def build_single_text_output(**kwargs) -> tuple[dict[str, Any], str]:
     """
     creates output with the dictionary returned from the request and the text attached to it
     Args:
@@ -2234,7 +2237,7 @@ def build_single_text_output(**kwargs) -> Tuple[Dict[str, Any], str]:
 
 
 @logger
-def build_unparsed_output(**kwargs) -> Tuple[Dict[str, Any], str]:
+def build_unparsed_output(**kwargs) -> tuple[dict[str, Any], str]:
     """
     creates output with the dictionary returned from the request and a markdown table generated
     from the unparsed response received
@@ -2261,7 +2264,7 @@ def build_unparsed_output(**kwargs) -> Tuple[Dict[str, Any], str]:
 
 
 @logger
-def build_ip_list_output(**kwargs) -> Tuple[Dict[str, List[str]], str]:
+def build_ip_list_output(**kwargs) -> tuple[dict[str, List[str]], str]:
     """
     creates output with a new dictionary parsed from the original response and two markdown tables, generated
     for commands which output is a dictionary containing two lists, one of single IPs and the other of ranges of ips.
@@ -2304,7 +2307,7 @@ def build_ip_list_output(**kwargs) -> Tuple[Dict[str, List[str]], str]:
 
 
 @logger
-def build_multiple_values_parsed_output(**kwargs) -> Tuple[List[Any], str]:
+def build_multiple_values_parsed_output(**kwargs) -> tuple[List[Any], str]:
     """
     When the response from Qualys has a list of dictionaries this function will get this list and
     will generate a markdown table from it
@@ -2340,7 +2343,7 @@ def build_multiple_values_parsed_output(**kwargs) -> Tuple[List[Any], str]:
 
 
 @logger
-def build_host_list_detection_outputs(**kwargs) -> Tuple[List[Any], str]:
+def build_host_list_detection_outputs(**kwargs) -> tuple[List[Any], str]:
     """
     Builds the outputs and readable output for host list detection.
     Args:
@@ -2385,7 +2388,7 @@ def build_host_list_detection_outputs(**kwargs) -> Tuple[List[Any], str]:
 
 
 @logger
-def build_changed_names_output(**kwargs) -> Tuple[List[Any], str]:
+def build_changed_names_output(**kwargs) -> tuple[List[Any], str]:
     """
     Takes the output and changes the output fields names as described in the command data
     Args:
@@ -2405,7 +2408,7 @@ def build_changed_names_output(**kwargs) -> Tuple[List[Any], str]:
 
 
 @logger
-def build_multiple_text_options_output(**kwargs) -> Tuple[None, str]:
+def build_multiple_text_options_output(**kwargs) -> tuple[None, str]:
     """
     When there's no need to build output from the response but output text is based on command's action requested
     this function will take the text based on the action and will return it
@@ -2424,7 +2427,7 @@ def build_multiple_text_options_output(**kwargs) -> Tuple[None, str]:
 
 
 @logger
-def build_text_value_pairs_parsed_output(**kwargs) -> Tuple[Dict[str, Any], str]:
+def build_text_value_pairs_parsed_output(**kwargs) -> tuple[dict[str, Any], str]:
     """
     A command might have multiple key value pairs. The data is returned as a list of dictionaries, each dictionary has
     a key named '@value' which holds the name of the field, and a key named '#text' which holds the
@@ -2446,7 +2449,7 @@ def build_text_value_pairs_parsed_output(**kwargs) -> Tuple[Dict[str, Any], str]
 
 
 @logger
-def build_ip_list_from_single_value(**kwargs) -> Tuple[Dict[str, Any], str]:
+def build_ip_list_from_single_value(**kwargs) -> tuple[dict[str, Any], str]:
     """
     Given a command response that has a value which contains a list of ips in the following format:
     '1.1.1.1','1.1.1.2'
@@ -2470,7 +2473,7 @@ def build_ip_list_from_single_value(**kwargs) -> Tuple[Dict[str, Any], str]:
 
 
 @logger
-def build_tag_asset_output(**kwargs) -> Tuple[List[Any], str]:
+def build_tag_asset_output(**kwargs) -> tuple[List[Any], str]:
     command_parse_and_output_data = kwargs["command_parse_and_output_data"]
     handled_result = kwargs["handled_result"]
 
@@ -2478,10 +2481,9 @@ def build_tag_asset_output(**kwargs) -> Tuple[List[Any], str]:
         readable_output = human_readable_massage
         return handled_result, readable_output
 
-    if type(handled_result) == dict:
-        if children_list := handled_result.get("children", {}).get("list", {}).get("TagSimple"):
-            handled_result["childTags"] = children_list
-            handled_result.pop("children")
+    if type(handled_result) == dict and (children_list := handled_result.get("children", {}).get("list", {}).get("TagSimple")):
+        handled_result["childTags"] = children_list
+        handled_result.pop("children")
 
     readable_output = tableToMarkdown(
         name=command_parse_and_output_data.get("table_name"),
@@ -2515,7 +2517,7 @@ def test_module(client: Client) -> str:
 
 @logger
 def qualys_command_flow_manager(
-    client: Client, args: Dict[str, str], command_name: str, command_methods: Dict[str, Callable]
+    client: Client, args: dict[str, str], command_name: str, command_methods: dict[str, Callable]
 ) -> Optional[CommandResults]:
     """
     Args:
@@ -2530,7 +2532,7 @@ def qualys_command_flow_manager(
     """
 
     # handle asset tag command parameters for HTTP request
-    if command_name in TAG_ASSET_COMMANDS_API_DATA.keys():
+    if command_name in TAG_ASSET_COMMANDS_API_DATA:
 
         handle_asset_tag_request_parameters(args, command_name)
 
@@ -2586,7 +2588,7 @@ def main():  # pragma: no cover
     username = params.get("credentials").get("identifier")
     password = params.get("credentials").get("password")
 
-    commands_methods: Dict[str, Dict[str, Callable]] = {
+    commands_methods: dict[str, dict[str, Callable]] = {
         # *** Commands with unparsed response as output ***
         "qualys-purge-scan-host-data": {
             "result_handler": handle_general_result,
@@ -2811,7 +2813,7 @@ def main():  # pragma: no cover
 
     demisto.debug(f"Command being called is {requested_command}")
     try:
-        headers: Dict = {"X-Requested-With": "Demisto"}
+        headers: dict = {"X-Requested-With": "Demisto"}
 
         client = Client(
             base_url=base_url, username=username, password=password, verify=verify_certificate, headers=headers, proxy=proxy

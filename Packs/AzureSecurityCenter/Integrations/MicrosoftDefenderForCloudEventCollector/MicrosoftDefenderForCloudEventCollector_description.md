@@ -8,15 +8,7 @@ Self-deployed configuration:
 
 #### Required permissions.
 
-Azure security center
-| API / Permissions name | Type | Description |
-| --- | --- | --- |
-| Azure scurity center | --- | --- |
-| user_impresonation | Delegated | Access Azure security center |
-| SecurityCenter | --- | --- |
-| user_impresonation | Delegated | Access SecurityCenter |
-
-After you finish configuring your application with the proper permission,
+After you finish configuring your application,
 add a “Security Reader” role to the application from the subscription.
 In order to add a role to a subscription, refer to:
 * [Azure AD built-in roles](https://learn.microsoft.com/en-us/azure/active-directory/roles/permissions-reference)
