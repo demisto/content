@@ -2,21 +2,11 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-import json
-from datetime import datetime, date
+from datetime import datetime
 
 AWS_SERVICE_NAME = 'athena'
-
-
-class DatetimeEncoder(json.JSONEncoder):
-    # pylint: disable=method-hidden
-    def default(self, obj):
-        if isinstance(obj, datetime):
-            return obj.strftime('%Y-%m-%dT%H:%M:%S')
-        elif isinstance(obj, date):
-            return obj.strftime('%Y-%m-%d')
-        # Let the base class default method raise the TypeError
-        return json.JSONEncoder.default(self, obj)
+QUERY_DATA_OUTPUTS_KEY = 'Query'
+QUERY_RESULTS_OUTPUTS_KEY = 'QueryResults'
 
 
 def parse_rows_response(rows_data: list[dict]) -> list[dict]:
@@ -48,7 +38,67 @@ def parse_rows_response(rows_data: list[dict]) -> list[dict]:
     return result_data
 
 
-def test_module_command(client) -> str | CommandResults:
+# --- API Call Functions --- #
+
+
+def start_query_execution(client, query_string: str, query_limit: int | None = None, client_request_token: str | None = None,
+                          database: str | None = None, output_location: str | None = None, encryption_option: str | None = None,
+                          kms_key: str | None = None, work_group: str | None = None) -> dict:
+    if query_limit and 'LIMIT' not in query_string:
+        query_string = f'{query_string} LIMIT {query_limit}'
+
+    kwargs: dict[str, Any] = {'QueryString': query_string}
+
+    if client_request_token:
+        kwargs.update({'ClientRequestToken': client_request_token})
+
+    if database:
+        kwargs.update({'QueryExecutionContext': {'Database': database}})
+
+    if output_location:
+        kwargs.update({'ResultConfiguration': {'OutputLocation': output_location}})
+
+    if encryption_option:
+        kwargs.update({'ResultConfiguration': {'EncryptionConfiguration': {'EncryptionOption': encryption_option}}})
+
+    if kms_key:
+        kwargs.update({'ResultConfiguration': {'EncryptionConfiguration': {'KmsKey': kms_key}}})
+
+    if work_group:
+        kwargs.update({'WorkGroup': work_group})
+
+    return client.start_query_execution(**kwargs)
+
+
+def get_query_execution(client, query_execution_id: str) -> dict:
+    response = client.get_query_execution(QueryExecutionId=query_execution_id)
+
+    # Convert datetime objects to strings
+    if datetime_value := response.get('QueryExecution', {}).get('Status', {}).get('SubmissionDateTime'):
+        if isinstance(datetime_value, datetime):
+            response['QueryExecution']['Status']['SubmissionDateTime'] = datetime_value.isoformat()
+
+    if datetime_value := response.get('QueryExecution', {}).get('Status', {}).get('CompletionDateTime'):
+        if isinstance(datetime_value, datetime):
+            response['QueryExecution']['Status']['CompletionDateTime'] = datetime_value.isoformat()
+
+    return response
+
+
+def get_query_results(client, query_execution_id: str) -> list[dict]:
+    raw_response = client.get_query_results(QueryExecutionId=query_execution_id)
+    parsed_response = parse_rows_response(rows_data=raw_response['ResultSet']['Rows'])
+
+    for result_item in parsed_response:
+        result_item['query_execution_id'] = query_execution_id
+
+    return parsed_response
+
+
+# --- Command Functions --- #
+
+
+def module_test_command(client) -> str | CommandResults:
     response = client.list_named_queries()
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         return 'ok'
@@ -59,27 +109,11 @@ def test_module_command(client) -> str | CommandResults:
 
 def start_query_command(args: dict, client):
     query_string: str = args['QueryString']
-    query_limit: str | None = args.get('QueryLimit')
 
-    if query_limit and 'LIMIT' not in query_string:
-        query_string = f'{query_string} LIMIT {query_limit}'
-
-    kwargs: dict[str, Any] = {'QueryString': query_string}
-
-    if args.get('ClientRequestToken'):
-        kwargs.update({'ClientRequestToken': args['ClientRequestToken']})
-    if args.get('Database'):
-        kwargs.update({'QueryExecutionContext': {'Database': args['Database']}})
-    if args.get('OutputLocation'):
-        kwargs.update({'ResultConfiguration': {'OutputLocation': args['OutputLocation']}})
-    if args.get('EncryptionOption'):
-        kwargs.update({'ResultConfiguration': {'EncryptionConfiguration': {'EncryptionOption': args['EncryptionOption']}}})
-    if args.get('KmsKey'):
-        kwargs.update({'ResultConfiguration': {'EncryptionConfiguration': {'KmsKey': args['KmsKey']}}})
-    if args.get('WorkGroup'):
-        kwargs.update({'WorkGroup': args['WorkGroup']})
-
-    response = client.start_query_execution(**kwargs)
+    response = start_query_execution(client=client, query_string=query_string, query_limit=args.get('QueryLimit'),
+                                     client_request_token=args.get('ClientRequestToken'), database=args.get('Database'),
+                                     output_location=args.get('OutputLocation'), encryption_option=args.get('EncryptionOption'),
+                                     kms_key=args.get('KmsKey'), work_group=args.get('WorkGroup'))
 
     context_data = {
         'QueryString': query_string,
@@ -87,7 +121,7 @@ def start_query_command(args: dict, client):
     }
 
     return CommandResults(
-        outputs_prefix='AWS.Athena.Query',
+        outputs_prefix=f'AWS.Athena.{QUERY_DATA_OUTPUTS_KEY}',
         outputs_key_field='QueryExecutionId',
         outputs=context_data,
         raw_response=response,
@@ -109,12 +143,12 @@ def stop_query_command(args: dict, client):
 
 def get_query_execution_command(args: dict, client):
     query_execution_id: str = args['QueryExecutionId']
-    raw_response = client.get_query_execution(QueryExecutionId=query_execution_id)
-    parsed_response = json.loads(json.dumps(raw_response, cls=DatetimeEncoder))['QueryExecution']
-    response = parsed_response['QueryExecution']
+    raw_response = get_query_execution(client=client, query_execution_id=query_execution_id)
+
+    response = raw_response['QueryExecution']
 
     return CommandResults(
-        outputs_prefix='AWS.Athena.Query',
+        outputs_prefix=f'AWS.Athena.{QUERY_DATA_OUTPUTS_KEY}',
         outputs_key_field='QueryExecutionId',
         outputs=response,
         raw_response=raw_response,
@@ -124,18 +158,79 @@ def get_query_execution_command(args: dict, client):
 
 def get_query_results_command(args: dict, client):
     query_execution_id: str = args['QueryExecutionId']
-    raw_response = client.get_query_results(QueryExecutionId=query_execution_id)
-
-    parsed_response = parse_rows_response(rows_data=raw_response['ResultSet']['Rows'])
-
-    for result_item in parsed_response:
-        result_item['query_execution_id'] = query_execution_id
+    response = get_query_results(client=client, query_execution_id=query_execution_id)
 
     return CommandResults(
-        outputs_prefix='AWS.Athena.QueryResults',
-        outputs=parsed_response,
-        raw_response=raw_response,
-        readable_output=tableToMarkdown('AWS Athena Query Results', parsed_response),
+        outputs_prefix=f'AWS.Athena.{QUERY_RESULTS_OUTPUTS_KEY}',
+        outputs=response,
+        raw_response=response,
+        readable_output=tableToMarkdown('AWS Athena Query Results', response),
+    )
+
+
+@polling_function(
+    name=demisto.command(),
+    interval=arg_to_number(demisto.args().get('interval_in_seconds', 10)),
+    timeout=arg_to_number(demisto.args().get('timeout_in_seconds', 300)),
+    requires_polling_arg=False,
+)
+def execute_query_command(args: dict, client):
+    if 'QueryExecutionId' not in args:
+        start_query_response = start_query_execution(client=client, query_string=args['QueryString'],
+                                                     query_limit=args.get('QueryLimit'),
+                                                     client_request_token=args.get('ClientRequestToken'),
+                                                     database=args.get('Database'),
+                                                     output_location=args.get('OutputLocation'),
+                                                     encryption_option=args.get('EncryptionOption'),
+                                                     kms_key=args.get('KmsKey'), work_group=args.get('WorkGroup'))
+        query_execution_id = start_query_response['QueryExecutionId']
+
+        # If this is the first polling iteration, wait a second to allow the query to complete.
+        # This saves time for most cases where waiting for the next poll (with a minimum of 10 seconds) is not necessary.
+        time.sleep(1)
+
+    else:
+        query_execution_id = args['QueryExecutionId']
+
+    query_execution_response = get_query_execution(client=client, query_execution_id=query_execution_id)
+    query_state = query_execution_response['QueryExecution']['Status']['State']
+
+    if query_state in ("QUEUED", "RUNNING"):
+        args["QueryExecutionId"] = query_execution_id
+
+        return PollResult(
+            response=None,
+            continue_to_poll=True,
+            args_for_next_run=args,
+            partial_result=CommandResults(readable_output=f"Query is still running. Current state: '{query_state}'."),
+        )
+
+    output_data: dict[str, Any] = {QUERY_DATA_OUTPUTS_KEY: query_execution_response}
+    readable_output = None
+
+    if query_state == "SUCCEEDED":
+        query_results_response = get_query_results(client=client, query_execution_id=query_execution_id)
+        output_data[QUERY_RESULTS_OUTPUTS_KEY] = query_results_response
+        readable_output = tableToMarkdown('AWS Athena Query Results', query_results_response)
+
+    elif query_state == "CANCELLED":
+        readable_output = f"Query '{query_execution_id}' has been cancelled."
+
+    elif query_state == "FAILED":
+        readable_output = f"Query '{query_execution_id}' has failed."
+
+        if query_execution_response['QueryExecution']['Status'].get('AthenaError', {}).get('ErrorMessage'):
+            error_message = query_execution_response['QueryExecution']['Status']['AthenaError']['ErrorMessage']
+            readable_output += f"\nError: {error_message}"
+
+    return PollResult(
+        response=CommandResults(
+            outputs_prefix='AWS.Athena',
+            outputs=output_data,
+            raw_response=output_data,
+            readable_output=readable_output,
+        ),
+        continue_to_poll=False,
     )
 
 
@@ -174,7 +269,7 @@ def main():  # pragma: no cover
         result: str | CommandResults
 
         if command == 'test-module':
-            result = test_module_command(client)
+            result = module_test_command(client)
 
         elif command == 'aws-athena-start-query':
             result = start_query_command(args=args, client=client)
@@ -187,6 +282,9 @@ def main():  # pragma: no cover
 
         elif command == 'aws-athena-get-query-results':
             result = get_query_results_command(args=args, client=client)
+
+        elif command == 'aws-athena-execute-query':
+            result = execute_query_command(args=args, client=client)
 
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
