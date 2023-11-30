@@ -1,5 +1,5 @@
 category: Analytics & SIEM
-description: Palo Alto Networks Symantec Cloud Secure Web Gateway Event Collector integration for XSIAM.
+description: Palo Alto Networks Symantec Cloud Secure Web Gateway Event Collector integration for Cortex XSIAM.
 display: Symantec Cloud Secure Web Gateway Event Collector Long Running
 name: Symantec Cloud Secure Web Gateway Event Collector Long Running
 commonfields:
@@ -33,7 +33,7 @@ configuration:
   name: longRunning
   type: 8
   section: Connect
-- display: Fetch interval in seconds, (The minimum threshold is 30 seconds)
+- display: Fetch interval in seconds. The minimum threshold is 30 seconds.
   name: fetch_interval
   type: 0
   defaultvalue: 60
