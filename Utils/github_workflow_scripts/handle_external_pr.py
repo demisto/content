@@ -264,6 +264,10 @@ def main():
     payload = json.loads(payload_str)
     print(f'{t.cyan}Processing PR started{t.normal}')
 
+
+    print('======')
+    print(payload.get('repository', {}).get('name'))
+
     org_name = 'demisto'
     repo_name = 'content'
     gh = Github(get_env_var('CONTENTBOT_GH_ADMIN_TOKEN'), verify=False)
@@ -283,9 +287,9 @@ def main():
     # - Contribution
     # - External PR
     # - Support Label
-    for label in labels_to_add:
-        pr.add_to_labels(label)
-        print(f'{t.cyan}Added "{label}" label to the PR{t.normal}')
+    # for label in labels_to_add:
+    #     pr.add_to_labels(label)
+    #     print(f'{t.cyan}Added "{label}" label to the PR{t.normal}')
 
     # check base branch is master
     if pr.base.ref == 'master':
@@ -334,7 +338,7 @@ def main():
         reviewers.append(tim_reviewer)
         pr.add_to_labels(TIM_LABEL)
 
-    pr.create_review_request(reviewers=reviewers)
+    # pr.create_review_request(reviewers=reviewers)
     print(f'{t.cyan}Assigned and requested review from "{",".join(reviewers)}" to the PR{t.normal}')
 
     # create welcome comment (only users who contributed through Github need to have that contribution form filled)
