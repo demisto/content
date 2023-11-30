@@ -2,8 +2,7 @@ from pytest import raises
 
 
 def create_client():
-    import os
-    from RecordedFutureLists import Client, __version__
+        from RecordedFutureLists import Client, __version__
 
     base_url = 'https://api.recordedfuture.com/gw/xsoar/'
     verify_ssl = True

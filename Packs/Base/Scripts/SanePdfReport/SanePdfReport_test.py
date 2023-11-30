@@ -1,4 +1,3 @@
-import os
 import demistomock as demisto
 import SanePdfReport
 from SanePdfReport import *

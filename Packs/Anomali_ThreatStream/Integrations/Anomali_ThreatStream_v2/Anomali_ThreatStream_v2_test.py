@@ -1,5 +1,4 @@
 import os
-import os
 import json
 import demistomock as demisto
 from tempfile import mkdtemp

@@ -1,4 +1,3 @@
-import os
 """Test file for FeedCyCognito Integration."""
 
 import json

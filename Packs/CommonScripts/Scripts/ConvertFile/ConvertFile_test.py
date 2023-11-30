@@ -1,4 +1,3 @@
-import os
 from ConvertFile import main, find_zombie_processes
 import demistomock as demisto
 from CommonServerPython import entryTypes

@@ -1,4 +1,3 @@
-import os
 """Test File for RubrikPolaris Integration."""
 import json
 import time

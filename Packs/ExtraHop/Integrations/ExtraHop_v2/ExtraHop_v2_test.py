@@ -1,4 +1,3 @@
-import os
 """Test File for ExtraHop Integration."""
 from copy import copy
 import datetime

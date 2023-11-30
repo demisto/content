@@ -1,4 +1,3 @@
-import os
 from pytest import raises, skip
 from CommonServerPython import *
 from dateutil.parser import parse

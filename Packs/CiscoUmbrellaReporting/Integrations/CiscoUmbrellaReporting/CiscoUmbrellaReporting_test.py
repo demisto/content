@@ -1,4 +1,3 @@
-import os
 """
 Tests module for Cisco Umbrella Reporting integration
 """

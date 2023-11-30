@@ -1,4 +1,3 @@
-import os
 import json
 import os
 import demistomock as demisto

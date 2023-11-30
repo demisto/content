@@ -1,4 +1,3 @@
-import os
 import json
 import os
 from CVESearchV2 import cve_command, valid_cve_id_format, Client

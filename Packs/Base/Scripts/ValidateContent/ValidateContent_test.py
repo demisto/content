@@ -1,5 +1,4 @@
 import os
-import os
 import pytest
 
 from ValidateContent import get_content_modules, adjust_linter_row_and_col
