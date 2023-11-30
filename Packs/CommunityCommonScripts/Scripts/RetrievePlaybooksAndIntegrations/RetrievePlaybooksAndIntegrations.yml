@@ -2,7 +2,7 @@ args:
 - description: Name of Playbook
   name: playbook_name
   required: true
-comment: Retrieves all Playbook (and Sub-Playbook) Names and Integrations for a provided Playbook name
+comment: Deprecated. Use RetrievePlaybookDependencies instead. Retrieves all Playbook (and Sub-Playbook) Names and Integrations for a provided Playbook name
 commonfields:
   id: RetrievePlaybooksAndIntegrations
   version: -1
@@ -10,6 +10,7 @@ contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
 dockerimage: demisto/python3:3.10.12.63474
+deprecated: true
 enabled: true
 name: RetrievePlaybooksAndIntegrations
 outputs:

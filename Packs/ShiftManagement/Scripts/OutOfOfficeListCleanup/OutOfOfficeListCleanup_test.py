@@ -58,3 +58,28 @@ def test_out_of_office_list_cleanup_list_not_changed(mocker):
     main()
     results = demisto.results.call_args[0][0]
     assert results == 'No users removed from the list OOO List'
+
+
+def execute_command_empty_list(name, args=None):
+    if name == 'getList':
+        return [{'Contents': "null"}]
+    return None
+
+
+def test_out_of_office_list_cleanup_list_create_empty_new_list(mocker):
+    """
+    Given:
+    - A non-existing list of OOO(out of office) users.
+
+    When:
+    - running OutOfOfficeListCleanup script.
+
+    Then:
+    - Check if the list stays empty.
+    """
+    mocker.patch.object(demisto, 'args', return_value={'listname': 'OOO List'})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command_empty_list)
+    mocker.patch.object(demisto, 'results')
+    main()
+    results = demisto.results.call_args[0][0]
+    assert results == 'No users removed from the list OOO List'

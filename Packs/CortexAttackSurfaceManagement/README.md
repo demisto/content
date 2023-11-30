@@ -48,7 +48,7 @@ Automated remediation is only possible when the right conditions are met.  These
   - AWS EC2 Instance
   - Azure Compute Instance
   - GCP Compute Engine (VM)
-  - On Prem asset protect with Palo Alto Networks Firewall
+  - On-prem asset protected with a Palo Alto Networks Firewall
 - Service owner information found through one of the following:
   - AWS IAM
   - Azure IAM
@@ -57,6 +57,7 @@ Automated remediation is only possible when the right conditions are met.  These
   - Rapid7 InsightVM (Nexpose)
   - Splunk
   - ServiceNow CMDB
+  - ServiceNow ITSM
   - Tenable.io Assets
   - Qualys
 - Indicators of a non-production host:
@@ -92,6 +93,7 @@ The main active response playbook is the `Cortex ASM - ASM Alert` playbook. This
   - [Cortex ASM - Remediation](#cortex-asm---remediation)
   - [Cortex ASM - Service Ownership](#cortex-asm---service-ownership)
   - [Cortex ASM - ServiceNow CMDB Enrichment](#cortex-asm---servicenow-cmdb-enrichment)
+  - [Cortex ASM - ServiceNow ITSM Enrichment](#cortex-asm---servicenow-itsm-enrichment)
   - [Cortex ASM - ServiceNow Notification](#cortex-asm---servicenow-notification)
   - [Cortex ASM - Splunk Enrichment](#cortex-asm---splunk-enrichment)
   - [Cortex ASM - Tenable.io Enrichment](#cortex-asm---tenableio-enrichment)
@@ -137,7 +139,7 @@ A playbook that utilizes the Remediation Confirmation Scan service to check for 
 
 A playbook that is used to send email notifications to service owners to notify them of their internet exposures.
 
-![Cortex ASM - Email Notification](https://raw.githubusercontent.com/demisto/content/94341532ed2e30cb0c5fb3235ef10b4411c8337c/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Email_Notification.png)
+![Cortex ASM - Email Notification](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Email_Notification.png)
 
 #### Cortex ASM - Enrichment
 
@@ -155,19 +157,19 @@ A playbook that given the IP address enriches GCP information relevant to ASM al
 
 A playbook that is used to create Jira tickets directed toward service owners to notify them of their internet exposures.
 
-![Cortex ASM - Jira Notification](https://raw.githubusercontent.com/demisto/content/94341532ed2e30cb0c5fb3235ef10b4411c8337c/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Jira_Notification.png)
+![Cortex ASM - Jira Notification](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Jira_Notification.png)
 
 #### Cortex ASM - On Prem Enrichment
 
 A playbook that given an IP address, port, and protocol of a service, enriches using on-prem integrations to find the related firewall rule and other related information.
 
-![Cortex ASM - On Prem Enrichment](https://raw.githubusercontent.com/demisto/content/8eb2a558a040e76040191456fd707f102cb16647/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_On_Prem_Enrichment.png)
+![Cortex ASM - On Prem Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_On_Prem_Enrichment.png)
 
 #### Cortex ASM - On Prem Remediation
 
 A playbook that adds new block rule(s) to on-prem firewall vendors in order to block internet access for internet exposures.
 
-![Cortex ASM - On Prem Remediation](https://raw.githubusercontent.com/demisto/content/8eb2a558a040e76040191456fd707f102cb16647/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_On_Prem_Remediation.png)
+![Cortex ASM - On Prem Remediation](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_On_Prem_Remediation.png)
 
 #### Cortex ASM - Prisma Cloud Enrichment
 
@@ -203,7 +205,7 @@ A playbook that pulls remediation guidance off of a list based on ASM RuleID to 
 
 A playbook that populates the remediation objectives field that is used to display the remediation actions to the end user.
 
-![Cortex ASM - Remediation Objectives](https://raw.githubusercontent.com/demisto/content/5f71853b59431ca60b1b783867b89f819accfefd/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Remediation_Objectives.png)
+![Cortex ASM - Remediation Objectives](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Remediation_Objectives.png)
 
 #### Cortex ASM - Remediation Path Rules
 
@@ -229,11 +231,17 @@ A playbook that given the IP address enriches ServiceNow CMDB information releva
 
 ![Cortex ASM - ServiceNow CMDB Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_ServiceNow_CMDB_Enrichment.png)
 
+#### Cortex ASM - ServiceNow ITSM Enrichment
+
+A playbook that given the search terms enriches ServiceNow ITSM service owner information relevant to ASM alerts.
+
+![Cortex ASM - ServiceNow ITSM Enrichment](https://raw.githubusercontent.com/demisto/content/0fd2fb4a7240673f3a3fcb1dec5339549f0f2fb8/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_ServiceNow_ITSM_Enrichment.png)
+
 #### Cortex ASM - ServiceNow Notification
 
 A playbook that is used to create ServiceNow tickets directed toward service owners to notify them of their internet exposures.
 
-![Cortex ASM - ServiceNow Notification](https://raw.githubusercontent.com/demisto/content/94341532ed2e30cb0c5fb3235ef10b4411c8337c/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_ServiceNow_Notification.png)
+![Cortex ASM - ServiceNow Notification](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_ServiceNow_Notification.png)
 
 #### Cortex ASM - Splunk Enrichment
 

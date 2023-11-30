@@ -114,6 +114,7 @@ Classifiers
 SentinelOne
 URLs
 unisolate
+tooltip
 MSDE
 CrowdStrike
 FAQ
@@ -246,3 +247,5 @@ sdk
 RFC
 datetime
 HSTS
+SaaS
+saas

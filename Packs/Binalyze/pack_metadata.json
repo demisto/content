@@ -1,8 +1,8 @@
 {
     "name": "Binalyze AIR",
-    "description": "Collect over 150 different types of evidence under 10 minutes.",
+    "description": "Collect over 300 different types of evidence under 10 minutes.",
     "support": "partner",
-    "currentVersion": "1.0.16",
+    "currentVersion": "1.1.1",
     "author": "Binalyze Integration Team",
     "url": "https://kb.binalyze.com/air/integrations/cortex-xsoar-integration",
     "email": "support@binalyze.com",

@@ -22,6 +22,7 @@ The integration pack allows:
 - **reco-get-files-shared-with-3rd-parties** - Get 3rd parties list with access to files
 - **reco-get-3rd-parties-accessible-to-data-list** - Get files shared with 3rd parties
 - **reco-get-sensitive-assets-with-public-link** - Get sensitive assets publicly exposed
+- **reco-get-user-context-by-email-address** - Get user context by email address
 
 
 For more information on Reco, please visit www.reco.ai

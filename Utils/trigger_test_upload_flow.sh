@@ -23,14 +23,15 @@ if [ "$#" -lt "1" ]; then
 fi
 
 _branch="$(git branch  --show-current)"
-_bucket="marketplace-dist-dev"
-_bucket_v2="marketplace-v2-dist-dev"
-_bucket_xpanse="xpanse-dist-dev"
-_bucket_xsoar_saas="marketplace-saas-dist-dev"
-_bucket_upload="true"
+_bucket="${TEST_XDR_PREFIX}marketplace-dist-dev"
+_bucket_v2="${TEST_XDR_PREFIX}marketplace-v2-dist-dev"
+_bucket_xpanse="${TEST_XDR_PREFIX}xpanse-dist-dev"
+_bucket_xsoar_saas="${TEST_XDR_PREFIX}marketplace-saas-dist-dev"
+_force="false"
 _slack_channel="dmst-bucket-upload"
 _storage_base_path=""
-_sdk_ref=${SDK_REF:-master}
+_sdk_ref="${SDK_REF:-master}"
+_override_sdk_ref="${DEMISTO_SDK_NIGHTLY:-}"
 # Parsing the user inputs.
 
 while [[ "$#" -gt 0 ]]; do
@@ -45,8 +46,8 @@ while [[ "$#" -gt 0 ]]; do
     shift;;
 
   -gb|--bucket)
-  if [ "$(echo "$2" | tr '[:upper:]' '[:lower:]')" == "marketplace-dist" ]; then
-    echo "Only test buckets are allowed to use. Using marketplace-dist-dev instead."
+  if [ "$(echo "$2" | tr '[:upper:]' '[:lower:]')" == "${TEST_XDR_PREFIX}marketplace-dist" ]; then
+    echo "Only test buckets are allowed to use. Using {TEST_XDR_PREFIX}marketplace-dist-dev instead."
   else
     _bucket=$2
   fi
@@ -54,8 +55,8 @@ while [[ "$#" -gt 0 ]]; do
     shift;;
 
   -gb2|--bucket_v2)
-  if [ "$(echo "$2" | tr '[:upper:]' '[:lower:]')" == "marketplace-v2-dist" ]; then
-    echo "Only test buckets are allowed to use. Using marketplace-v2-dist-dev instead."
+  if [ "$(echo "$2" | tr '[:upper:]' '[:lower:]')" == "${TEST_XDR_PREFIX}marketplace-v2-dist" ]; then
+    echo "Only test buckets are allowed to use. Using ${TEST_XDR_PREFIX}marketplace-v2-dist-dev instead."
   else
     _bucket_v2=$2
   fi
@@ -63,8 +64,8 @@ while [[ "$#" -gt 0 ]]; do
     shift;;
 
   -gb3|--bucket_xpanse)
-  if [ "$(echo "$2" | tr '[:upper:]' '[:lower:]')" == "xpanse-dist" ]; then
-    echo "Only test buckets are allowed to use. Using xpanse-dist-dev instead."
+  if [ "$(echo "$2" | tr '[:upper:]' '[:lower:]')" == "${TEST_XDR_PREFIX}xpanse-dist" ]; then
+    echo "Only test buckets are allowed to use. Using${TEST_XDR_PREFIX} xpanse-dist-dev instead."
   else
     _bucket_xpanse=$2
   fi
@@ -72,8 +73,8 @@ while [[ "$#" -gt 0 ]]; do
     shift;;
 
   -gb4|--bucket_xsoar_saas)
-  if [ "$(echo "$2" | tr '[:upper:]' '[:lower:]')" == "marketplace-saas-dist" ]; then
-    echo "Only test buckets are allowed to use. Using marketplace-saas-dist-dev instead."
+  if [ "$(echo "$2" | tr '[:upper:]' '[:lower:]')" == "${TEST_XDR_PREFIX}marketplace-saas-dist" ]; then
+    echo "Only test buckets are allowed to use. Using ${TEST_XDR_PREFIX}marketplace-saas-dist-dev instead."
   else
     _bucket_xsoar_saas=$2
   fi
@@ -81,7 +82,7 @@ while [[ "$#" -gt 0 ]]; do
     shift;;
 
   -f|--force) _force=true
-    _bucket_upload=""
+    shift
     shift;;
 
   -p|--packs) _packs="$2"
@@ -96,7 +97,9 @@ while [[ "$#" -gt 0 ]]; do
     shift
     shift;;
 
-  -sr|--sdk-ref) _sdk_ref="$2"
+  -sr|--sdk-ref)
+    _sdk_ref="${2}"
+    _override_sdk_ref="true"
     shift
     shift;;
 
@@ -117,12 +120,12 @@ if [ -z "$_ci_token" ]; then
     exit 1
 fi
 
-if [ -n "$_force" ] && [ -z "$_packs" ]; then
+if [ "$_force" == "true" ] && [ -z "$_packs" ]; then
     echo "You must provide a csv list of packs to force upload."
     exit 1
 fi
 
-if [ -n "$_force" ] && [ -n "$_storage_base_path" ]; then
+if [ "$_force" == "true" ] && [ -n "$_storage_base_path" ]; then
     echo "Can not force upload while using a storage base path."
     exit 1
 fi
@@ -136,11 +139,6 @@ if [ -n "$_storage_base_path" ] && [[ "$_storage_base_path" != upload-flow* ]]; 
   echo $_storage_base_path
   echo "The given storage base path should look like upload-flow/builds/branch_name/build_number/content.2"
   exit 1
-fi
-
-_variables="variables[BUCKET_UPLOAD]=true"
-if [ -n "$_force" ]; then
-  _variables="variables[FORCE_BUCKET_UPLOAD]=true"
 fi
 
 if [ -z "$_override_all_packs" ]; then
@@ -158,9 +156,10 @@ source Utils/gitlab_triggers/trigger_build_url.sh
 curl --request POST \
   --form token="${_ci_token}" \
   --form ref="${_branch}" \
-  --form "${_variables}" \
+  --form "variables[BUCKET_UPLOAD]=true" \
   --form "variables[SLACK_CHANNEL]=${_slack_channel}" \
   --form "variables[PACKS_TO_UPLOAD]=${_packs}" \
+  --form "variables[FORCE_BUCKET_UPLOAD]=${_force}" \
   --form "variables[GCS_MARKET_BUCKET]=${_bucket}" \
   --form "variables[GCS_MARKET_V2_BUCKET]=${_bucket_v2}" \
   --form "variables[GCS_MARKET_XPANSE_BUCKET]=${_bucket_xpanse}" \
@@ -169,6 +168,6 @@ curl --request POST \
   --form "variables[STORAGE_BASE_PATH]=${_storage_base_path}" \
   --form "variables[OVERRIDE_ALL_PACKS]=${_override_all_packs}" \
   --form "variables[CREATE_DEPENDENCIES_ZIP]=${_create_dependencies_zip}" \
-  --form "variables[OVERRIDE_SDK_REF]=${DEMISTO_SDK_NIGHTLY}" \
   --form "variables[SDK_REF]=${_sdk_ref}" \
+  --form "variables[OVERRIDE_SDK_REF]=${_override_sdk_ref}" \
   "$BUILD_TRIGGER_URL"
