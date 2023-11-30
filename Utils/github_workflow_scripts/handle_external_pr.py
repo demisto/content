@@ -144,6 +144,7 @@ def get_packs_support_level_label(file_paths: list[str], external_pr_branch: str
     )
     try:
         fork_owner = os.getenv('GITHUB_ACTOR')
+        print(Path().cwd())
         with Checkout(
             repo=Repo(Path().cwd(), search_parent_directories=True),
             branch_to_checkout=external_pr_branch,
