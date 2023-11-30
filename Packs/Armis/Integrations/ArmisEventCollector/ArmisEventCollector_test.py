@@ -217,9 +217,9 @@ class TestHelperFunction:
             - Case 2: Return list of dedup event and new list of 'new_ids' for next run.
             - Case 3: Return empty list and the unchanged list of 'events_last_fetch_ids' for next run.
         """
-        event_order_by = "time"
         from ArmisEventCollector import dedup_events
-        assert dedup_events(events, events_last_fetch_ids, unique_id_key, event_order_by) == expected_result
+        event_type: EVENT_TYPE = EVENT_TYPE('unique_id', 'example:query', 'events', 'time', 'events')
+        assert dedup_events(events, events_last_fetch_ids, event_type=event_type) == expected_result
 
     def test_fetch_by_event_type(self, mocker, dummy_client):
         """

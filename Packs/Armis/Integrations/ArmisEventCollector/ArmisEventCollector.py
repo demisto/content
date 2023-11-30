@@ -217,7 +217,7 @@ def are_two_datetime_equal_by_second(x: datetime, y: datetime):
         and (x.hour == y.hour) and (x.minute == y.minute) and (x.second == y.second)
 
 
-def dedup_events(events: list[dict], events_last_fetch_ids: list[str], unique_id_key: str, event_order_by: str):
+def dedup_events(events: list[dict], events_last_fetch_ids: list[str], event_type: EVENT_TYPE):
     """ Dedup events response.
     Armis API V.1.8 supports time filtering in requests only up to level of seconds (and not milliseconds).
     Therefore, if there are more events with the same timestamp than in the current fetch cycle,
@@ -246,12 +246,18 @@ def dedup_events(events: list[dict], events_last_fetch_ids: list[str], unique_id
     Returns:
         tuple[list[dict], list[str]: The list of dedup events and ID list of events of current fetch.
     """
+    unique_id_key: str = event_type.unique_id_key
+    event_order_by: str = event_type.order_by
     # case 1
     if not events:
         demisto.debug('debug-log: Dedup case 1 - Empty event list (no new events received from API response).')
         return [], events_last_fetch_ids
-
-    new_events: list[dict] = [event for event in events if event.get(unique_id_key) not in events_last_fetch_ids]
+    if event_type.type == 'devices':
+        demisto.debug('debug-log: event type is devices, no dedup needed.')
+        new_events: list[dict] = events
+    else:
+        demisto.debug('debug-log: performing dedup on event list.')
+        new_events: list[dict] = [event for event in events if event.get(unique_id_key) not in events_last_fetch_ids]
 
     earliest_event_datetime = arg_to_datetime(events[0].get(event_order_by))
     latest_event_datetime = arg_to_datetime(events[-1].get(event_order_by))
@@ -310,7 +316,7 @@ def fetch_by_event_type(event_type: EVENT_TYPE, events: dict, next_run: dict, cl
     demisto.debug(f'debug-log: fetched {len(response)} {event_type.type} from API')
     if response:
         new_events, next_run[last_fetch_ids] = dedup_events(
-            response, last_run.get(last_fetch_ids, []), event_type.unique_id_key, event_type.order_by)
+            response, last_run.get(last_fetch_ids, []), event_type=event_type)
         next_run[last_fetch_time] = new_events[-1].get(event_type.order_by) if new_events else last_run.get(last_fetch_time)
         demisto.debug(f'debug-log: updated next_run with: {next_run[last_fetch_time]}')
         events.setdefault(event_type.dataset_name, []).extend(new_events)
