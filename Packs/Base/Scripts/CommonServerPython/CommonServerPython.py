@@ -11357,6 +11357,7 @@ def has_passed_time_threshold(timestamp_str, hours_threshold = None, seconds_thr
         timestamp_str (str): The timestamp string in the folloing format: '%Y-%m-%dT%H:%M:%SZ'
         hours_threshold (int): The threshold in hours.
         seconds_threshold (int): The threshold in seconds.
+        if both are given, the hours_threshold will be used.
     Returns:
         boolean: True if the threshold has passed, False otherwise.
     """
