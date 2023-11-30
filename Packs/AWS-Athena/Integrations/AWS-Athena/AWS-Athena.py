@@ -74,13 +74,13 @@ def get_query_execution(client, query_execution_id: str) -> dict:
     response = client.get_query_execution(QueryExecutionId=query_execution_id)
 
     # Convert datetime objects to strings
-    if datetime_value := response.get('QueryExecution', {}).get('Status', {}).get('SubmissionDateTime'):
-        if isinstance(datetime_value, datetime):
-            response['QueryExecution']['Status']['SubmissionDateTime'] = datetime_value.isoformat()
+    if ((datetime_value := response.get('QueryExecution', {}).get('Status', {}).get('SubmissionDateTime'))
+            and isinstance(datetime_value, datetime)):
+        response['QueryExecution']['Status']['SubmissionDateTime'] = datetime_value.isoformat()
 
-    if datetime_value := response.get('QueryExecution', {}).get('Status', {}).get('CompletionDateTime'):
-        if isinstance(datetime_value, datetime):
-            response['QueryExecution']['Status']['CompletionDateTime'] = datetime_value.isoformat()
+    if ((datetime_value := response.get('QueryExecution', {}).get('Status', {}).get('CompletionDateTime'))
+            and isinstance(datetime_value, datetime)):
+        response['QueryExecution']['Status']['CompletionDateTime'] = datetime_value.isoformat()
 
     return response
 
