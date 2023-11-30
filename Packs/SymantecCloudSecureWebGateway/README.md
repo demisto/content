@@ -1,6 +1,5 @@
 # Symantec Cloud Secure Web Gateway (SWG)
 
-<~XSIAM>
 
 ## Cortex XSIAM SIEM Content
 
@@ -33,5 +32,3 @@ The following XQL Queries demonstrate the parsing and XDM modeling for the Syman
 
 
 **Remark**: As documented in the [Access Log Formats](https://techdocs.broadcom.com/us/en/symantec-security-software/web-and-network-security/cloud-swg/help/wss-reference/accesslogformats-ref.html) Cloud SWG reference, the **date** and **time** fields are interpreted in GMT time.
-
-</~XSIAM>

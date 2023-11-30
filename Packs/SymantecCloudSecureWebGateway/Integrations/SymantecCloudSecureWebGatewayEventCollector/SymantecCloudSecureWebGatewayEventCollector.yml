@@ -1,9 +1,9 @@
 category: Analytics & SIEM
 description: Palo Alto Networks Symantec Cloud Secure Web Gateway Event Collector integration for Cortex XSIAM.
-display: Symantec Cloud Secure Web Gateway Event Collector Long Running
-name: Symantec Cloud Secure Web Gateway Event Collector Long Running
+display: Symantec Cloud Secure Web Gateway Event Collector
+name: Symantec Cloud Secure Web Gateway Event Collector
 commonfields:
-  id: Symantec Cloud Secure Web Gateway Event Collector Long Running
+  id: Symantec Cloud Secure Web Gateway Event Collector
   version: -1
 configuration:
 - display: Server URL
@@ -50,4 +50,4 @@ tests:
 - No tests (auto formatted)
 marketplaces:
 - marketplacev2
-fromversion: 6.8.0
+fromversion: 8.2.0

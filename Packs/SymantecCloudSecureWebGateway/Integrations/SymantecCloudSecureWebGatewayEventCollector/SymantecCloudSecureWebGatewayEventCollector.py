@@ -102,6 +102,7 @@ def get_fetch_interval(fetch_interval: str | None) -> int:
     if not fetch_sleep:
         return DEFAULT_FETCH_SLEEP
     if fetch_sleep < MIN_FETCH_SLEEP:
+        demisto.debug(f"Fetch interval is too low, setting it to minimum of {MIN_FETCH_SLEEP} seconds")
         return MIN_FETCH_SLEEP
     return fetch_sleep
 
@@ -592,7 +593,16 @@ def get_events_command(
 """ TEST MODULE """
 
 
-def test_module(client: Client):
+def test_module(client: Client, fetch_interval: str | None) -> None:
+
+    # Enforcement for the fetch_interval parameter
+    # that will not be less than the minimum time allowed
+    if fetch_interval and int(fetch_interval) < MIN_FETCH_SLEEP:
+        raise ValueError(
+            f"The minimum fetch interval is {MIN_FETCH_SLEEP} seconds"
+            "Please increase the fetch_interval value and try again."
+        )
+
     start_date, end_date = get_start_and_end_date(None)
     params: dict[str, Union[str, int]] = {
         "startDate": start_date,
@@ -645,7 +655,7 @@ def main() -> None:  # pragma: no cover
         )
 
         if command == "test-module":
-            return_results(test_module(client))
+            return_results(test_module(client, fetch_interval))
         if command == "long-running-execution":
             demisto.debug("Starting long running execution")
             perform_long_running_loop(client)
