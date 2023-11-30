@@ -3,7 +3,6 @@
 echo "Starting the e2e test summary script - Server type: ${SERVER_TYPE}, Product type: ${PRODUCT_TYPE}"
 
 if [[ -n "${NIGHTLY}" ]]; then
-  ls -la "${ARTIFACTS_FOLDER}"
   python3 ./Tests/Marketplace/print_e2e_test_summary.py --artifacts-path "${ARTIFACTS_FOLDER}"
   summary_exit_code=$?
 else
