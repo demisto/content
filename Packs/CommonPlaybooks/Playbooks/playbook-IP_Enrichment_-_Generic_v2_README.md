@@ -12,8 +12,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* IP Enrichment - External - Generic v2
 * IP Enrichment - Internal - Generic v2
+* IP Enrichment - External - Generic v2
 
 ### Integrations
 
@@ -35,7 +35,7 @@ This playbook does not use any commands.
 | --- | --- | --- | --- |
 | IP | The IP address to enrich. | IP.Address | Optional |
 | InternalRange | A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). If a list is not provided, will use default list provided in the IsIPInRanges script \(the known IPv4 private address ranges\). | 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16 | Optional |
-| ResolveIP | Determines whether to convert the IP address to a hostname using a DNS query \(True/ False\).<br/>The default value is true. | True | Required |
+| ResolveIP | Determines whether to convert the IP address to a hostname using a DNS query \(True/ False\).<br/>The default value is true. | False | Required |
 | UseReputationCommand | Define if you would like to use the \!IP command.<br/>Note: This input should be used whenever there is no auto-extract enabled in the investigation flow.<br/>Possible values: True / False.<br/>The default value is false. | False | Required |
 | extended_data | Define whether you want the generic reputation command to return extended data \(last_analysis_results\).<br/>Possible values: True / False.<br/>The default value is false. | False | Optional |
 | threat_model_association | Define whether you wish to enhance generic reputation command to include additional information such as Threat Bulletins, Attack patterns, Actors, Campaigns, TTPs, vulnerabilities, etc. Note: If set to true, additional 6 API calls will be performed.<br/>Possible values: True / False.<br/>The default value is false. | False | Optional |

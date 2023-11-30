@@ -227,7 +227,7 @@ inputs:
   playbookInputQuery:
 - key: ResolveIP
   value:
-    simple: "True"
+    simple: "False"
   required: true
   description: |-
     Determines whether to convert the IP address to a hostname using a DNS query (True/ False).
