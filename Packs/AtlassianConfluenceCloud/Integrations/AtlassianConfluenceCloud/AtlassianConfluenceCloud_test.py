@@ -200,7 +200,8 @@ def test_confluence_cloud_content_delete_command_when_api_returns_error(requests
     """
     from AtlassianConfluenceCloud import confluence_cloud_content_delete_command
 
-    api_error_msg = util_load_json(os.path.dirname(__file__) + "/test_data/content_delete/content_delete_command_bad_request_error.json")
+    api_error_msg = util_load_json(os.path.dirname(
+        __file__) + "/test_data/content_delete/content_delete_command_bad_request_error.json")
     requests_mock.delete(BASE_URL + URL_SUFFIX["CONTENT"] + "/123", json=api_error_msg, status_code=400)
 
     args = {

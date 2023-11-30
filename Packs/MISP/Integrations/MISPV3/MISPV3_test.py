@@ -673,7 +673,8 @@ def test_add_email_object(file_path, expected_output_key, mock_response_key, moc
     mocker.patch.object(pymisp.api.PyMISP, "_prepare_request", return_value=get_response(200, mocker, mock_response_key))
     pymisp.ExpandedPyMISP.global_pythonify = False
     output = add_email_object(demisto_args).outputs
-    expected_output = util_load_json(os.path.dirname(__file__) + "/test_data/response_mock_add_email_object_test.json")[expected_output_key]
+    expected_output = util_load_json(os.path.dirname(
+        __file__) + "/test_data/response_mock_add_email_object_test.json")[expected_output_key]
     assert output == expected_output
 
 

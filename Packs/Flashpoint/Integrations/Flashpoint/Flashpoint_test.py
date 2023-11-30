@@ -1,3 +1,4 @@
+import os
 """Flashpoint Test File."""
 import demistomock as demisto
 import pytest
@@ -926,7 +927,8 @@ class MyTestCase(unittest.TestCase):
         }
         response = util_load_json(os.path.dirname(__file__) + "/testData/compromised_credentials_list_response.json")
         del response['hits']['hits'][0]['_source']['email']
-        expected_incidents = util_load_json(os.path.dirname(__file__) + "/testData/incidents_compromised_credentials_when_email_not_present.json")
+        expected_incidents = util_load_json(os.path.dirname(
+            __file__) + "/testData/incidents_compromised_credentials_when_email_not_present.json")
 
         _, incidents = prepare_incidents_from_compromised_credentials_data(response, next_run, START_DATE)
 
@@ -944,7 +946,8 @@ class MyTestCase(unittest.TestCase):
 
         del response['hits']['hits'][0]['_source']['email']
         del response['hits']['hits'][0]['_source']['fpid']
-        expected_incidents = util_load_json(os.path.dirname(__file__) + "/testData/incidents_compromised_credentials_when_fpid_not_present.json")
+        expected_incidents = util_load_json(os.path.dirname(
+            __file__) + "/testData/incidents_compromised_credentials_when_fpid_not_present.json")
 
         _, incidents = prepare_incidents_from_compromised_credentials_data(response, next_run, START_DATE)
 

@@ -1,3 +1,4 @@
+import os
 """Base Integration for ShiftLeft CORE - Cortex XSOAR Extension
 """
 

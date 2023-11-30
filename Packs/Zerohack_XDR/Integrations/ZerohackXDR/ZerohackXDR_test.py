@@ -1,3 +1,4 @@
+import os
 # Tests verified with pytest -vv as demisto-sdk didnt work.
 # Test records are present in the test_data directory.
 # Kept here for future reference.

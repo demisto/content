@@ -87,11 +87,13 @@ def test_vmwuem_device_os_updates_list_command_when_valid_response_is_returned(r
     from VMwareWorkspaceONEUEM import vmwuem_device_os_updates_list_command
     uuid = '3c119913-9341-428f-b8b5-35271550c2df'
 
-    expected_response = util_load_json(os.path.dirname(__file__) + "/test_data/vmwuem_device_osupdates_list_command_response.json")
+    expected_response = util_load_json(os.path.dirname(
+        __file__) + "/test_data/vmwuem_device_osupdates_list_command_response.json")
 
     requests_mock.get(BASE_URL + f'devices/{uuid}/osupdate', json=expected_response)
 
-    expected_context_output = util_load_json(os.path.dirname(__file__) + "/test_data/vmwuem_device_osupdates_list_command_context.json")
+    expected_context_output = util_load_json(os.path.dirname(
+        __file__) + "/test_data/vmwuem_device_osupdates_list_command_context.json")
 
     with open(os.path.dirname(__file__) + "/test_data/vmwuem_device_osupdates_list_command_readable_output.md") as f:
         expected_readable_output = f.read()
@@ -156,11 +158,13 @@ def test_vmwuem_device_osupdates_list_command_when_laptop_device_provided(reques
     from VMwareWorkspaceONEUEM import vmwuem_device_os_updates_list_command
     uuid = '7752a0be-4c0a-429a-97c0-228b1fd6ba0f'
 
-    expected_response = util_load_json(os.path.dirname(__file__) + "/test_data/vmwuem_device_osupdates_list_command_response_laptop.json")
+    expected_response = util_load_json(os.path.dirname(
+        __file__) + "/test_data/vmwuem_device_osupdates_list_command_response_laptop.json")
 
     requests_mock.get(BASE_URL + f'devices/{uuid}/osupdate', json=expected_response)
 
-    expected_context_output = util_load_json(os.path.dirname(__file__) + "/test_data/vmwuem_device_osupdates_list_command_context_laptop.json")
+    expected_context_output = util_load_json(os.path.dirname(
+        __file__) + "/test_data/vmwuem_device_osupdates_list_command_context_laptop.json")
 
     with open(os.path.dirname(__file__) + "/test_data/vmwuem_device_osupdates_list_command_readable_output_laptop.md") as f:
         expected_readable_output = f.read()

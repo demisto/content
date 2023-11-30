@@ -37,7 +37,8 @@ EVENT_TYPE_LIST_RESPONSE = util_load_json(os.path.dirname(__file__) + "/test_dat
 ACTIVITY_LIST_RESPONSE = util_load_json(os.path.dirname(__file__) + "/test_data/context_data_output/activity_data.json")
 ACTIVITY_DNS_LIST_RESPONSE = util_load_json(os.path.dirname(__file__) + "/test_data/context_data_output/activity_dns_data.json")
 SUMMARY_LIST_RESPONSE = util_load_json(os.path.dirname(__file__) + "/test_data/context_data_output/summary_data.json")
-DESTINATION_SUMMARY_LIST_RESPONSE = util_load_json(os.path.dirname(__file__) + "/test_data/context_data_output/destination_summary_data.json")
+DESTINATION_SUMMARY_LIST_RESPONSE = util_load_json(os.path.dirname(
+    __file__) + "/test_data/context_data_output/destination_summary_data.json")
 ACCESS_TOKEN_RESPONSE = util_load_json(os.path.dirname(__file__) + "/test_data/context_data_output/access_token_data.json")
 ACTIVITY_FIREWALL_LIST_RESPONSE = util_load_json(os.path.dirname(__file__) + "/test_data/context_data_output/file_data.json")
 

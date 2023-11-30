@@ -1,3 +1,4 @@
+import os
 import demistomock as demisto
 from TopMaliciousRatioIndicators import main, find_indicators_with_mal_ratio
 import json
@@ -44,7 +45,8 @@ def test_find_indicators_with_mal_ratio__no_indicators(mocker):
     """
 
     mocker.patch.object(demisto, 'args', return_value={})
-    mocker.patch.object(demisto, 'executeCommand', return_value=util_load_json(os.path.dirname(__file__) + '/test_data/no_indicators.json'))
+    mocker.patch.object(demisto, 'executeCommand', return_value=util_load_json(
+        os.path.dirname(__file__) + '/test_data/no_indicators.json'))
     widget_table, sorted_indicators = find_indicators_with_mal_ratio(max_indicators=1000, min_number_of_invs=5,
                                                                      max_results=1000,
                                                                      from_date="30 days ago")

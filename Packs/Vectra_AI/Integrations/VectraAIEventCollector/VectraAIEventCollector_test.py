@@ -39,14 +39,14 @@ def load_json(path: Path):
         return json.load(f)
 
 
-AUDITS: dict[str, Any] = load_json(Path(__file__).parent / "test_data/audits.json"))
-DETECTIONS: dict[str, Any] = load_json(Path(__file__).parent / "test_data/search_detections.json"))
+AUDITS: dict[str, Any] = load_json(Path(__file__).parent / "test_data/audits.json")
+DETECTIONS: dict[str, Any] = load_json(Path(__file__).parent / "test_data/search_detections.json")
 
 """ VectraClient Tests """
 
 
-@settings(max_examples=10)
-@given(st.text())
+@ settings(max_examples=10)
+@ given(st.text())
 def test_create_headers(token: str):
     """
     Given:
@@ -136,7 +136,7 @@ def test_get_audits(mocker: MockerFixture):
 """ Command Tests """
 
 
-@pytest.mark.parametrize(
+@ pytest.mark.parametrize(
     "detections,audits",
     [(DETECTIONS, AUDITS), ({}, {}), (DETECTIONS, {}), ({}, AUDITS)],
 )
@@ -197,7 +197,7 @@ class TestCommands:
         assert detection_res.outputs == detections.get("results")
         assert audits_res.outputs == audits.get("audits")
 
-    @freeze_time("1970-01-01 00:00:00")
+    @ freeze_time("1970-01-01 00:00:00")
     def test_first_fetch(
         self,
         mocker: MockerFixture,
@@ -239,7 +239,7 @@ class TestCommands:
         else:
             assert next_fetch.get(DETECTION_TIMESTAMP_KEY) == "1969-12-29T0000"
 
-    @freeze_time("2023-02-19 00:00:13")
+    @ freeze_time("2023-02-19 00:00:13")
     def test_not_first_fetch(
         self, mocker: MockerFixture, detections: dict[str, Any], audits: dict[str, Any]
     ):

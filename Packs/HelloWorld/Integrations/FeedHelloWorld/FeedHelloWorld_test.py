@@ -106,7 +106,8 @@ def test_fetch_indicators(mocker):
 
     """
     client = Client(base_url=URL)
-    mocker.patch.object(Client, 'build_iterator', return_value=util_load_json(os.path.dirname(__file__) + '/test_data/build_iterator_results.json'))
+    mocker.patch.object(Client, 'build_iterator', return_value=util_load_json(
+        os.path.dirname(__file__) + '/test_data/build_iterator_results.json'))
     results = fetch_indicators_command(client, params={'tlp_color': 'RED'})
     assert results == util_load_json(os.path.dirname(__file__) + '/test_data/get_indicators_command_results.json')
 

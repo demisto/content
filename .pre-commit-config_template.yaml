@@ -77,8 +77,8 @@ repos:
      - --override-ini='asyncio_mode=auto'
      - --override-ini='junit_family=xunit1'
      - --junitxml=/src/pytest_reports/.report_pytest.xml
-     - --cov-report=/src/pytest_reports/.coverage
-     - --cov=."
+     - --cov-report=term
+     - --cov=/src"
 
   - id: is-circle-changed
     name: is-circle-changed

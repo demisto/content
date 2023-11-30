@@ -1,3 +1,4 @@
+import os
 """
     Cortex XSOAR CrowdSec Integration Unit Tests
 """

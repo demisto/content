@@ -1,3 +1,4 @@
+import os
 import json
 import demistomock as demisto
 from pytest_mock import MockerFixture

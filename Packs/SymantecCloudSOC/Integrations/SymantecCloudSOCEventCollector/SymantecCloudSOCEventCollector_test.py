@@ -1,3 +1,4 @@
+import os
 import requests_mock
 from freezegun import freeze_time
 import demistomock as demisto

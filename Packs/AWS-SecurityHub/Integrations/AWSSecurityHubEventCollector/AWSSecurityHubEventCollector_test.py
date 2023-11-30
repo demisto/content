@@ -16,7 +16,7 @@ def load_test_data(folder: str, file_name: str) -> dict:
     Returns:
         dict: Dictionary data loaded from the json file.
     """
-    with open(Path(__file__).parent / "test_data") / folder / f"{file_name}.json") as f:
+    with open(Path(__file__).parent / "test_data" / folder / f"{file_name}.json") as f:
         return json.load(f)
 
 
@@ -58,7 +58,7 @@ class MockClient:
         self.last_index = 0
 
 
-@pytest.fixture
+@ pytest.fixture
 def client():
     """
     A fixture for creating a mock client.
@@ -66,14 +66,14 @@ def client():
     return MockClient()
 
 
-@pytest.mark.parametrize('page_size, limit, expected_api_calls_count, expected_output_file',
-                         [
-                             (100, 1000, 1, "fetch_events_expected_results_0"),
-                             (2, 1000, 5, "fetch_events_expected_results_0"),
-                             (3, 1000, 4, "fetch_events_expected_results_0"),
-                             (2, 5, 3, "fetch_events_expected_results_1"),
-                             (100, 5, 1, "fetch_events_expected_results_1"),
-                         ])
+@ pytest.mark.parametrize('page_size, limit, expected_api_calls_count, expected_output_file',
+                          [
+                              (100, 1000, 1, "fetch_events_expected_results_0"),
+                              (2, 1000, 5, "fetch_events_expected_results_0"),
+                              (3, 1000, 4, "fetch_events_expected_results_0"),
+                              (2, 5, 3, "fetch_events_expected_results_1"),
+                              (100, 5, 1, "fetch_events_expected_results_1"),
+                          ])
 def test_fetch(client, page_size: int, limit: int, expected_api_calls_count: int, expected_output_file: str):
     """
     Given: A page size parameter for the fetch events function.

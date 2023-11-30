@@ -1,3 +1,4 @@
+import os
 import json
 import RegistryParse as reg_parse
 

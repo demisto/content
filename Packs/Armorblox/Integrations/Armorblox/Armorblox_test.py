@@ -1,3 +1,4 @@
+import os
 # import demistomock as demisto
 # from CommonServerPython import *
 # from CommonServerUserPython import *
@@ -92,7 +93,8 @@ def test_get_incidents_list(requests_mock):
     requests_mock.get(url + '/6484', json=mock_response_for_incident_id)
     client = Client(api_key=API_KEY, instance_name=TENANT_NAME)
     response, pageToken = get_incidents_list(client, pageToken=51, first_fetch="lastDay")
-    assert response == util_load_json(os.path.dirname(__file__) + "/test_data/test_response_for_get_incidents_list.json")['incidents']
+    assert response == util_load_json(os.path.dirname(
+        __file__) + "/test_data/test_response_for_get_incidents_list.json")['incidents']
 
 
 def test_fetch_incidents_command(requests_mock):

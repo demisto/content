@@ -11,14 +11,14 @@ def load_test_data(json_file_name: str) -> list | dict:
     """
     Loads test data from a JSON file.
     """
-    with open(Path(__file__).parent / 'test_data', json_file_name)) as json_file:
+    with open(Path(__file__).parent / 'test_data', json_file_name) as json_file:
         return json.load(json_file)
 
 
 SAMPLE_DATA = load_test_data('sample_data.json')
 
 
-@pytest.mark.parametrize('indicator, scores_list, expected_average', [
+@ pytest.mark.parametrize('indicator, scores_list, expected_average', [
     ('192.0.2.0', [1, 2, 3], 2),  # General check
     ('192.0.2.1', [0, 0, 0], 0),  # Assure '0' is returned when all scores are '0'
     ('192.0.2.2', [1, 1, 0, 0], 1),  # Assure '0' values are ignored
@@ -36,7 +36,7 @@ def test_calculate_average_score(indicator: str, scores_list: list[int], expecte
     assert calculate_average_score(indicator, scores_list) == {'Indicator': indicator, 'Score': expected_average}
 
 
-@pytest.mark.parametrize('context_data, expected_context_output, expected_readable_output', [
+@ pytest.mark.parametrize('context_data, expected_context_output, expected_readable_output', [
     (SAMPLE_DATA['context_data'], SAMPLE_DATA['expected_context_output'], SAMPLE_DATA['expected_readable_output']),
 ])
 def test_calculate_all_average_scores(context_data: list[dict[str, Any]],

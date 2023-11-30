@@ -1,3 +1,4 @@
+import os
 """Expanse V2 Integration for Cortex XSOAR - Unit Tests file
 
 """
@@ -319,7 +320,8 @@ class TestMirroringFunctionality:
             'id': 'a827f1a5-f223-4bf6-80e0-e8481bce8e2c'
         }
 
-        MOCK_ENTRIES = util_load_json(os.path.dirname(__file__) + "/test_data/get_remote_data_updated_entries_incident_closure.json")
+        MOCK_ENTRIES = util_load_json(os.path.dirname(
+            __file__) + "/test_data/get_remote_data_updated_entries_incident_closure.json")
 
         client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
         mock_issue_updates = {
@@ -377,7 +379,8 @@ class TestMirroringFunctionality:
             'progressStatus': 'Investigating'
         }
 
-        MOCK_ENTRIES = util_load_json(os.path.dirname(__file__) + "/test_data/get_remote_data_updated_entries_incident_reopening.json")
+        MOCK_ENTRIES = util_load_json(os.path.dirname(
+            __file__) + "/test_data/get_remote_data_updated_entries_incident_reopening.json")
 
         client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
         mock_issue_updates = {
@@ -1823,7 +1826,8 @@ def test_get_associated_domains(requests_mock):
 
     CN_SEARCH = "*.0mizwwr0v7.gw.panclouddev.com"
     MOCK_LIMIT = "1"
-    mock_certificate_data = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_get_associated_domains_certificate.json")
+    mock_certificate_data = util_load_json(os.path.dirname(
+        __file__) + "/test_data/expanse_get_associated_domains_certificate.json")
     mock_cdetailed_data = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_get_associated_domains_cdetailed.json")
     # we load response for only one IP query
     mock_ips_data = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_get_associated_domains_ip.json")
@@ -2018,7 +2022,8 @@ def test_domains_by_certificate(requests_mock):
     domain_to_test = "base2.pets.com"
 
     mock_domains_by_certificate = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_assets_for_certificate.json")
-    mock_domains_by_certificates = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_get_domains_for_certificates.json")
+    mock_domains_by_certificates = util_load_json(os.path.dirname(
+        __file__) + "/test_data/expanse_get_domains_for_certificates.json")
     mock_ips = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_assets_ips.json")
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
     requests_mock.get("https://example.com/api/v2/assets/certificates/Jr8RiLR4OfFslz9VmELI9g==",

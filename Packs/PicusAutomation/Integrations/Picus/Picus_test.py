@@ -1,3 +1,4 @@
+import os
 import json
 import io
 from unittest.mock import MagicMock
@@ -50,7 +51,8 @@ def test_getMitigationList(mocker):
     args_mock.args.return_value.get.return_value = "1"
     mock_response = Response()
     mock_response.status_code = "200"
-    mock_response._content = json.dumps(util_load_json(os.path.dirname(__file__) + "/test_data/get_mitigations.json")).encode("ascii")
+    mock_response._content = json.dumps(util_load_json(os.path.dirname(
+        __file__) + "/test_data/get_mitigations.json")).encode("ascii")
     mocker.patch("Picus.requests.post", return_value=mock_response)
     result = getMitigationList().outputs
     assert result[0]["signature_id"] == "1357"
@@ -70,7 +72,8 @@ def test_getAttackResults(mocker):
     mock_insecure_response = Response()
     mock_secure_response.status_code = "200"
     mock_insecure_response.status_code = "200"
-    mock_secure_response._content = json.dumps(util_load_json(os.path.dirname(__file__) + "/test_data/get_secureAttackResults.json")).encode("ascii")
+    mock_secure_response._content = json.dumps(util_load_json(os.path.dirname(
+        __file__) + "/test_data/get_secureAttackResults.json")).encode("ascii")
     mock_insecure_response._content = json.dumps(util_load_json(os.path.dirname(__file__) + "/test_data/get_insecureAttackResults.json")).encode(
         "ascii")
 
@@ -89,7 +92,8 @@ def test_getThreatResults(mocker):
 
     mock_response = Response()
     mock_response.status_code = "200"
-    mock_response._content = json.dumps(util_load_json(os.path.dirname(__file__) + "/test_data/get_threatResults.json")).encode("ascii")
+    mock_response._content = json.dumps(util_load_json(os.path.dirname(
+        __file__) + "/test_data/get_threatResults.json")).encode("ascii")
 
     mocker.patch("Picus.requests.post", return_value=mock_response)
     result = getThreatResults().outputs
@@ -103,7 +107,8 @@ def test_getPicusVersion(mocker):
 
     mock_response = Response()
     mock_response.status_code = "200"
-    mock_response._content = json.dumps(util_load_json(os.path.dirname(__file__) + "/test_data/get_versionInfo.json")).encode("ascii")
+    mock_response._content = json.dumps(util_load_json(os.path.dirname(
+        __file__) + "/test_data/get_versionInfo.json")).encode("ascii")
 
     mocker.patch("Picus.requests.post", return_value=mock_response)
     result = getPicusVersion().outputs
@@ -117,7 +122,8 @@ def test_getPeerList(mocker):
 
     mock_response = Response()
     mock_response.status_code = "200"
-    mock_response._content = json.dumps(util_load_json(os.path.dirname(__file__) + "/test_data/get_peerList.json")).encode("ascii")
+    mock_response._content = json.dumps(util_load_json(os.path.dirname(
+        __file__) + "/test_data/get_peerList.json")).encode("ascii")
 
     mocker.patch("Picus.requests.post", return_value=mock_response)
     result = getPeerList().outputs
@@ -131,7 +137,8 @@ def test_getVectorList(mocker):
 
     mock_response = Response()
     mock_response.status_code = "200"
-    mock_response._content = json.dumps(util_load_json(os.path.dirname(__file__) + "/test_data/get_vectorList.json")).encode("ascii")
+    mock_response._content = json.dumps(util_load_json(os.path.dirname(
+        __file__) + "/test_data/get_vectorList.json")).encode("ascii")
 
     mocker.patch("Picus.requests.post", return_value=mock_response)
     result = getVectorList().outputs
@@ -161,7 +168,8 @@ def test_triggerUpdate(mocker):
 
     mock_response = Response()
     mock_response.status_code = "200"
-    mock_response._content = json.dumps(util_load_json(os.path.dirname(__file__) + "/test_data/triggerUpdate.json")).encode("ascii")
+    mock_response._content = json.dumps(util_load_json(os.path.dirname(
+        __file__) + "/test_data/triggerUpdate.json")).encode("ascii")
 
     mocker.patch("Picus.requests.post", return_value=mock_response)
     result = triggerUpdate().outputs
@@ -177,7 +185,8 @@ def test_getVectorCompare(mocker):
 
     mock_response = Response()
     mock_response.status_code = "200"
-    mock_response._content = json.dumps(util_load_json(os.path.dirname(__file__) + "/test_data/get_vectorCompare.json")).encode("ascii")
+    mock_response._content = json.dumps(util_load_json(os.path.dirname(
+        __file__) + "/test_data/get_vectorCompare.json")).encode("ascii")
 
     mocker.patch("Picus.requests.post", return_value=mock_response)
     result = getVectorCompare().outputs

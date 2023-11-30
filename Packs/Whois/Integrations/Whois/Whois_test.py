@@ -643,7 +643,7 @@ def test_parse_nic_contact_new_regex():
         - validate that the data extracted without timeout.
     """
     from Whois import parse_nic_contact
-    data = pathlib.Path(__file__).parent / 'test_data/whois_response_text.txt').read_text()
+    data = pathlib.Path(__file__).parent / 'test_data/whois_response_text.txt'.read_text()
     res = parse_nic_contact([data])
     assert len(res) == 2
     assert any(entry.get('email') == 'test@test.net' for entry in res)

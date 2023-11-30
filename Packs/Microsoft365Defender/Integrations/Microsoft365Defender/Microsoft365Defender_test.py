@@ -1,3 +1,4 @@
+import os
 """Base Integration for Cortex XSOAR - Unit Tests file
 
 Pytest Unit Tests: all funcion names must start with "test_"
@@ -53,14 +54,16 @@ def check_api_response(results, results_mock):
 
 def test_microsoft_365_defender_incidents_list_command(mocker):
     from Microsoft365Defender import microsoft_365_defender_incidents_list_command
-    client = mock_client(mocker, 'incidents_list', util_load_json(os.path.dirname(__file__) + '/test_data/incidents_list_response.json'))
+    client = mock_client(mocker, 'incidents_list', util_load_json(
+        os.path.dirname(__file__) + '/test_data/incidents_list_response.json'))
     results = microsoft_365_defender_incidents_list_command(client, {'limit': 10})
     check_api_response(results, util_load_json(os.path.dirname(__file__) + '/test_data/incidents_list_results.json'))
 
 
 def test_microsoft_365_defender_incident_update_command(mocker):
     from Microsoft365Defender import microsoft_365_defender_incident_update_command
-    client = mock_client(mocker, 'update_incident', util_load_json(os.path.dirname(__file__) + '/test_data/incident_update_response.json'))
+    client = mock_client(mocker, 'update_incident', util_load_json(
+        os.path.dirname(__file__) + '/test_data/incident_update_response.json'))
     args = {'id': '263', 'tags': 'test1,test2', 'status': 'Active', 'classification': 'Unknown',
             'determination': 'Other', 'assigned_to': ""}
     results = microsoft_365_defender_incident_update_command(client, args)
@@ -69,7 +72,8 @@ def test_microsoft_365_defender_incident_update_command(mocker):
 
 def test_microsoft_365_defender_incident_get_command(mocker):
     from Microsoft365Defender import microsoft_365_defender_incident_get_command
-    client = mock_client(mocker, 'get_incident', util_load_json(os.path.dirname(__file__) + '/test_data/incident_get_response.json'))
+    client = mock_client(mocker, 'get_incident', util_load_json(
+        os.path.dirname(__file__) + '/test_data/incident_get_response.json'))
     args = {'id': '263'}
     results = microsoft_365_defender_incident_get_command(client, args)
     check_api_response(results, util_load_json(os.path.dirname(__file__) + '/test_data/incident_get_results.json'))
@@ -77,7 +81,8 @@ def test_microsoft_365_defender_incident_get_command(mocker):
 
 def test_microsoft_365_defender_advanced_hunting_command(mocker):
     from Microsoft365Defender import microsoft_365_defender_advanced_hunting_command
-    client = mock_client(mocker, 'advanced_hunting', util_load_json(os.path.dirname(__file__) + '/test_data/advanced_hunting_response.json'))
+    client = mock_client(mocker, 'advanced_hunting', util_load_json(
+        os.path.dirname(__file__) + '/test_data/advanced_hunting_response.json'))
     args = {'query': 'AlertInfo'}
     results = microsoft_365_defender_advanced_hunting_command(client, args)
     check_api_response(results, util_load_json(os.path.dirname(__file__) + '/test_data/advanced_hunting_results.json'))

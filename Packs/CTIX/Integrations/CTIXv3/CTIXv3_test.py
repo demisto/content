@@ -1,3 +1,4 @@
+import os
 import json
 from CTIXv3 import (
     Client,
@@ -1152,13 +1153,15 @@ def test_cve_command(requests_mock):
     mock_threat_list_response = util_load_json(os.path.dirname(__file__) + "/test_data/get_cve_threat_data.json")
     requests_mock.post(f"{BASE_URL}ingestion/threat-data/list/", json=mock_threat_list_response)
     obj_id = mock_threat_list_response["results"][0]["id"]
-    mock_product_details_response = util_load_json(os.path.dirname(__file__) + "/test_data/get_vulnerability_product_details.json")
+    mock_product_details_response = util_load_json(os.path.dirname(
+        __file__) + "/test_data/get_vulnerability_product_details.json")
     requests_mock.get(f"{BASE_URL}ingestion/threat-data/vulnerability/{obj_id}/product-details/",
                       json=mock_product_details_response)
     source_id = mock_product_details_response["results"][0]["source"]["id"]
     mock_cvss_score_response = util_load_json(os.path.dirname(__file__) + "/test_data/get_cvss_score.json")
     requests_mock.get(f"{BASE_URL}ingestion/threat-data/vulnerability/{obj_id}/cvss-score/", json=mock_cvss_score_response)
-    mock_source_description_response = util_load_json(os.path.dirname(__file__) + "/test_data/get_vulnerability_source_description.json")
+    mock_source_description_response = util_load_json(os.path.dirname(
+        __file__) + "/test_data/get_vulnerability_source_description.json")
     requests_mock.get(f"{BASE_URL}ingestion/threat-data/vulnerability/{obj_id}/source-description/?source_id={source_id}",
                       json=mock_source_description_response)
 

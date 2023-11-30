@@ -1,3 +1,4 @@
+import os
 from CloudConvert import upload_command, Client, convert_command, check_status_command, download_command, modify_results_dict
 from CommonServerPython import remove_empty_elements, tableToMarkdown, string_to_table_header
 import demistomock as demisto
@@ -34,7 +35,8 @@ def test_upload_valid_url(mocker):
 
     """
     client = create_client()
-    mocker.patch.object(client, 'upload_url', return_value=util_load_json(os.path.dirname(__file__) + '/test_data/upload_url_response.json'))
+    mocker.patch.object(client, 'upload_url', return_value=util_load_json(
+        os.path.dirname(__file__) + '/test_data/upload_url_response.json'))
     results = upload_command(client, {'url': MOCK_URL})
     raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/upload_url_response.json')
     raw_response['data']['operation'] = 'upload/url'
@@ -59,7 +61,8 @@ def test_upload_invalid_url(mocker):
 
     """
     client = create_client()
-    mocker.patch.object(client, 'upload_url', return_value=util_load_json(os.path.dirname(__file__) + '/test_data/upload_url_bad_url_response.json'))
+    mocker.patch.object(client, 'upload_url', return_value=util_load_json(
+        os.path.dirname(__file__) + '/test_data/upload_url_bad_url_response.json'))
     with pytest.raises(ValueError) as e:
         upload_command(client, {'url': MOCK_URL})
         if not e:

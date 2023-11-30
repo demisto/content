@@ -1,3 +1,4 @@
+import os
 import json
 from pytest import raises
 
@@ -58,7 +59,8 @@ def test_success_investigate_url_command(requests_mock):
     }
     response = investigate_url_command(client, args, MOCK_APIKEY)
     assert response[0].outputs == util_load_json(os.path.dirname(__file__) + "/test_data/investigate-success-outputs.json")
-    assert response[0].raw_response == util_load_json(os.path.dirname(__file__) + "/test_data/investigate-success-raw-response.json")
+    assert response[0].raw_response == util_load_json(os.path.dirname(
+        __file__) + "/test_data/investigate-success-raw-response.json")
 
 
 def test_get_chosen_nothing_phishup_action_command():
