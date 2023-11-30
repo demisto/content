@@ -34,7 +34,7 @@ configuration:
   type: 13
   required: false
 - defaultvalue: '1'
-  display: Initial Fetch Interval(In minutes, used only for first fetch or after Reset last run)
+  display: Initial Fetch Interval (In minutes, used only for first fetch or after Reset last run)
   name: FetchInterval
   type: 0
   required: false
@@ -66,9 +66,9 @@ script:
       description: (default and mandatory) The unique identifier of the schedule.
       name: scheduleID
       required: true
-    - description: The start of the date range Using ISO 8601 Representation. E.g. !PagerDutyGetUsersOnCall since=2011-05-06T17:00Z.
+    - description: The start of the date range Using ISO 8601 Representation. Maximum range is 6 months and default is 1 month. E.g. !PagerDutyGetUsersOnCall since=2011-05-06T17:00Z.
       name: since
-    - description: The end of the date range.
+    - description: The end of the date range. Maximum range is 6 months and default is 1 month.
       name: until
     description: Returns the names and details of on call users at a certain time or by specific schedule.
     name: PagerDuty-get-users-on-call
@@ -135,12 +135,12 @@ script:
       name: sortBy
     - description: Last date and time.  Using ISO 8601 Representation. E.g. PagerDutyIncidents until=2016-05-06T13:00Z.
       name: until
-    - description: Incident de-duplication key. E.g. 8e42eeb6391a4a2abeda5d12e09bddec.
+    - description: Incident de-duplication key. E.g., 8e42eeb6391a4a2abeda5d12e09bddec.
       name: incident_key
     - description: The maximum number of incidents to retrieve. If "page_size" is defined, this argument is ignored.
       name: limit
       defaultValue: 50
-    - description: "Returns only the incidents currently assigned to the passed user(s). This expects one or more user IDs. Note: When using the assigned_to_user filter, you will only receive incidents with statuses of triggered or acknowledged. This is because resolved incidents are not assigned to any user."
+    - description: "Comma separated list of User IDs. Returns only the incidents currently assigned to the passed user(s). Note: When using the assigned_to_user filter, you will only receive incidents with statuses of triggered or acknowledged. This is because resolved incidents are not assigned to any user."
       name: user_id
     - auto: PREDEFINED
       description: Array of the urgencies of the incidents to be returned. Defaults to all urgencies. Account must have the urgencies ability to do this.
@@ -462,13 +462,13 @@ script:
     name: PagerDuty-add-responders
     outputs:
     - contextPath: PagerDuty.ResponderRequests.ResponderID
-      description: The User ID of the responder added.
+      description: The user ID of the responder added.
       type: String
     - contextPath: PagerDuty.ResponderRequests.ResponderName
       description: The name of the responder added.
       type: String
   - arguments:
-    - description: The PagerDuty Incident ID to run the play on.
+    - description: The PagerDuty incident ID to run the play on.
       name: incident_id
       required: true
     - description: User's email to trigger the response play from.
@@ -484,7 +484,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.13.80593
+  dockerimage: demisto/python3:3.10.13.81631
 tests:
 - PagerDuty Test
 fromversion: 5.0.0

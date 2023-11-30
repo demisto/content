@@ -15,7 +15,7 @@ This integration was integrated and tested with PagerDuty API v2.
     | Use system proxy settings | False |
     | Fetch incidents | False |
     | Incident type | False |
-    | Initial Fetch Interval(In minutes, used only for first fetch or after Reset last run) | False |
+    | Initial Fetch Interval (In minutes, used only for first fetch or after Reset last run) | False |
     | Default requestor ID for adding people to incidents | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
@@ -130,8 +130,8 @@ Returns the names and details of on call users at a certain time or by specific 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | scheduleID | (default and mandatory) The unique identifier of the schedule. | Required | 
-| since | The start of the date range Using ISO 8601 Representation. E.g. !PagerDutyGetUsersOnCall since=2011-05-06T17:00Z. | Optional | 
-| until | The end of the date range. | Optional | 
+| since | The start of the date range Using ISO 8601 Representation. Maximum range is 6 months and default is 1 month. E.g. !PagerDutyGetUsersOnCall since=2011-05-06T17:00Z. | Optional | 
+| until | The end of the date range. Maximum range is 6 months and default is 1 month. | Optional | 
 
 #### Context Output
 
@@ -258,9 +258,9 @@ Shows incidents in PagerDuty. Default status parameters are triggered,acknowledg
 | since | Beginning date and time. Using ISO 8601 Representation. E.g. PagerDutyIncidents since=2011-05-06T17:00Z (must be used with until argument). | Optional | 
 | sortBy | Used to specify both the field you wish to sort the results on, as well as the direction (ascending/descending) of the results.See more <https://v2.developer.pagerduty.com/v2/page/api-reference#!/Incidents/get_incidents>. | Optional | 
 | until | Last date and time.  Using ISO 8601 Representation. E.g. PagerDutyIncidents until=2016-05-06T13:00Z. | Optional | 
-| incident_key | Incident de-duplication key. E.g. 8e42eeb6391a4a2abeda5d12e09bddec. | Optional | 
+| incident_key | Incident de-duplication key. E.g., 8e42eeb6391a4a2abeda5d12e09bddec. | Optional | 
 | limit | The maximum number of incidents to retrieve. If "page_size" is defined, this argument is ignored. Default is 50. | Optional | 
-| user_id | Returns only the incidents currently assigned to the passed user(s). This expects one or more user IDs. Note: When using the assigned_to_user filter, you will only receive incidents with statuses of triggered or acknowledged. This is because resolved incidents are not assigned to any user. | Optional | 
+| user_id | Comma separated list of User IDs. Returns only the incidents currently assigned to the passed user(s). Note: When using the assigned_to_user filter, you will only receive incidents with statuses of triggered or acknowledged. This is because resolved incidents are not assigned to any user. | Optional | 
 | urgencies | Array of the urgencies of the incidents to be returned. Defaults to all urgencies. Account must have the urgencies ability to do this. Possible values are: high, low. | Optional | 
 | date_range | When set to all, the since and until parameters and defaults are ignored. Possible values are: all. | Optional | 
 | page | The page number of incidents to retrieve (used for pagination) starting from 1. The page size is defined by the "page_size" argument. | Optional | 
@@ -862,7 +862,7 @@ Add responders to an incident.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PagerDuty.ResponderRequests.ResponderID | String | The User ID of the responder added. | 
+| PagerDuty.ResponderRequests.ResponderID | String | The user ID of the responder added. | 
 | PagerDuty.ResponderRequests.ResponderName | String | The name of the responder added. | 
 
 #### Context Example
@@ -914,7 +914,7 @@ Response Plays are a package of Incident Actions that can be applied during an I
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | The PagerDuty Incident ID to run the play on. | Required | 
+| incident_id | The PagerDuty incident ID to run the play on. | Required | 
 | from_email | User's email to trigger the response play from. | Required | 
 | response_play_uuid | The UUID of the response play to run. | Required | 
 

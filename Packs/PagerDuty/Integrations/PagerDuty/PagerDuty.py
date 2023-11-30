@@ -598,7 +598,7 @@ def pagination_incidents(param_dict: dict, pagination_dict: dict, url: str) -> l
 
     if page_number is not None and page_size is not None:
         if page_size > INCIDENT_API_LIMIT:
-            raise DemistoException(f"The max size for page is {INCIDENT_API_LIMIT}. Please provide a smaller page size.")
+            raise DemistoException(f"The max size for page is {INCIDENT_API_LIMIT}. Please provide a lower page size.")
         limit = page_size
         offset = (page_number - 1) * page_size
 

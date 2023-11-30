@@ -522,5 +522,5 @@ def test_paginate_with_page_size_more_than_INCIDENT_API_LIMIT():
         it should raise a DemistoException with the message "The max size for page is 100. Please provide a smaller page size."
     """
     from PagerDuty import pagination_incidents
-    with pytest.raises(DemistoException, match="The max size for page is 100. Please provide a smaller page size."):
+    with pytest.raises(DemistoException, match="The max size for page is 100. Please provide a lower page size."):
         pagination_incidents({"user_ids": "test_id"}, {"page_size": 200, "page": 2}, "")
