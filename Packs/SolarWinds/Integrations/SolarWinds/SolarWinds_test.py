@@ -205,10 +205,10 @@ def test_validate_and_prepare_query_for_alert_list_failure(args, error_msg):
 def test_convert_alerts_outputs_to_hr():
     """Test case for convert_alerts_outputs_to_hr function"""
     from SolarWinds import convert_alerts_outputs_to_hr
-    with open('test_data/test_swis_alert_list_success_context.json') as data:
+    with open(os.path.dirname(__file__) + 'test_data/test_swis_alert_list_success_context.json') as data:
         expected_res = json.load(data)
 
-    with open('test_data/test_swis_alert_list_success.md') as data:
+    with open(os.path.dirname(__file__) + 'test_data/test_swis_alert_list_success.md') as data:
         expected_hr = data.read()
     hr_response = convert_alerts_outputs_to_hr(expected_res)
     assert hr_response == expected_hr
@@ -226,13 +226,13 @@ def test_swis_alert_list_success(http_request, client):
     """Test case for success scenarios of swis-alert-list command"""
     from SolarWinds import swis_alert_list_command
 
-    with open('test_data/swis_alert_list_raw_response.json') as data:
+    with open(os.path.dirname(__file__) + 'test_data/swis_alert_list_raw_response.json') as data:
         mock_response = json.load(data)
 
-    with open('test_data/test_swis_alert_list_success_context.json') as data:
+    with open(os.path.dirname(__file__) + 'test_data/test_swis_alert_list_success_context.json') as data:
         expected_res = json.load(data)
 
-    with open('test_data/test_swis_alert_list_success.md') as data:
+    with open(os.path.dirname(__file__) + 'test_data/test_swis_alert_list_success.md') as data:
         expected_hr = data.read()
 
     http_request.return_value = mock_response

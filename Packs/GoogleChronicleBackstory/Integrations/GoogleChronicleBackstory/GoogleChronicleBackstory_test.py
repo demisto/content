@@ -86,9 +86,9 @@ def return_error(error):
 def test_gcb_list_ioc_success(client):
     """When valid response comes in gcb-list-iocs command it should respond with result."""
     from GoogleChronicleBackstory import gcb_list_iocs_command
-    with open("test_data/list_ioc_response.txt", "rb") as f:
+    with open(os.path.dirname(__file__) + "test_data/list_ioc_response.txt", "rb") as f:
         dummy_response = f.read()
-    with open("test_data/list_ioc_ec.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/list_ioc_ec.json") as f:
         dummy_ec = json.load(f)
 
     mock_response = (
@@ -108,7 +108,7 @@ def test_gcb_list_ioc_failure_response(client):
     """When response not come with invalid response come in gcb-list-iocs command then it should raise ValueError \
     'Failed to parse response'."""
     from GoogleChronicleBackstory import gcb_list_iocs_command
-    with open("test_data/list_ioc_response.txt", "rb") as f:
+    with open(os.path.dirname(__file__) + "test_data/list_ioc_response.txt", "rb") as f:
         dummy_response = f.read()
 
     mock_response = (
@@ -143,9 +143,9 @@ def test_gcb_ioc_details_command_success(client):
     """When command execute successfully then it should prepare valid hr, ec."""
     from GoogleChronicleBackstory import gcb_ioc_details_command
 
-    with open("test_data/list_ioc_details_response.json", "r") as f:
+    with open(os.path.dirname(__file__) + "test_data/list_ioc_details_response.json", "r") as f:
         dummy_response = f.read()
-    with open("test_data/gcb_ioc_details_command_ec.json", "r") as f:
+    with open(os.path.dirname(__file__) + "test_data/gcb_ioc_details_command_ec.json", "r") as f:
         dummy_ec = json.load(f)
 
     mock_response = (
@@ -406,7 +406,7 @@ def test_gcb_assets_command_success(client):
     """When valid response come in gcb-assets command it should respond with result."""
     from GoogleChronicleBackstory import gcb_assets_command
 
-    with open("test_data/asset_response.json", encoding='utf-8') as f:
+    with open(os.path.dirname(__file__) + "test_data/asset_response.json", encoding='utf-8') as f:
         expected_response = json.load(f)
 
     success_mock_response = (
@@ -416,7 +416,7 @@ def test_gcb_assets_command_success(client):
 
     client.http_client.request.return_value = success_mock_response
     hr, ec, response = gcb_assets_command(client, {'artifact_value': SUCCESS_ASSET_NAME})
-    with open("test_data/asset_ec.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/asset_ec.json") as f:
         expected_ec = json.load(f)
     assert ec == expected_ec
     assert response == expected_response
@@ -440,7 +440,7 @@ def test_gcb_assets_command_failure_with_uri_empty_response(client):
     """When Null response come in gcb-assets command it should respond with No Records Found."""
     from GoogleChronicleBackstory import gcb_assets_command
 
-    with open("test_data/asset_with_no_response.json", encoding='utf-8') as f:
+    with open(os.path.dirname(__file__) + "test_data/asset_with_no_response.json", encoding='utf-8') as f:
         expected_response = json.load(f)
 
     failure_mock_response = (
@@ -509,7 +509,7 @@ def test_fetch_incident_run_ioc_domain_matches(mocker, client):
     from GoogleChronicleBackstory import fetch_incidents
     param = {}
 
-    with open("test_data/list_ioc_response.txt", "rb") as f:
+    with open(os.path.dirname(__file__) + "test_data/list_ioc_response.txt", "rb") as f:
         dummy_response = f.read()
 
     mock_response = (
@@ -574,7 +574,7 @@ def test_fetch_incident_success_with_param_and_alerts_when_executed_1st_time(moc
         'backstory_alert_type': ASSET_ALERT_TYPE
     }
 
-    with open("test_data/gcb_alerts_response.txt") as f:
+    with open(os.path.dirname(__file__) + "test_data/gcb_alerts_response.txt") as f:
         gcb_alert_sample = f.read()
 
     mock_response = (
@@ -597,7 +597,7 @@ def test_gcb_fetch_incident_success_with_alerts_with_demisto_last_run(mocker, cl
         'incident_severity': None,
         'backstory_alert_type': ASSET_ALERT_TYPE
     }
-    with open("test_data/gcb_alerts_response.txt") as f:
+    with open(os.path.dirname(__file__) + "test_data/gcb_alerts_response.txt") as f:
         gcb_alert_sample = f.read()
 
     mock_response = (
@@ -622,7 +622,7 @@ def test_asset_with_multiple_alerts_human_readable(client):
     from GoogleChronicleBackstory import group_infos_by_alert_asset_name, get_gcb_alerts
     from CommonServerPython import datetime
 
-    with open("test_data/gcb_alerts_human_readable.txt") as f:
+    with open(os.path.dirname(__file__) + "test_data/gcb_alerts_human_readable.txt") as f:
         gcb_alert_sample = f.read()
 
     mock_response = (
@@ -661,7 +661,7 @@ def test_gcb_list_alert_with_no_arg_supplied_success(mocker, client):
     hr, ec, events = gcb_list_alerts_command(client, param)
     assert hr
     assert ec
-    with open("test_data/alerts_ec.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/alerts_ec.json") as f:
         expected_ec = json.load(f)
 
     assert ec == expected_ec
@@ -691,7 +691,7 @@ def test_gcb_list_alert_with_severity_medium_arg_supplied_success(mocker, client
     hr, ec, events = gcb_list_alerts_command(client, param)
     assert hr
     assert ec
-    with open("test_data/medium_alert_ec.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/medium_alert_ec.json") as f:
         expected_ec = json.load(f)
 
     assert ec == expected_ec
@@ -721,7 +721,7 @@ def test_gcb_list_alert_with_severity_lowercase_medium_arg_supplied_success(mock
     hr, ec, events = gcb_list_alerts_command(client, param)
     assert hr
     assert ec
-    with open("test_data/medium_alert_ec.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/medium_alert_ec.json") as f:
         expected_ec = json.load(f)
 
     assert ec == expected_ec
@@ -731,7 +731,7 @@ def test_gcb_list_alert_with_severity_lowercase_medium_arg_supplied_success(mock
 
 def get_hr_gcb_alerts():
     """Read and return gcb_alerts human readable."""
-    with open("test_data/gcb_alerts_human_readable.txt") as f:
+    with open(os.path.dirname(__file__) + "test_data/gcb_alerts_human_readable.txt") as f:
         gcb_alert_sample = f.read()
     return gcb_alert_sample
 
@@ -782,9 +782,9 @@ def test_ip_command_success(mocker, client):
     mocker.patch.object(demisto, 'params', return_value=PARAMS)
     from GoogleChronicleBackstory import ip_command
 
-    with open("test_data/list_ioc_details_response.json", "r") as f:
+    with open(os.path.dirname(__file__) + "test_data/list_ioc_details_response.json", "r") as f:
         dummy_response = f.read()
-    with open("test_data/ip_command_ec.json", "r") as f:
+    with open(os.path.dirname(__file__) + "test_data/ip_command_ec.json", "r") as f:
         dummy_ec = json.load(f)
 
     mock_response = (
@@ -808,7 +808,7 @@ def test_ip_command_empty_response_when_uri_empty_response(client):
     """Test ip_command for empty response."""
     from GoogleChronicleBackstory import ip_command
 
-    with open("test_data/empty_list_ioc_details.json", "r") as f:
+    with open(os.path.dirname(__file__) + "test_data/empty_list_ioc_details.json", "r") as f:
         dummy_response = f.read()
     expected_hr = '### IP: {} found with Reputation: Unknown\n'.format(ARGS['ip'])
     expected_hr += MESSAGES["NO_RECORDS"]
@@ -903,9 +903,9 @@ def test_domain_command_success(mocker, client):
     mocker.patch.object(demisto, 'params', return_value=PARAMS)
     from GoogleChronicleBackstory import domain_command
 
-    with open("test_data/list_ioc_details_response.json", "r") as f:
+    with open(os.path.dirname(__file__) + "test_data/list_ioc_details_response.json", "r") as f:
         dummy_response = f.read()
-    with open("test_data/domain_command_ec.json", "r") as f:
+    with open(os.path.dirname(__file__) + "test_data/domain_command_ec.json", "r") as f:
         dummy_ec = json.load(f)
 
     mock_response = (
@@ -928,7 +928,7 @@ def test_domain_command_empty_response(client):
     """Test domain_command for empty response."""
     from GoogleChronicleBackstory import domain_command
 
-    with open("test_data/empty_list_ioc_details.json", "r") as f:
+    with open(os.path.dirname(__file__) + "test_data/empty_list_ioc_details.json", "r") as f:
         dummy_response = f.read()
     expected_hr = '### Domain: {} found with Reputation: Unknown\n'.format(ARGS['domain'])
     expected_hr += MESSAGES["NO_RECORDS"]
@@ -1884,10 +1884,10 @@ def test_list_events_command(client):
     """Test gcb_list_events_command for non-empty and empty response."""
     from GoogleChronicleBackstory import gcb_list_events_command
 
-    with open("test_data/list_events_response.json", "r") as f:
+    with open(os.path.dirname(__file__) + "test_data/list_events_response.json", "r") as f:
         dummy_response = f.read()
 
-    with open("test_data/list_events_ec.json", "r") as f:
+    with open(os.path.dirname(__file__) + "test_data/list_events_ec.json", "r") as f:
         dummy_ec = json.load(f)
 
     mock_response = (
@@ -1917,13 +1917,13 @@ def test_gcb_udm_search_command(client):
     """Test gcb_udm_search_command for non-empty and empty response."""
     from GoogleChronicleBackstory import gcb_udm_search_command
 
-    with open("test_data/udm_search_response.json", "r") as f:
+    with open(os.path.dirname(__file__) + "test_data/udm_search_response.json", "r") as f:
         dummy_response = f.read()
 
-    with open("test_data/udm_search_ec.json", "r") as f:
+    with open(os.path.dirname(__file__) + "test_data/udm_search_ec.json", "r") as f:
         dummy_ec = json.load(f)
 
-    with open("test_data/udm_search_hr.md", "r") as f:
+    with open(os.path.dirname(__file__) + "test_data/udm_search_hr.md", "r") as f:
         dummy_hr = f.read()
 
     mock_response = (
@@ -1955,13 +1955,13 @@ def test_gcb_udm_search_command_for_invalid_returned_date(capfd, client):
     """Test gcb_udm_search_command for invalid returned date from response."""
     from GoogleChronicleBackstory import gcb_udm_search_command
 
-    with open("test_data/udm_search_response_invalid_date.json", "r") as f:
+    with open(os.path.dirname(__file__) + "test_data/udm_search_response_invalid_date.json", "r") as f:
         dummy_response = f.read()
 
-    with open("test_data/udm_search_ec_invalid_date.json", "r") as f:
+    with open(os.path.dirname(__file__) + "test_data/udm_search_ec_invalid_date.json", "r") as f:
         dummy_ec = json.load(f)
 
-    with open("test_data/udm_search_hr_invalid_date.md", "r") as f:
+    with open(os.path.dirname(__file__) + "test_data/udm_search_hr_invalid_date.md", "r") as f:
         dummy_hr = f.read()
 
     mock_response = (
@@ -2005,13 +2005,13 @@ def test_list_detections_command(client):
     args = {'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'detection_start_time': '2019-10-17T00:00:00Z',
             'detection_end_time': '2 days ago'}
 
-    with open("test_data/list_detections_response.json", "r") as f:
+    with open(os.path.dirname(__file__) + "test_data/list_detections_response.json", "r") as f:
         dummy_response = f.read()
 
-    with open("test_data/list_detections_ec.json", "r") as f:
+    with open(os.path.dirname(__file__) + "test_data/list_detections_ec.json", "r") as f:
         dummy_ec = json.load(f)
 
-    with open("test_data/list_detections_hr.md", "r") as f:
+    with open(os.path.dirname(__file__) + "test_data/list_detections_hr.md", "r") as f:
         dummy_hr = f.read()
 
     mock_response = (
@@ -2077,13 +2077,13 @@ def test_list_curatedrule_detections_command(client):
     args = {'id': 'ur_ttp_GCP__GlobalSSHKeys_Added', 'detection_start_time': '2023-06-14T17:28:00Z',
             'detection_end_time': '2 days ago'}
 
-    with open("test_data/list_curatedrule_detections_response.json", "r") as f:
+    with open(os.path.dirname(__file__) + "test_data/list_curatedrule_detections_response.json", "r") as f:
         dummy_response = f.read()
 
-    with open("test_data/list_curatedrule_detections_ec.json", "r") as f:
+    with open(os.path.dirname(__file__) + "test_data/list_curatedrule_detections_ec.json", "r") as f:
         dummy_ec = json.load(f)
 
-    with open("test_data/list_curatedrule_detections_hr.md", "r") as f:
+    with open(os.path.dirname(__file__) + "test_data/list_curatedrule_detections_hr.md", "r") as f:
         dummy_hr = f.read()
 
     mock_response = (
@@ -2151,7 +2151,7 @@ def test_gcb_fetch_incident_success_with_alerts_with_incident_identifiers(mocker
         'backstory_alert_type': ASSET_ALERT_TYPE,
         'time_window': '45'
     }
-    with open("test_data/gcb_alerts_response.txt") as f:
+    with open(os.path.dirname(__file__) + "test_data/gcb_alerts_response.txt") as f:
         gcb_alert_sample = f.read()
 
     mock_response = (
@@ -2232,7 +2232,7 @@ def test_fetch_incident_detection_when_1st_sync_n_data_less_thn_max_fetch_and_id
         'fetch_detection_by_ids': VERSION_ID
     }
 
-    with open("test_data/fetch_detection_size_2.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/fetch_detection_size_2.json") as f:
         get_detection_json_size_2 = f.read()
 
     mock_response = (
@@ -2333,10 +2333,10 @@ def test_fetch_incident_detection_case_2(client, mocker):
         'fetch_detection_by_ids': VERSION_ID
     }
 
-    with open("test_data/fetch_detection_size_5_NT.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/fetch_detection_size_5_NT.json") as f:
         get_detection_json_size_5 = f.read()
 
-    with open("test_data/fetch_detection_size_2.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/fetch_detection_size_2.json") as f:
         get_detection_json_size_2 = f.read()
 
     mock_response_5 = (
@@ -2421,7 +2421,7 @@ def test_fetch_incident_detection_case_3(client, mocker):
                                   'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f@v_1602631092_146879002'
     }
 
-    with open("test_data/fetch_detection_size_3.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/fetch_detection_size_3.json") as f:
         get_detection_json_size_3 = f.read()
 
     mock_response_size_3 = (
@@ -2429,7 +2429,7 @@ def test_fetch_incident_detection_case_3(client, mocker):
         get_detection_json_size_3
     )
 
-    with open("test_data/fetch_detection_size_2.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/fetch_detection_size_2.json") as f:
         get_detection_json_size_2 = f.read()
 
     mock_response_size_2 = (
@@ -2469,7 +2469,7 @@ def test_detection_to_pull_is_empty_when_2nd_rule_returns_data_with_no_next_toke
     from GoogleChronicleBackstory import get_max_fetch_detections, get_detections
     import io
 
-    with io.open("test_data/fetch_detection_size_2.json", mode='r', encoding='utf-8') as f:
+    with io.open(os.path.dirname(__file__) + "test_data/fetch_detection_size_2.json", mode='r', encoding='utf-8') as f:
         get_detection_json_size_2 = json.loads(f.read())
 
     mock_build.return_value = ('p', get_detection_json_size_2)
@@ -2533,7 +2533,7 @@ def test_429_or_500_error_with_max_attempts_60(mock_error, client):
     mock_response_with_500_error = (Response(dict(status=500)),
                                     COMMON_RESP['ERROR_RESPONSE'])
 
-    with open("test_data/fetch_detection_size_3.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/fetch_detection_size_3.json") as f:
         get_detection_json_size_3 = f.read()
 
     mock_response_size_3 = (
@@ -2574,7 +2574,7 @@ def test_400_and_404_error(mock_error, client):
     mock_response_with_404_error = (Response(dict(status=404)),
                                     COMMON_RESP['ERROR_RESPONSE'])
 
-    with open("test_data/fetch_detection_size_3.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/fetch_detection_size_3.json") as f:
         get_detection_json_size_3 = f.read()
 
     mock_response_size_3 = (
@@ -2636,7 +2636,7 @@ def test_fetch_incident_detection_case_4(client, mocker):
         'fetch_detection_by_ids': '123, 456, 789'
     }
 
-    with open("test_data/fetch_detection_size_3.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/fetch_detection_size_3.json") as f:
         get_detection_json_size_3 = f.read()
 
     mock_response_size_3 = (
@@ -2644,7 +2644,7 @@ def test_fetch_incident_detection_case_4(client, mocker):
         get_detection_json_size_3
     )
 
-    with open("test_data/fetch_detection_size_5_NT.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/fetch_detection_size_5_NT.json") as f:
         get_detection_json_size_5 = f.read()
 
     mock_response_size_5 = (
@@ -2652,7 +2652,7 @@ def test_fetch_incident_detection_case_4(client, mocker):
         get_detection_json_size_5
     )
 
-    with open("test_data/fetch_detection_size_2.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/fetch_detection_size_2.json") as f:
         get_detection_json = f.read()
 
     mock_response_size_2 = (
@@ -2718,7 +2718,7 @@ def test_fetch_incident_detection_case_5(client, mocker):
         'backstory_alert_type': DETECTION_ALERT_TYPE
     }
 
-    with open("test_data/fetch_detection_size_3.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/fetch_detection_size_3.json") as f:
         get_detection_json_size_3 = f.read()
 
     mock_response_size_3 = (
@@ -2726,7 +2726,7 @@ def test_fetch_incident_detection_case_5(client, mocker):
         get_detection_json_size_3
     )
 
-    with open("test_data/fetch_detection_size_5_NT.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/fetch_detection_size_5_NT.json") as f:
         get_detection_json_size_5 = f.read()
 
     mock_response_size_5 = (
@@ -2734,7 +2734,7 @@ def test_fetch_incident_detection_case_5(client, mocker):
         get_detection_json_size_5
     )
 
-    with open("test_data/fetch_detection_size_2.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/fetch_detection_size_2.json") as f:
         get_detection_json = f.read()
 
     mock_response_size_2 = (
@@ -2791,7 +2791,7 @@ def test_gcb_fetch_incident_success_with_detections_with_incident_identifiers(mo
         'fetch_detection_by_ids': VERSION_ID
     }
 
-    with open("test_data/fetch_detection_size_5_NT.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/fetch_detection_size_5_NT.json") as f:
         get_detection_json_size_5 = f.read()
 
     mock_response = (
@@ -2833,7 +2833,7 @@ def test_fetch_incident_curatedrule_detection_case_4(client, mocker):
         'fetch_detection_by_ids': '123, 456, 789'
     }
 
-    with open("test_data/fetch_curatedrule_detection_size_3.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/fetch_curatedrule_detection_size_3.json") as f:
         get_detection_json_size_3 = f.read()
 
     mock_response_size_3 = (
@@ -2841,7 +2841,7 @@ def test_fetch_incident_curatedrule_detection_case_4(client, mocker):
         get_detection_json_size_3
     )
 
-    with open("test_data/fetch_curatedrule_detection_size_5_NT.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/fetch_curatedrule_detection_size_5_NT.json") as f:
         get_detection_json_size_5 = f.read()
 
     mock_response_size_5 = (
@@ -2849,7 +2849,7 @@ def test_fetch_incident_curatedrule_detection_case_4(client, mocker):
         get_detection_json_size_5
     )
 
-    with open("test_data/fetch_curatedrule_detection_size_2.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/fetch_curatedrule_detection_size_2.json") as f:
         get_detection_json = f.read()
 
     mock_response_size_2 = (
@@ -2899,7 +2899,7 @@ def test_fetch_incident_curatedrule_detection_when_1st_sync_n_data_less_thn_max_
         'fetch_detection_by_ids': CURATEDRULE_ID
     }
 
-    with open("test_data/fetch_curatedrule_detection_size_2.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/fetch_curatedrule_detection_size_2.json") as f:
         get_detection_json_size_2 = f.read()
 
     mock_response = (
@@ -2930,10 +2930,10 @@ def test_fetch_incident_curatedrule_detection_case_2(client, mocker):
         'fetch_detection_by_ids': CURATEDRULE_ID
     }
 
-    with open("test_data/fetch_curatedrule_detection_size_5_NT.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/fetch_curatedrule_detection_size_5_NT.json") as f:
         get_detection_json_size_5 = f.read()
 
-    with open("test_data/fetch_curatedrule_detection_size_2.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/fetch_curatedrule_detection_size_2.json") as f:
         get_detection_json_size_2 = f.read()
 
     mock_response_5 = (
@@ -3000,7 +3000,7 @@ def test_fetch_incident_curatedrule_detection_case_3(client, mocker):
                                   'de_662d8ff5-8eea-deb8-274e-f3410c7b935a'
     }
 
-    with open("test_data/fetch_curatedrule_detection_size_3.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/fetch_curatedrule_detection_size_3.json") as f:
         get_detection_json_size_3 = f.read()
 
     mock_response_size_3 = (
@@ -3008,7 +3008,7 @@ def test_fetch_incident_curatedrule_detection_case_3(client, mocker):
         get_detection_json_size_3
     )
 
-    with open("test_data/fetch_curatedrule_detection_size_2.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/fetch_curatedrule_detection_size_2.json") as f:
         get_detection_json_size_2 = f.read()
 
     mock_response_size_2 = (
@@ -3047,7 +3047,7 @@ def test_curatedrule_detection_to_pull_is_empty_when_2nd_rule_returns_data_with_
     from GoogleChronicleBackstory import get_max_fetch_curatedrule_detections, get_curatedrule_detections
     import io
 
-    with io.open("test_data/fetch_curatedrule_detection_size_2.json", mode='r', encoding='utf-8') as f:
+    with io.open(os.path.dirname(__file__) + "test_data/fetch_curatedrule_detection_size_2.json", mode='r', encoding='utf-8') as f:
         get_detection_json_size_2 = json.loads(f.read())
 
     mock_build.return_value = ('p', get_detection_json_size_2)
@@ -3108,7 +3108,7 @@ def test_429_or_500_error_with_max_attempts_60_for_curatedrule_detection(mock_er
     mock_response_with_500_error = (Response(dict(status=500)),
                                     COMMON_RESP['ERROR_RESPONSE'])
 
-    with open("test_data/fetch_curatedrule_detection_size_3.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/fetch_curatedrule_detection_size_3.json") as f:
         get_detection_json_size_3 = f.read()
 
     mock_response_size_3 = (
@@ -3145,7 +3145,7 @@ def test_400_and_404_error_for_curatedrule_detection(mock_error, client):
     mock_response_with_404_error = (Response(dict(status=404)),
                                     COMMON_RESP['ERROR_RESPONSE'])
 
-    with open("test_data/fetch_curatedrule_detection_size_3.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/fetch_curatedrule_detection_size_3.json") as f:
         get_detection_json_size_3 = f.read()
 
     mock_response_size_3 = (
@@ -3189,7 +3189,7 @@ def test_fetch_incident_curatedrule_detection_case_5(client, mocker):
         'backstory_alert_type': CURATEDRULE_DETECTION_ALERT_TYPE
     }
 
-    with open("test_data/fetch_curatedrule_detection_size_3.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/fetch_curatedrule_detection_size_3.json") as f:
         get_detection_json_size_3 = f.read()
 
     mock_response_size_3 = (
@@ -3197,7 +3197,7 @@ def test_fetch_incident_curatedrule_detection_case_5(client, mocker):
         get_detection_json_size_3
     )
 
-    with open("test_data/fetch_curatedrule_detection_size_5_NT.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/fetch_curatedrule_detection_size_5_NT.json") as f:
         get_detection_json_size_5 = f.read()
 
     mock_response_size_5 = (
@@ -3205,7 +3205,7 @@ def test_fetch_incident_curatedrule_detection_case_5(client, mocker):
         get_detection_json_size_5
     )
 
-    with open("test_data/fetch_curatedrule_detection_size_2.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/fetch_curatedrule_detection_size_2.json") as f:
         get_detection_json = f.read()
 
     mock_response_size_2 = (
@@ -3253,7 +3253,7 @@ def test_gcb_fetch_incident_success_for_curatedrule_detections_with_incident_ide
         'fetch_detection_by_ids': CURATEDRULE_ID
     }
 
-    with open("test_data/fetch_curatedrule_detection_size_5_NT.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/fetch_curatedrule_detection_size_5_NT.json") as f:
         get_detection_json_size_5 = f.read()
 
     mock_response = (
@@ -3322,7 +3322,7 @@ def test_fetch_user_alert_incident_success_with_param_and_alerts_when_executed_1
         'backstory_alert_type': USER_ALERT
     }
 
-    with open("test_data/gcb_alerts_response.txt") as f:
+    with open(os.path.dirname(__file__) + "test_data/gcb_alerts_response.txt") as f:
         gcb_alert_sample = f.read()
 
     mock_response = (
@@ -3344,7 +3344,7 @@ def test_gcb_user_alert_fetch_incident_success_with_alerts_with_demisto_last_run
         'max_fetch': 20,
         'backstory_alert_type': USER_ALERT
     }
-    with open("test_data/gcb_alerts_response.txt") as f:
+    with open(os.path.dirname(__file__) + "test_data/gcb_alerts_response.txt") as f:
         gcb_alert_sample = f.read()
 
     mock_response = (
@@ -3369,7 +3369,7 @@ def test_gcb_fetch_incident_user_alert_success_with_alerts_with_incident_identif
         'backstory_alert_type': USER_ALERT,
         'time_window': '45'
     }
-    with open("test_data/gcb_alerts_response.txt") as f:
+    with open(os.path.dirname(__file__) + "test_data/gcb_alerts_response.txt") as f:
         gcb_alert_sample = f.read()
 
     mock_response = (
@@ -3406,7 +3406,7 @@ def test_gcb_list_user_alert_with_no_arg_supplied_success(mocker, client):
     hr, ec, events = gcb_list_alerts_command(client, param)
     assert hr
     assert ec
-    with open("test_data/user_alerts_ec.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/user_alerts_ec.json") as f:
         expected_ec = json.load(f)
 
     assert ec == expected_ec
@@ -3442,13 +3442,13 @@ def test_list_rules_command(client):
     args = {'page_size': '2',
             'page_token': 'foobar_page_token'}
 
-    with open("test_data/list_rules_response.json", "r") as f:
+    with open(os.path.dirname(__file__) + "test_data/list_rules_response.json", "r") as f:
         dummy_response = f.read()
 
-    with open("test_data/list_rules_ec.json", "r") as f:
+    with open(os.path.dirname(__file__) + "test_data/list_rules_ec.json", "r") as f:
         dummy_ec = json.load(f)
 
-    with open("test_data/list_rules_hr.md", "r") as f:
+    with open(os.path.dirname(__file__) + "test_data/list_rules_hr.md", "r") as f:
         dummy_hr = f.read()
 
     mock_response = (
@@ -3508,10 +3508,10 @@ def test_gcb_list_rules_live_rule_argument_true(client):
     """Test gcb_list_rules command when live_rule argument is true."""
     from GoogleChronicleBackstory import gcb_list_rules_command
 
-    with open("test_data/list_rules_live_rule_true.json", "r") as f:
+    with open(os.path.dirname(__file__) + "test_data/list_rules_live_rule_true.json", "r") as f:
         response_true = f.read()
 
-    with open("test_data/list_rules_live_rule_true_ec.json", "r") as f:
+    with open(os.path.dirname(__file__) + "test_data/list_rules_live_rule_true_ec.json", "r") as f:
         dummy_ec = json.load(f)
     mock_response = (
         Response(dict(status=200)),
@@ -3529,10 +3529,10 @@ def test_gcb_list_rules_live_rule_argument_false(client):
     """Test gcb_list_rules command when live_rule argument is false."""
     from GoogleChronicleBackstory import gcb_list_rules_command
 
-    with open("test_data/list_rules_live_rule_false.json", "r") as f:
+    with open(os.path.dirname(__file__) + "test_data/list_rules_live_rule_false.json", "r") as f:
         response_false = f.read()
 
-    with open("test_data/list_rules_live_rule_false_ec.json", "r") as f:
+    with open(os.path.dirname(__file__) + "test_data/list_rules_live_rule_false_ec.json", "r") as f:
         dummy_ec = json.load(f)
     mock_response = (
         Response(dict(status=200)),
@@ -3550,13 +3550,13 @@ def test_gcb_create_rule_command_with_valid_response(client):
     """Test gcb_create_rule command when valid response is returned."""
     from GoogleChronicleBackstory import gcb_create_rule_command
 
-    with open("test_data/create_rule_response.json", "r") as f:
+    with open(os.path.dirname(__file__) + "test_data/create_rule_response.json", "r") as f:
         response = f.read()
 
-    with open("test_data/create_rule_ec.json", "r") as f:
+    with open(os.path.dirname(__file__) + "test_data/create_rule_ec.json", "r") as f:
         expected_ec = json.loads(f.read())
 
-    with open("test_data/create_rule_hr.md", "r") as f:
+    with open(os.path.dirname(__file__) + "test_data/create_rule_hr.md", "r") as f:
         expected_hr = f.read()
 
     mock_response = (
@@ -3615,7 +3615,7 @@ def test_gcb_create_rule_command_when_400_error_code_returned(client):
         "rule_text": DUMMY_RULE_TEXT
     }
 
-    with open("test_data/create_rule_400_response.json", 'r') as f:
+    with open(os.path.dirname(__file__) + "test_data/create_rule_400_response.json", 'r') as f:
         response = f.read()
 
     mock_response = (
@@ -3645,13 +3645,13 @@ def test_gcb_get_rule_output_when_valid_args_provided(client):
     from GoogleChronicleBackstory import gcb_get_rule_command
     args = {'id': 'dummy rule or version id'}
 
-    with open("test_data/gcb_get_rule_response.json", "r") as f:
+    with open(os.path.dirname(__file__) + "test_data/gcb_get_rule_response.json", "r") as f:
         dummy_response = f.read()
 
-    with open("test_data/gcb_get_rule_ec.json", "r") as f:
+    with open(os.path.dirname(__file__) + "test_data/gcb_get_rule_ec.json", "r") as f:
         dummy_ec = json.loads(f.read())
 
-    with open("test_data/gcb_get_rule_hr.md", "r") as f:
+    with open(os.path.dirname(__file__) + "test_data/gcb_get_rule_hr.md", "r") as f:
         dummy_hr = f.read()
 
     mock_response = (
@@ -3669,7 +3669,7 @@ def test_gcb_get_rule_output_when_valid_args_provided(client):
 def test_gcb_get_rule_command_when_rule_id_provided_does_not_exist(client):
     """Test gcb_get_rule_command when rule id provided does not exist."""
     from GoogleChronicleBackstory import gcb_get_rule_command
-    with open('test_data/gcb_get_rule_invalid_id_400.json') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_get_rule_invalid_id_400.json') as f:
         raw_response = f.read()
     mock_response = (
         Response(dict(status=400)),
@@ -3686,10 +3686,10 @@ def test_gcb_delete_rule_command_with_valid_response(client):
     """Test gcb_delete_rule command when valid response is returned."""
     from GoogleChronicleBackstory import gcb_delete_rule_command
 
-    with open("test_data/delete_rule_ec.json", "r") as f:
+    with open(os.path.dirname(__file__) + "test_data/delete_rule_ec.json", "r") as f:
         expected_ec = json.loads(f.read())
 
-    with open("test_data/delete_rule_hr.md", "r") as f:
+    with open(os.path.dirname(__file__) + "test_data/delete_rule_hr.md", "r") as f:
         expected_hr = f.read()
 
     mock_response = (
@@ -3730,7 +3730,7 @@ def test_gcb_delete_rule_command_when_400_error_code_returned(client):
         "rule_id": "12345"
     }
 
-    with open("test_data/delete_rule_400_response.json", 'r') as f:
+    with open(os.path.dirname(__file__) + "test_data/delete_rule_400_response.json", 'r') as f:
         response = f.read()
 
     mock_response = (
@@ -3770,7 +3770,7 @@ def test_gcb_create_rule_version_command_when_invalid_rule_text_provided(client)
 def test_gcb_create_rule_version_command_when_provided_rule_id_is_not_valid(client):
     """Test gcb_create_rule_version_command when rule id provided does not exist."""
     from GoogleChronicleBackstory import gcb_create_rule_version_command
-    with open('test_data/gcb_create_rule_version_command_invalid_id_400.json') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_create_rule_version_command_invalid_id_400.json') as f:
         raw_response = f.read()
     args = {
         "rule_id": "dummy",
@@ -3789,11 +3789,11 @@ def test_gcb_create_rule_version_command_when_provided_rule_id_is_not_valid(clie
 def test_gcb_create_rule_version_command_when_valid_args_provided(client):
     """Test gcb_create_rule_version_command for correct output when valid arguments are given."""
     from GoogleChronicleBackstory import gcb_create_rule_version_command
-    with open("test_data/gcb_create_rule_version_command_response.json", "r") as f:
+    with open(os.path.dirname(__file__) + "test_data/gcb_create_rule_version_command_response.json", "r") as f:
         expected_response = f.read()
-    with open("test_data/gcb_create_rule_version_command_ec.json", "r") as f:
+    with open(os.path.dirname(__file__) + "test_data/gcb_create_rule_version_command_ec.json", "r") as f:
         expected_ec = json.loads(f.read())
-    with open("test_data/gcb_create_rule_version_command_hr.md", "r") as f:
+    with open(os.path.dirname(__file__) + "test_data/gcb_create_rule_version_command_hr.md", "r") as f:
         expected_hr = f.read()
     mock_response = (
         Response(dict(status=200)),
@@ -3835,7 +3835,7 @@ def test_gcb_change_rule_alerting_status_command_when_invalid_alerting_status_pr
 def test_gcb_change_rule_alerting_status_command_when_provided_rule_id_does_not_exist(client):
     """Test gcb_change_rule_alerting_status_command when rule id provided does not exist."""
     from GoogleChronicleBackstory import gcb_change_rule_alerting_status_command
-    with open('test_data/gcb_change_rule_alerting_status_command_invalid_id_400.json') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_change_rule_alerting_status_command_invalid_id_400.json') as f:
         raw_response = f.read()
     args = {
         "rule_id": "dummy",
@@ -3855,10 +3855,10 @@ def test_gcb_change_rule_alerting_status_command_when_valid_args_provided(client
     """Test gcb_change_rule_alerting_status_command for valid output when valid arguments are provided."""
     from GoogleChronicleBackstory import gcb_change_rule_alerting_status_command
 
-    with open('test_data/gcb_change_rule_alerting_status_ec.json', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_change_rule_alerting_status_ec.json', 'r') as f:
         expected_ec = json.loads(f.read())
 
-    with open('test_data/gcb_change_rule_alerting_status_hr.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_change_rule_alerting_status_hr.md', 'r') as f:
         expected_hr = f.read()
 
     mock_response = (
@@ -3899,7 +3899,7 @@ def test_gcb_change_live_rule_status_command_when_invalid_live_rule_status_provi
 def test_gcb_change_live_rule_status_command_when_provided_rule_id_does_not_exist(client):
     """Test gcb_change_live_rule_status_command when rule id provided does not exist."""
     from GoogleChronicleBackstory import gcb_change_live_rule_status_command
-    with open('test_data/gcb_change_live_rule_status_command_invalid_id_400.json') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_change_live_rule_status_command_invalid_id_400.json') as f:
         raw_response = f.read()
     args = {
         "rule_id": "dummy",
@@ -3920,10 +3920,10 @@ def test_gcb_change_live_rule_status_command_when_valid_args_provided(client):
     """Test gcb_change_live_rule_status_command for valid output when valid arguments are provided."""
     from GoogleChronicleBackstory import gcb_change_live_rule_status_command
 
-    with open('test_data/gcb_change_live_rule_status_command_ec.json', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_change_live_rule_status_command_ec.json', 'r') as f:
         expected_ec = json.loads(f.read())
 
-    with open('test_data/gcb_change_live_rule_status_command_hr.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_change_live_rule_status_command_hr.md', 'r') as f:
         expected_hr = f.read()
 
     mock_response = (
@@ -3957,7 +3957,7 @@ def test_gcb_start_retrohunt_when_invalid_arguments_provided(client, args, error
 def test_gcb_start_retrohunt_command_when_invalid_rule_id_provided(client):
     """Test gcb_start_retrohunt_command when rule id provided is invalid."""
     from GoogleChronicleBackstory import gcb_start_retrohunt_command
-    with open('test_data/gcb_start_retrohunt_command_invalid_id_400.json') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_start_retrohunt_command_invalid_id_400.json') as f:
         raw_response = f.read()
     args = {
         "rule_id": "dummy",
@@ -3979,7 +3979,7 @@ def test_gcb_start_retrohunt_command_when_invalid_rule_id_provided(client):
 def test_gcb_start_retrohunt_command_when_provided_rule_id_does_not_exist(client):
     """Test gcb_start_retrohunt_command when rule id provided does not exist."""
     from GoogleChronicleBackstory import gcb_start_retrohunt_command
-    with open('test_data/gcb_start_retrohunt_command_id_does_not_exist_404.json') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_start_retrohunt_command_id_does_not_exist_404.json') as f:
         raw_response = f.read()
     args = {
         "rule_id": "dummy",
@@ -4002,13 +4002,13 @@ def test_gcb_start_retrohunt_command_when_valid_args_provided(client):
     """Test gcb_start_retrohunt_command for valid output when valid arguments are provided."""
     from GoogleChronicleBackstory import gcb_start_retrohunt_command
 
-    with open('test_data/gcb_start_retrohunt_command_ec.json', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_start_retrohunt_command_ec.json', 'r') as f:
         expected_ec = json.loads(f.read())
 
-    with open('test_data/gcb_start_retrohunt_command_hr.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_start_retrohunt_command_hr.md', 'r') as f:
         expected_hr = f.read()
 
-    with open('test_data/start_retrohunt_response.json', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/start_retrohunt_response.json', 'r') as f:
         mocked_response = f.read()
 
     mock_response = (
@@ -4040,13 +4040,13 @@ def test_gcb_get_retrohunt_command_when_valid_args_provided(client):
     from GoogleChronicleBackstory import gcb_get_retrohunt_command
     args = {'id': 'dummy_rule_or_version_id', 'retrohunt_id': 'dummy_retrohunt_id'}
 
-    with open("test_data/gcb_get_retrohunt_command_response.json", "r") as f:
+    with open(os.path.dirname(__file__) + "test_data/gcb_get_retrohunt_command_response.json", "r") as f:
         dummy_response = f.read()
 
-    with open("test_data/gcb_get_retrohunt_command_ec.json", "r") as f:
+    with open(os.path.dirname(__file__) + "test_data/gcb_get_retrohunt_command_ec.json", "r") as f:
         dummy_ec = json.loads(f.read())
 
-    with open("test_data/gcb_get_retrohunt_hr.md", "r") as f:
+    with open(os.path.dirname(__file__) + "test_data/gcb_get_retrohunt_hr.md", "r") as f:
         dummy_hr = f.read()
 
     mock_response = (
@@ -4065,7 +4065,7 @@ def test_gcb_get_retrohunt_command_when_rule_id_provided_is_invalid(client):
     """Test gcb_get_retrohunt_command when rule id provided is invalid."""
     from GoogleChronicleBackstory import gcb_get_retrohunt_command
 
-    with open('test_data/gcb_get_retrohunt_command_invalid_id_400.json') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_get_retrohunt_command_invalid_id_400.json') as f:
         raw_response = f.read()
 
     mock_response = (
@@ -4085,7 +4085,7 @@ def test_gcb_get_retrohunt_command_when_retrohunt_id_provided_is_invalid(client)
     """Test gcb_get_retrohunt_command when retrohunt id provided is invalid."""
     from GoogleChronicleBackstory import gcb_get_retrohunt_command
 
-    with open('test_data/gcb_get_retrohunt_command_invalid_retrohunt_id_400.json') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_get_retrohunt_command_invalid_retrohunt_id_400.json') as f:
         raw_response = f.read()
 
     mock_response = (
@@ -4104,7 +4104,7 @@ def test_gcb_get_retrohunt_command_when_retrohunt_id_provided_does_not_exists(cl
     """Test gcb_get_retrohunt_command when retrohunt id provided does not exists."""
     from GoogleChronicleBackstory import gcb_get_retrohunt_command
 
-    with open('test_data/gcb_get_retrohunt_command_invalid_retrohunt_id_404.json') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_get_retrohunt_command_invalid_retrohunt_id_404.json') as f:
         raw_response = f.read()
 
     mock_response = (
@@ -4156,11 +4156,11 @@ def test_gcb_list_retrohunts_command_when_empty_response_is_obtained(client):
 def test_gcb_list_retrohunts_command_when_retrohunts_for_all_versions_is_set_true(client):
     """Test gcb_list_retrohunts_command when retrohunts_for_all_versions is true and rule_id is provided."""
     from GoogleChronicleBackstory import gcb_list_retrohunts_command
-    with open('test_data/gcb_list_retrohunts_all_versions_true.json', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_list_retrohunts_all_versions_true.json', 'r') as f:
         response_false = f.read()
-    with open('test_data/gcb_list_retrohunts_all_versions_true_ec.json', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_list_retrohunts_all_versions_true_ec.json', 'r') as f:
         expected_ec = json.loads(f.read())
-    with open('test_data/gcb_list_retrohunts_all_versions_true_hr.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_list_retrohunts_all_versions_true_hr.md', 'r') as f:
         expected_hr = f.read()
     args = {
         "id": "dummy",
@@ -4180,11 +4180,11 @@ def test_gcb_list_retrohunts_command_when_retrohunts_for_all_versions_is_set_tru
 def test__gcb_list_retrohunts_command_when_retrohunts_for_all_versions_is_set_false(client):
     """Test gcb_list_retrohunts_command when retrohunts_for_all_versions is false and rule_id is provided."""
     from GoogleChronicleBackstory import gcb_list_retrohunts_command
-    with open('test_data/gcb_list_retrohunts_all_versions_false.json', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_list_retrohunts_all_versions_false.json', 'r') as f:
         response_true = f.read()
-    with open('test_data/gcb_list_retrohunts_all_versions_false_ec.json', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_list_retrohunts_all_versions_false_ec.json', 'r') as f:
         expected_ec = json.loads(f.read())
-    with open('test_data/gcb_list_retrohunts_all_versions_false_hr.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_list_retrohunts_all_versions_false_hr.md', 'r') as f:
         expected_hr = f.read()
     args = {
         "id": "dummy",
@@ -4204,11 +4204,11 @@ def test__gcb_list_retrohunts_command_when_retrohunts_for_all_versions_is_set_fa
 def test_gcb_list_retrohunts_command_when_no_arg_supplied_success(client):
     """Test gcb_list_retrohunts_command when no argumnets are provided."""
     from GoogleChronicleBackstory import gcb_list_retrohunts_command
-    with open('test_data/gcb_list_retrohunts_no_arg.json', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_list_retrohunts_no_arg.json', 'r') as f:
         response = f.read()
-    with open('test_data/gcb_list_retrohunts_no_arg_ec.json', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_list_retrohunts_no_arg_ec.json', 'r') as f:
         expected_ec = json.loads(f.read())
-    with open('test_data/gcb_list_retrohunts_no_arg_hr.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_list_retrohunts_no_arg_hr.md', 'r') as f:
         expected_hr = f.read()
     args = {}
     mock_response = (
@@ -4224,7 +4224,7 @@ def test_gcb_list_retrohunts_command_when_no_arg_supplied_success(client):
 def test_gcb_list_retrohunts_command_when_provided_rule_id_is_not_valid(client):
     """Test gcb_list_retrohunts_command when rule id provided is not valid."""
     from GoogleChronicleBackstory import gcb_list_retrohunts_command
-    with open('test_data/gcb_list_retrohunts_command_invalid_id_400.json') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_list_retrohunts_command_invalid_id_400.json') as f:
         raw_response = f.read()
     args = {
         "rule_id": "dummy",
@@ -4244,7 +4244,7 @@ def test_gcb_list_retrohunts_command_when_provided_rule_id_is_not_valid(client):
 def test_gcb_list_retrohunts_command_when_provided_rule_id_does_not_exist(client):
     """Test gcb_list_retrohunts_command when rule id provided does not exist."""
     from GoogleChronicleBackstory import gcb_list_retrohunts_command
-    with open('test_data/gcb_list_retrohunts_command_id_does_not_exist_404.json') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_list_retrohunts_command_id_does_not_exist_404.json') as f:
         raw_response = f.read()
     args = {
         "rule_id": "ru_f04b9ef9-bd49-4431-ae07-eb77bd3d00c9",
@@ -4275,9 +4275,9 @@ def test_gcb_cancel_retrohunt_command_when_valid_args_are_provided(client):
     """Test gcb_cancel_retrohunt_command for valid output when valid args are provided."""
     from GoogleChronicleBackstory import gcb_cancel_retrohunt_command
 
-    with open('test_data/gcb_cancel_retrohunt_ec.json', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_cancel_retrohunt_ec.json', 'r') as f:
         expected_ec = json.loads(f.read())
-    with open('test_data/gcb_cancel_retrohunt_hr.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_cancel_retrohunt_hr.md', 'r') as f:
         expected_hr = f.read()
     args = {"id": "dummy_id", "retrohunt_id": "dummy_retrohunt_id"}
     mock_response = (
@@ -4293,7 +4293,7 @@ def test_gcb_cancel_retrohunt_command_when_valid_args_are_provided(client):
 def test_gcb_cancel_retrohunt_command_when_provided_rule_id_does_not_exist(client):
     """Test gcb_list_retrohunts_command when rule id provided does not exist."""
     from GoogleChronicleBackstory import gcb_cancel_retrohunt_command
-    with open('test_data/gcb_cancel_retrohunt_id_does_not_exist_404.json') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_cancel_retrohunt_id_does_not_exist_404.json') as f:
         raw_response = f.read()
     args = {
         "id": "dummy",
@@ -4314,7 +4314,7 @@ def test_gcb_cancel_retrohunt_command_when_provided_rule_id_does_not_exist(clien
 def test_gcb_cancel_retrohunt_command_when_provided_retrohunt_id_is_not_in_running_state(client):
     """Test gcb_list_retrohunts_command when retrohunt provided is already DONE or CANCELLED."""
     from GoogleChronicleBackstory import gcb_cancel_retrohunt_command
-    with open('test_data/gcb_cancel_retrohunt_id_does_not_exist_400.json') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_cancel_retrohunt_id_does_not_exist_400.json') as f:
         raw_response = f.read()
     args = {
         "id": "dummy",
@@ -4355,11 +4355,11 @@ def test_gcb_create_reference_list_command_when_valid_args_provided(client):
         "description": "dummy_description",
         "lines": "L1,L2,L3,L4"
     }
-    with open('test_data/gcb_create_reference_list_response.json') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_create_reference_list_response.json') as f:
         response = f.read()
-    with open('test_data/gcb_create_reference_list_ec.json') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_create_reference_list_ec.json') as f:
         expected_ec = json.loads(f.read())
-    with open('test_data/gcb_create_reference_list_hr.md') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_create_reference_list_hr.md') as f:
         expected_hr = f.read()
     mock_response = (
         Response(dict(status=200)),
@@ -4380,11 +4380,11 @@ def test_gcb_create_reference_list_command_when_delimiter_provided(client):
         "lines": "L1:L2:L3:L4",
         "delimiter": ":"
     }
-    with open('test_data/gcb_create_reference_list_response.json') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_create_reference_list_response.json') as f:
         response = f.read()
-    with open('test_data/gcb_create_reference_list_ec.json') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_create_reference_list_ec.json') as f:
         expected_ec = json.loads(f.read())
-    with open('test_data/gcb_create_reference_list_hr.md') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_create_reference_list_hr.md') as f:
         expected_hr = f.read()
     mock_response = (
         Response(dict(status=200)),
@@ -4404,7 +4404,7 @@ def test_gcb_create_reference_list_command_when_list_already_exists(client):
         "description": "dummy_description",
         "lines": "dummy"
     }
-    with open('test_data/gcb_create_reference_list_400.json') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_create_reference_list_400.json') as f:
         response = f.read()
     mock_response = (
         Response(dict(status=409)),
@@ -4434,7 +4434,7 @@ def test_gcb_list_reference_list_command_when_invalid_args_provided(client, args
 def test_gcb_list_reference_list_command_when_invalid_page_token_provided(client):
     """Test gcb-list-reference-list-command when invalid page-token is provided."""
     from GoogleChronicleBackstory import gcb_list_reference_list_command
-    with open('test_data/gcb_list_reference_lists_command_invalid_token_400.json') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_list_reference_lists_command_invalid_token_400.json') as f:
         raw_response = f.read()
     args = {
         "page_size": "3",
@@ -4454,11 +4454,11 @@ def test_gcb_list_reference_list_command_when_invalid_page_token_provided(client
 def test_gcb_list_reference_list_command_when_valid_args_provided(client):
     """Test gcb-list-reference-list-command when valid arguments are provided."""
     from GoogleChronicleBackstory import gcb_list_reference_list_command
-    with open('test_data/gcb_list_reference_list_valid_args.json', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_list_reference_list_valid_args.json', 'r') as f:
         response = f.read()
-    with open('test_data/gcb_list_reference_list_ec.json', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_list_reference_list_ec.json', 'r') as f:
         expected_ec = json.loads(f.read())
-    with open('test_data/gcb_list_reference_list_hr.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_list_reference_list_hr.md', 'r') as f:
         expected_hr = f.read()
     args = {
         "page_size": "3",
@@ -4489,7 +4489,7 @@ def test_gcb_get_reference_list_command_when_invalid_args_are_provided(client, a
 def test_gcb_get_reference_list_command_when_provided_list_name_does_not_exist(client):
     """Test gcb_get_reference_list_command when list name provided does not exists."""
     from GoogleChronicleBackstory import gcb_get_reference_list_command
-    with open('test_data/gcb_get_reference_lists_command_list_name_not_found_404.json') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_get_reference_lists_command_list_name_not_found_404.json') as f:
         raw_response = f.read()
     args = {
         "name": "dummy",
@@ -4507,11 +4507,11 @@ def test_gcb_get_reference_list_command_when_provided_list_name_does_not_exist(c
 def test_gcb_get_reference_list_command_when_valid_arguments_provided(client):
     """Test gcb_get_reference_list_command for valid output when valid arguments are provided."""
     from GoogleChronicleBackstory import gcb_get_reference_list_command
-    with open('test_data/gcb_get_reference_list_valid_args.json', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_get_reference_list_valid_args.json', 'r') as f:
         response = f.read()
-    with open('test_data/gcb_get_reference_list_ec.json', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_get_reference_list_ec.json', 'r') as f:
         expected_ec = json.loads(f.read())
-    with open('test_data/gcb_get_reference_list_hr.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_get_reference_list_hr.md', 'r') as f:
         expected_hr = f.read()
     args = {
         "name": "dummy",
@@ -4542,11 +4542,11 @@ def test_gcb_update_reference_list_command_when_valid_args_provided(client):
     """Test gcb_update_reference_list command for valid output when valid arguments are provided."""
     from GoogleChronicleBackstory import gcb_update_reference_list_command
     args = {"name": "dummy", "lines": "L1;L2;L3", "description": "dummy_description", "delimiter": ";"}
-    with open("test_data/gcb_update_reference_list_command_response.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/gcb_update_reference_list_command_response.json") as f:
         response = f.read()
-    with open("test_data/gcb_update_reference_list_command_ec.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/gcb_update_reference_list_command_ec.json") as f:
         expected_ec = json.loads(f.read())
-    with open("test_data/gcb_update_reference_list_command_hr.md") as f:
+    with open(os.path.dirname(__file__) + "test_data/gcb_update_reference_list_command_hr.md") as f:
         expected_hr = f.read()
     mock_response = (
         Response(dict(status=200)),
@@ -4563,7 +4563,7 @@ def test_gcb_update_reference_list_command_when_name_prided_does_not_exists(clie
     """Test gcb_update_reference_list command when name provided does not exist."""
     from GoogleChronicleBackstory import gcb_update_reference_list_command
     args = {"name": "dummy", "lines": "L1,L2,L3", "description": "dummy_description"}
-    with open("test_data/gcb_update_reference_list_command_response_404.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/gcb_update_reference_list_command_response_404.json") as f:
         response = f.read()
     mock_response = (
         Response(dict(status=404)),
@@ -4616,11 +4616,11 @@ def test_gcb_test_rule_stream_command_valid_args(client):
         "end_time": "1 day ago",
         "max_results": "2"
     }
-    with open("test_data/gcb_test_rule_stream_command_response.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/gcb_test_rule_stream_command_response.json") as f:
         response = f.read()
-    with open("test_data/gcb_test_rule_stream_command_ec.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/gcb_test_rule_stream_command_ec.json") as f:
         expected_ec = json.loads(f.read())
-    with open("test_data/gcb_test_rule_stream_command_hr.md") as f:
+    with open(os.path.dirname(__file__) + "test_data/gcb_test_rule_stream_command_hr.md") as f:
         expected_hr = f.read()
     mock_response = (
         Response(dict(status=200)),
@@ -4665,7 +4665,7 @@ def test_gcb_test_rule_stream_command_invalid_rule_text_provided(client):
         "end_time": "1 day ago",
         "max_results": "2"
     }
-    with open("test_data/gcb_test_rule_stream_command_400.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/gcb_test_rule_stream_command_400.json") as f:
         response = f.read()
     mock_response = (
         Response(dict(status=400)),
@@ -4704,11 +4704,11 @@ def test_gcb_asset_aliases_list_command_invalid_args(client, args, error_msg):
 def test_gcb_asset_aliases_list_command_when_valid_arguments_provided(client):
     """Test gcb_list_asset_aliases_command for valid output when valid arguments are provided."""
     from GoogleChronicleBackstory import gcb_list_asset_aliases_command
-    with open('test_data/gcb_list_asset_aliases_response.json', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_list_asset_aliases_response.json', 'r') as f:
         response = f.read()
-    with open('test_data/gcb_list_asset_aliases_ec.json', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_list_asset_aliases_ec.json', 'r') as f:
         expected_ec = json.loads(f.read())
-    with open('test_data/gcb_list_asset_aliases_hr.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_list_asset_aliases_hr.md', 'r') as f:
         expected_hr = f.read()
     args = {
         "asset_identifier_type": "Host Name",
@@ -4727,10 +4727,10 @@ def test_gcb_asset_aliases_list_command_when_valid_arguments_provided(client):
 def test_gcb_asset_aliases_list_command_when_response_contains_single_alias(client):
     """Test gcb_list_asset_aliases_command when response contains single asset alias."""
     from GoogleChronicleBackstory import gcb_list_asset_aliases_command
-    with open('test_data/gcb_list_asset_aliases_response_with_single_alias.json', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_list_asset_aliases_response_with_single_alias.json', 'r') as f:
         response = f.read()
 
-    with open('test_data/gcb_list_asset_aliases_ec_with_single_alias.json', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_list_asset_aliases_ec_with_single_alias.json', 'r') as f:
         expected_ec = json.loads(f.read())
 
     args = {
@@ -4761,11 +4761,11 @@ def test_gcb_curated_rules_list_command_invalid_args(client, args, error_msg):
 def test_gcb_curated_rules_list_command_when_valid_arguments_provided(client):
     """Test gcb_list_curated_rules_command for valid output when valid arguments are provided."""
     from GoogleChronicleBackstory import gcb_list_curated_rules_command
-    with open('test_data/gcb_list_curated_rules_response.json', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_list_curated_rules_response.json', 'r') as f:
         response = f.read()
-    with open('test_data/gcb_list_curated_rules_ec.json', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_list_curated_rules_ec.json', 'r') as f:
         expected_ec = json.loads(f.read())
-    with open('test_data/gcb_list_curated_rules_hr.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_list_curated_rules_hr.md', 'r') as f:
         expected_hr = f.read()
     args = {
         "page_size": '2'
@@ -4806,11 +4806,11 @@ def test_gcb_user_aliases_list_command_invalid_args(client, args, error_msg):
 def test_gcb_user_aliases_list_command_when_valid_arguments_provided(client):
     """Test gcb_list_user_aliases_command for valid output when valid arguments are provided."""
     from GoogleChronicleBackstory import gcb_list_user_aliases_command
-    with open('test_data/gcb_list_user_aliases_response.json', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_list_user_aliases_response.json', 'r') as f:
         response = f.read()
-    with open('test_data/gcb_list_user_aliases_ec.json', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_list_user_aliases_ec.json', 'r') as f:
         expected_ec = json.loads(f.read())
-    with open('test_data/gcb_list_user_aliases_hr.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/gcb_list_user_aliases_hr.md', 'r') as f:
         expected_hr = f.read()
     args = {
         "user_identifier_type": "Email",

@@ -5,7 +5,7 @@ import demistomock as demisto
 
 
 def test_get_indicators():
-    with open('test_data/asn_ranges.txt') as asn_ranges_txt:
+    with open(os.path.dirname(__file__) + 'test_data/asn_ranges.txt') as asn_ranges_txt:
         asn_ranges = asn_ranges_txt.read().encode('utf8')
 
     with requests_mock.Mocker() as m:
@@ -56,7 +56,7 @@ def test_get_indicators():
 
 
 def test_get_indicators_json_params():
-    with open('test_data/asn_ranges.txt') as asn_ranges_txt:
+    with open(os.path.dirname(__file__) + 'test_data/asn_ranges.txt') as asn_ranges_txt:
         asn_ranges = asn_ranges_txt.read().encode('utf8')
 
     with requests_mock.Mocker() as m:
@@ -219,7 +219,7 @@ def test_feed_main_fetch_indicators(mocker, requests_mock):
     mocker.patch.object(demisto, 'command', return_value='fetch-indicators')
     mocker.patch.object(demisto, 'createIndicators')
 
-    with open('test_data/asn_ranges.txt') as asn_ranges_txt:
+    with open(os.path.dirname(__file__) + 'test_data/asn_ranges.txt') as asn_ranges_txt:
         asn_ranges = asn_ranges_txt.read().encode('utf8')
 
     requests_mock.get(feed_url, content=asn_ranges)
@@ -297,7 +297,7 @@ def test_feed_main_test_module(mocker, requests_mock):
     mocker.patch.object(demisto, 'command', return_value='test-module')
     mocker.patch.object(demisto, 'results')
 
-    with open('test_data/asn_ranges.txt') as asn_ranges_txt:
+    with open(os.path.dirname(__file__) + 'test_data/asn_ranges.txt') as asn_ranges_txt:
         asn_ranges = asn_ranges_txt.read().encode('utf8')
 
     requests_mock.get(feed_url, content=asn_ranges)

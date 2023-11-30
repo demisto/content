@@ -232,7 +232,7 @@ def test_azure_storage_get_blob_command(requests_mock):
     blob_name = "blob.txt"
     url = f'{BASE_URL}{container_name}/{blob_name}{SAS_TOKEN}'
 
-    with open('test_data/blob.txt', 'rb') as text_file_mock:
+    with open(os.path.dirname(__file__) + 'test_data/blob.txt', 'rb') as text_file_mock:
         requests_mock.get(url, content=text_file_mock.read())
 
     client = Client(server_url=BASE_URL, verify=False, proxy=False,

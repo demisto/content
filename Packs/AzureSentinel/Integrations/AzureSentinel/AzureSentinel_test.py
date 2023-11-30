@@ -742,7 +742,7 @@ class TestHappyPath:
         client = mock_client()
         args = {'incident_id': TEST_INCIDENT_ID}
         mocker.patch.object(client, 'http_request', return_value=MOCKED_INCIDENT_ENTITIES)
-        with open('test_data/expected_entities.json') as file:
+        with open(os.path.dirname(__file__) + 'test_data/expected_entities.json') as file:
             expected_entities = json.load(file)
 
         # run
@@ -769,7 +769,7 @@ class TestHappyPath:
         # prepare
         client = mock_client()
         mocker.patch.object(client, 'http_request', return_value=MOCKED_INCIDENT_ALERTS)
-        with open('test_data/expected_alerts.json') as file:
+        with open(os.path.dirname(__file__) + 'test_data/expected_alerts.json') as file:
             expected_alerts = json.load(file)
 
         # run
@@ -795,7 +795,7 @@ class TestHappyPath:
         # prepare
         client = mock_client()
         mocker.patch.object(client, 'http_request', return_value=MOCKED_WATCHLISTS)
-        with open('test_data/expected_watchlists.json') as file:
+        with open(os.path.dirname(__file__) + 'test_data/expected_watchlists.json') as file:
             expected_watchlists = json.load(file)
 
         # run
@@ -823,7 +823,7 @@ class TestHappyPath:
         client = mock_client()
         args = {'watchlist_alias': TEST_WATCHLIST_ALIAS}
         mocker.patch.object(client, 'http_request', return_value=MOCKED_WATCHLISTS['value'][0])
-        with open('test_data/expected_watchlists.json') as file:
+        with open(os.path.dirname(__file__) + 'test_data/expected_watchlists.json') as file:
             expected_watchlist = json.load(file)[0]
 
         # run
@@ -881,7 +881,7 @@ class TestHappyPath:
         client = mock_client()
         args = {'watchlist_alias': TEST_WATCHLIST_ALIAS}
         mocker.patch.object(client, 'http_request', return_value=MOCKED_WATCHLIST_ITEMS)
-        with open('test_data/expected_watchlist_items.json') as file:
+        with open(os.path.dirname(__file__) + 'test_data/expected_watchlist_items.json') as file:
             expected_items = json.load(file)
 
         # run
@@ -909,7 +909,7 @@ class TestHappyPath:
         args = {'watchlist_alias': TEST_WATCHLIST_ALIAS, 'watchlist_item_id': TEST_ITEM_ID}
         mocked_item = MOCKED_WATCHLIST_ITEMS['value'][0]
         mocker.patch.object(client, 'http_request', return_value=mocked_item)
-        with open('test_data/expected_watchlist_items.json') as file:
+        with open(os.path.dirname(__file__) + 'test_data/expected_watchlist_items.json') as file:
             expected_item = json.load(file)[0]
 
         # run
@@ -949,7 +949,7 @@ class TestHappyPath:
             'content_type': demisto.get(mocked_watchlist, 'properties.contentType')
         }
         mocker.patch.object(client, 'http_request', return_value=mocked_watchlist)
-        with open('test_data/expected_watchlists.json') as file:
+        with open(os.path.dirname(__file__) + 'test_data/expected_watchlists.json') as file:
             expected_watchlist = json.load(file)[0]
 
         # run
@@ -981,7 +981,7 @@ class TestHappyPath:
         }
 
         mocker.patch.object(client, 'http_request', return_value=mocked_item)
-        with open('test_data/expected_watchlist_items.json') as file:
+        with open(os.path.dirname(__file__) + 'test_data/expected_watchlist_items.json') as file:
             expected_item = json.load(file)[0]
 
         # run
@@ -1938,7 +1938,7 @@ def test_create_and_update_alert_rule_command(mocker):
     Then
         - Ensure the function returns the expected command results
     """
-    with open('test_data/create_alert_rule-mock_response.json') as file:
+    with open(os.path.dirname(__file__) + 'test_data/create_alert_rule-mock_response.json') as file:
         mock_response = json.load(file)
 
     client = mock_client()

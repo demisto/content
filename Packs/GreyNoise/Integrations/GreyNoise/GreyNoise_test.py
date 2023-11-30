@@ -107,7 +107,7 @@ def test_ip_quick_check_command(args, test_scenario, api_response, status_code, 
     elif test_scenario == "negative" and status_code == 200:
         mocker.patch("requests.Session.post", return_value=dummy_response)
         response = GreyNoise.ip_quick_check_command(client, args)
-        with open("test_data/quick_check.txt") as f:
+        with open(os.path.dirname(__file__) + "test_data/quick_check.txt") as f:
             expected_hr = f.read()
         assert response.readable_output == expected_hr
 

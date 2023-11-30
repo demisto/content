@@ -14,7 +14,7 @@ def load_mock_response(file_name):
         str: Mock file content.
 
     """
-    with open('test_data/' + file_name, mode='r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/' + file_name, mode='r') as f:
         return json.loads(f.read())
 
 

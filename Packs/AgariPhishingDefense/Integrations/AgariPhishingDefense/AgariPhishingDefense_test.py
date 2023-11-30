@@ -461,16 +461,16 @@ def test_get_events_command_success(mock_api_token, mock_request, client):
     mock_api_token.return_value = API_TOKEN
     args = {'policy_name': 'SystemAlert', 'limit': 4, 'url': SAMPLE_URL}
 
-    with open('test_data/get_events_response.json') as f:
+    with open(os.path.dirname(__file__) + 'test_data/get_events_response.json') as f:
         expected_res = json.load(f)
 
     mock_request.return_value = expected_res
 
     cmd_res = list_policy_events_command(client, args)
-    with open('test_data/get_events_context.json', encoding='utf-8') as f:
+    with open(os.path.dirname(__file__) + 'test_data/get_events_context.json', encoding='utf-8') as f:
         expected_outputs = json.load(f)
 
-    with open('test_data/get_events.md') as f:
+    with open(os.path.dirname(__file__) + 'test_data/get_events.md') as f:
         expected_hr = f.read()
 
     assert cmd_res.raw_response['alert_events'] == expected_res['alert_events']
@@ -645,7 +645,7 @@ def test_remediate_message_valid_id_passed(
 
     args = {'id': '53daff5a-2ac4-11eb-9375-0a8f2da72108', 'operation': 'move'}
 
-    with open('test_data/remediate_success_resp.json') as f:
+    with open(os.path.dirname(__file__) + 'test_data/remediate_success_resp.json') as f:
         expected_res = json.load(f)
 
     mock_api_token.return_value = API_TOKEN
@@ -761,7 +761,7 @@ def test_fetch_incident_command_success(mock_api_token, mock_request, client):
         'policy_filter': '',
     }
 
-    with open('test_data/get_fetch_response.json') as f:
+    with open(os.path.dirname(__file__) + 'test_data/get_fetch_response.json') as f:
         expected_res = json.load(f)
     mock_request.side_effect = expected_res
 
@@ -786,16 +786,16 @@ def test_list_message_data_command_success(
     mock_api_token.return_value = API_TOKEN
     args = {'limit': 4, 'url': SAMPLE_URL}
 
-    with open('test_data/get_messages_response.json') as f:
+    with open(os.path.dirname(__file__) + 'test_data/get_messages_response.json') as f:
         expected_res = json.load(f)
 
     mock_request.return_value = expected_res
 
     cmd_res = list_message_data_command(client, args)
-    with open('test_data/get_messages_context.json', encoding='utf-8') as f:
+    with open(os.path.dirname(__file__) + 'test_data/get_messages_context.json', encoding='utf-8') as f:
         expected_outputs = json.load(f)
 
-    with open('test_data/get_messages.md') as f:
+    with open(os.path.dirname(__file__) + 'test_data/get_messages.md') as f:
         expected_hr = f.read()
 
     assert cmd_res.raw_response['messages'] == expected_res['messages']

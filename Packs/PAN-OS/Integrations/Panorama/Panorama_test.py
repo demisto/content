@@ -563,7 +563,7 @@ class TestQueryLogsCommand:
 
         else:
 
-            with open('test_data/query_logs.xml') as f:
+            with open(os.path.dirname(__file__) + 'test_data/query_logs.xml') as f:
                 # job has finished with finding logs
                 response_queue.append(
                     MockedResponse(
@@ -936,10 +936,10 @@ def test_prettify_configured_user_id_agents__single_result():
 
 def test_prettify_rule():
     from Panorama import prettify_rule
-    with open("test_data/rule.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/rule.json") as f:
         rule = json.load(f)
 
-    with open("test_data/prettify_rule.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/prettify_rule.json") as f:
         expected_pretty_rule = json.load(f)
 
     pretty_rule = prettify_rule(rule)
@@ -2201,7 +2201,7 @@ class TestPanoramaPushToDeviceGroupCommand:
             ) for _ in range(push_to_devices_job_status_count)
         ]
 
-        with open('test_data/push_to_device_success.xml') as data_file:
+        with open(os.path.dirname(__file__) + 'test_data/push_to_device_success.xml') as data_file:
             mocked_responses += [
                 MockedResponse(
                     text=data_file.read(),
@@ -2632,14 +2632,14 @@ class TestDevices:
 
     def test_with_specific_target_only(self, requests_mock):
         import Panorama
-        with open('test_data/devices_list.xml') as data_file:
+        with open(os.path.dirname(__file__) + 'test_data/devices_list.xml') as data_file:
             requests_mock.get(Panorama.URL, text=data_file.read())
         Panorama.VSYS = None  # this a Panorama instance
         assert list(Panorama.devices(targets=['target1'])) == [('target1', 'vsys1'), ('target1', 'vsys2')]
 
     def test_without_specify(self, requests_mock):
         import Panorama
-        with open('test_data/devices_list.xml') as data_file:
+        with open(os.path.dirname(__file__) + 'test_data/devices_list.xml') as data_file:
             requests_mock.get(Panorama.URL, text=data_file.read())
         Panorama.VSYS = None  # this a Panorama instance
         assert list(Panorama.devices()) == [('target1', 'vsys1'), ('target1', 'vsys2'), ('target2', None)]
@@ -3985,9 +3985,9 @@ def test_check_latest_version_hr(mocker):
     """
     from Panorama import panorama_check_latest_panos_software_command
     import requests
-    with open('test_data/latest_versions.xml') as xml_file:
+    with open(os.path.dirname(__file__) + 'test_data/latest_versions.xml') as xml_file:
         text = xml_file.read()
-    with open('test_data/5_latest_version.md') as md_file:
+    with open(os.path.dirname(__file__) + 'test_data/5_latest_version.md') as md_file:
         markdown_assert = md_file.read()
     mr = MockedResponse(text=text,
                         status_code=200,

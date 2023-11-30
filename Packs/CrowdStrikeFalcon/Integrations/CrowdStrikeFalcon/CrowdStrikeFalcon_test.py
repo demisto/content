@@ -2510,12 +2510,12 @@ class TestIncidentFetch:
 
 
 def get_fetch_data():
-    with open('./test_data/test_data.json') as f:
+    with open(os.path.dirname(__file__) + 'test_data/test_data.json') as f:
         return json.loads(f.read())
 
 
 def get_fetch_data2():
-    with open('./test_data/test_data2.json') as f:
+    with open(os.path.dirname(__file__) + 'test_data/test_data2.json') as f:
         return json.loads(f.read())
 
 

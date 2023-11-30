@@ -23,7 +23,7 @@ def mock_client() -> Client:
 
 
 def load_event_for_test(test_name: str) -> list[dict]:
-    return json.loads(open("test_data/test_events.json").read())[f"EVENTS_{test_name}"]
+    return json.loads(open(os.path.dirname(__file__) + "test_data/test_events.json").read())[f"EVENTS_{test_name}"]
 
 
 @freeze_time("2023-06-10T16:00:00Z")

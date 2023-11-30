@@ -42,7 +42,7 @@ def test_main_with_flags(mocker):
 
 
 def test_text_as_string(mocker):
-    with open('test_data/temp_out.txt') as f:
+    with open(os.path.dirname(__file__) + 'test_data/temp_out.txt') as f:
         string_output = f.read()
         cr = stringsifter({'string_text': string_output, 'file_name': 'test_file', 'limit': '5'})
         assert cr.readable_output == open_file('test_data/redable_output_string_text.md')

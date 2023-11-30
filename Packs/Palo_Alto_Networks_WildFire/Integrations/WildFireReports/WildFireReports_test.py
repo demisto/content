@@ -18,7 +18,7 @@ def test_wildfire_report(mocker):
     mocker.patch.object(demisto, 'params', return_value={'server': 'https://test.com/', 'token': '123456'})
     mocker.patch.object(demisto, 'args', return_value={'sha256': mock_sha256})
 
-    with open('test_data/response.pdf', 'rb') as file:
+    with open(os.path.dirname(__file__) + 'test_data/response.pdf', 'rb') as file:
         file_content = b''
         while byte := file.read(1):
             file_content += byte

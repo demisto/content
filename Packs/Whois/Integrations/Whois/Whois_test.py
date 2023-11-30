@@ -273,14 +273,14 @@ def test_ph_tld():
 
 
 def test_parse_raw_whois():
-    with open('test_data/EU domains.text') as f:
+    with open(os.path.dirname(__file__) + 'test_data/EU domains.text') as f:
         raw_data = f.read()
     result = Whois.parse_raw_whois([raw_data], [], never_query_handles=False, handle_server='whois.eu')
     assert result['registrar'] == ['IONOS SE']
 
 
 def test_parse_raw_whois_empty_nameserver():
-    with open('test_data/EU domains_empty_nameservers.text') as f:
+    with open(os.path.dirname(__file__) + 'test_data/EU domains_empty_nameservers.text') as f:
         raw_data = f.read()
     result = Whois.parse_raw_whois([raw_data], [], never_query_handles=False, handle_server='whois.eu')
     assert result['nameservers'] == ['ns1060.ui-dns.biz']
@@ -327,7 +327,7 @@ def test_whois_with_verbose(args, expected_res, mocker: MockerFixture):
     mocker.patch.object(demisto, 'command', 'whois')
     mocker.patch.object(demisto, 'args', return_value=args)
     mocker.patch('Whois.get_domain_from_query', return_value='cnn.com')
-    with open('test_data/cnn_pickled', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/cnn_pickled', 'rb') as f:
         get_whois_ret_value = pickle.load(f)  # guardrails-disable-line
     mocker.patch('Whois.get_whois', return_value=get_whois_ret_value)
 
@@ -338,7 +338,7 @@ def test_whois_with_verbose(args, expected_res, mocker: MockerFixture):
 
 
 def test_parse_nic_contact():
-    with open('./test_data/whois_response.txt') as f:
+    with open(os.path.dirname(__file__) + 'test_data/whois_response.txt') as f:
         data = [f.read()]
 
     res = Whois.parse_nic_contact(data)
@@ -622,7 +622,7 @@ def test_domain_command(args: dict[str, Any], expected_res, mocker: MockerFixtur
     mocker.patch.object(demisto, 'command', 'domain')
     mocker.patch.object(demisto, 'args', return_value=args)
     mocker.patch('Whois.get_domain_from_query', return_value='cnn.com')
-    with open('test_data/cnn_pickled', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/cnn_pickled', 'rb') as f:
         get_whois_ret_value = pickle.load(f)  # guardrails-disable-line
     mocker.patch('Whois.get_whois', return_value=get_whois_ret_value)
 

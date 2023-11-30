@@ -2,9 +2,9 @@ import pytest
 from json import load
 from GroupIBTIA import fetch_incidents_command, Client, transform_function, main, get_available_collections_command
 
-with open('test_data/example.json') as example:
+with open(os.path.dirname(__file__) + 'test_data/example.json') as example:
     RAW_JSON = load(example)
-with open('test_data/results.json') as results:
+with open(os.path.dirname(__file__) + 'test_data/results.json') as results:
     RESULTS = load(results)
 
 # Because of errors with markdown tables

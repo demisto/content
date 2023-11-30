@@ -25,7 +25,7 @@ def test_pem():
     """
     from CertificateExtract import certificate_extract_command
 
-    with open('test_data/test.pem', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/test.pem', 'r') as f:
         contents = f.read()
 
     context = certificate_extract_command({'pem': contents}).to_context()

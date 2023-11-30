@@ -213,7 +213,7 @@ def test_download_message_positive(mocker, request, requests_mock, client):
     args = {
         'guid': guid
     }
-    with open('./test_data/download_message_response') as _file:
+    with open(os.path.dirname(__file__) + 'test_data/download_message_response') as _file:
         api_response = _file.read().encode('utf8')
     requests_mock.get(SERVER_URL + '/quarantine?' + urlencode(args), content=api_response)
     result = download_message(client=client, args=args)

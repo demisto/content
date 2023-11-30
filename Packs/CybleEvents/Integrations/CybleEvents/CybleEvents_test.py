@@ -10,7 +10,7 @@ def load_json_file(filename):
     :param filename:
     :return:
     """
-    with open("test_data/{0}".format(filename), 'r') as f:
+    with open(os.path.dirname(__file__) + "test_data/{0}".format(filename), 'r') as f:
         return json.load(f)
 
 

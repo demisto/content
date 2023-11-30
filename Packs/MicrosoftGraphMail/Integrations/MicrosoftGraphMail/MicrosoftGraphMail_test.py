@@ -88,7 +88,7 @@ def test_params_working(mocker, params, expected_results):
 def test_build_mail_object():
     # Testing list of mails
     user_id = 'ex@example.com'
-    with open('test_data/mails') as mail_json:
+    with open(os.path.dirname(__file__) + 'test_data/mails') as mail_json:
         mail = json.load(mail_json)
         res = GraphMailUtils.build_mail_object(mail, user_id=user_id, get_body=True)
         assert isinstance(res, list)
@@ -97,7 +97,7 @@ def test_build_mail_object():
         assert res[0]['UserID'] == user_id
         assert res[0]['Body']
 
-    with open('test_data/mail') as mail_json:
+    with open(os.path.dirname(__file__) + 'test_data/mail') as mail_json:
         mail = json.load(mail_json)
         res = GraphMailUtils.build_mail_object(mail, user_id=user_id, get_body=True)
         assert isinstance(res, dict)
@@ -198,7 +198,7 @@ def test_list_mails_command(mocker, client):
     args = {'user_id': 'test id'}
 
     # call list mails with two emails
-    with open('test_data/mails') as mail_json:
+    with open(os.path.dirname(__file__) + 'test_data/mails') as mail_json:
         mail = json.load(mail_json)
         mocker.patch.object(client, 'list_mails', return_value=mail)
         mocker.patch.object(demisto, 'results')
@@ -208,7 +208,7 @@ def test_list_mails_command(mocker, client):
                'increase "pages_to_pull" argument' in hr
 
     # call list mails with no emails
-    with open('test_data/no_mails') as mail_json:
+    with open(os.path.dirname(__file__) + 'test_data/no_mails') as mail_json:
         mail = json.load(mail_json)
         mocker.patch.object(client, 'list_mails', return_value=mail)
         mocker.patch.object(demisto, 'results')
@@ -257,7 +257,7 @@ def test_list_mails_with_page_limit(mocker, client):
     Validate that the http_request called properly with endpoint top=1
     """
     args = {'user_id': 'test id', 'page_size': 1, 'pages_to_pull': 1}
-    with open('test_data/response_with_one_mail') as mail_json:
+    with open(os.path.dirname(__file__) + 'test_data/response_with_one_mail') as mail_json:
         mail = json.load(mail_json)
         mock_request = mocker.patch.object(MicrosoftClient, 'http_request', return_value=mail)
         mocker.patch.object(demisto, 'results')
@@ -271,7 +271,7 @@ def test_list_mails_with_page_limit(mocker, client):
 
 @pytest.fixture()
 def expected_incident():
-    with open('test_data/expected_incident') as emails_json:
+    with open(os.path.dirname(__file__) + 'test_data/expected_incident') as emails_json:
         mocked_emails = json.load(emails_json)
         return mocked_emails
 
@@ -282,7 +282,7 @@ def emails_data_as_html():
 
 
 def emails_data_as_html_including_body():
-    with open('test_data/emails_data_html') as emails_json:
+    with open(os.path.dirname(__file__) + 'test_data/emails_data_html') as emails_json:
         mocked_emails = json.load(emails_json)
         return mocked_emails
 
@@ -293,38 +293,38 @@ def emails_data_as_text():
 
 
 def emails_data_as_text_including_body():
-    with open('test_data/emails_data_text') as emails_json:
+    with open(os.path.dirname(__file__) + 'test_data/emails_data_text') as emails_json:
         mocked_emails = json.load(emails_json)
         return mocked_emails
 
 
 def emails_data_as_html_without_body():
-    with open('test_data/emails_data_html_without_body') as emails_json:
+    with open(os.path.dirname(__file__) + 'test_data/emails_data_html_without_body') as emails_json:
         mocked_emails = json.load(emails_json)
         return mocked_emails
 
 
 def emails_data_as_text_without_body():
-    with open('test_data/emails_data_text_without_body') as emails_json:
+    with open(os.path.dirname(__file__) + 'test_data/emails_data_text_without_body') as emails_json:
         mocked_emails = json.load(emails_json)
         return mocked_emails
 
 
 @pytest.fixture()
 def emails_data_full_body_as_html():
-    with open('test_data/emails_data_full_body_html') as emails_json:
+    with open(os.path.dirname(__file__) + 'test_data/emails_data_full_body_html') as emails_json:
         return json.load(emails_json)
 
 
 @pytest.fixture()
 def emails_data_full_body_as_text():
-    with open('test_data/emails_data_full_body_text') as emails_json:
+    with open(os.path.dirname(__file__) + 'test_data/emails_data_full_body_text') as emails_json:
         return json.load(emails_json)
 
 
 @pytest.fixture()
 def expected_incident_full_body():
-    with open('test_data/expected_incident_full_body') as incident:
+    with open(os.path.dirname(__file__) + 'test_data/expected_incident_full_body') as incident:
         return json.load(incident)
 
 
@@ -648,7 +648,7 @@ def test_get_attachment(client):
 
     """
     output_prefix = 'MSGraphMail(val.ID && val.ID == obj.ID)'
-    with open('test_data/mail_with_attachment') as mail_json:
+    with open(os.path.dirname(__file__) + 'test_data/mail_with_attachment') as mail_json:
         user_id = 'ex@example.com'
         raw_response = json.load(mail_json)
         res = GraphMailUtils.item_result_creator(raw_response, user_id)
@@ -673,7 +673,7 @@ def test_get_attachments_without_attachment_id(mocker, client):
     """
     from MicrosoftGraphMail import get_attachment_command
     output_prefix = 'MSGraphMail(val.ID && val.ID == obj.ID)'
-    with open('test_data/mail_with_attachments') as mail_json:
+    with open(os.path.dirname(__file__) + 'test_data/mail_with_attachments') as mail_json:
         user_id = 'ex@example.com'
         test_args = {'user_id': user_id}
         raw_response = json.load(mail_json)
@@ -700,7 +700,7 @@ def test_get_attachment_unsupported_type(client):
         - Validate the human readable which explain we do not support the type
 
     """
-    with open('test_data/mail_with_unsupported_attachment') as mail_json:
+    with open(os.path.dirname(__file__) + 'test_data/mail_with_unsupported_attachment') as mail_json:
         user_id = 'ex@example.com'
         raw_response = json.load(mail_json)
         res = GraphMailUtils.item_result_creator(raw_response, user_id)
@@ -747,7 +747,7 @@ def test_list_attachments_with_name(mocker, client):
 
     """
     output_prefix = 'MSGraphMailAttachment(val.ID && val.ID == obj.ID)'
-    with open('test_data/list_attachment_result.json') as attachment_result:
+    with open(os.path.dirname(__file__) + 'test_data/list_attachment_result.json') as attachment_result:
         args = {"user_id": "example"}
         raw_response = json.load(attachment_result)
         mocker.patch.object(client, 'list_attachments', return_value=raw_response)
@@ -775,7 +775,7 @@ def test_list_attachments_without_name(mocker, client):
 
     """
     output_prefix = 'MSGraphMailAttachment(val.ID && val.ID == obj.ID)'
-    with open('test_data/list_attachment_result_no_name.json') as attachment_result:
+    with open(os.path.dirname(__file__) + 'test_data/list_attachment_result_no_name.json') as attachment_result:
         args = {"user_id": "example"}
         raw_response = json.load(attachment_result)
         mocker.patch.object(client, 'list_attachments', return_value=raw_response)

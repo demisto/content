@@ -12,7 +12,7 @@ def test_main(mocker):
 
     mocker.patch.object(sys, 'exit', side_effect=side_effect_sys_exit)
 
-    with open('./test_data/test-1.json', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/test-1.json', 'r') as f:
         test_list = json.load(f)
 
     for eval in test_list:

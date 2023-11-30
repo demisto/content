@@ -300,18 +300,18 @@ def test_get_components_command_domain_success(mocker_http_request, client):
     from PassiveTotal_v2 import get_components_command
 
     # Fetch the expected response from file
-    with open('test_data/HostAttribute/Component/component_resp.json', encoding='utf-8') as f:
+    with open(os.path.dirname(__file__) + 'test_data/HostAttribute/Component/component_resp.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_res = json_file.get('successDomain')
     mocker_http_request.return_value = expected_res
 
     # Fetch the expected custom entry context from file
-    with open('test_data/HostAttribute/Component/component_ec.json', encoding='utf-8') as f:
+    with open(os.path.dirname(__file__) + 'test_data/HostAttribute/Component/component_ec.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_custom_ec = json_file.get('successDomain')
 
     # Fetch the expected human readable details from file
-    with open('test_data/HostAttribute/Component/component_domain_hr.md') as f:
+    with open(os.path.dirname(__file__) + 'test_data/HostAttribute/Component/component_domain_hr.md') as f:
         expected_hr = f.read()
 
     result = get_components_command(client, HOST_ATTRIBUTE_ARGS['component_by_domain'])
@@ -331,18 +331,18 @@ def test_get_components_command_ip_success(mocker_http_request, client):
     from PassiveTotal_v2 import get_components_command
 
     # Fetch the expected response from file
-    with open('test_data/HostAttribute/Component/component_resp.json', encoding='utf-8') as f:
+    with open(os.path.dirname(__file__) + 'test_data/HostAttribute/Component/component_resp.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_res = json_file.get('successIP')
     mocker_http_request.return_value = expected_res
 
     # Fetch the expected custom entry context from file
-    with open('test_data/HostAttribute/Component/component_ec.json', encoding='utf-8') as f:
+    with open(os.path.dirname(__file__) + 'test_data/HostAttribute/Component/component_ec.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_custom_ec = json_file.get('successIP')
 
     # Fetch the expected human readable details from file
-    with open('test_data/HostAttribute/Component/component_ip_hr.md') as f:
+    with open(os.path.dirname(__file__) + 'test_data/HostAttribute/Component/component_ip_hr.md') as f:
         expected_hr = f.read()
 
     result = get_components_command(client, HOST_ATTRIBUTE_ARGS['component_by_ip'])
@@ -362,7 +362,7 @@ def test_get_components_command_no_record_found(mocker_http_request, client):
     from PassiveTotal_v2 import get_components_command
 
     # Fetch the expected response from file
-    with open('test_data/HostAttribute/Component/component_resp.json', encoding='utf-8') as f:
+    with open(os.path.dirname(__file__) + 'test_data/HostAttribute/Component/component_resp.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_res = json_file.get('emptyContent')
     mocker_http_request.return_value = expected_res
@@ -392,18 +392,18 @@ def test_get_trackers_command_domain_success(mocker_http_request, client):
     from PassiveTotal_v2 import get_trackers_command
 
     # Fetch the expected response from file
-    with open('test_data/HostAttribute/Tracker/tracker_resp.json', encoding='utf-8') as f:
+    with open(os.path.dirname(__file__) + 'test_data/HostAttribute/Tracker/tracker_resp.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_res = json_file.get('successDomain')
     mocker_http_request.return_value = expected_res
 
     # Fetch the expected custom entry context from file
-    with open('test_data/HostAttribute/Tracker/tracker_ec.json', encoding='utf-8') as f:
+    with open(os.path.dirname(__file__) + 'test_data/HostAttribute/Tracker/tracker_ec.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_custom_ec = json_file.get('successDomain')
 
     # Fetch the expected human readable details from file
-    with open('test_data/HostAttribute/Tracker/tracker_domain_hr.md') as f:
+    with open(os.path.dirname(__file__) + 'test_data/HostAttribute/Tracker/tracker_domain_hr.md') as f:
         expected_hr = f.read()
 
     result = get_trackers_command(client, HOST_ATTRIBUTE_ARGS['tracker_by_domain'])
@@ -423,18 +423,18 @@ def test_get_trackers_command_ip_success(mocker_http_request, client):
     from PassiveTotal_v2 import get_trackers_command
 
     # Fetch the expected response from file
-    with open('test_data/HostAttribute/Tracker/tracker_resp.json', encoding='utf-8') as f:
+    with open(os.path.dirname(__file__) + 'test_data/HostAttribute/Tracker/tracker_resp.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_res = json_file.get('successIP')
     mocker_http_request.return_value = expected_res
 
     # Fetch the expected custom entry context from file
-    with open('test_data/HostAttribute/Tracker/tracker_ec.json', encoding='utf-8') as f:
+    with open(os.path.dirname(__file__) + 'test_data/HostAttribute/Tracker/tracker_ec.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_custom_ec = json_file.get('successIP')
 
     # Fetch the expected human readable details from file
-    with open('test_data/HostAttribute/Tracker/tracker_ip_hr.md') as f:
+    with open(os.path.dirname(__file__) + 'test_data/HostAttribute/Tracker/tracker_ip_hr.md') as f:
         expected_hr = f.read()
 
     result = get_trackers_command(client, HOST_ATTRIBUTE_ARGS['tracker_by_ip'])
@@ -454,7 +454,7 @@ def test_get_trackers_command_no_record_found(mocker_http_request, client):
     from PassiveTotal_v2 import get_trackers_command
 
     # Fetch the expected response from file
-    with open('test_data/HostAttribute/Tracker/tracker_resp.json', encoding='utf-8') as f:
+    with open(os.path.dirname(__file__) + 'test_data/HostAttribute/Tracker/tracker_resp.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_res = json_file.get('emptyContent')
     mocker_http_request.return_value = expected_res
@@ -484,18 +484,18 @@ def test_get_host_pairs_command_success(mocker_http_request, client):
     from PassiveTotal_v2 import get_host_pairs_command
 
     # Fetch the expected response from file
-    with open('test_data/HostAttribute/Host_Pair/host_pair_resp.json', encoding='utf-8') as f:
+    with open(os.path.dirname(__file__) + 'test_data/HostAttribute/Host_Pair/host_pair_resp.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_res = json_file.get('success')
     mocker_http_request.return_value = expected_res
 
     # Fetch the expected custom entry context from file
-    with open('test_data/HostAttribute/Host_Pair/host_pair_ec.json', encoding='utf-8') as f:
+    with open(os.path.dirname(__file__) + 'test_data/HostAttribute/Host_Pair/host_pair_ec.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_custom_ec = json_file.get('success')
 
     # Fetch the expected human readable details from file
-    with open('test_data/HostAttribute/Host_Pair/host_pair_hr.md') as f:
+    with open(os.path.dirname(__file__) + 'test_data/HostAttribute/Host_Pair/host_pair_hr.md') as f:
         expected_hr = f.read()
 
     result = get_host_pairs_command(client, HOST_ATTRIBUTE_ARGS['host_pair'])
@@ -515,7 +515,7 @@ def test_get_host_pairs_command_no_record_found(mocker_http_request, client):
     from PassiveTotal_v2 import get_host_pairs_command
 
     # Fetch the expected response from file
-    with open('test_data/HostAttribute/Host_Pair/host_pair_resp.json', encoding='utf-8') as f:
+    with open(os.path.dirname(__file__) + 'test_data/HostAttribute/Host_Pair/host_pair_resp.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_res = json_file.get('emptyContent')
     mocker_http_request.return_value = expected_res
@@ -622,13 +622,13 @@ def test_pt_whois_search_command_success(request_mocker, mock_cr, client):
         'query': 'test-query@test.com',
         'field': 'email'
     }
-    with open('test_data/whois_command/whois_command_response.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/whois_command/whois_command_response.json', 'rb') as f:
         dummy_response = json.load(f)
-    with open('test_data/whois_command/whois_custom_context.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/whois_command/whois_custom_context.json', 'rb') as f:
         dummy_custom_context = json.load(f)
-    with open('test_data/whois_command/whois_command_readable_output.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/whois_command/whois_command_readable_output.md', 'r') as f:
         dummy_readable_output = f.read()
-    with open('test_data/whois_command/whois_command_standard_domain_readable_output.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/whois_command/whois_command_standard_domain_readable_output.md', 'r') as f:
         dummy_standard_domain_readable_output = f.read()
     request_mocker.return_value = dummy_response
 
@@ -689,17 +689,17 @@ def test_ssl_cert_search_command_success(mocker_http_request, client):
     from PassiveTotal_v2 import ssl_cert_search_command
 
     # Fetching expected raw response from file
-    with open('test_data/SSL/ssl_cert_resp.json', encoding='utf-8') as f:
+    with open(os.path.dirname(__file__) + 'test_data/SSL/ssl_cert_resp.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_res = json_file.get('success')
     mocker_http_request.return_value = expected_res
 
     # Fetching expected entry context details from file
-    with open("test_data/SSL/ssl_cert_ec.json", encoding='utf-8') as f:
+    with open(os.path.dirname(__file__) + "test_data/SSL/ssl_cert_ec.json", encoding='utf-8') as f:
         expected_ec = json.load(f)
 
     # Fetching expected entry context details from file
-    with open("test_data/SSL/ssl_cert_hr.md") as f:
+    with open(os.path.dirname(__file__) + "test_data/SSL/ssl_cert_hr.md") as f:
         expected_hr = f.read()
 
     result = ssl_cert_search_command(client, SSL_ARGS)
@@ -719,7 +719,7 @@ def test_ssl_cert_search_no_record_found(mocker_http_request, client):
     from PassiveTotal_v2 import ssl_cert_search_command
 
     # Fetching expected raw response from file
-    with open("test_data/SSL/ssl_cert_resp.json", encoding='utf-8') as f:
+    with open(os.path.dirname(__file__) + "test_data/SSL/ssl_cert_resp.json", encoding='utf-8') as f:
         json_file = json.load(f)
     expected_res = json_file.get('zeroRecords')
     mocker_http_request.return_value = expected_res
@@ -736,17 +736,17 @@ def test_get_pdns_details_command_success(mocker_http_request, client):
     from PassiveTotal_v2 import get_pdns_details_command
 
     # Fetching expected raw response from file
-    with open('test_data/PDNS/get_pdns_resp.json', encoding='utf-8') as f:
+    with open(os.path.dirname(__file__) + 'test_data/PDNS/get_pdns_resp.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_res = json_file.get('success')
     mocker_http_request.return_value = expected_res
 
     # Fetching expected entry context details from file
-    with open("test_data/PDNS/get_pdns_ec.json", encoding='utf-8') as f:
+    with open(os.path.dirname(__file__) + "test_data/PDNS/get_pdns_ec.json", encoding='utf-8') as f:
         expected_ec = json.load(f)
 
     # Fetching expected entry context details from file
-    with open("test_data/PDNS/get_pdns_hr.md") as f:
+    with open(os.path.dirname(__file__) + "test_data/PDNS/get_pdns_hr.md") as f:
         expected_hr = f.read()
 
     result = get_pdns_details_command(client, PDNS_ARGS)
@@ -767,7 +767,7 @@ def test_get_pdns_details_no_record_found(mocker_http_request, client):
     from PassiveTotal_v2 import get_pdns_details_command
 
     # Fetching expected raw response from file
-    with open("test_data/PDNS/get_pdns_resp.json", encoding='utf-8') as f:
+    with open(os.path.dirname(__file__) + "test_data/PDNS/get_pdns_resp.json", encoding='utf-8') as f:
         json_file = json.load(f)
     expected_res = json_file.get('zeroRecords')
     mocker_http_request.return_value = expected_res
@@ -937,13 +937,13 @@ def test_domain_reputation_command_success(mocker_http_request, client):
     args = {
         'domain': 'somedomain.com'
     }
-    with open('test_data/domain_reputation/domain_reputation_response.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/domain_reputation/domain_reputation_response.json', 'rb') as f:
         dummy_response = json.load(f)
-    with open('test_data/domain_reputation/domain_reputation_context.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/domain_reputation/domain_reputation_context.json', 'rb') as f:
         dummy_custom_context = json.load(f)
-    with open('test_data/domain_reputation/domain_reputation_command_readable_output.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/domain_reputation/domain_reputation_command_readable_output.md', 'r') as f:
         dummy_readable_output = f.read()
-    with open('test_data/domain_reputation/domain_reputation_command_reputation_response.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/domain_reputation/domain_reputation_command_reputation_response.json', 'rb') as f:
         dummy_custom_reputation_context = json.load(f)
     mocker_http_request.return_value = dummy_response
 
@@ -1020,13 +1020,13 @@ def test_get_services_command_success(request_mocker, client):
         'ip': '127.0.0.1'
     }
 
-    with open('test_data/services_command/services_command_response.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/services_command/services_command_response.json', 'rb') as f:
         dummy_response = json.load(f)
 
-    with open('test_data/services_command/services_command_context.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/services_command/services_command_context.json', 'rb') as f:
         context_output = json.load(f)
 
-    with open('test_data/services_command/services_command_readable_output.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/services_command/services_command_readable_output.md', 'r') as f:
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -1073,11 +1073,11 @@ def test_pt_get_whois_command_success(request_mocker, mock_cr, client):
         'query': 'test-query@test.com',
         'history': 'true'
     }
-    with open('test_data/whois_command/whois_command_response.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/whois_command/whois_command_response.json', 'rb') as f:
         dummy_response = json.load(f)
-    with open('test_data/whois_command/whois_custom_context.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/whois_command/whois_custom_context.json', 'rb') as f:
         dummy_custom_context = json.load(f)
-    with open('test_data/whois_command/whois_command_readable_output.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/whois_command/whois_command_readable_output.md', 'r') as f:
         dummy_readable_output = f.read()
     request_mocker.return_value = dummy_response
 
@@ -1136,7 +1136,7 @@ def test_get_cookies_no_record_found(mocker_http_request, client):
     from PassiveTotal_v2 import get_cookies_command
 
     # Fetching expected raw response from file
-    with open("test_data/Cookie/cookie_resp.json", encoding='utf-8') as f:
+    with open(os.path.dirname(__file__) + "test_data/Cookie/cookie_resp.json", encoding='utf-8') as f:
         json_file = json.load(f)
     expected_res = json_file.get('zeroRecords')
     mocker_http_request.return_value = expected_res
@@ -1153,17 +1153,17 @@ def test_get_cookies_command_success(mocker_http_request, client):
     from PassiveTotal_v2 import get_cookies_command
 
     # Fetching expected raw response from file
-    with open('test_data/Cookie/cookie_resp.json', encoding='utf-8') as f:
+    with open(os.path.dirname(__file__) + 'test_data/Cookie/cookie_resp.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_res = json_file.get('success')
     mocker_http_request.return_value = expected_res
 
     # Fetching expected entry context details from file
-    with open("test_data/Cookie/cookie_ec.json", encoding='utf-8') as f:
+    with open(os.path.dirname(__file__) + "test_data/Cookie/cookie_ec.json", encoding='utf-8') as f:
         expected_ec = json.load(f)
 
     # Fetching expected entry context details from file
-    with open("test_data/Cookie/cookie_hr.md") as f:
+    with open(os.path.dirname(__file__) + "test_data/Cookie/cookie_hr.md") as f:
         expected_hr = f.read()
 
     result = get_cookies_command(client, COOKIE_ARGS)
@@ -1225,11 +1225,11 @@ def test_pt_get_articles_command_success(request_mocker, client):
     args = {
         'query': 'dummy.com',
     }
-    with open('test_data/Articles/articles_command_response.json', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/Articles/articles_command_response.json', 'r') as f:
         dummy_response = json.load(f)
-    with open('test_data/Articles/articles_custom_context.json', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/Articles/articles_custom_context.json', 'r') as f:
         dummy_custom_context = json.load(f)
-    with open('test_data/Articles/articles_command_readable_output.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/Articles/articles_command_readable_output.md', 'r') as f:
         dummy_readable_output = f.read()
     request_mocker.return_value = dummy_response
 
@@ -1281,10 +1281,10 @@ def test_get_data_card_command_success(request_mocker, client):
         'query': '1.1.1.1'
     }
 
-    with open('test_data/Data_Card/data_card_command.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/Data_Card/data_card_command.json', 'rb') as f:
         dummy_response = json.load(f)
 
-    with open('test_data/Data_Card/data_card_command_readable_output.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/Data_Card/data_card_command_readable_output.md', 'r') as f:
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -1323,13 +1323,13 @@ def test_get_reputation_command_success(request_mocker, client):
         'query': '2020-windows.com'
     }
 
-    with open('test_data/Reputation/reputation_command_response.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/Reputation/reputation_command_response.json', 'rb') as f:
         dummy_response = json.load(f)
 
-    with open('test_data/Reputation/reputation_command_readable_output.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/Reputation/reputation_command_readable_output.md', 'r') as f:
         readable_output = f.read()
 
-    with open('test_data/Reputation/reputation_command_context.json', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/Reputation/reputation_command_context.json', 'r') as f:
         dummy_custom_context = json.load(f)
 
     request_mocker.return_value = dummy_response
@@ -1407,11 +1407,11 @@ def test_ip_reputation_command_success(request_mocker, client):
         'ip': '1.1.1.1'
     }
 
-    with open('test_data/ip_reputation/ip_reputation_command_response.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ip_reputation/ip_reputation_command_response.json', 'rb') as f:
         dummy_response = json.load(f)
-    with open('test_data/ip_reputation/ip_reputation_command_context.json', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ip_reputation/ip_reputation_command_context.json', 'r') as f:
         dummy_custom_context = json.load(f)
-    with open('test_data/ip_reputation/ip_reputation_command_readable_output.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ip_reputation/ip_reputation_command_readable_output.md', 'r') as f:
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -1441,13 +1441,13 @@ def test_pt_list_intel_profile_command_success(request_mocker, client):
         'source': 'osint',
         'category': 'network'
     }
-    with open('test_data/IntelProfile/intel_profile_command_response.json', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/IntelProfile/intel_profile_command_response.json', 'r') as f:
         dummy_response = json.load(f)
 
-    with open('test_data/IntelProfile/intel_profile_command_context.json', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/IntelProfile/intel_profile_command_context.json', 'r') as f:
         dummy_custom_context = json.load(f)
 
-    with open('test_data/IntelProfile/intel_profile_command_readable_output.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/IntelProfile/intel_profile_command_readable_output.md', 'r') as f:
         dummy_readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -1504,10 +1504,10 @@ def test_list_intel_profile_indicators_command_success(request_mocker, client):
         'page_size': 2
     }
 
-    with open('test_data/Intel_Profile_Indicator/intel_profile_indicator_command.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/Intel_Profile_Indicator/intel_profile_indicator_command.json', 'rb') as f:
         dummy_response = json.load(f)
 
-    with open('test_data/Intel_Profile_Indicator/intel_profile_indicator_readable_output.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/Intel_Profile_Indicator/intel_profile_indicator_readable_output.md', 'r') as f:
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -1557,13 +1557,13 @@ def test_pt_list_my_asi_insights_command_success(request_mocker, client):
     args = {
         'priority': 'high',
     }
-    with open('test_data/ASI_Insights/asi_insights_command_response.json', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Insights/asi_insights_command_response.json', 'r') as f:
         dummy_response = json.load(f)
 
-    with open('test_data/ASI_Insights/asi_insights_command_context.json', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Insights/asi_insights_command_context.json', 'r') as f:
         dummy_custom_context = json.load(f)
 
-    with open('test_data/ASI_Insights/asi_insights_command_readable_output.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Insights/asi_insights_command_readable_output.md', 'r') as f:
         dummy_readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -1599,13 +1599,13 @@ def test_pt_list_my_asi_insights_command_key_not_present(request_mocker, client)
     args = {
         'priority': 'high',
     }
-    with open('test_data/ASI_Insights/asi_insights_command_key_not_present_response.json', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Insights/asi_insights_command_key_not_present_response.json', 'r') as f:
         dummy_response = json.load(f)
 
-    with open('test_data/ASI_Insights/asi_insights_command_key_not_present_context.json', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Insights/asi_insights_command_key_not_present_context.json', 'r') as f:
         dummy_custom_context = json.load(f)
 
-    with open('test_data/ASI_Insights/asi_insights_command_key_not_present_readable_output.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Insights/asi_insights_command_key_not_present_readable_output.md', 'r') as f:
         dummy_readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -1626,13 +1626,13 @@ def test_list_my_attack_surfaces_command_success(request_mocker, client):
     """
     from PassiveTotal_v2 import list_my_attack_surfaces_command
 
-    with open('test_data/Attack_Surface/attack_surface_command.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/Attack_Surface/attack_surface_command.json', 'rb') as f:
         dummy_response = json.load(f)
 
-    with open('test_data/Attack_Surface/attack_surface_context.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/Attack_Surface/attack_surface_context.json', 'rb') as f:
         dummy_context = json.load(f)
 
-    with open('test_data/Attack_Surface/attack_surface_readable_output.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/Attack_Surface/attack_surface_readable_output.md', 'r') as f:
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -1666,13 +1666,13 @@ def test_list_my_attack_surfaces_command_when_object_not_present_success(request
     """
     from PassiveTotal_v2 import list_my_attack_surfaces_command
 
-    with open('test_data/Attack_Surface/attack_surface_object_not_present.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/Attack_Surface/attack_surface_object_not_present.json', 'rb') as f:
         dummy_response = json.load(f)
 
-    with open('test_data/Attack_Surface/attack_surface_object_not_present_context.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/Attack_Surface/attack_surface_object_not_present_context.json', 'rb') as f:
         dummy_context = json.load(f)
 
-    with open('test_data/Attack_Surface/attack_surface_object_not_present.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/Attack_Surface/attack_surface_object_not_present.md', 'r') as f:
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -1695,13 +1695,13 @@ def test_list_third_party_asi_command_success(request_mocker, client):
     """
     from PassiveTotal_v2 import list_third_party_asi_command
 
-    with open('test_data/Attack_Surface/attack_surface_command.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/Attack_Surface/attack_surface_command.json', 'rb') as f:
         dummy_response = json.load(f)
 
-    with open('test_data/Attack_Surface/third_party_attack_surface_command_context.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/Attack_Surface/third_party_attack_surface_command_context.json', 'rb') as f:
         dummy_context = json.load(f)
 
-    with open('test_data/Attack_Surface/attack_surface_readable_output.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/Attack_Surface/attack_surface_readable_output.md', 'r') as f:
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response[0]
@@ -1722,13 +1722,13 @@ def test_list_third_party_asi_command_when_object_not_present_success(request_mo
     """
     from PassiveTotal_v2 import list_third_party_asi_command
 
-    with open('test_data/Attack_Surface/attack_surface_object_not_present.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/Attack_Surface/attack_surface_object_not_present.json', 'rb') as f:
         dummy_response = json.load(f)
 
-    with open('test_data/Attack_Surface/third_party_attack_surface_object_not_present_context.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/Attack_Surface/third_party_attack_surface_object_not_present_context.json', 'rb') as f:
         dummy_context = json.load(f)
 
-    with open('test_data/Attack_Surface/attack_surface_object_not_present.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/Attack_Surface/attack_surface_object_not_present.md', 'r') as f:
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response[0]
@@ -1772,13 +1772,13 @@ def test_list_my_asi_assets_command_success(request_mocker, client):
     """
     from PassiveTotal_v2 import list_my_asi_assets_command
 
-    with open('test_data/ASI_Assets/asi_assets_command_response.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Assets/asi_assets_command_response.json', 'rb') as f:
         dummy_response = json.load(f)
 
-    with open('test_data/ASI_Assets/asi_assets_command_context.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Assets/asi_assets_command_context.json', 'rb') as f:
         dummy_context = json.load(f)
 
-    with open('test_data/ASI_Assets/asi_assets_command_readable_output.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Assets/asi_assets_command_readable_output.md', 'r') as f:
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -1804,13 +1804,13 @@ def test_list_my_asi_assets_command_success_object_not_present(request_mocker, c
     """
     from PassiveTotal_v2 import list_my_asi_assets_command
 
-    with open('test_data/ASI_Assets/asi_assets_command_object_not_present_response.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Assets/asi_assets_command_object_not_present_response.json', 'rb') as f:
         dummy_response = json.load(f)
 
-    with open('test_data/ASI_Assets/asi_assets_command_object_not_present_context.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Assets/asi_assets_command_object_not_present_context.json', 'rb') as f:
         dummy_context = json.load(f)
 
-    with open('test_data/ASI_Assets/asi_assets_command_object_not_present_readable_output.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Assets/asi_assets_command_object_not_present_readable_output.md', 'r') as f:
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -1841,13 +1841,13 @@ def test_list_third_party_asi_insights_command_success(request_mocker, client):
         'id': 88256,
         'priority': 'high',
     }
-    with open('test_data/ASI_Insights/asi_insights_command_response.json', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Insights/asi_insights_command_response.json', 'r') as f:
         dummy_response = json.load(f)
 
-    with open('test_data/ASI_Insights/third_party_asi_insights_command_context.json', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Insights/third_party_asi_insights_command_context.json', 'r') as f:
         dummy_custom_context = json.load(f)
 
-    with open('test_data/ASI_Insights/asi_insights_command_readable_output.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Insights/asi_insights_command_readable_output.md', 'r') as f:
         dummy_readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -1884,13 +1884,13 @@ def test_list_third_party_asi_insights_command_key_not_present(request_mocker, c
         'id': 88256,
         'priority': 'high',
     }
-    with open('test_data/ASI_Insights/asi_insights_command_key_not_present_response.json', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Insights/asi_insights_command_key_not_present_response.json', 'r') as f:
         dummy_response = json.load(f)
 
-    with open('test_data/ASI_Insights/third_party_asi_insights_key_not_present_context.json', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Insights/third_party_asi_insights_key_not_present_context.json', 'r') as f:
         dummy_custom_context = json.load(f)
 
-    with open('test_data/ASI_Insights/asi_insights_command_key_not_present_readable_output.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Insights/asi_insights_command_key_not_present_readable_output.md', 'r') as f:
         dummy_readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -1911,13 +1911,13 @@ def test_list_my_asi_vulnerable_components_command_success(request_mocker, clien
     """
     from PassiveTotal_v2 import list_my_asi_vulnerable_components_command
 
-    with open('test_data/ASI_VulnerableComponents/asi_vulnerable_components_command_response.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_VulnerableComponents/asi_vulnerable_components_command_response.json', 'rb') as f:
         dummy_response = json.load(f)
 
-    with open('test_data/ASI_VulnerableComponents/asi_vulnerable_components_command_context.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_VulnerableComponents/asi_vulnerable_components_command_context.json', 'rb') as f:
         dummy_context = json.load(f)
 
-    with open('test_data/ASI_VulnerableComponents/asi_vulnerable_components_command_readable_output.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_VulnerableComponents/asi_vulnerable_components_command_readable_output.md', 'r') as f:
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -1963,13 +1963,13 @@ def test_list_my_asi_vulnerabilities_command_success(request_mocker, client):
     """
     from PassiveTotal_v2 import list_my_asi_vulnerabilities_command
 
-    with open('test_data/ASI_Vulnerability/asi_vulnerability_command_response.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Vulnerability/asi_vulnerability_command_response.json', 'rb') as f:
         dummy_response = json.load(f)
 
-    with open('test_data/ASI_Vulnerability/asi_vulnerability_command_context.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Vulnerability/asi_vulnerability_command_context.json', 'rb') as f:
         dummy_context = json.load(f)
 
-    with open('test_data/ASI_Vulnerability/asi_vulnerability_command_readable_output.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Vulnerability/asi_vulnerability_command_readable_output.md', 'r') as f:
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -2008,13 +2008,13 @@ def test_list_my_asi_observations_command_success(request_mocker, client):
     """
     from PassiveTotal_v2 import list_my_asi_observations_command
 
-    with open('test_data/ASI_Observations/asi_observation_command_response.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Observations/asi_observation_command_response.json', 'rb') as f:
         dummy_response = json.load(f)
 
-    with open('test_data/ASI_Observations/asi_observation_command_context.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Observations/asi_observation_command_context.json', 'rb') as f:
         dummy_context = json.load(f)
 
-    with open('test_data/ASI_Observations/asi_observation_command_readable_output.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Observations/asi_observation_command_readable_output.md', 'r') as f:
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -2052,13 +2052,13 @@ def test_list_my_asi_observations_command_success_object_not_present(request_moc
     """
     from PassiveTotal_v2 import list_my_asi_observations_command
 
-    with open('test_data/ASI_Observations/asi_observation_command_object_not_present_response.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Observations/asi_observation_command_object_not_present_response.json', 'rb') as f:
         dummy_response = json.load(f)
 
-    with open('test_data/ASI_Observations/asi_observation_command_object_not_present_context.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Observations/asi_observation_command_object_not_present_context.json', 'rb') as f:
         dummy_context = json.load(f)
 
-    with open('test_data/ASI_Observations/asi_observations_command_object_not_present_readable_output.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Observations/asi_observations_command_object_not_present_readable_output.md', 'r') as f:
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -2096,13 +2096,13 @@ def test_list_third_party_asi_assets_command_success(request_mocker, client):
     """
     from PassiveTotal_v2 import list_third_party_asi_assets_command
 
-    with open('test_data/ASI_Assets/asi_assets_command_response.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Assets/asi_assets_command_response.json', 'rb') as f:
         dummy_response = json.load(f)
 
-    with open('test_data/ASI_Assets/third_party_asi_assets_command_context.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Assets/third_party_asi_assets_command_context.json', 'rb') as f:
         dummy_context = json.load(f)
 
-    with open('test_data/ASI_Assets/asi_assets_command_readable_output.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Assets/asi_assets_command_readable_output.md', 'r') as f:
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -2128,13 +2128,13 @@ def test_list_third_party_asi_assets_command_success_object_not_present(request_
     """
     from PassiveTotal_v2 import list_third_party_asi_assets_command
 
-    with open('test_data/ASI_Assets/asi_assets_command_object_not_present_response.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Assets/asi_assets_command_object_not_present_response.json', 'rb') as f:
         dummy_response = json.load(f)
 
-    with open('test_data/ASI_Assets/third_party_asi_assets_command_object_not_present_context.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Assets/third_party_asi_assets_command_object_not_present_context.json', 'rb') as f:
         dummy_context = json.load(f)
 
-    with open('test_data/ASI_Assets/asi_assets_command_object_not_present_readable_output.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Assets/asi_assets_command_object_not_present_readable_output.md', 'r') as f:
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -2164,10 +2164,10 @@ def test_pt_list_my_asi_insights_command_sorted_hr(request_mocker, client):
     args = {
         'priority': 'high',
     }
-    with open('test_data/ASI_Insights/asi_insights_command_sorted_hr_response.json', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Insights/asi_insights_command_sorted_hr_response.json', 'r') as f:
         dummy_response = json.load(f)
 
-    with open('test_data/ASI_Insights/asi_insights_command_sorted_readable_output.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Insights/asi_insights_command_sorted_readable_output.md', 'r') as f:
         dummy_readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -2187,14 +2187,14 @@ def test_list_third_party_asi_vulnerable_components_command_success(request_mock
     """
     from PassiveTotal_v2 import list_third_party_asi_vulnerable_components_command
 
-    with open('test_data/ASI_VulnerableComponents/asi_vulnerable_components_command_response.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_VulnerableComponents/asi_vulnerable_components_command_response.json', 'rb') as f:
         dummy_response = json.load(f)
 
-    with open('test_data/ASI_VulnerableComponents/third_party_asi_vulnerable_components_command_context.json',
+    with open(os.path.dirname(__file__) + 'test_data/ASI_VulnerableComponents/third_party_asi_vulnerable_components_command_context.json',
               'rb') as f:
         dummy_context = json.load(f)
 
-    with open('test_data/ASI_VulnerableComponents/asi_vulnerable_components_command_readable_output.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_VulnerableComponents/asi_vulnerable_components_command_readable_output.md', 'r') as f:
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -2244,13 +2244,13 @@ def test_list_third_party_attack_surface_vulnerabilities_command_success(request
     """
     from PassiveTotal_v2 import list_third_party_attack_surface_vulnerabilities_command
 
-    with open('test_data/ASI_Vulnerability/asi_vulnerability_command_response.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Vulnerability/asi_vulnerability_command_response.json', 'rb') as f:
         dummy_response = json.load(f)
 
-    with open('test_data/ASI_Vulnerability/third_party_asi_vulnerability_command_context.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Vulnerability/third_party_asi_vulnerability_command_context.json', 'rb') as f:
         dummy_context = json.load(f)
 
-    with open('test_data/ASI_Vulnerability/asi_vulnerability_command_readable_output.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Vulnerability/asi_vulnerability_command_readable_output.md', 'r') as f:
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -2303,13 +2303,13 @@ def test_list_third_party_asi_observations_command_success(request_mocker, clien
     """
     from PassiveTotal_v2 import list_third_party_asi_observations_command
 
-    with open('test_data/ASI_Observations/asi_observation_command_response.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Observations/asi_observation_command_response.json', 'rb') as f:
         dummy_response = json.load(f)
 
-    with open('test_data/ASI_Observations/third_party_asi_observation_command_context.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Observations/third_party_asi_observation_command_context.json', 'rb') as f:
         dummy_context = json.load(f)
 
-    with open('test_data/ASI_Observations/asi_observation_command_readable_output.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Observations/asi_observation_command_readable_output.md', 'r') as f:
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response
@@ -2347,14 +2347,14 @@ def test_list_third_party_asi_observations_command_success_object_not_present(re
     """
     from PassiveTotal_v2 import list_third_party_asi_observations_command
 
-    with open('test_data/ASI_Observations/asi_observation_command_object_not_present_response.json', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Observations/asi_observation_command_object_not_present_response.json', 'rb') as f:
         dummy_response = json.load(f)
 
-    with open('test_data/ASI_Observations/third_party_asi_observation_command_object_not_present_context.json',
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Observations/third_party_asi_observation_command_object_not_present_context.json',
               'rb') as f:
         dummy_context = json.load(f)
 
-    with open('test_data/ASI_Observations/asi_observations_command_object_not_present_readable_output.md', 'r') as f:
+    with open(os.path.dirname(__file__) + 'test_data/ASI_Observations/asi_observations_command_object_not_present_readable_output.md', 'r') as f:
         readable_output = f.read()
 
     request_mocker.return_value = dummy_response

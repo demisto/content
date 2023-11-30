@@ -78,7 +78,7 @@ def test_build_iterator(requests_mock):
         - Returns a list of the indicators parsed from the API's response
 
     """
-    with open('test_data/FeedHelloWorld_mock.txt', 'r') as file:
+    with open(os.path.dirname(__file__) + 'test_data/FeedHelloWorld_mock.txt', 'r') as file:
         response = file.read()
     requests_mock.get(URL, text=response)
     expected_url = 'https://url1.com/path'

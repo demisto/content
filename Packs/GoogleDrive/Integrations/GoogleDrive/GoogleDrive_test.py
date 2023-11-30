@@ -6,7 +6,7 @@ from CommonServerPython import *
 
 from GoogleDrive import MESSAGES, OUTPUT_PREFIX, HR_MESSAGES, GSuiteClient
 
-with open('test_data/service_account_json.txt') as f:
+with open(os.path.dirname(__file__) + 'test_data/service_account_json.txt') as f:
     TEST_JSON = f.read()
 
 MOCKER_HTTP_METHOD = 'GSuiteApiModule.GSuiteClient.http_request'
@@ -55,7 +55,7 @@ def test_drive_create_command_success(mocker_http_request, gsuite_client):
     """
     from GoogleDrive import drive_create_command
 
-    with open('test_data/drive_create_response.json', encoding='utf-8') as data:
+    with open(os.path.dirname(__file__) + 'test_data/drive_create_response.json', encoding='utf-8') as data:
         response_data = json.load(data)
     mocker_http_request.return_value = response_data
 
@@ -106,13 +106,13 @@ def test_drive_changes_list_command_success(mocker_http_request, gsuite_client):
     """
     from GoogleDrive import drive_changes_list_command
 
-    with open('test_data/drive_changes_response.json', encoding='utf-8') as data:
+    with open(os.path.dirname(__file__) + 'test_data/drive_changes_response.json', encoding='utf-8') as data:
         mock_response = json.load(data)
-    with open('test_data/drive_changes_drive_context.json', encoding='utf-8') as data:
+    with open(os.path.dirname(__file__) + 'test_data/drive_changes_drive_context.json', encoding='utf-8') as data:
         expected_res = json.load(data)
     mocker_http_request.return_value = mock_response
 
-    with open('test_data/drive_changes_hr.txt') as data:
+    with open(os.path.dirname(__file__) + 'test_data/drive_changes_hr.txt') as data:
         expected_hr = data.read()
     args = {'user_id': 'user@test.com', 'page_token': '1'}
     result = drive_changes_list_command(gsuite_client, args)
@@ -247,9 +247,9 @@ def test_drive_activity_list_command_success(mocker_http_request, gsuite_client)
     """
     from GoogleDrive import drive_activity_list_command
 
-    with open('test_data/drive_activity_response.json', encoding='utf-8') as data:
+    with open(os.path.dirname(__file__) + 'test_data/drive_activity_response.json', encoding='utf-8') as data:
         mock_response = json.load(data)
-    with open('test_data/drive_activity_context.json', encoding='utf-8') as data:
+    with open(os.path.dirname(__file__) + 'test_data/drive_activity_context.json', encoding='utf-8') as data:
         expected_res = json.load(data)
     mocker_http_request.return_value = mock_response
 
@@ -275,9 +275,9 @@ def test_drive_activity_list_command_human_readable(mocker_http_request, gsuite_
     """
     from GoogleDrive import drive_activity_list_command
 
-    with open('test_data/drive_activity_primary_activities.json', encoding='utf-8') as data:
+    with open(os.path.dirname(__file__) + 'test_data/drive_activity_primary_activities.json', encoding='utf-8') as data:
         mock_response = json.load(data)
-    with open('test_data/drive_activity_list_hr.txt') as data:
+    with open(os.path.dirname(__file__) + 'test_data/drive_activity_list_hr.txt') as data:
         expected_hr = data.read()
 
     mocker_http_request.return_value = mock_response
@@ -386,10 +386,10 @@ def test_fetch_incidents(gsuite_client, mocker):
         'action_detail_case_include': ['create', 'edit'],
         'user_id': 'user@domain.io'
     }
-    with open('test_data/fetch_incidents_response.json') as file:
+    with open(os.path.dirname(__file__) + 'test_data/fetch_incidents_response.json') as file:
         fetch_incidents_response = json.load(file)
     mocker.patch(MOCKER_HTTP_METHOD, return_value=fetch_incidents_response)
-    with open('test_data/fetch_incidents_output.json') as file:
+    with open(os.path.dirname(__file__) + 'test_data/fetch_incidents_output.json') as file:
         fetch_incidents_output = json.load(file)
     mocker.patch(MOCKER_HTTP_METHOD, return_value=fetch_incidents_response)
     params['first_fetch'] = '10 day'
@@ -408,7 +408,7 @@ def test_main_fetch_incidents(mocker):
     :return: None
     """
     from GoogleDrive import main, demisto
-    with open('test_data/fetch_incidents_output.json') as file:
+    with open(os.path.dirname(__file__) + 'test_data/fetch_incidents_output.json') as file:
         fetch_incidents_output = json.load(file)
     mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
     mocker.patch.object(demisto, 'incidents')
@@ -512,7 +512,7 @@ class TestDriveMethods:
         """
         from GoogleDrive import drives_list_command
 
-        with open('test_data/drives_list_response.json', encoding='utf-8') as data:
+        with open(os.path.dirname(__file__) + 'test_data/drives_list_response.json', encoding='utf-8') as data:
             mock_response = json.load(data)
         mocker_http_request.return_value = mock_response
 
@@ -571,7 +571,7 @@ class TestDriveMethods:
         """
         from GoogleDrive import drive_get_command
 
-        with open('test_data/drive_get_response.json', encoding='utf-8') as data:
+        with open(os.path.dirname(__file__) + 'test_data/drive_get_response.json', encoding='utf-8') as data:
             mock_response = json.load(data)
         mocker_http_request.return_value = mock_response
 
@@ -632,7 +632,7 @@ class TestFileMethods:
         """
         from GoogleDrive import files_list_command
 
-        with open('test_data/files_list_response.json', encoding='utf-8') as data:
+        with open(os.path.dirname(__file__) + 'test_data/files_list_response.json', encoding='utf-8') as data:
             mock_response = json.load(data)
         mocker_http_request.return_value = mock_response
 
@@ -691,7 +691,7 @@ class TestFileMethods:
         """
         from GoogleDrive import file_get_command
 
-        with open('test_data/file_get_response.json', encoding='utf-8') as data:
+        with open(os.path.dirname(__file__) + 'test_data/file_get_response.json', encoding='utf-8') as data:
             mock_response = json.load(data)
         mocker_http_request.return_value = mock_response
 
@@ -752,7 +752,7 @@ class TestFilePermissionMethods:
         """
         from GoogleDrive import file_permission_list_command
 
-        with open('test_data/file_permission_list_response.json', encoding='utf-8') as data:
+        with open(os.path.dirname(__file__) + 'test_data/file_permission_list_response.json', encoding='utf-8') as data:
             mock_response = json.load(data)
         mocker_http_request.return_value = mock_response
 
@@ -785,7 +785,7 @@ class TestFilePermissionMethods:
         """
         from GoogleDrive import get_labels_command
 
-        with open('test_data/list_labels_response.json', encoding='utf-8') as data:
+        with open(os.path.dirname(__file__) + 'test_data/list_labels_response.json', encoding='utf-8') as data:
             mock_response = json.load(data)
         mocker_http_request.return_value = mock_response
 
@@ -810,7 +810,7 @@ class TestFilePermissionMethods:
         """
         from GoogleDrive import modify_label_command
 
-        with open('test_data/modify_label_command_response.json', encoding='utf-8') as data:
+        with open(os.path.dirname(__file__) + 'test_data/modify_label_command_response.json', encoding='utf-8') as data:
             mock_response = json.load(data)
         mocker_http_request.return_value = mock_response
 
@@ -871,7 +871,7 @@ class TestFilePermissionMethods:
         """
         from GoogleDrive import file_permission_create_command
 
-        with open('test_data/file_permission_create_response.json', encoding='utf-8') as data:
+        with open(os.path.dirname(__file__) + 'test_data/file_permission_create_response.json', encoding='utf-8') as data:
             mock_response = json.load(data)
         mocker_http_request.return_value = mock_response
 
@@ -929,7 +929,7 @@ class TestFilePermissionMethods:
         """
         from GoogleDrive import file_permission_update_command
 
-        with open('test_data/file_permission_create_response.json', encoding='utf-8') as data:
+        with open(os.path.dirname(__file__) + 'test_data/file_permission_create_response.json', encoding='utf-8') as data:
             mock_response = json.load(data)
         mocker_http_request.return_value = mock_response
 

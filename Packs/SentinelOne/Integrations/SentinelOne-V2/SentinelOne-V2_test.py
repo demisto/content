@@ -142,7 +142,7 @@ def test_download_fetched_file(mocker, requests_mock, capfd):
         File entry of the file downloaded
     """
     agent_id = 1
-    with open('test_data/download_fetched_file.zip', 'rb') as f:
+    with open(os.path.dirname(__file__) + 'test_data/download_fetched_file.zip', 'rb') as f:
         dffzip_contents = f.read()
 
     requests_mock.get(f'https://usea1.sentinelone.net/web/api/v2.1/agents/{agent_id}/uploads/1', content=dffzip_contents)

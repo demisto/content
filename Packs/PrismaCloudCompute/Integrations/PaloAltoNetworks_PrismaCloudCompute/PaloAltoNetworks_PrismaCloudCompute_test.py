@@ -1370,7 +1370,7 @@ def test_get_waas_policies(mocker):
     """
     from PaloAltoNetworks_PrismaCloudCompute import get_waas_policies, PrismaCloudComputeClient
 
-    with open("test_data/get_waas_policies.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/get_waas_policies.json") as f:
         d = json.load(f)
 
     mocker.patch.object(PrismaCloudComputeClient, 'get_waas_policies', return_value=d)
@@ -1399,7 +1399,7 @@ def test_update_waas_policies(mocker):
     mocker.patch.object(PrismaCloudComputeClient, 'update_waas_policies',
                         return_value=type('Response', (object,), {"status_code": 200}))
 
-    with open("test_data/update_waas_policy.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/update_waas_policy.json") as f:
         policy = json.load(f)
 
     client = PrismaCloudComputeClient(base_url=BASE_URL, verify='False', project='', auth=('test', 'test'))
@@ -1426,7 +1426,7 @@ def test_get_audit_firewall_container_alerts(mocker):
     """
     from PaloAltoNetworks_PrismaCloudCompute import get_audit_firewall_container_alerts, PrismaCloudComputeClient
 
-    with open("test_data/get_audit_firewall_container_alerts.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/get_audit_firewall_container_alerts.json") as f:
         d = json.load(f)
 
     mocker.patch.object(PrismaCloudComputeClient, 'get_firewall_audit_container_alerts', return_value=d)
@@ -1451,7 +1451,7 @@ def test_get_alert_profiles_command(requests_mock):
         -  Ensure the outputs of requesting the alert profiles equals the raw_response object which is mocked
     """
     from PaloAltoNetworks_PrismaCloudCompute import get_alert_profiles_command, PrismaCloudComputeClient
-    with open("test_data/get_alert_profiles.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/get_alert_profiles.json") as f:
         d = json.load(f)
 
     requests_mock.get(url=BASE_URL + '/alert-profiles', json=d)
@@ -1472,7 +1472,7 @@ def test_get_backups_command(requests_mock):
         -  Ensure the outputs of requesting the defenders backup equals the raw_response object which is mocked
     """
     from PaloAltoNetworks_PrismaCloudCompute import get_backups_command, PrismaCloudComputeClient
-    with open("test_data/backups.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/backups.json") as f:
         d = json.load(f)
 
     requests_mock.get(url=BASE_URL + '/backups', json=d)
@@ -1495,7 +1495,7 @@ def test_get_defender_logs_command(requests_mock):
         -  Ensure the hostname argument equals the hostname received in the context object which is mocked
     """
     from PaloAltoNetworks_PrismaCloudCompute import get_logs_defender_command, PrismaCloudComputeClient
-    with open("test_data/defender_logs.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/defender_logs.json") as f:
         d = json.load(f)
 
     requests_mock.get(url=BASE_URL + '/logs/defender', json=d)
@@ -1522,7 +1522,7 @@ def test_get_defender_settings_command(requests_mock):
         -  Ensure the outputs of requesting the defenders settings equals the raw_response object which is mocked
     """
     from PaloAltoNetworks_PrismaCloudCompute import get_settings_defender_command, PrismaCloudComputeClient
-    with open("test_data/defender_settings.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/defender_settings.json") as f:
         d = json.load(f)
 
     requests_mock.get(url=BASE_URL + '/settings/defender', json=d)
@@ -1544,7 +1544,7 @@ def test_get_logs_defender_download_command(requests_mock):
     """
     from PaloAltoNetworks_PrismaCloudCompute import get_logs_defender_download_command, PrismaCloudComputeClient
 
-    with open("test_data/defender_logs.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/defender_logs.json") as f:
         d = json.load(f)
 
     data = json.dumps(d).encode("utf-8")
@@ -1570,7 +1570,7 @@ def test_get_file_integrity_events_command(requests_mock):
         - Ensure the file integrity events output equals the raw_response object which is mocked
     """
     from PaloAltoNetworks_PrismaCloudCompute import get_file_integrity_events_command, PrismaCloudComputeClient
-    with open("test_data/file_integrity_events.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/file_integrity_events.json") as f:
         d = json.load(f)
 
     requests_mock.get(url=BASE_URL + '/audits/runtime/file-integrity', json=d)
@@ -1641,7 +1641,7 @@ def test_get_ci_scan_results_list_command(requests_mock):
         -  Ensure the outputs of requesting the defenders settings equals the raw_response object which is mocked
     """
     from PaloAltoNetworks_PrismaCloudCompute import get_ci_scan_results_list, PrismaCloudComputeClient
-    with open("test_data/get_ci_scan_results_list.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/get_ci_scan_results_list.json") as f:
         response = json.load(f)
 
     requests_mock.get(url=BASE_URL + '/scans', json=response)
@@ -1664,7 +1664,7 @@ def test_get_trusted_images_command(requests_mock):
 
     from PaloAltoNetworks_PrismaCloudCompute import get_trusted_images, PrismaCloudComputeClient
 
-    with open("test_data/trusted_images.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/trusted_images.json") as f:
         response = json.load(f)
 
     requests_mock.get(url=BASE_URL + '/trust/data', json=response)
@@ -1687,7 +1687,7 @@ def test_update_trusted_images_command(mocker):
 
     from PaloAltoNetworks_PrismaCloudCompute import update_trusted_images, PrismaCloudComputeClient
 
-    with open("test_data/trusted_images.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/trusted_images.json") as f:
         images_list_json = json.load(f)
 
     client = PrismaCloudComputeClient(base_url=BASE_URL, verify='False', project='', auth=('test', 'test'))
@@ -1712,7 +1712,7 @@ def test_get_container_scan_results_command(requests_mock):
 
     from PaloAltoNetworks_PrismaCloudCompute import get_container_scan_results, PrismaCloudComputeClient
 
-    with open("test_data/get_container_scan_results.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/get_container_scan_results.json") as f:
         response = json.load(f)
 
     requests_mock.get(url=BASE_URL + '/containers', json=response)
@@ -1736,7 +1736,7 @@ def test_get_hosts_info_command(requests_mock):
 
     from PaloAltoNetworks_PrismaCloudCompute import get_hosts_info, PrismaCloudComputeClient
 
-    with open("test_data/get_hosts_info.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/get_hosts_info.json") as f:
         response = json.load(f)
 
     requests_mock.get(url=BASE_URL + '/hosts/info', json=response)
@@ -1760,7 +1760,7 @@ def test_get_runtime_container_audit_events_command(requests_mock):
 
     from PaloAltoNetworks_PrismaCloudCompute import get_runtime_container_audit_events, PrismaCloudComputeClient
 
-    with open("test_data/get_runtime_container_audit_events.json") as f:
+    with open(os.path.dirname(__file__) + "test_data/get_runtime_container_audit_events.json") as f:
         response = json.load(f)
 
     requests_mock.get(url=BASE_URL + '/audits/runtime/container', json=response)

@@ -196,13 +196,13 @@ def test_gsac_list_alerts_command_success(mocker_http_request, gsuite_client):
     """
     from GSuiteSecurityAlertCenter import gsac_list_alerts_command
 
-    with open('test_data/list_alert_response.json') as data:
+    with open(os.path.dirname(__file__) + 'test_data/list_alert_response.json') as data:
         mock_response = json.load(data)
 
-    with open('test_data/list_alert_context.json') as data:
+    with open(os.path.dirname(__file__) + 'test_data/list_alert_context.json') as data:
         expected_res = json.load(data)
 
-    with open('test_data/list_alert.md') as data:
+    with open(os.path.dirname(__file__) + 'test_data/list_alert.md') as data:
         expected_hr = data.read()
 
     mocker_http_request.return_value = mock_response
@@ -277,13 +277,13 @@ def test_gsac_get_alert_command_success(mocker_http_request, gsuite_client):
     """
     from GSuiteSecurityAlertCenter import gsac_get_alert_command
 
-    with open('test_data/get_alert_response.json') as data:
+    with open(os.path.dirname(__file__) + 'test_data/get_alert_response.json') as data:
         mock_response = json.load(data)
 
-    with open('test_data/get_alert_context.json') as data:
+    with open(os.path.dirname(__file__) + 'test_data/get_alert_context.json') as data:
         expected_res = json.load(data)
 
-    with open('test_data/get_alert.md') as data:
+    with open(os.path.dirname(__file__) + 'test_data/get_alert.md') as data:
         expected_hr = data.read()
 
     mocker_http_request.return_value = mock_response
@@ -355,13 +355,13 @@ def test_gsac_create_alert_feedback_command_success(mocker_http_request, gsuite_
     """
     from GSuiteSecurityAlertCenter import gsac_create_alert_feedback_command
 
-    with open('test_data/create_alert_feedback_response.json') as data:
+    with open(os.path.dirname(__file__) + 'test_data/create_alert_feedback_response.json') as data:
         mock_response = json.load(data)
 
-    with open('test_data/create_alert_feedback_response.json') as data:
+    with open(os.path.dirname(__file__) + 'test_data/create_alert_feedback_response.json') as data:
         expected_res = json.load(data)
 
-    with open('test_data/create_alert_feedback.md') as data:
+    with open(os.path.dirname(__file__) + 'test_data/create_alert_feedback.md') as data:
         expected_hr = data.read()
 
     mocker_http_request.return_value = mock_response
@@ -412,13 +412,13 @@ def test_gsac_batch_delete_alerts_command_success(mocker_http_request, gsuite_cl
     """
     from GSuiteSecurityAlertCenter import gsac_batch_delete_alerts_command
 
-    with open('test_data/batch_delete_alerts_raw_response.json') as data:
+    with open(os.path.dirname(__file__) + 'test_data/batch_delete_alerts_raw_response.json') as data:
         mock_response = json.load(data)
 
-    with open('test_data/batch_delete_alerts_context.json') as data:
+    with open(os.path.dirname(__file__) + 'test_data/batch_delete_alerts_context.json') as data:
         expected_res = json.load(data)
 
-    with open('test_data/batch_delete_alerts.md') as data:
+    with open(os.path.dirname(__file__) + 'test_data/batch_delete_alerts.md') as data:
         expected_hr = data.read()
 
     mocker_http_request.return_value = mock_response
@@ -447,13 +447,13 @@ def test_gsac_batch_recover_alerts_command_success(mocker_http_request, gsuite_c
     """
     from GSuiteSecurityAlertCenter import gsac_batch_recover_alerts_command
 
-    with open('test_data/batch_recover_alerts_raw_response.json') as data:
+    with open(os.path.dirname(__file__) + 'test_data/batch_recover_alerts_raw_response.json') as data:
         mock_response = json.load(data)
 
-    with open('test_data/batch_recover_alerts_context.json') as data:
+    with open(os.path.dirname(__file__) + 'test_data/batch_recover_alerts_context.json') as data:
         expected_res = json.load(data)
 
-    with open('test_data/batch_recover_alerts.md') as data:
+    with open(os.path.dirname(__file__) + 'test_data/batch_recover_alerts.md') as data:
         expected_hr = data.read()
 
     mocker_http_request.return_value = mock_response
@@ -482,13 +482,13 @@ def test_gsac_list_alert_feedback_command_success(mocker_http_request, gsuite_cl
     """
     from GSuiteSecurityAlertCenter import gsac_list_alert_feedback_command
 
-    with open('test_data/list_alert_feedback_response.json') as data:
+    with open(os.path.dirname(__file__) + 'test_data/list_alert_feedback_response.json') as data:
         mock_response = json.load(data)
 
-    with open('test_data/list_alert_feedback_context.json') as data:
+    with open(os.path.dirname(__file__) + 'test_data/list_alert_feedback_context.json') as data:
         expected_res = json.load(data)
 
-    with open('test_data/list_alert_feedback.md') as data:
+    with open(os.path.dirname(__file__) + 'test_data/list_alert_feedback.md') as data:
         expected_hr = data.read()
 
     mocker_http_request.return_value = mock_response
@@ -571,10 +571,10 @@ def test_fetch_incidents(gsuite_client, mocker):
         'max_fetch': '1',
         'admin_email': 'dummy'
     }
-    with open('test_data/fetch_incidents_alert_response.json') as file:
+    with open(os.path.dirname(__file__) + 'test_data/fetch_incidents_alert_response.json') as file:
         fetch_incidents_response = json.load(file)
 
-    with open('test_data/fetch_incidents_output.json') as file:
+    with open(os.path.dirname(__file__) + 'test_data/fetch_incidents_output.json') as file:
         fetch_incidents_output = json.load(file)
 
     mocker.patch("demistomock.info", return_value=True)
@@ -594,7 +594,7 @@ def test_main_fetch_incidents(mocker):
     :return: None
     """
     from GSuiteSecurityAlertCenter import main, demisto
-    with open('test_data/fetch_incidents_output.json') as file:
+    with open(os.path.dirname(__file__) + 'test_data/fetch_incidents_output.json') as file:
         fetch_incidents_output = json.load(file)
     mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
     mocker.patch.object(demisto, 'incidents')

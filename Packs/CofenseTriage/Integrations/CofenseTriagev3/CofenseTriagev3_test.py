@@ -124,13 +124,13 @@ def test_cofense_report_list_command_when_valid_response_is_returned(mocker_http
     """Test case scenario for successful execution of cofense-report-list command."""
     from CofenseTriagev3 import cofense_report_list_command
 
-    with open('test_data/report/report_list_response.json') as data:
+    with open(os.path.dirname(__file__) + 'test_data/report/report_list_response.json') as data:
         mock_response = json.load(data)
 
-    with open('test_data/report/report_list_context.json') as data:
+    with open(os.path.dirname(__file__) + 'test_data/report/report_list_context.json') as data:
         expected_res = json.load(data)
 
-    with open('test_data/report/report_list.md') as data:
+    with open(os.path.dirname(__file__) + 'test_data/report/report_list.md') as data:
         expected_hr = data.read()
 
     mocker_http_request.return_value = mock_response
@@ -372,13 +372,13 @@ def test_cofense_category_list_command_when_valid_response_is_returned(mocker_ht
     """Test case scenario for successful execution of cofense-category-list command."""
     from CofenseTriagev3 import cofense_category_list_command
 
-    with open('test_data/category/category_list_response.json') as data:
+    with open(os.path.dirname(__file__) + 'test_data/category/category_list_response.json') as data:
         mock_response = json.load(data)
 
-    with open('test_data/category/category_list_context.json') as data:
+    with open(os.path.dirname(__file__) + 'test_data/category/category_list_context.json') as data:
         expected_res = json.load(data)
 
-    with open('test_data/category/category_list.md') as data:
+    with open(os.path.dirname(__file__) + 'test_data/category/category_list.md') as data:
         expected_hr = data.read()
 
     mocker_http_request.return_value = mock_response
@@ -555,13 +555,13 @@ def test_cofense_rule_list_command_when_valid_response_is_returned(mocker_http_r
     """Test case scenario for successful execution of cofense-rule-list command."""
     from CofenseTriagev3 import cofense_rule_list_command
 
-    with open('test_data/rule/rule_list_response.json') as data:
+    with open(os.path.dirname(__file__) + 'test_data/rule/rule_list_response.json') as data:
         mock_response = json.load(data)
 
-    with open('test_data/rule/rule_list_context.json') as data:
+    with open(os.path.dirname(__file__) + 'test_data/rule/rule_list_context.json') as data:
         expected_res = json.load(data)
 
-    with open('test_data/rule/rule_list.md') as data:
+    with open(os.path.dirname(__file__) + 'test_data/rule/rule_list.md') as data:
         expected_hr = data.read()
 
     mocker_http_request.return_value = mock_response
@@ -851,7 +851,7 @@ def test_cofense_comment_list_command_when_valid_response_is_returned(mocker_htt
 
     expected_res = util_load_json('test_data/comment/comment_list_context.json')
 
-    with open('test_data/comment/comment_list_hr.md') as data:
+    with open(os.path.dirname(__file__) + 'test_data/comment/comment_list_hr.md') as data:
         expected_hr = data.read()
 
     args = {'page_size': '20'}
@@ -948,13 +948,13 @@ def test_cofense_cluster_list_command_when_valid_response_is_returned(mocker_htt
     """Test case scenario for successful execution of cofense-cluster-list command."""
     from CofenseTriagev3 import cofense_cluster_list_command
 
-    with open('test_data/cluster/cluster_list_response.json') as data:
+    with open(os.path.dirname(__file__) + 'test_data/cluster/cluster_list_response.json') as data:
         mock_response = json.load(data)
 
-    with open('test_data/cluster/cluster_list_context.json') as data:
+    with open(os.path.dirname(__file__) + 'test_data/cluster/cluster_list_context.json') as data:
         expected_res = json.load(data)
 
-    with open('test_data/cluster/cluster_list.md') as data:
+    with open(os.path.dirname(__file__) + 'test_data/cluster/cluster_list.md') as data:
         expected_hr = data.read()
 
     mocker_http_request.return_value = mock_response

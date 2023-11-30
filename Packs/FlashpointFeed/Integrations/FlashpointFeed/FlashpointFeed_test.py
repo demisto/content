@@ -163,7 +163,7 @@ def test_get_indicators_command_when_valid_response_is_returned(mocker_http_requ
 
     indicators = util_load_json('test_data/fetch_indicators.json')
 
-    with open('test_data/get_indicators.md') as data:
+    with open(os.path.dirname(__file__) + 'test_data/get_indicators.md') as data:
         expected_hr = data.read()
 
     params = PARAMS

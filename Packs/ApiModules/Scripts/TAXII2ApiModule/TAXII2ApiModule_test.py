@@ -6,30 +6,30 @@ from taxii2client import v20, v21
 import pytest
 import json
 
-with open('test_data/stix_envelope_no_indicators.json') as f:
+with open(os.path.dirname(__file__) + 'test_data/stix_envelope_no_indicators.json') as f:
     STIX_ENVELOPE_NO_IOCS = json.load(f)
 
-with open('test_data/stix_envelope_17-19.json') as f:
+with open(os.path.dirname(__file__) + 'test_data/stix_envelope_17-19.json') as f:
     STIX_ENVELOPE_17_IOCS_19_OBJS = json.load(f)
 
-with open('test_data/stix_envelope_complex_20-19.json') as f:
+with open(os.path.dirname(__file__) + 'test_data/stix_envelope_complex_20-19.json') as f:
     STIX_ENVELOPE_20_IOCS_19_OBJS = json.load(f)
 
-with open('test_data/cortex_parsed_indicators_17-19.json') as f:
+with open(os.path.dirname(__file__) + 'test_data/cortex_parsed_indicators_17-19.json') as f:
     CORTEX_17_IOCS_19_OBJS = json.load(f)
 
-with open('test_data/cortex_parsed_indicators_complex_20-19.json') as f:
+with open(os.path.dirname(__file__) + 'test_data/cortex_parsed_indicators_complex_20-19.json') as f:
     CORTEX_COMPLEX_20_IOCS_19_OBJS = json.load(f)
 
-with open('test_data/cortex_parsed_indicators_complex_skipped_14-19.json') as f:
+with open(os.path.dirname(__file__) + 'test_data/cortex_parsed_indicators_complex_skipped_14-19.json') as f:
     CORTEX_COMPLEX_14_IOCS_19_OBJS = json.load(f)
-with open('test_data/id_to_object_test.json') as f:
+with open(os.path.dirname(__file__) + 'test_data/id_to_object_test.json') as f:
     id_to_object = json.load(f)
-with open('test_data/parsed_stix_objects.json') as f:
+with open(os.path.dirname(__file__) + 'test_data/parsed_stix_objects.json') as f:
     parsed_objects = json.load(f)
-with open('test_data/objects_envelopes_v21.json') as f:
+with open(os.path.dirname(__file__) + 'test_data/objects_envelopes_v21.json') as f:
     envelopes_v21 = json.load(f)
-with open('test_data/objects_envelopes_v20.json') as f:
+with open(os.path.dirname(__file__) + 'test_data/objects_envelopes_v20.json') as f:
     envelopes_v20 = json.load(f)
 
 

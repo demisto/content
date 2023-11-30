@@ -93,7 +93,7 @@ def test_vmwuem_device_os_updates_list_command_when_valid_response_is_returned(r
 
     expected_context_output = util_load_json("test_data/vmwuem_device_osupdates_list_command_context.json")
 
-    with open("test_data/vmwuem_device_osupdates_list_command_readable_output.md", 'r') as f:
+    with open(os.path.dirname(__file__) + "test_data/vmwuem_device_osupdates_list_command_readable_output.md", 'r') as f:
         expected_readable_output = f.read()
 
     args = {
@@ -162,7 +162,7 @@ def test_vmwuem_device_osupdates_list_command_when_laptop_device_provided(reques
 
     expected_context_output = util_load_json("test_data/vmwuem_device_osupdates_list_command_context_laptop.json")
 
-    with open("test_data/vmwuem_device_osupdates_list_command_readable_output_laptop.md", 'r') as f:
+    with open(os.path.dirname(__file__) + "test_data/vmwuem_device_osupdates_list_command_readable_output_laptop.md", 'r') as f:
         expected_readable_output = f.read()
 
     args = {
@@ -240,7 +240,7 @@ def test_vmuem_device_get_command_when_no_records_found_html_response(requests_m
     Test no records found test case for vmuem-device-get when response is html
     """
     from VMwareWorkspaceONEUEM import vmwuem_device_get_command
-    with open("test_data/get_device_404_no_records_found_message.html") as file:
+    with open(os.path.dirname(__file__) + "test_data/get_device_404_no_records_found_message.html") as file:
         response = file.read()
 
     requests_mock.get(BASE_URL + 'devices/{uuid}'.format(uuid="1234"),

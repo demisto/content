@@ -551,7 +551,7 @@ def test_checkpoint_server_sanitization(mocker, server: str):
 
 
 def get_treat_protection_response():
-    with io.open('./test_data/threat_protection_response.json', mode='r', encoding='utf-8') as f:
+    with io.open(os.path.dirname(__file__) + 'test_data/threat_protection_response.json', mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 

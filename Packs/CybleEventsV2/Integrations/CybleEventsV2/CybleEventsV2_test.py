@@ -19,7 +19,7 @@ import demistomock as demisto
 
 
 def util_load_json(path):
-    with open("test_data/" + path, encoding='utf-8') as f:
+    with open(os.path.dirname(__file__) + "test_data/" + path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 

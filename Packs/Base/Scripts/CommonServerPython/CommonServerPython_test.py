@@ -719,7 +719,7 @@ class TestTableToMarkdown:
         Then:
           - Parse the json table to the default format which supports nesting.
         """
-        with open('test_data/nested_data_example.json') as f:
+        with open(os.path.dirname(__file__) + 'test_data/nested_data_example.json') as f:
             nested_data_example = json.load(f)
         table = tableToMarkdown("tableToMarkdown test", nested_data_example,
                                 headers=['name', 'changelog', 'nested'],
@@ -740,7 +740,7 @@ class TestTableToMarkdown:
 
     @staticmethod
     def test_with_json_transformer_simple():
-        with open('test_data/simple_data_example.json') as f:
+        with open(os.path.dirname(__file__) + 'test_data/simple_data_example.json') as f:
             simple_data_example = json.load(f)
         name_transformer = JsonTransformer(keys=['first', 'second'], is_nested=False)
         json_transformer_mapping = {'name': name_transformer}
@@ -773,7 +773,7 @@ class TestTableToMarkdown:
           - The header key which is transformed will parsed with the relevant keys.
         """
 
-        with open('test_data/nested_data_example.json') as f:
+        with open(os.path.dirname(__file__) + 'test_data/nested_data_example.json') as f:
             nested_data_example = json.load(f)
         changelog_transformer = JsonTransformer(keys=['releaseNotes', 'released'], is_nested=True)
         table_json_transformer = {'changelog': changelog_transformer}
@@ -796,7 +796,7 @@ class TestTableToMarkdown:
         Then:
           - The header key which is transformed will parsed with the relevant keys.
         """
-        with open('test_data/complex_nested_data_example.json') as f:
+        with open(os.path.dirname(__file__) + 'test_data/complex_nested_data_example.json') as f:
             complex_nested_data_example = json.load(f)
         changelog_transformer = JsonTransformer(keys=['releaseNotes', 'c'], is_nested=True)
         table_json_transformer = {'changelog': changelog_transformer}
@@ -823,7 +823,7 @@ class TestTableToMarkdown:
         def changelog_to_str(json_input):
             return ', '.join(json_input.keys())
 
-        with open('test_data/nested_data_example.json') as f:
+        with open(os.path.dirname(__file__) + 'test_data/nested_data_example.json') as f:
             nested_data_example = json.load(f)
         changelog_transformer = JsonTransformer(func=changelog_to_str)
         table_json_transformer = {'changelog': changelog_transformer}
@@ -846,7 +846,7 @@ class TestTableToMarkdown:
         Then:
           - Create a markdown table with the list
         """
-        with open('test_data/nested_data_in_list.json') as f:
+        with open(os.path.dirname(__file__) + 'test_data/nested_data_in_list.json') as f:
             data_with_list = json.load(f)
         table = tableToMarkdown("tableToMarkdown test", data_with_list, is_auto_json_transform=True)
         if IS_PY3:
@@ -873,7 +873,7 @@ class TestTableToMarkdown:
         Then:
           - Create a markdown table with the list only with given keys
         """
-        with open('test_data/nested_data_in_list.json') as f:
+        with open(os.path.dirname(__file__) + 'test_data/nested_data_in_list.json') as f:
             data_with_list = json.load(f)
         table = tableToMarkdown("tableToMarkdown test", data_with_list,
                                 json_transform_mapping={'Commands': JsonTransformer(keys=('commandStatus', 'command'))})

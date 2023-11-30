@@ -394,16 +394,16 @@ MOCK_FILE_CONTEXT = [
     },
 ]
 
-with open("test_data/alert_response.json") as f:
+with open(os.path.dirname(__file__) + "test_data/alert_response.json") as f:
     MOCK_ALERTS_RESPONSE = f.read()
 
-with open("test_data/alert_aggregate_response.json") as f:
+with open(os.path.dirname(__file__) + "test_data/alert_aggregate_response.json") as f:
     MOCK_ALERT_AGGREGATE_RESPONSE = f.read()
 
-with open("test_data/alert_details_response.json") as f:
+with open(os.path.dirname(__file__) + "test_data/alert_details_response.json") as f:
     MOCK_ALERT_DETAILS_RESPONSE = f.read()
 
-with open("test_data/v2_file_event_response.json") as f:
+with open(os.path.dirname(__file__) + "test_data/v2_file_event_response.json") as f:
     MOCK_V2_FILE_EVENTS_RESPONSE = f.read()
 
 MOCK_CODE42_ALERT_CONTEXT = [

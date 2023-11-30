@@ -6,7 +6,7 @@ from SendEmailToManager import *
 
 
 def executeCommand_mock(command: str, args: dict) -> list:
-    with open("test_data/ad-search.json", "r") as file:
+    with open(os.path.dirname(__file__) + "test_data/ad-search.json", "r") as file:
         test_data = json.load(file)
 
     if command == "ad-search":
