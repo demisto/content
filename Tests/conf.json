@@ -23,7 +23,7 @@
         {
             "playbookID": "playbook-AzureLogAnalytics-test",
             "integrations": "Azure Log Analytics",
-            "instance_name" : "Azure_Log_Analytics_client_cred",
+            "instance_name": "Azure_Log_Analytics_client_cred",
             "timeout": 800,
             "is_mockable": false
         },
@@ -190,7 +190,13 @@
             "memory_threshold": 500
         },
         {
-            "playbookID": "SetIfEmpty - non-ascii chars - Test"
+            "playbookID": "SetIfEmpty_Test"
+        },
+        {
+            "playbookID": "IsEmailAddressInternal_Test"
+        },
+        {
+            "playbookID": "SetAndHandleEmpty_Test"
         },
         {
             "integrations": "Tripwire",
@@ -2976,7 +2982,8 @@
         },
         {
             "playbookID": "FormattingPerformance - Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "toversion": "7.9.9"
         },
         {
             "integrations": "AWS - EC2",
@@ -5777,7 +5784,8 @@
         "Microsoft Defender Advanced Threat Protection - Test dev": "Issue CIAC-7514",
         "Microsoft Defender Advanced Threat Protection - Test self deployed": "Issue CIAC-7527",
         "Microsoft Defender Advanced Threat Protection - Test": "Issue CIAC-7527",
-        "OpsGenieV3TestPlaybook": "Issue CIAC-7649"
+        "OpsGenieV3TestPlaybook": "Issue CIAC-7649",
+        "ThreatStream-Test": "Issue CRTX-96526"
     },
     "skipped_integrations": {
         "CiscoWSAv2": "No instance - No license",
@@ -6209,4 +6217,3 @@
         "IPv6 extraction test"
     ]
 }
-
