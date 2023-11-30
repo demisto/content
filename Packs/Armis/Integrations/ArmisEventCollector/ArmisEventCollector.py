@@ -254,10 +254,9 @@ def dedup_events(events: list[dict], events_last_fetch_ids: list[str], event_typ
         return [], events_last_fetch_ids
     if event_type.type == 'devices':
         demisto.debug('debug-log: event type is devices, no dedup needed.')
-        new_events: list[dict] = events
-    else:
-        demisto.debug('debug-log: performing dedup on event list.')
-        new_events: list[dict] = [event for event in events if event.get(unique_id_key) not in events_last_fetch_ids]
+        return events, []
+    demisto.debug('debug-log: performing dedup on event list.')
+    new_events: list[dict] = [event for event in events if event.get(unique_id_key) not in events_last_fetch_ids]
 
     earliest_event_datetime = arg_to_datetime(events[0].get(event_order_by))
     latest_event_datetime = arg_to_datetime(events[-1].get(event_order_by))
