@@ -58,7 +58,7 @@ def test_none_or_apply(item, expected):
 """ COMMAND FUNCTIONS """
 
 
-TEST_DATA_PATH = Path(__file__.parent / "test_data")
+TEST_DATA_PATH = Path(__file__).parent / "test_data")
 
 
 def util_get_json(directory, filename):
