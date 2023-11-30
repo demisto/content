@@ -310,10 +310,10 @@ tasks:
   "8":
     id: "8"
     taskid: f39edc2d-ba70-493e-84f2-c8cead5fdab2
-    description: ""
     type: condition
     task:
       id: f39edc2d-ba70-493e-84f2-c8cead5fdab2
+      description: ""
       version: -1
       name: Any associated users were found?
       type: condition
@@ -353,10 +353,10 @@ tasks:
   "9":
     id: "9"
     taskid: 3542e395-7dab-438f-83a1-1f44a224290d
-    description: ""
     type: condition
     task:
       id: 3542e395-7dab-438f-83a1-1f44a224290d
+      description: ""
       version: -1
       name: Enrich Users?
       type: condition
@@ -431,6 +431,7 @@ inputs:
 outputs:
 - contextPath: PrismaCloud.Users
   type: unknown
+  description: The users which were found by this playbook.
 - contextPath: PrismaCloud.Users.email
   description: Prisma Cloud user email.
 - contextPath: PrismaCloud.Users.firstName
