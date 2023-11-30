@@ -98,7 +98,7 @@ def url_validation(url: str) -> str:
         )
     return url
 
-
+    
 class MsGraphClient:
     """
     Microsoft Graph Client enables authorized access to organization's files in OneDrive, SharePoint, and MS Teams.
@@ -154,6 +154,36 @@ class MsGraphClient:
         url_suffix = f"sites/{site_id}/drives"
         return self.ms_client.http_request(method="GET", params=params, url_suffix=url_suffix)
 
+    def list_site_permissions(self, site_id: str | None, permission_id: str | None) -> dict:
+            
+        url_suffix = f"sites/{site_id}/permissions"
+        if permission_id:
+            url_suffix += f"/{permission_id}"
+        return self.ms_client.http_request(method="GET", url_suffix=url_suffix)
+    
+    def get_application(self, app_id: str, ) -> dict[str, Any]:
+        return self.ms_client.http_request(method="GET", url_suffix=f"/applications(appId='{app_id}')")
+        
+    def create_site_permission(self, site_id: str, app_id: str, display_name: str, roles: list[str]) -> dict:
+        url_suffix = f"sites/{site_id}/permissions"
+        body = {
+                "roles": roles,
+                "grantedToIdentities": [{
+                    "application": {
+                    "id": app_id,
+                    "displayName": display_name
+                    }
+                }]
+            }
+        return self.ms_client.http_request(method="POST", url_suffix=url_suffix, json_data=body)
+    
+    def update_site_permission(self, site_id: str, permission_id: str, roles: list[str]) -> dict:
+    
+        url_suffix = f"sites/{site_id}/permissions/{permission_id}"
+        body = {
+                "roles": roles
+            }
+        return self.ms_client.http_request(method="PATCH", url_suffix=url_suffix, json_data=body)
     def list_drive_content(self, object_type, object_type_id, item_id=None, limit=None, next_page_url=None):
         """
         This command list all the drive's files and folders
@@ -165,7 +195,7 @@ class MsGraphClient:
         :return: graph api raw response
         """
         params = {"$top": limit} if limit else ""
-
+        uri = ''
         if next_page_url:
             url = url_validation(next_page_url)
             return self.ms_client.http_request(method="GET", full_url=url, params=params)
@@ -416,7 +446,7 @@ class MsGraphClient:
             return self.ms_client.http_request(
                 method="PUT", headers=headers, url_suffix=uri, data=file)
 
-    def download_file(self, object_type, object_type_id, item_id):
+    def download_file(self, object_type: str, object_type_id: str, item_id: str):
         """
         Download the contents of the file of a DriveItem.
         :param object_type: ms graph resource.
@@ -424,6 +454,7 @@ class MsGraphClient:
         :param item_id: ms graph item_id.
         :return: graph api raw response
         """
+        uri = ''
         if object_type == "drives":
             uri = f"{object_type}/{object_type_id}/items/{item_id}/content"
 
@@ -458,7 +489,7 @@ class MsGraphClient:
         return self.ms_client.http_request(method="POST", json_data=payload, url_suffix=uri)
 
 
-def module_test(client: MsGraphClient, *_):
+def test_module(client: MsGraphClient) -> str:
     """
     Performs basic get request to get item samples
     """
@@ -471,42 +502,40 @@ def module_test(client: MsGraphClient, *_):
 
     except Exception as e:
         raise DemistoException(
-            f"Test failed. please check if Server Url is correct. \n {e}"
+            f"Test failed.\n {e}"
         )
     return 'ok'
 
 
-def download_file_command(client: MsGraphClient, args: dict):
+def download_file_command(client: MsGraphClient, args: dict) -> dict:
     """
     This function runs download file command
     :return: FileResult object
     """
-    object_type = args.get("object_type")
-    object_type_id = args.get("object_type_id")
-    item_id = args.get("item_id")
+    object_type = args["object_type"]
+    object_type_id = args["object_type_id"]
+    item_id = args["item_id"]
 
     result = client.download_file(
         object_type=object_type, object_type_id=object_type_id, item_id=item_id
     )
-    stored_img = fileResult(item_id, result.content)
-    return stored_img
+    return fileResult(item_id, result.content)
 
 
-def list_drive_content_human_readable_object(parsed_drive_items):
-    human_readable_content_obj = {
+def list_drive_content_human_readable_object(parsed_drive_items: dict) -> dict:
+    return {
         "Name": parsed_drive_items.get("Name"),
         "ID": parsed_drive_items.get("ID"),
-        "CreatedBy": parsed_drive_items.get("CreatedBy").get("DisplayName"),
+        "CreatedBy": parsed_drive_items.get("CreatedBy", {}).get("DisplayName"),
         "CreatedDateTime": parsed_drive_items.get("CreatedDateTime"),
         "Description": parsed_drive_items.get("Description"),
         "Size": parsed_drive_items.get("Size"),
         "LastModifiedDateTime": parsed_drive_items.get("LastModifiedDateTime"),
         "WebUrl": parsed_drive_items.get("WebUrl"),
     }
-    return human_readable_content_obj
 
 
-def list_drive_content_command(client: MsGraphClient, args: dict):
+def list_drive_content_command(client: MsGraphClient, args: dict[str, str]) -> tuple[str, dict, dict]:
     """
     This function runs list drive children command
     :return: human_readable, context, result
@@ -808,6 +837,93 @@ def delete_file_command(client: MsGraphClient, args: dict) -> tuple[str, str]:
 
     return human_readable, text  # == raw response
 
+def get_site_id(client: MsGraphClient, site_name: str) -> str:
+    
+    site_details = client.list_sharepoint_sites(site_name)
+    if site_id := site_details.get("value", [{}])[0].get("id"):
+        site_id = site_id.split(",")[1]
+
+    return site_id
+def _parse_permission(permission: dict):
+    identities = permission.get("grantedToIdentitiesV2", [{}])
+    return {
+        "ID": permission.get("id"),
+        "Roles": permission.get("roles"),
+        "Application Name": [identity.get("application", {}).get("displayName") for identity in identities],
+        "Application ID": [identity.get("application", {}).get("id") for identity in identities],
+    }
+def list_site_permissions_command(client: MsGraphClient, args: dict[str, str]) -> CommandResults:
+
+    permission_id = args.get("permission_id")
+    limit = arg_to_number(args.get("limit", 50))
+    all_results = argToBoolean(args.get("all_results", True))
+
+    site_id = args.get("site_id")
+    site_name = args.get("site_name")
+    if not site_id and site_name:
+        site_id = get_site_id(client, site_name)
+    
+    if not any([site_id, site_name]):
+        raise DemistoException("Either site_id or site_name parameter is required")
+    results = client.list_site_permissions(site_id, permission_id)
+    if permission_id:
+        readable_output = tableToMarkdown(
+            name="Site Permission",
+            t=_parse_permission(results)
+        )
+    else:
+        results = results.get("value", [])[:limit]
+        readable_output = tableToMarkdown(
+            name="Site Permission",
+            t=[_parse_permission(result) for result in results]
+        )
+              
+    return CommandResults(
+        outputs_prefix="MsGraphFiles.SitePermission",
+        outputs_key_field="id",
+        outputs=results,
+        readable_output=readable_output
+    )
+
+def create_site_permissions_command(client: MsGraphClient, args: dict[str, str]) -> CommandResults:
+    site_id = args.get("site_id", '')
+    site_name = args.get("site_name")
+    app_id = args["app_id"]
+    roles = argToList(args["roles"])
+    display_name = args["display_name"]
+    # display_name = client.get_application(app_id)["displayName"]
+    
+    if not any([site_id, site_name]):
+        raise DemistoException("Either site_id or site_name parameter is required")
+    if not site_id and site_name:
+        site_id = get_site_id(client, site_name)
+
+    results = client.create_site_permission(site_id, app_id, display_name, roles)
+    
+    return CommandResults(
+        outputs_prefix="MsGraphFiles.SitePermission",
+        outputs_key_field="id",
+        outputs=results,
+        readable_output=tableToMarkdown("Site Permission", t=_parse_permission(results))
+    )
+
+def update_site_permissions_command(client: MsGraphClient, args: dict[str, str]) -> CommandResults:
+    site_id = args.get("site_id", '')
+    site_name = args.get("site_name")
+    permission_id = args["permission_id"]
+    roles = argToList(args["roles"])
+    if not any([site_id, site_name]):
+        raise DemistoException("Either site_id or site_name parameter is required")
+    if not site_id and site_name:
+        site_id = get_site_id(client, site_name)
+    results = client.update_site_permission(site_id, permission_id, roles)
+    
+    return CommandResults(
+        outputs_prefix="MsGraphFiles.SitePermission",   # TODO
+        outputs_key_field="id",
+        outputs=results,
+        readable_output=tableToMarkdown("Site Permission", t=_parse_permission(results))
+    )
 
 def main():
     params: dict = demisto.params()
@@ -841,11 +957,10 @@ def main():
                                managed_identities_client_id=managed_identities_client_id)
 
         demisto.debug(f"Command being called is {command}")
-
+        results: CommandResults | str
         if command == "test-module":
             # This is the call made when pressing the integration Test button.
-            result = module_test(client)
-            demisto.results(result)
+            results = test_module(client)
         elif command == "msgraph-delete-file":
             readable_output, raw_response = delete_file_command(client, args)
             return_outputs(readable_output=readable_output, raw_response=raw_response)
@@ -866,8 +981,16 @@ def main():
         elif command == "msgraph-upload-new-file":
             return_outputs(*upload_new_file_command(client, args))
         elif command == "msgraph-files-auth-reset":
-            return_results(reset_auth())
-    # Log exceptions
+            results = reset_auth()
+        elif command == "msgraph-list-site-permissions":
+            results = list_site_permissions_command(client, args)
+        elif command == "msgraph-create-site-permissions":
+            results = create_site_permissions_command(client, args)
+        elif command == "msgraph-update-site-permissions":
+            results = update_site_permissions_command(client, args)
+        else:
+            raise NotImplementedError(f"Command {command} is not implemented")
+        return_results(results)
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 

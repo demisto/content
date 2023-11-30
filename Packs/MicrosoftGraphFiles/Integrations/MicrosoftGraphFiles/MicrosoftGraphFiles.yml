@@ -639,6 +639,44 @@ script:
     execution: false
     name: msgraph-files-auth-reset
     arguments: []
+  - arguments:
+    - description:
+      name: limit
+      defaultValue: 50
+    - description:
+      name: site_id
+    - description:
+      name: site_name
+    - description:
+      name: permission_id
+    - description:
+      name: all_results
+    name: msgraph-list-site-permissions
+    description: Returns a list of permissions for a site.
+  - arguments:
+    - description: The site ID or site name.
+      name: site_id
+    - description:
+      name: site_name
+    - description:
+      name: roles
+    - description:
+      name: app_id
+    - description:
+      name: display_name
+    name: msgraph-create-site-permissions
+    description: Creates a new permission for a site.
+  - arguments:
+    - description: The site ID or site name.
+      name: site_name
+    - description:
+      name: site_id
+    - description: The permission ID to update.
+      name: permission_id
+    - description:
+      name: roles
+    name: msgraph-update-site-permissions
+    description: Updates an existing permission for a site.
   dockerimage: demisto/python_pancloud:1.0.0.77747
   script: ''
   subtype: python3
