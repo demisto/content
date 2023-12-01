@@ -214,7 +214,7 @@ def get_scan_result_command():
             ec[f'OPSWAT(val.ScanId == {scan_id}).PercentageBad'] = percntBad
             ec[f'OPSWAT(val.ScanId == {scan_id}).Result'] = scan_all_result_a
 
-            if percntBad >= percntBad >= HIGH_THRESHOLD:
+            if percntBad >= HIGH_THRESHOLD:
                 dbotScore = 3
                 ec[outputPaths['file']] = {
                     'Hash': file_info['md5'],
