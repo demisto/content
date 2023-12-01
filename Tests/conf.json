@@ -5496,6 +5496,9 @@
             "playbookID": "GridFieldSetup_test"
         },
         {
+            "playbookID": "TestGetArrayElements"
+        },
+        {
             "integrations": "Aha",
             "playbookID": "AHA_TestPlaybook",
             "fromversion": "6.5.0"
