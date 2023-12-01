@@ -1,3 +1,4 @@
+import datetime
 import json
 
 import demistomock as demisto  # noqa: F401
@@ -71,11 +72,22 @@ class Client(BaseClient):
     def get_set_list(self) -> dict:
         return self._http_request('GET', url_suffix='Sets')
 
-    def get_policy_audits(self, set_id: str) -> dict:
-        return self._http_request('POST', url_suffix=f'Sets/{set_id}/policyaudits/search')
+    def get_policy_audits(self, set_id: str, from_date: str = '', limit: int = 1000, next_cursor: str = '') -> dict:
+        url_suffix = f'Sets/{set_id}/policyaudits/search'
+        if limit:
+            url_suffix = f'{url_suffix}?limit={limit}'
+        if next_cursor:
+            url_suffix = f'{url_suffix}?nextCursor={next_cursor}'
 
-    def get_admin_audits(self) -> dict:
-        return self._http_request('GET', url_suffix=f'Account/AdminAudit')
+        data = {}
+        if from_date:
+            # data['filter'] = f'eventDate GE {from_date}'
+            data['filter'] = 'eventDate GE 2023-11-30T14:55:21Z'
+
+        return self._http_request('POST', url_suffix=url_suffix, json_data=data)
+
+    def get_admin_audits(self, set_id: str) -> dict:
+        return self._http_request('GET', url_suffix=f'Sets/{set_id}/AdminAudit')
 
     def get_events(self, set_id: str) -> dict:
         return self._http_request('POST', url_suffix=f'Sets/{set_id}/Events/Search')
@@ -107,17 +119,25 @@ def get_set_ids_by_set_names(client: Client) -> list[str]:
     return list(context_set_items.values())
 
 
-def get_policy_audits(client: Client) -> list:
+def get_policy_audits(client: Client, from_date: str, limit: int) -> list:
     """
     Args:
         client (Client): CyberArkEPM client to use.
+        from_date (str): Date from where to get events.
+        limit (int): The sum of events to get.
     Returns:
-        (list) A list of policy audits associated with a list of set names.
+        (list) A list events associated with a list of set names.
     """
     policy_audits = []
+
     for set_id in get_set_ids_by_set_names(client):
-        events = client.get_policy_audits(set_id).get('events')
-        policy_audits.extend(events)
+        result = client.get_policy_audits(set_id, from_date, limit)
+        policy_audits.extend(result.get('events'))
+
+        while next_cursor := result.get('nextCursor'):
+            result = client.get_policy_audits(set_id, from_date, limit, next_cursor)
+            policy_audits.extend(result.get('events'))
+
     return policy_audits
 
 
@@ -126,9 +146,13 @@ def get_admin_audits(client: Client) -> list:
     Args:
         client (Client): CyberArkEPM client to use.
     Returns:
-        (list) A list of admin audits.
+        (list) A list of admin audits associated with a list of set names.
     """
-    return client.get_admin_audits().get('events')
+    admin_audits = []
+    for set_id in get_set_ids_by_set_names(client):
+        events = client.get_admin_audits(set_id).get('AdminAudits')
+        admin_audits.extend(events)
+    return admin_audits
 
 
 def get_detailed_events(client: Client):
@@ -159,7 +183,15 @@ def fetch_events(client: Client, max_fetch: int = 5000) -> list:
     Return:
         (list) A list of events to push to XSIAM
     """
-    last_run = demisto.getLastRun()
+
+    if not (last_run := demisto.getLastRun()):
+        demisto.debug('First fetch')
+        now = datetime.datetime.now().strftime(DATE_FORMAT)
+        last_run = {
+            'policy_audits': now,
+            'admin_audits': now,
+            'detailed_events': now,
+        }
     demisto.debug(f'Start fetching last run: {last_run}')
 
     events = get_policy_audits(client) + get_admin_audits(client) + get_detailed_events(client)
@@ -218,8 +250,8 @@ def main():  # pragma: no cover
             application_url=application_url,
         )
 
-        get_admin_audits(client)
-        result = get_policy_audits(client) + get_detailed_events(client)
+        get_policy_audits(client, datetime.now().strftime(DATE_FORMAT), 5)
+        # result = get_policy_audits(client) + get_admin_audits(client) + get_detailed_events(client)
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
