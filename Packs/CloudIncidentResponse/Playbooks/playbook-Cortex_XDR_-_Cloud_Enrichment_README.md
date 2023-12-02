@@ -10,26 +10,32 @@ The playbook collects or enriches the following data:
    - ASN
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* IP Enrichment - Generic v2
+
 * Account Enrichment - Generic v2.1
+* IP Enrichment - Generic v2
 
 ### Integrations
-* Whois
+
+This playbook does not use any integrations.
 
 ### Scripts
-* If-Then-Else
+
+* IsInCidrRanges
 * Set
 * CopyContextToField
-* IsInCidrRanges
+* If-Then-Else
 
 ### Commands
+
 * setIncident
 * ip
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -38,12 +44,13 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | InternalRange | A list of internal IP ranges to check IP addresses against. \\nFor IP Enrichment - Generic v2 playbook. |  | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| IP | The IP objects | unknown |
-| DBotScore | Indicator, Score, Type, Vendor | unknown |
+| IP | The IP objects. | unknown |
+| DBotScore | Indicator, Score, Type, Vendor. | unknown |
 | Account | The account object. | unknown |
 | IAM | Generic IAM output. | unknown |
 | ASNType | Checks for cloud ASNs. | unknown |
@@ -53,5 +60,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | uniqueRegionCount | Involved region distinct count. | unknown |
 
 ## Playbook Image
+
 ---
+
 ![Cortex XDR - Cloud Enrichment](../doc_files/Cortex_XDR_-_Cloud_Enrichment.png)

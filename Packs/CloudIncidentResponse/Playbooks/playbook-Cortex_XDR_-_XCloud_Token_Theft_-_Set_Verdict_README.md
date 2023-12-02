@@ -37,12 +37,11 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* SearchIncidentsV2
 * Set
 
 ### Commands
 
-This playbook does not use any commands.
+* xdr-get-incident-extra-data
 
 ## Playbook Inputs
 

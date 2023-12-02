@@ -186,22 +186,23 @@ tasks:
       id: bed915ec-699c-4289-8e18-09a200000d57
       version: -1
       name: Get Geolocation data
-      description: Provides data enrichment for IPs.
-      script: Whois|||ip
+      description: Gets a quick indicator of the risk associated with an IP address.
+      script: '|||ip'
       type: regular
       iscommand: true
-      brand: Whois
+      brand: ""
     nexttasks:
       '#none#':
       - "30"
     scriptarguments:
-      extended_data:
-        simple: "true"
       ip:
         complex:
-          root: alertJson.raw_abioc.event
-          accessor: caller_ip
+          root: incident.xdralerts
+          accessor: hostip
+          transformers:
+          - operator: uniq
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -958,10 +959,10 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: IP
-  description: The IP objects
+  description: The IP objects.
   type: unknown
 - contextPath: DBotScore
-  description: Indicator, Score, Type, Vendor
+  description: Indicator, Score, Type, Vendor.
   type: unknown
 - contextPath: Account
   description: The account object.
