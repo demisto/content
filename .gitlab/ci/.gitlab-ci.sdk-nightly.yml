@@ -61,7 +61,7 @@
 
 .assert_test_content: &assert_test_content
   - section_start "Assert test-content" --collapsed
-  - count=$(grep -c "test" "${ARTIFACTS_FOLDER_SERVER_TYPE}/succeeded_tests.txt")
+  - count=$(grep -c "test" "${ARTIFACTS_FOLDER_INSTANCE}/succeeded_tests.txt")
   - if [ $SERVER_TYPE -eq "XSIAM" ]; then
       num_of_tests_that_should_run=1
     else
