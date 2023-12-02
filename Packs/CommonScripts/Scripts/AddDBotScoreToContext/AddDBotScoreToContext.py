@@ -8,6 +8,7 @@ def main():
     score = int(demisto.args().get("score"))
     vendor = demisto.args().get("vendor")
     reliability = demisto.args().get("reliability", None)
+    
     dbotscore = {
         "Indicator": indicator,
         "Type": indicatorType,
