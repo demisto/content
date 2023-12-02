@@ -15,7 +15,7 @@ API_TOKEN = demisto.getParam('APItoken') or (demisto.getParam('credentials') or 
 USERNAME = demisto.getParam('username')
 PASSWORD = demisto.getParam('password')
 COMMAND_NOT_IMPELEMENTED_MSG = 'Command not implemented'
-
+demisto.debug(" ")
 HEADERS = {
     'Content-Type': 'application/json',
 }
