@@ -537,6 +537,7 @@ def search_pack_and_its_dependencies(client: demisto_client,
     with lock:
         if not multithreading:
             match_found = False
+            found_base = False
             if list_packs_and_its_dependency_install_request_body is None:
                 list_packs_and_its_dependency_install_request_body = []
             logging.info(f"pack to instal: {packs_to_install}")          
@@ -557,15 +558,17 @@ def search_pack_and_its_dependencies(client: demisto_client,
                     # Check if any dictionary in pack_and_its_dependencies_as_list has a matching 'id' in the sublist
                     common_elements = {item['id'] for item in sublist}.intersection(item['id'] for item in pack_and_its_dependencies_as_list)
                     logging.info(f"found common element:{common_elements}")
-                    if common_elements:
-                        if common_elements == {'Base'}:
-                            list_packs_and_its_dependency_install_request_body.append([item for item in pack_and_its_dependencies_as_list if item['id'] not in common_elements])
-                        else:
-                            sublist.extend(item for item in pack_and_its_dependencies_as_list if item['id'] not in common_elements)
+                    if common_elements and common_elements != {'Base'}:
+                        sublist.extend(item for item in pack_and_its_dependencies_as_list if item['id'] not in common_elements)
                         match_found = True
                         break
-                if not match_found:    
-                    list_packs_and_its_dependency_install_request_body.append(pack_and_its_dependencies_as_list)
+                    else:
+                        found_base = True
+                if not match_found:   
+                    if found_base:
+                        list_packs_and_its_dependency_install_request_body.append([item for item in pack_and_its_dependencies_as_list if item['id'] != 'Base'])
+                    else:
+                        list_packs_and_its_dependency_install_request_body.append(pack_and_its_dependencies_as_list)
                 logging.info(f"list_packs_and_its_dependency_install_request_body:: {list_packs_and_its_dependency_install_request_body}")
         else:  # multithreading
             for pack in current_packs_to_install:
