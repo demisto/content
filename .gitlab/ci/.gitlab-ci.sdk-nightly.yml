@@ -64,13 +64,13 @@
   - count=$(grep -c "Test" "${ARTIFACTS_FOLDER_INSTANCE}/succeeded_tests.txt")
   - echo "Number of tests run - $count "
   - |
-    if [ $SERVER_TYPE -eq "XSIAM" ]; then
+    if [ $SERVER_TYPE = "XSIAM" ]; then
       num_of_tests_that_should_run=1
     else
       num_of_tests_that_should_run=2
     fi
   - echo "Number of tests that should have run - $num_of_tests_that_should_run "
-  -  |
+  - |
     if [ $count -eq $num_of_tests_that_should_run ]; then
       echo "test-content run all of the desired test-playbooks."
     else
