@@ -52,7 +52,7 @@ tasks:
       {
         "position": {
           "x": -230,
-          "y": -1470
+          "y": -1380
         }
       }
     note: false
@@ -77,13 +77,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "3"
     scriptarguments:
       alert_ids:
         complex:
           root: inputs.alert_id
-      extend-context:
-        simple: alertData=
+      filter_alert_fields:
+        simple: "false"
       ignore-outputs:
         simple: "false"
     separatecontext: false
@@ -92,7 +92,7 @@ tasks:
       {
         "position": {
           "x": -230,
-          "y": -1340
+          "y": -1250
         }
       }
     note: false
@@ -105,47 +105,6 @@ tasks:
     - incidentfield: ASN Name
       output:
         simple: ${Core.OriginalAlert.event.caller_ip_asn_org}
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: 17724863-d960-46ad-8a11-8f42cbf47f0e
-    type: regular
-    task:
-      id: 17724863-d960-46ad-8a11-8f42cbf47f0e
-      version: -1
-      name: Load alert JSON
-      description: Loads a JSON from a string input, and returns a JSON object result.
-      scriptName: LoadJSON
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      extend-context:
-        simple: alertJson=
-      ignore-outputs:
-        simple: "true"
-      input:
-        complex:
-          root: alertData.alerts
-          accessor: original_alert_json
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -230,
-          "y": -1180
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -171,7 +130,7 @@ tasks:
       {
         "position": {
           "x": -230,
-          "y": -1020
+          "y": -1090
         }
       }
     note: false
@@ -232,7 +191,7 @@ tasks:
       {
         "position": {
           "x": -640,
-          "y": 280
+          "y": 210
         }
       }
     note: false
@@ -263,7 +222,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1570
+          "y": 1700
         }
       }
     note: false
@@ -294,7 +253,7 @@ tasks:
       {
         "position": {
           "x": -230,
-          "y": 450
+          "y": 380
         }
       }
     note: false
@@ -340,7 +299,7 @@ tasks:
       {
         "position": {
           "x": -230,
-          "y": 750
+          "y": 680
         }
       }
     note: false
@@ -450,13 +409,9 @@ tasks:
       autoUserRemediation:
         simple: "False"
       cloudProvider:
-        complex:
-          root: alert.cloudprovider
-          accessor: '[0]'
+        simple: ${alert.cloudprovider}
       username:
-        complex:
-          root: alert.username
-          accessor: '[0]'
+        simple: ${alert.username}
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -467,8 +422,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1410
+          "x": 1170,
+          "y": 1340
         }
       }
     note: false
@@ -493,13 +448,14 @@ tasks:
     nexttasks:
       '#none#':
       - "10"
+      - "62"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1280
+          "x": 720,
+          "y": 1200
         }
       }
     note: false
@@ -531,7 +487,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1890
+          "y": 2010
         }
       }
     note: false
@@ -635,7 +591,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2220
+          "y": 2340
         }
       }
     note: false
@@ -1120,7 +1076,7 @@ tasks:
       {
         "position": {
           "x": -230,
-          "y": 585
+          "y": 515
         }
       }
     note: false
@@ -1180,7 +1136,7 @@ tasks:
       {
         "position": {
           "x": 190,
-          "y": 280
+          "y": 210
         }
       }
     note: false
@@ -1227,9 +1183,7 @@ tasks:
       - "14"
     scriptarguments:
       AWSAccessKeyID:
-        complex:
-          root: Core.OriginalAlert.[0].event
-          accessor: identity_invoked_by_uuid
+        simple: ${Core.OriginalAlert.event.identity_invoked_by_uuid}
       AWSTimespan:
         complex:
           root: alert
@@ -1250,6 +1204,8 @@ tasks:
                   simple: "1"
       AzureTimespan:
         simple: 2h
+      GCPProjectName:
+        simple: ${alert.cloudproject}
       GCPTimespan:
         complex:
           root: alert
@@ -1273,10 +1229,6 @@ tasks:
         complex:
           root: alert
           accessor: cloudprovider
-      projectName:
-        complex:
-          root: alert
-          accessor: cloudproject
       region:
         complex:
           root: alert
@@ -1296,7 +1248,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1710
+          "y": 1830
         }
       }
     note: false
@@ -1394,7 +1346,7 @@ tasks:
       {
         "position": {
           "x": 660,
-          "y": 2050
+          "y": 2170
         }
       }
     note: false
@@ -1459,7 +1411,7 @@ tasks:
       {
         "position": {
           "x": 240,
-          "y": 2050
+          "y": 2170
         }
       }
     note: false
@@ -1492,7 +1444,7 @@ tasks:
       {
         "position": {
           "x": -230,
-          "y": 920
+          "y": 850
         }
       }
     note: false
@@ -1538,7 +1490,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1100
+          "y": 1030
         }
       }
     note: false
@@ -1589,10 +1541,6 @@ tasks:
         simple: Stop
       GCP-userRemediationType:
         simple: Disable
-      SourceIP:
-        complex:
-          root: CloudIndicators
-          accessor: source_ip
       accessKeyId:
         complex:
           root: CloudIndicators
@@ -1606,9 +1554,7 @@ tasks:
       autoUserRemediation:
         simple: "True"
       cloudProvider:
-        complex:
-          root: alert.cloudprovider
-          accessor: '[0]'
+        simple: ${alert.cloudprovider}
       username:
         complex:
           root: CloudIndicators
@@ -1624,7 +1570,7 @@ tasks:
       {
         "position": {
           "x": 890,
-          "y": 3000
+          "y": 3005
         }
       }
     note: false
@@ -1679,7 +1625,7 @@ tasks:
       {
         "position": {
           "x": -630,
-          "y": -720
+          "y": -790
         }
       }
     note: false
@@ -1717,7 +1663,7 @@ tasks:
       {
         "position": {
           "x": -630,
-          "y": -540
+          "y": -610
         }
       }
     note: false
@@ -1765,7 +1711,7 @@ tasks:
       {
         "position": {
           "x": -230,
-          "y": -890
+          "y": -960
         }
       }
     note: false
@@ -1798,7 +1744,7 @@ tasks:
       {
         "position": {
           "x": -860,
-          "y": -30
+          "y": -100
         }
       }
     note: false
@@ -1833,7 +1779,7 @@ tasks:
       {
         "position": {
           "x": -630,
-          "y": -200
+          "y": -270
         }
       }
     note: false
@@ -1883,7 +1829,7 @@ tasks:
       {
         "position": {
           "x": -230,
-          "y": 280
+          "y": 210
         }
       }
     note: false
@@ -1916,7 +1862,7 @@ tasks:
       {
         "position": {
           "x": -230,
-          "y": 140
+          "y": 70
         }
       }
     note: false
@@ -1987,7 +1933,186 @@ tasks:
       {
         "position": {
           "x": -630,
-          "y": -380
+          "y": -450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: b1310b85-32c0-4bb9-88ea-3db371ff6978
+    type: playbook
+    task:
+      id: b1310b85-32c0-4bb9-88ea-3db371ff6978
+      version: -1
+      name: Cloud Credentials Rotation - Generic
+      description: |-
+        ## **Cloud Credentials Rotation - Generic**
+
+        This comprehensive playbook combines the remediation steps from AWS, Azure, and GCP sub-playbooks into a single, cohesive guide. Regardless of which Cloud Service Provider (CSP) you're working with, this playbook will direct you to the relevant steps, ensuring swift and effective response.
+
+        The primary objective is to offer an efficient way to address compromised credentials across different cloud platforms. By consolidating the key steps from AWS, Azure, and GCP, it minimizes the time spent searching for platform-specific procedures and accelerates the remediation process, ensuring the highest level of security for your cloud environments.
+
+        ## **Integrations for Each Sub-Playbook**
+
+        In order to seamlessly execute the actions mentioned in each sub-playbook, specific integrations are essential. These integrations facilitate the automated tasks and processes that the playbook carries out. Here are the required integrations for each sub-playbook:
+
+        ### **AWS Sub-Playbook:**
+        1. [**AWS - IAM**](https://xsoar.pan.dev/docs/reference/integrations/aws---iam): Used to manage AWS Identity and Access Management.
+        2. [**AWS - EC2**](https://xsoar.pan.dev/docs/reference/integrations/aws---ec2): Essential for managing Amazon Elastic Compute Cloud (EC2) instances.
+
+        ### **GCP Sub-Playbook:**
+        1. [**Google Workspace Admin**](https://xsoar.pan.dev/docs/reference/integrations/g-suite-admin): Manages users, groups, and other entities within Google Workspace.
+        2. [**GCP-IAM**](https://xsoar.pan.dev/docs/reference/integrations/gcp-iam): Ensures management and control of GCP's Identity and Access Management.
+
+        ### **Azure Sub-Playbook:**
+        1. [**Microsoft Graph Users**](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph-user): Manages users and related entities in Microsoft Graph.
+        2. [**Microsoft Graph Applications**](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph-applications): Manages applications within Microsoft Graph.
+      playbookName: Cloud Credentials Rotation - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      AWS-accessKeyID:
+        simple: ${Core.OriginalAlert.event.identity_orig.accessKeyId}
+      AWS-instanceID:
+        complex:
+          root: alert.username
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: alert.username
+                iscontext: true
+              right:
+                value:
+                  simple: i-
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: /
+              fields:
+                value:
+                  simple: "2"
+      AWS-newInstanceProfileName:
+        simple: ${inputs.AWS-newInstanceProfileName}
+      AWS-newRoleName:
+        simple: ${inputs.AWS-newRoleName}
+      AWS-roleNameToRestrict:
+        simple: ${inputs.AWS-newRoleName}
+      AWS-userID:
+        simple: ${alert.username}
+      Azure-AppID:
+        simple: ${Core.OriginalAlert.event.identity_orig.claims.appid}
+      Azure-ObjectID:
+        complex:
+          root: Core.OriginalAlert.event.identity_orig
+          accessor: claims
+          transformers:
+          - operator: Stringify
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: http://schemas.microsoft.com/identity/claims/objectidentifier":"\w{8}\-\w{4}\-\w{4}\-\w{4}\-\w{12}
+              unpack_matches: {}
+          - operator: ExtractInbetween
+            args:
+              from:
+                value:
+                  simple: http://schemas.microsoft.com/identity/claims/objectidentifier":"
+              to:
+                value:
+                  simple: '"'
+      Azure-userID:
+        simple: ${alert.username}
+      GCP-SAEmail:
+        simple: ${Core.OriginalAlert.event.identity_orig.principalEmail}
+      GCP-cloudProject:
+        simple: ${alert.cloudproject}
+      GCP-userID:
+        simple: ${alert.username}
+      GCP-zone:
+        simple: ${Core.OriginalAlert.event.zone}
+      RemediationType:
+        simple: ${inputs.credentialsRemediationType}
+      cloudProvider:
+        simple: ${alert.cloudprovider}
+      identityType:
+        simple: ${Core.OriginalAlert.event.identity_orig.sessionContext.sessionIssuer.type}
+      shouldCloneSA:
+        simple: ${inputs.shouldCloneSA}
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 1530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: 1f5bae14-32a0-4c17-8cc8-598bb4fc4778
+    type: condition
+    task:
+      id: 1f5bae14-32a0-4c17-8cc8-598bb4fc4778
+      version: -1
+      name: Should rotate the credentials automatically?
+      description: Whether to rotate the credentials automatically.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "61"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inpuCredentialsRotation
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 1340
         }
       }
     note: false
@@ -2009,19 +2134,22 @@ view: |-
       "38_39_Yes": 0.42,
       "49_9_#default#": 0.14,
       "50_11_yes": 0.38,
+      "50_5_#default#": 0.17,
       "52_53_URL": 0.43,
       "54_59_#default#": 0.11,
       "56_9_#default#": 0.12,
       "60_57_yes": 0.4,
       "60_59_#default#": 0.21,
+      "62_5_#default#": 0.56,
+      "62_61_yes": 0.44,
       "8_49_#default#": 0.48
     },
     "paper": {
       "dimensions": {
-        "height": 5835,
-        "width": 2130,
+        "height": 5745,
+        "width": 2410,
         "x": -860,
-        "y": -1470
+        "y": -1380
       }
     }
   }
@@ -2061,6 +2189,54 @@ inputs:
     1. A comma separated list of IP addresses assigned by the VPN provider. (using a XSIAM list or an hardcoded array)
     2. A comma separated list of CIDRs.
     3. A link to an IP addresses list which will be processed and extract the IP dynamically with each execution.
+  playbookInputQuery:
+- key: AWS-newInstanceProfileName
+  value: {}
+  required: false
+  description: The new instance profile name to assign in the clone service account flow.
+  playbookInputQuery:
+- key: AWS-newRoleName
+  value: {}
+  required: false
+  description: The new role name to assign in the clone service account flow.
+  playbookInputQuery:
+- key: AWS-roleNameToRestrict
+  value: {}
+  required: false
+  description: If provided, the role will be attached with a deny policy without the compute instance analysis flow.
+  playbookInputQuery:
+- key: shouldCloneSA
+  value:
+    simple: "False"
+  required: false
+  description: |-
+    Whether to clone the compromised SA before putting a deny policy to it.
+    Supports: AWS.
+    True/False
+  playbookInputQuery:
+- key: autoCredentialsRotation
+  value:
+    simple: "False"
+  required: false
+  description: Whether to rotate the identity credentials automatically.
+  playbookInputQuery:
+- key: credentialsRemediationType
+  value:
+    simple: Reset
+  required: false
+  description: |-
+    The response playbook provides the following remediation actions using AWS, MSGraph Users, GCP and GSuite Admin:
+
+    Reset: By entering "Reset" in the input, the playbook will execute password reset.
+    Supports: AWS, MSGraph Users, GCP and GSuite Admin.
+
+    Revoke: By entering "Revoke" in the input, the GCP will revoke the access key, GSuite Admin will revoke the access token and the MSGraph Users will revoke the session.
+    Supports: GCP, GSuite Admin and MSGraph Users.
+
+    Deactivate - By entering "Deactivate" in the input, the playbook will execute access key deactivation.
+    Supports: AWS.
+
+    ALL: By entering "ALL" in the input, the playbook will execute the all remediation actions provided for each CSP.
   playbookInputQuery:
 outputs: []
 tests:

@@ -31,7 +31,7 @@ tasks:
       {
         "position": {
           "x": 550,
-          "y": -190
+          "y": -30
         }
       }
     note: false
@@ -56,6 +56,7 @@ tasks:
     nexttasks:
       '#none#':
       - "81"
+      - "87"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -90,7 +91,7 @@ tasks:
       {
         "position": {
           "x": 550,
-          "y": 2450
+          "y": 2620
         }
       }
     note: false
@@ -145,16 +146,13 @@ tasks:
       iscommand: false
       brand: ""
       description: ''
-    nexttasks:
-      '#none#':
-      - "19"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1220,
-          "y": 1770
+          "y": 1425
         }
       }
     note: false
@@ -230,7 +228,7 @@ tasks:
       {
         "position": {
           "x": 550,
-          "y": 2110
+          "y": 2280
         }
       }
     note: false
@@ -265,7 +263,7 @@ tasks:
       {
         "position": {
           "x": 770,
-          "y": 2280
+          "y": 2450
         }
       }
     note: false
@@ -290,7 +288,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "67"
+      - "68"
     scriptarguments:
       alert_ids:
         complex:
@@ -304,7 +302,7 @@ tasks:
       {
         "position": {
           "x": 550,
-          "y": -50
+          "y": 110
         }
       }
     note: false
@@ -389,7 +387,7 @@ tasks:
       {
         "position": {
           "x": 320,
-          "y": 2280
+          "y": 2450
         }
       }
     note: false
@@ -456,47 +454,6 @@ tasks:
         "position": {
           "x": 550,
           "y": 750
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "67":
-    id: "67"
-    taskid: 4f102212-5337-40d7-8477-f983500618fe
-    type: regular
-    task:
-      id: 4f102212-5337-40d7-8477-f983500618fe
-      version: -1
-      name: Load alert JSON
-      description: Loads a JSON from a string input, and returns a JSON object.
-      scriptName: LoadJSON
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "68"
-    scriptarguments:
-      extend-context:
-        simple: alertJson=
-      ignore-outputs:
-        simple: "true"
-      input:
-        complex:
-          root: alertData.alerts
-          accessor: original_alert_json
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 550,
-          "y": 120
         }
       }
     note: false
@@ -682,9 +639,7 @@ tasks:
         complex:
           root: inputs.GCP-userRemediationType
       accessKeyId:
-        complex:
-          root: alertJson.raw_abioc.event._aws_specific_fields
-          accessor: access_key_id
+        simple: ${Core.OriginalAlert.event.identity_orig.accessKeyId}
       autoAccessKeyRemediation:
         complex:
           root: inputs.autoAccessKeyRemediation
@@ -701,12 +656,10 @@ tasks:
           root: alert
           accessor: cloudprovider
       region:
-        complex:
-          root: alertJson.raw_abioc.event
-          accessor: region
+        simple: ${alert.region}
       resourceGroup:
         complex:
-          root: alertJson.raw_abioc.event
+          root: Core.OriginalAlert.event
           accessor: referenced_resource
           transformers:
           - operator: Cut
@@ -718,17 +671,11 @@ tasks:
                 value:
                   simple: "5"
       resourceName:
-        complex:
-          root: alertJson.raw_abioc.event
-          accessor: referenced_resource_name
+        simple: ${Core.OriginalAlert.event.referenced_resource_name}
       resourceZone:
-        complex:
-          root: alertJson.raw_abioc.event
-          accessor: zone
+        simple: ${Core.OriginalAlert.event.zone}
       username:
-        complex:
-          root: alertJson.raw_abioc.event
-          accessor: identity_name
+        simple: ${alert.username}
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -739,7 +686,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 550,
+          "x": 800,
           "y": 1930
         }
       }
@@ -980,17 +927,207 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "86":
+    id: "86"
+    taskid: 8aaeb2be-7a3c-43a4-8702-fe8d7c7cde2c
+    type: playbook
+    task:
+      id: 8aaeb2be-7a3c-43a4-8702-fe8d7c7cde2c
+      version: -1
+      name: Cloud Credentials Rotation - Generic
+      description: |-
+        ## **Cloud Credentials Rotation - Generic**
+
+        This comprehensive playbook combines the remediation steps from AWS, Azure, and GCP sub-playbooks into a single, cohesive guide. Regardless of which Cloud Service Provider (CSP) you're working with, this playbook will direct you to the relevant steps, ensuring swift and effective response.
+
+        The primary objective is to offer an efficient way to address compromised credentials across different cloud platforms. By consolidating the key steps from AWS, Azure, and GCP, it minimizes the time spent searching for platform-specific procedures and accelerates the remediation process, ensuring the highest level of security for your cloud environments.
+
+        ## **Integrations for Each Sub-Playbook**
+
+        In order to seamlessly execute the actions mentioned in each sub-playbook, specific integrations are essential. These integrations facilitate the automated tasks and processes that the playbook carries out. Here are the required integrations for each sub-playbook:
+
+        ### **AWS Sub-Playbook:**
+        1. [**AWS - IAM**](https://xsoar.pan.dev/docs/reference/integrations/aws---iam): Used to manage AWS Identity and Access Management.
+        2. [**AWS - EC2**](https://xsoar.pan.dev/docs/reference/integrations/aws---ec2): Essential for managing Amazon Elastic Compute Cloud (EC2) instances.
+
+        ### **GCP Sub-Playbook:**
+        1. [**Google Workspace Admin**](https://xsoar.pan.dev/docs/reference/integrations/g-suite-admin): Manages users, groups, and other entities within Google Workspace.
+        2. [**GCP-IAM**](https://xsoar.pan.dev/docs/reference/integrations/gcp-iam): Ensures management and control of GCP's Identity and Access Management.
+
+        ### **Azure Sub-Playbook:**
+        1. [**Microsoft Graph Users**](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph-user): Manages users and related entities in Microsoft Graph.
+        2. [**Microsoft Graph Applications**](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph-applications): Manages applications within Microsoft Graph.
+      playbookName: Cloud Credentials Rotation - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      AWS-accessKeyID:
+        simple: ${Core.OriginalAlert.event.identity_orig.accessKeyId}
+      AWS-instanceID:
+        complex:
+          root: alert.username
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: alert.username
+                iscontext: true
+              right:
+                value:
+                  simple: i-
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: /
+              fields:
+                value:
+                  simple: "2"
+      AWS-newInstanceProfileName:
+        simple: ${inputs.AWS-newInstanceProfileName}
+      AWS-newRoleName:
+        simple: ${inputs.AWS-newRoleName}
+      AWS-roleNameToRestrict:
+        simple: ${inputs.AWS-newRoleName}
+      AWS-userID:
+        simple: ${alert.username}
+      Azure-AppID:
+        simple: ${Core.OriginalAlert.event.identity_orig.claims.appid}
+      Azure-ObjectID:
+        complex:
+          root: Core.OriginalAlert.event.identity_orig
+          accessor: claims
+          transformers:
+          - operator: Stringify
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: http://schemas.microsoft.com/identity/claims/objectidentifier":"\w{8}\-\w{4}\-\w{4}\-\w{4}\-\w{12}
+              unpack_matches: {}
+          - operator: ExtractInbetween
+            args:
+              from:
+                value:
+                  simple: http://schemas.microsoft.com/identity/claims/objectidentifier":"
+              to:
+                value:
+                  simple: '"'
+      Azure-userID:
+        simple: ${alert.username}
+      GCP-SAEmail:
+        simple: ${Core.OriginalAlert.event.identity_orig.principalEmail}
+      GCP-cloudProject:
+        simple: ${alert.cloudproject}
+      GCP-userID:
+        simple: ${alert.username}
+      GCP-zone:
+        simple: ${Core.OriginalAlert.event.zone}
+      RemediationType:
+        simple: ${inputs.credentialsRemediationType}
+      cloudProvider:
+        simple: ${alert.cloudprovider}
+      identityType:
+        simple: ${alert.cloudidentitytype}
+      shouldCloneSA:
+        simple: ${inputs.shouldCloneSA}
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": 2110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "87":
+    id: "87"
+    taskid: 2b02d21a-eb90-431d-8f12-e22e2ef89007
+    type: condition
+    task:
+      id: 2b02d21a-eb90-431d-8f12-e22e2ef89007
+      version: -1
+      name: Should rotate the credentials automatically?
+      description: Whether to rotate the credentials automatically.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "57"
+      "yes":
+      - "86"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.autoAccessKeyRemediation
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: inputs.autoUserRemediation
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": 1930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
-      "21_64_False Positive": 0.54
+      "21_64_False Positive": 0.54,
+      "87_57_#default#": 0.76,
+      "87_86_yes": 0.42
     },
     "paper": {
       "dimensions": {
-        "height": 2705,
+        "height": 2715,
         "width": 1310,
         "x": 290,
-        "y": -190
+        "y": -30
       }
     }
   }
@@ -1079,108 +1216,144 @@ inputs:
     simple: "False"
   required: false
   description: Whether to open a ticket automatically in a ticketing system. (True/False).
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: serviceNowShortDescription
   value:
     simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
   required: false
   description: A short description of the ticket.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: serviceNowImpact
   value: {}
   required: false
   description: The impact for the new ticket. Leave empty for ServiceNow default impact.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: serviceNowUrgency
   value: {}
   required: false
   description: The urgency of the new ticket. Leave empty for ServiceNow default urgency.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: serviceNowSeverity
   value: {}
   required: false
-  description: The severity of the new ticket. Leave empty for ServiceNow default
-    severity.
-  playbookInputQuery: null
+  description: The severity of the new ticket. Leave empty for ServiceNow default severity.
+  playbookInputQuery:
 - key: serviceNowTicketType
   value: {}
   required: false
-  description: The ServiceNow ticket type. Options are "incident", "problem", "change_request",
-    "sc_request", "sc_task", or "sc_req_item". Default is "incident".
-  playbookInputQuery: null
+  description: The ServiceNow ticket type. Options are "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident".
+  playbookInputQuery:
 - key: serviceNowCategory
   value: {}
   required: false
   description: The category of the ServiceNow ticket.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: serviceNowAssignmentGroup
   value: {}
   required: false
   description: The group to which to assign the new ticket.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ZendeskPriority
   value: {}
   required: false
-  description: The urgency with which the ticket should be addressed. Allowed values
-    are "urgent", "high", "normal", or "low".
-  playbookInputQuery: null
+  description: The urgency with which the ticket should be addressed. Allowed values are "urgent", "high", "normal", or "low".
+  playbookInputQuery:
 - key: ZendeskRequester
   value: {}
   required: false
   description: The user who requested this ticket.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ZendeskStatus
   value: {}
   required: false
-  description: The state of the ticket. Allowed values are "new", "open", "pending",
-    "hold", "solved", or "closed".
-  playbookInputQuery: null
+  description: The state of the ticket. Allowed values are "new", "open", "pending", "hold", "solved", or "closed".
+  playbookInputQuery:
 - key: ZendeskSubject
   value:
     simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
   required: false
   description: The value of the subject field for this ticket.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ZendeskTags
   value: {}
   required: false
   description: The array of tags applied to this ticket.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ZendeskType
   value: {}
   required: false
-  description: The type of this ticket. Allowed values are "problem", "incident",
-    "question", or "task".
-  playbookInputQuery: null
+  description: The type of this ticket. Allowed values are "problem", "incident", "question", or "task".
+  playbookInputQuery:
 - key: ZendeskAssigne
   value: {}
   required: false
   description: The agent currently assigned to the ticket.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ZendeskCollaborators
   value: {}
   required: false
   description: The users currently CC'ed on the ticket.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: description
   value:
     simple: ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url}
   required: false
   description: The ticket description.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: addCommentPerEndpoint
   value:
     simple: "True"
   required: false
-  description: 'Whether to append a new comment to the ticket for each endpoint in the incident.  
-    Possible values: True/False.'
-  playbookInputQuery: null
+  description: 'Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False.'
+  playbookInputQuery:
 - key: CommentToAdd
   value:
     simple: '${alert.name}. Alert ID: ${alert.id}'
   required: false
   description: Comment for the ticket.
-  playbookInputQuery: null
+  playbookInputQuery:
+- key: AWS-newInstanceProfileName
+  value: {}
+  required: false
+  description: The new instance profile name to assign in the clone service account flow.
+  playbookInputQuery:
+- key: AWS-newRoleName
+  value: {}
+  required: false
+  description: The new role name to assign in the clone service account flow.
+  playbookInputQuery:
+- key: AWS-roleNameToRestrict
+  value: {}
+  required: false
+  description: If provided, the role will be attached with a deny policy without the compute instance analysis flow.
+  playbookInputQuery:
+- key: shouldCloneSA
+  value:
+    simple: "False"
+  required: false
+  description: |-
+    Whether to clone the compromised SA before putting a deny policy to it.
+    Supports: AWS.
+    True/False
+  playbookInputQuery:
+- key: credentialsRemediationType
+  value:
+    simple: Reset
+  required: false
+  description: |-
+    The response playbook provides the following remediation actions using AWS, MSGraph Users, GCP and GSuite Admin:
+
+    Reset: By entering "Reset" in the input, the playbook will execute password reset.
+    Supports: AWS, MSGraph Users, GCP and GSuite Admin.
+
+    Revoke: By entering "Revoke" in the input, the GCP will revoke the access key, GSuite Admin will revoke the access token and the MSGraph Users will revoke the session.
+    Supports: GCP, GSuite Admin and MSGraph Users.
+
+    Deactivate - By entering "Deactivate" in the input, the playbook will execute access key deactivation.
+    Supports: AWS.
+
+    ALL: By entering "ALL" in the input, the playbook will execute the all remediation actions provided for each CSP.
+  playbookInputQuery:
 outputs: []
 tests:
 - No tests (auto formatted)

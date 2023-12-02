@@ -29,27 +29,27 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Handle False Positive Alerts
-* Cloud Response - Generic
-* Ticket Management - Generic
-* XCloud Cryptojacking - Set Verdict
 * XCloud Alert Enrichment
+* Cloud Response - Generic
+* XCloud Cryptojacking - Set Verdict
+* Cloud Credentials Rotation - Generic
+* Ticket Management - Generic
+* Handle False Positive Alerts
 
 ### Integrations
 
-* CortexCoreIR
+This playbook does not use any integrations.
 
 ### Scripts
 
-* LoadJSON
 * IncreaseIncidentSeverity
 
 ### Commands
 
+* setParentIncidentFields
 * closeInvestigation
-* core-get-cloud-original-alerts
 * send-mail
-* setParentIncidentField
+* core-get-cloud-original-alerts
 
 ## Playbook Inputs
 
@@ -58,7 +58,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | alert_id | The alert ID. |  | Optional |
-| SOCEmailAddress | The SOC email address to use for the alert status notification. | None | Optional |
+| SOCEmailAddress | The SOC email address to use for the alert status notification. |  | Optional |
 | requireAnalystReview | Whether to require an analyst review after the alert remediation. | True | Optional |
 | ShouldCloseAutomatically | Should we automatically close false positive alerts? Specify true/false. | False | Optional |
 | ShouldHandleFPautomatically | Should we automatically handle false positive alerts? Specify true/false. | False | Optional |
@@ -96,6 +96,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | description | The ticket description. | ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url} | Optional |
 | addCommentPerEndpoint | Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False. | True | Optional |
 | CommentToAdd | Comment for the ticket. | ${alert.name}. Alert ID: ${alert.id} | Optional |
+| credentialsRemediationType | The response playbook provides the following remediation actions using AWS, MSGraph Users, GCP and GSuite Admin:<br/><br/>Reset: By entering "Reset" in the input, the playbook will execute password reset.<br/>Supports: AWS, MSGraph Users, GCP and GSuite Admin.<br/><br/>Revoke: By entering "Revoke" in the input, the GCP will revoke the access key, GSuite Admin will revoke the access token and the MSGraph Users will revoke the session.<br/>Supports: GCP, GSuite Admin and MSGraph Users.<br/><br/>Deactivate - By entering "Deactivate" in the input, the playbook will execute access key deactivation.<br/>Supports: AWS.<br/><br/>ALL: By entering "ALL" in the input, the playbook will execute the all remediation actions provided for each CSP. | Reset | Optional |
+| AWS-newInstanceProfileName | The new instance profile name to assign in the clone service account flow. |  | Optional |
+| AWS-newRoleName | The new role name to assign in the clone service account flow. |  | Optional |
+| AWS-roleNameToRestrict | If provided, the role will be attached with a deny policy without the compute instance analysis flow. |  | Optional |
+| shouldCloneSA | Whether to clone the compromised SA before putting a deny policy to it.<br/>Supports: AWS.<br/>True/False | False | Optional |
 
 ## Playbook Outputs
 
@@ -106,4 +111,4 @@ There are no outputs for this playbook.
 
 ---
 
-![XCloud Cryptojacking](../doc_files/XCloud_Cryptomining.png)
+![XCloud Cryptojacking](../doc_files/XCloud_Cryptojacking.png)
