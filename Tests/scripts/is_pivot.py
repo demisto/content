@@ -1,18 +1,19 @@
 import gitlab
+import os
 from datetime import datetime, timedelta
-import sys
 from dateutil import parser
 
 
-def get_pipelines_and_commits(gitlab_url, gitlab_access_token, project_id='2596', lookback_hours=48):
+
+def get_pipelines_and_commits(gitlab_url:str, gitlab_access_token:str, project_id:str, lookback_hours:int):
     """
     Get all pipelines and commits on the master branch in the last X hours,
     pipelines are filtered to only include successful and failed pipelines.
     Args:
-        gitlab_url: str
-        gitlab_access_token: str
-        project_id: str
-        lookback_hours: int
+        gitlab_url - the url of the gitlab instance
+        gitlab_access_token - the access token to use to authenticate with gitlab
+        project_id - the id of the project to query
+        lookback_hours - the number of hours to look back for commits and pipeline
     Return:
         a list of gitlab pipelines and a list of gitlab commits in ascending order
     """
@@ -21,7 +22,7 @@ def get_pipelines_and_commits(gitlab_url, gitlab_access_token, project_id='2596'
 
     # Calculate the timestamp for lookback_hours ago
     time_threshold = (
-        datetime.now() - timedelta(hours=lookback_hours)).isoformat()
+        datetime.utcnow() - timedelta(hours=lookback_hours)).isoformat()
 
     commits = project.commits.list(all=True, since=time_threshold, order_by='updated_at', sort='asc')
     pipelines = project.pipelines.list(all=True, updated_after=time_threshold, ref='master',
@@ -88,15 +89,11 @@ def is_pivot(single_pipeline_id, list_of_pipelines, commits):
     Return:
         string
     """
-    pipeline_index = 0
-    for pipeline in list_of_pipelines:
-        if pipeline.id == int(single_pipeline_id):
-            pipeline_index = list_of_pipelines.index(pipeline)
-            break
-    if pipeline_index == 0:
+    current_pipeline = next((pipeline for pipeline in list_of_pipelines if pipeline.id == int(single_pipeline_id)), None)
+    pipeline_index = list_of_pipelines.index(current_pipeline) if current_pipeline else 0
+    if pipeline_index == 0:         # either current_pipeline is not in the list , or it is the first pipeline
         return None, None
     previous_pipeline = list_of_pipelines[pipeline_index - 1]
-    current_pipeline = list_of_pipelines[pipeline_index]
 
     # if previous pipeline was successful and current pipeline failed, and current pipeline was created after
     # previous pipeline (n), then it is a negative pivot
@@ -104,23 +101,7 @@ def is_pivot(single_pipeline_id, list_of_pipelines, commits):
     if in_order:
         if previous_pipeline.status == 'success' and current_pipeline.status == 'failed':
             return True, pivot_commit
-        elif previous_pipeline.status == 'failed' and current_pipeline.status == 'success':
+        if previous_pipeline.status == 'failed' and current_pipeline.status == 'success':
             return False, pivot_commit
     return None, None
 
-
-def main(args):
-    # example of use
-    gitlab_url = args[1]
-    gitlab_access_token = args[2]
-    project_id = args[3]
-    pipeline_id = args[4]
-    lookback_hours = int(args[5])
-    pipelines, commits = get_pipelines_and_commits(gitlab_url, gitlab_access_token, project_id, lookback_hours)
-    is_pivot_result, pivot_commit = is_pivot(pipeline_id, pipelines, commits)
-    if is_pivot_result is None:
-        shame(pivot_commit)
-
-
-if __name__ == "__main__":
-    main(sys.argv)
