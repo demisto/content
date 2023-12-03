@@ -4,6 +4,7 @@ from enum import Enum
 from ipaddress import ip_address
 from urllib import parse
 import dateparser
+from requests.exceptions import ReadTimeout, ConnectTimeout, ConnectionError
 
 import pytz
 import urllib3
@@ -2931,10 +2932,27 @@ def qradar_reference_set_value_upsert_command(args: dict, client: Client, params
     Returns:
         PollResult.
     """
-    return insert_values_to_reference_set_polling(client,
-                                                  params.get('api_version', ''),
-                                                  args,
-                                                  values=argToList(args.get('value', '')))
+    try:
+        return insert_values_to_reference_set_polling(client,
+                                                      params.get('api_version', ''),
+                                                      args,
+                                                      values=argToList(args.get('value', '')))
+    except (DemistoException, ReadTimeout) as err:
+        if isinstance(err, DemistoException) and isinstance(err.exception, (ConnectionError, ConnectTimeout)):
+            return PollResult(
+                partial_result=CommandResults(
+                    readable_output='Connection error occurred, retrying'),
+                continue_to_poll=True,
+                args_for_next_run=args,
+                response=None
+            )
+        return PollResult(
+            partial_result=CommandResults(readable_output='read timeout error occurred, retrying'),
+            continue_to_poll=True,
+            args_for_next_run=args,
+            response=None
+        )
+
 
 
 def qradar_reference_set_value_delete_command(client: Client, args: dict) -> CommandResults:
