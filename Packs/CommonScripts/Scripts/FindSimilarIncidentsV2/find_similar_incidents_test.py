@@ -1,7 +1,7 @@
 import pytest
 
 from CommonServerPython import *
-import demistomock as demisto 
+import demistomock as demisto
 
 default_args = {
     'hoursBack': 5,
