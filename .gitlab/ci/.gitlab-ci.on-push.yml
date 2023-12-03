@@ -97,13 +97,6 @@ run-unittests-and-lint:
     - if: '$DEMISTO_SDK_NIGHTLY != "true"'
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
 
-  after_script:
-      - >
-        if [ "$CI_COMMIT_BRANCH" != "master" ] && [ "$CI_JOB_STATUS" == "failed" ]; then
-          echo "====================send slack notification===================="
-          #!/bin/sh
-          python .gitlab/ci/WriteToBucket.py
-        fi
 # runs in gitlab for the on-push flow (except for contributors)
 run-validations:
   extends:
