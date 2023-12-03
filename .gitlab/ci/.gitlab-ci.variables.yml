@@ -23,7 +23,6 @@ variables:
   JIRA_ADDITIONAL_FIELDS: '{"customfield_19581":{"value": "IN"},"customfield_19582":{"value": "FALSE"},"customfield_19583":{"value": "Single"}}'
   BASH_ENV: "${CI_PROJECT_DIR}/artifacts/bash_env"
   PYTHONPATH: "${CI_PROJECT_DIR}"
-  PATH: ${CI_PROJECT_DIR}/.venv/bin:${PATH}
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
   FEATURE_BRANCH_NAME: "v4.5.0"
   IFRA_ENV_TYPE: "Content-Env"
