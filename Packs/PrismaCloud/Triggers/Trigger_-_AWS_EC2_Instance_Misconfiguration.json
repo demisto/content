@@ -10,12 +10,12 @@
         {
             "SEARCH_FIELD": "alert_name",
             "SEARCH_TYPE": "CONTAINS",
-            "SEARCH_VALUE": "Azure AKS cluster HTTP application routing enabled"
+            "SEARCH_VALUE": "AWS Default Security Group does not restrict all traffic"
         },
         {
             "SEARCH_FIELD": "alert_name",
             "SEARCH_TYPE": "CONTAINS",
-            "SEARCH_VALUE": "Azure AKS cluster monitoring not enabled"
+            "SEARCH_VALUE": "AWS Security Group allows all traffic on RDP port (3389)"
         }
       ]
     }
