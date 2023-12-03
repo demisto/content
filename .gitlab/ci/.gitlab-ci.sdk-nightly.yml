@@ -43,7 +43,7 @@
 .copy_env_results: &copy_env_results
   - section_start "Copy env results to artifacts folder" --collapsed
   - |
-    # workaround for the hard-coded value in the sdk
+    # workaround for the hard-coded value in the sdk CIAC-9091
     if [[ -e "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json" ]]; then
       cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json" "./artifacts/env_results.json"
     fi
@@ -77,7 +77,7 @@
 .cleanup_after_test_content: &cleanup_after_test_content
   - section_start "Cleanup env results from artifacts folder" --collapsed
   - |
-    # workaround for the hard-coded value in the sdk
+    # workaround for the hard-coded value in the sdk CIAC-9091
     if [[ -e "./artifacts/env_results.json" ]]; then
       rm -f "./artifacts/env_results.json"
     fi
