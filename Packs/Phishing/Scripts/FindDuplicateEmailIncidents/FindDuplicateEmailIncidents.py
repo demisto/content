@@ -84,7 +84,6 @@ def get_existing_incidents(input_args, current_incident_type):
     incidents_query_res = demisto.executeCommand('GetIncidentsByQuery_dev', get_incidents_args)
     demisto.debug(f'Received results from GetIncidentsByQuery: {json.dumps(incidents_query_res)}\n')
 
-    incidents_query_res = demisto.executeCommand('GetIncidentsByQuery', get_incidents_args)
     if is_error(incidents_query_res):
         return_error(get_error(incidents_query_res))
 
@@ -391,10 +390,10 @@ def main():
     if not incident_has_text_fields(new_incident):
         create_new_incident_no_text_fields()
         return
-    demisto.debug(f'IN main: {new_incident[EMAIL_BODY_FIELD]=}')
-    demisto.debug(f'IN main: {new_incident[EMAIL_SUBJECT_FIELD]=}')
-    demisto.debug(f'IN main: {new_incident[EMAIL_HTML_FIELD]=}')
-    demisto.debug(f'IN main: {new_incident[FROM_FIELD]=}')
+    demisto.debug(f'IN main: {new_incident.get(EMAIL_BODY_FIELD)=}')
+    demisto.debug(f'IN main: {new_incident.get(EMAIL_SUBJECT_FIELD)=}')
+    demisto.debug(f'IN main: {new_incident.get(EMAIL_HTML_FIELD)=}')
+    demisto.debug(f'IN main: {new_incident.get(FROM_FIELD)=}')
     new_incident_df = preprocess_incidents_df([new_incident])
     if len(new_incident_df) == 0:  # len(new_incident_df)==0 means new incident is too short
         create_new_incident_too_short()
