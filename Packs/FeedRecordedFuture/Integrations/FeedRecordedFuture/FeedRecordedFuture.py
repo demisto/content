@@ -163,13 +163,48 @@ class Client(BaseClient):
                     )  # type: ignore
 
         if service == 'connectApi':
+            # response_content = gzip.decompress(response.content)
+            # response_content = response_content.decode('utf-8')
+            # with open("response.txt", "w") as f:
+            #     f.write(response_content)
             demisto.debug("Will now stream the response's compressed data")
             decompressor = zlib.decompressobj(zlib.MAX_WBITS + 16)
+            cut_off_bytes = b''
+            chunks_counter = 0
+            decoded_counter = 0
+            overall_bytes_cut_off = 0
             with open("response.txt", "w") as f:
-                for chunk in response.iter_content(CHUNK_SIZE):
+                # CHUNK_SIZE
+                for chunk in response.iter_content(int(1024 * 1024 * 2.5)):
                     if chunk:
+                        chunks_counter += 1
+                        should_cut_off_bytes = True
+                        bytes_to_cut = 0
                         decompressed_chunk = decompressor.decompress(chunk)
-                        f.write(decompressed_chunk.decode('utf-8'))
+                        if cut_off_bytes:
+                            # To concatenate cut off bytes from previous chunk
+                            decompressed_chunk = cut_off_bytes + decompressed_chunk
+                            cut_off_bytes = b''
+                        chunk_to_decode = decompressed_chunk
+                        while should_cut_off_bytes:
+                            try:
+                                decoded_counter += 1
+                                decoded_str = chunk_to_decode.decode('utf-8')
+                                f.write(decoded_str)
+                                should_cut_off_bytes = False
+                            except UnicodeDecodeError as decode_error:
+                                bytes_to_cut += 1
+                                overall_bytes_cut_off += 1
+                                if bytes_to_cut >= 4:
+                                    raise DemistoException('We only need to cut a maximum of 3 bytes, something is wrong') from \
+                                        decode_error
+                                # Save the bytes that we cut off
+                                cut_off_bytes = decompressed_chunk[-bytes_to_cut:]
+                                # Try to decode without the bytes that we cut off
+                                chunk_to_decode = decompressed_chunk[:len(decompressed_chunk) - bytes_to_cut]
+            demisto.debug(f'{overall_bytes_cut_off} bytes were cut off and reused during this fetch')
+            demisto.debug(f'Number of chunks = {chunks_counter}')
+            demisto.debug(f'Number of decoding needed = {decoded_counter}')
         else:
             demisto.debug("Will now stream the response's data")
             with open("response.txt", "w") as f:
