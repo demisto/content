@@ -1585,22 +1585,6 @@ def build_address_outputs(args: dict[str, Any]) -> dict[str, Any]:
     )
 
 
-def normalize_styling(value: str) -> str:
-    """Standardizes the input string for case conversion.
-
-    Args:
-        value (str): The input string.
-
-    Returns:
-        str: The standardized string with spaces separating words.
-    """
-    value = value.replace("-", " ").replace("_", " ")  # Replace hyphens and underscores with spaces
-    value = CAMEL_CASE_PATTERN.sub(r" \1", value)  # Separate camelCase
-    value = UPPER_FOLLOWED_BY_MIXED_PATTERN.sub(r"\1 ", value)  # Separate consecutive uppercase followed by lowercase
-
-    return value.lower()
-
-
 def to_kebab_case(value: str) -> str:
     """Converts a string to kebab-case.
 
@@ -1610,7 +1594,12 @@ def to_kebab_case(value: str) -> str:
     Returns:
         str: The converted string in kebab-case.
     """
-    value = normalize_styling(value)
+    # Normalize any case style of string to words separated by white spaces.
+    value = value.replace("-", " ").replace("_", " ")  # Replace hyphens and underscores with spaces
+    value = CAMEL_CASE_PATTERN.sub(r" \1", value)  # Separate camelCase
+    value = UPPER_FOLLOWED_BY_MIXED_PATTERN.sub(r"\1 ", value)  # Separate consecutive uppercase followed by lowercase
+    value = value.lower()
+
     return value.replace(" ", "-")
 
 
