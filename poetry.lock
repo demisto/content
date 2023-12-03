@@ -1380,13 +1380,13 @@ urllib3 = ">=1.26.7"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.23.0"
+version = "1.24.0"
 description = "\"A Python library for the Demisto SDK\""
 optional = false
 python-versions = ">=3.8,<3.11"
 files = [
-    {file = "demisto_sdk-1.23.0-py3-none-any.whl", hash = "sha256:bba68fc849915e2e5b98f3741435844a84ae6da7c38cd42c6d37307ab1033916"},
-    {file = "demisto_sdk-1.23.0.tar.gz", hash = "sha256:1610c856e90e29adfc34a2136412b0064f6408ee1fbb007714078ba1bc82a3d5"},
+    {file = "demisto_sdk-1.24.0-py3-none-any.whl", hash = "sha256:4b78711d820af684d2949eb4cab474559f3abadd5956596d8d52686084b05b44"},
+    {file = "demisto_sdk-1.24.0.tar.gz", hash = "sha256:68b870ce88442aac730129840cc112293ad31557c8d3828cc46b799b049126bf"},
 ]
 
 [package.dependencies]
@@ -1465,6 +1465,7 @@ types-requests = "2.28.11"
 types-setuptools = ">=65.6.0.1,<68.0.0.0"
 types-six = ">=1.16.12,<2.0.0"
 types-tabulate = ">=0.8.6,<0.10.0"
+types-toml = ">=0.10.8.7,<0.11.0.0"
 types-ujson = ">=5.6.0.0,<6.0.0.0"
 typing-extensions = ">=4.1.1,<5.0.0"
 ujson = ">=5.1.0,<6.0.0"
@@ -6571,6 +6572,17 @@ files = [
 ]
 
 [[package]]
+name = "types-toml"
+version = "0.10.8.7"
+description = "Typing stubs for toml"
+optional = false
+python-versions = "*"
+files = [
+    {file = "types-toml-0.10.8.7.tar.gz", hash = "sha256:58b0781c681e671ff0b5c0319309910689f4ab40e8a2431e205d70c94bb6efb1"},
+    {file = "types_toml-0.10.8.7-py3-none-any.whl", hash = "sha256:61951da6ad410794c97bec035d59376ce1cbf4453dc9b6f90477e81e4442d631"},
+]
+
+[[package]]
 name = "types-tqdm"
 version = "4.66.0.4"
 description = "Typing stubs for tqdm"
@@ -7185,4 +7197,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "7958eb8cea0b325f86fe119f6d66233408c8c3a918b072cc8bea6a04df3c22ed"
+content-hash = "f91d8a7fd1b79e2b8d8e5a0157ed222b06df9ed6f920ff80d4500c80cdbf3113"
