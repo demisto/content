@@ -2069,7 +2069,7 @@ class TestPanoramaCommitCommand:
                                            {'Description': '', 'JobID': '19420', 'Status': 'Pending'}, id="no args")
                               ])
     def test_panorama_commit_command_without_polling(
-            self, mocker, args, expected_request_params, request_result, expected_demisto_result
+        self, mocker, args, expected_request_params, request_result, expected_demisto_result
     ):
         """
         Given:
@@ -2130,7 +2130,7 @@ class TestPanoramaCommitCommand:
         ]
     )
     def test_panorama_commit_command_with_polling(
-            self, mocker, args, expected_commit_request_url_params, api_response_queue
+        self, mocker, args, expected_commit_request_url_params, api_response_queue
     ):
         """
         Given:
@@ -2396,7 +2396,7 @@ def test_panorama_push_to_device_group_command(mocker, args, expected_request_pa
                                        id='with device'),
                           ])
 def test_panorama_push_to_template_command(
-        mocker, args, expected_request_params, request_result, expected_demisto_result
+    mocker, args, expected_request_params, request_result, expected_demisto_result
 ):
     """
     Given:
@@ -2500,7 +2500,7 @@ def test_panorama_push_to_template_command(
                                  id='with device'),
                          ])
 def test_panorama_push_to_template_stack_command(
-        mocker, args, expected_request_params, request_result, expected_demisto_result
+    mocker, args, expected_request_params, request_result, expected_demisto_result
 ):
     """
     Given:
@@ -3328,16 +3328,16 @@ class TestUniversalCommand:
 
         # We also want to check that if an empty string is passed, an error is returned
         with pytest.raises(
-                DemistoException,
-                match="filter_str  is not the exact ID of a host in this topology; use a more specific filter string."
+            DemistoException,
+            match="filter_str  is not the exact ID of a host in this topology; use a more specific filter string."
         ):
             UniversalCommand.reboot(mock_topology, "")
 
         # Lets also check that if an invalid hostid is given, we also raise.
         with pytest.raises(
-                DemistoException,
-                match="filter_str badserialnumber is not the exact ID of "
-                      "a host in this topology; use a more specific filter string."
+            DemistoException,
+            match="filter_str badserialnumber is not the exact ID of "
+                  "a host in this topology; use a more specific filter string."
         ):
             UniversalCommand.reboot(mock_topology, "badserialnumber")
 
@@ -3566,7 +3566,8 @@ def test_panorama_apply_dns_command2(mocker):
     apply_dns_signature_policy_command({'anti_spyware_profile_name': 'fake_profile_name'})
 
     request_params = request_mock.call_args.kwargs['params']  # The body part of the request
-    assert request_params.get('xpath') == "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='fakeDeviceGroup']/profiles/spyware/entry[@name='fake_profile_name']"  # noqa
+    assert request_params.get(
+        'xpath') == "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='fakeDeviceGroup']/profiles/spyware/entry[@name='fake_profile_name']"  # noqa
 
 
 class TestHygieneFunctions:
@@ -4707,7 +4708,7 @@ class TestPanOSListVirtualRouters:
         ]
     )
     def test_pan_os_list_virtual_routers_command_main_flow(
-            self, mocker, args, params, expected_url_params, mocked_response_path
+        self, mocker, args, params, expected_url_params, mocked_response_path
     ):
         """
         Given:
@@ -4782,7 +4783,7 @@ class TestPanOSListRedistributionProfiles:
         ]
     )
     def test_pan_os_list_redistribution_profiles_main_flow(
-            self, mocker, args, params, expected_url_params
+        self, mocker, args, params, expected_url_params
     ):
         """
         Given:
@@ -4983,7 +4984,7 @@ class TestPanOSEditRedistributionProfile:
         ]
     )
     def test_pan_os_edit_redistribution_profile_command_replace_action_main_flow(
-            self, mocker, args, params, expected_url_params
+        self, mocker, args, params, expected_url_params
     ):
         """
         Tests several cases where behavior == 'replace'
@@ -5053,7 +5054,7 @@ class TestPanOSEditRedistributionProfile:
         ]
     )
     def test_pan_os_edit_redistribution_profile_command_add_action_main_flow(
-            self, mocker, args, params, expected_url_params
+        self, mocker, args, params, expected_url_params
     ):
         """
         Tests cases where behavior == 'add'
@@ -5129,7 +5130,7 @@ class TestPanOSEditRedistributionProfile:
         ]
     )
     def test_pan_os_edit_redistribution_profile_command_remove_action_main_flow(
-            self, mocker, args, params, expected_url_params
+        self, mocker, args, params, expected_url_params
     ):
         """
         Tests cases where behavior == 'remove'
@@ -6785,8 +6786,8 @@ def test_filter_fetched_entries(mocker):
     """
     from Panorama import filter_fetched_entries
     raw_entries = {"log_type1": [{'device_name': 'dummy_device1'},
-                   {'device_name': 'dummy_device1', 'seqno': '000000002'},
-                   {'device_name': 'dummy_device2', 'seqno': '000000001'}],
+                                 {'device_name': 'dummy_device1', 'seqno': '000000002'},
+                                 {'device_name': 'dummy_device2', 'seqno': '000000001'}],
                    "log_type2": [{'device_name': 'dummy_device3', 'seqno': '000000004'},
                                  {'seqno': '000000007'}]}
     id_dict = {"log_type1": {'dummy_device1': '000000003', 'dummy_device2': '000000000'}}
@@ -6897,6 +6898,26 @@ def test_panorama_list_rules():
     assert rules['application']['member'][0] == 'dns'
     assert mock_request.last_request.qs['xpath'][0] == \
         "/config/devices/entry/vsys/entry[@name='vsys1']/rulebase/security/rules/entry[(application/member = 'dns')]"
+
+
+def test_prettify_rules():
+    """
+    Given:
+        - rule entry.
+    When:
+        - Running the prettify_rules method.
+    Then:
+        - Ensure no errors are raised.
+    """
+    from Panorama import prettify_rules
+    test_rule = {
+        '@name': 'test',
+        '@uuid': '11111-111-111-11',
+        'source': {'@loc': 'test',
+                   'member': [{'@loc': 'test', '#text': 'text'},
+                              'Failing String']}}
+    prettier_rules = prettify_rules(test_rule)
+    assert 'Failing String' in prettier_rules[0].get('Source')
 
 
 @pytest.mark.parametrize('include_shared', ['No', 'Yes'])
