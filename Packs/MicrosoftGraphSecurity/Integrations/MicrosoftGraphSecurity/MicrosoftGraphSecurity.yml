@@ -2038,7 +2038,7 @@ script:
     - contextPath: MSGraphMail.AssessmentRequest.ResultMessage
       description: The result message of the assessment request.
       type: String
-  dockerimage: demisto/crypto:1.0.0.80214
+  dockerimage: demisto/crypto:1.0.0.82278
   isfetch: true
   runonce: false
   script: '-'
