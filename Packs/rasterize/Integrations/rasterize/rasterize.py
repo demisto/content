@@ -104,7 +104,7 @@ class PychromeEventHandler:
                 self.tab.Page.stopLoading()
 
                 with self.screen_lock:
-                  # must activate current tab
+                    # must activate current tab
                     demisto.debug(self.browser.activate_tab(self.tab.id))
                     self.tab_ready.set()
                     demisto.debug('frame_stopped_loading, Sent tab_ready.set')
@@ -112,6 +112,7 @@ class PychromeEventHandler:
                 demisto.error(f'Failed stop loading the page: {self.tab=}, {frameId=}, {e=}')
 
 # endregion
+
 
 def is_chrome_running():
     browser = pychrome.Browser(url=LOCAL_CHROME_URL)
@@ -236,10 +237,10 @@ def rasterize(path: str,
             # tab.call_method("Browser.Bounds.width=600")
             tab.call_method("Emulation.setVisibleSize", width=width, height=height)
 
-            if rasterize_type == RasterizeType.PNG:
+            if rasterize_type == RasterizeType.PNG or str(rasterize_type).lower == RasterizeType.PNG.value:
                 return screenshot_image(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout)
 
-            elif rasterize_type == RasterizeType.PDF:
+            elif rasterize_type == RasterizeType.PDF or str(rasterize_type).lower == RasterizeType.PDF.value:
                 return screenshot_pdf(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout,
                                       include_url=include_url)
             else:
