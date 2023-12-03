@@ -453,6 +453,9 @@ script:
       - last_modified_date|desc
     - name: slug
       description: 'Search by ''slug'' or short descriptive name. For example, "anchor-panda"'
+    - name: display_full_fields
+      description: Whether to display the full fields result from CS API.
+      defaultValue: false
     outputs:
     - contextPath: FalconIntel.Actor.ImageURL
       description: The URL of the actor image.
@@ -799,6 +802,9 @@ script:
       - created_date|desc
       - last_modified_date|asc
       - last_modified_date|desc
+    - name: display_full_fields
+      description: Whether to display the full fields result from CS API.
+      defaultValue: false
     outputs:
     - contextPath: FalconIntel.Report.ID
       description: The ID of the report.

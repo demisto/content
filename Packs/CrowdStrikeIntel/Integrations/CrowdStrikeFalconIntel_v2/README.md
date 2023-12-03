@@ -569,6 +569,7 @@ Search known actors based on the given parameters.
 | limit | The maximum number of actors to retrieve. The default is 10. | Optional | 
 | sort | Sort by field and direction. | Optional | 
 | slug | Search by 'slug' or short descriptive name. Ex: "anchor-panda" | Optional | 
+| display_full_fields | Whether to display the full fields result from CS API. Default is False | Optional | 
 
 
 #### Context Output
@@ -900,6 +901,7 @@ The Falcon Intel Reports API allows to query CrowdStrike intelligence publicatio
 | offset | Used to paginate the response. You can then use limit to set the number of results for the next page. | Optional | 
 | limit | The maximum number of reports to retrieve. The default is 10. | Optional | 
 | sort | Sort by field and direction. | Optional | 
+| display_full_fields | Whether to display the full fields result from CS API. Default is False | Optional | 
 
 
 #### Context Output
