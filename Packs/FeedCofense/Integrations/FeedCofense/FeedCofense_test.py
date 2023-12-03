@@ -104,6 +104,12 @@ class TestFetchIndicators:
         else:
             assert not results
 
+    process_items_params = [
+        (threats[0], "randommd5", FeedIndicatorType.File, 0, 4),
+        (threats[0], "6ad00a19ab3e47e4b54b2792a7b47a13", FeedIndicatorType.File, 2, 4),
+        ({}, "", "", 0, 0),
+    ]
+
     @pytest.mark.parametrize("threat, value, _type, indicator_index, length", process_items_params)
     def test_process_file_item(self, threat, value, _type, indicator_index, length):
         """
