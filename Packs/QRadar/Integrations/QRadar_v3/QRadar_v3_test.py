@@ -5,7 +5,7 @@ import json
 from datetime import datetime
 from collections.abc import Callable
 import copy
-from requests.exceptions import ReadTimeout, ConnectTimeout, ConnectionError
+from requests.exceptions import ReadTimeout
 
 import QRadar_v3  # import module separately for mocker
 import pytest
