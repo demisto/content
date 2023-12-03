@@ -16,7 +16,7 @@ def load_json_file(filename):
     :return:
     """
     content = None
-    with open(os.path.dirname(__file__) + f"test_data/{filename}") as f:
+    with open(os.path.dirname(__file__) + f"/test_data/{filename}") as f:
         content = json.load(f)
     return content
 

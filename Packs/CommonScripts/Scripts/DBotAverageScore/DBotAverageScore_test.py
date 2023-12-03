@@ -11,7 +11,7 @@ def load_test_data(json_file_name: str) -> list | dict:
     """
     Loads test data from a JSON file.
     """
-    with open(Path(__file__).parent / 'test_data', json_file_name) as json_file:
+    with open(Path(__file__).parent / 'test_data' / json_file_name) as json_file:
         return json.load(json_file)
 
 
