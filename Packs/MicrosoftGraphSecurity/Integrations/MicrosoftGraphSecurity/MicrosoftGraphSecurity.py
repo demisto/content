@@ -265,7 +265,7 @@ class MsGraphClient:
         return self.ms_client.http_request(method='POST', url_suffix=THREAT_ASSESSMENT_URL_PREFIX, json_data=body)
 
     def get_user_id(self, email):
-        return self.ms_client.http_request(method='GET', url_suffix='users', params={'$filter': f'mail eq {email}'})
+        return self.ms_client.http_request(method='GET', url_suffix='users', params={'$filter': f"mail eq '{email}'"})
 
     def get_threat_assessment_request(self, request_id):
         return self.ms_client.http_request(method='GET',

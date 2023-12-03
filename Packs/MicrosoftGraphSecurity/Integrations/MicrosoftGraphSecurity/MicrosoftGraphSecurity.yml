@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: Microsoft Graph
+  id: Microsoft Graph Test
   version: -1
 configuration:
 - defaultvalue: https://graph.microsoft.com
@@ -175,8 +175,8 @@ configuration:
   advanced: true
   required: false
 description: Unified gateway to security insights - all from a unified Microsoft Graph Security API.
-display: Microsoft Graph Security
-name: Microsoft Graph
+display: Microsoft Graph Security Test
+name: Microsoft Graph Test
 script:
   commands:
   - arguments:
