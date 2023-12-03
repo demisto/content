@@ -4667,6 +4667,7 @@ def upload_batch_custom_ioc_command(
 
 
 def test_module():
+    # TODO: added a comment to trigger the "CrowdStrike Falcon - Get Endpoint Forensics Data" TPB
     try:
         get_token(new_token=True)
     except ValueError:
