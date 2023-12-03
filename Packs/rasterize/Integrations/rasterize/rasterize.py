@@ -68,20 +68,21 @@ class TabLifecycleManager:
     def __init__(self, browser):
         self.browser = browser
         self.tab = None
+        demisto.debug(f'TabLifecycleManager, init, tabs list:\n{self.browser.list_tab()}')
 
     def __enter__(self):
         self.tab = self.browser.new_tab()
         self.tab.start()
         self.tab.Page.enable()
-        demisto.debug(f'TabLifecycleManager, entering tab {self.tab}')
+        demisto.debug(f'TabLifecycleManager, entering tab {self.tab.id}')
+        demisto.debug(f'TabLifecycleManager, init, tabs list:\n{self.browser.list_tab()}')
         return self.tab
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if self.tab:
             tab_id = self.tab.id
-            self.browser.close_tab(self.tab.id)
+            self.browser.close_tab(tab_id)
             demisto.debug(f'TabLifecycleManager, exiting, closing tab {tab_id}')
-        demisto.debug(f'TabLifecycleManager, exiting, tabs list:\n{self.browser.list_tab()}')
 
 
 class PychromeEventHandler:
