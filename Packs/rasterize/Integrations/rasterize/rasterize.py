@@ -42,6 +42,10 @@ DEFAULT_RETRIES_COUNT = 4
 DEFAULT_RETRY_WAIT_IN_SECONDS = 3
 PAGES_LIMITATION = 20
 
+# Polling for rasterization commands to complete
+DEFAULT_CALLBACK_TIMEOUT = 5
+DEFAULT_POLLING_INTERVAL = 0.1
+
 # Consts for custom width and height
 MAX_FULLSCREEN_WIDTH = 8000
 MAX_FULLSCREEN_HEIGHT = 8000
@@ -56,7 +60,7 @@ LOCAL_CHROME_URL = f"http://{LOCAL_CHROME_HOST}:{LOCAL_CHROME_PORT}"
 class RasterizeType(Enum):
     PNG = 'png'
     PDF = 'pdf'
-    # TODO: handle JSON and selenium functions
+    # TODO: handle JSON
     JSON = 'json'
 
 
@@ -171,9 +175,12 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout):  # prag
 
         demisto.debug(f'Starting tab navigation to given path: {path}')
 
+        print(f"*** {navigation_timeout=}")
         if navigation_timeout > 0:
+            print(f"*** navigation_timeout > 0, {navigation_timeout=}")
             tab.Page.navigate(url=path, _timeout=navigation_timeout)
         else:
+            print(f"*** NOT navigation_timeout > 0, {navigation_timeout=}")
             tab.Page.navigate(url=path)
 
         success_flag = tab_ready_event.wait(navigation_timeout)
@@ -194,7 +201,14 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout):  # prag
 
 def screenshot_image(browser, tab, path, wait_time, navigation_timeout):  # pragma: no cover
     navigate_to_path(browser, tab, path, wait_time, navigation_timeout)
-    ret_value = base64.b64decode(tab.Page.captureScreenshot()['data'])
+
+    screenshot_data = tab.Page.captureScreenshot()['data']
+    # captureScreenshot is asynchronous, so make sure you have data there
+    callback_timeout = time.time() + DEFAULT_CALLBACK_TIMEOUT
+    while screenshot_data is None and time.time() < callback_timeout:
+        time.sleep(DEFAULT_POLLING_INTERVAL)
+
+    ret_value = base64.b64decode(screenshot_data)
     demisto.debug(f"Captured snapshot, {len(ret_value)=}")
     return ret_value
 
@@ -204,7 +218,14 @@ def screenshot_pdf(browser, tab, path, wait_time, navigation_timeout, include_ur
     header_template = ''
     if include_url:
         header_template = "<span class=url></span>"
-    ret_value = base64.b64decode(tab.Page.printToPDF(headerTemplate=header_template)['data'])
+
+    pdf_data = tab.Page.printToPDF(headerTemplate=header_template)['data']
+    # printToPDF is asynchronous, so make sure you have data there
+    callback_timeout = time.time() + DEFAULT_CALLBACK_TIMEOUT
+    while pdf_data is None and time.time() < callback_timeout:
+        time.sleep(DEFAULT_POLLING_INTERVAL)
+
+    ret_value = base64.b64decode(pdf_data)
     return ret_value
 
 
