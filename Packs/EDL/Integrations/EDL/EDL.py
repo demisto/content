@@ -345,7 +345,14 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher,
     ioc_counter = 0
     try:
         for ioc_res in indicator_searcher:
+            total = ioc_res.get("total")
+            if total is None:
+                version = demisto.demistoVersion()
+                # NG + XSIAM can recover from a shutdown
+                if version.get('platform') == 'x2' or is_demisto_version_ge('8'):
+                    raise SystemExit('Encountered issue when trying to fetch indicators. Restarting container and trying again.')
             fetched_iocs = ioc_res.get('iocs') or []
+            demisto.info(f'{fetched_iocs=}')
             for ioc in fetched_iocs:
                 ioc_counter += 1
                 if request_args.out_format == FORMAT_PROXYSG:
