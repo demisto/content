@@ -49,6 +49,7 @@ CI_COMMIT_SHA = os.getenv('CI_COMMIT_SHA', '')
 CI_SERVER_HOST = os.getenv('CI_SERVER_HOST', '')
 DEFAULT_BRANCH = 'master'
 ALL_FAILURES_WERE_CONVERTED_TO_JIRA_TICKETS = ' (All failures were converted to Jira tickets)'
+LOOKBACK_HOURS = 48
 
 
 def options_handler() -> argparse.Namespace:
@@ -525,8 +526,8 @@ def main():
                                                          commits=commits)
         if pipeline_changed_status is not None:
             name, email, pr = shame(pivot_commit)
-            msg = "You broke" if pipeline_changed_status else "You fixed"
-            shame_message = f"Hi @{name}, {msg} the build. That was done in this PR: {pr}"
+            msg = "broke" if pipeline_changed_status else "fixed"  
+            shame_message = f"Hi @{name}, You {msg} the build. That was done in this PR: {pr}" 
 
             computed_slack_channel = "test_slack_notifier_when_master_is_broken"
         else:
