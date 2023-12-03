@@ -809,7 +809,7 @@ class MyTestCase(unittest.TestCase):
             ]
         }
 
-        expected_alerts = util_load_json(os.path.dirname(__file__) + "/test_data/fetch_alert_list_after_removing_duplication.json")
+        expected_alerts = util_load_json(os.path.dirname(__file__) + "/test_data/fetch_alert_list_after_removing_duplication.json")  # noqa: E501
 
         assert remove_duplicate_records(alerts, "Alerts", next_run) == expected_alerts
 
