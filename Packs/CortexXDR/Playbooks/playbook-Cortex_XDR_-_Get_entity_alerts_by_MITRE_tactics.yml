@@ -1030,8 +1030,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -30,
-          "y": 6320
+          "x": -490,
+          "y": 6300
         }
       }
     note: false
@@ -1236,7 +1236,7 @@ tasks:
       {
         "position": {
           "x": 350,
-          "y": 5910
+          "y": 5930
         }
       }
     note: false
@@ -1358,10 +1358,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "71":
     id: "71"
-    taskid: da3dc9c4-0fa7-4dca-8e41-419bb92d4c68
+    taskid: 573bf529-9645-4d2a-8d13-bc005673129a
     type: regular
     task:
-      id: da3dc9c4-0fa7-4dca-8e41-419bb92d4c68
+      id: 573bf529-9645-4d2a-8d13-bc005673129a
       version: -1
       name: Finalize Query
       description: |-
@@ -2011,7 +2011,7 @@ tasks:
       {
         "position": {
           "x": 350,
-          "y": 5740
+          "y": 5750
         }
       }
     note: false
@@ -2027,10 +2027,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "83":
     id: "83"
-    taskid: 8b7112d4-578c-4127-8409-2f7a1d69f209
+    taskid: 7598b80c-2e7a-4ec6-83fe-24a1d8743823
     type: condition
     task:
-      id: 8b7112d4-578c-4127-8409-2f7a1d69f209
+      id: 7598b80c-2e7a-4ec6-83fe-24a1d8743823
       version: -1
       name: Should hunting be executed?
       type: condition
@@ -2039,11 +2039,13 @@ tasks:
     nexttasks:
       '#default#':
       - "52"
-      "yes":
+      Yes - Hunt All:
+      - "86"
+      Yes - Specified Huntings:
       - "84"
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: Yes - Hunt All
       condition:
       - - operator: isEqualString
           left:
@@ -2054,7 +2056,9 @@ tasks:
             value:
               simple: "True"
           ignorecase: true
-        - operator: isEqualString
+    - label: Yes - Specified Huntings
+      condition:
+      - - operator: isEqualString
           left:
             value:
               simple: inputs.HuntReconnaissanceTechniques
@@ -2220,6 +2224,69 @@ tasks:
     quietmode: 1
     isoversize: false
     isautoswitchedtoquietmode: false
+  "86":
+    id: "86"
+    taskid: 821d6640-58ce-4c5b-887f-f23c7e9d1d79
+    type: regular
+    task:
+      id: 821d6640-58ce-4c5b-887f-f23c7e9d1d79
+      version: -1
+      name: Set final query to hunt all
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "82"
+    scriptarguments:
+      key:
+        simple: FinalQuery
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: inputs.EntityType
+          transformers:
+          - operator: ConcatFormat
+            args:
+              ctx_data: {}
+              ctx_inc: {}
+              ctx_inputs:
+                value:
+                  simple: inputs
+                iscontext: true
+              keep_symbol_to_null: {}
+              prefix:
+                value:
+                  simple: "{\n\t\"AND\": [\n\t\t{\n\t\t\t\"OR\": [\n\t\t\t\t{\n\t\t\t\t\t\"SEARCH_FIELD\": \"mitre_tactic_id_and_name\",\n\t\t\t\t\t\"SEARCH_TYPE\": \"CONTAINS\",\n\t\t\t\t\t\"SEARCH_VALUE\": \"TA0043\"\n\t\t\t\t},\n\t\t\t\t{\n\t\t\t\t\t\"SEARCH_FIELD\": \"mitre_tactic_id_and_name\",\n\t\t\t\t\t\"SEARCH_TYPE\": \"CONTAINS\",\n\t\t\t\t\t\"SEARCH_VALUE\": \"TA0001\"\n\t\t\t\t},\n\t\t\t\t{\n\t\t\t\t\t\"SEARCH_FIELD\": \"mitre_tactic_id_and_name\",\n\t\t\t\t\t\"SEARCH_TYPE\": \"CONTAINS\",\n\t\t\t\t\t\"SEARCH_VALUE\": \"TA0002\"\n\t\t\t\t},\n\t\t\t\t{\n\t\t\t\t\t\"SEARCH_FIELD\": \"mitre_tactic_id_and_name\",\n\t\t\t\t\t\"SEARCH_TYPE\": \"CONTAINS\",\n\t\t\t\t\t\"SEARCH_VALUE\": \"TA0003\"\n\t\t\t\t},\n\t\t\t\t{\n\t\t\t\t\t\"SEARCH_FIELD\": \"mitre_tactic_id_and_name\",\n\t\t\t\t\t\"SEARCH_TYPE\": \"CONTAINS\",\n\t\t\t\t\t\"SEARCH_VALUE\": \"TA0004\"\n\t\t\t\t},\n\t\t\t\t{\n\t\t\t\t\t\"SEARCH_FIELD\": \"mitre_tactic_id_and_name\",\n\t\t\t\t\t\"SEARCH_TYPE\": \"CONTAINS\",\n\t\t\t\t\t\"SEARCH_VALUE\": \"TA0005\"\n\t\t\t\t},\n\t\t\t\t{\n\t\t\t\t\t\"SEARCH_FIELD\": \"mitre_tactic_id_and_name\",\n\t\t\t\t\t\"SEARCH_TYPE\": \"CONTAINS\",\n\t\t\t\t\t\"SEARCH_VALUE\": \"TA0006\"\n\t\t\t\t},\n\t\t\t\t{\n\t\t\t\t\t\"SEARCH_FIELD\": \"mitre_tactic_id_and_name\",\n\t\t\t\t\t\"SEARCH_TYPE\": \"CONTAINS\",\n\t\t\t\t\t\"SEARCH_VALUE\": \"TA0007\"\n\t\t\t\t},\n\t\t\t\t{\n\t\t\t\t\t\"SEARCH_FIELD\": \"mitre_tactic_id_and_name\",\n\t\t\t\t\t\"SEARCH_TYPE\": \"CONTAINS\",\n\t\t\t\t\t\"SEARCH_VALUE\": \"TA0009\"\n\t\t\t\t},\n\t\t\t\t{\n\t\t\t\t\t\"SEARCH_FIELD\": \"mitre_tactic_id_and_name\",\n\t\t\t\t\t\"SEARCH_TYPE\": \"CONTAINS\",\n\t\t\t\t\t\"SEARCH_VALUE\": \"TA0011\"\n\t\t\t\t},\n\t\t\t\t{\n\t\t\t\t\t\"SEARCH_FIELD\": \"mitre_tactic_id_and_name\",\n\t\t\t\t\t\"SEARCH_TYPE\": \"CONTAINS\",\n\t\t\t\t\t\"SEARCH_VALUE\": \"TA0040\"\n\t\t\t\t}\n\t\t\t]\n\t\t},\n\t\t{\n\t\t\t\"SEARCH_FIELD\": \""
+              suffix:
+                value:
+                  simple: "\",\n\t\t\t\"SEARCH_TYPE\": \"CONTAINS\",\n\t\t\t\"SEARCH_VALUE\": \"${inputs.entityID}\"\n\t\t}\n\t]\n}"
+              variable_markers: {}
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -150,
+          "y": 5580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 1
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
@@ -2227,13 +2294,15 @@ view: |-
       "24_81_yes": 0.51,
       "2_18_#default#": 0.32,
       "4_19_#default#": 0.39,
-      "64_52_#default#": 0.28
+      "64_52_#default#": 0.28,
+      "83_52_#default#": 0.1,
+      "83_86_Yes - Hunt All": 0.12
     },
     "paper": {
       "dimensions": {
-        "height": 7495,
-        "width": 1230,
-        "x": -30,
+        "height": 7475,
+        "width": 1690,
+        "x": -490,
         "y": -1110
       }
     }

@@ -50,7 +50,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "64"
+      - "116"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -58,158 +58,6 @@ tasks:
         "position": {
           "x": 450,
           "y": -940
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "64":
-    id: "64"
-    taskid: e2587a6e-11b1-488d-8fd5-2a2132443c5f
-    type: condition
-    task:
-      id: e2587a6e-11b1-488d-8fd5-2a2132443c5f
-      version: -1
-      name: Should hunting be executed?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "114"
-      "yes":
-      - "68"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: inputs.RunAll
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-        - operator: isEqualString
-          left:
-            value:
-              simple: inputs.HuntReconnaissanceTechniques
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-        - operator: isEqualString
-          left:
-            value:
-              simple: inputs.HuntInitialAccessTechniques
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-        - operator: isEqualString
-          left:
-            value:
-              simple: inputs.HuntExecutionTechniques
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-        - operator: isEqualString
-          left:
-            value:
-              simple: inputs.HuntPersistenceTechniques
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-        - operator: isEqualString
-          left:
-            value:
-              simple: inputs.HuntPrivilegeEscalationTechniques
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-        - operator: isEqualString
-          left:
-            value:
-              simple: inputs.HuntDefenseEvasionTechniques
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-        - operator: isEqualString
-          left:
-            value:
-              simple: inputs.HuntDiscoveryTechniques
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-        - operator: isEqualString
-          left:
-            value:
-              simple: inputs.HuntLateralMovementTechniques
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-        - operator: isEqualString
-          left:
-            value:
-              simple: inputs.HuntCollectionTechniques
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-        - operator: isEqualString
-          left:
-            value:
-              simple: inputs.HuntCnCTechniques
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-        - operator: isEqualString
-          left:
-            value:
-              simple: inputs.HuntImpactTechniques
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-        - operator: isEqualString
-          left:
-            value:
-              simple: inputs.HuntCredentialAccessTechniques
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": -805
         }
       }
     note: false
@@ -311,10 +159,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "69":
     id: "69"
-    taskid: a2c5cb96-0373-4ea1-8a37-f982258091e2
+    taskid: 23aeb319-9260-4ca8-88a5-a83e131b9b90
     type: regular
     task:
-      id: a2c5cb96-0373-4ea1-8a37-f982258091e2
+      id: 23aeb319-9260-4ca8-88a5-a83e131b9b90
       version: -1
       name: Add Reconnaissance to query
       description: |-
@@ -452,10 +300,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "74":
     id: "74"
-    taskid: c4ef38ed-4bde-439e-8f58-d7efe9074648
+    taskid: 5af0d290-f0ca-43c9-8976-50a35ff78282
     type: regular
     task:
-      id: c4ef38ed-4bde-439e-8f58-d7efe9074648
+      id: 5af0d290-f0ca-43c9-8976-50a35ff78282
       version: -1
       name: Hunt techniques
       description: |-
@@ -472,11 +320,11 @@ tasks:
       '#none#':
       - "114"
     scriptarguments:
-      extend-context:
-        simple: Impact_techniques
       fromdate:
         complex:
           root: inputs.timeRange
+      ignore-outputs:
+        simple: "false"
       query:
         complex:
           root: MITRETactics
@@ -2096,76 +1944,306 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "116":
+    id: "116"
+    taskid: 82911802-06e9-4017-8f70-1a1f5a557a2d
+    type: condition
+    task:
+      id: 82911802-06e9-4017-8f70-1a1f5a557a2d
+      version: -1
+      name: Should hunting be executed?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Yes - Hunt All:
+      - "117"
+      Yes - Specified Huntings:
+      - "68"
+    separatecontext: false
+    conditions:
+    - label: Yes - Hunt All
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.RunAll
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    - label: Yes - Specified Huntings
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.HuntReconnaissanceTechniques
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: inputs.HuntInitialAccessTechniques
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: inputs.HuntExecutionTechniques
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: inputs.HuntPersistenceTechniques
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: inputs.HuntPrivilegeEscalationTechniques
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: inputs.HuntDefenseEvasionTechniques
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: inputs.HuntDiscoveryTechniques
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: inputs.HuntLateralMovementTechniques
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: inputs.HuntCollectionTechniques
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: inputs.HuntCnCTechniques
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: inputs.HuntImpactTechniques
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: inputs.HuntCredentialAccessTechniques
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": -800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "117":
+    id: "117"
+    taskid: f2da8ae7-bba0-475f-87d4-728005910653
+    type: regular
+    task:
+      id: f2da8ae7-bba0-475f-87d4-728005910653
+      version: -1
+      name: Hunt all techniques
+      description: |-
+        Searches Demisto alerts. A summarized version of this scrips is avilable with the summarizedversion argument.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SearchAlertsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "114"
+    scriptarguments:
+      fromdate:
+        complex:
+          root: inputs.timeRange
+      query:
+        complex:
+          root: inputs.EntityType
+          transformers:
+          - operator: ConcatFormat
+            args:
+              ctx_data: {}
+              ctx_inc: {}
+              ctx_inputs:
+                value:
+                  simple: inputs
+                iscontext: true
+              keep_symbol_to_null: {}
+              prefix: {}
+              suffix:
+                value:
+                  simple: :"${inputs.EntityID}" and (categoryname:"Reconnaisance" or categoryname:"Initial Access" or categoryname:"Execution" or categoryname:"Persistence" or categoryname:"Privilege Escalation" or categoryname:"Defense Evasion" or categoryname:"Credential Access" or categoryname:"Discovery" or categoryname:"Lateral Movement" or categoryname:"Collection" or categoryname:"Command and Control" or categoryname:"Impact")
+              variable_markers: {}
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -100,
+          "y": -15
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Hunt Impact techniques - Cortex XDR - Endpoint Investigation
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 7245,
-        "width": 1130,
-        "x": 30,
+        "width": 1260,
+        "x": -100,
         "y": -1070
       }
     }
   }
 inputs:
 - key: HuntReconnaissanceTechniques
-  value: {}
+  value:
+    simple: "False"
   required: false
   description: Set to True to hunt for identified alerts with MITRE Reconnaissance techniques.
   playbookInputQuery:
 - key: HuntInitialAccessTechniques
-  value: {}
+  value:
+    simple: "False"
   required: false
   description: Set to True to hunt for identified alerts with MITRE Initial Access techniques.
   playbookInputQuery:
 - key: HuntExecutionTechniques
-  value: {}
+  value:
+    simple: "False"
   required: false
   description: Set to True to hunt for identified alerts with MITRE Execution techniques.
   playbookInputQuery:
 - key: HuntPersistenceTechniques
-  value: {}
+  value:
+    simple: "False"
   required: false
   description: Set to True to hunt for identified alerts with MITRE Persistence techniques.
   playbookInputQuery:
 - key: HuntPrivilegeEscalationTechniques
-  value: {}
+  value:
+    simple: "False"
   required: false
   description: Set to True to hunt for identified alerts with MITRE Privilege Escalation techniques.
   playbookInputQuery:
 - key: HuntDefenseEvasionTechniques
-  value: {}
+  value:
+    simple: "False"
   required: false
   description: Set to True to hunt for identified alerts with MITRE Defense Evasion techniques.
   playbookInputQuery:
 - key: HuntDiscoveryTechniques
-  value: {}
+  value:
+    simple: "False"
   required: false
   description: Set to True to hunt for identified alerts with MITRE Discovery techniques.
   playbookInputQuery:
 - key: HuntLateralMovementTechniques
-  value: {}
+  value:
+    simple: "False"
   required: false
   description: Set to True to hunt for identified alerts with MITRE Lateral Movement techniques.
   playbookInputQuery:
 - key: HuntCollectionTechniques
-  value: {}
+  value:
+    simple: "False"
   required: false
   description: Set to True to hunt for identified alerts with MITRE Collection techniques .
   playbookInputQuery:
 - key: HuntCnCTechniques
-  value: {}
+  value:
+    simple: "False"
   required: false
   description: Set to True to hunt for identified alerts with MITRE Command and Control techniques.
   playbookInputQuery:
 - key: HuntImpactTechniques
-  value: {}
+  value:
+    simple: "False"
   required: false
   description: Set to True to hunt for identified alerts with MITRE Impact techniques.
   playbookInputQuery:
 - key: HuntCredentialAccessTechniques
-  value: {}
+  value:
+    simple: "False"
   required: false
   description: Set to True to hunt for identified alerts with MITRE Credential Access techniques.
   playbookInputQuery:
