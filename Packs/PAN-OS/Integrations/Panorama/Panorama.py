@@ -288,6 +288,7 @@ def http_request(uri: str, method: str, headers: dict = {},
     """
     Makes an API call with the given arguments
     """
+    demisto.debug("")
     result = requests.request(
         method,
         uri,
