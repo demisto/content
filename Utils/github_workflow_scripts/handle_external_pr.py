@@ -113,7 +113,7 @@ def packs_to_check_in_pr(file_paths: list[str]) -> set:
     return pack_dirs_to_check
 
 
-def get_packs_support_level_label(file_paths: list[str], external_pr_branch: str) -> str:
+def get_packs_support_level_label(file_paths: list[str], external_pr_branch: str, repo_name: str) -> str:
     """
     Get The contributions' support level label.
 
@@ -144,11 +144,13 @@ def get_packs_support_level_label(file_paths: list[str], external_pr_branch: str
     )
     try:
         fork_owner = os.getenv('GITHUB_ACTOR')
+        print(Path().cwd())
         with Checkout(
             repo=Repo(Path().cwd(), search_parent_directories=True),
             branch_to_checkout=external_pr_branch,
             # in marketplace contributions the name of the owner should be xsoar-contrib
-            fork_owner=fork_owner if fork_owner != 'xsoar-bot' else 'xsoar-contrib'
+            fork_owner=fork_owner if fork_owner != 'xsoar-bot' else 'xsoar-contrib',
+            repo_name=repo_name
         ):
             packs_support_levels = get_support_level(pack_dirs_to_check_support_levels_labels)
     except Exception as error:
@@ -263,6 +265,10 @@ def main():
     payload = json.loads(payload_str)
     print(f'{t.cyan}Processing PR started{t.normal}')
 
+
+    print('======')
+    print(payload.get('repository', {}).get('name'))
+
     org_name = 'demisto'
     repo_name = 'content'
     gh = Github(get_env_var('CONTENTBOT_GH_ADMIN_TOKEN'), verify=False)
@@ -270,21 +276,22 @@ def main():
 
     pr_number = payload.get('pull_request', {}).get('number')
     pr = content_repo.get_pull(pr_number)
+    repo_name = payload.get('repository', {}).get('name')
 
     pr_files = [file.filename for file in pr.get_files()]
     print(f'{pr_files=} for {pr_number=}')
 
     labels_to_add = [CONTRIBUTION_LABEL, EXTERNAL_LABEL]
-    if support_label := get_packs_support_level_label(pr_files, pr.head.ref):
+    if support_label := get_packs_support_level_label(pr_files, pr.head.ref, repo_name):
         labels_to_add.append(support_label)
 
     # Add the initial labels to PR:
     # - Contribution
     # - External PR
     # - Support Label
-    for label in labels_to_add:
-        pr.add_to_labels(label)
-        print(f'{t.cyan}Added "{label}" label to the PR{t.normal}')
+    # for label in labels_to_add:
+    #     pr.add_to_labels(label)
+    #     print(f'{t.cyan}Added "{label}" label to the PR{t.normal}')
 
     # check base branch is master
     if pr.base.ref == 'master':
@@ -319,27 +326,27 @@ def main():
     print(f"TIM Reviewer: {tim_reviewer}")
 
     content_reviewer = determine_reviewer(content_reviewers, content_repo)
-    pr.add_to_assignees(content_reviewer)
+    # pr.add_to_assignees(content_reviewer)
     reviewers = [content_reviewer]
 
     # Add a security architect reviewer if the PR contains security content items
     if is_requires_security_reviewer(pr_files):
         reviewers.append(security_reviewer)
-        pr.add_to_assignees(security_reviewer)
+        # pr.add_to_assignees(security_reviewer)
         pr.add_to_labels(SECURITY_LABEL)
 
     # adding TIM reviewer
     if is_tim_reviewer_needed(pr_files, support_label):
         reviewers.append(tim_reviewer)
-        pr.add_to_labels(TIM_LABEL)
+        # pr.add_to_labels(TIM_LABEL)
 
-    pr.create_review_request(reviewers=reviewers)
+    # pr.create_review_request(reviewers=reviewers)
     print(f'{t.cyan}Assigned and requested review from "{",".join(reviewers)}" to the PR{t.normal}')
 
     # create welcome comment (only users who contributed through Github need to have that contribution form filled)
     message_to_send = WELCOME_MSG if pr.user.login == MARKETPLACE_CONTRIBUTION_PR_AUTHOR else WELCOME_MSG_WITH_GFORM
     body = message_to_send.format(selected_reviewer=content_reviewer)
-    pr.create_issue_comment(body)
+    # pr.create_issue_comment(body)
     print(f'{t.cyan}Created welcome comment{t.normal}')
 
     print('contributors.md section')
@@ -354,8 +361,8 @@ def main():
         contributors_body = f'Hi @{pr.user.login}, thanks for contributing to a Cortex XSOAR supported pack. To receive ' \
             f'credit for your generous contribution please follow this [link]' \
             f'(https://xsoar.pan.dev/docs/packs/packs-format#contributorsjson).'
-    if XSOAR_SUPPORT_LEVEL_LABEL in labels_to_add and ver != '1.0.0':
-        pr.create_issue_comment(contributors_body)
+    # if XSOAR_SUPPORT_LEVEL_LABEL in labels_to_add and ver != '1.0.0':
+    #     pr.create_issue_comment(contributors_body)
 
 
 if __name__ == "__main__":
