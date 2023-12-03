@@ -178,12 +178,9 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout):  # prag
 
         demisto.debug(f'Starting tab navigation to given path: {path}')
 
-        print(f"*** {navigation_timeout=}")
         if navigation_timeout > 0:
-            print(f"*** navigation_timeout > 0, {navigation_timeout=}")
             tab.Page.navigate(url=path, _timeout=navigation_timeout)
         else:
-            print(f"*** NOT navigation_timeout > 0, {navigation_timeout=}")
             tab.Page.navigate(url=path)
 
         success_flag = tab_ready_event.wait(navigation_timeout)
