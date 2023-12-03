@@ -377,6 +377,7 @@ expected_results = ['created']
 
 
 def test_remove_empty_or_short_fields(sample_data):
+    from DBotFindSimilarIncidents import Model
     """
     Given:
         - sample_data: a dataframe with a column of strings
