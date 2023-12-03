@@ -9,7 +9,6 @@ from FeedRecordedFuture import get_indicator_type, get_indicators_command, Clien
 from csv import DictReader
 from CommonServerPython import argToList
 
-# def mock_iter_content(bytes: )
 
 def test_stream_compressed_data_iterations(mocker: MockerFixture):
     # The test will have a chunk size of 3, since the first character is of 4 bytes, the first chunk will have to be decoded 3
