@@ -4,7 +4,6 @@ from CommonServerUserPython import *
 
 # IMPORTS
 from datetime import datetime
-from typing import List, Tuple, Optional
 
 import urllib3
 
@@ -35,7 +34,7 @@ class Client(BaseClient):
         if not (self._client_id and self._client_secret):
             raise DemistoException('API client ID and API client secret must be provided.')
         super().__init__(base_url=self._server_url, verify=self._verify_certificate,
-                         ok_codes=tuple(), proxy=params.get('proxy', False))
+                         ok_codes=(), proxy=params.get('proxy', False))
         self._token = self._get_access_token()
         self._headers = {'Authorization': 'Bearer ' + self._token}
 
@@ -61,7 +60,7 @@ class Client(BaseClient):
         token_res = self.http_request('POST', '/oauth2/token', data=body, auth=(self._client_id, self._client_secret))
         return token_res.get('access_token')
 
-    def create_indicators_from_response(self, response, feed_tags: list, tlp_color: Optional[str]) -> list:
+    def create_indicators_from_response(self, response, feed_tags: list, tlp_color: str | None) -> list:
         parsed_indicators = []  # type:List
         indicator = {}
         for actor in response['resources']:
@@ -139,7 +138,7 @@ class Client(BaseClient):
             url_suffix = url_suffix + '&filter=' + params
         return url_suffix
 
-    def get_indicators(self, feed_tags: List, tlp_color: Optional[str], limit=None, offset=None, target_countries=None,
+    def get_indicators(self, feed_tags: list, tlp_color: str | None, limit=None, offset=None, target_countries=None,
                        target_industries=None, custom_filter=None, time_filter=None, sort=None):
         """Get a list of indicators.
         Returns:
@@ -166,7 +165,7 @@ class Client(BaseClient):
         )
 
 
-def test_module(client: Client, args: dict, feed_tags: list, tlp_color: Optional[str]):
+def test_module(client: Client, args: dict, feed_tags: list, tlp_color: str | None):
     try:
         tags = argToList(demisto.params().get('feedTags'))
         client.get_indicators(tags, tlp_color, limit=1, offset=0)
@@ -176,8 +175,8 @@ def test_module(client: Client, args: dict, feed_tags: list, tlp_color: Optional
     return 'ok', {}, {}
 
 
-def get_indicators_command(client: Client, args: dict, feed_tags: list, tlp_color: Optional[str]) \
-        -> Tuple[str, dict, list]:
+def get_indicators_command(client: Client, args: dict, feed_tags: list, tlp_color: str | None) \
+        -> tuple[str, dict, list]:
     """Initiate a single fetch-indicators
 
     Args:
@@ -220,7 +219,7 @@ def get_indicators_command(client: Client, args: dict, feed_tags: list, tlp_colo
     return human_readable, {}, indicators
 
 
-def fetch_indicators(client: Client, feed_tags: List, tlp_color: Optional[str], limit: int,
+def fetch_indicators(client: Client, feed_tags: list, tlp_color: str | None, limit: int,
                      target_countries=None, target_industries=None, custom_filter=None) -> tuple:
     """Fetch-indicators command from CrowdStrike Feeds
 
@@ -258,7 +257,7 @@ def fetch_indicators(client: Client, feed_tags: List, tlp_color: Optional[str], 
         }
     elif len(indicators) > 0:
         # we need to store the latest updateddate from the indictators for the next run
-        latest_modified_time = max(map(lambda indicator: indicator['fields']['updateddate'], indicators))
+        latest_modified_time = max(indicator['fields']['updateddate'] for indicator in indicators)
         new_last_modified_time = int(latest_modified_time) + 1  # + 1 to avoid get the same
         last_run = {'last_modified_time': new_last_modified_time}
     else:
