@@ -23,7 +23,7 @@
         {
             "playbookID": "playbook-AzureLogAnalytics-test",
             "integrations": "Azure Log Analytics",
-            "instance_name" : "Azure_Log_Analytics_client_cred",
+            "instance_name": "Azure_Log_Analytics_client_cred",
             "timeout": 800,
             "is_mockable": false
         },
@@ -5499,6 +5499,9 @@
             "playbookID": "GridFieldSetup_test"
         },
         {
+            "playbookID": "TestGetArrayElements"
+        },
+        {
             "integrations": "Aha",
             "playbookID": "AHA_TestPlaybook",
             "fromversion": "6.5.0"
@@ -6220,4 +6223,3 @@
         "IPv6 extraction test"
     ]
 }
-
