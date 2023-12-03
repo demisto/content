@@ -3,24 +3,23 @@ from datetime import datetime, timedelta
 import sys
 from dateutil import parser
 
-GITLAB_URL = 'https://code.pan.run'
-GITLAB_ACCESS_TOKEN = ''
-PROJECT_ID = '2596'
 
-
-def get_pipelines_and_commits(lookback_hours=48):
+def get_pipelines_and_commits(gitlab_url, gitlab_access_token, project_id='2596', lookback_hours=48):
     """
     Get all pipelines and commits on the master branch in the last X hours,
     pipelines are filtered to only include successful and failed pipelines.
     Args:
+        gitlab_url: str
+        gitlab_access_token: str
+        project_id: str
         lookback_hours: int
     Return:
         a list of gitlab pipelines and a list of gitlab commits in ascending order
     """
-    gl = gitlab.Gitlab(GITLAB_URL, private_token=GITLAB_ACCESS_TOKEN)
-    project = gl.projects.get(PROJECT_ID)
+    gl = gitlab.Gitlab(gitlab_url, private_token=gitlab_access_token)
+    project = gl.projects.get(project_id)
 
-    # Calculate the timestamp for 48 hours ago
+    # Calculate the timestamp for lookback_hours ago
     time_threshold = (
         datetime.now() - timedelta(hours=lookback_hours)).isoformat()
 
@@ -91,11 +90,11 @@ def is_pivot(single_pipeline_id, list_of_pipelines, commits):
     """
     pipeline_index = 0
     for pipeline in list_of_pipelines:
-        if pipeline.id == single_pipeline_id:
+        if pipeline.id == int(single_pipeline_id):
             pipeline_index = list_of_pipelines.index(pipeline)
             break
     if pipeline_index == 0:
-        return False
+        return None, None
     previous_pipeline = list_of_pipelines[pipeline_index - 1]
     current_pipeline = list_of_pipelines[pipeline_index]
 
@@ -111,10 +110,16 @@ def is_pivot(single_pipeline_id, list_of_pipelines, commits):
 
 
 def main(args):
-    list_of_pipelines, commits = get_pipelines_and_commits(48)
-    res = is_pivot(int(args[1]), list_of_pipelines, commits)
-    print(res)
-
+    #example of use
+    gitlab_url = args[1]
+    gitlab_access_token = args[2]
+    project_id = args[3]
+    pipeline_id = args[4]
+    lookback_hours = int(args[5])
+    pipelines, commits = get_pipelines_and_commits(gitlab_url, gitlab_access_token, project_id, lookback_hours)
+    is_pivot_result, pivot_commit = is_pivot(pipeline_id, pipelines, commits)
+    if is_pivot_result is None:
+        info = shame(pivot_commit)
 
 if __name__ == "__main__":
     main(sys.argv)
