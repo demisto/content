@@ -43,7 +43,6 @@ DEFAULT_RETRY_WAIT_IN_SECONDS = 3
 PAGES_LIMITATION = 20
 
 # Polling for rasterization commands to complete
-DEFAULT_CALLBACK_TIMEOUT = 5
 DEFAULT_POLLING_INTERVAL = 0.1
 
 # Consts for custom width and height
@@ -72,22 +71,26 @@ class TabLifecycleManager:
     def __init__(self, browser):
         self.browser = browser
         self.tab = None
-        demisto.debug(f'TabLifecycleManager, init, tabs list:\n{self.browser.list_tab()}')
+        demisto.debug(f'TabLifecycleManager, __init__, active tabs len: {len(self.browser.list_tab())}')
 
     def __enter__(self):
         self.tab = self.browser.new_tab()
         self.tab.start()
         self.tab.Page.enable()
         demisto.debug(f'TabLifecycleManager, entering tab {self.tab.id}')
-        demisto.debug(f'TabLifecycleManager, init, tabs list:\n{self.browser.list_tab()}')
+        demisto.debug(f'TabLifecycleManager, __enter__, active tabs len: {len(self.browser.list_tab())}')
         return self.tab
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if self.tab:
-            self.tab.Page.disable()
-            tab_id = self.tab.id
-            self.browser.close_tab(tab_id)
-            demisto.debug(f'TabLifecycleManager, exiting, closing tab {tab_id}')
+            try:
+                self.tab.Page.disable()
+                tab_id = self.tab.id
+                self.browser.close_tab(tab_id)
+                demisto.debug(f'TabLifecycleManager, __exit__, closing tab {tab_id}')
+                demisto.debug(f'TabLifecycleManager, __exit__, active tabs len: {len(self.browser.list_tab())}')
+            except Exception as ex:
+                demisto.debug(f'TabLifecycleManager, failed ot stop {tab_id} due to {ex}')
 
 
 class PychromeEventHandler:
@@ -201,17 +204,18 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout):  # prag
 
 def screenshot_image(browser, tab, path, wait_time, navigation_timeout):  # pragma: no cover
     navigate_to_path(browser, tab, path, wait_time, navigation_timeout)
-
+    
     screenshot_data = tab.Page.captureScreenshot()['data']
     # captureScreenshot is asynchronous, so make sure you have data there
-    callback_timeout = time.time() + DEFAULT_CALLBACK_TIMEOUT
-    while screenshot_data is None and time.time() < callback_timeout:
+    retry = 0
+    while screenshot_data is None and retry < 50:
         time.sleep(DEFAULT_POLLING_INTERVAL)
+        retry += 1
+    demisto.debug(f"Screenshot image is available after {retry} retries.")
 
     ret_value = base64.b64decode(screenshot_data)
     demisto.debug(f"Captured snapshot, {len(ret_value)=}")
     return ret_value
-
 
 def screenshot_pdf(browser, tab, path, wait_time, navigation_timeout, include_url):  # pragma: no cover
     navigate_to_path(browser, tab, path, wait_time, navigation_timeout)
@@ -221,9 +225,11 @@ def screenshot_pdf(browser, tab, path, wait_time, navigation_timeout, include_ur
 
     pdf_data = tab.Page.printToPDF(headerTemplate=header_template)['data']
     # printToPDF is asynchronous, so make sure you have data there
-    callback_timeout = time.time() + DEFAULT_CALLBACK_TIMEOUT
-    while pdf_data is None and time.time() < callback_timeout:
+    retry = 0
+    while pdf_data is None and retry < 50:
         time.sleep(DEFAULT_POLLING_INTERVAL)
+        retry += 1
+    demisto.debug(f"ODF is available after {retry} retries.")
 
     ret_value = base64.b64decode(pdf_data)
     return ret_value
