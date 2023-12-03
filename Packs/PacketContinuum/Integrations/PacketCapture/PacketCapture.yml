@@ -7,7 +7,7 @@ configuration:
   name: api_token
   type: 0
   required: true
-- display: Packet Continuum Management IP (e.g. 10.91.170.193)
+- display: Packet Continuum Management IP
   name: ip_management
   type: 0
   required: true

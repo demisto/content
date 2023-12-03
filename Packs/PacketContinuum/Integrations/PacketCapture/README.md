@@ -10,7 +10,7 @@ This integration was integrated and tested with version xx of PacketCapture
     | **Parameter** | **Required** |
     | --- | --- |
     | API Rest API Token | True |
-    | Packet Continuum Management IP (e.g. 10.91.170.193) | True |
+    | Packet Continuum Management IP | True |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
