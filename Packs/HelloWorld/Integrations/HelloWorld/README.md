@@ -10,8 +10,8 @@ This is the Hello World integration for getting started.
     | --- | --- | --- |
     | Source Reliability | Reliability of the source providing the intelligence data. | False |
     | Server URL (e.g., https://api.xsoar-example.com) |  | True |
-    | Fetch alerts |  | False |
-    | Alert type |  | False |
+    | Fetch incidents |  | False |
+    | Incident type |  | False |
     | Maximum number of alerts per fetch |  | False |
     | API Key |  | True |
     | Score threshold for IP reputation command | Set this to determine the HelloWorld score that will determine if an IP is malicious \(0-100\) | False |
@@ -76,7 +76,7 @@ Lists the example alerts as it would be fetched from the API.
 | --- | --- | --- |
 | alert_id | Filter by alert item ID. If not provided, all IDs will be retrieved. | Optional | 
 | limit | How many alerts to fetch. Default is 10. | Optional | 
-| severity | The severity  by which to filter the alerts. | Optional | 
+| severity | The severity by which to filter the alerts. | Optional | 
 
 #### Context Output
 
@@ -213,8 +213,8 @@ Return IP information and reputation.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | List of IPs. | Optional | 
-| threshold | If the IP has a reputation above the threshold, then the IP is defined as malicious. If threshold is not set, then the threshold from the instance configuration is used. Default is 65. | Optional | 
+| ip | A comma-separated list of IPs. | Optional | 
+| threshold | If the IP has a reputation above the threshold, then the IP is defined as malicious. If a threshold not set, then threshold from the instance configuration is used. Default is 65. | Optional | 
 
 #### Context Output
 
@@ -271,7 +271,7 @@ Return IP information and reputation.
 {
     "DBotScore": {
         "Indicator": "8.8.8.8",
-        "Reliability": "C - Fairly reliable",
+        "Reliability": "C Fairly reliable",
         "Score": 3,
         "Type": "ip",
         "Vendor": "HelloWorld Dev"
@@ -687,3 +687,20 @@ Return IP information and reputation.
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| EMERALD-ONION |  | NA | US | :jarm: | ***harmless***: 72<br/>***malicious***: 5<br/>***suspicious***: 2<br/>***timeout***: 0<br/>***undetected***: 8 |  | :cidr: | ARIN |  | ***values***:  | ***harmless***: 0<br/>***malicious***: 1 |  |
 
+  | Incidents Fetch Interval |  | False |
+### helloworld-new-cmd
+***
+New command to test out https://jira-dc.paloaltonetworks.com/browse/CIAC-4657
+#### Base Command
+`helloworld-new-cmd`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| HelloWorld.NewCmd | unknown |  | 
