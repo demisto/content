@@ -375,6 +375,8 @@ fan-in-nightly:
       when: always
   script:
     - echo "fan in nightly"
+  needs:
+    - job: pre_job
 
 jobs-done-check-nightly:
   extends:

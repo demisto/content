@@ -307,8 +307,6 @@
       - local: .gitlab/ci/.gitlab-ci.slack-notify.yml
   inherit: # see https://gitlab.com/gitlab-org/gitlab-runner/-/issues/27775
     variables: false
-  needs:
-    - job: pre_job
 
 .destroy_xsoar_instances:
   - section_start "Destroy Instances"
