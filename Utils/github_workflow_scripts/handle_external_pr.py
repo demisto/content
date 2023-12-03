@@ -267,8 +267,9 @@ def main():
 
 
     print('======')
-    print(payload.get('repository', {}).get('name'))
 
+    repo_name = payload.get('head', {}).get('repo',{}).get('name')
+    print(repo_name)
     org_name = 'demisto'
     repo_name = 'content'
     gh = Github(get_env_var('CONTENTBOT_GH_ADMIN_TOKEN'), verify=False)
@@ -276,7 +277,6 @@ def main():
 
     pr_number = payload.get('pull_request', {}).get('number')
     pr = content_repo.get_pull(pr_number)
-    repo_name = payload.get('repository', {}).get('name')
 
     pr_files = [file.filename for file in pr.get_files()]
     print(f'{pr_files=} for {pr_number=}')
