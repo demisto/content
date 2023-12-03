@@ -1000,5 +1000,5 @@ outputs:
   description: The tags of the Attack Pattern.
   type: string
 tests:
-- No tests (auto formatted)
+- Test Playbook - Detonate and Analyze File
 fromversion: 6.5.0
