@@ -4,6 +4,7 @@ from CommonServerPython import *  # noqa: F401
 import base64
 import os
 import pychrome
+import random
 import requests
 import subprocess
 import tempfile
@@ -123,31 +124,57 @@ class PychromeEventHandler:
 # endregion
 
 
-def is_chrome_running():
-    browser = pychrome.Browser(url=LOCAL_CHROME_URL)
+def is_chrome_running(port):
+    browser_url = f"http://{LOCAL_CHROME_HOST}:{port}"
+    demisto.debug(f"is_chrome_running, trying to connect to {browser_url=}")
+    browser = pychrome.Browser(url=browser_url)
     try:
         browser.list_tab()
         return browser
     except requests.exceptions.ConnectionError as exp:
         exp_str = str(exp)
+        demisto.debug(f"is_chrome_running, {port=}. ConnectionError, {exp_str=}, {exp=}")
         #  HTTPConnectionPool(host='127.0.0.1', port=9222): Max retries exceeded with url: /json
         #   (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x1059ccd30>:
         #    Failed to establish a new connection: [Errno 61] Connection refused'))
-        exception_identifiers = [LOCAL_CHROME_HOST, LOCAL_CHROME_PORT, "Connection refused"]
+        exception_identifiers = [LOCAL_CHROME_HOST, port, "Connection refused"]
         if all(identifier in exp_str for identifier in exception_identifiers):
-            demisto.info(f'Could not connect to Chrome on port {LOCAL_CHROME_PORT}')
+            demisto.info(f'Could not connect to Chrome on port {port}')
     return None
 
 
-def ensure_chrome_running():  # pragma: no cover
+def get_chrome_port():
+    chrome_port_filename = 'chrome_port.txt'
+    try:
+        with open(chrome_port_filename) as chrome_port_file:
+            chrome_port = chrome_port_file.readline()
+            # Make sure it's an int
+            chrome_port_int = int(chrome_port)
+            return f"{chrome_port_int}"
+    except FileNotFoundError:
+        demisto.info("chrome_port_filename not found, creating")
+    except ValueError:
+        demisto.info("chrome_port file doesn't contain a valid value, creating")
+
+    chrome_port = f"{random.randint(1024, 49151)}"
+    demisto.info(f"Generated chrome_port: {chrome_port}")
+    demisto.debug(f"get_chrome_port, saving port {chrome_port}")
+    with open(chrome_port_filename, "w") as chrome_port_file:
+        chrome_port_file.write(chrome_port)
+    demisto.debug(f"get_chrome_port, saved port {chrome_port}")
+    return chrome_port
+
+
+def ensure_chrome_running(port=None):  # pragma: no cover
     for _ in range(DEFAULT_RETRIES_COUNT):
-        if browser := is_chrome_running():
+        chrome_port = get_chrome_port()
+        if browser := is_chrome_running(chrome_port):
             demisto.debug('Chrome is instance running. Returning True.')
             return browser
         else:
             demisto.debug('Chrome is not running, trying to start it.')
             try:
-                subprocess.run(['bash', '/start_chrome_headless.sh'],
+                subprocess.run(['bash', '/start_chrome_headless.sh', '--port', chrome_port],
                                text=True, stdout=subprocess.DEVNULL,
                                stderr=subprocess.DEVNULL)
                 demisto.debug('Chrome headless started')
@@ -201,12 +228,12 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout):  # prag
 
 def screenshot_image(browser, tab, path, wait_time, navigation_timeout):  # pragma: no cover
     navigate_to_path(browser, tab, path, wait_time, navigation_timeout)
-    
+
     screenshot_data = tab.Page.captureScreenshot()['data']
     # captureScreenshot is asynchronous, so make sure you have data there
     retry = 0
     while screenshot_data is None and retry < 50:
-        time.sleep(DEFAULT_POLLING_INTERVAL)
+        time.sleep(DEFAULT_POLLING_INTERVAL)  # pylint: disable=E9003
         retry += 1
     demisto.debug(f"Screenshot image is available after {retry} retries.")
 
@@ -224,7 +251,7 @@ def screenshot_pdf(browser, tab, path, wait_time, navigation_timeout, include_ur
     # printToPDF is asynchronous, so make sure you have data there
     retry = 0
     while pdf_data is None and retry < 50:
-        time.sleep(DEFAULT_POLLING_INTERVAL)
+        time.sleep(DEFAULT_POLLING_INTERVAL)  # pylint: disable=E9003
         retry += 1
     demisto.debug(f"ODF is available after {retry} retries.")
 
