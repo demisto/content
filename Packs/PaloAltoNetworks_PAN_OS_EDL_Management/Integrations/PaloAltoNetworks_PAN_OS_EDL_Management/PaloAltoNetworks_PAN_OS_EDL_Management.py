@@ -620,8 +620,6 @@ def edl_get_external_file_metadata_command(args: dict):
 
     file_size = int(result.split("Size: ", 1)[1].split(" ", 1)[0])
     file_name = file_path.split("/")[-1]
-    if len(file_name) == 0:
-        file_name = file_path
     last_modified_parts = result.split("Change: ", 1)[1].split(" ", 2)[0:2]
     last_modified = ' '.join(last_modified_parts)
 
