@@ -1448,11 +1448,12 @@ def create_mail_assessment_request_command(args, client: MsGraphClient) -> PollR
                                                        args.get('message_id'))
         request_id = result.get('id')
 
-    result = client.get_threat_assessment_request_status(request_id)
+    # result = client.get_threat_assessment_request_status(request_id)
+    result = client.get_threat_assessment_request(request_id)
     status = result.get('status')
     demisto.debug(f"status is: {status}")
-    if status == 'completed':
-        result = client.get_threat_assessment_request(request_id)
+    if status == 'completed' or result.get('results'):
+        # result = client.get_threat_assessment_request(request_id)
         outputs = get_result_outputs(result)
         outputs['Message ID'] = args.get('message_id')
         readable_output = tableToMarkdown('Mail assessment request:', outputs, removeNull=True)
@@ -1483,11 +1484,12 @@ def create_email_file_request_command(args, client: MsGraphClient) -> PollResult
                                                              content_data)
         request_id = result.get('id')
     demisto.debug(f"got request id: {request_id}")
-    result = client.get_threat_assessment_request_status(request_id)
+    # result = client.get_threat_assessment_request_status(request_id)
+    result = client.get_threat_assessment_request(request_id)
     status = result.get('status')
     demisto.debug(f"status is: {status}")
-    if status == 'completed':
-        result = client.get_threat_assessment_request(request_id)
+    if status == 'completed' or result.get('results'):
+        # result = client.get_threat_assessment_request(request_id)
         outputs = get_result_outputs(result)
         readable_output = tableToMarkdown('Email file assessment request results:', outputs, removeNull=True)
 
