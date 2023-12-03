@@ -1054,7 +1054,94 @@ script:
   - description: Run this command if for some reason you need to rerun the authentication process.
     name: msgraph-mail-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.78196
+  - arguments:
+    - description: User ID or principal ID (usually an email address in the format someuser@example.com).
+      isArray: false
+      name: user_id
+      required: true
+    - description: Maximum number of results to return.
+      name: limit
+      required: true
+      defaultValue: 50
+    description: List email rules for a user's mailbox using Microsoft Graph API.
+    name: msgraph-mail-list-rules
+    outputs:
+    - contextPath: MSGraphMail.Rule.conditions
+      description: Conditions that when fulfilled, will trigger the corresponding actions for that rule.
+      type: Unknown
+    - contextPath: MSGraphMail.Rule.actions
+      description: Actions to be taken on a message when the corresponding conditions are fulfilled.
+      type: Unknown
+    - contextPath: MSGraphMail.Rule.displayName
+      description: The display name of the rule.
+      type: String
+    - contextPath: MSGraphMail.Rule.exceptions
+      description: Exception conditions for the rule.
+      type: Unknown
+    - contextPath: MSGraphMail.Rule.hasError
+      description: Indicates whether the rule is in an error condition.
+      type: Boolean
+    - contextPath: MSGraphMail.Rule.id
+      description: The ID of the rule.
+      type: String
+    - contextPath: MSGraphMail.Rule.isEnabled
+      description: Indicates whether the rule is enabled to be applied to messages.
+      type: Boolean
+    - contextPath: MSGraphMail.Rule.isReadOnly
+      description: Indicates if the rule is read-only and cannot be modified or deleted by the rules REST API.
+      type: Boolean
+    - contextPath: MSGraphMail.Rule.sequence
+      description: Indicates the order in which the rule is executed, among other rules.
+      type: Number
+  - arguments:
+    - description: User ID or principal ID (usually an email address in the format someuser@example.com).
+      isArray: false
+      name: user_id
+      required: true
+    - description: The ID of the rule to retrieve.
+      name: rule_id
+      required: true
+    description: Get details of a specific email rule by ID for a user's mailbox using Microsoft Graph API.
+    name: msgraph-mail-get-rule
+    outputs:
+    - contextPath: MSGraphMail.Rule.conditions
+      description: Conditions that when fulfilled, will trigger the corresponding actions for that rule.
+      type: Unknown
+    - contextPath: MSGraphMail.Rule.actions
+      description: Actions to be taken on a message when the corresponding conditions are fulfilled.
+      type: Unknown
+    - contextPath: MSGraphMail.Rule.displayName
+      description: The display name of the rule.
+      type: String
+    - contextPath: MSGraphMail.Rule.exceptions
+      description: Exception conditions for the rule.
+      type: Unknown
+    - contextPath: MSGraphMail.Rule.hasError
+      description: Indicates whether the rule is in an error condition.
+      type: Boolean
+    - contextPath: MSGraphMail.Rule.id
+      description: The ID of the rule.
+      type: String
+    - contextPath: MSGraphMail.Rule.isEnabled
+      description: Indicates whether the rule is enabled to be applied to messages.
+      type: Boolean
+    - contextPath: MSGraphMail.Rule.isReadOnly
+      description: Indicates if the rule is read-only and cannot be modified or deleted by the rules REST API.
+      type: Boolean
+    - contextPath: MSGraphMail.Rule.sequence
+      description: Indicates the order in which the rule is executed, among other rules.
+      type: Number
+  - arguments:
+    - description: User ID or principal ID (usually an email address in the format someuser@example.com).
+      isArray: false
+      name: user_id
+      required: true
+    - description: The ID of the rule to delete.
+      name: rule_id
+      required: true
+    description: Delete a specific email rule by ID for a user's mailbox using Microsoft Graph API.
+    name: msgraph-mail-delete-rule
+  dockerimage: demisto/crypto:1.0.0.80694
   isfetch: true
   runonce: false
   script: '-'

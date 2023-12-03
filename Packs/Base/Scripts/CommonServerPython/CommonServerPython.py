@@ -2369,6 +2369,19 @@ def fileResult(filename, data, file_type=None):
     # pylint: enable=undefined-variable
     with open(demisto.investigation()['id'] + '_' + temp, 'wb') as f:
         f.write(data)
+
+    # when there is ../ in the filename, xsoar thinks that path of the file is in the previous folder(s) and because of that
+    # xsoar returns empty files to war-rooms
+    if isinstance(filename, str):
+        replaced_filename = filename.replace("../", "")
+        if filename != replaced_filename:
+            filename = replaced_filename
+            demisto.debug(
+                "replaced {filename} with new file name {replaced_file_name}".format(
+                    filename=filename, replaced_file_name=replaced_filename
+                )
+            )
+
     return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': file_type, 'File': filename, 'FileID': temp}
 
 
@@ -8185,6 +8198,60 @@ def is_demisto_version_ge(version, build_number=''):
         return True
 
 
+def is_xsiam_or_xsoar_saas():
+    """Determines whether or not the platform is XSIAM or XSOAR SAAS.
+
+    :return: True iff the platform is XSIAM or XSOAR SAAS.
+    :rtype: ``bool``
+    """
+    return is_demisto_version_ge('8.0.0')
+
+
+def is_xsoar():
+    """Determines whether or not the platform is XSOAR.
+
+    :return: True iff the platform is XSOAR.
+    :rtype: ``bool``
+    """
+    return "xsoar" in demisto.demistoVersion().get("platform")
+
+
+def is_xsoar_on_prem():
+    """Determines whether or not the platform is a XSOAR on-prem.
+
+    :return: True iff the platform is XSOAR on-prem.
+    :rtype: ``bool``
+    """
+    return demisto.demistoVersion().get("platform") == "xsoar" and not is_demisto_version_ge('8.0.0')
+
+
+def is_xsoar_hosted():
+    """Determines whether or not the platform is XSOAR hosted.
+
+    :return: True iff the platform is XSOAR hosted.
+    :rtype: ``bool``
+    """
+    return demisto.demistoVersion().get("platform") == "xsoar_hosted"
+
+
+def is_xsoar_saas():
+    """Determines whether or not the platform is XSOAR SAAS.
+
+    :return: True iff the platform is XSOAR SAAS.
+    :rtype: ``bool``
+    """
+    return demisto.demistoVersion().get("platform") == "xsoar" and is_xsiam_or_xsoar_saas()
+
+
+def is_xsiam():
+    """Determines whether or not the platform is XSIAM.
+
+    :return: True iff the platform is XSIAM.
+    :rtype: ``bool``
+    """
+    return demisto.demistoVersion().get("platform") == "x2"
+
+
 class DemistoHandler(logging.Handler):
     """
         Handler to route logging messages to an IntegrationLogger or demisto.debug if not supplied
@@ -10329,7 +10396,7 @@ def polling_function(name, interval=30, timeout=600, poll_message='Fetching Resu
                 *arguments: any additional arguments to the command function.
                 **kwargs: additional keyword arguments to the command function.
             """
-            if not requires_polling_arg or argToBoolean(args.get(polling_arg_name)):
+            if not requires_polling_arg or argToBoolean(args.get(polling_arg_name, False)):
                 ScheduledCommand.raise_error_if_not_supported()
                 poll_result = func(args, *arguments, **kwargs)
 
