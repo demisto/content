@@ -32,9 +32,9 @@ MOCK_LOOKUP_JSON_ID = {
     "country": "ES",
     "created": "2021-04-21T16:33:35.329972",
     "detections": {
-              "benign": 0,
-              "malicious": 0,
-              "total": 0
+        "benign": 0,
+        "malicious": 0,
+        "total": 0
     },
     "extended_type": "ASCII text, with no line terminators",
     "failed": False,

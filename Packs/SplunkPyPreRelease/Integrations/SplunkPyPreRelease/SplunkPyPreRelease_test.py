@@ -1,4 +1,3 @@
-import os
 from copy import deepcopy
 import pytest
 from splunklib import client
