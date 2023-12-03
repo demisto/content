@@ -267,8 +267,7 @@ def main():
 
 
     print('======')
-
-    repo_name = payload.get('head', {}).get('repo',{}).get('name')
+    repo_name = payload.get('pull_request', {}).get('head', {}).get('repo', {}).get('name')
     print(repo_name)
     org_name = 'demisto'
     repo_name = 'content'
