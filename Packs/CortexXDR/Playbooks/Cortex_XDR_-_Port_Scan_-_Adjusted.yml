@@ -23,7 +23,7 @@ tasks:
       {
         "position": {
           "x": 1770,
-          "y": -1130
+          "y": -960
         }
       }
     note: false
@@ -50,14 +50,14 @@ tasks:
       '#none#':
       - "103"
       - "149"
-      - "197"
+      - "121"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1770,
-          "y": -1000
+          "y": -830
         }
       }
     note: false
@@ -155,7 +155,7 @@ tasks:
       {
         "position": {
           "x": 1550,
-          "y": -860
+          "y": -690
         }
       }
     note: false
@@ -401,7 +401,7 @@ tasks:
       {
         "position": {
           "x": 2240,
-          "y": -520
+          "y": -690
         }
       }
     note: false
@@ -490,7 +490,7 @@ tasks:
       {
         "position": {
           "x": 2007.5,
-          "y": -250
+          "y": -420
         }
       }
     note: false
@@ -521,7 +521,7 @@ tasks:
       {
         "position": {
           "x": 2010,
-          "y": -380
+          "y": -550
         }
       }
     note: false
@@ -1351,7 +1351,7 @@ tasks:
       {
         "position": {
           "x": 960,
-          "y": -860
+          "y": -690
         }
       }
     note: false
@@ -1565,7 +1565,7 @@ tasks:
       {
         "position": {
           "x": 2460,
-          "y": -380
+          "y": -550
         }
       }
     note: false
@@ -2296,7 +2296,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "157"
+      - "197"
     scriptarguments:
       IP:
         complex:
@@ -2323,7 +2323,7 @@ tasks:
       {
         "position": {
           "x": 2460,
-          "y": -250
+          "y": -420
         }
       }
     note: false
@@ -2584,7 +2584,7 @@ tasks:
       '#default#':
       - "109"
       "yes":
-      - "121"
+      - "157"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -2599,8 +2599,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2240,
-          "y": -860
+          "x": 2460,
+          "y": -250
         }
       }
     note: false
@@ -2626,15 +2626,14 @@ view: |-
       "179_180_#default#": 0.25,
       "194_180_#default#": 0.36,
       "194_195_yes": 0.49,
-      "195_140_#default#": 0.47,
-      "197_121_yes": 0.53
+      "195_140_#default#": 0.47
     },
     "paper": {
       "dimensions": {
-        "height": 4995,
+        "height": 4825,
         "width": 2260,
         "x": 790,
-        "y": -1130
+        "y": -960
       }
     }
   }
