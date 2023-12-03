@@ -110,7 +110,7 @@ def is_pivot(single_pipeline_id, list_of_pipelines, commits):
 
 
 def main(args):
-    #example of use
+    # example of use
     gitlab_url = args[1]
     gitlab_access_token = args[2]
     project_id = args[3]
@@ -119,7 +119,8 @@ def main(args):
     pipelines, commits = get_pipelines_and_commits(gitlab_url, gitlab_access_token, project_id, lookback_hours)
     is_pivot_result, pivot_commit = is_pivot(pipeline_id, pipelines, commits)
     if is_pivot_result is None:
-        info = shame(pivot_commit)
+        shame(pivot_commit)
+
 
 if __name__ == "__main__":
     main(sys.argv)

@@ -515,24 +515,24 @@ def main():
         logging.info("Not a pull request build, skipping PR comment")
 
     pipeline_url, pipeline_failed_jobs = collect_pipeline_data(gitlab_client, project_id, pipeline_id)
-    shame_message = None    
+    shame_message = None
     if options.current_branch == DEFAULT_BRANCH and triggering_workflow == CONTENT_MERGE:
         # We check if the previous build failed and this one passed, or wise versa.
         list_of_pipelines, commits = get_pipelines_and_commits(gitlab_url=server_url, gitlab_access_token=ci_token,
                                                                project_id=project_id, lookback_hours=48)
-        pipeline_changed_status, pivot_commit = is_pivot(single_pipeline_id=pipeline_id, 
-                                                         list_of_pipelines=list_of_pipelines, 
+        pipeline_changed_status, pivot_commit = is_pivot(single_pipeline_id=pipeline_id,
+                                                         list_of_pipelines=list_of_pipelines,
                                                          commits=commits)
         if pipeline_changed_status is not None:
             name, email, pr = shame(pivot_commit)
             msg = "You broke" if pipeline_changed_status else "You fixed"
             shame_message = f"Hi @{name}, {msg} the build. That was done in this PR: {pr}"
-       
+
             computed_slack_channel = "test_slack_notifier_when_master_is_broken"
         else:
             computed_slack_channel = "dmst-build-test"
     slack_msg_data = construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs, pull_request, shame_message)
-    
+
     with contextlib.suppress(Exception):
         output_file = ROOT_ARTIFACTS_FOLDER / 'slack_msg.json'
         logging.info(f'Writing Slack message to {output_file}')
