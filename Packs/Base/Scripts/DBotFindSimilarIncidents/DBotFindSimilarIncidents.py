@@ -25,7 +25,7 @@ MESSAGE_WARNING_TRUNCATED = f"- Incidents fetched have been truncated to %s, ple
                             "to more than %s."
 
 MESSAGE_NO_CURRENT_INCIDENT = "- Incident %s does not exist within the given time range. " \
-                              f"Please check incidentId value or that you are running the command within an {INCIDENT_ALIAS}."  # What todo about incidentId
+                              f"Please check incidentId value or that you are running the command within an {INCIDENT_ALIAS}."
 MESSAGE_NO_FIELD = f"- %s field(s) does not exist in the current {INCIDENT_ALIAS}."
 MESSAGE_INCORRECT_FIELD = "- %s field(s) don't/doesn't exist within the fetched {INCIDENT_ALIAS}s."
 
@@ -929,9 +929,9 @@ def main():
     global_msg += "%s \n" % msg
 
     if incidents:
-        demisto.debug(f'Found {len(incidents)} {INCIDENT_ALIAS} for {incident_id=}')
+        demisto.debug(f'Found {len(incidents)} {INCIDENT_ALIAS}s for {incident_id=}')
     else:
-        demisto.debug(f'No {INCIDENT_ALIAS} found for {incident_id=}')
+        demisto.debug(f'No {INCIDENT_ALIAS}s found for {incident_id=}')
         return_outputs_summary(confidence, 0, 0, [], global_msg)
         return_outputs_similar_incidents_empty()
         return None, global_msg
