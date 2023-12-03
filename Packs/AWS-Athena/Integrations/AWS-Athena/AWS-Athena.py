@@ -82,7 +82,7 @@ def get_query_execution(client, query_execution_id: str) -> dict:
             and isinstance(datetime_value, datetime)):
         response['QueryExecution']['Status']['CompletionDateTime'] = datetime_value.isoformat()
 
-    return response
+    return response['QueryExecution']
 
 
 def get_query_results(client, query_execution_id: str) -> list[dict]:
@@ -143,15 +143,13 @@ def stop_query_command(args: dict, client):
 
 def get_query_execution_command(args: dict, client):
     query_execution_id: str = args['QueryExecutionId']
-    raw_response = get_query_execution(client=client, query_execution_id=query_execution_id)
-
-    response = raw_response['QueryExecution']
+    response = get_query_execution(client=client, query_execution_id=query_execution_id)
 
     return CommandResults(
         outputs_prefix=f'AWS.Athena.{QUERY_DATA_OUTPUTS_KEY}',
         outputs_key_field='QueryExecutionId',
         outputs=response,
-        raw_response=raw_response,
+        raw_response=response,
         readable_output=tableToMarkdown('AWS Athena Query Execution', response),
     )
 
@@ -193,7 +191,7 @@ def execute_query_command(args: dict, client):
         query_execution_id = args['QueryExecutionId']
 
     query_execution_response = get_query_execution(client=client, query_execution_id=query_execution_id)
-    query_state = query_execution_response['QueryExecution']['Status']['State']
+    query_state = query_execution_response['Status']['State']
 
     if query_state in ("QUEUED", "RUNNING"):
         args["QueryExecutionId"] = query_execution_id

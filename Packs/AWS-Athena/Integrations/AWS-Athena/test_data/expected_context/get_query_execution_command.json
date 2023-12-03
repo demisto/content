@@ -1,6 +1,6 @@
 {
     "QueryExecutionId": "b3c194e7-6580-421c-81fa-4b409e1ba04f",
-    "Query": "SELECT * FROM test_db.test_table WHERE eventDay BETWEEN cast(date_format(current_timestamp - INTERVAL '7' day, '%Y%m%d%H') as varchar) and cast(date_format(current_timestamp - INTERVAL '0' day, '%Y%m%d%H') as varchar) LIMIT 25",
+    "Query": "SELECT * FROM test_db.test_table",
     "StatementType": "DML",
     "ResultConfiguration": {
         "OutputLocation": "s3://athena-queries-test/b3c194e7-6580-421c-81fa-4b409e1ba04f.csv"
