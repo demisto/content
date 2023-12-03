@@ -491,11 +491,11 @@ class TestCollector(ABC):
 
         self._validate_path(path)
         item_object = BaseContent.from_path(path)
-      
+
         if is_integration:
             self.__validate_skipped_integration(id_, path)
             self.__validate_deprecated_integration(path)
-      
+
         # pack_marketplaces = PACK_MANAGER.get_pack_metadata(pack_id).marketplaces
         marketplaces = tuple(item_object.marketplaces) if item_object else (marketplaces or ())
         self.__validate_marketplace_compatibility(marketplaces, path)
