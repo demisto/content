@@ -158,6 +158,17 @@ xpanse-prepare-testing-bucket-upload-flow:
     - python3 ./Tests/scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" --gsm_project_id_dev "$GSM_PROJECT_ID_DEV" --gsm_project_id_prod "$GSM_PROJECT_ID" >> $ARTIFACTS_FOLDER/logs/handle_secrets.log
     - section_end "Secrets Fetch"
     - !reference [.ssh-config-setup]
+    - section_start "Check if should run Instance role"
+    - export INSTANCES_CREATED_FOR_ROLE=$(cat "${ENV_RESULTS_PATH}" | jq -c "map(select(.Role == \"${INSTANCE_ROLE}\")) | length")
+    - |
+      echo "Instance role:${INSTANCE_ROLE} Product type:${PRODUCT_TYPE} Instances created for role:${INSTANCES_CREATED_FOR_ROLE}"
+      if [[ "${INSTANCES_CREATED_FOR_ROLE}" -eq 0 ]]; then
+        echo "Instances with role ${INSTANCE_ROLE} were not created, not running the instance flow."
+        rm -f "${ARTIFACTS_FOLDER_INSTANCE}/instance_role.txt" # delete the instance_role.txt file so the job will not be collected by slack notifier.
+        job-done
+        exit 0
+      fi
+    - section_end "Check if should run Instance role"
     - section_start "Get Instance Variables"
     - echo INSTANCE_ROLE="$INSTANCE_ROLE"
     - echo INSTANCE_CREATED="$INSTANCE_CREATED"
