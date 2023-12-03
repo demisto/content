@@ -215,6 +215,31 @@ def test_to_kebab_case(given: str, expected: str):
     assert FortiGate.to_kebab_case(given) == expected
 
 
+def test_map_keys():
+    """
+    Test the map_keys function to ensure it correctly maps keys from an old dictionary to a new dictionary.
+    """
+    old_dict = {"key1": "value1", "key2": {"subkey1": "subvalue1", "subkey2": "subvalue2"}}
+    mappings = [
+        FortiGate.Mapping(old_keys=["key1"], new_keys=["newKey1"]),
+        FortiGate.Mapping(old_keys=["key2", "subkey1"], new_keys=["newKey2", "newSubKey1"]),
+        FortiGate.Mapping(old_keys=["nonexistentKey"], new_keys=["newKey3"], default_value="defaultValue"),
+        FortiGate.Mapping(
+            old_keys=["key2", "subkey2"],
+            new_keys=["newKey2", "newSubKey2"],
+            default_value=None,
+            value_changer=lambda x: x.upper(),
+        ),
+    ]
+    expected_result = {
+        "newKey1": "value1",
+        "newKey2": {"newSubKey1": "subvalue1", "newSubKey2": "SUBVALUE2"},
+        "newKey3": "defaultValue",
+    }
+
+    assert FortiGate.map_keys(old_dict, mappings) == expected_result
+
+
 @pytest.mark.parametrize(
     "items, expected_table",
     [
