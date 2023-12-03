@@ -53,7 +53,7 @@ clone_repository_with_fallback_branch() {
     # If either user or token is not empty, then we need to add them to the url.
     user_info="${user}:${token}@"
   fi
-  git ls-remote --exit-code --quiet --heads "https://${user_info}${host}/${repo_name}.git" "refs/heads/${branch}" 1>/dev/null 2>&1
+  curl --fail --silent --show-error --output /dev/null --header "PRIVATE-TOKEN: ${token}" "https://${user_info}${host}/api/v4/projects/${CI_PROJECT_ID}/repository/branches?search=${branch}" 1>/dev/null 2>&1
   local branch_exists=$?
 
   if [ "${branch_exists}" -ne 0 ]; then
