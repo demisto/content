@@ -8,7 +8,6 @@ from datetime import datetime, timedelta
 from distutils.util import strtobool
 from pathlib import Path
 from typing import Any
-#from is_pivot import is_pivot, get_pipelines_and_commits
 
 import gitlab
 import requests
@@ -480,8 +479,11 @@ def main():
     shame_message = None    
     if options.current_branch == DEFAULT_BRANCH and triggering_workflow == CONTENT_MERGE:
         # We check if the previous build failed and this one passed, or wise versa.
-        list_of_pipelines, commits = get_pipelines_and_commits(48)
-        pipeline_changed_status, pivot_commit = is_pivot(pipeline_id, list_of_pipelines, commits)
+        list_of_pipelines, commits = get_pipelines_and_commits(gitlab_url=server_url, gitlab_access_token=ci_token,
+                                                               project_id=project_id, lookback_hours=48)
+        pipeline_changed_status, pivot_commit = is_pivot(single_pipeline_id=pipeline_id, 
+                                                         list_of_pipelines=list_of_pipelines, 
+                                                         commits=commits)
         if pipeline_changed_status is not None:
             name, email, pr = shame(pivot_commit)
             msg = "You broke" if pipeline_changed_status else "You fixed"
