@@ -494,7 +494,7 @@
         echo "Skipping the -Validate Files and Yaml- step when force uploading to a bucket."
       else
         ./Tests/scripts/linters_runner.sh
-        ./Tests/scripts/validate.sh
+        $VALIDATE_SCRIPT
       fi
     - section_end "Validate Files and Yaml"
     - section_start "Check Spelling"
@@ -520,7 +520,9 @@
     - section_end "Revoking GCP Auth"
     - !reference [ .validate_content_test_conf_branch_merged ]  # This section should be the last one in the script, do not move it.
     - job-done
-
+  parallel:
+      matrix:
+        - VALIDATE_SCRIPT: ['./Tests/scripts/validate.sh','./Tests/scripts/new_validate.sh']
 .jobs-done-check:
   stage: are-jobs-really-done
   extends:
