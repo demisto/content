@@ -81,7 +81,7 @@ class MyTestCase(unittest.TestCase):
         """Test domain_lookup_command."""
         from Flashpoint import domain_lookup_command
 
-        with open("./TestData/domain_response.json", encoding='utf-8') as f:
+        with open(os.path.dirname(__file__) + "/TestData/domain_response.json", encoding='utf-8') as f:
             expected = json.load(f)
 
         mocker.return_value = expected
@@ -90,7 +90,7 @@ class MyTestCase(unittest.TestCase):
         result = self.get_result(resp)
         # ec = command_result.to_context().get('EntryContext')
         #
-        # with open("./TestData/domain_ec.json", encoding='utf-8') as f:
+        # with open(os.path.dirname(__file__) + "/TestData/domain_ec.json", encoding='utf-8') as f:
         #     expected_ec = json.load(f)
 
         fpid = result['fpid']
@@ -104,7 +104,7 @@ class MyTestCase(unittest.TestCase):
         """Test ip_lookup_command."""
         from Flashpoint import ip_lookup_command
 
-        with open("./TestData/ip_response.json", encoding='utf-8') as f:
+        with open(os.path.dirname(__file__) + "/TestData/ip_response.json", encoding='utf-8') as f:
             expected = json.load(f)
 
         mocker.return_value = expected
@@ -113,7 +113,7 @@ class MyTestCase(unittest.TestCase):
         result = self.get_result(resp)
         # ec = command_result.to_context().get('EntryContext')
         #
-        # with open("./TestData/ip_ec.json", encoding='utf-8') as f:
+        # with open(os.path.dirname(__file__) + "/TestData/ip_ec.json", encoding='utf-8') as f:
         #     expected_ec = json.load(f)
 
         fpid = result['fpid']
@@ -127,14 +127,14 @@ class MyTestCase(unittest.TestCase):
         """Test filename_lookup_command."""
         from Flashpoint import filename_lookup_command
 
-        with open("./TestData/filename_response.json", encoding='utf-8') as f:
+        with open(os.path.dirname(__file__) + "/TestData/filename_response.json", encoding='utf-8') as f:
             expected = json.load(f)
 
         mocker.return_value = expected
         hr, ec, resp = filename_lookup_command(self.client, TEST_SCAN_FILENAME)
         result = self.get_result(resp)
 
-        with open("./TestData/filename_ec.json", encoding='utf-8') as f:
+        with open(os.path.dirname(__file__) + "/TestData/filename_ec.json", encoding='utf-8') as f:
             expected_ec = json.load(f)
 
         fpid = result['fpid']
@@ -148,7 +148,7 @@ class MyTestCase(unittest.TestCase):
         """Test url_lookup_command."""
         from Flashpoint import url_lookup_command
 
-        with open("./TestData/url_response.json", encoding='utf-8') as f:
+        with open(os.path.dirname(__file__) + "/TestData/url_response.json", encoding='utf-8') as f:
             expected = json.load(f)
 
         mocker.return_value = expected
@@ -157,7 +157,7 @@ class MyTestCase(unittest.TestCase):
         result = self.get_result(resp)
         # ec = command_result.to_context().get('EntryContext')
         #
-        # with open("./TestData/url_ec.json", encoding='utf-8') as f:
+        # with open(os.path.dirname(__file__) + "/TestData/url_ec.json", encoding='utf-8') as f:
         #     expected_ec = json.load(f)
 
         fpid = result['fpid']
@@ -171,7 +171,7 @@ class MyTestCase(unittest.TestCase):
         """Test file_lookup_command."""
         from Flashpoint import file_lookup_command
 
-        with open("./TestData/file_response.json", encoding='utf-8') as f:
+        with open(os.path.dirname(__file__) + "/TestData/file_response.json", encoding='utf-8') as f:
             expected = json.load(f)
 
         mocker.return_value = expected
@@ -180,7 +180,7 @@ class MyTestCase(unittest.TestCase):
         result = self.get_result(resp)
         # ec = command_result.to_context().get('EntryContext')
         #
-        # with open("./TestData/file_ec.json", encoding='utf-8') as f:
+        # with open(os.path.dirname(__file__) + "/TestData/file_ec.json", encoding='utf-8') as f:
         #     expected_ec = json.load(f)
 
         fpid = result['fpid']
@@ -194,14 +194,14 @@ class MyTestCase(unittest.TestCase):
         """Test email_lookup_command."""
         from Flashpoint import email_lookup_command
 
-        with open("./TestData/email_response.json", encoding='utf-8') as f:
+        with open(os.path.dirname(__file__) + "/TestData/email_response.json", encoding='utf-8') as f:
             expected = json.load(f)
 
         mocker.return_value = expected
         hr, ec, resp = email_lookup_command(self.client, TEST_SCAN_EMAIL)
         result = self.get_result(resp)
 
-        with open("./TestData/email_ec.json", encoding='utf-8') as f:
+        with open(os.path.dirname(__file__) + "/TestData/email_ec.json", encoding='utf-8') as f:
             expected_ec = json.load(f)
 
         fpid = result['fpid']
@@ -215,7 +215,7 @@ class MyTestCase(unittest.TestCase):
         """Test get_reports_command."""
         from Flashpoint import get_reports_command
 
-        with open("./TestData/report_search_by_keyword_response.json", encoding='utf-8') as f:
+        with open(os.path.dirname(__file__) + "/TestData/report_search_by_keyword_response.json", encoding='utf-8') as f:
             expected = json.load(f)
         args = {
             'report_search': TEST_SCAN_REPORT_KEYWORD
@@ -231,7 +231,7 @@ class MyTestCase(unittest.TestCase):
         """Test get_report_by_id_command."""
         from Flashpoint import get_report_by_id_command
 
-        with open("./TestData/report_search_by_id_response.json", encoding='utf-8') as f:
+        with open(os.path.dirname(__file__) + "/TestData/report_search_by_id_response.json", encoding='utf-8') as f:
             expected = json.load(f)
         args = {
             'report_id': TEST_SCAN_REPORT_ID
@@ -239,7 +239,7 @@ class MyTestCase(unittest.TestCase):
         mocker.return_value = expected
         hr, ec, resp = get_report_by_id_command(self.client, args)
 
-        with open("./TestData/report_search_by_id_ec.json", encoding='utf-8') as f:
+        with open(os.path.dirname(__file__) + "/TestData/report_search_by_id_ec.json", encoding='utf-8') as f:
             expected_ec = json.load(f)
 
         assert resp['id'] == TEST_SCAN_REPORT_ID
@@ -251,7 +251,7 @@ class MyTestCase(unittest.TestCase):
         """Test get_event_by_id_command."""
         from Flashpoint import get_event_by_id_command
 
-        with open("./TestData/event_search_by_id_response.json", encoding='utf-8') as f:
+        with open(os.path.dirname(__file__) + "/TestData/event_search_by_id_response.json", encoding='utf-8') as f:
             expected = json.load(f)
         args = {
             'event_id': TEST_SCAN_EVENT_ID
@@ -259,7 +259,7 @@ class MyTestCase(unittest.TestCase):
         mocker.return_value = expected
         hr, ec, resp = get_event_by_id_command(self.client, args)
 
-        with open("./TestData/event_search_by_id_ec.json", encoding='utf-8') as f:
+        with open(os.path.dirname(__file__) + "/TestData/event_search_by_id_ec.json", encoding='utf-8') as f:
             expected_ec = json.load(f)
 
         assert resp[0]['fpid'] == TEST_SCAN_EVENT_ID
@@ -271,7 +271,7 @@ class MyTestCase(unittest.TestCase):
         """Test get_event_by_id_command."""
         from Flashpoint import get_event_by_id_command
 
-        with open("./TestData/event_search_by_id_response_no_malware_description.json", encoding='utf-8') as f:
+        with open(os.path.dirname(__file__) + "/TestData/event_search_by_id_response_no_malware_description.json", encoding='utf-8') as f:
             expected = json.load(f)
         args = {
             'event_id': TEST_SCAN_EVENT_ID
@@ -279,7 +279,7 @@ class MyTestCase(unittest.TestCase):
         mocker.return_value = expected
         hr, ec, resp = get_event_by_id_command(self.client, args)
 
-        with open("./TestData/event_search_by_id_ec.json", encoding='utf-8') as f:
+        with open(os.path.dirname(__file__) + "/TestData/event_search_by_id_ec.json", encoding='utf-8') as f:
             expected_ec = json.load(f)
             # Without malware_description in response should not be considered in EC
             expected_ec.get('Flashpoint.Event(val.EventId == obj.EventId)').pop('MalwareDescription')
@@ -293,7 +293,7 @@ class MyTestCase(unittest.TestCase):
         """Test get_forum_details_by_id_command."""
         from Flashpoint import get_forum_details_by_id_command
 
-        with open("./TestData/forum_search_by_id_response.json", encoding='utf-8') as f:
+        with open(os.path.dirname(__file__) + "/TestData/forum_search_by_id_response.json", encoding='utf-8') as f:
             expected = json.load(f)
 
         args = {
@@ -302,7 +302,7 @@ class MyTestCase(unittest.TestCase):
         mocker.return_value = expected
         hr, ec, resp = get_forum_details_by_id_command(self.client, args)
 
-        with open("./TestData/forum_search_by_id_ec.json", encoding='utf-8') as f:
+        with open(os.path.dirname(__file__) + "/TestData/forum_search_by_id_ec.json", encoding='utf-8') as f:
             expected_ec = json.load(f)
 
         assert resp['id'] == TEST_SCAN_FORUM_ID
@@ -314,7 +314,7 @@ class MyTestCase(unittest.TestCase):
         """Test get_room_details_by_id_command."""
         from Flashpoint import get_room_details_by_id_command
 
-        with open("./TestData/forum_room_search_by_id_response.json", encoding='utf-8') as f:
+        with open(os.path.dirname(__file__) + "/TestData/forum_room_search_by_id_response.json", encoding='utf-8') as f:
             expected = json.load(f)
         args = {
             'room_id': TEST_SCAN_FORUM_ROOM_ID
@@ -322,7 +322,7 @@ class MyTestCase(unittest.TestCase):
         mocker.return_value = expected
         hr, ec, resp = get_room_details_by_id_command(self.client, args)
 
-        with open("./TestData/forum_room_search_by_id_ec.json", encoding='utf-8') as f:
+        with open(os.path.dirname(__file__) + "/TestData/forum_room_search_by_id_ec.json", encoding='utf-8') as f:
             expected_ec = json.load(f)
 
         assert resp['id'] == TEST_SCAN_FORUM_ROOM_ID
@@ -334,7 +334,7 @@ class MyTestCase(unittest.TestCase):
         """Test get_user_details_by_id_command."""
         from Flashpoint import get_user_details_by_id_command
 
-        with open("./TestData/forum_user_search_by_id_response.json", encoding='utf-8') as f:
+        with open(os.path.dirname(__file__) + "/TestData/forum_user_search_by_id_response.json", encoding='utf-8') as f:
             expected = json.load(f)
         args = {
             'user_id': TEST_SCAN_FORUM_USER_ID
@@ -342,7 +342,7 @@ class MyTestCase(unittest.TestCase):
         mocker.return_value = expected
         hr, ec, resp = get_user_details_by_id_command(self.client, args)
 
-        with open("./TestData/forum_user_search_by_id_ec.json", encoding='utf-8') as f:
+        with open(os.path.dirname(__file__) + "/TestData/forum_user_search_by_id_ec.json", encoding='utf-8') as f:
             expected_ec = json.load(f)
 
         assert resp['id'] == TEST_SCAN_FORUM_USER_ID
@@ -354,7 +354,7 @@ class MyTestCase(unittest.TestCase):
         """Test get_post_details_by_id_command."""
         from Flashpoint import get_post_details_by_id_command
 
-        with open("./TestData/forum_post_search_by_id_response.json", encoding='utf-8') as f:
+        with open(os.path.dirname(__file__) + "/TestData/forum_post_search_by_id_response.json", encoding='utf-8') as f:
             expected = json.load(f)
         args = {
             'post_id': TEST_SCAN_FORUM_POST_ID
@@ -362,7 +362,7 @@ class MyTestCase(unittest.TestCase):
         mocker.return_value = expected
         hr, ec, resp = get_post_details_by_id_command(self.client, args)
 
-        with open("./TestData/forum_post_search_by_id_ec.json", encoding='utf-8') as f:
+        with open(os.path.dirname(__file__) + "/TestData/forum_post_search_by_id_ec.json", encoding='utf-8') as f:
             expected_ec = json.load(f)
 
         assert resp['id'] == TEST_SCAN_FORUM_POST_ID
@@ -374,7 +374,7 @@ class MyTestCase(unittest.TestCase):
         """Test get_events_command."""
         from Flashpoint import get_events_command
 
-        with open("./TestData/events_search_response.json", encoding='utf-8') as f:
+        with open(os.path.dirname(__file__) + "/TestData/events_search_response.json", encoding='utf-8') as f:
             expected = json.load(f)
 
         mocker.return_value = expected
@@ -393,7 +393,7 @@ class MyTestCase(unittest.TestCase):
         """Test get_forum_sites_command."""
         from Flashpoint import get_forum_sites_command
 
-        with open("./TestData/forum_site_search_response.json", encoding='utf-8') as f:
+        with open(os.path.dirname(__file__) + "/TestData/forum_site_search_response.json", encoding='utf-8') as f:
             expected = json.load(f)
 
         mocker.return_value = expected
@@ -409,7 +409,7 @@ class MyTestCase(unittest.TestCase):
         """Test get_forum_posts_command."""
         from Flashpoint import get_forum_posts_command
 
-        with open("./TestData/forum_post_search_response.json", encoding='utf-8') as f:
+        with open(os.path.dirname(__file__) + "/TestData/forum_post_search_response.json", encoding='utf-8') as f:
             expected = json.load(f)
         args = {
             'post_search': TEST_POST_SEARCH_KEYWORD
@@ -818,8 +818,8 @@ class MyTestCase(unittest.TestCase):
         from Flashpoint import prepare_incidents_from_alerts_data
 
         start_time = '2021-06-16T02:22:14Z'
-        response = util_load_json('TestData/alert_list_response.json')
-        expected_incidents = util_load_json('TestData/incidents_alerts.json')
+        response = util_load_json(os.path.dirname(__file__) + '/TestData/alert_list_response.json')
+        expected_incidents = util_load_json(os.path.dirname(__file__) + '/TestData/incidents_alerts.json')
         expected_next_run = {
             'alert_ids': ['2983ad0b-b03d-4202-bea7-65dd94697b5b', 'a31a9f81-988b-47c0-9739-1300e1855f6b'],
             'start_time': '2021-07-28T16:56:07Z',
@@ -852,13 +852,13 @@ class MyTestCase(unittest.TestCase):
         """Test case scenario when the given data is valid."""
         from Flashpoint import prepare_incidents_from_compromised_credentials_data
 
-        response = util_load_json('TestData/compromised_credentials_list_response.json')
+        response = util_load_json(os.path.dirname(__file__) + '/TestData/compromised_credentials_list_response.json')
         next_run = {
             'fetch_count': 0,
             'fetch_sum': 100
         }
 
-        expected_incidents = util_load_json('TestData/incidents_compromised_credentials.json')
+        expected_incidents = util_load_json(os.path.dirname(__file__) + '/TestData/incidents_compromised_credentials.json')
         expected_next_run = {
             'total': 1302,
             'fetch_count': 1,
@@ -1011,20 +1011,20 @@ class MyTestCase(unittest.TestCase):
         """Test case scenario for successful execution of fetch_incident."""
         from Flashpoint import fetch_incidents
 
-        response = util_load_json('TestData/compromised_credentials_list_response.json')
+        response = util_load_json(os.path.dirname(__file__) + '/TestData/compromised_credentials_list_response.json')
         mocker.return_value = response
 
-        expected_incidents = util_load_json('TestData/incidents_compromised_credentials.json')
+        expected_incidents = util_load_json(os.path.dirname(__file__) + '/TestData/incidents_compromised_credentials.json')
         params = {'max_fetch': '1', 'first_fetch': '1 year', 'fetch_type': ''}
 
         _, incidents = fetch_incidents(self.client, {}, params)
 
         assert incidents == expected_incidents
 
-        response = util_load_json('TestData/alert_list_response.json')
+        response = util_load_json(os.path.dirname(__file__) + '/TestData/alert_list_response.json')
         mocker.return_value = response
 
-        expected_incidents = util_load_json('TestData/incidents_alerts.json')
+        expected_incidents = util_load_json(os.path.dirname(__file__) + '/TestData/incidents_alerts.json')
         params = {'max_fetch': '1', 'first_fetch': '1 year', 'fetch_type': 'Alerts'}
 
         _, incidents = fetch_incidents(self.client, {}, params)

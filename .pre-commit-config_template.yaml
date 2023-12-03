@@ -69,16 +69,19 @@ repos:
     docker_image:ci: native:ga,from-yml,native:dev,native:maintenance
     docker_image:native: native:ga,from-yml,native:dev,native:maintenance
     docker_image: from-yml
-    entry: pytest
-    files: Packs\/.*\.py$
+    entry: coverage
+    files: Packs\/.*_test\.py$
+    env:
+      # the data-file argument is not supported in coverage-py 5.5 which is the LTS on python2
+      COVERAGE_FILE: /src/.pre-commit/coverage/.coverage
     args: 
+     - run
+     - --parallel
+     - -m
+     - pytest
      - -v
      - --rootdir=/src
-     - --override-ini='asyncio_mode=auto'
-     - --override-ini='junit_family=xunit1'
-     - --junitxml=/src/pytest_reports/.report_pytest.xml
-     - --cov-report=term
-     - --cov=/src"
+     - --junitxml=/src/.pre-commit/pytest-junit/.report_pytest.xml
 
   - id: is-circle-changed
     name: is-circle-changed

@@ -513,7 +513,11 @@ exclude = [
 max_line_length = 130
 
 [tool.pytest]
-junit_family = "xunit1"
+asyncio_mode = "auto"
+
+[tool.coverage.run]
+relative_files = true
+omit = ["*/test_data/*", "*_test.py", "demistomock.py"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
