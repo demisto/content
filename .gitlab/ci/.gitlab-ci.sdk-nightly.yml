@@ -64,7 +64,7 @@
   - num_test_that_ran=$(grep -c "Test" "${ARTIFACTS_FOLDER_INSTANCE}/succeeded_tests.txt")
   - num_tests_that_should_run=$(grep -c "Test" "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_file.txt") 
   - echo "Number of test-playbook tested - $num_test_that_ran "
-  - echo "Number of tests that should have been tested - $num_of_tests_that_should_run "
+  - echo "Number of tests that should have been tested - $num_tests_that_should_run "
   - |
     if [ $num_test_that_ran -eq $num_tests_that_should_run ]; then
       echo "test-content ran all of the collected test-playbooks."
@@ -290,16 +290,13 @@ demisto-sdk-nightly:run-end-to-end-tests-general:
   needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
   stage: run-instances
   script:
+    - EXIT_CODE=0
     - !reference [.ssh-config-setup]
 
     - section_start "End to End Tests"  --collapsed
     - |
       mkdir $ARTIFACTS_FOLDER/demisto-sdk
       git clone -b ${SDK_REF} --single-branch --depth 1 https://github.com/demisto/demisto-sdk.git $ARTIFACTS_FOLDER/demisto-sdk
-
-      TUNNEL_PORT=$(cat "${ENV_RESULTS_PATH}" | jq "map(select(.Role == \"$INSTANCE_ROLE\")) | .[].TunnelPort")
-      export DEMISTO_BASE_URL="https://$(cat "${ENV_RESULTS_PATH}" | jq -r '.[0].InstanceDNS')"
-      echo "Server URL: $DEMISTO_BASE_URL"
 
       python3 -m pytest ${ARTIFACTS_FOLDER}/demisto-sdk/tests_end_to_end/${E2E_TEST_FOLDER} || EXIT_CODE=$?
     - section_end "End to End Tests"
@@ -315,7 +312,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
   extends:
     - .default-job-settings
     - .sdk-nightly-schedule-rule-always
-  services: # needed for running lint
+  services: # needed for running e2e tests for docker
     - name: docker.art.code.pan.run/build-tools--image-dind:20.10.12-dind
       alias: docker
   variables:
@@ -334,6 +331,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
   needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
   stage: run-instances
   script:
+    - EXIT_CODE=0
     - !reference [.ssh-config-setup]
 
     - !reference [.copy_env_results]
@@ -379,14 +377,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
     - !reference [.install_ssh_keys]
     - !reference [.ssh-config-setup]
 
-    - section_start "Destroy Instances" --collapsed
-    - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir "${ARTIFACTS_FOLDER}" --env-file "${ENV_RESULTS_PATH}" --instance-role "${INSTANCE_ROLE}"
-    - destroy_instances_exit_code=$?
-    - |
-      if [ "${destroy_instances_exit_code}" -ne 0 ]; then
-        echo "Failed to destroy instances, exit code: ${destroy_instances_exit_code}"
-      fi
-    - section_end "Destroy Instances"
+    - !reference [.destroy_xsoar_instances]
 
 demisto-sdk-nightly:run-end-to-end-tests-xsiam:
   tags:
