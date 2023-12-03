@@ -80,6 +80,7 @@ class TabLifecycleManager:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if self.tab:
+            self.tab.Page.disable()
             tab_id = self.tab.id
             self.browser.close_tab(tab_id)
             demisto.debug(f'TabLifecycleManager, exiting, closing tab {tab_id}')
@@ -117,9 +118,9 @@ class PychromeEventHandler:
 
 def is_chrome_running():
     browser = pychrome.Browser(url=LOCAL_CHROME_URL)
-    ret_value = True
     try:
         browser.list_tab()
+        return browser
     except requests.exceptions.ConnectionError as exp:
         exp_str = str(exp)
         #  HTTPConnectionPool(host='127.0.0.1', port=9222): Max retries exceeded with url: /json
@@ -127,15 +128,15 @@ def is_chrome_running():
         #    Failed to establish a new connection: [Errno 61] Connection refused'))
         exception_identifiers = [LOCAL_CHROME_HOST, LOCAL_CHROME_PORT, "Connection refused"]
         if all(identifier in exp_str for identifier in exception_identifiers):
-            ret_value = False
-    return ret_value
+            demisto.info(f'Could not connect to Chrome on port {LOCAL_CHROME_PORT}')
+    return None
 
 
 def ensure_chrome_running():  # pragma: no cover
     for _ in range(DEFAULT_RETRIES_COUNT):
-        if is_chrome_running():
+        if browser := is_chrome_running():
             demisto.debug('Chrome is instance running. Returning True.')
-            return True
+            return browser
         else:
             demisto.debug('Chrome is not running, trying to start it.')
             try:
@@ -150,7 +151,7 @@ def ensure_chrome_running():  # pragma: no cover
         time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS)  # pylint: disable=E9003
 
     demisto.info(f'Max retries ({DEFAULT_RETRIES_COUNT}) reached, Chrome headless is not running correctly')
-    return False
+    return None
 
 
 def setup_tab_event(browser, tab):
@@ -228,8 +229,7 @@ def rasterize(path: str,
     :param height: window height
     """
 
-    if ensure_chrome_running():
-        browser = pychrome.Browser(url=LOCAL_CHROME_URL)
+    if browser := ensure_chrome_running():
         with TabLifecycleManager(browser) as tab:
             if offline_mode:
                 tab.call_method("Network.disable")
