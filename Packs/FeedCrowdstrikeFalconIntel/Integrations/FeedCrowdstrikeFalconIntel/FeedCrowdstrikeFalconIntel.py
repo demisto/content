@@ -13,10 +13,10 @@ urllib3.disable_warnings()
 INDICATOR_FIELDS_MAPPER = {
     'stixid': 'id',
     'stixaliases': 'known_as',
-    'stixdescription': 'short_description',
+    'stixdescription': 'description',
     'stixprimarymotivation': 'motivations',
     'aliases': 'known_as',
-    'description': 'short_description',
+    'description': 'description',
     'primarymotivation': 'motivations',
     'creationdate': 'created_date',
     'updateddate': 'last_modified_date',
@@ -126,17 +126,17 @@ class Client(BaseClient):
                 actors_filter += self.add_target_industries_to_filter(industry)
 
         if actors_filter:
-            actors_filter = '?filter=' + actors_filter[:-3]
+            actors_filter = '&filter=' + actors_filter[:-3]
         return actors_filter
 
     def build_url_suffix(self, params, actors_filter):
-        url_suffix = "/intel/combined/actors/v1"
+        url_suffix = "/intel/combined/actors/v1?fields=__full__"
         if actors_filter:
             url_suffix = url_suffix + actors_filter
             if params:
                 url_suffix = url_suffix + '%2B' + params
         elif params:
-            url_suffix = url_suffix + '?filter=' + params
+            url_suffix = url_suffix + '&filter=' + params
         return url_suffix
 
     def get_indicators(self, feed_tags: List, tlp_color: Optional[str], limit=None, offset=None, target_countries=None,
