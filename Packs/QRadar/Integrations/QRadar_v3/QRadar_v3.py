@@ -2933,12 +2933,14 @@ def qradar_reference_set_value_upsert_command(args: dict, client: Client, params
         PollResult.
     """
     try:
-        return insert_values_to_reference_set_polling(client,
-                                                      params.get('api_version', ''),
-                                                      args,
-                                                      values=argToList(args.get('value', '')))
+        return insert_values_to_reference_set_polling(
+            client,
+            params.get('api_version', ''),
+            args,
+            values=argToList(args.get('value', ''))
+        )
     except (DemistoException, ReadTimeout) as err:
-        if isinstance(err, DemistoException) and isinstance(err.exception, (ConnectionError, ConnectTimeout)):
+        if isinstance(err, DemistoException) and isinstance(err.exception, ConnectionError | ConnectTimeout):
             return PollResult(
                 partial_result=CommandResults(
                     readable_output='Connection error occurred, retrying'),
@@ -2952,7 +2954,6 @@ def qradar_reference_set_value_upsert_command(args: dict, client: Client, params
             args_for_next_run=args,
             response=None
         )
-
 
 
 def qradar_reference_set_value_delete_command(client: Client, args: dict) -> CommandResults:
