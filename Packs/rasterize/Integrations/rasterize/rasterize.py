@@ -72,7 +72,6 @@ class TabLifecycleManager:
     def __enter__(self):
         self.tab = self.browser.new_tab()
         self.tab.start()
-        self.tab.Page.enable()
         demisto.debug(f'TabLifecycleManager, entering tab {self.tab}')
         return self.tab
 
