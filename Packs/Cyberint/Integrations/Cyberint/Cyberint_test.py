@@ -15,7 +15,7 @@ def load_mock_response(file_name: str) -> str:
     Args:
         file_name (str): Name of the mock response JSON file to return.
     """
-    with open(f"test_data/{file_name}", mode="r", encoding="utf-8") as mock_file:
+    with open(f"test_data/{file_name}", encoding="utf-8") as mock_file:
         return mock_file.read()
 
 
@@ -451,7 +451,7 @@ def test_get_remote_data_command():
             "lastUpdate": "2023-02-14 12:30:45",
         }
 
-        with patch("Cyberint.arg_to_datetime") as mock_arg_to_datetime:
+        with patch("Cyberint.arg_to_datetime") as mock_arg_to_datetime:  # noqa: SIM117
             with patch("Cyberint.date_to_epoch_for_fetch") as mock_date_to_epoch_for_fetch:
                 mock_arg_to_datetime.return_value = datetime(2023, 2, 14, 12, 30, 45)
                 mock_date_to_epoch_for_fetch.return_value = 123456789
