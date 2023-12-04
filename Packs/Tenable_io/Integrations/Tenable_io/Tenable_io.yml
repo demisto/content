@@ -51,18 +51,6 @@ configuration:
   name: events
   type: 20
   section: Collect - events
-- display: Severity
-  additionalinfo: The severity of the vulnerabilities to include in the export.
-  name: severity
-  options:
-  - info
-  - low
-  - medium
-  - high
-  - critical
-  type: 16
-  required: false
-  section: Collect - events
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
@@ -79,6 +67,18 @@ configuration:
 - display: Assets Settings
   name: assets
   type: 20
+  section: Collect - assets
+- display: Severity
+  additionalinfo: The severity of the vulnerabilities to include in the export.
+  name: severity
+  options:
+  - info
+  - low
+  - medium
+  - high
+  - critical
+  type: 16
+  required: false
   section: Collect - assets
 - defaultvalue: '1440'
   display: Assets Fetch Interval
