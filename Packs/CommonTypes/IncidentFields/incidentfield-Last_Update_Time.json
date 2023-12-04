@@ -33,11 +33,12 @@
         "Rapid7 ThreatCommand Alert",
         "Prisma Cloud - VM Alert Prioritization",
         "FreshworksFreshservice Ticket",
-        "FreshworksFreshservice Release Request",
-        "FreshworksFreshservice Problem Request",
-        "FreshworksFreshservice Change Request",
+        "FreshworksFreshservice Release Request",
+        "FreshworksFreshservice Problem Request",
+        "FreshworksFreshservice Change Request",
         "Graph Security Alert",
-        "CrowdStrike Falcon IDP Detection"
+        "CrowdStrike Falcon IDP Detection",
+        "Cyberint Incident"
     ],
     "breachScript": "",
     "caseInsensitive": true,
