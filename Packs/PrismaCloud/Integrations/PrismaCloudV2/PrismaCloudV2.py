@@ -517,7 +517,9 @@ def extract_namespace(response_items: List[Dict[str, Any]]):
     Extract namespaces from resource list items.
     """
     for item in response_items:
-        for member in item.get('members', []):  # members is a list of dicts
+        for member in item.get('members', []):  # members is a list of dict or strs
+            if isinstance(member, str):
+                continue
             if item_namespace := member.get('namespaces', []):
                 item['namespaces'] = item_namespace
                 break

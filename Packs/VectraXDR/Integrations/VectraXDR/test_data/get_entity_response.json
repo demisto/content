@@ -1,0 +1,36 @@
+{
+  "id": 334,
+  "name": "account_name",
+  "breadth_contrib": 2,
+  "entity_importance": 1,
+  "importance": 2,
+  "entity_type": "account",
+  "type": "account",
+  "is_prioritized": true,
+  "severity": "Critical",
+  "urgency_score": 100,
+  "velocity_contrib": 2,
+  "detection_set": [
+    "http://server_url.com/api/v3.3/detections/1933",
+    "http://server_url.com/api/v3.3/detections/1934"
+  ],
+  "last_detection_timestamp": "2023-05-15T09:39:24Z",
+  "last_modified_timestamp": "2023-07-28T05:25:47Z",
+  "notes": [],
+  "attack_rating": 10,
+  "privilege_level": null,
+  "privilege_category": null,
+  "attack_profile": "test_attack",
+  "sensors": [
+    "test"
+  ],
+  "state": "active",
+  "tags": [
+    "test"
+  ],
+  "url": "http://server_url.com/api/v3.3/accounts/334",
+  "host_type": null,
+  "account_type": [
+    "o365"
+  ]
+}
