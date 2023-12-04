@@ -6,7 +6,9 @@ BLACK_HTML_STYLE = "color:#555555;text-align:center;font-size:200%;"
 
 def main():
     try:
-        alert = demisto.context().get('Core', {}).get('OriginalAlert')[0]
+        alert = demisto.context().get('Core', {}).get('OriginalAlert')
+        if isinstance(alert, list):
+            alert = alert[0]
         event = alert.get('event')
         resourceType = event.get('resource_type_orig')
 
