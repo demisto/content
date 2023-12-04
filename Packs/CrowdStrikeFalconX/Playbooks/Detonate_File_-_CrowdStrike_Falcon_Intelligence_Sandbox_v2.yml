@@ -405,7 +405,7 @@ inputs:
   value:
     simple: "1"
   required: false
-  description: Polling frequency - how often the polling command should run (minutes)
+  description: Polling frequency - how often the polling command should run (in minutes).
   playbookInputQuery:
 - key: Timeout
   value:
