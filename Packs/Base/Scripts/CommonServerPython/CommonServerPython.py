@@ -11303,10 +11303,10 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         2. String containing raw events separated by a new line.
 
     :type vendor: ``str``
-    :param vendor: The vendor corresponding to the integration that originated the events.
+    :param vendor: The vendor corresponding to the integration that originated the data.
 
     :type product: ``str``
-    :param product: The product corresponding to the integration that originated the events.
+    :param product: The product corresponding to the integration that originated the data.
 
     :type data_format: ``str``
     :param data_format: Should only be filled in case the 'events' parameter contains a string of raw
@@ -11322,7 +11322,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     :param chunk_size: Advanced - The maximal size of each chunk size we send to API. Limit of 9 MB will be inforced.
 
     :type data_type: ``str``
-    :param data_type: Type of events to send to Xsiam, events, assets or assets_snapshots.
+    :param data_type: Type of data to send to Xsiam, events or assets.
 
     :return: None
     :rtype: ``None``
