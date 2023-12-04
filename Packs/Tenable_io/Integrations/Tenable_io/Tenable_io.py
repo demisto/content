@@ -1381,50 +1381,87 @@ def export_scan_command(args: dict[str, Any], client: Client) -> PollResult:
 
 
 def main():  # pragma: no cover
-
-    if not (ACCESS_KEY and SECRET_KEY):
-        raise DemistoException('Access Key and Secret Key must be provided.')
-
-    client = Client(
-        BASE_URL,
-        verify=USE_SSL,
-        proxy=USE_PROXY,
-        ok_codes=(200,),
-        headers=HEADERS
-    )
+    """main function, parses params and runs command functions
+    """
     args = demisto.args()
     command = demisto.command()
+    params = demisto.params()
+    events = []
+    vulnerabilities: list = []
 
-    if command == 'test-module':
-        demisto.results(test_module(client))
-    elif command == 'tenable-io-list-scans':
-        demisto.results(get_scans_command())
-    elif command == 'tenable-io-launch-scan':
-        demisto.results(launch_scan_command())
-    elif command == 'tenable-io-get-scan-report':
-        demisto.results(get_report_command())
-    elif command == 'tenable-io-get-vulnerability-details':
-        demisto.results(get_vulnerability_details_command())
-    elif command == 'tenable-io-get-vulnerabilities-by-asset':
-        demisto.results(get_vulnerabilities_by_asset_command())
-    elif command == 'tenable-io-get-scan-status':
-        demisto.results(get_scan_status_command())
-    elif command == 'tenable-io-pause-scan':
-        demisto.results(pause_scan_command())
-    elif command == 'tenable-io-resume-scan':
-        demisto.results(resume_scan_command())
-    elif command == 'tenable-io-get-asset-details':
-        return_results(get_asset_details_command())
-    elif command == 'tenable-io-export-assets':
-        return_results(export_assets_command(args))
-    elif command == 'tenable-io-export-vulnerabilities':
-        return_results(export_vulnerabilities_command(args))
-    elif command == 'tenable-io-list-scan-filters':
-        return_results(list_scan_filters_command(client))
-    elif command == 'tenable-io-get-scan-history':
-        return_results(get_scan_history_command(args, client))
-    elif command == 'tenable-io-export-scan':
-        return_results(export_scan_command(args, client))
+    access_key = params.get('credentials', {}).get('identifier', '')
+    secret_key = params.get('credentials', {}).get('password', '')
+    url = params.get('url')
+    verify_certificate = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
+
+    # Events Params
+    # vuln_fetch_interval = arg_to_number(params.get('vuln_fetch_interval', 240)) * 60  # type: ignore
+    severity = argToList(params.get('severity'))
+    max_fetch = arg_to_number(params.get('max_fetch')) or 1000
+    first_fetch: datetime = arg_to_datetime(params.get('first_fetch', '3 days'))  # type: ignore
+
+    # transform minutes to seconds
+    # scanned_since: datetime = arg_to_datetime(params.get('scanned_from', '107') + ' days')  # type: ignore
+    demisto.debug(f'Command being called is {command}')
+    try:
+        headers = {'X-ApiKeys': f'accessKey={access_key}; secretKey={secret_key}',
+                   "Accept": "application/json"}
+        client = Client(
+            base_url=url,
+            verify=verify_certificate,
+            headers=headers,
+            proxy=proxy)
+
+        if command == 'test-module':
+            demisto.results(test_module(client))
+        elif command == 'tenable-io-list-scans':
+            demisto.results(get_scans_command())
+        elif command == 'tenable-io-launch-scan':
+            demisto.results(launch_scan_command())
+        elif command == 'tenable-io-get-scan-report':
+            demisto.results(get_report_command())
+        elif command == 'tenable-io-get-vulnerability-details':
+            demisto.results(get_vulnerability_details_command())
+        elif command == 'tenable-io-get-vulnerabilities-by-asset':
+            demisto.results(get_vulnerabilities_by_asset_command())
+        elif command == 'tenable-io-get-scan-status':
+            demisto.results(get_scan_status_command())
+        elif command == 'tenable-io-pause-scan':
+            demisto.results(pause_scan_command())
+        elif command == 'tenable-io-resume-scan':
+            demisto.results(resume_scan_command())
+        elif command == 'tenable-io-get-asset-details':
+            return_results(get_asset_details_command())
+        elif command == 'tenable-io-export-assets':
+            return_results(export_assets_command(args))
+        elif command == 'tenable-io-export-vulnerabilities':
+            return_results(export_vulnerabilities_command(args))
+        elif command == 'tenable-io-list-scan-filters':
+            return_results(list_scan_filters_command(client))
+        elif command == 'tenable-io-get-scan-history':
+            return_results(get_scan_history_command(args, client))
+        elif command == 'tenable-io-export-scan':
+            return_results(export_scan_command(args, client))
+
+        elif command == 'fetch-assets':
+
+    except Exception as e:
+        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+
+    # if not (ACCESS_KEY and SECRET_KEY):
+    #     raise DemistoException('Access Key and Secret Key must be provided.')
+
+    # client = Client(
+    #     BASE_URL,
+    #     verify=USE_SSL,
+    #     proxy=USE_PROXY,
+    #     ok_codes=(200,),
+    #     headers=HEADERS
+    # )
+    # args = demisto.args()
+    # command = demisto.command()
+
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:

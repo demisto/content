@@ -71,6 +71,11 @@ configuration:
   name: assets
   type: 20
   section: Collect - assets
+#- display: Fetch Assets and Vulnerabilities
+#  name: isFetchAssets
+#  type: 8
+#  section: Collect - assets
+#  required: false
 - defaultvalue: 7 days
   display: Assets first fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch_time_assets
