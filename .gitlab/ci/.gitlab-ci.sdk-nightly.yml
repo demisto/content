@@ -444,7 +444,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsiam:
     - source .gitlab/helper_functions.sh
     - !reference [.unlock-machine]
 
-demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
+demisto-sdk-nightly:run-end-to-end-tests-xsoar-saas:
   tags:
     - gce
   extends:
