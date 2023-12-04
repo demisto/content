@@ -42,7 +42,6 @@ def main():
     try:
         return_results(associate_indicator_to_incident())
     except Exception as ex:
-        demisto.error(traceback.format_exc())
         return_error(
             f"Failed to execute AssociateIndicatorsToIncident. Error: {str(ex)}")
 

@@ -746,7 +746,7 @@ def format_investigate_output(result):
     }
 
     demisto_title = f'DomainTools Iris Investigate for {domain}.'
-    iris_title = 'Investigate [{0}](https://research.domaintools.com/iris/search/?q={0}) in Iris.'.format(domain)
+    iris_title = f'Investigate [{domain}](https://research.domaintools.com/iris/search/?q={domain}) in Iris.'
     headers = profile_headers()
     human_readable = tableToMarkdown(
         f'{demisto_title} {iris_title}', human_readable_data, headers=headers
@@ -1021,7 +1021,7 @@ def domain_command():
     domain = demisto.args()['domain']
     domain_list = domain.split(",")
     domain_chunks = chunks(domain_list, 100)
-    include_context = argToBoolean(demisto.args().get('include_context'))
+    include_context = argToBoolean(demisto.args().get('include_context', True))
     command_results_list: List[CommandResults] = []
 
     for chunk in domain_chunks:
@@ -1062,7 +1062,7 @@ def domain_enrich_command():
     domain = demisto.args()['domain']
     domain_list = domain.split(",")
     domain_chunks = chunks(domain_list, 100)
-    include_context = argToBoolean(demisto.args().get('include_context'))
+    include_context = argToBoolean(demisto.args().get('include_context', True))
     command_results_list: List[CommandResults] = []
 
     for chunk in domain_chunks:
@@ -1136,7 +1136,7 @@ def domain_analytics_command():
                'Google Analytics',
                'Tags']
     demisto_title = f'DomainTools Domain Analytics for {domain}.'
-    iris_title = 'Investigate [{0}](https://research.domaintools.com/iris/search/?q={0}) in Iris.'.format(domain)
+    iris_title = f'Investigate [{domain}](https://research.domaintools.com/iris/search/?q={domain}) in Iris.'
     human_readable = tableToMarkdown(
         f'{demisto_title} {iris_title}',
         human_readable_data,
@@ -1223,9 +1223,9 @@ def threat_profile_command():
                'Threat Profile Malware Risk Score',
                'Threat Profile Phishing Risk Score',
                'Threat Profile Spam Risk Score']
-    demisto_title = 'DomainTools Threat Profile for {}.'.format(domain)
-    iris_title = 'Investigate [{0}](https://research.domaintools.com/iris/search/?q={0}) in Iris.'.format(domain)
-    human_readable = tableToMarkdown('{} {}'.format(demisto_title, iris_title),
+    demisto_title = f'DomainTools Threat Profile for {domain}.'
+    iris_title = f'Investigate [{domain}](https://research.domaintools.com/iris/search/?q={domain}) in Iris.'
+    human_readable = tableToMarkdown(f'{demisto_title} {iris_title}'),
                                      human_readable_data,
                                      headers=headers)
 
@@ -1296,7 +1296,7 @@ def domain_pivot_command():
     risk_list = []
     age_list = []
     count = 0
-    include_context = argToBoolean(demisto.args().get('include_context'))
+    include_context = argToBoolean(demisto.args().get('include_context', True))
 
     if not response.get('results_count'):
         return_warning("No pivots for this search.", exit=True)
@@ -1328,8 +1328,6 @@ def domain_pivot_command():
         "PivotedDomains": domain_context_list
     }
 
-    outputs = {'DomainTools.Pivots.PivotedDomains(val.Name == obj.Name)': domain_context_list}
-    prune_context_data(outputs)
     headers = ['domain', 'risk_score']
 
     sorted_output = sorted(output, key=lambda x: x['risk_score'] if x['risk_score'] is not None else -1, reverse=True)
@@ -1398,7 +1396,7 @@ def whois_history_command():
     if mode == 'count':
         human_readable = f'record count: {response.get("record_count")}'
     if mode == 'check_existence':
-        human_readable = f'has history entiries: {response.get("has_history_entries")}'
+        human_readable = f'has history entries: {response.get("has_history_entries")}'
 
     results = CommandResults(
         outputs_prefix='DomainTools.History',
@@ -1484,10 +1482,10 @@ def reverse_whois_command():
     domains = results.get('domains', [])
 
     context = []
-    human_readable = f'Found {len(domains)}' + ' domains: \n'
+    human_readable = f'Found {len(domains)} domains:\n'
 
     for domain in domains:
-        human_readable += f'* {domain}' + '\n'
+        human_readable += f'* {domain}\n'
         context.append({'Name': domain})
 
     all_context = {'Value': terms, 'Results': context}
@@ -1556,8 +1554,6 @@ def parsed_whois_command():
                                      )
 
     results = CommandResults(
-        outputs_prefix='Domain',
-        outputs_key_field='Name',
         indicator=domain_indicator,
         readable_output=human_readable,
         ignore_auto_extract=True
@@ -1579,7 +1575,7 @@ def test_module():
 
 def fetch_domains():
     # iris search hash
-    monitor_domain_by_search_hash = demisto.params().get("monitor_iris_search_hash", ) or "Import Indicators Only"
+    monitor_domain_by_search_hash = demisto.params().get("monitor_iris_search_hash") or "Import Indicators Only"
     iris_search_hash = demisto.params().get("domaintools_iris_search_hash") or False
     # iris tags
     monitor_domain_by_iris_tags = demisto.params().get("monitor_iris_tags") or "Import Indicators Only"
@@ -1631,7 +1627,7 @@ def main():
             fetch_domains()
     except Exception as e:
         return_error(
-            f'Unable to perform command : {demisto.command()}, Reason: {str(e)}, Stack: {traceback.format_exc()}'
+            f'Unable to perform command : {demisto.command()}, Reason: {str(e)}'
         )
 
 

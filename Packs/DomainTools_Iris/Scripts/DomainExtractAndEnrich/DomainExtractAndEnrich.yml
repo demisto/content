@@ -6,7 +6,8 @@ args:
   required: true
   secret: false
 - default: false
-  description: Optionally include the investigate results into the Context Data. Defaults to false.
+  description: Optionally include the investigate results into the Context Data.
+  defaultValue: 'false'
   isArray: false
   name: include_context
   required: false

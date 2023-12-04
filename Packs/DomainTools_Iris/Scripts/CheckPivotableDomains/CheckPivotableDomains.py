@@ -451,7 +451,6 @@ def main():
     try:
         return_results(check_pivotable_domains(demisto.args()))
     except Exception as ex:
-        demisto.error(traceback.format_exc())
         return_error(
             f"Failed to execute check_pivotable_domains. Error: {str(ex)}")
 

@@ -2025,7 +2025,7 @@ script:
       description: Domain Registrar history data.
   - arguments:
     - default: true
-      description: (mandatory and default) List of one or more terms to search for in the Whois record, separated with the pipe character ( | ).
+      description: (default) List of one or more terms to search for in the Whois record, separated with the pipe character ( | ).
       name: terms
       required: true
     - description: Domain names with Whois records that match these terms will be excluded from the result set. Separate multiple terms with the pipe character ( | ).

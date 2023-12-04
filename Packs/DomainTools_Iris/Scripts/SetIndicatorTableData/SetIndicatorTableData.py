@@ -123,7 +123,7 @@ def set_indicator_table_data(args: Dict[str, Any]) -> CommandResults:
         demisto.executeCommand("createNewIndicator",
                                domaintools_iris_indicator)
 
-        human_readable_str = "Data for {} enriched.".format(domain_name)
+        human_readable_str = f"Data for {domain_name} enriched."
 
     return CommandResults(readable_output=human_readable_str)
 
@@ -132,7 +132,6 @@ def main():
     try:
         return_results(set_indicator_table_data(demisto.args()))
     except Exception as ex:
-        demisto.error(traceback.format_exc())
         return_error(
             f"Failed to execute SetIndicatorTableData. Error: {str(ex)}")
 

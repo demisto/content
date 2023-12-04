@@ -20,7 +20,6 @@ def add_domain_riskscore_to_context(args: Dict[str, Any]) -> CommandResults:
         outputs_prefix='AddDomainRiskScoreToContext.HighRiskPivotedDomains',
         outputs_key_field='Name',
         outputs=result,
-        ignore_auto_extract=True
     )
 
 
@@ -31,7 +30,6 @@ def main():
     try:
         return_results(add_domain_riskscore_to_context(demisto.args()))
     except Exception as ex:
-        demisto.error(traceback.format_exc())
         return_error(
             f'Failed to execute AddDomainRiskScoreToContext. Error: {str(ex)}')
 

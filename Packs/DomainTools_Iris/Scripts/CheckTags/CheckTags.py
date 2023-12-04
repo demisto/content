@@ -32,7 +32,6 @@ def main():
     try:
         return_results(check_tags(demisto.args()))
     except Exception as ex:
-        demisto.error(traceback.format_exc())
         return_error(
             f"Failed to execute CheckTags. Error: {str(ex)}")
 

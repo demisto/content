@@ -189,7 +189,7 @@ def test_domain_extract_and_investigate_output(mocker):
 
     mocker.patch.object(demisto, "executeCommand", return_value=[
         {
-            "Contents": u"demisto.com"
+            "Contents": "demisto.com"
         }
     ])
     mocker.patch.object(demisto, "results", return_value=[
