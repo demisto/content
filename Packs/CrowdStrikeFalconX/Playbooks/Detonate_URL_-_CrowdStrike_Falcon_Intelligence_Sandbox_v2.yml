@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Detonate URL - CrowdStrike Falcon Intelligence Sandbox v2
-description: Detonate one or more files using the CrowdStrike Falcon Intelligence Sandbox integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
+description: Detonate one or more URL's using the CrowdStrike Falcon Intelligence Sandbox integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
 starttaskid: "0"
 tasks:
   "0":
@@ -215,7 +215,7 @@ tasks:
       id: defb49bb-c77d-496e-806f-5a75bcd1c982
       version: -1
       name: Is there a URL to detonate?
-      description: Checks whether there's a file to detonate.
+      description: Checks whether there's a url to detonate.
       type: condition
       iscommand: false
       brand: ""
