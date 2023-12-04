@@ -1,0 +1,138 @@
+{
+  "trigger_id": "b1d5915dea04d48f8aff2eff41ad8351",
+  "playbook_id": "Prisma Cloud Remediation - Azure Network Misconfiguration v2",
+  "suggestion_reason": "Recommended for Azure Network Misconfiguration alerts",
+  "description": "This trigger is responsible for handling Azure Network Misconfiguration alerts",
+  "trigger_name": "Azure Network Misconfiguration",
+  "alerts_filter": {
+    "filter": {
+      "OR": [
+        {
+          "SEARCH_FIELD": "alert_name",
+          "SEARCH_TYPE": "CONTAINS",
+          "SEARCH_VALUE": "Azure AKS cluster HTTP application routing enabled"
+        },
+        {
+          "SEARCH_FIELD": "alert_name",
+          "SEARCH_TYPE": "CONTAINS",
+          "SEARCH_VALUE": "Azure AKS cluster monitoring not enabled"
+        },
+        {
+          "SEARCH_FIELD": "alert_name",
+          "SEARCH_TYPE": "CONTAINS",
+          "SEARCH_VALUE": "Azure Network Security Group allows all traffic on CIFS (UDP Port 445)"
+        },
+        {
+          "SEARCH_FIELD": "alert_name",
+          "SEARCH_TYPE": "CONTAINS",
+          "SEARCH_VALUE": "Azure Network Security Group allows all traffic on FTP (TCP Port 21)"
+        },
+        {
+          "SEARCH_FIELD": "alert_name",
+          "SEARCH_TYPE": "CONTAINS",
+          "SEARCH_VALUE": "Azure Network Security Group allows all traffic on FTP-Data (TCP Port 20)"
+        },
+        {
+          "SEARCH_FIELD": "alert_name",
+          "SEARCH_TYPE": "CONTAINS",
+          "SEARCH_VALUE": "Azure Network Security Group allows all traffic on ICMP (Ping)"
+        },
+        {
+          "SEARCH_FIELD": "alert_name",
+          "SEARCH_TYPE": "CONTAINS",
+          "SEARCH_VALUE": "Azure Network Security Group allows all traffic on MSQL (TCP Port 4333)"
+        },
+        {
+          "SEARCH_FIELD": "alert_name",
+          "SEARCH_TYPE": "CONTAINS",
+          "SEARCH_VALUE": "Azure Network Security Group allows all traffic on MySQL (TCP Port 3306)"
+        },
+        {
+          "SEARCH_FIELD": "alert_name",
+          "SEARCH_TYPE": "CONTAINS",
+          "SEARCH_VALUE": "Azure Network Security Group allows all traffic on NetBIOS (UDP Port 137)"
+        },
+        {
+          "SEARCH_FIELD": "alert_name",
+          "SEARCH_TYPE": "CONTAINS",
+          "SEARCH_VALUE": "Azure Network Security Group allows all traffic on NetBIOS (UDP Port 138)"
+        },
+        {
+          "SEARCH_FIELD": "alert_name",
+          "SEARCH_TYPE": "CONTAINS",
+          "SEARCH_VALUE": "Azure Network Security Group allows all traffic on NetBIOS DNS (TCP Port 53)"
+        },
+        {
+          "SEARCH_FIELD": "alert_name",
+          "SEARCH_TYPE": "CONTAINS",
+          "SEARCH_VALUE": "Azure Network Security Group allows all traffic on NetBIOS DNS (UDP Port 53)"
+        },
+        {
+          "SEARCH_FIELD": "alert_name",
+          "SEARCH_TYPE": "CONTAINS",
+          "SEARCH_VALUE": "Azure Network Security Group allows all traffic on PostgreSQL (TCP Port 5432)"
+        },
+        {
+          "SEARCH_FIELD": "alert_name",
+          "SEARCH_TYPE": "CONTAINS",
+          "SEARCH_VALUE": "Azure Network Security Group allows all traffic on RDP Port 3389"
+        },
+        {
+          "SEARCH_FIELD": "alert_name",
+          "SEARCH_TYPE": "CONTAINS",
+          "SEARCH_VALUE": "Azure Network Security Group allows all traffic on SMTP (TCP Port 25)"
+        },
+        {
+          "SEARCH_FIELD": "alert_name",
+          "SEARCH_TYPE": "CONTAINS",
+          "SEARCH_VALUE": "Azure Network Security Group allows all traffic on SQL Server (TCP Port 1433)"
+        },
+        {
+          "SEARCH_FIELD": "alert_name",
+          "SEARCH_TYPE": "CONTAINS",
+          "SEARCH_VALUE": "Azure Network Security Group allows all traffic on SQL Server (UDP Port 1434)"
+        },
+        {
+          "SEARCH_FIELD": "alert_name",
+          "SEARCH_TYPE": "CONTAINS",
+          "SEARCH_VALUE": "Azure Network Security Group allows all traffic on SSH port 22"
+        },
+        {
+          "SEARCH_FIELD": "alert_name",
+          "SEARCH_TYPE": "CONTAINS",
+          "SEARCH_VALUE": "Azure Network Security Group allows all traffic on Telnet (TCP Port 23)"
+        },
+        {
+          "SEARCH_FIELD": "alert_name",
+          "SEARCH_TYPE": "CONTAINS",
+          "SEARCH_VALUE": "Azure Network Security Group allows all traffic on VNC Listener (TCP Port 5500)"
+        },
+        {
+          "SEARCH_FIELD": "alert_name",
+          "SEARCH_TYPE": "CONTAINS",
+          "SEARCH_VALUE": "Azure Network Security Group allows all traffic on Windows RPC (TCP Port 135)"
+        },
+        {
+          "SEARCH_FIELD": "alert_name",
+          "SEARCH_TYPE": "CONTAINS",
+          "SEARCH_VALUE": "Azure Network Security Group allows all traffic on Windows SMB (TCP Port 445)"
+        },
+        {
+          "SEARCH_FIELD": "alert_name",
+          "SEARCH_TYPE": "CONTAINS",
+          "SEARCH_VALUE": "Azure Network Security Group having Inbound rule overly permissive to all traffic on TCP protocol"
+        },
+        {
+          "SEARCH_FIELD": "alert_name",
+          "SEARCH_TYPE": "CONTAINS",
+          "SEARCH_VALUE": "Azure Network Security Group having Inbound rule overly permissive to all traffic on UDP protocol"
+        },
+        {
+          "SEARCH_FIELD": "alert_name",
+          "SEARCH_TYPE": "CONTAINS",
+          "SEARCH_VALUE": "Azure Network Security Group having Inbound rule overly permissive to all traffic on any protocol"
+        }
+      ]
+    }
+  }
+}
