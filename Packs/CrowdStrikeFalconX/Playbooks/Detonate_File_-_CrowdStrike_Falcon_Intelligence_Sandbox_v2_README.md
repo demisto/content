@@ -1,4 +1,24 @@
-Deprecated. Use Detonate File - CrowdStrike Falcon Intelligence Sandbox v2 instead.
+Detonates a file using CrowdStrike Falcon Intelligence Sandbox.
+Accepted file formats:
+Portable executables: .exe, .scr, .pif, .dll, .com, .cpl, etc.
+Office documents: .doc, .docx, .ppt, .pps, .pptx, .ppsx, .xls, .xlsx, .rtf, .pub
+PDF
+APK
+Executable JAR
+Windows script component: .sct
+Windows shortcut: .lnk
+Windows help: .chm
+HTML application: .hta
+Windows script file: .wsf
+Javascript: .js
+Visual Basic: .vbs, .vbe
+Shockwave Flash: .swf
+Perl: .pl
+Powershell: .ps1, .psd1, .psm1
+Scalable vector graphics: .svg
+Python: .py
+Linux ELF executables
+Email files: MIME RFC 822 .eml, Outlook .msg.
 
 ## Dependencies
 
@@ -6,7 +26,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-GenericPolling
+This playbook does not use any sub-playbooks.
 
 ### Integrations
 
@@ -15,15 +35,13 @@ GenericPolling
 
 ### Scripts
 
-* Set
-* Sleep
+This playbook does not use any scripts.
 
 ### Commands
 
-* cs-fx-upload-file
 * cs-fx-get-report-summary
+* cs-fx-upload-file
 * cs-fx-get-full-report
-* cs-fx-submit-uploaded-file
 
 ## Playbook Inputs
 
@@ -32,13 +50,13 @@ GenericPolling
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | File | The file to detonate. The file is taken from the context. | File | Optional |
-| Interval | Polling frequency - how often the polling command should run \(minutes\) | 1 | Optional |
-| Timeout | How much time to wait before a timeout occurs \(minutes\) | 15 | Optional |
+| Interval | Polling frequency - how often the polling command should run \(in minutes\). | 1 | Optional |
+| Timeout | How much time to wait before a timeout occurs \(in minutes\). | 10 | Optional |
 | EnvironmentID | Sandbox environment used for analysis. | 160: Windows 10 | Optional |
 | ActionScript | Runtime script for sandbox analysis. |  | Optional |
 | CommandLine | Command line script passed to the submitted file at runtime. Max length: 2048 characters. |  | Optional |
 | DocumentPassword | Auto-filled for Adobe or Office files that prompt for a password. Max length: 32 characters. |  | Optional |
-| SubmitName | Name of the malware sample that's used for file type detection. and analysis. |  | Optional |
+| SubmitName | Name of the malware sample that's used for file type detection and analysis. |  | Optional |
 | SystemDate | Set a custom date for the sandbox environment in the format yyyy-MM-dd. |  | Optional |
 | SystemTime | Sets a custom time for the sandbox environment in the format HH:mm. |  | Optional |
 | FullReport | Whether to get a full report or report summary from Falcon X.<br/>Set to "False" to get report summary. | True | Optional |
@@ -73,4 +91,4 @@ GenericPolling
 
 ---
 
-![Detonate File - CrowdStrike Falcon Intelligence Sandbox](../doc_files/Detonate_File_-_CrowdStrike_Falcon_Intelligence_Sandbox.png)
+![Detonate File - CrowdStrike Falcon Intelligence Sandbox v2](../doc_files/Detonate_File_-_CrowdStrike_Falcon_Intelligence_Sandbox_v2.png)
