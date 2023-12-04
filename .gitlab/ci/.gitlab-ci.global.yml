@@ -494,7 +494,11 @@
         echo "Skipping the -Validate Files and Yaml- step when force uploading to a bucket."
       else
         ./Tests/scripts/linters_runner.sh
-        $VALIDATE_SCRIPT
+        if [ $VALIDATE_SCRIPT == "old-validate-flow" ]; then
+          ./Tests/scripts/validate.sh
+        else
+          ./Tests/scripts/new_validate.sh
+        fi
       fi
     - section_end "Validate Files and Yaml"
     - section_start "Check Spelling"
@@ -522,7 +526,7 @@
     - job-done
   parallel:
       matrix:
-        - VALIDATE_SCRIPT: ['./Tests/scripts/validate.sh','./Tests/scripts/new_validate.sh']
+        - VALIDATE_SCRIPT: ['old-validate-flow','new-validate-flow']
 .jobs-done-check:
   stage: are-jobs-really-done
   extends:
