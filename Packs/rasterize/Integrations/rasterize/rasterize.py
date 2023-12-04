@@ -39,9 +39,11 @@ DEFAULT_WAIT_TIME = max(int(demisto.params().get('wait_time', 0)), 0)
 DEFAULT_PAGE_LOAD_TIME = int(demisto.params().get('max_page_load_time', 180))
 
 # TODO: decide if we want to reuse it in several places
-DEFAULT_RETRIES_COUNT = 5
+DEFAULT_RETRIES_COUNT = 3
 DEFAULT_RETRY_WAIT_IN_SECONDS = 2
 PAGES_LIMITATION = 20
+
+MAX_CHROMES_COUNT = 32
 
 # Polling for rasterization commands to complete
 DEFAULT_POLLING_INTERVAL = 0.1
@@ -123,21 +125,44 @@ class PychromeEventHandler:
 
 
 def is_chrome_running(port):
-    browser_url = f"http://{LOCAL_CHROME_HOST}:{port}"
-    demisto.debug(f"Trying to connect to {browser_url=}")
-    browser = pychrome.Browser(url=browser_url)
+    try:
+        processes = subprocess.check_output(['ps', 'auxww'],
+                                            stderr=subprocess.STDOUT,
+                                            text=True).splitlines()
+
+        chrome_identifiers = ["chrom", "headless", f"--remote-debugging-port={port}"]
+        chrome_processes = [process for process in processes
+                            if all(identifier in process for identifier in chrome_identifiers)]
+
+        demisto.debug(f'Detected {len(chrome_processes)} Chrome processes running on port {port}')
+        return len(chrome_processes) > 0
+
+    except subprocess.CalledProcessError as e:
+        demisto.info(f'Error fetching process list: {e.output}')
+        return False
+    except Exception as e:
+        demisto.info(f'Unexpected error: {e}')
+        return Flase
+
+
+
+def is_chrome_running_locally(port):
 
     for i in range(DEFAULT_RETRIES_COUNT):
         try:
+            browser_url = f"http://{LOCAL_CHROME_HOST}:{port}"
+            demisto.debug(f"Trying to connect to {browser_url=}, iteration {i+1}/{DEFAULT_RETRIES_COUNT}")
+            browser = pychrome.Browser(url=browser_url)
+
             # Use list tab to ping the browser and make sure it's available
             browser.list_tab()
             return browser
         except requests.exceptions.ConnectionError as exp:
             exp_str = str(exp)
             demisto.debug(f"Failed to connect to Chrome on port {port=} on iteration {i+1}. ConnectionError, {exp_str=}, {exp=}")
-        
-        time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS * (i+1))  # pylint: disable=E9003
-        
+
+        time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS)  # pylint: disable=E9003
+
     return None
 
 
@@ -145,7 +170,7 @@ def get_chrome_port():
     chrome_port_filename = 'chrome_port.txt'
     valid_port_range = range(49152, 65535)
     is_new_port = False
-    
+
     try:
         with open(chrome_port_filename) as chrome_port_file:
             chrome_port = chrome_port_file.readline()
@@ -169,36 +194,55 @@ def get_chrome_port():
         chrome_port_file.write(chrome_port)
         demisto.debug(f"Saved current chrome port {chrome_port} to file")
         is_new_port = True
-    
+
     return chrome_port, is_new_port
 
 
 def ensure_chrome_running():  # pragma: no cover
-    for _ in range(DEFAULT_RETRIES_COUNT):
-        chrome_port, is_new_port = get_chrome_port()
+    chrome_port = 9201
+    for i in range(MAX_CHROMES_COUNT):
+        # chrome_port, is_new_port = get_chrome_port()
+        chrome_port = 9201 + i
 
-        if not is_new_port:
-            browser = is_chrome_running(chrome_port)
+        chrome_is_running = is_chrome_running(chrome_port)
+        browser = is_chrome_running_locally(chrome_port)
+        demisto.debug(f"Checking port {chrome_port}: {chrome_is_running=}, {browser}")
+        if chrome_is_running and browser:
+            # There's a Chrome in that port, and we're connected to it
             demisto.info(f'Connected to Chrome running on port {chrome_port}')
             return browser
+        elif chrome_is_running:
+            # There's a Chrome in that port, but we couldn't connect to it
+            demisto.debug(f"Found Chrome running on port {chrome_port}, but couldn't connect to it")
+            pass
         else:
-            demisto.debug(f'Initializing a new Chrome session on port: {chrome_port}')
-            try:
-                process = subprocess.run(['bash', '/start_chrome_headless.sh', '--port', chrome_port],
-                                         text=True, stdout=subprocess.DEVNULL,
-                                         stderr=subprocess.DEVNULL)
+            # There's no Chrome in that port
+            demisto.debug(f"No Chrome found on port {chrome_port}")
+            break
+        demisto.debug(f'Could not connect to Chrome on port {chrome_port}')
 
-                if process.returncode == 0:
-                    demisto.debug(f'New Chrome session active on Port {chrome_port}')
-                    is_new_port = False
-                    # Allow Chrome to initialize
-                    time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS)  # pylint: disable=E9003
-                else:
-                    demisto.debug(f'Chrome did not start successfully on port {chrome_port}. Return code: {process.returncode}')
-            except subprocess.SubprocessError as ex:
-                demisto.debug(f'Error starting Chrome on port {chrome_port}. Error: {ex}')
+    if i + 1 == MAX_CHROMES_COUNT:
+        demisto.error(f'Max retries ({MAX_CHROMES_COUNT}) reached, could not connect to chrome')
+        return None
 
-    demisto.error(f'Max retries ({DEFAULT_RETRIES_COUNT}) reached, could not connect to chrome')
+    demisto.debug(f'Initializing a new Chrome session on port: {chrome_port}')
+    try:
+        process = subprocess.run(['bash', '/start_chrome_headless.sh', '--port', str(chrome_port)],
+                                 text=True, stdout=subprocess.DEVNULL,
+                                 stderr=subprocess.DEVNULL)
+
+        if process.returncode == 0:
+            demisto.debug(f'New Chrome session active on Port {chrome_port}')
+            # Allow Chrome to initialize
+            time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS)  # pylint: disable=E9003
+            browser = is_chrome_running_locally(chrome_port)
+            return browser
+        else:
+            demisto.debug(f'Chrome did not start successfully on port {chrome_port}. Return code: {process.returncode}')
+    except subprocess.SubprocessError as ex:
+        demisto.debug(f'Error starting Chrome on port {chrome_port}. Error: {ex}')
+    demisto.debug(f'Could not connect to Chrome on port {chrome_port}')
+
     return None
 
 
@@ -251,7 +295,7 @@ def screenshot_image(browser, tab, path, wait_time, navigation_timeout):  # prag
     while screenshot_data is None and operation_time < DEFAULT_WAIT_TIME:
         time.sleep(DEFAULT_POLLING_INTERVAL)  # pylint: disable=E9003
         operation_time +=DEFAULT_POLLING_INTERVAL
-    
+
     demisto.debug(f"Screenshot image available after {operation_time} seconds.")
 
     ret_value = base64.b64decode(screenshot_data)
@@ -271,7 +315,7 @@ def screenshot_pdf(browser, tab, path, wait_time, navigation_timeout, include_ur
     while pdf_data is None and operation_time < DEFAULT_WAIT_TIME:
         time.sleep(DEFAULT_POLLING_INTERVAL)  # pylint: disable=E9003
         operation_time += DEFAULT_POLLING_INTERVAL
-    
+
     demisto.debug(f"PDF data available after {operation_time} seconds.")
 
     ret_value = base64.b64decode(pdf_data)
