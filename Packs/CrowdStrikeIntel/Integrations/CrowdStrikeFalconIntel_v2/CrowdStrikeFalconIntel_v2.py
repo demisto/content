@@ -110,6 +110,7 @@ class Client:
         params: dict[str, Any] = self.build_request_params(args)
         return self.cs_client.http_request(method='GET', url_suffix=url_suffix, params=params)
 
+
 ''' HELPER FUNCTIONS '''
 
 
