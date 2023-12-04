@@ -105,11 +105,10 @@ class Client:
 
     def cs_reports(self, args: dict[str, str]) -> dict[str, Any]:
         url_suffix = 'intel/combined/reports/v1'
-        if args.pop('display_full_fields', False):
+        if argToBoolean(args.pop('display_full_fields', False)):
             url_suffix += '?fields=__full__'
         params: dict[str, Any] = self.build_request_params(args)
         return self.cs_client.http_request(method='GET', url_suffix=url_suffix, params=params)
-
 
 ''' HELPER FUNCTIONS '''
 
@@ -407,10 +406,10 @@ def cs_actors_command(client: Client, args: dict[str, str]) -> CommandResults:
             last_activity_date = r.get('last_activity_date')
             active = r.get('active')
             known_as = r.get('known_as')
-            target_industries = r.get('target_industries', [])
-            target_countries = r.get('target_countries', [])
-            origins = r.get('origins', [])
-            motivations = r.get('motivations', [])
+            target_industries = r.get('target_industries') or []
+            target_countries = r.get('target_countries') or []
+            origins = r.get('origins') or []
+            motivations = r.get('motivations') or []
             capability = r.get('capability', {}).get('value')
             group = r.get('group')
             region = r.get('region', {}).get('value')
@@ -526,11 +525,11 @@ def cs_reports_command(client: Client, args: dict[str, str]) -> CommandResults:
             last_modified_date: int = r.get('last_modified_date')
             short_description: str = r.get('short_description')
             description: str = r.get('description')
-            target_industries: List[Any] = r.get('target_industries', [])
-            target_countries: List[Any] = r.get('target_countries', [])
-            motivations: List[Any] = r.get('motivations', [])
-            tags: List[Any] = r.get('tags', [])
-            actors: List[Any] = r.get('actors', [])
+            target_industries: List[Any] = r.get('target_industries') or []
+            target_countries: List[Any] = r.get('target_countries') or []
+            motivations: List[Any] = r.get('motivations') or []
+            tags: List[Any] = r.get('tags') or []
+            actors: List[Any] = r.get('actors') or []
 
             output: dict[str, Any] = assign_params(**{
                 'ID': report_id,
