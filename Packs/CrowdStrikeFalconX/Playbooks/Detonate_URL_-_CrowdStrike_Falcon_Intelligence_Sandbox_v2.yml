@@ -366,7 +366,7 @@ inputs:
   value:
     simple: "10"
   required: false
-  description: How much time to wait before a timeout occurs  (minutes)
+  description: How much time to wait before a timeout occurs  (in minutes).
   playbookInputQuery:
 - key: Full Report
   value:
