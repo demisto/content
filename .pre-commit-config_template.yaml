@@ -36,7 +36,7 @@ repos:
   rev: "v0.0.272"
   hooks:
   - id: ruff
-    args: [ "--fix" ]
+    args: [ "--fix", "--show-fixes"]
     args:nightly: [ "--config=nightly_ruff.toml" ]
     args:ci: [ "--config=nightly_ruff.toml" ]
 
