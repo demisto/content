@@ -166,42 +166,9 @@ def is_chrome_running_locally(port):
     return None
 
 
-def get_chrome_port():
-    chrome_port_filename = 'chrome_port.txt'
-    valid_port_range = range(49152, 65535)
-    is_new_port = False
-
-    try:
-        with open(chrome_port_filename) as chrome_port_file:
-            chrome_port = chrome_port_file.readline()
-            # Make sure it's an int
-            chrome_port_int = int(chrome_port)
-            demisto.debug(f'Found an existing Chrome port: {chrome_port}')
-            if chrome_port_int in valid_port_range:
-                return f"{chrome_port_int}", is_new_port
-            else:
-                demisto.debug(f"Port {chrome_port} out of valid range {valid_port_range}, allocating a new port")
-    except FileNotFoundError:
-        demisto.info("Could not locate an active port for this session, allocating a new port")
-    except ValueError:
-        demisto.info("Invalid port value extracted, allocating a new port")
-        os.remove(chrome_port_filename)  # Deleting the file with invalid port
-
-    chrome_port = str(random.choice(valid_port_range))
-    demisto.info(f"New port allocated for Chrome: {chrome_port}")
-    demisto.debug(f"Saving port {chrome_port}")
-    with open(chrome_port_filename, "w") as chrome_port_file:
-        chrome_port_file.write(chrome_port)
-        demisto.debug(f"Saved current chrome port {chrome_port} to file")
-        is_new_port = True
-
-    return chrome_port, is_new_port
-
-
 def ensure_chrome_running():  # pragma: no cover
     chrome_port = 9201
     for i in range(MAX_CHROMES_COUNT):
-        # chrome_port, is_new_port = get_chrome_port()
         chrome_port = 9201 + i
 
         chrome_is_running = is_chrome_running(chrome_port)
