@@ -31,14 +31,24 @@ configuration:
   defaultvalue: 'false'
   type: 8
   required: false
-- display: File Threshold. Minimum number of positive results from VT scanners to consider the file malicious.
+- display: File Malicious Threshold. Minimum number of positive results from VT scanners to consider the file malicious.
   name: fileThreshold
   defaultvalue: '10'
   type: 0
   required: false
-- display: IP Threshold. Minimum number of positive results from VT scanners to consider the IP malicious.
+- display: File Suspicious Threshold. Minimum number of positive and suspicious results from VT scanners to consider the file suspicious.
+  name: fileSuspiciousThreshold
+  defaultvalue: '5'
+  type: 0
+  required: false
+- display: IP Malicious Threshold. Minimum number of positive results from VT scanners to consider the IP malicious.
   name: ipThreshold
   defaultvalue: '10'
+  type: 0
+  required: false
+- display: IP Suspicious Threshold. Minimum number of positive and suspicious results from VT scanners to consider the IP suspicious.
+  name: ipSuspiciousThreshold
+  defaultvalue: '5'
   type: 0
   required: false
 - display: Disable reputation lookups for private IP addresses
@@ -47,14 +57,24 @@ configuration:
   type: 8
   required: false
   additionalinfo: To reduce the number of lookups made to the VT API, this option can be selected to gracefully skip enrichment of any IP addresses allocated for private networks.
-- display: URL Threshold. Minimum number of positive results from VT scanners to consider the URL malicious.
+- display: 'URL Malicious Threshold. Minimum number of positive results from VT scanners to consider the URL malicious.'
   name: urlThreshold
   defaultvalue: '10'
   type: 0
   required: false
-- display: Domain Threshold. Minimum number of positive results from VT scanners to consider the domain malicious.
+- display: 'URL Suspicious Threshold. Minimum number of positive and suspicious results from VT scanners to consider the URL suspicious.'
+  name: urlSuspiciousThreshold
+  defaultvalue: '5'
+  type: 0
+  required: false
+- display: Domain Malicious Threshold. Minimum number of positive results from VT scanners to consider the Domain malicious.
   name: domainThreshold
   defaultvalue: '10'
+  type: 0
+  required: false
+- display: Domain Suspicious Threshold. Minimum number of positive and suspicious results from VT scanners to consider the Domain suspicious.
+  name: domainSuspiciousThreshold
+  defaultvalue: '5'
   type: 0
   required: false
 - display: 'Preferred Vendors List. CSV list of vendors who are considered more trustworthy.'
@@ -67,42 +87,47 @@ configuration:
   defaultvalue: '5'
   type: 0
   required: false
-- display: Enable score analyzing by Crowdsourced Yara Rules, Sigma, and IDS
+- display: 'Enable score analyzing by Crowdsourced Yara Rules, Sigma, and IDS'
   name: crowdsourced_yara_rules_enabled
-  defaultvalue: 'true'
   type: 8
+  defaultvalue: 'true'
   required: false
 - display: Crowdsourced Yara Rules Threshold
   name: yaraRulesThreshold
-  defaultvalue: '1'
   type: 0
+  defaultvalue: '1'
   required: false
 - display: Sigma and Intrusion Detection Rules Threshold
   name: SigmaIDSThreshold
-  defaultvalue: '5'
   type: 0
+  defaultvalue: '5'
   required: false
 - display: 'Domain Popularity Ranking Threshold'
   name: domain_popularity_ranking
-  defaultvalue: '10000'
   type: 0
+  defaultvalue: '10000'
   required: false
-- display: 'Premium Subscription Only: Relationship Files Threshold'
+- display: 'Premium Subscription Only: Relationship Malicious Files Threshold'
   name: relationship_threshold
   type: 0
-  defaultvalue: '3'
   required: false
-- additionalinfo: Select the list of relationships to retrieve from the API. Note that relationships that are signed with * key are available only for the VirusTotal premium API key.
-  display: IP Relationships
+  defaultvalue: '3'
+- display: 'Premium Subscription Only: Relationship Suspicious Files Threshold'
+  name: relationship_suspicious_threshold
+  type: 0
+  required: false
+  defaultvalue: '2'
+- display: IP Relationships
   name: ip_relationships
+  type: 16
+  required: false
+  additionalinfo: Select the list of relationships to retrieve from the API. Note that relationships that are signed with * key are available only for the VirusTotal premium API key.
   options:
   - 'communicating files'
   - '* downloaded files'
   - referrer files
   - '* urls'
-  type: 16
   defaultvalue: 'communicating files,* downloaded files,referrer files,* urls'
-  required: false
 - additionalinfo: Select the list of relationships to retrieve from the API. Note that relationships that are signed with * key are available only for the VirusTotal premium API key.
   display: Domain Relationships
   name: domain_relationships
