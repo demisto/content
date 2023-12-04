@@ -798,13 +798,13 @@ crt = ["awscrt (==0.19.17)"]
 
 [[package]]
 name = "botocore-stubs"
-version = "1.33.6"
+version = "1.33.6.post1"
 description = "Type annotations and code completion for botocore"
 optional = false
 python-versions = ">=3.7,<4.0"
 files = [
-    {file = "botocore_stubs-1.33.6-py3-none-any.whl", hash = "sha256:9a69a9cde5fed4254e11e8472dca1ded08757c296d33445e8d9b3675c04d3e16"},
-    {file = "botocore_stubs-1.33.6.tar.gz", hash = "sha256:02e032ea31f138b2d0f065543aa5eb38972b827f8718105de00f693f34662e04"},
+    {file = "botocore_stubs-1.33.6.post1-py3-none-any.whl", hash = "sha256:657f98bb01862d5e60cb15ba04718165d986afb7eda35dad93e488d956669c46"},
+    {file = "botocore_stubs-1.33.6.post1.tar.gz", hash = "sha256:de2e63924addb4a49d8eb3a403b97aaa8ce449987f49f05ce92ea709f42382cb"},
 ]
 
 [package.dependencies]
@@ -1380,101 +1380,106 @@ urllib3 = ">=1.26.7"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.23.0"
+version = "1.24.0"
 description = "\"A Python library for the Demisto SDK\""
 optional = false
 python-versions = ">=3.8,<3.11"
-files = [
-    {file = "demisto_sdk-1.23.0-py3-none-any.whl", hash = "sha256:bba68fc849915e2e5b98f3741435844a84ae6da7c38cd42c6d37307ab1033916"},
-    {file = "demisto_sdk-1.23.0.tar.gz", hash = "sha256:1610c856e90e29adfc34a2136412b0064f6408ee1fbb007714078ba1bc82a3d5"},
-]
+files = []
+develop = false
 
 [package.dependencies]
-autopep8 = ">=1.6.0,<2.0.0"
-bandit = ">=1.7.4,<2.0.0"
-beautifulsoup4 = ">=4.11.1,<5.0.0"
+autopep8 = "^1.6.0"
+bandit = "^1.7.4"
+beautifulsoup4 = "^4.11.1"
 chardet = ">=4,<6"
-click = ">=8.0.0,<9.0.0"
-coloredlogs = ">=15.0.1,<16.0.0"
-configparser = ">=5.2.0,<6.0.0"
-coverage = ">=7.2.1,<8.0.0"
-cryptography = ">=36.0.2,<37.0.0"
-dateparser = ">=1.1.1,<2.0.0"
-decorator = ">=5.1.1,<6.0.0"
-demisto-py = ">=3.2.10,<4.0.0"
-dictdiffer = ">=0.9.0,<0.10.0"
-dictor = ">=0.1.9,<0.2.0"
-docker = ">=5.0.3,<6.0.0"
-flatten-dict = ">=0.4.2,<0.5.0"
-gitdb = ">=4.0.9,<5.0.0"
-GitPython = ">=3.1.37,<4.0.0"
-giturlparse = ">=0.10.0,<0.11.0"
-google-cloud-secret-manager = ">=2.16.2,<3.0.0"
-google-cloud-storage = ">=2.13.0,<3.0.0"
-imagesize = ">=1.3.0,<2.0.0"
-importlib-resources = ">=5.6.0,<6.0.0"
-inflection = ">=0.5.1,<0.6.0"
-json5 = ">=0.9.14,<0.10.0"
-jsonschema = ">=4.4.0,<5.0.0"
-junitparser = ">=3.1.0,<4.0.0"
-klara = ">=0.6.3,<0.7.0"
-mergedeep = ">=1.3.4,<2.0.0"
-more-itertools = ">=9.0.0,<10.0.0"
-mypy = ">=0.982,<0.983"
-neo4j = ">=5.14.0,<6.0.0"
-networkx = ">=2.7.1,<3.0.0"
-nltk = ">=3.7,<4.0"
-ordered-set = ">=4.1.0,<5.0.0"
-orjson = ">=3.8.3,<4.0.0"
-packaging = ">=23.1,<24.0"
-paramiko = ">=2.11.0,<3.0.0"
+click = "^8.0.0"
+coloredlogs = "^15.0.1"
+configparser = "^5.2.0"
+coverage = "^7.2.1"
+cryptography = "^36.0.2"
+dateparser = "^1.1.1"
+decorator = "^5.1.1"
+demisto-py = "^3.2.10"
+dictdiffer = "^0.9.0"
+dictor = "^0.1.9"
+docker = "^5.0.3"
+flatten-dict = "^0.4.2"
+gitdb = "^4.0.9"
+GitPython = "^3.1.37"
+giturlparse = "^0.10.0"
+google-cloud-secret-manager = "^2.16.2"
+google-cloud-storage = "^2.13.0"
+imagesize = "^1.3.0"
+importlib-resources = "^5.6.0"
+inflection = "^0.5.1"
+json5 = "^0.9.14"
+jsonschema = "^4.4.0"
+junitparser = "^3.1.0"
+klara = "^0.6.3"
+mergedeep = "^1.3.4"
+more-itertools = "^9.0.0"
+mypy = "^0.982"
+neo4j = "^5.14.0"
+networkx = "^2.7.1"
+nltk = "^3.7"
+ordered-set = "^4.1.0"
+orjson = "^3.8.3"
+packaging = "^23.1"
+paramiko = "^2.11.0"
 Pebble = ">=4.6.3,<6.0.0"
-prettytable = ">=3.2.0,<4.0.0"
-pydantic = ">=1.10,<2.0"
-pykwalify = ">=1.8.0,<2.0.0"
+prettytable = "^3.2.0"
+pydantic = "^1.10"
+pykwalify = "^1.8.0"
 pylint = "2.12.2"
-PyPDF2 = ">=1.28.6,<2.0.0"
-pyspellchecker = ">=0.6.3,<0.7.0"
-pytest-freezegun = ">=0.4.2,<0.5.0"
-python-dotenv = ">=0.20.0,<0.21.0"
-requests = ">=2.27.1,<3.0.0"
-"ruamel.yaml" = ">=0.17.21,<0.18.0"
-slack-sdk = ">=3.17.0,<4.0.0"
+PyPDF2 = "^1.28.6"
+pyspellchecker = "^0.6.3"
+pytest-freezegun = "^0.4.2"
+python-dotenv = "^0.20.0"
+requests = "^2.27.1"
+"ruamel.yaml" = "^0.17.21"
+slack-sdk = "^3.17.0"
 tabulate = ">=0.8.9,<0.10.0"
-tenacity = ">=8.2.3,<9.0.0"
-typed-ast = ">=1.5.2,<2.0.0"
+tenacity = "^8.2.3"
+typed-ast = "^1.5.2"
 typer = {version = ">=0.6.1,<0.8.0", extras = ["all"]}
 types-chardet = ">=4.0.3,<6.0.0"
-types-dateparser = ">=1.1.0,<2.0.0"
-types-decorator = ">=5.1.8,<6.0.0"
+types-dateparser = "^1.1.0"
+types-decorator = "^5.1.8"
 types-emoji = ">=1.2.7,<3.0.0"
-types-filelock = ">=3.2.5,<4.0.0"
-types-futures = ">=3.3.8,<4.0.0"
-types-ipaddress = ">=1.0.8,<2.0.0"
-types-Markdown = ">=3.3.21,<4.0.0"
-types-mock = ">=4.0.15,<5.0.0"
-types-paramiko = ">=2.8.17,<3.0.0"
-types-pkg-resources = ">=0.1.3,<0.2.0"
-types-protobuf = ">=4.24.0.4,<5.0.0.0"
-types-PyMySQL = ">=1.0.15,<2.0.0"
-types-python-dateutil = ">=2.8.10,<3.0.0"
+types-filelock = "^3.2.5"
+types-futures = "^3.3.8"
+types-ipaddress = "^1.0.8"
+types-Markdown = "^3.3.21"
+types-mock = "^4.0.15"
+types-paramiko = "^2.8.17"
+types-pkg-resources = "^0.1.3"
+types-protobuf = "^4.24.0.4"
+types-PyMySQL = "^1.0.15"
+types-python-dateutil = "^2.8.10"
 types-pytz = ">=2021.3.6,<2023.0.0"
 types-pyvmomi = ">=7.0.6,<9.0.0"
-types-PyYAML = ">=6.0.5,<7.0.0"
+types-PyYAML = "^6.0.5"
 types-requests = "2.28.11"
 types-setuptools = ">=65.6.0.1,<68.0.0.0"
-types-six = ">=1.16.12,<2.0.0"
+types-six = "^1.16.12"
 types-tabulate = ">=0.8.6,<0.10.0"
-types-ujson = ">=5.6.0.0,<6.0.0.0"
-typing-extensions = ">=4.1.1,<5.0.0"
-ujson = ">=5.1.0,<6.0.0"
-urllib3 = ">=1.26.9,<2.0.0"
-vulture = ">=2.3,<3.0"
-wcmatch = ">=8.3,<9.0"
-yamlordereddictloader = ">=0.4.0,<0.5.0"
+types-toml = "^0.10.8.7"
+types-ujson = "^5.6.0.0"
+typing-extensions = "^4.1.1"
+ujson = "^5.1.0"
+urllib3 = "^1.26.9"
+vulture = "^2.3"
+wcmatch = "^8.3"
+yamlordereddictloader = "^0.4.0"
 
 [package.extras]
 build = ["gsutil (==5.17)"]
+
+[package.source]
+type = "git"
+url = "https://github.com/demisto/demisto-sdk.git"
+reference = "demisto_sdk_e2e_tests"
+resolved_reference = "20039694d333135181cc4d1a9fae35a3c2c8104e"
 
 [[package]]
 name = "deprecated"
@@ -1770,13 +1775,13 @@ six = ">=1.12,<2.0"
 
 [[package]]
 name = "freezegun"
-version = "1.2.2"
+version = "1.3.0"
 description = "Let your Python tests travel through time"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 files = [
-    {file = "freezegun-1.2.2-py3-none-any.whl", hash = "sha256:ea1b963b993cb9ea195adbd893a48d573fda951b0da64f60883d7e988b606c9f"},
-    {file = "freezegun-1.2.2.tar.gz", hash = "sha256:cd22d1ba06941384410cd967d8a99d5ae2442f57dfafeff2fda5de8dc5c05446"},
+    {file = "freezegun-1.3.0-py3-none-any.whl", hash = "sha256:fc21de00b8e7f3dfb91414f876afe7f74b2f29ce9907bd81013bdbc7e8a632d0"},
+    {file = "freezegun-1.3.0.tar.gz", hash = "sha256:56cc5dc34de38fe28a4d19bea65bbd3af6fd66020df8141b92bdb45c9be9f503"},
 ]
 
 [package.dependencies]
@@ -2747,17 +2752,18 @@ z3-solver = ">=4.8.12,<5.0.0"
 
 [[package]]
 name = "lark"
-version = "1.1.5"
+version = "1.1.8"
 description = "a modern parsing library"
 optional = false
-python-versions = "*"
+python-versions = ">=3.6"
 files = [
-    {file = "lark-1.1.5-py3-none-any.whl", hash = "sha256:8476f9903e93fbde4f6c327f74d79e9b4bd0ed9294c5dfa3164ab8c581b5de2a"},
-    {file = "lark-1.1.5.tar.gz", hash = "sha256:4b534eae1f9af5b4ea000bea95776350befe1981658eea3820a01c37e504bb4d"},
+    {file = "lark-1.1.8-py3-none-any.whl", hash = "sha256:7d2c221a66a8165f3f81aacb958d26033d40d972fdb70213ab0a2e0627e29c86"},
+    {file = "lark-1.1.8.tar.gz", hash = "sha256:7ef424db57f59c1ffd6f0d4c2b705119927f566b68c0fe1942dddcc0e44391a5"},
 ]
 
 [package.extras]
 atomic-cache = ["atomicwrites"]
+interegular = ["interegular (>=0.3.1,<0.4.0)"]
 nearley = ["js2py"]
 regex = ["regex"]
 
@@ -5412,17 +5418,17 @@ pyasn1 = ">=0.1.3"
 
 [[package]]
 name = "rtfde"
-version = "0.1.0"
+version = "0.1.1"
 description = "A library for extracting HTML content from RTF encapsulated HTML as commonly found in the exchange MSG email format."
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.8"
 files = [
-    {file = "RTFDE-0.1.0-py3-none-any.whl", hash = "sha256:a110dbef435803f3fba717d51a7b9c7a92695c2461637cc6eaf36a9f54386e26"},
-    {file = "RTFDE-0.1.0.tar.gz", hash = "sha256:12215ee59856208010b9200c19afe0f9fa13a3fb39f44015979299c248cbacd7"},
+    {file = "RTFDE-0.1.1-py3-none-any.whl", hash = "sha256:ea7ab0e0b9d4af08415f5017ecff91d74e24216a5e4e4682155cedc478035e99"},
+    {file = "RTFDE-0.1.1.tar.gz", hash = "sha256:9e43485e79b2dd1018127735d8134f65d2a9d73af314d2a101f10346333b241e"},
 ]
 
 [package.dependencies]
-lark = "1.1.5"
+lark = "1.1.8"
 oletools = ">=0.56"
 
 [package.extras]
@@ -6550,6 +6556,17 @@ files = [
 ]
 
 [[package]]
+name = "types-toml"
+version = "0.10.8.7"
+description = "Typing stubs for toml"
+optional = false
+python-versions = "*"
+files = [
+    {file = "types-toml-0.10.8.7.tar.gz", hash = "sha256:58b0781c681e671ff0b5c0319309910689f4ab40e8a2431e205d70c94bb6efb1"},
+    {file = "types_toml-0.10.8.7-py3-none-any.whl", hash = "sha256:61951da6ad410794c97bec035d59376ce1cbf4453dc9b6f90477e81e4442d631"},
+]
+
+[[package]]
 name = "types-tqdm"
 version = "4.66.0.5"
 description = "Typing stubs for tqdm"
@@ -6800,13 +6817,13 @@ requests = "*"
 
 [[package]]
 name = "websocket-client"
-version = "1.6.4"
+version = "1.7.0"
 description = "WebSocket client for Python with low level API options"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "websocket-client-1.6.4.tar.gz", hash = "sha256:b3324019b3c28572086c4a319f91d1dcd44e6e11cd340232978c684a7650d0df"},
-    {file = "websocket_client-1.6.4-py3-none-any.whl", hash = "sha256:084072e0a7f5f347ef2ac3d8698a5e0b4ffbfcab607628cadabc650fc9a83a24"},
+    {file = "websocket-client-1.7.0.tar.gz", hash = "sha256:10e511ea3a8c744631d3bd77e61eb17ed09304c413ad42cf6ddfa4c7787e8fe6"},
+    {file = "websocket_client-1.7.0-py3-none-any.whl", hash = "sha256:f4c3d22fec12a2461427a29957ff07d35098ee2d976d3ba244e688b8b4057588"},
 ]
 
 [package.extras]
@@ -7179,4 +7196,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "7958eb8cea0b325f86fe119f6d66233408c8c3a918b072cc8bea6a04df3c22ed"
+content-hash = "e8c7097e6e92e1df931ee5b576a4c3b26579bdd153075e7af0e53c6d4f6c7737"
