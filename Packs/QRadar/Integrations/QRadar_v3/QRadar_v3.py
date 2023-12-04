@@ -4,9 +4,6 @@ from enum import Enum
 from ipaddress import ip_address
 from urllib import parse
 
-import requests
-from requests.exceptions import ConnectTimeout, ConnectionError
-
 import pytz
 import urllib3
 from CommonServerUserPython import *  # noqa
