@@ -159,6 +159,9 @@ if not USE_PROXY:
     del os.environ['http_proxy']
     del os.environ['https_proxy']
 
+CHUNK_SIZE = 5000
+MAX_CHUNKS_PER_FETCH = 10
+ASSETS_FETCH_FROM = '90 days'
 
 class Client(BaseClient):
 
@@ -191,6 +194,51 @@ class Client(BaseClient):
                 'GET', f'scans/{scan_id}/export/{file_id}/download',
                 resp_type='content'),
             EntryType.ENTRY_INFO_FILE)
+
+    def export_assets_request(self, fetch_from):
+        """
+
+        Args:
+            chunk_size: maximum number of assets in one chunk.
+            fetch_from: the last asset that was fetched previously.
+
+        Returns: The UUID of the assets export job.
+
+        """
+        payload = {
+            'chunk_size': CHUNK_SIZE,
+            "filters": {
+                "updated_at": fetch_from
+            }
+        }
+        demisto.debug(f"my payload is: {payload}")
+        res = self._http_request(method='POST', url_suffix='assets/export', json_data=payload,
+                                 headers=self._headers)
+        return res.get('export_uuid')
+
+    def get_export_assets_status(self, export_uuid):
+        """
+        Args:
+                export_uuid: The UUID of the assets export job.
+
+        Returns: The assets' chunk id.
+
+        """
+        res = self._http_request(method='GET', url_suffix=f'assets/export/{export_uuid}/status', headers=self._headers)
+        return res.get('status'), res.get('chunks_available')
+
+    def download_assets_chunk(self, export_uuid: str, chunk_id: int):
+        """
+
+        Args:
+            export_uuid: The UUID of the assets export job.
+            chunk_id: The ID of the chunk you want to export.
+
+        Returns: Chunk of assets from API.
+
+        """
+        return self._http_request(method='GET', url_suffix=f'/assets/export/{export_uuid}/chunks/{chunk_id}',
+                                  headers=self._headers)
 
 
 def flatten(d):
@@ -437,6 +485,63 @@ def send_asset_attributes_request(asset_id: str) -> Dict[str, Any]:
 
     return res.json()
 
+def get_timestamp(timestamp):
+    return time.mktime(timestamp.timetuple())
+
+def generate_assets_export_uuid(client: Client, assets_last_run: dict[str, str | float | None]):
+    """
+    Generate a job export uuid in order to fetch assets.
+
+    Args:
+        client: Client class object.
+        first_fetch: time to first fetch assets from.
+        assets_last_run: assets last run object.
+
+    """
+
+    demisto.info("Getting assets export uuid.")
+    fetch_from = round(get_timestamp(arg_to_datetime(ASSETS_FETCH_FROM)))
+
+    export_uuid = client.export_assets_request(fetch_from=fetch_from)
+    demisto.debug(f'assets export uuid is {export_uuid}')
+
+    assets_last_run.update({'export_uuid': export_uuid})
+
+
+def handle_assets_chunks(client: Client, assets_last_run):
+    stored_chunks = assets_last_run.get('available_chunks', [])
+    updated_stored_chunks = stored_chunks.copy()
+    export_uuid = assets_last_run.get('export_uuid')
+    assets = []
+    for chunk_id in stored_chunks[:MAX_CHUNKS_PER_FETCH]:
+        assets.extend(client.download_assets_chunk(export_uuid=export_uuid, chunk_id=chunk_id))
+        updated_stored_chunks.remove(chunk_id)
+    if updated_stored_chunks:
+        assets_last_run.update({'available_chunks': updated_stored_chunks,
+                                'nextTrigger': '0', "type": 1})
+    else:
+        assets_last_run.pop('nextTrigger', None)
+        assets_last_run.pop('type', None)
+        assets_last_run.pop('available_chunks', None)
+        assets_last_run.pop('export_uuid', None)
+    return assets_last_run, assets
+
+def try_get_assets_chunks(client: Client, export_uuid: str, assets_last_run):
+    """
+    If job has succeeded (status FINISHED) get all information from all chunks available.
+    Args:
+        client: Client class object.
+        export_uuid: The UUID of the assets export job.
+
+    Returns: All information from all chunks available.
+
+    """
+    status, chunks_available = client.get_export_assets_status(export_uuid=export_uuid)
+    demisto.info(f'Assets report status is {status}, and number of available chunks is {chunks_available}')
+    if status == 'FINISHED':
+        assets_last_run.update({'available_chunks': chunks_available})
+
+    return status
 
 def test_module(client: Client):
     client.list_scan_filters()
@@ -1380,6 +1485,41 @@ def export_scan_command(args: dict[str, Any], client: Client) -> PollResult:
                 f'File ID: {file_id}\n')
 
 
+''' FETCH COMMANDS '''
+
+
+def fetch_assets_command(client: Client, assets_last_run):
+    """
+    Fetches assets.
+    Args:
+        assets_last_run: last run object.
+        client: Client class object.
+
+    Returns:
+        assets fetched from the API.
+    """
+    assets = []
+    export_uuid = assets_last_run.get('export_uuid')    # if already in assets_last_run meaning its still polling chunks from api
+    available_chunks = assets_last_run.get('available_chunks', [])  # if exists, still downloading chunks from prev fetch call
+    if available_chunks:
+        assets, assets_last_run = handle_assets_chunks(client, assets_last_run)
+    elif export_uuid:
+        status = try_get_assets_chunks(client=client, export_uuid=export_uuid, assets_last_run=assets_last_run)
+
+        if status in ['PROCESSING', 'QUEUED']:
+            assets_last_run.update({'nextTrigger': '30', "type": 1})
+        # set params for next run
+        if status == 'FINISHED':
+            assets, assets_last_run = handle_assets_chunks(client, assets_last_run)
+        elif status in ['CANCELLED', 'ERROR']:
+            export_uuid = client.export_assets_request(fetch_from=round(get_timestamp(arg_to_datetime(ASSETS_FETCH_FROM))))
+            assets_last_run.update({'export_uuid': export_uuid})
+            assets_last_run.update({'nextTrigger': '30', "type": 1})
+
+    demisto.info(f'Done fetching {len(assets)} assets, {assets_last_run=}.')
+    return assets, assets_last_run
+
+
 def main():  # pragma: no cover
     """main function, parses params and runs command functions
     """
@@ -1389,20 +1529,17 @@ def main():  # pragma: no cover
     events = []
     vulnerabilities: list = []
 
-    access_key = params.get('credentials', {}).get('identifier', '')
-    secret_key = params.get('credentials', {}).get('password', '')
+    access_key = params.get('credentials_access_key', {}).get('password') or params.get('access-key')
+    secret_key = params.get('credentials_secret_key', {}).get('password') or params.get('secret-key')
     url = params.get('url')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
     # Events Params
-    # vuln_fetch_interval = arg_to_number(params.get('vuln_fetch_interval', 240)) * 60  # type: ignore
     severity = argToList(params.get('severity'))
     max_fetch = arg_to_number(params.get('max_fetch')) or 1000
     first_fetch: datetime = arg_to_datetime(params.get('first_fetch', '3 days'))  # type: ignore
 
-    # transform minutes to seconds
-    # scanned_since: datetime = arg_to_datetime(params.get('scanned_from', '107') + ' days')  # type: ignore
     demisto.debug(f'Command being called is {command}')
     try:
         headers = {'X-ApiKeys': f'accessKey={access_key}; secretKey={secret_key}',
@@ -1444,7 +1581,28 @@ def main():  # pragma: no cover
         elif command == 'tenable-io-export-scan':
             return_results(export_scan_command(args, client))
 
+        # Fetch Commands
+
         elif command == 'fetch-assets':
+            assets_last_run = demisto.getAssetsLastRun()
+
+            # starting new fetch for assets, not polling from prev call
+            if not assets_last_run.get('export_uuid'):
+                generate_assets_export_uuid(client, assets_last_run)
+
+            assets, new_assets_last_run = fetch_assets_command(client, assets_last_run)
+            demisto.setAssetsLastRun(new_assets_last_run)
+
+            # todo: to be implemented in CSP once we have the api endpoint from xdr
+            demisto.updateModuleHealth({'assetsPulled': len(assets)})
+
+            demisto.debug("now sending with send_data_to_xsiam")
+            assets = [{'id': '4b4dd943-583f-4034-a5b7-c8b7d8c5b46f',"tmp": tmp+1, 'has_agent': False, 'has_plugin_results': True, 'created_at': '2022-08-14T11:17:12.521Z', 'terminated_at': None, 'terminated_by': None, 'updated_at': '2023-10-28T16:52:01.049Z', 'deleted_at': None, 'deleted_by': None, 'first_seen': '2022-08-14T11:17:09.239Z', 'last_seen': '2023-08-20T11:34:26.366Z', 'first_scan_time': '2022-08-14T11:17:09.239Z', 'last_scan_time': '2023-08-20T11:34:26.366Z', 'last_authenticated_scan_date': None, 'last_licensed_scan_date': '2023-08-20T11:34:26.366Z', 'last_scan_id': '79e631d5-dba5-4291-92ac-d16eef9fa67e', 'last_schedule_id': 'template-f2f3de19-02aa-2bb0-2845-4af9dcdf19be726959c33b9f70a1', 'azure_vm_id': None, 'azure_resource_id': None, 'gcp_project_id': None, 'gcp_zone': None, 'gcp_instance_id': None, 'aws_ec2_instance_ami_id': None, 'aws_ec2_instance_id': None, 'agent_uuid': None, 'bios_uuid': None, 'network_id': '00000000-0000-0000-0000-000000000000', 'network_name': 'Default', 'aws_owner_id': None, 'aws_availability_zone': None, 'aws_region': None, 'aws_vpc_id': None, 'aws_ec2_instance_group_name': None, 'aws_ec2_instance_state_name': None, 'aws_ec2_instance_type': None, 'aws_subnet_id': None, 'aws_ec2_product_code': None, 'aws_ec2_name': None, 'mcafee_epo_guid': None, 'mcafee_epo_agent_guid': None, 'servicenow_sysid': None, 'bigfix_asset_id': None, 'agent_names': [], 'installed_software': ['cpe:/a:apache:http_server:2.4.7', 'cpe:/a:apache:http_server:2.4.99', 'cpe:/a:openbsd:openssh:6.6'], 'ipv4s': ['45.33.32.156'], 'ipv6s': [], 'fqdns': ['scanme.nmap.org'], 'mac_addresses': [], 'netbios_names': [], 'operating_systems': ['Linux Kernel 3.13 on Ubuntu 14.04 (trusty)'], 'system_types': ['general-purpose'], 'hostnames': [], 'ssh_fingerprints': [], 'qualys_asset_ids': [], 'qualys_host_ids': [], 'manufacturer_tpm_ids': [], 'symantec_ep_hardware_keys': [], 'sources': [{'name': 'NESSUS_SCAN', 'first_seen': '2022-08-14T11:17:09.239Z', 'last_seen': '2023-08-20T11:34:26.366Z'}], 'tags': [{'uuid': '75947cc6-533f-4d00-ab8c-42d11da8aa3b', 'key': 'VulnerableDomains', 'value': 'testphp.vulnweb.com', 'added_by': '142f7818-d956-449d-b575-3599763698a6', 'added_at': '2022-08-14T11:19:04.025Z'}], 'network_interfaces': [{'name': 'UNKNOWN', 'virtual': None, 'aliased': None, 'fqdns': ['scanme.nmap.org'], 'mac_addresses': [], 'ipv4s': ['45.33.32.156'], 'ipv6s': []}]}, {'id': '1d7b5fc4-5ac9-4df6-9c34-720cbda9952b','tmp': tmp, 'has_agent': False, 'has_plugin_results': True, 'created_at': '2022-08-14T12:10:07.151Z', 'terminated_at': None, 'terminated_by': None, 'updated_at': '2023-10-01T02:53:05.792Z', 'deleted_at': None, 'deleted_by': None, 'first_seen': '2022-08-14T12:10:05.145Z', 'last_seen': '2023-11-20T11:34:26.366Z', 'first_scan_time': '2022-08-14T12:10:05.145Z', 'last_scan_time': '2023-11-25T11:34:26.366Z', 'last_authenticated_scan_date': None, 'last_licensed_scan_date': '2023-08-20T11:34:26.366Z', 'last_scan_id': '79e631d5-dba5-4291-92ac-d16eef9fa67e', 'last_schedule_id': 'template-f2f3de19-02aa-2bb0-2845-4af9dcdf19be726959c33b9f70a1', 'azure_vm_id': None, 'azure_resource_id': None, 'gcp_project_id': None, 'gcp_zone': None, 'gcp_instance_id': None, 'aws_ec2_instance_ami_id': None, 'aws_ec2_instance_id': None, 'agent_uuid': None, 'bios_uuid': None, 'network_id': '00000000-0000-0000-0000-000000000111', 'network_name': 'Default', 'aws_owner_id': None, 'aws_availability_zone': None, 'aws_region': None, 'aws_vpc_id': None, 'aws_ec2_instance_group_name': None, 'aws_ec2_instance_state_name': None, 'aws_ec2_instance_type': None, 'aws_subnet_id': None, 'aws_ec2_product_code': None, 'aws_ec2_name': None, 'mcafee_epo_guid': None, 'mcafee_epo_agent_guid': None, 'servicenow_sysid': None, 'bigfix_asset_id': None, 'agent_names': [], 'installed_software': ['cpe:/a:isc:bind:9.8.2rc1-redhat-9.8.2-0.62.rc1.el6_9.5', 'cpe:/a:isc:bind:9.8.2rc1:RedHat', 'cpe:/a:openbsd:openssh:5.3'], 'ipv4s': ['67.222.39.71'], 'ipv6s': [], 'fqdns': ['box2055.bluehost.com'], 'mac_addresses': [], 'netbios_names': [], 'operating_systems': ['Linux Kernel 2.6'], 'system_types': ['general-purpose'], 'hostnames': [], 'ssh_fingerprints': ['677e755a565ed2b7e7c8ff04086b409c'], 'qualys_asset_ids': [], 'qualys_host_ids': [], 'manufacturer_tpm_ids': [], 'symantec_ep_hardware_keys': [], 'sources': [{'name': 'NESSUS_SCAN', 'first_seen': '2022-08-14T12:10:05.145Z', 'last_seen': '2023-08-20T11:34:26.366Z'}], 'tags': [{'uuid': '07f7ad9b-6f61-4c3e-925c-9bec5659cd8d', 'key': 'VulnerableDomains', 'value': 'test', 'added_by': '142f7818-d956-449d-b575-3599763698a6', 'added_at': '2023-02-02T10:55:35.281Z'}, {'uuid': '75947cc6-533f-4d00-ab8c-42d11da8aa3b', 'key': 'VulnerableDomains', 'value': 'testphp.vulnweb.com', 'added_by': '142f7818-d956-449d-b575-3599763698a6', 'added_at': '2022-08-14T11:19:04.025Z'}], 'network_interfaces': [{'name': 'UNKNOWN', 'virtual': None, 'aliased': None, 'fqdns': ['box2055.bluehost.com'], 'mac_addresses': [], 'ipv4s': ['67.222.39.71'], 'ipv6s': []}]}]
+            send_data_to_xsiam(data=assets, vendor=VENDOR, product=f'{PRODUCT}_assets', data_type=ASSETS)
+            # send_events_to_xsiam(assets, product=PRODUCT, vendor=VENDOR)
+
+            demisto.debug(f"done sending {len(assets)} assets to xsiam")
+
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
