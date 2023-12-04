@@ -5,11 +5,12 @@ from pytest_mock import MockerFixture
 from requests_mock import MockerCore
 from pathlib import Path
 import json
-import CommonServerPython
+from CommonServerPython import CommandResults, DemistoException
 import demistomock as demisto
 from MicrosoftGraphFiles import remove_identity_key, url_validation, parse_key_to_context, delete_file_command, \
     download_file_command, list_sharepoint_sites_command, list_drive_content_command, create_new_folder_command, \
-    list_drives_in_site_command, MsGraphClient, upload_new_file_command
+    list_drives_in_site_command, MsGraphClient, upload_new_file_command, list_site_permissions_command, \
+    create_site_permissions_command, update_site_permissions_command, delete_site_permission_command
 
 
 def util_load_json(path: str) -> dict:
@@ -31,9 +32,32 @@ class File:
     content = b"12345"
 
 
-client_mocker = MsGraphClient(
-    tenant_id="tenant_id", auth_id="auth_id", enc_key='enc_key', app_name='app_name',
-    base_url='url', verify='use_ssl', proxy='proxy', self_deployed='self_deployed', ok_codes=(1, 2, 3))
+CLIENT_MOCKER = MsGraphClient(
+    tenant_id="tenant_id", auth_id="auth_id", enc_key='enc_key', app_name='app_name', ok_codes=(200, 204, 201),
+    base_url='https://graph.microsoft.com/v1.0/', verify='use_ssl', proxy='proxy', self_deployed='self_deployed')
+
+
+def get_azure_access_token_mock() -> dict:
+    """
+    Mock Azure access token object.
+
+    Returns:
+        dict: Azure access token mock.
+    """
+    return {
+        'access_token': 'my-access-token',
+        'expires_in': 3595,
+        'refresh_token': 'my-refresh-token',
+    }
+
+
+def authorization_mock(requests_mock: MockerCore) -> None:
+    """
+    Azure authorization API request mock.
+
+    """
+    authorization_url = 'https://login.microsoftonline.com/tenant_id/oauth2/v2.0/token'
+    requests_mock.post(authorization_url, json=get_azure_access_token_mock())
 
 
 def test_remove_identity_key_with_valid_application_input() -> None:
@@ -118,7 +142,7 @@ def test_url_validation_with_empty_string() -> None:
     Then
         - Returns Demisto error
     """
-    with pytest.raises(CommonServerPython.DemistoException):
+    with pytest.raises(DemistoException):
         url_validation("")
 
 
@@ -132,7 +156,7 @@ def test_url_validation_with_invalid_url() -> None:
         - Returns Demisto error
     """
 
-    with pytest.raises(CommonServerPython.DemistoException):
+    with pytest.raises(DemistoException):
         url_validation(ARGUMENTS["invalid_next_link_url"])
 
 
@@ -171,8 +195,8 @@ def test_download_file(mocker: MockerFixture, command: Callable, args: dict, res
     Then
         - return FileResult object
     """
-    mocker.patch.object(client_mocker.ms_client, "http_request", return_value=response)
-    result: dict = command(client_mocker, args)
+    mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request", return_value=response)
+    result: dict = command(CLIENT_MOCKER, args)
     assert "Contents" in list(result.keys())
 
 
@@ -196,8 +220,8 @@ def test_delete_file(mocker: MockerFixture, command: Callable, args: dict, respo
     Then
         - return FileResult object
     """
-    mocker.patch.object(client_mocker.ms_client, "http_request", return_value=response)
-    _, result = command(client_mocker, args)
+    mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request", return_value=response)
+    _, result = command(CLIENT_MOCKER, args)
     assert expected_result == result
 
 
@@ -221,8 +245,8 @@ def test_list_tenant_sites(mocker: MockerFixture, command: Callable, args: dict,
     Then
         - return FileResult object
     """
-    mocker.patch.object(client_mocker.ms_client, "http_request", return_value=response)
-    result = command(client_mocker, args)
+    mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request", return_value=response)
+    result = command(CLIENT_MOCKER, args)
     assert expected_result == result[1]
 
 
@@ -246,8 +270,8 @@ def test_list_drive_content(mocker: MockerFixture, command: Callable, args: dict
     Then
         - return FileResult object
     """
-    mocker.patch.object(client_mocker.ms_client, "http_request", return_value=response)
-    result = command(client_mocker, args)
+    mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request", return_value=response)
+    result = command(CLIENT_MOCKER, args)
     assert expected_result == result[1]
 
 
@@ -276,8 +300,8 @@ def test_create_name_folder(mocker: MockerFixture, command: Callable, args: dict
     Then
         - return FileResult object
     """
-    mocker.patch.object(client_mocker.ms_client, "http_request", return_value=response)
-    result = command(client_mocker, args)
+    mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request", return_value=response)
+    result = command(CLIENT_MOCKER, args)
     assert expected_result == result[1]
 
 
@@ -301,8 +325,8 @@ def test_list_drives_in_site(mocker: MockerFixture, command: Callable, args: dic
     Then
         - return FileResult object
     """
-    mocker.patch.object(client_mocker.ms_client, "http_request", return_value=response)
-    result = command(client_mocker, args)
+    mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request", return_value=response)
+    result = command(CLIENT_MOCKER, args)
     assert expected_result == result[1]
 
 
@@ -578,10 +602,182 @@ def test_test_module_command_with_managed_identities(mocker: MockerFixture, requ
     mocker.patch.object(demisto, 'command', return_value='test-module')
     mocker.patch.object(demisto, 'results', return_value=params)
     mocker.patch('MicrosoftApiModule.get_integration_context', return_value={})
-
+    mocker.Mock()
     main()
 
     assert 'ok' in demisto.results.call_args[0][0]
     qs = get_mock.last_request.qs
     assert qs['resource'] == [Resources.graph]
     assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs
+
+
+@pytest.mark.parametrize(
+    "func_to_test, args",
+    [
+        pytest.param(
+            list_site_permissions_command,
+            {},
+            id="test list_site_permissions_command"
+        ),
+        pytest.param(
+            create_site_permissions_command,
+            {"app_id": "test", "role": "test", "display_name": "test"},
+            id="test create_site_permissions_command",
+        ),
+        pytest.param(
+            update_site_permissions_command,
+            {
+                "app_id": "test",
+                "role": "test",
+                "display_name": "test",
+                "permission_id": "test",
+            },
+            id="test update_site_permissions_command",
+        ),
+        pytest.param(
+            delete_site_permission_command,
+            {"permission_id": "test"},
+            id="test delete_site_permission_command",
+        ),
+    ],
+)
+def test_get_site_id_raise_error_site_name_or_site_id_required(
+    func_to_test: Callable[[MsGraphClient, dict], CommandResults], args: dict
+) -> None:
+    with pytest.raises(
+        DemistoException, match="Either site_id or site_name parameter is required."
+    ):
+        func_to_test(CLIENT_MOCKER, args)
+
+
+@pytest.mark.parametrize(
+    "func_to_test, args",
+    [
+        pytest.param(
+            list_site_permissions_command,
+            {"site_name": "test"},
+            id="test list_site_permissions_command with site_name",
+        ),
+        pytest.param(
+            create_site_permissions_command,
+            {
+                "site_name": "test",
+                "app_id": "test",
+                "role": "test",
+                "display_name": "test",
+            },
+            id="test create_site_permissions_command with site_name",
+        ),
+        pytest.param(
+            update_site_permissions_command,
+            {
+                "site_name": "test",
+                "app_id": "test",
+                "role": "test",
+                "display_name": "test",
+                "permission_id": "test",
+            },
+            id="test update_site_permissions_command with site_name",
+        ),
+        pytest.param(
+            delete_site_permission_command,
+            {"site_name": "test", "permission_id": "test"},
+            id="test delete_site_permissions_command with site_name",
+        ),
+    ],
+)
+def test_get_site_id_raise_error_invalid_site_name(
+    requests_mock: MockerCore,
+    func_to_test: Callable[[MsGraphClient, dict], CommandResults],
+    args: dict,
+) -> None:
+    authorization_mock(requests_mock)
+    requests_mock.get(
+        "https://graph.microsoft.com/v1.0/sites", json={"value": []}, status_code=200
+    )
+    with pytest.raises(
+        DemistoException,
+        match="Site not found. Please provide a valid site name or id.",
+    ):
+        func_to_test(CLIENT_MOCKER, args)
+
+
+def test_list_site_permissions(requests_mock: MockerCore) -> None:
+    authorization_mock(requests_mock)
+    requests_mock.get(
+        "https://graph.microsoft.com/v1.0/sites/test/permissions",
+        json=util_load_json("test_data/mock_list_permissions.json"),
+    )
+
+    result = list_site_permissions_command(CLIENT_MOCKER, {"site_id": "test"})
+    assert result.readable_output == (
+        "### Site Permission\n"
+        "|Application ID|Application Name|ID|Roles|\n"
+        "|---|---|---|---|\n"
+        "| new-app-id | Contoso Time Manager App | 1 | read |\n"
+        "| new-app-id | Fabrikam Dashboard App | 2 | write |\n"
+    )
+
+
+def test_list_site_permissions_with_permission_id(requests_mock: MockerCore) -> None:
+    args = {"site_id": "test", "permission_id": "id"}
+    authorization_mock(requests_mock)
+    requests_mock.get(
+        "https://graph.microsoft.com/v1.0/sites/test/permissions/id",
+        json=util_load_json("test_data/mock_list_permissions.json")["value"][0],
+    )
+
+    result = list_site_permissions_command(CLIENT_MOCKER, args)
+    assert result.readable_output == (
+        "### Site Permission\n"
+        "|Application ID|Application Name|ID|Roles|\n"
+        "|---|---|---|---|\n"
+        "| new-app-id | Contoso Time Manager App | 1 | read |\n"
+    )
+
+
+def test_create_permissions_success(requests_mock: MockerCore) -> None:
+    args = {
+        "site_id": "test",
+        "app_id": "app-id",
+        "role": "role",
+        "display_name": "name",
+    }
+    authorization_mock(requests_mock)
+    requests_mock.post(
+        "https://graph.microsoft.com/v1.0/sites/test/permissions",
+        json=util_load_json("test_data/mock_list_permissions.json")["value"][0],
+    )
+    result = create_site_permissions_command(CLIENT_MOCKER, args)
+    assert result.readable_output == (
+        "### Site Permission\n"
+        "|Application ID|Application Name|ID|Roles|\n"
+        "|---|---|---|---|\n"
+        "| new-app-id | Contoso Time Manager App | 1 | read |\n"
+    )
+
+
+def test_update_permissions_command(requests_mock: MockerCore) -> None:
+    args = {"permission_id": "id", "role": "role1", "site_id": "site"}
+    authorization_mock(requests_mock)
+    requests_mock.patch(
+        "https://graph.microsoft.com/v1.0/sites/site/permissions/id",
+        json=util_load_json("test_data/mock_list_permissions.json")["value"][0],
+    )
+    result = update_site_permissions_command(CLIENT_MOCKER, args)
+
+    assert (
+        result.readable_output
+        == "Permission id of site site was updated successfully with new role ['read']."
+    )
+
+
+def test_delete_site_permission_command(requests_mock: MockerCore) -> None:
+    args = {"permission_id": "id", "site_id": "site"}
+    authorization_mock(requests_mock)
+    requests_mock.delete(
+        "https://graph.microsoft.com/v1.0/sites/site/permissions/id", status_code=204
+    )
+    result = delete_site_permission_command(CLIENT_MOCKER, args)
+
+    assert result.readable_output == "Site permission was deleted."

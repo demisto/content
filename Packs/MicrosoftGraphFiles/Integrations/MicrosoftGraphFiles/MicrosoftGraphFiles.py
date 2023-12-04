@@ -840,12 +840,35 @@ def delete_file_command(client: MsGraphClient, args: dict) -> tuple[str, str]:
     return human_readable, text  # == raw response
 
 
-def get_site_id(client: MsGraphClient, site_name: str) -> str:
+def get_site_id(client: MsGraphClient, site_id: str | None, site_name: str | None) -> str:
+    """
+    Retrieves the SharePoint site ID based on either the provided site ID or site name.
 
-    site_details = client.list_sharepoint_sites(site_name)
-    if site_id := site_details.get("value", [{}])[0].get("id"):
-        site_id = site_id.split(",")[1]
+    Args:
+        client (MsGraphClient): An instance of the Microsoft Graph client.
+        site_id (Optional[str]): The ID of the SharePoint site. If not provided, it will be fetched using the site_name.
+        site_name (Optional[str]): The name of the SharePoint site. If site_id is not provided,
+                                    it will be used to fetch the site ID.
 
+    Returns:
+        str: The SharePoint site ID extracted from the provided parameters.
+
+    Raises:
+        DemistoException: If neither site_id nor site_name is provided,
+        or if the specified site_name does not correspond to a valid SharePoint site.
+
+    Note:
+        The SharePoint site ID is extracted from a string in the format "sharepoint.com,site_id,additional_info".
+    """
+    if not site_id and not site_name:
+        raise DemistoException("Either site_id or site_name parameter is required.")
+
+    if not site_id and site_name:
+        if not (site_details := client.list_sharepoint_sites(site_name)["value"]):
+            raise DemistoException("Site not found. Please provide a valid site name or id.")
+        site_id = site_details[0]["id"].split(",")[1]
+    if site_id is None:
+        raise DemistoException("Site not found. Please provide a valid site name or id.")
     return site_id
 
 
@@ -864,14 +887,7 @@ def list_site_permissions_command(client: MsGraphClient, args: dict[str, str]) -
     permission_id = args.get("permission_id")
     limit = arg_to_number(args.get("limit", 50))
     all_results = argToBoolean(args.get("all_results", False))
-
-    site_id = args.get("site_id")
-    site_name = args.get("site_name")
-    if not site_id and site_name:
-        site_id = get_site_id(client, site_name)
-
-    if not any([site_id, site_name]):
-        raise DemistoException("Either site_id or site_name parameter is required")
+    site_id = get_site_id(client, args.get("site_id"), args.get("site_name"))
     results = client.list_site_permissions(site_id, permission_id)
     if permission_id:
         list_permissions = results
@@ -897,16 +913,10 @@ def list_site_permissions_command(client: MsGraphClient, args: dict[str, str]) -
 
 
 def create_site_permissions_command(client: MsGraphClient, args: dict[str, str]) -> CommandResults:
-    site_id = args.get("site_id", '')
-    site_name = args.get("site_name")
     app_id = args["app_id"]
     role = argToList(args["role"])
     display_name = args["display_name"]
-
-    if not any([site_id, site_name]):
-        raise DemistoException("Either site_id or site_name parameter is required")
-    if not site_id and site_name:
-        site_id = get_site_id(client, site_name)
+    site_id = get_site_id(client, args.get("site_id"), args.get("site_name"))
 
     results = client.create_site_permission(site_id, app_id, display_name, role)
 
@@ -919,30 +929,22 @@ def create_site_permissions_command(client: MsGraphClient, args: dict[str, str])
 
 
 def update_site_permissions_command(client: MsGraphClient, args: dict[str, str]) -> CommandResults:
-    site_id = args.get("site_id", '')
-    site_name = args.get("site_name")
     permission_id = args["permission_id"]
     role = argToList(args["role"])
-    if not any([site_id, site_name]):
-        raise DemistoException("Either site_id or site_name parameter is required")
-    if not site_id and site_name:
-        site_id = get_site_id(client, site_name)
+    site_id = get_site_id(client, args.get("site_id"), args.get("site_name"))
+
     results = client.update_site_permission(site_id, permission_id, role)
 
     return CommandResults(
-        readable_output=f"Permission {permission_id} of site {site_id} was updated successfully with new role {results['roles']}."
+        readable_output=(
+            f"Permission {permission_id} of site {site_id} was updated successfully with new role {results['roles']}."
+        )
     )
 
 
 def delete_site_permission_command(client: MsGraphClient, args: dict[str, str]) -> CommandResults:
-    site_id = args.get("site_id", '')
-    site_name = args.get("site_name")
     permission_id = args["permission_id"]
-
-    if not any([site_id, site_name]):
-        raise DemistoException("Either site_id or site_name parameter is required")
-    if not site_id and site_name:
-        site_id = get_site_id(client, site_name)
+    site_id = get_site_id(client, args.get("site_id"), args.get("site_name"))
 
     client.delete_site_permission(site_id, permission_id)
     return CommandResults(
