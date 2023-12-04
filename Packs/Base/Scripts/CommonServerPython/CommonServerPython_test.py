@@ -1218,12 +1218,13 @@ def test_get_error_need_raise_error_on_non_error_input():
     assert False
 
 
-@mark.parametrize('data,data_expected', [
-    ("this is a test", b"this is a test"),
-    (u"עברית", u"עברית".encode('utf-8')),
-    (b"binary data\x15\x00", b"binary data\x15\x00"),
+@mark.parametrize('data,data_expected,filename', [
+    ("this is a test", b"this is a test", "test.txt"),
+    ("this is a test", b"this is a test", "../../../test.txt"),
+    (u"עברית", u"עברית".encode('utf-8'), "test.txt"),
+    (b"binary data\x15\x00", b"binary data\x15\x00", "test.txt"),
 ])  # noqa: E124
-def test_fileResult(mocker, request, data, data_expected):
+def test_fileResult(mocker, request, data, data_expected, filename):
     mocker.patch.object(demisto, 'uniqueFile', return_value="test_file_result")
     mocker.patch.object(demisto, 'investigation', return_value={'id': '1'})
     file_name = "1_test_file_result"
@@ -1235,7 +1236,7 @@ def test_fileResult(mocker, request, data, data_expected):
             pass
 
     request.addfinalizer(cleanup)
-    res = fileResult("test.txt", data)
+    res = fileResult(filename, data)
     assert res['File'] == "test.txt"
     with open(file_name, 'rb') as f:
         assert f.read() == data_expected
@@ -2612,6 +2613,46 @@ class TestCommandResults:
         )
         context = res.to_context()
         assert "outputs_test" == context.get('HumanReadable')
+
+    def test_replace_existing(self):
+        """
+        Given:
+        - replace_existing=True
+
+        When:
+        - Returning an object to context that needs to override it's key on each run.
+
+        Then:
+        - Return an object with the DT "(true)"
+        """
+        from CommonServerPython import CommandResults
+        res = CommandResults(
+            outputs="next_token",
+            outputs_prefix="Path.To.Value",
+            replace_existing=True
+        )
+        context = res.to_context()
+        assert context["EntryContext"] == {"Path.To(true)": {"Value": "next_token"}}
+    
+    def test_replace_existing_not_nested(self):
+        """
+        Given:
+        - replace_existing=True but outputs_prefix is not nested, i.e., does not have a period.
+
+        When:
+        - Returning an object to context that needs to override it's key on each run.
+
+        Then:
+        - Raise an errror.
+        """
+        from CommonServerPython import CommandResults
+        res = CommandResults(
+            outputs="next_token",
+            outputs_prefix="PathToValue",
+            replace_existing=True
+        )
+        with pytest.raises(DemistoException, match='outputs_prefix must be a nested path to replace an existing key.'):
+            res.to_context()
 
 
 def test_http_request_ssl_ciphers_insecure():
