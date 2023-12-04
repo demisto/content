@@ -1,0 +1,40 @@
+category: Utilities
+commonfields:
+  id: CIAC-4657-integration
+  version: -1
+configuration:
+- advanced: true
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  section: Connect
+  type: 8
+- advanced: true
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  section: Connect
+  type: 8
+description: Some dummy integration to test CIAC-4657.
+display: CIAC-4657-integration
+name: CIAC-4657-integration
+script:
+  commands:
+  - arguments:
+    - description: Dummy argument for CIAC-4657.
+      name: nothing
+      type: textArea
+    description: Dummy command for CIAC-4657.
+    name: ciac-4657-get-nothing
+    outputs:
+    - contextPath: CIAC4657.Output
+      description: Dummy output for CIAC-4657.
+      type: string
+  dockerimage: demisto/python3:3.10.13.82076
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
