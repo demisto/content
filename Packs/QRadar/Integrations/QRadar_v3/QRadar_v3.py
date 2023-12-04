@@ -841,10 +841,15 @@ def insert_values_to_reference_set_polling(client: Client,
         if not use_old_api:
             response = client.get_reference_data_bulk_task_status(args["task_id"])
     except (DemistoException, requests.Timeout) as e:
-        print_debug_msg(
-            f"Polling get_reference_data_bulk_task_status or reference_set_entries/reference_set_bulk_load failed due to {e}. "
-            f"Will try to poll again in the next interval."
-        )
+        if 'task_id' in args:
+            print_debug_msg(
+                f"Polling task status {args['task_id']} failed due to {e}. "
+                f"Will try to poll task status again in the next interval."
+            )
+        else:
+            print_debug_msg(
+                f"Failed inserting values to reference due to {e}, will retry in the insert in the next interval"
+            )
         response = {}
     if use_old_api or response.get("status") == "COMPLETED":
         if not use_old_api:
