@@ -520,7 +520,7 @@ def main():
     if options.current_branch == DEFAULT_BRANCH and triggering_workflow == CONTENT_MERGE:
         # We check if the previous build failed and this one passed, or wise versa.
         list_of_pipelines, commits = get_pipelines_and_commits(gitlab_url=server_url, gitlab_access_token=ci_token,
-                                                               project_id=project_id, lookback_hours=48)
+                                                               project_id=project_id, lookback_hours=LOOKBACK_HOURS)
         pipeline_changed_status, pivot_commit = is_pivot(single_pipeline_id=pipeline_id,
                                                          list_of_pipelines=list_of_pipelines,
                                                          commits=commits)
