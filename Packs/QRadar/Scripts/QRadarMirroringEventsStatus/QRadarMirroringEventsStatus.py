@@ -13,8 +13,8 @@ HTML_TEMPLATE = (
     "<div draggable='false' class='section-item-content' style='width: 220px; min-height: 22px; padding-top:10px;'>"
     "<div class='field-wrapper row'>"
     "<div class='header-wrapper'>"
-    "<span class='header-value label-text opacity-description ellipsis' title='LastMirroredInTime'>"
-    "LastMirroredInTime"
+    "<span class='header-value label-text opacity-description ellipsis' title='Last Mirrored Time Stamp'>"
+    "Last Mirrored Time Stamp"
     "</span>"
     "</div>"
     "<div class='value-wrapper'>"
@@ -37,7 +37,7 @@ def main():
     try:
         incident = demisto.incident()
         custom_fields = incident.get('CustomFields', {})
-        last_mirror_in_time = custom_fields.get('lastmirroredintime', None)
+        last_mirror_in_time = custom_fields.get('lastmirroredtimestamp', None)
         message = custom_fields.get('incomingmirrorerror', '')
 
         if message == '':
