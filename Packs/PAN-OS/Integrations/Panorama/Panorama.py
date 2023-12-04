@@ -9772,8 +9772,8 @@ class TemplateStackInformation(ResultData):
     """
     serial: str
     connected: str
-    hostname: str
     last_commit_all_state_tpl: str
+    hostname: str = ""
     name: str = ""
 
     _output_prefix = OUTPUT_PREFIX + "TemplateStackOp"
