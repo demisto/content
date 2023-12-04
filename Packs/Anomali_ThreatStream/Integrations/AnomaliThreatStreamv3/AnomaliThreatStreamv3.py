@@ -7,7 +7,6 @@ import emoji
 import traceback
 import urllib3
 from datetime import date
-import urllib.parse as urlparse
 
 
 # Disable insecure warnings
@@ -2522,9 +2521,8 @@ def get_indicators(client: Client, **kwargs):
     if limit > 1000:
         next_page = res.get('meta', {}).get('next', None)
         while len(iocs_context) < limit and next_page:
-            kwargs['limit'] = limit
-            kwargs['search_after'] = urlparse.parse_qs(next_page).get('search_after')[0]
-            res = client.http_request("GET", url, params=kwargs)
+            next_page = next_page.replace('api/', '')
+            res = client.http_request("GET", next_page)
             iocs_list = res.get('objects', None)
             next_page = res.get('meta', {}).get('next', None)
             if iocs_list:
