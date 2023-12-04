@@ -48,6 +48,35 @@ name: Cybereason
 script:
   commands:
   - arguments:
+    - description: The hostname of the machine.
+      name: machineName
+      required: true
+    - name: page
+      description: The page number of machine records to retrieve (used for pagination) starting from 1. The page size is defined by the "pageSize" argument.
+    - name: pageSize
+      description: The number of machine records per page to retrieve (used for pagination). The page number is defined by the "page" argument.
+    - name: limit
+      description: The maximum number of records to retrieve. If "pageSize" is defined, this argument is ignored.
+      defaultValue: '50'
+    description: Get the Machine FQDN and Machine Group Details.
+    name: cybereason-get-machine-details
+    outputs:
+    - contextPath: Cybereason.Sensor.MachineID
+      description: Sensor ID of machine.
+      type: string
+    - contextPath: Cybereason.Sensor.MachineName
+      description: Host name of machine.
+      type: string
+    - contextPath: Cybereason.Sensor.MachineFQDN
+      description: FQDN of machine.
+      type: string
+    - contextPath: Cybereason.Sensor.GroupID
+      description: Group ID of machine.
+      type: string
+    - contextPath: Cybereason.Sensor.GroupName
+      description: Group Name of machine.
+      type: string
+  - arguments:
     - description: Sensor ID of Cybereason Sensor.
       name: sensorID
       required: true
@@ -75,68 +104,68 @@ script:
     - description: The hostname of the machine.
       name: machine
     - auto: PREDEFINED
-      defaultValue: 'false'
+      defaultValue: "false"
       description: Show only suspicious processes.
       name: onlySuspicious
       predefined:
-      - 'true'
-      - 'false'
-    - defaultValue: '10000'
+      - "true"
+      - "false"
+    - defaultValue: "10000"
       description: Maximum number of results to retrieve.
       name: limit
     - description: Process name to filter by.
       name: processName
     - auto: PREDEFINED
-      defaultValue: 'false'
+      defaultValue: "false"
       description: If true, save the result to the context.
       name: saveToContext
       predefined:
-      - 'true'
-      - 'false'
+      - "true"
+      - "false"
     - auto: PREDEFINED
-      defaultValue: 'false'
+      defaultValue: "false"
       description: Filter only processes with incoming connections.
       name: hasIncomingConnection
       predefined:
-      - 'true'
-      - 'false'
+      - "true"
+      - "false"
     - auto: PREDEFINED
-      defaultValue: 'false'
+      defaultValue: "false"
       description: Filter only processes with outgoing connections.
       name: hasOutgoingConnection
       predefined:
-      - 'true'
-      - 'false'
+      - "true"
+      - "false"
     - auto: PREDEFINED
       description: If process has external connection.
       name: hasExternalConnection
       predefined:
-      - 'true'
-      - 'false'
+      - "true"
+      - "false"
     - auto: PREDEFINED
       description: If process is not known to reputation services and its image file is unsigned.
       name: unsignedUnknownReputation
       predefined:
-      - 'true'
-      - 'false'
+      - "true"
+      - "false"
     - auto: PREDEFINED
       description: If process is running from temporary folder.
       name: fromTemporaryFolder
       predefined:
-      - 'true'
-      - 'false'
+      - "true"
+      - "false"
     - auto: PREDEFINED
       description: If process was identified elevating its privileges to local system user.
       name: privilegesEscalation
       predefined:
-      - 'true'
-      - 'false'
+      - "true"
+      - "false"
     - auto: PREDEFINED
       description: If the process was executed by PsExec service and is suspicious as being executed maliciously.
       name: maliciousPsExec
       predefined:
-      - 'true'
-      - 'false'
+      - "true"
+      - "false"
     description: Searches for processes with various filters.
     name: cybereason-query-processes
     outputs:
@@ -209,10 +238,10 @@ script:
     - description: If true, save the result to the context.
       name: saveToContext
       auto: PREDEFINED
-      defaultValue: 'false'
+      defaultValue: "false"
       predefined:
-      - 'true'
-      - 'false'
+      - "true"
+      - "false"
     description: Searches for connections.
     name: cybereason-query-connections
     outputs:
@@ -268,12 +297,11 @@ script:
       description: Is the machine isolated.
       type: boolean
   - arguments:
-    - default: true
-      description: Machine name to be un-isolated.
+    - description: Machine name to be un-isolated.
       name: machine
+      default: true
       required: true
     description: Stops isolation of a machine.
-    execution: true
     name: cybereason-unisolate-machine
     outputs:
     - contextPath: Cybereason.Machine
@@ -282,6 +310,7 @@ script:
     - contextPath: Cybereason.IsIsolated
       description: Is the machine isolated.
       type: boolean
+    execution: true
   - arguments:
     - description: Filter to filter response by, given in Cybereason API syntax.
       name: filters
@@ -291,7 +320,7 @@ script:
       name: perGroupLimit
     - auto: PREDEFINED
       defaultValue: MALOP
-      description: 'The level of detail to provide in the response. Possible values include:  SPECIFIC:  References value contain only the count in the ElementValues class. The Suspicions map is calculated for each results, with the suspicion name and the first time the suspicion appeared. The Evidence map is not calculated for the results. CUSTOM:  Reference values contain the specific Elements, up to the limit defined in the perFeatureLimit parameter. The Suspicions map is not calculated for the results. The Evidence map is not calculated for the results. DETAILS:  Reference values contain the specific Elements, up to the limit defined in the perFeatureLimit parameter. The Suspicions map is calculated for each result, containing the suspicion name and the first time the suspicion appeared. The Evidence map is not calculated for the results.'
+      description: "The level of detail to provide in the response. Possible values include:  SPECIFIC:  References value contain only the count in the ElementValues class. The Suspicions map is calculated for each results, with the suspicion name and the first time the suspicion appeared. The Evidence map is not calculated for the results. CUSTOM:  Reference values contain the specific Elements, up to the limit defined in the perFeatureLimit parameter. The Suspicions map is not calculated for the results. The Evidence map is not calculated for the results. DETAILS:  Reference values contain the specific Elements, up to the limit defined in the perFeatureLimit parameter. The Suspicions map is calculated for each result, containing the suspicion name and the first time the suspicion appeared. The Evidence map is not calculated for the results."
       name: templateContext
       predefined:
       - MALOP
@@ -422,7 +451,7 @@ script:
       description: Malop GUID.
       type: string
     - contextPath: Cybereason.Malops.Status
-      description: 'Malop status: To Review,Unread,Remediated,Not Relevant.'
+      description: "Malop status: To Review,Unread,Remediated,Not Relevant."
       type: string
   - arguments:
     - default: true
@@ -535,10 +564,10 @@ script:
       description: Was domain ever resolved as a second level domain.
       type: boolean
   - arguments:
-    - default: true
-      description: Username to query.
+    - description: Username to query.
       name: username
       required: true
+      default: true
     description: Query users as part of investigation.
     name: cybereason-query-user
     outputs:
@@ -591,10 +620,10 @@ script:
     description: Downloads the actual file to the machine.
     name: cybereason-download-file
   - arguments:
-    - default: true
-      description: The batch id to abort a file download operation.
+    - description: The batch id to abort a file download operation.
       name: batchID
       required: true
+      default: true
     description: Aborts a file download operation that is in progress.
     name: cybereason-close-file-batch-id
   - arguments:
@@ -727,8 +756,8 @@ script:
       name: needsAttention
       auto: PREDEFINED
       predefined:
-      - 'True'
-      - 'False'
+      - "True"
+      - "False"
     - description: Filter for Fetching Malwares by Malware Type. (Possible filter values for Type are "KnownMalware,UnknownMalware,FilelessMalware,ApplicationControlMalware,RansomwareMalware").
       name: type
     - description: Filter for Fetching Malwares by Malware Status. (Possible filter values for Status are "Done,Excluded,Detected,Prevented,Remediated,DeleteOnRestart,Quarantined").
@@ -755,9 +784,9 @@ script:
     description: Start or stop a full or quick scan for a host.
     name: cybereason-start-host-scan
   - arguments:
-    - default: true
-      description: The batch ID obtained after initiating the scan.
+    - description: The batch ID obtained after initiating the scan.
       name: batchID
+      default: true
       required: true
     description: Get the results for host scanning.
     name: cybereason-fetch-scan-status
@@ -770,7 +799,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.78960
+  dockerimage: demisto/python3:3.10.13.81631
 tests:
 - Cybereason Test
 fromversion: 5.0.0

@@ -1,28 +1,31 @@
 Use the PagerDuty integration to manage schedules and on-call users. 
 This integration was integrated and tested with PagerDuty API v2.
+
 ## Configure PagerDuty v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for PagerDuty v2.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter**                                                                              | **Required** |
-    |--------------| --- |
-    | API Key                                                                                    | True         |
-    | Service Key (for triggering events only)                                                   | False        |
-    | Trust any certificate (not secure)                                                         | False        |
-    | Use system proxy settings                                                                  | False        |
-    | Fetch incidents                                                                            | False        |
-    | Incident type                                                                              | False        |
-    | Default Requestor                                                                          | False        |
-    | Initial Fetch Interval (In minutes, used only for the first fetch or after Reset last run) | False        |
+    | **Parameter** | **Required** |
+    | --- | --- |
+    | API Key | False |
+    | Service Key (for triggering, acknowledging and resolving events only) | False |
+    | Trust any certificate (not secure) | False |
+    | Use system proxy settings | False |
+    | Fetch incidents | False |
+    | Incident type | False |
+    | Initial Fetch Interval (In minutes, used only for first fetch or after Reset last run) | False |
+    | Default requestor ID for adding people to incidents | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Fetched Incidents Data
+
 By default, the integration will import PagerDuty incidents data as Cortex XSOAR incidents. All incidents created in the minute prior to the configuration of Fetch Incidents and up to current time will be imported.
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
@@ -41,13 +44,14 @@ After you successfully execute a command, a DBot message appears in the War Room
 13. [Run response play to an incident: PagerDuty-run-response-play](#pagerduty-run-response-play)
 
 ### PagerDuty-get-all-schedules
-***
-Receive all schedules from PagerDuty
 
+***
+Receive all schedules from PagerDuty.
 
 #### Base Command
 
 `PagerDuty-get-all-schedules`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -55,19 +59,20 @@ Receive all schedules from PagerDuty
 | query | Show only the schedules whose name matches the query. | Optional | 
 | limit | The limit for the amount of schedules to receive(Default is 25, max value is 100). | Optional | 
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PagerDuty.Schedules.id | string | The ID of the schedule | 
-| PagerDuty.Schedules.name | string | The name of the schedule | 
+| PagerDuty.Schedules.id | string | The ID of the schedule. | 
+| PagerDuty.Schedules.name | string | The name of the schedule. | 
 
 
 #### Command Example
+
 ```!PagerDuty-get-all-schedules```
 
 #### Context Example
+
 ```json
 {
     "PagerDuty": {
@@ -104,6 +109,7 @@ Receive all schedules from PagerDuty
 #### Human Readable Output
 
 >### All Schedules
+
 >|ID|Name|Today|Time Zone|Escalation Policy|Escalation Policy ID|
 >|---|---|---|---|---|---|
 >| scheduleid | New Schedule #1 | 2021-03-10 | America/Los_Angeles | Default | someid |
@@ -111,38 +117,39 @@ Receive all schedules from PagerDuty
 
 
 ### PagerDuty-get-users-on-call
-***
-Returns the names and details of on call users at a certain time or by specific schedule
 
+***
+Returns the names and details of on call users at a certain time or by specific schedule.
 
 #### Base Command
 
 `PagerDuty-get-users-on-call`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | scheduleID | (default and mandatory) The unique identifier of the schedule. | Required | 
-| since | The start of the date range Using ISO 8601 Representation. E.g. !PagerDutyGetUsersOnCall since=2011-05-06T17:00Z. | Optional | 
-| until | The end of the date range. | Optional | 
-
+| since | The start of the date range Using ISO 8601 Representation. Maximum range is 6 months and default is 1 month. E.g. !PagerDutyGetUsersOnCall since=2011-05-06T17:00Z. | Optional | 
+| until | The end of the date range. Maximum range is 6 months and default is 1 month. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PagerDutyUser.id | string | User's ID | 
-| PagerDutyUser.Emails | string | Email of user | 
-| PagerDutyUser.Username | string | Username of person | 
-| PagerDutyUser.DisplayName | string | Display name of person | 
-| PagerDutyUser.Role | string | Display role of person | 
-| PagerDutyUser.TimeZone | string | The time zone of the user | 
-
+| PagerDutyUser.id | string | User's ID. | 
+| PagerDutyUser.Emails | string | Email of user. | 
+| PagerDutyUser.Username | string | Username of person. | 
+| PagerDutyUser.DisplayName | string | Display name of person. | 
+| PagerDutyUser.Role | string | Display role of person. | 
+| PagerDutyUser.TimeZone | string | The time zone of the user. | 
 
 #### Command Example
+
 ```!PagerDuty-get-users-on-call scheduleID=scheduleid```
 
 #### Context Example
+
 ```json
 {
     "PagerDutyUser": [
@@ -169,20 +176,22 @@ Returns the names and details of on call users at a certain time or by specific 
 #### Human Readable Output
 
 >### Users On Call
+
 >|ID|Email|Name|Role|User Url|Time Zone|
 >|---|---|---|---|---|---|
->| someid | demisto@demisto.com | Demisto User | owner | https://demisto.pagerduty.com/users/someid | Europe/Athens |
->| anotherid | demisto@mail.com | Another User | user | https://demisto.pagerduty.com/users/anotherid | Europe/Athens |
+>| someid | demisto@demisto.com | Demisto User | owner | <https://demisto.pagerduty.com/users/someid> | Europe/Athens |
+>| anotherid | demisto@mail.com | Another User | user | <https://demisto.pagerduty.com/users/anotherid> | Europe/Athens |
 
 
 ### PagerDuty-get-users-on-call-now
-***
-Returns the names and details of current on call personnel
 
+***
+Returns the names and details of current on call personnel.
 
 #### Base Command
 
 `PagerDuty-get-users-on-call-now`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -191,23 +200,24 @@ Returns the names and details of current on call personnel
 | escalation_policy_ids | Filters the results, showing only on-call users for the specified escalation policy IDs. | Optional | 
 | schedule_ids | Filters the results, showing only on-call users for the specified schedule IDs. If the value is null, permanent on-call user are included due to direct user escalation policy targets. | Optional | 
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PagerDutyUser.ID | string | User's ID | 
-| PagerDutyUser.Email | string | Email of user | 
-| PagerDutyUser.Username | string | Username of person | 
-| PagerDutyUser.DisplayName | string | Display name of person | 
-| PagerDutyUser.Role | string | Role of person | 
-| PagerDutyUser.TimeZone | string | The time zone of the user | 
+| PagerDutyUser.ID | string | User's ID. | 
+| PagerDutyUser.Email | string | Email of user. | 
+| PagerDutyUser.Username | string | Username of person. | 
+| PagerDutyUser.DisplayName | string | Display name of person. | 
+| PagerDutyUser.Role | string | Role of person. | 
+| PagerDutyUser.TimeZone | string | The time zone of the user. | 
 
 
 #### Command Example
+
 ```!PagerDuty-get-users-on-call-now```
 
 #### Context Example
+
 ```json
 {
     "PagerDutyUser": [
@@ -226,63 +236,71 @@ Returns the names and details of current on call personnel
 #### Human Readable Output
 
 >### Users On Call Now
+
 >|ID|Email|Name|Role|User Url|Time Zone|
 >|---|---|---|---|---|---|
->| someid | demisto@demisto.com | Demisto User | owner | https://demisto.pagerduty.com/users/someid | Europe/Athens |
+>| someid | demisto@demisto.com | Demisto User | owner | <https://demisto.pagerduty.com/users/someid> | Europe/Athens |
 
 ### PagerDuty-incidents
-***
-Shows incidents in PagerDuty. Default status parameters are triggered,acknowledged
 
+***
+Shows incidents in PagerDuty. Default status parameters are triggered,acknowledged.
 
 #### Base Command
 
 `PagerDuty-incidents`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | status | Returns only the incidents currently in the passed status(es). Valid status options are triggered,acknowledged, and resolved. (Default values are triggered,acknowledged). Possible values are: triggered, acknowledged, resolved. | Optional | 
 | since | Beginning date and time. Using ISO 8601 Representation. E.g. PagerDutyIncidents since=2011-05-06T17:00Z (must be used with until argument). | Optional | 
-| sortBy | Used to specify both the field you wish to sort the results on, as well as the direction (ascending/descending) of the results.See more https://v2.developer.pagerduty.com/v2/page/api-reference#!/Incidents/get_incidents. | Optional | 
+| sortBy | Used to specify both the field you wish to sort the results on, as well as the direction (ascending/descending) of the results.See more <https://v2.developer.pagerduty.com/v2/page/api-reference#!/Incidents/get_incidents>. | Optional | 
 | until | Last date and time.  Using ISO 8601 Representation. E.g. PagerDutyIncidents until=2016-05-06T13:00Z. | Optional | 
-| incident_key | Incident de-duplication key,. | Optional | 
-
+| incident_key | Incident de-duplication key. E.g., 8e42eeb6391a4a2abeda5d12e09bddec. | Optional | 
+| limit | The maximum number of incidents to retrieve. If "page_size" is defined, this argument is ignored. Default is 50. | Optional | 
+| user_id | Comma separated list of User IDs. Returns only the incidents currently assigned to the passed user(s). Note: When using the assigned_to_user filter, you will only receive incidents with statuses of triggered or acknowledged. This is because resolved incidents are not assigned to any user. | Optional | 
+| urgencies | Array of the urgencies of the incidents to be returned. Defaults to all urgencies. Account must have the urgencies ability to do this. Possible values are: high, low. | Optional | 
+| date_range | When set to all, the since and until parameters and defaults are ignored. Possible values are: all. | Optional | 
+| page | The page number of incidents to retrieve (used for pagination) starting from 1. The page size is defined by the "page_size" argument. | Optional | 
+| page_size | The number of incidents per page to retrieve (used for pagination). The page number is defined by the "page" argument. The maximum value is 100. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PagerDuty.Incidents.ID | string | Incident ID | 
-| PagerDuty.Incidents.Title | string | The title of the incident | 
-| PagerDuty.Incidents.Status | string | Incident Status | 
-| PagerDuty.Incidents.created_at | date | Time in which the incident was created | 
-| PagerDuty.Incidents.urgency | string | Incident Urgency | 
-| PagerDuty.Incidents.assignee | string | The assignee of the incident  | 
-| PagerDuty.Incidents.service_id | string | The id of the impacted service | 
-| PagerDuty.Incidents.service_name | string | The name of the impacted service | 
-| PagerDuty.Incidents.escalation_policy | string | The escalation policy | 
-| PagerDuty.Incidents.last_status_change_at | date | Time in which the last status change occurred | 
-| PagerDuty.Incidents.last_status_change_by | string | Name of the user who done the last status change | 
-| PagerDuty.Incidents.number_of_escalations | number | Number of escalations that took place | 
-| PagerDuty.Incidents.resolved_by | string | Name of the User who resolved the incident | 
-| PagerDuty.Incidents.resolve_reason | string | The reason for resolving the issue | 
-| PagerDuty.Incidents.Description | string | The Description of the incident | 
+| PagerDuty.Incidents.ID | string | Incident ID. | 
+| PagerDuty.Incidents.Title | string | The title of the incident. | 
+| PagerDuty.Incidents.Status | string | Incident Status. | 
+| PagerDuty.Incidents.created_at | date | Time in which the incident was created. | 
+| PagerDuty.Incidents.urgency | string | Incident Urgency. | 
+| PagerDuty.Incidents.assignee | string | The assignee of the incident. | 
+| PagerDuty.Incidents.service_id | string | The id of the impacted service. | 
+| PagerDuty.Incidents.service_name | string | The name of the impacted service. | 
+| PagerDuty.Incidents.escalation_policy | string | The escalation policy. | 
+| PagerDuty.Incidents.last_status_change_at | date | Time in which the last status change occurred. | 
+| PagerDuty.Incidents.last_status_change_by | string | Name of the user who done the last status change. | 
+| PagerDuty.Incidents.number_of_escalations | number | Number of escalations that took place. | 
+| PagerDuty.Incidents.resolved_by | string | Name of the User who resolved the incident. | 
+| PagerDuty.Incidents.resolve_reason | string | The reason for resolving the issue. | 
+| PagerDuty.Incidents.Description | string | The Description of the incident. | 
 | PagerDuty.Incidents.teams.ID | string | The ID of the team assigned for the incident. | 
 | PagerDuty.Incidents.teams.ID | string | The name of the team assigned for the incident. | 
-| PagerDuty.Incidents.assignment.time | date | The time of the assignment to the incident | 
-| PagerDuty.Incidents.assignment.assignee | string | The name of the assignee to the incident | 
-| PagerDuty.Incidents.assignment.assigneeId | string | The ID of the assignee to the incident | 
-| PagerDuty.Incidents.acknowledgement.time | date | The time of the acknowledgement to the incident | 
-| PagerDuty.Incidents.acknowledgement.acknowledger | string | The name of the acknowledger to the incident | 
-| PagerDuty.Incidents.acknowledgement.acknowledgerId | string | The ID of the acknowledger to the incident | 
-| PagerDuty.Incidents.incident_key | String | The incident's de-duplication key | 
-
+| PagerDuty.Incidents.assignment.time | date | The time of the assignment to the incident. | 
+| PagerDuty.Incidents.assignment.assignee | string | The name of the assignee to the incident. | 
+| PagerDuty.Incidents.assignment.assigneeId | string | The ID of the assignee to the incident. | 
+| PagerDuty.Incidents.acknowledgement.time | date | The time of the acknowledgement to the incident. | 
+| PagerDuty.Incidents.acknowledgement.acknowledger | string | The name of the acknowledger to the incident. | 
+| PagerDuty.Incidents.acknowledgement.acknowledgerId | string | The ID of the acknowledger to the incident. | 
+| PagerDuty.Incidents.incident_key | String | The incident's de-duplication key. | 
 
 #### Command Example
+
 ```!PagerDuty-incidents```
 
 #### Context Example
+
 ```json
 {
     "PagerDuty": {
@@ -353,19 +371,21 @@ Shows incidents in PagerDuty. Default status parameters are triggered,acknowledg
 #### Human Readable Output
 
 >### PagerDuty Incidents
+
 >|ID|Title|Description|Status|Created On|Urgency|Html Url|Incident key|Assigned To User|Service ID|Service Name|Escalation Policy|Last Status Change On|Last Status Change By|Resolved By User|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| someid | [#264] Ticket 01439490 | description: No description | acknowledged | 2021-03-04T08:52:56Z | high | https://demisto.pagerduty.com/incidents/someid |  | someone | P5CX6RZ | PD SF | Default | 2021-03-04T08:53:04Z | someone | - |
->| anotherid | [#278] my event | description: No description | triggered | 2021-03-10T07:57:16Z | high | https://demisto.pagerduty.com/incidents/anotherid | somekey | someone-else | someid | API Service | Default | 2021-03-10T08:37:17Z | API Service | - |
+>| someid | [#264] Ticket 01439490 | description: No description | acknowledged | 2021-03-04T08:52:56Z | high | <https://demisto.pagerduty.com/incidents/someid> |  | someone | P5CX6RZ | PD SF | Default | 2021-03-04T08:53:04Z | someone | - |
+>| anotherid | [#278] my event | description: No description | triggered | 2021-03-10T07:57:16Z | high | <https://demisto.pagerduty.com/incidents/anotherid> | somekey | someone-else | someid | API Service | Default | 2021-03-10T08:37:17Z | API Service | - |
 
 ### PagerDuty-submit-event
-***
-Creates a new event/incident in PagerDuty(In order to use this command you have to enter the Service Key in the integration settings)
 
+***
+Creates a new event/incident in PagerDuty(In order to use this command you have to enter the Service Key in the integration settings).
 
 #### Base Command
 
 `PagerDuty-submit-event`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -381,53 +401,55 @@ Creates a new event/incident in PagerDuty(In order to use this command you have 
 | incident_key | Incident key, used to acknowledge/resolve specific event. | Optional | 
 | serviceKey | Service key for the integration. | Optional | 
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PagerDuty.Event.Status | string | Status of the action on the event | 
-| PagerDuty.Event.incident_key | string | Incident key | 
+| PagerDuty.Event.Status | string | Status of the action on the event. | 
+| PagerDuty.Event.incident_key | string | Incident key. | 
 
 
 #### Command Example
+
 ```!PagerDuty-submit-event action=trigger severity=info source=demisto summary="my new event"```
 
 #### Human Readable Output
+
 >|Incident key|Message|Status|
 >|---|---|---|
 >| somekey | Event processed | success |
 
 
 ### PagerDuty-get-contact-methods
-***
-Get the contact methods of a given user
 
+***
+Get the contact methods of a given user.
 
 #### Base Command
 
 `PagerDuty-get-contact-methods`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| UserID | ID of the wanted user . | Required | 
-
+| UserID | ID of the wanted user. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PagerDuty.Contact_methods.phone | string | The phone number of the user | 
-| PagerDuty.Contact_methods.id | string | ID of the contact method | 
-| PagerDuty.Contact_methods.type | string | The type of the current contact method | 
-| PagerDuty.Contact_methods.email | string | The email of the user | 
-
+| PagerDuty.Contact_methods.phone | string | The phone number of the user. | 
+| PagerDuty.Contact_methods.id | string | ID of the contact method. | 
+| PagerDuty.Contact_methods.type | string | The type of the current contact method. | 
+| PagerDuty.Contact_methods.email | string | The email of the user. |
 
 #### Command Example
+
 ```!PagerDuty-get-contact-methods UserID=someid```
 
 #### Context Example
+
 ```json
 {
     "PagerDuty": {
@@ -472,6 +494,7 @@ Get the contact methods of a given user
 #### Human Readable Output
 
 >### Contact Methods
+
 >|ID|Type|Details|
 >|---|---|---|
 >| someotherid | Email | demisto@demisto.com |
@@ -480,33 +503,35 @@ Get the contact methods of a given user
 
 
 ### PagerDuty-get-users-notification
-***
-Get the users notification rules
 
+***
+Get the users notification rules.
 
 #### Base Command
 
 `PagerDuty-get-users-notification`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | UserID | ID of the wanted user. | Required | 
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PagerDuty.Notification_rules.start_delay_in_minutes | string | The delay time for notifying the user | 
-| PagerDuty.Notification_rules.urgency | string | The urgency of the notification | 
-| PagerDuty.Notification_rules.id | string | The id of the notification rule | 
+| PagerDuty.Notification_rules.start_delay_in_minutes | string | The delay time for notifying the user. | 
+| PagerDuty.Notification_rules.urgency | string | The urgency of the notification. | 
+| PagerDuty.Notification_rules.id | string | The id of the notification rule. |
 
 
 #### Command Example
+
 ```!PagerDuty-get-users-notification UserID=someid```
 
 #### Context Example
+
 ```json
 {
     "PagerDuty": {
@@ -537,39 +562,42 @@ Get the users notification rules
 #### Human Readable Output
 
 >### User notification rules
+
 >|ID|Type|Urgency|Notification timeout(minutes)|
 >|---|---|---|---|
 >| someid | assignment_notification_rule | high | 0 |
 
 
 ### PagerDuty-resolve-event
-***
-Resolves an existing event in PagerDuty
 
+***
+Resolves an existing event in PagerDuty.
 
 #### Base Command
 
 `PagerDuty-resolve-event`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | incident_key | Incident key. | Required | 
-| serviceKey | Service key for the integration. | Required | 
-
+| serviceKey | Service key for the integration. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PagerDuty.Event.Status | string | Status of the action on the event | 
-| PagerDuty.Event.incident_key | string | Incident key | 
+| PagerDuty.Event.Status | string | Status of the action on the event. | 
+| PagerDuty.Event.incident_key | string | Incident key. | 
 
 
 #### Command Example
+
 ```!PagerDuty-resolve-event incident_key=somekey serviceKey=servicekey```
 
 #### Context Example
+
 ```json
 {
     "Event": {
@@ -588,39 +616,42 @@ Resolves an existing event in PagerDuty
 #### Human Readable Output
 
 >### Resolve Event
+
 >|Incident key|Message|Status|
 >|---|---|---|
 >| somekey | Event processed | success |
 
 
 ### PagerDuty-acknowledge-event
-***
-Acknowledges an existing event in PagerDuty
 
+***
+Acknowledges an existing event in PagerDuty.
 
 #### Base Command
 
 `PagerDuty-acknowledge-event`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | incident_key | Incident key. | Required | 
-| serviceKey | Service key for the integration. | Required | 
-
+| serviceKey | Service key for the integration. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PagerDuty.Event.Status | string | Status of the action on the event | 
-| PagerDuty.Event.incident_key | string | Incident key | 
+| PagerDuty.Event.Status | string | Status of the action on the event. | 
+| PagerDuty.Event.incident_key | string | Incident key. | 
 
 
 #### Command Example
+
 ```!PagerDuty-acknowledge-event incident_key=somekey serviceKey=servicekey```
 
 #### Context Example
+
 ```json
 {
     "Event": {
@@ -639,60 +670,63 @@ Acknowledges an existing event in PagerDuty
 #### Human Readable Output
 
 >### Acknowledge Event
+
 >|Incident key|Message|Status|
 >|---|---|---|
 >| somekey | Event processed | success |
 
 
 ### PagerDuty-get-incident-data
-***
-Get data about a incident from PagerDuty
 
+***
+Get data about a incident from PagerDuty.
 
 #### Base Command
 
 `PagerDuty-get-incident-data`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | incident_id | ID of the incident to get information for. | Required | 
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PagerDuty.Incidents.ID | string | Incident ID | 
-| PagerDuty.Incidents.Title | string | The title of the incident | 
-| PagerDuty.Incidents.Status | string | Incident Status | 
-| PagerDuty.Incidents.created_at | date | Time in which the incident was created | 
-| PagerDuty.Incidents.urgency | string | Incident Urgency | 
-| PagerDuty.Incidents.assignee | string | The assignee of the incident  | 
-| PagerDuty.Incidents.service_id | string | The id of the impacted service | 
-| PagerDuty.Incidents.service_name | string | The name of the impacted service | 
-| PagerDuty.Incidents.escalation_policy | string | The escalation policy | 
-| PagerDuty.Incidents.last_status_change_at | date | Time in which the last status change occurred | 
-| PagerDuty.Incidents.last_status_change_by | string | Name of the user who done the last status change | 
-| PagerDuty.Incidents.number_of_escalations | number | Number of escalations that took place | 
-| PagerDuty.Incidents.resolved_by | string | Name of the User who resolved the incident | 
-| PagerDuty.Incidents.resolve_reason | string | The reason for resolving the issue | 
-| PagerDuty.Incidents.Description | string | The Description of the incident | 
+| PagerDuty.Incidents.ID | string | Incident ID. | 
+| PagerDuty.Incidents.Title | string | The title of the incident. | 
+| PagerDuty.Incidents.Status | string | Incident Status. | 
+| PagerDuty.Incidents.created_at | date | Time in which the incident was created. | 
+| PagerDuty.Incidents.urgency | string | Incident Urgency. | 
+| PagerDuty.Incidents.assignee | string | The assignee of the incident. | 
+| PagerDuty.Incidents.service_id | string | The id of the impacted service. | 
+| PagerDuty.Incidents.service_name | string | The name of the impacted service. | 
+| PagerDuty.Incidents.escalation_policy | string | The escalation policy. | 
+| PagerDuty.Incidents.last_status_change_at | date | Time in which the last status change occurred. | 
+| PagerDuty.Incidents.last_status_change_by | string | Name of the user who done the last status change. | 
+| PagerDuty.Incidents.number_of_escalations | number | Number of escalations that took place. | 
+| PagerDuty.Incidents.resolved_by | string | Name of the User who resolved the incident. | 
+| PagerDuty.Incidents.resolve_reason | string | The reason for resolving the issue. | 
+| PagerDuty.Incidents.Description | string | The Description of the incident. | 
 | PagerDuty.Incidents.teams.ID | string | The ID of the team assigned for the incident. | 
 | PagerDuty.Incidents.teams.ID | string | The name of the team assigned for the incident. | 
-| PagerDuty.Incidents.assignment.time | date | The time of the assignment to the incident | 
-| PagerDuty.Incidents.assignment.assignee | string | The name of the assignee to the incident | 
-| PagerDuty.Incidents.assignment.assigneeId | string | The ID of the assignee to the incident | 
-| PagerDuty.Incidents.acknowledgement.time | date | The time of the acknowledgement to the incident | 
-| PagerDuty.Incidents.acknowledgement.acknowledger | string | The name of the acknowledger to the incident | 
-| PagerDuty.Incidents.acknowledgement.acknowledgerId     | string | The ID of the acknowledger to the incident |
-| PagerDuty.Incidents.incident_key | String | The incident's de-duplication key | 
+| PagerDuty.Incidents.assignment.time | date | The time of the assignment to the incident. | 
+| PagerDuty.Incidents.assignment.assignee | string | The name of the assignee to the incident. | 
+| PagerDuty.Incidents.assignment.assigneeId | string | The ID of the assignee to the incident. | 
+| PagerDuty.Incidents.acknowledgement.time | date | The time of the acknowledgement to the incident. | 
+| PagerDuty.Incidents.acknowledgement.acknowledger | string | The name of the acknowledger to the incident. | 
+| PagerDuty.Incidents.acknowledgement.acknowledgerId | string | The ID of the acknowledger to the incident. | 
+| PagerDuty.Incidents.incident_key | String | The incident's de-duplication key. |
 
 
 #### Command Example
+
 ```!PagerDuty-get-incident-data incident_id=someid```
 
 #### Context Example
+
 ```json
 {
     "PagerDuty": {
@@ -732,19 +766,21 @@ Get data about a incident from PagerDuty
 #### Human Readable Output
 
 >### PagerDuty Incident
+
 >|ID|Title|Status|Created On|Urgency|Html Url|Incident key|Service ID|Service Name|Escalation Policy|Last Status Change On|Last Status Change By|Resolved By User|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| someid | [#281] my new event | acknowledged | 2021-03-10T09:31:48Z | high | https://demisto.pagerduty.com/incidents/someid | 8e42eeb6391a4a2abeda5d12e09bddec | someid | API Service | Default | 2021-03-10T10:00:50Z | API Service | - |
+>| someid | [#281] my new event | acknowledged | 2021-03-10T09:31:48Z | high | <https://demisto.pagerduty.com/incidents/someid> | 8e42eeb6391a4a2abeda5d12e09bddec | someid | API Service | Default | 2021-03-10T10:00:50Z | API Service | - |
 
 
 ### PagerDuty-get-service-keys
-***
-Get Service keys for each of the services configured in the PagerDuty instance
 
+***
+Get Service keys for each of the services configured in the PagerDuty instance.
 
 #### Base Command
 
 `PagerDuty-get-service-keys`
+
 #### Input
 
 There are no input arguments for this command.
@@ -753,19 +789,21 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PagerDuty.Service.ID | string | The ID of the service connected to PagerDuty | 
-| PagerDuty.Service.Name | string | The name of the service connected to PagerDuty | 
-| PagerDuty.Service.Status | string | The status of the service connected to PagerDuty | 
-| PagerDuty.Service.CreatedAt | date | The date in which the service connected to PagerDuty was created | 
-| PagerDuty.Service.Integration.Name | string | The name of the integration used with the service | 
-| PagerDuty.Service.Integration.Vendor | string | The name of the vendor for the integration used with the service.\(A value of 'Missing Vendor information' will appear once no information could be found\) | 
-| PagerDuty.Service.Integration.Key | string | The key used to control events with the integration | 
+| PagerDuty.Service.ID | string | The ID of the service connected to PagerDuty. | 
+| PagerDuty.Service.Name | string | The name of the service connected to PagerDuty. | 
+| PagerDuty.Service.Status | string | The status of the service connected to PagerDuty. | 
+| PagerDuty.Service.CreatedAt | date | The date in which the service connected to PagerDuty was created. | 
+| PagerDuty.Service.Integration.Name | string | The name of the integration used with the service. | 
+| PagerDuty.Service.Integration.Vendor | string | The name of the vendor for the integration used with the service.\(A value of 'Missing Vendor information' will appear once no information could be found\). | 
+| PagerDuty.Service.Integration.Key | string | The key used to control events with the integration. | 
 
 
 #### Command Example
+
 ```!PagerDuty-get-service-keys```
 
 #### Context Example
+
 ```json
 {
     "PagerDuty": {
@@ -789,39 +827,46 @@ There are no input arguments for this command.
 ```
 
 #### Human Readable Output
+
 >### Service List
+
 >|ID|Name|Status|Created At|Integration|
 >|---|---|---|---|---|
 >| someid | API Service | critical | 2016-03-20T14:00:55+02:00 | Name: API Service, Vendor: Missing Vendor information, Key: somekey<br/> |
 
 ### PagerDuty-add-responders
+
 ***
-Add responders to an incident
+Add responders to an incident.
 
 #### Base Command
 
 `PagerDuty-add-responders`
+
 #### Input
-| **Argument Name** | **Description**                                                                  | **Required** |
-| --- |----------------------------------------------------------------------------------| --- |
-| incident_id | PagerDuty Incident ID to add responders to                                   | Required | 
-| requestor_id | UserID sending the request (if blank, uses the default for the integration) | Required | 
-| message | Message to send to responders                                                    | Optional | 
-| user_requests | Comma separated list of User IDs to request response from                  | Optional | 
-| escalation_policy_requests | Comma separated list of Escalation Policy IDs to request response from           | Optional | 
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | PagerDuty Incident ID to add responders to. | Required | 
+| message | Message to send to responders. | Required | 
+| user_requests | Comma separated list of User IDs to request response from. | Optional | 
+| escalation_policy_requests | Comma separated list of Escalation Policy IDs to request response from. | Optional | 
+| requestor_id | UserID sending the request (if blank, uses the default for the integration). | Optional | 
 
 
 #### Command Example
+
 ```!PagerDuty-add-responders incident_id=PXP12GZ UserRequests=P09TT3C,PAIXXX  Message="Please join zoom meeting" ```
 
 #### Context Output
 
-| **Path** | **Type** | **Description**       |
-| --- | --- |-----------------------|
-| PagerDuty.ResponderRequests.ResponderID | string | ID of the Responder   | 
-| PagerDuty.ResponderRequests.ResponderName | string | Name of the Responder | 
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PagerDuty.ResponderRequests.ResponderID | String | The user ID of the responder added. | 
+| PagerDuty.ResponderRequests.ResponderName | String | The name of the responder added. | 
 
 #### Context Example
+
 ```json
 {
     "PagerDuty": 
@@ -854,8 +899,9 @@ Add responders to an incident
 
 
 ### PagerDuty-run-response-play
+
 ***
-Run a specified response play on a given incident.
+Run a response play on PagerDuty (based on its UUID).
 
 Response Plays are a package of Incident Actions that can be applied during an Incident's life cycle.
 
@@ -863,17 +909,21 @@ Response Plays are a package of Incident Actions that can be applied during an I
 #### Base Command
 
 `PagerDuty-run-response-play`
+
 #### Input
-| **Argument Name** | **Description**                                                                   | **Required** |
-| --- |-----------------------------------------------------------------------------------|--------------|
-| incident_id | PagerDuty Incident ID targeted to run the response play                           |  Required    | 
-| from_email | The email address of a valid user associated with the account making the request. | Required     | 
-| response_play_uuid | The response play ID of the response play associated with the request.            | required     | 
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | The PagerDuty incident ID to run the play on. | Required | 
+| from_email | User's email to trigger the response play from. | Required | 
+| response_play_uuid | The UUID of the response play to run. | Required | 
 
 
 #### Command Example
+
 ```!PagerDuty-run-response-play incident_id="Q107XAAAAMBBR" from_email="john.doe@example.com" response_play_uuid="111111-88bb-bb37-181d-11111111110dewsq"```
 
 
 >#### Human Readable Output
+
 >Response play successfully run to the incident Q107XAAAAMBBR by john.doe@example.com
