@@ -3789,7 +3789,14 @@ def qradar_search_retrieve_events_command(
     # determine if this is the last run of the polling command
     is_last_run = (datetime.now() + timedelta(seconds=interval_in_secs)).timestamp() >= end_date.timestamp() \
         if end_date else False
-    events, status = poll_offense_events(client, search_id, should_get_events=True, offense_id=args.get('offense_id', ''))
+    try:
+        events, status = poll_offense_events(client, search_id, should_get_events=True, offense_id=args.get('offense_id', ''))
+    except (requests.ConnectionError, requests.Timeout, requests.RequestException) as e:
+        if is_last_run:
+            raise e
+        print_debug_msg(f"Polling event failed due to {e}. Will try to poll again in the next interval.")
+        events = []
+        status = QueryStatus.WAIT.value
     if is_last_run and args.get('success') and not events:
         # if last run, we want to get the events that were fetched in the previous calls
         return CommandResults(
