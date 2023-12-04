@@ -239,13 +239,12 @@ class CollectionResult:
                     raise ValueError(f'{test} has no path')
                 if PACK_MANAGER.is_test_skipped_in_pack_ignore(playbook_path.name, pack_id):
                     raise SkippedTestException(test, skip_place='.pack_ignore')
-                test_to_integrations = conf.tests_to_integrations.get(test)
+                test_to_integrations = set(conf.tests_to_integrations.get(test) or ())
                 if test_playbook.implementing_integrations != tuple(test_to_integrations or []):
                     logger.info(f'Compared id_set to conf.json for {test}: {test_playbook.implementing_integrations=} BUT {test_to_integrations=}')
                 else:
-                    logger.info(f'id_set and conf.json are equal for {test}')
-                for integration in test_playbook.implementing_integrations:
-                    # todo this msg didn't show in logs
+                    logger.info(f'id_set and conf.json are equal for {test}: it is {test_playbook.implementing_integrations=}')
+                for integration in set(test_playbook.implementing_integrations) | test_to_integrations:
                     if reason := conf.skipped_integrations.get(integration):  # type: ignore[union-attr, assignment]
                         raise SkippedTestException(
                             test_name=test,
