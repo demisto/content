@@ -104,7 +104,7 @@ def test_uptycs_get_carves_link(mocker, requests_mock):
     })
 
     mock_response = {
-        "url": "https://uptycs-carves-testing.s3.us-west-2.amazonaws.com/%s/testurl?" % CUSTOMER_ID
+        "url": f"https://{DOMAIN}/{CUSTOMER_ID}/testurl?"
     }
     access_control_headers = ['x-amz-server-side-encryption-customer-algorithm',
                               'x-amz-server-side-encryption-customer-key',
@@ -2392,7 +2392,7 @@ def test_uptycs_create_lookuptable(mocker, requests_mock):
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
     # Mocking demisto.getFilePath
     mocker.patch.object(demisto, "getFilePath", return_value={
-        'path': './test_data/look_up_table_test.csv'
+        'path': os.path.dirname(__file__) + '/test_data/look_up_table_test.csv'
     })
 
     mock_response = {
