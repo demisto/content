@@ -5604,9 +5604,12 @@
             "is_mockable": false
         },
         {
+            "integrations": "AWS - Organizations",
+            "playbookID": "Test - AWS_Organizations"
+        },
+        {
             "integrations": "Netcraft V2",
-            "playbookID": "Test - Netcraft",
-            "timeout": 2400
+            "playbookID": "Test - Netcraft"
         }
     ],
     "skipped_tests": {
