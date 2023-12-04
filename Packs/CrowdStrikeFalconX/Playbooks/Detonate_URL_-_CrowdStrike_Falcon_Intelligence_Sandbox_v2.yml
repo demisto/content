@@ -183,6 +183,9 @@ tasks:
     scriptarguments:
       environment_id:
         simple: '160: Windows 10'
+      interval_in_seconds:
+        complex:
+          root: inputs.Interval
       polling:
         simple: "true"
       url:

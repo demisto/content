@@ -19,9 +19,9 @@ This playbook does not use any scripts.
 
 ### Commands
 
+* cs-fx-get-report-summary
 * cs-fx-get-full-report
 * cs-fx-submit-url
-* cs-fx-get-report-summary
 
 ## Playbook Inputs
 
