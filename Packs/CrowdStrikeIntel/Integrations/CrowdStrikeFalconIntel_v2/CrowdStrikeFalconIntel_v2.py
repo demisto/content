@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 from datetime import datetime, timezone
-from typing import Union, Any, Dict
+from typing import Any
 from dateparser import parse
 
 import urllib3
@@ -13,7 +13,7 @@ urllib3.disable_warnings()
 
 ''' GLOBAL VARIABLES '''
 
-MALICIOUS_DICTIONARY: Dict[Any, int] = {
+MALICIOUS_DICTIONARY: dict[Any, int] = {
     'low': Common.DBotScore.GOOD,
     'medium': Common.DBotScore.SUSPICIOUS,
     'high': Common.DBotScore.BAD
@@ -29,11 +29,11 @@ class Client:
     The integration's client
     """
 
-    def __init__(self, params: Dict[str, str], reliability: Optional[DBotScoreReliability] = None):
+    def __init__(self, params: dict[str, str], reliability: Optional[DBotScoreReliability] = None):
         self.cs_client: CrowdStrikeClient = CrowdStrikeClient(params=params)
         self.reliability = reliability
-        self.query_params: Dict[str, str] = {'offset': 'offset', 'limit': 'limit', 'sort': 'sort', 'free_search': 'q'}
-        self.date_params: Dict[str, Dict[str, str]] = {
+        self.query_params: dict[str, str] = {'offset': 'offset', 'limit': 'limit', 'sort': 'sort', 'free_search': 'q'}
+        self.date_params: dict[str, dict[str, str]] = {
             'created_date': {'operator': '', 'api_key': 'created_date'},
             'last_updated_date': {'operator': '', 'api_key': 'last_updated'},
             'max_last_modified_date': {'operator': '<=', 'api_key': 'last_modified_date'},
@@ -41,24 +41,24 @@ class Client:
             'max_last_activity_date': {'operator': '<=', 'api_key': 'last_activity_date'},
         }
 
-    def build_request_params(self, args: Dict[str, Any]) -> Dict[str, Any]:
+    def build_request_params(self, args: dict[str, Any]) -> dict[str, Any]:
         """
         Build the params dict for the request
         :param args: Cortex XSOAR args
         :return: The params dict
         """
-        params: Dict[str, Any] = {key: args.get(arg) for arg, key in self.query_params.items()}
+        params: dict[str, Any] = {key: args.get(arg) for arg, key in self.query_params.items()}
         query = args.get('query')
         params['filter'] = query if query else self.build_filter_query(args)
         return assign_params(**params)
 
-    def build_filter_query(self, args: Dict[str, str]) -> str:
+    def build_filter_query(self, args: dict[str, str]) -> str:
         """
         Builds the filter query in Falcon Query Language (FQL)
         :param args: Cortex XSOAR args
         :return: The query
         """
-        filter_query: str = str()
+        filter_query: str = ''
 
         for key in args:
             if key not in self.query_params:
@@ -81,34 +81,34 @@ class Client:
 
         return filter_query
 
-    def get_indicator(self, indicator_value: str) -> Dict[str, Any]:
+    def get_indicator(self, indicator_value: str) -> dict[str, Any]:
         # crowdstrike do not allow passing single quotes - so we encode them
         # we are not encoding the entire indicator value, as the other reserved chars (such as + and &) are allowed
         indicator_value = indicator_value.replace("'", "%27")
-        args: Dict[str, Any] = {
+        args: dict[str, Any] = {
             'indicator': indicator_value,
             'limit': 1
         }
-        params: Dict[str, Any] = self.build_request_params(args)
+        params: dict[str, Any] = self.build_request_params(args)
         return self.cs_client.http_request(method='GET', url_suffix='intel/combined/indicators/v1', params=params)
 
-    def cs_actors(self, args: Dict[str, str]) -> Dict[str, Any]:
-        params: Dict[str, Any] = self.build_request_params(args)
+    def cs_actors(self, args: dict[str, str]) -> dict[str, Any]:
+        params: dict[str, Any] = self.build_request_params(args)
         return self.cs_client.http_request(method='GET', url_suffix='intel/combined/actors/v1', params=params)
 
-    def cs_indicators(self, args: Dict[str, str]) -> Dict[str, Any]:
-        params: Dict[str, Any] = self.build_request_params(args)
+    def cs_indicators(self, args: dict[str, str]) -> dict[str, Any]:
+        params: dict[str, Any] = self.build_request_params(args)
         return self.cs_client.http_request(method='GET', url_suffix='intel/combined/indicators/v1', params=params)
 
-    def cs_reports(self, args: Dict[str, str]) -> Dict[str, Any]:
-        params: Dict[str, Any] = self.build_request_params(args)
+    def cs_reports(self, args: dict[str, str]) -> dict[str, Any]:
+        params: dict[str, Any] = self.build_request_params(args)
         return self.cs_client.http_request(method='GET', url_suffix='intel/combined/reports/v1', params=params)
 
 
 ''' HELPER FUNCTIONS '''
 
 
-def get_dbot_score_type(indicator_type: str) -> Union[Exception, DBotScoreType, str]:
+def get_dbot_score_type(indicator_type: str) -> Exception | DBotScoreType | str:
     """
     Returns the dbot score type
     :param indicator_type: The indicator type
@@ -126,7 +126,7 @@ def get_dbot_score_type(indicator_type: str) -> Union[Exception, DBotScoreType, 
         raise DemistoException('Indicator type is not supported.')
 
 
-def get_score_from_resource(r: Dict[str, Any]) -> int:
+def get_score_from_resource(r: dict[str, Any]) -> int:
     """
     Calculates the DBotScore for the resource
     :param r: The resource
@@ -142,7 +142,7 @@ def get_score_from_resource(r: Dict[str, Any]) -> int:
     return score
 
 
-def get_indicator_hash_type(indicator_value: str) -> Union[str, Exception]:
+def get_indicator_hash_type(indicator_value: str) -> str | Exception:
     """
     Calculates the type of the hash
     :param indicator_value: The hash value
@@ -161,7 +161,7 @@ def get_indicator_hash_type(indicator_value: str) -> Union[str, Exception]:
 
 
 def get_indicator_object(indicator_value: Any, indicator_type: str, dbot_score: Common.DBotScore) \
-        -> Union[Common.IP, Common.URL, Common.File, Common.Domain, None]:
+        -> Common.IP | Common.URL | Common.File | Common.Domain | None:
     """
     Returns the corresponding indicator common object
     :param indicator_value: The indicator value
@@ -180,7 +180,7 @@ def get_indicator_object(indicator_value: Any, indicator_type: str, dbot_score: 
             dbot_score=dbot_score
         )
     elif indicator_type == 'hash':
-        hash_type: Union[str, Exception] = get_indicator_hash_type(indicator_value)
+        hash_type: str | Exception = get_indicator_hash_type(indicator_value)
         if hash_type == 'hash_md5':
             return Common.File(
                 md5=indicator_value,
@@ -233,7 +233,7 @@ def build_indicator(indicator_value: str, indicator_type: str, title: str, clien
     :param client: The integration's client
     :return: The indicator entry
     """
-    res: Dict[str, Any] = client.get_indicator(indicator_value)
+    res: dict[str, Any] = client.get_indicator(indicator_value)
     resources: List[Any] = res.get('resources', [])
     results: List[CommandResults] = []
 
@@ -269,8 +269,8 @@ def build_indicator(indicator_value: str, indicator_type: str, title: str, clien
     return results
 
 
-def get_values(items_list: List[Any], return_type: str = 'str', keys: Union[str, List[Any]] = 'value') \
-        -> Union[str, List[Union[str, Dict]]]:
+def get_values(items_list: List[Any], return_type: str = 'str', keys: str | List[Any] = 'value') \
+        -> str | List[str | dict]:
     """
     Returns the values of list's items
     :param items_list: The items list
@@ -278,7 +278,7 @@ def get_values(items_list: List[Any], return_type: str = 'str', keys: Union[str,
     :param keys: The key to get the data
     :return: The values list
     """
-    new_list: List[Any] = list()
+    new_list: List[Any] = []
     if isinstance(keys, str):
         new_list = [item.get(keys) for item in items_list]
     elif isinstance(keys, list):
@@ -288,13 +288,13 @@ def get_values(items_list: List[Any], return_type: str = 'str', keys: Union[str,
     return ', '.join(str(item) for item in new_list)
 
 
-def get_indicator_outputs(resource: Dict[str, Any]) -> Dict[str, Any]:
+def get_indicator_outputs(resource: dict[str, Any]) -> dict[str, Any]:
     """
     Build the output and extra context of an indicator
     :param resource: The indicator's object
     :return: The indicator's human readable
     """
-    output: Dict[str, Any] = dict()
+    output: dict[str, Any] = {}
 
     if resource:
         indicator_id = resource.get('id')
@@ -338,7 +338,7 @@ def get_indicator_outputs(resource: Dict[str, Any]) -> Dict[str, Any]:
 ''' COMMANDS '''
 
 
-def run_test_module(client: Client) -> Union[str, Exception]:
+def run_test_module(client: Client) -> str | Exception:
     """
     If a client is successfully constructed then an access token was successfully created,
     therefore the username and password are valid and a connection was made.
@@ -378,12 +378,12 @@ def domain_command(domains: List, client: Client) -> List[CommandResults]:
     return results
 
 
-def cs_actors_command(client: Client, args: Dict[str, str]) -> CommandResults:
-    res: Dict[str, Any] = client.cs_actors(args)
+def cs_actors_command(client: Client, args: dict[str, str]) -> CommandResults:
+    res: dict[str, Any] = client.cs_actors(args)
     resources: List[Any] = res.get('resources', [])
-    outputs: List[Dict[str, Any]] = list()
-    md_outputs: List[Dict[str, Any]] = list()
-    md: str = str()
+    outputs: List[dict[str, Any]] = []
+    md_outputs: List[dict[str, Any]] = []
+    md: str = ''
     title: str = 'Falcon Intel Actor search:'
 
     if resources:
@@ -398,16 +398,16 @@ def cs_actors_command(client: Client, args: Dict[str, str]) -> CommandResults:
             last_activity_date = r.get('last_activity_date')
             active = r.get('active')
             known_as = r.get('known_as')
-            target_industries = r.get('target_industries', [])
-            target_countries = r.get('target_countries', [])
-            origins = r.get('origins', [])
-            motivations = r.get('motivations', [])
+            target_industries = r.get('target_industries') or []
+            target_countries = r.get('target_countries') or []
+            origins = r.get('origins') or []
+            motivations = r.get('motivations') or []
             capability = r.get('capability', {}).get('value')
             group = r.get('group')
             region = r.get('region', {}).get('value')
             kill_chain = r.get('kill_chain')
 
-            output: Dict[str, Any] = assign_params(**{
+            output: dict[str, Any] = assign_params(**{
                 'ImageURL': image_url,
                 'Name': name,
                 'ID': actor_id,
@@ -431,7 +431,7 @@ def cs_actors_command(client: Client, args: Dict[str, str]) -> CommandResults:
             })
             outputs.append(output)
 
-            md_output: Dict[str, Any] = output
+            md_output: dict[str, Any] = output
             for key in ('URL', 'ImageURL'):
                 if key in md_output:
                     value = md_output[key]
@@ -452,8 +452,8 @@ def cs_actors_command(client: Client, args: Dict[str, str]) -> CommandResults:
     return results
 
 
-def cs_indicators_command(client: Client, args: Dict[str, str]) -> List[CommandResults]:
-    res: Dict[str, Any] = client.cs_indicators(args)
+def cs_indicators_command(client: Client, args: dict[str, str]) -> List[CommandResults]:
+    res: dict[str, Any] = client.cs_indicators(args)
     resources: List[Any] = res.get('resources', [])
     results: List[CommandResults] = []
     title: str = 'Falcon Intel Indicator search:'
@@ -496,12 +496,12 @@ def cs_indicators_command(client: Client, args: Dict[str, str]) -> List[CommandR
     return results
 
 
-def cs_reports_command(client: Client, args: Dict[str, str]) -> CommandResults:
-    res: Dict[str, Any] = client.cs_reports(args)
+def cs_reports_command(client: Client, args: dict[str, str]) -> CommandResults:
+    res: dict[str, Any] = client.cs_reports(args)
     resources: List[Any] = res.get('resources', [])
-    outputs: List[Dict[str, Any]] = list()
-    md_outputs: List[Dict[str, Any]] = list()
-    md: str = str()
+    outputs: List[dict[str, Any]] = []
+    md_outputs: List[dict[str, Any]] = []
+    md: str = ''
     title: str = 'Falcon Intel Report search:'
 
     if resources:
@@ -515,13 +515,13 @@ def cs_reports_command(client: Client, args: Dict[str, str]) -> CommandResults:
             created_date: int = r.get('created_date')
             last_modified_date: int = r.get('last_modified_date')
             short_description: str = r.get('short_description')
-            target_industries: List[Any] = r.get('target_industries', [])
-            target_countries: List[Any] = r.get('target_countries', [])
-            motivations: List[Any] = r.get('motivations', [])
-            tags: List[Any] = r.get('tags', [])
-            actors: List[Any] = r.get('actors', [])
+            target_industries: List[Any] = r.get('target_industries') or []
+            target_countries: List[Any] = r.get('target_countries') or []
+            motivations: List[Any] = r.get('motivations') or []
+            tags: List[Any] = r.get('tags') or []
+            actors: List[Any] = r.get('actors') or []
 
-            output: Dict[str, Any] = assign_params(**{
+            output: dict[str, Any] = assign_params(**{
                 'ID': report_id,
                 'URL': url,
                 'Name': name,
@@ -541,7 +541,7 @@ def cs_reports_command(client: Client, args: Dict[str, str]) -> CommandResults:
             })
             outputs.append(output)
 
-            md_output: Dict[str, Any] = output
+            md_output: dict[str, Any] = output
             if 'URL' in md_output:
                 value = md_output['URL']
                 md_output['URL'] = f'[{value}]({value})'
@@ -563,20 +563,20 @@ def cs_reports_command(client: Client, args: Dict[str, str]) -> CommandResults:
 
 
 def main():
-    params: Dict[str, str] = demisto.params()
+    params: dict[str, str] = demisto.params()
 
     reliability = params.get('integrationReliability', 'C - Fairly reliable')
     reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability) if \
         DBotScoreReliability.is_valid_type(reliability) else None
 
-    args: Dict[str, str] = demisto.args()
-    results: Union[CommandResults, List[CommandResults]]
+    args: dict[str, str] = demisto.args()
+    results: CommandResults | List[CommandResults]
     try:
         command: str = demisto.command()
         LOG(f'Command being called in CrowdStrike Falcon Intel v2 is: {command}')
         client: Client = Client(params=params, reliability=reliability)
         if command == 'test-module':
-            result: Union[str, Exception] = run_test_module(client)
+            result: str | Exception = run_test_module(client)
             return_results(result)
         elif command == 'file':
             results = file_command(argToList(args['file']), client)
