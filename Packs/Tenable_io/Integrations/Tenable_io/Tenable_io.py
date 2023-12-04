@@ -151,13 +151,13 @@ HEADERS = AUTH_HEADERS | {
     'User-Agent': USER_AGENT_HEADERS_VALUE
 }
 USE_SSL = not PARAMS['unsecure']
-USE_PROXY = PARAMS['proxy']
+USE_PROXY = PARAMS.get('proxy', False)
 
-if not USE_PROXY:
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
+# if not USE_PROXY:
+#     del os.environ['HTTP_PROXY']
+#     del os.environ['HTTPS_PROXY']
+#     del os.environ['http_proxy']
+#     del os.environ['https_proxy']
 
 DATE_FORMAT = '%Y-%m-%d'
 VENDOR = 'tenable'
@@ -579,7 +579,7 @@ def get_timestamp(timestamp):
     return time.mktime(timestamp.timetuple())
 
 
-def generate_export_uuid(client: Client, last_run: dict[str, str | float | None],
+def generate_export_uuid(client: Client, last_run,
                          severity: List[str]):
     """
     Generate a job export uuid in order to fetch vulnerabilities.
@@ -600,7 +600,7 @@ def generate_export_uuid(client: Client, last_run: dict[str, str | float | None]
     last_run.update({'vuln_export_uuid': export_uuid})
 
 
-def generate_assets_export_uuid(client: Client, assets_last_run: dict[str, str | float | None]):
+def generate_assets_export_uuid(client: Client, assets_last_run):
     """
     Generate a job export uuid in order to fetch assets.
 
@@ -621,7 +621,7 @@ def generate_assets_export_uuid(client: Client, assets_last_run: dict[str, str |
 
 
 def handle_assets_chunks(client: Client, assets_last_run):
-    stored_chunks = assets_last_run.get('available_chunks', [])
+    stored_chunks = assets_last_run.get('assets_available_chunks', [])
     updated_stored_chunks = stored_chunks.copy()
     export_uuid = assets_last_run.get('assets_export_uuid')
     assets = []
@@ -630,14 +630,15 @@ def handle_assets_chunks(client: Client, assets_last_run):
         # demisto.debug(f"extended assets are: {assets}")
         updated_stored_chunks.remove(chunk_id)
     if updated_stored_chunks:
-        assets_last_run.update({'available_chunks': updated_stored_chunks,
+        assets_last_run.update({'assets_available_chunks': updated_stored_chunks,
                                 'nextTrigger': '0', "type": 1})
     else:
         assets_last_run.pop('nextTrigger', None)
         assets_last_run.pop('type', None)
-        assets_last_run.pop('available_chunks', None)
+        assets_last_run.pop('assets_available_chunks', None)
         assets_last_run.pop('assets_export_uuid', None)
     return assets, assets_last_run
+
 
 def try_get_assets_chunks(client: Client, export_uuid: str, assets_last_run):
     """
@@ -652,7 +653,7 @@ def try_get_assets_chunks(client: Client, export_uuid: str, assets_last_run):
     status, chunks_available = client.get_export_assets_status(export_uuid=export_uuid)
     demisto.info(f'Assets report status is {status}, and number of available chunks is {chunks_available}')
     if status == 'FINISHED':
-        assets_last_run.update({'available_chunks': chunks_available})
+        assets_last_run.update({'assets_available_chunks': chunks_available})
 
     return status
 
@@ -1491,7 +1492,7 @@ def get_scan_history_command(args: dict[str, Any], client: Client) -> CommandRes
         readable_output=scan_history_readable(history))
 
 
-def build_filters(filters: str | None) -> dict:
+def build_filters(filters) -> dict:
     """
     Build a dictionary of filter information from a filters string.
 
@@ -1679,7 +1680,7 @@ def fetch_events_command(client: Client, first_fetch: datetime, last_run: dict, 
 
 
 @polling_function('tenable-get-vulnerabilities', requires_polling_arg=False)
-def get_vulnerabilities_command(args: dict[str, Any], client: Client) -> CommandResults | PollResult:
+def get_vulnerabilities_command(args: dict[str, Any], client: Client):
     """
     Getting vulnerabilities from Tenable. Polling as long as the report is not ready (status FINISHED or failed)
     Args:
@@ -1732,7 +1733,7 @@ def fetch_assets_command(client: Client, assets_last_run):
     """
     assets = []
     export_uuid = assets_last_run.get('assets_export_uuid')    # if already in assets_last_run meaning its still polling chunks from api
-    available_chunks = assets_last_run.get('available_chunks', [])  # if exists, still downloading chunks from prev fetch call
+    available_chunks = assets_last_run.get('assets_available_chunks', [])  # if exists, still downloading chunks from prev fetch call
     if available_chunks:
         assets, assets_last_run = handle_assets_chunks(client, assets_last_run)
     elif export_uuid:
@@ -1789,7 +1790,7 @@ def fetch_vulnerabilities(client: Client, last_run: dict, severity: List[str]):
         vulnerabilities, status = try_get_chunks(client=client, export_uuid=export_uuid)
         # set params for next run
         if status == 'FINISHED':
-            last_run.update({'vuln_export_uuid': None})
+            last_run.pop('vuln_export_uuid')
         elif status in ['CANCELLED', 'ERROR']:
             export_uuid = client.get_vuln_export_uuid(num_assets=CHUNK_SIZE,
                                                       last_found=get_timestamp(arg_to_datetime(ASSETS_FETCH_FROM)),
