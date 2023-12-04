@@ -29,7 +29,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### aws-athena-execute-query
 
 ***
-Execute a new query, wait for the query to complete (using polling), and return query's execution information, and query's results (if successful).
+Execute a new query, wait for the query to complete (using polling), and return query's execution information, and query's results (if successful). Either 'OutputLocation' or 'WorkGroup' must be specified for the query to run.
 
 #### Base Command
 

@@ -124,7 +124,7 @@ script:
       description: The AWS Region, if not specified the default region will be used.
     - name: QueryExecutionId
       description: ID of the newly created query. Used internally for polling.
-    description: Execute a new query, wait for the query to complete (using polling), and return query's execution information, and query's results (if successful).
+    description: Execute a new query, wait for the query to complete (using polling), and return query's execution information, and query's results (if successful). Either 'OutputLocation' or 'WorkGroup' must be specified for the query to run.
     polling: true
     outputs:
     - contextPath: AWS.Athena.Query.QueryExecutionId
