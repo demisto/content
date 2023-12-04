@@ -27,7 +27,7 @@ class Client(BaseClient):
         )
 
 
-def test_module(client: Client):
+def testing_module(client: Client):
     try:
         res = client.fetch_indicators(limit=1)
         if 'data' in res:
