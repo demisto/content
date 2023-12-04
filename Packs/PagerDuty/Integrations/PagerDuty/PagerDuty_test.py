@@ -1,9 +1,10 @@
-# -*- coding: utf-8 -*-
 from CommonServerPython import *
 import pytest
+from pytest_mock import MockerFixture
+from requests_mock import MockerCore
 
 
-def load_mock_response(file_name):
+def load_mock_response(file_name: str) -> dict:
     """
     Load mock file that simulates an API response.
 
@@ -14,11 +15,11 @@ def load_mock_response(file_name):
         str: Mock file content.
 
     """
-    with open('test_data/' + file_name, mode='r') as f:
+    with open(f'test_data/{file_name}') as f:
         return json.loads(f.read())
 
 
-def test_get_incidents(requests_mock, mocker):
+def test_get_incidents(requests_mock: MockerCore, mocker: MockerFixture) -> None:
     """
     Given:
         - An incident with non-ascii character in its documentation
@@ -56,11 +57,11 @@ def test_get_incidents(requests_mock, mocker):
             }]
         }
     )
-    res = get_incidents_command()
+    res = get_incidents_command({})
     assert '| Documentation: • |' in res['HumanReadable']
 
 
-def test_add_responders(requests_mock, mocker):
+def test_add_responders(requests_mock: MockerCore, mocker: MockerFixture) -> None:
     """
     Given:
         - a responder request.
@@ -92,19 +93,19 @@ def test_add_responders(requests_mock, mocker):
     )
     requests_mock.post(
         'https://api.pagerduty.com/incidents/PXP12GZ/responder_requests',
-        json=load_mock_response('responder_requests.json').get('specific_users')
+        json=load_mock_response('responder_requests.json')['specific_users']
     )
 
     from PagerDuty import add_responders_to_incident
     res = add_responders_to_incident(**demisto.args())
-    expected_users_requested = ','.join([x.get("ID") for x in res.outputs])
-    assert demisto.args().get('incident_id') == res.outputs[0].get('IncidentID')
-    assert demisto.args().get('message') == res.outputs[0].get('Message')
-    assert demisto.params().get('DefaultRequestor') == res.outputs[1].get('RequesterID')
-    assert demisto.args().get('user_requests') == expected_users_requested
+    expected_users_requested = ','.join([x["ID"] for x in res.outputs])
+    assert demisto.args()['incident_id'] == res.outputs[0]['IncidentID']
+    assert demisto.args()['message'] == res.outputs[0]['Message']
+    assert demisto.params()['DefaultRequestor'] == res.outputs[1]['RequesterID']
+    assert demisto.args()['user_requests'] == expected_users_requested
 
 
-def test_add_responders_default(requests_mock, mocker):
+def test_add_responders_default(requests_mock: MockerCore, mocker: MockerFixture) -> None:
     """
     Given:
         - a responder request without specifying responders.
@@ -135,19 +136,19 @@ def test_add_responders_default(requests_mock, mocker):
     )
     requests_mock.post(
         'https://api.pagerduty.com/incidents/PXP12GZ/responder_requests',
-        json=load_mock_response('responder_requests.json').get('default_user')
+        json=load_mock_response('responder_requests.json')['default_user']
     )
 
     from PagerDuty import add_responders_to_incident
     res = add_responders_to_incident(**demisto.args())
-    expected_users_requested = ','.join([x.get("ID") for x in res.outputs])
-    assert demisto.args().get('incident_id') == res.outputs[0].get('IncidentID')
-    assert demisto.args().get('message') == res.outputs[0].get('Message')
-    assert demisto.params().get('DefaultRequestor') == res.outputs[0].get('RequesterID')
-    assert demisto.params().get('DefaultRequestor') == expected_users_requested
+    expected_users_requested = ','.join([x["ID"] for x in res.outputs])
+    assert demisto.args()['incident_id'] == res.outputs[0]['IncidentID']
+    assert demisto.args()['message'] == res.outputs[0]['Message']
+    assert demisto.params()['DefaultRequestor'] == res.outputs[0]['RequesterID']
+    assert demisto.params()['DefaultRequestor'] == expected_users_requested
 
 
-def test_play_response_play(requests_mock, mocker):
+def test_play_response_play(requests_mock: MockerCore, mocker: MockerFixture) -> None:
     """
     Given:
         - a responder request without specifying responders.
@@ -188,7 +189,7 @@ def test_play_response_play(requests_mock, mocker):
     assert res.raw_response == {"status": "ok"}
 
 
-def test_get_users_on_call(requests_mock, mocker):
+def test_get_users_on_call(requests_mock: MockerCore, mocker: MockerFixture) -> None:
     """
     Given:
         - a request to get user on-call by schedule ID.
@@ -222,10 +223,10 @@ def test_get_users_on_call(requests_mock, mocker):
     )
     from PagerDuty import get_on_call_users_command
     res = get_on_call_users_command(**demisto.args())
-    assert demisto.args().get('scheduleID') == res.outputs[0].get('ScheduleID')
+    assert demisto.args()['scheduleID'] == res.outputs[0]['ScheduleID']
 
 
-def test_get_users_on_call_now(requests_mock, mocker):
+def test_get_users_on_call_now(requests_mock: MockerCore, mocker: MockerFixture) -> None:
     """
     Given:
         - a reqest to get user oncall by schedule ID without specifying responders.
@@ -259,11 +260,11 @@ def test_get_users_on_call_now(requests_mock, mocker):
     )
     from PagerDuty import get_on_call_now_users_command
     res = get_on_call_now_users_command(**demisto.args())
-    assert res.outputs[0].get('ScheduleID') in demisto.args().get('schedule_ids')
+    assert res.outputs[0]['ScheduleID'] in demisto.args()['schedule_ids']
     assert 'oncalls' in res.raw_response
 
 
-def test_submit_event(requests_mock, mocker):
+def test_submit_event(requests_mock: MockerCore, mocker: MockerFixture) -> None:
     """
     Given:
         - a reqest to submit request.
@@ -299,10 +300,10 @@ def test_submit_event(requests_mock, mocker):
     )
     from PagerDuty import submit_event_command
     res = submit_event_command(source, summary, severity, action)
-    assert '### Trigger Event' in res.get('HumanReadable')
+    assert '### Trigger Event' in res['HumanReadable']
 
 
-def test_get_all_schedules_command(mocker, requests_mock):
+def test_get_all_schedules_command(mocker: MockerFixture, requests_mock: MockerCore) -> None:
     """
     Given:
         - a reqest to get all schedule
@@ -336,10 +337,10 @@ def test_get_all_schedules_command(mocker, requests_mock):
     )
     from PagerDuty import get_all_schedules_command
     res = get_all_schedules_command()
-    assert '### All Schedules' in res.get('HumanReadable')
+    assert '### All Schedules' in res['HumanReadable']
 
 
-def test_get_users_contact_methods_command(mocker, requests_mock):
+def test_get_users_contact_methods_command(mocker: MockerFixture, requests_mock: MockerCore) -> None:
     """
     Given:
         - a reqest to get all schedule.
@@ -369,10 +370,10 @@ def test_get_users_contact_methods_command(mocker, requests_mock):
     )
     from PagerDuty import get_users_contact_methods_command
     res = get_users_contact_methods_command(user_id)
-    assert '### Contact Methods' in res.get('HumanReadable')
+    assert '### Contact Methods' in res['HumanReadable']
 
 
-def test_get_users_notification_command(mocker, requests_mock):
+def test_get_users_notification_command(mocker: MockerFixture, requests_mock: MockerCore) -> None:
     """
     Given:
         - a request to get users notifications.
@@ -402,11 +403,11 @@ def test_get_users_notification_command(mocker, requests_mock):
     )
     from PagerDuty import get_users_notification_command
     res = get_users_notification_command(user_id)
-    assert '### User notification rules' in res.get('HumanReadable')
+    assert '### User notification rules' in res['HumanReadable']
 
 
 @pytest.mark.parametrize('severity, expected_result', [('high', 3), ('low', 1), ('other_severity', 0)])
-def test_translate_severity(mocker, severity, expected_result):
+def test_translate_severity(mocker: MockerFixture, severity: str, expected_result: int) -> None:
     """
     Given:
         - a severity.
@@ -428,3 +429,98 @@ def test_translate_severity(mocker, severity, expected_result):
     from PagerDuty import translate_severity
     res = translate_severity(severity)
     assert res == expected_result
+
+
+def test_paginate_with_limit(mocker: MockerFixture):
+    """This test verifies that the function correctly handles pagination when a limit is provided,
+        making a single API request with the expected parameters and returning the correct results.
+    Given:
+        a test scenario where the `pagination_incidents` function is called with a specified limit,
+    When:
+        the function is invoked with a limit of 79,
+    Then:
+        it should make a single API request with the specified limit and offset 0,
+        and the result should match the mocked API response.
+    """
+    from PagerDuty import pagination_incidents
+
+    re = mocker.patch(
+        "PagerDuty.http_request",
+        side_effect=[
+            {"incidents": list(range(79))}
+        ],
+    )
+
+    result = pagination_incidents({"user_ids": "test_id"}, {"limit": 79}, "")
+
+    assert result == list(range(79))
+    assert re.call_count == 1
+    assert re.call_args_list[0].args == ("GET", "", {"user_ids": "test_id", "limit": 79, "offset": 0})
+
+
+def test_paginate_with_limit_is_more_than_INCIDENT_API_LIMIT(mocker: MockerFixture):
+    """This test ensures that the function correctly handles pagination for large limits,
+        making multiple API calls to retrieve all incidents.
+
+    Given:
+        a test scenario where the requested limit exceeds the max incidents per page (100),
+    When:
+        the `pagination_incidents` function is called with a limit of 179,
+    Then:
+        it should make two API calls:
+        - First call with limit 100 and offset 0.
+        - Second call with limit 79 (to fetch the remaining incidents) and offset 100.
+
+    """
+    from PagerDuty import pagination_incidents
+
+    re = mocker.patch(
+        "PagerDuty.http_request",
+        side_effect=[
+            {"incidents": list(range(100))},  # the response for the first call
+            {"incidents": list(range(100, 179))},  # the response for the secund call
+        ],
+    )
+
+    result = pagination_incidents({"user_ids": "test_id"}, {"limit": 179}, "")
+
+    assert result == list(range(179))
+    assert re.call_count == 2
+    assert re.call_args_list[0].args == ("GET", "", {"user_ids": "test_id", "limit": 100, "offset": 0})  # first call
+    assert re.call_args_list[1].args == ("GET", "", {"user_ids": "test_id", "limit": 79, "offset": 100})  # secund call
+
+
+def test_paginate_with_page_size(mocker: MockerFixture):
+    """This test verifies that the pagination functionality correctly handles the provided page size
+        and page number, making a single API request with the expected parameters.
+    Given:
+        a test scenario where pagination is performed with a specified page size,
+    When:
+        the `pagination_incidents` function is called with a page size of 100 and page number 2,
+    Then:
+        it should make a single API request to fetch results from offset 100 to 199.
+    """
+    from PagerDuty import pagination_incidents
+
+    re = mocker.patch(
+        "PagerDuty.http_request", side_effect=[{"incidents": list(range(100, 200))}]
+    )
+    result = pagination_incidents({"user_ids": "test_id"}, {"page_size": 100, "page": 2}, "")
+    assert result == list(range(100, 200))
+    assert re.call_count == 1
+    assert re.call_args_list[0].args == ('GET', '', {'user_ids': 'test_id', 'limit': 100, 'offset': 100})
+
+
+def test_paginate_with_page_size_more_than_INCIDENT_API_LIMIT():
+    """This test ensures that the function correctly handles the case where the provided page size exceeds the API limit,
+    raising a DemistoException with the appropriate error message.
+    Given:
+        a test scenario where the `pagination_incidents` function is called with a page size greater than the API limit,
+    When:
+        the function is invoked with a page size of 200 and page number 2,
+    Then:
+        it should raise a DemistoException with the message "The max size for page is 100. Please provide a smaller page size."
+    """
+    from PagerDuty import pagination_incidents
+    with pytest.raises(DemistoException, match="The max size for page is 100. Please provide a lower page size."):
+        pagination_incidents({"user_ids": "test_id"}, {"page_size": 200, "page": 2}, "")
