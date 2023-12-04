@@ -473,7 +473,7 @@ script:
     - contextPath: ASM.Alert.detection_timestamp
       description: Date the alert was created.
       type: Date
-  - name: asm-list-attack-surface-rules
+  - name: asm-get-attack-surface-rule
     arguments:
     - name: enabled_status
       auto: PREDEFINED
@@ -836,7 +836,7 @@ script:
       description: User-provided notes related to the incident.
       type: string
     description: Returns additional details about a specific incident.
-  dockerimage: demisto/python3:3.10.13.78960
+  dockerimage: demisto/python3:3.10.13.80593
   isFetchSamples: true
   isfetch: true
   script: ''
