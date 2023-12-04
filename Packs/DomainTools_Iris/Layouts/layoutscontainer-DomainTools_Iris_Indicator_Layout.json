@@ -226,7 +226,7 @@
                         "name": "DomainTools Iris Details",
                         "static": false,
                         "w": 1,
-                        "x": 0,
+                        "x": 1,
                         "y": 0
                     },
                     {
@@ -324,11 +324,11 @@
                         "type": "tagsAndTLP",
                         "w": 1,
                         "x": 2,
-                        "y": 1
+                        "y": 6
                     },
                     {
                         "displayType": "ROW",
-                        "h": 4,
+                        "h": 3,
                         "i": "default-main-2e51bfc4-73ba-40e0-8625-911abb4f023d-default-main-indicatorTimeline",
                         "maxW": 3,
                         "minH": 1,
@@ -338,10 +338,10 @@
                         "type": "indicatorTimeline",
                         "w": 1,
                         "x": 2,
-                        "y": 3
+                        "y": 1
                     },
                     {
-                        "h": 3,
+                        "h": 2,
                         "i": "default-main-2e51bfc4-73ba-40e0-8625-911abb4f023d-default-main-comments",
                         "maxW": 3,
                         "minH": 1,
@@ -351,7 +351,7 @@
                         "type": "comments",
                         "w": 1,
                         "x": 2,
-                        "y": 7
+                        "y": 4
                     },
                     {
                         "h": 1,
@@ -364,8 +364,8 @@
                         "static": false,
                         "type": "reputationStatus",
                         "w": 1,
-                        "x": 1,
-                        "y": 0
+                        "x": 0,
+                        "y": 1
                     },
                     {
                         "h": 1,
@@ -378,8 +378,8 @@
                         "static": false,
                         "type": "expirationStatus",
                         "w": 1,
-                        "x": 1,
-                        "y": 3
+                        "x": 0,
+                        "y": 0
                     },
                     {
                         "h": 2,
@@ -391,8 +391,8 @@
                         "static": false,
                         "type": "reputationSources",
                         "w": 1,
-                        "x": 1,
-                        "y": 1
+                        "x": 0,
+                        "y": 2
                     }
                 ],
                 "type": "custom"
