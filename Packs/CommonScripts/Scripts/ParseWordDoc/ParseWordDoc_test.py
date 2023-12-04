@@ -1,5 +1,5 @@
 import demistomock as demisto
-
+import os
 
 class TestParseWordDoc:
     @staticmethod
@@ -106,7 +106,7 @@ def test_extract_urls_docx_without_hyperlink():
     """
     from docx import Document
     from ParseWordDoc import extract_urls_docx
-    document = Document('./test_data/file-sample2.docx')
+    document = Document(os.path.dirname(__file__) + '/test_data/file-sample2.docx')
     urls = extract_urls_docx(document)
     assert urls == []
 

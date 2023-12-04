@@ -448,8 +448,8 @@ def test_taxii21_objects(mocker, taxii2_server_v21, demisto_iocs_file, res_file,
         Then
             Validate that right objects are returned.
     """
-    iocs = util_load_json(f'test_data/{demisto_iocs_file}.json')
-    objects = util_load_json(f'test_data/{res_file}.json')
+    iocs = util_load_json(os.path.dirname(__file__) + f'/test_data/{demisto_iocs_file}.json')
+    objects = util_load_json(os.path.dirname(__file__) + f'/test_data/{res_file}.json')
     mocker.patch('TAXII2Server.SERVER', taxii2_server_v21)
     mocker.patch.object(uuid, 'uuid4', return_value='1ffe4bee-95e7-4e36-9a17-f56dbab3c777')
     mocker.patch.object(demisto, 'searchIndicators', return_value=iocs)
@@ -521,7 +521,7 @@ def test_taxii21_objects_filtered_params(mocker, taxii2_server_v21, res_file, fi
             Validate that right objects are returned.
     """
     iocs = util_load_json(os.path.dirname(__file__) + '/test_data/file_iocs_filter_test.json')
-    objects = util_load_json(f'test_data/{res_file}.json')
+    objects = util_load_json(os.path.dirname(__file__) + f'/test_data/{res_file}.json')
     mocker.patch('TAXII2Server.SERVER', taxii2_server_v21)
     mocker.patch('TAXII2Server.SERVER.fields_to_present', fields)
     mocker.patch('TAXII2Server.SERVER.has_extension', has_extension)

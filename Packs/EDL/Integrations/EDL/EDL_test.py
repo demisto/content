@@ -97,7 +97,7 @@ class TestHelperFunctions:
             - return the edl from the system file
         """
         import EDL as edl
-        edl.EDL_ON_DEMAND_CACHE_PATH = 'test_data/iocs_cache_values_text.txt'
+        edl.EDL_ON_DEMAND_CACHE_PATH = os.path.dirname(__file__) + '/test_data/iocs_cache_values_text.txt'
         edl.EDL_ON_DEMAND_CACHE_ORIGINAL_SIZE = 40
         mocker.patch.object(edl, 'get_integration_context', return_value={})
         actual_edl, original_indicators_count = edl.get_edl_on_demand()
