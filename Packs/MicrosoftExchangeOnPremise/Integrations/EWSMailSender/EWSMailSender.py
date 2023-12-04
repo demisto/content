@@ -40,7 +40,7 @@ import exchangelib  # noqa: E402
 from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter  # noqa: E402
 from exchangelib.version import EXCHANGE_2007, EXCHANGE_2010, EXCHANGE_2010_SP2, EXCHANGE_2013, \
     EXCHANGE_2016  # noqa: E402
-from exchangelib import HTMLBody, Message, FileAttachment, Account, IMPERSONATION, Credentials, Configuration, NTLM, \
+from exchangelib import HTMLBody, Body, Message, FileAttachment, Account, IMPERSONATION, Credentials, Configuration, NTLM, \
     BASIC, DIGEST, Version, DELEGATE  # noqa: E402
 from exchangelib.errors import ErrorItemNotFound, UnauthorizedError  # noqa: E402
 
@@ -128,12 +128,14 @@ def send_email_to_mailbox(
     to: List[str],
     subject: str,
     body: str,
+    body_type: str,
     bcc: List[str],
     cc: List[str],
     reply_to: List[str],
     html_body: Optional[str] = None,
     attachments: Optional[List[str]] = None,
-    raw_message: Optional[str] = None,
+    raw_message
+: Optional[str] = None,
     from_address: Optional[str] = None
 ):      # pragma: no cover
     """
@@ -144,6 +146,7 @@ def send_email_to_mailbox(
         to (list[str]): a list of emails to send an email.
         subject (str): subject of the mail.
         body (str): body of the email.
+        body_type (str): The body type of the email.
         reply_to (list[str]): list of emails of which to reply to from the sent email.
         bcc (list[str]): list of email addresses for the 'bcc' field.
         cc (list[str]): list of email addresses for the 'cc' field.
@@ -155,7 +158,7 @@ def send_email_to_mailbox(
     """
     if not attachments:
         attachments = []
-    message_body = HTMLBody(html_body) if html_body else body
+    message_body = HTMLBody(html_body) if body_type == 'html' and html_body else Body(body)
     m = Message(
         account=account,
         mime_content=raw_message.encode('UTF-8') if raw_message else None,
@@ -235,7 +238,7 @@ def get_none_empty_addresses(addresses_ls):
 
 def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=None,
                attachIDs="", attachCIDs="", attachNames="", from_mailbox=None, manualAttachObj=None,
-               raw_message=None, from_address=None):
+               raw_message=None, from_address=None, bodyType='text'):
     account = get_account(from_mailbox or ACCOUNT_EMAIL)
     bcc: List[str] = get_none_empty_addresses(argToList(bcc))
     cc: List[str] = get_none_empty_addresses(argToList(cc))
@@ -247,7 +250,7 @@ def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=N
     attachments, attachments_names = process_attachments(attachCIDs, attachIDs, attachNames, manualAttachObj)
 
     send_email_to_mailbox(
-        account=account, to=to, subject=subject, body=body, bcc=bcc, cc=cc, reply_to=reply_to,
+        account=account, to=to, subject=subject, body=body, body_type=bodyType, bcc=bcc, cc=cc, reply_to=reply_to,
         html_body=htmlBody, attachments=attachments, raw_message=raw_message, from_address=from_address
     )
     result_object = {

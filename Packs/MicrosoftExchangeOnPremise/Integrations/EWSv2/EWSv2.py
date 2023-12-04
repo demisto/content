@@ -11,7 +11,7 @@ from io import StringIO
 from exchangelib import (BASIC, DELEGATE, DIGEST, IMPERSONATION, NTLM, Account,
                          Build, Configuration, Credentials, EWSDateTime,
                          EWSTimeZone, FileAttachment, Folder, HTMLBody,
-                         ItemAttachment, Version)
+                         ItemAttachment, Version, Body)
 from exchangelib.errors import (AutoDiscoverFailed, ErrorFolderNotFound,
                                 ErrorInvalidIdMalformed,
                                 ErrorInvalidPropertyRequest,
@@ -710,7 +710,7 @@ class MarkAsJunk(EWSAccountService):
         return junk
 
 
-def send_email_to_mailbox(account, to, subject, body, bcc, cc, reply_to, html_body=None, attachments=None,
+def send_email_to_mailbox(account, to, subject, body, body_type, bcc, cc, reply_to, html_body=None, attachments=None,
                           raw_message=None, from_address=None):  # pragma: no cover
     """
     Send an email to a mailbox.
@@ -731,7 +731,7 @@ def send_email_to_mailbox(account, to, subject, body, bcc, cc, reply_to, html_bo
     """
     if not attachments:
         attachments = []
-    message_body = HTMLBody(html_body) if html_body else body
+    message_body = HTMLBody(html_body) if body_type == 'html' and html_body else Body(body)
     m = Message(
         account=account,
         mime_content=raw_message.encode('UTF-8') if raw_message else None,
@@ -2263,8 +2263,9 @@ def send_email(args):
     attachments, attachments_names = process_attachments(args.get('attachCIDs', ''), args.get('attachIDs', ''),
                                                          args.get('attachNames', ''), args.get('manualAttachObj') or [])
 
+    body_type = args.get('bodyType') or args.get('body_type') or 'text'
     send_email_to_mailbox(
-        account=account, to=to, subject=subject, body=args.get('body'), bcc=bcc, cc=cc, reply_to=replyTo,
+        account=account, to=to, subject=subject, body=args.get('body'), body_type=body_type, bcc=bcc, cc=cc, reply_to=replyTo,
         html_body=args.get('htmlBody'), attachments=attachments, raw_message=args.get('raw_message'),
         from_address=args.get('from')
     )
