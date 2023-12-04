@@ -3,7 +3,6 @@ import secrets
 from enum import Enum
 from ipaddress import ip_address
 from urllib import parse
-import dateparser
 from requests.exceptions import ReadTimeout, ConnectTimeout, ConnectionError
 
 import pytz
@@ -637,7 +636,7 @@ class Client(BaseClient):
             additional_headers=headers
         )
 
-    def reference_set_entries(self, ref_name: str, indicators: Any, fields: Optional[str] = None, source: Optional[str] = None):
+    def reference_set_entries(self, ref_name: str, indicators: Any, fields: Optional[str] = None, source: Optional[str] = None, timeout: Optional[int] = None):
         headers = {
             'Content-Type': 'application/json'
         }
@@ -653,7 +652,8 @@ class Client(BaseClient):
             url_suffix='/reference_data_collections/set_entries',
             json_data=[{"collection_id": set_id, "value": str(indicator), "source": source}
                        for indicator in indicators],  # type: ignore[arg-type]
-            additional_headers=headers
+            additional_headers=headers,
+            timeout=timeout
         )
 
     def get_reference_data_bulk_task_status(self, task_id: int):
@@ -829,7 +829,7 @@ def insert_values_to_reference_set_polling(client: Client,
         if use_old_api:
             response = client.reference_set_bulk_load(ref_name, values, fields)
         else:
-            response = client.reference_set_entries(ref_name, values, fields, source)
+            response = client.reference_set_entries(ref_name, values, fields, source, timeout=300)
             args['task_id'] = response.get('id')
     if not use_old_api:
         response = client.get_reference_data_bulk_task_status(args["task_id"])
