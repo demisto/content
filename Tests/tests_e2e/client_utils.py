@@ -130,30 +130,6 @@ def save_playbook(xsoar_client: XsoarClient, playbook_path: str, playbook_id: st
         logging.info(f'Deleted playbook {playbook_id}')
 
 
-@retry(times=10, delay=30)
-def is_playbook_state_as_expected(client: XsoarClient, incident_id: str, expected_states: set[str]) -> bool:
-    """
-    Validates whether playbook has reached into an expected state
-
-    Args:
-        client (XsoarClient): xsoar client (saas/on-prem/xsiam).
-        incident_id (dict): the incident ID that the playbook is attached to.
-        expected_states (Set[str]): the expected states that the playbook can reach which are valid
-
-    Returns:
-        bool: True if the playbook reached to the expected state, raises exception if not.
-    """
-    playbook_status_raw_response = client.get_playbook_state(incident_id)
-    _playbook_status = playbook_status_raw_response.get("state", "").lower()
-    if _playbook_status in expected_states:
-        return True
-    playbook_id = playbook_status_raw_response.get("playbookId")
-    if _playbook_status == "failed":
-        playbook_failure_reason = client.get_incident_playbook_failure(incident_id)
-        raise Exception(f'playbook {playbook_id} failed because of {playbook_failure_reason} and its state is {_playbook_status}')
-    raise Exception(f'the status of the playbook {playbook_id} is {_playbook_status}')
-
-
 def get_integration_instance_name(integration_params: dict, default: str) -> str:
     """
     Gets an instance name for the integration.
@@ -161,36 +137,6 @@ def get_integration_instance_name(integration_params: dict, default: str) -> str
     return integration_params.pop(
         "integrationInstanceName", f'e2e-test-{integration_params.get("name", default)}'
     )
-
-
-@retry(times=30, delay=5)
-def is_incident_state_as_expected(client: XsoarClient, incident_id: str, expected_state: str = "closed") -> bool:
-    """
-    Validates whether an incident has reached into an expected state
-
-    Args:
-        client (XsoarClient): xsoar client (saas/on-prem/xsiam).
-        incident_id (dict): the incident ID
-        expected_state (str): the expected state that the incident should be
-
-    Returns:
-        bool: True if the playbook reached to the expected state, raises exception if not.
-    """
-    incident_status = {
-        0: "new",  # pending
-        1: "in_progress",  # active
-        2: "closed",  # done
-        3: "acknowledged"  # archived
-    }
-
-    incident_response = client.search_incidents(incident_ids=incident_id)
-    # status 2 means the incident is closed.
-    incident = incident_response["data"][0]
-    incident_status = incident_status.get(incident.get("status"))
-    if incident_status == expected_state:
-        return True
-    incident_name = incident.get("name")
-    raise Exception(f'incident {incident_name} status is {incident_status} and is not in state {expected_state}')
 
 
 @contextmanager
