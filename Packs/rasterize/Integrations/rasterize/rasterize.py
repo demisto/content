@@ -39,8 +39,8 @@ DEFAULT_WAIT_TIME = max(int(demisto.params().get('wait_time', 0)), 0)
 DEFAULT_PAGE_LOAD_TIME = int(demisto.params().get('max_page_load_time', 180))
 
 # TODO: decide if we want to reuse it in several places
-DEFAULT_RETRIES_COUNT = 4
-DEFAULT_RETRY_WAIT_IN_SECONDS = 3
+DEFAULT_RETRIES_COUNT = 5
+DEFAULT_RETRY_WAIT_IN_SECONDS = 2
 PAGES_LIMITATION = 20
 
 # Polling for rasterization commands to complete
@@ -53,8 +53,6 @@ DEFAULT_WIDTH, DEFAULT_HEIGHT = 600, 800
 
 # Local Chrome
 LOCAL_CHROME_HOST = "127.0.0.1"
-LOCAL_CHROME_PORT = "9222"
-LOCAL_CHROME_URL = f"http://{LOCAL_CHROME_HOST}:{LOCAL_CHROME_PORT}"
 
 
 class RasterizeType(Enum):
@@ -78,8 +76,7 @@ class TabLifecycleManager:
         self.tab = self.browser.new_tab()
         self.tab.start()
         self.tab.Page.enable()
-        demisto.debug(f'TabLifecycleManager, entering tab {self.tab.id}')
-        demisto.debug(f'TabLifecycleManager, __enter__, active tabs len: {len(self.browser.list_tab())}')
+        demisto.debug(f'TabLifecycleManager, entering tab {self.tab.id}, tabs len: {len(self.browser.list_tab())}')
         return self.tab
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -106,85 +103,102 @@ class PychromeEventHandler:
     def frame_started_loading(self, frameId):
         if not self.start_frame:
             self.start_frame = frameId
+            demisto.debug(f'Frame started loading: {frameId}')
 
     def frame_stopped_loading(self, frameId):
-        demisto.debug('frame_stopped_loading')
+        demisto.debug('Frame stopped loading')
         if self.start_frame == frameId:
             try:
-                self.tab.Page.stopLoading()
-
                 with self.screen_lock:
-                    # must activate current tab
-                    demisto.debug(self.browser.activate_tab(self.tab.id))
+                    self.tab.Page.stopLoading()
+                    # Activate current tab
+                    activation_result = self.browser.activate_tab(self.tab.id)
+                    demisto.debug(f'Tab activated: {activation_result}')
                     self.tab_ready.set()
-                    demisto.debug('frame_stopped_loading, Sent tab_ready.set')
-            except Exception as e:  # pragma: no cover
-                demisto.error(f'Failed stop loading the page: {self.tab=}, {frameId=}, {e=}')
+                    demisto.debug('Tab ready event set')
+            except pychrome.exceptions.PyChromeException as e:
+                demisto.error(f'Error stopping page loading: {self.tab=}, {frameId=}, {e}')
 
 # endregion
 
 
 def is_chrome_running(port):
     browser_url = f"http://{LOCAL_CHROME_HOST}:{port}"
-    demisto.debug(f"is_chrome_running, trying to connect to {browser_url=}")
+    demisto.debug(f"Trying to connect to {browser_url=}")
     browser = pychrome.Browser(url=browser_url)
-    try:
-        browser.list_tab()
-        return browser
-    except requests.exceptions.ConnectionError as exp:
-        exp_str = str(exp)
-        demisto.debug(f"is_chrome_running, {port=}. ConnectionError, {exp_str=}, {exp=}")
-        #  HTTPConnectionPool(host='127.0.0.1', port=9222): Max retries exceeded with url: /json
-        #   (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x1059ccd30>:
-        #    Failed to establish a new connection: [Errno 61] Connection refused'))
-        exception_identifiers = [LOCAL_CHROME_HOST, port, "Connection refused"]
-        if all(identifier in exp_str for identifier in exception_identifiers):
-            demisto.info(f'Could not connect to Chrome on port {port}')
+
+    for i in range(DEFAULT_RETRIES_COUNT):
+        try:
+            # Use list tab to ping the browser and make sure it's available
+            browser.list_tab()
+            return browser
+        except requests.exceptions.ConnectionError as exp:
+            exp_str = str(exp)
+            demisto.debug(f"Failed to connect to Chrome on port {port=} on iteration {i+1}. ConnectionError, {exp_str=}, {exp=}")
+        
+        time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS * (i+1))  # pylint: disable=E9003
+        
     return None
 
 
 def get_chrome_port():
     chrome_port_filename = 'chrome_port.txt'
+    valid_port_range = range(49152, 65535)
+    is_new_port = False
+    
     try:
         with open(chrome_port_filename) as chrome_port_file:
             chrome_port = chrome_port_file.readline()
             # Make sure it's an int
             chrome_port_int = int(chrome_port)
-            return f"{chrome_port_int}"
+            demisto.debug(f'Found an existing Chrome port: {chrome_port}')
+            if chrome_port_int in valid_port_range:
+                return f"{chrome_port_int}", is_new_port
+            else:
+                demisto.debug(f"Port {chrome_port} out of valid range {valid_port_range}, allocating a new port")
     except FileNotFoundError:
-        demisto.info("chrome_port_filename not found, creating")
+        demisto.info("Could not locate an active port for this session, allocating a new port")
     except ValueError:
-        demisto.info("chrome_port file doesn't contain a valid value, creating")
+        demisto.info("Invalid port value extracted, allocating a new port")
+        os.remove(chrome_port_filename)  # Deleting the file with invalid port
 
-    chrome_port = f"{random.randint(1024, 49151)}"
-    demisto.info(f"Generated chrome_port: {chrome_port}")
-    demisto.debug(f"get_chrome_port, saving port {chrome_port}")
+    chrome_port = str(random.choice(valid_port_range))
+    demisto.info(f"New port allocated for Chrome: {chrome_port}")
+    demisto.debug(f"Saving port {chrome_port}")
     with open(chrome_port_filename, "w") as chrome_port_file:
         chrome_port_file.write(chrome_port)
-    demisto.debug(f"get_chrome_port, saved port {chrome_port}")
-    return chrome_port
+        demisto.debug(f"Saved current chrome port {chrome_port} to file")
+        is_new_port = True
+    
+    return chrome_port, is_new_port
 
 
-def ensure_chrome_running(port=None):  # pragma: no cover
+def ensure_chrome_running():  # pragma: no cover
     for _ in range(DEFAULT_RETRIES_COUNT):
-        chrome_port = get_chrome_port()
-        if browser := is_chrome_running(chrome_port):
-            demisto.debug('Chrome is instance running. Returning True.')
+        chrome_port, is_new_port = get_chrome_port()
+
+        if not is_new_port:
+            browser = is_chrome_running(chrome_port)
+            demisto.info(f'Connected to Chrome running on port {chrome_port}')
             return browser
         else:
-            demisto.debug('Chrome is not running, trying to start it.')
+            demisto.debug(f'Initializing a new Chrome session on port: {chrome_port}')
             try:
-                subprocess.run(['bash', '/start_chrome_headless.sh', '--port', chrome_port],
-                               text=True, stdout=subprocess.DEVNULL,
-                               stderr=subprocess.DEVNULL)
-                demisto.debug('Chrome headless started')
-            except Exception as ex:
-                demisto.info(f'Error starting Chrome headless: {ex}')
-            demisto.debug("Started Chrome")
+                process = subprocess.run(['bash', '/start_chrome_headless.sh', '--port', chrome_port],
+                                         text=True, stdout=subprocess.DEVNULL,
+                                         stderr=subprocess.DEVNULL)
 
-        time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS)  # pylint: disable=E9003
+                if process.returncode == 0:
+                    demisto.debug(f'New Chrome session active on Port {chrome_port}')
+                    is_new_port = False
+                    # Allow Chrome to initialize
+                    time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS)  # pylint: disable=E9003
+                else:
+                    demisto.debug(f'Chrome did not start successfully on port {chrome_port}. Return code: {process.returncode}')
+            except subprocess.SubprocessError as ex:
+                demisto.debug(f'Error starting Chrome on port {chrome_port}. Error: {ex}')
 
-    demisto.info(f'Max retries ({DEFAULT_RETRIES_COUNT}) reached, Chrome headless is not running correctly')
+    demisto.error(f'Max retries ({DEFAULT_RETRIES_COUNT}) reached, could not connect to chrome')
     return None
 
 
@@ -201,8 +215,6 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout):  # prag
     tab_ready_event = setup_tab_event(browser, tab)
 
     try:
-        demisto.debug(f'Preparing tab for navigation to {path=}')
-
         demisto.debug(f'Starting tab navigation to given path: {path}')
 
         if navigation_timeout > 0:
@@ -220,8 +232,12 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout):  # prag
         time.sleep(wait_time)  # pylint: disable=E9003
         demisto.debug(f"navigate_to_path, Navigated to {path=}")
 
-    except Exception as ex:
-        message = f'Unhandled exception: {ex} thrown while trying to navigate to {path}'
+    except pychrome.exceptions.TimeoutException as ex:
+        message = f'Navigation timeout: {ex} thrown while trying to navigate to {path}'
+        demisto.error(message)
+        return_error(message)
+    except pychrome.exceptions.PyChromeException as ex:
+        message = f'Exception: {ex} thrown while trying to navigate to {path}'
         demisto.error(message)
         return_error(message)
 
@@ -230,16 +246,18 @@ def screenshot_image(browser, tab, path, wait_time, navigation_timeout):  # prag
     navigate_to_path(browser, tab, path, wait_time, navigation_timeout)
 
     screenshot_data = tab.Page.captureScreenshot()['data']
-    # captureScreenshot is asynchronous, so make sure you have data there
-    retry = 0
-    while screenshot_data is None and retry < 50:
+    # Make sure that the (asynchronous) screenshot data is available before continuing with execution
+    operation_time = 0
+    while screenshot_data is None and operation_time < DEFAULT_WAIT_TIME:
         time.sleep(DEFAULT_POLLING_INTERVAL)  # pylint: disable=E9003
-        retry += 1
-    demisto.debug(f"Screenshot image is available after {retry} retries.")
+        operation_time +=DEFAULT_POLLING_INTERVAL
+    
+    demisto.debug(f"Screenshot image available after {operation_time} seconds.")
 
     ret_value = base64.b64decode(screenshot_data)
     demisto.debug(f"Captured snapshot, {len(ret_value)=}")
     return ret_value
+
 
 def screenshot_pdf(browser, tab, path, wait_time, navigation_timeout, include_url):  # pragma: no cover
     navigate_to_path(browser, tab, path, wait_time, navigation_timeout)
@@ -248,12 +266,13 @@ def screenshot_pdf(browser, tab, path, wait_time, navigation_timeout, include_ur
         header_template = "<span class=url></span>"
 
     pdf_data = tab.Page.printToPDF(headerTemplate=header_template)['data']
-    # printToPDF is asynchronous, so make sure you have data there
-    retry = 0
-    while pdf_data is None and retry < 50:
+    # Make sure that the (asynchronous) PDF data is available before continuing with execution
+    operation_time = 0
+    while pdf_data is None and operation_time < DEFAULT_WAIT_TIME:
         time.sleep(DEFAULT_POLLING_INTERVAL)  # pylint: disable=E9003
-        retry += 1
-    demisto.debug(f"ODF is available after {retry} retries.")
+        operation_time += DEFAULT_POLLING_INTERVAL
+    
+    demisto.debug(f"PDF data available after {operation_time} seconds.")
 
     ret_value = base64.b64decode(pdf_data)
     return ret_value
@@ -389,7 +408,7 @@ def convert_pdf_to_jpeg(path: str, max_pages: str, password: str):
 def rasterize_pdf_command():  # pragma: no cover
     entry_id = demisto.args().get('EntryID')
     password = demisto.args().get('pdfPassword')
-    max_pages = demisto.args().get('maxPages', 30)
+    max_pages = demisto.args().get('maxPages', PAGES_LIMITATION)
     file_name = demisto.args().get('file_name', 'image')
 
     file_path = demisto.getFilePath(entry_id).get('path')
