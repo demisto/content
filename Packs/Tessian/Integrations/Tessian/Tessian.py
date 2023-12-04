@@ -192,9 +192,9 @@ def test_module(client: Client) -> str:  #  pragma: no cover
     try:
         response = client.get_events(2, None, None)
 
-        success = demisto.get(response, 'success.total')  # Safe access to response['success']['total']
-        if success != 1:
-            return f'Unexpected result from the service: success={success} (expected success=1), response={str(response)}'
+        success = demisto.get(response, 'checkpoint')
+        if success is None:
+            return f'Unexpected result from the service: expected checkpoint to be a string, response={str(response)}'
 
         return 'ok'
     except Exception as e:

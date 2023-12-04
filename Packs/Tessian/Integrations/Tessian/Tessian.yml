@@ -11,7 +11,7 @@ configuration:
 - display: API Key
   name: api_key
   additionalinfo: The API Key to use to connect to the Tessian API. This can be found under "Security Integrations" in your Tessian Portal (/0/admin/integrations/api/tokens)
-  type: 9
+  type: 0
   required: true
 description: Tessian is an email security platform that allows organizations to protect their users from inbound phishing threats, outbound data loss (both malicious and accidental) and account takeovers.
 display: Tessian
