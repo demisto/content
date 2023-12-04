@@ -1,4 +1,4 @@
 !tessian-get-events limit=1 created_after="2020-02-02T19:00:00Z"
-!tessian-release-from-quarantine event_id="defender::inbound-5a781dedfbd9b81be11ff81b680e187cf619bcd5dc385abbfddaf249bcd6b9e5"
-!tessian-delete-from-quarantine event_id="defender::inbound-5a781dedfbd9b81be11ff81b680e187cf619bcd5dc385abbfddaf249bcd6b9e5"
-!tessian-delete-from-inbox event_id="defender::inbound-5a781dedfbd9b81be11ff81b680e187cf619bcd5dc385abbfddaf249bcd6b9e5s"
+!tessian-release-from-quarantine event_id="string"
+!tessian-delete-from-quarantine event_id="string"
+!tessian-delete-from-inbox event_id="string"

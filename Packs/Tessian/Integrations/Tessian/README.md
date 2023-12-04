@@ -43,10 +43,182 @@ This command allows you to pull Tessian event data into your XSOAR instance.
 | Tessian.EventsOutput.additional_results | Boolean | True if there may be more events that can be immediately retrieved. | 
 | Tessian.EventsOutput.results | Unknown | The events returned by this request. | 
 
-#### Command Example
+#### Command example
+```!tessian-get-events limit=2 created_after="2020-02-02T19:00:00Z"```
 
-`!tessian-get-events limit=100 after_checkpoint="example-value" created_after="2020-02-02T19:00:00Z"`
+#### Context Example
+```json
+{
+    "Tessian": {
+        "EventsOutput": {
+            {
+                "checkpoint": "string",
+                "additional_results": true,
+                "results": [
+                    {
+                        "id": "string",
+                        "type": "string",
+                        "created_at": "2019-08-24T14:15:22Z",
+                        "updated_at": "2019-08-24T14:15:22Z",
+                        "portal_link": "string",
+                        "outbound_email_details": {
+                            "send_time": "2019-08-24T14:15:22Z",
+                            "tessian_action": "WARN",
+                            "message_id": "string",
+                            "tessian_id": "string",
+                            "from": null,
+                            "transmitter": null,
+                            "reply_to": [
+                                null
+                            ],
+                            "recipients": {
+                                "to": [
+                                    null
+                                ],
+                                "cc": [
+                                    null
+                                ],
+                                "bcc": [
+                                    null
+                                ],
+                                "all": [
+                                    null
+                                ],
+                                "count": 0
+                            },
+                            "subject": "string",
+                            "attachments": {
+                                "names": [
+                                    "string"
+                                ],
+                                "count": 0,
+                                "bytes": 0
+                            }
+                        },
+                        "guardian_details": {
+                            "triggered_filter_ids": [
+                                "string"
+                            ],
+                            "type": "MISDIRECTED_EMAIL",
+                            "triggered_filter_names": [
+                            "string"
+                            ],
+                            "breach_prevented": true,
+                            "anomalous_recipients": [
+                                null
+                            ],
+                            "suggested_recipients": [
+                                null
+                            ],
+                            "anomalous_attachments": [
+                                "string"
+                            ],
+                            "final_outcome": null,
+                            "user_responses": [
+                                "SEND"
+                            ],
+                            "admin_action": "SAFE",
+                            "justifications": [
+                                "string"
+                            ],
+                            "user_shown_message": true
+                        }
+                    },
+                    {
+                        "id": "string",
+                        "type": "string",
+                        "created_at": "2019-08-24T14:15:22Z",
+                        "updated_at": "2019-08-24T14:15:22Z",
+                        "portal_link": "string",
+                        "inbound_email_details": {
+                            "received_time": "2019-08-24T14:15:22Z",
+                            "urls": ["strings"],
+                            "attachment_urls": ["strings"],
+                            "message_id": "string",
+                            "tessian_id": "string",
+                            "from": null,
+                            "transmitter": null,
+                            "reply_to": [null],
+                            "recipients": {
+                                "to": [
+                                    null
+                                ],
+                                "cc": [
+                                    null
+                                ],
+                                "bcc": [
+                                    null
+                                ],
+                                "all": [
+                                    null
+                                ],
+                                "count": 0
+                            },
+                            "subject": "string",
+                            "attachments": {
+                                "names": [
+                                    "string"
+                                ],
+                                "count": 0,
+                                "bytes": 0
+                            }
+                        },
+                        "defender_details": {
+                            "burst_attack_id": "string",
+                            "intent_types": ["INVOICE"],
+                            "threat_signal_types": ["string"],
+                            "threat_types": ["MATCHED_DENYLIST"],
+                            "spf_result": null,
+                            "dkim_result": null,
+                            "dmarc_result": null,
+                            "sender_location": null,
+                            "users_responded": {
+                                "malicious": 1,
+                                "safe" 0,
+                                "unsure": 0,
+                                "deleted": 0,
+                            },
+                            "admin_label": null,
+                            "quarantine_status_count": {
+                                "admin_quarantine_status_count": {
+                                    "not_quarantined": 0,
+                                    "quarantined": 1,
+                                    "released": 0,
+                                    "deleted": 0,
+                                    "pending_release": 0,
+                                },
+                                "user_quarantine_status_count": {
+                                    "not_quarantined": 0,
+                                    "quarantined": 1,
+                                    "released": 0,
+                                    "deleted": 0,
+                                    "pending_release": 0,
+                                },
+                            },
+                            "deletion_status_count": {
+                                "deleted": 1,
+                                "deletion_pending": 0,
+                                "not_deleted": 0,
+                            },
+                            "number_protected_users": 1,
+                            "confidence": HIGH,
+                            "impersonation_type": null,
+                            "impersonated_domain": null,
+                            "impersonated_address": null,
+                        }
+                    }
+                ]
+            }
+        }
+    }
+}
+```
 
+#### Human Readable Output
+
+>### Tessian Events
+>## Checkpoint: eyJzb3J0X3ZhbHVlcyI6IFsxNjkxNTkyNTc4Mjg4LCAiaW5ib3VuZC1lNWI1MmQyYWQ3ZGQ4MTdhMGRhYmVhZjgzMDhhYWMwMDhkZDY3ZDg1ZTQ3MTk1NDE4NTZmMzRkN2JlY2Y4ZTNlIl0sICJyZXZlcnNlIjogZmFsc2V9 | Additional Results: True
+># Number of events returned: 2
 
 ### tessian-release-from-quarantine
 
@@ -72,10 +244,32 @@ This command allows you to release a quarantined emails associated with an event
 | Tessian.ReleaseFromQuarantineOutput.results | Unknown | The results of the release action. This is an array of objects mapping the email address of users to the result of the release action. | 
 | Tessian.ReleaseFromQuarantineOutput.event_id | String | The event ID that was submitted for release. | 
 
-#### Command Example
+#### Command example
+```!tessian-release-from-quarantine event_id="string"```
 
-`!tessian-release-from-quarantine event_id="id-from-tessian-get-events"
-`
+#### Context Example
+```json
+{
+    "Tessian": {
+        "EventsOutput": {
+            "number_of_actions_attempted": 1,
+            "number_of_actions_succeeded": 1,
+            "results": [
+                {
+                    "user_address": "test_user@example.com",
+                    "error": null,
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Release from Quarantine Action for Event ID: string
+>## Number of Actions Attemped: 1
+>## Number of Actions Succeeded: 1
 
 ### tessian-delete-from-quarantine
 
@@ -101,9 +295,32 @@ This command allows you to delete quarantined emails associated with an event fr
 | Tessian.DeleteFromQuarantineOutput.results | Unknown | The results of the delete action. This is an array of objects mapping the email address of users to the result of the delete action. | 
 | Tessian.DeleteFromQuarantineOutput.event_id | String | The event ID that was submitted for deletion. | 
 
-#### Command Example
+#### Command example
+```!tessian-delete-from-quarantine event_id="string"```
 
-`!tessian-delete-from-quarantine event_id="id-from-tessian-get-events"`
+#### Context Example
+```json
+{
+    "Tessian": {
+        "EventsOutput": {
+            "number_of_actions_attempted": 1,
+            "number_of_actions_succeeded": 1,
+            "results": [
+                {
+                    "user_address": "test_user@example.com",
+                    "error": null,
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Delete from Quarantine Action for Event ID: string
+>## Number of Actions Attemped: 1
+>## Number of Actions Succeeded: 1
 
 ### tessian-delete-from-inbox
 
@@ -129,6 +346,29 @@ This command allows you to delete emails associated with a Tessian event from yo
 | Tessian.DeleteFromQuarantineOutput.results | Unknown | The results of the delete action. This is an array of objects mapping the email address of users to the result of the delete action. | 
 | Tessian.DeleteFromQuarantineOutput.event_id | String | The event ID that was submitted for deletion. | 
 
-#### Command Example
+#### Command example
+```!tessian-delete-from-inbox event_id="string"```
 
-`!tessian-delete-from-inbox event_id="id-from-tessian-get-events"`
+#### Context Example
+```json
+{
+    "Tessian": {
+        "EventsOutput": {
+            "number_of_actions_attempted": 1,
+            "number_of_actions_succeeded": 1,
+            "results": [
+                {
+                    "user_address": "test_user@example.com",
+                    "error": null,
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Delete from Inbox Action for Event ID: string
+>## Number of Actions Attemped: 1
+>## Number of Actions Succeeded: 1
