@@ -14,4 +14,4 @@ dependson: {}
 timeout: 0s
 tests:
 - 'Test CommonServer'
-fromversion: 5.0.0
+fromversion: 6.11.0
