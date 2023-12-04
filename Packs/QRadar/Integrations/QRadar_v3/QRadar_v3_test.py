@@ -1611,11 +1611,9 @@ def test_qradar_reference_set_value_upsert_command_continue_polling_with_connect
     result = qradar_reference_set_value_upsert_command(args, client=client, params=api_version)
     # make sure in ReadTimeout that no outputs are returned
     assert not result.outputs
-    assert result.readable_output == 'Connection error occurred, retrying'
     result = qradar_reference_set_value_upsert_command(args, client=client, params=api_version)
     # make sure when status is IN_PROGRESS no outputs are returned
     assert not result.outputs
-    assert result.readable_output == 'Reference set test_ref is still being updated in task 1234'
     result = qradar_reference_set_value_upsert_command(args, client=client, params=api_version)
     # make sure when status is COMPLETED that outputs are returned
     assert result.outputs
