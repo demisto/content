@@ -1,4 +1,4 @@
-Detonates a File using CrowdStrike Falcon Intelligence Sandbox.
+Detonates a file using CrowdStrike Falcon Intelligence Sandbox.
 Accepted file formats:
 Portable executables: .exe, .scr, .pif, .dll, .com, .cpl, etc.
 Office documents: .doc, .docx, .ppt, .pps, .pptx, .ppsx, .xls, .xlsx, .rtf, .pub
