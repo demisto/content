@@ -222,6 +222,7 @@ tasks:
       id: 7a4f2026-ef32-4866-844b-65c8e7a64c07
       version: -1
       name: Is Jira project key set?
+      description: Determines if a Jira project key has been provided or not.
       type: condition
       iscommand: false
       brand: ""
