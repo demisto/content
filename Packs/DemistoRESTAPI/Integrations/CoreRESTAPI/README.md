@@ -34,7 +34,7 @@ send HTTP POST request
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uri | Request endpoint (i.e. /incident or /public_api/v1/incidents/update_incident). | Required | 
+| uri | Request endpoint (e.g. /incident or /public_api/v1/incidents/update_incident). | Required | 
 | body | Body of HTTP POST. | Optional | 
 
 
@@ -61,7 +61,7 @@ send HTTP GET requests
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uri | Request endpoint (i.e. /user or /public_api/v1/rbac/get_users). | Required | 
+| uri | Request endpoint (e.g. /user or /public_api/v1/rbac/get_users). | Required | 
 
 #### Context Output
 
@@ -86,7 +86,7 @@ send HTTP PUT request
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uri | Request endpoint (i.e. /user). | Required | 
+| uri | Request endpoint (e.g. /user). | Required | 
 | body | Request body. | Optional | 
 
 
@@ -102,7 +102,7 @@ send HTTP DELETE request
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uri | Request endpoint (i.e. /user). | Required | 
+| uri | Request endpoint (e.g. /user). | Required | 
 
 #### Context Output
 
