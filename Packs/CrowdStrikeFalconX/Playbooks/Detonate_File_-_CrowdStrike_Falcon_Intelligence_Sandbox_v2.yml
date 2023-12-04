@@ -102,7 +102,7 @@ tasks:
       id: 73843b9d-b556-4e1c-895c-93ae4f6671dc
       version: -1
       name: Done
-      description: finished
+      description: Finished.
       type: title
       iscommand: false
       brand: ""
