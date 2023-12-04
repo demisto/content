@@ -41,6 +41,17 @@ def get_additonal_info() -> List[Dict]:
 
 def main():
     try:
+        alert_context = demisto.investigation()
+        core_alert_context = demisto.context().get('Core', {})
+        if not core_alert_context.get('OriginalAlert'):
+            original_alert_data = demisto.executeCommand('core-get-cloud-original-alerts', {"alert_ids": alert_context.get('id')})
+            if original_alert_data:
+                if isinstance(original_alert_data, list):
+                    res = original_alert_data[0].get('EntryContext')
+                    res['OriginalAlert'] = res.pop('Core.OriginalAlert(val.internal_id && val.internal_id == obj.internal_id)')
+                    if isinstance(res['OriginalAlert'], list):
+                        res['OriginalAlert'] = res['OriginalAlert'][0]
+                demisto.executeCommand('SetByIncidentId', {"key": "Core", "value": res, "id": alert_context.get('id')})
         results = get_additonal_info()
         command_results = CommandResults(
             readable_output=tableToMarkdown('Original Alert Additional Information', results,
