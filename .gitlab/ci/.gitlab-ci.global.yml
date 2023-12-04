@@ -469,7 +469,7 @@
     matrix:
       - DOCKER: ['native:ga,native:maintenance,native:candidate','native:dev,from-yml']
 
-.pre-commit:
+.run-pre-commit:
   extends:
     - .unittests-and-lint-settings
   script:
