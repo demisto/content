@@ -93,10 +93,10 @@ class Client:
         return self.cs_client.http_request(method='GET', url_suffix='intel/combined/indicators/v1', params=params)
 
     def cs_actors(self, args: dict[str, str]) -> dict[str, Any]:
-        params: dict[str, Any] = self.build_request_params(args)
         url_suffix = 'intel/combined/actors/v1'
-        if args.get('display_full_fields', False):
+        if argToBoolean(args.pop('display_full_fields', False)):
             url_suffix += '?fields=__full__'
+        params: dict[str, Any] = self.build_request_params(args)
         return self.cs_client.http_request(method='GET', url_suffix=url_suffix, params=params)
 
     def cs_indicators(self, args: dict[str, str]) -> dict[str, Any]:
@@ -104,10 +104,10 @@ class Client:
         return self.cs_client.http_request(method='GET', url_suffix='intel/combined/indicators/v1', params=params)
 
     def cs_reports(self, args: dict[str, str]) -> dict[str, Any]:
-        params: dict[str, Any] = self.build_request_params(args)
         url_suffix = 'intel/combined/reports/v1'
-        if args.get('display_full_fields', False):
+        if args.pop('display_full_fields', False):
             url_suffix += '?fields=__full__'
+        params: dict[str, Any] = self.build_request_params(args)
         return self.cs_client.http_request(method='GET', url_suffix=url_suffix, params=params)
 
 
@@ -285,6 +285,8 @@ def get_values(items_list: List[Any], return_type: str = 'str', keys: str | List
     :return: The values list
     """
     new_list: List[Any] = []
+    if not items_list:
+        return new_list
     if isinstance(keys, str):
         new_list = [item.get(keys) for item in items_list]
     elif isinstance(keys, list):
