@@ -3,7 +3,9 @@ import secrets
 from enum import Enum
 from ipaddress import ip_address
 from urllib import parse
-from requests.exceptions import ReadTimeout, ConnectTimeout, ConnectionError
+
+import requests
+from requests.exceptions import ConnectTimeout, ConnectionError
 
 import pytz
 import urllib3
@@ -636,7 +638,14 @@ class Client(BaseClient):
             additional_headers=headers
         )
 
-    def reference_set_entries(self, ref_name: str, indicators: Any, fields: Optional[str] = None, source: Optional[str] = None, timeout: Optional[int] = None):
+    def reference_set_entries(
+        self,
+        ref_name: str,
+        indicators: Any,
+        fields: Optional[str] = None,
+        source: Optional[str] = None,
+        timeout: Optional[int] = None
+    ):
         headers = {
             'Content-Type': 'application/json'
         }
@@ -788,51 +797,62 @@ def insert_values_to_reference_set_polling(client: Client,
     response = {}
     use_old_api = get_major_version(api_version) <= 15
     ref_name = args.get('ref_name', '')
-    if use_old_api or 'task_id' not in args:
-        if from_indicators:
-            query = args.get('query')
-            limit = arg_to_number(args.get('limit', DEFAULT_LIMIT_VALUE))
-            page = arg_to_number(args.get('page', 0))
+    try:
+        if use_old_api or 'task_id' not in args:
+            if from_indicators:
+                query = args.get('query')
+                limit = arg_to_number(args.get('limit', DEFAULT_LIMIT_VALUE))
+                page = arg_to_number(args.get('page', 0))
 
-            # Backward compatibility for QRadar V2 command. Create reference set for given 'ref_name' if does not exist.
-            element_type = args.get('element_type', '')
-            timeout_type = args.get('timeout_type')
-            time_to_live = args.get('time_to_live')
-            try:
-                client.reference_sets_list(ref_name=ref_name)
-            except DemistoException as e:
-                # Create reference set if does not exist
-                if e.message and f'{ref_name} does not exist' in e.message:
-                    # if this call fails, raise an error and stop command execution
-                    client.reference_set_create(ref_name, element_type, timeout_type, time_to_live)
-                else:
-                    raise e
+                # Backward compatibility for QRadar V2 command. Create reference set for given 'ref_name' if does not exist.
+                element_type = args.get('element_type', '')
+                timeout_type = args.get('timeout_type')
+                time_to_live = args.get('time_to_live')
+                try:
+                    client.reference_sets_list(ref_name=ref_name)
+                except DemistoException as e:
+                    # Create reference set if does not exist
+                    if e.message and f'{ref_name} does not exist' in e.message:
+                        # if this call fails, raise an error and stop command execution
+                        client.reference_set_create(ref_name, element_type, timeout_type, time_to_live)
+                    else:
+                        raise e
 
-            search_indicators = IndicatorsSearcher(page=page)
-            indicators = search_indicators.search_indicators_by_version(query=query, size=limit).get('iocs', [])
-            indicators_data = [{'Indicator Value': indicator.get('value'), 'Indicator Type': indicator.get('indicator_type')}
-                               for indicator in indicators if 'value' in indicator and 'indicator_type' in indicator]
-            values = [indicator.get('Indicator Value', '') for indicator in indicators_data]
-            if not indicators_data:
-                return PollResult(CommandResults(
-                    readable_output=f'No indicators were found for reference set {ref_name}',
-                ))
+                search_indicators = IndicatorsSearcher(page=page)
+                indicators = search_indicators.search_indicators_by_version(query=query, size=limit).get('iocs', [])
+                indicators_data = [{'Indicator Value': indicator.get('value'), 'Indicator Type': indicator.get('indicator_type')}
+                                   for indicator in indicators if 'value' in indicator and 'indicator_type' in indicator]
+                values = [indicator.get('Indicator Value', '') for indicator in indicators_data]
+                if not indicators_data:
+                    return PollResult(CommandResults(
+                        readable_output=f'No indicators were found for reference set {ref_name}',
+                    ))
 
-        if not values:
-            raise DemistoException('Value to insert must be given.')
-        source = args.get('source')
-        date_value = argToBoolean(args.get('date_value', False))
-        fields = args.get('fields')
+            if not values:
+                raise DemistoException('Value to insert must be given.')
+            source = args.get('source')
+            date_value = argToBoolean(args.get('date_value', False))
+            fields = args.get('fields')
 
-        if date_value:
-            values = [get_time_parameter(value, epoch_format=True) for value in values]
-        if use_old_api:
-            response = client.reference_set_bulk_load(ref_name, values, fields)
+            if date_value:
+                values = [get_time_parameter(value, epoch_format=True) for value in values]
+            if use_old_api:
+                response = client.reference_set_bulk_load(ref_name, values, fields)
+            else:
+                response = client.reference_set_entries(ref_name, values, fields, source, timeout=300)
+                args['task_id'] = response.get('id')
+        if not use_old_api:
+            response = client.get_reference_data_bulk_task_status(args["task_id"])
+    except (DemistoException, requests.Timeout) as err:
+        if (
+            (
+                isinstance(err, DemistoException) and isinstance(err.exception, ConnectionError | ConnectTimeout)
+            )
+            or isinstance(err, requests.Timeout)
+        ):
+            response = {}
         else:
-            response = client.reference_set_entries(ref_name, values, fields, source, timeout=300)
-            args['task_id'] = response.get('id')
-    if not use_old_api:
-        response = client.get_reference_data_bulk_task_status(args["task_id"])
+            raise
     if use_old_api or response.get("status") == "COMPLETED":
         if not use_old_api:
             # get the reference set data
@@ -2932,28 +2952,10 @@ def qradar_reference_set_value_upsert_command(args: dict, client: Client, params
     Returns:
         PollResult.
     """
-    try:
-        return insert_values_to_reference_set_polling(
-            client,
-            params.get('api_version', ''),
-            args,
-            values=argToList(args.get('value', ''))
-        )
-    except (DemistoException, ReadTimeout) as err:
-        if (
-            (
-                isinstance(err, DemistoException) and isinstance(err.exception, ConnectionError | ConnectTimeout)
-            )
-            or isinstance(err, ReadTimeout)
-        ):
-            return PollResult(
-                partial_result=CommandResults(
-                    readable_output='Connection error occurred, retrying'),
-                continue_to_poll=True,
-                args_for_next_run=args,
-                response=None
-            )
-        raise
+    return insert_values_to_reference_set_polling(client,
+                                                  params.get('api_version', ''),
+                                                  args,
+                                                  values=argToList(args.get('value', '')))
 
 
 def qradar_reference_set_value_delete_command(client: Client, args: dict) -> CommandResults:
