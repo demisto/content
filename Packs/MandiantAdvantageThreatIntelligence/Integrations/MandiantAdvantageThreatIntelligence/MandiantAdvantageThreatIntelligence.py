@@ -329,6 +329,7 @@ def get_dbot_score(indicator: dict, indicator_type: str = None) -> dict:
         ),
     }
 
+
 def get_dbot_score_obj(dbot_score: dict) -> Common.DBotScore:
     return Common.DBotScore(
         indicator=dbot_score["Indicator"],
@@ -336,6 +337,7 @@ def get_dbot_score_obj(dbot_score: dict) -> Common.DBotScore:
         score=dbot_score["Score"],
         reliability=dbot_score["Reliability"]
     )
+
 
 def get_indicator_relationships(
     raw_indicator: dict,
