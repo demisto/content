@@ -56,7 +56,7 @@ This playbook does not use any scripts.
 | ActionScript | Runtime script for sandbox analysis. |  | Optional |
 | CommandLine | Command line script passed to the submitted file at runtime. Max length: 2048 characters. |  | Optional |
 | DocumentPassword | Auto-filled for Adobe or Office files that prompt for a password. Max length: 32 characters. |  | Optional |
-| SubmitName | Name of the malware sample that's used for file type detection. and analysis. |  | Optional |
+| SubmitName | Name of the malware sample that's used for file type detection and analysis. |  | Optional |
 | SystemDate | Set a custom date for the sandbox environment in the format yyyy-MM-dd. |  | Optional |
 | SystemTime | Sets a custom time for the sandbox environment in the format HH:mm. |  | Optional |
 | FullReport | Whether to get a full report or report summary from Falcon X.<br/>Set to "False" to get report summary. | True | Optional |
