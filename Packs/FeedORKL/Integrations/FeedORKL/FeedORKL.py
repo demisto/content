@@ -189,7 +189,7 @@ def main():
         )
 
         if demisto.command() == 'test-module':
-            return_results(test_module(client))
+            return_results(testing_module(client))
 
         elif demisto.command() == 'fetch-indicators':
             indicators = fetch_indicator_command(
