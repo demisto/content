@@ -1,5 +1,5 @@
 from CommonServerPython import *
-from typing import Dict, Any
+from typing import Any
 
 
 def time_check(last_check: str) -> bool:
@@ -10,7 +10,7 @@ def time_check(last_check: str) -> bool:
         return False
 
 
-def check_last_enrichment(args: Dict[str, Any]) -> CommandResults:
+def check_last_enrichment(args: dict[str, Any]) -> CommandResults:
     last_enrichment = args['last_enrichment']
 
     should_refresh_enrichment = "yes" if last_enrichment is None or time_check(

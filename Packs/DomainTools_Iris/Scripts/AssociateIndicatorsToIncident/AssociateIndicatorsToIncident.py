@@ -1,8 +1,7 @@
 from CommonServerPython import *
-from typing import List
 
 
-def get_related_indicators(addintional_indicators: str = '') -> List[str]:
+def get_related_indicators(addintional_indicators: str = '') -> list[str]:
     related_indicators = addintional_indicators.strip(
         '[]').replace('"', '').split(',')
     # Remove leading and trailing spaces from each domain

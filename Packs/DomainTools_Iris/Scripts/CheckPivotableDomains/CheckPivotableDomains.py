@@ -1,12 +1,12 @@
 from CommonServerPython import *
-from typing import Dict, Any, List
+from typing import Any
 
 """ STANDALONE FUNCTION """
 
 
 def check_pivotable_nameserver_host_or_domain(
-    nameservers: List[Dict[str, Any]], key: str, max_count: int
-) -> List[Dict[str, Any]]:
+    nameservers: list[dict[str, Any]], key: str, max_count: int
+) -> list[dict[str, Any]]:
     pivotable = []
     try:
         for ns in nameservers or []:
@@ -25,8 +25,8 @@ def check_pivotable_nameserver_host_or_domain(
 
 
 def check_pivotable_nameserver_ip(
-    nameservers: List[Dict[str, Any]], max_name_server_ip_count: int
-) -> List[Dict[str, Any]]:
+    nameservers: list[dict[str, Any]], max_name_server_ip_count: int
+) -> list[dict[str, Any]]:
     pivotable = []
     try:
         for ns in nameservers:
@@ -45,8 +45,8 @@ def check_pivotable_nameserver_ip(
 
 
 def check_pivotable_registrant_contact_name(
-    registrant_contact: Dict[str, Any], max_registrant_contact_name_count: int
-) -> Optional[Dict[str, Any]]:
+    registrant_contact: dict[str, Any], max_registrant_contact_name_count: int
+) -> Optional[dict[str, Any]]:
     try:
         r_contact_name = registrant_contact.get("Name") or {}
         r_contact_name_count = int(r_contact_name.get("count") or 0)
@@ -62,8 +62,8 @@ def check_pivotable_registrant_contact_name(
 
 
 def check_pivotable_registrant_org(
-    registrant_contact: Dict[str, Any], max_registrant_org_count: int
-) -> Optional[Dict[str, Any]]:
+    registrant_contact: dict[str, Any], max_registrant_org_count: int
+) -> Optional[dict[str, Any]]:
     try:
         r_contact_org = registrant_contact.get("Org") or {}
         r_contact_org_count = int(r_contact_org.get("count") or 0)
@@ -78,8 +78,8 @@ def check_pivotable_registrant_org(
 
 
 def check_pivotable_registrar(
-    registrar: Dict[str, Any], max_registrar_count: int
-) -> Optional[Dict[str, Any]]:
+    registrar: dict[str, Any], max_registrar_count: int
+) -> Optional[dict[str, Any]]:
     try:
         registrar = registrar.get("Org") or {}
         registrar_count = int(registrar.get("count") or 0)
@@ -94,8 +94,8 @@ def check_pivotable_registrar(
 
 
 def check_pivotable_ssl_info(
-    ssl_infos: List[Dict[str, Any]], key: str, max_property_count: int
-) -> List[Dict[str, Any]]:
+    ssl_infos: list[dict[str, Any]], key: str, max_property_count: int
+) -> list[dict[str, Any]]:
     pivotable = []
     try:
         for ssl_info in ssl_infos:
@@ -112,8 +112,8 @@ def check_pivotable_ssl_info(
 
 
 def check_pivotable_ssl_email(
-    ssl_infos: List[Dict[str, Any]], max_property_count: int
-) -> List[Dict[str, Any]]:
+    ssl_infos: list[dict[str, Any]], max_property_count: int
+) -> list[dict[str, Any]]:
     pivotable = []
     try:
         for ssl_info in ssl_infos:
@@ -131,8 +131,8 @@ def check_pivotable_ssl_email(
 
 
 def check_pivotable_soa_email(
-    soa_emails: List[Dict[str, Any]], max_count: int
-) -> List[Dict[str, Any]]:
+    soa_emails: list[dict[str, Any]], max_count: int
+) -> list[dict[str, Any]]:
     pivotable = []
     try:
         for soa_email in soa_emails:
@@ -148,8 +148,8 @@ def check_pivotable_soa_email(
 
 
 def check_pivotable_ip_address(
-    ips: List[Dict[str, Any]], max_count: int
-) -> List[Dict[str, Any]]:
+    ips: list[dict[str, Any]], max_count: int
+) -> list[dict[str, Any]]:
     pivotable = []
     try:
         for ip in ips:
@@ -166,8 +166,8 @@ def check_pivotable_ip_address(
 
 
 def check_pivotable_mx_ip(
-    mx: List[Dict[str, Any]], max_mx_ip_count: int
-) -> List[Dict[str, Any]]:
+    mx: list[dict[str, Any]], max_mx_ip_count: int
+) -> list[dict[str, Any]]:
     pivotable = []
     try:
         for prop in mx:
@@ -185,8 +185,8 @@ def check_pivotable_mx_ip(
 
 
 def check_pivotable_mx_host_or_domain(
-    mx: List[Dict[str, Any]], key: str, max_count: int
-) -> List[Dict[str, Any]]:
+    mx: list[dict[str, Any]], key: str, max_count: int
+) -> list[dict[str, Any]]:
     pivotable = []
     try:
         for prop in mx:
@@ -203,8 +203,8 @@ def check_pivotable_mx_host_or_domain(
 
 
 def check_pivotable_google_props(
-    google_prop: Dict[str, Any], max_count: int
-) -> Optional[Dict[str, Any]]:
+    google_prop: dict[str, Any], max_count: int
+) -> Optional[dict[str, Any]]:
     try:
         google_prop_count = int(google_prop.get("count") or 0)
         if max_count >= google_prop_count > 1:
@@ -219,7 +219,7 @@ def check_pivotable_google_props(
 """ COMMAND FUNCTION """
 
 
-def check_pivotable_domains(args: Dict[str, Any]) -> CommandResults:
+def check_pivotable_domains(args: dict[str, Any]) -> CommandResults:
     domaintools_data = args["domaintools_data"]
 
     # name server

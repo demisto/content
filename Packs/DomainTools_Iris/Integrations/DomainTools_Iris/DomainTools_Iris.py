@@ -6,7 +6,7 @@ from CommonServerUserPython import *
 import urllib3
 import statistics
 from datetime import datetime
-from typing import Dict, Any, List
+from typing import Any
 from domaintools import API
 from domaintools import utils
 import urllib.parse
@@ -244,9 +244,9 @@ def create_results(domain_result):
     Args:
         domain_result: DomainTools domain data
 
-    Returns: Dict {
+    Returns: dict {
         domain: <Common.Domain> - Domain indicator object with Iris results that map to Domain context
-        domaintools: <Dict> - DomainTools context with all Iris results
+        domaintools: <dict> - DomainTools context with all Iris results
     }
 
     """
@@ -751,14 +751,14 @@ def format_investigate_output(result):
     return (human_readable, indicators)
 
 
-def get_domain_risk_score_details(domain_risk: Dict[str, Any]) -> Dict[str, Any]:
+def get_domain_risk_score_details(domain_risk: dict[str, Any]) -> dict[str, Any]:
     """Get the domain risk score details on a given domain risk
 
     Args:
-        domain_risk (Dict[str, Any]): The domain risk attribute of a domain
+        domain_risk (dict[str, Any]): The domain risk attribute of a domain
 
     Returns:
-        Dict[str, Any]: The detailed risk scores.
+        dict[str, Any]: The detailed risk scores.
     """
     risk_scores = {
         "overall_risk_score": 0,
@@ -799,11 +799,11 @@ def get_domain_risk_score_details(domain_risk: Dict[str, Any]) -> Dict[str, Any]
     return risk_scores
 
 
-def format_attribute(attribute: List[dict], key: str = '') -> str:
+def format_attribute(attribute: list[dict], key: str = '') -> str:
     """Format list of attribute to str
 
     Args:
-        attribute (List[dict]): The attribute to format
+        attribute (list[dict]): The attribute to format
         key (str): The key to lookup, supports nested dict (e.g "host.value")
 
     Returns:
@@ -821,15 +821,15 @@ def format_attribute(attribute: List[dict], key: str = '') -> str:
     return ",".join(formatted_str) if formatted_str else ""
 
 
-def create_indicator_from_dt_domain(domain: Dict[str, Any], source: str) -> Dict[str, Any]:
+def create_indicator_from_dt_domain(domain: dict[str, Any], source: str) -> dict[str, Any]:
     """Create an Indicator object from the Domaintools Iris domain.
 
     Args:
-        domain (Dict[str, Any]): The domain to be created as indicator.
+        domain (dict[str, Any]): The domain to be created as indicator.
         source (str): The domain source.
 
     Returns:
-        Dict[str, Any]: The DomainTools Iris Indicator Attributes
+        dict[str, Any]: The DomainTools Iris Indicator Attributes
     """
     ip_addresses = domain.get("ip") or []
     ip_country_code = ip_addresses[0].get('country_code', {}).get('value') if len(ip_addresses) else ''
@@ -893,7 +893,7 @@ def create_indicator_from_dt_domain(domain: Dict[str, Any], source: str) -> Dict
     }
 
 
-def fetch_domains_from_dt_api(search_type: str, search_value: str) -> List[Dict[str, Any]]:
+def fetch_domains_from_dt_api(search_type: str, search_value: str) -> list[dict[str, Any]]:
     """Fetch Domains from Domaintools API
 
     Args:
@@ -901,7 +901,7 @@ def fetch_domains_from_dt_api(search_type: str, search_value: str) -> List[Dict[
         search_value (str): The search value
 
     Returns:
-        List[Dict[str, Any]]: DomainTools Iris response
+        list[dict[str, Any]]: DomainTools Iris response
     """
     search_data = {search_type: search_value}
     dt_query = domain_pivot(search_data)
@@ -914,18 +914,18 @@ def fetch_domains_from_dt_api(search_type: str, search_value: str) -> List[Dict[
     return dt_results
 
 
-def fetch_and_process_domains(iris_search_hash: Dict[str, Any], iris_tags: Dict[str, Any]) -> None:
+def fetch_and_process_domains(iris_search_hash: dict[str, Any], iris_tags: dict[str, Any]) -> None:
     """
     Fetch and Process Domaintools Domain by given search hash or iris tags.
     Creates incidents/indicators in XSOAR.
 
     Args:
-        iris_search_hash (Dict[str, str]): The iris_search_hash key value attribute (keys: search_hash, import_only)
-        iris_tags (Dict[str, str]): The iris_tags key value attribute (keys: tags, import_only)
+        iris_search_hash (dict[str, str]): The iris_search_hash key value attribute (keys: search_hash, import_only)
+        iris_tags (dict[str, str]): The iris_tags key value attribute (keys: tags, import_only)
     """
 
     def process_domains(
-        domains_list: list[Dict[str, Any]] = [],
+        domains_list: list[dict[str, Any]] = [],
         import_only: bool = True,
         incident_name: str = "",
         source: str = ""
@@ -960,9 +960,9 @@ def fetch_and_process_domains(iris_search_hash: Dict[str, Any], iris_tags: Dict[
 
         return last_run
 
-    incidents: List[Any] = []
-    dt_iris_search_hash_result: List[Any] = []
-    dt_iris_tags_result: List[Any] = []
+    incidents: list[Any] = []
+    dt_iris_search_hash_result: list[Any] = []
+    dt_iris_tags_result: list[Any] = []
 
     # DT Iris Tags Results
     if iris_tags["tags"]:
@@ -1018,7 +1018,7 @@ def domain_command():
     domain_list = domain.split(",")
     domain_chunks = chunks(domain_list, 100)
     include_context = argToBoolean(demisto.args().get('include_context', True))
-    command_results_list: List[CommandResults] = []
+    command_results_list: list[CommandResults] = []
 
     for chunk in domain_chunks:
         response = domain_investigate(','.join(chunk))
@@ -1059,7 +1059,7 @@ def domain_enrich_command():
     domain_list = domain.split(",")
     domain_chunks = chunks(domain_list, 100)
     include_context = argToBoolean(demisto.args().get('include_context', True))
-    command_results_list: List[CommandResults] = []
+    command_results_list: list[CommandResults] = []
 
     for chunk in domain_chunks:
         response = domain_enrich(','.join(chunk))
@@ -1243,7 +1243,7 @@ def domain_pivot_command():
     Command to get list of domains that share connected infrastructure iris-investigate API endpoint.
     e.g. !domaintoolsiris-pivot ip=1.1.1.1
     """
-    search_data = {}  # type: Dict[Any, Any]
+    search_data = {}  # type: dict[Any, Any]
     search_type = ''
     search_value = ''
     available_pivots = {

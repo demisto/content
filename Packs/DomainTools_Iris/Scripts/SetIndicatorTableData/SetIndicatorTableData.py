@@ -1,5 +1,5 @@
 from CommonServerPython import *
-from typing import Dict, Any, List
+from typing import Any
 from enum import Enum
 
 
@@ -31,11 +31,11 @@ def find_indicator_reputation(domain_age: int, proximity_score: int, threat_prof
         return ReputationEnum.GOOD
 
 
-def format_attribute(attribute: List[dict], key: str = '') -> str:
+def format_attribute(attribute: list[dict], key: str = '') -> str:
     """Format list of attribute to str
 
     Args:
-        attribute (List[dict]): The attribute to format
+        attribute (list[dict]): The attribute to format
         key (str): The key to lookup, supports nested dict (e.g "host.value")
 
     Returns:
@@ -53,7 +53,7 @@ def format_attribute(attribute: List[dict], key: str = '') -> str:
     return ",".join(formatted_str) if formatted_str else ""
 
 
-def set_indicator_table_data(args: Dict[str, Any]) -> CommandResults:
+def set_indicator_table_data(args: dict[str, Any]) -> CommandResults:
     human_readable_str = "No context data for domain."
     required_keys = ("Name", "Hosting", "Identity", "Analytics")
 
