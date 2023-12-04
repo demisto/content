@@ -380,7 +380,7 @@ def get_indicator_relationships(
     return relationships
 
 
-def create_malware_indicator(client: MandiantClient, raw_indicator: dict) -> dict:
+def create_malware_indicator(client: MandiantClient, raw_indicator: dict) -> tuple[None, dict]:
     """
     Creates a malware indicator
     Args:
@@ -539,7 +539,7 @@ def create_campaign_indicator(client: MandiantClient, raw_indicator: dict) -> di
     return indicator_obj
 
 
-def create_actor_indicator(client: MandiantClient, raw_indicator: dict) -> dict:
+def create_actor_indicator(client: MandiantClient, raw_indicator: dict) -> tuple[None,dict]:
     """
     Create indicator
     Args:

@@ -655,7 +655,7 @@ def test_reputation_file(
         results_dict["fields"]["stixid"] == "md5--7c8be1f2-b949-aaaa-af7f-18908175108f"
     )
     assert (
-        results_dict["fields"]["DBotScore"]["Indicator"]
+        results_dict["fields"]["dbotscore"]["Indicator"]
         == "0cc22fd05a3e771b09b584db0a16aaaa"
     )
     assert results_dict["fields"]["md5"] == "0cc22fd05a3e771b09b584db0a16aaaa"
@@ -693,7 +693,7 @@ def test_reputation_domain(
     assert (
         results_dict["fields"]["stixid"] == "fqdn--be2e92a7-aaaa-5f35-8c6e-0731685aee19"
     )
-    assert results_dict["fields"]["DBotScore"]["Indicator"] == "some.url.com"
+    assert results_dict["fields"]["dbotscore"]["Indicator"] == "some.url.com"
     assert results_dict["fields"]["dns"] == "some.url.com"
     assert results_dict["fields"]["domain"] == "some.url.com"
     assert results_dict["fields"]["trafficlightprotocol"] == "GREEN"
@@ -722,7 +722,7 @@ def test_reputation_ip(
     assert (
         results_dict["fields"]["stixid"] == "ipv4--27063181-abcd-53ec-b785-3b9772febd50"
     )
-    assert results_dict["fields"]["DBotScore"]["Indicator"] == "192.168.84.82"
+    assert results_dict["fields"]["dbotscore"]["Indicator"] == "192.168.84.82"
     assert results_dict["fields"]["ip"] == "192.168.84.82"
     assert results_dict["fields"]["trafficlightprotocol"] == "GREEN"
 
@@ -752,7 +752,7 @@ def test_reputation_url(
     assert (
         results_dict["fields"]["stixid"] == "url--02183bee-dcba-5d25-956b-765650f9e42a"
     )
-    assert results_dict["fields"]["DBotScore"]["Indicator"] == "https://someurl.com"
+    assert results_dict["fields"]["dbotscore"]["Indicator"] == "https://someurl.com"
     assert results_dict["fields"]["url"] == "https://someurl.com"
     assert results_dict["fields"]["trafficlightprotocol"] == "RED"
 
@@ -780,7 +780,7 @@ def test_reputation_cve(
         == "vulnerability--e3b6a556-abcd-dcba-b1df-8e1f0444e978"
     )
     assert results_dict["fields"]["trafficlightprotocol"] == "RED"
-    assert results_dict["fields"]["DBotScore"]["Score"] == 1
+    assert results_dict["fields"]["dbotscore"]["Score"] == 1
     assert results_dict["fields"]["cvss"] == "v2.0"
     assert len(results_dict["fields"]["cvss2"]) > 0
 
