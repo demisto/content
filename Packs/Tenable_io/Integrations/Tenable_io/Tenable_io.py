@@ -159,6 +159,8 @@ if not USE_PROXY:
     del os.environ['http_proxy']
     del os.environ['https_proxy']
 
+VENDOR = 'tenable'
+PRODUCT = 'io'
 CHUNK_SIZE = 5000
 MAX_CHUNKS_PER_FETCH = 10
 ASSETS_FETCH_FROM = '90 days'
@@ -515,6 +517,7 @@ def handle_assets_chunks(client: Client, assets_last_run):
     assets = []
     for chunk_id in stored_chunks[:MAX_CHUNKS_PER_FETCH]:
         assets.extend(client.download_assets_chunk(export_uuid=export_uuid, chunk_id=chunk_id))
+        # demisto.debug(f"extended assets are: {assets}")
         updated_stored_chunks.remove(chunk_id)
     if updated_stored_chunks:
         assets_last_run.update({'available_chunks': updated_stored_chunks,
@@ -524,7 +527,7 @@ def handle_assets_chunks(client: Client, assets_last_run):
         assets_last_run.pop('type', None)
         assets_last_run.pop('available_chunks', None)
         assets_last_run.pop('export_uuid', None)
-    return assets_last_run, assets
+    return assets, assets_last_run
 
 def try_get_assets_chunks(client: Client, export_uuid: str, assets_last_run):
     """
@@ -1542,6 +1545,11 @@ def main():  # pragma: no cover
 
     demisto.debug(f'Command being called is {command}')
     try:
+        h = AUTH_HEADERS | {
+    'accept': "application/json",
+    'content-type': "application/json",
+    'User-Agent': USER_AGENT_HEADERS_VALUE
+}
         headers = {'X-ApiKeys': f'accessKey={access_key}; secretKey={secret_key}',
                    "Accept": "application/json"}
         client = Client(
@@ -1585,41 +1593,29 @@ def main():  # pragma: no cover
 
         elif command == 'fetch-assets':
             assets_last_run = demisto.getAssetsLastRun()
+            demisto.debug(f"saved lastrun assets: {assets_last_run}")
 
             # starting new fetch for assets, not polling from prev call
             if not assets_last_run.get('export_uuid'):
                 generate_assets_export_uuid(client, assets_last_run)
 
             assets, new_assets_last_run = fetch_assets_command(client, assets_last_run)
+            demisto.debug(f"new lastrun assets: {new_assets_last_run}")
+
             demisto.setAssetsLastRun(new_assets_last_run)
 
-            # todo: to be implemented in CSP once we have the api endpoint from xdr
             demisto.updateModuleHealth({'assetsPulled': len(assets)})
 
             demisto.debug("now sending with send_data_to_xsiam")
-            assets = [{'id': '4b4dd943-583f-4034-a5b7-c8b7d8c5b46f',"tmp": tmp+1, 'has_agent': False, 'has_plugin_results': True, 'created_at': '2022-08-14T11:17:12.521Z', 'terminated_at': None, 'terminated_by': None, 'updated_at': '2023-10-28T16:52:01.049Z', 'deleted_at': None, 'deleted_by': None, 'first_seen': '2022-08-14T11:17:09.239Z', 'last_seen': '2023-08-20T11:34:26.366Z', 'first_scan_time': '2022-08-14T11:17:09.239Z', 'last_scan_time': '2023-08-20T11:34:26.366Z', 'last_authenticated_scan_date': None, 'last_licensed_scan_date': '2023-08-20T11:34:26.366Z', 'last_scan_id': '79e631d5-dba5-4291-92ac-d16eef9fa67e', 'last_schedule_id': 'template-f2f3de19-02aa-2bb0-2845-4af9dcdf19be726959c33b9f70a1', 'azure_vm_id': None, 'azure_resource_id': None, 'gcp_project_id': None, 'gcp_zone': None, 'gcp_instance_id': None, 'aws_ec2_instance_ami_id': None, 'aws_ec2_instance_id': None, 'agent_uuid': None, 'bios_uuid': None, 'network_id': '00000000-0000-0000-0000-000000000000', 'network_name': 'Default', 'aws_owner_id': None, 'aws_availability_zone': None, 'aws_region': None, 'aws_vpc_id': None, 'aws_ec2_instance_group_name': None, 'aws_ec2_instance_state_name': None, 'aws_ec2_instance_type': None, 'aws_subnet_id': None, 'aws_ec2_product_code': None, 'aws_ec2_name': None, 'mcafee_epo_guid': None, 'mcafee_epo_agent_guid': None, 'servicenow_sysid': None, 'bigfix_asset_id': None, 'agent_names': [], 'installed_software': ['cpe:/a:apache:http_server:2.4.7', 'cpe:/a:apache:http_server:2.4.99', 'cpe:/a:openbsd:openssh:6.6'], 'ipv4s': ['45.33.32.156'], 'ipv6s': [], 'fqdns': ['scanme.nmap.org'], 'mac_addresses': [], 'netbios_names': [], 'operating_systems': ['Linux Kernel 3.13 on Ubuntu 14.04 (trusty)'], 'system_types': ['general-purpose'], 'hostnames': [], 'ssh_fingerprints': [], 'qualys_asset_ids': [], 'qualys_host_ids': [], 'manufacturer_tpm_ids': [], 'symantec_ep_hardware_keys': [], 'sources': [{'name': 'NESSUS_SCAN', 'first_seen': '2022-08-14T11:17:09.239Z', 'last_seen': '2023-08-20T11:34:26.366Z'}], 'tags': [{'uuid': '75947cc6-533f-4d00-ab8c-42d11da8aa3b', 'key': 'VulnerableDomains', 'value': 'testphp.vulnweb.com', 'added_by': '142f7818-d956-449d-b575-3599763698a6', 'added_at': '2022-08-14T11:19:04.025Z'}], 'network_interfaces': [{'name': 'UNKNOWN', 'virtual': None, 'aliased': None, 'fqdns': ['scanme.nmap.org'], 'mac_addresses': [], 'ipv4s': ['45.33.32.156'], 'ipv6s': []}]}, {'id': '1d7b5fc4-5ac9-4df6-9c34-720cbda9952b','tmp': tmp, 'has_agent': False, 'has_plugin_results': True, 'created_at': '2022-08-14T12:10:07.151Z', 'terminated_at': None, 'terminated_by': None, 'updated_at': '2023-10-01T02:53:05.792Z', 'deleted_at': None, 'deleted_by': None, 'first_seen': '2022-08-14T12:10:05.145Z', 'last_seen': '2023-11-20T11:34:26.366Z', 'first_scan_time': '2022-08-14T12:10:05.145Z', 'last_scan_time': '2023-11-25T11:34:26.366Z', 'last_authenticated_scan_date': None, 'last_licensed_scan_date': '2023-08-20T11:34:26.366Z', 'last_scan_id': '79e631d5-dba5-4291-92ac-d16eef9fa67e', 'last_schedule_id': 'template-f2f3de19-02aa-2bb0-2845-4af9dcdf19be726959c33b9f70a1', 'azure_vm_id': None, 'azure_resource_id': None, 'gcp_project_id': None, 'gcp_zone': None, 'gcp_instance_id': None, 'aws_ec2_instance_ami_id': None, 'aws_ec2_instance_id': None, 'agent_uuid': None, 'bios_uuid': None, 'network_id': '00000000-0000-0000-0000-000000000111', 'network_name': 'Default', 'aws_owner_id': None, 'aws_availability_zone': None, 'aws_region': None, 'aws_vpc_id': None, 'aws_ec2_instance_group_name': None, 'aws_ec2_instance_state_name': None, 'aws_ec2_instance_type': None, 'aws_subnet_id': None, 'aws_ec2_product_code': None, 'aws_ec2_name': None, 'mcafee_epo_guid': None, 'mcafee_epo_agent_guid': None, 'servicenow_sysid': None, 'bigfix_asset_id': None, 'agent_names': [], 'installed_software': ['cpe:/a:isc:bind:9.8.2rc1-redhat-9.8.2-0.62.rc1.el6_9.5', 'cpe:/a:isc:bind:9.8.2rc1:RedHat', 'cpe:/a:openbsd:openssh:5.3'], 'ipv4s': ['67.222.39.71'], 'ipv6s': [], 'fqdns': ['box2055.bluehost.com'], 'mac_addresses': [], 'netbios_names': [], 'operating_systems': ['Linux Kernel 2.6'], 'system_types': ['general-purpose'], 'hostnames': [], 'ssh_fingerprints': ['677e755a565ed2b7e7c8ff04086b409c'], 'qualys_asset_ids': [], 'qualys_host_ids': [], 'manufacturer_tpm_ids': [], 'symantec_ep_hardware_keys': [], 'sources': [{'name': 'NESSUS_SCAN', 'first_seen': '2022-08-14T12:10:05.145Z', 'last_seen': '2023-08-20T11:34:26.366Z'}], 'tags': [{'uuid': '07f7ad9b-6f61-4c3e-925c-9bec5659cd8d', 'key': 'VulnerableDomains', 'value': 'test', 'added_by': '142f7818-d956-449d-b575-3599763698a6', 'added_at': '2023-02-02T10:55:35.281Z'}, {'uuid': '75947cc6-533f-4d00-ab8c-42d11da8aa3b', 'key': 'VulnerableDomains', 'value': 'testphp.vulnweb.com', 'added_by': '142f7818-d956-449d-b575-3599763698a6', 'added_at': '2022-08-14T11:19:04.025Z'}], 'network_interfaces': [{'name': 'UNKNOWN', 'virtual': None, 'aliased': None, 'fqdns': ['box2055.bluehost.com'], 'mac_addresses': [], 'ipv4s': ['67.222.39.71'], 'ipv6s': []}]}]
-            send_data_to_xsiam(data=assets, vendor=VENDOR, product=f'{PRODUCT}_assets', data_type=ASSETS)
-            # send_events_to_xsiam(assets, product=PRODUCT, vendor=VENDOR)
+            # assets = [{'id': '4b4dd943-583f-4034-a5b7-c8b7d8c5b46f',"tmp": tmp+1, 'has_agent': False, 'has_plugin_results': True, 'created_at': '2022-08-14T11:17:12.521Z', 'terminated_at': None, 'terminated_by': None, 'updated_at': '2023-10-28T16:52:01.049Z', 'deleted_at': None, 'deleted_by': None, 'first_seen': '2022-08-14T11:17:09.239Z', 'last_seen': '2023-08-20T11:34:26.366Z', 'first_scan_time': '2022-08-14T11:17:09.239Z', 'last_scan_time': '2023-08-20T11:34:26.366Z', 'last_authenticated_scan_date': None, 'last_licensed_scan_date': '2023-08-20T11:34:26.366Z', 'last_scan_id': '79e631d5-dba5-4291-92ac-d16eef9fa67e', 'last_schedule_id': 'template-f2f3de19-02aa-2bb0-2845-4af9dcdf19be726959c33b9f70a1', 'azure_vm_id': None, 'azure_resource_id': None, 'gcp_project_id': None, 'gcp_zone': None, 'gcp_instance_id': None, 'aws_ec2_instance_ami_id': None, 'aws_ec2_instance_id': None, 'agent_uuid': None, 'bios_uuid': None, 'network_id': '00000000-0000-0000-0000-000000000000', 'network_name': 'Default', 'aws_owner_id': None, 'aws_availability_zone': None, 'aws_region': None, 'aws_vpc_id': None, 'aws_ec2_instance_group_name': None, 'aws_ec2_instance_state_name': None, 'aws_ec2_instance_type': None, 'aws_subnet_id': None, 'aws_ec2_product_code': None, 'aws_ec2_name': None, 'mcafee_epo_guid': None, 'mcafee_epo_agent_guid': None, 'servicenow_sysid': None, 'bigfix_asset_id': None, 'agent_names': [], 'installed_software': ['cpe:/a:apache:http_server:2.4.7', 'cpe:/a:apache:http_server:2.4.99', 'cpe:/a:openbsd:openssh:6.6'], 'ipv4s': ['45.33.32.156'], 'ipv6s': [], 'fqdns': ['scanme.nmap.org'], 'mac_addresses': [], 'netbios_names': [], 'operating_systems': ['Linux Kernel 3.13 on Ubuntu 14.04 (trusty)'], 'system_types': ['general-purpose'], 'hostnames': [], 'ssh_fingerprints': [], 'qualys_asset_ids': [], 'qualys_host_ids': [], 'manufacturer_tpm_ids': [], 'symantec_ep_hardware_keys': [], 'sources': [{'name': 'NESSUS_SCAN', 'first_seen': '2022-08-14T11:17:09.239Z', 'last_seen': '2023-08-20T11:34:26.366Z'}], 'tags': [{'uuid': '75947cc6-533f-4d00-ab8c-42d11da8aa3b', 'key': 'VulnerableDomains', 'value': 'testphp.vulnweb.com', 'added_by': '142f7818-d956-449d-b575-3599763698a6', 'added_at': '2022-08-14T11:19:04.025Z'}], 'network_interfaces': [{'name': 'UNKNOWN', 'virtual': None, 'aliased': None, 'fqdns': ['scanme.nmap.org'], 'mac_addresses': [], 'ipv4s': ['45.33.32.156'], 'ipv6s': []}]}, {'id': '1d7b5fc4-5ac9-4df6-9c34-720cbda9952b','tmp': tmp, 'has_agent': False, 'has_plugin_results': True, 'created_at': '2022-08-14T12:10:07.151Z', 'terminated_at': None, 'terminated_by': None, 'updated_at': '2023-10-01T02:53:05.792Z', 'deleted_at': None, 'deleted_by': None, 'first_seen': '2022-08-14T12:10:05.145Z', 'last_seen': '2023-11-20T11:34:26.366Z', 'first_scan_time': '2022-08-14T12:10:05.145Z', 'last_scan_time': '2023-11-25T11:34:26.366Z', 'last_authenticated_scan_date': None, 'last_licensed_scan_date': '2023-08-20T11:34:26.366Z', 'last_scan_id': '79e631d5-dba5-4291-92ac-d16eef9fa67e', 'last_schedule_id': 'template-f2f3de19-02aa-2bb0-2845-4af9dcdf19be726959c33b9f70a1', 'azure_vm_id': None, 'azure_resource_id': None, 'gcp_project_id': None, 'gcp_zone': None, 'gcp_instance_id': None, 'aws_ec2_instance_ami_id': None, 'aws_ec2_instance_id': None, 'agent_uuid': None, 'bios_uuid': None, 'network_id': '00000000-0000-0000-0000-000000000111', 'network_name': 'Default', 'aws_owner_id': None, 'aws_availability_zone': None, 'aws_region': None, 'aws_vpc_id': None, 'aws_ec2_instance_group_name': None, 'aws_ec2_instance_state_name': None, 'aws_ec2_instance_type': None, 'aws_subnet_id': None, 'aws_ec2_product_code': None, 'aws_ec2_name': None, 'mcafee_epo_guid': None, 'mcafee_epo_agent_guid': None, 'servicenow_sysid': None, 'bigfix_asset_id': None, 'agent_names': [], 'installed_software': ['cpe:/a:isc:bind:9.8.2rc1-redhat-9.8.2-0.62.rc1.el6_9.5', 'cpe:/a:isc:bind:9.8.2rc1:RedHat', 'cpe:/a:openbsd:openssh:5.3'], 'ipv4s': ['67.222.39.71'], 'ipv6s': [], 'fqdns': ['box2055.bluehost.com'], 'mac_addresses': [], 'netbios_names': [], 'operating_systems': ['Linux Kernel 2.6'], 'system_types': ['general-purpose'], 'hostnames': [], 'ssh_fingerprints': ['677e755a565ed2b7e7c8ff04086b409c'], 'qualys_asset_ids': [], 'qualys_host_ids': [], 'manufacturer_tpm_ids': [], 'symantec_ep_hardware_keys': [], 'sources': [{'name': 'NESSUS_SCAN', 'first_seen': '2022-08-14T12:10:05.145Z', 'last_seen': '2023-08-20T11:34:26.366Z'}], 'tags': [{'uuid': '07f7ad9b-6f61-4c3e-925c-9bec5659cd8d', 'key': 'VulnerableDomains', 'value': 'test', 'added_by': '142f7818-d956-449d-b575-3599763698a6', 'added_at': '2023-02-02T10:55:35.281Z'}, {'uuid': '75947cc6-533f-4d00-ab8c-42d11da8aa3b', 'key': 'VulnerableDomains', 'value': 'testphp.vulnweb.com', 'added_by': '142f7818-d956-449d-b575-3599763698a6', 'added_at': '2022-08-14T11:19:04.025Z'}], 'network_interfaces': [{'name': 'UNKNOWN', 'virtual': None, 'aliased': None, 'fqdns': ['box2055.bluehost.com'], 'mac_addresses': [], 'ipv4s': ['67.222.39.71'], 'ipv6s': []}]}]
+            # send_data_to_xsiam(data=assets, vendor=VENDOR, product=f'{PRODUCT}_assets', data_type=ASSETS)
+            send_events_to_xsiam(events=assets, product=f'{PRODUCT}', vendor=VENDOR)
 
             demisto.debug(f"done sending {len(assets)} assets to xsiam")
 
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
-
-    # if not (ACCESS_KEY and SECRET_KEY):
-    #     raise DemistoException('Access Key and Secret Key must be provided.')
-
-    # client = Client(
-    #     BASE_URL,
-    #     verify=USE_SSL,
-    #     proxy=USE_PROXY,
-    #     ok_codes=(200,),
-    #     headers=HEADERS
-    # )
-    # args = demisto.args()
-    # command = demisto.command()
-
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
