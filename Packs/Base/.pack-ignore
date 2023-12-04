@@ -53,7 +53,7 @@ ignore=BA124
 ignore=BA124
 
 [file:CommonServer_6_10.yml]
-ignore=BA108
+ignore=BA108,BA109
 
 [known_words]
 createindicatorrelationship
