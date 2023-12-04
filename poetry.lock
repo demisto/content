@@ -1376,7 +1376,7 @@ urllib3 = ">=1.26.7"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.23.0"
+version = "1.24.0"
 description = "\"A Python library for the Demisto SDK\""
 optional = false
 python-versions = ">=3.8,<3.11"
@@ -1467,6 +1467,7 @@ urllib3 = "^1.26.9"
 vulture = "^2.3"
 wcmatch = "^8.3"
 yamlordereddictloader = "^0.4.0"
+
 
 [package.extras]
 build = ["gsutil (==5.17)"]
@@ -7202,3 +7203,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
 content-hash = "0d258094b5d9feb57c964a83b6af2c08ac989fbf09d0af2415650e812ffd1b19"
+
