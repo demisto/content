@@ -1060,13 +1060,13 @@ class TestGetIndicators:
             verify that the requested amount is returned.
         """
         mocker.patch.object(Client, 'http_request', side_effect=[
-            {'objects': INDICATOR * 1000},
-            {'objects': INDICATOR * 1000},
-            {'objects': INDICATOR * 1000},
-            {'objects': INDICATOR * 1000},
-            {'objects': INDICATOR * 1000},
-            {'objects': INDICATOR * 1000},
-            {'objects': INDICATOR * 1000},
+            {'objects': INDICATOR * 1000, 'meta': {'next': '/api/v2/intelligence/?&search_after=1693750222045%2C455231625'}},
+            {'objects': INDICATOR * 1000, 'meta': {'next': '/api/v2/intelligence/?&search_after=1693750222045%2C455231625'}},
+            {'objects': INDICATOR * 1000, 'meta': {'next': '/api/v2/intelligence/?&search_after=1693750222045%2C455231625'}},
+            {'objects': INDICATOR * 1000, 'meta': {'next': '/api/v2/intelligence/?&search_after=1693750222045%2C455231625'}},
+            {'objects': INDICATOR * 1000, 'meta': {'next': '/api/v2/intelligence/?&search_after=1693750222045%2C455231625'}},
+            {'objects': INDICATOR * 1000, 'meta': {'next': '/api/v2/intelligence/?&search_after=1693750222045%2C455231625'}},
+            {'objects': INDICATOR * 1000, 'meta': {'next': None}},
         ])
         client = Client(
             base_url='',
