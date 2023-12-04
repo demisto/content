@@ -1,4 +1,5 @@
 import json
+import os
 
 BASE_URL = "https://api.mnemonic.no"
 CASE_ID = 1337
@@ -149,7 +150,7 @@ def test_parse_first_fetch():
 def test_test_module_command(requests_mock):
     from ArgusManagedDefence import test_module_command
 
-    with open("argus_json/argus_currentuser.json") as json_file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_currentuser.json") as json_file:
         data = json.load(json_file)
     method_url = "/currentuser/v1/user"
     requests_mock.get(f"{BASE_URL}{method_url}", json=data)
@@ -161,11 +162,11 @@ def test_test_module_command(requests_mock):
 def test_fetch_incidents(requests_mock):
     from ArgusManagedDefence import fetch_incidents
 
-    with open("argus_json/argus_case_search.json") as json_file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_case_search.json") as json_file:
         data = json.load(json_file)
-    with open("argus_json/argus_case_attachments.json") as attachments_file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_case_attachments.json") as attachments_file:
         attachments = json.load(attachments_file)
-    with open("argus_json/argus_case_attachment.json", "rb") as attachment_file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_case_attachment.json", "rb") as attachment_file:
         attachment = attachment_file.read()
 
     method_url = "/cases/v2/case/search"
@@ -189,7 +190,7 @@ def test_fetch_incidents_increment_timestamp(requests_mock):
 
     method_url = "/cases/v2/case/search"
     timestamp = 327645
-    with open("argus_json/argus_case_search.json") as json_file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_case_search.json") as json_file:
         data = json.load(json_file)
     data["data"][0]["createdTimestamp"] = timestamp
 
@@ -203,11 +204,11 @@ def test_fetch_incidents_increment_timestamp(requests_mock):
 def test_get_remote_data_command(requests_mock):
     from ArgusManagedDefence import get_remote_data_command
 
-    with open("argus_json/argus_case_metadata.json") as json_file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_case_metadata.json") as json_file:
         metadata = json.load(json_file)
-    with open("argus_json/argus_case_attachments.json") as json_file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_case_attachments.json") as json_file:
         attachments = json.load(json_file)
-    with open("argus_json/argus_case_comments.json") as json_file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_case_comments.json") as json_file:
         comments = json.load(json_file)
 
     method_urls = {
@@ -243,11 +244,11 @@ def test_get_remote_data_command(requests_mock):
 def test_get_remote_data_command_no_updates(requests_mock):
     from ArgusManagedDefence import get_remote_data_command
 
-    with open("argus_json/argus_case_metadata.json") as json_file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_case_metadata.json") as json_file:
         metadata = json.load(json_file)
-    with open("argus_json/argus_case_attachments.json") as json_file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_case_attachments.json") as json_file:
         attachments = json.load(json_file)
-    with open("argus_json/argus_case_comments.json") as json_file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_case_comments.json") as json_file:
         comments = json.load(json_file)
 
     method_urls = {
@@ -272,12 +273,12 @@ def test_get_remote_data_command_no_updates(requests_mock):
 def test_update_remote_system_command(requests_mock):
     from ArgusManagedDefence import update_remote_system_command
 
-    with open("argus_json/argus_case_metadata.json") as json_file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_json/argus_case_metadata.json") as json_file:
         data = json.load(json_file)
     data["data"]["id"] = CASE_ID
     method_url = f"/cases/v2/case/{CASE_ID}"
     requests_mock.put(f"{BASE_URL}{method_url}", json=data)
-    with open("argus_json/argus_case_comment.json") as json_file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_case_comment.json") as json_file:
         comment = json.load(json_file)
     method_url = f"/cases/v2/case/{CASE_ID}/comments"
     requests_mock.post(f"{BASE_URL}{method_url}", json=comment)
@@ -320,7 +321,7 @@ def test_update_remote_system_command_no_change(requests_mock):
 def test_add_case_tag_command(requests_mock):
     from ArgusManagedDefence import add_case_tag_command
 
-    with open("argus_json/argus_case_metadata.json") as json_file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_case_metadata.json") as json_file:
         data = json.load(json_file)
     method_url = f"/cases/v2/case/{CASE_ID}/tags"
     requests_mock.post(f"{BASE_URL}{method_url}", json=data)
@@ -332,7 +333,7 @@ def test_add_case_tag_command(requests_mock):
 def test_add_comment_command(requests_mock):
     from ArgusManagedDefence import add_comment_command
 
-    with open("argus_json/argus_case_comment.json") as json_file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_case_comment.json") as json_file:
         data = json.load(json_file)
     method_url = f"/cases/v2/case/{CASE_ID}/comments"
     requests_mock.post(f"{BASE_URL}{method_url}", json=data)
@@ -344,7 +345,7 @@ def test_add_comment_command(requests_mock):
 def test_advanced_case_search_command(requests_mock):
     from ArgusManagedDefence import advanced_case_search_command
 
-    with open("argus_json/argus_case_search.json") as json_file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_case_search.json") as json_file:
         data = json.load(json_file)
     method_url = "/cases/v2/case/search"
     requests_mock.post(f"{BASE_URL}{method_url}", json=data)
@@ -355,7 +356,7 @@ def test_advanced_case_search_command(requests_mock):
 def test_close_case_command(requests_mock):
     from ArgusManagedDefence import close_case_command
 
-    with open("argus_json/argus_case_metadata.json") as json_file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_case_metadata.json") as json_file:
         data = json.load(json_file)
     method_url = f"/cases/v2/case/{CASE_ID}/close"
     requests_mock.put(f"{BASE_URL}{method_url}", json=data)
@@ -367,7 +368,7 @@ def test_close_case_command(requests_mock):
 def test_create_case_command(requests_mock):
     from ArgusManagedDefence import create_case_command
 
-    with open("argus_json/argus_case_metadata.json") as json_file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_case_metadata.json") as json_file:
         data = json.load(json_file)
     method_url = "/cases/v2/case"
     requests_mock.post(f"{BASE_URL}{method_url}", json=data)
@@ -385,7 +386,7 @@ def test_create_case_command(requests_mock):
 def test_delete_case_command(requests_mock):
     from ArgusManagedDefence import delete_case_command
 
-    with open("argus_json/argus_case_metadata.json") as json_file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_case_metadata.json") as json_file:
         data = json.load(json_file)
     method_url = f"/cases/v2/case/{CASE_ID}"
     requests_mock.delete(f"{BASE_URL}{method_url}", json=data)
@@ -397,7 +398,7 @@ def test_delete_case_command(requests_mock):
 def test_delete_comment_command(requests_mock):
     from ArgusManagedDefence import delete_comment_command
 
-    with open("argus_json/argus_case_comment.json") as json_file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_case_comment.json") as json_file:
         data = json.load(json_file)
     method_url = f"/cases/v2/case/{CASE_ID}/comments/{COMMENT_ID}"
     requests_mock.delete(f"{BASE_URL}{method_url}", json=data)
@@ -409,7 +410,7 @@ def test_delete_comment_command(requests_mock):
 def test_download_attachment_command(requests_mock):
     from ArgusManagedDefence import download_attachment_command
 
-    with open("argus_json/argus_case_attachment.json", "rb") as file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_case_attachment.json", "rb") as file:
         content = file.read()
     method_url = f"/cases/v2/case/{CASE_ID}/attachments/{ATTACHMENT_ID}/download"
     requests_mock.get(f"{BASE_URL}{method_url}", content=content)
@@ -421,7 +422,7 @@ def test_download_attachment_command(requests_mock):
 def test_edit_comment_command(requests_mock):
     from ArgusManagedDefence import edit_comment_command
 
-    with open("argus_json/argus_case_comment.json") as json_file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_case_comment.json") as json_file:
         data = json.load(json_file)
     method_url = f"/cases/v2/case/{CASE_ID}/comments/{COMMENT_ID}"
     requests_mock.put(f"{BASE_URL}{method_url}", json=data)
@@ -433,7 +434,7 @@ def test_edit_comment_command(requests_mock):
 def test_get_attachment_command(requests_mock):
     from ArgusManagedDefence import get_attachment_command
 
-    with open("argus_json/argus_case_attachment.json") as json_file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_case_attachment.json") as json_file:
         data = json.load(json_file)
     method_url = f"/cases/v2/case/{CASE_ID}/attachments/{ATTACHMENT_ID}"
     requests_mock.get(f"{BASE_URL}{method_url}", json=data)
@@ -445,7 +446,7 @@ def test_get_attachment_command(requests_mock):
 def test_get_case_metadata_by_id_command(requests_mock):
     from ArgusManagedDefence import get_case_metadata_by_id_command
 
-    with open("argus_json/argus_case_metadata.json") as json_file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_case_metadata.json") as json_file:
         data = json.load(json_file)
     method_url = f"/cases/v2/case/{CASE_ID}"
     requests_mock.get(f"{BASE_URL}{method_url}", json=data)
@@ -457,7 +458,7 @@ def test_get_case_metadata_by_id_command(requests_mock):
 def test_list_case_attachments_command(requests_mock):
     from ArgusManagedDefence import list_case_attachments_command
 
-    with open("argus_json/argus_case_attachments.json") as json_file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_case_attachments.json") as json_file:
         data = json.load(json_file)
     method_url = f"/cases/v2/case/{CASE_ID}/attachments"
     requests_mock.get(f"{BASE_URL}{method_url}", json=data)
@@ -469,7 +470,7 @@ def test_list_case_attachments_command(requests_mock):
 def test_list_case_tags_command(requests_mock):
     from ArgusManagedDefence import list_case_tags_command
 
-    with open("argus_json/argus_case_tags.json") as json_file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_case_tags.json") as json_file:
         data = json.load(json_file)
     method_url = f"/cases/v2/case/{CASE_ID}/tags"
     requests_mock.get(f"{BASE_URL}{method_url}", json=data)
@@ -481,7 +482,7 @@ def test_list_case_tags_command(requests_mock):
 def test_list_case_comments_command(requests_mock):
     from ArgusManagedDefence import list_case_comments_command
 
-    with open("argus_json/argus_case_comments.json") as json_file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_case_comments.json") as json_file:
         data = json.load(json_file)
     method_url = f"/cases/v2/case/{CASE_ID}/comments"
     requests_mock.get(f"{BASE_URL}{method_url}", json=data)
@@ -493,7 +494,7 @@ def test_list_case_comments_command(requests_mock):
 def test_remove_case_tag_by_id_command(requests_mock):
     from ArgusManagedDefence import remove_case_tag_by_id_command
 
-    with open("argus_json/argus_case_tags.json") as json_file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_case_tags.json") as json_file:
         data = json.load(json_file)
     method_url = f"/cases/v2/case/{CASE_ID}/tags/{TAG_ID}"
     requests_mock.delete(f"{BASE_URL}{method_url}", json=data)
@@ -505,7 +506,7 @@ def test_remove_case_tag_by_id_command(requests_mock):
 def test_remove_case_tag_by_key_value_command(requests_mock):
     from ArgusManagedDefence import remove_case_tag_by_key_value_command
 
-    with open("argus_json/argus_case_tags.json") as json_file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_case_tags.json") as json_file:
         data = json.load(json_file)
     method_url = f"/cases/v2/case/{CASE_ID}/tags/{TAG_KEY}/{TAG_VALUE}"
     requests_mock.delete(f"{BASE_URL}{method_url}", json=data)
@@ -517,7 +518,7 @@ def test_remove_case_tag_by_key_value_command(requests_mock):
 def test_update_case_command(requests_mock):
     from ArgusManagedDefence import update_case_command
 
-    with open("argus_json/argus_case_metadata.json") as json_file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_case_metadata.json") as json_file:
         data = json.load(json_file)
     method_url = f"/cases/v2/case/{CASE_ID}"
     requests_mock.put(f"{BASE_URL}{method_url}", json=data)
@@ -529,7 +530,7 @@ def test_update_case_command(requests_mock):
 def test_get_events_for_case_command(requests_mock):
     from ArgusManagedDefence import get_events_for_case_command
 
-    with open("argus_json/argus_events.json") as json_file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_events.json") as json_file:
         data = json.load(json_file)
     method_url = f"/events/v1/case/{CASE_ID}"
     requests_mock.get(f"{BASE_URL}{method_url}", json=data)
@@ -541,7 +542,7 @@ def test_get_events_for_case_command(requests_mock):
 def test_find_aggregated_events_command(requests_mock):
     from ArgusManagedDefence import find_aggregated_events_command
 
-    with open("argus_json/argus_events.json") as json_file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_events.json") as json_file:
         data = json.load(json_file)
     method_url = "/events/v1/aggregated/search"
     requests_mock.post(f"{BASE_URL}{method_url}", json=data)
@@ -552,7 +553,7 @@ def test_find_aggregated_events_command(requests_mock):
 def test_list_aggregated_events_command(requests_mock):
     from ArgusManagedDefence import list_aggregated_events_command
 
-    with open("argus_json/argus_events.json") as json_file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_events.json") as json_file:
         data = json.load(json_file)
     method_url = "/events/v1/aggregated"
     requests_mock.get(f"{BASE_URL}{method_url}", json=data)
@@ -563,7 +564,7 @@ def test_list_aggregated_events_command(requests_mock):
 def test_get_event(requests_mock):
     from ArgusManagedDefence import get_event_command
 
-    with open("argus_json/argus_event.json") as json_file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_event.json") as json_file:
         data = json.load(json_file)
 
     method_url = f"/events/v1/{EVENT_TYPE}/{TIMESTAMP}/{CUSTOMER_ID}/{EVENT_ID}"
@@ -582,7 +583,7 @@ def test_get_event(requests_mock):
 def test_get_payload_command(requests_mock):
     from ArgusManagedDefence import get_payload_command
 
-    with open("argus_json/argus_event_payload.json") as json_file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_event_payload.json") as json_file:
         data = json.load(json_file)
 
     method_url = f"/events/v1/{EVENT_TYPE}/{TIMESTAMP}/{CUSTOMER_ID}/{EVENT_ID}/payload"
@@ -601,7 +602,7 @@ def test_get_payload_command(requests_mock):
 def test_get_pcap_command(requests_mock):
     from ArgusManagedDefence import get_pcap_command
 
-    with open("argus_json/argus_event.json", "rb") as file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_event.json", "rb") as file:
         content = file.read()
 
     method_url = f"/events/v1/{EVENT_TYPE}/{TIMESTAMP}/{CUSTOMER_ID}/{EVENT_ID}/pcap"
@@ -620,7 +621,7 @@ def test_get_pcap_command(requests_mock):
 def test_search_records_command(requests_mock):
     from ArgusManagedDefence import search_records_command
 
-    with open("argus_json/argus_event_pdns.json") as json_file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_event_pdns.json") as json_file:
         data = json.load(json_file)
 
     query = "mnemonic.no"
@@ -634,7 +635,7 @@ def test_search_records_command(requests_mock):
 def test_fetch_observations_for_domain_command(requests_mock):
     from ArgusManagedDefence import fetch_observations_for_domain_command
 
-    with open("argus_json/argus_event_obs_domain.json") as json_file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_event_obs_domain.json") as json_file:
         data = json.load(json_file)
     fqdn = "domain.test"
     method_url = f"/reputation/v1/observation/domain/{fqdn}"
@@ -647,7 +648,7 @@ def test_fetch_observations_for_domain_command(requests_mock):
 def test_fetch_observations_for_i_p_command(requests_mock):
     from ArgusManagedDefence import fetch_observations_for_i_p_command
 
-    with open("argus_json/argus_event_obs_ip.json") as json_file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_event_obs_ip.json") as json_file:
         data = json.load(json_file)
 
     ip = "0.0.0.0"
@@ -661,7 +662,7 @@ def test_fetch_observations_for_i_p_command(requests_mock):
 def test_find_nids_events(requests_mock):
     from ArgusManagedDefence import find_nids_events_command
 
-    with open("argus_json/argus_event_nids.json") as json_file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_event_nids.json") as json_file:
         data = json.load(json_file)
     method_url = "/events/v1/nids/search"
 
@@ -673,7 +674,7 @@ def test_find_nids_events(requests_mock):
 def test_list_nids_events(requests_mock):
     from ArgusManagedDefence import list_nids_events_command
 
-    with open("argus_json/argus_event_nids.json") as json_file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_event_nids.json") as json_file:
         data = json.load(json_file)
     method_url = "/events/v1/nids"
 
@@ -685,7 +686,7 @@ def test_list_nids_events(requests_mock):
 def test_print_case_comments_command(requests_mock):
     from ArgusManagedDefence import print_case_comments_command
 
-    with open("argus_json/argus_case_comments.json") as json_file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_case_comments.json") as json_file:
         data = json.load(json_file)
     method_url = f"/cases/v2/case/{CASE_ID}/comments"
     requests_mock.get(f"{BASE_URL}{method_url}", json=data)
@@ -701,7 +702,7 @@ def test_print_case_comments_command(requests_mock):
 def test_print_case_metadata_by_id_command(requests_mock):
     from ArgusManagedDefence import print_case_metadata_by_id_command
 
-    with open("argus_json/argus_case_metadata.json") as json_file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_case_metadata.json") as json_file:
         data = json.load(json_file)
     method_url = f"/cases/v2/case/{CASE_ID}"
     requests_mock.get(f"{BASE_URL}{method_url}", json=data)
@@ -715,13 +716,13 @@ def test_print_case_metadata_by_id_command(requests_mock):
 def test_download_case_attachments_command(requests_mock):
     from ArgusManagedDefence import download_case_attachments_command
 
-    with open("argus_json/argus_case_attachments.json") as json_file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_case_attachments.json") as json_file:
         data = json.load(json_file)
     data["data"][0]["name"] = "filename"
     attachment_id = data["data"][0]["id"]
     method_url = f"/cases/v2/case/{CASE_ID}/attachments"
     requests_mock.get(f"{BASE_URL}{method_url}", json=data)
-    with open("argus_json/argus_case_attachments.json", "rb") as file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_case_attachments.json", "rb") as file:
         bin_data = file.read()
     method_url = f"/cases/v2/case/{CASE_ID}/attachments/{attachment_id}/download"
     requests_mock.get(f"{BASE_URL}{method_url}", content=bin_data)

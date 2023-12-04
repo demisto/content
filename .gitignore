@@ -40,6 +40,7 @@ failed_unittests.txt
 Scripts/**/__init__.py
 Integrations/**/__init__.py
 Packs/**/__init__.py
+!Packs/**/test_data/__init__.py
 requirements.txt
 **/collect_tests.log
 .args_command.json

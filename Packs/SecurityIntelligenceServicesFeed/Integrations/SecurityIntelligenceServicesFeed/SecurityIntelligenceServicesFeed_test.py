@@ -3,7 +3,7 @@ import json
 from collections import OrderedDict
 
 import pytest
-
+from pathlib import Path
 import demistomock
 from SecurityIntelligenceServicesFeed import Client, botocore, MESSAGES
 
@@ -18,7 +18,7 @@ def test_request_list_objects(mocker):
     """
     Test the list objects method of client class.
     """
-    with open('./TestData/response_list_object.json') as f:
+    with open(Path(__file__) / 'test_data/response_list_object.json') as f:
         expected_response = json.load(f)
 
     mocker.patch('botocore.client.BaseClient._make_api_call', return_value=expected_response)
@@ -151,7 +151,7 @@ def test_build_iterator(mocker):
         next(CLIENT.build_iterator(feed_type='Domain', key='key'))
 
     # With limit parameter.
-    with open('./TestData/response_get_object.json') as f:
+    with open(Path(__file__) / 'test_data/response_get_object.json') as f:
         expected_response = json.load(f)
     event_stream = [{
         'Records': {
@@ -173,7 +173,7 @@ def test_build_iterator_client_error(mocker):
     """
     Tests, Handle error occur during extracting feeds.
     """
-    with open('./TestData/response_list_object.json') as f:
+    with open(Path(__file__) / 'test_data/response_list_object.json') as f:
         expected_response = json.load(f)
     expected_response['ResponseMetadata']['HTTPStatusCode'] = 400
     mocker.patch('botocore.client.BaseClient._make_api_call',
@@ -223,7 +223,7 @@ def test_test_module_client_error(mocker):
     Tests, Handle error occur during extracting feeds.
     """
     from SecurityIntelligenceServicesFeed import test_module
-    with open('./TestData/response_list_object.json') as f:
+    with open(Path(__file__) / 'test_data/response_list_object.json') as f:
         expected_response = json.load(f)
     expected_response['ResponseMetadata']['HTTPStatusCode'] = 400
     mocker.patch('botocore.client.BaseClient._make_api_call',

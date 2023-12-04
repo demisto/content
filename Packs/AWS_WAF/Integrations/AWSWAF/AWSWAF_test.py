@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 from CommonServerPython import *
 import pytest
 from AWSWAF import OPERATOR_TO_STATEMENT_OPERATOR, REGEX_MATCH_STATEMENT, BYTE_MATCH_STATEMENT
@@ -55,7 +56,7 @@ class MockedBoto3Client:
 
 
 def util_load_json(path):
-    with open(f'test_data/{path}.json', encoding='utf-8') as f:
+    with open(Path(__file__) / f'test_data/{path}.json', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
