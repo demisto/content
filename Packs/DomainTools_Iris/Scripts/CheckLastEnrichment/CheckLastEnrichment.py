@@ -1,6 +1,5 @@
 from CommonServerPython import *
 from typing import Dict, Any
-import traceback
 
 
 def time_check(last_check: str) -> bool:

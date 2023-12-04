@@ -1,6 +1,5 @@
 from CommonServerPython import *
 from typing import Dict, Any, List
-import traceback
 
 """ STANDALONE FUNCTION """
 

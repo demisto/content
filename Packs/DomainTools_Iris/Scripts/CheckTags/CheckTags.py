@@ -1,7 +1,6 @@
 from CommonServerPython import *
 
 from typing import Dict, Any
-import traceback
 
 
 def check_tags(args: Dict[str, Any]) -> CommandResults:

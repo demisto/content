@@ -693,14 +693,14 @@ Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris 
 | DomainTools.Pivots.PivotedDomains.Analytics.GoogleAdsenseTrackingCode | Number | The tracking code of Google Adsense. | 
 | DomainTools.Pivots.PivotedDomains.Analytics.GoogleAnalyticTrackingCode | Number | The tracking code Google Analytics. | 
 
-### whoisHistory
+### domaintools-whois-history
 
 ***
 The DomainTools Whois History API endpoint returns up to 100 historical Whois records associated with a domain name.
 
 #### Base Command
 
-`whoisHistory`
+`domaintools-whois-history`
 
 #### Input
 
@@ -719,14 +719,14 @@ The DomainTools Whois History API endpoint returns up to 100 historical Whois re
 | DomainTools.History.Value | unknown | Name of domain. | 
 | DomainTools.History.WhoisHistory | unknown | Domain Whois history data. | 
 
-### hostingHistory
+### domaintools-hosting-history
 
 ***
 Hosting History will list IP address, name server and registrar history.
 
 #### Base Command
 
-`hostingHistory`
+`domaintools-hosting-history`
 
 #### Input
 
@@ -743,14 +743,14 @@ Hosting History will list IP address, name server and registrar history.
 | DomainTools.History.NameserverHistory | unknown | Domain Nameserver history data. | 
 | DomainTools.History.RegistrarHistory | unknown | Domain Registrar history data. | 
 
-### reverseWhois
+### domaintools-reverse-whois
 
 ***
 The DomainTools Reverse Whois API provides a list of domain names that share the same Registrant Information. You can enter terms that describe a domain owner, like an email address or a company name, and you’ll get a list of domain names that have your search terms listed in the Whois record.
 
 #### Base Command
 
-`reverseWhois`
+`domaintools-reverse-whois`
 
 #### Input
 
@@ -767,14 +767,14 @@ The DomainTools Reverse Whois API provides a list of domain names that share the
 | DomainTools.ReverseWhois.Value | unknown | Search term to reverse whois lookup on. | 
 | DomainTools.ReverseWhois.Results | unknown | List of results for reverse whois lookup. | 
 
-### whois
+### domaintools-whois
 
 ***
 The DomainTools Parsed Whois API provides parsed information extracted from the raw Whois record. The API is optimized to quickly retrieve the Whois record, group important data together and return a well-structured format. The Parsed Whois API is ideal for anyone wishing to search for, index, or cross-reference data from one or multiple Whois records.
 
 #### Base Command
 
-`whois`
+`domaintools-whois`
 
 #### Input
 

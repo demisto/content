@@ -1,6 +1,5 @@
 from CommonServerPython import *
 from typing import List
-import traceback
 
 
 def get_related_indicators(addintional_indicators: str = '') -> List[str]:

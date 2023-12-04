@@ -42,6 +42,48 @@ MONITOR_DOMAIN_IRIS_SEARCH_HASH_TIMESTAMP = "monitor_domain_iris_search_hash_las
 MONITOR_DOMAIN_IRIS_TAG_TIMESTAMP = "monitor_domain_iris_tags_last_run"
 BATCH_SIZE = 200
 
+PROFILE_HEADERS = [
+    'Name',
+    'Last Enriched',
+    'Overall Risk Score',
+    'Proximity Risk Score',
+    'Threat Profile Risk Score',
+    'Threat Profile Threats',
+    'Threat Profile Evidence',
+    'Website Response Code',
+    'Tags',
+    'Registrant Name',
+    'Registrant Org',
+    'Registrant Contact',
+    'Registrar',
+    'SOA Email',
+    'SSL Certificate Email',
+    'Admin Contact',
+    'Technical Contact',
+    'Billing Contact',
+    'Email Domains',
+    'Additional Whois Emails',
+    'Domain Registrant',
+    'Registrar Status',
+    'Domain Status',
+    'Create Date',
+    'Expiration Date',
+    'IP Addresses',
+    'IP Country Code',
+    'Mail Servers',
+    'SPF Record',
+    'Name Servers',
+    'SSL Certificate',
+    'Redirects To',
+    'Redirect Domain',
+    'Google Adsense Tracking Code',
+    'Google Analytic Tracking Code',
+    'Website Title',
+    'First Seen',
+    'Server Type',
+    'Popularity'
+]
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -435,50 +477,6 @@ def parsed_whois(domain):
     return http_request('parsed-whois', {'domain': domain})
 
 
-def profile_headers():
-    return [
-        'Name',
-        'Last Enriched',
-        'Overall Risk Score',
-        'Proximity Risk Score',
-        'Threat Profile Risk Score',
-        'Threat Profile Threats',
-        'Threat Profile Evidence',
-        'Website Response Code',
-        'Tags',
-        'Registrant Name',
-        'Registrant Org',
-        'Registrant Contact',
-        'Registrar',
-        'SOA Email',
-        'SSL Certificate Email',
-        'Admin Contact',
-        'Technical Contact',
-        'Billing Contact',
-        'Email Domains',
-        'Additional Whois Emails',
-        'Domain Registrant',
-        'Registrar Status',
-        'Domain Status',
-        'Create Date',
-        'Expiration Date',
-        'IP Addresses',
-        'IP Country Code',
-        'Mail Servers',
-        'SPF Record',
-        'Name Servers',
-        'SSL Certificate',
-        'Redirects To',
-        'Redirect Domain',
-        'Google Adsense Tracking Code',
-        'Google Analytic Tracking Code',
-        'Website Title',
-        'First Seen',
-        'Server Type',
-        'Popularity'
-    ]
-
-
 def add_key_to_json(cur, to_add):
     if not cur:
         return to_add
@@ -547,9 +545,8 @@ def format_enrich_output(result):
 
     demisto_title = f'DomainTools Iris Enrich for {domain}.'
     iris_title = 'Investigate [{0}](https://research.domaintools.com/iris/search/?q={0}) in Iris.'.format(domain)
-    headers = profile_headers()
     human_readable = tableToMarkdown(
-        f'{demisto_title} {iris_title}', human_readable_data, headers=headers
+        f'{demisto_title} {iris_title}', human_readable_data, headers=PROFILE_HEADERS
     )
 
     return (human_readable, indicators)
@@ -747,9 +744,8 @@ def format_investigate_output(result):
 
     demisto_title = f'DomainTools Iris Investigate for {domain}.'
     iris_title = f'Investigate [{domain}](https://research.domaintools.com/iris/search/?q={domain}) in Iris.'
-    headers = profile_headers()
     human_readable = tableToMarkdown(
-        f'{demisto_title} {iris_title}', human_readable_data, headers=headers
+        f'{demisto_title} {iris_title}', human_readable_data, headers=PROFILE_HEADERS
     )
 
     return (human_readable, indicators)
@@ -1225,7 +1221,7 @@ def threat_profile_command():
                'Threat Profile Spam Risk Score']
     demisto_title = f'DomainTools Threat Profile for {domain}.'
     iris_title = f'Investigate [{domain}](https://research.domaintools.com/iris/search/?q={domain}) in Iris.'
-    human_readable = tableToMarkdown(f'{demisto_title} {iris_title}'),
+    human_readable = tableToMarkdown(f'{demisto_title} {iris_title}',
                                      human_readable_data,
                                      headers=headers)
 
@@ -1347,9 +1343,9 @@ def domain_pivot_command():
 
 
 def to_camel_case(value):
-    str = f' {value.strip()}'
-    str = re.sub(r' ([a-z,A-Z])', lambda g: g.group(1).upper(), str)
-    return str
+    result = f' {value.strip()}'
+    result = re.sub(r' ([a-z,A-Z])', lambda g: g.group(1).upper(), result)
+    return result
 
 
 def whois_history_command():
@@ -1566,11 +1562,9 @@ def test_module():
     """
     Tests the API key for a user.
     """
-    try:
-        http_request('iris-investigate', {'domains': 'demisto.com'})
-        demisto.results('ok')
-    except Exception:
-        raise
+
+    http_request('iris-investigate', {'domains': 'demisto.com'})
+    demisto.results('ok')
 
 
 def fetch_domains():
@@ -1595,8 +1589,6 @@ def fetch_domains():
         iris_tags=iris_tags_params
     )
 
-    return True
-
 
 def main():
     """
@@ -1615,13 +1607,13 @@ def main():
             domain_pivot_command()
         elif demisto.command() == 'domaintoolsiris-enrich':
             domain_enrich_command()
-        elif demisto.command() == 'whoisHistory':
+        elif demisto.command() == 'domaintools-whois-history':
             whois_history_command()
-        elif demisto.command() == 'hostingHistory':
+        elif demisto.command() == 'domaintools-hosting-history':
             hosting_history_command()
-        elif demisto.command() == 'reverseWhois':
+        elif demisto.command() == 'domaintools-reverse-whois':
             reverse_whois_command()
-        elif demisto.command() == 'whois':
+        elif demisto.command() == 'domaintools-whois':
             parsed_whois_command()
         elif demisto.command() == 'fetch-incidents':
             fetch_domains()
