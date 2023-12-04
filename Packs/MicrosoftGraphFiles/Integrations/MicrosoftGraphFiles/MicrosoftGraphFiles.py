@@ -883,36 +883,67 @@ def _parse_permission(permission: dict):
 
 
 def list_site_permissions_command(client: MsGraphClient, args: dict[str, str]) -> CommandResults:
+    """Lists permissions for a SharePoint site.
 
+    Args:
+        client (MsGraphClient): The Microsoft Graph client.
+        args (dict): The command arguments.
+            permission_id (Optional): The unique identifier for the permission.
+            limit (Optional): Number of items to return. Default is 50.
+            all_results (Optional): Return all results. Default is False.
+            site_name (Optional): The display name of the site. Either site_id or site_name is required.
+            site_id (Optional): The unique identifier for the site. Either site_id or site_name is required.
+
+    Returns:
+        CommandResults: The command results with outputs and readable output.
+    """
     permission_id = args.get("permission_id")
     limit = arg_to_number(args.get("limit", 50))
     all_results = argToBoolean(args.get("all_results", False))
     site_id = get_site_id(client, args.get("site_id"), args.get("site_name"))
     results = client.list_site_permissions(site_id, permission_id)
     if permission_id:
-        list_permissions = results
-        readable_output = tableToMarkdown(
-            name="Site Permission",
-            t=_parse_permission(results)
-        )
-    else:
-        list_permissions = results.get("value", [])
-        list_permissions = list_permissions if all_results else list_permissions[:limit]
-        readable_output = tableToMarkdown(
-            name="Site Permission",
-            t=[_parse_permission(permission) for permission in list_permissions],
-            removeNull=True  # when the permission_id is not provided, return a list of permissions, and the Roles filed is empty.
+        return CommandResults(
+            outputs_prefix="MsGraphFiles.SitePermission",
+            outputs_key_field="id",
+            outputs=results,
+            readable_output=tableToMarkdown(
+                name="Site Permission",
+                t=_parse_permission(results)
+            )
         )
 
+    list_permissions = results.get("value", [])
     return CommandResults(
         outputs_prefix="MsGraphFiles.SitePermission",
         outputs_key_field="id",
-        outputs=list_permissions,
-        readable_output=readable_output
+        outputs=list_permissions if all_results else list_permissions[:limit],
+        readable_output=tableToMarkdown(
+            name="Site Permission",
+            t=[_parse_permission(permission) for permission in list_permissions],
+            # when the permission_id is not provided, return a list of permissions, and the Roles filed is empty.
+            removeNull=True
+        )
     )
 
 
 def create_site_permissions_command(client: MsGraphClient, args: dict[str, str]) -> CommandResults:
+    """Creates a new permission for a SharePoint site.
+
+    Args:
+        client (MsGraphClient): The Microsoft Graph client.
+
+        args (dict): The command arguments.
+            app_id (Required): The app ID to assign permissions to.
+            role (Required): The role(s) to assign. Can be "read", "write", or "owner".
+            display_name (Required): The display name for the permission.
+            site_name (Optional): The display name of the site. Either site_id or site_name is required.
+            site_id (Optional): The unique identifier for the site. Either site_id or site_name is required.
+
+    Returns:
+        CommandResults: The results including the new permission that was created.
+
+    """
     app_id = args["app_id"]
     role = argToList(args["role"])
     display_name = args["display_name"]
@@ -929,6 +960,20 @@ def create_site_permissions_command(client: MsGraphClient, args: dict[str, str])
 
 
 def update_site_permissions_command(client: MsGraphClient, args: dict[str, str]) -> CommandResults:
+    """Updates the permissions for a SharePoint site.
+
+    Args:
+        client (MsGraphClient): The Microsoft Graph client.
+        args (dict): The command arguments.
+            permission_id (Required): The ID of the permission to update.
+            role (Required): The updated role(s) for the permission. read/write/owner.
+            site_name (Optional): The display name of the site. Either site_id or site_name is required.
+            site_id (Optional): The unique identifier for the site. Either site_id or site_name is required.
+
+    Returns:
+        CommandResults: The command results with readable output.
+
+    """
     permission_id = args["permission_id"]
     role = argToList(args["role"])
     site_id = get_site_id(client, args.get("site_id"), args.get("site_name"))
@@ -943,6 +988,19 @@ def update_site_permissions_command(client: MsGraphClient, args: dict[str, str])
 
 
 def delete_site_permission_command(client: MsGraphClient, args: dict[str, str]) -> CommandResults:
+    """Deletes a permission from a SharePoint site.
+
+    Args:
+        client (MsGraphClient): The Microsoft Graph client.
+        args (dict): The command arguments.
+            permission_id (Required): The ID of the permission to delete.
+            site_name (Optional): The display name of the site. Either site_id or site_name is required.
+            site_id (Optional): The unique identifier for the site. Either site_id or site_name is required.
+
+    Returns:
+        CommandResults: The command results with readable output.
+
+    """
     permission_id = args["permission_id"]
     site_id = get_site_id(client, args.get("site_id"), args.get("site_name"))
 

@@ -644,6 +644,14 @@ def test_test_module_command_with_managed_identities(mocker: MockerFixture, requ
 def test_get_site_id_raise_error_site_name_or_site_id_required(
     func_to_test: Callable[[MsGraphClient, dict], CommandResults], args: dict
 ) -> None:
+    """
+    Given:
+        - Function to test and arguments to pass to the function
+    When:
+        - Calling the function without providing site_id or site_name parameter
+    Then:
+        - Ensure DemistoException is raised with expected error message
+    """
     with pytest.raises(
         DemistoException, match="Either site_id or site_name parameter is required."
     ):
@@ -691,6 +699,18 @@ def test_get_site_id_raise_error_invalid_site_name(
     func_to_test: Callable[[MsGraphClient, dict], CommandResults],
     args: dict,
 ) -> None:
+    """
+    Given:
+        - A function to test that requires a valid site name or ID
+        - Arguments to pass to the function that have an invalid site name
+
+    When:
+        - The function is called with the invalid site name
+
+    Then:
+        - Ensure a DemistoException is raised 
+        - With error message that the site was not found and to provide valid site name/ID
+    """
     authorization_mock(requests_mock)
     requests_mock.get(
         "https://graph.microsoft.com/v1.0/sites", json={"value": []}, status_code=200
@@ -703,6 +723,19 @@ def test_get_site_id_raise_error_invalid_site_name(
 
 
 def test_list_site_permissions(requests_mock: MockerCore) -> None:
+    """
+    Given:
+        - A requests mock object
+        - Mock responses set up for the list site permissions API call
+
+    When:
+        - The list_site_permissions_command function is called with the mock client
+        - And arguments for a site ID
+
+    Then:
+        - Ensure the readable output contains the expected permission data
+        - And matches the mock response
+    """
     authorization_mock(requests_mock)
     requests_mock.get(
         "https://graph.microsoft.com/v1.0/sites/test/permissions",
@@ -720,6 +753,18 @@ def test_list_site_permissions(requests_mock: MockerCore) -> None:
 
 
 def test_list_site_permissions_with_permission_id(requests_mock: MockerCore) -> None:
+    """
+    Given:
+        - A requests mock object
+        - Arguments with a site ID and permission ID
+
+    When:
+        - The list_site_permissions_command is called with the arguments
+
+    Then:
+        - Ensure the readable output contains the expected permission data
+        - Ensure the api call is with permission id "/permissions/id"
+    """
     args = {"site_id": "test", "permission_id": "id"}
     authorization_mock(requests_mock)
     requests_mock.get(
@@ -737,6 +782,16 @@ def test_list_site_permissions_with_permission_id(requests_mock: MockerCore) -> 
 
 
 def test_create_permissions_success(requests_mock: MockerCore) -> None:
+    """
+    Given:
+        - Arguments with site ID, app ID, role and display name
+
+    When:
+        - The create_site_permissions_command is called with the arguments
+
+    Then:
+        - Ensure the readable output contains the expected permission data
+    """
     args = {
         "site_id": "test",
         "app_id": "app-id",
@@ -758,6 +813,17 @@ def test_create_permissions_success(requests_mock: MockerCore) -> None:
 
 
 def test_update_permissions_command(requests_mock: MockerCore) -> None:
+    """
+    Given:
+        - Arguments with permission ID, new role, and site ID
+
+    When:
+        - The update_site_permissions_command is called with the arguments
+
+    Then:
+        - Ensure the readable output contains the expected updated permission data
+        - Ensure the API call is made to update the permission with the given ID
+    """
     args = {"permission_id": "id", "role": "role1", "site_id": "site"}
     authorization_mock(requests_mock)
     requests_mock.patch(
@@ -773,6 +839,17 @@ def test_update_permissions_command(requests_mock: MockerCore) -> None:
 
 
 def test_delete_site_permission_command(requests_mock: MockerCore) -> None:
+    """
+    Given:
+        - Arguments with permission ID and site ID
+
+    When:
+        - The delete_site_permission_command is called with the arguments
+
+    Then:
+        - Ensure the API call is made to delete the permission with the given ID
+        - Ensure the readable output indicates the permission was deleted
+    """
     args = {"permission_id": "id", "site_id": "site"}
     authorization_mock(requests_mock)
     requests_mock.delete(
