@@ -11350,29 +11350,23 @@ def replace_spaces_in_credential(credential):
     return credential
 
 
-def has_passed_time_threshold(timestamp_str, hours_threshold = None, seconds_threshold = None):
+def has_passed_time_threshold(timestamp_str, seconds_threshold):
     """
-    Check if more than the given hours/seconds threshold have passed since the timestamp
+    Cheks if the time difference between the current time and the timestamp is greater than the threshold, in seconds.
     Args:
         timestamp_str (str): The timestamp string in the folloing format: '%Y-%m-%dT%H:%M:%SZ'
-        hours_threshold (int): The threshold in hours.
         seconds_threshold (int): The threshold in seconds.
-        if both are given, the hours_threshold will be used.
     Returns:
         boolean: True if the threshold has passed, False otherwise.
     """
-    if not hours_threshold and not seconds_threshold:
-        raise ValueError('Either hours_threshold or seconds_threshold must be provided.')
-    
     try:
-        timestampt = datetime.strptime(timestamp_str, '%Y-%m-%dT%H:%M:%SZ')
+        timestampt = dateparser.parse(timestamp_str,['%Y-%m-%dT%H:%M:%SZ'])
         current_time = datetime.utcnow()
         time_difference = current_time - timestampt
-    except Exception:
-        demisto.debug(f'Error parsing timestamp: {timestamp_str}')
+    except Exception as e:
+        demisto.debug(f'Error parsing timestamp: {timestamp_str} : {str(e)}')
         raise
-    return time_difference.total_seconds() > hours_threshold * 60 * 60 if hours_threshold else \
-        time_difference.total_seconds() > seconds_threshold
+    return time_difference.total_seconds() > seconds_threshold
 
 
 ###########################################

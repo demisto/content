@@ -13,7 +13,7 @@ urllib3.disable_warnings()
 
 # Globals
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-HOURS_THRESHOLD = 12
+THRESHOLD_IN_SECONDS = 43200
 
 
 class Client(BaseClient):
@@ -145,7 +145,7 @@ class Client(BaseClient):
                 # To avoid issues with indicators expiring, if 'last_updated' is over X hours old,
                 # we'll refresh the indicators to ensure their expiration time is updated.
                 # For further details, refer to : https://confluence-dc.paloaltonetworks.com/display/DemistoContent/Json+Api+Module     # noqa: E501
-                if last_updated and has_passed_time_threshold(timestamp_str=last_updated, hours_threshold=HOURS_THRESHOLD):
+                if last_updated and has_passed_time_threshold(timestamp_str=last_updated, seconds_threshold=THRESHOLD_IN_SECONDS):
                     last_modified = None
                     etag = None
                     demisto.debug("Since it's been a long time with no update, to make sure we are keeping the indicators alive, \
