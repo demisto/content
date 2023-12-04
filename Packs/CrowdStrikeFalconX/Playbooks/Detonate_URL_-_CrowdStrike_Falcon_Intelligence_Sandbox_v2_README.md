@@ -30,8 +30,8 @@ This playbook does not use any scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | URL | URL to detonate. | URL.Data | Optional |
-| Interval | Polling frequency - how often the polling command should run \(minutes\) | 1 | Optional |
-| Timeout | How much time to wait before a timeout occurs  \(minutes\) | 10 | Optional |
+| Interval | Polling frequency - how often the polling command should run \(in minutes\). | 1 | Optional |
+| Timeout | How much time to wait before a timeout occurs  \(in minutes\). | 10 | Optional |
 | Full Report | Whether to get a full report or report summary from Falcon X.<br/>Set to "False" to get report summary. | True | Optional |
 
 ## Playbook Outputs
