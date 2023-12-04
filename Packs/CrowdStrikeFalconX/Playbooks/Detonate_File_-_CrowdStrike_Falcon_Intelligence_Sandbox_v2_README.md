@@ -51,7 +51,7 @@ This playbook does not use any scripts.
 | --- | --- | --- | --- |
 | File | The file to detonate. The file is taken from the context. | File | Optional |
 | Interval | Polling frequency - how often the polling command should run \(in minutes\). | 1 | Optional |
-| Timeout | How much time to wait before a timeout occurs \(minutes\) | 10 | Optional |
+| Timeout | How much time to wait before a timeout occurs \(in minutes\). | 10 | Optional |
 | EnvironmentID | Sandbox environment used for analysis. | 160: Windows 10 | Optional |
 | ActionScript | Runtime script for sandbox analysis. |  | Optional |
 | CommandLine | Command line script passed to the submitted file at runtime. Max length: 2048 characters. |  | Optional |
