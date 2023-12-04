@@ -437,7 +437,7 @@ inputs:
 - key: SubmitName
   value: {}
   required: false
-  description: Name of the malware sample that's used for file type detection. and analysis.
+  description: Name of the malware sample that's used for file type detection and analysis.
   playbookInputQuery:
 - key: SystemDate
   value: {}
