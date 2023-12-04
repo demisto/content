@@ -108,7 +108,8 @@ def test_azure_sql_db_audit_policy_list_command(mocker):
             - Assert the returned markdown and context data are as expected.
         """
     from AzureSQLManagement import azure_sql_db_audit_policy_list_command
-    client = mock_client(mocker, util_load_json(os.path.dirname(__file__) + '/test_data/azure_sql_db_audit_policy_list_command_result.json'))
+    client = mock_client(mocker, util_load_json(os.path.dirname(__file__)
+                         + '/test_data/azure_sql_db_audit_policy_list_command_result.json'))
     args = {'server_name': 'integration', 'db_name': 'integration-db'}
     results = azure_sql_db_audit_policy_list_command(client, args, 'resourceGroupName')
     assert "### Database Audit Settings for resource_group_name='resourceGroupName'" in results.readable_output
@@ -146,7 +147,8 @@ def test_azure_sql_db_threat_policy_get_command(mocker):
             - Assert the returned markdown and context data are as expected.
         """
     from AzureSQLManagement import azure_sql_db_threat_policy_get_command
-    client = mock_client(mocker, util_load_json(os.path.dirname(__file__) + '/test_data/azure_sql_db_threat_policy_get_command_result.json'))
+    client = mock_client(mocker, util_load_json(os.path.dirname(__file__)
+                         + '/test_data/azure_sql_db_threat_policy_get_command_result.json'))
     args = {'server_name': 'integration', 'db_name': 'integration-db'}
     results = azure_sql_db_threat_policy_get_command(client, args)
     assert '### Database Threat Detection Policies' in results.readable_output
@@ -166,7 +168,7 @@ def test_azure_sql_db_audit_policy_create_update_command(mocker):
         """
     from AzureSQLManagement import azure_sql_db_audit_policy_create_update_command
     client = mock_client(mocker,
-                         util_load_json(os.path.dirname(__file__) + '/test_data/azure_sql_db_audit_policy_create_update_command_result.json'))
+                         util_load_json(os.path.dirname(__file__) + '/test_data/azure_sql_db_audit_policy_create_update_command_result.json'))  # noqa: E501
     args = {'server_name': 'integration',
             'db_name': 'integration-db',
             'state': 'Enabled',
@@ -195,7 +197,7 @@ def test_azure_sql_db_threat_policy_create_update_command(mocker):
         """
     from AzureSQLManagement import azure_sql_db_threat_policy_create_update_command
     client = mock_client(mocker,
-                         util_load_json(os.path.dirname(__file__) + '/test_data/azure_sql_db_threat_policy_create_update_command_result.json'))
+                         util_load_json(os.path.dirname(__file__) + '/test_data/azure_sql_db_threat_policy_create_update_command_result.json'))  # noqa: E501
     args = {'server_name': 'integration',
             'db_name': 'integration-db',
             'state': 'Enabled',
@@ -318,7 +320,8 @@ def test_subscriptions_list_command(mocker):
     """
 
     from AzureSQLManagement import subscriptions_list_command
-    client = mock_client(mocker, util_load_json(os.path.dirname(__file__) + '/test_data/azure_aql_subscriptions_list_command_result.json'))
+    client = mock_client(mocker, util_load_json(os.path.dirname(__file__)
+                         + '/test_data/azure_aql_subscriptions_list_command_result.json'))
     results = subscriptions_list_command(client=client)
     assert '### Subscription List' in results.readable_output
     assert results.outputs[0].get('id') == 'id'
@@ -337,7 +340,8 @@ def test_resource_group_list_command(mocker):
         - Assert the returned markdown and context data are as expected.
     """
     from AzureSQLManagement import resource_group_list_command
-    client = mock_client(mocker, util_load_json(os.path.dirname(__file__) + '/test_data/azure_sql_resource_group_list_command_results.json'))
+    client = mock_client(mocker, util_load_json(os.path.dirname(__file__)
+                         + '/test_data/azure_sql_resource_group_list_command_results.json'))
     args = {
         'tag': 'Name:name'
     }
@@ -393,7 +397,8 @@ def test_command_with_multiple_resource_group_name(mocker):
             - Assert the returned List contains 2 CommandResult objects.
         """
     from AzureSQLManagement import command_with_multiple_resource_group_name
-    client = mock_client(mocker, util_load_json(os.path.dirname(__file__) + '/test_data/azure_sql_db_audit_policy_list_command_result.json'))
+    client = mock_client(mocker, util_load_json(os.path.dirname(__file__)
+                         + '/test_data/azure_sql_db_audit_policy_list_command_result.json'))
     args = {
         'resource_group_name': 'resourceGroupName, resourceGroupName',
         'server_name': 'integration',

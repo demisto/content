@@ -1,5 +1,4 @@
 import os
-import os
 from JSONFeedApiModule import Client, fetch_indicators_command, jmespath, get_no_update_value
 from CommonServerPython import *
 import pytest

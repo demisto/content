@@ -1,5 +1,4 @@
 import os
-import os
 from optparse import OptionParser
 from unittest.mock import Mock
 import demistomock as demisto

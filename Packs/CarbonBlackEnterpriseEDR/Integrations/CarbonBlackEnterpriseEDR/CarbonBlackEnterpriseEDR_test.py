@@ -1,4 +1,3 @@
-import os
 import pytest
 import CarbonBlackEnterpriseEDR as cbe
 import demistomock as demisto

@@ -159,7 +159,7 @@ def test_fetch_events_with_last_run(mocker):
 
     http_request_mocker = mocker.patch.object(Client, "error_handled_http_request", side_effect=[
         util_load_json(os.path.dirname(__file__) + '/test_data/fetch_events_operationlogs.json').get('fetch_events_with_token'),
-        util_load_json(os.path.dirname(__file__) + '/test_data/fetch_events_operationlogs.json').get('fetch_events_with_token_next'),
+        util_load_json(os.path.dirname(__file__) + '/test_data/fetch_events_operationlogs.json').get('fetch_events_with_token_next'),  # noqa: E501
         util_load_json(os.path.dirname(__file__) + '/test_data/fetch_events_activities.json').get('fetch_events_with_token'),
         util_load_json(os.path.dirname(__file__) + '/test_data/fetch_events_activities.json').get('fetch_events_with_token_next')
     ])

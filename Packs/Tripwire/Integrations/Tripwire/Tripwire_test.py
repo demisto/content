@@ -1,4 +1,3 @@
-import os
 from datetime import datetime
 
 from Tripwire import Client, fetch_incidents, get_fetch_start_time, filter_nodes, filter_elements, filter_rules, \

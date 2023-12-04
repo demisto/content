@@ -1,4 +1,3 @@
-import os
 from ExtractFQDNFromUrlAndEmail import extract_fqdn
 import pytest
 

@@ -1,4 +1,3 @@
-import os
 from GetIncidentsByQuery import build_incidents_query, get_incidents, parse_relative_time, main, \
     preprocess_incidents_fields_list, get_demisto_datetme_format, get_fields_to_populate_arg, PYTHON_MAGIC, \
     get_comma_sep_list

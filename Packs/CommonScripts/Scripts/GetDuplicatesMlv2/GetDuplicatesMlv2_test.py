@@ -1,5 +1,4 @@
 import os
-import os
 import demistomock as demisto
 from GetDuplicatesMlv2 import main, Utils
 from CommonServerPython import entryTypes

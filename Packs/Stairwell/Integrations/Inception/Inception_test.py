@@ -60,7 +60,8 @@ def test_file_enrichment_command(requests_mock):
 
 
 def test_file_enrichment_command_multiple_occurrences(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/file_enrichment_command_result_multiple_occurrences.json')
+    mock_response = util_load_json(os.path.dirname(
+        __file__) + '/test_data/file_enrichment_command_result_multiple_occurrences.json')
 
     requests_mock.get("https://fakeapi.stairwelldemo.com/" + TEST_FILE_HASH, json=mock_response)
 

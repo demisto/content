@@ -1,5 +1,4 @@
 import os
-import os
 from FeedMicrosoftIntune import Client
 
 URL = 'https://docs.microsoft.com/en-us/intune/fundamentals/intune-endpoints'

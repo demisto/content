@@ -1,4 +1,3 @@
-import os
 """
 Tests module for the LDAP Authentication integration
 """

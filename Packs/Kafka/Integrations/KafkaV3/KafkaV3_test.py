@@ -1,4 +1,3 @@
-import os
 from CommonServerPython import DemistoException, demisto
 
 from KafkaV3 import KafkaCommunicator, command_test_module, KConsumer, KProducer, print_topics, fetch_partitions, \

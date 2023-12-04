@@ -1,4 +1,3 @@
-import os
 import dateparser
 from ThreatConnectV3 import Client, Method, create_or_query, create_context, get_last_run_time, list_groups, fetch_incidents
 from freezegun import freeze_time

@@ -1,4 +1,3 @@
-import os
 from XSOARmirroring import get_mapping_fields_command, Client, fetch_incidents, update_remote_system_command, \
     validate_and_prepare_basic_params, XSOAR_DATE_FORMAT
 from datetime import datetime, timedelta

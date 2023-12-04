@@ -1,5 +1,4 @@
 import os
-import os
 import datetime
 import pickle
 import Whois

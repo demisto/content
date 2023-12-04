@@ -1,4 +1,3 @@
-import os
 # from xMatters import Client
 # from typing import Any, Dict, Tuple, List, Optional, cast
 # import unittest

@@ -1,4 +1,3 @@
-import os
 import pytest
 from GeneratePassword import generate_password, SYMBOLS
 from CommonServerPython import DemistoException

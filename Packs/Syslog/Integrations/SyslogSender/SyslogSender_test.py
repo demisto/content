@@ -1,4 +1,3 @@
-import os
 from CommonServerPython import *
 import pytest
 from contextlib import contextmanager

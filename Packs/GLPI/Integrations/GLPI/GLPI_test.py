@@ -1,4 +1,3 @@
-import os
 """GLPI Integration for Cortex XSOAR - Unit Tests file"""
 
 import json

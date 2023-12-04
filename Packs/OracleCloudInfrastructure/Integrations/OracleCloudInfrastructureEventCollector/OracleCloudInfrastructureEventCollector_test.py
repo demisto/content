@@ -1,4 +1,3 @@
-import os
 import datetime
 import pytest
 import demistomock as demisto

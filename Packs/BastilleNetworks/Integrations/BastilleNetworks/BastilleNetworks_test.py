@@ -1,4 +1,3 @@
-import os
 import pytest
 
 from BastilleNetworks import (Client, get_zone_events_command, get_device_events_command,

@@ -1,4 +1,3 @@
-import os
 
 from CommonServerPython import *
 from AzureKeyVault import KeyVaultClient, create_or_update_key_vault_command, list_key_vaults_command, \

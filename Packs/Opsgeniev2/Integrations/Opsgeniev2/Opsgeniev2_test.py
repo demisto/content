@@ -1,4 +1,3 @@
-import os
 import pytest
 import os
 from Opsgeniev2 import Client

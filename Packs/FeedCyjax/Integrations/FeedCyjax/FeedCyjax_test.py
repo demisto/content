@@ -1,4 +1,3 @@
-import os
 import dateparser
 from datetime import datetime, timedelta, timezone
 

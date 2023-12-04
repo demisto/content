@@ -1,5 +1,4 @@
 import os
-import os
 import demistomock as demisto
 import DedupBy
 import json

@@ -1,4 +1,3 @@
-import os
 from PrismaCloudComputeParseComplianceAlert import parse_compliance
 import pytest
 import json

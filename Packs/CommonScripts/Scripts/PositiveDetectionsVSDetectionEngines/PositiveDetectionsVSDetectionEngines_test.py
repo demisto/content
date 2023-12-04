@@ -1,4 +1,3 @@
-import os
 from typing import Any
 import pytest
 from PositiveDetectionsVSDetectionEngines import extract_engines_data_from_indicator

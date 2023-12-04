@@ -1,4 +1,3 @@
-import os
 """
 Unit Tests module for the iboss integration.
 """

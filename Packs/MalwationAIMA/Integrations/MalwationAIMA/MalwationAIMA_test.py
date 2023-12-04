@@ -1,5 +1,4 @@
 import os
-import os
 import json
 from MalwationAIMA import Client
 import demistomock as demisto

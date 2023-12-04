@@ -1,4 +1,3 @@
-import os
 import demistomock as demisto
 from BluelivThreatContext import Client, blueliv_threatActor, blueliv_campaign, blueliv_malware, blueliv_indicatorIp, \
     blueliv_indicatorFqdn, blueliv_indicatorCs, blueliv_attackPattern, blueliv_tool, \

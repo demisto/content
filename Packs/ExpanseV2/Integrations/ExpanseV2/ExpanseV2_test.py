@@ -1,5 +1,4 @@
 import os
-import os
 """Expanse V2 Integration for Cortex XSOAR - Unit Tests file
 
 """

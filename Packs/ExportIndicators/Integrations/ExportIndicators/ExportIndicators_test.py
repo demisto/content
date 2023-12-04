@@ -1,5 +1,4 @@
 import os
-import os
 """Imports"""
 import json
 import pytest

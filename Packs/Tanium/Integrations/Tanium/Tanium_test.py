@@ -1,5 +1,4 @@
 import os
-import os
 
 RAW_JSON_RESPONSE_1 = [
     {

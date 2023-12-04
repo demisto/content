@@ -1,4 +1,3 @@
-import os
 """Axonius Integration for Cortex XSOAR - Unit Tests file."""
 
 import warnings

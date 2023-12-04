@@ -16,8 +16,10 @@ def util_load_json(path):
 @pytest.mark.parametrize(
     "email_threads, expected_result",
     [
-        (util_load_json(os.path.dirname(__file__) + '/test_data/email_threads.json'), util_load_json(os.path.dirname(__file__) + '/test_data/email_threads.json')),
-        (util_load_json(os.path.dirname(__file__) + '/test_data/email_threads.json')[0], [util_load_json(os.path.dirname(__file__) + '/test_data/email_threads.json')[0]]),
+        (util_load_json(os.path.dirname(__file__) + '/test_data/email_threads.json'),
+         util_load_json(os.path.dirname(__file__) + '/test_data/email_threads.json')),
+        (util_load_json(os.path.dirname(__file__) + '/test_data/email_threads.json')
+         [0], [util_load_json(os.path.dirname(__file__) + '/test_data/email_threads.json')[0]]),
         ('', None)
     ]
 )

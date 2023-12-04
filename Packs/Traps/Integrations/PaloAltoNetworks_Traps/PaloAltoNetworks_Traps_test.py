@@ -1,5 +1,4 @@
 import os
-import os
 import demistomock as demisto
 
 SERVER_MOCK_URL = 'https://demisto.mock.mybrz.net/xapi/v1/'

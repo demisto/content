@@ -1,5 +1,4 @@
 import os
-import os
 import unittest
 
 from AnsibleApiModule import dict2md, rec_ansible_key_strip, generate_ansible_inventory, generic_ansible, \

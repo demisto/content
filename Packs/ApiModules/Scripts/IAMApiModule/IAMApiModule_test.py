@@ -1,4 +1,3 @@
-import os
 from IAMApiModule import *
 import pytest
 from copy import deepcopy

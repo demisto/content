@@ -1,4 +1,3 @@
-import os
 from CrowdStrikeStreamingPreProcessing import get_host_from_system_incident
 import pytest
 

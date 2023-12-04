@@ -1,4 +1,3 @@
-import os
 from Infoblox import Client
 import demistomock as demisto
 import json

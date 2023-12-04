@@ -46,7 +46,8 @@ def test_get_domain_state_command(mocker):
     )
     domain = '$anon100-2.com'
     response = get_domain_state_command(client, {'domain': domain})
-    mocker.patch.object(Client, '_http_request', return_value=util_load_json(os.path.dirname(__file__) + '/test_data/domain_state.json'))
+    mocker.patch.object(Client, '_http_request', return_value=util_load_json(
+        os.path.dirname(__file__) + '/test_data/domain_state.json'))
     assert response.outputs['DomainState'] == client.get_domain_state(domain)
     assert response.outputs_prefix == 'Cyberpion'
     assert response.outputs_key_field == 'id'

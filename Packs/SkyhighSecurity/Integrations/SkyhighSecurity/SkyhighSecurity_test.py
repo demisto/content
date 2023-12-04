@@ -95,7 +95,8 @@ def test_policy_dictionary_list_command(mocker):
     response = mocker.patch.object(demisto, 'results')
 
     with requests_mock.Mocker() as m:
-        m.get('https://www.example.com/shnapi/rest/dlp/dictionary', json=util_load_json(os.path.dirname(__file__) + '/test_data/policies.json'))
+        m.get('https://www.example.com/shnapi/rest/dlp/dictionary',
+              json=util_load_json(os.path.dirname(__file__) + '/test_data/policies.json'))
         main()
 
     assert len(response.call_args[0][0]['Contents']) > 0

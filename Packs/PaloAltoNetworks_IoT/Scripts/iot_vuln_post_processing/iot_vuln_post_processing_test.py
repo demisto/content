@@ -1,4 +1,3 @@
-import os
 import demistomock as demisto
 import iot_vuln_post_processing
 from iot_vuln_post_processing import iot_resolve_vuln

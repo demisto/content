@@ -1,5 +1,4 @@
 import os
-import os
 import json
 from unittest.mock import patch
 
@@ -1171,7 +1170,8 @@ def test_mobile_device_list_empty_response(mocker, gsuite_client, pagination_arg
     from GSuiteAdmin import gsuite_mobile_device_list_command
     args = {'projection': 'full', 'order_by': 'name', 'sort_order': 'descending', **pagination_args, 'customer_id': 'customer_id'}
     raw_responses = util_load_json(os.path.dirname(__file__) + '/test_data/mobile_devices_list/no_results_found.json')
-    expected_command_results = util_load_json(os.path.dirname(__file__) + '/test_data/mobile_devices_list/parsed_no_results_found.json')
+    expected_command_results = util_load_json(os.path.dirname(
+        __file__) + '/test_data/mobile_devices_list/parsed_no_results_found.json')
     mocker.patch(MOCKER_HTTP_METHOD, side_effect=raw_responses)
     command_results = gsuite_mobile_device_list_command(client=gsuite_client, args=args)
     to_context = command_results.to_context()

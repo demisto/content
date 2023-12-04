@@ -1,4 +1,3 @@
-import os
 """Base Integration for Cortex XSOAR - Unit Tests file
 
 Pytest Unit Tests: all funcion names must start with "test_"
@@ -608,7 +607,8 @@ def test_search_endpoint_process_details(mocker):
 
 
 def test_search_endpoint_installed_software(mocker):
-    mock_search_endpoint_installed_software = util_load_json(os.path.dirname(__file__) + '/test_data/search_endpoint_installed_software.json')
+    mock_search_endpoint_installed_software = util_load_json(os.path.dirname(
+        __file__) + '/test_data/search_endpoint_installed_software.json')
 
     import CovalenceForSecurityProviders
     mocker.patch.object(demisto, 'args', return_value={
@@ -628,7 +628,8 @@ def test_search_endpoint_installed_software(mocker):
 
 
 def test_search_endpoint_installed_software_details(mocker):
-    mock_search_endpoint_installed_software = util_load_json(os.path.dirname(__file__) + '/test_data/search_endpoint_installed_software.json')
+    mock_search_endpoint_installed_software = util_load_json(os.path.dirname(
+        __file__) + '/test_data/search_endpoint_installed_software.json')
 
     import CovalenceForSecurityProviders
     mocker.patch.object(demisto, 'args', return_value={

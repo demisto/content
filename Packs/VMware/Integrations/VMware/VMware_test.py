@@ -1,4 +1,3 @@
-import os
 import pyVim.task
 import pytest
 import VMware

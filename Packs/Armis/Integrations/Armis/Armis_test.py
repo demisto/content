@@ -1,4 +1,3 @@
-import os
 """Armis Integration for Cortex XSOAR - Unit Tests file
 This file contains the Pytest Tests for the Armis Integration
 """

@@ -1,5 +1,4 @@
 import os
-import os
 import pytest
 import demistomock as demisto
 from QRadarGetCorrelationLogs import main

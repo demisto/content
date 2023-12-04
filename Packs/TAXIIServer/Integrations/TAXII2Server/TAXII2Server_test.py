@@ -658,7 +658,8 @@ def test_taxii21_objects_with_relationships(mocker, taxii2_server_v21):
 
     mocker.patch('TAXII2Server.SERVER', taxii2_server_v21)
     mocker.patch('TAXII2Server.SERVER.has_extension', False)
-    mock_search_relationships_response = util_load_json(os.path.dirname(__file__) + '/test_data/searchRelationships-response.json')
+    mock_search_relationships_response = util_load_json(os.path.dirname(
+        __file__) + '/test_data/searchRelationships-response.json')
     mocker.patch.object(demisto, 'searchRelationships', return_value=mock_search_relationships_response)
 
     objects = util_load_json(os.path.dirname(__file__) + '/test_data/objects21_ip_with_relationships.json')

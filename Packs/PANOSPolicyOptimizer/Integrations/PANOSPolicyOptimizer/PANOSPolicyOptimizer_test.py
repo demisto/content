@@ -1,4 +1,3 @@
-import os
 import pytest
 from CommonServerPython import *
 from PANOSPolicyOptimizer import Client, policy_optimizer_get_rules_command, policy_optimizer_get_dag_command, define_position, \

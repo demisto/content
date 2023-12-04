@@ -1,4 +1,3 @@
-import os
 import dateparser
 import demistomock as demisto
 from Claroty import Client, fetch_incidents

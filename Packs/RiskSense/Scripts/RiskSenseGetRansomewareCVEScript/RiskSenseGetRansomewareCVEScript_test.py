@@ -1,4 +1,3 @@
-import os
 EXPECTED_RANSOMWARE_CVES = [
     {
         "Cve": "CVE-0000-0000",

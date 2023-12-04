@@ -1,4 +1,3 @@
-import os
 import pytest
 
 from CyberArkPAS import Client, add_user_command, get_users_command, \

@@ -1,4 +1,3 @@
-import os
 from pytest_mock import MockerFixture
 import demistomock as demisto
 import os

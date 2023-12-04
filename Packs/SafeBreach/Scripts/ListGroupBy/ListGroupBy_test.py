@@ -1,5 +1,4 @@
 import os
-import os
 import demistomock as demisto
 from ListGroupBy import main as ListGroupBy
 

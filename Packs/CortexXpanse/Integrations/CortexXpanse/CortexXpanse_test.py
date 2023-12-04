@@ -1,4 +1,3 @@
-import os
 """
 Tests module for Cortex Xpanse integration.
 """

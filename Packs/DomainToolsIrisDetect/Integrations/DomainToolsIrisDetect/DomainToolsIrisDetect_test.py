@@ -1,4 +1,3 @@
-import os
 """
 DomainTools Iris Detect Test Cases
 """

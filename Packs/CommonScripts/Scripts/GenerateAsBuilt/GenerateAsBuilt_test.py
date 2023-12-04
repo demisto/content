@@ -1,4 +1,3 @@
-import os
 from GenerateAsBuilt import TableData, SortedTableData
 import pytest
 import demistomock as demisto

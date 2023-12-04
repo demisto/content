@@ -1,4 +1,3 @@
-import os
 import requests_mock
 from ClarizenIAM import Client, main
 from IAMApiModule import *

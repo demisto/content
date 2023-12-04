@@ -1,4 +1,3 @@
-import os
 from MicrosoftTeamsAsk import main
 from CommonServerPython import entryTypes
 import demistomock as demisto

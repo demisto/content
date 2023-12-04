@@ -1,4 +1,3 @@
-import os
 from MicrosoftGraphApplications import main, MANAGED_IDENTITIES_TOKEN_URL, Resources
 import MicrosoftGraphApplications
 import demistomock as demisto

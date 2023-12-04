@@ -1,4 +1,3 @@
-import os
 import demistomock as demisto  # noqa: F401
 
 from contextlib import nullcontext as does_not_raise

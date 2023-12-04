@@ -1,4 +1,3 @@
-import os
 ''' Tests for the Cado Response API Integration for the Cortex XSOAR Platform '''
 
 

@@ -419,7 +419,8 @@ def test_merge_request_note_list_command(mocker):
                     proxy=False,
                     headers={'PRIVATE-TOKEN': 'api_key'})
     args = {'limit': 2, 'sort': 'asc', 'merge_request_iid': 123}
-    response_client = util_load_json(os.path.dirname(__file__) + '/test_data/commands_test_data.json').get('list_merge_request_note')
+    response_client = util_load_json(os.path.dirname(
+        __file__) + '/test_data/commands_test_data.json').get('list_merge_request_note')
     mocker.patch.object(Client, '_http_request', return_value=response_client)
     result = merge_request_note_list_command(client, args)
     expected_hr = '### List Merge Issue Notes\n'\

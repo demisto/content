@@ -1,4 +1,3 @@
-import os
 from MicrosoftDefenderForCloudEventCollector import (MsClient,
                                                      find_next_run,
                                                      get_events,

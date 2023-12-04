@@ -1,4 +1,3 @@
-import os
 import pytest
 from CommonServerPython import *
 import MandiantAdvantageThreatIntelligence

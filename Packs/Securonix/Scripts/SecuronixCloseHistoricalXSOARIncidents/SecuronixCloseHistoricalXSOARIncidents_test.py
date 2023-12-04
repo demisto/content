@@ -1,5 +1,4 @@
 import os
-import os
 """Unit test cases for SecuronixCloseHistoricalXSOARIncidents script."""
 
 import json

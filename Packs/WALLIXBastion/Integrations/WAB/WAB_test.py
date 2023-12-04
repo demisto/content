@@ -1,4 +1,3 @@
-import os
 from WAB import main, Client
 import demistomock as demisto
 from CommonServerPython import *

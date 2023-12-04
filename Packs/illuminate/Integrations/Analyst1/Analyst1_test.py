@@ -1,4 +1,3 @@
-import os
 import pytest
 from Analyst1 import *
 

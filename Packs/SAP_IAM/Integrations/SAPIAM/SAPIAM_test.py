@@ -1,4 +1,3 @@
-import os
 import requests_mock
 from SAPIAM import Client, get_mapping_fields, main
 from IAMApiModule import *

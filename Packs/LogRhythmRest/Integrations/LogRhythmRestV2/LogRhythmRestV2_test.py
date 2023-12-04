@@ -1,4 +1,3 @@
-import os
 import json
 import pytest
 from LogRhythmRestV2 import Client

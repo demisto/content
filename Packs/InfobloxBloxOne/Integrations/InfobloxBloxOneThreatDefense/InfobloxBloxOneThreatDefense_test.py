@@ -1,4 +1,3 @@
-import os
 from InfobloxBloxOneThreatDefense import *
 from pathlib import Path
 import pytest

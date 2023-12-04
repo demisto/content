@@ -1,4 +1,3 @@
-import os
 import demistomock as demisto
 import pytest
 import requests_mock

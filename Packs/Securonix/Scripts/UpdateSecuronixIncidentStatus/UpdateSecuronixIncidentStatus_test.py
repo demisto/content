@@ -1,4 +1,3 @@
-import os
 """Unit test cases for UpdateSecuronixIncidentStatus script."""
 from unittest.mock import patch
 from UpdateSecuronixIncidentStatus import main

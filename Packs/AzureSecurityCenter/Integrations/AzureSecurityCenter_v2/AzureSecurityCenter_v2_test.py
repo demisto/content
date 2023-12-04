@@ -1,4 +1,3 @@
-import os
 import pytest
 
 from AzureSecurityCenter_v2 import MsClient, get_atp_command, get_aps_command, update_atp_command, \

@@ -1,4 +1,3 @@
-import os
 from CommonServerPython import *
 
 RETURN_ERROR_TARGET = 'AbuseDB.return_error'

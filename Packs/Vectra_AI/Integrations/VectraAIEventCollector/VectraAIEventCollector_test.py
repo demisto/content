@@ -1,4 +1,3 @@
-import os
 """
 Unit tests for Vectra Event Collector
 """

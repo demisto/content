@@ -1,4 +1,3 @@
-import os
 import pytest
 import demistomock as demisto
 from ServiceDeskPlus import Client, create_request_command, update_request_command, list_requests_command, \

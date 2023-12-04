@@ -66,7 +66,8 @@ def test_fetch_events(mocker):
     client = Client(BASE_URL)
 
     with requests_mock.Mocker() as m:
-        first_mock_request = m.get(f'{BASE_URL}/alert/search', json=util_load_json(os.path.dirname(__file__) + '/test_data/first_fetch.json'))
+        first_mock_request = m.get(f'{BASE_URL}/alert/search',
+                                   json=util_load_json(os.path.dirname(__file__) + '/test_data/first_fetch.json'))
 
         mock_events, next_last_run = fetch_events(client, limit=2, last_run=arg_to_datetime('3 days').strftime(DATE_FORMAT))
 
@@ -78,7 +79,8 @@ def test_fetch_events(mocker):
     last_run_time = next_last_run.get('last_run_time')
 
     with requests_mock.Mocker() as m:
-        second_mock_request = m.get(f'{BASE_URL}/alert/search', json=util_load_json(os.path.dirname(__file__) + '/test_data/second_fetch.json'))
+        second_mock_request = m.get(f'{BASE_URL}/alert/search',
+                                    json=util_load_json(os.path.dirname(__file__) + '/test_data/second_fetch.json'))
 
         mock_events, next_last_run = fetch_events(client, limit=2, last_run=last_run_time)
 
@@ -94,7 +96,8 @@ def test_main(mocker):
     events = mocker.patch('RecordedFutureEventCollector.send_events_to_xsiam', side_effect=mock_send_events_to_xsiam)
 
     with requests_mock.Mocker() as m:
-        mock_request = m.get(f'{BASE_URL}/alert/search', json=util_load_json(os.path.dirname(__file__) + '/test_data/first_fetch.json'))
+        mock_request = m.get(f'{BASE_URL}/alert/search',
+                             json=util_load_json(os.path.dirname(__file__) + '/test_data/first_fetch.json'))
 
         main()
 

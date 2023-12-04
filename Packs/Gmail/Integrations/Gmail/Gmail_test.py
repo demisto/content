@@ -1,4 +1,3 @@
-import os
 import demistomock as demisto
 import pytest
 from test_data import input_data

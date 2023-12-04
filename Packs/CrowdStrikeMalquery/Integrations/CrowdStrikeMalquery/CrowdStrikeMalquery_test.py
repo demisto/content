@@ -230,7 +230,7 @@ def test_hunt_command(mocker):
     [
         ('096f6aa5-f245-4b09-790f-133bc89d4d26', util_load_json(os.path.dirname(__file__) + '/test_data/get_hunt_request.json'),
          get_hunt_request_outputs, get_hunt_request_hr),
-        ('fc4db762-288c-40cc-5f4f-4f19b65649a', util_load_json(os.path.dirname(__file__) + '/test_data/get_exact_search_request.json'),
+        ('fc4db762-288c-40cc-5f4f-4f19b65649a', util_load_json(os.path.dirname(__file__) + '/test_data/get_exact_search_request.json'),  # noqa: E501
          get_exact_search_request_outputs, get_exact_search_request_hr),
         ('abc-123', get_request_status_inprogress_raw, get_request_status_inprogress_outputs,
          get_request_status_inprogress_hr)
@@ -302,7 +302,8 @@ def test_get_ratelimit_command(mocker):
                 - All data is provided - check context and human readable
     """
     from CrowdStrikeMalquery import get_ratelimit_command
-    mocker.patch.object(client, 'get_quotas', return_value=util_load_json(os.path.dirname(__file__) + '/test_data/get_ratelimit_raw_respose.json'))
+    mocker.patch.object(client, 'get_quotas', return_value=util_load_json(
+        os.path.dirname(__file__) + '/test_data/get_ratelimit_raw_respose.json'))
     result = get_ratelimit_command(client, {})
     expected_hr = "|hunt_count|download_count|monitor_count|hunt_limit|download_limit|monitor_limit|refresh_time" \
                   "|days_left|"

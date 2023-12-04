@@ -104,7 +104,8 @@ def test_check_the_status_of_an_action_requested_on_a_case_command(mocker):
             - Assert the context data is as expected.
             - Assert output prefix data is as expected
     """
-    client = mock_client(mocker, util_load_json(os.path.dirname(__file__) + '/test_data/test_check_status_of_action_requested_on_threat.json'))
+    client = mock_client(mocker, util_load_json(os.path.dirname(__file__)
+                         + '/test_data/test_check_status_of_action_requested_on_threat.json'))
     results = check_the_status_of_an_action_requested_on_a_case_command(client, {})
     assert results.outputs.get('status') == 'acknowledged'
     assert results.outputs_prefix == 'AbnormalSecurity.ActionStatus'
@@ -118,7 +119,8 @@ def test_check_the_status_of_an_action_requested_on_a_threat_command(mocker):
             - Assert the context data is as expected.
             - Assert output prefix data is as expected
     """
-    client = mock_client(mocker, util_load_json(os.path.dirname(__file__) + '/test_data/test_check_status_of_action_requested_on_threat.json'))
+    client = mock_client(mocker, util_load_json(os.path.dirname(__file__)
+                         + '/test_data/test_check_status_of_action_requested_on_threat.json'))
     results = check_the_status_of_an_action_requested_on_a_threat_command(client, {})
     assert results.outputs.get('status') == 'acknowledged'
     assert results.outputs_prefix == 'AbnormalSecurity.ActionStatus'
@@ -176,7 +178,8 @@ def test_get_the_details_of_a_specific_vendor_command(mocker):
             - Assert the context data is as expected.
             - Assert output prefix data is as expected
     """
-    client = mock_client(mocker, util_load_json(os.path.dirname(__file__) + '/test_data/test_get_the_details_of_a_specific_vendor.json'))
+    client = mock_client(mocker, util_load_json(os.path.dirname(__file__)
+                         + '/test_data/test_get_the_details_of_a_specific_vendor.json'))
     results = get_the_details_of_a_specific_vendor_command(client, {'vendor_domain': "test-domain-1.com"})
     assert results.outputs.get('vendorDomain') == 'test-domain-1.com'
     assert results.outputs.get('vendorContacts')[0] == 'john.doe@test-domain-1.com'
@@ -191,7 +194,8 @@ def test_get_the_activity_of_a_specific_vendor_command(mocker):
             - Assert the context data is as expected.
             - Assert output prefix data is as expected
     """
-    client = mock_client(mocker, util_load_json(os.path.dirname(__file__) + '/test_data/test_get_the_activity_of_a_specific_vendor.json'))
+    client = mock_client(mocker, util_load_json(os.path.dirname(__file__)
+                         + '/test_data/test_get_the_activity_of_a_specific_vendor.json'))
     results = get_the_activity_of_a_specific_vendor_command(client, {'vendor_domain': "test-domain-1.com"})
     assert results.outputs.get('eventTimeline')[0].get('suspiciousDomain') == 'test@test-domain.com'
     assert results.outputs_prefix == 'AbnormalSecurity.VendorActivity'
@@ -219,7 +223,8 @@ def test_get_the_details_of_a_vendor_case_command(mocker):
             - Assert the context data is as expected.
             - Assert output prefix data is as expected
     """
-    client = mock_client(mocker, util_load_json(os.path.dirname(__file__) + '/test_data/test_get_the_details_of_a_vendor_case.json'))
+    client = mock_client(mocker, util_load_json(os.path.dirname(__file__)
+                         + '/test_data/test_get_the_details_of_a_vendor_case.json'))
     results = get_the_details_of_a_vendor_case_command(client, {"case_id": 2})
     assert results.outputs.get('vendorCaseId') == 123
     assert results.outputs.get('timeline')[0].get('threatId') == 1234
@@ -234,7 +239,8 @@ def test_get_a_list_of_unanalyzed_abuse_mailbox_campaigns_command(mocker):
             - Assert the context data is as expected.
             - Assert output prefix data is as expected
     """
-    client = mock_client(mocker, util_load_json(os.path.dirname(__file__) + '/test_data/test_get_a_list_of_unanalyzed_abuse_mailbox_messages.json'))
+    client = mock_client(mocker, util_load_json(os.path.dirname(__file__)
+                         + '/test_data/test_get_a_list_of_unanalyzed_abuse_mailbox_messages.json'))
     results = get_a_list_of_unanalyzed_abuse_mailbox_campaigns_command(client, {})
     assert results.outputs.get('results')[0].get('abx_message_id') == 123456789
     assert results.outputs.get('results')[0].get('recipient').get('email') == 'john.doe@some-domain.com'
@@ -249,7 +255,8 @@ def test_get_details_of_an_abnormal_case_command(mocker):
             - Assert the context data is as expected.
             - Assert output prefix data is as expected
     """
-    client = mock_client(mocker, util_load_json(os.path.dirname(__file__) + '/test_data/test_get_details_of_an_abnormal_case.json'))
+    client = mock_client(mocker, util_load_json(os.path.dirname(__file__)
+                         + '/test_data/test_get_details_of_an_abnormal_case.json'))
     results = get_details_of_an_abnormal_case_command(client, {})
     assert results.outputs.get('caseId') == '1234'
     assert results.outputs.get('threatIds')[0] == '184712ab-6d8b-47b3-89d3-a314efef79e2'
@@ -466,7 +473,8 @@ def test_provides_the_analysis_and_timeline_details_of_a_case_command(mocker):
             - Assert the context data is as expected.
             - Assert output prefix data is as expected
     """
-    client = mock_client(mocker, util_load_json(os.path.dirname(__file__) + '/test_data/test_get_case_analysis_and_timeline.json'))
+    client = mock_client(mocker, util_load_json(os.path.dirname(__file__)
+                         + '/test_data/test_get_case_analysis_and_timeline.json'))
     results = provides_the_analysis_and_timeline_details_of_a_case_command(client, {})
     assert len(results.outputs.get('insights')) > 0
     assert len(results.outputs.get('eventTimeline')) > 0
@@ -476,7 +484,8 @@ def test_provides_the_analysis_and_timeline_details_of_a_case_command(mocker):
 def test_fetch_incidents(mocker, mock_get_a_list_of_threats_request,
                          mock_get_a_list_of_campaigns_submitted_to_abuse_mailbox_request,
                          mock_get_a_list_of_abnormal_cases_identified_by_abnormal_security_request):
-    client = mock_client(mocker, util_load_json(os.path.dirname(__file__) + '/test_data/test_get_case_analysis_and_timeline.json'))
+    client = mock_client(mocker, util_load_json(os.path.dirname(__file__)
+                         + '/test_data/test_get_case_analysis_and_timeline.json'))
     first_fetch_time = datetime.now().strftime(ISO_8601_FORMAT)
     next_run, incidents = fetch_incidents(
         client=client,

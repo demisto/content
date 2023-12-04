@@ -1,5 +1,4 @@
 import os
-import os
 import demistomock as demisto  # noqa: F401
 import pytest
 from CommonServerPython import *  # noqa: F401

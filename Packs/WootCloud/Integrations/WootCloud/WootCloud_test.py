@@ -1,4 +1,3 @@
-import os
 from WootCloud import fetch_incidents, Client, fetch_single_alert
 
 MOCK_URL = 'https://api_mock.wootcloud.com'

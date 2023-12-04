@@ -1,4 +1,3 @@
-import os
 import pytest
 from UploadFile import upload_file_command
 

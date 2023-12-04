@@ -1,4 +1,3 @@
-import os
 from NumberOfPhishingAttemptPerUser import get_relevant_incidents
 
 from CommonServerPython import *

@@ -1,4 +1,3 @@
-import os
 from ArmisEventCollector import Client, datetime, timedelta, DemistoException, arg_to_datetime, EVENT_TYPE, EVENT_TYPES, Any
 import pytest
 from freezegun import freeze_time

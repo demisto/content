@@ -1,4 +1,3 @@
-import os
 """Dataminr Pulse Integration for Cortex XSOAR - Unit Tests file."""
 
 import json

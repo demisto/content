@@ -1,4 +1,3 @@
-import os
 """
 Unit testing for Cisco Firepower Management Center.
 """

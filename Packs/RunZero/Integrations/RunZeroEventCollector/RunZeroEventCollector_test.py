@@ -263,7 +263,8 @@ def test_main(mocker):
         }
     )
     mocker.patch('RunZeroEventCollector.Client.get_api_token', return_value={'access_token': 'access_token'})
-    mocker.patch('RunZeroEventCollector.Client.http_request', return_value=util_load_json(os.path.dirname(__file__) + '/test_data/system_event_logs.json'))
+    mocker.patch('RunZeroEventCollector.Client.http_request', return_value=util_load_json(
+        os.path.dirname(__file__) + '/test_data/system_event_logs.json'))
     mocker.patch.object(
         demisto, 'command',
         return_value='test-module'

@@ -1,5 +1,4 @@
 import os
-import os
 import json
 import pytest
 
@@ -317,7 +316,8 @@ def test_checkpoint_update_application_site_command(mocker):
 def test_checkpoint_delete_application_site_command(mocker):
     from CheckPointFirewallV2 import checkpoint_delete_application_site_command
     mocked_client = mocker.Mock()
-    mocked_client.delete_application_site.return_value = util_load_json(os.path.dirname(__file__) + '/test_data/delete_object.json')
+    mocked_client.delete_application_site.return_value = util_load_json(
+        os.path.dirname(__file__) + '/test_data/delete_object.json')
     result = checkpoint_delete_application_site_command(mocked_client, 'application1').outputs
     assert result.get('message') == 'OK'
 
@@ -424,7 +424,8 @@ def test_checkpoint_update_threat_indicator_command(mocker):
 def test_checkpoint_delete_threat_indicator_command(mocker):
     from CheckPointFirewallV2 import checkpoint_delete_threat_indicator_command
     mocked_client = mocker.Mock()
-    mocked_client.delete_threat_indicator.return_value = util_load_json(os.path.dirname(__file__) + '/test_data/delete_object.json')
+    mocked_client.delete_threat_indicator.return_value = util_load_json(
+        os.path.dirname(__file__) + '/test_data/delete_object.json')
     result = checkpoint_delete_threat_indicator_command(mocked_client, 'threat_indicator_1').outputs
     assert result.get('message') == 'OK'
 

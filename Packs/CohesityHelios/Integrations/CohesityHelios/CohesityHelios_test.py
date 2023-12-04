@@ -1,4 +1,3 @@
-import os
 """Cohesity Helios Cortex XSOAR - Unit Tests file
 """
 

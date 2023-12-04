@@ -1,5 +1,4 @@
 import os
-import os
 from urllib.parse import quote
 
 import pytest

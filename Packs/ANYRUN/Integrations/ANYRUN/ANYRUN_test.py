@@ -1,4 +1,3 @@
-import os
 import pytest
 import json
 from ANYRUN import underscore_to_camel_case, images_from_report

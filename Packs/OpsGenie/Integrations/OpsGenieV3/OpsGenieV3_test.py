@@ -1037,7 +1037,8 @@ def test_invite_user(mocker):
     """
     mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
     mock_client = OpsGenieV3.Client(base_url="")
-    mocker.patch.object(mock_client, 'invite_user', return_value=util_load_json(os.path.dirname(__file__) + '/test_data/invite_user.json'))
+    mocker.patch.object(mock_client, 'invite_user', return_value=util_load_json(
+        os.path.dirname(__file__) + '/test_data/invite_user.json'))
     res = OpsGenieV3.invite_user(mock_client, {'username': "test@example.com", 'fullName': 'Test Example', 'role': 'user'})
     assert (res.raw_response == util_load_json(os.path.dirname(__file__) + '/test_data/invite_user.json'))
 

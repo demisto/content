@@ -1,5 +1,4 @@
 import os
-import os
 import json
 import pytest
 from datetime import datetime, timedelta

@@ -97,7 +97,7 @@ def test_fetch_events():
         m.get(ACTIVITIES_MOCK_URL, json=util_load_json(os.path.dirname(__file__) + '/test_data/activities.json'))
         m.get(THREATS_MOCK_URL, json=util_load_json(os.path.dirname(__file__) + '/test_data/threats.json'))
         m.get(ALERTS_MOCK_URL, json=util_load_json(os.path.dirname(__file__) + '/test_data/alerts.json'))
-        m.get(ACTIVITIES_SECOND_MOCK_URL, json=util_load_json(os.path.dirname(__file__) + '/test_data/activities_second_fetch.json'))
+        m.get(ACTIVITIES_SECOND_MOCK_URL, json=util_load_json(os.path.dirname(__file__) + '/test_data/activities_second_fetch.json'))  # noqa: E501
         m.get(THREATS_SECOND_MOCK_URL, json={})
         m.get(ALERTS_SECOND_MOCK_URL, json={})
 
@@ -136,9 +136,12 @@ def test_main(mocker):
     events = mocker.patch('SentinelOneEventCollector.send_events_to_xsiam', side_effect=mock_send_events_to_xsiam)
 
     with requests_mock.Mocker() as m:
-        m.get(ACTIVITIES_MOCK_URL.replace('limit=1000', 'limit=2'), json=util_load_json(os.path.dirname(__file__) + '/test_data/activities.json'))
-        m.get(THREATS_MOCK_URL.replace('limit=1000', 'limit=2'), json=util_load_json(os.path.dirname(__file__) + '/test_data/threats.json'))
-        m.get(ALERTS_MOCK_URL.replace('limit=1000', 'limit=2'), json=util_load_json(os.path.dirname(__file__) + '/test_data/alerts.json'))
+        m.get(ACTIVITIES_MOCK_URL.replace('limit=1000', 'limit=2'), json=util_load_json(
+            os.path.dirname(__file__) + '/test_data/activities.json'))
+        m.get(THREATS_MOCK_URL.replace('limit=1000', 'limit=2'), json=util_load_json(
+            os.path.dirname(__file__) + '/test_data/threats.json'))
+        m.get(ALERTS_MOCK_URL.replace('limit=1000', 'limit=2'), json=util_load_json(
+            os.path.dirname(__file__) + '/test_data/alerts.json'))
 
         main()
 

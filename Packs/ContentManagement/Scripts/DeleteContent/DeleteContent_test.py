@@ -1,4 +1,3 @@
-import os
 import pytest
 
 from DeleteContent import get_and_delete_needed_ids, CORE_PACKS_LIST_URL

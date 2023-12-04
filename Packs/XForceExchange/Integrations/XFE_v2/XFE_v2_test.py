@@ -1,4 +1,3 @@
-import os
 from XFE_v2 import Client, ip_command, url_command, cve_get_command, \
     cve_search_command, file_command, whois_command
 from CommonServerPython import outputPaths

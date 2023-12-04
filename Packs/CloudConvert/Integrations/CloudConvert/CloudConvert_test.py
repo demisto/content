@@ -1,5 +1,4 @@
 import os
-import os
 from CloudConvert import upload_command, Client, convert_command, check_status_command, download_command, modify_results_dict
 from CommonServerPython import remove_empty_elements, tableToMarkdown, string_to_table_header
 import demistomock as demisto
@@ -142,7 +141,7 @@ def test_convert_valid_format_and_id(mocker):
                                                                            'json').get('data')),
                                       headers=('id', 'operation', 'created_at', 'status', 'depends_on_task_ids'),
                                       headerTransform=string_to_table_header)
-    assert results.outputs == remove_empty_elements(util_load_json(os.path.dirname(__file__) + '/test_data/convert_valid_format_and_id_response.json'
+    assert results.outputs == remove_empty_elements(util_load_json(os.path.dirname(__file__) + '/test_data/convert_valid_format_and_id_response.json'  # noqa: E501
                                                                    ).get('data'))
     assert results.readable_output == readable_output
 
@@ -159,7 +158,7 @@ def test_convert_invalid_format_or_id(mocker):
 
     """
     client = create_client()
-    mocker.patch.object(client, 'convert', return_value=util_load_json(os.path.dirname(__file__) + '/test_data/convert_invalid_format_or_id'
+    mocker.patch.object(client, 'convert', return_value=util_load_json(os.path.dirname(__file__) + '/test_data/convert_invalid_format_or_id'  # noqa: E501
                                                                        '_response.json'))
     with pytest.raises(ValueError) as e:
         convert_command(client, {
@@ -213,7 +212,8 @@ def test_check_status_valid_id_non_download(mocker, create_war_room_entry):
         'task_id': 'id',
         'create_war_room_entry': create_war_room_entry
     })
-    raw_response_data = util_load_json(os.path.dirname(__file__) + '/test_data/check_status_non_download_response.json').get('data')
+    raw_response_data = util_load_json(os.path.dirname(
+        __file__) + '/test_data/check_status_non_download_response.json').get('data')
     modify_results_dict(raw_response_data)
     readable_output = tableToMarkdown('Check Status Results',
                                       remove_empty_elements(raw_response_data),
@@ -281,7 +281,8 @@ def test_download_invalid_id(mocker, download_as):
 
     """
     client = create_client()
-    mocker.patch.object(client, 'download_url', return_value=util_load_json(os.path.dirname(__file__) + '/test_data/download_invalid_id_response.json'))
+    mocker.patch.object(client, 'download_url', return_value=util_load_json(
+        os.path.dirname(__file__) + '/test_data/download_invalid_id_response.json'))
     with pytest.raises(ValueError) as e:
         download_command(client, {
             'task_id': 'id',
@@ -304,7 +305,8 @@ def test_download_valid_id(mocker, download_as):
 
     """
     client = create_client()
-    mocker.patch.object(client, 'download_url', return_value=util_load_json(os.path.dirname(__file__) + '/test_data/download_valid_id_response.json'))
+    mocker.patch.object(client, 'download_url', return_value=util_load_json(
+        os.path.dirname(__file__) + '/test_data/download_valid_id_response.json'))
 
     results = download_command(client, {
         'task_id': 'id',

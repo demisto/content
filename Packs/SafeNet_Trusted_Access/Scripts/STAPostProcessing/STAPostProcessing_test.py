@@ -1,4 +1,3 @@
-import os
 import demistomock as demisto
 import STAPostProcessing
 from STAPostProcessing import close_incident_sta

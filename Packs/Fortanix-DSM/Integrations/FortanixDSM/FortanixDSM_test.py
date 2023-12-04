@@ -1,4 +1,3 @@
-import os
 """Fortanix-DSM Integration for Cortex XSOAR - Unit Tests file
 
 This Unit Tests in this file validate the FortanixDSM Integration based

@@ -1,4 +1,3 @@
-import os
 import demistomock as demisto
 from GIBIncidentUpdateIncludingClosed import prevent_duplication
 

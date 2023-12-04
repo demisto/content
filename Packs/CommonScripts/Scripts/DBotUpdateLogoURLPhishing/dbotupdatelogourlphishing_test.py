@@ -1,5 +1,4 @@
 import os
-import os
 from DBotUpdateLogoURLPhishing import *
 
 MSG_LOGO_ADDED = "Logo was added successfully"

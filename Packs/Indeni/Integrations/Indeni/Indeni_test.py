@@ -1,4 +1,3 @@
-import os
 
 API_KEY = "API-KEY"
 SERVER = "https://10.11.80.21:9443"

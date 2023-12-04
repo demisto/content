@@ -1,5 +1,4 @@
 import os
-import os
 from copy import deepcopy
 
 import CommonServerPython

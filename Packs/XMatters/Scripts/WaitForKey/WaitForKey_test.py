@@ -1,4 +1,3 @@
-import os
 # Test runner for WaitForKey
 
 from WaitForKey import main

@@ -237,12 +237,14 @@ def test_get_mobile_devices_command(mocker):
 
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {}
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_mobile_devices/get_mobile_devices_raw_response.json')
+    mock_response = util_load_json(os.path.dirname(
+        __file__) + '/test_data/get_mobile_devices/get_mobile_devices_raw_response.json')
 
     mocker.patch.object(client, 'get_mobile_devices_request', return_value=mock_response)
 
     devices_response = get_mobile_devices_command(client, args)
-    expected_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_mobile_devices/get_mobile_devices_context.json')
+    expected_response = util_load_json(os.path.dirname(
+        __file__) + '/test_data/get_mobile_devices/get_mobile_devices_context.json')
     assert devices_response[0].outputs == expected_response
 
 
@@ -259,12 +261,14 @@ def test_get_mobile_devices_limit_command(mocker):
 
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {'limit': 10, 'page': 1}
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_mobile_devices/get_mobile_devices_raw_response.json')
+    mock_response = util_load_json(os.path.dirname(
+        __file__) + '/test_data/get_mobile_devices/get_mobile_devices_raw_response.json')
 
     mocker.patch.object(client, 'get_mobile_devices_request', return_value=mock_response)
 
     devices_response = get_mobile_devices_command(client, args)
-    expected_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_mobile_devices/get_mobile_devices_limit_context.json')
+    expected_response = util_load_json(os.path.dirname(
+        __file__) + '/test_data/get_mobile_devices/get_mobile_devices_limit_context.json')
     assert devices_response[0].outputs == expected_response
 
 
@@ -281,12 +285,14 @@ def test_get_mobile_devices_by_id_command(mocker):
 
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {'id': 1}
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_mobile_devices/get_mobile_device_by_id_raw_response.json')
+    mock_response = util_load_json(os.path.dirname(
+        __file__) + '/test_data/get_mobile_devices/get_mobile_device_by_id_raw_response.json')
 
     mocker.patch.object(client, 'get_mobile_devices_request', return_value=mock_response)
 
     devices_response = get_mobile_device_by_id_command(client, args)
-    expected_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_mobile_devices/get_mobile_device_by_id_context.json')
+    expected_response = util_load_json(os.path.dirname(
+        __file__) + '/test_data/get_mobile_devices/get_mobile_device_by_id_context.json')
     assert devices_response.outputs == expected_response
 
 
@@ -303,12 +309,14 @@ def test_get_mobile_devices_by_match_command(mocker):
 
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {'match': 'ab12cdc060a311e490b812*'}
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_mobile_devices/get_mobile_device_by_match_raw_response.json')
+    mock_response = util_load_json(os.path.dirname(
+        __file__) + '/test_data/get_mobile_devices/get_mobile_device_by_match_raw_response.json')
 
     mocker.patch.object(client, 'get_mobile_devices_request', return_value=mock_response)
 
     devices_response = get_mobile_devices_command(client, args)
-    expected_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_mobile_devices/get_mobile_device_by_match_context.json')
+    expected_response = util_load_json(os.path.dirname(
+        __file__) + '/test_data/get_mobile_devices/get_mobile_device_by_match_context.json')
     assert devices_response[0].outputs == expected_response
 
 
@@ -349,12 +357,14 @@ def test_get_computers_by_app_command(mocker):
 
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {'application': 'safar*'}
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_computer_by_app/get_computer_by_app_raw_response.json')
+    mock_response = util_load_json(os.path.dirname(
+        __file__) + '/test_data/get_computer_by_app/get_computer_by_app_raw_response.json')
 
     mocker.patch.object(client, 'get_computers_by_app_request', return_value=mock_response)
 
     computer_response = get_computers_by_app_command(client, args)
-    expected_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_computer_by_app/get_computer_by_app_context.json')
+    expected_response = util_load_json(os.path.dirname(
+        __file__) + '/test_data/get_computer_by_app/get_computer_by_app_context.json')
     assert computer_response[0].outputs == expected_response
 
 
@@ -376,7 +386,8 @@ def test_mobile_device_lost_command(mocker):
     mocker.patch.object(client, 'mobile_device_lost_request', return_value=json.loads(xml2json(mock_response)))
 
     mobile_response = mobile_device_lost_command(client, args)
-    expected_response = util_load_json(os.path.dirname(__file__) + '/test_data/mobile_device_lost/mobile_device_lost_context.json')
+    expected_response = util_load_json(os.path.dirname(
+        __file__) + '/test_data/mobile_device_lost/mobile_device_lost_context.json')
     assert mobile_response.outputs == expected_response
 
 
@@ -398,7 +409,8 @@ def test_mobile_device_erase_command(mocker):
     mocker.patch.object(client, 'mobile_device_erase_request', return_value=json.loads(xml2json(mock_response)))
 
     computer_response = mobile_device_erase_command(client, args)
-    expected_response = util_load_json(os.path.dirname(__file__) + '/test_data/mobile_device_erase/mobile_device_erase_context.json')
+    expected_response = util_load_json(os.path.dirname(
+        __file__) + '/test_data/mobile_device_erase/mobile_device_erase_context.json')
     assert computer_response.outputs == expected_response
 
 

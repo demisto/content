@@ -1,4 +1,3 @@
-import os
 import itertools
 from types import SimpleNamespace
 

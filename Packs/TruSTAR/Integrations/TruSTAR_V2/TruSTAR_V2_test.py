@@ -1,5 +1,4 @@
 import os
-import os
 import pytest
 from TruSTAR_V2 import TrustarClient, Utils
 

@@ -1,4 +1,3 @@
-import os
 import demistomock as demisto  # noqa: F401
 import pytest
 import unittest

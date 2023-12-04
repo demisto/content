@@ -1,4 +1,3 @@
-import os
 import gzip
 import json
 from freezegun import freeze_time

@@ -14,9 +14,11 @@ def util_load_json(path):
 SINGLE_INCIDENTS_MOCK_RESPONSE = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_single_incident.json')
 MULTIPLE_INCIDENTS_MOCK_RESPONSE = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_multiple_incident.json')
 FIRST_STATIC_ATT_MOCK_RESPONSE = util_load_json(os.path.dirname(__file__) + '/test_data/incident_static_attributes_first.json')
-FIRST_EDITABLE_ATT_MOCK_RESPONSE = util_load_json(os.path.dirname(__file__) + '/test_data/incident_editable_attributes_first.json')
+FIRST_EDITABLE_ATT_MOCK_RESPONSE = util_load_json(os.path.dirname(
+    __file__) + '/test_data/incident_editable_attributes_first.json')
 SECOND_STATIC_ATT_MOCK_RESPONSE = util_load_json(os.path.dirname(__file__) + '/test_data/incident_static_attributes_second.json')
-SECOND_EDITABLE_ATT_MOCK_RESPONSE = util_load_json(os.path.dirname(__file__) + '/test_data/incident_editable_attributes_second.json')
+SECOND_EDITABLE_ATT_MOCK_RESPONSE = util_load_json(os.path.dirname(
+    __file__) + '/test_data/incident_editable_attributes_second.json')
 
 FIRST_INCIDENT_DETAILS = json.dumps({"ID": 3620, "severity": "High", "customAttributeGroup": [
     {"name": "custom_attribute_group.default",

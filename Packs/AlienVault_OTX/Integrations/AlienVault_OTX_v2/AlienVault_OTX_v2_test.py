@@ -1,4 +1,3 @@
-import os
 # Import std packages
 
 # Import 3-rd party packages

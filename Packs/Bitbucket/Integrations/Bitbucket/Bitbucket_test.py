@@ -30,7 +30,8 @@ def test_get_paged_results(mocker, bitbucket_client):
             - return a list with all the results after pagination
         """
     from Bitbucket import get_paged_results
-    get_paged_results_object = util_load_json(os.path.dirname(__file__) + '/test_data/commands_test_data.json').get('get_paged_results')
+    get_paged_results_object = util_load_json(os.path.dirname(
+        __file__) + '/test_data/commands_test_data.json').get('get_paged_results')
     response1 = get_paged_results_object.get('response1')
     response2 = get_paged_results_object.get('response2')
     res = get_paged_results_object.get('results')
@@ -52,7 +53,8 @@ def test_check_pagination(bitbucket_client):
             - return a list with all the results after pagination
     """
     from Bitbucket import check_pagination
-    response = util_load_json(os.path.dirname(__file__) + '/test_data/commands_test_data.json').get('check_pagination').get('response')
+    response = util_load_json(os.path.dirname(__file__)
+                              + '/test_data/commands_test_data.json').get('check_pagination').get('response')
     res = response.get('values', [])
     results10 = check_pagination(bitbucket_client, response, 10)
     results1 = check_pagination(bitbucket_client, response, 1)
@@ -102,7 +104,8 @@ def test_project_list_command(mocker, bitbucket_client):
     """
     from Bitbucket import project_list_command
     args = {'limit': '10', 'partial_response': 'false'}
-    check_pagination_object = util_load_json(os.path.dirname(__file__) + '/test_data/commands_test_data.json').get('check_pagination')
+    check_pagination_object = util_load_json(os.path.dirname(
+        __file__) + '/test_data/commands_test_data.json').get('check_pagination')
     response = check_pagination_object.get('response2')
     expected_result = response.get('values')
     mocker.patch.object(bitbucket_client, 'get_project_list_request', return_value=response)
@@ -152,7 +155,8 @@ def test_open_branch_list_command(mocker, bitbucket_client):
         and returns a command result with a list of the open branches.
     """
     from Bitbucket import open_branch_list_command
-    response = util_load_json(os.path.dirname(__file__) + '/test_data/commands_test_data.json').get('test_open_branch_list_command')
+    response = util_load_json(os.path.dirname(__file__)
+                              + '/test_data/commands_test_data.json').get('test_open_branch_list_command')
     mocker.patch.object(bitbucket_client, 'get_open_branch_list_request', return_value=response)
     expected_result = response.get('values')
     expected_human_readable = '### Open Branches\n' \
@@ -522,7 +526,8 @@ def test_pull_request_list_command(mocker, bitbucket_client):
     """
     from Bitbucket import pull_request_list_command
     args = {'limit': '2', 'partial_response': 'false'}
-    response = util_load_json(os.path.dirname(__file__) + '/test_data/commands_test_data.json').get('test_pull_request_list_command')
+    response = util_load_json(os.path.dirname(__file__)
+                              + '/test_data/commands_test_data.json').get('test_pull_request_list_command')
     mocker.patch.object(bitbucket_client, 'pull_request_list_request', return_value=response)
     expected_human_readable = '### List of the pull requests\n' \
                               '|Id|Title|Description|SourceBranch|DestinationBranch|State|CreatedBy|CreatedAt' \
@@ -548,7 +553,8 @@ def test_issue_comment_list_command(mocker, bitbucket_client):
     """
     from Bitbucket import issue_comment_list_command
     args = {'limit': '2', 'issue_id': '8', 'partial_response': 'false'}
-    response = util_load_json(os.path.dirname(__file__) + '/test_data/commands_test_data.json').get('test_issue_comment_list_command')
+    response = util_load_json(os.path.dirname(__file__)
+                              + '/test_data/commands_test_data.json').get('test_issue_comment_list_command')
     mocker.patch.object(bitbucket_client, 'issue_comment_list_request', return_value=response)
     expected_human_readable = '### List of the comments on issue "8"\n' \
                               '|Id|Content|CreatedBy|CreatedAt|UpdatedAt|IssueId|IssueTitle|\n' \

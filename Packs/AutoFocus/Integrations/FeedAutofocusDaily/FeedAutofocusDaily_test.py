@@ -1,5 +1,4 @@
 import os
-import os
 import pytest
 from FeedAutofocusDaily import Client, fetch_indicators_command, get_indicators_command
 

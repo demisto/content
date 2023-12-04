@@ -1,4 +1,3 @@
-import os
 from SearchIncidentsV2 import *
 import pytest
 

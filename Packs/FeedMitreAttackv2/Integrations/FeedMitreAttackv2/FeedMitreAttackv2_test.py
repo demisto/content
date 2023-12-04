@@ -1,4 +1,3 @@
-import os
 import json
 import pytest
 from stix2 import TAXIICollectionSource, parse

@@ -504,7 +504,8 @@ def test_handle_protection_groups_list_commands(mocker):
     """
     from NetscoutAED import handle_protection_groups_list_commands
 
-    protection_groups_raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/protection_groups/protection_groups_list_raw.json')
+    protection_groups_raw_response = util_load_json(os.path.dirname(
+        __file__) + '/test_data/protection_groups/protection_groups_list_raw.json')
     mocker.patch.object(client, 'protection_group_list_command',
                         return_value=protection_groups_raw_response)
     expected_output = {
@@ -621,7 +622,8 @@ def test_handle_domain_list_commands(mocker):
     """
     from NetscoutAED import handle_domain_list_commands
 
-    inbound_blacklisted_domains_raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/domains/inbound_blacklisted_domains_raw.json')
+    inbound_blacklisted_domains_raw_response = util_load_json(os.path.dirname(
+        __file__) + '/test_data/domains/inbound_blacklisted_domains_raw.json')
     mocker.patch.object(client, 'inbound_blacklisted_domain_list_command',
                         return_value=inbound_blacklisted_domains_raw_response)
     result = handle_domain_list_commands(client, {})
@@ -746,7 +748,8 @@ def test_handle_url_list_commands(mocker):
     """
     from NetscoutAED import handle_url_list_commands
 
-    inbound_blacklisted_urls_raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/urls/inbound_blacklisted_urls_raw.json')
+    inbound_blacklisted_urls_raw_response = util_load_json(os.path.dirname(
+        __file__) + '/test_data/urls/inbound_blacklisted_urls_raw.json')
     mocker.patch.object(client, 'inbound_blacklisted_url_list_command',
                         return_value=inbound_blacklisted_urls_raw_response)
     result = handle_url_list_commands(client, {})

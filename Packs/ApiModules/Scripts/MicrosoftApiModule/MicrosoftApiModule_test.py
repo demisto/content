@@ -1,4 +1,3 @@
-import os
 import freezegun
 from requests import Response
 from MicrosoftApiModule import *

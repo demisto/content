@@ -1,5 +1,4 @@
 import os
-import os
 """
 Symantec EDR (On-prem) Integration - Unit Tests file
 """

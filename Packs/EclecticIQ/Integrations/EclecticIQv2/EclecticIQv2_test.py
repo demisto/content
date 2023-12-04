@@ -1,4 +1,3 @@
-import os
 import pytest
 import demistomock as demisto
 from EclecticIQv2 import (

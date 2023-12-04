@@ -1,4 +1,3 @@
-import os
 import requests_mock
 from ACTIIndicatorQuery import IDEFENSE_URL_TEMPLATE, Client, domain_command, url_command, ip_command, uuid_command, _calculate_dbot_score, getThreatReport_command, fix_markdown, addBaseUrlToPartialPaths, convert_inline_image_to_encoded, fundamental_uuid_command                         # noqa: E501
 from CommonServerPython import DemistoException, DBotScoreReliability

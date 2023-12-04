@@ -1,5 +1,4 @@
 import os
-import os
 import json
 from CTIXv3 import (
     Client,

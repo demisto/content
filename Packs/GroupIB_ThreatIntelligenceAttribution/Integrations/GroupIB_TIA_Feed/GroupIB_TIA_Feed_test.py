@@ -1,5 +1,4 @@
 import os
-import os
 import pytest
 from json import load
 from GroupIB_TIA_Feed import fetch_indicators_command, Client

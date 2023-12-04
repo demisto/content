@@ -1,4 +1,3 @@
-import os
 import pytest
 import json
 from Tenable_sc import update_asset_command, list_zones_command, list_queries, create_policy_request_body, list_groups_command, \

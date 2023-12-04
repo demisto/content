@@ -1,4 +1,3 @@
-import os
 from CommonServerPython import *
 from FindEmailCampaign import *
 import json

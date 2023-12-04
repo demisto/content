@@ -202,7 +202,7 @@ def test_cve_to_indicator(input, expected):
                            {},
                            'https://www.opencve.io/api/reports'),
                           (util_load_json(os.path.dirname(__file__) + '/test_data/single_report_response.json'),
-                           CommandResults(outputs=util_load_json(os.path.dirname(__file__) + '/test_data/single_report_response.json'),
+                           CommandResults(outputs=util_load_json(os.path.dirname(__file__) + '/test_data/single_report_response.json'),  # noqa: E501
                                           outputs_prefix='OpenCVE.Reports.KLMHU9EB4N8C'),
                            {'report_id': 'KLMHU9EB4N8C'},
                            'https://www.opencve.io/api/reports/KLMHU9EB4N8C')])
@@ -216,7 +216,7 @@ def test_get_reports_command(response, expected, args, mock_url, requests_mock):
 @pytest.mark.parametrize("response, args, expected, mock_url",
                          [(util_load_json(os.path.dirname(__file__) + '/test_data/vendors_specific_vendor.json'),
                            {'vendor_name': 'paloaltonetworks'},
-                           CommandResults(outputs=util_load_json(os.path.dirname(__file__) + '/test_data/vendors_specific_vendor.json'),
+                           CommandResults(outputs=util_load_json(os.path.dirname(__file__) + '/test_data/vendors_specific_vendor.json'),  # noqa: E501
                                           outputs_prefix='OpenCVE.paloaltonetworks'),
                            'https://www.opencve.io/api/vendors/paloaltonetworks'),
                           (util_load_json(os.path.dirname(__file__) + '/test_data/vendors.json'),

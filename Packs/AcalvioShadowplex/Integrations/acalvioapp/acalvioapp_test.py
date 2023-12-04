@@ -1,4 +1,3 @@
-import os
 import pytest
 
 from test_data.api_responses \

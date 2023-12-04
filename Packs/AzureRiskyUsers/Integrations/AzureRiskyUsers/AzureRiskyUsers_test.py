@@ -1,4 +1,3 @@
-import os
 import pytest
 from AzureRiskyUsers import Client, CLIENT_CREDENTIALS_FLOW, DEVICE_FLOW
 import json

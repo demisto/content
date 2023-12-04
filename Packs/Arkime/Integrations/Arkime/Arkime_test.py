@@ -493,7 +493,7 @@ def test_session_tag_remove_command(mocker, arkime_client):
     from Arkime import session_tag_remove_command
 
     http_request = mocker.patch.object(arkime_client, '_http_request',
-                                       return_value=util_load_json(os.path.dirname(__file__) + '/test_data/session_tag_remove.json'))
+                                       return_value=util_load_json(os.path.dirname(__file__) + '/test_data/session_tag_remove.json'))  # noqa: E501
 
     args = {'segments': ['no'],
             'ids': '220516-QHSdz21pJ_xCtJGoL8mbmyNv',

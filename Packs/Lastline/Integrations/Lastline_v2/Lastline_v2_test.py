@@ -1,4 +1,3 @@
-import os
 import pytest
 from Lastline_v2 import *
 

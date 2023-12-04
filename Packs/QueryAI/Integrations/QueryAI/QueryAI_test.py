@@ -1,4 +1,3 @@
-import os
 def test_queryai_run_query(requests_mock):
     """Tests queryai-run-quer command function.
     """

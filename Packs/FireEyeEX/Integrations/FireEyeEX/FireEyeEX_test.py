@@ -423,7 +423,8 @@ def test_fetch_incidents(mocker):
     """
     mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
-    mocker.patch.object(FireEyeClient, 'get_alerts_request', return_value=util_load_json(os.path.dirname(__file__) + '/test_data/alerts.json'))
+    mocker.patch.object(FireEyeClient, 'get_alerts_request', return_value=util_load_json(
+        os.path.dirname(__file__) + '/test_data/alerts.json'))
     last_run, incidents = fetch_incidents(client=client,
                                           last_run={},
                                           first_fetch='1 year',
@@ -448,7 +449,8 @@ def test_fetch_incidents_with_limit(mocker):
     """
     mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
-    mocker.patch.object(FireEyeClient, 'get_alerts_request', return_value=util_load_json(os.path.dirname(__file__) + '/test_data/alerts.json'))
+    mocker.patch.object(FireEyeClient, 'get_alerts_request', return_value=util_load_json(
+        os.path.dirname(__file__) + '/test_data/alerts.json'))
     last_run, incidents = fetch_incidents(client=client,
                                           last_run={},
                                           first_fetch='1 year',
@@ -476,7 +478,8 @@ def test_fetch_incidents_last_alerts(mocker):
     # mocker.patch.object(dateparser, 'parse', side_effect=date_parser_mock)
     mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
-    mocker.patch.object(FireEyeClient, 'get_alerts_request', return_value=util_load_json(os.path.dirname(__file__) + '/test_data/alerts.json'))
+    mocker.patch.object(FireEyeClient, 'get_alerts_request', return_value=util_load_json(
+        os.path.dirname(__file__) + '/test_data/alerts.json'))
     last_run_time = '2021-02-14T17:01:14+00:00'
     next_run_time_to_expect = (dateparser.parse(last_run_time) + timedelta(hours=48)).isoformat()
     last_alert_ids = '["1", "2", "3", "4", "5"]'
@@ -514,7 +517,8 @@ def test_fetch_incidents_no_alerts(mocker):
     """
     mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
-    mocker.patch.object(FireEyeClient, 'get_alerts_request', return_value=util_load_json(os.path.dirname(__file__) + '/test_data/no_alerts.json'))
+    mocker.patch.object(FireEyeClient, 'get_alerts_request', return_value=util_load_json(
+        os.path.dirname(__file__) + '/test_data/no_alerts.json'))
     last_run_time = '2021-02-14T17:01:14+00:00'
     last_alert_ids = '["1", "2", "3", "4", "5"]'
     last_run = {

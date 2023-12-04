@@ -1,4 +1,3 @@
-import os
 import json
 from unittest.mock import patch
 from freezegun import freeze_time

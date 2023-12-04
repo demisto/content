@@ -1,4 +1,3 @@
-import os
 from IdentifyAttachedEmail import *
 import IdentifyAttachedEmail
 
