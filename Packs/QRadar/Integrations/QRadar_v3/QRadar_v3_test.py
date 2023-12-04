@@ -1,4 +1,5 @@
 import os
+import os
 """
     QRadar v3 integration for Cortex XSOAR - Unit Tests file
 """

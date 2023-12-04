@@ -1,3 +1,4 @@
+import os
 import base64
 from Cryptosim import Client, correlation_alerts_command, correlations_command, fetch_incidents
 

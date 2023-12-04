@@ -1,4 +1,5 @@
 import os
+import os
 """Flashpoint Test File."""
 import demistomock as demisto
 import pytest

@@ -1,3 +1,4 @@
+import os
 """
 Unit testing for Check Point Threat Emulation (SandBlast)
 commands: query, upload, download and quota.

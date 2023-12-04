@@ -1,3 +1,4 @@
+import os
 from IllusiveNetworks import Client, is_deceptive_user_command, is_deceptive_server_command, \
     delete_deceptive_users_command, delete_deceptive_servers_command, run_forensics_on_demand_command, \
     get_asm_host_insight_command, get_asm_cj_insight_command, get_deceptive_users_command, \

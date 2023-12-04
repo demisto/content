@@ -1,3 +1,4 @@
+import os
 """Test file for CyCognito Integration."""
 
 import json

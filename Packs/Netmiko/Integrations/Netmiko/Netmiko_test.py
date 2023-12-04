@@ -1,4 +1,5 @@
 import os
+import os
 import json
 from Netmiko import cmds_command
 

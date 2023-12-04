@@ -1,4 +1,5 @@
 import os
+import os
 from Malwr import MalwrAPI
 from requests_mock import Mocker
 import tempfile

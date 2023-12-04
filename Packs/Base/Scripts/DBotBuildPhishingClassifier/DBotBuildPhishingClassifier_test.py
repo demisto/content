@@ -1,3 +1,4 @@
+import os
 from DBotBuildPhishingClassifier import *
 
 QUERY = '-status:closed and -category:job and created:>="2020-11-08T00:00:00 +0200"'

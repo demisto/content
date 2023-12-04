@@ -1,3 +1,4 @@
+import os
 """
 Unit and Integrationt tests for Securities API
 """

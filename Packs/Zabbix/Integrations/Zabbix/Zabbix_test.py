@@ -1,3 +1,4 @@
+import os
 import Zabbix
 from pyzabbix import ZabbixAPI
 

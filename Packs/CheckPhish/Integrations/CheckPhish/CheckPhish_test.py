@@ -1,3 +1,4 @@
+import os
 import demistomock as demisto
 import CheckPhish
 from CommonServerPython import DBotScoreReliability

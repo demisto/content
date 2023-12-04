@@ -1,3 +1,4 @@
+import os
 """EmailRepIO Integration for Cortex XSOAR - Unit Tests file"""
 from CommonServerPython import Common, DBotScoreType
 import demistomock as demisto

@@ -1,3 +1,4 @@
+import os
 import pytest
 import AzureWAF as waf
 import demistomock as demisto

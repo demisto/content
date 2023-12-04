@@ -1,3 +1,4 @@
+import os
 import MailSenderNew
 import demistomock as demisto
 import pytest

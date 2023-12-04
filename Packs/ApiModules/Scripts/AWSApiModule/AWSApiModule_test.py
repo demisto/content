@@ -1,3 +1,4 @@
+import os
 from AWSApiModule import *
 import pytest
 from pytest import raises

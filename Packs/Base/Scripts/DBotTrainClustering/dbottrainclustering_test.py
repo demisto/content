@@ -1,3 +1,4 @@
+import os
 import json
 
 from DBotTrainClustering import demisto, main, MESSAGE_INCORRECT_FIELD, MESSAGE_INVALID_FIELD, \

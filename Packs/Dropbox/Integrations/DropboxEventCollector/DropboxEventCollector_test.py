@@ -1,3 +1,4 @@
+import os
 import json
 import requests_mock
 from freezegun import freeze_time

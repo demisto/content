@@ -1,3 +1,4 @@
+import os
 # from CommonServerPython import *
 from DBotFindSimilarIncidents import normalize_command_line, main, demisto, keep_high_level_field, \
     preprocess_incidents_field, PREFIXES_TO_REMOVE, check_list_of_dict, REGEX_IP, match_one_regex, \

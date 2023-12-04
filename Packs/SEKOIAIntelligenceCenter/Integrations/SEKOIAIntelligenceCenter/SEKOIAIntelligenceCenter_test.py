@@ -1,3 +1,4 @@
+import os
 import SEKOIAIntelligenceCenter
 from CommonServerPython import *
 import pytest

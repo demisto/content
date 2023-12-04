@@ -1,4 +1,5 @@
 import os
+import os
 import json
 
 from Polygon import Client, ANALGIN_UPLOAD, ATTACH, FILE_TYPE, \

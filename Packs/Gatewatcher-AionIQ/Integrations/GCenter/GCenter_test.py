@@ -1,3 +1,4 @@
+import os
 """Unit Tests file"""
 
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import

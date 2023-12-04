@@ -1,3 +1,4 @@
+import os
 """Cyren Inbox Security Integration for Cortex XSOAR - Unit Tests file
 
 """

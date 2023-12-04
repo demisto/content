@@ -1,3 +1,4 @@
+import os
 import pytest
 import requests
 from CommonServerPython import DemistoException

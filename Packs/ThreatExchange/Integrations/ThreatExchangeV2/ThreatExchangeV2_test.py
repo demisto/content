@@ -1,3 +1,4 @@
+import os
 """
 Tests module for ThreatExchangeV2 integration logic
 """

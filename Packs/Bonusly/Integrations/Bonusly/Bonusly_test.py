@@ -1,3 +1,4 @@
+import os
 """ Bonusly Integration for Cortex XSOAR - Unit Tests file
 """
 import json

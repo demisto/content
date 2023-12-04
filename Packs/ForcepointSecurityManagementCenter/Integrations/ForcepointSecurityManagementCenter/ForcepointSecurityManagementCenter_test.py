@@ -1,3 +1,4 @@
+import os
 import pytest
 from ForcepointSecurityManagementCenter import (create_iplist_command, update_iplist_command, list_iplist_command,
                                                 delete_iplist_command, create_host_command, list_host_command,

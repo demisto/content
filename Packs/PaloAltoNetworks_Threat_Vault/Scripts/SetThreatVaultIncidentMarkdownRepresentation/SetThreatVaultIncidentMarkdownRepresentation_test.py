@@ -1,3 +1,4 @@
+import os
 import pytest
 from SetThreatVaultIncidentMarkdownRepresentation import json_to_md, read_context_from_threat_vault_incident
 

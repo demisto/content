@@ -1,3 +1,4 @@
+import os
 from GetDockerImageLatestTag import main, find_latest_tag_by_date, lexical_find_latest_tag
 import demistomock as demisto
 import pytest

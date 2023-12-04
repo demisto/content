@@ -1,3 +1,4 @@
+import os
 from datetime import datetime, timedelta
 from CommonServerPython import date_to_timestamp
 import demistomock as demisto

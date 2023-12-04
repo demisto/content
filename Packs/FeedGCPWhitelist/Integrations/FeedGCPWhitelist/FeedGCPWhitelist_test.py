@@ -1,4 +1,5 @@
 import os
+import os
 import dns.resolver
 import json
 from FeedGCPWhitelist import fetch_cidr

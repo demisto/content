@@ -1,3 +1,4 @@
+import os
 from LastInfoSec import (
     lis_get_by_minute,
     lis_get_by_value,

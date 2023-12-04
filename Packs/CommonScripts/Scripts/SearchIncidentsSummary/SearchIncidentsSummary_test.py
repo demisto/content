@@ -1,3 +1,4 @@
+import os
 from SearchIncidentsSummary import check_if_found_incident, is_valid_args, apply_filters, add_incidents_link
 
 

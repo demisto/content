@@ -1,3 +1,4 @@
+import os
 from Forescout import dict_to_formatted_string
 
 # disable-secrets-detection-start

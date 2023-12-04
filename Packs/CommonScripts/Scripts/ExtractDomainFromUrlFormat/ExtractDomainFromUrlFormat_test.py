@@ -1,3 +1,4 @@
+import os
 from ExtractDomainFromUrlFormat import extract_domain
 from ExtractDomainFromUrlFormat import unescape_url
 import pytest

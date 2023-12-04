@@ -1,3 +1,4 @@
+import os
 from UBIRCH import AUTHENTICITY_TYPE, get_error_definition, create_incidents, AUTHENTICATION_TYPE, LOW_SEVERITY, \
     HIGH_SEVERITY, SEQUENCE_TYPE
 

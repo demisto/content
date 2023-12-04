@@ -1,3 +1,4 @@
+import os
 import json
 import requests_mock
 import demistomock as demisto

@@ -1,3 +1,4 @@
+import os
 import pytest
 from MicrosoftGraphGroups import parse_outputs, camel_case_to_readable, MsGraphClient, list_groups_command, \
     get_group_command, create_group_command, list_members_command, add_member_command, delete_group_command, \

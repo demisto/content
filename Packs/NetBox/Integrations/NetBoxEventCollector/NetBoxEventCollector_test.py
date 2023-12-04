@@ -1,3 +1,4 @@
+import os
 import json
 
 from NetBoxEventCollector import LOG_TYPES

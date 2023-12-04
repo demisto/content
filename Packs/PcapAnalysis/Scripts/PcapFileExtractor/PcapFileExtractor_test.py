@@ -1,4 +1,5 @@
 import os
+import os
 
 import pytest
 from PcapFileExtractor import filter_files, upload_files, INCLUSIVE, EXCLUSIVE

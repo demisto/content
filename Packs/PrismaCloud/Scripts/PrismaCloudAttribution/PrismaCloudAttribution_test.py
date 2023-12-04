@@ -1,3 +1,4 @@
+import os
 from PrismaCloudAttribution import attribution_command
 import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
 import json

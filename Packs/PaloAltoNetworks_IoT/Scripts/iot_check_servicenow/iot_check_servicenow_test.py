@@ -1,3 +1,4 @@
+import os
 import demistomock as demisto
 import iot_check_servicenow
 from iot_check_servicenow import check_servicenow_and_close

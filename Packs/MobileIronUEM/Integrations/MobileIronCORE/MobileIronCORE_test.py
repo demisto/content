@@ -1,3 +1,4 @@
+import os
 
 from pytest import raises, fixture
 

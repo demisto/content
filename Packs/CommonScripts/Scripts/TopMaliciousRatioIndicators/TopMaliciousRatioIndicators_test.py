@@ -1,4 +1,5 @@
 import os
+import os
 import demistomock as demisto
 from TopMaliciousRatioIndicators import main, find_indicators_with_mal_ratio
 import json

@@ -1,3 +1,4 @@
+import os
 from GetDomainDNSDetails import make_query, get_domain_dns_details_command
 
 from typing import cast, TYPE_CHECKING

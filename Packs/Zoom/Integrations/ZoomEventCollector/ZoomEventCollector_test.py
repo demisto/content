@@ -1,3 +1,4 @@
+import os
 import pytest
 from CommonServerPython import DemistoException
 import demistomock as demisto  # noqa: F401

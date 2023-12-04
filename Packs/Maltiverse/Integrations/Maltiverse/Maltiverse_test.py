@@ -1,3 +1,4 @@
+import os
 from Maltiverse import Client, ip_command, url_command, domain_command, file_command
 from test_data.response_constants import IP_RESPONSE, URL_RESPONSE, DOMAIN_RESPONSE, FILE_RESPONSE, \
     FILE_RESPONSE_NO_PROCCESS_LIST

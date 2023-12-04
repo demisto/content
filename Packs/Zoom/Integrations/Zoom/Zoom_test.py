@@ -1,3 +1,4 @@
+import os
 from fastapi import Request, status
 import json
 from unittest.mock import patch

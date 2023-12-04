@@ -1,3 +1,4 @@
+import os
 from DBotPredictURLPhishing import *
 import pytest
 import DBotPredictURLPhishing

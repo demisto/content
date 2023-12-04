@@ -1,3 +1,4 @@
+import os
 import pytest
 from PwnedV2 import pwned_domain_command, pwned_username_command, pwned_email_command
 import PwnedV2

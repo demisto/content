@@ -1,3 +1,4 @@
+import os
 def create_client():
     from CarbonBlackEndpointStandard import Client
     client = Client(base_url='example.com',

@@ -1,3 +1,4 @@
+import os
 import json
 import DeepInstinct
 import demistomock as demisto

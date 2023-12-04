@@ -1,4 +1,5 @@
 import os
+import os
 import pytest
 from Threat_Vault import Client, antivirus_signature_get, file_command, dns_get_by_id, antispyware_get_by_id, \
     ip_geo_get, ip_command, antispyware_signature_search, signature_search_results

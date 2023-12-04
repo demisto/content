@@ -1,3 +1,4 @@
+import os
 import pytest
 from RSADisplayMetasEvents import CamelCaseToDotCase, display_metas
 

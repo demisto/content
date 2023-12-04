@@ -1,3 +1,4 @@
+import os
 """CyberTotal Integration for Cortex XSOAR - Unit Tests file
 This file contains the Unit Tests for the CyberTotal Integration based
 on pytest. Cortex XSOAR contribution requirements mandate that every

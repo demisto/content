@@ -1,3 +1,4 @@
+import os
 import pytest
 from Zimperium import Client, events_search, users_search, user_get_by_id, devices_search, device_get_by_id, \
     devices_get_last_updated, app_classification_get, file_reputation, fetch_incidents, report_get

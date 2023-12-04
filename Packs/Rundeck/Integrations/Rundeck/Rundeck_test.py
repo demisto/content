@@ -1,3 +1,4 @@
+import os
 from Rundeck import (
     filter_results,
     attribute_pairs_to_dict,

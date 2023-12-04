@@ -1,3 +1,4 @@
+import os
 from CommonServerPython import CommandResults
 import knowbe4Phisher as phisher
 import pytest

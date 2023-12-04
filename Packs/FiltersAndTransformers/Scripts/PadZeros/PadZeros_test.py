@@ -1,3 +1,4 @@
+import os
 from PadZeros import main
 import demistomock as demisto
 

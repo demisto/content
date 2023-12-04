@@ -1,3 +1,4 @@
+import os
 """CimTrak Integration for Cortex XSOAR - Unit Tests file
 
 This file contains the Unit Tests for the CimTrak Integration based

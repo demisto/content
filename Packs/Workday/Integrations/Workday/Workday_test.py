@@ -1,3 +1,4 @@
+import os
 import json
 import pytest
 from Workday import Client, list_workers_command, create_worker_context, convert_to_json, main

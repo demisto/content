@@ -1,3 +1,4 @@
+import os
 import json
 
 MOCKED_BASE_URL = 'https://api.test.com/api/'

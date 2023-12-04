@@ -1,3 +1,4 @@
+import os
 from ExpansePrintSuggestions import expanse_print_suggestions
 import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
 import json

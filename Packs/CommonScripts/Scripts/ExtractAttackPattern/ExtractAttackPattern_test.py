@@ -1,3 +1,4 @@
+import os
 from ExtractAttackPattern import is_valid_attack_pattern
 
 from CommonServerPython import *

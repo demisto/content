@@ -1,3 +1,4 @@
+import os
 """Qintel QWatch Integration for Cortex XSOAR - Unit Tests file"""
 
 import json

@@ -1,4 +1,5 @@
 import os
+import os
 import demistomock as demisto
 from QualysCreateIncidentFromReport import main, get_asset_id_for_ip
 

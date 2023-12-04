@@ -1,3 +1,4 @@
+import os
 import json
 import McAfeeNSMv2
 import pytest

@@ -1,3 +1,4 @@
+import os
 def test_format_entity():
     """
     Given:

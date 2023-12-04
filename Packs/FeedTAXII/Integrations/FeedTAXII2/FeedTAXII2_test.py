@@ -1,4 +1,5 @@
 import os
+import os
 import json
 import pytest
 from FeedTAXII2 import *

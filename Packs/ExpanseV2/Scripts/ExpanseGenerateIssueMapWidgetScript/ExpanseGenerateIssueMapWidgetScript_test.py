@@ -1,3 +1,4 @@
+import os
 import demistomock as demisto  # noqa
 
 from math import floor

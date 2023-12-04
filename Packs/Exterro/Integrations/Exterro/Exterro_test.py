@@ -1,3 +1,4 @@
+import os
 from requests_mock import Mocker
 from accessdata.client import Client
 from accessdata.api.extensions import status_check_ext, trigger_workflow_ext

@@ -1,3 +1,4 @@
+import os
 """Test file for Cofense Vision integration."""
 
 import os

@@ -1,3 +1,4 @@
+import os
 from unittest.mock import patch, MagicMock, call
 import demistomock as demisto
 import json

@@ -1,3 +1,4 @@
+import os
 import json
 
 BASE_URL = 'https://gateway.qg2.apps.qualys.eu/'

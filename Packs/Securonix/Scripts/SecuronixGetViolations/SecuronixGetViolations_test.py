@@ -1,4 +1,5 @@
 import os
+import os
 """Unit test cases for SecuronixGetViolations script."""
 import json
 from unittest.mock import patch

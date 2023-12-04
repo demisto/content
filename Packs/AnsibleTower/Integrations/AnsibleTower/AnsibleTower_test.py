@@ -1,3 +1,4 @@
+import os
 import pytest
 import requests_mock
 from AnsibleTower import Client, delete_host, job_template_launch, create_ad_hoc_command, list_job_events_by_id, output_content

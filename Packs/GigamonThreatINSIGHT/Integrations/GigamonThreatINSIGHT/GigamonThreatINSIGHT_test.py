@@ -1,3 +1,4 @@
+import os
 """Gigamon-ThreatINSIGHT Integration for Cortex XSOAR - Unit Tests file
 """
 

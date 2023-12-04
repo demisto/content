@@ -1,3 +1,4 @@
+import os
 from TrendMicroVisionOne import (
     Client,
     add_or_remove_from_block_list,

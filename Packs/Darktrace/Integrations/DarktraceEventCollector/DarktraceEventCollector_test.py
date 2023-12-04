@@ -1,3 +1,4 @@
+import os
 from freezegun import freeze_time
 import demistomock as demisto
 import json

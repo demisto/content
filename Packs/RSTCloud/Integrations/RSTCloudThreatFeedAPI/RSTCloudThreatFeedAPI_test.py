@@ -1,3 +1,4 @@
+import os
 """RST Cloud Threat Feed API Integration for Cortex XSOAR - Unit Tests file
 Test Execution
 --------------

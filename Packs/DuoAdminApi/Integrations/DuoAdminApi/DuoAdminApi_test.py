@@ -1,3 +1,4 @@
+import os
 import duo_client
 import json
 import demistomock as demisto

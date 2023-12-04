@@ -1,3 +1,4 @@
+import os
 from Slack_IAM import Client, get_mapping_fields
 from IAMApiModule import *
 

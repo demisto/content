@@ -1,4 +1,5 @@
 import os
+import os
 import pytest
 from EclecticIQ import maliciousness_to_dbotscore
 

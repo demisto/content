@@ -1,3 +1,4 @@
+import os
 """Qintel PMI Integration for Cortex XSOAR - Unit Tests file"""
 
 import json

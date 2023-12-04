@@ -1,3 +1,4 @@
+import os
 import json
 from Infinipoint import COMMANDS_CONFIG
 

@@ -1,4 +1,5 @@
 import os
+import os
 def mock_http_post(suffix_url, data=None, files=None, parse_json=True):
     return {'data': {'webids': [files]}}
 

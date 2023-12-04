@@ -1,3 +1,4 @@
+import os
 import json
 from ReversingLabsTitaniumScale import parse_report_and_return_results, parse_upload_report_and_return_results, format_proxy
 

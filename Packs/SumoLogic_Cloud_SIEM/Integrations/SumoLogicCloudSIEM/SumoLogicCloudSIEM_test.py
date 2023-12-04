@@ -1,3 +1,4 @@
+import os
 """Integration for Sumo Logic Cloud SIEM - Unit Tests file
 
 More information about Unit Tests in Cortex XSOAR:

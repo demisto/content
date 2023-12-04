@@ -1,3 +1,4 @@
+import os
 #!/usr/bin/env python -W ignore::DeprecationWarning
 sample_span_result = """{
   "data": {

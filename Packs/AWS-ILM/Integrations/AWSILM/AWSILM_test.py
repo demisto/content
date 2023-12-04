@@ -1,3 +1,4 @@
+import os
 import pytest
 import requests_mock
 from AWSILM import Client, main, get_group_command, create_group_command, update_group_command, delete_group_command

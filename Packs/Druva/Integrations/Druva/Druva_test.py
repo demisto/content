@@ -1,3 +1,4 @@
+import os
 def test_Druva_FindDevice_Command(requests_mock):
     from Druva import Client, Druva_FindDevice_Command
     mock_response = {'resources': [{

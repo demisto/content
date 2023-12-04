@@ -1,3 +1,4 @@
+import os
 import pytest
 
 FIRST_ACCESSED_TIME = "2018-10-03T02:59:56Z"

@@ -1,3 +1,4 @@
+import os
 import demistomock as demisto
 import re
 from BluelivThreatCompass import Client, resource_set_tlp, resource_fav, set_resource_rating

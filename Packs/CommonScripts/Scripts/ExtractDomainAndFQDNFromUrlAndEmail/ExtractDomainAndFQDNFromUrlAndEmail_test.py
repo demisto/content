@@ -1,3 +1,4 @@
+import os
 from pytest_mock import MockFixture
 import demistomock as demisto
 from ExtractDomainAndFQDNFromUrlAndEmail import extract_fqdn, main

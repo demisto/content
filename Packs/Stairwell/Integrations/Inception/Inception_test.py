@@ -1,3 +1,4 @@
+import os
 from Inception import Client, variant_discovery_command, file_enrichment_command
 import json
 

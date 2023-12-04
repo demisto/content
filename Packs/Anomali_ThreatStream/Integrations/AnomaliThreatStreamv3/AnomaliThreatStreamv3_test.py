@@ -1,4 +1,5 @@
 import os
+import os
 import emoji
 
 import demistomock as demisto

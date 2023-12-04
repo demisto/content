@@ -1,3 +1,4 @@
+import os
 """OPNSense Integration for Cortex XSOAR - Unit Tests file"""
 
 import json

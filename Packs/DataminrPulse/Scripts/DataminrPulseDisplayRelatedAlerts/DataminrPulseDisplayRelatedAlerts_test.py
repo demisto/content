@@ -1,3 +1,4 @@
+import os
 import demistomock as demisto
 from DataminrPulseDisplayRelatedAlerts import main
 from unittest.mock import patch

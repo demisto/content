@@ -1,3 +1,4 @@
+import os
 from MicrosoftTeamsWebhook import (Client, send_teams_message_command, create_teams_message)
 
 WEBHOOK = "https://readywebookone"

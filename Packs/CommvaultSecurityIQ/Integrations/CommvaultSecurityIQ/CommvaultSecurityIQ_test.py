@@ -1,3 +1,4 @@
+import os
 from typing import Any
 from gevent.server import StreamServer
 import demistomock as demisto

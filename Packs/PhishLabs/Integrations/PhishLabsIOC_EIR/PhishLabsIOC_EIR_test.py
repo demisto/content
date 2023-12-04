@@ -1,3 +1,4 @@
+import os
 import pytest
 from PhishLabsIOC_EIR import Client
 

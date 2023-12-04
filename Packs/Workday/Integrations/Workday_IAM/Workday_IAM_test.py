@@ -1,3 +1,4 @@
+import os
 import demistomock as demisto  # noqa: F401
 import json
 import pytest

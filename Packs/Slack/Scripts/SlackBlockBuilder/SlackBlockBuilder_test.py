@@ -1,3 +1,4 @@
+import os
 import json
 import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerPython import entryTypes

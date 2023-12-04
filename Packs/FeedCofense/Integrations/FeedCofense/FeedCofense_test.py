@@ -1,4 +1,5 @@
 import os
+import os
 import json
 import pytest
 from FeedCofense import Client, fetch_indicators_command

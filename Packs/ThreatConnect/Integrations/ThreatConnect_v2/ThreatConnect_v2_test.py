@@ -1,4 +1,5 @@
 import os
+import os
 from copy import deepcopy
 
 from ThreatConnect_v2 import calculate_freshness_time, create_context, demisto, \

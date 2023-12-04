@@ -1,3 +1,4 @@
+import os
 import pytest
 from IfElif import ConditionParser
 import ast

@@ -1,3 +1,4 @@
+import os
 """InsightIDR Integration for Cortex XSOAR - Unit Tests file"""
 import json
 

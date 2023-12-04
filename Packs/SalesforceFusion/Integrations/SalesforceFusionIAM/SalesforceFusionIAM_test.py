@@ -1,3 +1,4 @@
+import os
 from SalesforceFusionIAM import Client, main
 from IAMApiModule import *
 import requests_mock

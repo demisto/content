@@ -1,3 +1,4 @@
+import os
 import demistomock as demisto
 from Penfield import main, get_assignee, Client
 import json

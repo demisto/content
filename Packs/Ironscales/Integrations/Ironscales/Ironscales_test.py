@@ -1,3 +1,4 @@
+import os
 import json
 from Ironscales import fetch_incidents
 

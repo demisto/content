@@ -1,3 +1,4 @@
+import os
 import demistomock as demisto
 import iot_alert_post_processing
 from iot_alert_post_processing import iot_resolve_alert

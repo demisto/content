@@ -1,3 +1,4 @@
+import os
 
 import json
 from CensysV2 import Client, censys_view_command, censys_search_command

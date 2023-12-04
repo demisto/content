@@ -1,3 +1,4 @@
+import os
 from CrowdStrikeApiModule import CrowdStrikeClient
 from test_data.http_responses import MULTI_ERRORS_HTTP_RESPONSE, NO_ERRORS_HTTP_RESPONSE
 from test_data.context import MULTIPLE_ERRORS_RESULT

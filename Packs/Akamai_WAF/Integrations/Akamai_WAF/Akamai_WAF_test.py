@@ -1,3 +1,4 @@
+import os
 import json
 import pytest
 from Akamai_WAF import Client

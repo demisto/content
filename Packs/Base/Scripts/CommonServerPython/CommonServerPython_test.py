@@ -1,3 +1,4 @@
+import os
 # -*- coding: utf-8 -*-
 import copy
 import gzip

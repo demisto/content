@@ -1,3 +1,4 @@
+import os
 from decyfiriocs import Client
 from CommonServerPython import ThreatIntel
 import json

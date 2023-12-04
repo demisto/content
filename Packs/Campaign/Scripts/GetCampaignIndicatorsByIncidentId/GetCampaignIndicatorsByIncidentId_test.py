@@ -1,3 +1,4 @@
+import os
 import pytest
 from GetCampaignIndicatorsByIncidentId import *
 import demistomock as demisto

@@ -1,3 +1,4 @@
+import os
 # flake8: noqa
 from Cymptom import Client, get_mitigations, api_test, get_users_with_cracked_passwords
 # Mocked access credentials

@@ -1,3 +1,4 @@
+import os
 from TrendMicroVisionOneV3 import (
     Client,
     add_note,

@@ -1,3 +1,4 @@
+import os
 from FeedOpenCTI_v4 import *
 from test_data.feed_data import RESPONSE_DATA, RESPONSE_DATA_WITHOUT_INDICATORS
 from CommonServerPython import CommandResults

@@ -1,3 +1,4 @@
+import os
 from MatchIPinCIDRIndicators import match_ip_in_cidr_indicators
 import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
 from typing import Any

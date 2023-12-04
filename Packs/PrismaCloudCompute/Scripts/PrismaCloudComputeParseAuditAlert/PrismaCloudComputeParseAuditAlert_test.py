@@ -1,3 +1,4 @@
+import os
 from PrismaCloudComputeParseAuditAlert import parse_audit
 import pytest
 import json

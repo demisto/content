@@ -1,3 +1,4 @@
+import os
 def test_parse_fqdn_implicit_port(mocker):
     from JARM import parse_hostname
 

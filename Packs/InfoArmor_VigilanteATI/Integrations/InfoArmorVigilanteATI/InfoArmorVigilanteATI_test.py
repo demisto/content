@@ -1,3 +1,4 @@
+import os
 """
     Tests module for InfoArmor VigilanteATI integration
 """

@@ -1,3 +1,4 @@
+import os
 from rasterize import (rasterize, find_zombie_processes, merge_options, DEFAULT_CHROME_OPTIONS, rasterize_image_command,
                        RasterizeMode, RasterizeType, init_driver, rasterize_html_command)
 import demistomock as demisto

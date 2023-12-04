@@ -1,3 +1,4 @@
+import os
 
 import pytest
 from MobileIronCLOUD import get_partition_id

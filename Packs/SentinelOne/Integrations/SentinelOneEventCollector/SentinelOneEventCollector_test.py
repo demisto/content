@@ -1,3 +1,4 @@
+import os
 from CommonServerPython import *
 import demistomock as demisto
 from freezegun import freeze_time

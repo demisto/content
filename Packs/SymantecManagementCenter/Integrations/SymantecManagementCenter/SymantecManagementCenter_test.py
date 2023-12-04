@@ -1,3 +1,4 @@
+import os
 from SymantecManagementCenter import main, LOCAL_CATEGORY_DB_TYPE
 import demistomock as demisto
 
