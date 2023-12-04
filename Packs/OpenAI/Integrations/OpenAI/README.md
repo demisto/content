@@ -4,10 +4,10 @@ This integration was integrated and tested with version 1 of the OpenAI API and 
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-openai).
 
-## Configure OpenAI (Community Contribution) on Cortex XSOAR
+## Configure OpenAI on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for OpenAI (Community Contribution).
+2. Search for OpenAI.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
