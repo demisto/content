@@ -1,7 +1,9 @@
-id: Detonate URL - CrowdStrike Falcon Intelligence Sandbox
+id: Detonate URL - CrowdStrike Falcon Intelligence Sandbox v2
 version: -1
-name: Detonate URL - CrowdStrike Falcon Intelligence Sandbox
-description: Deprecated. Use Detonate URL - CrowdStrike Falcon Intelligence Sandbox v2 instead.
+contentitemexportablefields:
+  contentitemfields: {}
+name: Detonate URL - CrowdStrike Falcon Intelligence Sandbox v2
+description: Detonate one or more URL's using the CrowdStrike Falcon Intelligence Sandbox integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
 starttaskid: "0"
 tasks:
   "0":
@@ -19,6 +21,7 @@ tasks:
       '#none#':
       - "5"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -31,6 +34,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: fc1f205f-4605-402d-805d-57b7d4b4cef7
@@ -79,6 +84,7 @@ tasks:
                     ignorecase: true
                 accessor: brand
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -91,6 +97,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: 66063116-5734-4166-82b3-aa4c0f629285
@@ -104,11 +112,12 @@ tasks:
       iscommand: false
       brand: ""
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1395
+          "x": 30,
+          "y": 1080
         }
       }
     note: false
@@ -116,6 +125,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
     taskid: 9ab16bf8-de8e-4201-8561-992345b51280
@@ -138,11 +149,12 @@ tasks:
           root: csfalconx.resource
           accessor: submitted_id
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 310,
-          "y": 1220
+          "x": 290,
+          "y": 910
         }
       }
     note: false
@@ -150,12 +162,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 251b7acf-b9ad-4122-8968-788528be9bc1
+    taskid: 81be8060-73f1-48e6-8b37-4ff7cc3fd8a8
     type: regular
     task:
-      id: 251b7acf-b9ad-4122-8968-788528be9bc1
+      id: 81be8060-73f1-48e6-8b37-4ff7cc3fd8a8
       version: -1
       name: CrowdStrike Falcon Intelligence Sandbox Submit URL
       description: Submit a URL or FTP for sandbox analysis.
@@ -165,18 +179,24 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "17"
+      - "18"
     scriptarguments:
       environment_id:
         simple: '160: Windows 10'
+      interval_in_seconds:
+        complex:
+          root: inputs.Interval
+      polling:
+        simple: "true"
       url:
         complex:
           root: inputs.URL
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 540,
+          "x": 520,
           "y": 545
         }
       }
@@ -185,15 +205,17 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 7bda06fb-0f5a-487b-8242-69d776363760
+    taskid: defb49bb-c77d-496e-806f-5a75bcd1c982
     type: condition
     task:
-      id: 7bda06fb-0f5a-487b-8242-69d776363760
+      id: defb49bb-c77d-496e-806f-5a75bcd1c982
       version: -1
       name: Is there a URL to detonate?
-      description: Checks whether there's a file to detonate.
+      description: Checks whether there's a url to detonate.
       type: condition
       iscommand: false
       brand: ""
@@ -211,101 +233,14 @@ tasks:
             value:
               simple: inputs.URL
             iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 260,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "16":
-    id: "16"
-    taskid: 92f6cd66-9c00-4782-85e6-4b9ebe0fd014
-    type: playbook
-    task:
-      id: 92f6cd66-9c00-4782-85e6-4b9ebe0fd014
-      version: -1
-      name: GenericPolling
-      description: |-
-        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
-        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
-        The remote action should have the following structure:
-
-        1. Initiate the operation.
-        2. Poll to check if the operation completed.
-        3. (optional) Get the results of the operation.
-      playbookName: GenericPolling
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "18"
-    scriptarguments:
-      Ids:
-        complex:
-          root: csfalconx
-          accessor: resource.submitted_id
-      Interval:
-        complex:
-          root: inputs.Interval
-      PollingCommandArgName:
-        simple: ids
-      PollingCommandName:
-        simple: cs-fx-get-analysis-status
-      Timeout:
-        complex:
-          root: inputs.Timeout
-      dt:
-        simple: csfalconx(val.resource.state !== 'success').resource.id
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 540,
-          "y": 875
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "17":
-    id: "17"
-    taskid: fb7377bf-b9ae-443f-86ab-7bb11a490480
-    type: regular
-    task:
-      id: fb7377bf-b9ae-443f-86ab-7bb11a490480
-      version: -1
-      name: Sleep before first polling
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "16"
-    scriptarguments:
-      seconds:
-        simple: "10"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 540,
-          "y": 710
+          "x": 270,
+          "y": 360
         }
       }
     note: false
@@ -349,8 +284,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 540,
-          "y": 1040
+          "x": 520,
+          "y": 730
         }
       }
     note: false
@@ -386,8 +321,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 780,
-          "y": 1220
+          "x": 760,
+          "y": 910
         }
       }
     note: false
@@ -397,7 +332,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -406,9 +340,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1420,
+        "height": 1105,
         "width": 1110,
-        "x": 50,
+        "x": 30,
         "y": 40
       }
     }
@@ -424,15 +358,15 @@ inputs:
   playbookInputQuery:
 - key: Interval
   value:
-    simple: "5"
+    simple: "1"
   required: false
-  description: Polling frequency - how often the polling command should run (minutes)
+  description: Polling frequency - how often the polling command should run (in minutes).
   playbookInputQuery:
 - key: Timeout
   value:
-    simple: "30"
+    simple: "10"
   required: false
-  description: How much time to wait before a timeout occurs  (minutes)
+  description: How much time to wait before a timeout occurs  (in minutes).
   playbookInputQuery:
 - key: Full Report
   value:
@@ -494,8 +428,7 @@ outputs:
 - contextPath: csfalconx.resource.ioc_report_broad_maec_artifact_id
   description: ID of the IOC pack to download (MAEC).
   type: String
-fromversion: 5.0.0
 quiet: true
 tests:
-- No tests (deprecated)
-deprecated: true
+- No tests (auto formatted)
+fromversion: 6.10.0

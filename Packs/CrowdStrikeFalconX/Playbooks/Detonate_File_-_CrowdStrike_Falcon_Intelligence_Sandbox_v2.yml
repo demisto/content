@@ -1,8 +1,30 @@
-id: Detonate File - CrowdStrike Falcon Intelligence Sandbox
+id: Detonate File - CrowdStrike Falcon Intelligence Sandbox v2
 version: -1
-name: Detonate File - CrowdStrike Falcon Intelligence Sandbox
+contentitemexportablefields:
+  contentitemfields: {}
+name: Detonate File - CrowdStrike Falcon Intelligence Sandbox v2
 description: |-
-  Deprecated. Use Detonate File - CrowdStrike Falcon Intelligence Sandbox v2 instead.
+  Detonates a file using CrowdStrike Falcon Intelligence Sandbox.
+  Accepted file formats:
+  Portable executables: .exe, .scr, .pif, .dll, .com, .cpl, etc.
+  Office documents: .doc, .docx, .ppt, .pps, .pptx, .ppsx, .xls, .xlsx, .rtf, .pub
+  PDF
+  APK
+  Executable JAR
+  Windows script component: .sct
+  Windows shortcut: .lnk
+  Windows help: .chm
+  HTML application: .hta
+  Windows script file: .wsf
+  Javascript: .js
+  Visual Basic: .vbs, .vbe
+  Shockwave Flash: .swf
+  Perl: .pl
+  Powershell: .ps1, .psd1, .psm1
+  Scalable vector graphics: .svg
+  Python: .py
+  Linux ELF executables
+  Email files: MIME RFC 822 .eml, Outlook .msg.
 starttaskid: "0"
 tasks:
   "0":
@@ -26,67 +48,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: 334792b6-7e5d-4494-85a1-aa4bc2274105
-    type: playbook
-    task:
-      id: 334792b6-7e5d-4494-85a1-aa4bc2274105
-      version: -1
-      name: GenericPolling
-      description: |-
-        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
-        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
-        The remote action should have the following structure:
-
-        1. Initiate the operation.
-        2. Poll to check if the operation completed.
-        3. (optional) Get the results of the operation.
-      playbookName: GenericPolling
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "17"
-    scriptarguments:
-      Ids:
-        complex:
-          root: csfalconx
-          accessor: resource.submitted_id
-      Interval:
-        complex:
-          root: inputs.Interval
-      PollingCommandArgName:
-        simple: ids
-      PollingCommandName:
-        simple: cs-fx-get-analysis-status
-      Timeout:
-        complex:
-          root: inputs.Timeout
-      dt:
-        simple: csfalconx(val.resource.state !== 'success').resource.id
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 870,
-          "y": 1545
         }
       }
     note: false
@@ -122,8 +83,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 620,
-          "y": 1880
+          "x": 320,
+          "y": 890
         }
       }
     note: false
@@ -141,7 +102,7 @@ tasks:
       id: 73843b9d-b556-4e1c-895c-93ae4f6671dc
       version: -1
       name: Done
-      description: finished
+      description: Finished.
       type: title
       iscommand: false
       brand: ""
@@ -151,7 +112,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2055
+          "y": 1060
         }
       }
     note: false
@@ -163,10 +124,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: ee402758-5d33-4edd-89fb-816dee6233c5
+    taskid: fbcbfd3f-5a86-4438-8ce7-c4dd4c1848bc
     type: condition
     task:
-      id: ee402758-5d33-4edd-89fb-816dee6233c5
+      id: fbcbfd3f-5a86-4438-8ce7-c4dd4c1848bc
       version: -1
       name: Is CrowdStrike Falcon Intelligence Sandbox enabled?
       description: |
@@ -207,163 +168,14 @@ tasks:
                         simple: active
                 accessor: brand
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
           "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
-    taskid: 44e9c26f-c38e-4c1c-8b60-80a92220810e
-    type: condition
-    task:
-      id: 44e9c26f-c38e-4c1c-8b60-80a92220810e
-      version: -1
-      name: Filter taskId
-      description: Checks that only valid files have been sent to detonation.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "5"
-      "yes":
-      - "16"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: csfalconx.resource.submitted_id(val != -1)
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 670,
-          "y": 1195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "10":
-    id: "10"
-    taskid: dd7a0c59-4cf4-4a46-8316-19dadac61a1b
-    type: condition
-    task:
-      id: dd7a0c59-4cf4-4a46-8316-19dadac61a1b
-      version: -1
-      name: Is file type supported?
-      description: Checks if the file type is supported.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "5"
-      "yes":
-      - "14"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: File
-                filters:
-                - - operator: match
-                    left:
-                      value:
-                        simple: File.Type
-                      iscontext: true
-                    right:
-                      value:
-                        simple: .*(?:EXE|DLL|COM|SCR|CPL|DOC|DOCX|XLS|XSLX|PPS|PPSX|PPT|PPTX|RTF|PDF|ETC|PUB|SCT|INK|CHM|HTA|WSF|JS|VBS|VBE|SWF|PL|PS1|PSD1|PSM1|SVG|PY|ELF|EML|MSG)\b
-                    ignorecase: true
-                  - operator: match
-                    left:
-                      value:
-                        simple: File.Extension
-                      iscontext: true
-                    right:
-                      value:
-                        simple: .*(?:EXE|DLL|COM|SCR|CPL|DOC|DOCX|XLS|XSLX|PPS|PPSX|PPT|PPTX|RTF|PDF|ETC|PUB|SCT|INK|CHM|HTA|WSF|JS|VBS|VBE|SWF|PL|PS1|PSD1|PSM1|SVG|PY|ELF|EML|MSG)\b
-                    ignorecase: true
-                  - operator: match
-                    left:
-                      value:
-                        simple: File.Info
-                      iscontext: true
-                    right:
-                      value:
-                        simple: .*(?:EXE|DLL|COM|SCR|CPL|DOC|DOCX|XLS|XSLX|PPS|PPSX|PPT|PPTX|RTF|PDF|ETC|PUB|SCT|INK|CHM|HTA|WSF|JS|VBS|VBE|SWF|PL|PS1|PSD1|PSM1|SVG|PY|ELF|EML|MSG)\b
-                    ignorecase: true
-                accessor: EntryID
-            iscontext: true
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 470,
-          "y": 700
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
-    taskid: e0e4b29f-fe26-47b2-8930-00d6087bdbeb
-    type: regular
-    task:
-      id: e0e4b29f-fe26-47b2-8930-00d6087bdbeb
-      version: -1
-      name: Set File to context
-      description: Set the file object into context.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      key:
-        simple: File
-      value:
-        complex:
-          root: inputs.File
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 470,
-          "y": 540
         }
       }
     note: false
@@ -389,7 +201,7 @@ tasks:
       '#default#':
       - "5"
       "yes":
-      - "11"
+      - "14"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -403,7 +215,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 270,
+          "x": 300,
           "y": 370
         }
       }
@@ -416,136 +228,64 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 33e04243-7824-4475-8ea1-5c2366c22fd6
+    taskid: 12b7b1f2-98bb-41e0-8869-6f18075f8d4d
     type: regular
     task:
-      id: 33e04243-7824-4475-8ea1-5c2366c22fd6
+      id: 12b7b1f2-98bb-41e0-8869-6f18075f8d4d
       version: -1
       name: CrowdStrike Falcon Intelligence Sandbox Upload File to Sandbox
-      description: Upload a file for sandbox analysis.
-      script: CrowdStrike Falcon X|||cs-fx-upload-file
+      description: Uploads a file for sandbox analysis.
+      script: '|||cs-fx-upload-file'
       type: regular
       iscommand: true
-      brand: CrowdStrike Falcon X
+      brand: ""
     nexttasks:
       '#none#':
-      - "15"
+      - "17"
     scriptarguments:
       action_script:
         simple: ${inputs.ActionScript}
       command_line:
-        simple: ${inputs.CommandLine}
+        complex:
+          root: inputs.CommandLine
       document_password:
-        simple: ${inputs.DocumentPassword}
+        complex:
+          root: inputs.DocumentPassword
       enable_tor:
         simple: "false"
       environment_id:
         simple: ${inputs.EnvironmentID}
       file:
-        simple: ${inputs.File.EntryID}
+        complex:
+          root: inputs.File
+          accessor: EntryID
       file_name:
-        simple: ${inputs.File.Name}
-      sha256:
-        simple: ${csfalconx.resource.sha256}
+        complex:
+          root: inputs.File
+          accessor: Name
+      interval_in_seconds:
+        complex:
+          root: inputs.Interval
+      polling:
+        simple: "true"
+      submit_file:
+        simple: "yes"
       submit_name:
-        simple: ${inputs.SubmitName}
+        complex:
+          root: inputs.SubmitName
       system_date:
-        simple: ${inputs.SystemDate}
+        complex:
+          root: inputs.SystemDate
       system_time:
-        simple: ${inputs.SystemTime}
+        complex:
+          root: inputs.SystemTime
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 670,
-          "y": 870
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "15":
-    id: "15"
-    taskid: 5a968f27-55f8-4761-88d0-a89b4d023bda
-    type: regular
-    task:
-      id: 5a968f27-55f8-4761-88d0-a89b4d023bda
-      version: -1
-      name: CrowdStrike FalconX Detonate Uploaded File
-      description: Submit a sample SHA256 for sandbox analysis.
-      script: '|||cs-fx-submit-uploaded-file'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      action_script:
-        simple: ${inputs.ActionScript}
-      command_line:
-        simple: ${inputs.CommandLine}
-      document_password:
-        simple: ${inputs.DocumentPassword}
-      enable_tor:
-        simple: "false"
-      environment_id:
-        simple: ${inputs.EnvironmentID}
-      sha256:
-        simple: ${csfalconx.resource.sha256}
-      submit_name:
-        simple: ${inputs.SubmitName}
-      system_date:
-        simple: ${inputs.SystemDate}
-      system_time:
-        simple: ${inputs.SystemTime}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 670,
-          "y": 1030
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "16":
-    id: "16"
-    taskid: 7f92d8fa-94a2-4957-871a-872d191d80f0
-    type: regular
-    task:
-      id: 7f92d8fa-94a2-4957-871a-872d191d80f0
-      version: -1
-      name: Sleep before first polling
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      seconds:
-        simple: "10"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 870,
-          "y": 1380
+          "x": 520,
+          "y": 540
         }
       }
     note: false
@@ -557,10 +297,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 4e86bc79-2296-4b51-8198-8c72cd5029ea
+    taskid: 39983faa-72ad-4bee-8bf7-e074701eae1a
     type: condition
     task:
-      id: 4e86bc79-2296-4b51-8198-8c72cd5029ea
+      id: 39983faa-72ad-4bee-8bf7-e074701eae1a
       version: -1
       name: Full Report or Report Summary?
       type: condition
@@ -590,8 +330,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 870,
-          "y": 1705
+          "x": 520,
+          "y": 720
         }
       }
     note: false
@@ -627,8 +367,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1110,
-          "y": 1880
+          "x": 730,
+          "y": 890
         }
       }
     note: false
@@ -638,19 +378,16 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
 view: |-
   {
     "linkLabelsPosition": {
-      "10_5_#default#": 0.3,
       "12_5_#default#": 0.1,
-      "7_5_#default#": 0.13,
-      "8_5_#default#": 0.65
+      "7_5_#default#": 0.13
     },
     "paper": {
       "dimensions": {
-        "height": 2070,
-        "width": 1440,
+        "height": 1075,
+        "width": 1060,
         "x": 50,
         "y": 50
       }
@@ -668,13 +405,13 @@ inputs:
   value:
     simple: "1"
   required: false
-  description: Polling frequency - how often the polling command should run (minutes)
+  description: Polling frequency - how often the polling command should run (in minutes).
   playbookInputQuery:
 - key: Timeout
   value:
-    simple: "15"
+    simple: "10"
   required: false
-  description: How much time to wait before a timeout occurs (minutes)
+  description: How much time to wait before a timeout occurs (in minutes).
   playbookInputQuery:
 - key: EnvironmentID
   value:
@@ -700,7 +437,7 @@ inputs:
 - key: SubmitName
   value: {}
   required: false
-  description: Name of the malware sample that's used for file type detection. and analysis.
+  description: Name of the malware sample that's used for file type detection and analysis.
   playbookInputQuery:
 - key: SystemDate
   value: {}
@@ -778,7 +515,6 @@ outputs:
 - contextPath: csfalconx.resource.ioc_report_broad_maec_artifact_id
   description: ID of the IOC pack to download (MAEC).
   type: String
-fromversion: 5.0.0
 tests:
-- No tests (deprecated)
-deprecated: true
+- No tests (auto formatted)
+fromversion: 6.10.0
