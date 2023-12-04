@@ -254,7 +254,7 @@ xpanse-prepare-testing-bucket:
 .run_tests:
   - section_start "Run Tests"
   - |
-    if [[ $CI_COMMIT_BRANCH == "coverage_xsoar8_refactors" && $SERVER_TYPE == "XSOAR SAAS" ]]; then
+    if [[ -n "${NIGHTLY}" && $SERVER_TYPE == "XSOAR SAAS" ]]; then
       ./Tests/scripts/run_tests.sh --generate-empty-result-file
       if [[ $TEST_XDR_ENV ]]; then
         cat "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
@@ -793,8 +793,6 @@ test-upload-flow:
   stage: results
   rules:
     - !reference [ .filter-non-nightly-docker-updates-rule, rules ]
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-      when: always
     - if: '$NIGHTLY'
       when: always
   extends:
