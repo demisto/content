@@ -17,7 +17,7 @@ def test_add_time_key_to_events():
        """
     from DigitalGuardianARCEventCollector import add_time_to_events
 
-    events = util_load_json('test_data/events.json')
+    events = util_load_json(os.path.dirname(__file__) + '/test_data/events.json')
     add_time_to_events(events)
 
     assert events[0]['_time'] == "2023-05-23T06:56:39Z"
@@ -36,14 +36,14 @@ def test_get_raw_events_command(mocker):
     """
     from DigitalGuardianARCEventCollector import Client, get_raw_events
 
-    raw_events = util_load_json('test_data/events_mock_request.json')
+    raw_events = util_load_json(os.path.dirname(__file__) + '/test_data/events_mock_request.json')
     mocker.patch.object(Client, 'get_token', return_value='token')
     mocker.patch.object(Client, 'get_events', return_value=raw_events)
     client = Client(verify=False, proxy=False, auth_url="example.com", gateway_url="test.com", base_url="exmpt.com",
                     client_id="11", client_secret="22", export_profile="33")
     events = get_raw_events(client, None)
 
-    mock_events = util_load_json('test_data/events.json')
+    mock_events = util_load_json(os.path.dirname(__file__) + '/test_data/events.json')
 
     assert events == mock_events
 
@@ -60,7 +60,7 @@ def test_get_events_command(mocker):
     """
     from DigitalGuardianARCEventCollector import Client, get_events_command
 
-    raw_events = util_load_json('test_data/events_mock_request.json')
+    raw_events = util_load_json(os.path.dirname(__file__) + '/test_data/events_mock_request.json')
     mocker.patch.object(Client, 'get_token', return_value='aaa')
     mocker.patch.object(Client, 'get_events', return_value=raw_events)
 
@@ -69,7 +69,7 @@ def test_get_events_command(mocker):
                     client_id="11", client_secret="22", export_profile="33")
     events, _ = get_events_command(client, args)
 
-    expected_events = util_load_json('test_data/events_mock_1_response.json')
+    expected_events = util_load_json(os.path.dirname(__file__) + '/test_data/events_mock_1_response.json')
 
     assert events == expected_events
 
@@ -86,8 +86,8 @@ def test_create_events_for_push():
     """
     from DigitalGuardianARCEventCollector import create_events_for_push
 
-    events = util_load_json('test_data/events_for_create_and_push.json')
-    events_result = util_load_json('test_data/results_for_create_and_push.json')
+    events = util_load_json(os.path.dirname(__file__) + '/test_data/events_for_create_and_push.json')
+    events_result = util_load_json(os.path.dirname(__file__) + '/test_data/results_for_create_and_push.json')
 
     last_time = None
     id_list = []
@@ -109,14 +109,14 @@ def test_fetch_events_command(mocker):
             - Ensure the events are returned as expected and the next_run is as expected
     """
     from DigitalGuardianARCEventCollector import Client, fetch_events
-    events = util_load_json('test_data/events.json')
+    events = util_load_json(os.path.dirname(__file__) + '/test_data/events.json')
     mocker.patch("DigitalGuardianARCEventCollector.get_raw_events", return_value=events)
 
     client = Client(verify=False, proxy=False, auth_url="example.com", gateway_url="test.com", base_url="exmpt.com",
                     client_id="11", client_secret="22", export_profile="33")
     next_run, events = fetch_events(client, limit=2, last_run={})
 
-    mock_events = util_load_json('test_data/events.json')
+    mock_events = util_load_json(os.path.dirname(__file__) + '/test_data/events.json')
     assert events == mock_events
     assert next_run == {'start_time': '2023-05-23 11:53:11',
                         'id_list': ['1dc3c1fa-5474-4fc0-a7c3-74ff42d28e5e', 'c742c377-b429-428a-b0c9-515cbbf143be']}

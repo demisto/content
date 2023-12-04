@@ -13,9 +13,9 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-MOCK_ENTRY = util_load_json('test_data/mock_events_entry.json')
-EVENTS_RAW = util_load_json('test_data/events_raw.json')
-EVENTS_PAGE_RAW = util_load_json('test_data/multiple_events_raw.json')
+MOCK_ENTRY = util_load_json(os.path.dirname(__file__) + '/test_data/mock_events_entry.json')
+EVENTS_RAW = util_load_json(os.path.dirname(__file__) + '/test_data/events_raw.json')
+EVENTS_PAGE_RAW = util_load_json(os.path.dirname(__file__) + '/test_data/multiple_events_raw.json')
 BASE_URL = 'https://netskope.example.com'
 FIRST_LAST_RUN = {'alert': {'operation': 1680182467}, 'application': {'operation': 1680182467},
                   'audit': {'operation': 1680182467}, 'network': {'operation': 1680182467}, 'page': {'operation': 1680182467}}

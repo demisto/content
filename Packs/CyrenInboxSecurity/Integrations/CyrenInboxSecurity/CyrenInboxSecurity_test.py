@@ -92,7 +92,7 @@ def test_fetch_incidents(requests_mock):
     """
     from CyrenInboxSecurity import Client, fetch_incidents
 
-    mock_response = util_load_json('test_data/sample-incidents.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/sample-incidents.json')
 
     requests_mock.get(
         'https://test.com/v1/incidents',

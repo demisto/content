@@ -53,7 +53,7 @@ def test_censys_host_search(requests_mock, client):
         'limit': 1
     }
 
-    mock_response = util_load_json('test_data/search_host_response.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/search_host_response.json')
     requests_mock.get('https://search.censys.io/api/v2/hosts/search', json=mock_response)
     response = censys_search_command(client, args)
     assert "### Search results for query \"services.service_name:HTTP\"" in response.readable_output
@@ -75,7 +75,7 @@ def test_censys_certs_search(requests_mock, client):
         'fields': ['parsed.fingerprint_sha1', 'validation.apple.valid']
     }
 
-    mock_response = util_load_json('test_data/search_certs_response.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/search_certs_response.json')
     requests_mock.post('https://search.censys.io/api/v1/search/certificates', json=mock_response)
     response = censys_search_command(client, args)
     history = requests_mock.request_history[0]
@@ -100,7 +100,7 @@ def test_censys_view_host(requests_mock, client):
         'index': 'ipv4',
         'query': "8.8.8.8"
     }
-    mock_response = util_load_json('test_data/view_host_response.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/view_host_response.json')
     requests_mock.get('https://search.censys.io/api/v2/hosts/8.8.8.8', json=mock_response)
     response = censys_view_command(client, args)
     assert '### Information for IP 8.8.8.8' in response.readable_output
@@ -143,7 +143,7 @@ def test_censys_view_cert(requests_mock, client):
         'index': 'certificates',
         'query': "9d3b51a6b80daf76e074730f19dc01e643ca0c3127d8f48be64cf3302f661234"
     }
-    mock_response = util_load_json('test_data/view_cert_response.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/view_cert_response.json')
     requests_mock.get('https://search.censys.io/api/v1/view/certificates/9d3b51a6b80daf76e07473'
                       '0f19dc01e643ca0c3127d8f48be64cf3302f661234', json=mock_response)
     response = censys_view_command(client, args)

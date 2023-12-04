@@ -152,7 +152,7 @@ def test_results_in_progress_polling_true_with_file(mocker, requests_mock):
     mocker.patch.object(demisto, 'params', return_value={'integrationReliability': DBotScoreReliability.D})
     mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
     filetype = "pdf"
-    hash_response_json = util_load_json('test_data/scan_response.json')
+    hash_response_json = util_load_json(os.path.dirname(__file__) + '/test_data/scan_response.json')
 
     args = {'file': 'abcd', 'environmentID': 300, 'polling': True, 'file-type': filetype}
     raw_response_data = 'RawDataOfFileResult'

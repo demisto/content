@@ -844,10 +844,10 @@ def test_cofense_comment_list_command_when_valid_response_is_returned(mocker_htt
     """Test case scenario for successful execution of cofense-comment-list command."""
     from CofenseTriagev3 import cofense_comment_list_command
 
-    mock_response = util_load_json('test_data/comment/comment_list_response.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/comment/comment_list_response.json')
     mocker_http_request.return_value = mock_response
 
-    expected_res = util_load_json('test_data/comment/comment_list_context.json')
+    expected_res = util_load_json(os.path.dirname(__file__) + '/test_data/comment/comment_list_context.json')
 
     with open(os.path.dirname(__file__) + '/test_data/comment/comment_list_hr.md') as data:
         expected_hr = data.read()

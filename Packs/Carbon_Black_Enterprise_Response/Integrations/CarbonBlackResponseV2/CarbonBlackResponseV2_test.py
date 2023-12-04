@@ -386,7 +386,7 @@ def test_fetch_incidents_first_fetch(mocker):
             validate fetch incidents command using the Client gets all 3 relevant incidents
     """
     from CarbonBlackResponseV2 import fetch_incidents, Client
-    alerts = util_load_json('test_data/commands_test_data.json').get('fetch_incident_data')
+    alerts = util_load_json(os.path.dirname(__file__) + '/test_data/commands_test_data.json').get('fetch_incident_data')
     client = Client(base_url="url", apitoken="api_key", use_ssl=True, use_proxy=False)
     mocker.patch.object(Client, 'get_alerts', return_value=alerts)
     first_fetch_time = '7 days'
@@ -407,7 +407,7 @@ def test_fetch_incidents(mocker):
     """
     from CarbonBlackResponseV2 import fetch_incidents, Client
     last_run = {'last_fetch': dateparser.parse('2021-03-12T14:13:20+00:00').timestamp()}
-    alerts = util_load_json('test_data/commands_test_data.json').get('fetch_incident_data')
+    alerts = util_load_json(os.path.dirname(__file__) + '/test_data/commands_test_data.json').get('fetch_incident_data')
     client = Client(base_url="url", apitoken="api_key", use_ssl=True, use_proxy=False)
     mocker.patch.object(Client, 'get_alerts', return_value=alerts)
     first_fetch_time = '7 days'
@@ -464,7 +464,7 @@ def test_endpoint_command(mocker):
     from CarbonBlackResponseV2 import endpoint_command, Client
     from CommonServerPython import Common
 
-    endpoints_response = util_load_json('test_data/commands_test_data.json').get('endpoint_response')
+    endpoints_response = util_load_json(os.path.dirname(__file__) + '/test_data/commands_test_data.json').get('endpoint_response')
     mocker.patch.object(Client, 'get_sensors', return_value=(1, endpoints_response))
     client = Client(base_url='url', apitoken='api_key', use_ssl=True, use_proxy=False)
 
@@ -512,7 +512,7 @@ def test_watchlist_update_action_command(mocker, requests_mock):
 def test_remove_PREPREPRE_POSTPOSTPOST_tags(mocker):
     from CarbonBlackResponseV2 import fetch_incidents, Client
     last_run = {'last_fetch': dateparser.parse('2023-07-01T23:13:20+00:00').timestamp()}
-    alerts = util_load_json('test_data/commands_test_data.json').get('fetch_incident_data')
+    alerts = util_load_json(os.path.dirname(__file__) + '/test_data/commands_test_data.json').get('fetch_incident_data')
     client = Client(base_url="url", apitoken="api_key", use_ssl=True, use_proxy=False)
     mocker.patch.object(Client, 'get_alerts', return_value=alerts)
     first_fetch_time = '7 days'

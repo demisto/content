@@ -41,11 +41,11 @@ def test_match_ip_in_cidr_indicators(mocker):
     Then
         - The proper markdown report is generated
     """
-    mock_users = util_load_json('test_data/expanse_users.json')
-    mock_ips = util_load_json('test_data/expanse_ips.json')
-    mock_devices = util_load_json('test_data/expanse_devices.json')
-    mock_prisma = util_load_json('test_data/prisma_cloud.json')
-    mock_shadowit = util_load_json('test_data/shadow_it.json')
+    mock_users = util_load_json(os.path.dirname(__file__) + '/test_data/expanse_users.json')
+    mock_ips = util_load_json(os.path.dirname(__file__) + '/test_data/expanse_ips.json')
+    mock_devices = util_load_json(os.path.dirname(__file__) + '/test_data/expanse_devices.json')
+    mock_prisma = util_load_json(os.path.dirname(__file__) + '/test_data/prisma_cloud.json')
+    mock_shadowit = util_load_json(os.path.dirname(__file__) + '/test_data/shadow_it.json')
 
     mock_markdown_result = util_load_raw('test_data/output.md')
 

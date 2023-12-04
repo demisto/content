@@ -99,7 +99,7 @@ def test_Module(mocker):
         - Return ok result
     """
     from AHA import test_module
-    client = mock_client(mocker, util_load_json('test_data/get_all_features.json'))
+    client = mock_client(mocker, util_load_json(os.path.dirname(__file__) + '/test_data/get_all_features.json'))
     results = test_module(client=client)
     assert results == 'ok'
 
@@ -111,7 +111,7 @@ def test_getFeatures(mocker):
         Then:
             - Asserts get a list of expected length with all features.
     """
-    client = mock_client(mocker, util_load_json('test_data/get_all_features.json'))
+    client = mock_client(mocker, util_load_json(os.path.dirname(__file__) + '/test_data/get_all_features.json'))
     results = get_command(client=client, aha_type=AHA_TYPE.FEATURES, from_date='2022-01-01')
     assert len(results.outputs) == 3
     assert len(results.outputs[0].get('ideas')) == 1
@@ -125,7 +125,7 @@ def test_getIdeas(mocker):
         Then:
             - Asserts get a list of expected length with all ideas.
     """
-    client = mock_client(mocker, util_load_json('test_data/get_all_ideas.json'))
+    client = mock_client(mocker, util_load_json(os.path.dirname(__file__) + '/test_data/get_all_ideas.json'))
     results = get_command(client=client, aha_type=AHA_TYPE.IDEAS, from_date='2022-01-01')
     assert len(results.outputs) == 4
 
@@ -152,7 +152,7 @@ def test_getAFeature(mocker):
         Then:
             - Returns the requested feature
     """
-    client = mock_client(mocker, util_load_json('test_data/get_specific_feature.json'))
+    client = mock_client(mocker, util_load_json(os.path.dirname(__file__) + '/test_data/get_specific_feature.json'))
     result = get_command(client=client, aha_type=AHA_TYPE.FEATURES, from_date='2020-01-01', aha_object_name='DEMO-10')
     assert len(result.outputs) == 1
     assert result.outputs[0]['reference_num'] == 'DEMO-10'
@@ -165,7 +165,7 @@ def test_getAnIdea(mocker):
         Then:
             - Returns the requested idea
     """
-    client = mock_client(mocker, util_load_json('test_data/get_specific_idea.json'))
+    client = mock_client(mocker, util_load_json(os.path.dirname(__file__) + '/test_data/get_specific_idea.json'))
     result = get_command(client=client, aha_type=AHA_TYPE.IDEAS, from_date='2020-01-01', aha_object_name='DEMO-I-2895')
     assert len(result.outputs) == 1
     assert result.outputs[0]['reference_num'] == 'DEMO-I-2895'
@@ -178,7 +178,7 @@ def test_editFeatureField(mocker):
         Then:
             - Return the feature with updated fields.
     """
-    client = mock_client(mocker, util_load_json('test_data/update_feature_fields.json'))
+    client = mock_client(mocker, util_load_json(os.path.dirname(__file__) + '/test_data/update_feature_fields.json'))
     result = edit_command(client=client, aha_type=AHA_TYPE.FEATURES, aha_object_name='DEMO-10',
                           fields='{"name": "DEMO-10", "description": "new description", "status": "Closed"}')
     assert len(result.outputs) == 1
@@ -195,7 +195,7 @@ def test_editIdeaStatus(mocker):
         Then:
             - Return the idea with an updated field.
     """
-    client = mock_client(mocker, util_load_json('test_data/update_idea_status.json'))
+    client = mock_client(mocker, util_load_json(os.path.dirname(__file__) + '/test_data/update_idea_status.json'))
     result = edit_command(client=client, aha_type=AHA_TYPE.IDEAS, aha_object_name='DEMO-I-2895', fields='{}')
     assert len(result.outputs) == 1
     output = result.outputs[0]
@@ -212,7 +212,7 @@ def test_editSpecificFeatureField(mocker):
             - Return the feature with only the specific field updated.
     """
     new_name = 'change just name'
-    client = mock_client(mocker, util_load_json('test_data/update_feature_field.json'))
+    client = mock_client(mocker, util_load_json(os.path.dirname(__file__) + '/test_data/update_feature_field.json'))
     result = edit_command(client=client, aha_type=AHA_TYPE.FEATURES, aha_object_name='DEMO-10',
                           fields=f'{{"description": "{new_name}"}}')
     assert len(result.outputs) == 1

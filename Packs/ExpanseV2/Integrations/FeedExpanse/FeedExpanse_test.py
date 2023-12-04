@@ -21,11 +21,11 @@ def test_indicator_generator(requests_mock):
     from FeedExpanse import Client, indicator_generator
 
     # load mock responses
-    ipranges_mock_response = util_load_json('test_data/ipranges.json')
-    certificates_mock_response = util_load_json('test_data/certificates.json')
-    domains_mock_response = util_load_json('test_data/domains.json')
-    ips0_mock_response = util_load_json('test_data/ips-page0.json')
-    ips1_mock_response = util_load_json('test_data/ips-page1.json')
+    ipranges_mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/ipranges.json')
+    certificates_mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/certificates.json')
+    domains_mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/domains.json')
+    ips0_mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/ips-page0.json')
+    ips1_mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/ips-page1.json')
 
     # hook the mock responses in requests_mock
     requests_mock.get(

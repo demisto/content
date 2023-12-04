@@ -20,7 +20,7 @@ def test_get_incidents_command(requests_mock):
     the output of the command function with the expected output.
     """
     from LogPoint_SIEM_Integration import Client, get_incidents_command
-    mock_response = util_load_json('test_data/sample_incident_response.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/sample_incident_response.json')
     requests_mock.get(
         'https://test.com/incidents',
         json=mock_response)
@@ -56,7 +56,7 @@ def test_get_incident_data_command(requests_mock):
     the output of the command function with the expected output.
     """
     from LogPoint_SIEM_Integration import Client, get_incident_data_command
-    mock_response = util_load_json('test_data/sample_incident_data_response.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/sample_incident_data_response.json')
     requests_mock.get(
         'https://test.com/get_data_from_incident',
         json=mock_response)
@@ -93,7 +93,7 @@ def test_get_incident_states_command(requests_mock):
     """
     from LogPoint_SIEM_Integration import Client, get_incident_states_command
     # mock_response = SAMPLE_INCIDENT_STATES_RESPONSE
-    mock_response = util_load_json('test_data/sample_incident_states_response.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/sample_incident_states_response.json')
     requests_mock.get(
         'https://test.com/incident_states',
         json=mock_response)
@@ -324,7 +324,7 @@ def test_get_users_command(requests_mock):
         the output of the command function with the expected output.
         """
     from LogPoint_SIEM_Integration import Client, get_users_command
-    mock_response = util_load_json('test_data/sample_get_users_response.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/sample_get_users_response.json')
     requests_mock.get(
         'https://test.com/get_users',
         json=mock_response)
@@ -355,7 +355,7 @@ def test_get_users_preference_command(requests_mock):
         the output of the command function with the expected output.
         """
     from LogPoint_SIEM_Integration import Client, get_users_preference_command
-    mock_response = util_load_json('test_data/sample_get_users_preference_response.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/sample_get_users_preference_response.json')
     requests_mock.post(
         'https://test.com/getalloweddata',
         json=mock_response)
@@ -383,7 +383,7 @@ def test_get_logpoints_command(requests_mock):
         the output of the command function with the expected output.
         """
     from LogPoint_SIEM_Integration import Client, get_logpoints_command
-    mock_response = util_load_json('test_data/sample_get_logpoints_response.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/sample_get_logpoints_response.json')
     requests_mock.post(
         'https://test.com/getalloweddata',
         json=mock_response)
@@ -411,7 +411,7 @@ def test_get_repos_command(requests_mock):
         the output of the command function with the expected output.
         """
     from LogPoint_SIEM_Integration import Client, get_repos_command
-    mock_response = util_load_json('test_data/sample_get_repos_response.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/sample_get_repos_response.json')
     requests_mock.post(
         'https://test.com/getalloweddata',
         json=mock_response)
@@ -439,7 +439,7 @@ def test_get_devices_command(requests_mock):
         the output of the command function with the expected output.
         """
     from LogPoint_SIEM_Integration import Client, get_devices_command
-    mock_response = util_load_json('test_data/sample_get_devices_response.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/sample_get_devices_response.json')
     allowed_devices = mock_response['allowed_devices']
     device_list = []
     for device in allowed_devices:
@@ -474,7 +474,7 @@ def test_get_livesearches_command(requests_mock):
         the output of the command function with the expected output.
         """
     from LogPoint_SIEM_Integration import Client, get_livesearches_command
-    mock_response = util_load_json('test_data/sample_get_livesearches_response.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/sample_get_livesearches_response.json')
     requests_mock.post(
         'https://test.com/getalloweddata',
         json=mock_response)
@@ -501,7 +501,7 @@ def test_get_searchid_command(requests_mock):
         the output of the command function with the expected output.
         """
     from LogPoint_SIEM_Integration import Client, get_searchid_command
-    mock_response = util_load_json('test_data/sample_get_searchid_response.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/sample_get_searchid_response.json')
     requests_mock.post(
         'https://test.com/getsearchlogs',
         json=mock_response)
@@ -534,7 +534,7 @@ def test_search_logs_command(requests_mock):
         the output of the command function with the expected output.
         """
     from LogPoint_SIEM_Integration import Client, search_logs_command
-    mock_response = util_load_json('test_data/sample_search_logs_response.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/sample_search_logs_response.json')
     requests_mock.post(
         'https://test.com/getsearchlogs',
         json=mock_response)
@@ -560,7 +560,7 @@ def test_fetch_incidents(requests_mock):
     """Tests fetch-incidents command function.
     """
     from LogPoint_SIEM_Integration import Client, fetch_incidents
-    mock_response = util_load_json('test_data/sample_incident_response.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/sample_incident_response.json')
     requests_mock.get(
         'https://test.com/incidents',
         json=mock_response)

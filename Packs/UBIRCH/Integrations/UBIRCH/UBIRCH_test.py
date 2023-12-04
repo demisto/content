@@ -79,7 +79,7 @@ def test_create_incidents() -> None:
 
     No mock is needed here.
     """
-    ERROR_MESSAGE = util_load_json('test_data/raw_json_error_message.json')
+    ERROR_MESSAGE = util_load_json(os.path.dirname(__file__) + '/test_data/raw_json_error_message.json')
     incidents = create_incidents(ERROR_MESSAGE)
     assert incidents == INCIDENT_RESPONSE
 

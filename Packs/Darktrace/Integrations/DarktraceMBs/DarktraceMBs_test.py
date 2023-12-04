@@ -19,7 +19,7 @@ def test_get_model_breach(requests_mock):
     from DarktraceMBs import Client, get_model_breach_command
 
     # GIVEN an integration is configured to Darktrace
-    mock_api_response = util_load_json('test_data/get_breach.json')
+    mock_api_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_breach.json')
     requests_mock.get('https://mock.darktrace.com/modelbreaches?pbid=95',
                       json=mock_api_response)
 
@@ -35,7 +35,7 @@ def test_get_model_breach(requests_mock):
     }
 
     integration_response = get_model_breach_command(client, args)
-    expected_response = util_load_json('test_data/formatted_get_breach.json')
+    expected_response = util_load_json(os.path.dirname(__file__) + '/test_data/formatted_get_breach.json')
 
     # THEN the response should be returned and formatted
     assert integration_response.outputs == expected_response
@@ -52,7 +52,7 @@ def test_fetch_incidents(requests_mock):
     from DarktraceMBs import Client, fetch_incidents
 
     # GIVEN an integration is configured and fetch incidents
-    mock_response = util_load_json('test_data/fetch_breach.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_breach.json')
     requests_mock.get('https://usw1-51965-01.cloud.darktrace.com/modelbreaches?minscore=0.0&starttime=1598932817000',
                       json=mock_response)
 
@@ -76,7 +76,7 @@ def test_fetch_incidents(requests_mock):
     )
 
     # THEN the relevant information will be fetched and pulled
-    expected_response = util_load_json('test_data/formatted_fetch_breach.json')
+    expected_response = util_load_json(os.path.dirname(__file__) + '/test_data/formatted_fetch_breach.json')
 
     assert integration_response == expected_response
     assert len(integration_response) == 2
@@ -91,7 +91,7 @@ def test_get_model_breach_connections(mocker):
     from DarktraceMBs import Client, get_model_breach_connections_command
 
     # GIVEN an integration is configured and you would like to find similar devices
-    mock_api_response = util_load_json('test_data/breach_details.json')
+    mock_api_response = util_load_json(os.path.dirname(__file__) + '/test_data/breach_details.json')
     mocker.patch.object(Client, 'get_model_breach_connections', return_value=mock_api_response)
     client = Client(
         base_url='https://mock.darktrace.com',
@@ -109,7 +109,7 @@ def test_get_model_breach_connections(mocker):
 
     # THEN the context will be updated and information about similar devices will be fetched and pulled
     integration_response = get_model_breach_connections_command(client, args)
-    expected_response = util_load_json('test_data/formatted_breach_details.json')
+    expected_response = util_load_json(os.path.dirname(__file__) + '/test_data/formatted_breach_details.json')
 
     assert integration_response.outputs == expected_response
     assert len(mock_api_response) == len(expected_response) + 1
@@ -125,7 +125,7 @@ def test_get_model(requests_mock):
     from DarktraceMBs import Client, get_model_command
 
     # GIVEN an integration is configured and you would like to find similar devices
-    mock_api_response = util_load_json('test_data/model.json')
+    mock_api_response = util_load_json(os.path.dirname(__file__) + '/test_data/model.json')
     requests_mock.get('https://mock.darktrace.com/models?uuid=80010119-6d7f-0000-0305-5e0000000325',
                       json=mock_api_response)
 
@@ -142,7 +142,7 @@ def test_get_model(requests_mock):
 
     # THEN the context will be updated and information about similar devices will be fetched and pulled
     integration_response = get_model_command(client, args)
-    expected_response = util_load_json('test_data/formatted_model.json')
+    expected_response = util_load_json(os.path.dirname(__file__) + '/test_data/formatted_model.json')
 
     assert integration_response.outputs == expected_response
     assert integration_response.outputs_prefix == 'Darktrace.Model'
@@ -157,7 +157,7 @@ def test_get_model_component(requests_mock):
     from DarktraceMBs import Client, get_model_component_command
 
     # GIVEN an integration is configured and you would like to find similar devices
-    mock_api_response = util_load_json('test_data/component.json')
+    mock_api_response = util_load_json(os.path.dirname(__file__) + '/test_data/component.json')
     requests_mock.get('https://mock.darktrace.com/components?cid=254503',
                       json=mock_api_response)
 
@@ -174,7 +174,7 @@ def test_get_model_component(requests_mock):
 
     # THEN the context will be updated and information about similar devices will be fetched and pulled
     integration_response = get_model_component_command(client, args)
-    expected_response = util_load_json('test_data/formatted_component.json')
+    expected_response = util_load_json(os.path.dirname(__file__) + '/test_data/formatted_component.json')
 
     assert integration_response.outputs == expected_response
     assert integration_response.outputs_prefix == 'Darktrace.Model.Component'
@@ -190,7 +190,7 @@ def test_get_model_breach_comments(requests_mock):
     from DarktraceMBs import Client, get_model_breach_comments_command
 
     # GIVEN an integration is configured and comments are desired
-    mock_api_response = util_load_json('test_data/get_comments.json')
+    mock_api_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_comments.json')
     requests_mock.get('https://mock.darktrace.com/mbcomments?pbid=2507',
                       json=mock_api_response)
 
@@ -206,7 +206,7 @@ def test_get_model_breach_comments(requests_mock):
     }
 
     integration_response = get_model_breach_comments_command(client, args)
-    expected_response = util_load_json('test_data/formatted_get_comments.json')
+    expected_response = util_load_json(os.path.dirname(__file__) + '/test_data/formatted_get_comments.json')
 
     # THEN the comments should be returned and formatted
     assert integration_response.outputs == expected_response
@@ -223,7 +223,7 @@ def test_acknowledge_model_breach(requests_mock):
     from DarktraceMBs import Client, acknowledge_model_breach_command
 
     # GIVEN an integration is configured and you would like to acknowledge a breach
-    mock_api_response = util_load_json('test_data/ack_success.json')
+    mock_api_response = util_load_json(os.path.dirname(__file__) + '/test_data/ack_success.json')
     requests_mock.post('https://mock.darktrace.com/modelbreaches/2509/acknowledge', json=mock_api_response)
 
     client = Client(
@@ -238,7 +238,7 @@ def test_acknowledge_model_breach(requests_mock):
     }
 
     integration_response = acknowledge_model_breach_command(client, args)
-    expected_response = util_load_json('test_data/formatted_ack_success.json')
+    expected_response = util_load_json(os.path.dirname(__file__) + '/test_data/formatted_ack_success.json')
 
     # THEN the breach should be acknowledged, context updated, and message posted
     assert integration_response.outputs == expected_response
@@ -256,7 +256,7 @@ def test_unacknowledge(requests_mock):
     from DarktraceMBs import Client, unacknowledge_model_breach_command
 
     # GIVEN an integration is configured and you would like to unacknowledge a breach
-    mock_api_response = util_load_json('test_data/ack_success.json')
+    mock_api_response = util_load_json(os.path.dirname(__file__) + '/test_data/ack_success.json')
     requests_mock.post('https://mock.darktrace.com/modelbreaches/2509/unacknowledge', json=mock_api_response)
 
     client = Client(
@@ -271,7 +271,7 @@ def test_unacknowledge(requests_mock):
     }
 
     integration_response = unacknowledge_model_breach_command(client, args)
-    expected_response = util_load_json('test_data/formatted_unack_success.json')
+    expected_response = util_load_json(os.path.dirname(__file__) + '/test_data/formatted_unack_success.json')
 
     # THEN the breach should be acknowledged, context updated, and message posted
     assert integration_response.outputs == expected_response
@@ -284,7 +284,7 @@ def test_post_comment_to_model_breach(requests_mock):
     from DarktraceMBs import Client, post_comment_to_model_breach_command
 
     # GIVEN an integration is configured and you would like to unacknowledge a breach
-    mock_api_response = util_load_json('test_data/comment_post.json')
+    mock_api_response = util_load_json(os.path.dirname(__file__) + '/test_data/comment_post.json')
     requests_mock.post('https://mock.darktrace.com/modelbreaches/2509/comments', json=mock_api_response)
 
     client = Client(
@@ -300,7 +300,7 @@ def test_post_comment_to_model_breach(requests_mock):
     }
 
     integration_response = post_comment_to_model_breach_command(client, args)
-    expected_response = util_load_json('test_data/formatted_comment_post.json')
+    expected_response = util_load_json(os.path.dirname(__file__) + '/test_data/formatted_comment_post.json')
 
     # THEN the breach should be acknowledged, context updated, and message posted
     assert integration_response.outputs == expected_response

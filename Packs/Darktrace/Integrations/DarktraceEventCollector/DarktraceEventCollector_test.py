@@ -23,7 +23,7 @@ def client(mocker):
     from DarktraceEventCollector import Client
 
     mocker.patch.object(Client, '_http_request', return_value=None)
-    mocker.patch.object(Client, 'parse_respone', return_value=util_load_json('test_data/mocked_get_events.json'))
+    mocker.patch.object(Client, 'parse_respone', return_value=util_load_json(os.path.dirname(__file__) + '/test_data/mocked_get_events.json'))
     return Client(base_url="https://mock.darktrace.com", verify=False, proxy=False, auth=('example_pub', 'example_pri'))
 
 

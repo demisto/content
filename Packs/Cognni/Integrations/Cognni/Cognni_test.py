@@ -11,7 +11,7 @@ def test_fetch_incidents(requests_mock):
     """
     from Cognni import Client, fetch_incidents
 
-    mock_response = util_load_json('test_data/fetch_incidents.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_incidents.json')
     requests_mock.post('https://localhost/intelligence/data/graphql',
                        json=mock_response)
 
@@ -41,7 +41,7 @@ def test_get_event_with_special_character(requests_mock):
     """
     from Cognni import Client, get_event_command
 
-    mock_response = util_load_json('test_data/get_event_with_special_character.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_event_with_special_character.json')
     requests_mock.post('https://localhost/intelligence/data/graphql',
                        json=mock_response)
 
@@ -68,7 +68,7 @@ def test_get_event_with_whitespace(requests_mock):
     """
     from Cognni import Client, get_event_command
 
-    mock_response = util_load_json('test_data/get_event_with_whitespace.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_event_with_whitespace.json')
     requests_mock.post('https://localhost/intelligence/data/graphql',
                        json=mock_response)
 
@@ -95,7 +95,7 @@ def test_get_insight_with_whitespace(requests_mock):
     """
     from Cognni import Client, get_insight_command
 
-    mock_response = util_load_json('test_data/get_insight_with_whitespace.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_insight_with_whitespace.json')
     requests_mock.post('https://localhost/intelligence/data/graphql',
                        json=mock_response)
 
@@ -123,7 +123,7 @@ def test_get_insight_with_special_characters(requests_mock):
       """
     from Cognni import Client, get_insight_command
 
-    mock_response = util_load_json('test_data/get_insight_with_special_characters.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_insight_with_special_characters.json')
     requests_mock.post('https://localhost/intelligence/data/graphql',
                        json=mock_response)
 
@@ -149,7 +149,7 @@ def test_get_event(requests_mock):
     """
     from Cognni import Client, get_event_command
 
-    mock_response = util_load_json('test_data/get_event.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_event.json')
     requests_mock.post('https://localhost/intelligence/data/graphql',
                        json=mock_response)
 
@@ -175,7 +175,7 @@ def test_get_event(requests_mock):
 def test_get_event_with_unknown_id(requests_mock):
     from Cognni import Client, get_event_command
 
-    mock_response = util_load_json('test_data/get_event_with_unknown_id.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_event_with_unknown_id.json')
     requests_mock.post('https://localhost/intelligence/data/graphql',
                        json=mock_response)
 
@@ -202,7 +202,7 @@ def test_get_insight(requests_mock):
     """
     from Cognni import Client, get_insight_command
 
-    mock_response = util_load_json('test_data/get_insight.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_insight.json')
     requests_mock.post('https://localhost/intelligence/data/graphql',
                        json=mock_response)
 
@@ -228,7 +228,7 @@ def test_get_insight(requests_mock):
 def test_get_insight_with_unknown_id(requests_mock):
     from Cognni import Client, get_insight_command
 
-    mock_response = util_load_json('test_data/get_insight_with_unknown_id.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_insight_with_unknown_id.json')
     requests_mock.post('https://localhost/intelligence/data/graphql',
                        json=mock_response)
 
@@ -254,7 +254,7 @@ def test_fetch_insights(requests_mock):
     """
     from Cognni import Client, fetch_insights_command
 
-    mock_response = util_load_json('test_data/fetch_insights.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_insights.json')
     requests_mock.post('https://localhost/intelligence/data/graphql',
                        json=mock_response)
 
@@ -278,7 +278,7 @@ def test_fetch_insights(requests_mock):
 def test_fetch_insight_with_small_severity(requests_mock):
     from Cognni import Client, fetch_insights_command
 
-    mock_response = util_load_json('test_data/fetch_insights_with_small_severity.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_insights_with_small_severity.json')
     requests_mock.post('https://localhost/intelligence/data/graphql',
                        json=mock_response)
 
@@ -305,7 +305,7 @@ def test_fetch_insight_with_small_severity(requests_mock):
 def test_fetch_insight_with_large_severity(requests_mock):
     from Cognni import Client, fetch_insights_command
 
-    mock_response = util_load_json('test_data/fetch_insights_with_large_severity.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_insights_with_large_severity.json')
     requests_mock.post('https://localhost/intelligence/data/graphql',
                        json=mock_response)
 
@@ -330,7 +330,7 @@ def test_fetch_insight_with_large_severity(requests_mock):
 def test_convert_file_event_to_incident():
     from Cognni import convert_file_event_to_incident
 
-    mock_file_event = util_load_json('test_data/file_event.json')
+    mock_file_event = util_load_json(os.path.dirname(__file__) + '/test_data/file_event.json')
 
     result = convert_file_event_to_incident(mock_file_event)
 
@@ -342,7 +342,7 @@ def test_convert_file_event_to_incident():
 def test_flatten_event_file_items():
     from Cognni import flatten_event_file_items
 
-    mock_event_with_file_items = util_load_json('test_data/event_with_file_items.json')
+    mock_event_with_file_items = util_load_json(os.path.dirname(__file__) + '/test_data/event_with_file_items.json')
 
     result = flatten_event_file_items(mock_event_with_file_items)
 
@@ -359,7 +359,7 @@ def test_flatten_event_file_items():
 def test_flatten_event_file_items_with_0_items():
     from Cognni import flatten_event_file_items
 
-    mock_event_with_0_file_items = util_load_json('test_data/event_with_0_file_items.json')
+    mock_event_with_0_file_items = util_load_json(os.path.dirname(__file__) + '/test_data/event_with_0_file_items.json')
 
     result = flatten_event_file_items(mock_event_with_0_file_items)
 

@@ -31,7 +31,7 @@ def test_ip_command(requests_mock):
     from RSTCloudThreatFeedAPI import Client, ip_command
 
     value_to_check = '1.2.3.4'
-    mock_response = util_load_json('test_data/ip_reputation.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/ip_reputation.json')
     requests_mock.get(f'https://api.rstcloud.net/v1/ioc?value={value_to_check}', json=mock_response)
 
     client = Client(verify=False, apikey='test')
@@ -58,7 +58,7 @@ def test_domain_command(requests_mock):
     from RSTCloudThreatFeedAPI import Client, domain_command
 
     value_to_check = 'malicious-domain.local'
-    mock_response = util_load_json('test_data/domain_reputation.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/domain_reputation.json')
     requests_mock.get(f'https://api.rstcloud.net/v1/ioc?value={value_to_check}', json=mock_response)
 
     client = Client(verify=False, apikey='test')
@@ -84,7 +84,7 @@ def test_url_command(requests_mock):
     from RSTCloudThreatFeedAPI import Client, url_command
 
     value_to_check = 'http://malicious-domain.local/uri/test'
-    mock_response = util_load_json('test_data/url_reputation.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/url_reputation.json')
     requests_mock.get(f'https://api.rstcloud.net/v1/ioc?value={value_to_check}', json=mock_response)
 
     client = Client(verify=False, apikey='test')
@@ -110,7 +110,7 @@ def test_file_command(requests_mock):
     from RSTCloudThreatFeedAPI import Client, file_command
 
     value_to_check = 'f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2'
-    mock_response = util_load_json('test_data/hash_reputation.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/hash_reputation.json')
     requests_mock.get(f'https://api.rstcloud.net/v1/ioc?value={value_to_check}', json=mock_response)
 
     client = Client(verify=False, apikey='test')
@@ -179,7 +179,7 @@ def test_test_command(requests_mock):
     """
     from RSTCloudThreatFeedAPI import Client, test_module
 
-    mock_response = util_load_json('test_data/test_response.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/test_response.json')
     requests_mock.get('https://api.rstcloud.net/v1/ioc?value=1.1.1.1', json=mock_response)
 
     client = Client(verify=False, apikey='test')

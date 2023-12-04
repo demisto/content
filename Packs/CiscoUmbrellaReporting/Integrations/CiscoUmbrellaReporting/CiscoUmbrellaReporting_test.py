@@ -28,9 +28,9 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-DESTINATION_LIST_RESPONSE = util_load_json('test_data/context_data_output/destination_data.json')
-CATEGORY_LIST_RESPONSE = util_load_json('test_data/context_data_output/category_data.json')
-IDENTITY_LIST_RESPONSE = util_load_json('test_data/context_data_output/identity_data.json')
+DESTINATION_LIST_RESPONSE = util_load_json(os.path.dirname(__file__) + '/test_data/context_data_output/destination_data.json')
+CATEGORY_LIST_RESPONSE = util_load_json(os.path.dirname(__file__) + '/test_data/context_data_output/category_data.json')
+IDENTITY_LIST_RESPONSE = util_load_json(os.path.dirname(__file__) + '/test_data/context_data_output/identity_data.json')
 FILE_LIST_RESPONSE = util_load_json(os.path.dirname(__file__) + "/test_data/context_data_output/file_data.json")
 THREAT_LIST_RESPONSE = util_load_json(os.path.dirname(__file__) + "/test_data/context_data_output/threat_data.json")
 EVENT_TYPE_LIST_RESPONSE = util_load_json(os.path.dirname(__file__) + "/test_data/context_data_output/event_type_data.json")

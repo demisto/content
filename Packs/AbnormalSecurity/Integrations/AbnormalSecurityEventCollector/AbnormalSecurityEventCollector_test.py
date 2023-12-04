@@ -10,10 +10,10 @@ def util_load_json(path):
 
 class Client(BaseClient):
     def list_threats(self, params):
-        return util_load_json('test_data/test_get_list_threats.json')
+        return util_load_json(os.path.dirname(__file__) + '/test_data/test_get_list_threats.json')
 
     def get_threat(self, threat):
-        return util_load_json('test_data/test_get_threat.json').get(threat)
+        return util_load_json(os.path.dirname(__file__) + '/test_data/test_get_threat.json').get(threat)
 
 
 """

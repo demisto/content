@@ -180,7 +180,7 @@ def test_get_bucket_policy_command(mocker):
     """
     args = {'bucket': 'test_bucket'}
     args.update(TEST_PARAMS)
-    excepted = util_load_json('test_data/get_bucket_policy.json')
+    excepted = util_load_json(os.path.dirname(__file__) + '/test_data/get_bucket_policy.json')
     mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, "get_bucket_policy", return_value=TEST_POLICY)
     client = AWSClient()

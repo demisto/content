@@ -52,7 +52,7 @@ def test_get_session(mocker, mcafeensmv2_client):
     assert expected_session_id == result
 
 
-records_list = util_load_json('test_data/commands_test_data.json').get('get_list_firewall_policy')
+records_list = util_load_json(os.path.dirname(__file__) + '/test_data/commands_test_data.json').get('get_list_firewall_policy')
 records_list2 = records_list[2:]
 test_pagination_params = [(records_list[:2], 50, 1, 2),
                           (records_list2[:2], 50, 2, 2),
@@ -84,7 +84,7 @@ def test_alerts_list_pagination():
             - Returns the wanted records.
     """
     from McAfeeNSMv2 import alerts_list_pagination
-    records_list = util_load_json('test_data/commands_test_data.json').get('get_alerts_output', {}).get('alertsList')
+    records_list = util_load_json(os.path.dirname(__file__) + '/test_data/commands_test_data.json').get('get_alerts_output', {}).get('alertsList')
     page_size = 1050
     page = 1
     time_period = None
@@ -322,7 +322,7 @@ def test_overwrite_source_destination_object(rule_object_id, rule_object_type, d
             - Returns the updated address object.
     """
     from McAfeeNSMv2 import overwrite_source_destination_object
-    member_rule_list = util_load_json('test_data/commands_test_data.json').get('member_rule_list')[0]
+    member_rule_list = util_load_json(os.path.dirname(__file__) + '/test_data/commands_test_data.json').get('member_rule_list')[0]
     result = overwrite_source_destination_object(rule_object_id, rule_object_type, dest_or_src, member_rule_list)
     assert expected_obj == result
 
@@ -353,8 +353,8 @@ def test_get_addresses_from_response():
             - Returns the updated dictionary with the alert details.
     """
     from McAfeeNSMv2 import get_addresses_from_response
-    get_rule_object1 = util_load_json('test_data/commands_test_data.json').get('get_rule_object1')
-    get_rule_object2 = util_load_json('test_data/commands_test_data.json').get('get_rule_object2')
+    get_rule_object1 = util_load_json(os.path.dirname(__file__) + '/test_data/commands_test_data.json').get('get_rule_object1')
+    get_rule_object2 = util_load_json(os.path.dirname(__file__) + '/test_data/commands_test_data.json').get('get_rule_object2')
     expected_addresses1 = [{'FromAddress': '1.1.1.1', 'ToAddress': '2.2.2.2'}]
     expected_addresses2 = ['3.3.3.3/33', '4.4.4.4/44']
     result1 = get_addresses_from_response(get_rule_object1)
@@ -377,7 +377,7 @@ def test_list_domain_firewall_policy_command(mocker, mcafeensmv2_client):
     """
     from McAfeeNSMv2 import list_domain_firewall_policy_command
     args = {'domain_id': '0', 'limit': '2'}
-    response = util_load_json('test_data/commands_test_data.json').get('list_domain_firewall_policy')
+    response = util_load_json(os.path.dirname(__file__) + '/test_data/commands_test_data.json').get('list_domain_firewall_policy')
     expected_result = response.get('FirewallPoliciesForDomainResponseList')
     mocker.patch.object(mcafeensmv2_client, 'list_domain_firewall_policy_request', return_value=response)
     result = list_domain_firewall_policy_command(mcafeensmv2_client, args)
@@ -404,8 +404,8 @@ def test_get_firewall_policy_command(mocker, mcafeensmv2_client):
     """
     from McAfeeNSMv2 import get_firewall_policy_command
     args = {'policy_id': '147'}
-    response = util_load_json('test_data/commands_test_data.json').get('get_firewall_policy')
-    expected_result = util_load_json('test_data/commands_test_data.json').get('expected_get_firewall_policy')
+    response = util_load_json(os.path.dirname(__file__) + '/test_data/commands_test_data.json').get('get_firewall_policy')
+    expected_result = util_load_json(os.path.dirname(__file__) + '/test_data/commands_test_data.json').get('expected_get_firewall_policy')
     mocker.patch.object(mcafeensmv2_client, 'get_firewall_policy_request', return_value=response)
     result = get_firewall_policy_command(mcafeensmv2_client, args)
     expected_readable_output = '### Firewall Policy 147\n' \
@@ -520,7 +520,7 @@ def test_update_firewall_policy_command(mocker, mcafeensmv2_client):
     """
     from McAfeeNSMv2 import update_firewall_policy_command
     http_request = mocker.patch.object(mcafeensmv2_client, '_http_request')
-    get_response = util_load_json('test_data/commands_test_data.json').get('get_firewall_policy')
+    get_response = util_load_json(os.path.dirname(__file__) + '/test_data/commands_test_data.json').get('get_firewall_policy')
     args1 = {
         'policy_id': '147',
         'domain': '0',
@@ -756,7 +756,7 @@ def test_list_domain_rule_objects_command(mocker, mcafeensmv2_client):
     """
     from McAfeeNSMv2 import list_domain_rule_objects_command
     args = {'domain_id': '0', 'limit': '2'}
-    response = util_load_json('test_data/commands_test_data.json').get('list_domain_rule_objects')
+    response = util_load_json(os.path.dirname(__file__) + '/test_data/commands_test_data.json').get('list_domain_rule_objects')
     expected_result = response.get('RuleObjDef')
     mocker.patch.object(mcafeensmv2_client, 'list_domain_rule_objects_request', return_value=response)
     mocker.patch.object(McAfeeNSMv2, 'VERSION', 'V9x')
@@ -782,7 +782,7 @@ def test_get_rule_object_command(mocker, mcafeensmv2_client):
     """
     from McAfeeNSMv2 import get_rule_object_command
     args = {'rule_id': '113'}
-    response = util_load_json('test_data/commands_test_data.json').get('get_rule_object_test')
+    response = util_load_json(os.path.dirname(__file__) + '/test_data/commands_test_data.json').get('get_rule_object_test')
     expected_result = response.get('RuleObjDef')
     mocker.patch.object(mcafeensmv2_client, 'get_rule_object_request', return_value=response)
     mocker.patch.object(McAfeeNSMv2, 'VERSION', 'V9x')
@@ -850,7 +850,7 @@ def test_update_rule_object_command(mocker, mcafeensmv2_client):
     """
     from McAfeeNSMv2 import update_rule_object_command
     http_request = mocker.patch.object(mcafeensmv2_client, '_http_request')
-    get_response = util_load_json('test_data/commands_test_data.json').get('get_rule_object_test')
+    get_response = util_load_json(os.path.dirname(__file__) + '/test_data/commands_test_data.json').get('get_rule_object_test')
     args1 = {
         'rule_id': '113',
         'domain': '0',
@@ -940,8 +940,8 @@ def test_get_alerts_command(mocker, mcafeensmv2_client):
     from McAfeeNSMv2 import get_alerts_command
     args = {'domain_id': '0', 'time_period': 'CUSTOM', 'start_time': '12/17/2000 14:14',
             'end_time': '12/18/2022 00:26:45'}
-    response = util_load_json('test_data/commands_test_data.json').get('get_alerts_output')
-    expected_result = util_load_json('test_data/commands_test_data.json').get('updated_get_alert_list')
+    response = util_load_json(os.path.dirname(__file__) + '/test_data/commands_test_data.json').get('get_alerts_output')
+    expected_result = util_load_json(os.path.dirname(__file__) + '/test_data/commands_test_data.json').get('updated_get_alert_list')
     mocker.patch.object(mcafeensmv2_client, 'get_alerts_request', return_value=response)
     result = get_alerts_command(mcafeensmv2_client, args)
     expected_readable_output = '### Alerts list. Showing 3 of 3\n' \
@@ -969,8 +969,8 @@ def test_get_attacks_command(mocker, mcafeensmv2_client):
     """
     from McAfeeNSMv2 import get_attacks_command
     args = {'attack_id': '0x00000000'}
-    response = util_load_json('test_data/commands_test_data.json').get('get_attacks_command')
-    expected_result = util_load_json('test_data/commands_test_data.json').get('expected_get_attacks_list')
+    response = util_load_json(os.path.dirname(__file__) + '/test_data/commands_test_data.json').get('get_attacks_command')
+    expected_result = util_load_json(os.path.dirname(__file__) + '/test_data/commands_test_data.json').get('expected_get_attacks_list')
     mocker.patch.object(mcafeensmv2_client, 'get_attacks_request', return_value=response)
     result = get_attacks_command(mcafeensmv2_client, args)[0]
     expected_readable_output = '### Attack no.0x00000000\n' \
@@ -993,8 +993,8 @@ def test_get_domains_command(mocker, mcafeensmv2_client):
     """
     from McAfeeNSMv2 import get_domains_command
     args = {'domain_id': '0'}
-    response = util_load_json('test_data/commands_test_data.json').get('get_domains')
-    expected_result = util_load_json('test_data/commands_test_data.json').get('expected_get_domains')
+    response = util_load_json(os.path.dirname(__file__) + '/test_data/commands_test_data.json').get('get_domains')
+    expected_result = util_load_json(os.path.dirname(__file__) + '/test_data/commands_test_data.json').get('expected_get_domains')
     mocker.patch.object(mcafeensmv2_client, 'get_domains_request', return_value=response)
     result = get_domains_command(mcafeensmv2_client, args)
     expected_readable_output = '### Domain no.0\n' \
@@ -1016,8 +1016,8 @@ def test_get_sensors_command(mocker, mcafeensmv2_client):
     """
     from McAfeeNSMv2 import get_sensors_command
     args = {'domain_id': '0'}
-    response = util_load_json('test_data/commands_test_data.json').get('get_sensors')
-    expected_result = util_load_json('test_data/commands_test_data.json').get('expected_sensors_list')
+    response = util_load_json(os.path.dirname(__file__) + '/test_data/commands_test_data.json').get('get_sensors')
+    expected_result = util_load_json(os.path.dirname(__file__) + '/test_data/commands_test_data.json').get('expected_sensors_list')
     mocker.patch.object(mcafeensmv2_client, 'get_sensors_request', return_value=response)
     result = get_sensors_command(mcafeensmv2_client, args)
     expected_readable_output = '### Sensors List\n' \
@@ -1039,8 +1039,8 @@ def test_get_ips_policies_command(mocker, mcafeensmv2_client):
     """
     from McAfeeNSMv2 import get_ips_policies_command
     args = {'domain_id': '0'}
-    response = util_load_json('test_data/commands_test_data.json').get('get_ips_policies')
-    expected_result = util_load_json('test_data/commands_test_data.json').get('expected_get_ips_policies')
+    response = util_load_json(os.path.dirname(__file__) + '/test_data/commands_test_data.json').get('get_ips_policies')
+    expected_result = util_load_json(os.path.dirname(__file__) + '/test_data/commands_test_data.json').get('expected_get_ips_policies')
     mocker.patch.object(mcafeensmv2_client, 'get_ips_policies_request', return_value=response)
     result = get_ips_policies_command(mcafeensmv2_client, args)
     expected_readable_output = '### IPS Policies List of Domain no.0\n' \

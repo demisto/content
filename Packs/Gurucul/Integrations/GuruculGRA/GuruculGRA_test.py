@@ -21,7 +21,7 @@ def test_gra_fetch_users(requests_mock):
         Validate key field
     """
     from GuruculGRA import Client, fetch_record_command
-    mock_response = util_load_json('test_data/gra-fetch-users.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/gra-fetch-users.json')
     requests_mock.get('https://test.com/api/users',
                       json=mock_response)
     api_url = '/users'
@@ -54,7 +54,7 @@ def test_gra_fetch_accounts(requests_mock):
         Validate key field
     """
     from GuruculGRA import Client, fetch_record_command
-    mock_response = util_load_json('test_data/gra-fetch-accounts.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/gra-fetch-accounts.json')
     requests_mock.get('https://test.com/api/accounts',
                       json=mock_response)
     api_url = '/accounts'
@@ -87,7 +87,7 @@ def test_gra_fetch_active_resource_accounts(requests_mock):
         Validate key field
     """
     from GuruculGRA import Client, fetch_record_command
-    mock_response = util_load_json('test_data/gra-fetch-active-resource-accounts.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/gra-fetch-active-resource-accounts.json')
     requests_mock.get('https://test.com/api/resources/Linux/accounts',
                       json=mock_response)
     api_url = '/resources/Linux/accounts'
@@ -120,7 +120,7 @@ def test_gra_fetch_user_accounts(requests_mock):
         Validate key field
     """
     from GuruculGRA import Client, fetch_record_command
-    mock_response = util_load_json('test_data/gra-fetch-user-accounts.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/gra-fetch-user-accounts.json')
     requests_mock.get('https://test.com/api/users/AB1234/accounts',
                       json=mock_response)
     api_url = '/users/AB1234/accounts'
@@ -153,7 +153,7 @@ def test_gra_fetch_resource_highrisk_accounts(requests_mock):
         Validate key field
     """
     from GuruculGRA import Client, fetch_record_command
-    mock_response = util_load_json('test_data/gra-fetch-resource-highrisk-accounts.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/gra-fetch-resource-highrisk-accounts.json')
     requests_mock.get('https://test.com/api/resources/Linux/accounts/highrisk',
                       json=mock_response)
     api_url = '/resources/Linux/accounts/highrisk'
@@ -186,7 +186,7 @@ def test_gra_fetch_hpa(requests_mock):
         Validate key field
     """
     from GuruculGRA import Client, fetch_record_command
-    mock_response = util_load_json('test_data/gra-fetch-hpa.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/gra-fetch-hpa.json')
     requests_mock.get('https://test.com/api/accounts/highprivileged',
                       json=mock_response)
     api_url = '/accounts/highprivileged'
@@ -219,7 +219,7 @@ def test_gra_fetch_resource_hpa(requests_mock):
         Validate key field
     """
     from GuruculGRA import Client, fetch_record_command
-    mock_response = util_load_json('test_data/gra-fetch-resource-hpa.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/gra-fetch-resource-hpa.json')
     requests_mock.get('https://test.com/api/resources/Linux/accounts/highprivileged',
                       json=mock_response)
     api_url = '/resources/Linux/accounts/highprivileged'
@@ -252,7 +252,7 @@ def test_gra_fetch_orphan_accounts(requests_mock):
         Validate key field
     """
     from GuruculGRA import Client, fetch_record_command
-    mock_response = util_load_json('test_data/gra-fetch-orphan-accounts.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/gra-fetch-orphan-accounts.json')
     requests_mock.get('https://test.com/api/accounts/orphan',
                       json=mock_response)
     api_url = '/accounts/orphan'
@@ -285,7 +285,7 @@ def test_gra_fetch_resource_orphan_accounts(requests_mock):
         Validate key field
     """
     from GuruculGRA import Client, fetch_record_command
-    mock_response = util_load_json('test_data/gra-fetch-resource-orphan-accounts.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/gra-fetch-resource-orphan-accounts.json')
     requests_mock.get('https://test.com/api/resources/Linux/accounts/orphan',
                       json=mock_response)
     api_url = '/resources/Linux/accounts/orphan'
@@ -318,7 +318,7 @@ def test_gra_user_activities(requests_mock):
         Validate key field
     """
     from GuruculGRA import Client, fetch_record_command
-    mock_response = util_load_json('test_data/gra-user-activities.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/gra-user-activities.json')
     requests_mock.get('https://test.com/api/user/AB1234/activity',
                       json=mock_response)
     api_url = '/user/AB1234/activity'
@@ -351,7 +351,7 @@ def test_fetch_gra_users_details(requests_mock):
         Validate key field
     """
     from GuruculGRA import Client, fetch_record_command
-    mock_response = util_load_json('test_data/gra-fetch-users-details.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/gra-fetch-users-details.json')
     requests_mock.get('https://test.com/api/users/AB1234',
                       json=mock_response)
     api_url = '/users/AB1234'
@@ -384,7 +384,7 @@ def test_gra_highRisk_users(requests_mock):
         Validate key field
     """
     from GuruculGRA import Client, fetch_record_command
-    mock_response = util_load_json('test_data/gra-highRisk-users.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/gra-highRisk-users.json')
     requests_mock.get('https://test.com/api/users/highrisk',
                       json=mock_response)
     api_url = '/users/highrisk'
@@ -417,7 +417,7 @@ def test_gra_cases(requests_mock):
         Validate key field
     """
     from GuruculGRA import Client, fetch_record_command
-    mock_response = util_load_json('test_data/gra-cases.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/gra-cases.json')
     requests_mock.get('https://test.com/api/cases/OPEN',
                       json=mock_response)
     api_url = '/cases/OPEN'
@@ -450,7 +450,7 @@ def test_fetch_user_anomalies(requests_mock):
         Validate key field
     """
     from GuruculGRA import Client, fetch_record_command
-    mock_response = util_load_json('test_data/gra-user-anomalies.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/gra-user-anomalies.json')
     requests_mock.get('https://test.com/api/users/AB1234/anomalies/',
                       json=mock_response)
     anomaly_url = '/users/AB1234/anomalies/'
@@ -507,7 +507,7 @@ def test_gra_case_action(requests_mock):
         Validate key field
     """
     from GuruculGRA import Client, fetch_record_command
-    mock_response = util_load_json('test_data/gra-case-action.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/gra-case-action.json')
     requests_mock.get('https://test.com/api/cases/closeCase',
                       json=mock_response)
     cases_url = '/cases/closeCase'
@@ -540,7 +540,7 @@ def test_gra_case_action_anomaly(requests_mock):
         Validate key field
     """
     from GuruculGRA import Client, fetch_record_command
-    mock_response = util_load_json('test_data/gra-case-action-anomaly.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/gra-case-action-anomaly.json')
     requests_mock.get('https://test.com/api/cases/closeCaseAnomaly',
                       json=mock_response)
     cases_url = '/cases/closeCaseAnomaly'
@@ -573,7 +573,7 @@ def test_gra_investigate_anomaly_summary(requests_mock):
         Validate key field
     """
     from GuruculGRA import Client, fetch_record_command
-    mock_response = util_load_json('test_data/gra-investigate-anomaly-summary.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/gra-investigate-anomaly-summary.json')
     requests_mock.get('https://test.com/api/investigateAnomaly/anomalySummary/ModelName',
                       json=mock_response)
     investigateAnomaly_url = '/investigateAnomaly/anomalySummary/ModelName'
@@ -607,7 +607,7 @@ def test_gra_analytical_features_entity_value(requests_mock):
         Validate key field
     """
     from GuruculGRA import Client, fetch_record_command
-    mock_response = util_load_json('test_data/gra-analytical-features-entity-value.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/gra-analytical-features-entity-value.json')
     requests_mock.get('https://test.com/api/profile/analyticalFeatures/entityValue',
                       json=mock_response)
     investigateAnomaly_url = '/profile/analyticalFeatures/entityValue'

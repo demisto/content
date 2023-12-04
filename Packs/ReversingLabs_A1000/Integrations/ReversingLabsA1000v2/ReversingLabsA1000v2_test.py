@@ -14,8 +14,8 @@ def handle_calling_context(mocker):
 
 
 def test_a1000_report_output():
-    test_response = util_load_json('test_data/a1000_response.json')
-    test_context = util_load_json('test_data/a1000_context.json')
+    test_response = util_load_json(os.path.dirname(__file__) + '/test_data/a1000_response.json')
+    test_context = util_load_json(os.path.dirname(__file__) + '/test_data/a1000_context.json')
 
     result = a1000_report_output(test_response)
 
@@ -23,8 +23,8 @@ def test_a1000_report_output():
 
 
 def test_a1000_list_extracted_output():
-    test_response = util_load_json('test_data/a1000_list_extracted_response.json')
-    test_context = util_load_json('test_data/a1000_list_extracted_context.json')
+    test_response = util_load_json(os.path.dirname(__file__) + '/test_data/a1000_list_extracted_response.json')
+    test_context = util_load_json(os.path.dirname(__file__) + '/test_data/a1000_list_extracted_context.json')
 
     result = list_extracted_files_output(test_response)
 
@@ -32,8 +32,8 @@ def test_a1000_list_extracted_output():
 
 
 def test_a1000_get_classification_output():
-    test_response = util_load_json('test_data/a1000_get_classification_response.json')
-    test_context = util_load_json('test_data/a1000_get_classification_context.json')
+    test_response = util_load_json(os.path.dirname(__file__) + '/test_data/a1000_get_classification_response.json')
+    test_context = util_load_json(os.path.dirname(__file__) + '/test_data/a1000_get_classification_context.json')
 
     result = get_classification_output(test_response)
 

@@ -21,7 +21,7 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-command_test_data = util_load_json('test_data/commands_test_data.json')
+command_test_data = util_load_json(os.path.dirname(__file__) + '/test_data/commands_test_data.json')
 
 TEST_GITLAB_COMMANDS_DATA = [(gitlab_pipelines_schedules_list_command, command_test_data['pipeline_schedule']),
                              (gitlab_pipelines_list_command, command_test_data['pipeline']),

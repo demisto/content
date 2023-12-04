@@ -28,17 +28,17 @@ def test_sepio_query_agents(requests_mock):
     from SepioPrimeAPI import Client, sepio_query_agents_command
 
     #  mock api http response
-    mock_signin_http_response = util_load_json('test_data/signin_http_response.json')
+    mock_signin_http_response = util_load_json(os.path.dirname(__file__) + '/test_data/signin_http_response.json')
     requests_mock.post(
         f'{BASE_URL}/auth/signin',
         json=mock_signin_http_response)
 
-    mock_agents_http_response = util_load_json('test_data/agents_http_response.json')
+    mock_agents_http_response = util_load_json(os.path.dirname(__file__) + '/test_data/agents_http_response.json')
     requests_mock.get(
         f'{BASE_URL}/agents',
         json=mock_agents_http_response)
 
-    mock_agents_query_test = util_load_json('test_data/agents_query_test.json')
+    mock_agents_query_test = util_load_json(os.path.dirname(__file__) + '/test_data/agents_query_test.json')
 
     client = Client(
         base_url=f'{BASE_URL}',
@@ -74,17 +74,17 @@ def test_sepio_query_global_peripherals(requests_mock):
     from SepioPrimeAPI import Client, sepio_query_global_peripherals_command
 
     #  mock api http response
-    mock_signin_http_response = util_load_json('test_data/signin_http_response.json')
+    mock_signin_http_response = util_load_json(os.path.dirname(__file__) + '/test_data/signin_http_response.json')
     requests_mock.post(
         f'{BASE_URL}/auth/signin',
         json=mock_signin_http_response)
 
-    mock_global_peripherals_http_response = util_load_json('test_data/global_peripherals_http_response.json')
+    mock_global_peripherals_http_response = util_load_json(os.path.dirname(__file__) + '/test_data/global_peripherals_http_response.json')
     requests_mock.get(
         f'{BASE_URL}/peripherals',
         json=mock_global_peripherals_http_response)
 
-    mock_global_peripherals_query_test = util_load_json('test_data/global_peripherals_query_test.json')
+    mock_global_peripherals_query_test = util_load_json(os.path.dirname(__file__) + '/test_data/global_peripherals_query_test.json')
 
     client = Client(
         base_url=f'{BASE_URL}',
@@ -122,17 +122,17 @@ def test_sepio_query_switches(requests_mock):
     from SepioPrimeAPI import Client, sepio_query_switches_command
 
     #  mock api http response
-    mock_signin_http_response = util_load_json('test_data/signin_http_response.json')
+    mock_signin_http_response = util_load_json(os.path.dirname(__file__) + '/test_data/signin_http_response.json')
     requests_mock.post(
         f'{BASE_URL}/auth/signin',
         json=mock_signin_http_response)
 
-    mock_switches_http_response = util_load_json('test_data/switches_http_response.json')
+    mock_switches_http_response = util_load_json(os.path.dirname(__file__) + '/test_data/switches_http_response.json')
     requests_mock.get(
         f'{BASE_URL}/switches/switches',
         json=mock_switches_http_response)
 
-    mock_switches_query_test = util_load_json('test_data/switches_query_test.json')
+    mock_switches_query_test = util_load_json(os.path.dirname(__file__) + '/test_data/switches_query_test.json')
 
     client = Client(
         base_url=f'{BASE_URL}',
@@ -167,17 +167,17 @@ def test_sepio_query_switch_ports(requests_mock):
     from SepioPrimeAPI import Client, sepio_query_switch_ports_command
 
     #  mock api http response
-    mock_signin_http_response = util_load_json('test_data/signin_http_response.json')
+    mock_signin_http_response = util_load_json(os.path.dirname(__file__) + '/test_data/signin_http_response.json')
     requests_mock.post(
         f'{BASE_URL}/auth/signin',
         json=mock_signin_http_response)
 
-    mock_ports_http_response = util_load_json('test_data/ports_http_response.json')
+    mock_ports_http_response = util_load_json(os.path.dirname(__file__) + '/test_data/ports_http_response.json')
     requests_mock.get(
         f'{BASE_URL}/switches/ports',
         json=mock_ports_http_response)
 
-    mock_ports_query_test = util_load_json('test_data/ports_query_test.json')
+    mock_ports_query_test = util_load_json(os.path.dirname(__file__) + '/test_data/ports_query_test.json')
 
     client = Client(
         base_url=f'{BASE_URL}',
@@ -213,17 +213,17 @@ def test_sepio_query_system_events(requests_mock):
     from SepioPrimeAPI import Client, sepio_query_system_events_command
 
     #  mock api http response
-    mock_signin_http_response = util_load_json('test_data/signin_http_response.json')
+    mock_signin_http_response = util_load_json(os.path.dirname(__file__) + '/test_data/signin_http_response.json')
     requests_mock.post(
         f'{BASE_URL}/auth/signin',
         json=mock_signin_http_response)
 
-    mock_events_http_response = util_load_json('test_data/events_http_response.json')
+    mock_events_http_response = util_load_json(os.path.dirname(__file__) + '/test_data/events_http_response.json')
     requests_mock.get(
         f'{BASE_URL}/events/getevents',
         json=mock_events_http_response)
 
-    mock_events_query_test = util_load_json('test_data/events_query_test.json')
+    mock_events_query_test = util_load_json(os.path.dirname(__file__) + '/test_data/events_query_test.json')
 
     client = Client(
         base_url=f'{BASE_URL}',
@@ -262,18 +262,18 @@ def test_sepio_set_agent_mode(requests_mock):
     from SepioPrimeAPI import Client, sepio_set_agent_mode_command
 
     #  mock api http response
-    mock_signin_http_response = util_load_json('test_data/signin_http_response.json')
+    mock_signin_http_response = util_load_json(os.path.dirname(__file__) + '/test_data/signin_http_response.json')
     requests_mock.post(
         f'{BASE_URL}/auth/signin',
         json=mock_signin_http_response)
 
-    mock_set_agent_mode_http_reponse = util_load_json('test_data/set_agent_mode_http_reponse.json')
+    mock_set_agent_mode_http_reponse = util_load_json(os.path.dirname(__file__) + '/test_data/set_agent_mode_http_reponse.json')
     requests_mock.post(
         f'{BASE_URL}/agents/configuration',
         status_code=200,
         json=mock_set_agent_mode_http_reponse)
 
-    mock_set_agent_mode_update_test = util_load_json('test_data/set_agent_mode_update_test.json')
+    mock_set_agent_mode_update_test = util_load_json(os.path.dirname(__file__) + '/test_data/set_agent_mode_update_test.json')
 
     client = Client(
         base_url=f'{BASE_URL}',
@@ -307,18 +307,18 @@ def test_sepio_set_agent_peripherals_mode(requests_mock):
     from SepioPrimeAPI import Client, sepio_set_agent_peripherals_mode_command
 
     #  mock api http response
-    mock_signin_http_response = util_load_json('test_data/signin_http_response.json')
+    mock_signin_http_response = util_load_json(os.path.dirname(__file__) + '/test_data/signin_http_response.json')
     requests_mock.post(
         f'{BASE_URL}/auth/signin',
         json=mock_signin_http_response)
 
-    mock_set_peripherals_mode_http_reponse = util_load_json('test_data/set_peripherals_mode_http_reponse.json')
+    mock_set_peripherals_mode_http_reponse = util_load_json(os.path.dirname(__file__) + '/test_data/set_peripherals_mode_http_reponse.json')
     requests_mock.post(
         f'{BASE_URL}/peripherals/command',
         status_code=200,
         json=mock_set_peripherals_mode_http_reponse)
 
-    mock_set_peripherals_mode_update_test = util_load_json('test_data/set_peripherals_mode_update_test.json')
+    mock_set_peripherals_mode_update_test = util_load_json(os.path.dirname(__file__) + '/test_data/set_peripherals_mode_update_test.json')
 
     client = Client(
         base_url=f'{BASE_URL}',
@@ -353,19 +353,19 @@ def test_fetch_incidents(requests_mock):
     from SepioPrimeAPI import Client, fetch_incidents
 
     #  mock api http response
-    mock_signin_http_response = util_load_json('test_data/signin_http_response.json')
+    mock_signin_http_response = util_load_json(os.path.dirname(__file__) + '/test_data/signin_http_response.json')
     requests_mock.post(
         f'{BASE_URL}/auth/signin',
         json=mock_signin_http_response)
 
-    mock_fetch_incidents_http_response = util_load_json('test_data/fetch_incidents_http_response.json')
+    mock_fetch_incidents_http_response = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_incidents_http_response.json')
     requests_mock.get(
         f'{BASE_URL}/events/getevents?pageSize=20&'
         'pageNumber=1&sortBy=date_asc&minimumSeverity=Warning&'
         'fromDate=2020-06-22T12%3A00%3A00.000Z',
         json=mock_fetch_incidents_http_response)
 
-    mock_fetch_incidents_query_test = util_load_json('test_data/fetch_incidents_query_test.json')
+    mock_fetch_incidents_query_test = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_incidents_query_test.json')
 
     client = Client(
         base_url=f'{BASE_URL}',

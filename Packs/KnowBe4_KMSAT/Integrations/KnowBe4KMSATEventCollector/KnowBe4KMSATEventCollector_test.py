@@ -10,7 +10,7 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-MOCK_ENTRY = util_load_json('test_data/mock_event.json')
+MOCK_ENTRY = util_load_json(os.path.dirname(__file__) + '/test_data/mock_event.json')
 BASE_URL = 'https://api.events.knowbe4.com'
 
 

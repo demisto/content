@@ -31,7 +31,7 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-command_tests_data = util_load_json('test_data/commands_data.json')
+command_tests_data = util_load_json(os.path.dirname(__file__) + '/test_data/commands_data.json')
 
 
 @pytest.mark.parametrize('args, argument_name,minimum, maximum, expected',

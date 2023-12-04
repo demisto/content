@@ -96,10 +96,10 @@ def test_fetch_events(mocker):
     first_fetch_time = datetime(2023, 3, 1).replace(tzinfo=timezone.utc)
 
     http_request_mocker = mocker.patch.object(Client, "error_handled_http_request", side_effect=[
-        util_load_json('test_data/fetch_events_operationlogs.json').get('fetch_events_month_before'),
-        util_load_json('test_data/fetch_events_operationlogs.json').get('fetch_events'),
-        util_load_json('test_data/fetch_events_activities.json').get('fetch_events_month_before'),
-        util_load_json('test_data/fetch_events_activities.json').get('fetch_events'),
+        util_load_json(os.path.dirname(__file__) + '/test_data/fetch_events_operationlogs.json').get('fetch_events_month_before'),
+        util_load_json(os.path.dirname(__file__) + '/test_data/fetch_events_operationlogs.json').get('fetch_events'),
+        util_load_json(os.path.dirname(__file__) + '/test_data/fetch_events_activities.json').get('fetch_events_month_before'),
+        util_load_json(os.path.dirname(__file__) + '/test_data/fetch_events_activities.json').get('fetch_events'),
     ])
 
     mocker.patch('ZoomEventCollector.Client.get_oauth_token', return_value=('token', None))
@@ -109,7 +109,7 @@ def test_fetch_events(mocker):
     next_run, events = fetch_events(client, last_run={},
                                     first_fetch_time=datetime(2023, 2, 1).replace(tzinfo=timezone.utc))
 
-    mock_events = util_load_json('test_data/zoom_fetch_events.json')
+    mock_events = util_load_json(os.path.dirname(__file__) + '/test_data/zoom_fetch_events.json')
     assert http_request_mocker.call_args_list[0][1].get("params") == {'page_size': 300, 'from': '2023-02-01',
                                                                       'to': '2023-03-01'}
     assert http_request_mocker.call_args_list[1][1].get("params") == {'page_size': 300, 'from': '2023-03-02',
@@ -127,8 +127,8 @@ def test_fetch_events(mocker):
     # assert no new results when given the last_run:
 
     mocker.patch.object(Client, "error_handled_http_request", side_effect=[
-        util_load_json('test_data/fetch_events_operationlogs.json').get('fetch_events'),
-        util_load_json('test_data/fetch_events_activities.json').get('fetch_events')
+        util_load_json(os.path.dirname(__file__) + '/test_data/fetch_events_operationlogs.json').get('fetch_events'),
+        util_load_json(os.path.dirname(__file__) + '/test_data/fetch_events_activities.json').get('fetch_events')
     ])
 
     next_run, events = fetch_events(client, last_run={'activities': '2023-03-29T11:38:50Z',
@@ -157,10 +157,10 @@ def test_fetch_events_with_last_run(mocker):
     first_fetch_time = datetime(2023, 3, 1).replace(tzinfo=timezone.utc)
 
     http_request_mocker = mocker.patch.object(Client, "error_handled_http_request", side_effect=[
-        util_load_json('test_data/fetch_events_operationlogs.json').get('fetch_events_with_token'),
-        util_load_json('test_data/fetch_events_operationlogs.json').get('fetch_events_with_token_next'),
-        util_load_json('test_data/fetch_events_activities.json').get('fetch_events_with_token'),
-        util_load_json('test_data/fetch_events_activities.json').get('fetch_events_with_token_next')
+        util_load_json(os.path.dirname(__file__) + '/test_data/fetch_events_operationlogs.json').get('fetch_events_with_token'),
+        util_load_json(os.path.dirname(__file__) + '/test_data/fetch_events_operationlogs.json').get('fetch_events_with_token_next'),
+        util_load_json(os.path.dirname(__file__) + '/test_data/fetch_events_activities.json').get('fetch_events_with_token'),
+        util_load_json(os.path.dirname(__file__) + '/test_data/fetch_events_activities.json').get('fetch_events_with_token_next')
     ])
 
     mocker.patch('ZoomEventCollector.Client.get_oauth_token', return_value=('token', None))
@@ -171,7 +171,7 @@ def test_fetch_events_with_last_run(mocker):
                                                       'operationlogs': "2023-03-20T16:37:58Z"},
                                     first_fetch_time=first_fetch_time)
 
-    mock_events = util_load_json('test_data/zoom_fetch_events_with_token.json')
+    mock_events = util_load_json(os.path.dirname(__file__) + '/test_data/zoom_fetch_events_with_token.json')
     assert http_request_mocker.call_args_list[0][1].get("params") == {'page_size': 300, 'from': '2023-03-20',
                                                                       'to': '2023-03-30'}
     assert http_request_mocker.call_args_list[1][1].get("params") == {'page_size': 300, 'from': '2023-03-20',
@@ -205,8 +205,8 @@ def test_get_events_command(mocker):
     from ZoomEventCollector import get_events, Client
 
     http_request_mocker = mocker.patch.object(Client, "error_handled_http_request", side_effect=[
-        util_load_json('test_data/get_events_operationlogs.json'),
-        util_load_json('test_data/get_events_activities.json')
+        util_load_json(os.path.dirname(__file__) + '/test_data/get_events_operationlogs.json'),
+        util_load_json(os.path.dirname(__file__) + '/test_data/get_events_activities.json')
     ])
 
     mocker.patch('ZoomEventCollector.Client.get_oauth_token', return_value=('token', None))
@@ -216,7 +216,7 @@ def test_get_events_command(mocker):
     events, results = get_events(client, limit=2,
                                  first_fetch_time=datetime(2023, 3, 1).replace(tzinfo=timezone.utc))
 
-    mock_events = util_load_json('test_data/zoom_get_events.json')
+    mock_events = util_load_json(os.path.dirname(__file__) + '/test_data/zoom_get_events.json')
     assert http_request_mocker.call_args_list[0][1].get("params") == {'page_size': 2, 'from': '2023-03-01',
                                                                       'to': '2023-03-30'}
     assert http_request_mocker.call_args_list[1][1].get("params") == {'page_size': 2, 'from': '2023-03-01',

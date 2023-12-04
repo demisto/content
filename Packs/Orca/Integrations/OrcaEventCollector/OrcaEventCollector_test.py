@@ -9,7 +9,7 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-test_get_alerts_json = util_load_json('test_data/get_alerts_test.json')
+test_get_alerts_json = util_load_json(os.path.dirname(__file__) + '/test_data/get_alerts_test.json')
 get_alerts_dict = test_get_alerts_json.get('test_1')
 
 

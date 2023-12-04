@@ -32,7 +32,7 @@ def test_first_fetch_incidents_no_pagination(mocker, requests_mock):
     mocker.patch.object(demisto, 'params', return_value=MOCK_PARAMS)
     import FreshDesk
     mocker.patch.object(FreshDesk, 'MAX_INCIDENTS', 5)
-    raw_response = util_load_json('test_data/first_page_incindents_respone.json')
+    raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/first_page_incindents_respone.json')
     mocker.patch.object(demisto, 'getLastRun', return_value={'last_created_incident_timestamp': 1619834298000})
     mocker.patch.object(demisto, 'setLastRun')
     mocker.patch.object(demisto, 'incidents')
@@ -63,8 +63,8 @@ def test_first_fetch_incidents_with_pagination(mocker, requests_mock):
     mocker.patch.object(demisto, 'params', return_value=MOCK_PARAMS)
     import FreshDesk
     mocker.patch.object(FreshDesk, 'MAX_INCIDENTS', 15)
-    raw_response_first = util_load_json('test_data/first_page_incindents_respone.json')
-    raw_response_second = util_load_json('test_data/second_page_incidents_response.json')
+    raw_response_first = util_load_json(os.path.dirname(__file__) + '/test_data/first_page_incindents_respone.json')
+    raw_response_second = util_load_json(os.path.dirname(__file__) + '/test_data/second_page_incidents_response.json')
     mocker.patch.object(demisto, 'getLastRun', return_value={'last_created_incident_timestamp': 1619834298000})
     mocker.patch.object(demisto, 'setLastRun')
     mocker.patch.object(demisto, 'incidents')
@@ -96,7 +96,7 @@ def test_second_fetch_incidents(mocker, requests_mock):
     mocker.patch.object(demisto, 'params', return_value=MOCK_PARAMS)
     import FreshDesk
     mocker.patch.object(FreshDesk, 'MAX_INCIDENTS', 15)
-    raw_response_second = util_load_json('test_data/second_page_incidents_response.json')
+    raw_response_second = util_load_json(os.path.dirname(__file__) + '/test_data/second_page_incidents_response.json')
 
     mocker.patch.object(demisto, 'getLastRun', return_value={'last_created_incident_timestamp': 1620826216000,
                                                              'last_incident_id': 43})

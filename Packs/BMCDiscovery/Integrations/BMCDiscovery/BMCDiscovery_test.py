@@ -49,14 +49,14 @@ client = mock_client(Client)
 
 
 def test_discovery_process_status_command(mocker):
-    mocker.patch.object(client, 'discovery_process_status', return_value=util_load_json('test_data/discovery_process_resp.json'))
+    mocker.patch.object(client, 'discovery_process_status', return_value=util_load_json(os.path.dirname(__file__) + '/test_data/discovery_process_resp.json'))
     results = discovery_process_status_command(client)
     assert results.raw_response.get('status') == 'running'
 
 
 def test_discovery_search_custom_command(mocker):
     mocker.patch.object(client, 'discovery_search_custom',
-                        return_value=util_load_json('test_data/discovery_search_custom_resp.json'))
+                        return_value=util_load_json(os.path.dirname(__file__) + '/test_data/discovery_search_custom_resp.json'))
     query = \
         "SEARCH FLAGS(no_segment) DeviceInfo WHERE #DiscoveryResult:DiscoveryAccessResult:DiscoveryAccess:DiscoveryAccess._last_marker TRAVERSE Primary:Inference:InferredElement: SHOW kind(#), name, #InferredElement:Inference:Associate:DiscoveryAccess.endpoint"  # noqa: E501
     results = discovery_search_custom_command(client, query=query)
@@ -65,7 +65,7 @@ def test_discovery_search_custom_command(mocker):
 
 def test_discovery_scan_status_list_command_by_id(mocker):
     mocker.patch.object(client, 'discovery_scan_status_list',
-                        return_value=util_load_json('test_data/discovery_scan_status_list_id_resp.json'))
+                        return_value=util_load_json(os.path.dirname(__file__) + '/test_data/discovery_scan_status_list_id_resp.json'))
     run_id = 'f5ac176243062b2b14c1a75a6e446973636f7665727952756e'
     results = discovery_scan_status_list_command(client, run_id=run_id)
     assert results.outputs[0].get('label') == "Sample_run_16"
@@ -73,21 +73,21 @@ def test_discovery_scan_status_list_command_by_id(mocker):
 
 def test_discovery_scan_status_list_command_single(mocker):
     mocker.patch.object(client, 'discovery_scan_status_list',
-                        return_value=util_load_json('test_data/discovery_scan_status_list_single_resp.json'))
+                        return_value=util_load_json(os.path.dirname(__file__) + '/test_data/discovery_scan_status_list_single_resp.json'))
     results = discovery_scan_status_list_command(client)
     assert results.outputs[0].get('valid_ranges') == '192.168.0.0/16'
 
 
 def test_discovery_scan_status_list_command_multiple(mocker):
     mocker.patch.object(client, 'discovery_scan_status_list',
-                        return_value=util_load_json('test_data/discovery_scan_status_list_multi_resp.json'))
+                        return_value=util_load_json(os.path.dirname(__file__) + '/test_data/discovery_scan_status_list_multi_resp.json'))
     results = discovery_scan_status_list_command(client)
     assert len(results.outputs) == 2
 
 
 def test_discovery_scan_create_command(mocker):
     mocker.patch.object(client, 'discovery_scan_create',
-                        return_value=util_load_json('test_data/discovery_scan_create_resp.json'))
+                        return_value=util_load_json(os.path.dirname(__file__) + '/test_data/discovery_scan_create_resp.json'))
     label = 'Sample_XSOAR_scan'
     ranges = '10.11.6.0/24'
     results = discovery_scan_create_command(client, label=label, ranges=ranges)
@@ -103,7 +103,7 @@ def test_discovery_scan_stop_command(mocker):
 
 def test_discovery_scan_summary_command_single(mocker):
     mocker.patch.object(client, 'discovery_scan_summary',
-                        return_value=util_load_json('test_data/discovery_scan_summary_single_resp.json'))
+                        return_value=util_load_json(os.path.dirname(__file__) + '/test_data/discovery_scan_summary_single_resp.json'))
     run_id = 'f5ac176243062b2b14c1a75a6e446973636f7665727952756e'
     results = discovery_scan_summary_command(client, run_id=run_id)
     assert results.outputs['Dropped'] == 26879
@@ -111,7 +111,7 @@ def test_discovery_scan_summary_command_single(mocker):
 
 def test_discovery_scan_summary_command_multiple(mocker):
     mocker.patch.object(client, 'discovery_scan_summary',
-                        return_value=util_load_json('test_data/discovery_scan_summary_multi_resp.json'))
+                        return_value=util_load_json(os.path.dirname(__file__) + '/test_data/discovery_scan_summary_multi_resp.json'))
     run_id = 'f5ac176243062b2b14c1a7a46e446973636f7665727952756e'
     results = discovery_scan_summary_command(client, run_id=run_id)
     assert results.outputs['Success'] == 13
@@ -120,7 +120,7 @@ def test_discovery_scan_summary_command_multiple(mocker):
 
 def test_discovery_scan_results_list_command_success(mocker):
     mocker.patch.object(client, 'discovery_scan_results_list',
-                        return_value=util_load_json('test_data/discovery_scan_results_list_success_resp.json'))
+                        return_value=util_load_json(os.path.dirname(__file__) + '/test_data/discovery_scan_results_list_success_resp.json'))
     run_id = 'f5ac176243062b2b14c1a75a6e446973636f7665727952756e'
     result_type = 'Success'
     results = discovery_scan_results_list_command(client, run_id=run_id, result_type=result_type)
@@ -129,7 +129,7 @@ def test_discovery_scan_results_list_command_success(mocker):
 
 def test_discovery_scan_results_list_command_noresponse(mocker):
     mocker.patch.object(client, 'discovery_scan_results_list',
-                        return_value=util_load_json('test_data/discovery_scan_results_list_empty_resp.json'))
+                        return_value=util_load_json(os.path.dirname(__file__) + '/test_data/discovery_scan_results_list_empty_resp.json'))
     run_id = 'f5ac176243062b2b14c1a75a6e446973636f7665727952756e'
     result_type = 'NoResponse'
     results = discovery_scan_results_list_command(client, run_id=run_id, result_type=result_type)
@@ -138,7 +138,7 @@ def test_discovery_scan_results_list_command_noresponse(mocker):
 
 def test_discovery_scan_results_list_command_dropped(mocker):
     mocker.patch.object(client, 'discovery_scan_results_list',
-                        return_value=util_load_json('test_data/discovery_scan_results_list_dropped_resp.json'))
+                        return_value=util_load_json(os.path.dirname(__file__) + '/test_data/discovery_scan_results_list_dropped_resp.json'))
     run_id = 'f5ac176243062b2b14c1a75a6e446973636f7665727952756e'
     result_type = 'Dropped'
     limit = 5
@@ -148,7 +148,7 @@ def test_discovery_scan_results_list_command_dropped(mocker):
 
 def test_discovery_search_command_ip_success(mocker):
     mocker.patch.object(client, 'discovery_search',
-                        return_value=util_load_json('test_data/discovery_search_single_success_192.168.11.1_resp.json'))
+                        return_value=util_load_json(os.path.dirname(__file__) + '/test_data/discovery_search_single_success_192.168.11.1_resp.json'))
     kind = 'Host'
     ip = '192.168.11.1'
     results = discovery_search_command(client, kind=kind, ip=ip)
@@ -157,7 +157,7 @@ def test_discovery_search_command_ip_success(mocker):
 
 def test_discovery_search_command_ip_fail(mocker):
     mocker.patch.object(client, 'discovery_search',
-                        return_value=util_load_json('test_data/discovery_search_fail_192.168.11.1_resp.json'))
+                        return_value=util_load_json(os.path.dirname(__file__) + '/test_data/discovery_search_fail_192.168.11.1_resp.json'))
     kind = 'SNMPManagedDevice'
     ip = '192.168.11.1'
     results = discovery_search_command(client, kind=kind, ip=ip)
@@ -166,7 +166,7 @@ def test_discovery_search_command_ip_fail(mocker):
 
 def test_discovery_search_command_hostname_multiple(mocker):
     mocker.patch.object(client, 'discovery_search',
-                        return_value=util_load_json('test_data/discovery_search_success_multi_ais-blade_resp.json'))
+                        return_value=util_load_json(os.path.dirname(__file__) + '/test_data/discovery_search_success_multi_ais-blade_resp.json'))
     kind = 'Host'
     hostname = 'ais-blade'
     results = discovery_search_command(client, kind=kind, hostname=hostname)

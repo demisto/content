@@ -140,9 +140,9 @@ def test_threats_analysis():
     """
     indicator = 'email1'
     threshold = 'Major'
-    mock_threats = util_load_json('test_data/test_threats.json').get('threats')
-    mock_md_data = util_load_json('test_data/test_threats.json').get('mock_md_data')
-    mock_dbot_score = util_load_json('test_data/test_threats.json').get('mock_dbot_score')
+    mock_threats = util_load_json(os.path.dirname(__file__) + '/test_data/test_threats.json').get('threats')
+    mock_md_data = util_load_json(os.path.dirname(__file__) + '/test_data/test_threats.json').get('mock_md_data')
+    mock_dbot_score = util_load_json(os.path.dirname(__file__) + '/test_data/test_threats.json').get('mock_dbot_score')
     md_data, dbot_score = threats_analysis(client.severity_score, mock_threats, indicator, threshold, "email")
     assert mock_dbot_score == dbot_score
     assert mock_md_data == md_data
@@ -159,10 +159,10 @@ def test_create_threat_md_row():
     Then:
         - Verify md row data
     """
-    threat = util_load_json('test_data/test_threats.json').get('threats')[0]
-    severity_level = util_load_json('test_data/test_threats.json').get('mock_dbot_score')
+    threat = util_load_json(os.path.dirname(__file__) + '/test_data/test_threats.json').get('threats')[0]
+    severity_level = util_load_json(os.path.dirname(__file__) + '/test_data/test_threats.json').get('mock_dbot_score')
     threat_md_row = create_threat_md_row(threat, severity_level)
-    mock_threat_md_row = util_load_json('test_data/test_threats.json').get('mock_md_data')[0]
+    mock_threat_md_row = util_load_json(os.path.dirname(__file__) + '/test_data/test_threats.json').get('mock_md_data')[0]
     assert mock_threat_md_row == threat_md_row
 
 
@@ -179,7 +179,7 @@ def test_extracted_string(mocker):
         - verify response readable output
     """
     mock_args = {'str': 'str', 'limit': '10'}
-    test_data = util_load_json('test_data/test_extracted_string.json')
+    test_data = util_load_json(os.path.dirname(__file__) + '/test_data/test_extracted_string.json')
 
     return_value = test_data.get('string_search_response')
     mocker.patch.object(client, 'search_cofense', return_value=return_value)
@@ -203,7 +203,7 @@ def test_search_url_command(mocker):
         - verify response readable output
     """
     mock_args = {'url': 'url'}
-    test_data = util_load_json('test_data/test_search_url.json')
+    test_data = util_load_json(os.path.dirname(__file__) + '/test_data/test_search_url.json')
     return_value = test_data.get('url_search_response')
     mocker.patch.object(client, 'threat_search_call', return_value=return_value)
     response = search_url_command(client, mock_args, mock_params)
@@ -227,7 +227,7 @@ def test_check_email_command(mocker):
         - verify response readable output
     """
     mock_args = {'email': 'email@email.com'}
-    test_data = util_load_json('test_data/test_search_email.json')
+    test_data = util_load_json(os.path.dirname(__file__) + '/test_data/test_search_email.json')
     return_value = test_data.get('email_search_response')
     mocker.patch.object(client, 'threat_search_call', return_value=return_value)
     response = check_email_command(client, mock_args, mock_params)
@@ -249,7 +249,7 @@ def test_check_ip_command(mocker):
         - verify response readable output
     """
     mock_args = {'ip': '127.0.0.1'}
-    test_data = util_load_json('test_data/test_search_ip.json')
+    test_data = util_load_json(os.path.dirname(__file__) + '/test_data/test_search_ip.json')
     return_value = test_data.get('ip_search_response')
     mocker.patch.object(client, 'threat_search_call', return_value=return_value)
     response = check_ip_command(client, mock_args, mock_params)
@@ -273,7 +273,7 @@ def test_check_file_command_with_md5_hash(mocker):
         - verify response readable output
     """
     mock_args = {'file': 'md5'}
-    test_data = util_load_json('test_data/test_search_file.json')
+    test_data = util_load_json(os.path.dirname(__file__) + '/test_data/test_search_file.json')
     return_value = test_data.get('file_search_response')
     mocker.patch.object(client, 'threat_search_call', return_value=return_value)
     response = check_file_command(client, mock_args, mock_params)
@@ -299,7 +299,7 @@ def test_check_file_command_with_sha256_hash(mocker):
         - verify response readable output
     """
     mock_args = {'file': 'sha256'}
-    test_data = util_load_json('test_data/test_search_file.json')
+    test_data = util_load_json(os.path.dirname(__file__) + '/test_data/test_search_file.json')
     return_value = test_data.get('file_search_response')
     mocker.patch.object(client, 'threat_search_call', return_value=return_value)
     response = check_file_command(client, mock_args, mock_params)
@@ -325,7 +325,7 @@ def test_check_domain_command(mocker):
         - verify response readable output
     """
     mock_args = {'domain': 'domain'}
-    test_data = util_load_json('test_data/test_search_domain.json')
+    test_data = util_load_json(os.path.dirname(__file__) + '/test_data/test_search_domain.json')
     return_value = test_data.get('domain_search_response')
     mocker.patch.object(client, 'threat_search_call', return_value=return_value)
     response = check_domain_command(client, mock_args, mock_params)
@@ -366,7 +366,7 @@ def test_dummy_is_safe_domain_even_though_abc_dummy_is_malicious(mocker):
         - Should return the dbot score of 1 indicating domain is 'Good'.
     """
     mock_args = {'domain': 'dummy.com'}
-    mock_api_resp = util_load_json('test_data/test_google_safe_domain.json')
+    mock_api_resp = util_load_json(os.path.dirname(__file__) + '/test_data/test_google_safe_domain.json')
     mocker.patch.object(client, 'threat_search_call', return_value=mock_api_resp)
     response = check_domain_command(client, mock_args, mock_params)
 
@@ -393,7 +393,7 @@ def test_check_whether_dbot_score_is_updated_for_every_instance_present_in_respo
         - Should return the dbot score of 1 indicating domain is 'Good'.
     """
     mock_args = {'domain': 'dummy.com'}
-    mock_api_resp = util_load_json('test_data/test_google_safe_domain_miltiple_instance.json')
+    mock_api_resp = util_load_json(os.path.dirname(__file__) + '/test_data/test_google_safe_domain_miltiple_instance.json')
     mocker.patch.object(client, 'threat_search_call', return_value=mock_api_resp)
     response = check_domain_command(client, mock_args, mock_params)
 
@@ -414,7 +414,7 @@ def test_url_is_malicious_and_domain_is_safe(mocker):
         - Should return the dbot score of 1 indicating domain is 'Good'.
     """
     mock_args = {'domain': 'dummy.com'}
-    mock_api_resp = util_load_json('test_data/test_url_bad_and_domain_safe.json')
+    mock_api_resp = util_load_json(os.path.dirname(__file__) + '/test_data/test_url_bad_and_domain_safe.json')
     mocker.patch.object(client, 'threat_search_call', return_value=mock_api_resp)
     response = check_domain_command(client, mock_args, mock_params)
 
@@ -435,7 +435,7 @@ def test_url_is_malicious_and_no_entry_in_domain(mocker):
         - Should return dbot score of 0 indicating the domain is 'Unknown'.
     """
     mock_args = {'domain': 'dummy.com'}
-    mock_api_resp = util_load_json('test_data/test_url_malicious_domain_safe.json')
+    mock_api_resp = util_load_json(os.path.dirname(__file__) + '/test_data/test_url_malicious_domain_safe.json')
     mocker.patch.object(client, 'threat_search_call', return_value=mock_api_resp)
     response = check_domain_command(client, mock_args, mock_params)
 

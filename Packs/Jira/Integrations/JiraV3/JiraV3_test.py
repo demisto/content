@@ -415,7 +415,7 @@ class TestJiraGetIssueCommand:
         from pathlib import Path
         from JiraV3 import create_file_info_from_attachment
         client = jira_base_client_mock()
-        raw_response_attachment_metadata = util_load_json('test_data/get_issue_test/raw_response_attachment_metadata.json')
+        raw_response_attachment_metadata = util_load_json(os.path.dirname(__file__) + '/test_data/get_issue_test/raw_response_attachment_metadata.json')
         dummy_attachment_content = util_load_bytes_file('test_data/get_issue_test/dummy_attachment_content.txt')
         mocker.patch.object(client, 'get_attachment_metadata', return_value=raw_response_attachment_metadata)
         mocker.patch.object(client, 'get_attachment_content', return_value=dummy_attachment_content)
@@ -443,7 +443,7 @@ class TestJiraGetIssueCommand:
         """
         from JiraV3 import get_issue_command
         client = jira_base_client_mock()
-        raw_issue_response = util_load_json('test_data/get_issue_test/raw_response.json')
+        raw_issue_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_issue_test/raw_response.json')
         mocker.patch.object(client, 'get_issue', return_value=raw_issue_response)
         mocker.patch('JiraV3.create_file_info_from_attachment', return_value={'Contents': '', 'ContentsFormat': 'dummy_format',
                                                                               'Type': 'dummy_type', 'File': 'dummy_filename',
@@ -468,9 +468,9 @@ class TestJiraGetIssueCommand:
         client = jira_base_client_mock()
         args = {'issue_key': 'dummy_key', 'get_attachments': 'true', 'expand_links': 'true',
                 'fields': 'watches,rank'}
-        raw_response = util_load_json('test_data/get_issue_test/raw_response.json')
-        raw_response_extended_issues = util_load_json('test_data/get_issue_test/raw_response_extended_issues.json')
-        expected_command_results_context = util_load_json('test_data/get_issue_test/parsed_result.json')
+        raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_issue_test/raw_response.json')
+        raw_response_extended_issues = util_load_json(os.path.dirname(__file__) + '/test_data/get_issue_test/raw_response_extended_issues.json')
+        expected_command_results_context = util_load_json(os.path.dirname(__file__) + '/test_data/get_issue_test/parsed_result.json')
         mocker.patch.object(client, 'get_issue', return_value=raw_response)
         mocker.patch('JiraV3.get_expanded_issues', return_value=raw_response_extended_issues)
         mocker.patch('JiraV3.download_issue_attachments_to_war_room', return_value=None)
@@ -492,8 +492,8 @@ class TestJiraGetCommentsCommand:
         """
         from JiraV3 import get_comments_command
         client = jira_base_client_mock()
-        raw_response = util_load_json('test_data/get_comments_test/raw_response.json')
-        expected_command_results_context = util_load_json('test_data/get_comments_test/parsed_result.json')
+        raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_comments_test/raw_response.json')
+        expected_command_results_context = util_load_json(os.path.dirname(__file__) + '/test_data/get_comments_test/parsed_result.json')
         mocker.patch.object(client, 'get_comments', return_value=raw_response)
         command_result = get_comments_command(client=client, args={'issue_key': 'dummy_issue_key'})
         assert expected_command_results_context['EntryContext'] == command_result.to_context()['EntryContext']
@@ -598,7 +598,7 @@ class TestJiraEditIssueCommand:
         """
         from JiraV3 import edit_issue_command
         client = jira_base_client_mock()
-        transitions_raw_response = util_load_json('test_data/get_transitions_test/raw_response.json')
+        transitions_raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_transitions_test/raw_response.json')
         get_transitions_mocker = mocker.patch.object(client, 'get_transitions', return_value=transitions_raw_response)
         apply_transition_mocker = mocker.patch.object(client, 'transition_issue', return_value=requests.Response())
         mocker.patch.object(client, 'get_issue', return_value={})
@@ -732,8 +732,8 @@ class TestJiraGetTransitionsCommand:
         """
         from JiraV3 import get_transitions_command
         client = jira_base_client_mock()
-        raw_response = util_load_json('test_data/get_transitions_test/raw_response.json')
-        expected_command_results_context = util_load_json('test_data/get_transitions_test/parsed_result.json')
+        raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_transitions_test/raw_response.json')
+        expected_command_results_context = util_load_json(os.path.dirname(__file__) + '/test_data/get_transitions_test/parsed_result.json')
         mocker.patch.object(client, 'get_transitions', return_value=raw_response)
         command_result = get_transitions_command(client=client, args={'issue_key': 'dummy_key'})
         assert expected_command_results_context['EntryContext'] == command_result.to_context()['EntryContext']
@@ -753,8 +753,8 @@ class TestJiraAddCommentCommand:
         from JiraV3 import add_comment_command
         client = jira_base_client_mock()
         args = {'visibility': 'Administrators', 'issue_key': 'dummy_key', 'comment': 'dummy_comment'}
-        raw_response = util_load_json('test_data/create_comment_test/raw_response.json')
-        expected_command_results_context = util_load_json('test_data/create_comment_test/parsed_result.json')
+        raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/create_comment_test/raw_response.json')
+        expected_command_results_context = util_load_json(os.path.dirname(__file__) + '/test_data/create_comment_test/parsed_result.json')
         mocker.patch.object(client, 'add_comment', return_value=raw_response)
         command_result = add_comment_command(client=client, args=args)
         assert expected_command_results_context['EntryContext'] == command_result.to_context()['EntryContext']
@@ -774,7 +774,7 @@ class TestJiraGetIDOffsetCommand:
         """
         from JiraV3 import get_id_offset_command
         client = jira_base_client_mock()
-        raw_response = util_load_json('test_data/issue_query_test/raw_response.json')
+        raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/issue_query_test/raw_response.json')
         run_query_mocker = mocker.patch.object(client, 'run_query', return_value=raw_response)
         command_result = get_id_offset_command(client=client, args={})
         assert run_query_mocker.call_args[1].get('query_params', {}).get('jql') == 'ORDER BY created ASC'
@@ -792,7 +792,7 @@ class TestJiraGetIDOffsetCommand:
         """
         from JiraV3 import get_id_offset_command
         client = jira_base_client_mock()
-        raw_response = util_load_json('test_data/issue_query_test/raw_response.json')
+        raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/issue_query_test/raw_response.json')
         run_query_mocker = mocker.patch.object(client, 'run_query', return_value=raw_response)
         get_id_offset_command(client=client, args={'query': 'project = "Dummy Project"'})
         assert run_query_mocker.call_args[1].get('query_params', {}).get(
@@ -825,8 +825,8 @@ class TestJiraGetIDOffsetCommand:
         """
         from JiraV3 import edit_comment_command
         client = jira_base_client_mock()
-        comments_raw_response = util_load_json('test_data/get_comments_test/raw_response.json')
-        expected_command_results_context = util_load_json('test_data/get_comments_test/parsed_result.json')
+        comments_raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_comments_test/raw_response.json')
+        expected_command_results_context = util_load_json(os.path.dirname(__file__) + '/test_data/get_comments_test/parsed_result.json')
         mocker.patch.object(client, 'edit_comment', return_value=requests.Response())
         get_comments_mocker = mocker.patch.object(client, 'get_comments', return_value=comments_raw_response)
         command_result = edit_comment_command(client=client, args={'issue_key': 'dummy_issue_key'})
@@ -850,8 +850,8 @@ class TestJiraListIssueFieldsCommand:
         """
         from JiraV3 import list_fields_command
         client = jira_base_client_mock()
-        issue_fields_raw_response = util_load_json('test_data/get_issue_fields_test/raw_response.json')
-        expected_context = util_load_json('test_data/get_issue_fields_test/parsed_result.json')
+        issue_fields_raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_issue_fields_test/raw_response.json')
+        expected_context = util_load_json(os.path.dirname(__file__) + '/test_data/get_issue_fields_test/parsed_result.json')
         start_at = pagination_args.get('start_at', 0)
         max_results = pagination_args.get('max_results', 50)
         mocker.patch.object(client, 'get_issue_fields', return_value=issue_fields_raw_response)
@@ -975,8 +975,8 @@ class TestJiraBoardListCommand:
         """
         from JiraV3 import board_list_command
         client = jira_base_client_mock()
-        board_raw_response = util_load_json('test_data/get_board_test/raw_response.json')
-        expected_command_results = util_load_json('test_data/get_board_test/parsed_result.json')
+        board_raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_board_test/raw_response.json')
+        expected_command_results = util_load_json(os.path.dirname(__file__) + '/test_data/get_board_test/parsed_result.json')
         get_board_mocker = mocker.patch.object(client, 'get_board', return_value=board_raw_response)
         get_boards_mocker = mocker.patch.object(client, 'get_boards', return_value={})
         command_results = board_list_command(client=client, args={'board_id': 'dummy_board_id'})
@@ -995,8 +995,8 @@ class TestJiraBoardListCommand:
         """
         from JiraV3 import board_list_command
         client = jira_base_client_mock()
-        board_raw_response = util_load_json('test_data/get_boards_test/raw_response.json')
-        expected_command_results = util_load_json('test_data/get_boards_test/parsed_result.json')
+        board_raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_boards_test/raw_response.json')
+        expected_command_results = util_load_json(os.path.dirname(__file__) + '/test_data/get_boards_test/parsed_result.json')
         get_board_mocker = mocker.patch.object(client, 'get_board', return_value={})
         get_boards_mocker = mocker.patch.object(client, 'get_boards', return_value=board_raw_response)
         command_results = board_list_command(client=client, args={})
@@ -1017,8 +1017,8 @@ class TestJiraIssuesFromBacklogOfBoardCommand:
         """
         from JiraV3 import board_backlog_list_command
         client = jira_base_client_mock()
-        backlog_issues_raw_response = util_load_json('test_data/get_issues_from_backlog_test/raw_response.json')
-        expected_command_results = util_load_json('test_data/get_issues_from_backlog_test/parsed_result.json')
+        backlog_issues_raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_issues_from_backlog_test/raw_response.json')
+        expected_command_results = util_load_json(os.path.dirname(__file__) + '/test_data/get_issues_from_backlog_test/parsed_result.json')
         mocker.patch.object(client, 'get_issues_from_backlog', return_value=backlog_issues_raw_response)
         command_results = board_backlog_list_command(client=client, args={'board_id': '14'})
         assert expected_command_results['EntryContext'] == command_results.to_context()['EntryContext']
@@ -1036,8 +1036,8 @@ class TestJiraIssuesFromBoardCommand:
         """
         from JiraV3 import board_issues_list_command
         client = jira_base_client_mock()
-        board_issues_raw_response = util_load_json('test_data/get_issues_from_board_test/raw_response.json')
-        expected_command_results = util_load_json('test_data/get_issues_from_board_test/parsed_result.json')
+        board_issues_raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_issues_from_board_test/raw_response.json')
+        expected_command_results = util_load_json(os.path.dirname(__file__) + '/test_data/get_issues_from_board_test/parsed_result.json')
         mocker.patch.object(client, 'get_issues_from_board', return_value=board_issues_raw_response)
         command_results = board_issues_list_command(client=client, args={'board_id': '14'})
         assert expected_command_results['EntryContext'] == command_results.to_context()['EntryContext']
@@ -1055,8 +1055,8 @@ class TestJiraBoarSprintsCommand:
         """
         from JiraV3 import board_sprint_list_command
         client = jira_base_client_mock()
-        board_sprints_raw_response = util_load_json('test_data/get_board_sprints_test/raw_response.json')
-        expected_command_results = util_load_json('test_data/get_board_sprints_test/parsed_result.json')
+        board_sprints_raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_board_sprints_test/raw_response.json')
+        expected_command_results = util_load_json(os.path.dirname(__file__) + '/test_data/get_board_sprints_test/parsed_result.json')
         mocker.patch.object(client, 'get_sprints_from_board', return_value=board_sprints_raw_response)
         command_results = board_sprint_list_command(client=client, args={'board_id': '12'})
         assert expected_command_results['EntryContext'] == command_results.to_context()['EntryContext']
@@ -1074,8 +1074,8 @@ class TestJiraIssueLinkTypesCommand:
         """
         from JiraV3 import get_issue_link_types_command
         client = jira_base_client_mock()
-        link_types_raw_response = util_load_json('test_data/get_issue_link_types_test/raw_response.json')
-        expected_command_results = util_load_json('test_data/get_issue_link_types_test/parsed_result.json')
+        link_types_raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_issue_link_types_test/raw_response.json')
+        expected_command_results = util_load_json(os.path.dirname(__file__) + '/test_data/get_issue_link_types_test/parsed_result.json')
         mocker.patch.object(client, 'get_issue_link_types', return_value=link_types_raw_response)
         command_results = get_issue_link_types_command(client=client, args={})
         assert expected_command_results['EntryContext'] == command_results.to_context()['EntryContext']
@@ -1127,8 +1127,8 @@ class TestJiraEpicIssuesCommand:
         """
         from JiraV3 import epic_issues_list_command
         client = jira_base_client_mock()
-        epic_issues_raw_response = util_load_json('test_data/get_epic_issues_test/raw_response.json')
-        expected_command_results = util_load_json('test_data/get_epic_issues_test/parsed_result.json')
+        epic_issues_raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_epic_issues_test/raw_response.json')
+        expected_command_results = util_load_json(os.path.dirname(__file__) + '/test_data/get_epic_issues_test/parsed_result.json')
         mocker.patch.object(client, 'get_epic_issues', return_value=epic_issues_raw_response)
         command_results = epic_issues_list_command(client=client, args={'epic_key': 'TSTPRD-1'})
         assert expected_command_results['EntryContext'] == command_results.to_context()['EntryContext']
@@ -1145,7 +1145,7 @@ class TestJiraEpicIssuesCommand:
         """
         from JiraV3 import epic_issues_list_command
         client = jira_base_client_mock()
-        epic_issues_raw_response = util_load_json('test_data/get_epic_issues_test/raw_response.json')
+        epic_issues_raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_epic_issues_test/raw_response.json')
         mocker.patch.object(client, 'get_epic_issues', return_value=epic_issues_raw_response)
         for issue in epic_issues_raw_response.get('issues', []):
             (issue.get('fields', {}).get('sprint', {}) or {})['originBoardId'] = ''
@@ -1168,8 +1168,8 @@ class TestJiraBoardEpicsCommand:
         """
         from JiraV3 import board_epic_list_command
         client = jira_base_client_mock()
-        board_epics_raw_response = util_load_json('test_data/get_board_epics_test/raw_response.json')
-        expected_command_results = util_load_json('test_data/get_board_epics_test/parsed_result.json')
+        board_epics_raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_board_epics_test/raw_response.json')
+        expected_command_results = util_load_json(os.path.dirname(__file__) + '/test_data/get_board_epics_test/parsed_result.json')
         mocker.patch.object(client, 'get_epics_from_board', return_value=board_epics_raw_response)
         command_results = board_epic_list_command(client=client, args={'board_id': '14'})
         assert expected_command_results['EntryContext'] == command_results.to_context()['EntryContext']
@@ -1189,8 +1189,8 @@ class TestJiraSprintIssuesCommand:
         """
         from JiraV3 import sprint_issues_list_command
         client = jira_base_client_mock()
-        sprint_issues_raw_response = util_load_json('test_data/get_sprint_issues_test/raw_response.json')
-        expected_command_results = util_load_json('test_data/get_sprint_issues_test/parsed_result.json')
+        sprint_issues_raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_sprint_issues_test/raw_response.json')
+        expected_command_results = util_load_json(os.path.dirname(__file__) + '/test_data/get_sprint_issues_test/parsed_result.json')
         issues_from_sprint_mocker = mocker.patch.object(client, 'get_issues_from_sprint', return_value=sprint_issues_raw_response)
         sprint_issues_from_board_mocker = mocker.patch.object(client,
                                                               'get_sprint_issues_from_board',
@@ -1213,8 +1213,8 @@ class TestJiraSprintIssuesCommand:
         """
         from JiraV3 import sprint_issues_list_command
         client = jira_base_client_mock()
-        sprint_issues_raw_response = util_load_json('test_data/get_sprint_issues_test/raw_response.json')
-        expected_command_results = util_load_json('test_data/get_sprint_issues_test/parsed_result.json')
+        sprint_issues_raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_sprint_issues_test/raw_response.json')
+        expected_command_results = util_load_json(os.path.dirname(__file__) + '/test_data/get_sprint_issues_test/parsed_result.json')
         issues_from_sprint_mocker = mocker.patch.object(client, 'get_issues_from_sprint', return_value=sprint_issues_raw_response)
         sprint_issues_from_board_mocker = mocker.patch.object(client,
                                                               'get_sprint_issues_from_board',
@@ -1236,7 +1236,7 @@ class TestJiraSprintIssuesCommand:
         """
         from JiraV3 import sprint_issues_list_command
         client = jira_base_client_mock()
-        sprint_issues_raw_response: Dict[str, Any] = util_load_json('test_data/get_sprint_issues_test/raw_response.json')
+        sprint_issues_raw_response: Dict[str, Any] = util_load_json(os.path.dirname(__file__) + '/test_data/get_sprint_issues_test/raw_response.json')
         issues_from_sprint_mocker = mocker.patch.object(client, 'get_issues_from_sprint', return_value=sprint_issues_raw_response)
         sprint_issues_from_board_mocker = mocker.patch.object(client,
                                                               'get_sprint_issues_from_board',
@@ -1326,8 +1326,8 @@ class TestJiraUploadFileCommand:
         """
         from JiraV3 import upload_file_command
         client = jira_base_client_mock()
-        upload_file_raw_response = util_load_json('test_data/upload_file_test/raw_response.json')
-        expected_command_results_context = util_load_json('test_data/upload_file_test/parsed_result.json')
+        upload_file_raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/upload_file_test/raw_response.json')
+        expected_command_results_context = util_load_json(os.path.dirname(__file__) + '/test_data/upload_file_test/parsed_result.json')
         mocker.patch('JiraV3.get_file_name_and_content', return_value=('dummy_file_name.pdf', b'dummy content'))
         mocker.patch.object(client, 'upload_attachment', return_value=upload_file_raw_response)
         command_results = upload_file_command(client=client, args={'issue_key': 'COMPANYSA-35'})
@@ -1455,8 +1455,8 @@ class TestJiraGetSpecificField:
         """
         from JiraV3 import get_specific_fields_command
         client = jira_base_client_mock()
-        issue_raw_response = util_load_json('test_data/get_specific_field_test/raw_response.json')
-        expected_command_results = util_load_json('test_data/get_specific_field_test/parsed_result.json')
+        issue_raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_specific_field_test/raw_response.json')
+        expected_command_results = util_load_json(os.path.dirname(__file__) + '/test_data/get_specific_field_test/parsed_result.json')
         mocker.patch.object(client, 'get_issue', return_value=issue_raw_response)
         command_results = get_specific_fields_command(client=client, args={'issue_key': 'COMPANYSA-35',
                                                                            'fields': 'watches,rank'})
@@ -1476,8 +1476,8 @@ class TestJiraIssueQueryField:
         """
         from JiraV3 import issue_query_command
         client = jira_base_client_mock()
-        issue_query_raw_response = util_load_json('test_data/get_issue_query_test/raw_response.json')
-        expected_command_results = util_load_json('test_data/get_issue_query_test/parsed_result.json')
+        issue_query_raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_issue_query_test/raw_response.json')
+        expected_command_results = util_load_json(os.path.dirname(__file__) + '/test_data/get_issue_query_test/parsed_result.json')
         mocker.patch.object(client, 'run_query', return_value=issue_query_raw_response)
         command_results = issue_query_command(client=client, args={'fields': 'watches,rank'})
         command_results = command_results if isinstance(command_results, list) else [command_results]
@@ -1882,7 +1882,7 @@ class TestJiraFetchIncidents:
         """
         from JiraV3 import get_comments_entries_for_fetched_incident
         client = jira_base_client_mock()
-        comments_raw_response = util_load_json('test_data/get_comments_test/raw_response.json')
+        comments_raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_comments_test/raw_response.json')
         mocker.patch.object(client, 'get_comments', return_value=comments_raw_response)
         comments_entries = get_comments_entries_for_fetched_incident(client=client, issue_id_or_key='1234')
         expected_comments_entries = [
@@ -1906,7 +1906,7 @@ class TestJiraFetchIncidents:
         """
         from JiraV3 import get_attachments_entries_for_fetched_incident
         client = jira_base_client_mock()
-        attachment_metadata_raw_response = util_load_json('test_data/get_issue_test/raw_response_attachment_metadata.json')
+        attachment_metadata_raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_issue_test/raw_response_attachment_metadata.json')
         expected_attachments_entries = [
             {'Contents': '', 'ContentsFormat': 'dummy_format', 'Type': 'dummy_type', 'File': 'dummy_filename_1',
              'FileID': 'dummy_id_1'}, {
@@ -1977,7 +1977,7 @@ class TestJiraFetchIncidents:
             - Validate that the correct data is extracted and returned
         """
         from JiraV3 import add_extracted_data_to_incident
-        issue = util_load_json('test_data/get_issue_test/raw_response.json')
+        issue = util_load_json(os.path.dirname(__file__) + '/test_data/get_issue_test/raw_response.json')
         expected_issue = add_extracted_data_to_incident(issue=issue)
         expected_extracted_issue_data = {'extractedSubtasks': [
             {'id': '21525', 'key': 'COMPANYSA-63'}, {'id': '21538', 'key': 'COMPANYSA-70'}],
@@ -2015,8 +2015,8 @@ class TestJiraFetchIncidents:
             - Validate that the data of the custom fields get parsed and show the correct data
         """
         from JiraV3 import parse_custom_fields
-        issue = util_load_json('test_data/get_issue_test/raw_response.json')
-        expected_parsed_custom_fields = util_load_json('test_data/parsed_issue_custom_fields.json')
+        issue = util_load_json(os.path.dirname(__file__) + '/test_data/get_issue_test/raw_response.json')
+        expected_parsed_custom_fields = util_load_json(os.path.dirname(__file__) + '/test_data/parsed_issue_custom_fields.json')
         parse_custom_fields(issue=issue, issue_fields_id_to_name_mapping=issue.get('names', {}) or {})
         assert expected_parsed_custom_fields == issue
 
@@ -2202,8 +2202,8 @@ class TestJiraFetchIncidents:
             incident fields
         """
         from JiraV3 import fetch_incidents
-        query_raw_response = util_load_json('test_data/issue_query_test/raw_response.json')
-        issue_incident = util_load_json('test_data/fetch_incidents_test/issue_incident.json')
+        query_raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/issue_query_test/raw_response.json')
+        issue_incident = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_incidents_test/issue_incident.json')
         client = jira_base_client_mock()
         mocker.patch.object(client, 'run_query', return_value=query_raw_response)
         mocker.patch('JiraV3.get_fetched_attachments', return_value=[{'FileID': '1'}, {'FileID': '2'}])
@@ -2354,7 +2354,7 @@ class TestJiraIssueAssign:
             - Ensure the body request is ok for both cloud/server jira
         """
         from JiraV3 import update_issue_assignee_command
-        get_issue_response = util_load_json('test_data/get_issue_test/raw_response.json')
+        get_issue_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_issue_test/raw_response.json')
         args = {
             'assignee': assignee,           # For Jira OnPrem
             'assignee_id': assignee_id,     # For Jira Cloud

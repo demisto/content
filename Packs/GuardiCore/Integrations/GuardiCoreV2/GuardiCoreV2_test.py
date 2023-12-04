@@ -210,7 +210,7 @@ def test_get_incident(mocker, requests_mock):
     - Validate that the correct response is returned
     """
     from GuardiCoreV2 import Client, get_indicent
-    mock_response = util_load_json('test_data/get_incident_response.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_incident_response.json')
     requests_mock.post(
         'https://api.guardicoreexample.com/api/v3.0/authenticate',
         json={'access_token': TEST_API_KEY})
@@ -235,7 +235,7 @@ def test_get_assets(mocker, requests_mock):
     - Validate that the correct output is returned
     """
     from GuardiCoreV2 import Client, get_assets
-    mock_response = util_load_json('test_data/get_assets_response.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_assets_response.json')
     requests_mock.post(
         'https://api.guardicoreexample.com/api/v3.0/authenticate',
         json={'access_token': TEST_API_KEY})
@@ -267,7 +267,7 @@ def test_endpoint_command_fails(mocker, requests_mock):
     - Validate that there is a correct error
     """
     from GuardiCoreV2 import Client, endpoint_command
-    mock_response = util_load_json('test_data/get_endpoint_response.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_endpoint_response.json')
     requests_mock.post(
         'https://api.guardicoreexample.com/api/v3.0/authenticate',
         json={'access_token': TEST_API_KEY})
@@ -290,7 +290,7 @@ def test_endpoint_command(mocker, requests_mock):
     - Validate that the correct readable output is returned
     """
     from GuardiCoreV2 import Client, endpoint_command
-    mock_response = util_load_json('test_data/get_endpoint_response.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_endpoint_response.json')
     requests_mock.post(
         'https://api.guardicoreexample.com/api/v3.0/authenticate',
         json={'access_token': TEST_API_KEY})
@@ -325,7 +325,7 @@ def test_get_incidents(mocker, requests_mock):
                     verify=False, proxy=False, username='test', password='test')
     args = {'from_time': '2021-07-07T15:31:17Z',
             'to_time': '2022-07-07T15:31:17Z', 'limit': 3}
-    mock_response = util_load_json('test_data/get_incidents_response.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_incidents_response.json')
     mocker.patch.object(client, '_http_request', return_value=mock_response)
     response = get_incidents(client, args)
 
@@ -355,7 +355,7 @@ def test_fetch_incidents_no_first(mocker, requests_mock):
     from pytz import utc
     from GuardiCoreV2 import Client, fetch_incidents
 
-    incidents_data = util_load_json('test_data/fetch_incidents_response.json')
+    incidents_data = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_incidents_response.json')
     requests_mock.post(
         'https://api.guardicoreexample.com/api/v3.0/authenticate',
         json={'access_token': TEST_API_KEY})
@@ -436,7 +436,7 @@ def test_fetch_incidents_no_duplicates(mocker, requests_mock):
     """
     from GuardiCoreV2 import Client, fetch_incidents
     fetch_params = {'first_fetch': '3 days'}
-    incidents_data = util_load_json('test_data/fetch_incidents_no_duplicates.json')
+    incidents_data = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_incidents_no_duplicates.json')
     requests_mock.post(
         'https://api.guardicoreexample.com/api/v3.0/authenticate',
         json={'access_token': TEST_API_KEY},

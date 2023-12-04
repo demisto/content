@@ -15,7 +15,7 @@ def test_test_module(requests_mock):
     from ResecurityMonitoring import Client, test_module, DemistoException
     url = 'https://test.com/api/monitor/check-connection'
 
-    mock_response = util_load_json('test_data/test_module_result.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/test_module_result.json')
     requests_mock.get(url, json=mock_response)
 
     client = Client(
@@ -48,7 +48,7 @@ def test_get_task_monitor_results_command(requests_mock):
               }
     url = 'https://test.com/api/monitor/task-results-by-module?' + urllib.parse.urlencode(params)
 
-    mock_response = util_load_json('test_data/get_task_monitor_results.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_task_monitor_results.json')
 
     requests_mock.get(url,
                       headers={PAGINATION_HEADER_NAME: str(page)},
@@ -81,7 +81,7 @@ def test_get_task_monitor_results_command(requests_mock):
               }
     url = 'https://test.com/api/monitor/task-results-by-module?' + urllib.parse.urlencode(params)
 
-    mock_response = util_load_json('test_data/get_task_monitor_results.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_task_monitor_results.json')
     requests_mock.get(url,
                       headers={PAGINATION_HEADER_NAME: str(page)},
                       json=mock_response)
@@ -106,7 +106,7 @@ def test_get_task_monitor_results_command(requests_mock):
               }
     url = 'https://test.com/api/monitor/task-results-by-module?' + urllib.parse.urlencode(params)
 
-    mock_response = util_load_json('test_data/get_task_monitor_results.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_task_monitor_results.json')
     requests_mock.get(url,
                       headers={PAGINATION_HEADER_NAME: str(page)},
                       json=mock_response)

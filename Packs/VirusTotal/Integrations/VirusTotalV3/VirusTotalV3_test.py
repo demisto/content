@@ -257,8 +257,8 @@ def test_domain_command(mocker, requests_mock):
     )
 
     # Load assertions and mocked request data
-    mock_response = util_load_json('test_data/domain.json')
-    expected_results = util_load_json('test_data/domain_results.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/domain.json')
+    expected_results = util_load_json(os.path.dirname(__file__) + '/test_data/domain_results.json')
     requests_mock.get(f'https://www.virustotal.com/api/v3/domains/testing.com?relationships={domain_relationships}',
                       json=mock_response)
 
@@ -302,8 +302,8 @@ def test_ip_command(mocker, requests_mock):
     )
 
     # Load assertions and mocked request data
-    mock_response = util_load_json('test_data/ip.json')
-    expected_results = util_load_json('test_data/ip_results.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/ip.json')
+    expected_results = util_load_json(os.path.dirname(__file__) + '/test_data/ip_results.json')
     requests_mock.get(f'https://www.virustotal.com/api/v3/ip_addresses/8.8.8.8?relationships={ip_relationships}',
                       json=mock_response)
 
@@ -349,8 +349,8 @@ def test_url_command_success(mocker, requests_mock):
     )
 
     # Load assertions and mocked request data
-    mock_response = util_load_json('test_data/url.json')
-    expected_results = util_load_json('test_data/url_results.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/url.json')
+    expected_results = util_load_json(os.path.dirname(__file__) + '/test_data/url_results.json')
     requests_mock.get(f'https://www.virustotal.com/api/v3/urls/{encode_url_to_base64(testing_url)}'
                       f'?relationships={url_relationships}', json=mock_response)
 
@@ -394,8 +394,8 @@ def test_private_file_command(mocker, requests_mock):
     )
 
     # Load assertions and mocked request data
-    mock_response = util_load_json('test_data/private_file.json')
-    expected_results = util_load_json('test_data/private_file_results.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/private_file.json')
+    expected_results = util_load_json(os.path.dirname(__file__) + '/test_data/private_file_results.json')
     requests_mock.get(f'https://www.virustotal.com/api/v3/private/files/{sha256}',
                       json=mock_response)
 

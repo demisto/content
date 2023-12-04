@@ -38,7 +38,7 @@ def test_list_events_command(requests_mock) -> None:
      - Ensure outputs key fields is correct.
     """
     from QualysFIM import Client, list_events_command
-    mock_response = util_load_json('test_data/list_events.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/list_events.json')
     requests_mock.post(f'{BASE_URL}fim/v2/events/search', json=mock_response)
     requests_mock.post(f'{BASE_URL}/auth', json={})
     client = Client(base_url=BASE_URL, verify=False, proxy=False, auth=('a', 'b'))
@@ -61,7 +61,7 @@ def test_get_event_command(requests_mock) -> None:
      - Ensure outputs key fields is correct.
     """
     from QualysFIM import Client, get_event_command
-    mock_response = util_load_json('test_data/get_event.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_event.json')
     requests_mock.get(f'{BASE_URL}fim/v1/events/123456', json=mock_response)
     requests_mock.post(f'{BASE_URL}/auth', json={})
     client = Client(base_url=BASE_URL, verify=False, proxy=False, auth=('a', 'b'))
@@ -86,7 +86,7 @@ def test_list_incidents_command(requests_mock) -> None:
     """
 
     from QualysFIM import Client, list_incidents_command
-    mock_response = util_load_json('test_data/list_incidents.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/list_incidents.json')
     requests_mock.post(f'{BASE_URL}fim/v3/incidents/search', json=mock_response)
     requests_mock.post(f'{BASE_URL}/auth', json={})
     client = Client(base_url=BASE_URL, verify=False, proxy=False, auth=('a', 'b'))
@@ -113,7 +113,7 @@ def test_get_incident_events_command(requests_mock) -> None:
     """
 
     from QualysFIM import Client, list_incident_events_command
-    mock_response = util_load_json('test_data/get_incident_events.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_incident_events.json')
     requests_mock.post(f'{BASE_URL}fim/v2/incidents/None/events/search',
                        json=mock_response)
     requests_mock.post(f'{BASE_URL}/auth', json={})
@@ -137,9 +137,9 @@ def test_create_incident_command(requests_mock) -> None:
          - Ensure outputs key fields is correct.
         """
     from QualysFIM import Client, create_incident_command
-    mock_response = util_load_json('test_data/create_incident.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/create_incident.json')
     requests_mock.post(f'{BASE_URL}fim/v3/incidents/create', json=mock_response)
-    mock_response = util_load_json('test_data/list_incidents.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/list_incidents.json')
     requests_mock.post(f'{BASE_URL}fim/v3/incidents/search', json=mock_response)
     requests_mock.post(f'{BASE_URL}/auth', json={})
     client = Client(base_url=BASE_URL, verify=False, proxy=False, auth=('a', 'b'))
@@ -161,7 +161,7 @@ def test_approve_incident_command(requests_mock) -> None:
          - Ensure outputs key fields is correct.
         """
     from QualysFIM import Client, approve_incident_command
-    mock_response = util_load_json('test_data/approve_incident.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/approve_incident.json')
     requests_mock.post(f'{BASE_URL}fim/v3/incidents/None/approve', json=mock_response)
     requests_mock.post(f'{BASE_URL}/auth', json={})
     client = Client(base_url=BASE_URL, verify=False, proxy=False, auth=('a', 'b'))
@@ -187,7 +187,7 @@ def test_list_assets_command(requests_mock) -> None:
      - Ensure outputs key fields is correct.
     """
     from QualysFIM import Client, list_assets_command
-    mock_response = util_load_json('test_data/list_assets.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/list_assets.json')
     requests_mock.post(f'{BASE_URL}fim/v3/assets/search', json=mock_response)
     requests_mock.post(f'{BASE_URL}/auth', json={})
     client = Client(base_url=BASE_URL, verify=False, proxy=False, auth=('a', 'b'))
@@ -210,7 +210,7 @@ def test_fetch_incidents_command(requests_mock) -> None:
      - Ensure occurred time is correct.
     """
     from QualysFIM import Client, fetch_incidents
-    mock_response = util_load_json('test_data/fetch_incidents.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_incidents.json')
     requests_mock.post(f'{BASE_URL}fim/v3/incidents/search', json=mock_response)
     requests_mock.post(f'{BASE_URL}/auth', json={})
     client = Client(base_url=BASE_URL, verify=False, proxy=False, auth=('a', 'b'))

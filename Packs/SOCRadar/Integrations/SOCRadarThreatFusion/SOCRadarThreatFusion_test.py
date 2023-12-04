@@ -28,7 +28,7 @@ def test_test_module(requests_mock):
 
     mock_socradar_api_key = "APIKey"
     suffix = f'threat/analysis/check/auth?key={mock_socradar_api_key}'
-    mock_response = util_load_json('test_data/check_auth_response.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/check_auth_response.json')
     requests_mock.get(f'{SOCRADAR_API_ENDPOINT}/{suffix}', json=mock_response)
 
     client = Client(
@@ -50,7 +50,7 @@ def test_test_module_handles_authorization_error(requests_mock):
 
     mock_socradar_api_key = "WrongAPIKey"
     suffix = f'threat/analysis/check/auth?key={mock_socradar_api_key}'
-    mock_response = util_load_json('test_data/check_auth_response_auth_error.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/check_auth_response_auth_error.json')
     requests_mock.get(f'{SOCRADAR_API_ENDPOINT}/{suffix}', json=mock_response, status_code=401)
     client = Client(
         base_url=SOCRADAR_API_ENDPOINT,
@@ -72,7 +72,7 @@ def test_ip_command(requests_mock):
     from SOCRadarThreatFusion import Client, ip_command
 
     mock_socradar_api_key = "APIKey"
-    mock_response = util_load_json('test_data/score_ip_response.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/score_ip_response.json')
     suffix = 'threat/analysis'
     requests_mock.get(f'{SOCRADAR_API_ENDPOINT}/{suffix}', json=mock_response)
 
@@ -90,8 +90,8 @@ def test_ip_command(requests_mock):
         args=mock_args,
     )
 
-    expected_output = util_load_json('test_data/score_ip_expected_output.json')
-    expected_context = util_load_json('test_data/score_ip_expected_context_generic_command.json')
+    expected_output = util_load_json(os.path.dirname(__file__) + '/test_data/score_ip_expected_output.json')
+    expected_context = util_load_json(os.path.dirname(__file__) + '/test_data/score_ip_expected_context_generic_command.json')
 
     assert isinstance(result, list)
     assert result != []
@@ -132,7 +132,7 @@ def test_domain_command(requests_mock):
     from SOCRadarThreatFusion import Client, domain_command
 
     mock_socradar_api_key = "APIKey"
-    mock_response = util_load_json('test_data/score_domain_response.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/score_domain_response.json')
     suffix = 'threat/analysis'
     requests_mock.get(f'{SOCRADAR_API_ENDPOINT}/{suffix}', json=mock_response)
 
@@ -150,8 +150,8 @@ def test_domain_command(requests_mock):
         args=mock_args,
     )
 
-    expected_output = util_load_json('test_data/score_domain_expected_output.json')
-    expected_context = util_load_json('test_data/score_domain_expected_context_generic_command.json')
+    expected_output = util_load_json(os.path.dirname(__file__) + '/test_data/score_domain_expected_output.json')
+    expected_context = util_load_json(os.path.dirname(__file__) + '/test_data/score_domain_expected_context_generic_command.json')
     assert isinstance(result, list)
     assert result != []
     assert '### SOCRadar - Analysis results for domain: paloaltonetworks.com' in result[0].readable_output
@@ -191,7 +191,7 @@ def test_file_command(requests_mock):
     from SOCRadarThreatFusion import Client, file_command
 
     mock_socradar_api_key = "APIKey"
-    mock_response = util_load_json('test_data/score_hash_response.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/score_hash_response.json')
     suffix = 'threat/analysis'
     requests_mock.get(f'{SOCRADAR_API_ENDPOINT}/{suffix}', json=mock_response)
 
@@ -209,8 +209,8 @@ def test_file_command(requests_mock):
         args=mock_args,
     )
 
-    expected_output = util_load_json('test_data/score_hash_expected_output.json')
-    expected_context = util_load_json('test_data/score_hash_expected_context_generic_command.json')
+    expected_output = util_load_json(os.path.dirname(__file__) + '/test_data/score_hash_expected_output.json')
+    expected_context = util_load_json(os.path.dirname(__file__) + '/test_data/score_hash_expected_context_generic_command.json')
 
     assert isinstance(result, list)
     assert result != []
@@ -252,7 +252,7 @@ def test_score_ip(requests_mock):
     from SOCRadarThreatFusion import Client, score_ip_command
 
     mock_socradar_api_key = "APIKey"
-    mock_response = util_load_json('test_data/score_ip_response.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/score_ip_response.json')
     suffix = 'threat/analysis'
     requests_mock.get(f'{SOCRADAR_API_ENDPOINT}/{suffix}', json=mock_response)
 
@@ -270,8 +270,8 @@ def test_score_ip(requests_mock):
         args=mock_args,
     )
 
-    expected_output = util_load_json('test_data/score_ip_expected_output.json')
-    expected_context = util_load_json('test_data/score_ip_expected_context.json')
+    expected_output = util_load_json(os.path.dirname(__file__) + '/test_data/score_ip_expected_output.json')
+    expected_context = util_load_json(os.path.dirname(__file__) + '/test_data/score_ip_expected_context.json')
 
     assert isinstance(result, CommandResults)
     assert '### SOCRadar - Analysis results for IP: 1.1.1.1' in result.readable_output
@@ -311,7 +311,7 @@ def test_score_domain(requests_mock):
     from SOCRadarThreatFusion import Client, score_domain_command
 
     mock_socradar_api_key = "APIKey"
-    mock_response = util_load_json('test_data/score_domain_response.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/score_domain_response.json')
     suffix = 'threat/analysis'
     requests_mock.get(f'{SOCRADAR_API_ENDPOINT}/{suffix}', json=mock_response)
 
@@ -329,8 +329,8 @@ def test_score_domain(requests_mock):
         args=mock_args,
     )
 
-    expected_output = util_load_json('test_data/score_domain_expected_output.json')
-    expected_context = util_load_json('test_data/score_domain_expected_context.json')
+    expected_output = util_load_json(os.path.dirname(__file__) + '/test_data/score_domain_expected_output.json')
+    expected_context = util_load_json(os.path.dirname(__file__) + '/test_data/score_domain_expected_context.json')
     assert isinstance(result, CommandResults)
     assert '### SOCRadar - Analysis results for domain: paloaltonetworks.com' in result.readable_output
     assert result.outputs == expected_context
@@ -369,7 +369,7 @@ def test_score_hash(requests_mock):
     from SOCRadarThreatFusion import Client, score_hash_command
 
     mock_socradar_api_key = "APIKey"
-    mock_response = util_load_json('test_data/score_hash_response.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/score_hash_response.json')
     suffix = 'threat/analysis'
     requests_mock.get(f'{SOCRADAR_API_ENDPOINT}/{suffix}', json=mock_response)
 
@@ -387,8 +387,8 @@ def test_score_hash(requests_mock):
         args=mock_args
     )
 
-    expected_output = util_load_json('test_data/score_hash_expected_output.json')
-    expected_context = util_load_json('test_data/score_hash_expected_context.json')
+    expected_output = util_load_json(os.path.dirname(__file__) + '/test_data/score_hash_expected_output.json')
+    expected_context = util_load_json(os.path.dirname(__file__) + '/test_data/score_hash_expected_context.json')
 
     assert isinstance(result, CommandResults)
     assert '### SOCRadar - Analysis results for hash: 3b7b359ea17ac76341957573e332a2d6bcac363401ac71c8df94dac93df6d792' \

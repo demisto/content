@@ -1723,14 +1723,14 @@ def test_create_co_from_template_command(mocker):
     args = {"template": "Add network switch to datacenter cabinet"}
     mocker.patch.object(client,
                         'send_request',
-                        return_value=util_load_json('test_data/create_co_from_template_result.json'))
+                        return_value=util_load_json(os.path.dirname(__file__) + '/test_data/create_co_from_template_result.json'))
     result = ServiceNowv2.create_co_from_template_command(client, args)
     assert result.outputs_prefix == "ServiceNow.Ticket"
     assert result.outputs == {
         'Ticket(val.ID===obj.ID)': CREATED_TICKET_CONTEXT_CREATE_CO_FROM_TEMPLATE_COMMAND,
         'ServiceNow.Ticket(val.ID===obj.ID)': CREATED_TICKET_CONTEXT_CREATE_CO_FROM_TEMPLATE_COMMAND
     }
-    assert result.raw_response == util_load_json('test_data/create_co_from_template_result.json')
+    assert result.raw_response == util_load_json(os.path.dirname(__file__) + '/test_data/create_co_from_template_result.json')
 
 
 def test_get_tasks_for_co_command(mocker):
@@ -1750,13 +1750,13 @@ def test_get_tasks_for_co_command(mocker):
     args = {"id": "a9e9c33dc61122760072455df62663d2"}
     mocker.patch.object(client,
                         'send_request',
-                        return_value=util_load_json('test_data/get_tasks_for_co_command.json'))
+                        return_value=util_load_json(os.path.dirname(__file__) + '/test_data/get_tasks_for_co_command.json'))
     result = ServiceNowv2.get_tasks_for_co_command(client, args)
     assert result.outputs_prefix == "ServiceNow.Tasks"
     assert result.outputs == {
         'ServiceNow.Tasks(val.ID===obj.ID)': CREATED_TICKET_CONTEXT_GET_TASKS_FOR_CO_COMMAND
     }
-    assert result.raw_response == util_load_json('test_data/get_tasks_for_co_command.json')
+    assert result.raw_response == util_load_json(os.path.dirname(__file__) + '/test_data/get_tasks_for_co_command.json')
 
 
 def test_get_ticket_attachment_entries_with_oauth_token(mocker):

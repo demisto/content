@@ -35,7 +35,7 @@ def test_baseintegration_dummy():
     }
     response = baseintegration_dummy_command(client, args)
 
-    mock_response = util_load_json('test_data/baseintegration-dummy.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/baseintegration-dummy.json')
 
     assert response.outputs == mock_response
 # TODO: ADD HERE unit tests for every command

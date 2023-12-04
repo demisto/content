@@ -93,8 +93,8 @@ def test_info_analysis_command(mocker, client):
     """
     from JoeSecurityV2 import analysis_info_command
 
-    result = util_load_json('test_data/list_analysis_raw_response.json')
-    excepted = util_load_json('test_data/list_analysis_expected_output.json')
+    result = util_load_json(os.path.dirname(__file__) + '/test_data/list_analysis_raw_response.json')
+    excepted = util_load_json(os.path.dirname(__file__) + '/test_data/list_analysis_expected_output.json')
 
     mocker.patch.object(client, 'analysis_info', return_value=result[0])
 
@@ -114,8 +114,8 @@ def test_list_analysis_command(mocker, client):
     """
     from JoeSecurityV2 import list_analysis_command
 
-    result = util_load_json('test_data/list_analysis_raw_response.json')
-    excepted = util_load_json('test_data/list_analysis_expected_output.json')
+    result = util_load_json(os.path.dirname(__file__) + '/test_data/list_analysis_raw_response.json')
+    excepted = util_load_json(os.path.dirname(__file__) + '/test_data/list_analysis_expected_output.json')
 
     mocker.patch.object(client, 'analysis_list_paged', return_value=[])
     mocker.patch.object(client, 'analysis_info', return_value={})
@@ -194,8 +194,8 @@ def test_file_command(mocker, client):
     """
     from JoeSecurityV2 import file_command
 
-    result = [util_load_json('test_data/list_analysis_raw_response.json')[0]]
-    excepted = util_load_json('test_data/list_analysis_expected_output.json')
+    result = [util_load_json(os.path.dirname(__file__) + '/test_data/list_analysis_raw_response.json')[0]]
+    excepted = util_load_json(os.path.dirname(__file__) + '/test_data/list_analysis_expected_output.json')
 
     mocker.patch.object(client, 'analysis_search', return_value=result)
 
@@ -218,8 +218,8 @@ def test_url_command(mocker, client):
     """
     from JoeSecurityV2 import url_command
 
-    result = util_load_json('test_data/list_analysis_raw_response.json')[-1]
-    excepted = util_load_json('test_data/list_analysis_expected_output.json')
+    result = util_load_json(os.path.dirname(__file__) + '/test_data/list_analysis_raw_response.json')[-1]
+    excepted = util_load_json(os.path.dirname(__file__) + '/test_data/list_analysis_expected_output.json')
 
     mocker.patch.object(client, 'analysis_search', return_value=[result])
     command_res = url_command(client, {'url': 'test_url'})[0]

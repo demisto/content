@@ -75,8 +75,8 @@ def test_http_request_when_raise_for_status(client):
 
 def test_create_indicators_from_response(client):
     """Tests scenario when valid response is provided to create_indicators_from_response."""
-    response = util_load_json('test_data/fetch_indicators_response.json')
-    indicators = util_load_json('test_data/fetch_indicators.json')
+    response = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_indicators_response.json')
+    indicators = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_indicators.json')
 
     params = PARAMS
     assert client.create_indicators_from_response(response, '', params, False) == indicators
@@ -115,10 +115,10 @@ def test_fetch_indicators_command_when_valid_response_is_returned(mocker_http_re
     """Test case scenario for successful execution of fetch_indicators_command."""
     from FlashpointFeed import fetch_indicators_command
 
-    response = util_load_json('test_data/fetch_indicators_response.json')
+    response = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_indicators_response.json')
     mocker_http_request.return_value = response
 
-    indicators = util_load_json('test_data/fetch_indicators.json')
+    indicators = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_indicators.json')
 
     params = PARAMS
     assert fetch_indicators_command(client, params, {}, False) == indicators
@@ -158,10 +158,10 @@ def test_get_indicators_command_when_valid_response_is_returned(mocker_http_requ
     """Test case scenario for successful execution of get_indicators_command."""
     from FlashpointFeed import get_indicators_command
 
-    mock_response = util_load_json('test_data/fetch_indicators_response.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_indicators_response.json')
     mocker_http_request.return_value = mock_response
 
-    indicators = util_load_json('test_data/fetch_indicators.json')
+    indicators = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_indicators.json')
 
     with open(os.path.dirname(__file__) + '/test_data/get_indicators.md') as data:
         expected_hr = data.read()

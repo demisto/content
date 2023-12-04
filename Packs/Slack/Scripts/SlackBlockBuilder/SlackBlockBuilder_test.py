@@ -42,7 +42,7 @@ def test_block_carrier_with_url(mocker):
 
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     block_carrier = BlockCarrier(url=BLOCKS_URL)
-    mock_response = util_load_json('test_data/blocks.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/blocks.json')
 
     assert block_carrier.blocks_dict == mock_response
 
@@ -54,8 +54,8 @@ def test_block_carrier_with_list_name(mocker):
     """
     from SlackBlockBuilder import BlockCarrier
 
-    blocks_dict = util_load_json('test_data/blocks.json')
-    mock_list = util_load_json('test_data/list.json')
+    blocks_dict = util_load_json(os.path.dirname(__file__) + '/test_data/blocks.json')
+    mock_list = util_load_json(os.path.dirname(__file__) + '/test_data/list.json')
 
     def executeCommand(command: str, args: dict[str, Any]) -> list[dict[str, Any]]:
         if command == 'getList':
@@ -88,7 +88,7 @@ def test_block_builder_command_list(mocker):
     """
     from SlackBlockBuilder import slack_block_builder_command
 
-    mock_list = util_load_json('test_data/list.json')
+    mock_list = util_load_json(os.path.dirname(__file__) + '/test_data/list.json')
 
     def executeCommand(command: str, args: dict[str, Any]) -> list[dict[str, Any]]:
         if command == 'getList':
@@ -116,7 +116,7 @@ def test_block_builder_command_url(mocker):
     """
     from SlackBlockBuilder import slack_block_builder_command
 
-    mock_list = util_load_json('test_data/list.json')
+    mock_list = util_load_json(os.path.dirname(__file__) + '/test_data/list.json')
 
     def executeCommand(command: str, args: dict[str, Any]) -> list[dict[str, Any]]:
         if command == 'getList':

@@ -25,8 +25,8 @@ def test_fetch_incidents(mocker):
     Then
     - validate the incidents values
     """
-    client_response = util_load_json('test_data/json_raw_response.json')
-    mapped_user = util_load_json('test_data/mapped_user.json')
+    client_response = util_load_json(os.path.dirname(__file__) + '/test_data/json_raw_response.json')
+    mapped_user = util_load_json(os.path.dirname(__file__) + '/test_data/mapped_user.json')
 
     mocker.patch.object(Client, 'get_full_report', return_value=client_response.get('Report_Entry'))
     mocker.patch('Workday_IAM.get_all_user_profiles', return_value=({}, {}, {}))

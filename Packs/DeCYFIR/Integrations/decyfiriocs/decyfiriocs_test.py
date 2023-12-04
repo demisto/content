@@ -19,7 +19,7 @@ def test_get_indicator_or_threatintel_type(mocker):
 
 
 def test_build_ioc_relationship_obj(mocker):
-    raw_iocs_ti_data = util_load_json('test_data/iocs.json')
+    raw_iocs_ti_data = util_load_json(os.path.dirname(__file__) + '/test_data/iocs.json')
     ta_data = raw_iocs_ti_data['IN_DATA_3']
     iocs_data = raw_iocs_ti_data['IN_DATA_1']
 
@@ -33,9 +33,9 @@ def test_build_ioc_relationship_obj(mocker):
 
 
 def test_build_threat_actor_relationship_obj(mocker):
-    raw_iocs_ti_data = util_load_json('test_data/iocs_ti.json')
+    raw_iocs_ti_data = util_load_json(os.path.dirname(__file__) + '/test_data/iocs_ti.json')
     ins_data_in = raw_iocs_ti_data['intrusion_set']
-    raw_iocs_data = util_load_json('test_data/iocs.json')
+    raw_iocs_data = util_load_json(os.path.dirname(__file__) + '/test_data/iocs.json')
     ta_data = raw_iocs_data['IN_DATA_3']
 
     client = Client(
@@ -54,9 +54,9 @@ def test_build_threat_actor_relationship_obj(mocker):
 
 
 def test_build_threat_intel_indicator_obj(mocker):
-    raw_iocs_ti_data = util_load_json('test_data/iocs_ti.json')
+    raw_iocs_ti_data = util_load_json(os.path.dirname(__file__) + '/test_data/iocs_ti.json')
 
-    raw_iocs_data = util_load_json('test_data/iocs.json')
+    raw_iocs_data = util_load_json(os.path.dirname(__file__) + '/test_data/iocs.json')
     ta_data = raw_iocs_data['IN_DATA_3']
     ti_data = raw_iocs_ti_data['threat_actors']
 
@@ -75,9 +75,9 @@ def test_build_threat_intel_indicator_obj(mocker):
 
 
 def test_build_ta_relationships_data(mocker):
-    raw_iocs_ti_data = util_load_json('test_data/iocs_ti.json')
+    raw_iocs_ti_data = util_load_json(os.path.dirname(__file__) + '/test_data/iocs_ti.json')
 
-    raw_iocs_data = util_load_json('test_data/iocs.json')
+    raw_iocs_data = util_load_json(os.path.dirname(__file__) + '/test_data/iocs.json')
     ta_data = raw_iocs_data['IN_DATA_7']
     ti_data = raw_iocs_ti_data['ta_relationships']
 
@@ -101,9 +101,9 @@ def test_build_ta_relationships_data(mocker):
 
 
 def test_add_aliases(mocker):
-    raw_iocs_ti_data = util_load_json('test_data/iocs_ti.json')
+    raw_iocs_ti_data = util_load_json(os.path.dirname(__file__) + '/test_data/iocs_ti.json')
 
-    raw_iocs_data = util_load_json('test_data/iocs.json')
+    raw_iocs_data = util_load_json(os.path.dirname(__file__) + '/test_data/iocs.json')
     ta_data = raw_iocs_data['IN_DATA_3'][0]
     ti_data = raw_iocs_ti_data['threat_actors']
 
@@ -124,9 +124,9 @@ def test_add_aliases(mocker):
 
 
 def test_add_tags(mocker):
-    raw_iocs_ti_data = util_load_json('test_data/iocs_ti.json')
+    raw_iocs_ti_data = util_load_json(os.path.dirname(__file__) + '/test_data/iocs_ti.json')
 
-    raw_iocs_data = util_load_json('test_data/iocs.json')
+    raw_iocs_data = util_load_json(os.path.dirname(__file__) + '/test_data/iocs.json')
     ta_data = raw_iocs_data['IN_DATA_3'][0]
     ti_data = raw_iocs_ti_data['threat_actors']
 
@@ -147,8 +147,8 @@ def test_add_tags(mocker):
 
 
 def test_convert_decyfir_ti_to_indicator_format(mocker):
-    raw_iocs_ti_data = util_load_json('test_data/iocs_ti.json')
-    raw_ti_data = util_load_json('test_data/iocs.json')
+    raw_iocs_ti_data = util_load_json(os.path.dirname(__file__) + '/test_data/iocs_ti.json')
+    raw_ti_data = util_load_json(os.path.dirname(__file__) + '/test_data/iocs.json')
     ti_data = raw_iocs_ti_data['threat_actors']
 
     client = Client(
@@ -165,8 +165,8 @@ def test_convert_decyfir_ti_to_indicator_format(mocker):
 
 
 def test_convert_decyfir_ti_to_indicators_formats(mocker):
-    raw_iocs_ti_data = util_load_json('test_data/iocs_ti.json')
-    raw_ti_data = util_load_json('test_data/iocs.json')
+    raw_iocs_ti_data = util_load_json(os.path.dirname(__file__) + '/test_data/iocs_ti.json')
+    raw_ti_data = util_load_json(os.path.dirname(__file__) + '/test_data/iocs.json')
     ti_data = raw_iocs_ti_data['threat_actors']
 
     client = Client(
@@ -183,8 +183,8 @@ def test_convert_decyfir_ti_to_indicators_formats(mocker):
 
 
 def test_convert_decyfir_ioc_to_indicators_formats(mocker):
-    raw_iocs_ti_data = util_load_json('test_data/iocs_ti.json')
-    raw_ti_data = util_load_json('test_data/iocs.json')
+    raw_iocs_ti_data = util_load_json(os.path.dirname(__file__) + '/test_data/iocs_ti.json')
+    raw_ti_data = util_load_json(os.path.dirname(__file__) + '/test_data/iocs.json')
     ti_data = raw_iocs_ti_data['iocs']
 
     client = Client(
@@ -202,8 +202,8 @@ def test_convert_decyfir_ioc_to_indicators_formats(mocker):
 
 def test_fetch_indicators(mocker):
     from decyfiriocs import Client, fetch_indicators_command
-    mock_response1 = util_load_json('test_data/iocs_ti.json')
-    mock_response2 = util_load_json('test_data/iocs.json')
+    mock_response1 = util_load_json(os.path.dirname(__file__) + '/test_data/iocs_ti.json')
+    mock_response2 = util_load_json(os.path.dirname(__file__) + '/test_data/iocs.json')
 
     client = Client(
         base_url='test_url',
@@ -223,8 +223,8 @@ def test_fetch_indicators(mocker):
 
 def test_decyfir_get_indicators(mocker):
     from decyfiriocs import Client, decyfir_get_indicators_command
-    mock_response1 = util_load_json('test_data/iocs_ti.json')
-    mock_response2 = util_load_json('test_data/iocs.json')
+    mock_response1 = util_load_json(os.path.dirname(__file__) + '/test_data/iocs_ti.json')
+    mock_response2 = util_load_json(os.path.dirname(__file__) + '/test_data/iocs.json')
 
     client = Client(
         base_url='test_url',

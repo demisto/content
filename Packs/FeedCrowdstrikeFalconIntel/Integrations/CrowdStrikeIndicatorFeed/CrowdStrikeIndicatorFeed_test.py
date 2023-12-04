@@ -23,7 +23,7 @@ def test_crowdstrike_indicators_list_command(requests_mock):
 
     from CrowdStrikeIndicatorFeed import Client, crowdstrike_indicators_list_command
 
-    mock_response = util_load_json('test_data/crowdstrike_indicators_list_command.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/crowdstrike_indicators_list_command.json')
     requests_mock.post('https://api.crowdstrike.com/oauth2/token', json={'access_token': '12345'})
     requests_mock.get(url='https://api.crowdstrike.com/intel/combined/indicators/v1', json=mock_response)
 
@@ -77,8 +77,8 @@ def test_create_indicators_from_response():
     """
     from CrowdStrikeIndicatorFeed import Client
 
-    raw_response = util_load_json('test_data/crowdstrike_indicators_list_command.json')
-    expected_result = util_load_json('test_data/create_indicators_from_response.json')
+    raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/crowdstrike_indicators_list_command.json')
+    expected_result = util_load_json(os.path.dirname(__file__) + '/test_data/create_indicators_from_response.json')
     res = Client.create_indicators_from_response(raw_response)
     assert res == expected_result
 
@@ -155,7 +155,7 @@ def test_fetch_no_indicators(mocker, requests_mock):
     """
     from CrowdStrikeIndicatorFeed import Client
 
-    mock_response = util_load_json('test_data/crowdstrike_indicators_list_command.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/crowdstrike_indicators_list_command.json')
     requests_mock.post('https://api.crowdstrike.com/oauth2/token', json={'access_token': '12345'})
     requests_mock.get(url='https://api.crowdstrike.com/intel/combined/indicators/v1', json=mock_response)
 

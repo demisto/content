@@ -45,7 +45,7 @@ def test_fetch_events_few_events(mocker):
 
     with requests_mock.Mocker() as m:
         m.post(f'{URL}oauth2/token/test_app', json={'access_token': '123456abc'})
-        m.post(f'{URL}RedRock/Query', json=util_load_json('test_data/events.json'))
+        m.post(f'{URL}RedRock/Query', json=util_load_json(os.path.dirname(__file__) + '/test_data/events.json'))
 
         from CyberArkIdentityEventCollector import main
         main('cyberarkidentity-get-events', params.return_value | args.return_value)
@@ -107,7 +107,7 @@ def test_fetch_events_limit_set_to_one(mocker):
 
     with requests_mock.Mocker() as m:
         m.post(f'{URL}oauth2/token/test_app', json={'access_token': '123456abc'})
-        m.post(f'{URL}RedRock/Query', json=util_load_json('test_data/events.json'))
+        m.post(f'{URL}RedRock/Query', json=util_load_json(os.path.dirname(__file__) + '/test_data/events.json'))
 
         from CyberArkIdentityEventCollector import main
         main('cyberarkidentity-get-events', params.return_value | args.return_value)

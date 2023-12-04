@@ -47,7 +47,7 @@ class TestGetPartitionId:
         })
         mocker.patch.object(demisto, 'getIntegrationContext', return_value={})
 
-        mock_response = util_load_json('test_data/tenant_spaces.json')
+        mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/tenant_spaces.json')
         requests_mock.get('/api/v1/tenant/partition/device', json=mock_response)
 
         result = get_partition_id(client)
@@ -84,7 +84,7 @@ class TestGetPartitionId:
         mocker.patch.object(demisto, 'getIntegrationContext', return_value={
             'for_user': 'otheremail',
         })
-        mock_response = util_load_json('test_data/tenant_spaces.json')
+        mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/tenant_spaces.json')
         requests_mock.get('/api/v1/tenant/partition/device', json=mock_response)
 
         result = get_partition_id(client)
@@ -96,8 +96,8 @@ class TestClientGetDevicesData:
 
     @pytest.fixture
     def prepare_mock(self, requests_mock):
-        mock_response_page_one = util_load_json('test_data/get_devices_response_page.json')
-        mock_response_page_two = util_load_json('test_data/get_devices_response_page2.json')
+        mock_response_page_one = util_load_json(os.path.dirname(__file__) + '/test_data/get_devices_response_page.json')
+        mock_response_page_two = util_load_json(os.path.dirname(__file__) + '/test_data/get_devices_response_page2.json')
         requests_mock.register_uri('GET', f'{MOCK_URL}/api/v1/device',
                                    [{'json': mock_response_page_one, 'status_code': 200},
                                     {'json': mock_response_page_two, 'status_code': 200}])
@@ -157,7 +157,7 @@ def test_get_device_by_id_command(client, mocker, requests_mock):
         'device_id': '1'
     })
 
-    mock_response = util_load_json('test_data/device_response.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/device_response.json')
 
     requests_mock.get(f'{MOCK_URL}/api/v1/device/1', json=mock_response)
 
@@ -211,7 +211,7 @@ def test_execute_send_message_command(client, requests_mock, mocker):
 def test_execute_test_module_command(client, requests_mock):
     from MobileIronCLOUD import execute_test_module_command
 
-    mock_response = util_load_json('test_data/tenant_spaces.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/tenant_spaces.json')
     requests_mock.get('/api/v1/tenant/partition/device', json=mock_response)
     result = execute_test_module_command(client)
     assert result == 'ok'
@@ -220,7 +220,7 @@ def test_execute_test_module_command(client, requests_mock):
 def test_fetch_incidents(client, requests_mock):
     from MobileIronCLOUD import fetch_incidents, SEVERITY_HIGH
 
-    mock_response = util_load_json('test_data/get_devices_response_page2.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_devices_response_page2.json')
     requests_mock.get(f'{MOCK_URL}/api/v1/device', json=mock_response)
 
     result = fetch_incidents(client, 'partition_id_value', 'MobileIron Cloud Device Incident', 1000)

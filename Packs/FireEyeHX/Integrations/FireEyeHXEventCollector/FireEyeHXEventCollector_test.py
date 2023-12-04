@@ -10,8 +10,8 @@ def util_load_json(path):
 
 
 BASE_URL = 'https://example.com'
-EVENTS_RES = util_load_json('test_data/events_res.json')
-EVENTS_RAW = util_load_json('test_data/events_raw.json')
+EVENTS_RES = util_load_json(os.path.dirname(__file__) + '/test_data/events_res.json')
+EVENTS_RAW = util_load_json(os.path.dirname(__file__) + '/test_data/events_raw.json')
 
 
 def test_populate_modeling_rule_fields():

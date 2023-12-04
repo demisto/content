@@ -10,7 +10,7 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-MOCK_EVENTS = util_load_json('test_data/mock_events.json')
+MOCK_EVENTS = util_load_json(os.path.dirname(__file__) + '/test_data/mock_events.json')
 CORE_URL = 'https://api.example.com'
 
 

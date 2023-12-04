@@ -136,7 +136,7 @@ def test_country_code_list_command(mocker):
     """
     from NetscoutAED import country_code_list_command
 
-    countries_code_raw_response = util_load_json('test_data/countries_codes/countries_code_raw.json')
+    countries_code_raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/countries_codes/countries_code_raw.json')
     mocker.patch.object(client, "country_code_list_command", return_value=countries_code_raw_response)
     result = country_code_list_command(client, {})
     assert "Anguilla" in result.readable_output
@@ -213,7 +213,7 @@ def test_handle_country_addition_commands(mocker, country, func_mock, raw_respon
     """
     from NetscoutAED import handle_country_addition_commands
 
-    blacklisted_countries_raw = util_load_json('test_data/countries/' + raw_respond)
+    blacklisted_countries_raw = util_load_json(os.path.dirname(__file__) + '/test_data/countries/' + raw_respond)
     if country == 'BS':
         blacklisted_countries_raw = blacklisted_countries_raw["single_country_output"]
     elif country == 'BS,AU':
@@ -398,7 +398,7 @@ def test_handle_host_addition_commands(mocker, host, func_mock, raw_respond, dir
     """
     from NetscoutAED import handle_host_addition_and_replacement_commands
 
-    hosts_raw = util_load_json('test_data/hosts/' + raw_respond)
+    hosts_raw = util_load_json(os.path.dirname(__file__) + '/test_data/hosts/' + raw_respond)
     if host == '1.1.1.1':
         hosts_raw = hosts_raw["single_host_output"]
     elif host == '2.2.2.2,3.3.3.3':
@@ -503,7 +503,7 @@ def test_handle_protection_groups_list_commands(mocker):
     """
     from NetscoutAED import handle_protection_groups_list_commands
 
-    protection_groups_raw_response = util_load_json('test_data/protection_groups/protection_groups_list_raw.json')
+    protection_groups_raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/protection_groups/protection_groups_list_raw.json')
     mocker.patch.object(client, 'protection_group_list_command',
                         return_value=protection_groups_raw_response)
     expected_output = {
@@ -620,7 +620,7 @@ def test_handle_domain_list_commands(mocker):
     """
     from NetscoutAED import handle_domain_list_commands
 
-    inbound_blacklisted_domains_raw_response = util_load_json('test_data/domains/inbound_blacklisted_domains_raw.json')
+    inbound_blacklisted_domains_raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/domains/inbound_blacklisted_domains_raw.json')
     mocker.patch.object(client, 'inbound_blacklisted_domain_list_command',
                         return_value=inbound_blacklisted_domains_raw_response)
     result = handle_domain_list_commands(client, {})
@@ -657,7 +657,7 @@ def test_handle_domain_addition_commands(mocker, domain, expected_output):
     """
     from NetscoutAED import handle_domain_addition_commands
 
-    domains_raw = util_load_json('test_data/domains/added_inbound_blacklisted_domains_raw.json')
+    domains_raw = util_load_json(os.path.dirname(__file__) + '/test_data/domains/added_inbound_blacklisted_domains_raw.json')
     if domain == 'google.com':
         domains_raw = domains_raw["single_domain_output"]
     elif domain == 'google.com,sport.com':
@@ -745,7 +745,7 @@ def test_handle_url_list_commands(mocker):
     """
     from NetscoutAED import handle_url_list_commands
 
-    inbound_blacklisted_urls_raw_response = util_load_json('test_data/urls/inbound_blacklisted_urls_raw.json')
+    inbound_blacklisted_urls_raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/urls/inbound_blacklisted_urls_raw.json')
     mocker.patch.object(client, 'inbound_blacklisted_url_list_command',
                         return_value=inbound_blacklisted_urls_raw_response)
     result = handle_url_list_commands(client, {})
@@ -782,7 +782,7 @@ def test_handle_url_addition_commands(mocker, url, expected_output):
     """
     from NetscoutAED import handle_url_addition_commands
 
-    urls_raw = util_load_json('test_data/urls/added_inbound_blacklisted_urls_raw.json')
+    urls_raw = util_load_json(os.path.dirname(__file__) + '/test_data/urls/added_inbound_blacklisted_urls_raw.json')
     if url == 'maps.google.com':
         urls_raw = urls_raw["single_url_output"]
     elif url == 'maps.google.com,sport.com':

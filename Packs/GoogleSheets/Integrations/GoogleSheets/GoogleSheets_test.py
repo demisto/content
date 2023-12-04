@@ -89,7 +89,7 @@ def test_prepare_result_with_echo(mocker):
     mocker.patch.object(GoogleSheets, 'create_list_id_title',
                         return_value=[{'SheetId': 783932040, 'Sheet title': "new sheet"},
                                       {'SheetId': 0, 'Sheet title': "Sheet1"}])
-    response = util_load_json('test_data/helper_functions/test_prepare_result_echo/response.json')
+    response = util_load_json(os.path.dirname(__file__) + '/test_data/helper_functions/test_prepare_result_echo/response.json')
     command_result = GoogleSheets.prepare_result(response, {"echo_spreadsheet": "true"}, "")
     with open(os.path.dirname(__file__) + '/test_data/helper_functions/test_prepare_result_echo/markdown_result.md') as file:
         markdown_assert = file.read()
@@ -126,7 +126,7 @@ def test_create_list_id_title():
         - return a proper markdown format string
 
     '''
-    sheets = util_load_json('test_data/helper_functions/test_create_list_id_title/sheets.json')
+    sheets = util_load_json(os.path.dirname(__file__) + '/test_data/helper_functions/test_create_list_id_title/sheets.json')
     assert GoogleSheets.create_list_id_title(sheets) == util_load_json(
         'test_data/helper_functions/test_create_list_id_title/create_list_id_title_response.json')
 

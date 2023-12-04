@@ -23,7 +23,7 @@ def test_get_suspicious_activity(requests_mock):
     """
     from MicrosoftAdvancedThreatAnalytics import Client, get_suspicious_activity
 
-    mock_response = util_load_json('test_data/suspicious_activity.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/suspicious_activity.json')
     requests_mock.get(f'{ATA_CENTER_URL}/suspiciousActivities/', json=mock_response)
     honeytoken_activity = [mock_response[1]]
 
@@ -62,10 +62,10 @@ def test_get_suspicious_activity_details(requests_mock):
 
     suspicious_activity_id = '5f1fe6b383eaed101ce19b58'
 
-    mock_response = util_load_json('test_data/suspicious_activity.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/suspicious_activity.json')
     honeytoken_activity = mock_response[1]
     requests_mock.get(f'{ATA_CENTER_URL}/suspiciousActivities/{suspicious_activity_id}', json=mock_response[1])
-    details_mock_response = util_load_json('test_data/suspicious_activity_details.json')
+    details_mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/suspicious_activity_details.json')
     requests_mock.get(f'{ATA_CENTER_URL}/suspiciousActivities/{suspicious_activity_id}/details',
                       json=details_mock_response)
     honeytoken_activity = [honeytoken_activity]
@@ -167,7 +167,7 @@ def test_get_monitoring_alert(requests_mock):
     """
     from MicrosoftAdvancedThreatAnalytics import Client, get_monitoring_alert
 
-    mock_response = util_load_json('test_data/monitoring_alert.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/monitoring_alert.json')
     requests_mock.get(f'{ATA_CENTER_URL}/monitoringAlerts', json=mock_response)
 
     client = Client(
@@ -198,9 +198,9 @@ def test_entity_get_computer(requests_mock):
 
     computer_entity_id = '6b0e48f5-6c63-449c-8b6f-c749e18e28b3'
 
-    mock_response = util_load_json('test_data/entity_computer.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/entity_computer.json')
     requests_mock.get(f'{ATA_CENTER_URL}/uniqueEntities/{computer_entity_id}', json=mock_response)
-    profile_mock_response = util_load_json('test_data/entity_profile_computer.json')
+    profile_mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/entity_profile_computer.json')
     requests_mock.get(f'{ATA_CENTER_URL}/uniqueEntities/{computer_entity_id}/profile', json=profile_mock_response)
     mock_response['Profile'] = profile_mock_response
 
@@ -230,7 +230,7 @@ def test_fetch_incidents(requests_mock):
     """
     from MicrosoftAdvancedThreatAnalytics import Client, fetch_incidents
 
-    mock_response = util_load_json('test_data/suspicious_activity.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/suspicious_activity.json')
     requests_mock.get(f'{ATA_CENTER_URL}/suspiciousActivities/', json=mock_response)
 
     client = Client(base_url=ATA_CENTER_URL)

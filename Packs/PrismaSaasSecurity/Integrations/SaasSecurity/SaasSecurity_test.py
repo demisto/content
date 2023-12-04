@@ -98,7 +98,7 @@ def test_convert_to_xsoar_incident():
     """
     from SaasSecurity import convert_to_xsoar_incident
 
-    incident = util_load_json('test_data/get-incident-by-id.json')
+    incident = util_load_json(os.path.dirname(__file__) + '/test_data/get-incident-by-id.json')
     expected = {
         "name": "Saas Security: SP0605 copy 6.java",
         "occurred": "2021-08-03T20:25:15Z",
@@ -119,7 +119,7 @@ def test_convert_to_xsoar_incident_without_occurred():
     """
     from SaasSecurity import convert_to_xsoar_incident
 
-    incident = util_load_json('test_data/get-incident-by-id.json')
+    incident = util_load_json(os.path.dirname(__file__) + '/test_data/get-incident-by-id.json')
     incident['created_at'] = None
     expected = {
         "name": "Saas Security: SP0605 copy 6.java",
@@ -144,8 +144,8 @@ def test_fetch_incidents(mocker, client, requests_mock, demisto_mocker, last_run
     """
     from SaasSecurity import main
 
-    get_incidents = util_load_json('test_data/get-incidents.json')
-    incidents_for_fetch = util_load_json('test_data/fech_incident_data.json')
+    get_incidents = util_load_json(os.path.dirname(__file__) + '/test_data/get-incidents.json')
+    incidents_for_fetch = util_load_json(os.path.dirname(__file__) + '/test_data/fech_incident_data.json')
     mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
     mocker.patch.object(demisto, 'getLastRun', return_value={'last_run_time': last_run})
     requests_mock.get('http://base_url/incident/api/incidents/delta', json=get_incidents)
@@ -175,7 +175,7 @@ def test_get_incidents_command(client, requests_mock):
     """
     from SaasSecurity import get_incidents_command
 
-    incidents = util_load_json('test_data/get-incidents.json')
+    incidents = util_load_json(os.path.dirname(__file__) + '/test_data/get-incidents.json')
     req_mocker = requests_mock.get('http://base_url/incident/api/incidents/delta', json=incidents)
 
     result = get_incidents_command(client, {'limit': '5', 'state': 'All', 'severity': 'Low,High', 'status': 'All'})
@@ -196,7 +196,7 @@ def test_get_incident_by_id_command(client, requests_mock):
     """
     from SaasSecurity import get_incident_by_id_command
 
-    incident = util_load_json('test_data/get-incident-by-id.json')
+    incident = util_load_json(os.path.dirname(__file__) + '/test_data/get-incident-by-id.json')
     requests_mock.get('http://base_url/incident/api/incidents/4', json=incident)
     res = get_incident_by_id_command(client, {'id': '4'})
     assert res.outputs == incident
@@ -215,7 +215,7 @@ def test_update_incident_state_command(client, requests_mock):
     """
     from SaasSecurity import update_incident_state_command
 
-    updated_status = util_load_json('test_data/update-incident-status.json')
+    updated_status = util_load_json(os.path.dirname(__file__) + '/test_data/update-incident-status.json')
     req_mocker = requests_mock.post('http://base_url/incident/api/incidents/4/state', json=updated_status)
 
     result = update_incident_state_command(client, {'id': '4', 'category': 'Business Justified'})
@@ -276,7 +276,7 @@ def test_get_remediation_status_command(client, requests_mock):
             - Sends request with the expected query params and creates a CommandResult object.
     """
     from SaasSecurity import get_remediation_status_command
-    remediation_status = util_load_json('test_data/get-asset-remediation-status.json')
+    remediation_status = util_load_json(os.path.dirname(__file__) + '/test_data/get-asset-remediation-status.json')
     req_mocker = requests_mock.get('http://base_url/remediation/api/assets', json=remediation_status)
     result = get_remediation_status_command(client, {'asset_id': '61099dd36b544e38fa3d22b9', 'remediation_type': 'Quarantine'})
 
@@ -302,7 +302,7 @@ def test_get_remote_data_command(client, requests_mock, mocker, close_incident,
         'id': 1,
         'lastUpdate': '2021-08-24T07:44:21.608Z'
     }
-    incident = util_load_json('test_data/get-incident-by-id.json')
+    incident = util_load_json(os.path.dirname(__file__) + '/test_data/get-incident-by-id.json')
     requests_mock.get('http://base_url/incident/api/incidents/1', json=incident)
     mocker.patch.object(demisto, 'params', return_value={'close_incident': close_incident})
 
@@ -327,7 +327,7 @@ def test_get_remote_data_closed_status_uppercase(client, requests_mock, mocker, 
         'id': 1,
         'lastUpdate': '2021-08-24T07:44:21.608Z'
     }
-    incident = util_load_json('test_data/get-incident-by-id.json')
+    incident = util_load_json(os.path.dirname(__file__) + '/test_data/get-incident-by-id.json')
     incident['state'] = 'Closed'
 
     requests_mock.get('http://base_url/incident/api/incidents/1', json=incident)
@@ -345,7 +345,7 @@ def test_get_modified_remote_data_command(client, requests_mock):
 
     args = {'lastUpdate': '2020-11-18T13:16:52.005381+02:00'}
 
-    incidents = util_load_json('test_data/get-incidents.json')
+    incidents = util_load_json(os.path.dirname(__file__) + '/test_data/get-incidents.json')
     requests_mock.get('http://base_url/incident/api/incidents/delta', json=incidents)
 
     result = get_modified_remote_data_command(client, args)

@@ -22,7 +22,7 @@ def test_add_time_key_to_events():
     """
     from NetBoxEventCollector import add_time_key_to_events
 
-    events = util_load_json('test_data/netbox-get-events.json')
+    events = util_load_json(os.path.dirname(__file__) + '/test_data/netbox-get-events.json')
     events = add_time_key_to_events(events)
 
     assert events[0]['_time'] == '2022-12-04T14:33:52.067484Z'
@@ -49,7 +49,7 @@ def test_get_events_command(requests_mock):
     client = Client(base_url=BASE_URL, verify=False)
     events, _ = get_events_command(client, limit=4)
 
-    mock_events = util_load_json('test_data/netbox-get-events.json')
+    mock_events = util_load_json(os.path.dirname(__file__) + '/test_data/netbox-get-events.json')
 
     assert events == mock_events
 
@@ -73,14 +73,14 @@ def test_fetch_events_command(requests_mock):
 
     # mock the events
     requests_mock.get(f'{BASE_URL}/journal-entries?limit=2&ordering=id&id__gte=5',
-                      json=util_load_json('test_data/fetch_events_journal-entries.json'))
+                      json=util_load_json(os.path.dirname(__file__) + '/test_data/fetch_events_journal-entries.json'))
     requests_mock.get(f'{BASE_URL}/object-changes?limit=2&ordering=id&id__gte=9',
-                      json=util_load_json('test_data/fetch_events_object-changes.json'))
+                      json=util_load_json(os.path.dirname(__file__) + '/test_data/fetch_events_object-changes.json'))
 
     client = Client(base_url=BASE_URL, verify=False)
     next_run, events = fetch_events_command(client, max_fetch=2, last_run={}, first_fetch_time='2022-01-01T00:00:00Z')
 
-    mock_events = util_load_json('test_data/netbox-fetch-events.json')
+    mock_events = util_load_json(os.path.dirname(__file__) + '/test_data/netbox-fetch-events.json')
 
     assert events == mock_events
     assert next_run == {'journal-entries': 7, 'object-changes': 11}

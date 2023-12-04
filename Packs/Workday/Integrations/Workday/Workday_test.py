@@ -51,7 +51,7 @@ def test_create_worker_context():
 
        No mock is needed here.
        """
-    WORKER_DATA = util_load_json('test_data/worker_data.json')
+    WORKER_DATA = util_load_json(os.path.dirname(__file__) + '/test_data/worker_data.json')
     context = create_worker_context(WORKER_DATA, num_of_managers=2)
     assert context == WORKER_CONTEXT_DATA
     assert len(context[0].get('Managers')) == 2
@@ -69,7 +69,7 @@ def test_convert_to_json():
     No mock is needed here.
     """
     XML_RAW_RESPONSE = util_read_file('test_data/xml_raw_response.txt')
-    JSON_RAW_RESPONSE = util_load_json('test_data/json_raw_respose.json')
+    JSON_RAW_RESPONSE = util_load_json(os.path.dirname(__file__) + '/test_data/json_raw_respose.json')
     raw_response, worker_data = convert_to_json(XML_RAW_RESPONSE)
     assert raw_response == JSON_RAW_RESPONSE
     assert worker_data == worker_data

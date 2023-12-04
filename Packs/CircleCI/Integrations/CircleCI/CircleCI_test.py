@@ -13,7 +13,7 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-test_data = util_load_json('test_data/circle_ci_commands_test_data.json')
+test_data = util_load_json(os.path.dirname(__file__) + '/test_data/circle_ci_commands_test_data.json')
 
 
 @pytest.mark.parametrize('command_func, func_name',

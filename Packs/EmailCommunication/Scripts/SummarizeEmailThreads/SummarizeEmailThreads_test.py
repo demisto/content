@@ -15,8 +15,8 @@ def util_load_json(path):
 @pytest.mark.parametrize(
     "email_threads, expected_result",
     [
-        (util_load_json('test_data/email_threads.json'), util_load_json('test_data/email_threads.json')),
-        (util_load_json('test_data/email_threads.json')[0], [util_load_json('test_data/email_threads.json')[0]]),
+        (util_load_json(os.path.dirname(__file__) + '/test_data/email_threads.json'), util_load_json(os.path.dirname(__file__) + '/test_data/email_threads.json')),
+        (util_load_json(os.path.dirname(__file__) + '/test_data/email_threads.json')[0], [util_load_json(os.path.dirname(__file__) + '/test_data/email_threads.json')[0]]),
         ('', None)
     ]
 )
@@ -65,8 +65,8 @@ def test_format_threads(mocker):
     from SummarizeEmailThreads import format_threads
     import SummarizeEmailThreads
     tableToMarkdown_mocker = mocker.patch.object(SummarizeEmailThreads, 'tableToMarkdown', return_value=True)
-    format_threads(util_load_json('test_data/email_threads.json'))
+    format_threads(util_load_json(os.path.dirname(__file__) + '/test_data/email_threads.json'))
     tableToMarkdown_call_args = tableToMarkdown_mocker.call_args
-    expected = util_load_json('test_data/valid_table_data.txt')
+    expected = util_load_json(os.path.dirname(__file__) + '/test_data/valid_table_data.txt')
     actual = tableToMarkdown_call_args.kwargs['t']
     assert actual == expected

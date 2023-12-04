@@ -916,7 +916,7 @@ EXPEXTED_LOGS_RESULT = \
 
 
 def test_get_readable_logs():
-    logs_raw_response = util_load_json('test_data/get_logs_response.json')
+    logs_raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_logs_response.json')
     result = client.get_readable_logs(logs_raw_response)
     assert len(result) == 2
     assert result == EXPEXTED_LOGS_RESULT

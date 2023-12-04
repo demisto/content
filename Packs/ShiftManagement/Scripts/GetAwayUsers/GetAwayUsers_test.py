@@ -12,7 +12,7 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-away_user_data = util_load_json('test_data/away_user.json')
+away_user_data = util_load_json(os.path.dirname(__file__) + '/test_data/away_user.json')
 AWAY_USER = away_user_data
 NOT_AWAY_USER = deepcopy(away_user_data)
 NOT_AWAY_USER['isAway'] = False

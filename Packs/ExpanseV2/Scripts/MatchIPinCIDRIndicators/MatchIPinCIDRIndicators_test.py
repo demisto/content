@@ -56,7 +56,7 @@ def test_match_ip_in_cidr_indicators(mocker):
         - proper query i constructed to search for indicators with different prefix sizes and requested tags
         - indicator with longest match is found and returned to Context
     """
-    mock_indicator = util_load_json('test_data/indicator.json')
+    mock_indicator = util_load_json(os.path.dirname(__file__) + '/test_data/indicator.json')
 
     def executeCommand(name: str, args: dict[str, Any]) -> list[dict[str, Any]]:
         if name == 'findIndicators':

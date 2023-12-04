@@ -16,7 +16,7 @@ def util_load_json(path):
 def test_get_verdict_command(requests_mock):
     from SecneurXAnalysis import Client, get_verdict_cmd
 
-    res = util_load_json('test_data/get_response_example.json')
+    res = util_load_json(os.path.dirname(__file__) + '/test_data/get_response_example.json')
     mock_response = res['verdict_response']
     requests_mock.get(f'{SERVER_URL}/get_verdict', json=mock_response)
     client = Client(
@@ -33,7 +33,7 @@ def test_get_verdict_command(requests_mock):
 def test_get_verdict_failure(requests_mock):
     from SecneurXAnalysis import Client, get_verdict_cmd
 
-    res = util_load_json('test_data/get_response_example.json')
+    res = util_load_json(os.path.dirname(__file__) + '/test_data/get_response_example.json')
     mock_response = res['error_response']
     requests_mock.get(f'{SERVER_URL}/get_verdict', json=mock_response['invalid_error_res'])
     client = Client(
@@ -50,7 +50,7 @@ def test_get_verdict_failure(requests_mock):
 def test_get_completed_command(requests_mock):
     from SecneurXAnalysis import Client, get_completed_cmd
 
-    res = util_load_json('test_data/get_response_example.json')
+    res = util_load_json(os.path.dirname(__file__) + '/test_data/get_response_example.json')
     mock_response = res['completed_response']
     requests_mock.get(f'{SERVER_URL}/get_completed', json=mock_response)
     client = Client(
@@ -68,7 +68,7 @@ def test_get_completed_command(requests_mock):
 def test_get_completed_failure(requests_mock):
     from SecneurXAnalysis import Client, get_completed_cmd
 
-    res = util_load_json('test_data/get_response_example.json')
+    res = util_load_json(os.path.dirname(__file__) + '/test_data/get_response_example.json')
     mock_response = res['error_response']
     requests_mock.get(f'{SERVER_URL}/get_completed', json=mock_response['empty_error_res'])
     client = Client(
@@ -89,7 +89,7 @@ def test_get_completed_failure(requests_mock):
 def test_get_pending_command(requests_mock):
     from SecneurXAnalysis import Client, get_pending_cmd
 
-    res = util_load_json('test_data/get_response_example.json')
+    res = util_load_json(os.path.dirname(__file__) + '/test_data/get_response_example.json')
     mock_response = res['pending_response']
     requests_mock.get(f'{SERVER_URL}/get_processing', json=mock_response)
     client = Client(
@@ -107,7 +107,7 @@ def test_get_pending_command(requests_mock):
 def test_get_pending_failure(requests_mock):
     from SecneurXAnalysis import Client, get_pending_cmd
 
-    res = util_load_json('test_data/get_response_example.json')
+    res = util_load_json(os.path.dirname(__file__) + '/test_data/get_response_example.json')
     mock_response = res['error_response']
     requests_mock.get(f'{SERVER_URL}/get_processing', json=mock_response['empty_error_res'])
     client = Client(
@@ -128,7 +128,7 @@ def test_get_pending_failure(requests_mock):
 def test_get_sample_status_command(requests_mock):
     from SecneurXAnalysis import Client, get_status_cmd
 
-    res = util_load_json('test_data/get_response_example.json')
+    res = util_load_json(os.path.dirname(__file__) + '/test_data/get_response_example.json')
     mock_response = res['status_response']
     requests_mock.get(f'{SERVER_URL}/get_status', json=mock_response)
     client = Client(
@@ -146,7 +146,7 @@ def test_get_sample_status_command(requests_mock):
 def test_get_sample_status_failure(requests_mock):
     from SecneurXAnalysis import Client, get_status_cmd
 
-    res = util_load_json('test_data/get_response_example.json')
+    res = util_load_json(os.path.dirname(__file__) + '/test_data/get_response_example.json')
     mock_response = res['error_response']
     requests_mock.get(f'{SERVER_URL}/get_status', json=mock_response['empty_error_res'])
     client = Client(
@@ -167,7 +167,7 @@ def test_get_sample_status_failure(requests_mock):
 def test_get_report_command(requests_mock, mocker):
     from SecneurXAnalysis import Client, get_report_cmd
 
-    res = util_load_json('test_data/get_response_example.json')
+    res = util_load_json(os.path.dirname(__file__) + '/test_data/get_response_example.json')
     mock_response = res['report_response']
     requests_mock.get(f'{SERVER_URL}/get_report', json=mock_response)
     client = Client(
@@ -187,7 +187,7 @@ def test_get_report_command(requests_mock, mocker):
 def test_get_report_command_failure(requests_mock):
     from SecneurXAnalysis import Client, get_report_cmd
 
-    response = util_load_json('test_data/get_response_example.json')
+    response = util_load_json(os.path.dirname(__file__) + '/test_data/get_response_example.json')
     mock_response = response['error_response']
     requests_mock.get(f'{SERVER_URL}/get_report', json=mock_response['metadata_error_res'])
     client = Client(
@@ -200,7 +200,7 @@ def test_get_report_command_failure(requests_mock):
     res = get_report_cmd(client, args)
     assert res.raw_response == mock_response['metadata_error_res']
 
-    response = util_load_json('test_data/get_response_example.json')
+    response = util_load_json(os.path.dirname(__file__) + '/test_data/get_response_example.json')
     mock_response = response['pending_response']
     requests_mock.get(f'{SERVER_URL}/get_report', json={'success': 1, 'data': mock_response[DATA_KEY][0]})
     args = {'task_uuid': 'e94e76882b30f4050d456d126ec76713b8e997a193ac80269f090f394290086b-2022-07-05-06-59-01'}
@@ -211,7 +211,7 @@ def test_get_report_command_failure(requests_mock):
 def test_post_url_command(requests_mock):
     from SecneurXAnalysis import Client, post_submit_url
 
-    res = util_load_json('test_data/get_response_example.json')
+    res = util_load_json(os.path.dirname(__file__) + '/test_data/get_response_example.json')
     mock_response = res['submit_url_response']
     requests_mock.post(f'{SERVER_URL}/analyze_url', json=mock_response)
     client = Client(
@@ -228,7 +228,7 @@ def test_post_url_command(requests_mock):
 def test_post_url_command_failure(requests_mock):
     from SecneurXAnalysis import Client, post_submit_url
 
-    res = util_load_json('test_data/get_response_example.json')
+    res = util_load_json(os.path.dirname(__file__) + '/test_data/get_response_example.json')
     mock_response = res['error_response']
     requests_mock.post(f'{SERVER_URL}/analyze_url', json=mock_response['submit_failed_res'], status_code=200)
     client = Client(
@@ -245,7 +245,7 @@ def test_post_url_command_failure(requests_mock):
 def test_post_sample_command(requests_mock, mocker):
     from SecneurXAnalysis import Client, post_submit_file
 
-    res = util_load_json('test_data/get_response_example.json')
+    res = util_load_json(os.path.dirname(__file__) + '/test_data/get_response_example.json')
     mock_response = res['submit_file_response']
     requests_mock.post(f'{SERVER_URL}/submit_file', json=mock_response)
     client = Client(
@@ -283,7 +283,7 @@ def test_requests_params_dict():
 def test_module_connection(requests_mock):
     from SecneurXAnalysis import Client, SNXErrorMsg, test_module
 
-    res = util_load_json('test_data/get_response_example.json')
+    res = util_load_json(os.path.dirname(__file__) + '/test_data/get_response_example.json')
     mock_response = res['status_response']
     requests_mock.get(f'{SERVER_URL}/get_status', json=mock_response)
     client = Client(
@@ -325,7 +325,7 @@ def test_connection_response(requests_mock):
 def test_quoto_cmd(requests_mock):
     from SecneurXAnalysis import Client, get_quota_cmd
 
-    res = util_load_json('test_data/get_response_example.json')
+    res = util_load_json(os.path.dirname(__file__) + '/test_data/get_response_example.json')
     mock_response = res['quota_response']
     requests_mock.get(f'{SERVER_URL}/get_quota', json=mock_response)
     client = Client(

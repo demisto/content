@@ -387,7 +387,7 @@ def test_attachment_upload_command(client,
         - validate the entry context.
     """
 
-    mock_topdesk_node = util_load_json('test_data/topdesk_attachment.json')
+    mock_topdesk_node = util_load_json(os.path.dirname(__file__) + '/test_data/topdesk_attachment.json')
     response_attachment = mock_topdesk_node.copy()
 
     requests_mock.post(
@@ -441,7 +441,7 @@ def test_attachment_list_command(client,
         - validate the entry context.
     """
 
-    mock_topdesk_node = util_load_json('test_data/topdesk_attachment.json')
+    mock_topdesk_node = util_load_json(os.path.dirname(__file__) + '/test_data/topdesk_attachment.json')
 
     response = []
     expected = []
@@ -928,9 +928,9 @@ def test_fetch_incidents(client, requests_mock, topdesk_incidents_override, last
         - validate the entry context.
         - validate last_fetch is updated.
     """
-    mock_topdesk_incident = util_load_json('test_data/topdesk_incident.json')
+    mock_topdesk_incident = util_load_json(os.path.dirname(__file__) + '/test_data/topdesk_incident.json')
     mock_topdesk_response = []
-    mock_actions = util_load_json('test_data/topdesk_actions.json')
+    mock_actions = util_load_json(os.path.dirname(__file__) + '/test_data/topdesk_actions.json')
     requests_mock.get(
         'https://test.com/api/incidents/id/some-test-id-1/actions',
         json=mock_actions)
@@ -1027,7 +1027,7 @@ def test_fetch_incidents_with_no_actions(client, requests_mock, topdesk_incident
         - validate the entry context.
         - validate last_fetch is updated.
     """
-    mock_topdesk_incident = util_load_json('test_data/topdesk_incident.json')
+    mock_topdesk_incident = util_load_json(os.path.dirname(__file__) + '/test_data/topdesk_incident.json')
     mock_topdesk_response = []
     requests_mock.get(
         'https://test.com/api/incidents/id/some-test-id-1/actions',
@@ -1109,7 +1109,7 @@ def test_incident_actions_list(client, requests_mock, command_args):
         - The result fits the expected mapping
     """
 
-    mock_incident_actions = util_load_json('test_data/topdesk_actions.json')
+    mock_incident_actions = util_load_json(os.path.dirname(__file__) + '/test_data/topdesk_actions.json')
     if command_args['incident_id']:
         requests_mock.get(
             'https://test.com/api/incidents/id/some-id/actions',
@@ -1136,8 +1136,8 @@ def test_get_remote_data_command(client, requests_mock, args):
     Then
         - The result fits the expected mapping
     """
-    mock_incident = util_load_json('test_data/topdesk_incident.json')
-    mock_actions = util_load_json('test_data/topdesk_actions.json')
+    mock_incident = util_load_json(os.path.dirname(__file__) + '/test_data/topdesk_incident.json')
+    mock_actions = util_load_json(os.path.dirname(__file__) + '/test_data/topdesk_actions.json')
     requests_mock.get(
         'https://test.com/api/incidents/id/some-id',
         json=mock_incident)

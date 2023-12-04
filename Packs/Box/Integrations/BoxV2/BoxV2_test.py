@@ -158,7 +158,7 @@ def test_create_update_file_share_link(requests_mock, mocker):
     """
     from BoxV2 import create_update_file_share_link_command
 
-    mock_response = util_load_json('test_data/create_update_file_share_link.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/create_update_file_share_link.json')
     requests_mock.put(
         'https://api.box.com/2.0/files/742246263170/?fields=shared_link',
         json=mock_response)
@@ -201,7 +201,7 @@ def test_remove_file_share_link_command(requests_mock, mocker):
     """
     from BoxV2 import remove_file_share_link_command
 
-    mock_response = util_load_json('test_data/create_update_file_share_link.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/create_update_file_share_link.json')
     requests_mock.put(
         'https://api.box.com/2.0/files/742246263170/?fields=shared_link',
         json=mock_response)
@@ -244,7 +244,7 @@ def test_get_shared_link_for_file_command(requests_mock, mocker):
     """
     from BoxV2 import get_shared_link_for_file_command
 
-    mock_response = util_load_json('test_data/create_update_file_share_link.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/create_update_file_share_link.json')
     requests_mock.get(
         'https://api.box.com/2.0/files/742246263170/',
         json=mock_response)
@@ -284,7 +284,7 @@ def test_create_update_folder_share_link_command(requests_mock, mocker):
     """
     from BoxV2 import create_update_folder_share_link_command
 
-    mock_response = util_load_json('test_data/create_update_file_share_link.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/create_update_file_share_link.json')
     requests_mock.put(
         'https://api.box.com/2.0/folders/742246263170/',
         json=mock_response)
@@ -328,7 +328,7 @@ def test_remove_folder_share_link_command(requests_mock, mocker):
     """
     from BoxV2 import remove_folder_share_link_command
 
-    mock_response = util_load_json('test_data/create_update_file_share_link.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/create_update_file_share_link.json')
     requests_mock.put(
         'https://api.box.com/2.0/folders/742246263170/',
         json=mock_response)
@@ -368,7 +368,7 @@ def test_get_folder_command(requests_mock, mocker):
     """
     from BoxV2 import get_folder_command
 
-    mock_response = util_load_json('test_data/get_folder.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_folder.json')
     requests_mock.get(
         'https://api.box.com/2.0/folders/0/',
         json=mock_response)
@@ -408,7 +408,7 @@ def test_list_folder_items_command(requests_mock, mocker):
     """
     from BoxV2 import list_folder_items_command
 
-    mock_response = util_load_json('test_data/get_folder.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_folder.json')
     requests_mock.get(
         'https://api.box.com/2.0/folders/0/',
         json=mock_response)
@@ -451,7 +451,7 @@ def test_folder_create_command(requests_mock, mocker):
     """
     from BoxV2 import folder_create_command
 
-    mock_response = util_load_json('test_data/get_folder.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_folder.json')
     requests_mock.post(
         'https://api.box.com/2.0/folders/',
         json=mock_response)
@@ -531,7 +531,7 @@ def test_list_users_command(requests_mock, mocker):
     """
     from BoxV2 import list_users_command
 
-    mock_response = util_load_json('test_data/get_folder.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_folder.json')
     requests_mock.get(
         'https://api.box.com/2.0/users/',
         json=mock_response)
@@ -729,7 +729,7 @@ def test_get_current_user_command(requests_mock, mocker):
     """
     from BoxV2 import get_current_user_command
 
-    mock_response = util_load_json('test_data/get_current_user.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_current_user.json')
 
     client = ClientTestBox(mocker).client
 
@@ -769,7 +769,7 @@ def test_url_as_param(requests_mock, mocker):
     testing_auth_header = {'Authorization': 'Bearer JWT_TOKEN'}
     mocker.patch.object(Client, '_request_token', return_value=testing_auth_header)
 
-    mock_response = util_load_json('test_data/get_current_user.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_current_user.json')
 
     # The different url
     other_url = 'https://api.triangle.com'
@@ -815,7 +815,7 @@ def test_create_user_command(requests_mock, mocker):
      """
     from BoxV2 import create_user_command
 
-    mock_response = util_load_json('test_data/create_user.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/create_user.json')
 
     client = ClientTestBox(mocker).client
 
@@ -882,7 +882,7 @@ def test_update_user_command(requests_mock, mocker):
      """
     from BoxV2 import update_user_command
 
-    mock_response = util_load_json('test_data/create_user.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/create_user.json')
 
     client = ClientTestBox(mocker).client
 
@@ -1000,8 +1000,8 @@ def test_fetch_incidents(requests_mock, mocker):
     last_run = {'time': '2015-10-21T04:29-8:00'}
     first_fetch_time = 1607935741
 
-    mock_response = util_load_json('test_data/events.json')
-    expected_fetch_results = util_load_json('test_data/fetch_expected_response.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/events.json')
+    expected_fetch_results = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_expected_response.json')
 
     requests_mock.get(
         'https://api.box.com/2.0/events/',
@@ -1044,7 +1044,7 @@ def test_list_user_events_command(requests_mock, mocker):
         'as_user': 'sample_current_user',
         'stream_type': 'all'
     }
-    mock_response = util_load_json('test_data/events.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/events.json')
     requests_mock.get(
         'https://api.box.com/2.0/events/',
         json=mock_response
@@ -1085,7 +1085,7 @@ def test_list_enterprise_events_command(requests_mock, mocker):
         'stream_type': 'all',
         'created_after': '3 days'
     }
-    mock_response = util_load_json('test_data/events.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/events.json')
     requests_mock.get(
         'https://api.box.com/2.0/events/',
         json=mock_response
@@ -1126,7 +1126,7 @@ def test_move_folder_command(requests_mock, mocker):
         'to_user_id': '7890',
         'notify': 'true'
     }
-    mock_response = util_load_json('test_data/get_folder.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_folder.json')
     requests_mock.put(
         'https://api.box.com/2.0/users/123456/folders/0/',
         json=mock_response
@@ -1166,7 +1166,7 @@ def test_main(mocker):
     mocker.patch.object(demisto, 'command', return_value=demisto_command)
     client = ClientTestBox(mocker).client
     mocker.patch.object(BoxV2, 'Client', return_value=client)
-    mock_response = util_load_json('test_data/get_folder.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_folder.json')
     mocker.patch.object(Client, 'list_users', return_value=mock_response)
     BoxV2.main()
 

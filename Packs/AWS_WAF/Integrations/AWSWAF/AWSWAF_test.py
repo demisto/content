@@ -56,7 +56,7 @@ class MockedBoto3Client:
 
 
 def util_load_json(path):
-    with open(Path(__file__) / f'test_data/{path}.json', encoding='utf-8') as f:
+    with open(Path(__file__).parent / f'test_data/{path}.json', encoding='utf-8') as f:
         return json.loads(f.read())
 
 

@@ -30,14 +30,14 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-bitcoin_responses = util_load_json('test_data/bitcoin_responses.json')
-report_address_scenarios = util_load_json('test_data/report_command.json')
+bitcoin_responses = util_load_json(os.path.dirname(__file__) + '/test_data/bitcoin_responses.json')
+report_address_scenarios = util_load_json(os.path.dirname(__file__) + '/test_data/report_command.json')
 successful_bitcoin_report_command_output = 'Bitcoin address 12xfas41 by abuse bitcoin user ' \
                                            'blabla@blabla.net was reported to ' \
                                            'BitcoinAbuse service'
 failure_bitcoin_report_command_output = 'bitcoin report address did not succeed: {}'.format(
     bitcoin_responses['failure']['response'])
-get_indicators_scenarios = util_load_json('test_data/get_indicators_command.json')
+get_indicators_scenarios = util_load_json(os.path.dirname(__file__) + '/test_data/get_indicators_command.json')
 
 
 @pytest.mark.parametrize('response, address_report, expected',

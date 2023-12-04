@@ -34,7 +34,7 @@ def test_get_alerts(mocker):
     mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
     mocker.patch.object(FireEyeClient, 'get_alerts_request',
-                        return_value=util_load_json('test_data/get_alerts.json'))
+                        return_value=util_load_json(os.path.dirname(__file__) + '/test_data/get_alerts.json'))
     command_results = get_alerts(client=client,
                                  args={'limit': '2', 'start_time': '2 months', 'sender_email': 'test@malicious.net'})
     assert command_results.outputs == GET_ALERTS_CONTEXT
@@ -55,7 +55,7 @@ def test_get_alert_details(mocker):
     mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
     mocker.patch.object(FireEyeClient, 'get_alert_details_request',
-                        return_value=util_load_json('test_data/get_alert_details.json'))
+                        return_value=util_load_json(os.path.dirname(__file__) + '/test_data/get_alert_details.json'))
     command_results = get_alert_details(client=client, args={'alert_id': '3'})
     assert command_results[0].outputs == GET_ALERTS_DETAILS_CONTEXT
 
@@ -75,7 +75,7 @@ def test_get_artifacts_metadata(mocker):
     mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
     mocker.patch.object(FireEyeClient, 'get_artifacts_metadata_by_uuid_request',
-                        return_value=util_load_json('test_data/get_artifact_metadata.json'))
+                        return_value=util_load_json(os.path.dirname(__file__) + '/test_data/get_artifact_metadata.json'))
     command_results = get_artifacts_metadata_by_uuid(client=client, args={'uuid': 'uuid'})
     assert command_results[0].outputs == GET_ARTIFACTS_METADATA_CONTEXT
 
@@ -95,7 +95,7 @@ def test_get_quarantined_emails(mocker):
     mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
     mocker.patch.object(FireEyeClient, 'get_quarantined_emails_request',
-                        return_value=util_load_json('test_data/quarantined_emails.json'))
+                        return_value=util_load_json(os.path.dirname(__file__) + '/test_data/quarantined_emails.json'))
     command_results = get_quarantined_emails(client=client, args={'limit': '2'})
     assert command_results.outputs == QUARANTINED_EMAILS_CONTEXT
 
@@ -215,7 +215,7 @@ def test_list_allowedlist(mocker):
     mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
     mocker.patch.object(FireEyeClient, 'list_allowedlist_request',
-                        return_value=util_load_json('test_data/list_allowedlist.json'))
+                        return_value=util_load_json(os.path.dirname(__file__) + '/test_data/list_allowedlist.json'))
     command_results = list_allowedlist(client=client, args={'type': 'url'})
     assert command_results.outputs == ALLOWEDLIST
 
@@ -235,7 +235,7 @@ def test_create_allowedlist_already_exist(mocker):
     mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
     mocker.patch.object(FireEyeClient, 'list_allowedlist_request',
-                        return_value=util_load_json('test_data/list_allowedlist.json'))
+                        return_value=util_load_json(os.path.dirname(__file__) + '/test_data/list_allowedlist.json'))
     err_str = 'Cannot create the entry_value www.demisto.com as it is already exist in the Allowedlist of type url.'
     with pytest.raises(DemistoException, match=err_str):
         create_allowedlist(client=client, args={'type': 'url', 'entry_value': 'www.demisto.com', 'matches': '2'})
@@ -256,7 +256,7 @@ def test_update_allowedlist_not_exist(mocker):
     mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
     mocker.patch.object(FireEyeClient, 'list_allowedlist_request',
-                        return_value=util_load_json('test_data/list_allowedlist.json'))
+                        return_value=util_load_json(os.path.dirname(__file__) + '/test_data/list_allowedlist.json'))
     err_str = 'Cannot update the entry_value www.fake.com as it does not exist in the Allowedlist of type url.'
     with pytest.raises(DemistoException, match=err_str):
         update_allowedlist(client=client, args={'type': 'url', 'entry_value': 'www.fake.com', 'matches': '2'})
@@ -277,7 +277,7 @@ def test_delete_allowedlist_not_exist(mocker):
     mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
     mocker.patch.object(FireEyeClient, 'list_allowedlist_request',
-                        return_value=util_load_json('test_data/list_allowedlist.json'))
+                        return_value=util_load_json(os.path.dirname(__file__) + '/test_data/list_allowedlist.json'))
     err_str = 'Cannot delete the entry_value www.fake.com as it does not exist in the Allowedlist of type url.'
     with pytest.raises(DemistoException, match=err_str):
         delete_allowedlist(client=client, args={'type': 'url', 'entry_value': 'www.fake.com'})
@@ -298,7 +298,7 @@ def test_list_blockedlist(mocker):
     mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
     mocker.patch.object(FireEyeClient, 'list_blockedlist_request',
-                        return_value=util_load_json('test_data/list_blockedlist.json'))
+                        return_value=util_load_json(os.path.dirname(__file__) + '/test_data/list_blockedlist.json'))
     command_results = list_blockedlist(client=client, args={'type': 'url'})
     assert command_results.outputs == BLOCKEDLIST
 
@@ -318,7 +318,7 @@ def test_list_blockedlist_with_limit(mocker):
     mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
     mocker.patch.object(FireEyeClient, 'list_blockedlist_request',
-                        return_value=util_load_json('test_data/list_blockedlist.json'))
+                        return_value=util_load_json(os.path.dirname(__file__) + '/test_data/list_blockedlist.json'))
     command_results = list_blockedlist(client=client, args={'type': 'url', 'limit': '1'})
     assert command_results.outputs == BLOCKEDLIST[:1]
 
@@ -357,7 +357,7 @@ def test_create_blockedlist_already_exist(mocker):
     mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
     mocker.patch.object(FireEyeClient, 'list_blockedlist_request',
-                        return_value=util_load_json('test_data/list_blockedlist.json'))
+                        return_value=util_load_json(os.path.dirname(__file__) + '/test_data/list_blockedlist.json'))
     err_str = 'Cannot create the entry_value www.blocksite1.net/path/test.html as it is already exist in the ' \
               'Blockedlist of type url.'
     with pytest.raises(DemistoException, match=err_str):
@@ -380,7 +380,7 @@ def test_update_blockedlist_not_exist(mocker):
     mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
     mocker.patch.object(FireEyeClient, 'list_blockedlist_request',
-                        return_value=util_load_json('test_data/list_blockedlist.json'))
+                        return_value=util_load_json(os.path.dirname(__file__) + '/test_data/list_blockedlist.json'))
     err_str = 'Cannot update the entry_value www.fake.com as it does not exist in the Blockedlist of type url.'
     with pytest.raises(DemistoException, match=err_str):
         update_blockedlist(client=client, args={'type': 'url', 'entry_value': 'www.fake.com', 'matches': '2'})
@@ -401,7 +401,7 @@ def test_delete_blockedlist_not_exist(mocker):
     mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
     mocker.patch.object(FireEyeClient, 'list_blockedlist_request',
-                        return_value=util_load_json('test_data/list_blockedlist.json'))
+                        return_value=util_load_json(os.path.dirname(__file__) + '/test_data/list_blockedlist.json'))
     err_str = 'Cannot delete the entry_value www.fake.com as it does not exist in the Blockedlist of type url.'
     with pytest.raises(DemistoException, match=err_str):
         delete_blockedlist(client=client, args={'type': 'url', 'entry_value': 'www.fake.com'})
@@ -422,7 +422,7 @@ def test_fetch_incidents(mocker):
     """
     mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
-    mocker.patch.object(FireEyeClient, 'get_alerts_request', return_value=util_load_json('test_data/alerts.json'))
+    mocker.patch.object(FireEyeClient, 'get_alerts_request', return_value=util_load_json(os.path.dirname(__file__) + '/test_data/alerts.json'))
     last_run, incidents = fetch_incidents(client=client,
                                           last_run={},
                                           first_fetch='1 year',
@@ -447,7 +447,7 @@ def test_fetch_incidents_with_limit(mocker):
     """
     mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.ex.com/", username='user', password='pass', verify=False, proxy=False)
-    mocker.patch.object(FireEyeClient, 'get_alerts_request', return_value=util_load_json('test_data/alerts.json'))
+    mocker.patch.object(FireEyeClient, 'get_alerts_request', return_value=util_load_json(os.path.dirname(__file__) + '/test_data/alerts.json'))
     last_run, incidents = fetch_incidents(client=client,
                                           last_run={},
                                           first_fetch='1 year',
@@ -475,7 +475,7 @@ def test_fetch_incidents_last_alerts(mocker):
     # mocker.patch.object(dateparser, 'parse', side_effect=date_parser_mock)
     mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
-    mocker.patch.object(FireEyeClient, 'get_alerts_request', return_value=util_load_json('test_data/alerts.json'))
+    mocker.patch.object(FireEyeClient, 'get_alerts_request', return_value=util_load_json(os.path.dirname(__file__) + '/test_data/alerts.json'))
     last_run_time = '2021-02-14T17:01:14+00:00'
     next_run_time_to_expect = (dateparser.parse(last_run_time) + timedelta(hours=48)).isoformat()
     last_alert_ids = '["1", "2", "3", "4", "5"]'
@@ -513,7 +513,7 @@ def test_fetch_incidents_no_alerts(mocker):
     """
     mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
-    mocker.patch.object(FireEyeClient, 'get_alerts_request', return_value=util_load_json('test_data/no_alerts.json'))
+    mocker.patch.object(FireEyeClient, 'get_alerts_request', return_value=util_load_json(os.path.dirname(__file__) + '/test_data/no_alerts.json'))
     last_run_time = '2021-02-14T17:01:14+00:00'
     last_alert_ids = '["1", "2", "3", "4", "5"]'
     last_run = {

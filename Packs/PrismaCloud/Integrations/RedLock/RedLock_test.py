@@ -410,8 +410,8 @@ def test_redlock_search_network(mocker):
 @pytest.mark.parametrize(
     "raw_alert, expected_result, set_args",
     [
-        (util_load_json('test_data/alert_raw.json'), util_load_json('test_data/alert_context.json'), False),
-        (util_load_json('test_data/alert_raw.json'), util_load_json('test_data/alert_context_with_resource_keys.json'), True)
+        (util_load_json(os.path.dirname(__file__) + '/test_data/alert_raw.json'), util_load_json(os.path.dirname(__file__) + '/test_data/alert_context.json'), False),
+        (util_load_json(os.path.dirname(__file__) + '/test_data/alert_raw.json'), util_load_json(os.path.dirname(__file__) + '/test_data/alert_context_with_resource_keys.json'), True)
     ]
 )
 def test_alert_to_context(raw_alert, expected_result, set_args, mocker):

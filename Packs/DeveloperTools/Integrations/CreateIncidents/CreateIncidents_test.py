@@ -18,9 +18,9 @@ def util_loaf_file(path):
         return f.read()
 
 
-incident_list = util_load_json('test_data/incidents_examples.json')
+incident_list = util_load_json(os.path.dirname(__file__) + '/test_data/incidents_examples.json')
 incident = util_loaf_file('test_data/incidents.json')
-context_list = util_load_json('test_data/context_examples.json')
+context_list = util_load_json(os.path.dirname(__file__) + '/test_data/context_examples.json')
 attachment_content = util_loaf_file('test_data/YOU HAVE WON 10000$.eml')
 CLIENT_MOCK = CreateIncidents.Client('example_url.com', False, False)
 

@@ -134,7 +134,7 @@ def test_parse_cpes(nodes, expected):
 
 
 @pytest.mark.parametrize("response, expected",
-                         [(util_load_json('test_data/CVE-2019-0708.json'),
+                         [(util_load_json(os.path.dirname(__file__) + '/test_data/CVE-2019-0708.json'),
                            {'ID': 'CVE-2019-0708',
                             'CVSS Score': 9.8,
                             'Published': '2019-05-16T19:29:00Z',
@@ -156,8 +156,8 @@ def test_valid_cve_format(input, expected):
     assert valid_cve_format(input) == expected
 
 
-@pytest.mark.parametrize("response, expected", [(util_load_json('test_data/CVE-2019-0708.json'),
-                                                 (util_load_json('test_data/parsed_Cve.json')))])
+@pytest.mark.parametrize("response, expected", [(util_load_json(os.path.dirname(__file__) + '/test_data/CVE-2019-0708.json'),
+                                                 (util_load_json(os.path.dirname(__file__) + '/test_data/parsed_Cve.json')))])
 def test_parse_cve(response, expected):
     relationships, parsed_cve = parse_cve(OPEN_CVE, response)
     parsed_cve_relationships = [json.dumps(relationship.to_context()) for relationship in relationships]
@@ -167,7 +167,7 @@ def test_parse_cve(response, expected):
     assert parsed_cve['fields']['cvssscore'] == expected['fields']['cvssscore']
 
 
-@pytest.mark.parametrize("input, expected", [(util_load_json('test_data/CVE-2019-0708.json'),
+@pytest.mark.parametrize("input, expected", [(util_load_json(os.path.dirname(__file__) + '/test_data/CVE-2019-0708.json'),
                                               ["Windows vista", "Windows 7", "Windows server 2008",
                                                "Windows server 2003", "Windows xp", "Microsoft", "CWE-416"])])
 def test_parse_tags(input, expected):
@@ -181,8 +181,8 @@ def test_dedupe_cves(input, expected):
     assert dedupe_cves(input) == expected
 
 
-@pytest.mark.parametrize("input, expected", [(util_load_json('test_data/CVE-2019-0708.json'),
-                                              util_load_json('test_data/indicator.json'))])
+@pytest.mark.parametrize("input, expected", [(util_load_json(os.path.dirname(__file__) + '/test_data/CVE-2019-0708.json'),
+                                              util_load_json(os.path.dirname(__file__) + '/test_data/indicator.json'))])
 def test_cve_to_indicator(input, expected):
     relationships, parsed_cve = parse_cve(OPEN_CVE, input)
     indicator = cve_to_indicator(ocve=OPEN_CVE, cve=parsed_cve, relationships=relationships)
@@ -190,7 +190,7 @@ def test_cve_to_indicator(input, expected):
 
 
 @pytest.mark.parametrize("response, expected, args, mock_url",
-                         [(util_load_json('test_data/reports_response.json'),
+                         [(util_load_json(os.path.dirname(__file__) + '/test_data/reports_response.json'),
                            CommandResults(outputs=[{'id': 'KLMHU9EB4N8C',
                                                     'created_at': '2023-08-02T09:52:47Z',
                                                     'details': ['microsoft']},
@@ -200,8 +200,8 @@ def test_cve_to_indicator(input, expected):
                                           outputs_prefix='OpenCVE.Reports'),
                            {},
                            'https://www.opencve.io/api/reports'),
-                          (util_load_json('test_data/single_report_response.json'),
-                           CommandResults(outputs=util_load_json('test_data/single_report_response.json'),
+                          (util_load_json(os.path.dirname(__file__) + '/test_data/single_report_response.json'),
+                           CommandResults(outputs=util_load_json(os.path.dirname(__file__) + '/test_data/single_report_response.json'),
                                           outputs_prefix='OpenCVE.Reports.KLMHU9EB4N8C'),
                            {'report_id': 'KLMHU9EB4N8C'},
                            'https://www.opencve.io/api/reports/KLMHU9EB4N8C')])
@@ -213,14 +213,14 @@ def test_get_reports_command(response, expected, args, mock_url, requests_mock):
 
 
 @pytest.mark.parametrize("response, args, expected, mock_url",
-                         [(util_load_json('test_data/vendors_specific_vendor.json'),
+                         [(util_load_json(os.path.dirname(__file__) + '/test_data/vendors_specific_vendor.json'),
                            {'vendor_name': 'paloaltonetworks'},
-                           CommandResults(outputs=util_load_json('test_data/vendors_specific_vendor.json'),
+                           CommandResults(outputs=util_load_json(os.path.dirname(__file__) + '/test_data/vendors_specific_vendor.json'),
                                           outputs_prefix='OpenCVE.paloaltonetworks'),
                            'https://www.opencve.io/api/vendors/paloaltonetworks'),
-                          (util_load_json('test_data/vendors.json'),
+                          (util_load_json(os.path.dirname(__file__) + '/test_data/vendors.json'),
                            {'search': 'search', 'letter': 'a', 'page': 1},
-                           CommandResults(outputs=util_load_json('test_data/vendors.json'),
+                           CommandResults(outputs=util_load_json(os.path.dirname(__file__) + '/test_data/vendors.json'),
                                           outputs_prefix='OpenCVE.Vendors'),
                            'https://www.opencve.io/api/vendors')])
 def test_get_vendors_command(response, args, expected, mock_url, requests_mock):
@@ -231,8 +231,8 @@ def test_get_vendors_command(response, args, expected, mock_url, requests_mock):
 
 
 @pytest.mark.parametrize("response, expected, mock_url",
-                         [(util_load_json('test_data/my_vendors.json'),
-                           CommandResults(outputs=util_load_json('test_data/my_vendors.json'),
+                         [(util_load_json(os.path.dirname(__file__) + '/test_data/my_vendors.json'),
+                           CommandResults(outputs=util_load_json(os.path.dirname(__file__) + '/test_data/my_vendors.json'),
                                           outputs_prefix='OpenCVE.myVendors'),
                            'https://www.opencve.io/api/account/subscriptions/vendors')])
 def test_get_my_vendors_command(response, expected, mock_url, requests_mock):
@@ -243,8 +243,8 @@ def test_get_my_vendors_command(response, expected, mock_url, requests_mock):
 
 
 @pytest.mark.parametrize("response, expected, mock_url",
-                         [(util_load_json('test_data/my_products.json'),
-                           CommandResults(outputs=util_load_json('test_data/my_products.json'),
+                         [(util_load_json(os.path.dirname(__file__) + '/test_data/my_products.json'),
+                           CommandResults(outputs=util_load_json(os.path.dirname(__file__) + '/test_data/my_products.json'),
                                           outputs_prefix='OpenCVE.myProducts'),
                            'https://www.opencve.io/api/account/subscriptions/products')])
 def test_get_my_products_command(response, expected, mock_url, requests_mock):
@@ -266,15 +266,15 @@ def test_existing_key(input, expected):
 @pytest.mark.parametrize("expected", [(['CVE-2021-28478', 'CVE-2021-26418'])])
 def test_cve_latest_command(expected, requests_mock):
     requests_mock.get('https://www.opencve.io/api/reports',
-                      json=util_load_json('test_data/reports_response.json'))
+                      json=util_load_json(os.path.dirname(__file__) + '/test_data/reports_response.json'))
     requests_mock.get('https://www.opencve.io/api/reports/KLMHU9EB4N8C/alerts',
-                      json=util_load_json('test_data/KLMHU9EB4N8C_alerts.json'))
+                      json=util_load_json(os.path.dirname(__file__) + '/test_data/KLMHU9EB4N8C_alerts.json'))
     requests_mock.get('https://www.opencve.io/api/reports/NZSBGGBLW4TH/alerts',
-                      json=util_load_json('test_data/NZSBGGBLW4TH_alerts.json'))
+                      json=util_load_json(os.path.dirname(__file__) + '/test_data/NZSBGGBLW4TH_alerts.json'))
     requests_mock.get('https://www.opencve.io/api/cve/CVE-2021-28478',
-                      json=util_load_json('test_data/CVE-2021-28478.json'))
+                      json=util_load_json(os.path.dirname(__file__) + '/test_data/CVE-2021-28478.json'))
     requests_mock.get('https://www.opencve.io/api/cve/CVE-2021-26418',
-                      json=util_load_json('test_data/CVE-2021-26418.json'))
+                      json=util_load_json(os.path.dirname(__file__) + '/test_data/CVE-2021-26418.json'))
     result = cve_latest_command(CLIENT, OPEN_CVE, {'last_run': '2023-08-01T02:00:00'})
     cves = [cve["value"] for cve in result.outputs]
     assert all(cve in expected for cve in cves)
@@ -288,7 +288,7 @@ def test_cve_latest_command(expected, requests_mock):
                              'test_data/alert_475fde88-00dc-4024-9499-8197e334dfe7.json')),
                           ({'report_id': 'KLMHU9EB4N8C'},
                            'https://www.opencve.io/api/reports/KLMHU9EB4N8C/alerts',
-                           util_load_json('test_data/alerts_KLMHU9EB4N8C.json'))])
+                           util_load_json(os.path.dirname(__file__) + '/test_data/alerts_KLMHU9EB4N8C.json'))])
 def test_get_alerts_command(args, mock_url, mock_json, requests_mock):
     requests_mock.get(mock_url, json=mock_json)
     alerts = get_alerts_command(CLIENT, args)
@@ -302,8 +302,8 @@ def test_get_alert_failed_commad():
 
 @pytest.mark.parametrize("args, mock_url, mock_json, expected",
                          [({'cve': 'CVE-2021-26418'}, 'https://www.opencve.io/api/cve/CVE-2021-26418',
-                           util_load_json('test_data/CVE-2021-26418.json'),
-                           util_load_json('test_data/get_cve_command_outputs.json'))])
+                           util_load_json(os.path.dirname(__file__) + '/test_data/CVE-2021-26418.json'),
+                           util_load_json(os.path.dirname(__file__) + '/test_data/get_cve_command_outputs.json'))])
 def test_get_cve_command(args, mock_url, mock_json, expected, requests_mock):
     requests_mock.get(mock_url, json=mock_json)
     cve = get_cve_command(CLIENT, OPEN_CVE, args)

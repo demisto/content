@@ -32,7 +32,7 @@ def test_basescript_dummy():
     }
     response = basescript_dummy_command(args)
 
-    mock_response = util_load_json('test_data/basescript-dummy.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/basescript-dummy.json')
 
     assert response.outputs == mock_response
 # TODO: ADD HERE your unit tests

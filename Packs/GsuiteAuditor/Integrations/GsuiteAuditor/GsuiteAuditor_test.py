@@ -42,8 +42,8 @@ def test_activities_list_command(gsuite_client, mocker):
         'user_key': 'all',
         'application_name': 'admin'
     }
-    api_response = util_load_json('test_data/activities_list_response.json')
-    expected_entry_context = util_load_json('test_data/activities_list_entry_context.json')
+    api_response = util_load_json(os.path.dirname(__file__) + '/test_data/activities_list_response.json')
+    expected_entry_context = util_load_json(os.path.dirname(__file__) + '/test_data/activities_list_entry_context.json')
 
     mocker.patch.object(gsuite_client, 'http_request', return_value=api_response)
 

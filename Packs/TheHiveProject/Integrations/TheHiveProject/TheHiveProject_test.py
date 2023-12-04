@@ -12,7 +12,7 @@ def test_list_cases_command(requests_mock):
 
     from TheHiveProject import list_cases_command, Client
 
-    mock_response = util_load_json('test_data/cases_list_new.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/cases_list_new.json')
 
     requests_mock.post('https://test/api/v1/query?name=list-cases',
                        json=mock_response)
@@ -47,7 +47,7 @@ def test_get_case_command(requests_mock):
 
     from TheHiveProject import get_case_command, Client
 
-    mock_response = util_load_json('test_data/cases_list.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/cases_list.json')
 
     requests_mock.get('https://test/api/case/1',
                       json=mock_response[0])
@@ -82,7 +82,7 @@ def test_update_case_command(requests_mock):
 
     from TheHiveProject import update_case_command, Client
 
-    mock_original_response = util_load_json('test_data/cases_list.json')
+    mock_original_response = util_load_json(os.path.dirname(__file__) + '/test_data/cases_list.json')
     mock_response = mock_original_response.copy()
     mock_response[0]["title"] = "updated title"
     mock_response[0]["description"] = "updated description"
@@ -170,7 +170,7 @@ def test_merge_cases_command(requests_mock):
 
     from TheHiveProject import merge_cases_command, Client
 
-    mock_response = util_load_json('test_data/merged_cases.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/merged_cases.json')
 
     requests_mock.post('https://test/api/case/1/_merge/2',
                        json=mock_response)
@@ -200,7 +200,7 @@ def test_get_case_tasks_command(requests_mock):
 
     from TheHiveProject import get_case_tasks_command, Client
 
-    mock_response = util_load_json('test_data/cases_list.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/cases_list.json')
 
     requests_mock.post('https://test/api/case/task/_search',
                        json=mock_response[1]['tasks'])
@@ -237,7 +237,7 @@ def test_get_task_command(requests_mock):
 
     from TheHiveProject import get_task_command, Client
 
-    mock_response = util_load_json('test_data/cases_list.json')[1]['tasks'][0]
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/cases_list.json')[1]['tasks'][0]
 
     requests_mock.get('https://test/api/status',
                       json={'versions': {'TheHive': 'version'}})
@@ -270,7 +270,7 @@ def test_update_task_command(requests_mock):
 
     from TheHiveProject import update_task_command, Client
 
-    mock_original_response = util_load_json('test_data/cases_list.json')[1]['tasks'][0]
+    mock_original_response = util_load_json(os.path.dirname(__file__) + '/test_data/cases_list.json')[1]['tasks'][0]
     mock_response = mock_original_response.copy()
     mock_response['title'] = 'updated title'
 
@@ -307,7 +307,7 @@ def test_get_users_list_command(requests_mock):
 
     from TheHiveProject import get_users_list_command, Client
 
-    mock_response = util_load_json('test_data/users_list.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/users_list.json')
 
     requests_mock.get('https://test/api/status',
                       json={'versions': {'TheHive': 'version'}})
@@ -336,7 +336,7 @@ def test_get_user_command(requests_mock):
 
     from TheHiveProject import get_user_command, Client
 
-    mock_response = util_load_json('test_data/users_list.json')[0]
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/users_list.json')[0]
 
     requests_mock.get('https://test/api/status',
                       json={'versions': {'TheHive': 'version'}})
@@ -365,7 +365,7 @@ def test_create_local_user_command(requests_mock):
 
     from TheHiveProject import create_local_user_command, Client
 
-    mock_response = util_load_json('test_data/added_user.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/added_user.json')
 
     requests_mock.get('https://test/api/status',
                       json={'versions': {'TheHive': 'version'}})
@@ -399,7 +399,7 @@ def test_list_observables_command(requests_mock):
 
     from TheHiveProject import list_observables_command, Client
 
-    mock_response = util_load_json('test_data/cases_list.json')[2]
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/cases_list.json')[2]
 
     requests_mock.get('https://test/api/status',
                       json={'versions': {'TheHive': 'version'}})
@@ -436,7 +436,7 @@ def test_create_observable_command(requests_mock):
 
     from TheHiveProject import create_observable_command, Client
 
-    mock_original_response = util_load_json('test_data/cases_list.json')[0]
+    mock_original_response = util_load_json(os.path.dirname(__file__) + '/test_data/cases_list.json')[0]
     mock_response = mock_original_response.copy()
     mock_response['observables'].append(
         {
@@ -496,7 +496,7 @@ def test_update_observable_command(requests_mock):
 
     from TheHiveProject import update_observable_command, Client
 
-    mock_original_response = util_load_json('test_data/cases_list.json')[2]
+    mock_original_response = util_load_json(os.path.dirname(__file__) + '/test_data/cases_list.json')[2]
     mock_response = mock_original_response.copy()
     mock_response['observables'][0]['message'] = "update message for test"
 

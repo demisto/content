@@ -52,7 +52,7 @@ def test_fetch_incidents_few_incidents(mocker):
     mocker.patch('JiraEventCollector.send_events_to_xsiam')
 
     with requests_mock.Mocker() as m:
-        m.get(f'{URL}?{FIRST_REQUESTS_PARAMS}', json=util_load_json('test_data/events.json'))
+        m.get(f'{URL}?{FIRST_REQUESTS_PARAMS}', json=util_load_json(os.path.dirname(__file__) + '/test_data/events.json'))
         m.get(f'{URL}?{SECOND_REQUESTS_PARAMS}', json={})
 
         from JiraEventCollector import main
@@ -118,7 +118,7 @@ def test_fetch_events_max_fetch_set_to_one(mocker):
     mocker.patch('JiraEventCollector.send_events_to_xsiam')
 
     with requests_mock.Mocker() as m:
-        m.get(f'{URL}?{FIRST_REQUESTS_PARAMS}', json=util_load_json('test_data/events.json'))
+        m.get(f'{URL}?{FIRST_REQUESTS_PARAMS}', json=util_load_json(os.path.dirname(__file__) + '/test_data/events.json'))
         m.get(f'{URL}?{SECOND_REQUESTS_PARAMS}', json={})
 
         from JiraEventCollector import main

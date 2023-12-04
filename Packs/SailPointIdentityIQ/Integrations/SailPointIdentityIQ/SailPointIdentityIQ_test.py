@@ -230,7 +230,7 @@ def test_send_request_non_200_status(mock_response):
     """
     Send request should return None in case of 3XX, 4XX or 5XX HTTP status from IdentityIQ.
     """
-    json_data = util_load_json('test_data/404_Not_Found.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/404_Not_Found.json')
     mock_response.return_value = util_mock_http_resp(404, json_data)
     response = MOCK_CLIENT.send_request(MOCK_IDENTITYIQ_BASE_URL, 'GET', None)
     assert response.status_code == 404
@@ -243,7 +243,7 @@ def test_send_request_success(mock_response):
     """
     Send request should return response json in case of 2XX HTTP status from IdentityIQ.
     """
-    json_data = util_load_json('test_data/ResourceTypes.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/ResourceTypes.json')
     mock_response.return_value = util_mock_http_resp(200, json_data)
     response = MOCK_CLIENT.send_request(MOCK_IDENTITYIQ_BASE_URL, 'GET', None)
     assert response.status_code == 200
@@ -256,7 +256,7 @@ def test_transform_object_list_none_all():
 
 
 def test_transform_object_list_type_none():
-    json_data = util_load_json('test_data/Users.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/Users.json')
     data_list = SailPointIdentityIQ.transform_object_list(None, json_data['Resources'])
     assert data_list == json_data['Resources']
 
@@ -267,7 +267,7 @@ def test_transform_object_list_none():
 
 
 def test_transform_object_list():
-    json_data = util_load_json('test_data/Users.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/Users.json')
     data_list = SailPointIdentityIQ.transform_object_list('IdentityIQ.Identity', json_data['Resources'])
     assert data_list == json_data['Resources']
 
@@ -284,7 +284,7 @@ def test_transform_object_none_all():
 
 
 def test_transform_object_type_none():
-    json_data = util_load_json('test_data/User.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/User.json')
     data = SailPointIdentityIQ.transform_object(None, json_data)
     assert data == json_data
 
@@ -295,7 +295,7 @@ def test_transform_object_none():
 
 
 def test_transform_object():
-    json_data = util_load_json('test_data/User.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/User.json')
     data = SailPointIdentityIQ.transform_object('IdentityIQ.Identity', json_data)
     assert data == json_data
     assert 'sailpointUser' in data
@@ -308,7 +308,7 @@ def test_get_markdown_none():
 
 
 def test_get_markdown_object_type_none():
-    json_data = util_load_json('test_data/User.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/User.json')
     markdown = SailPointIdentityIQ.get_markdown(None, json_data)
     assert markdown == ''
 
@@ -321,7 +321,7 @@ def test_get_markdown_objects_none():
 
 
 def test_get_markdown():
-    json_data = util_load_json('test_data/User.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/User.json')
     markdown = SailPointIdentityIQ.get_markdown('IdentityIQ.Identity', json_data)
     headers = ['id', 'userName', 'displayName', 'name', 'emails', 'sailpointUser', 'extendedUser', 'entitlements',
                'roles', 'capabilities', 'active']
@@ -335,14 +335,14 @@ def test_build_results_none():
 
 
 def test_build_results_non_2xx_status():
-    json_data = util_load_json('test_data/404_Not_Found.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/404_Not_Found.json')
     response = util_mock_http_resp(404, json_data)
     results = SailPointIdentityIQ.build_results('Test.prefix', 'Test.key_field', response)
     assert results == '404 : Resource 7f000001705911b4817059d30cf50348 not found.'
 
 
 def test_build_results_2xx_status():
-    json_data = util_load_json('test_data/User.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/User.json')
     response = util_mock_http_resp(200, json_data)
     results = SailPointIdentityIQ.build_results('IdentityIQ.Identity', 'IdentityIQ.Identity', response)
     assert results.readable_output == '### Results:\n' + SailPointIdentityIQ.get_markdown('IdentityIQ.Identity',
@@ -371,7 +371,7 @@ def test_connection_success(mock_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_search_identities_no_resources(mock_search_identities_response):
-    json_data = util_load_json('test_data/NoResources.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/NoResources.json')
     mock_search_identities_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityIQ.search_identities(MOCK_CLIENT, None, None, 0, False, None)
     assert response.status_code == 200
@@ -380,7 +380,7 @@ def test_search_identities_no_resources(mock_search_identities_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_search_identities_id_not_found(mock_search_identities_response):
-    json_data = util_load_json('test_data/404_Not_Found.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/404_Not_Found.json')
     mock_search_identities_response.return_value = util_mock_http_resp(404, json_data)
     response = SailPointIdentityIQ.search_identities(MOCK_CLIENT, '7f000001705911b4817059d30cf50348', None, 0, True, None)
     assert response.status_code == 404
@@ -390,7 +390,7 @@ def test_search_identities_id_not_found(mock_search_identities_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_search_identities_id_found(mock_search_identities_response):
-    json_data = util_load_json('test_data/User.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/User.json')
     mock_search_identities_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityIQ.search_identities(MOCK_CLIENT, '7f00000174441779817444c8842b0017', None, 0, True, None)
     assert response.status_code == 200
@@ -400,7 +400,7 @@ def test_search_identities_id_found(mock_search_identities_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_search_identities_email_not_found(mock_search_identities_response):
-    json_data = util_load_json('test_data/NoResources.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/NoResources.json')
     mock_search_identities_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityIQ.search_identities(MOCK_CLIENT, None, 'test@sailpointdemo.com', 0, True, None)
     assert response.status_code == 200
@@ -409,7 +409,7 @@ def test_search_identities_email_not_found(mock_search_identities_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_search_identities_email_found(mock_search_identities_response):
-    json_data = util_load_json('test_data/User_Filtered.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/User_Filtered.json')
     mock_search_identities_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityIQ.search_identities(MOCK_CLIENT, None, 'serviceaccount@sailpointdemo.com', 0, True, None)
     assert response.status_code == 200
@@ -426,7 +426,7 @@ def test_search_identities_email_found(mock_search_identities_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_search_identities_risk_score_not_matched(mock_search_identities_response):
-    json_data = util_load_json('test_data/NoResources.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/NoResources.json')
     mock_search_identities_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityIQ.search_identities(MOCK_CLIENT, None, None, 1600, True, None)
     assert response.status_code == 200
@@ -435,7 +435,7 @@ def test_search_identities_risk_score_not_matched(mock_search_identities_respons
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_search_identities_risk_score_invalid(mock_search_identities_response):
-    json_data = util_load_json('test_data/400_Bad_Request.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/400_Bad_Request.json')
     mock_search_identities_response.return_value = util_mock_http_resp(400, json_data)
     response = SailPointIdentityIQ.search_identities(MOCK_CLIENT, None, None, -1, True, None)
     assert response.status_code == 400
@@ -446,7 +446,7 @@ def test_search_identities_risk_score_invalid(mock_search_identities_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_search_identities_risk_score_matched(mock_search_identities_response):
-    json_data = util_load_json('test_data/User_Filtered.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/User_Filtered.json')
     mock_search_identities_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityIQ.search_identities(MOCK_CLIENT, None, None, 100, True, None)
     assert response.status_code == 200
@@ -459,7 +459,7 @@ def test_search_identities_risk_score_matched(mock_search_identities_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_search_identities_active_false(mock_search_identities_response):
-    json_data = util_load_json('test_data/NoResources.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/NoResources.json')
     mock_search_identities_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityIQ.search_identities(MOCK_CLIENT, None, None, 0, True, None)
     assert response.status_code == 200
@@ -468,7 +468,7 @@ def test_search_identities_active_false(mock_search_identities_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_search_identities_active_true(mock_search_identities_response):
-    json_data = util_load_json('test_data/Users.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/Users.json')
     mock_search_identities_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityIQ.search_identities(MOCK_CLIENT, None, None, 0, True, None)
     assert response.status_code == 200
@@ -480,7 +480,7 @@ def test_search_identities_active_true(mock_search_identities_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_search_identities_custom_filter_found(mock_search_identities_response):
-    json_data = util_load_json('test_data/User_Filtered.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/User_Filtered.json')
     mock_search_identities_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityIQ.search_identities(MOCK_CLIENT, None, None, 0, True,
                                                      'emails.value eq "serviceaccount@sailpointdemo.com"')
@@ -498,7 +498,7 @@ def test_search_identities_custom_filter_found(mock_search_identities_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_get_policy_violations_id_not_found(mock_policy_violations_response):
-    json_data = util_load_json('test_data/404_Not_Found.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/404_Not_Found.json')
     mock_policy_violations_response.return_value = util_mock_http_resp(404, json_data)
     response = SailPointIdentityIQ.get_policy_violations(MOCK_CLIENT, '8a8080824df45873014df46036521343')
     assert response.status_code == 404
@@ -508,7 +508,7 @@ def test_get_policy_violations_id_not_found(mock_policy_violations_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_get_policy_violations_id_found(mock_policy_violations_response):
-    json_data = util_load_json('test_data/PolicyViolation.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/PolicyViolation.json')
     mock_policy_violations_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityIQ.get_policy_violations(MOCK_CLIENT, '8a8080824df45873014df46036521328')
     assert response.status_code == 200
@@ -518,7 +518,7 @@ def test_get_policy_violations_id_found(mock_policy_violations_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_get_policy_violations_no_resources(mock_policy_violations_response):
-    json_data = util_load_json('test_data/NoResources.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/NoResources.json')
     mock_policy_violations_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityIQ.get_policy_violations(MOCK_CLIENT, None)
     assert response.status_code == 200
@@ -527,7 +527,7 @@ def test_get_policy_violations_no_resources(mock_policy_violations_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_get_policy_violations(mock_policy_violations_response):
-    json_data = util_load_json('test_data/PolicyViolations.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/PolicyViolations.json')
     mock_policy_violations_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityIQ.get_policy_violations(MOCK_CLIENT, None)
     assert response.status_code == 200
@@ -538,7 +538,7 @@ def test_get_policy_violations(mock_policy_violations_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_get_task_results_id_not_found(mock_task_results_response):
-    json_data = util_load_json('test_data/404_Not_Found.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/404_Not_Found.json')
     mock_task_results_response.return_value = util_mock_http_resp(404, json_data)
     response = SailPointIdentityIQ.get_task_results(MOCK_CLIENT, '7f00000175891f4b81763bd218de1d64')
     assert response.status_code == 404
@@ -548,7 +548,7 @@ def test_get_task_results_id_not_found(mock_task_results_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_get_task_results_id_found(mock_task_results_response):
-    json_data = util_load_json('test_data/TaskResult.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/TaskResult.json')
     mock_task_results_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityIQ.get_task_results(MOCK_CLIENT, '7f00000175891f4b81763bd2181c1d5f')
     assert response.status_code == 200
@@ -557,7 +557,7 @@ def test_get_task_results_id_found(mock_task_results_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_get_task_results_no_resources(mock_task_results_response):
-    json_data = util_load_json('test_data/NoResources.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/NoResources.json')
     mock_task_results_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityIQ.get_task_results(MOCK_CLIENT, None)
     assert response.status_code == 200
@@ -566,7 +566,7 @@ def test_get_task_results_no_resources(mock_task_results_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_get_task_results(mock_task_results_response):
-    json_data = util_load_json('test_data/TaskResults.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/TaskResults.json')
     mock_task_results_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityIQ.get_task_results(MOCK_CLIENT, None)
     assert response.status_code == 200
@@ -577,7 +577,7 @@ def test_get_task_results(mock_task_results_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_get_accounts_no_resources(mock_accounts_response):
-    json_data = util_load_json('test_data/NoResources.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/NoResources.json')
     mock_accounts_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityIQ.get_accounts(MOCK_CLIENT, None, None, None, None, None, None, None)
     assert response.status_code == 200
@@ -586,7 +586,7 @@ def test_get_accounts_no_resources(mock_accounts_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_get_accounts_id_not_found(mock_accounts_response):
-    json_data = util_load_json('test_data/404_Not_Found.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/404_Not_Found.json')
     mock_accounts_response.return_value = util_mock_http_resp(404, json_data)
     response = SailPointIdentityIQ.get_accounts(MOCK_CLIENT, '7f00000174441779817444c8837c5373', None, None, None, None,
                                                 None, None)
@@ -597,7 +597,7 @@ def test_get_accounts_id_not_found(mock_accounts_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_get_accounts_id_found(mock_accounts_response):
-    json_data = util_load_json('test_data/Account.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/Account.json')
     mock_accounts_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityIQ.get_accounts(MOCK_CLIENT, '7f00000174441779817444c8837c0014', None, None, None, None,
                                                 None, None)
@@ -607,7 +607,7 @@ def test_get_accounts_id_found(mock_accounts_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_get_accounts_display_name_not_found(mock_accounts_response):
-    json_data = util_load_json('test_data/NoResources.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/NoResources.json')
     mock_accounts_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityIQ.get_accounts(MOCK_CLIENT, None, 'Black Jack', None, None, None, None, None)
     assert response.status_code == 200
@@ -616,7 +616,7 @@ def test_get_accounts_display_name_not_found(mock_accounts_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_get_accounts_display_name_found(mock_accounts_response):
-    json_data = util_load_json('test_data/Account_Filtered.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/Account_Filtered.json')
     mock_accounts_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityIQ.get_accounts(MOCK_CLIENT, None, 'bjack', None, None, None, None, None)
     assert response.status_code == 200
@@ -629,7 +629,7 @@ def test_get_accounts_display_name_found(mock_accounts_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_get_accounts_last_refresh_not_matched(mock_accounts_response):
-    json_data = util_load_json('test_data/NoResources.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/NoResources.json')
     mock_accounts_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityIQ.get_accounts(MOCK_CLIENT, None, None, '2020-12-10T08:50:25Z', None, None, None, None)
     assert response.status_code == 200
@@ -638,7 +638,7 @@ def test_get_accounts_last_refresh_not_matched(mock_accounts_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_get_accounts_last_refresh_matched(mock_accounts_response):
-    json_data = util_load_json('test_data/Account_Filtered.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/Account_Filtered.json')
     mock_accounts_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityIQ.get_accounts(MOCK_CLIENT, None, None, '2020-08-31T00:00:00Z', None, None, None, None)
     assert response.status_code == 200
@@ -651,7 +651,7 @@ def test_get_accounts_last_refresh_matched(mock_accounts_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_get_accounts_native_identity_not_found(mock_accounts_response):
-    json_data = util_load_json('test_data/NoResources.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/NoResources.json')
     mock_accounts_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityIQ.get_accounts(MOCK_CLIENT, None, None, None, 'Black Jack', None, None, None)
     assert response.status_code == 200
@@ -660,7 +660,7 @@ def test_get_accounts_native_identity_not_found(mock_accounts_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_get_accounts_native_identity_found(mock_accounts_response):
-    json_data = util_load_json('test_data/Account_Filtered.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/Account_Filtered.json')
     mock_accounts_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityIQ.get_accounts(MOCK_CLIENT, None, None, None, 'bjack', None, None, None)
     assert response.status_code == 200
@@ -673,7 +673,7 @@ def test_get_accounts_native_identity_found(mock_accounts_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_get_accounts_last_target_agg_not_matched(mock_accounts_response):
-    json_data = util_load_json('test_data/NoResources.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/NoResources.json')
     mock_accounts_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityIQ.get_accounts(MOCK_CLIENT, None, None, None, None, '2020-12-10T00:00:00Z', None, None)
     assert response.status_code == 200
@@ -682,7 +682,7 @@ def test_get_accounts_last_target_agg_not_matched(mock_accounts_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_get_accounts_last_target_agg_matched(mock_accounts_response):
-    json_data = util_load_json('test_data/Account_Filtered.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/Account_Filtered.json')
     mock_accounts_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityIQ.get_accounts(MOCK_CLIENT, None, None, None, None, '2020-08-31T00:00:00Z', None, None)
     assert response.status_code == 200
@@ -695,7 +695,7 @@ def test_get_accounts_last_target_agg_matched(mock_accounts_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_get_accounts_identity_name_not_matched(mock_accounts_response):
-    json_data = util_load_json('test_data/NoResources.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/NoResources.json')
     mock_accounts_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityIQ.get_accounts(MOCK_CLIENT, None, None, None, None, None, 'Black Jack', None)
     assert response.status_code == 200
@@ -704,7 +704,7 @@ def test_get_accounts_identity_name_not_matched(mock_accounts_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_get_accounts_identity_name_matched(mock_accounts_response):
-    json_data = util_load_json('test_data/Account_Filtered.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/Account_Filtered.json')
     mock_accounts_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityIQ.get_accounts(MOCK_CLIENT, None, None, None, None, None, 'bjack', None)
     assert response.status_code == 200
@@ -718,7 +718,7 @@ def test_get_accounts_identity_name_matched(mock_accounts_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_get_accounts_application_name_not_matched(mock_accounts_response):
-    json_data = util_load_json('test_data/NoResources.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/NoResources.json')
     mock_accounts_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityIQ.get_accounts(MOCK_CLIENT, None, None, None, None, None, None, 'SCIM Server')
     assert response.status_code == 200
@@ -727,7 +727,7 @@ def test_get_accounts_application_name_not_matched(mock_accounts_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_get_accounts_application_name_matched(mock_accounts_response):
-    json_data = util_load_json('test_data/Account_Filtered.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/Account_Filtered.json')
     mock_accounts_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityIQ.get_accounts(MOCK_CLIENT, None, None, None, None, None, None, 'SCIM SDK')
     assert response.status_code == 200
@@ -740,7 +740,7 @@ def test_get_accounts_application_name_matched(mock_accounts_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_get_accounts(mock_accounts_response):
-    json_data = util_load_json('test_data/Accounts.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/Accounts.json')
     mock_accounts_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityIQ.get_accounts(MOCK_CLIENT, None, None, '2020-05-01T00:00:00Z', None, None, None, None)
     assert response.status_code == 200
@@ -751,7 +751,7 @@ def test_get_accounts(mock_accounts_response):
 
 @patch('SailPointIdentityIQ.change_account_status')
 def test_change_account_id_not_found(mock_account):
-    mock_account.return_value = util_load_json('test_data/404_Not_Found.json')
+    mock_account.return_value = util_load_json(os.path.dirname(__file__) + '/test_data/404_Not_Found.json')
     accounts = SailPointIdentityIQ.change_account_status(MOCK_CLIENT, '7f00000174441779817444c8837c5373', True)
     assert 'urn:ietf:params:scim:api:messages:2.0:Error' in accounts['schemas']
     assert accounts['status'] == '404'
@@ -759,7 +759,7 @@ def test_change_account_id_not_found(mock_account):
 
 @patch('SailPointIdentityIQ.change_account_status')
 def test_change_account_enable(mock_account):
-    mock_account.return_value = util_load_json('test_data/Account.json')
+    mock_account.return_value = util_load_json(os.path.dirname(__file__) + '/test_data/Account.json')
     account = SailPointIdentityIQ.change_account_status(MOCK_CLIENT, '7f00000174441779817444c883c30016', True)
     verify_account(account)
     assert account['active'] is True
@@ -767,7 +767,7 @@ def test_change_account_enable(mock_account):
 
 @patch('SailPointIdentityIQ.change_account_status')
 def test_change_account_disable(mock_account):
-    mock_account.return_value = util_load_json('test_data/Account_Disabled.json')
+    mock_account.return_value = util_load_json(os.path.dirname(__file__) + '/test_data/Account_Disabled.json')
     account = SailPointIdentityIQ.change_account_status(MOCK_CLIENT, '7f00000174441779817444c883c30016', False)
     verify_account(account)
     assert account['active'] is False
@@ -803,7 +803,7 @@ def test_delete_account(mock_account_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_get_launched_workflows_id_not_found(mock_launched_workflows_response):
-    json_data = util_load_json('test_data/404_Not_Found.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/404_Not_Found.json')
     mock_launched_workflows_response.return_value = util_mock_http_resp(404, json_data)
     response = SailPointIdentityIQ.get_launched_workflows(MOCK_CLIENT, '7f00000173de18fa8173deb1064e0453')
     assert response.status_code == 404
@@ -813,7 +813,7 @@ def test_get_launched_workflows_id_not_found(mock_launched_workflows_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_get_launched_workflows_id_found(mock_launched_workflows_response):
-    json_data = util_load_json('test_data/LaunchedWorkflow.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/LaunchedWorkflow.json')
     mock_launched_workflows_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityIQ.get_launched_workflows(MOCK_CLIENT, '7f00000173de18fa8173deb1064e001c')
     assert response.status_code == 200
@@ -822,7 +822,7 @@ def test_get_launched_workflows_id_found(mock_launched_workflows_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_get_launched_workflows_no_resources(mock_launched_workflows_response):
-    json_data = util_load_json('test_data/NoResources.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/NoResources.json')
     mock_launched_workflows_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityIQ.get_launched_workflows(MOCK_CLIENT, None)
     assert response.status_code == 200
@@ -831,7 +831,7 @@ def test_get_launched_workflows_no_resources(mock_launched_workflows_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_get_launched_workflows(mock_launched_workflows_response):
-    json_data = util_load_json('test_data/LaunchedWorkflows.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/LaunchedWorkflows.json')
     mock_launched_workflows_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityIQ.get_launched_workflows(MOCK_CLIENT, None)
     assert response.status_code == 200
@@ -842,7 +842,7 @@ def test_get_launched_workflows(mock_launched_workflows_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_get_roles_id_not_found(mock_roles_response):
-    json_data = util_load_json('test_data/404_Not_Found.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/404_Not_Found.json')
     mock_roles_response.return_value = util_mock_http_resp(404, json_data)
     response = SailPointIdentityIQ.get_roles(MOCK_CLIENT, '7f000001705911b4817059d312394432')
     assert response.status_code == 404
@@ -852,7 +852,7 @@ def test_get_roles_id_not_found(mock_roles_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_get_roles_id_found(mock_roles_response):
-    json_data = util_load_json('test_data/Role.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/Role.json')
     mock_roles_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityIQ.get_roles(MOCK_CLIENT, '7f000001705911b4817059d31239035f')
     assert response.status_code == 200
@@ -861,7 +861,7 @@ def test_get_roles_id_found(mock_roles_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_get_roles_no_resources(mock_roles_response):
-    json_data = util_load_json('test_data/NoResources.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/NoResources.json')
     mock_roles_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityIQ.get_roles(MOCK_CLIENT, None)
     assert response.status_code == 200
@@ -870,7 +870,7 @@ def test_get_roles_no_resources(mock_roles_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_get_roles(mock_roles_response):
-    json_data = util_load_json('test_data/Roles.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/Roles.json')
     mock_roles_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityIQ.get_roles(MOCK_CLIENT, None)
     assert response.status_code == 200
@@ -881,7 +881,7 @@ def test_get_roles(mock_roles_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_get_entitlements_id_not_found(mock_entitlements_response):
-    json_data = util_load_json('test_data/404_Not_Found.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/404_Not_Found.json')
     mock_entitlements_response.return_value = util_mock_http_resp(404, json_data)
     response = SailPointIdentityIQ.get_entitlements(MOCK_CLIENT, '7f000001705911b4817059d355844443')
     assert response.status_code == 404
@@ -891,7 +891,7 @@ def test_get_entitlements_id_not_found(mock_entitlements_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_get_entitlements_id_found(mock_entitlements_response):
-    json_data = util_load_json('test_data/Entitlement.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/Entitlement.json')
     mock_entitlements_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityIQ.get_entitlements(MOCK_CLIENT, '7f000001705911b4817059d355840657')
     assert response.status_code == 200
@@ -900,7 +900,7 @@ def test_get_entitlements_id_found(mock_entitlements_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_get_entitlements_no_resources(mock_entitlements_response):
-    json_data = util_load_json('test_data/NoResources.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/NoResources.json')
     mock_entitlements_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityIQ.get_entitlements(MOCK_CLIENT, None)
     assert response.status_code == 200
@@ -909,7 +909,7 @@ def test_get_entitlements_no_resources(mock_entitlements_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_get_entitlements(mock_entitlements_response):
-    json_data = util_load_json('test_data/Entitlements.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/Entitlements.json')
     mock_entitlements_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityIQ.get_entitlements(MOCK_CLIENT, None)
     assert response.status_code == 200
@@ -920,7 +920,7 @@ def test_get_entitlements(mock_entitlements_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_get_alerts_id_not_found(mock_alerts_response):
-    json_data = util_load_json('test_data/404_Not_Found.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/404_Not_Found.json')
     mock_alerts_response.return_value = util_mock_http_resp(404, json_data)
     response = SailPointIdentityIQ.get_alerts(MOCK_CLIENT, '0a000001758a173e81763f81205e6453')
     assert response.status_code == 404
@@ -930,7 +930,7 @@ def test_get_alerts_id_not_found(mock_alerts_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_get_alerts_id_found(mock_alerts_response):
-    json_data = util_load_json('test_data/Alert.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/Alert.json')
     mock_alerts_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityIQ.get_alerts(MOCK_CLIENT, '0a000001758a173e81763f81205e0062')
     assert response.status_code == 200
@@ -939,7 +939,7 @@ def test_get_alerts_id_found(mock_alerts_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_get_alerts_no_resources(mock_alerts_response):
-    json_data = util_load_json('test_data/NoResources.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/NoResources.json')
     mock_alerts_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityIQ.get_alerts(MOCK_CLIENT, None)
     assert response.status_code == 200
@@ -948,7 +948,7 @@ def test_get_alerts_no_resources(mock_alerts_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_get_alerts(mock_alerts_response):
-    json_data = util_load_json('test_data/Alerts.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/Alerts.json')
     mock_alerts_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityIQ.get_alerts(MOCK_CLIENT, None)
     assert response.status_code == 200
@@ -959,7 +959,7 @@ def test_get_alerts(mock_alerts_response):
 
 @patch('SailPointIdentityIQ.Client.send_request')
 def test_create_alert(mock_alerts_response):
-    json_data = util_load_json('test_data/Alert.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/Alert.json')
     mock_alerts_response.return_value = util_mock_http_resp(201, json_data)
     response = SailPointIdentityIQ.create_alert(MOCK_CLIENT, 'Test Alert')
     assert response.status_code == 201

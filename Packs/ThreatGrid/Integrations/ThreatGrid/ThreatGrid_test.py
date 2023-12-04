@@ -24,7 +24,7 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-Search_query_input = util_load_json('test_data/input_search_query.json')
+Search_query_input = util_load_json(os.path.dirname(__file__) + '/test_data/input_search_query.json')
 
 
 LIST_MOCK = [
@@ -93,8 +93,8 @@ def test_get_with_limit_dict(mocker):
 def test_submit_urls(mocker, requests_mock):
     mocker.patch.object(demisto, 'params', return_value=PARAMS)
     testing_url = 'http://test.com/api/v2/samples'
-    mock_response = util_load_json('test_data/submit_url.json')
-    expected_results = util_load_json('test_data/submit_url_results.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/submit_url.json')
+    expected_results = util_load_json(os.path.dirname(__file__) + '/test_data/submit_url_results.json')
     requests_mock.post(testing_url, json=mock_response)
     from ThreatGrid import submit_urls
     args = Submit_url_input
@@ -110,8 +110,8 @@ def test_advanced_seach(mocker, requests_mock):
     args = Search_query_input
     testing_url = 'http://test.com/api/v3/search'
     # Load assertions and mocked request data
-    mock_response = util_load_json('test_data/advanced_search.json')
-    expected_results = util_load_json('test_data/advanced_search_results.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/advanced_search.json')
+    expected_results = util_load_json(os.path.dirname(__file__) + '/test_data/advanced_search_results.json')
     requests_mock.post(testing_url, json=mock_response, status_code=201)
 
     res = advanced_search(args)

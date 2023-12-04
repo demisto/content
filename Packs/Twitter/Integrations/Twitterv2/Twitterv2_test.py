@@ -16,7 +16,7 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-test_data = util_load_json('test_data/test_data.json')
+test_data = util_load_json(os.path.dirname(__file__) + '/test_data/test_data.json')
 
 
 def side_effect_twitter_tweet_search(method, url_suffix, headers, params, ok_codes):

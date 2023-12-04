@@ -33,7 +33,7 @@ class TestFetchActivity:
 
     @staticmethod
     def create_response_by_limit(from_date, to_date, offset, user_activity_entry_count=False, limit=1):
-        single_response = util_load_json('test_data/single_loggings_response.json')
+        single_response = util_load_json(os.path.dirname(__file__) + '/test_data/single_loggings_response.json')
         return [single_response.copy() for i in range(limit)]
 
     @staticmethod
@@ -47,7 +47,7 @@ class TestFetchActivity:
             id_to_start_from: id to start from
 
         """
-        single_response = util_load_json('test_data/single_loggings_response.json')
+        single_response = util_load_json(os.path.dirname(__file__) + '/test_data/single_loggings_response.json')
         request_time_date_time = datetime.strptime(request_time, DATE_FORMAT)
         output = []
 
@@ -111,7 +111,7 @@ class TestFetchActivity:
 
         """
         from WorkdayEventCollector import remove_milliseconds_from_time_of_logging
-        activity_logging: dict = util_load_json('test_data/single_loggings_response.json')
+        activity_logging: dict = util_load_json(os.path.dirname(__file__) + '/test_data/single_loggings_response.json')
         requests_time = '2023-04-24T07:00:00.123Z'
         final_time = '2023-04-24T07:00:00Z'
         activity_logging['requestTime'] = requests_time
@@ -150,7 +150,7 @@ class TestFetchActivity:
         from WorkdayEventCollector import fetch_activity_logging
 
         first_fetch_time = datetime.strptime('2023-04-12T07:00:00Z', DATE_FORMAT)
-        fetched_events = util_load_json('test_data/fetch_activity_loggings.json')
+        fetched_events = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_activity_loggings.json')
         http_responses = mocker.patch.object(Client, "get_activity_logging_request", side_effect=[
             fetched_events.get('fetch_loggings_before'),
             fetched_events.get('fetch_loggings'),
@@ -175,7 +175,7 @@ class TestFetchActivity:
         assert new_last_run.get('last_log').get('taskId') == '3'
 
         # assert no new results when given the last_run:
-        fetched_events = util_load_json('test_data/fetch_activity_loggings.json')
+        fetched_events = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_activity_loggings.json')
         http_responses = mocker.patch.object(Client, "get_activity_logging_request", side_effect=[
             fetched_events.get('fetch_loggings'),
             []

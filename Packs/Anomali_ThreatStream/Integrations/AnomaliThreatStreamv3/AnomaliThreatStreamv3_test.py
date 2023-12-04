@@ -101,10 +101,10 @@ class TestReputationCommands:
                                 resp_type='json'):
         if 'associated_with_intelligence' in url_suffix:
             if 'actor' in url_suffix:
-                mocked_actor_result = util_load_json('test_data/mocked_actor_response.json')
+                mocked_actor_result = util_load_json(os.path.dirname(__file__) + '/test_data/mocked_actor_response.json')
                 return mocked_actor_result
             else:
-                mocked_empty_result = util_load_json('test_data/mocked_empty_response.json')
+                mocked_empty_result = util_load_json(os.path.dirname(__file__) + '/test_data/mocked_empty_response.json')
                 return mocked_empty_result
         else:
             if params.get('type', '') == DBotScoreType.IP:
@@ -175,10 +175,10 @@ class TestReputationCommands:
     def mocked_http_request(self, method, url_suffix, params=None, data=None, headers=None, files=None, json=None,
                             resp_type='json'):
         if 'actor' in url_suffix:
-            mocked_actor_result = util_load_json('test_data/mocked_actor_response.json')
+            mocked_actor_result = util_load_json(os.path.dirname(__file__) + '/test_data/mocked_actor_response.json')
             return mocked_actor_result
         else:
-            mocked_empty_result = util_load_json('test_data/mocked_empty_response.json')
+            mocked_empty_result = util_load_json(os.path.dirname(__file__) + '/test_data/mocked_empty_response.json')
             return mocked_empty_result
 
     def test_get_intelligence_command(self, mocker):
@@ -1099,7 +1099,7 @@ def test_search_intelligence(mocker):
 
     # prepare
 
-    mocked_ip_result = util_load_json('test_data/mocked_ip_response.json')
+    mocked_ip_result = util_load_json(os.path.dirname(__file__) + '/test_data/mocked_ip_response.json')
     mocker.patch.object(Client, 'http_request', return_value=mocked_ip_result)
 
     args = {'uuid': '9807794e-3de0-4340-91ca-cd82dd7b6d24',
@@ -1126,7 +1126,7 @@ def test_search_intelligence_with_confidence(mocker):
         - Validate the params passed correctly
 
     """
-    mocked_ip_result = util_load_json('test_data/mocked_ip_response.json')
+    mocked_ip_result = util_load_json(os.path.dirname(__file__) + '/test_data/mocked_ip_response.json')
     mocker.patch.object(Client, 'http_request', return_value=mocked_ip_result)
 
     args = {'uuid': '9807794e-3de0-4340-91ca-cd82dd7b6d24',
@@ -1223,7 +1223,7 @@ def test_list_whitelist_entry_command(mocker):
         - Validate the command result
 
     """
-    mocked_response = util_load_json('test_data/mocked_data.json').get('list_whitelist_response')
+    mocked_response = util_load_json(os.path.dirname(__file__) + '/test_data/mocked_data.json').get('list_whitelist_response')
     mocker.patch.object(Client, 'http_request', return_value=mocked_response)
 
     args = {'format': 'JSON'}
@@ -1263,7 +1263,7 @@ def test_list_import_job_command(mocker):
         - Validate the command result
 
     """
-    load_json = util_load_json('test_data/mocked_data.json')
+    load_json = util_load_json(os.path.dirname(__file__) + '/test_data/mocked_data.json')
     mocked_response = load_json.get('list_import_job_response')
     mocker.patch.object(Client, 'http_request', return_value=mocked_response)
 
@@ -1293,7 +1293,7 @@ def test_list_rule_command(mocker):
         - Validate the command result
 
     """
-    load_json = util_load_json('test_data/mocked_data.json')
+    load_json = util_load_json(os.path.dirname(__file__) + '/test_data/mocked_data.json')
     mocked_response = load_json.get('list_rule_response')
     mocker.patch.object(Client, 'http_request', return_value=mocked_response)
 
@@ -1327,7 +1327,7 @@ def test_list_user_command(mocker):
         - Validate the command result
 
     """
-    load_json = util_load_json('test_data/mocked_data.json')
+    load_json = util_load_json(os.path.dirname(__file__) + '/test_data/mocked_data.json')
     mocked_response = load_json.get('list_user_response')
     mocker.patch.object(Client, 'http_request', return_value=mocked_response)
 
@@ -1355,7 +1355,7 @@ def test_list_investigation_command(mocker):
         - Validate the command result
 
     """
-    load_json = util_load_json('test_data/mocked_data.json')
+    load_json = util_load_json(os.path.dirname(__file__) + '/test_data/mocked_data.json')
     mocked_response = load_json.get('list_investigation_response')
     mocker.patch.object(Client, 'http_request', return_value=mocked_response)
 
@@ -1384,7 +1384,7 @@ def test_create_rule_command(mocker):
         - Validate the command result
 
     """
-    load_json = util_load_json('test_data/mocked_data.json')
+    load_json = util_load_json(os.path.dirname(__file__) + '/test_data/mocked_data.json')
     mocked_response = load_json.get('create_rule_response')
     mocker.patch.object(Client, 'http_request', return_value=mocked_response)
 
@@ -1408,7 +1408,7 @@ def test_update_rule_command(mocker):
         - Validate the command result
 
     """
-    load_json = util_load_json('test_data/mocked_data.json')
+    load_json = util_load_json(os.path.dirname(__file__) + '/test_data/mocked_data.json')
     mocked_response = load_json.get('update_rule_response')
     mocker.patch.object(Client, 'http_request', return_value=mocked_response)
 
@@ -1456,7 +1456,7 @@ def test_create_investigation_command(mocker):
         - Validate the command result
 
     """
-    load_json = util_load_json('test_data/mocked_data.json')
+    load_json = util_load_json(os.path.dirname(__file__) + '/test_data/mocked_data.json')
     mocked_response = load_json.get('create_investigation_response')
     mocker.patch.object(Client, 'http_request', return_value=mocked_response)
 
@@ -1481,7 +1481,7 @@ def test_update_investigation_command(mocker):
         - Validate the command result
 
     """
-    load_json = util_load_json('test_data/mocked_data.json')
+    load_json = util_load_json(os.path.dirname(__file__) + '/test_data/mocked_data.json')
     mocked_response = load_json.get('update_investigation_response')
     mocker.patch.object(Client, 'http_request', return_value=mocked_response)
 
@@ -1536,7 +1536,7 @@ def test_add_investigation_element_command(mocker, args, get_from_jason, result_
         - Validate the command result
 
     """
-    load_json = util_load_json('test_data/mocked_data.json')
+    load_json = util_load_json(os.path.dirname(__file__) + '/test_data/mocked_data.json')
     mocked_response = load_json.get(get_from_jason)
     mocker.patch.object(Client, 'http_request', return_value=mocked_response)
 
@@ -1559,7 +1559,7 @@ def test_approve_import_job_command(mocker):
         - Validate the command result
 
     """
-    load_json = util_load_json('test_data/mocked_data.json')
+    load_json = util_load_json(os.path.dirname(__file__) + '/test_data/mocked_data.json')
     mocked_response = load_json.get('approve_import_job_response')
     mocker.patch.object(Client, 'http_request', return_value=mocked_response)
 
@@ -1583,7 +1583,7 @@ def test_search_threat_model_command(mocker):
         - Validate the command result
 
     """
-    load_json = util_load_json('test_data/mocked_data.json')
+    load_json = util_load_json(os.path.dirname(__file__) + '/test_data/mocked_data.json')
     mocked_response = load_json.get('search_threat_model_response')
     mocker.patch.object(Client, 'http_request', return_value=mocked_response)
 

@@ -275,7 +275,7 @@ def test_get_markdown_none():
 
 
 def test_get_markdown_object_type_none():
-    json_data = util_load_json('test_data/Identity.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/Identity.json')
     markdown = SailPointIdentityNow.get_markdown(None, json_data)
     assert markdown == ''
 
@@ -290,7 +290,7 @@ def test_get_markdown_objects_none():
 
 
 def test_get_markdown():
-    json_data = util_load_json('test_data/Identity.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/Identity.json')
     markdown = SailPointIdentityNow.get_markdown('IdentityNow.Identity', json_data)
     headers = ['id', 'name', 'displayName', 'firstName', 'lastName', 'email', 'created', 'modified', 'inactive',
                'protected', 'status', 'isManager', 'identityProfile', 'source', 'attributes', 'accounts',
@@ -313,7 +313,7 @@ def test_build_results_non_2xx_status():
 
 
 def test_build_results_2xx_status():
-    json_data = util_load_json('test_data/Identity.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/Identity.json')
     response = util_mock_http_resp(200, json_data)
     results = SailPointIdentityNow.build_results('IdentityNow.Identity', 'IdentityNow.Identity', response)
     assert results.readable_output == '### Results:\n' + SailPointIdentityNow.get_markdown('IdentityNow.Identity',
@@ -365,7 +365,7 @@ def test_search_object_type_not_in_list():
 
 @patch('SailPointIdentityNow.Client.send_request')
 def test_search_negative_offset(mock_search_empty_response):
-    json_data = util_load_json('test_data/200_Empty_Response.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/200_Empty_Response.json')
     mock_search_empty_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityNow.search(MOCK_CLIENT, 'identities', '*', -1, 0)
     assert response.status_code == 200
@@ -374,7 +374,7 @@ def test_search_negative_offset(mock_search_empty_response):
 
 @patch('SailPointIdentityNow.Client.send_request')
 def test_search_exceeds_limit(mock_search_empty_response):
-    json_data = util_load_json('test_data/200_Empty_Response.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/200_Empty_Response.json')
     mock_search_empty_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityNow.search(MOCK_CLIENT, 'identities', '*', 0, 1000)
     assert response.status_code == 200
@@ -383,7 +383,7 @@ def test_search_exceeds_limit(mock_search_empty_response):
 
 @patch('SailPointIdentityNow.Client.send_request')
 def test_search_identity_not_found(mock_search_identity_response):
-    json_data = util_load_json('test_data/200_Empty_Response.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/200_Empty_Response.json')
     mock_search_identity_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityNow.search(MOCK_CLIENT, 'identities', 'id:2c918084740346d5017408d79229489ex', 0, 250)
     assert response.status_code == 200
@@ -392,7 +392,7 @@ def test_search_identity_not_found(mock_search_identity_response):
 
 @patch('SailPointIdentityNow.Client.send_request')
 def test_search_identity_found(mock_search_identity_response):
-    json_data = util_load_json('test_data/Identity.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/Identity.json')
     mock_search_identity_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityNow.search(MOCK_CLIENT, 'identities', 'id:2c918084740346d5017408d79229489e', 0, 250)
     assert response.status_code == 200
@@ -411,7 +411,7 @@ def test_get_accounts_id_not_found(mock_account_response):
 
 @patch('SailPointIdentityNow.Client.send_request')
 def test_get_accounts_id_found(mock_account_response):
-    json_data = util_load_json('test_data/Account.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/Account.json')
     mock_account_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityNow.get_accounts(MOCK_CLIENT, '2c918084740346d30174088afa6d625e', None, None, 0, 250)
     assert response.status_code == 200
@@ -421,7 +421,7 @@ def test_get_accounts_id_found(mock_account_response):
 
 @patch('SailPointIdentityNow.Client.send_request')
 def test_get_accounts_name_not_found(mock_account_response):
-    json_data = util_load_json('test_data/200_Empty_Response.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/200_Empty_Response.json')
     mock_account_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityNow.get_accounts(MOCK_CLIENT, None, 'Tes.Testerson', None, 0, 250)
     assert response.status_code == 200
@@ -430,7 +430,7 @@ def test_get_accounts_name_not_found(mock_account_response):
 
 @patch('SailPointIdentityNow.Client.send_request')
 def test_get_accounts_name_found(mock_account_response):
-    json_data = util_load_json('test_data/Account.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/Account.json')
     mock_account_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityNow.get_accounts(MOCK_CLIENT, None, 'Testy.Testerson', 'native_identity', 0, 250)
     assert response.status_code == 200
@@ -440,7 +440,7 @@ def test_get_accounts_name_found(mock_account_response):
 
 @patch('SailPointIdentityNow.Client.send_request')
 def test_get_accounts_native_identity_not_found(mock_account_response):
-    json_data = util_load_json('test_data/200_Empty_Response.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/200_Empty_Response.json')
     mock_account_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityNow.get_accounts(MOCK_CLIENT, None, None, '412632345', 0, 250)
     assert response.status_code == 200
@@ -449,7 +449,7 @@ def test_get_accounts_native_identity_not_found(mock_account_response):
 
 @patch('SailPointIdentityNow.Client.send_request')
 def test_get_accounts_native_identity_found(mock_account_response):
-    json_data = util_load_json('test_data/Account.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/Account.json')
     mock_account_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityNow.get_accounts(MOCK_CLIENT, None, None, '41263', 0, 250)
     assert response.status_code == 200
@@ -459,7 +459,7 @@ def test_get_accounts_native_identity_found(mock_account_response):
 
 @patch('SailPointIdentityNow.Client.send_request')
 def test_get_account_activities_id_not_found(mock_account_activities_response):
-    json_data = util_load_json('test_data/404_Not_Found.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/404_Not_Found.json')
     mock_account_activities_response.return_value = util_mock_http_resp(404, json_data)
     response = SailPointIdentityNow.get_account_activities(MOCK_CLIENT, '2c918084705f18bd01706349f23e5eb3x', None, None,
                                                            None, None, 0, 250)
@@ -469,7 +469,7 @@ def test_get_account_activities_id_not_found(mock_account_activities_response):
 
 @patch('SailPointIdentityNow.Client.send_request')
 def test_get_account_activities_id_found(mock_account_activities_response):
-    json_data = util_load_json('test_data/Account_Activity.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/Account_Activity.json')
     mock_account_activities_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityNow.get_account_activities(MOCK_CLIENT, '4fcac89c839f4e4dbeef2810a435f9f6', None, None,
                                                            None, None, 0, 250)
@@ -480,7 +480,7 @@ def test_get_account_activities_id_found(mock_account_activities_response):
 
 @patch('SailPointIdentityNow.Client.send_request')
 def test_get_account_activities_requested_for_not_found(mock_account_activities_response):
-    json_data = util_load_json('test_data/400_Bad_Request_Content.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/400_Bad_Request_Content.json')
     mock_account_activities_response.return_value = util_mock_http_resp(400, json_data)
     response = SailPointIdentityNow.get_account_activities(MOCK_CLIENT, None, '2c91808a6fca28a6016fd7f5ec3f5228x', None,
                                                            None, None, 0, 250)
@@ -490,7 +490,7 @@ def test_get_account_activities_requested_for_not_found(mock_account_activities_
 
 @patch('SailPointIdentityNow.Client.send_request')
 def test_get_account_activities_requested_for_found(mock_account_activities_response):
-    json_data = util_load_json('test_data/Account_Activity.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/Account_Activity.json')
     mock_account_activities_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityNow.get_account_activities(MOCK_CLIENT, None, '2c91808a6fca28a6016fd7f5ec3f5228', None,
                                                            None, None, 0, 250)
@@ -501,7 +501,7 @@ def test_get_account_activities_requested_for_found(mock_account_activities_resp
 
 @patch('SailPointIdentityNow.Client.send_request')
 def test_get_account_activities_requested_by_not_found(mock_account_activities_response):
-    json_data = util_load_json('test_data/400_Bad_Request_Content.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/400_Bad_Request_Content.json')
     mock_account_activities_response.return_value = util_mock_http_resp(400, json_data)
     response = SailPointIdentityNow.get_account_activities(MOCK_CLIENT, None, None, '2c91808363f06ad80163fb690fae55b8x',
                                                            None, None, 0, 250)
@@ -511,7 +511,7 @@ def test_get_account_activities_requested_by_not_found(mock_account_activities_r
 
 @patch('SailPointIdentityNow.Client.send_request')
 def test_get_account_activities_requested_by_found(mock_account_activities_response):
-    json_data = util_load_json('test_data/Account_Activity.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/Account_Activity.json')
     mock_account_activities_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityNow.get_account_activities(MOCK_CLIENT, None, None, '2c91808363f06ad80163fb690fae55b8',
                                                            None, None, 0, 250)
@@ -522,7 +522,7 @@ def test_get_account_activities_requested_by_found(mock_account_activities_respo
 
 @patch('SailPointIdentityNow.Client.send_request')
 def test_get_account_activities_regarding_identity_not_found(mock_account_activities_response):
-    json_data = util_load_json('test_data/400_Bad_Request_Content.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/400_Bad_Request_Content.json')
     mock_account_activities_response.return_value = util_mock_http_resp(400, json_data)
     response = SailPointIdentityNow.get_account_activities(MOCK_CLIENT, None, None, None,
                                                            '2c91808a6fca28a6016fd7f5ec3f5228x', None, 0, 250)
@@ -532,7 +532,7 @@ def test_get_account_activities_regarding_identity_not_found(mock_account_activi
 
 @patch('SailPointIdentityNow.Client.send_request')
 def test_get_account_activities_regarding_identity_found(mock_account_activities_response):
-    json_data = util_load_json('test_data/Account_Activity.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/Account_Activity.json')
     mock_account_activities_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityNow.get_account_activities(MOCK_CLIENT, None, None, None,
                                                            '2c91808a6fca28a6016fd7f5ec3f5228', None, 0, 250)
@@ -543,7 +543,7 @@ def test_get_account_activities_regarding_identity_found(mock_account_activities
 
 @patch('SailPointIdentityNow.Client.send_request')
 def test_get_account_activities_type_not_found(mock_account_activities_response):
-    json_data = util_load_json('test_data/200_Empty_Response.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/200_Empty_Response.json')
     mock_account_activities_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityNow.get_account_activities(MOCK_CLIENT, None, None, None, None, 'Test', 0, 250)
     assert response.status_code == 200
@@ -551,7 +551,7 @@ def test_get_account_activities_type_not_found(mock_account_activities_response)
 
 @patch('SailPointIdentityNow.Client.send_request')
 def test_get_account_activities_type_found(mock_account_activities_response):
-    json_data = util_load_json('test_data/Account_Activity.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/Account_Activity.json')
     mock_account_activities_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityNow.get_account_activities(MOCK_CLIENT, None, None, None, None, 'appRequest', 0, 250)
     assert response.status_code == 200
@@ -561,7 +561,7 @@ def test_get_account_activities_type_found(mock_account_activities_response):
 
 @patch('SailPointIdentityNow.Client.send_request')
 def test_get_account_activities(mock_account_activities_response):
-    json_data = util_load_json('test_data/Account_Activity.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/Account_Activity.json')
     mock_account_activities_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityNow.get_account_activities(MOCK_CLIENT, None, '2c91808a6fca28a6016fd7f5ec3f5228',
                                                            '2c91808363f06ad80163fb690fae55b8', None, None, 0, 250)
@@ -573,7 +573,7 @@ def test_get_account_activities(mock_account_activities_response):
 
 @patch('SailPointIdentityNow.Client.send_request')
 def test_search_access_profile_not_found(mock_search_access_profile_response):
-    json_data = util_load_json('test_data/200_Empty_Response.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/200_Empty_Response.json')
     mock_search_access_profile_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityNow.search(MOCK_CLIENT, 'accessprofiles', 'id:2c91808a700d408901701223fb6b007d', 0, 250)
     assert response.status_code == 200
@@ -582,7 +582,7 @@ def test_search_access_profile_not_found(mock_search_access_profile_response):
 
 @patch('SailPointIdentityNow.Client.send_request')
 def test_search_access_profile_found(mock_search_access_profile_response):
-    json_data = util_load_json('test_data/Access_Profile.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/Access_Profile.json')
     mock_search_access_profile_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityNow.search(MOCK_CLIENT, 'accessprofiles', 'id:2c91808a700d408901701223fb6b0077', 0, 250)
     assert response.status_code == 200
@@ -592,7 +592,7 @@ def test_search_access_profile_found(mock_search_access_profile_response):
 
 @patch('SailPointIdentityNow.Client.send_request')
 def test_search_role_not_found(mock_search_role_response):
-    json_data = util_load_json('test_data/200_Empty_Response.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/200_Empty_Response.json')
     mock_search_role_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityNow.search(MOCK_CLIENT, 'roles', 'id:2c9180846ff9c50201700beb2e9000dd', 0, 250)
     assert response.status_code == 200
@@ -601,7 +601,7 @@ def test_search_role_not_found(mock_search_role_response):
 
 @patch('SailPointIdentityNow.Client.send_request')
 def test_search_role_found(mock_search_role_response):
-    json_data = util_load_json('test_data/Role.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/Role.json')
     mock_search_role_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityNow.search(MOCK_CLIENT, 'roles', 'id:2c9180846ff9c50201700beb2e9000da', 0, 250)
     assert response.status_code == 200
@@ -611,7 +611,7 @@ def test_search_role_found(mock_search_role_response):
 
 @patch('SailPointIdentityNow.Client.send_request')
 def test_search_entitlement_not_found(mock_search_entitlement_response):
-    json_data = util_load_json('test_data/200_Empty_Response.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/200_Empty_Response.json')
     mock_search_entitlement_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityNow.search(MOCK_CLIENT, 'entitlements', 'id:2c9180846ff7e56b01700bb399f60ead', 0, 250)
     assert response.status_code == 200
@@ -620,7 +620,7 @@ def test_search_entitlement_not_found(mock_search_entitlement_response):
 
 @patch('SailPointIdentityNow.Client.send_request')
 def test_search_entitlement_found(mock_search_entitlement_response):
-    json_data = util_load_json('test_data/Entitlement.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/Entitlement.json')
     mock_search_entitlement_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityNow.search(MOCK_CLIENT, 'entitlements', 'id:2c9180846ff7e56b01700bb399f60eaa', 0, 250)
     assert response.status_code == 200
@@ -630,7 +630,7 @@ def test_search_entitlement_found(mock_search_entitlement_response):
 
 @patch('SailPointIdentityNow.Client.send_request')
 def test_search_event_not_found(mock_search_event_response):
-    json_data = util_load_json('test_data/200_Empty_Response.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/200_Empty_Response.json')
     mock_search_event_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityNow.search(MOCK_CLIENT, 'events', 'id:2bd61299-d986-4c27-bd37-408b9c9ba11d', 0, 250)
     assert response.status_code == 200
@@ -639,7 +639,7 @@ def test_search_event_not_found(mock_search_event_response):
 
 @patch('SailPointIdentityNow.Client.send_request')
 def test_search_event_found(mock_search_event_response):
-    json_data = util_load_json('test_data/Event.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/Event.json')
     mock_search_event_response.return_value = util_mock_http_resp(200, json_data)
     response = SailPointIdentityNow.search(MOCK_CLIENT, 'events', 'id:2bd61299-d986-4c27-bd37-408b9c9ba118', 0, 250)
     assert response.status_code == 200
@@ -667,7 +667,7 @@ def test_access_request_requested_item_type_none():
 
 @patch('SailPointIdentityNow.Client.send_request')
 def test_access_request_requested_for_not_found(mock_access_request_grant_response):
-    json_data = util_load_json('test_data/400_Bad_Request_Object_Not_Found.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/400_Bad_Request_Object_Not_Found.json')
     mock_access_request_grant_response.return_value = util_mock_http_resp(400, json_data)
     response = SailPointIdentityNow.access_request(MOCK_CLIENT, 'GRANT_ACCESS', '2c9180886ccef167016cdb658fb6547d',
                                                    '2c918086775e1f5d0177653720ea0381', 'ROLE', 'Testing')
@@ -676,7 +676,7 @@ def test_access_request_requested_for_not_found(mock_access_request_grant_respon
 
 @patch('SailPointIdentityNow.Client.send_request')
 def test_access_request_requested_item_not_found(mock_access_request_grant_response):
-    json_data = util_load_json('test_data/400_Bad_Request_Object_Not_Found.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/400_Bad_Request_Object_Not_Found.json')
     mock_access_request_grant_response.return_value = util_mock_http_resp(400, json_data)
     response = SailPointIdentityNow.access_request(MOCK_CLIENT, 'GRANT_ACCESS', '2c9180886ccef167016cdb658fb6547d',
                                                    '2c918086775e1f5d0177653720ea038d', 'ROLE', 'Testing')
@@ -685,7 +685,7 @@ def test_access_request_requested_item_not_found(mock_access_request_grant_respo
 
 @patch('SailPointIdentityNow.Client.send_request')
 def test_access_request_requested_item_type_invalid(mock_access_request_grant_response):
-    json_data = util_load_json('test_data/400_Bad_Request_Illegal_Value.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/400_Bad_Request_Illegal_Value.json')
     mock_access_request_grant_response.return_value = util_mock_http_resp(400, json_data)
     response = SailPointIdentityNow.access_request(MOCK_CLIENT, 'GRANT_ACCESS', '2c9180886ccef167016cdb658fb6547d',
                                                    '2c918086775e1f5d0177653720ea038d', 'TEST', 'Testing')
@@ -694,7 +694,7 @@ def test_access_request_requested_item_type_invalid(mock_access_request_grant_re
 
 @patch('SailPointIdentityNow.Client.send_request')
 def test_access_request_re_grant(mock_access_request_grant_response):
-    json_data = util_load_json('test_data/400_Bad_Request_Content.json')
+    json_data = util_load_json(os.path.dirname(__file__) + '/test_data/400_Bad_Request_Content.json')
     mock_access_request_grant_response.return_value = util_mock_http_resp(400, json_data)
     response = SailPointIdentityNow.access_request(MOCK_CLIENT, 'GRANT_ACCESS', '2c9180886ccef167016cdb658fb6547a',
                                                    '2c918086775e1f5d01776530eb67037b', 'TEST', 'Testing')

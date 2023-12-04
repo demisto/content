@@ -31,7 +31,7 @@ def test_translate(requests_mock):
     client = Client(base_url=BASE_URL, verify=False, api_key='foo', proxy=False)
     args = {'text': 'this is some sentence for translation'}
 
-    raw_response = util_load_json('test_data/translate.json')
+    raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/translate.json')
     requests_mock.post(ENDPOINT_URL, json=raw_response)
     command_result = translate_command(client, **args)
 
@@ -60,7 +60,7 @@ def test_translate_invalid(requests_mock):
     client = Client(base_url=BASE_URL, verify=False, api_key='my api key', proxy=False)
     args = {'text': 'this is some sentence for translation'}
 
-    requests_mock.post(ENDPOINT_URL, json=util_load_json('test_data/translate-fail-no-translation.json'))
+    requests_mock.post(ENDPOINT_URL, json=util_load_json(os.path.dirname(__file__) + '/test_data/translate-fail-no-translation.json'))
     with pytest.raises(DemistoException) as e:
         translate_command(client, **args)
     assert 'did not include `translated`' in str(e)

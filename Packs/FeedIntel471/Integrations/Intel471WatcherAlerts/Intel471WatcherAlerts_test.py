@@ -50,7 +50,7 @@ def test_fetch_incidents(requests_mock):
     """
     from Intel471WatcherAlerts import Client, fetch_incidents
 
-    mock_response = util_load_json('test_data/search_alerts.json')
+    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/search_alerts.json')
     requests_mock.get(
         'https://api.test.com/v1/alerts?showRead=true&displayWatchers=true&markAsRead=false&sort=earliest&count=1&'
         'from=1581944401',

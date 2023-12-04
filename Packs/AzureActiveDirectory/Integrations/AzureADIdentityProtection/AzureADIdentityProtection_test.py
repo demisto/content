@@ -169,7 +169,7 @@ def test_fetch_all_incidents(mocker):
             validate fetch incidents command using the Client gets all relevant incidents
     """
     from AzureADIdentityProtection import detections_to_incidents, get_last_fetch_time
-    test_incidents = util_load_json('test_data/incidents.json')
+    test_incidents = util_load_json(os.path.dirname(__file__) + '/test_data/incidents.json')
     last_run = {
         'latest_detection_found': '2021-07-10T11:02:54Z'
     }
@@ -190,7 +190,7 @@ def test_fetch_new_incidents(mocker):
             validate fetch incidents command using the Client gets all relevant incidents
     """
     from AzureADIdentityProtection import detections_to_incidents, get_last_fetch_time
-    test_incidents = util_load_json('test_data/incidents.json')
+    test_incidents = util_load_json(os.path.dirname(__file__) + '/test_data/incidents.json')
     last_run = {
         'latest_detection_found': '2021-07-20T11:02:54Z'
     }
@@ -331,7 +331,7 @@ def test_detections_to_incident():
     - Both calls return 10 incidents, and the latest detection time among the detections.
     """
     from AzureADIdentityProtection import detections_to_incidents
-    detections_in_order = util_load_json('test_data/incidents.json')['value']
+    detections_in_order = util_load_json(os.path.dirname(__file__) + '/test_data/incidents.json')['value']
     detections_out_of_order = copy.deepcopy(detections_in_order)
     random.shuffle(detections_out_of_order)
     last_fetch = '2019-07-28T00:10:00.123456'
@@ -355,7 +355,7 @@ def mock_list_detections(limit, filter_expression, user_id, user_principal_name)
     receives these parameters).
     """
     from AzureADIdentityProtection import DATE_FORMAT, date_str_to_azure_format
-    test_incidents = util_load_json('test_data/incidents.json')
+    test_incidents = util_load_json(os.path.dirname(__file__) + '/test_data/incidents.json')
     all_possible_results = test_incidents.get('value')
 
     start_time = filter_expression.split('gt ')[-1]

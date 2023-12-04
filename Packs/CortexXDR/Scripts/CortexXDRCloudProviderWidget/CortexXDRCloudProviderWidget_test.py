@@ -9,8 +9,8 @@ def util_load_json(path):
 
 
 @pytest.mark.parametrize('incident_data, expected_result', [
-    (util_load_json('test_data/incident_data.json'), {'AWS'}),
-    (util_load_json('test_data/multi_clouds_incident_data.json'), {'AWS', 'GCP', 'Azure'})
+    (util_load_json(os.path.dirname(__file__) + '/test_data/incident_data.json'), {'AWS'}),
+    (util_load_json(os.path.dirname(__file__) + '/test_data/multi_clouds_incident_data.json'), {'AWS', 'GCP', 'Azure'})
 ])
 def test_cloud_provider(mocker, incident_data, expected_result):
     mocker.patch.object(demisto, 'incident', return_value=incident_data)

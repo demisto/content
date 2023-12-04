@@ -15,7 +15,7 @@ def test_fetch_incidents(requests_mock):
 
     from Linkshadow import Client, fetch_incidents
 
-    test_api_response = util_load_json('test_data/fetch_incident.json')
+    test_api_response = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_incident.json')
     requests_mock.post('https://LS_test_fetch_incidents.com/api/plugin/', json=test_api_response)
     client = Client(
         base_url='https://LS_test_fetch_incidents.com/',
@@ -34,7 +34,7 @@ def test_fetch_incidents(requests_mock):
         plugin_id="xsoar_integration_1604211382",
         action="fetch_entity_anomalies"
     )
-    expected_response = util_load_json('test_data/formatted_fetch_incident.json')
+    expected_response = util_load_json(os.path.dirname(__file__) + '/test_data/formatted_fetch_incident.json')
     responsejson = integration_response[1][0]
     responsejson['rawJSON'] = json.loads(responsejson['rawJSON'])
 
@@ -45,7 +45,7 @@ def test_fetch_entity_anomalies(requests_mock):
 
     from Linkshadow import Client, fetch_entity_anomalies
 
-    test_api_response = util_load_json('test_data/fetch_anomaly.json')
+    test_api_response = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_anomaly.json')
     requests_mock.post('https://LS_test_fetch_anomaly.com/api/plugin/', json=test_api_response)
     client = Client(
         base_url='https://LS_test_fetch_anomaly.com/',
@@ -61,7 +61,7 @@ def test_fetch_entity_anomalies(requests_mock):
         'time_frame': '01'
     }
     integration_response = fetch_entity_anomalies(client, params, args)
-    expected_response = util_load_json('test_data/formatted_fetch_anomaly.json')
+    expected_response = util_load_json(os.path.dirname(__file__) + '/test_data/formatted_fetch_anomaly.json')
     # raise ValueError(integration_response.outputs, expected_response)
     assert integration_response.outputs == expected_response
     assert integration_response.outputs_key_field == 'GlobalID'
