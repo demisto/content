@@ -220,7 +220,7 @@ This command allows you to pull Tessian event data into your XSOAR instance.
 >## Checkpoint: eyJzb3J0X3ZhbHVlcyI6IFsxNjkxNTkyNTc4Mjg4LCAiaW5ib3VuZC1lNWI1MmQyYWQ3ZGQ4MTdhMGRhYmVhZjgzMDhhYWMwMDhkZDY3ZDg1ZTQ3MTk1NDE4NTZmMzRkN2JlY2Y4ZTNlIl0sICJyZXZlcnNlIjogZmFsc2V9
 >## Additional Results: True
 >### Number of events returned: 2
-> ### Errors
+> ### Results
 >
 > | Event ID                           | Event Type                           | Event Created At                           | Event Updated At                           | Portal Link                           |
 > | ------------------------------------ | ------------------------------------ | ------------------------------------ | ------------------------------------ | ------------------------------------ |
