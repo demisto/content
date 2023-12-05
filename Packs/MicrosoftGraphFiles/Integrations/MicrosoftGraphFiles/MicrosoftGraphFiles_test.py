@@ -37,27 +37,17 @@ CLIENT_MOCKER = MsGraphClient(
     base_url='https://graph.microsoft.com/v1.0/', verify='use_ssl', proxy='proxy', self_deployed='self_deployed')
 
 
-def get_azure_access_token_mock() -> dict:
-    """
-    Mock Azure access token object.
-
-    Returns:
-        dict: Azure access token mock.
-    """
-    return {
-        'access_token': 'my-access-token',
-        'expires_in': 3595,
-        'refresh_token': 'my-refresh-token',
-    }
-
-
 def authorization_mock(requests_mock: MockerCore) -> None:
     """
-    Azure authorization API request mock.
+    Authorization API request mock.
 
     """
     authorization_url = 'https://login.microsoftonline.com/tenant_id/oauth2/v2.0/token'
-    requests_mock.post(authorization_url, json=get_azure_access_token_mock())
+    requests_mock.post(authorization_url, json={
+        'access_token': 'my-access-token',
+        'expires_in': 3595,
+        'refresh_token': 'my-refresh-token',
+    })
 
 
 def test_remove_identity_key_with_valid_application_input() -> None:
@@ -602,7 +592,7 @@ def test_test_module_command_with_managed_identities(mocker: MockerFixture, requ
     mocker.patch.object(demisto, 'command', return_value='test-module')
     mocker.patch.object(demisto, 'results', return_value=params)
     mocker.patch('MicrosoftApiModule.get_integration_context', return_value={})
-    mocker.Mock()
+
     main()
 
     assert 'ok' in demisto.results.call_args[0][0]
