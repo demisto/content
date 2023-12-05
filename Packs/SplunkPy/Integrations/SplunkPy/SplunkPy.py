@@ -414,7 +414,7 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_t
     # so the next run's earliest time will be the latest_time from this iteration
     if (len(incidents) + num_of_dropped) < FETCH_LIMIT:
         demisto.debug(f'[SplunkPy] Number of fetched incidents = {len(incidents)}, dropped = {num_of_dropped}. Sum is less'
-                     f' than {FETCH_LIMIT=}. Starting new fetch')
+                      f' than {FETCH_LIMIT=}. Starting new fetch')
         next_run_earliest_time = latest_time
         new_last_run = {
             'time': next_run_earliest_time,
