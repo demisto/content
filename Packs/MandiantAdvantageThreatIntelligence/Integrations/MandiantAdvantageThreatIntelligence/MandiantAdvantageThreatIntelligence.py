@@ -760,9 +760,9 @@ def create_file_indicator(client: MandiantClient, raw_indicator: dict) -> tuple[
 
     indicator = Common.File(
         dbot_score=get_dbot_score_obj(indicator_obj["fields"]["dbotscore"]),
-        md5=additional_fields["md5"],
-        sha1=additional_fields["sha1"],
-        sha256=additional_fields["sha256"],
+        md5=additional_fields.get("md5"),
+        sha1=additional_fields.get("sha1"),
+        sha256=additional_fields.get("sha256"),
     )
 
     return indicator, indicator_obj
