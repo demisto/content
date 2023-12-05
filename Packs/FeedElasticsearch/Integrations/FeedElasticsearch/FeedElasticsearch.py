@@ -24,6 +24,7 @@ HTTP_ERRORS = {
 
 '''VARIABLES FOR FETCH INDICATORS'''
 FETCH_SIZE = 50
+LIMIT = 10_000
 API_KEY_PREFIX = '_api_key_id:'
 MODULE_TO_FEEDMAP_KEY = 'moduleToFeedMap'
 FEED_TYPE_GENERIC = 'Generic Feed'
@@ -95,8 +96,8 @@ class ElasticsearchClient:
         <https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-create-api-key.html>`
         :arg api_key, either a tuple or a base64 encoded string
         """
-        if isinstance(api_key, (tuple, list)):
-            s = "{0}:{1}".format(api_key[0], api_key[1]).encode('utf-8')
+        if isinstance(api_key, tuple | list):
+            s = f"{api_key[0]}:{api_key[1]}".encode()
             return "ApiKey " + base64.b64encode(s).decode('utf-8')
         return "ApiKey " + api_key
 
@@ -159,7 +160,7 @@ def test_command(client, feed_type, src_val, src_type, default_type, time_method
 
                 else:
                     # if it is unknown error - get the message from the error itself
-                    return_error("Failed to connect. The following error occurred: {}".format(str(e)))
+                    return_error(f"Failed to connect. The following error occurred: {str(e)}")
 
     except requests.exceptions.RequestException as e:
         return_error("Failed to connect. Check Server URL field and port number.\nError message: " + str(e))
@@ -178,7 +179,7 @@ def get_indicators_command(client, feed_type, src_val, src_type, default_type):
         # Insight is the name of the indicator object as it's saved into the database
         search = get_scan_insight_format(client, now, feed_type=feed_type)
         ioc_lst, ioc_enrch_lst = get_demisto_indicators(search, client.tags, client.tlp_color)
-        hr = tableToMarkdown('Indicators', list(set(map(lambda ioc: ioc.get('name'), ioc_lst))), 'Name')
+        hr = tableToMarkdown('Indicators', list({ioc.get('name') for ioc in ioc_lst}), 'Name')
         if ioc_enrch_lst:
             for ioc_enrch in ioc_enrch_lst:
                 hr += tableToMarkdown('Enrichment', ioc_enrch, ['value', 'sourceBrand', 'score'])
@@ -227,17 +228,22 @@ def fetch_indicators_command(client, feed_type, src_val, src_type, default_type,
         for hit in search.scan():
             ioc_lst.extend(extract_indicators_from_generic_hit(hit, src_val, src_type, default_type, client.tags,
                                                                client.tlp_color))
-
+    last_fetch_time = int(now.timestamp() * 1000)
     if ioc_lst:
         for b in batch(ioc_lst, batch_size=2000):
             demisto.createIndicators(b)
+        last_time = ioc_lst[-1].get(client.time_field)
+        if last_time:
+            last_datetime = dateparser.parse(last_time)
+            if last_datetime:
+                last_fetch_time = int(last_datetime.timestamp() * 1000)
     if ioc_enrch_lst:
         ioc_enrch_batches = create_enrichment_batches(ioc_enrch_lst)
         for enrch_batch in ioc_enrch_batches:
             # ensure batch sizes don't exceed 2000
             for b in batch(enrch_batch, batch_size=2000):
                 demisto.createIndicators(b)
-    demisto.setLastRun({'time': int(now.timestamp() * 1000)})
+    demisto.setLastRun({'time': last_fetch_time})
 
 
 def get_last_fetch_timestamp(last_fetch, time_method, fetch_time):
@@ -267,6 +273,8 @@ def get_scan_generic_format(client, now, last_fetch_timestamp=None):
             time_field: {'gt': last_fetch_timestamp, 'lte': now}} if last_fetch_timestamp else {
             time_field: {'lte': now}}
         search = Search(using=es, index=fetch_index).filter({'range': range_field}).query(query)
+        search.extra(size=LIMIT)
+        search.sort({time_field: "asc"})
     else:
         search = Search(using=es, index=fetch_index).query(QueryString(query=client.query))
     return search
@@ -299,6 +307,9 @@ def get_scan_insight_format(client, now, last_fetch_timestamp=None, feed_type=No
     elif not indices:
         indices = '_all'
     search = Search(using=es, index=indices).filter({'range': range_field}).query(query)
+    search = search.extra(size=LIMIT)
+    search = search.sort({time_field: {'order': 'asc'}})
+
     return search
 
 
@@ -362,7 +373,7 @@ def create_enrichment_batches(ioc_enrch_lst):
 
 def main():
     try:
-        LOG('command is %s' % (demisto.command(),))
+        LOG(f'command is {demisto.command()}')
         params = demisto.params()
         server = params.get('url', '').rstrip('/')
         creds = params.get('credentials')
@@ -392,7 +403,7 @@ def main():
         elif demisto.command() == 'es-get-indicators':
             get_indicators_command(client, feed_type, src_val, src_type, default_type)
     except Exception as e:
-        return_error("Failed executing {}.\nError message: {}".format(demisto.command(), str(e)))
+        return_error(f"Failed executing {demisto.command()}.\nError message: {str(e)}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
