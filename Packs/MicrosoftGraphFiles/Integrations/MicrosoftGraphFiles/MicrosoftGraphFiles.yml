@@ -95,16 +95,13 @@ script:
       - sites
       - users
       required: true
-    - auto: PREDEFINED
-      description: |-
+    - description: |-
         MS Graph resource ID.
         For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
         For resource type 'group': To get a list of all groups that exists, configure the 'Azure Active Directory Groups' integration and use the msgraph-groups-list-groups command.
         For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
         For resource type 'users': To get a list of all users that exists, configure the 'Azure Active Directory Users' integration and use the msgraph-user-list command.
       name: object_type_id
-      predefined:
-      - ''
       required: true
     - description: |-
         The ID of the item to delete.
@@ -538,7 +535,7 @@ script:
       description: The OData query.
       type: String
   - arguments:
-    - description: Keyword used to search for sites across a SharePoint tenant. If a keyword is not provided, it returns all sites).
+    - description: Keyword used to search for sites across a SharePoint tenant. If a keyword is not provided, it returns all sites.
       name: keyword
     description: Returns a list of the tenant sites.
     name: msgraph-list-sharepoint-sites
@@ -643,7 +640,9 @@ script:
     - description: The maximum number of results to return. Default is 50.
       name: limit
       defaultValue: 50
-    - description: The ID of the site. Must provide either site_id or site_name.
+    - description: |-
+        The ID of the site. Must provide either site_id or site_name.
+        To find a list of all sites, use the msgraph-list-sharepoint-sites command.
       name: site_id
     - description: The name of the site. Must provide either site_id or site_name.
       name: site_name
@@ -672,7 +671,9 @@ script:
       description: The display name of the identity. The display name might not always be available or up to date.
       type: String
   - arguments:
-    - description: The ID of the site. Must provide either site_id or site_name.
+    - description: |-
+        The ID of the site. Must provide either site_id or site_name.
+        To find a list of all sites, use the msgraph-list-sharepoint-sites command.
       name: site_id
     - description: The name of the site. Must provide either site_id or site_name.
       name: site_name
@@ -698,7 +699,9 @@ script:
   - arguments:
     - description: The name of the site. Must provide either site_name or site_id.
       name: site_name
-    - description: The ID of the site. Must provide either site_id or site_name.
+    - description: |-
+        The ID of the site. Must provide either site_id or site_name.
+        To find a list of all sites, use the msgraph-list-sharepoint-sites command.
       name: site_id
     - description: The unique identifier of the permission to update.
       name: permission_id
@@ -717,7 +720,9 @@ script:
     name: msgraph-update-site-permissions
     description: Updates an existing permission for a site.
   - arguments:
-    - description: Unique identifier for SharePoint site. Must provide either site_id or site_name.
+    - description: |-
+        Unique identifier for SharePoint site. Must provide either site_id or site_name.
+        To find a list of all sites, use the msgraph-list-sharepoint-sites command.
       name: site_id
     - description: The name of the site. Must provide either site_id or site_name.
       name: site_name

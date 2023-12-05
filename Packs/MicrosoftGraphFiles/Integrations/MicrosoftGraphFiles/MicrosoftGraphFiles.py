@@ -286,6 +286,7 @@ class MsGraphClient:
         :param item_id: ms graph item_id.
         :return: graph api raw response
         """
+        uri = ''
         if object_type == "drives":
             uri = f"{object_type}/{object_type_id}/items/{item_id}"
 
@@ -866,7 +867,7 @@ def get_site_id(client: MsGraphClient, site_id: str | None, site_name: str | Non
     if not site_id and site_name:
         if not (site_details := client.list_sharepoint_sites(site_name)["value"]):
             raise DemistoException("Site not found. Please provide a valid site name or id.")
-        site_id = site_details[0]["id"].split(",")[1]
+        site_id = site_details[0]["id"]  # .split(",")[1] #TODO
     if site_id is None:
         raise DemistoException("Site not found. Please provide a valid site name or id.")
     return site_id
@@ -1042,10 +1043,10 @@ def main():
                                managed_identities_client_id=managed_identities_client_id)
 
         demisto.debug(f"Command being called is {command}")
-        results: CommandResults | str
+
         if command == "test-module":
             # This is the call made when pressing the integration Test button.
-            results = test_module(client)
+            return_results(test_module(client))
         elif command == "msgraph-delete-file":
             readable_output, raw_response = delete_file_command(client, args)
             return_outputs(readable_output=readable_output, raw_response=raw_response)
@@ -1066,18 +1067,17 @@ def main():
         elif command == "msgraph-upload-new-file":
             return_outputs(*upload_new_file_command(client, args))
         elif command == "msgraph-files-auth-reset":
-            results = reset_auth()
+            return_results(reset_auth())
         elif command == "msgraph-list-site-permissions":
-            results = list_site_permissions_command(client, args)
+            return_results(list_site_permissions_command(client, args))
         elif command == "msgraph-create-site-permissions":
-            results = create_site_permissions_command(client, args)
+            return_results(create_site_permissions_command(client, args))
         elif command == "msgraph-update-site-permissions":
-            results = update_site_permissions_command(client, args)
+            return_results(update_site_permissions_command(client, args))
         elif command == "msgraph-delete-site-permissions":
-            results = delete_site_permission_command(client, args)
+            return_results(delete_site_permission_command(client, args))
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
-        return_results(results)
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
