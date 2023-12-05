@@ -822,7 +822,7 @@ script:
       name: parent_folder_id
       required: true
     - defaultValue: '20'
-      description: The maximum number of mail folder lists to return. 
+      description: The maximum number of mail folder lists to return.
       name: limit
     - description: Flag for the rate limit retry.
       name: ran_once_flag
@@ -847,7 +847,82 @@ script:
     - contextPath: MSGraphMail.Folders.UnreadItemCount
       description: The number of unread email messages in the folder.
       type: Number
-  dockerimage: demisto/crypto:1.0.0.79610
+  - arguments:
+    - description: Maximum number of results to return.
+      name: limit
+      required: true
+      defaultValue: 50
+    description: List email rules for a user's mailbox using Microsoft Graph API.
+    name: msgraph-mail-list-rules
+    outputs:
+    - contextPath: MSGraphMail.Rule.conditions
+      description: Conditions that when fulfilled, will trigger the corresponding actions for that rule.
+      type: Unknown
+    - contextPath: MSGraphMail.Rule.actions
+      description: Actions to be taken on a message when the corresponding conditions are fulfilled.
+      type: Unknown
+    - contextPath: MSGraphMail.Rule.displayName
+      description: The display name of the rule.
+      type: String
+    - contextPath: MSGraphMail.Rule.exceptions
+      description: Exception conditions for the rule.
+      type: Unknown
+    - contextPath: MSGraphMail.Rule.hasError
+      description: Indicates whether the rule is in an error condition.
+      type: Boolean
+    - contextPath: MSGraphMail.Rule.id
+      description: The ID of the rule.
+      type: String
+    - contextPath: MSGraphMail.Rule.isEnabled
+      description: Indicates whether the rule is enabled to be applied to messages.
+      type: Boolean
+    - contextPath: MSGraphMail.Rule.isReadOnly
+      description: Indicates if the rule is read-only and cannot be modified or deleted by the rules REST API.
+      type: Boolean
+    - contextPath: MSGraphMail.Rule.sequence
+      description: Indicates the order in which the rule is executed, among other rules.
+      type: Number
+  - arguments:
+    - description: The ID of the rule to retrieve.
+      name: rule_id
+      required: true
+    description: Get details of a specific email rule by ID for a user's mailbox using Microsoft Graph API.
+    name: msgraph-mail-get-rule
+    outputs:
+    - contextPath: MSGraphMail.Rule.conditions
+      description: Conditions that when fulfilled, will trigger the corresponding actions for that rule.
+      type: Unknown
+    - contextPath: MSGraphMail.Rule.actions
+      description: Actions to be taken on a message when the corresponding conditions are fulfilled.
+      type: Unknown
+    - contextPath: MSGraphMail.Rule.displayName
+      description: The display name of the rule.
+      type: String
+    - contextPath: MSGraphMail.Rule.exceptions
+      description: Exception conditions for the rule.
+      type: Unknown
+    - contextPath: MSGraphMail.Rule.hasError
+      description: Indicates whether the rule is in an error condition.
+      type: Boolean
+    - contextPath: MSGraphMail.Rule.id
+      description: The ID of the rule.
+      type: String
+    - contextPath: MSGraphMail.Rule.isEnabled
+      description: Indicates whether the rule is enabled to be applied to messages.
+      type: Boolean
+    - contextPath: MSGraphMail.Rule.isReadOnly
+      description: Indicates if the rule is read-only and cannot be modified or deleted by the rules REST API.
+      type: Boolean
+    - contextPath: MSGraphMail.Rule.sequence
+      description: Indicates the order in which the rule is executed, among other rules.
+      type: Number
+  - arguments:
+    - description: The ID of the rule to delete.
+      name: rule_id
+      required: true
+    description: Delete a specific email rule by ID for a user's mailbox using Microsoft Graph API.
+    name: msgraph-mail-delete-rule
+  dockerimage: demisto/crypto:1.0.0.80694
   isfetch: true
   script: ''
   type: python

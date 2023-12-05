@@ -236,15 +236,13 @@ demisto-sdk-nightly:run-commands-against-instance:
     - section_end "Run Lint"
     - *change-file-ids
     - *upload-entities-to-cortex-xsoar
-    - section_start "Destroy instances"
-    - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir $ARTIFACTS_FOLDER --env-file "${ENV_RESULTS_PATH}" --instance-role "$INSTANCE_ROLE"
-    - destroy_instances_exit_code=$?
-    - |
-      if [ "${destroy_instances_exit_code}" -ne 0 ]; then
-        echo "Failed to destroy instances, exit code: ${destroy_instances_exit_code}"
-      fi
-    - section_end "Destroy instances"
     - job-done
+  after_script:
+    - !reference [.default-after-script]
+    - !reference [.install_ssh_keys]
+    - !reference [.ssh-config-setup]
+    - !reference [.destroy_xsoar_instances]
+
 
 demisto-sdk-nightly:run-end-to-end-tests:
   tags:

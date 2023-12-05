@@ -36,7 +36,7 @@ WLM_TASK_FAILED_ERROR_CODE = 101704
 GITLAB_SESSION = Session()
 CONTENT_PROJECT_ID = os.getenv('CI_PROJECT_ID', '2596')  # the default is the id of the content repo in code.pan.run
 PACKS_DIR = "Packs"
-PACK_METADATA_FILE = Pack.USER_METADATA
+PACK_METADATA_FILE = Pack.PACK_METADATA
 GITLAB_PACK_METADATA_URL = f'{{gitlab_url}}/api/v4/projects/{CONTENT_PROJECT_ID}/repository/files/{PACKS_DIR}%2F{{pack_id}}%2F{PACK_METADATA_FILE}'  # noqa: E501
 
 BATCH_SIZE = 10
@@ -335,7 +335,7 @@ def install_packs_private(client: demisto_client,
 def get_error_ids(body: str) -> dict[int, str]:
     with contextlib.suppress(json.JSONDecodeError):
         response_info = json.loads(body)
-        return {error["id"]: error.get("details", "") for error in response_info.get("errors", []) if "id" in error}
+        return {error["id"]: error.get("detail", "") for error in response_info.get("errors", []) if "id" in error}
     return {}
 
 
@@ -551,7 +551,8 @@ def search_pack_and_its_dependencies(client: demisto_client,
                 ]
                 packs_to_install.extend([pack['id'] for pack in pack_and_its_dependencies_as_list])
                 list_packs_and_its_dependency_install_request_body.append(pack_and_its_dependencies_as_list)
-
+                logging.info(
+                    f"list_packs_and_its_dependency_install_request_body: {list_packs_and_its_dependency_install_request_body} ")
         else:  # multithreading
             for pack in current_packs_to_install:
                 if pack['id'] not in packs_to_install:
@@ -783,6 +784,8 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
 
     success = True
     if not multithreading:
+        pack_ids = sorted(pack_ids, key=lambda x: (x == "DeveloperTools", x == "Base"))
+        logging.info(f"pack_ids = {pack_ids}")
         for pack_id in pack_ids:
             success &= search_pack_and_its_dependencies(pack_id=pack_id, **kwargs)
 

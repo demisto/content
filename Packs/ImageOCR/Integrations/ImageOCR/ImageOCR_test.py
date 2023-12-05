@@ -2,12 +2,12 @@ import pytest
 
 import demistomock as demisto
 from CommonServerPython import entryTypes
-from ImageOCR import list_languages, extract_text, run_test_module, main
+from ImageOCR import list_languages_command, extract_text, run_test_module, main
 
 RETURN_ERROR_TARGET = 'ImageOCR.return_error'
 
 
-def test_list_languages():
+def test_list_languages_command():
     """
     When:
      - Running the list_languages function
@@ -15,7 +15,8 @@ def test_list_languages():
     Then:
      - Ensure the supported languages in the Docker image are present.
     """
-    res = list_languages()
+    cmd_res = list_languages_command()
+    res = cmd_res.raw_response
     assert len(res) >= 16
     assert "eng" in res  # english
     assert "pol" in res  # polish

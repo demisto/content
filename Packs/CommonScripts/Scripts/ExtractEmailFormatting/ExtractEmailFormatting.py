@@ -48,10 +48,7 @@ def check_tld(email_address: str) -> bool:
         Boolean: True if it's not a common file extension
 
     """
-    if email_address.split(".")[-1] not in COMMON_FILE_EXT:
-        return True
-    else:
-        return False
+    return email_address.split(".")[-1] not in COMMON_FILE_EXT
 
 
 def refang_email(email_address: str) -> str:
@@ -91,24 +88,30 @@ def extract_email_from_url_query(email_address: str) -> str:
 def main():
     list_results = []
 
-    emails = argToList(demisto.args().get('input'))
+    try:
+        emails = argToList(demisto.args().get('input'))
 
-    clean_emails = [extract_email(address) for address in emails]
+        clean_emails = [extract_email(address) for address in emails]
 
-    list_results = [refang_email(email_address) for email_address in clean_emails]
+        list_results = [refang_email(email_address) for email_address in clean_emails]
 
-    output = [
-        {
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': [email_address] if email_address else [],
-            'EntryContext': {'Email': email_address} if email_address else {},
-        } for email_address in list_results]
+        output = [
+            {
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': [email_address] if email_address else [],
+                'EntryContext': {'Email': email_address} if email_address else {},
+            } for email_address in list_results]
 
-    if output:
-        return_results(output)
-    else:
-        return_results('')
+        if output:
+            return_results(output)
+        else:
+            return_results('')
+
+    except Exception as e:
+        return_error(
+            f'Failed to execute the automation. Error: \n{str(e)}'
+        )
 
 
 if __name__ in ('__main__', 'builtin', 'builtins'):
