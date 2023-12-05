@@ -3,6 +3,8 @@ from CommonServerPython import *
 from XCloudIdentitiesWidget import get_additonal_info, main, DemistoException
 
 # Mock the context data
+
+
 def mock_context(alerts):
     demisto.results({
         'Type': entryTypes['note'],
@@ -15,6 +17,8 @@ def mock_context(alerts):
     })
 
 # Unit test for get_additonal_info function
+
+
 def test_get_additonal_info_single_alert():
     mock_context([{
         'event': {
@@ -34,6 +38,7 @@ def test_get_additonal_info_single_alert():
     assert results[0]['Identity Invoke Type'] == 'API Key'
     assert results[0]['Identity Invoke Sub Type'] == 'Read Access'
 
+
 def test_get_additonal_info_multiple_alerts():
     mock_context([
         {'event': {'identity_name': 'John Doe'}},
@@ -45,11 +50,13 @@ def test_get_additonal_info_multiple_alerts():
     assert results[0]['Identity Name'] == 'John Doe'
     assert results[1]['Identity Name'] == 'Jane Doe'
 
+
 def test_get_additonal_info_empty_alert():
     mock_context([{}])
 
     results = get_additonal_info()
     assert len(results) == 0
+
 
 def test_get_additonal_info_alert_not_configured():
     mock_context(None)
@@ -60,7 +67,16 @@ def test_get_additonal_info_alert_not_configured():
     except DemistoException as e:
         assert str(e) == 'Original Alert is not configured in context'
 
+
+def test_get_additonal_info_invalid_alert():
+    mock_context([{'invalid_key': 'value'}])
+
+    results = get_additonal_info()
+    assert len(results) == 0
+
 # Unit test for main function
+
+
 def test_main(mocker):
     mocker.patch('demistomock.results', side_effect=mocked_demisto_results)
     mocker.patch.object(demisto, 'args', return_value={})
@@ -83,16 +99,22 @@ def test_main(mocker):
     assert 'Failed to execute XCloudIdentitiesWidget. Error: Test Exception' in result
 
 # Mocked demisto.results function
+
+
 def mocked_demisto_results(params):
     pass
 
 # Run the unit tests
+
+
 def run_tests():
     test_get_additonal_info_single_alert()
     test_get_additonal_info_multiple_alerts()
     test_get_additonal_info_empty_alert()
     test_get_additonal_info_alert_not_configured()
+    test_get_additonal_info_invalid_alert()
     test_main()
+
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     run_tests()
