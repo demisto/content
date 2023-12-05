@@ -20,6 +20,8 @@ demisto.results({
 })
 
 # Unit test for get_additonal_info function
+
+
 def test_get_additonal_info():
     results = get_additonal_info()
     assert len(results) == 1
@@ -30,6 +32,8 @@ def test_get_additonal_info():
     assert results[0]['Identity Invoke Sub Type'] == 'Read Access'
 
 # Unit test for main function
+
+
 def test_main(mocker):
     mocker.patch('demistomock.results', side_effect=mocked_demisto_results)
     mocker.patch.object(demisto, 'args', return_value={})
@@ -37,13 +41,18 @@ def test_main(mocker):
     main()
 
 # Mocked demisto.results function
+
+
 def mocked_demisto_results(params):
     pass
 
 # Run the unit tests
+
+
 def run_tests():
     test_get_additonal_info()
     test_main()
+
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     run_tests()

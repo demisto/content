@@ -1,6 +1,7 @@
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from EntryWidgetRegionNameXCLOUD import main
+
 
 class TestYourScript(unittest.TestCase):
 
