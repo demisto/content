@@ -100,7 +100,7 @@ configuration:
   name: feedExpirationInterval
   type: 1
   required: false
-- defaultvalue: '240'
+- defaultvalue: '10'
   display: Feed Fetch Interval
   name: feedFetchInterval
   type: 19
