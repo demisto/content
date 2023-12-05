@@ -13,7 +13,7 @@ urllib3.disable_warnings()
 
 # Globals
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-THRESHOLD_IN_SECONDS = 43200
+THRESHOLD_IN_SECONDS = 43200    # 12 hours in seconds
 
 
 class Client(BaseClient):
@@ -261,7 +261,7 @@ def get_no_update_value(response: requests.models.Response, url: str) -> bool:
     etag = response.headers.get('ETag')
     last_modified = response.headers.get('Last-Modified')
     current_time = datetime.utcnow()
-    # Save the current time as the last updated time. This will be used to check if the indicators have been updated in XSOAR.
+    # Save the current time as the last updated time. This will be used to indicate the last time the feed was updated in XSOAR.
     last_updated = current_time.strftime(DATE_FORMAT)
 
     if not etag and not last_modified:
