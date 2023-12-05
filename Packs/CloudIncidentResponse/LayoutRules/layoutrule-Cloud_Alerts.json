@@ -5,32 +5,23 @@
     "rule_name": "Cloud Alerts Layout Rule",
     "alerts_filter": {
         "filter": {
-            "AND": [
+              "OR": [
                 {
-                    "SEARCH_FIELD": "alert_source",
-                    "SEARCH_TYPE": "EQ",
-                    "SEARCH_VALUE": "MAGNIFIER"
+                  "SEARCH_FIELD": "cloud_provider",
+                  "SEARCH_TYPE": "EQ",
+                  "SEARCH_VALUE": "AWS"
                 },
                 {
-                  "OR": [
-                    {
-                      "SEARCH_FIELD": "cloud_provider",
-                      "SEARCH_TYPE": "EQ",
-                      "SEARCH_VALUE": "AWS"
-                    },
-                    {
-                      "SEARCH_FIELD": "cloud_provider",
-                      "SEARCH_TYPE": "EQ",
-                      "SEARCH_VALUE": "AZURE"
-                    },
-                    {
-                      "SEARCH_FIELD": "cloud_provider",
-                      "SEARCH_TYPE": "EQ",
-                      "SEARCH_VALUE": "GCP"
-                    }
-                  ]
+                  "SEARCH_FIELD": "cloud_provider",
+                  "SEARCH_TYPE": "EQ",
+                  "SEARCH_VALUE": "AZURE"
+                },
+                {
+                  "SEARCH_FIELD": "cloud_provider",
+                  "SEARCH_TYPE": "EQ",
+                  "SEARCH_VALUE": "GCP"
                 }
-            ]
+              ]
         }
     },
     "fromVersion": "6.10.0"

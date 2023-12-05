@@ -7,7 +7,7 @@ BLACK_HTML_STYLE = "color:#555555;text-align:center;font-size:200%;"
 def main():
     try:
         alert = demisto.context().get('Core', {}).get('OriginalAlert')[0]
-        if alert.get('raw_abioc') == None:
+        if alert.get("raw_abioc") is None:
             event = alert.get('event')
         else:
             event = alert.get('raw_abioc').get('event')
