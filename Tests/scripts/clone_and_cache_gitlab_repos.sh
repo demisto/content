@@ -86,6 +86,34 @@ clone_repository_with_fallback_branch() {
   fi
 }
 
+get_cache_gitlab_repositories() {
+  local host=$1
+  local user=$2
+  local token=$3
+  local repo_name=$4
+  local branch=$5
+  local retry_count=$6
+  local sleep_time=${7:-10}  # default sleep time is 10 seconds.
+
+  if [ -z "${user}" ] && [ -z "${token}" ]; then
+    user_info=""
+  else
+    # If either user or token is not empty, then we need to add them to the url.
+    user_info="${user}:${token}@"
+  fi
+
+  if [ -d "./${repo_name}" ] ; then
+    cd ./"${repo_name}"
+    git remote set-url origin "https://${user_info}${host}/${repo_name}.git"
+    git fetch -p -P
+    cd ..
+  else
+    echo "Getting ${repo_name} repository with branch:${SEARCHED_BRANCH_NAME}, with fallback to master"
+    clone_repository_with_fallback_branch "${host}" "${user}" "${token}" "${repo_name}" "${branch}" "${retry_count}" "${sleep_time}"
+  fi
+
+}
+
 TEST_UPLOAD_BRANCH_SUFFIX="-upload_test_branch-"
 # Search for the branch name without the suffix of '-upload_test_branch-' in case it exists.
 if [[ "${CI_COMMIT_BRANCH}" == *"${TEST_UPLOAD_BRANCH_SUFFIX}"* ]]; then
@@ -102,28 +130,9 @@ CI_SERVER_HOST=${CI_SERVER_HOST:-code.pan.run}
 
 echo "Getting content-test-conf and infra repositories with branch:${SEARCHED_BRANCH_NAME}"
 
-local host=$1
-local user=$2
-local token=$3
-if [ -d "./infra" ] ; then
-  cd ./infra
-  git remote set-url origin https://${CI_JOB_TOKEN}${CI_SERVER_HOST}/infra.git
-  git fetch -p -P
-  cd ..
-else
-  echo "Getting infra repository with branch:${SEARCHED_BRANCH_NAME}, with fallback to master"
-  clone_repository_with_fallback_branch "${CI_SERVER_HOST}" "gitlab-ci-token" "${CI_JOB_TOKEN}" "${CI_PROJECT_NAMESPACE}/infra" "${SEARCHED_BRANCH_NAME}" 3 10 "master"
-fi
+get_cache_gitlab_repositories "${CI_SERVER_HOST}" "gitlab-ci-token" "${CI_JOB_TOKEN}" "${CI_PROJECT_NAMESPACE}/content-test-conf" "${SEARCHED_BRANCH_NAME}" 3 10 "master"
+get_cache_gitlab_repositories "${CI_SERVER_HOST}" "gitlab-ci-token" "${CI_JOB_TOKEN}" "${CI_PROJECT_NAMESPACE}/infra" "${SEARCHED_BRANCH_NAME}" 3 10 "master"
 
-if [ -d "./content-test-conf" ] ; then
-  cd ./content-test-conf
-  git remote set-url origin https://${CI_JOB_TOKEN}${CI_SERVER_HOST}/content-test-conf.git
-  git fetch -p -P
-  cd ..
-else
-  echo "Getting content-test-conf repository with branch:${SEARCHED_BRANCH_NAME}, with fallback to master"
-  clone_repository_with_fallback_branch "${CI_SERVER_HOST}" "gitlab-ci-token" "${CI_JOB_TOKEN}" "${CI_PROJECT_NAMESPACE}/content-test-conf" "${SEARCHED_BRANCH_NAME}" 3 10 "master"
-fi
 
 echo "Successfully cloned content-test-conf and infra repositories"
 set -e
