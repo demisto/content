@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import NamedTuple
 from collections.abc import Generator
 import demistomock as demisto
@@ -11,7 +12,7 @@ import pytz
 from pathlib import Path
 import tempfile
 import os
-from time import time as get_current_time_as_seconds
+from time import time as get_current_time_in_seconds
 
 disable_warnings()
 
@@ -23,6 +24,12 @@ REGEX_FOR_TOKEN = re.compile(r"X-sync-token: (?P<token>.*?)(?=\\r\\n|$)")
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 MAX_CHUNK_SIZE_TO_READ = 1024 * 1024 * 150  # 150 MB
 MAX_CHUNK_SIZE_TO_WRITE = 200 * (10**6)  # ~200 MB
+
+
+class StatusType(Enum):
+    DONE = "done"
+    MORE = "more"
+    ABORT = "abort"
 
 
 class LastRun(NamedTuple):
@@ -151,13 +158,13 @@ def get_start_and_end_date(start_date: str | None) -> tuple[int, int]:
     return start_date, end_date
 
 
-def get_status_and_token_from_file_system(file_path: Path) -> tuple[str, str]:
+def get_status_and_token_from_file(file_path: Path) -> tuple[str, str]:
     """
     Extracting the status and the next_token.
     """
 
     # Getting the file size to read only its end for the `status` and `next_token`
-    file_size = get_file_size(file_path)
+    file_size = file_path.stat().st_size
     read_size = 2000
     if file_size < read_size:  # In case the file is smaller than 2000 bytes
         read_size = file_size
@@ -176,11 +183,6 @@ def get_status_and_token_from_file_system(file_path: Path) -> tuple[str, str]:
         token = token_match.groupdict().get("token", "")
 
     return status, token
-
-
-def get_file_size(file_path: Path) -> int:
-    """Get size of file in bytes"""
-    return file_path.stat().st_size
 
 
 def get_the_last_row_that_incomplete(lines: list[bytes], file_size: int) -> bytes:
@@ -511,8 +513,8 @@ def get_events_command(
     last_run_model: LastRun,
 ) -> None:
     # Make API call in streaming to fetch events and writing to a temporary file on the disk.
-    status = "more"
-    while status != "done":
+    status = StatusType.MORE
+    while status != StatusType.DONE:
         token_expired = last_run_model.token_expired
 
         # Set the fetch times, where the `end_time` is consistently set to the current time.
@@ -537,7 +539,7 @@ def get_events_command(
         except DemistoException as e:
             try:
                 if e.res is not None and e.res.status_code == 410:
-                    # In case the token is expiring
+                    # In case the token expired
                     # Update last run model with expired_token = True
                     # for handling duplicates in next fetch
                     demisto.debug(f"The token has expired: {e}")
@@ -554,30 +556,34 @@ def get_events_command(
                     time.sleep(client.fetch_interval)
                     continue
                 elif e.res is not None and e.res.status_code == 429:
-                    demisto.debug(f"Crashed on limit of api calls: {e}")
+                    demisto.debug(f"Call refused due to limit of api calls: {e}")
                     time.sleep(client.fetch_interval)
                     continue
                 else:
-                    demisto.debug(f"Some ERROR: {e=}")
+                    demisto.info(f"ERROR: {e=}")
                     raise e
             except Exception as err:
-                demisto.debug(f"Some ERROR: {e=} after the error: {err}")
+                demisto.debug(f"ERROR: {e=} after the error: {err}")
                 raise e
         except Exception as err:
             raise err
-        status, new_token = get_status_and_token_from_file_system(tmp_file_path)
+
+        status, new_token = get_status_and_token_from_file(tmp_file_path)
 
         # If status is "abort", deletes the tmp file
         # and continue the loop to fetch with the same parameters.
-        if status == "abort":
+        if status == StatusType.ABORT:
             tmp_file_path.unlink()
             continue
 
-        (
-            time_of_last_fetched_event,
-            new_events_suspected_duplicates,
-            handling_duplicates,
-        ) = extract_logs_and_push_to_XSIAM(last_run_model, tmp_file_path, token_expired)
+        try:
+            (
+                time_of_last_fetched_event,
+                new_events_suspected_duplicates,
+                handling_duplicates,
+            ) = extract_logs_and_push_to_XSIAM(last_run_model, tmp_file_path, token_expired)
+        except Exception:
+            tmp_file_path.unlink()
 
         # Removes the tmp file
         tmp_file_path.unlink()
@@ -619,7 +625,7 @@ def perform_long_running_loop(client: Client):
     last_run_obj: LastRun
     while True:
         # Used to calculate the duration of the fetch run.
-        start_run = get_current_time_as_seconds()
+        start_run = get_current_time_in_seconds()
         try:
             integration_context = get_integration_context()
             demisto.debug(f"Starting new fetch with {integration_context=}")
@@ -635,7 +641,7 @@ def perform_long_running_loop(client: Client):
             raise e
 
         # Used to calculate the duration of the fetch run.
-        end_run = get_current_time_as_seconds()
+        end_run = get_current_time_in_seconds()
 
         # Calculation of the fetch runtime against `client.fetch_interval`
         # If the runtime is less than the `client.fetch_interval` time

@@ -15,7 +15,7 @@ from SymantecCloudSecureWebGatewayEventCollector import (
     get_size_gzip_file,
     get_start_and_end_date,
     get_start_date_for_next_fetch,
-    get_status_and_token_from_file_system,
+    get_status_and_token_from_file,
     get_the_last_row_that_incomplete,
     management_next_fetch,
     parse_events,
@@ -111,7 +111,7 @@ def test_get_start_and_end_date(start_date, expected_start, expected_end):
         (b"", "", ""),
     ],
 )
-def test_get_status_and_token_from_file_system(
+def test_get_status_and_token_from_file(
     tmpdir, content_file: bytes, expected_status: str, expected_token: str
 ):
     """
@@ -120,14 +120,14 @@ def test_get_status_and_token_from_file_system(
         - A large file containing a status and token at the end
         - An empty file
     When:
-        - run the `get_status_and_token_from_file_system` function
+        - run the `get_status_and_token_from_file` function
     Then:
         - Cases 1-2: Ensure the status and token are extracted as expected from the file
         - Case 3: Ensure the function returns empty strings for status and token
     """
     tmp_file = Path(tmpdir / "test.zip")
     tmp_file.write_bytes(content_file)
-    status, token = get_status_and_token_from_file_system(tmp_file)
+    status, token = get_status_and_token_from_file(tmp_file)
     assert status == expected_status
     assert token == expected_token
 
@@ -193,7 +193,22 @@ def test_get_size_gzip_file(tmpdir, data: bytes, expected_size: int):
     ],
 )
 def test_is_duplicate(id_, cur_time, last_time, dup_ids, expected):
-    """ """
+    '''
+    Given:
+        - A unique ID, current time, last time, and a list of duplicate IDs.
+    When:
+        - run the `is_duplicate` method.
+    Then:
+        - Case 1: Ensure the method returns True,
+          since the cur_time equal to last_time
+          and the ID is in the duplicate list.
+
+        - Case 2: Ensure the method returns False,
+          since the ID is not in the duplicate list.
+
+        - Case 3: Ensure the method returns False,
+          since the cur_time is greater than last_time.
+    '''
     handling_duplicates = HandlingDuplicates(
         max_time=last_time, events_suspected_duplicates=dup_ids
     )
@@ -212,6 +227,15 @@ def test_is_duplicate(id_, cur_time, last_time, dup_ids, expected):
 def test_get_start_date_for_next_fetch(
     start_time: int, time_of_last_fetched_event: str | None, expected
 ):
+    '''
+    Given:
+        - A start time and a time of last fetched event.
+    When:
+        - run the `get_start_date_for_next_fetch` function.
+    Then:
+        - Ensure that as long as the argument `time_of_last_fetched_event` is either None
+          or not in datetime format, the original start_time is returned.
+    '''
     next_start = get_start_date_for_next_fetch(start_time, time_of_last_fetched_event)
     assert next_start == expected
 
@@ -617,7 +641,7 @@ def test_perform_long_running_loop(
     mock_sleep = mocker.patch("time.sleep")
 
     mocker.patch(
-        "SymantecCloudSecureWebGatewayEventCollector.get_current_time_as_seconds",
+        "SymantecCloudSecureWebGatewayEventCollector.get_current_time_in_seconds",
         side_effect=mock_current_time,
     )
     mocker.patch(
