@@ -150,9 +150,9 @@ xpanse-prepare-testing-bucket-upload-flow:
   extends:
     - .bucket-upload-rule
     - .default-job-settings
-    - .use_cached_gitlab_repos
   script:
     - EXIT_CODE=0
+    - !reference [.use_cached_gitlab_repos]
     - section_start "Secrets Fetch" --collapsed
     - SECRET_CONF_PATH=$(cat secret_conf_path)
     - python3 ./Tests/scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" --gsm_project_id_dev "$GSM_PROJECT_ID_DEV" --gsm_project_id_prod "$GSM_PROJECT_ID" >> $ARTIFACTS_FOLDER/logs/handle_secrets.log
@@ -244,9 +244,9 @@ install-packs-in-server-master:
     CLOUD_MACHINES_COUNT: 1
   extends:
     - .default-job-settings
-    - .use_cached_gitlab_repos
   script:
     - EXIT_CODE=0
+    - !reference [.use_cached_gitlab_repos]
     - section_start "Secrets Fetch" --collapsed
     - SECRET_CONF_PATH=$(cat secret_conf_path)
     - python3 ./Tests/scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" --gsm_project_id_dev "$GSM_PROJECT_ID_DEV" --gsm_project_id_prod "$GSM_PROJECT_ID" >> $ARTIFACTS_FOLDER/logs/handle_secrets.log

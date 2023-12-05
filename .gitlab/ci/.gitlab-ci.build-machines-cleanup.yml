@@ -15,9 +15,9 @@ build-machines-cleanup:
   extends:
     - .build-machines-cleanup-rule
     - .default-job-settings
-    - .use_cached_gitlab_repos
   script:
     - EXIT_CODE=0
+    - !reference [.use_cached_gitlab_repos]
     - !reference [.lock-machine]
     - !reference [.uninstall-packs-and-reset-bucket-cloud]
     - !reference [.cloud-machine-information]

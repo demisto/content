@@ -183,7 +183,6 @@ demisto-sdk-nightly:run-commands-against-instance:
   extends:
     - .default-job-settings
     - .sdk-nightly-schedule-rule-always
-    - .use_cached_gitlab_repos
   services: # needed for running lint
     - name: docker.art.code.pan.run/build-tools--image-dind:20.10.12-dind
       alias: docker
@@ -201,6 +200,7 @@ demisto-sdk-nightly:run-commands-against-instance:
   needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
   stage: run-instances
   script:
+    - !reference [.use_cached_gitlab_repos]
     - !reference [.ssh-config-setup]
     - section_start "Wait Until Server Ready"
     - |
