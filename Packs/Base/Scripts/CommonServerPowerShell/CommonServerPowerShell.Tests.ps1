@@ -36,6 +36,7 @@ Describe 'Check-incidents'{
             }
 
             [array] Incidents ($Incidents) {
+                # This cmdlet returns a string representing the input object converted to a JSON string.
                 $Incidents = $Incidents | ConvertTo-Json -Depth 6 -AsArray
                 return $Incidents
             }
@@ -43,6 +44,8 @@ Describe 'Check-incidents'{
         [DemistoObject]$demisto = [DemistoObject]::New()
         $r = $demisto.Incidents($incidents)
         $r.GetType().IsArray | Should -BeTrue
+        $incidentArray = $r | ConvertFrom-Json
+        $incidentArray.Length | Should -Be 3
     }
 
     It 'Check Incidents creation in a case of only one incident'{
@@ -70,6 +73,7 @@ Describe 'Check-incidents'{
             }
             
             [array] Incidents ($Incidents) {
+                # This cmdlet returns a string representing the input object converted to a JSON string.
                 $Incidents = $Incidents | ConvertTo-Json -Depth 6 -AsArray
                 return $Incidents
             }
@@ -77,6 +81,8 @@ Describe 'Check-incidents'{
         [DemistoObject]$demisto = [DemistoObject]::New()
         $r = $demisto.Incidents($incidents)
         $r.GetType().IsArray | Should -BeTrue
+        $incidentArray = $r | ConvertFrom-Json
+        $incidentArray.Length | Should -Be 1
     }
 }
 
