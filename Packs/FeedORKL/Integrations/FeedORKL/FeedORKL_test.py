@@ -3,7 +3,7 @@ import unittest
 from importlib import import_module
 from test_data.feed_data import RESPONSE_DATA
 from unittest.mock import patch
-from FeedORKL import Client, fetch_indicator_command, get_reports_command, testing_module, DemistoException
+from FeedORKL import Client, fetch_indicator_command, get_reports_command, module_of_testing, DemistoException
 
 FeedORKL = import_module('FeedORKL')
 main = FeedORKL.main
@@ -81,7 +81,7 @@ class TestTestModule(unittest.TestCase):
         mock_fetch.return_value = {'data': ['some data']}
 
         # Act
-        result = testing_module(self.client)
+        result = module_of_testing(self.client)
 
         # Assert
         self.assertEqual(result, 'ok')
@@ -92,7 +92,7 @@ class TestTestModule(unittest.TestCase):
         mock_fetch.return_value = {}
 
         # Act
-        result = testing_module(self.client)
+        result = module_of_testing(self.client)
 
         # Assert
         self.assertTrue(result.startswith('Test Command Error:'))
@@ -104,4 +104,4 @@ class TestTestModule(unittest.TestCase):
 
         # Act and Assert
         with self.assertRaises(DemistoException):
-            testing_module(self.client)
+            module_of_testing(self.client)

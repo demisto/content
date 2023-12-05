@@ -27,7 +27,7 @@ class Client(BaseClient):
         )
 
 
-def testing_module(client: Client):
+def module_of_testing(client: Client):
     try:
         res = client.fetch_indicators(limit=1)
         if 'data' in res:
@@ -189,7 +189,7 @@ def main():
         )
 
         if demisto.command() == 'test-module':
-            return_results(testing_module(client))
+            return_results(module_of_testing(client))
 
         elif demisto.command() == 'fetch-indicators':
             indicators = fetch_indicator_command(
