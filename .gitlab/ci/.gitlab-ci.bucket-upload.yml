@@ -150,6 +150,7 @@ xpanse-prepare-testing-bucket-upload-flow:
   extends:
     - .bucket-upload-rule
     - .default-job-settings
+    - .use_cached_gitlab_repos
   script:
     - EXIT_CODE=0
     - section_start "Secrets Fetch" --collapsed
@@ -243,6 +244,7 @@ install-packs-in-server-master:
     CLOUD_MACHINES_COUNT: 1
   extends:
     - .default-job-settings
+    - .use_cached_gitlab_repos
   script:
     - EXIT_CODE=0
     - section_start "Secrets Fetch" --collapsed

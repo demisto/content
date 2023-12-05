@@ -1,10 +1,5 @@
 .default-cache:
   cache:
-    - key: ci-repos-$CI_COMMIT_SHA
-      paths:
-        - content-test-conf
-        - infra
-      policy: pull
     - key:
         files:
           - "poetry.lock"
@@ -62,10 +57,10 @@
   - if [ -f ./items_removed_manually_from_id_set.json ]; then cp ./items_removed_manually_from_id_set.json "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs"; fi
   - section_end "Create ID Set"
 
-.download-demisto-conf: &download-demisto-conf
-  - section_start "Download content-test-conf and infra" --collapsed
-  - ./Tests/scripts/download_conf_repos.sh 2>&1 | tee --append "${ARTIFACTS_FOLDER}/logs/download_conf_repos.log"
-  - section_end "Download content-test-conf and infra"
+#.download-demisto-conf: &download-demisto-conf
+#  - section_start "Download content-test-conf and infra" --collapsed
+#  - ./Tests/scripts/download_conf_repos.sh 2>&1 | tee --append "${ARTIFACTS_FOLDER}/logs/download_conf_repos.log"
+#  - section_end "Download content-test-conf and infra"
 
 .secrets-fetch:
   - section_start "Secrets Fetch" --collapsed
@@ -552,10 +547,26 @@ cloning-content-repo-last-upload-commit:
   script:
     - !reference [.add-content-production-to-artifacts]
 
+
+.clone_and_cache_gitlab_repos: &clone_and_cache_gitlab_repos
+  - section_start "Git clone and cache gitlab repos" --collapsed
+  - ./Tests/scripts/clone_and_cache_gitlab_repos.sh 2>&1 | tee --append "${ARTIFACTS_FOLDER}/logs/clone_and_cache_gitlab_repos.log"
+  - section_end "Git clone and cache gitlab repos"
+
+.use_cached_gitlab_repos:
+  cache:
+    - key: ci-repos-$CI_COMMIT_BRANCH
+      paths:
+        - content-test-conf
+        - infra
+      policy: pull
+  script:
+    - ./Tests/scripts/use_cached_gitlab_repos.sh 2>&1 | tee --append "${ARTIFACTS_FOLDER}/logs/use_cached_gitlab_repos.log"
+
 pre_job:
   stage: .pre
   cache:
-    - key: ci-repos-$CI_COMMIT_SHA
+    - key: ci-repos-$CI_COMMIT_BRANCH
       paths:
         - content-test-conf
         - infra
@@ -563,6 +574,6 @@ pre_job:
   script:
     - source .gitlab/helper_functions.sh
     - *setup-artifactory
-    - *download-demisto-conf
     - *stop_contrib_external_build
     - *check_build_files_are_up_to_date
+    - *clone_and_cache_gitlab_repos

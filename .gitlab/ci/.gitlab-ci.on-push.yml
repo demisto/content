@@ -46,6 +46,7 @@ merge-dev-secrets:
     - gke
   extends:
     - .default-job-settings
+    - .use_cached_gitlab_repos
   variables:
     master_branch_name: master
   rules:
@@ -122,6 +123,7 @@ validate-content-conf:
     - gke
   extends:
     - .default-job-settings
+    - .use_cached_gitlab_repos
   rules:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: "$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/"
@@ -276,6 +278,7 @@ xpanse-prepare-testing-bucket:
   extends:
     - .default-job-settings
     - .push-rule
+    - .use_cached_gitlab_repos
   variables:
     SERVER_TYPE: "XSOAR"
     PRODUCT_TYPE: "XSOAR"
@@ -557,6 +560,7 @@ slack-notify-on-merge:
   extends:
     - .default-job-settings
     - .push-rule
+    - .use_cached_gitlab_repos
   variables:
     EXTRACT_PRIVATE_TESTDATA: "true"
   stage: run-instances
