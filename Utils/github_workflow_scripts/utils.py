@@ -116,6 +116,8 @@ class Checkout:  # pragma: no cover
         if fork_owner:
             forked_remote_name = f'{fork_owner}_{repo_name}_{branch_to_checkout}_remote'
             url = f"https://github.com/{fork_owner}/{repo_name}"
+            print('=====')
+            print(url)
             try:
                 self.repo.create_remote(name=forked_remote_name, url=url)
                 print(f'Successfully created remote {forked_remote_name} for repo {url}')  # noqa: T201
