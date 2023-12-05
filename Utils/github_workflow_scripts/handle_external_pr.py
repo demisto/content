@@ -113,7 +113,7 @@ def packs_to_check_in_pr(file_paths: list[str]) -> set:
     return pack_dirs_to_check
 
 
-def get_packs_support_level_label(file_paths: list[str], external_pr_branch: str, repo_name: str) -> str:
+def get_packs_support_level_label(file_paths: list[str], external_pr_branch: str, repo_name: str = 'content') -> str:
     """
     Get The contributions' support level label.
 
@@ -129,6 +129,7 @@ def get_packs_support_level_label(file_paths: list[str], external_pr_branch: str
     Args:
         file_paths(str): file paths
         external_pr_branch (str): the branch of the external PR.
+        repo_name(str): the name of the forked repo (without the owner)
 
     Returns:
         highest support level of the packs that were changed, empty string in case no packs were changed.
