@@ -113,13 +113,15 @@ class Client(BaseClient):  # pragma: no cover
 
         return res
 
-    def get_activity_log(self, from_LastModifiedOn: str, size: int) -> dict:
+    def get_activity_log(self, from_LastModifiedOn: str, size: int, to_LastModifiedOn: str) -> dict:
+        time = {"from": from_LastModifiedOn}
+        if to_LastModifiedOn:
+            time["to"] = to_LastModifiedOn
+        
         req_body = assign_params(
             size=size,
             attributes=assign_params(
-                time={
-                    "from": f"{from_LastModifiedOn}",
-                }
+                time=time
             ),
         )
 
@@ -318,52 +320,63 @@ class EventCollector:
 
     def fetch_activity_log(
         self, event_type: EventType, start_time: datetime, fetched_ids: set = set()
-    ) -> tuple[list[dict], datetime]:
+    ) -> tuple[list[dict], str]:
         res_count = 0
         res = []
 
         results_left = True
-
-        while results_left and res_count < event_type.client_max_fetch:
-            demisto.debug(f"Converting {start_time=} to string")
-            # formatting to iso z format without microseconds due to api lack of support,
-            # api response should be already in format.
-            iso_start_time = f"{datetime.strftime(start_time.astimezone(timezone.utc), '%Y-%m-%dT%H:%M:%S%z')}Z"
-
+        iso_end_time = ""
+        demisto.debug(f"Converting {start_time=} to string")
+        # formatting to iso z format without microseconds due to api lack of support,
+        # api response should be already in this format.
+        iso_start_time = f"{datetime.strftime(start_time.astimezone(timezone.utc), '%Y-%m-%dT%H:%M:%S%z')}Z"
+        
+        while results_left and ((not iso_end_time) or iso_end_time >= iso_start_time):           
             demisto.debug(
-                f"{LOG_LINE} getting user activity: {results_left=}, {res_count=}, {iso_start_time=}"
+                f"{LOG_LINE} getting user activity: {results_left=}, {res_count=}, {iso_start_time=}, {iso_end_time=}"
             )
 
-            current_batch = self.client.get_activity_log(iso_start_time, min(
-                event_type.api_max, event_type.client_max_fetch - res_count))
+            current_batch = self.client.get_activity_log(from_LastModifiedOn=iso_start_time,
+                                                         size=event_type.api_max,
+                                                         to_LastModifiedOn=iso_end_time)
             current_batch_data = current_batch.get("data", [])
 
             demisto.debug(f"{LOG_LINE} raw: {current_batch_data}")
 
             if current_batch_data:
-                dedup_data = list(
-                    filter(lambda item: get_activity_log_id(item) not in fetched_ids,
-                           current_batch_data))
+                dedup_data = [item for item in current_batch_data if get_activity_log_id(item) not in fetched_ids]
                 if dedup_data:
                     demisto.debug(
-                        f"Fetching {len(dedup_data)} alerts from {len(current_batch_data)} found in API for {event_type.name}"
+                        f"Fetching {len(dedup_data)} non duplicates alerts from {len(current_batch_data)} found in API for {event_type.name}"
                     )
                     res.extend(dedup_data)
-                    res_count += len(dedup_data)
 
                     fetched_ids = fetched_ids.union(
                         {get_activity_log_id(item) for item in dedup_data}
                     )
 
-                    # Getting last item's modification date, Cannot assume desc order.
-                    events_times: list[str] = [demisto.get(
-                        item, "attributes.time") for item in dedup_data if demisto.get(item, "attributes.time")]  # type: ignore
-                    start_time = max(map(parse_special_iso_format, events_times))
+                    # Last run of pagination, avoiding endless loop if all page has the same time. We do not have how to handle this case.
+                    if iso_end_time == iso_start_time:
+                        demisto.debug("Got equal start and end time, this was the last page.")
+                        results_left = False
+
+                    # Getting last item's modification date, Assuming Asc order.
+                    # iso_start_time = demisto.get(dedup_data[0], "attributes.time")
+                    iso_end_time = demisto.get(dedup_data[-1], "attributes.time")
 
                 else:
+                    demisto.debug("Avoiding infinite loop due to multiple alerts in the same time blocking pagination.")
                     results_left = False
             else:
                 results_left = False
+
+        # Got all results from API, taking only the last #max_limit.
+        if len(res) > event_type.client_max_fetch:
+            res = res[-event_type.client_max_fetch:]
+
+        # Getting last_run_time
+        if res:
+            start_time = demisto.get(res[0], "attributes.time")
 
         return res, start_time
 
@@ -474,20 +487,10 @@ class EventCollector:
                     fetched_ids=last_fetched_ids,
                 )
                 last_run_ids = set(
-                    map(
-                        get_activity_log_id,
-                        filter(
-                            lambda item: parse_special_iso_format(
-                                demisto.get(item, "attributes.time")
-                            )
-                            == last_run_time,
-                            events,
-                        ),
-                    )
-                )
+                    [get_activity_log_id(item) for item in events if demisto.get(item, "attributes.time") == last_run_time])
 
                 format_activity_log(events)
-
+                last_run_time = parse_special_iso_format(last_run_time)
             case _:
                 raise DemistoException("Event's type format is undefined.")
 
@@ -501,7 +504,7 @@ class EventCollector:
 
 
 def get_activity_log_id(event: dict) -> str:
-    return f"{demisto.get(event, 'attributes.user_action')}-{demisto.get(event, 'attributes.time')}"
+    return f"{demisto.get(event, 'attributes.user_action')}-{demisto.get(event, 'attributes.user_email_id')}-{demisto.get(event, 'attributes.time')}"
 
 
 def set_events_max(event_names: list[str], new_max: int) -> None:

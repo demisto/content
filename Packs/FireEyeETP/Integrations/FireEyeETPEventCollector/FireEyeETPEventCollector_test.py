@@ -96,7 +96,7 @@ def test_fetch_alerts(mocker, hide_sensitive, alert_expected, trace_expected, ac
     event_types_to_run = [
         FireEyeETPEventCollector.EventType('alerts', 25, outbound=False),
         FireEyeETPEventCollector.EventType('email_trace', 200, outbound=False),
-        FireEyeETPEventCollector.EventType('activity_log', 25, outbound=False)
+        FireEyeETPEventCollector.EventType('activity_log', 2, outbound=False)
     ]
     collector = FireEyeETPEventCollector.EventCollector(client, event_types_to_run)
     mocker.patch.object(FireEyeETPEventCollector.Client, 'get_alerts', side_effect=[
