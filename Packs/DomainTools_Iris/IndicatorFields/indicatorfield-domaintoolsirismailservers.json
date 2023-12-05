@@ -1,10 +1,10 @@
 {
-    "id": "indicator_registrantorg",
+    "id": "indicator_domaintoolsirismailservers",
     "version": -1,
     "modified": "2023-10-16T17:13:01.885961592Z",
-    "name": "Registrant Org",
+    "name": "DomainTools Iris Mail Servers",
     "ownerOnly": false,
-    "cliName": "registrantorg",
+    "cliName": "domaintoolsirismailservers",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,

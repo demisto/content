@@ -61,7 +61,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "domainage",
+                                "fieldId": "domaintoolsirisdomainage",
                                 "height": 22,
                                 "id": "749bb260-6d0c-11ee-8a87-2bc9bae13888",
                                 "index": 2,
@@ -102,7 +102,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "registrantorg",
+                                "fieldId": "domaintoolsirisregistrantorg",
                                 "height": 22,
                                 "id": "62c29ae0-6d0c-11ee-8a87-2bc9bae13888",
                                 "index": 6,
@@ -124,7 +124,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "ipaddresses",
+                                "fieldId": "domaintoolsirisipaddresses",
                                 "height": 22,
                                 "id": "af900fc0-6cf7-11ee-b1a9-4fdded761d69",
                                 "index": 8,
@@ -135,7 +135,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "ipcountrycode",
+                                "fieldId": "domaintoolsirisipcountrycode",
                                 "height": 22,
                                 "id": "5581f740-6d0c-11ee-8a87-2bc9bae13888",
                                 "index": 9,
@@ -174,7 +174,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "mailservers",
+                                "fieldId": "domaintoolsirismailservers",
                                 "height": 22,
                                 "id": "4f8fe6d0-6d0c-11ee-8a87-2bc9bae13888",
                                 "index": 13,
@@ -183,7 +183,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "emaildomains",
+                                "fieldId": "domaintoolsirisemaildomains",
                                 "height": 22,
                                 "id": "4b7a1070-6d0c-11ee-8a87-2bc9bae13888",
                                 "index": 14,
@@ -192,7 +192,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "soaemail",
+                                "fieldId": "domaintoolsirisail",
                                 "height": 22,
                                 "id": "69c38340-6d0c-11ee-8a87-2bc9bae13888",
                                 "index": 15,
@@ -201,7 +201,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "additionalwhoisemails",
+                                "fieldId": "domaintoolsirisadditionalwhoisemails",
                                 "height": 22,
                                 "id": "a4a3e370-6cf7-11ee-b1a9-4fdded761d69",
                                 "index": 16,
