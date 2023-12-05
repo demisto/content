@@ -183,6 +183,7 @@ demisto-sdk-nightly:run-commands-against-instance:
   extends:
     - .default-job-settings
     - .sdk-nightly-schedule-rule-always
+    - .use_cached_gitlab_repos
   services: # needed for running lint
     - name: docker.art.code.pan.run/build-tools--image-dind:20.10.12-dind
       alias: docker
