@@ -1161,7 +1161,9 @@ class Taxii2FeedClient:
             return []
 
         try:
+            demisto.debug(f"Fetching {page_size} objects from TAXII server")
             envelopes = self.poll_collection(page_size, **kwargs)  # got data from server
+            demisto.debug(f"Received {envelopes} envelopes from TAXII server")
             indicators = self.load_stix_objects_from_envelope(envelopes, limit)
         except InvalidJSONError as e:
             demisto.debug(f'Excepted InvalidJSONError, continuing with empty result.\nError: {e}')
@@ -1236,16 +1238,19 @@ class Taxii2FeedClient:
                     continue
 
                 if not parse_objects_func.get(obj_type):
-                    demisto.debug(f'There is no parsing function for object type {obj_type}, '
+                    demisto.debug(f'There is no parsing function for object type {obj_type}, for object {obj}. The'
                                   f'available parsing functions are for types: {",".join(parse_objects_func.keys())}.')
+
                     continue
                 if result := parse_objects_func[obj_type](obj):
+                    demisto.debug(f"Extracted {len(result)} indicators from {obj_type} object")
                     indicators.extend(result)
                     self.update_last_modified_indicator_date(obj.get("modified"))
 
                 if reached_limit(limit, len(indicators)):
+                    demisto.debug("Reached limit of indicators to fetch")
                     return indicators, relationships_lst
-
+        demisto.debug("Finished parsing all objects")
         return indicators, relationships_lst
 
     def poll_collection(
