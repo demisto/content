@@ -1,54 +1,52 @@
 {
-    "name": "get_current_compliance_items",
-    "execute": "response_raw = CimTrak.get_current_compliance_items_command(client,{'ObjectId': '2','ComplianceScanId' : '-1'})\n\nresponse = response_raw[0].outputs\nif len(response_raw) > 1:\n\tret_results: List[Dict[str, Any]] = response_raw[1].outputs\n\tresponse['results'] = list()\n\tresponse_raw[1].outputs\n\tresponse['results'].append(ret_results)\n",
     "posts": [
         {
-            "url": "https://test.com/CimTrakRestAPI/v1/Client.getCurrentComplianceItems",
             "reply": {
+                "errorCode": "",
+                "errorDescription": "",
                 "results": [
                     {
-                        "objectid": 10,
-                        "type": "Benchmark",
-                        "name": "CIS Microsoft Office 2016 Benchmark",
-                        "description": "<ns0:p xmlns:ns0=\"http://www.w3.org/1999/xhtml\" xmlns=\"http://www.w3.org/1999/xhtml\"><ns1:span xmlns:ns1=\"http://www.w3.org/1999/xhtml\">This document, Security Configuration Benchmark for Microsoft Office 2016, provides prescriptive guidance for establishing a secure configuration posture for Microsoft Office 2016 running on Windows 10. This guide was tested against Microsoft Office 2016. To obtain the latest version of this guide, please visit http://cisecurity.org. If you have questions, comments, or have identified ways to improve this guide, please write us at feedback@cisecurity.org.</ns1:span></ns0:p>",
-                        "scanstarttime": "2022-03-12 06:00:04",
-                        "scanendtime": "2022-03-12 06:00:49",
-                        "scanid": 86,
                         "compliancemappingid": 0,
+                        "description": "<ns0:p xmlns:ns0=\"http://www.w3.org/1999/xhtml\" xmlns=\"http://www.w3.org/1999/xhtml\"><ns1:span xmlns:ns1=\"http://www.w3.org/1999/xhtml\">This document, Security Configuration Benchmark for Microsoft Office 2016, provides prescriptive guidance for establishing a secure configuration posture for Microsoft Office 2016 running on Windows 10. This guide was tested against Microsoft Office 2016. To obtain the latest version of this guide, please visit http://cisecurity.org. If you have questions, comments, or have identified ways to improve this guide, please write us at feedback@cisecurity.org.</ns1:span></ns0:p>",
                         "id": 146,
-                        "totalfailcount": 0,
-                        "totalpasscount": 0,
-                        "totaltestsskipped": 53,
-                        "totalwaivecount": 0,
-                        "totaltestsran": 0,
+                        "name": "CIS Microsoft Office 2016 Benchmark",
+                        "objectid": 10,
+                        "osversion": "",
                         "pass": true,
                         "pass_percent": 0,
-                        "osversion": "",
-                        "personality": ""
+                        "personality": "",
+                        "scanendtime": "2022-03-12 06:00:49",
+                        "scanid": 86,
+                        "scanstarttime": "2022-03-12 06:00:04",
+                        "totalfailcount": 0,
+                        "totalpasscount": 0,
+                        "totaltestsran": 0,
+                        "totaltestsskipped": 53,
+                        "totalwaivecount": 0,
+                        "type": "Benchmark"
                     }
                 ],
-                "status": "success",
-                "errorCode": "",
-                "errorDescription": ""
-            }
+                "status": "success"
+            },
+            "url": "https://test.com/CimTrakRestAPI/v1/Client.getCurrentComplianceItems"
         }
     ],
     "response": {
+        "errorCode": "",
+        "errorDescription": "",
         "results": [
             {
-                "objectid": 10,
-                "type": "Benchmark",
-                "name": "CIS Microsoft Office 2016 Benchmark",
+                "compliancemappingid": 0,
                 "description": "<ns0:p xmlns:ns0=\"http://www.w3.org/1999/xhtml\" xmlns=\"http://www.w3.org/1999/xhtml\"><ns1:span xmlns:ns1=\"http://www.w3.org/1999/xhtml\">This document, Security Configuration Benchmark for Microsoft Office 2016, provides prescriptive guidance for establishing a secure configuration posture for Microsoft Office 2016 running on Windows 10. This guide was tested against Microsoft Office 2016. To obtain the latest version of this guide, please visit http://cisecurity.org. If you have questions, comments, or have identified ways to improve this guide, please write us at feedback@cisecurity.org.</ns1:span></ns0:p>",
-                "scanstarttime": "2022-03-12 06:00:04",
+                "id": 146,
+                "name": "CIS Microsoft Office 2016 Benchmark",
+                "objectid": 10,
                 "scanendtime": "2022-03-12 06:00:49",
                 "scanid": 86,
-                "compliancemappingid": 0,
-                "id": 146
+                "scanstarttime": "2022-03-12 06:00:04",
+                "type": "Benchmark"
             }
         ],
-        "status": "success",
-        "errorCode": "",
-        "errorDescription": ""
+        "status": "success"
     }
 }
