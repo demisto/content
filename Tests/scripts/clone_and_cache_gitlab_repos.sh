@@ -3,6 +3,7 @@ set +e
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
 NC='\033[0m'
 
 clone_repository() {
@@ -25,7 +26,7 @@ clone_repository() {
   for ((i=1; i <= retry_count; i++)); do
     git clone --depth=1 "https://${user_info}${host}/${repo_name}.git" --branch "${branch}" && exit_code=0 && break || exit_code=$?
     if [ ${i} -ne "${retry_count}" ]; then
-      echo -e "${RED}Failed to clone ${repo_name} with branch:${branch}, exit code:${exit_code}, sleeping for ${sleep_time} seconds and trying again${NC}"
+      echo -e "${YELLOW}Failed to clone ${repo_name} with branch:${branch}, exit code:${exit_code}, sleeping for ${sleep_time} seconds and trying again${NC}"
       sleep "${sleep_time}"
     else
       echo -e "${RED}Failed to clone ${repo_name} with branch:${branch}, exit code:${exit_code}, exhausted all ${retry_count} retries${NC}"
@@ -53,11 +54,11 @@ clone_repository_with_fallback_branch() {
     # If either user or token is not empty, then we need to add them to the url.
     user_info="${user}:${token}@"
   fi
-  curl --fail --silent --show-error --output /dev/null --header "PRIVATE-TOKEN: ${token}" "https://${user_info}${host}/api/v4/projects/${CI_PROJECT_ID}/repository/branches?search=${branch}" 1>/dev/null 2>&1
+  git ls-remote --exit-code --quiet --heads "https://${user_info}${host}/${repo_name}.git" "refs/heads/${branch}" 1>/dev/null 2>&1
   local branch_exists=$?
 
   if [ "${branch_exists}" -ne 0 ]; then
-    echo -e "${RED}Branch ${branch} does not exist in ${repo_name}, defaulting to ${fallback_branch}${NC}"
+    echo -e "${YELLOW}Branch ${branch} does not exist in ${repo_name}, defaulting to ${fallback_branch}${NC}"
     local exit_code=1
   else
     echo -e "${GREEN}Branch ${branch} exists in ${repo_name}, trying to clone${NC}"
@@ -69,7 +70,7 @@ clone_repository_with_fallback_branch() {
   fi
   if [ "${exit_code}" -ne 0 ]; then
     # Trying to clone from fallback branch.
-    echo -e "${RED}Trying to clone repository:${repo_name} with fallback branch ${fallback_branch}!${NC}"
+    echo -e "${YELLOW}Trying to clone repository:${repo_name} with fallback branch ${fallback_branch}!${NC}"
     clone_repository "${host}" "${user}" "${token}" "${repo_name}" "${fallback_branch}" "${retry_count}" "${sleep_time}"
     local exit_code=$?
     if [ ${exit_code} -ne 0 ]; then
@@ -101,8 +102,9 @@ CI_SERVER_HOST=${CI_SERVER_HOST:-code.pan.run}
 
 echo "Getting content-test-conf and infra repositories with branch:${SEARCHED_BRANCH_NAME}, with fallback to master"
 
-
 clone_repository_with_fallback_branch "${CI_SERVER_HOST}" "gitlab-ci-token" "${CI_JOB_TOKEN}" "${CI_PROJECT_NAMESPACE}/content-test-conf" "${SEARCHED_BRANCH_NAME}" 3 10 "master"
 clone_repository_with_fallback_branch "${CI_SERVER_HOST}" "gitlab-ci-token" "${CI_JOB_TOKEN}" "${CI_PROJECT_NAMESPACE}/infra" "${SEARCHED_BRANCH_NAME}" 3 10 "master"
 
 echo "Successfully cloned content-test-conf and infra repositories"
+set -e
+exit 0
