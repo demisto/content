@@ -8,10 +8,15 @@ configuration:
   additionalinfo: The URL that you use to access the Tessian Portal. Please include the extension, e.g. "example.tessian-platform.com" or "example.tessian-app.com"
   type: 0
   required: true
-- display: API Key
+# - display: API Key
+#   name: api_key
+#   additionalinfo: The API Key to use to connect to the Tessian API. This can be found under "Security Integrations" in your Tessian Portal (/0/admin/integrations/api/tokens)
+#   type: 0
+#   required: true
+- displaypassword: API Key
   name: api_key
-  additionalinfo: The API Key to use to connect to the Tessian API. This can be found under "Security Integrations" in your Tessian Portal (/0/admin/integrations/api/tokens)
-  type: 0
+  type: 9
+  hiddenusername: true
   required: true
 description: Tessian is an email security platform that allows organizations to protect their users from inbound phishing threats, outbound data loss (both malicious and accidental) and account takeovers.
 display: Tessian
