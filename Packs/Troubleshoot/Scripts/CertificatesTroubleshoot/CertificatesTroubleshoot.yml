@@ -337,7 +337,7 @@ tags:
 - Utility
 timeout: '0'
 type: python
-dockerimage: demisto/auth-utils:1.0.0.77807
+dockerimage: demisto/auth-utils:1.0.0.81563
 runas: DBotWeakRole
 tests:
 - No tests (auto formatted)
