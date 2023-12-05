@@ -9,7 +9,10 @@ def main():
         alert = demisto.context().get('Core', {}).get('OriginalAlert')
         if isinstance(alert, list):
             alert = alert[0]
-        event = alert.get('event')
+        if alert.get("raw_abioc") is None:
+            event = alert.get('event')
+        else:
+            event = alert.get('raw_abioc').get('event')
         resourceType = event.get('resource_type_orig')
 
         html = f"<h1 style='{BLACK_HTML_STYLE}'>{str(resourceType)}</h1>"
