@@ -22,7 +22,7 @@ client_mocker = MsGraphClient(tenant_id="tenant_id", auth_id="auth_id", enc_key=
 
 
 def load_json(path):
-    with open(Path(__file__) / path, encoding='utf-8') as f:
+    with open(Path(__file__).parent / path, encoding='utf-8') as f:
         return json.load(f)
 
 

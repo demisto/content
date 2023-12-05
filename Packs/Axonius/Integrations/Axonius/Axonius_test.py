@@ -1,8 +1,8 @@
 """Axonius Integration for Cortex XSOAR - Unit Tests file."""
 
 import warnings
-from TestData.Raw_data import USERS_SQS, DUMMY_TAGS, DUMMY_DEVICES_IDS, DUMMY_USER_IDS, DUMMY_DEVICES
-from TestData.Expected_data import EXPECTED_USERS_SQS, EXPECTED_DEVICE_TAGS, EXPECTED_DEVICE
+from test_data.Raw_data import USERS_SQS, DUMMY_TAGS, DUMMY_DEVICES_IDS, DUMMY_USER_IDS, DUMMY_DEVICES
+from test_data.Expected_data import EXPECTED_USERS_SQS, EXPECTED_DEVICE_TAGS, EXPECTED_DEVICE
 from Axonius import run_command
 from marshmallow.warnings import RemovedInMarshmallow4Warning
 warnings.filterwarnings('ignore', category=RemovedInMarshmallow4Warning)

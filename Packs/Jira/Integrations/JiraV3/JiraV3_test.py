@@ -1305,7 +1305,7 @@ class TestJiraUploadFileCommand:
             the required data.
         """
         from JiraV3 import get_file_name_and_content
-        file_path = 'test_data/get_issue_test/dummy_attachment_content.txt'
+        file_path = str(Path(__file__).parent / 'test_data/get_issue_test/dummy_attachment_content.txt')
         expected_file_name = 'dummy_attachment_content.txt'
         mocker.patch.object(demisto, 'getFilePath',
                             return_value={'name': expected_file_name,

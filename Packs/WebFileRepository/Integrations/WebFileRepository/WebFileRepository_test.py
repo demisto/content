@@ -16,7 +16,7 @@ import urllib.parse
 import WebFileRepository
 import freezegun
 from typing import Any
-
+from pathlib import Path
 
 def equals_object(obj1, obj2) -> bool:
     if type(obj1) != type(obj2):
@@ -1631,6 +1631,7 @@ def test_command_archive_zip(mocker, save_as, content_filename):
         Then:
             Validate the right response returns.
     """
+    content_filename = Path(__file__).parent / content_filename
     params = {
         'longRunningPort': '8000',
         'rwCredentials': {},

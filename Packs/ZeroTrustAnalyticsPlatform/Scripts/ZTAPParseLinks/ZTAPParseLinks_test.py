@@ -1,4 +1,3 @@
-import os
 import json
 from pathlib import Path
 
@@ -15,7 +14,7 @@ def util_load_raw(path):
 def test_parse_links():
     from ZTAPParseLinks import parse_links
 
-    events = util_load_json("/test_data/events.json")
+    events = util_load_json("test_data/events.json")
     output = parse_links(events)
 
     mock_markdown_result = util_load_raw("test_data/output.md")

@@ -1,6 +1,7 @@
 import json
 import pytest
 from datetime import datetime
+from pathlib import Path
 from ProofpointTAP_v2 import fetch_incidents, Client, ALL_EVENTS, ISSUES_EVENTS, get_events_command
 
 MOCK_URL = "http://123-fake-api.com"
@@ -817,7 +818,7 @@ def load_mock_response(file_name: str) -> str:
         str: Mock file content.
 
     """
-    with open(f'test_data/{file_name}', encoding='utf-8') as mock_file:
+    with open(Path(__file__).parent / f'test_data/{file_name}', encoding='utf-8') as mock_file:
         return mock_file.read()
 
 
