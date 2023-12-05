@@ -46,7 +46,6 @@ merge-dev-secrets:
     - gke
   extends:
     - .default-job-settings
-    - .use_cached_gitlab_repos
   variables:
     master_branch_name: master
   rules:
@@ -55,6 +54,7 @@ merge-dev-secrets:
   stage: unittests-and-validations
   script:
     - EXIT_CODE=0
+    - !reference [.use_cached_gitlab_repos]
     - section_start "Merging and deleting dev secrets"
     - python3 ./Tests/scripts/merge_and_delete_dev_secrets.py -sa "$GSM_SERVICE_ACCOUNT" --gsm_project_id_dev "$GSM_PROJECT_ID_DEV" --gsm_project_id_prod "$GSM_PROJECT_ID" >> "${ARTIFACTS_FOLDER}/logs/merge_secrets.log" 2>&1 || EXIT_CODE=$?
     - job-done
@@ -123,7 +123,6 @@ validate-content-conf:
     - gke
   extends:
     - .default-job-settings
-    - .use_cached_gitlab_repos
   rules:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: "$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/"
@@ -135,6 +134,7 @@ validate-content-conf:
     EXTRACT_PRIVATE_TESTDATA: "true"
   stage: prepare-testing-bucket
   script:
+    - !reference [.use_cached_gitlab_repos]
     - !reference [.create-release-notes-and-common-docs]
     - !reference [.secrets-fetch]
     - section_start "Create or update content graph" --collapsed
@@ -278,7 +278,6 @@ xpanse-prepare-testing-bucket:
   extends:
     - .default-job-settings
     - .push-rule
-    - .use_cached_gitlab_repos
   variables:
     SERVER_TYPE: "XSOAR"
     PRODUCT_TYPE: "XSOAR"
@@ -291,6 +290,7 @@ xpanse-prepare-testing-bucket:
     - job: xsoar-prepare-testing-bucket
   script:
     - EXIT_CODE=0
+    - !reference [.use_cached_gitlab_repos]
     - section_start "Check if should run Instance role"
     - export INSTANCES_CREATED_FOR_ROLE=$(cat "${ENV_RESULTS_PATH}" | jq -c "map(select(.Role == \"${INSTANCE_ROLE}\")) | length")
     - |
@@ -562,12 +562,12 @@ slack-notify-on-merge:
   extends:
     - .default-job-settings
     - .push-rule
-    - .use_cached_gitlab_repos
   variables:
     EXTRACT_PRIVATE_TESTDATA: "true"
   stage: run-instances
   script:
     - EXIT_CODE=0
+    - !reference [.use_cached_gitlab_repos]
     - !reference [.secrets-fetch]
     - section_start "Are there tests to run?" --collapsed
     - |

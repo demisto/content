@@ -1,10 +1,15 @@
 .default-cache:
   cache:
+    - key: ci-repos-$CI_COMMIT_BRANCH
+      paths:
+        - content-test-conf
+        - infra
+      policy: pull
     - key:
-        files:
-          - "poetry.lock"
-          - "package-lock.json"
-        prefix: dev-content
+      files:
+        - "poetry.lock"
+        - "package-lock.json"
+      prefix: dev-content
       paths:
         - $PIP_CACHE_DIR
         - .venv/
@@ -549,19 +554,14 @@ cloning-content-repo-last-upload-commit:
 
 
 .clone_and_cache_gitlab_repos: &clone_and_cache_gitlab_repos
-  - section_start "Git clone and cache gitlab repos" --collapsed
+  - section_start "Git clone and cache gitlab repos" # --collapsed
   - ./Tests/scripts/clone_and_cache_gitlab_repos.sh 2>&1 | tee --append "${ARTIFACTS_FOLDER}/logs/clone_and_cache_gitlab_repos.log"
   - section_end "Git clone and cache gitlab repos"
 
 .use_cached_gitlab_repos:
-  cache:
-    - key: ci-repos-$CI_COMMIT_BRANCH
-      paths:
-        - content-test-conf
-        - infra
-      policy: pull
-  script:
-    - ./Tests/scripts/use_cached_gitlab_repos.sh 2>&1 | tee --append "${ARTIFACTS_FOLDER}/logs/use_cached_gitlab_repos.log"
+  - section_start "Use gitlab cached repos" # --collapsed
+  - ./Tests/scripts/use_cached_gitlab_repos.sh 2>&1 | tee --append "${ARTIFACTS_FOLDER}/logs/use_cached_gitlab_repos.log"
+  - section_end "Use gitlab cached repos"
 
 pre_job:
   stage: .pre
