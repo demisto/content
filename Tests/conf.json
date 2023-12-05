@@ -2236,7 +2236,7 @@
         {
             "integrations": "Microsoft Graph",
             "playbookID": "MSG-Threat-Assessment-test",
-            "instance_names": "ms_graph_security_threat_assessment"
+            "instance_names": "ms_graph_security_ediscovery"
         },
         {
             "integrations": "Microsoft Graph User",
