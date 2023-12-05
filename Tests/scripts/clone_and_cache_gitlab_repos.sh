@@ -94,6 +94,7 @@ get_cache_gitlab_repositories() {
   local branch=$5
   local retry_count=$6
   local sleep_time=${7:-10}  # default sleep time is 10 seconds.
+  local repo=$8
 
   if [ -z "${user}" ] && [ -z "${token}" ]; then
     user_info=""
@@ -102,8 +103,8 @@ get_cache_gitlab_repositories() {
     user_info="${user}:${token}@"
   fi
 
-  if [ -d "./${repo_name}" ] ; then
-    cd ./"${repo_name}"
+  if [ -d "./${repo}" ] ; then
+    cd ./"${repo}"
     git remote set-url origin "https://${user_info}${host}/${repo_name}.git"
     git fetch -p -P
     cd ..
@@ -130,8 +131,8 @@ CI_SERVER_HOST=${CI_SERVER_HOST:-code.pan.run}
 
 echo "Getting content-test-conf and infra repositories with branch:${SEARCHED_BRANCH_NAME}"
 
-get_cache_gitlab_repositories "${CI_SERVER_HOST}" "gitlab-ci-token" "${CI_JOB_TOKEN}" "${CI_PROJECT_NAMESPACE}/content-test-conf" "${SEARCHED_BRANCH_NAME}" 3 10 "master"
-get_cache_gitlab_repositories "${CI_SERVER_HOST}" "gitlab-ci-token" "${CI_JOB_TOKEN}" "${CI_PROJECT_NAMESPACE}/infra" "${SEARCHED_BRANCH_NAME}" 3 10 "master"
+get_cache_gitlab_repositories "${CI_SERVER_HOST}" "gitlab-ci-token" "${CI_JOB_TOKEN}" "${CI_PROJECT_NAMESPACE}/content-test-conf" "${SEARCHED_BRANCH_NAME}" 3 10 "master" "content-test-conf"
+get_cache_gitlab_repositories "${CI_SERVER_HOST}" "gitlab-ci-token" "${CI_JOB_TOKEN}" "${CI_PROJECT_NAMESPACE}/infra" "${SEARCHED_BRANCH_NAME}" 3 10 "master" "infra"
 
 
 echo "Successfully cloned content-test-conf and infra repositories"
