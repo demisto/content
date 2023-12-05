@@ -198,10 +198,10 @@ validate-content-conf:
         [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
         echo "sdk nightly:${DEMISTO_SDK_NIGHTLY}"
         if [[ ${DEMISTO_SDK_NIGHTLY} == "true" ]]; then
-          echo "Creating Xsoar Instances for SDK nightly."
-          python3 ./gcp/create_instance.py --env-type "${IFRA_ENV_TYPE}" --outfile "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json" --creds "${CONTENT_BUILD_GCP}" --zone "${GCP_ZONE}"
-        else
-          python3 ./gcp/create_instance.py --env-type "${IFRA_ENV_TYPE}" --outfile "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json" --filter-envs "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_envs.json" --creds "${CONTENT_BUILD_GCP}" --zone "${GCP_ZONE}"
+          echo "Creating Xsoar Instances for SDK nightly- changing the filter_envs json."
+          SDK_NIGHTLY_MACHINES = '{"Server 6.9": false, "Server 6.10": false, "Server 6.11": false, "Server 6.12": false, "Server Master": true}'
+          jq '.' <<< "$SDK_NIGHTLY_MACHINES" > "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_envs.json"
+        python3 ./gcp/create_instance.py --env-type "${IFRA_ENV_TYPE}" --outfile "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json" --filter-envs "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_envs.json" --creds "${CONTENT_BUILD_GCP}" --zone "${GCP_ZONE}"
         fi
       fi
     - section_end "Create Instances for XSOAR"
