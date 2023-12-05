@@ -216,7 +216,7 @@ def get_attachments_using_instance(email_related_incident, labels, email_to):
                                {'command': 'gmail-get-attachments', 'incidents': email_related_incident,
                                 'arguments': {'user-id': 'me', 'message-id': str(message_id), 'using': instance_name}})
 
-    elif integration_name in ['MicrosoftGraphMail']:
+    elif integration_name in ['MicrosoftGraphMail', 'Microsoft Graph Mail Single User']:
         demisto.executeCommand("executeCommandAt",
                                {'command': 'msgraph-mail-get-attachment', 'incidents': email_related_incident,
                                 'arguments': {'user_id': email_to, 'message_id': str(message_id),

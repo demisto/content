@@ -17,13 +17,13 @@ from pathlib import Path
 
 # pylint: disable=no-member
 
-
 from Tests.Marketplace.marketplace_services import Pack, input_to_list, get_valid_bool, convert_price, \
     get_updated_server_version, load_json, \
     store_successful_and_failed_packs_in_ci_artifacts, is_ignored_pack_file, \
     is_the_only_rn_in_block, get_pull_request_numbers_from_file, remove_old_versions_from_changelog
 from Tests.Marketplace.marketplace_constants import Changelog, PackStatus, PackFolders, Metadata, GCPConfig, BucketUploadFlow, \
-    PackTags
+    PackTags, XSOAR_START_TAG, XSOAR_END_TAG, XSOAR_SAAS_START_TAG, XSOAR_SAAS_END_TAG, XSOAR_ON_PREM_TAG, \
+    XSOAR_ON_PREM_END_TAG, XSOAR_MP, XSIAM_MP, XSOAR_SAAS_MP
 
 CHANGELOG_DATA_INITIAL_VERSION = {
     "1.0.0": {
@@ -1556,6 +1556,129 @@ class TestFilterChangelog:
 
         assert result == expected_result
 
+    RN_ENTRY_XSOAR_TAGS = f"""#### Integrations
+- General entry
+{XSOAR_START_TAG}
+- Entry for all xsoar marketplaces.
+{XSOAR_END_TAG}
+{XSOAR_SAAS_START_TAG}
+- Entry only for xsoar_saas.
+{XSOAR_SAAS_END_TAG}
+{XSOAR_ON_PREM_TAG}
+- Entry only for xsoar on prem.
+{XSOAR_ON_PREM_END_TAG}
+"""
+
+    XSOAR_MP_RES = """#### Integrations
+- General entry\n
+- Entry for all xsoar marketplaces.\n\n
+- Entry only for xsoar on prem.\n
+"""
+
+    XSOAR_SAAS_MP_RES = """#### Integrations
+- General entry\n
+- Entry for all xsoar marketplaces.\n\n
+- Entry only for xsoar_saas.\n
+"""
+
+    XSIAM_MP_RES = """#### Integrations
+- General entry
+"""
+
+    @pytest.mark.parametrize('upload_marketplace, expected_result', [(XSOAR_MP, XSOAR_MP_RES),
+                                                                     (XSOAR_SAAS_MP, XSOAR_SAAS_MP_RES),
+                                                                     (XSIAM_MP, XSIAM_MP_RES)])
+    def test_filter_for_xsoar_tags(self, dummy_pack: Pack, upload_marketplace, expected_result):
+        """
+            Given:
+                - Realease notes entries wrapped by tags for XSOAR marketplaces.
+            When:
+                - Uploading and preparing the RN for upload.
+            Then:
+                - Validate that each mp contains the correct entries.
+        """
+        result = dummy_pack.filter_release_notes_by_tags(self.RN_ENTRY_XSOAR_TAGS, upload_marketplace)
+        assert result == expected_result
+
+    TEST1 = """#### Integrations
+##### ServiceNow v2
+  - Fixed the test button to work with debug mode."""
+
+    res1 = {'Integrations': {'ServiceNow v2': '- Fixed the test button to work with debug mode.\n'}}
+
+    TEST2 = """#### Incident Fields
+- **Claroty Category**"""
+
+    res2 = {'Incident Fields': {'[special_msg]': '- **Claroty Category**\n'}}
+
+    res_original_regex = {}
+
+    TEST3 = """#### Integrations
+##### Ansible Cisco NXOS
+- Documentation and metadata improvements.
+- Fixed contextPath outputs for the ***nxos-facts*** command.
+- Updated the Docker image to: *demisto/ansible-runner:1.0.0.24037*."""
+
+    res3 = {'Integrations': {'Ansible Cisco NXOS': '- Documentation and metadata improvements.\n- Fixed contextPath outputs for the ***nxos-facts*** command.\n- Updated the Docker image to: *demisto/ansible-runner:1.0.0.24037*.\n'}}  # noqa: E501
+
+    TEST4 = """#### Integrations
+##### Akamai WAF
+
+- Added 8 new commmands:
+  - ***akamai-get-production-deployment***
+  - ***akamai-get-change-history***
+  - ***akamai-modify-appsec-config-selected-hosts***
+  - ***akamai-patch-papi-property-rule-siteshield***
+  - ***akamai-update-appsec-config-version-notes***
+  - ***akamai-new-or-renew-match-target***
+  - ***akamai-patch-papi-property-rule-generic***
+  - ***akamai-get-papi-property-rule***
+
+- Added the following arguments to the ***akamai-create-enrollment*** command:
+   - *clone_dns_names*
+   - *exclude_sans*
+   - *change_management*
+   - *network_configuration_geography*
+   - *ra*
+   - *validation_type*
+   - *enable_multi_stacked_certificates*
+   - *network_configuration_quic_enabled*
+   - *network_configuration_secure_network*
+   - *network_configuration_sni_only*
+   - *indicator_type*
+   - *active_only*
+   - *confidence*
+   - *threat_assess_score*
+
+- Added the following arguments to the ***akamai-update-property*** command:
+   - *property_comments*
+   - *dc1_id*
+   - *dc2_id*
+
+- Added the following argument to the ***akamai-activate-papi-property*** command:
+   - *note*
+"""
+
+    res4 = {'Integrations': {'Akamai WAF': '- Added 8 new commmands:\n  - ***akamai-get-production-deployment***\n  - ***akamai-get-change-history***\n  - ***akamai-modify-appsec-config-selected-hosts***\n  - ***akamai-patch-papi-property-rule-siteshield***\n  - ***akamai-update-appsec-config-version-notes***\n  - ***akamai-new-or-renew-match-target***\n  - ***akamai-patch-papi-property-rule-generic***\n  - ***akamai-get-papi-property-rule***\n\n- Added the following arguments to the ***akamai-create-enrollment*** command:\n   - *clone_dns_names*\n   - *exclude_sans*\n   - *change_management*\n   - *network_configuration_geography*\n   - *ra*\n   - *validation_type*\n   - *enable_multi_stacked_certificates*\n   - *network_configuration_quic_enabled*\n   - *network_configuration_secure_network*\n   - *network_configuration_sni_only*\n   - *indicator_type*\n   - *active_only*\n   - *confidence*\n   - *threat_assess_score*\n\n- Added the following arguments to the ***akamai-update-property*** command:\n   - *property_comments*\n   - *dc1_id*\n   - *dc2_id*\n\n- Added the following argument to the ***akamai-activate-papi-property*** command:\n   - *note*\n'}}  # noqa: E501
+
+    Test5 = """#### Incident Fields"""
+
+    res5 = {'Incident Fields': {'[special_msg]': '\n'}}
+
+    @pytest.mark.parametrize('test, res', [(TEST1, res1), (TEST2, res2), (TEST3, res3), (TEST4, res4), (Test5, res5)])
+    def test_get_relese_notes_dict(self, dummy_pack: Pack, test, res):
+        """
+            This test was added after changing the rexgex - ENTITY_TYPE_SECTION_REGEX
+            to check same results before and after change.
+            Given:
+                - Release notes after before and after filter.
+            When:
+                - Preparing the release notes in the upload after the tags were filtered out.
+            Then:
+                - Validate that the release notes dict is build properly.
+        """
+        assert dummy_pack.get_release_notes_dict('3.0.1', test) == res
+
     @pytest.mark.parametrize('id_set, expected_result', [
         ({"integrations": [{'id': {"display_name": "Display Name 2"}}],
           "IncidentFields": [{'id': {"display_name": "Field name 1"}}, {'id': {"display_name": "Field name 3"}}]},
@@ -1585,7 +1708,13 @@ class TestFilterChangelog:
     @pytest.mark.parametrize('changelog_entry, marketplace, id_set, expected_rn', [
         ({Changelog.RELEASE_NOTES: '#### Integrations\n##### Display Name\n- Some entry 1.\n- Some entry 2.'},
          'xsoar', {"integrations": [{'id': {'display_name': 'Display Name'}}]},
-         '#### Integrations\n##### Display Name\n- Some entry 1.\n- Some entry 2.')
+         '#### Integrations\n##### Display Name\n- Some entry 1.\n- Some entry 2.'),
+        ({Changelog.RELEASE_NOTES: """#### Incident Fields
+<~XSOAR_SAAS>
+- New: **HelloWorld SaaS**
+</~XSOAR_SAAS>"""},
+         'xsoar', {"integrations": [{'id': {'display_name': 'Display Name'}}]},
+         'Changes are not relevant for XSOAR marketplace.')
     ])
     def test_changes_not_relevant_message_in_rn(self, dummy_pack: Pack, changelog_entry,
                                                 marketplace, id_set, expected_rn):
