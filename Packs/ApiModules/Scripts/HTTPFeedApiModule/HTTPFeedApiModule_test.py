@@ -570,7 +570,7 @@ def test_build_iterator__with_and_without_passed_time_threshold(mocker, has_pass
         'https://api.github.com/meta': {
             'etag': 'etag',
             'last_modified': '2023-05-29T12:34:56Z',
-            'last_updated': 'Mon, 27 Nov 2023 09:12:06 GMT'
+            'last_updated': '2023-05-05T09:09:06Z'
         }})
     client = Client(
         url='https://api.github.com/meta',
