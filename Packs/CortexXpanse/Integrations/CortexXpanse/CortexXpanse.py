@@ -1372,7 +1372,7 @@ def main() -> None:
             'asm-list-asset-internet-exposure': list_asset_internet_exposure_command,
             'asm-get-asset-internet-exposure': get_asset_internet_exposure_command,
             'asm-list-alerts': list_alerts_command,
-            'asm-list-attack-surface-rules': list_attack_surface_rules_command,
+            'asm-get-attack-surface-rule': list_attack_surface_rules_command,
             'asm-tag-asset-assign': assign_tag_to_assets_command,
             'asm-tag-asset-remove': remove_tag_to_assets_command,
             'asm-tag-range-assign': assign_tag_to_ranges_command,
