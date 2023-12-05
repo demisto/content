@@ -48,6 +48,7 @@ def test_stream_compressed_data_iterations(mocker: MockerFixture):
     # We save the cut off bytes from the last chunk, and add it to the current chunk so we can decode
     assert call_args_list[4][0][0][0:3] == b'\xf0\x9f\x98'
 
+
 @pytest.mark.parametrize('chunk_size', [(1), (2), (3), (4), (8), (10), (25), (27)])
 def test_stream_compressed_data_file_content(chunk_size: int):
     """
@@ -79,6 +80,7 @@ def test_stream_compressed_data_file_content(chunk_size: int):
     # We want to check if the code is able to decode the chunks correctly
     with open('test_data/test_gzip_compressed.txt') as file:
         assert file.read() == file_content
+
 
 GET_INDICATOR_TYPE_INPUTS = [
     ('ip', OrderedDict([('Name', '192.168.1.1'), ('Risk', '89'), ('RiskString', '5/12'),
@@ -354,7 +356,7 @@ class DictReaderGenerator:
 
     def __next__(self):
         if self.has_returned_dict_reader:
-            raise StopIteration()
+            raise StopIteration
         self.has_returned_dict_reader = True
         return self.dict_reader
 
