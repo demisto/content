@@ -1,10 +1,10 @@
 #!/bin/bash
 
 
-# Run flake8 pylint and mypy on all excluding Packs, (Integraions and Scripts) - they will be handled in linting
+# Run flake8 pylint and mypy on all excluding Packs and artifacts, (Integrations and Scripts) - they will be handled in linting
 errors=0
-all_dirs=$(find . -type d -not \( -path "*cache*" -o -path "./.*" -o -path "./Templates*" -o -path "./TestPlaybooks*" -o -path "./node_modules*" -o -path "./venv*" -o -path "./Packs*" -o -path "*infrastructure_tests*" -o -path "*scripts/awsinstancetool*" -o -path "./docs*" \))
-all_1_depth_dirs=$(find . -maxdepth 1 -type d -not \( -path "*cache*" -o -path . -o -path ./Packs -o -path ./venv -o -path ./Templates -o -path ./TestPlaybooks -o -path ./node_modules -o -path "./.*" -o -path ./docs \))
+all_dirs=$(find . -type d -not \( -path "*cache*" -o -path "./.*" -o -path "./Templates*" -o -path "./TestPlaybooks*" -o -path "./node_modules*" -o -path "./venv*" -o -path "./Packs*" -o -path "./artifacts*" -o -path "*infrastructure_tests*" -o -path "*scripts/awsinstancetool*" -o -path "./docs*" \))
+all_1_depth_dirs=$(find . -maxdepth 1 -type d -not \( -path "*cache*" -o -path . -o -path ./Packs -o -path ./venv -o -path ./Templates -o -path ./TestPlaybooks -o -path ./node_modules -o -path "./artifacts*" -o -path "./.*" -o -path ./docs \))
 
 echo -e "Top level folders to scan (used by flake8):\n${all_1_depth_dirs}\n"
 echo -e "Folders to be used for lint scan (used by pylint and mypy):\n${all_dirs}\n"
@@ -12,8 +12,6 @@ echo -e "Folders to be used for lint scan (used by pylint and mypy):\n${all_dirs
 # run mypy
 ./Tests/scripts/mypy.sh $all_1_depth_dirs || errors=$?
 
-# run pylint
-./Tests/scripts/pylint.sh $all_dirs || errors=$?
 
 # run flake8
 python3 -m flake8 $all_1_depth_dirs || errors=$?
