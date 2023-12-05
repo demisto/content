@@ -1,14 +1,15 @@
 from pytest_mock import MockerFixture
 import demistomock as demisto
 import os
-
+from pathlib import Path
 import pytest
 from ReadPDFFileV2 import PdfInvalidCredentialsException, PdfPermissionsException
+
 
 CWD = os.path.join(os.path.dirname(__file__), "test_data")
 
 def open_html_file(file):
-    with open(file, encoding='utf-8') as f:
+    with open(Path(__file__).parent / file, encoding='utf-8') as f:
         return f.read()
 
 
@@ -97,16 +98,16 @@ def test_incorrect_authentication():
 
 def test_get_files_names_in_path():
     from ReadPDFFileV2 import get_files_names_in_path
-    pdf_file_names = get_files_names_in_path('test_data', '*.pdf')
+    pdf_file_names = get_files_names_in_path(CWD, '*.pdf')
     assert 'scanned.pdf' in pdf_file_names
 
-    pdf_file_names = get_files_names_in_path('test_data', '*.pdf', full_path=True)
+    pdf_file_names = get_files_names_in_path(CWD, '*.pdf', full_path=True)
     assert 'test_data/text-only.pdf' in pdf_file_names
 
 
 def test_get_images_paths_in_path():
     from ReadPDFFileV2 import get_images_paths_in_path
-    img_file_paths = get_images_paths_in_path('test_data')
+    img_file_paths = get_images_paths_in_path(CWD)
     assert 'test_data/test1.png' in img_file_paths
     assert 'test_data/scanned.pdf' not in img_file_paths
 

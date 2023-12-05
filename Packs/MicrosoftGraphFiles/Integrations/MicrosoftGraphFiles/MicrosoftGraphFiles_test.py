@@ -509,7 +509,7 @@ def test_upload_command_with_upload_session(mocker, client, args):
             - return an result with upload session.
      """
     import requests
-    mocker.patch.object(demisto, 'getFilePath', return_value={'path': 'test_data/shark.jpg',
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': os.path.dirname(__file__) + '/test_data/shark.jpg',
                                                               'name': 'shark.jpg'})
     create_upload_mock = mocker.patch.object(MsGraphClient, 'create_an_upload_session',
                                              return_value=({"response": "", "uploadUrl": "test.com"}, "test.com"))
@@ -531,7 +531,7 @@ def test_upload_command_without_upload_session(mocker, client, args):
         Then:
             - return an result without upload session.
      """
-    mocker.patch.object(demisto, 'getFilePath', return_value={'path': 'test_data/some_pdf.pdf',
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': os.path.dirname(__file__) + '/test_data/some_pdf.pdf',
                                                               'name': 'some_pdf.pdf'})
     mocker_https = mocker.patch.object(client.ms_client, "http_request", return_value=return_value_upload_without_upload_session)
     create_upload_mock = mocker.patch.object(MsGraphClient, 'create_an_upload_session',

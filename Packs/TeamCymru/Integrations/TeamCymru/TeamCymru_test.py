@@ -183,7 +183,7 @@ def test_team_cymru_parse_file():
     from TeamCymru import parse_file
     mock_arg = {
         'id': 'test_id',
-        'path': 'test_data/test_ips_file.csv',
+        'path': str(Path(__file__).parent / 'test_data/test_ips_file.csv'),
         'name': 'test_ips_file.csv',
     }
     assert parse_file(mock_arg) == MOCK_IPS_LIST
