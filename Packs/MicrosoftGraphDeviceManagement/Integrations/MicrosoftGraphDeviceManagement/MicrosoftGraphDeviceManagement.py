@@ -57,9 +57,9 @@ class MsGraphClient:
         raw_response = self.ms_client.http_request('GET', url_suffix)
         return raw_response.get('value', []), raw_response
 
-    def get_managed_device(self, device_id: str, beta_version: bool = False) -> tuple[Any, str]:
+    def get_managed_device(self, device_id: str, version: str = 'v1.0') -> tuple[Any, str]:
         url_suffix: str = f'/deviceManagement/managedDevices/{device_id}'
-        if beta_version:
+        if version == 'beta':
             url_suffix += "$select=id,hardwareinformation,physicalMemoryInBytes'"
         return self.ms_client.http_request('GET', url_suffix), device_id
 
@@ -270,10 +270,9 @@ def find_managed_devices_command(client: MsGraphClient, args: dict) -> None:
     return_outputs(human_readable, entry_context, raw_response)
 
 
-def get_managed_device_command(client: MsGraphClient, args: dict) -> None:
+def get_managed_device_command(client: MsGraphClient, args: dict, version: str = 'v1.0') -> None:
     device_id: str = str(args.get('device_id'))
-    beta_version: bool = argToBoolean(args.get('beta_version', False))
-    raw_response, device_id = client.get_managed_device(device_id, beta_version)
+    raw_response, device_id = client.get_managed_device(device_id, version)
     device: dict = build_device_object(raw_response)
     entry_context: dict = {'MSGraphDeviceManagement.Device(val.ID === obj.ID)': device}
     device_name: str = device.get('Name', '')
@@ -454,9 +453,7 @@ def main():
         elif command == 'msgraph-get-managed-device-by-id':
             get_managed_device_command(client, args)
         elif command == 'msgraph-get-managed-device-by-id-beta':
-            if version == 'beta':
-                args['beta_version'] = True
-            get_managed_device_command(client, args)
+            get_managed_device_command(client, args, version)
         elif command == 'msgraph-device-disable-lost-mode':
             disable_lost_mode_command(client, args)
         elif command == 'msgraph-locate-device':
