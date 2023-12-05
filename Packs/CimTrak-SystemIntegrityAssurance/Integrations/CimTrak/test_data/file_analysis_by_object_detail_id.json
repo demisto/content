@@ -1,6 +1,4 @@
 {
-    "name": "file_analysis_by_object_detail_id",
-    "execute": "response_raw = CimTrak.file_analysis_by_object_detail_id_command(client,{'ObjectDetailId':42})\n\nresponse = response_raw[0].outputs\nif len(response_raw) > 1:\n\tret_results: List[Dict[str, Any]] = response_raw[1].outputs\n\tresponse['results'] = list()\n\tresponse_raw[1].outputs\n\tresponse['results'].append(ret_results)\n",
     "posts": [
         {
             "url": "https://test.com/CimTrakRestAPI/v1/Client.fileAnalysisByObjectDetailId",

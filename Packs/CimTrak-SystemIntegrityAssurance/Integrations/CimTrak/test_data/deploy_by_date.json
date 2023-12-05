@@ -1,6 +1,4 @@
 {
-    "name": "deploy_by_date",
-    "execute": "response_raw = CimTrak.deploy_by_date_command(client,{'date': '2021-12-20 15:08:29','objectId':'2'})\n\nresponse = response_raw[0].outputs\nif len(response_raw) > 1:\n\tret_results: List[Dict[str, Any]] = response_raw[1].outputs\n\tresponse['results'] = list()\n\tresponse_raw[1].outputs\n\tresponse['results'].append(ret_results)\n",
     "posts": [
         {
             "url": "https://test.com/CimTrakRestAPI/v1/Client.getSubGenerations",
