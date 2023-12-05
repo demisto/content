@@ -21,7 +21,7 @@ STATUS_MAP = {
     '2': 'Closed',
     '3': 'Closed'
 }
-INCIDENT_ALIAS = 'incident' if (demisto.demistoVersion()['platform'] == 'xsoar') else 'alert'
+INCIDENT_ALIAS = 'incident' if (demisto.demistoVersion().get('platform') == 'xsoar') else 'alert'
 
 
 def parse_input(csv):
@@ -336,7 +336,7 @@ def main():
             if not response and RAISE_ERROR_MISSING_VALUES:
                 raise ValueError(f"Error: Missing context key for {INCIDENT_ALIAS}: {key}")
 
-    log_message = 'Incident fields with exact match: %s' % exact_match_incident_fields
+    log_message = f'{INCIDENT_ALIAS.capitalize()} fields with exact match: %s' % exact_match_incident_fields
     if len(exact_match_incident_fields) > 1:
         log_message += ', applied with %s condition' % INCIDENT_FIELDS_APPLIED_CONDITION
     demisto.debug(log_message)

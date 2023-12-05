@@ -14,17 +14,17 @@ from typing import Any
 warnings.simplefilter("ignore")
 warnings.filterwarnings('ignore', category=UserWarning)
 
-INCIDENT_ALIAS = 'incident' if (demisto.demistoVersion()['platform'] == 'xsoar') else 'alert'
+INCIDENT_ALIAS = 'incident' if (demisto.demistoVersion().get('platform') == 'xsoar') else 'alert'
 MESSAGE_NO_FIELDS_USED = "- No field are used to find similarity. Possible reasons: 1) No field selected  " \
                          f" 2) Selected field are empty for this {INCIDENT_ALIAS}  3) Fields are misspelled"
 
 MESSAGE_NO_INCIDENT_FETCHED = f"- 0 {INCIDENT_ALIAS}s fetched with these exact match for the given dates."
 
-MESSAGE_WARNING_TRUNCATED = f"- Incidents fetched have been truncated to %s, please either add {INCIDENT_ALIAS} fields in " \
+MESSAGE_WARNING_TRUNCATED = f"- {INCIDENT_ALIAS.capitalize()} fetched have been truncated to %s, please either add {INCIDENT_ALIAS} fields in " \
                             "fieldExactMatch, enlarge the time period or increase the limit argument " \
                             "to more than %s."
 
-MESSAGE_NO_CURRENT_INCIDENT = "- Incident %s does not exist within the given time range. " \
+MESSAGE_NO_CURRENT_INCIDENT = f"- {INCIDENT_ALIAS.capitalize()} %s does not exist within the given time range. " \
                               f"Please check incidentId value or that you are running the command within an {INCIDENT_ALIAS}."
 MESSAGE_NO_FIELD = f"- %s field(s) does not exist in the current {INCIDENT_ALIAS}."
 MESSAGE_INCORRECT_FIELD = "- %s field(s) don't/doesn't exist within the fetched {INCIDENT_ALIAS}s."
@@ -793,8 +793,8 @@ def return_outputs_similar_incidents(show_actual_incident: bool, current_inciden
 
     if show_actual_incident == 'True':
         return_outputs(
-            readable_output=tableToMarkdown("Current Incident", incident_json, col_current_incident_to_display))
-    readable_output = tableToMarkdown("Similar incidents", similar_incidents_json, colums_to_display)
+            readable_output=tableToMarkdown(f"Current {INCIDENT_ALIAS.capitalize()}", incident_json, col_current_incident_to_display))
+    readable_output = tableToMarkdown(f"Similar {INCIDENT_ALIAS.capitalize()}s", similar_incidents_json, colums_to_display)
     return_entry = {
         "Type": entryTypes["note"],
         "HumanReadable": readable_output,
