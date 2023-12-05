@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch
-from XCloudAdditionalAlertInformationWidget import get_additonal_info
+from XCloudAdditionalAlertInformationWidget import *
 
 
 class TestXCloudAdditionalAlertInformationWidget(unittest.TestCase):
@@ -37,7 +37,22 @@ class TestXCloudAdditionalAlertInformationWidget(unittest.TestCase):
         result = get_additonal_info()
         assert result == expected_result
 
-    # Add more test cases as needed
+    def test_verify_list_type_dict(self):
+        input_dict = {"EntryContext": {"Core.OriginalAlert": {"id": "123"}}}
+        expected_output = {"EntryContext": {"OriginalAlert": {"id": "123"}}}
+        output = verify_list_type(input_dict)
+        self.assertEqual(output, expected_output)
+
+    def test_verify_list_type_list(self):
+        input_list = [{"EntryContext": {"Core.OriginalAlert": {"id": "123"}}}]
+        expected_output = {"EntryContext": {"OriginalAlert": {"id": "123"}}}
+        output = verify_list_type(input_list)
+        self.assertEqual(output, expected_output)
+
+    def test_verify_list_type_empty(self):
+        input = None
+        with self.assertRaises(Exception):
+            verify_list_type(input)
 
 
 if __name__ == '__main__':
