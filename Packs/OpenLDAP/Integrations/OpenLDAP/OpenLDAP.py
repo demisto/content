@@ -181,12 +181,11 @@ class LdapClient:
                 entry = conn.entries[0]
                 if 'objectClass' in entry and 'OpenLDAProotDSE' in entry['objectClass'].value:
                     self._ldap_server_vendor = self.OPENLDAP
-                    demisto.info(f'Determining LDAP vendor is {self._ldap_server_vendor}')
                 else:
-                    # There is no way to determine the AD vendor, and as we support only 2 vendors,
+                    # There is no way to determine the AD vendor. As we support only 2 vendors,
                     # we can assume the AD vendor by saying that it is not OpenLDAP
                     self._ldap_server_vendor = self.ACTIVE_DIRECTORY
-                    demisto.info(f'Determining LDAP vendor is {self._ldap_server_vendor}')
+                demisto.info(f'Determining LDAP vendor is {self._ldap_server_vendor}')
         except Exception as e:
             raise DemistoException(f'Could not parse LDAP vendor automatically. Try to choose the vendor manually. '
                                    f'Error: str({e})')
