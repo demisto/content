@@ -260,7 +260,7 @@ script:
     - contextPath: FESPortal.Aro.type
       description: Type.
       type: String
-  dockerimage: demisto/python3:3.10.13.81631
+  dockerimage: demisto/python3:3.10.13.82467
   isfetch: true
   runonce: false
   script: ''
