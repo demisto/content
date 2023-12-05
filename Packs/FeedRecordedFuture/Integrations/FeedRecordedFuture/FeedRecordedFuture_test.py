@@ -1,7 +1,5 @@
 import collections
 import os
-from flask import cli
-from more_itertools import side_effect
 from pytest_mock import MockerFixture
 import pytest
 from collections import OrderedDict
@@ -11,11 +9,20 @@ from CommonServerPython import argToList
 
 
 def test_stream_compressed_data_iterations(mocker: MockerFixture):
+    """
+    Given:
+     - A response that will stream the compressed data.
+
+    When:
+     - Fetching indicators using the connectApi service
+
+    Then:
+     - Verify that the decoding mechanism is able to handle when we try to decode part of a character.
+    """
     # The test will have a chunk size of 3, since the first character is of 4 bytes, the first chunk will have to be decoded 3
     # times, until we reach valid encoded bytes, and the 3 bytes that were cut off, will be concatenated to the next chunk
     from FeedRecordedFuture import requests
     import io
-    chunk_size = 3
     gzip_compressed_data = b''
     # The file below should be a gzip compressed file. The content of the compressed file was obtained by running:
     # gzip -k test_data/test_gzip_compressed.txt (The -k flag tells gzip to keep the original file)
@@ -26,9 +33,9 @@ def test_stream_compressed_data_iterations(mocker: MockerFixture):
     response_mocker.encoding = 'utf-8'
     client = Client(indicator_type='url', api_token='123', services=['connectApi'])
     decoding_mocker = mocker.patch.object(client, 'decode_bytes', side_effect=client.decode_bytes)
-    client.stream_compressed_data(response=response_mocker, chunk_size=chunk_size)
+    client.stream_compressed_data(response=response_mocker, chunk_size=3)
     os.remove("response.txt")
-    # The first 12 in our case are for bytes concerning the gzip compressing method, not relevant
+    # The first 12 bytes in our case are for the gzip compressing method, not relevant
     call_args_list = decoding_mocker.call_args_list[12:]
     # The first character uses 4 bytes, and our chunk size is 3, therefore, we will first try to decode the first 3 bytes
     assert call_args_list[0][0][0] == b'\xf0\x9f\x98'
@@ -43,6 +50,17 @@ def test_stream_compressed_data_iterations(mocker: MockerFixture):
 
 @pytest.mark.parametrize('chunk_size', [(1), (2), (3), (4), (8), (10), (25), (27)])
 def test_stream_compressed_data_file_content(chunk_size: int):
+    """
+    Given:
+     - A response that will stream the compressed data.
+     - The chunk size of the streamed data.
+
+    When:
+     - Fetching indicators using the connectApi service
+
+    Then:
+     - Validate that the decoded chunks from the response make up the correct content.
+    """
     from FeedRecordedFuture import requests
     import io
     gzip_compressed_data = b''
@@ -57,6 +75,8 @@ def test_stream_compressed_data_file_content(chunk_size: int):
     file_content = file_stream.read()
     file_stream.close()
     os.remove("response.txt")
+    # test_data/test_gzip_compressed.txt holds the decompressed data of test_data/test_gzip_compressed.txt.gz
+    # We want to check if the code is able to decode the chunks correctly
     with open('test_data/test_gzip_compressed.txt') as file:
         assert file.read() == file_content
 

@@ -173,12 +173,26 @@ class Client(BaseClient):
         demisto.info('done build_iterator')
 
     def stream_compressed_data(self, response: requests.Response, chunk_size: int) -> None:
+        """This will stream the response's compressed data and write it to a file. The streamed data is compressed,
+        therefore, for every chunk that we stream, we will decode it, but we may decode A PART of a character, for which
+        the decoder will throw an error.
+        We solve this by removing one byte form the chunk and decode again, until we decode
+        successfully, and the bytes that were removed will be concatenated to the next chunk.
+
+        Args:
+            response (requests.Response): The response object.
+            chunk_size (int): The chunk size to use while streaming the data.
+
+        Raises:
+            DemistoException: If we reach a point where we need to cut more than 3 bytes from the chunk.
+        """
         demisto.debug("Will now stream the response's compressed data")
+        # Since we need to decompress gzip compressed data, we add 16 to zlib.MAX_WBITS, to tell the decompressor object
+        # that we are dealing with gzip
         decompressor = zlib.decompressobj(zlib.MAX_WBITS + 16)
         cut_off_bytes = b''
         chunks_counter = 0
         decoded_counter = 0
-        overall_bytes_cut_off = 0
         with open("response.txt", "w") as f:
             for chunk in response.iter_content(chunk_size):
                 if chunk:
@@ -194,13 +208,13 @@ class Client(BaseClient):
                     while should_cut_off_bytes:
                         try:
                             decoded_counter += 1
-                            # decoded_str = chunk_to_decode.decode('utf-8')
                             decoded_str = self.decode_bytes(chunk_to_decode)
                             f.write(decoded_str)
                             should_cut_off_bytes = False
                         except UnicodeDecodeError as decode_error:
                             bytes_to_cut += 1
-                            overall_bytes_cut_off += 1
+                            demisto.debug('Decoding using UTF-8 failed due to cut-off character while streaming.'
+                                          f' Will remove {bytes_to_cut} byte/s from the chunk and decode again.')
                             if bytes_to_cut >= 4:
                                 raise DemistoException('We only need to cut a maximum of 3 bytes, something is wrong') from \
                                     decode_error
@@ -208,11 +222,14 @@ class Client(BaseClient):
                             cut_off_bytes = decompressed_chunk[-bytes_to_cut:]
                             # Try to decode without the bytes that we cut off
                             chunk_to_decode = decompressed_chunk[:len(decompressed_chunk) - bytes_to_cut]
-        demisto.debug(f'{overall_bytes_cut_off} bytes were cut off and reused during this fetch')
-        demisto.debug(f'Number of chunks = {chunks_counter}')
-        demisto.debug(f'Number of decoding needed = {decoded_counter}')
+        demisto.debug(f'{CHUNK_SIZE=}. Number of chunks received = {chunks_counter}.'
+                      f' Number of failed decoding = {decoded_counter-chunks_counter}')
     
     def decode_bytes(self, bytes_to_decode: bytes, encoding: str = 'utf-8') -> str:
+        """
+        The decoding of the bytes was outsourced to this function, in order to test the decoding mechanism
+        in the 'stream_compressed_data' function.
+        """
         return bytes_to_decode.decode(encoding=encoding)
     
     def get_batches_from_file(self, limit):
