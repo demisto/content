@@ -1380,13 +1380,13 @@ urllib3 = ">=1.26.7"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.23.0"
+version = "1.24.0"
 description = "\"A Python library for the Demisto SDK\""
 optional = false
 python-versions = ">=3.8,<3.11"
 files = [
-    {file = "demisto_sdk-1.23.0-py3-none-any.whl", hash = "sha256:bba68fc849915e2e5b98f3741435844a84ae6da7c38cd42c6d37307ab1033916"},
-    {file = "demisto_sdk-1.23.0.tar.gz", hash = "sha256:1610c856e90e29adfc34a2136412b0064f6408ee1fbb007714078ba1bc82a3d5"},
+    {file = "demisto_sdk-1.24.0-py3-none-any.whl", hash = "sha256:4b78711d820af684d2949eb4cab474559f3abadd5956596d8d52686084b05b44"},
+    {file = "demisto_sdk-1.24.0.tar.gz", hash = "sha256:68b870ce88442aac730129840cc112293ad31557c8d3828cc46b799b049126bf"},
 ]
 
 [package.dependencies]
@@ -1465,6 +1465,7 @@ types-requests = "2.28.11"
 types-setuptools = ">=65.6.0.1,<68.0.0.0"
 types-six = ">=1.16.12,<2.0.0"
 types-tabulate = ">=0.8.6,<0.10.0"
+types-toml = ">=0.10.8.7,<0.11.0.0"
 types-ujson = ">=5.6.0.0,<6.0.0.0"
 typing-extensions = ">=4.1.1,<5.0.0"
 ujson = ">=5.1.0,<6.0.0"
