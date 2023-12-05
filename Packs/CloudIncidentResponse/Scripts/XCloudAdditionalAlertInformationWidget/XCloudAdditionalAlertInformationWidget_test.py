@@ -18,9 +18,7 @@ class TestXCloudAdditionalAlertInformationWidget(unittest.TestCase):
                                                                                       'user_agent': 'Browser1'}}]}})
     def test_get_additonal_info(self, mock_context):
         # Test with a mock context containing one original alert
-        expected_result = [{'Alert Full Description': None,
-                            'Detection Module': None,
-                            'Vendor': 'Vendor1',
+        expected_result = [{'Vendor': 'Vendor1',
                             'Provider': 'AWS',
                             'Log Name': 'SecurityLog',
                             'Event Type': 'Event1',
