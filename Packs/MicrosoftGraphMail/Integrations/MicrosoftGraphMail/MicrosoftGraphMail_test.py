@@ -992,19 +992,19 @@ class TestCommandsWithLargeAttachments:
     def get_attachment_file_details_by_attachment_id(attach_id):
         attachment_info = {
             '1': {
-                'path': 'test_data/world.jpg',  # bigger than 3mb attachment
+                'path': f'{os.path.dirname(__file__)}/test_data/world.jpg',  # bigger than 3mb attachment
                 'name': 'world.jpg'
             },
             '2': {
-                'path': 'test_data/plant.jpg',  # smaller than 3mb attachment
+                'path': f'{os.path.dirname(__file__)}/test_data/plant.jpg',  # smaller than 3mb attachment
                 'name': 'plant.jpg'
             },
             '3': {
-                'path': 'test_data/test.pdf',  # bigger than 3mb attachment
+                'path': f'{os.path.dirname(__file__)}/test_data/test.pdf',  # bigger than 3mb attachment
                 'name': 'test.pdf'
             },
             '4': {
-                'path': 'test_data/sample.pdf',  # smaller than 3mb attachment
+                'path': f'{os.path.dirname(__file__)}/test_data/sample.pdf',  # smaller than 3mb attachment
                 'name': 'sample-pdf'
             }
         }

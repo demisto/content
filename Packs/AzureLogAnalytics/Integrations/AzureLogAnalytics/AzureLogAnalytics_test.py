@@ -131,7 +131,7 @@ def load_mock_response(file_path: str) -> dict:
     Returns:
         str: Mock file content.
     """
-    with open(file_path, encoding='utf-8') as mock_file:
+    with open(Path(__file__).parent / file_path, encoding='utf-8') as mock_file:
         return json.loads(mock_file.read())
 
 

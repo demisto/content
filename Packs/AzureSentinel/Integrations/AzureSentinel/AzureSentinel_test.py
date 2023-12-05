@@ -1768,7 +1768,7 @@ def test_list_alert_rule_command(mocker, args):
         - Ensure the function returns the expected alert rule
     """
     prefix_file = 'get' if args.get('rule_id') else 'list'
-    with open(f'test_data/{prefix_file}_alert_rule-mock_response.json') as file:
+    with open(f'{os.path.dirname(__file__)}/test_data/{prefix_file}_alert_rule-mock_response.json') as file:
         mock_response = json.load(file)
 
     client = mock_client()
@@ -1805,7 +1805,7 @@ def test_list_alert_rule_template_command(mocker, args):
         - Ensure the function returns the expected alert rule template
     """
     prefix_file = 'get' if args.get('template_id') else 'list'
-    with open(f'test_data/{prefix_file}_alert_rule_template-mock_response.json') as file:
+    with open(f'{os.path.dirname(__file__)}/test_data/{prefix_file}_alert_rule_template-mock_response.json') as file:
         mock_response = json.load(file)
 
     client = mock_client()

@@ -1,6 +1,6 @@
 import pytest
 import json
-
+from pathlib import Path
 from AzureCompute_v2 import MsGraphClient, screen_errors, assign_image_attributes, list_vms_command, \
     create_vm_parameters, get_network_interface_command, get_public_ip_details_command, \
     get_all_public_ip_details_command, create_nic_command, get_single_ip_details_from_list_of_ip_details
@@ -59,7 +59,7 @@ Expected_VM_PARAMS = {
 
 
 def load_test_data(json_path):
-    with open(json_path) as f:
+    with open(Path(__file__).parent / json_path) as f:
         return json.load(f)
 
 # test_list_vms data:
