@@ -3,6 +3,7 @@ import demistomock as demisto
 import pytest
 import hmac
 import hashlib
+import os
 
 RETURN_ERROR_TARGET = 'MailSenderNew.return_error'
 
@@ -116,7 +117,7 @@ def test_attachments(mocker):
     })
     mocker.patch.object(demisto, 'params', return_value={'from': 'test@test.com'})
     mocker.patch.object(demisto, 'getFilePath', return_value={
-        'path': 'test_data/attachment.txt',
+        'path': os.path.dirname(__file__) + '/test_data/attachment.txt',
         'name': 'attachment.txt'
     })
 
