@@ -2033,6 +2033,7 @@ tasks:
       id: 7598b80c-2e7a-4ec6-83fe-24a1d8743823
       version: -1
       name: Should hunting be executed?
+      description: Checks whether any hunting should be executed.
       type: condition
       iscommand: false
       brand: ""
