@@ -27,7 +27,7 @@ class Client(BaseClient):
     For this  implementation, no special attributes defined
     """
 
-    def get_events(self, limit: int | None, after_checkpoint: str | None, created_after: str | None) -> dict[str, Any]:
+    def list_events(self, limit: int | None, after_checkpoint: str | None, created_after: str | None) -> dict[str, Any]:
         params = assign_params(limit=limit, after_checkpoint=after_checkpoint, created_after=created_after)
 
         return self._http_request(
@@ -97,12 +97,12 @@ def format_url(url: str) -> str:
 ''' COMMAND FUNCTIONS '''
 
 
-def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    limit = int(args.get('limit', None))
+def list_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    limit = int(args.get('limit', 100))
     after_checkpoint = args.get('after_checkpoint', None)
     created_after = args.get('created_after', None)
 
-    results = client.get_events(limit, after_checkpoint, created_after)
+    results = client.list_events(limit, after_checkpoint, created_after)
 
     markdown = '### Tessian Events\n'
     markdown += f'## Checkpoint: {results.get("checkpoint")} | Additional Results: {results.get("additional_results")}\n'
@@ -190,7 +190,7 @@ def test_module(client: Client) -> str:  #  pragma: no cover
     """
 
     try:
-        response = client.get_events(2, None, None)
+        response = client.list_events(2, None, None)
 
         success = demisto.get(response, 'checkpoint')
         if success is None:
@@ -248,8 +248,8 @@ def main() -> None:  #  pragma: no cover
             result = test_module(client)
             return_results(result)
 
-        elif demisto.command() == 'tessian-get-events':
-            return_results(get_events_command(client, args))
+        elif demisto.command() == 'tessian-list-events':
+            return_results(list_events_command(client, args))
 
         elif demisto.command() == 'tessian-release-from-quarantine':
             return_results(release_from_quarantine_command(client, args))
