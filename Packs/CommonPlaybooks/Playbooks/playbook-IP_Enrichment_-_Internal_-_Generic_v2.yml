@@ -1,22 +1,12 @@
 id: IP Enrichment - Internal - Generic v2
-version: 22
-contentitemexportablefields:
-  contentitemfields:
-    packID: CommonPlaybooks
-    packName: Common Playbooks
-    itemVersion: 2.4.37
-    fromServerVersion: 5.0.0
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: IP Enrichment - Internal - Generic v2
 description: |-
   Enrich Internal IP addresses using one or more integrations.
 
   - Resolve IP address to hostname (DNS)
   - Separate internal and external IP addresses
-  - Get host information for IP addresses
+  - Get host information for IP addresses.
 starttaskid: "0"
 tasks:
   "0":
@@ -29,11 +19,11 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "28"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -46,6 +36,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "24":
@@ -59,8 +50,8 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -73,6 +64,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "26":
@@ -86,11 +78,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "43"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -103,6 +95,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "28":
@@ -152,7 +145,6 @@ tasks:
               complex:
                 root: inputs.IP
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -165,6 +157,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 2
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "34":
@@ -197,7 +190,6 @@ tasks:
             value:
               simple: "True"
           ignorecase: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -210,6 +202,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "35":
@@ -255,7 +248,6 @@ tasks:
           - operator: uniq
     reputationcalc: 2
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -268,6 +260,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "39":
@@ -312,7 +305,6 @@ tasks:
             iscontext: true
           right:
             value: {}
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -325,6 +317,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "40":
@@ -335,9 +328,7 @@ tasks:
       id: 711a6f17-1f6f-4b1f-86d6-2808ea6ea255
       version: -1
       name: Determine whether the IP address is internal or external
-      description: "Checks if the IP address is in the internal IP address ranges.\nIf
-        internal, sets the \"InRange\" attribute to \"yes\".\nIf external, sets the
-        \"InRange\" attribute to \"no\". \n"
+      description: "Checks if the IP address is in the internal IP address ranges.\nIf internal, sets the \"InRange\" attribute to \"yes\".\nIf external, sets the \"InRange\" attribute to \"no\". \n"
       scriptName: IsIPInRanges
       type: regular
       iscommand: false
@@ -358,7 +349,6 @@ tasks:
           - operator: uniq
     reputationcalc: 1
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -371,6 +361,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "41":
@@ -384,11 +375,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "24"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -401,6 +392,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "43":
@@ -411,6 +403,10 @@ tasks:
       id: 6c875c0b-ef7d-42c5-82c1-e99cc62e3f2d
       version: -1
       name: Endpoint Enrichment - Generic v2.1
+      playbookName: Endpoint Enrichment - Generic v2.1
+      type: playbook
+      iscommand: false
+      brand: ""
       description: |-
         Enrich an endpoint by hostname using one or more integrations.
         Supported integrations:
@@ -422,10 +418,6 @@ tasks:
         - ExtraHop Reveal(x)
         - Cortex XDR / Core (endpoint enrichment, reputation and risk)
         - Endpoint reputation using !endpoint command.
-      playbookName: Endpoint Enrichment - Generic v2.1
-      type: playbook
-      iscommand: false
-      brand: ""
     nexttasks:
       '#none#':
       - "24"
@@ -456,7 +448,6 @@ tasks:
       UseReputationCommand:
         simple: "False"
     separatecontext: true
-    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -474,6 +465,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "44":
@@ -487,6 +479,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "40"
@@ -506,7 +499,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -534,17 +526,13 @@ inputs:
       - operator: uniq
   required: false
   description: The IP address to enrich.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: InternalRange
   value:
     simple: inputs.InternalRange
   required: false
-  description: "A CSV list of IP address ranges (in CIDR notation). Use this list
-    to check if an IP address is found within a set of IP address ranges. \nFor example:
-    \"172.16.0.0/12,10.0.0.0/8,192.168.0.0/16\" (without quotes). If no list is provided,
-    will use default list provided in the IsIPInRanges script (the known IPv4 private
-    address ranges)."
-  playbookInputQuery: null
+  description: "A CSV list of IP address ranges (in CIDR notation). Use this list to check if an IP address is found within a set of IP address ranges. \nFor example: \"172.16.0.0/12,10.0.0.0/8,192.168.0.0/16\" (without quotes). If no list is provided, will use default list provided in the IsIPInRanges script (the known IPv4 private address ranges)."
+  playbookInputQuery:
 - key: ResolveIP
   value:
     complex:
@@ -553,7 +541,7 @@ inputs:
   description: |-
     Whether to convert the IP address to a hostname using a DNS query (True/False).
     The default value is true.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ExecutedFromParent
   value:
     simple: "False"
@@ -563,21 +551,18 @@ inputs:
     Setting this to True will execute the relevant commands in the main playbook instead of executing them in both sub-playbooks.
 
     Set this to True in the parent playbook if you are using the parent playbook, as opposed to using the sub-playbooks directly in your playbooks, as this will improve the performance of the playbook and reduce the overfall size of the incident.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Hostnames
   value: {}
   required: false
-  description: Hostnames to enrich. If the ExecutedFromParent playbook is set to True
-    in the IP - Enrichment - Generic v2 playbook, and an internal IP resolves to an
-    endpoint hostname that you want to enrich, the hostnames defined here will be
-    used.
-  playbookInputQuery: null
+  description: Hostnames to enrich. If the ExecutedFromParent playbook is set to True in the IP - Enrichment - Generic v2 playbook, and an internal IP resolves to an endpoint hostname that you want to enrich, the hostnames defined here will be used.
+  playbookInputQuery:
 outputs:
 - contextPath: IP
   description: The IP objects.
   type: unknown
 - contextPath: DBotScore
-  description: Indicator, Score, Type and Vendor
+  description: Indicator, Score, Type and Vendor.
   type: unknown
 - contextPath: Endpoint
   description: The endpoint's object.
@@ -644,8 +629,7 @@ outputs:
   description: The class of the device.
   type: String
 - contextPath: ExtraHop.Device.UserModTime
-  description: The time of the most recent update, expressed in milliseconds since
-    the epoch.
+  description: The time of the most recent update, expressed in milliseconds since the epoch.
   type: Number
 - contextPath: ExtraHop.Device.AutoRole
   description: The role automatically detected by the ExtraHop.
@@ -672,8 +656,7 @@ outputs:
   description: Whether the device is on the advanced analysis allow list.
   type: Boolean
 - contextPath: ExtraHop.Device.ModTime
-  description: The time of the most recent update, expressed in milliseconds since
-    the epoch.
+  description: The time of the most recent update, expressed in milliseconds since the epoch.
   type: Number
 - contextPath: ExtraHop.Device.IsL3
   description: Indicates whether the device is a Layer 3 device.
@@ -721,8 +704,7 @@ outputs:
   description: The endpoint that was enriched.
   type: string
 - contextPath: ActiveDirectory.ComputersPageCookie
-  description: An opaque string received in a paged search, used for requesting subsequent
-    entries.
+  description: An opaque string received in a paged search, used for requesting subsequent entries.
   type: string
 - contextPath: ActiveDirectory.Computers
   description: The information about the hostname that was enriched using Active Directory.
@@ -740,8 +722,7 @@ outputs:
   description: The information about  the endpoint.
   type: string
 - contextPath: CarbonBlackEDR.Sensor.systemvolume_total_size
-  description: The size, in bytes, of the system volume of the endpoint on which the
-    sensor is installed. installed.
+  description: The size, in bytes, of the system volume of the endpoint on which the sensor is installed. installed.
   type: number
 - contextPath: CarbonBlackEDR.Sensor.emet_telemetry_path
   description: The path of the EMET telemetry associated with the sensor.
@@ -771,8 +752,7 @@ outputs:
   description: The size in bytes of physical memory.
   type: number
 - contextPath: CarbonBlackEDR.Sensor.build_id
-  description: The sensor version installed on this endpoint. From the /api/builds/
-    endpoint.
+  description: The sensor version installed on this endpoint. From the /api/builds/ endpoint.
   type: string
 - contextPath: CarbonBlackEDR.Sensor.uptime
   description: Endpoint uptime in seconds.
@@ -827,8 +807,7 @@ outputs:
   description: Machine SID of this host.
   type: string
 - contextPath: CarbonBlackEDR.Sensor.next_checkin_time
-  description: Next expected communication from this computer in server-local time
-    and zone.
+  description: Next expected communication from this computer in server-local time and zone.
   type: string
 - contextPath: CarbonBlackEDR.Sensor.node_id
   description: The node ID associated with the sensor.
@@ -858,12 +837,10 @@ outputs:
   description: A pipe-delimited list of IP,MAC pairs for each network interface.
   type: string
 - contextPath: CarbonBlackEDR.Sensor.sensor_health_status
-  description: Self-reported health score, from 0 to 100. Higher numbers indicate
-    a better health status.
+  description: Self-reported health score, from 0 to 100. Higher numbers indicate a better health status.
   type: number
 - contextPath: CarbonBlackEDR.Sensor.registration_time
-  description: Time this sensor was originally registered in server-local time and
-    zone.
+  description: Time this sensor was originally registered in server-local time and zone.
   type: string
 - contextPath: CarbonBlackEDR.Sensor.restart_queued
   description: Whether a restart of the sensor is queued.
@@ -893,8 +870,7 @@ outputs:
   description: The sensor group ID this sensor is assigned to.
   type: string
 - contextPath: CarbonBlackEDR.Sensor.uninstall
-  description: When set, indicates that the sensor will be directed to uninstall on
-    next check-in.
+  description: When set, indicates that the sensor will be directed to uninstall on next check-in.
   type: string
 - contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_id
   description: The endpoint ID.
@@ -1068,11 +1044,14 @@ outputs:
   description: The score.
   type: string
 - contextPath: IP.Address
-  description: The IP Address
+  description: The IP Address.
   type: string
 - contextPath: IP.InRange
-  description: Is the IP is in the input ranges? (could be 'yes' or 'no)
+  description: Is the IP is in the input ranges? (could be 'yes' or 'no).
   type: string
 fromversion: 5.0.0
 tests:
 - IP Enrichment - Generic v2 - Test
+contentitemexportablefields:
+  contentitemfields: {}
+system: true

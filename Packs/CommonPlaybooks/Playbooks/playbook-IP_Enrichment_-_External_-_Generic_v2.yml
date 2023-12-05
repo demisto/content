@@ -1,16 +1,7 @@
 id: IP Enrichment - External - Generic v2
-version: 31
-contentitemexportablefields:
-  contentitemfields:
-    packID: CommonPlaybooks
-    packName: Common Playbooks
-    itemVersion: 2.4.37
-    fromServerVersion: 5.0.0
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: IP Enrichment - External - Generic v2
+fromversion: 5.0.0
 description: |-
   Enrich IP addresses using one or more integrations.
 
@@ -30,11 +21,11 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "47"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -45,6 +36,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -102,7 +94,6 @@ tasks:
                 accessor: Address
             iscontext: true
           ignorecase: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -113,6 +104,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -128,8 +120,8 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -140,6 +132,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -155,12 +148,12 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "36"
       - "44"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -171,6 +164,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -183,9 +177,7 @@ tasks:
       id: ae5e40bb-17cb-4470-84bc-4801e67b1cae
       version: -1
       name: Determine whether the IP address is internal or external
-      description: "Checks if the IP address is in the internal IP address ranges.\nIf
-        internal, sets the \"InRange\" attribute to \"yes\".\nIf external, sets the
-        \"InRange\" attribute to \"no\". "
+      description: "Checks if the IP address is in the internal IP address ranges.\nIf internal, sets the \"InRange\" attribute to \"yes\".\nIf external, sets the \"InRange\" attribute to \"no\". "
       scriptName: IsIPInRanges
       type: regular
       iscommand: false
@@ -194,8 +186,6 @@ tasks:
       '#none#':
       - "15"
     scriptarguments:
-      ignore-outputs:
-        simple: "false"
       ip:
         complex:
           root: inputs.IP
@@ -204,9 +194,10 @@ tasks:
       ipRanges:
         complex:
           root: inputs.InternalRange
+      ignore-outputs:
+        simple: "false"
     reputationcalc: 1
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -217,6 +208,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -251,7 +243,6 @@ tasks:
             value:
               simple: "True"
           ignorecase: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -262,6 +253,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -308,9 +300,8 @@ tasks:
           transformers:
           - operator: uniq
     reputationcalc: 2
-    separatecontext: false
     continueonerror: true
-    continueonerrortype: ""
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -321,6 +312,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: true
     quietmode: 0
     isoversize: false
@@ -336,11 +328,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "37"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -351,6 +343,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -363,8 +356,7 @@ tasks:
       id: 0df4420b-8119-4731-8cb3-4745fd044913
       version: -1
       name: Is VirusTotal Private API enabled?
-      description: Checks if there is an active instance of the VirusTotal Private
-        API integration enabled.
+      description: Checks if there is an active instance of the VirusTotal Private API integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -404,7 +396,6 @@ tasks:
                 accessor: brand
             iscontext: true
           ignorecase: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -415,6 +406,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -472,7 +464,6 @@ tasks:
           - operator: uniq
     reputationcalc: 1
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -483,6 +474,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: true
     quietmode: 0
     isoversize: false
@@ -498,11 +490,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "24"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -513,6 +505,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -528,6 +521,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "46"
@@ -564,9 +558,6 @@ tasks:
       '#none#':
       - "24"
     scriptarguments:
-      extended_data:
-        complex:
-          root: inputs.extended_data
       ip:
         complex:
           root: .
@@ -599,6 +590,9 @@ tasks:
                   simple: inputs.IP
                 iscontext: true
           - operator: uniq
+      extended_data:
+        complex:
+          root: inputs.extended_data
       threat_model_association:
         complex:
           root: inputs.threat_model_association
@@ -736,6 +730,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "29"
@@ -755,7 +750,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -788,17 +782,13 @@ inputs:
       - operator: uniq
   required: false
   description: The IP address to enrich.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: InternalRange
   value:
-    simple: 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16
+    simple: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16"
   required: false
-  description: 'A CSV list of IP address ranges (in CIDR notation). Use this list
-    to check if an IP address is found within a set of IP address ranges. For example:
-    "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided,
-    will use default list provided in the IsIPInRanges script (the known IPv4 private
-    address ranges).'
-  playbookInputQuery: null
+  description: 'A CSV list of IP address ranges (in CIDR notation). Use this list to check if an IP address is found within a set of IP address ranges. For example: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided, will use default list provided in the IsIPInRanges script (the known IPv4 private address ranges).'
+  playbookInputQuery:
 - key: ResolveIP
   value:
     simple: "True"
@@ -806,7 +796,7 @@ inputs:
   description: |-
     Whether to convert the IP address to a hostname using a DNS query (True/False).
     The default value is true.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: UseReputationCommand
   value:
     simple: "False"
@@ -816,7 +806,7 @@ inputs:
     Note: This input should be used whenever there is no auto-extract enabled in the investigation flow.
     Possible values: True / False.
     The default value is false.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: extended_data
   value:
     simple: "False"
@@ -825,7 +815,7 @@ inputs:
     Define whether you want the generic reputation command to return extended data (last_analysis_results).
     Possible values: True / False.
     The default value is false.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: threat_model_association
   value:
     simple: "False"
@@ -834,7 +824,7 @@ inputs:
     Define whether you wish to enhance generic reputation command to include additional information such as Threat Bulletins, Attack patterns, Actors, Campaigns, TTPs, vulnerabilities, etc. Note: If set to true, additional 6 API calls will be performed.
     Possible values: True / False.
     The default value is false.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ExecutedFromParent
   value:
     simple: "False"
@@ -844,7 +834,7 @@ inputs:
     Setting this to True will execute the relevant commands in the main playbook instead of executing them in both sub-playbooks.
 
     Set this to True in the parent playbook if you are using the parent playbook, as opposed to using the sub-playbooks directly in your playbooks, as this will improve the performance of the playbook and reduce the overfall size of the incident.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: IP
   description: The IP address objects.
@@ -862,10 +852,10 @@ outputs:
   description: A list of endpoint IP addresses.
   type: string
 - contextPath: IP.Address
-  description: The IP Address
+  description: The IP Address.
   type: string
 - contextPath: IP.InRange
-  description: Is the IP is in the input ranges? (could be 'yes' or 'no)
+  description: Is the IP is in the input ranges? (could be 'yes' or 'no).
   type: string
 - contextPath: DBotScore.Indicator
   description: The indicator that was tested.
@@ -898,37 +888,37 @@ outputs:
   description: The vendor that reported the indicator as malicious.
   type: string
 - contextPath: IP.Malicious.Description
-  description: For malicious IPs, the reason that the vendor made the decision
+  description: For malicious IPs, the reason that the vendor made the decision.
   type: string
 - contextPath: IP.VirusTotal.DownloadedHashes
-  description: Latest files that are detected by at least one antivirus solution and
-    were downloaded by VirusTotal from the IP address
+  description: Latest files that are detected by at least one antivirus solution and were downloaded by VirusTotal from the IP address.
   type: string
 - contextPath: IP.VirusTotal.UnAVDetectedDownloadedHashes
-  description: Latest files that are not detected by any antivirus solution and were
-    downloaded by VirusTotal from the IP address provided
+  description: Latest files that are not detected by any antivirus solution and were downloaded by VirusTotal from the IP address provided.
   type: string
 - contextPath: IP.VirusTotal.DetectedURLs
-  description: Latest URLs hosted in this IP address detected by at least one URL
-    scanner
+  description: Latest URLs hosted in this IP address detected by at least one URL scanner.
   type: string
 - contextPath: IP.VirusTotal.CommunicatingHashes
-  description: Latest detected files that communicate with this IP address
+  description: Latest detected files that communicate with this IP address.
   type: string
 - contextPath: IP.VirusTotal.UnAVDetectedCommunicatingHashes
-  description: Latest undetected files that communicate with this IP address
+  description: Latest undetected files that communicate with this IP address.
   type: string
 - contextPath: IP.VirusTotal.Resolutions.hostname
-  description: The following domains resolved to the given IP
+  description: The following domains resolved to the given IP.
   type: string
 - contextPath: IP.VirusTotal.ReferrerHashes
-  description: Latest detected files that embed this IP address in their strings
+  description: Latest detected files that embed this IP address in their strings.
   type: string
 - contextPath: IP.VirusTotal.UnAVDetectedReferrerHashes
-  description: Latest undetected files that embed this IP address in their strings
+  description: Latest undetected files that embed this IP address in their strings.
   type: string
 - contextPath: IP.VirusTotal.Resolutions.last_resolved
-  description: The last time the following domains resolved to the given IP
+  description: The last time the following domains resolved to the given IP.
   type: string
 tests:
 - IP Enrichment - Generic v2 - Test
+contentitemexportablefields:
+  contentitemfields: {}
+system: true

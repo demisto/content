@@ -1,7 +1,7 @@
-id: IP Enrichment - Generic v2_dev
-version: 40
-vcShouldKeepItemLegacyProdMachine: false
-name: IP Enrichment - Generic v2_dev
+id: IP Enrichment - Generic v2
+version: -1
+fromversion: 5.0.0
+name: IP Enrichment - Generic v2
 description: |-
   Enrich IP addresses using one or more integrations.
 
@@ -9,7 +9,7 @@ description: |-
   - Provide threat information
   - IP address reputation using !ip command
   - Separate internal and external IP addresses
-  - For internal IP addresses, get host information
+  - For internal IP addresses, get host information.
 starttaskid: "0"
 tasks:
   "0":
@@ -22,11 +22,11 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "28"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -37,6 +37,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -52,8 +53,8 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -64,6 +65,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -91,9 +93,6 @@ tasks:
       '#none#':
       - "24"
     scriptarguments:
-      ExecutedFromParent:
-        complex:
-          root: inputs.ExecutedFromParent
       IP:
         complex:
           root: .
@@ -143,8 +142,10 @@ tasks:
       threat_model_association:
         complex:
           root: inputs.threat_model_association
+      ExecutedFromParent:
+        complex:
+          root: inputs.ExecutedFromParent
     separatecontext: true
-    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -160,6 +161,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -186,29 +188,6 @@ tasks:
       '#none#':
       - "24"
     scriptarguments:
-      ExecutedFromParent:
-        complex:
-          root: inputs.ExecutedFromParent
-      Hostnames:
-        simple: |-
-          ${.=getHostname(val.Endpoint, getIpInRange(val.IP));
-          function getHostname(x, y){
-              res = [];
-              for (i=0; i<x.length; i++) {
-                  for (j=0; j<y.length; j++) {
-                      if (x[i].IP == y[j].Address){res.push(x[i].Hostname)}
-                  }
-               }
-               return res
-          };
-          function getIpInRange(a){
-              res = [];
-              for (i=0; i<a.length; i++) {
-                  if (a[i].InRange == "yes") res.push(a[i]);
-              }
-              return res;
-          }
-          }
       IP:
         complex:
           root: .
@@ -250,8 +229,30 @@ tasks:
       ResolveIP:
         complex:
           root: inputs.ResolveIP
+      ExecutedFromParent:
+        complex:
+          root: inputs.ExecutedFromParent
+      Hostnames:
+        simple: |-
+          ${.=getHostname(val.Endpoint, getIpInRange(val.IP));
+          function getHostname(x, y){
+              res = [];
+              for (i=0; i<x.length; i++) {
+                  for (j=0; j<y.length; j++) {
+                      if (x[i].IP == y[j].Address){res.push(x[i].Hostname)}
+                  }
+               }
+               return res
+          };
+          function getIpInRange(a){
+              res = [];
+              for (i=0; i<a.length; i++) {
+                  if (a[i].InRange == "yes") res.push(a[i]);
+              }
+              return res;
+          }
+          }
     separatecontext: true
-    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -267,6 +268,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -279,9 +281,7 @@ tasks:
       id: 4b707093-e557-49e6-8825-f7b23c1f12a6
       version: -1
       name: Determine whether the IP address is internal or external
-      description: "Checks if the IP address is in the internal IP address ranges.\nIf
-        internal, sets the \"InRange\" attribute to \"yes\".\nIf external, sets the
-        \"InRange\" attribute to \"no\". "
+      description: "Checks if the IP address is in the internal IP address ranges.\nIf internal, sets the \"InRange\" attribute to \"yes\".\nIf external, sets the \"InRange\" attribute to \"no\". "
       scriptName: IsIPInRanges
       type: regular
       iscommand: false
@@ -323,9 +323,7 @@ tasks:
       id: 6c306aba-243f-4d13-888c-a142fcf86737
       version: -1
       name: Can common logic be executed from the parent playbook?
-      description: Checks whether the playbook inputs specify that common logic like
-        the classification of IP addresses to ranges and resolving them should be
-        executed in the main (parent) enrichment playbook, instead of in the sub-playbooks.
+      description: Checks whether the playbook inputs specify that common logic like the classification of IP addresses to ranges and resolving them should be executed in the main (parent) enrichment playbook, instead of in the sub-playbooks.
       type: condition
       iscommand: false
       brand: ""
@@ -390,6 +388,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "31"
@@ -504,6 +503,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "27"
@@ -535,6 +535,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "25"
@@ -581,17 +582,13 @@ inputs:
       - operator: uniq
   required: false
   description: The IP address to enrich.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: InternalRange
   value:
     simple: 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16
   required: false
-  description: 'A list of internal IP ranges to check IP addresses against. The list
-    should be provided in CIDR notation, separated by commas. An example of a list
-    of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).
-    If a list is not provided, will use default list provided in the IsIPInRanges
-    script (the known IPv4 private address ranges).'
-  playbookInputQuery: null
+  description: 'A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided, will use default list provided in the IsIPInRanges script (the known IPv4 private address ranges).'
+  playbookInputQuery:
 - key: ResolveIP
   value:
     simple: "True"
@@ -599,7 +596,7 @@ inputs:
   description: |-
     Determines whether to convert the IP address to a hostname using a DNS query (True/ False).
     The default value is true.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: UseReputationCommand
   value:
     simple: "False"
@@ -609,7 +606,7 @@ inputs:
     Note: This input should be used whenever there is no auto-extract enabled in the investigation flow.
     Possible values: True / False.
     The default value is false.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: extended_data
   value:
     simple: "False"
@@ -618,7 +615,7 @@ inputs:
     Define whether you want the generic reputation command to return extended data (last_analysis_results).
     Possible values: True / False.
     The default value is false.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: threat_model_association
   value:
     simple: "False"
@@ -627,7 +624,7 @@ inputs:
     Define whether you wish to enhance generic reputation command to include additional information such as Threat Bulletins, Attack patterns, Actors, Campaigns, TTPs, vulnerabilities, etc. Note: If set to true, additional 6 API calls will be performed.
     Possible values: True / False.
     The default value is false.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ExecutedFromParent
   value:
     simple: "True"
@@ -637,31 +634,31 @@ inputs:
     Setting this to True will execute the relevant commands in the main playbook instead of executing them in both sub-playbooks.
 
     Set this to True in the parent playbook if you are using the parent playbook, as opposed to using the sub-playbooks directly in your playbooks, as this will improve the performance of the playbook and reduce the overfall size of the incident.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: IP
-  description: The IP objects
+  description: The IP objects.
   type: unknown
 - contextPath: DBotScore
-  description: Indicator, Score, Type, Vendor
+  description: Indicator, Score, Type, Vendor.
   type: unknown
 - contextPath: Endpoint
-  description: The Endpoint's object
+  description: The Endpoint's object.
   type: unknown
 - contextPath: Endpoint.Hostname
-  description: The hostname to enrich
+  description: The hostname to enrich.
   type: string
 - contextPath: Endpoint.OS
-  description: Endpoint OS
+  description: Endpoint OS.
   type: string
 - contextPath: Endpoint.IP
-  description: List of endpoint IP addresses
+  description: List of endpoint IP addresses.
   type: string
 - contextPath: Endpoint.MAC
-  description: List of endpoint MAC addresses
+  description: List of endpoint MAC addresses.
   type: string
 - contextPath: Endpoint.Domain
-  description: Endpoint domain name
+  description: Endpoint domain name.
   type: string
 - contextPath: DBotScore.Indicator
   description: The indicator that was tested.
@@ -694,43 +691,40 @@ outputs:
   description: The vendor that reported the indicator as malicious.
   type: string
 - contextPath: IP.Malicious.Description
-  description: For malicious IPs, the reason that the vendor made the decision
+  description: For malicious IPs, the reason that the vendor made the decision.
   type: string
 - contextPath: IP.VirusTotal.DownloadedHashes
-  description: Latest files that are detected by at least one antivirus solution and
-    were downloaded by VirusTotal from the IP address
+  description: Latest files that are detected by at least one antivirus solution and were downloaded by VirusTotal from the IP address.
   type: string
 - contextPath: IP.VirusTotal.UnAVDetectedDownloadedHashes
-  description: Latest files that are not detected by any antivirus solution and were
-    downloaded by VirusTotal from the IP address provided
+  description: Latest files that are not detected by any antivirus solution and were downloaded by VirusTotal from the IP address provided.
   type: string
 - contextPath: IP.VirusTotal.DetectedURLs
-  description: Latest URLs hosted in this IP address detected by at least one URL
-    scanner
+  description: Latest URLs hosted in this IP address detected by at least one URL scanner.
   type: string
 - contextPath: IP.VirusTotal.CommunicatingHashes
-  description: Latest detected files that communicate with this IP address
+  description: Latest detected files that communicate with this IP address.
   type: string
 - contextPath: IP.VirusTotal.UnAVDetectedCommunicatingHashes
-  description: Latest undetected files that communicate with this IP address
+  description: Latest undetected files that communicate with this IP address.
   type: string
 - contextPath: IP.VirusTotal.Resolutions.hostname
-  description: The following domains resolved to the given IP
+  description: The following domains resolved to the given IP.
   type: string
 - contextPath: IP.VirusTotal.ReferrerHashes
-  description: Latest detected files that embed this IP address in their strings
+  description: Latest detected files that embed this IP address in their strings.
   type: string
 - contextPath: IP.VirusTotal.UnAVDetectedReferrerHashes
-  description: Latest undetected files that embed this IP address in their strings
+  description: Latest undetected files that embed this IP address in their strings.
   type: string
 - contextPath: IP.VirusTotal.Resolutions.last_resolved
-  description: The last time the following domains resolved to the given IP
+  description: The last time the following domains resolved to the given IP.
   type: string
 - contextPath: IP.Address
-  description: The IP Address
+  description: The IP Address.
   type: string
 - contextPath: IP.InRange
-  description: Is the IP is in the input ranges? (could be 'yes' or 'no)
+  description: Is the IP is in the input ranges? (could be 'yes' or 'no).
   type: string
 - contextPath: Endpoint.ID
   description: The endpoint ID.
@@ -781,8 +775,7 @@ outputs:
   description: The class of the device.
   type: string
 - contextPath: ExtraHop.Device.UserModTime
-  description: The time of the most recent update, expressed in milliseconds since
-    the epoch.
+  description: The time of the most recent update, expressed in milliseconds since the epoch.
   type: number
 - contextPath: ExtraHop.Device.AutoRole
   description: The role automatically detected by the ExtraHop.
@@ -809,8 +802,7 @@ outputs:
   description: Whether the device is on the advanced analysis allow list.
   type: boolean
 - contextPath: ExtraHop.Device.ModTime
-  description: The time of the most recent update, expressed in milliseconds since
-    the epoch.
+  description: The time of the most recent update, expressed in milliseconds since the epoch.
   type: number
 - contextPath: ExtraHop.Device.IsL3
   description: Indicates whether the device is a Layer 3 device.
@@ -858,8 +850,7 @@ outputs:
   description: The endpoint that was enriched.
   type: string
 - contextPath: ActiveDirectory.ComputersPageCookie
-  description: An opaque string received in a paged search, used for requesting subsequent
-    entries.
+  description: An opaque string received in a paged search, used for requesting subsequent entries.
   type: string
 - contextPath: ActiveDirectory.Computers
   description: The information about the hostname that was enriched using Active Directory.
@@ -877,8 +868,7 @@ outputs:
   description: The information about  the endpoint.
   type: string
 - contextPath: CarbonBlackEDR.Sensor.systemvolume_total_size
-  description: The size, in bytes, of the system volume of the endpoint on which the
-    sensor is installed. installed.
+  description: The size, in bytes, of the system volume of the endpoint on which the sensor is installed. installed.
   type: number
 - contextPath: CarbonBlackEDR.Sensor.emet_telemetry_path
   description: The path of the EMET telemetry associated with the sensor.
@@ -908,8 +898,7 @@ outputs:
   description: The size in bytes of physical memory.
   type: number
 - contextPath: CarbonBlackEDR.Sensor.build_id
-  description: The sensor version installed on this endpoint. From the /api/builds/
-    endpoint.
+  description: The sensor version installed on this endpoint. From the /api/builds/ endpoint.
   type: string
 - contextPath: CarbonBlackEDR.Sensor.uptime
   description: Endpoint uptime in seconds.
@@ -964,8 +953,7 @@ outputs:
   description: Machine SID of this host.
   type: string
 - contextPath: CarbonBlackEDR.Sensor.next_checkin_time
-  description: Next expected communication from this computer in server-local time
-    and zone.
+  description: Next expected communication from this computer in server-local time and zone.
   type: string
 - contextPath: CarbonBlackEDR.Sensor.node_id
   description: The node ID associated with the sensor.
@@ -995,12 +983,10 @@ outputs:
   description: A pipe-delimited list of IP,MAC pairs for each network interface.
   type: string
 - contextPath: CarbonBlackEDR.Sensor.sensor_health_status
-  description: Self-reported health score, from 0 to 100. Higher numbers indicate
-    a better health status.
+  description: Self-reported health score, from 0 to 100. Higher numbers indicate a better health status.
   type: number
 - contextPath: CarbonBlackEDR.Sensor.registration_time
-  description: Time this sensor was originally registered in server-local time and
-    zone.
+  description: Time this sensor was originally registered in server-local time and zone.
   type: string
 - contextPath: CarbonBlackEDR.Sensor.restart_queued
   description: Whether a restart of the sensor is queued.
@@ -1030,8 +1016,7 @@ outputs:
   description: The sensor group ID this sensor is assigned to.
   type: string
 - contextPath: CarbonBlackEDR.Sensor.uninstall
-  description: When set, indicates that the sensor will be directed to uninstall on
-    next check-in.
+  description: When set, indicates that the sensor will be directed to uninstall on next check-in.
   type: string
 - contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_id
   description: The endpoint ID.
