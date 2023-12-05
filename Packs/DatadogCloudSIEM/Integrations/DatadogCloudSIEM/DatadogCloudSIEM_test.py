@@ -63,19 +63,19 @@ from test_data.inputs import TIME_SERIES_POINT_QUERY_RESPONSE, TIME_SERIES_POINT
     METRIC_METADATA_GET_CONTEXT, METRIC_METADATA_UPDATE_RESPONSE, METRIC_METADATA_UPDATE_CONTEXT, EVENT_MOCK, EXPECTED_EVENT_MOCK
 import datetime
 import demistomock as demisto
-
+from pathlib import Pathlib
 
 def util_load_json(path):
-    with open(path, encoding="utf-8") as f:
+    with open(Path(__file__).parent / path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
 DATADOG_API_CLIENT_MOCK = MagicMock()
 
-TAGS_LIST_RESPONSE = util_load_json(os.path.dirname(__file__) + "/test_data/tag-list.json")
-HOST_TAG_CREATE_RESPONSE = util_load_json(os.path.dirname(__file__) + "/test_data/host-tag-create.json")
-HOST_TAG_GET_RESPONSE = util_load_json(os.path.dirname(__file__) + "/test_data/host-tag-get.json")
-HOST_TAG_UPDATE_RESPONSE = util_load_json(os.path.dirname(__file__) + "/test_data/host-tag-update.json")
+TAGS_LIST_RESPONSE = util_load_json("test_data/tag-list.json")
+HOST_TAG_CREATE_RESPONSE = util_load_json("test_data/host-tag-create.json")
+HOST_TAG_GET_RESPONSE = util_load_json("test_data/host-tag-get.json")
+HOST_TAG_UPDATE_RESPONSE = util_load_json("test_data/host-tag-update.json")
 
 
 class Datadog:
@@ -150,7 +150,7 @@ def test_create_event_command(mocker, raw_resp, expected, configuration):
     mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
     mocker.patch("DatadogCloudSIEM.EventsApi", return_value=DATADOG_API_CLIENT_MOCK)
     with open(
-        os.path.join("test_data", "readable_outputs/create_event_command_readable.md"),
+        os.path.join(os.path.dirname(__file__), "test_data", "readable_outputs/create_event_command_readable.md"),
     ) as f:
         readable_output = f.read()
     result = create_event_command(configuration, args)
@@ -189,7 +189,7 @@ def test_list_events_command(mocker, raw_resp, expected, configuration):
     mocker.patch("DatadogCloudSIEM.EventsApi", return_value=DATADOG_API_CLIENT_MOCK)
     result = get_events_command(configuration, args)
     with open(
-        os.path.join("test_data", "readable_outputs/list_events_command_readable.md"),
+        os.path.join(os.path.dirname(__file__), "test_data", "readable_outputs/list_events_command_readable.md"),
     ) as f:
         readable_output = f.read()
     assert isinstance(result, CommandResults)
@@ -220,7 +220,7 @@ def test_get_events_command(mocker, raw_resp, expected, configuration):
     mocker.patch("DatadogCloudSIEM.EventsApi", return_value=DATADOG_API_CLIENT_MOCK)
     result = get_events_command(configuration, args)
     with open(
-        os.path.join("test_data", "readable_outputs/get_events_command_readable.md"),
+        os.path.join(os.path.dirname(__file__), "test_data", "readable_outputs/get_events_command_readable.md"),
     ) as f:
         readable_output = f.read()
     assert isinstance(result, CommandResults)
@@ -255,7 +255,7 @@ def test_add_tags_to_host_command(mocker, raw_resp, expected, configuration):
     result = add_tags_to_host_command(configuration, args)
     with open(
         os.path.join(
-            "test_data", "readable_outputs/add_tags_to_host_command_readable.md"
+            os.path.dirname(__file__), "test_data", "readable_outputs/add_tags_to_host_command_readable.md"
         ),
     ) as f:
         readable_output = f.read()
@@ -287,7 +287,7 @@ def test_get_host_tags_command(mocker, raw_resp, expected, configuration):
     mocker.patch("DatadogCloudSIEM.TagsApi", return_value=DATADOG_API_CLIENT_MOCK)
     result = get_host_tags_command(configuration, args)
     with open(
-        os.path.join("test_data", "readable_outputs/get_host_tags_command_readable.md"),
+        os.path.join(os.path.dirname(__file__), "test_data", "readable_outputs/get_host_tags_command_readable.md"),
     ) as f:
         readable_output = f.read()
     assert isinstance(result, CommandResults)
@@ -322,7 +322,7 @@ def test_update_host_tags_command(mocker, raw_resp, expected, configuration):
     result = update_host_tags_command(configuration, args)
     with open(
         os.path.join(
-            "test_data", "readable_outputs/update_host_tags_command_readable.md"
+            os.path.dirname(__file__), "test_data", "readable_outputs/update_host_tags_command_readable.md"
         ),
     ) as f:
         readable_output = f.read()
@@ -357,7 +357,7 @@ def test_active_metrics_list_command(mocker, raw_resp, expected, configuration):
     result = active_metrics_list_command(configuration, args)
     with open(
         os.path.join(
-            "test_data", "readable_outputs/active_metrics_list_command_readable.md"
+            os.path.dirname(__file__), "test_data", "readable_outputs/active_metrics_list_command_readable.md"
         ),
     ) as f:
         readable_output = f.read()
@@ -393,7 +393,7 @@ def test_metrics_search_command(mocker, raw_resp, expected, configuration):
     result = metrics_search_command(configuration, args)
     with open(
         os.path.join(
-            "test_data", "readable_outputs/metrics_search_command_readable.md"
+            os.path.dirname(__file__), "test_data", "readable_outputs/metrics_search_command_readable.md"
         ),
     ) as f:
         readable_output = f.read()
@@ -427,7 +427,7 @@ def test_get_metric_metadata_command(mocker, raw_resp, expected, configuration):
     result = get_metric_metadata_command(configuration, args)
     with open(
         os.path.join(
-            "test_data", "readable_outputs/get_metric_metadata_command_readable.md"
+            os.path.dirname(__file__), "test_data", "readable_outputs/get_metric_metadata_command_readable.md"
         ),
     ) as f:
         readable_output = f.read()
@@ -469,7 +469,7 @@ def test_update_metric_metadata_command(mocker, raw_resp, expected, configuratio
     result = update_metric_metadata_command(configuration, args)
     with open(
         os.path.join(
-            "test_data", "readable_outputs/update_metric_metadata_command_readable.md"
+            os.path.dirname(__file__), "test_data", "readable_outputs/update_metric_metadata_command_readable.md"
         ),
     ) as f:
         readable_output = f.read()
@@ -505,7 +505,7 @@ def test_get_tags_command(mocker, raw_resp, expected, configuration):
     mocker.patch("DatadogCloudSIEM.TagsApi", return_value=DATADOG_API_CLIENT_MOCK)
     result = get_tags_command(configuration, args)
     with open(
-        os.path.join("test_data", "readable_outputs/get_tags_command_readable.md")
+        os.path.join(os.path.dirname(__file__), "test_data", "readable_outputs/get_tags_command_readable.md")
     ) as f:
         readable_output = f.read()
     assert isinstance(result, CommandResults)
@@ -538,7 +538,7 @@ def test_query_timeseries_points_command(mocker, raw_resp, expected, configurati
     result = query_timeseries_points_command(configuration, args)
     with open(
         os.path.join(
-            "test_data", "readable_outputs/query_timeseries_points_command_readable.md"
+            os.path.dirname(__file__), "test_data", "readable_outputs/query_timeseries_points_command_readable.md"
         ),
     ) as f:
         readable_output = f.read()
@@ -633,7 +633,7 @@ def test_create_incident_command(mocker, raw_resp, expected, configuration):
     result = create_incident_command(configuration, args)
     with open(
         os.path.join(
-            "test_data", "readable_outputs/create_incident_command_readable.md"
+            os.path.dirname(__file__), "test_data", "readable_outputs/create_incident_command_readable.md"
         ),
     ) as f:
         readable_output = f.read()
@@ -680,7 +680,7 @@ def test_update_incident_command(mocker, raw_resp, expected, configuration):
     result = update_incident_command(configuration, args)
     with open(
         os.path.join(
-            "test_data", "readable_outputs/update_incident_command_readable.md"
+            os.path.dirname(__file__), "test_data", "readable_outputs/update_incident_command_readable.md"
         ),
     ) as f:
         readable_output = f.read()
@@ -712,7 +712,7 @@ def test_get_incident_command(mocker, raw_resp, expected, configuration):
     mocker.patch("DatadogCloudSIEM.IncidentsApi", return_value=DATADOG_API_CLIENT_MOCK)
     result = get_incident_command(configuration, args)
     with open(
-        os.path.join("test_data", "readable_outputs/get_incident_command_readable.md"),
+        os.path.join(os.path.dirname(__file__), "test_data", "readable_outputs/get_incident_command_readable.md"),
     ) as f:
         readable_output = f.read()
     assert isinstance(result, CommandResults)
@@ -743,7 +743,7 @@ def test_list_incident_command(mocker, raw_resp, expected, configuration):
     mocker.patch("DatadogCloudSIEM.IncidentsApi", return_value=DATADOG_API_CLIENT_MOCK)
     result = get_incident_command(configuration, args)
     with open(
-        os.path.join("test_data", "readable_outputs/list_incident_command_readable.md"),
+        os.path.join(os.path.dirname(__file__), "test_data", "readable_outputs/list_incident_command_readable.md"),
     ) as f:
         readable_output = f.read()
     assert isinstance(result, CommandResults)

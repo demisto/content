@@ -1,10 +1,10 @@
 from unittest.mock import patch
 import json
 import pytest
-
+from pathlib import Path
 
 def util_load_json(path: str):
-    with open(path, encoding='utf-8') as f:
+    with open(Path(__file__).parent / path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
