@@ -5,8 +5,8 @@ from XCloudAdditionalAlertInformationWidget import get_additonal_info
 
 class TestXCloudAdditionalAlertInformationWidget(unittest.TestCase):
 
-    @patch('demistomock.context', return_value={'Core': {'OriginalAlert': [{'event': {'alert_full_description':'New cloud alert',
-                                                                                      'detection_modules':'BIOC',
+    @patch('demistomock.context', return_value={'Core': {'OriginalAlert': [{'event': {'alert_full_description': 'New cloud alert',
+                                                                                      'detection_modules': 'BIOC',
                                                                                       'vendor': 'Vendor1',
                                                                                       'cloud_provider': 'AWS',
                                                                                       'log_name': 'SecurityLog',
@@ -20,8 +20,8 @@ class TestXCloudAdditionalAlertInformationWidget(unittest.TestCase):
                                                                                       'user_agent': 'Browser1'}}]}})
     def test_get_additonal_info(self, mock_context):
         # Test with a mock context containing one original alert
-        expected_result = [{'Alert Full Description':'New cloud alert',
-                            'Detection Module':'BIOC',
+        expected_result = [{'Alert Full Description': 'New cloud alert',
+                            'Detection Module': 'BIOC',
                             'Vendor': 'Vendor1',
                             'Provider': 'AWS',
                             'Log Name': 'SecurityLog',
