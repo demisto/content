@@ -587,7 +587,6 @@ def test_parse_incident_from_item_with_attachments():
 
 
 def test_parse_incident_from_item_with_eml_attachment_header_integrity(mocker):
-
     """
     Given:
         1. Message with EML attachment
