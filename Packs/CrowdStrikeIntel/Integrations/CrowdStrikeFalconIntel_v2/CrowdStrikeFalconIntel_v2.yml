@@ -454,7 +454,7 @@ script:
     - name: slug
       description: 'Search by ''slug'' or short descriptive name. For example, "anchor-panda".'
     - name: display_full_fields
-      description: Whether to return and display full data from CS API. (For example full description, which by default is short)
+      description: Whether to return and display full data from CS API. (For example full description, which by default is short).
       defaultValue: false
     outputs:
     - contextPath: FalconIntel.Actor.ImageURL
@@ -836,7 +836,7 @@ script:
     - contextPath: FalconIntel.Report.ShortDescription
       description: The short description of the report.
       type: String
-    - contextPath: FalconIntel.Report.ShortDescription
+    - contextPath: FalconIntel.Report.Description
       description: The full description of the report.
       type: String
     - contextPath: FalconIntel.Report.TargetIndustries
