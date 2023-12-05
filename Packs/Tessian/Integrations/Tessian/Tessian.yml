@@ -14,6 +14,7 @@ configuration:
 #   type: 0
 #   required: true
 - displaypassword: API Key
+  additionalinfo: The API Key to use to connect to the Tessian API. This can be found under "Security Integrations" in your Tessian Portal (/0/admin/integrations/api/tokens)
   name: api_key
   type: 9
   hiddenusername: true

@@ -18,20 +18,20 @@ Tessian is an email security platform that allows organizations to protect their
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### tessian-get-events
+### tessian-list-events
 
 ***
 This command allows you to pull Tessian event data into your XSOAR instance.
 
 #### Base Command
 
-`tessian-get-events`
+`tessian-list-events`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of events you would like Tessian to return per call. The maximum value is 100. | Optional | 
+| limit | The maximum number of events you would like Tessian to return per call. The maximum value is 100. The minimum value is 2. | Optional | 
 | after_checkpoint | If provided, this parameter must be set to the checkpoint returned by a previous request to this endpoint. When provided, events from the previous request will not be included in the response from this request. If the new checkpoint returned by this request is used in yet another call to this endpoint events from both previous requests will not be included in the response (and so on). By making a number of consecutive requests to this endpoint where the checkpoint from the previous request is provided, clients can get all events from the Tessian platform, even when there are many more than can be returned in a single request. This process is often referred to as pagination. If an event is updated, it will no longer be excluded from subsequent requests. | Optional | 
 | created_after | Only include events that were created after this time. For example, 2020-02-02T19:00:00Z. | Optional | 
 
@@ -44,7 +44,7 @@ This command allows you to pull Tessian event data into your XSOAR instance.
 | Tessian.EventsOutput.results | Unknown | The events returned by this request. | 
 
 #### Command example
-```!tessian-get-events limit=2 created_after="2020-02-02T19:00:00Z"```
+```!tessian-list-events limit=2```
 
 #### Context Example
 ```json
@@ -216,9 +216,16 @@ This command allows you to pull Tessian event data into your XSOAR instance.
 
 #### Human Readable Output
 
->### Tessian Events
->## Checkpoint: eyJzb3J0X3ZhbHVlcyI6IFsxNjkxNTkyNTc4Mjg4LCAiaW5ib3VuZC1lNWI1MmQyYWQ3ZGQ4MTdhMGRhYmVhZjgzMDhhYWMwMDhkZDY3ZDg1ZTQ3MTk1NDE4NTZmMzRkN2JlY2Y4ZTNlIl0sICJyZXZlcnNlIjogZmFsc2V9 | Additional Results: True
-># Number of events returned: 2
+># Tessian Events
+>## Checkpoint: eyJzb3J0X3ZhbHVlcyI6IFsxNjkxNTkyNTc4Mjg4LCAiaW5ib3VuZC1lNWI1MmQyYWQ3ZGQ4MTdhMGRhYmVhZjgzMDhhYWMwMDhkZDY3ZDg1ZTQ3MTk1NDE4NTZmMzRkN2JlY2Y4ZTNlIl0sICJyZXZlcnNlIjogZmFsc2V9
+>## Additional Results: True
+>### Number of events returned: 2
+> ### Errors
+>
+> | Event ID                           | Event Type                           | Event Created At                           | Event Updated At                           | Portal Link                           |
+> | ------------------------------------ | ------------------------------------ | ------------------------------------ | ------------------------------------ | ------------------------------------ |
+> | string | string | 2019-08-24T14:15:22Z | 2019-08-24T14:15:22Z | string |
+> | string | string | 2019-08-24T14:15:22Z | 2019-08-24T14:15:22Z | string |
 
 ### tessian-release-from-quarantine
 
@@ -258,7 +265,11 @@ This command allows you to release a quarantined emails associated with an event
                 {
                     "user_address": "test_user@example.com",
                     "error": null,
-                }
+                },
+                {
+                    "user_address": "test_user2@example.com",
+                    "error": "EMAIL_ALREADY_REMEDIATED",
+                },
             ]
         }
     }
@@ -267,9 +278,15 @@ This command allows you to release a quarantined emails associated with an event
 
 #### Human Readable Output
 
->### Release from Quarantine Action for Event ID: string
->## Number of Actions Attemped: 1
->## Number of Actions Succeeded: 1
+># Release from Quarantine Action
+>## Event ID: string
+>## Number of Release Actions Successfully Initiated: 1
+>## Number of Release Actions Failed: 1
+> ### Errors
+>
+> | Recipient                           | Error                           |
+> | ------------------------------------ | ------------------------------------ |
+> | test_user2@example.com | EMAIL_ALREADY_REMEDIATED |
 
 ### tessian-delete-from-quarantine
 
@@ -309,7 +326,11 @@ This command allows you to delete quarantined emails associated with an event fr
                 {
                     "user_address": "test_user@example.com",
                     "error": null,
-                }
+                },
+                {
+                    "user_address": "test_user2@example.com",
+                    "error": "EMAIL_ALREADY_REMEDIATED",
+                },
             ]
         }
     }
@@ -318,9 +339,15 @@ This command allows you to delete quarantined emails associated with an event fr
 
 #### Human Readable Output
 
->### Delete from Quarantine Action for Event ID: string
->## Number of Actions Attemped: 1
->## Number of Actions Succeeded: 1
+># Delete from Quarantine Action
+>## Event ID: string
+>## Number of Delete Actions Successfully Initiated: 1
+>## Number of Delete Actions Failed: 1
+> ### Errors
+>
+> | Recipient                           | Error                           |
+> | ------------------------------------ | ------------------------------------ |
+> | test_user2@example.com | EMAIL_ALREADY_REMEDIATED |
 
 ### tessian-delete-from-inbox
 
@@ -360,7 +387,11 @@ This command allows you to delete emails associated with a Tessian event from yo
                 {
                     "user_address": "test_user@example.com",
                     "error": null,
-                }
+                },
+                {
+                    "user_address": "test_user2@example.com",
+                    "error": "ALREADY_DELETED",
+                },
             ]
         }
     }
@@ -369,6 +400,12 @@ This command allows you to delete emails associated with a Tessian event from yo
 
 #### Human Readable Output
 
->### Delete from Inbox Action for Event ID: string
->## Number of Actions Attemped: 1
->## Number of Actions Succeeded: 1
+># Delete from Inbox Action
+>## Event ID: string
+>## Number of Delete Actions Successfully Initiated: 1
+>## Number of Delete Actions Failed: 1
+> ### Errors
+>
+> | Recipient                           | Error                           |
+> | ------------------------------------ | ------------------------------------ |
+> | test_user2@example.com | ALREADY_DELETED |

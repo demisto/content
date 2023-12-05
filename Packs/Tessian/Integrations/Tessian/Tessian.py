@@ -142,7 +142,7 @@ def release_from_quarantine_command(client: Client, args: dict[str, Any]) -> Com
     results = client.release_from_quarantine(event_id)
     results["event_id"] = event_id
 
-    markdown = '# Release from Quarantine Action for Event ID\n'
+    markdown = '# Release from Quarantine Action\n'
     markdown += f'## Event ID: {event_id}\n'
     markdown += f'## Number of Release Actions Successfully Initiated: {results.get("number_of_actions_succeeded")}\n'
     failure_count = results.get("number_of_actions_attempted", 0) - results.get("number_of_actions_succeeded", 0)
@@ -156,7 +156,7 @@ def release_from_quarantine_command(client: Client, args: dict[str, Any]) -> Com
             } for failure in results.get("results", []) if failure.get("error") is not None
         ]
         markdown += tableToMarkdown(
-            name="Results",
+            name="Errors",
             t=failures,
             headers=['Recipient', 'Error'],
         )
@@ -193,7 +193,7 @@ def delete_from_quarantine_command(client: Client, args: dict[str, Any]) -> Comm
             } for failure in results.get("results", []) if failure.get("error") is not None
         ]
         markdown += tableToMarkdown(
-            name="Results",
+            name="Errors",
             t=failures,
             headers=['Recipient', 'Error'],
         )
@@ -230,7 +230,7 @@ def delete_from_inbox_command(client: Client, args: dict[str, Any]) -> CommandRe
             } for failure in results.get("results", []) if failure.get("error") is not None
         ]
         markdown += tableToMarkdown(
-            name="Results",
+            name="Errors",
             t=failures,
             headers=['Recipient', 'Error'],
         )
