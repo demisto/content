@@ -104,7 +104,7 @@ echo "Getting content-test-conf and infra repositories with branch:${SEARCHED_BR
 
 if [ -d "./infra" ] ; then
   cd ./infra
-  git pull
+  git fetch -p -P
   cd ..
 else
   clone_repository_with_fallback_branch "${CI_SERVER_HOST}" "gitlab-ci-token" "${CI_JOB_TOKEN}" "${CI_PROJECT_NAMESPACE}/infra" "${SEARCHED_BRANCH_NAME}" 3 10 "master"
@@ -112,7 +112,7 @@ fi
 
 if [ -d "./content-test-conf" ] ; then
   cd ./content-test-conf
-  git pull
+  git fetch -p -P
   cd ..
 else
   clone_repository_with_fallback_branch "${CI_SERVER_HOST}" "gitlab-ci-token" "${CI_JOB_TOKEN}" "${CI_PROJECT_NAMESPACE}/content-test-conf" "${SEARCHED_BRANCH_NAME}" 3 10 "master"
