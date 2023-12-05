@@ -102,9 +102,12 @@ CI_SERVER_HOST=${CI_SERVER_HOST:-code.pan.run}
 
 echo "Getting content-test-conf and infra repositories with branch:${SEARCHED_BRANCH_NAME}"
 
+local host=$1
+local user=$2
+local token=$3
 if [ -d "./infra" ] ; then
   cd ./infra
-  git remote set-url origin https://${user_info}${host}/infra.git
+  git remote set-url origin https://${CI_JOB_TOKEN}${CI_SERVER_HOST}/infra.git
   git fetch -p -P
   cd ..
 else
@@ -114,7 +117,7 @@ fi
 
 if [ -d "./content-test-conf" ] ; then
   cd ./content-test-conf
-  git remote set-url origin https://${user_info}${host}/content-test-conf.git
+  git remote set-url origin https://${CI_JOB_TOKEN}${CI_SERVER_HOST}/content-test-conf.git
   git fetch -p -P
   cd ..
 else
