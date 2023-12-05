@@ -102,8 +102,21 @@ CI_SERVER_HOST=${CI_SERVER_HOST:-code.pan.run}
 
 echo "Getting content-test-conf and infra repositories with branch:${SEARCHED_BRANCH_NAME}, with fallback to master"
 
-clone_repository_with_fallback_branch "${CI_SERVER_HOST}" "gitlab-ci-token" "${CI_JOB_TOKEN}" "${CI_PROJECT_NAMESPACE}/content-test-conf" "${SEARCHED_BRANCH_NAME}" 3 10 "master"
-clone_repository_with_fallback_branch "${CI_SERVER_HOST}" "gitlab-ci-token" "${CI_JOB_TOKEN}" "${CI_PROJECT_NAMESPACE}/infra" "${SEARCHED_BRANCH_NAME}" 3 10 "master"
+if [ -d "./infra" ] ; then
+  cd ./infra
+  git pull
+  cd ..
+else
+  clone_repository_with_fallback_branch "${CI_SERVER_HOST}" "gitlab-ci-token" "${CI_JOB_TOKEN}" "${CI_PROJECT_NAMESPACE}/infra" "${SEARCHED_BRANCH_NAME}" 3 10 "master"
+fi
+
+if [ -d "./content-test-conf" ] ; then
+  cd ./content-test-conf
+  git pull
+  cd ..
+else
+  clone_repository_with_fallback_branch "${CI_SERVER_HOST}" "gitlab-ci-token" "${CI_JOB_TOKEN}" "${CI_PROJECT_NAMESPACE}/content-test-conf" "${SEARCHED_BRANCH_NAME}" 3 10 "master"
+fi
 
 echo "Successfully cloned content-test-conf and infra repositories"
 set -e
