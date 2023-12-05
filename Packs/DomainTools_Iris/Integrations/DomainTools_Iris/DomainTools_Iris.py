@@ -6,7 +6,7 @@ from CommonServerUserPython import *
 import urllib3
 import statistics
 from datetime import datetime
-from typing import Dict, Any, List
+from typing import Any
 from domaintools import API
 from domaintools import utils
 import urllib.parse
@@ -41,6 +41,48 @@ DOMAINTOOLS_IRIS_INDICATOR_TYPE = "DomainTools Iris"
 MONITOR_DOMAIN_IRIS_SEARCH_HASH_TIMESTAMP = "monitor_domain_iris_search_hash_last_run"
 MONITOR_DOMAIN_IRIS_TAG_TIMESTAMP = "monitor_domain_iris_tags_last_run"
 BATCH_SIZE = 200
+
+PROFILE_HEADERS = [
+    'Name',
+    'Last Enriched',
+    'Overall Risk Score',
+    'Proximity Risk Score',
+    'Threat Profile Risk Score',
+    'Threat Profile Threats',
+    'Threat Profile Evidence',
+    'Website Response Code',
+    'Tags',
+    'Registrant Name',
+    'Registrant Org',
+    'Registrant Contact',
+    'Registrar',
+    'SOA Email',
+    'SSL Certificate Email',
+    'Admin Contact',
+    'Technical Contact',
+    'Billing Contact',
+    'Email Domains',
+    'Additional Whois Emails',
+    'Domain Registrant',
+    'Registrar Status',
+    'Domain Status',
+    'Create Date',
+    'Expiration Date',
+    'IP Addresses',
+    'IP Country Code',
+    'Mail Servers',
+    'SPF Record',
+    'Name Servers',
+    'SSL Certificate',
+    'Redirects To',
+    'Redirect Domain',
+    'Google Adsense Tracking Code',
+    'Google Analytic Tracking Code',
+    'Website Title',
+    'First Seen',
+    'Server Type',
+    'Popularity'
+]
 
 ''' HELPER FUNCTIONS '''
 
@@ -202,9 +244,9 @@ def create_results(domain_result):
     Args:
         domain_result: DomainTools domain data
 
-    Returns: Dict {
+    Returns: dict {
         domain: <Common.Domain> - Domain indicator object with Iris results that map to Domain context
-        domaintools: <Dict> - DomainTools context with all Iris results
+        domaintools: <dict> - DomainTools context with all Iris results
     }
 
     """
@@ -435,50 +477,6 @@ def parsed_whois(domain):
     return http_request('parsed-whois', {'domain': domain})
 
 
-def profile_headers():
-    return [
-        'Name',
-        'Last Enriched',
-        'Overall Risk Score',
-        'Proximity Risk Score',
-        'Threat Profile Risk Score',
-        'Threat Profile Threats',
-        'Threat Profile Evidence',
-        'Website Response Code',
-        'Tags',
-        'Registrant Name',
-        'Registrant Org',
-        'Registrant Contact',
-        'Registrar',
-        'SOA Email',
-        'SSL Certificate Email',
-        'Admin Contact',
-        'Technical Contact',
-        'Billing Contact',
-        'Email Domains',
-        'Additional Whois Emails',
-        'Domain Registrant',
-        'Registrar Status',
-        'Domain Status',
-        'Create Date',
-        'Expiration Date',
-        'IP Addresses',
-        'IP Country Code',
-        'Mail Servers',
-        'SPF Record',
-        'Name Servers',
-        'SSL Certificate',
-        'Redirects To',
-        'Redirect Domain',
-        'Google Adsense Tracking Code',
-        'Google Analytic Tracking Code',
-        'Website Title',
-        'First Seen',
-        'Server Type',
-        'Popularity'
-    ]
-
-
 def add_key_to_json(cur, to_add):
     if not cur:
         return to_add
@@ -547,9 +545,8 @@ def format_enrich_output(result):
 
     demisto_title = f'DomainTools Iris Enrich for {domain}.'
     iris_title = 'Investigate [{0}](https://research.domaintools.com/iris/search/?q={0}) in Iris.'.format(domain)
-    headers = profile_headers()
     human_readable = tableToMarkdown(
-        f'{demisto_title} {iris_title}', human_readable_data, headers=headers
+        f'{demisto_title} {iris_title}', human_readable_data, headers=PROFILE_HEADERS
     )
 
     return (human_readable, indicators)
@@ -747,22 +744,21 @@ def format_investigate_output(result):
 
     demisto_title = f'DomainTools Iris Investigate for {domain}.'
     iris_title = f'Investigate [{domain}](https://research.domaintools.com/iris/search/?q={domain}) in Iris.'
-    headers = profile_headers()
     human_readable = tableToMarkdown(
-        f'{demisto_title} {iris_title}', human_readable_data, headers=headers
+        f'{demisto_title} {iris_title}', human_readable_data, headers=PROFILE_HEADERS
     )
 
     return (human_readable, indicators)
 
 
-def get_domain_risk_score_details(domain_risk: Dict[str, Any]) -> Dict[str, Any]:
+def get_domain_risk_score_details(domain_risk: dict[str, Any]) -> dict[str, Any]:
     """Get the domain risk score details on a given domain risk
 
     Args:
-        domain_risk (Dict[str, Any]): The domain risk attribute of a domain
+        domain_risk (dict[str, Any]): The domain risk attribute of a domain
 
     Returns:
-        Dict[str, Any]: The detailed risk scores.
+        dict[str, Any]: The detailed risk scores.
     """
     risk_scores = {
         "overall_risk_score": 0,
@@ -803,11 +799,11 @@ def get_domain_risk_score_details(domain_risk: Dict[str, Any]) -> Dict[str, Any]
     return risk_scores
 
 
-def format_attribute(attribute: List[dict], key: str = '') -> str:
+def format_attribute(attribute: list[dict], key: str = '') -> str:
     """Format list of attribute to str
 
     Args:
-        attribute (List[dict]): The attribute to format
+        attribute (list[dict]): The attribute to format
         key (str): The key to lookup, supports nested dict (e.g "host.value")
 
     Returns:
@@ -825,15 +821,15 @@ def format_attribute(attribute: List[dict], key: str = '') -> str:
     return ",".join(formatted_str) if formatted_str else ""
 
 
-def create_indicator_from_dt_domain(domain: Dict[str, Any], source: str) -> Dict[str, Any]:
+def create_indicator_from_dt_domain(domain: dict[str, Any], source: str) -> dict[str, Any]:
     """Create an Indicator object from the Domaintools Iris domain.
 
     Args:
-        domain (Dict[str, Any]): The domain to be created as indicator.
+        domain (dict[str, Any]): The domain to be created as indicator.
         source (str): The domain source.
 
     Returns:
-        Dict[str, Any]: The DomainTools Iris Indicator Attributes
+        dict[str, Any]: The DomainTools Iris Indicator Attributes
     """
     ip_addresses = domain.get("ip") or []
     ip_country_code = ip_addresses[0].get('country_code', {}).get('value') if len(ip_addresses) else ''
@@ -876,28 +872,28 @@ def create_indicator_from_dt_domain(domain: Dict[str, Any], source: str) -> Dict
         "fields": {
             "source": source,
             "sourcebrands": "DomainTools Iris",
-            "domainage": domain_age,
+            "domaintoolsirisdomainage": domain_age,
             "domainstatus": domain.get('active'),
             "firstseen": first_seen,
             "domaintoolsirisriskscore": domain.get("domain_risk", {}).get("risk_score"),
             "domaintoolsirisfirstseen": first_seen,
             "domaintoolsiristags": format_attribute(domain.get("tags", []), key="label"),
-            "additionalwhoisemails": format_attribute(domain.get("additional_whois_email", []), key="value"),
-            "emaildomains": format_attribute(domain.get("email_domain", []), key="value"),
+            "domaintoolsirisadditionalwhoisemails": format_attribute(domain.get("additional_whois_email", []), key="value"),
+            "domaintoolsirisemaildomains": format_attribute(domain.get("email_domain", []), key="value"),
             "nameservers": format_attribute(domain.get("name_server", []), key="host.value"),
-            "ipaddresses": format_attribute(domain.get("ip", []), key="address.value"),
-            "mailservers": format_attribute(domain.get("mx", []), key="domain.value"),
-            "ipcountrycode": ip_country_code,
-            "registrantorg": domain.get("registrant_org", {}).get("value") or "",
+            "domaintoolsirisipaddresses": format_attribute(domain.get("ip", []), key="address.value"),
+            "domaintoolsirismailservers": format_attribute(domain.get("mx", []), key="domain.value"),
+            "domaintoolsirisipcountrycode": ip_country_code,
+            "domaintoolsirisregistrantorg": domain.get("registrant_org", {}).get("value") or "",
             "registrantname": domain.get("registrant_name", {}).get("value") or "",
-            "soaemail": format_attribute(domain.get("soa_email", []), key="value"),
+            "domaintoolsirissoaemail": format_attribute(domain.get("soa_email", []), key="value"),
             "expirationdate": domain.get("expiration_date", {}).get("value"),
             "domaintoolsirisriskscorecomponents": riskscore_component_mapping
         }
     }
 
 
-def fetch_domains_from_dt_api(search_type: str, search_value: str) -> List[Dict[str, Any]]:
+def fetch_domains_from_dt_api(search_type: str, search_value: str) -> list[dict[str, Any]]:
     """Fetch Domains from Domaintools API
 
     Args:
@@ -905,7 +901,7 @@ def fetch_domains_from_dt_api(search_type: str, search_value: str) -> List[Dict[
         search_value (str): The search value
 
     Returns:
-        List[Dict[str, Any]]: DomainTools Iris response
+        list[dict[str, Any]]: DomainTools Iris response
     """
     search_data = {search_type: search_value}
     dt_query = domain_pivot(search_data)
@@ -918,18 +914,18 @@ def fetch_domains_from_dt_api(search_type: str, search_value: str) -> List[Dict[
     return dt_results
 
 
-def fetch_and_process_domains(iris_search_hash: Dict[str, Any], iris_tags: Dict[str, Any]) -> None:
+def fetch_and_process_domains(iris_search_hash: dict[str, Any], iris_tags: dict[str, Any]) -> None:
     """
     Fetch and Process Domaintools Domain by given search hash or iris tags.
     Creates incidents/indicators in XSOAR.
 
     Args:
-        iris_search_hash (Dict[str, str]): The iris_search_hash key value attribute (keys: search_hash, import_only)
-        iris_tags (Dict[str, str]): The iris_tags key value attribute (keys: tags, import_only)
+        iris_search_hash (dict[str, str]): The iris_search_hash key value attribute (keys: search_hash, import_only)
+        iris_tags (dict[str, str]): The iris_tags key value attribute (keys: tags, import_only)
     """
 
     def process_domains(
-        domains_list: list[Dict[str, Any]] = [],
+        domains_list: list[dict[str, Any]] = [],
         import_only: bool = True,
         incident_name: str = "",
         source: str = ""
@@ -964,9 +960,9 @@ def fetch_and_process_domains(iris_search_hash: Dict[str, Any], iris_tags: Dict[
 
         return last_run
 
-    incidents: List[Any] = []
-    dt_iris_search_hash_result: List[Any] = []
-    dt_iris_tags_result: List[Any] = []
+    incidents: list[Any] = []
+    dt_iris_search_hash_result: list[Any] = []
+    dt_iris_tags_result: list[Any] = []
 
     # DT Iris Tags Results
     if iris_tags["tags"]:
@@ -1022,7 +1018,7 @@ def domain_command():
     domain_list = domain.split(",")
     domain_chunks = chunks(domain_list, 100)
     include_context = argToBoolean(demisto.args().get('include_context', True))
-    command_results_list: List[CommandResults] = []
+    command_results_list: list[CommandResults] = []
 
     for chunk in domain_chunks:
         response = domain_investigate(','.join(chunk))
@@ -1063,7 +1059,7 @@ def domain_enrich_command():
     domain_list = domain.split(",")
     domain_chunks = chunks(domain_list, 100)
     include_context = argToBoolean(demisto.args().get('include_context', True))
-    command_results_list: List[CommandResults] = []
+    command_results_list: list[CommandResults] = []
 
     for chunk in domain_chunks:
         response = domain_enrich(','.join(chunk))
@@ -1225,7 +1221,7 @@ def threat_profile_command():
                'Threat Profile Spam Risk Score']
     demisto_title = f'DomainTools Threat Profile for {domain}.'
     iris_title = f'Investigate [{domain}](https://research.domaintools.com/iris/search/?q={domain}) in Iris.'
-    human_readable = tableToMarkdown(f'{demisto_title} {iris_title}'),
+    human_readable = tableToMarkdown(f'{demisto_title} {iris_title}',
                                      human_readable_data,
                                      headers=headers)
 
@@ -1247,7 +1243,7 @@ def domain_pivot_command():
     Command to get list of domains that share connected infrastructure iris-investigate API endpoint.
     e.g. !domaintoolsiris-pivot ip=1.1.1.1
     """
-    search_data = {}  # type: Dict[Any, Any]
+    search_data = {}  # type: dict[Any, Any]
     search_type = ''
     search_value = ''
     available_pivots = {
@@ -1347,9 +1343,9 @@ def domain_pivot_command():
 
 
 def to_camel_case(value):
-    str = f' {value.strip()}'
-    str = re.sub(r' ([a-z,A-Z])', lambda g: g.group(1).upper(), str)
-    return str
+    result = f' {value.strip()}'
+    result = re.sub(r' ([a-z,A-Z])', lambda g: g.group(1).upper(), result)
+    return result
 
 
 def whois_history_command():
@@ -1566,11 +1562,9 @@ def test_module():
     """
     Tests the API key for a user.
     """
-    try:
-        http_request('iris-investigate', {'domains': 'demisto.com'})
-        demisto.results('ok')
-    except Exception:
-        raise
+
+    http_request('iris-investigate', {'domains': 'demisto.com'})
+    demisto.results('ok')
 
 
 def fetch_domains():
@@ -1595,8 +1589,6 @@ def fetch_domains():
         iris_tags=iris_tags_params
     )
 
-    return True
-
 
 def main():
     """
@@ -1615,13 +1607,13 @@ def main():
             domain_pivot_command()
         elif demisto.command() == 'domaintoolsiris-enrich':
             domain_enrich_command()
-        elif demisto.command() == 'whoisHistory':
+        elif demisto.command() == 'domaintools-whois-history':
             whois_history_command()
-        elif demisto.command() == 'hostingHistory':
+        elif demisto.command() == 'domaintools-hosting-history':
             hosting_history_command()
-        elif demisto.command() == 'reverseWhois':
+        elif demisto.command() == 'domaintools-reverse-whois':
             reverse_whois_command()
-        elif demisto.command() == 'whois':
+        elif demisto.command() == 'domaintools-whois':
             parsed_whois_command()
         elif demisto.command() == 'fetch-incidents':
             fetch_domains()

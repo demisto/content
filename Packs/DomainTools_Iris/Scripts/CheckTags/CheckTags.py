@@ -1,10 +1,9 @@
 from CommonServerPython import *
 
-from typing import Dict, Any
-import traceback
+from typing import Any
 
 
-def check_tags(args: Dict[str, Any]) -> CommandResults:
+def check_tags(args: dict[str, Any]) -> CommandResults:
     incident_id = args['incident_id']
     domain_tags = args['domain_tags']
     domain_tags_set = set([domain_tag['label'] for domain_tag in domain_tags])

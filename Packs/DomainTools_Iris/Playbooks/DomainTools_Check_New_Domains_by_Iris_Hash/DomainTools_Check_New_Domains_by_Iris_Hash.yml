@@ -266,7 +266,7 @@ inputs:
 - key: iris_search_hash
   value: {}
   required: true
-  description: 'The "search hash" that has a built in "first seen within" parameter. -> Enter an Iris Investigate Search Hash (From the Iris Investigate UI: Advanced -> Import/Export Search). This playbook works best when you include a filter for "first seen within X [days/hours]" to monitor for new domains.'
+  description: 'The "search hash" that has a built in "first seen within" parameter. -> Enter an Iris Investigate Search Hash (From the Iris Investigate UI: Advanced -> Import/Export Search). This playbook works best when you include a filter for "first seen within X [days/hours]" to monitor for new domains. Example search hash: U2FsdGVkX19fiQpXzJOAPTExIacKV47T5HBy/Tx7PazRX1FV8IfPydNPYYLkTGXiwgFodra+U/WdNXHFnnxfgaB0NV0e0AZeFPyh4lXvKMNCuh1qEwlUNt2T+NTyOHm0gz03DwYZ/bZwP3A0CpROExew5y836f44l10gQQCDGqz+mtc7PsvpZJr9+AyNdH1C16d6h0ULI+/y7NGLlXJqlOPy31/FXZbfkmLSsizmfDTssd6C8miTYREzMkYrHehDPBm2djMsD8jZi6U3wca28omBMLqx+GiR3GNsOHbztolYvCqxn20Fi0QJi3ULikMW'
   playbookInputQuery:
 - key: should_wait_for_analyst_review
   value:

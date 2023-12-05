@@ -1,7 +1,6 @@
 from CommonServerPython import *
-from typing import Dict, Any, List
+from typing import Any
 from enum import Enum
-import traceback
 
 
 class ReputationEnum(Enum):
@@ -32,11 +31,11 @@ def find_indicator_reputation(domain_age: int, proximity_score: int, threat_prof
         return ReputationEnum.GOOD
 
 
-def format_attribute(attribute: List[dict], key: str = '') -> str:
+def format_attribute(attribute: list[dict], key: str = '') -> str:
     """Format list of attribute to str
 
     Args:
-        attribute (List[dict]): The attribute to format
+        attribute (list[dict]): The attribute to format
         key (str): The key to lookup, supports nested dict (e.g "host.value")
 
     Returns:
@@ -54,7 +53,7 @@ def format_attribute(attribute: List[dict], key: str = '') -> str:
     return ",".join(formatted_str) if formatted_str else ""
 
 
-def set_indicator_table_data(args: Dict[str, Any]) -> CommandResults:
+def set_indicator_table_data(args: dict[str, Any]) -> CommandResults:
     human_readable_str = "No context data for domain."
     required_keys = ("Name", "Hosting", "Identity", "Analytics")
 
@@ -98,22 +97,22 @@ def set_indicator_table_data(args: Dict[str, Any]) -> CommandResults:
             "source": "DomainTools Iris",
             "reputation": reputation.value,
             "seenNow": "true",
-            "domainage": domain_age,
+            "domaintoolsirisdomainage": domain_age,
             "firstseen": first_seen,
             "domaintoolsirisriskscore": domaintools_analytics_data.get("OverallRiskScore"),
             "domaintoolsirisfirstseen": first_seen,
             "domaintoolsiristags": format_attribute(domaintools_analytics_data.get("Tags"), key="label"),
-            "additionalwhoisemails": format_attribute(domaintools_identity_data.get(
+            "domaintoolsirisadditionalwhoisemails": format_attribute(domaintools_identity_data.get(
                 "AdditionalWhoisEmails",
             ), key="value"),
             "emaildomains": format_attribute(domaintools_identity_data.get("EmailDomains")),
             "nameservers": format_attribute(domaintools_hosting_data.get("NameServers"), key="host.value"),
-            "ipaddresses": format_attribute(domaintools_hosting_data.get("IPAddresses"), key="address.value"),
-            "mailservers": format_attribute(domaintools_hosting_data.get("MailServers"), key="domain.value"),
-            "ipcountrycode": domaintools_hosting_data.get("IPCountryCode"),
-            "registrantorg": domaintools_identity_data.get("RegistrantOrg"),
+            "domaintoolsirisipaddresses": format_attribute(domaintools_hosting_data.get("IPAddresses"), key="address.value"),
+            "domaintoolsirismailservers": format_attribute(domaintools_hosting_data.get("MailServers"), key="domain.value"),
+            "domaintoolsirisipcountrycode": domaintools_hosting_data.get("IPCountryCode"),
+            "domaintoolsirisregistrantorg": domaintools_identity_data.get("RegistrantOrg"),
             "registrantname": domaintools_identity_data.get("RegistrantName"),
-            "soaemail": format_attribute(domaintools_identity_data.get("SOAEmail"), key="value"),
+            "domaintoolsirissoaemail": format_attribute(domaintools_identity_data.get("SOAEmail"), key="value"),
             "expirationdate": domaintools_identity_data.get("Registration", {}).get("ExpirationDate"),
             "domaintoolsirisriskscorecomponents": riskscore_component_mapping
         }

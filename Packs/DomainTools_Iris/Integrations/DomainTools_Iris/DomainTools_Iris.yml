@@ -1997,7 +1997,7 @@ script:
     deprecated: false
     description: The DomainTools Whois History API endpoint returns up to 100 historical Whois records associated with a domain name.
     execution: false
-    name: whoisHistory
+    name: domaintools-whois-history
     outputs:
     - contextPath: DomainTools.History.Value
       description: Name of domain.
@@ -2013,7 +2013,7 @@ script:
     deprecated: false
     description: Hosting History will list IP address, name server and registrar history.
     execution: false
-    name: hostingHistory
+    name: domaintools-hosting-history
     outputs:
     - contextPath: DomainTools.History.Value
       description: Name of domain.
@@ -2038,7 +2038,7 @@ script:
       - "true"
       - "false"
     description: The DomainTools Reverse Whois API provides a list of domain names that share the same Registrant Information. You can enter terms that describe a domain owner, like an email address or a company name, and you’ll get a list of domain names that have your search terms listed in the Whois record.
-    name: reverseWhois
+    name: domaintools-reverse-whois
     outputs:
     - contextPath: DomainTools.ReverseWhois.Value
       description: Search term to reverse whois lookup on.
@@ -2050,7 +2050,7 @@ script:
       name: query
       required: true
     description: The DomainTools Parsed Whois API provides parsed information extracted from the raw Whois record. The API is optimized to quickly retrieve the Whois record, group important data together and return a well-structured format. The Parsed Whois API is ideal for anyone wishing to search for, index, or cross-reference data from one or multiple Whois records.
-    name: whois
+    name: domaintools-whois
     outputs:
     - contextPath: Domain.Name
       description: Requested domain name.
@@ -2058,7 +2058,7 @@ script:
       description: Parsed Whois data.
     - contextPath: Domain.WhoisRecords
       description: Full Whois record.
-  dockerimage: demisto/vendors-sdk:1.0.0.80778
+  dockerimage: demisto/vendors-sdk:1.0.0.82771
   runonce: false
   script: '-'
   type: python

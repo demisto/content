@@ -1,6 +1,6 @@
 ## DomainTools Associate Indicator to Incident
 
-This playbooks automatically associate additional indicators from the incident context. (Key: `incident.additionalindicators`)
+This playbook calls the AssociateIndicatorsToIncident Script to Associate an Indicator to its the current incident created. Checks for additionalindicators in the customFields of an incident.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, lists and scripts.

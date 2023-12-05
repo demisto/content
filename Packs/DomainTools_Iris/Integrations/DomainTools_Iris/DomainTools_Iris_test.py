@@ -89,7 +89,7 @@ def test_pivot_command(mocker):
 
 
 def test_whois_history_command(mocker):
-    mocker.patch.object(demisto, "command", return_value="whoisHistory")
+    mocker.patch.object(demisto, "command", return_value="domaintools-whois-history")
     mocker.patch.object(demisto, "args", return_value={"domain": "domaintools.com"})
     mocker.patch(
         'DomainTools_Iris.whois_history',
@@ -104,7 +104,7 @@ def test_whois_history_command(mocker):
 
 
 def test_hosting_history_command(mocker):
-    mocker.patch.object(demisto, "command", return_value="hostingHistory")
+    mocker.patch.object(demisto, "command", return_value="domaintools-hosting-history")
     mocker.patch.object(demisto, "args", return_value={"domain": "domaintools.com"})
     mocker.patch(
         'DomainTools_Iris.hosting_history',
@@ -119,7 +119,7 @@ def test_hosting_history_command(mocker):
 
 
 def test_reverse_whois_command(mocker):
-    mocker.patch.object(demisto, "command", return_value="reverseWhois")
+    mocker.patch.object(demisto, "command", return_value="domaintools-reverse-whois")
     mocker.patch.object(demisto, "args", return_value={"terms": "domaintools"})
     mocker.patch('DomainTools_Iris.reverse_whois', return_value=mock_response.reverse_whois_response)
 
@@ -130,7 +130,7 @@ def test_reverse_whois_command(mocker):
 
 
 def test_whois_command(mocker):
-    mocker.patch.object(demisto, "command", return_value="whois")
+    mocker.patch.object(demisto, "command", return_value="domaintools-whois")
     mocker.patch.object(demisto, "args", return_value={"query": "domaintools.com"})
     mocker.patch('DomainTools_Iris.parsed_whois', return_value=mock_response.parsed_whois_response)
 

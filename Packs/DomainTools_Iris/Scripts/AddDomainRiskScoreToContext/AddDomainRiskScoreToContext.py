@@ -1,12 +1,11 @@
 from CommonServerPython import *
-from typing import Dict, Any
-import traceback
+from typing import Any
 
 
 ''' COMMAND FUNCTION '''
 
 
-def add_domain_riskscore_to_context(args: Dict[str, Any]) -> CommandResults:
+def add_domain_riskscore_to_context(args: dict[str, Any]) -> CommandResults:
 
     domaintools_data = args['domaintools_data']
 
