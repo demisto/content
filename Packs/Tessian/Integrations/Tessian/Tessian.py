@@ -142,9 +142,24 @@ def release_from_quarantine_command(client: Client, args: dict[str, Any]) -> Com
     results = client.release_from_quarantine(event_id)
     results["event_id"] = event_id
 
-    markdown = f'# Release from Quarantine Action for Event ID: {event_id}\n'
-    markdown += f'## Number of Release Actions Attemped: {results.get("number_of_actions_attempted")}\n'
+    markdown = '# Release from Quarantine Action for Event ID\n'
+    markdown += f'## Event ID: {event_id}\n'
     markdown += f'## Number of Release Actions Successfully Initiated: {results.get("number_of_actions_succeeded")}\n'
+    failure_count = results.get("number_of_actions_attempted", 0) - results.get("number_of_actions_succeeded", 0)
+    markdown += f'## Number of Release Actions Failed: {failure_count}\n'
+
+    if results.get("number_of_actions_attempted") != results.get("number_of_actions_succeeded"):
+        failures = [
+            {
+                "Recipient": failure.get("user_address"),
+                "Error": failure.get("error")
+            } for failure in results.get("results", []) if failure.get("error") is not None
+        ]
+        markdown += tableToMarkdown(
+            name="Results",
+            t=failures,
+            headers=['Recipient', 'Error'],
+        )
 
     return CommandResults(
         outputs_prefix='Tessian.ReleaseFromQuarantineOutput',
@@ -164,9 +179,25 @@ def delete_from_quarantine_command(client: Client, args: dict[str, Any]) -> Comm
     results = client.delete_from_quarantine(event_id)
     results["event_id"] = event_id
 
-    markdown = f'# Delete from Quarantine Action for Event ID: {event_id}\n'
-    markdown += f'## Number of Delete Actions Attemped: {results.get("number_of_actions_attempted")}\n'
+    markdown = '# Delete from Quarantine Action\n'
+    markdown += f'## Event ID: {event_id}\n'
     markdown += f'## Number of Delete Actions Successfully Initiated: {results.get("number_of_actions_succeeded")}\n'
+    failure_count = results.get("number_of_actions_attempted", 0) - results.get("number_of_actions_succeeded", 0)
+    markdown += f'## Number of Delete Actions Failed: {failure_count}\n'
+
+    if results.get("number_of_actions_attempted") != results.get("number_of_actions_succeeded"):
+        failures = [
+            {
+                "Recipient": failure.get("user_address"),
+                "Error": failure.get("error")
+            } for failure in results.get("results", []) if failure.get("error") is not None
+        ]
+        markdown += tableToMarkdown(
+            name="Results",
+            t=failures,
+            headers=['Recipient', 'Error'],
+        )
+
     return CommandResults(
         outputs_prefix='Tessian.DeleteFromQuarantineOutput',
         outputs_key_field='event_id',
@@ -185,9 +216,24 @@ def delete_from_inbox_command(client: Client, args: dict[str, Any]) -> CommandRe
     results = client.delete_from_inbox(event_id)
     results["event_id"] = event_id
 
-    markdown = f'# Delete from Inbox Action for Event ID: {event_id}\n'
-    markdown += f'## Number of Delete Actions Attemped: {results.get("number_of_actions_attempted")}\n'
+    markdown = '# Delete from Inbox Action\n'
+    markdown += f'## Event ID: {event_id}\n'
     markdown += f'## Number of Delete Actions Successfully Initiated: {results.get("number_of_actions_succeeded")}\n'
+    failure_count = results.get("number_of_actions_attempted", 0) - results.get("number_of_actions_succeeded", 0)
+    markdown += f'## Number of Delete Actions Failed: {failure_count}\n'
+
+    if results.get("number_of_actions_attempted") != results.get("number_of_actions_succeeded"):
+        failures = [
+            {
+                "Recipient": failure.get("user_address"),
+                "Error": failure.get("error")
+            } for failure in results.get("results", []) if failure.get("error") is not None
+        ]
+        markdown += tableToMarkdown(
+            name="Results",
+            t=failures,
+            headers=['Recipient', 'Error'],
+        )
 
     return CommandResults(
         outputs_prefix='Tessian.DeleteFromInboxOutput',
