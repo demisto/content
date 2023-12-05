@@ -34,6 +34,9 @@ args:
   description: 'Keys to retrieve from nested dictionaries. Can be used only when the unpack_nested_elements argument is set to false. Keys will not be columns correlated. Default is all keys.'
   isArray: true
   name: keys_from_nested
+- description: The incident ID.
+  name: incident_id
+  required: false
 comment: Creates a Grid table from items or key-value pairs.
 commonfields:
   id: SetGridField
