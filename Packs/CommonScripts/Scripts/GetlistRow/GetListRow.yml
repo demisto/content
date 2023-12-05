@@ -42,7 +42,7 @@ script: '-'
 subtype: python3
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.12.65389
+dockerimage: demisto/python3:3.10.13.80593
 runas: DBotWeakRole
 tests:
 - No tests (auto formatted)
