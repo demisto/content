@@ -5,8 +5,7 @@ import os
 import pytest
 from ReadPDFFileV2 import PdfInvalidCredentialsException, PdfPermissionsException
 
-CWD = os.getcwd() if os.getcwd().endswith('test_data') else f'{os.getcwd()}/test_data'
-
+CWD = os.path.join(os.path.dirname(__file__), "test_data")
 
 def open_html_file(file):
     with open(file, encoding='utf-8') as f:

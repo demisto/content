@@ -1,7 +1,7 @@
 import requests
 import pytest
 import json
-
+from pathlib import Path
 import demistomock as demisto
 
 mock_response = ""
@@ -9,7 +9,7 @@ mocked_get_token_response = """{"access_token": "fababfafbh"}"""
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with open(Path(__file__).parent / path, encoding='utf-8') as f:
         return f.read()
 
 

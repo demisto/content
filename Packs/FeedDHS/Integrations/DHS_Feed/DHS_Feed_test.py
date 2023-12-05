@@ -1,7 +1,7 @@
 import os
 import pytest
 from DHS_Feed import *
-
+from pathlib import Path
 
 def compare(object_a, object_b):
     if isinstance(object_a, List):
@@ -182,9 +182,8 @@ class TestIndicators:
 
     @staticmethod
     def read_json(path):
-        with open(path) as json_file:
-            json_file = json_file.read()
-        return json.loads(json_file)
+        with open(Path(__file__).parent / path) as json_file:
+            return json.load(json_file)
 
     @staticmethod
     def get_stix_header(block):

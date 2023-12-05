@@ -1,7 +1,7 @@
 import os
 import json
 import pytest
-
+from pathlib import Path
 from FeedTAXII import TAXIIClient, fetch_indicators_command
 
 """ helper functions """
@@ -17,7 +17,7 @@ def get_files_in_dir(mypath, only_with_ext=None):
 
 
 class TestStixDecode:
-    FILE_PATH = 'FeedTAXII_test/StixDecodeTest'
+    FILE_PATH = str(Path(__file__).parent / 'FeedTAXII_test/StixDecodeTest')
 
     def test_decode(self):
         """Test decode on all files"""

@@ -214,7 +214,7 @@ def test_main(mocker):
     )
     mock_file = {
         'id': '7@47',
-        'path': 'test_data/automation-NewBranchName.yml',
+        'path': str(Path(__file__).parent / 'test_data/automation-NewBranchName.yml'),
         'name': 'automation-NewBranchName.yml',
     }
     mocker.patch.object(demisto, 'getFilePath', return_value=mock_file)

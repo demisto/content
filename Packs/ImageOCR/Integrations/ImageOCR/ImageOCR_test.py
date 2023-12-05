@@ -3,6 +3,7 @@ import pytest
 import demistomock as demisto
 from CommonServerPython import entryTypes
 from ImageOCR import list_languages_command, extract_text, run_test_module, main
+from pathlib import Path
 
 RETURN_ERROR_TARGET = 'ImageOCR.return_error'
 
@@ -41,7 +42,7 @@ def test_extract_text(image, expected_text, langs):
     Then:
      - The expected text is extracted
     """
-    res = extract_text('test_data/' + image, langs)
+    res = extract_text(str(Path(__file__). parent / 'test_data' / image), langs)
     assert expected_text in res
 
 
@@ -58,7 +59,7 @@ def test_extract_text_command(mocker):
      - The Human Readable and context are stored with the proper values
     """
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
-    mocker.patch.object(demisto, 'getFilePath', return_value={"path": "test_data/irs.png"})
+    mocker.patch.object(demisto, 'getFilePath', return_value={"path": str(Path(__file__).parent / "test_data/irs.png")})
     mocker.patch.object(demisto, 'command', return_value='image-ocr-extract-text')
     mocker.patch.object(demisto, 'results')
     # validate our mocks are good
@@ -86,7 +87,7 @@ def test_extract_text_command_bad(mocker):
      - A proper error is raised
     """
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test', 'langs': 'thisis,bad'})
-    mocker.patch.object(demisto, 'getFilePath', return_value={"path": "test_data/irs.png"})
+    mocker.patch.object(demisto, 'getFilePath', return_value={"path": str(Path(__file__).parent / "test_data/irs.png")})
     mocker.patch.object(demisto, 'command', return_value='image-ocr-extract-text')
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
     # validate our mocks are good

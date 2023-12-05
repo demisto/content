@@ -1,10 +1,10 @@
 import demistomock as demisto
 import pytest
-
+from pathlib import Path
 from GetIdsFromCustomContent import get_included_ids_command
 
 
-EXAMPLE_CUSTOM_CONTENT_PATH = 'test_data/content-bundle-for-test.tar.gz'
+EXAMPLE_CUSTOM_CONTENT_PATH = str(Path(__file__).parent / 'test_data/content-bundle-for-test.tar.gz')
 EXAMPLE_CUSTOM_CONTENT_NAME = 'content-bundle-for-test.tar.gz'
 IDS_IN_EXAMPLE_CONFIG = {
     'included_ids': {

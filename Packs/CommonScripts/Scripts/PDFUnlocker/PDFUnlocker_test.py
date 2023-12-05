@@ -1,5 +1,5 @@
 import demistomock as demisto
-
+from pathlib import Path
 
 class TestPDFUnlocker:
     @staticmethod
@@ -36,7 +36,7 @@ class TestPDFUnlocker:
     @staticmethod
     def create_file_object(file_path):
         return {
-            "path": file_path,
+            "path": str(Path(__file__).parent / file_path),
             "name": file_path.split("/")[-1]
         }
 

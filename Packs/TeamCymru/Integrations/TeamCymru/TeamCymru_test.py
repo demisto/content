@@ -5,7 +5,7 @@ import demistomock as demisto
 import pytest
 import TeamCymru
 from TeamCymru import CymruClient
-
+from pathlib import Path
 
 '''GLOBALS'''
 
@@ -27,7 +27,7 @@ DEFAULT_RELIABILITY = 'B - Usually reliable'
 
 
 def load_test_data(json_path):
-    with open(json_path) as f:
+    with open(Path(__file__).parent / json_path) as f:
         return json.load(f)
 
 

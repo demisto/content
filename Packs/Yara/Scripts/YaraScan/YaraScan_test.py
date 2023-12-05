@@ -2,7 +2,7 @@
 from YaraScan import main
 import demistomock as demisto
 from CommonServerPython import entryTypes
-
+import os
 
 def test_main(mocker):
     rule = '''rule PE_file_identifier
@@ -25,7 +25,7 @@ def test_main(mocker):
                 {
                     'Type': entryTypes['note'],
                     'Contents': {
-                        'path': 'test_data/unzip.exe',
+                        'path': os.path.dirname(__file__) + '/test_data/unzip.exe',
                         'name': 'unzip.exe',
                         'ID': 'testfileid'
                     }

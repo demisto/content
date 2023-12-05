@@ -2,15 +2,15 @@ import os
 import json
 from StringSifter import *
 import pytest
-
+from pathlib import Path
 
 def open_file(path):
-    with open(path) as file:
+    with open(Path(__file__).parent / path) as file:
         return file.read()
 
 
 def open_json(path):
-    with open(path) as json_file:
+    with open(Path(__file__).parent / path) as json_file:
         return json.load(json_file)
 
 
