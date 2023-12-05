@@ -574,6 +574,7 @@ def test_get_kv_store_config(fields, expected_output, mocker):
     expected_output = f'{START_OUTPUT}{expected_output}'
     assert output == expected_output
 
+
 class TestFetchForLateIndexedEvents:
     notable1 = {'status': '5', 'event_id': 'id_1'}
     notable2 = {'status': '6', 'event_id': 'id_2'}
@@ -607,7 +608,7 @@ class TestFetchForLateIndexedEvents:
         from SplunkPy import UserMappingObject
         mocker.patch.object(demisto, 'setLastRun')
         mock_last_run = {'time': '2018-10-24T14:13:20', 'late_indexed_pagination': True,
-                        'found_incidents_ids': {'1234': 1700497516, '5678': 1700497516}}
+                         'found_incidents_ids': {'1234': 1700497516, '5678': 1700497516}}
         mock_params = {'fetchQuery': 'something'}
         mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
         mocker.patch('demistomock.params', return_value=mock_params)
@@ -621,6 +622,7 @@ class TestFetchForLateIndexedEvents:
 
 
 # If (num_of_dropped == FETCH_LIMIT and '`notable`' in fetch_query), then late_indexed_pagination should be set to True
+
     def test_first_condition_for_late_indexed_pagination(self, mocker: MockerFixture, monkeypatch: pytest.MonkeyPatch):
         """
         Given
@@ -639,12 +641,12 @@ class TestFetchForLateIndexedEvents:
         monkeypatch.setattr(splunk, 'FETCH_LIMIT', 2)
         mocker.patch.object(demisto, 'setLastRun')
         mock_last_run = {'time': '2018-10-24T14:13:20',
-                        'found_incidents_ids': {'id_1': 1700497516, 'id_2': 1700497516}}
+                         'found_incidents_ids': {'id_1': 1700497516, 'id_2': 1700497516}}
         mock_params = {'fetchQuery': '`notable` is cool', 'fetch_limit': 2}
         mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
         mocker.patch('demistomock.params', return_value=mock_params)
         mocker.patch('splunklib.results.JSONResultsReader', return_value=[self.notable1,
-                                                                        self.notable2])
+                                                                          self.notable2])
         set_last_run_mocker = mocker.patch('demistomock.setLastRun')
         service = self.Service()
         mapper = UserMappingObject(service, False)
@@ -670,17 +672,18 @@ class TestFetchForLateIndexedEvents:
         monkeypatch.setattr(splunk, 'FETCH_LIMIT', 2)
         mocker.patch.object(demisto, 'setLastRun')
         mock_last_run = {'time': '2018-10-24T14:13:20', 'late_indexed_pagination': True,
-                        'found_incidents_ids': {'1234': 1700497516, '5678': 1700497516}}
+                         'found_incidents_ids': {'1234': 1700497516, '5678': 1700497516}}
         mock_params = {'fetchQuery': '`notable` is cool', 'fetch_limit': 2}
         mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
         mocker.patch('demistomock.params', return_value=mock_params)
         mocker.patch('splunklib.results.JSONResultsReader', return_value=[self.notable1,
-                                                                        self.notable2])
+                                                                          self.notable2])
         set_last_run_mocker = mocker.patch('demistomock.setLastRun')
         service = self.Service()
         mapper = UserMappingObject(service, False)
         splunk.fetch_incidents(service, mapper, 'from_xsoar', 'from_splunk')
         assert set_last_run_mocker.call_args_list[0][0][0]['late_indexed_pagination'] is True
+
 
 def test_fetch_incidents(mocker):
     """
