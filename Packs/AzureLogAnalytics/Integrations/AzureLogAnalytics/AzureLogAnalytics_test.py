@@ -21,7 +21,7 @@ from AzureLogAnalytics import (
 
 
 def util_load_json(path: str) -> dict:
-    return json.loads(Path(path).read_text())
+    return json.loads((Path(__file__).parent / path).read_text())
 
 
 MOCKED_SAVED_SEARCHES_OUTPUT = {

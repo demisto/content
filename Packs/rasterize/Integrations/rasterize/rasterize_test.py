@@ -112,13 +112,13 @@ def test_merge_options():
 
 @pytest.mark.parametrize("r_mode", [RasterizeMode.WEBDRIVER_ONLY, RasterizeMode.HEADLESS_CLI_ONLY])
 def test_rasterize_large_html(r_mode):
-    path = os.path.realpath('test_data/large.html')
+    path = os.path.dirname(__file__) + '/test_data/large.html'
     res = rasterize(path=f'file://{path}', width=250, height=250, r_type=RasterizeType.PNG, r_mode=r_mode)
     assert res
 
 
 def test_rasterize_html(mocker):
-    path = os.path.realpath('test_data/file.html')
+    path = os.path.dirname(__file__) + '/test_data/file.html'
     mocker.patch.object(demisto, 'args', return_value={'EntryID': 'test'})
     mocker.patch.object(demisto, 'getFilePath', return_value={"path": path})
     mocker.patch.object(os, 'rename')
@@ -188,7 +188,7 @@ def test_rasterize_url_long_load(r_mode, mocker, http_wait_server):
 
 @pytest.mark.filterwarnings('ignore::ResourceWarning')
 def test_rasterize_image_to_pdf(mocker):
-    path = os.path.realpath('test_data/image.png')
+    path = os.path.dirname(__file__) + '/test_data/image.png'
     mocker.patch.object(demisto, 'args', return_value={'EntryID': 'test'})
     mocker.patch.object(demisto, 'getFilePath', return_value={"path": path})
     mocker.patch.object(demisto, 'results')
@@ -350,7 +350,7 @@ def test_rasterize_html_no_internet_access(mocker):
     import requests
     mock = Mock()
     requests.get = mock
-    path = os.path.realpath('test_data/file.html')
+    path = os.path.dirname(__file__) + '/test_data/file.html'
     mocker.patch.object(demisto, 'args', return_value={'EntryID': 'test'})
     mocker.patch.object(demisto, 'getFilePath', return_value={"path": path})
     mocker.patch.object(os, 'rename')

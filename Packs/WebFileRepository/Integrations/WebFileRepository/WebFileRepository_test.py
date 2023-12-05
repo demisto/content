@@ -186,7 +186,7 @@ def test_process_root_get_resource(mocker, filename, content_type):
                                   'sandbox_usage, '
                                   'storage_usage',
                          argvalues=[
-                             ('./test_data/integration_ctx_empty.json',
+                             (os.path.dirname(__file__) + '/test_data/integration_ctx_empty.json',
                               'read/write',
                               '10000',
                               '100000',
@@ -242,13 +242,13 @@ def test_process_root_get_status(mocker,
 
 @pytest.mark.parametrize(argnames='integration_context_filename, dir_name, recursive, output_filename',
                          argvalues=[
-                             ('./test_data/integration_ctx_empty.json', '/', False, './test_data/ls_out_01.json'),
-                             ('./test_data/integration_ctx_common.json', '/', False, './test_data/ls_out_02.json'),
-                             ('./test_data/integration_ctx_common.json', '/', True, './test_data/ls_out_03.json'),
-                             ('./test_data/integration_ctx_common.json', '/x', False, './test_data/ls_out_04.json'),
-                             ('./test_data/integration_ctx_common.json', '/x/あいうえお', False, './test_data/ls_out_05.json'),
-                             ('./test_data/integration_ctx_common.json', '/x/あいうえお', False, './test_data/ls_out_05.json'),
-                             ('./test_data/integration_ctx_common.json', '/not-found', False, './test_data/ls_out_06.json'),
+                             (os.path.dirname(__file__) + '/test_data/integration_ctx_empty.json', '/', False, os.path.dirname(__file__) + '/test_data/ls_out_01.json'),  # noqa: E501
+                             (os.path.dirname(__file__) + '/test_data/integration_ctx_common.json', '/', False, os.path.dirname(__file__) + '/test_data/ls_out_02.json'),  # noqa: E501
+                             (os.path.dirname(__file__) + '/test_data/integration_ctx_common.json', '/', True, os.path.dirname(__file__) + '/test_data/ls_out_03.json'),  # noqa: E501
+                             (os.path.dirname(__file__) + '/test_data/integration_ctx_common.json', '/x', False, os.path.dirname(__file__) + '/test_data/ls_out_04.json'),  # noqa: E501
+                             (os.path.dirname(__file__) + '/test_data/integration_ctx_common.json', '/x/あいうえお', False, os.path.dirname(__file__) + '/test_data/ls_out_05.json'),  # noqa: E501
+                             (os.path.dirname(__file__) + '/test_data/integration_ctx_common.json', '/x/あいうえお', False, os.path.dirname(__file__) + '/test_data/ls_out_05.json'),  # noqa: E501
+                             (os.path.dirname(__file__) + '/test_data/integration_ctx_common.json', '/not-found', False, os.path.dirname(__file__) + '/test_data/ls_out_06.json'),  # noqa: E501
                          ])
 def test_process_root_get_ls(mocker, integration_context_filename, dir_name, recursive, output_filename):
     """
@@ -345,7 +345,7 @@ def test_process_root_get_download(mocker, integration_context_filename, path, o
 
 @pytest.mark.parametrize(argnames='integration_context_filename, path',
                          argvalues=[
-                             ('./test_data/integration_ctx_common.json', '/zzz.dat'),
+                             (os.path.dirname(__file__) + '/test_data/integration_ctx_common.json', '/zzz.dat'),
                          ])
 def test_process_root_get_download_not_found(mocker, integration_context_filename, path):
     """
@@ -385,7 +385,7 @@ def test_process_root_get_download_not_found(mocker, integration_context_filenam
 
 @pytest.mark.parametrize(argnames='integration_context_filename, filenames',
                          argvalues=[
-                             ('./test_data/integration_ctx_common.json',
+                             (os.path.dirname(__file__) + '/test_data/integration_ctx_common.json',
                               [
                                   'a.dat',
                                   'b.dat',
@@ -477,37 +477,37 @@ def test_process_root_get_html_main(mocker):
                                   'request_permission, '
                                   'ok',
                          argvalues=[
-                             ('./test_data/integration_ctx_common.json',
+                             (os.path.dirname(__file__) + '/test_data/integration_ctx_common.json',
                               'read/write',
                               'read/write',
                               'write',
                               True,
                               ),
-                             ('./test_data/integration_ctx_common.json',
+                             (os.path.dirname(__file__) + '/test_data/integration_ctx_common.json',
                               'read/write',
                               'read',
                               'write',
                               False,
                               ),
-                             ('./test_data/integration_ctx_common.json',
+                             (os.path.dirname(__file__) + '/test_data/integration_ctx_common.json',
                               'read-only',
                               'read',
                               'read',
                               True,
                               ),
-                             ('./test_data/integration_ctx_common.json',
+                             (os.path.dirname(__file__) + '/test_data/integration_ctx_common.json',
                               'read-only',
                               None,
                               'read',
                               False,
                               ),
-                             ('./test_data/integration_ctx_common.json',
+                             (os.path.dirname(__file__) + '/test_data/integration_ctx_common.json',
                               'sandbox',
                               'read/write',
                               'write',
                               True,
                               ),
-                             ('./test_data/integration_ctx_common.json',
+                             (os.path.dirname(__file__) + '/test_data/integration_ctx_common.json',
                               'sandbox',
                               None,
                               'read',
@@ -588,10 +588,10 @@ def test_process_root_post_health(mocker,
 @pytest.mark.parametrize(argnames='integration_context_filename, '
                                   'storage_protection',
                          argvalues=[
-                             ('./test_data/integration_ctx_common.json',
+                             (os.path.dirname(__file__) + '/test_data/integration_ctx_common.json',
                               'read/write'
                               ),
-                             ('./test_data/integration_ctx_common.json',
+                             (os.path.dirname(__file__) + '/test_data/integration_ctx_common.json',
                               'sandbox'
                               ),
                          ])
@@ -661,12 +661,12 @@ def test_process_root_post_cleanup(mocker,
                                   'integration_context_filename_after, '
                                   'storage_protection',
                          argvalues=[
-                             ('./test_data/integration_ctx_common.json',
-                              './test_data/integration_ctx_empty.json',
+                             (os.path.dirname(__file__) + '/test_data/integration_ctx_common.json',
+                              os.path.dirname(__file__) + '/test_data/integration_ctx_empty.json',
                               'read/write',
                               ),
-                             ('./test_data/integration_ctx_common.json',
-                              './test_data/integration_ctx_common.json',
+                             (os.path.dirname(__file__) + '/test_data/integration_ctx_common.json',
+                              os.path.dirname(__file__) + '/test_data/integration_ctx_common.json',
                               'sandbox',
                               ),
                          ])
@@ -793,17 +793,17 @@ def test_process_root_post_reset_in_read_only(mocker):
                                   'path_list, '
                                   'integration_context_filename_after',
                          argvalues=[
-                             ('./test_data/integration_ctx_common.json',
+                             (os.path.dirname(__file__) + '/test_data/integration_ctx_common.json',
                               ['/a.dat'],
-                              './test_data/delete_out_01.json',
+                              os.path.dirname(__file__) + '/test_data/delete_out_01.json',
                               ),
-                             ('./test_data/integration_ctx_common.json',
+                             (os.path.dirname(__file__) + '/test_data/integration_ctx_common.json',
                               ['/a.dat', '/x/XYZ/アイウエオ.txt'],
-                              './test_data/delete_out_02.json',
+                              os.path.dirname(__file__) + '/test_data/delete_out_02.json',
                               ),
-                             ('./test_data/integration_ctx_common.json',
+                             (os.path.dirname(__file__) + '/test_data/integration_ctx_common.json',
                               ['/a.dat', '/x'],
-                              './test_data/delete_out_03.json',
+                              os.path.dirname(__file__) + '/test_data/delete_out_03.json',
                               ),
                          ])
 def test_process_root_post_delete(mocker,
@@ -913,35 +913,35 @@ def test_process_root_post_delete_in_read_only(mocker):
                                   'extract_archive, '
                                   'integration_context_filename_after',
                          argvalues=[
-                             ('./test_data/integration_ctx_empty.json',
-                              ['./test_data/upload_file.txt'],
+                             (os.path.dirname(__file__) + '/test_data/integration_ctx_empty.json',
+                              [os.path.dirname(__file__) + '/test_data/upload_file.txt'],
                               '/',
                               False,
-                              './test_data/upload_out_01.json',
+                              os.path.dirname(__file__) + '/test_data/upload_out_01.json',
                               ),
-                             ('./test_data/integration_ctx_empty.json',
-                              ['./test_data/upload_file.txt', './test_data/upload_file.dat'],
+                             (os.path.dirname(__file__) + '/test_data/integration_ctx_empty.json',
+                              [os.path.dirname(__file__) + '/test_data/upload_file.txt', os.path.dirname(__file__) + '/test_data/upload_file.dat'],  # noqa: E501
                               '/',
                               False,
-                              './test_data/upload_out_02.json',
+                              os.path.dirname(__file__) + '/test_data/upload_out_02.json',
                               ),
-                             ('./test_data/integration_ctx_empty.json',
-                              ['./test_data/upload_file.zip'],
+                             (os.path.dirname(__file__) + '/test_data/integration_ctx_empty.json',
+                              [os.path.dirname(__file__) + '/test_data/upload_file.zip'],
                               '/',
                               True,
-                              './test_data/upload_out_03.json',
+                              os.path.dirname(__file__) + '/test_data/upload_out_03.json',
                               ),
-                             ('./test_data/integration_ctx_empty.json',
-                              ['./test_data/upload_file.tar.gz'],
+                             (os.path.dirname(__file__) + '/test_data/integration_ctx_empty.json',
+                              [os.path.dirname(__file__) + '/test_data/upload_file.tar.gz'],
                               '/',
                               True,
-                              './test_data/upload_out_04.json',
+                              os.path.dirname(__file__) + '/test_data/upload_out_04.json',
                               ),
-                             ('./test_data/integration_ctx_empty.json',
-                              ['./test_data/upload_file.txt'],
+                             (os.path.dirname(__file__) + '/test_data/integration_ctx_empty.json',
+                              [os.path.dirname(__file__) + '/test_data/upload_file.txt'],
                               '/あいうえお',
                               False,
-                              './test_data/upload_out_05.json',
+                              os.path.dirname(__file__) + '/test_data/upload_out_05.json',
                               ),
                          ])
 def test_process_root_post_upload(mocker,
@@ -1674,28 +1674,28 @@ def test_command_archive_zip(mocker, save_as, content_filename):
                                   'mimetypes_output_filename, '
                                   'merge_mime_types',
                          argvalues=[
-                             ('./test_data/mime_types_style_01.json',
-                              './test_data/mime_types_out_overwrite.json',
+                             (os.path.dirname(__file__) + '/test_data/mime_types_style_01.json',
+                              os.path.dirname(__file__) + '/test_data/mime_types_out_overwrite.json',
                               False,
                               ),
-                             ('./test_data/mime_types_style_02.txt',
-                              './test_data/mime_types_out_overwrite.json',
+                             (os.path.dirname(__file__) + '/test_data/mime_types_style_02.txt',
+                              os.path.dirname(__file__) + '/test_data/mime_types_out_overwrite.json',
                               False,
                               ),
-                             ('./test_data/mime_types_style_03.txt',
-                              './test_data/mime_types_out_overwrite.json',
+                             (os.path.dirname(__file__) + '/test_data/mime_types_style_03.txt',
+                              os.path.dirname(__file__) + '/test_data/mime_types_out_overwrite.json',
                               False,
                               ),
-                             ('./test_data/mime_types_style_01.json',
-                              './test_data/mime_types_out_merge.json',
+                             (os.path.dirname(__file__) + '/test_data/mime_types_style_01.json',
+                              os.path.dirname(__file__) + '/test_data/mime_types_out_merge.json',
                               True,
                               ),
-                             ('./test_data/mime_types_style_02.txt',
-                              './test_data/mime_types_out_merge.json',
+                             (os.path.dirname(__file__) + '/test_data/mime_types_style_02.txt',
+                              os.path.dirname(__file__) + '/test_data/mime_types_out_merge.json',
                               True,
                               ),
-                             ('./test_data/mime_types_style_03.txt',
-                              './test_data/mime_types_out_merge.json',
+                             (os.path.dirname(__file__) + '/test_data/mime_types_style_03.txt',
+                              os.path.dirname(__file__) + '/test_data/mime_types_out_merge.json',
                               True,
                               ),
                          ])

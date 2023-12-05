@@ -3,7 +3,7 @@ import copy
 import pytest
 from unittest.mock import Mock
 from CommonServerPython import *
-
+from pathlib import Path
 SUBSCRIPTION_ID = "sub_id"
 RESOURCE_GROUP_NAME = "group_name"
 BASE_URL = f'https://management.azure.com/subscriptions/{SUBSCRIPTION_ID}' \
@@ -21,7 +21,7 @@ def load_mock_response(file_path: str) -> str:
     Returns:
         str: Mock file content.
     """
-    with open(file_path, encoding='utf-8') as mock_file:
+    with open(Path(__file__).parent / file_path, encoding='utf-8') as mock_file:
         return mock_file.read()
 
 

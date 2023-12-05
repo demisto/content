@@ -14,7 +14,7 @@ import pytest
 import json
 import demistomock as demisto
 import re
-
+from pathlib import Path
 API_V2 = "Alerts v2"
 API_V1 = "Legacy Alerts"
 client_mocker = MsGraphClient(tenant_id="tenant_id", auth_id="auth_id", enc_key='enc_key', app_name='app_name',
@@ -22,7 +22,7 @@ client_mocker = MsGraphClient(tenant_id="tenant_id", auth_id="auth_id", enc_key=
 
 
 def load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with open(Path(__file__) / path, encoding='utf-8') as f:
         return json.load(f)
 
 

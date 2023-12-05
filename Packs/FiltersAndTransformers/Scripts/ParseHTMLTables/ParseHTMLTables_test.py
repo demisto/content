@@ -1,6 +1,7 @@
 import demistomock as demisto
 import json
 import pytest
+from pathlib import Path
 
 INPUTS = [
     ('test_data/test1-in.html', 'test_data/test1-out.json', None, None),
@@ -27,7 +28,8 @@ INPUTS = [
 @pytest.mark.parametrize('in_file, out_file, title, default_header_line', INPUTS)
 def test_main(mocker, in_file, out_file, title, default_header_line):
     from ParseHTMLTables import main
-
+    in_file = str(Path(__file__).parent / in_file)
+    out_file = str(Path(__file__).parent / out_file)
     with open(in_file) as f:
         value = f.read()
 

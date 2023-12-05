@@ -18,7 +18,7 @@ def test_request_list_objects(mocker):
     """
     Test the list objects method of client class.
     """
-    with open(Path(__file__) / 'test_data/response_list_object.json') as f:
+    with open(Path(__file__).parent / 'test_data/response_list_object.json') as f:
         expected_response = json.load(f)
 
     mocker.patch('botocore.client.BaseClient._make_api_call', return_value=expected_response)
@@ -173,7 +173,7 @@ def test_build_iterator_client_error(mocker):
     """
     Tests, Handle error occur during extracting feeds.
     """
-    with open(Path(__file__) / 'test_data/response_list_object.json') as f:
+    with open(Path(__file__).parent / 'test_data/response_list_object.json') as f:
         expected_response = json.load(f)
     expected_response['ResponseMetadata']['HTTPStatusCode'] = 400
     mocker.patch('botocore.client.BaseClient._make_api_call',
@@ -223,7 +223,7 @@ def test_test_module_client_error(mocker):
     Tests, Handle error occur during extracting feeds.
     """
     from SecurityIntelligenceServicesFeed import test_module
-    with open(Path(__file__) / 'test_data/response_list_object.json') as f:
+    with open(Path(__file__).parent / 'test_data/response_list_object.json') as f:
         expected_response = json.load(f)
     expected_response['ResponseMetadata']['HTTPStatusCode'] = 400
     mocker.patch('botocore.client.BaseClient._make_api_call',

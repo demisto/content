@@ -216,7 +216,7 @@ def mock_method_in_lr_session(mocker, method_name, mocked_results=None):
     test_mocker = mocker.patch.object(MOCKED_LR_SESSION, method_name, return_value=mocked_results)
 
     mocker.patch.object(demisto, 'getFilePath', return_value={
-        "path": 'test_data/test.txt',
+        "path": os.path.dirname(__file__) + '/test_data/test.txt',
         "name": 'test'
     })
     return test_mocker

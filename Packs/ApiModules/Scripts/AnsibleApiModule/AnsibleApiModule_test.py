@@ -252,7 +252,7 @@ def test_generic_ansible_with_problematic_stdout():
     # Mock results from Ansible run
     mock_ansible_results = Object()
 
-    with open(os.path.join(os.path.join("test_data", "stdout.txt")), encoding='unicode_escape') as f:
+    with open(os.path.join(os.path.join(os.path.dirname(__file__), "test_data", "stdout.txt")), encoding='unicode_escape') as f:
         stdout = f.read()
 
     mock_ansible_results.events = [{'uuid': 'cf26f7c4-6eca-48b2-8294-4bd263cfb2e0', 'counter': 1, 'stdout': '',

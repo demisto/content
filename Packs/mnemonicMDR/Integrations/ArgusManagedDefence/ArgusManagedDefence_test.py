@@ -273,7 +273,7 @@ def test_get_remote_data_command_no_updates(requests_mock):
 def test_update_remote_system_command(requests_mock):
     from ArgusManagedDefence import update_remote_system_command
 
-    with open(os.path.dirname(__file__) + "/test_data/argus_json/argus_case_metadata.json") as json_file:
+    with open(os.path.dirname(__file__) + "/test_data/argus_case_metadata.json") as json_file:
         data = json.load(json_file)
     data["data"]["id"] = CASE_ID
     method_url = f"/cases/v2/case/{CASE_ID}"

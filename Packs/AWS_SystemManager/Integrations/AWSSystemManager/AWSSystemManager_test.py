@@ -93,7 +93,7 @@ class MockClient:
 
 
 def util_load_json(path: str) -> dict:
-    return json.loads(Path(path).read_text())
+    return json.loads((Path(__file__).parent / path).read_text())
 
 
 """ Tests For The Helper Functions """

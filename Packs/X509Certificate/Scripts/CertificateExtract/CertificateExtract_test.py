@@ -1,7 +1,7 @@
 import os
 import demistomock as demisto
 import pytest
-
+from pathlib import Path
 
 @pytest.fixture(autouse=True)
 def handle_calling_context(mocker):
@@ -11,7 +11,7 @@ def handle_calling_context(mocker):
 def load_json_data(path):
     import json
 
-    with open(path) as f:
+    with open(Path(__file__).parent / path) as f:
         return json.load(f)
 
 
@@ -45,7 +45,7 @@ def test_load_pem(mocker):
         - the result of the function should match the one loaded from a specific JSON file
     """
     mocker.patch('demistomock.getFilePath', return_value={
-        "path": 'test_data/pandev.pem',
+        "path": os.path.dirname(__file__) + '/test_data/pandev.pem',
         "name": 'test'
     })
 
@@ -66,7 +66,7 @@ def test_load_der(mocker):
         - the result of the function should match the one loaded from a specific JSON file
     """
     mocker.patch('demistomock.getFilePath', return_value={
-        "path": 'test_data/pandev.der',
+        "path": os.path.dirname(__file__) + '/test_data/pandev.der',
         "name": 'test'
     })
 
@@ -88,7 +88,7 @@ def test_load_pem2(mocker):
         - the result of the function should match the one loaded from a specific JSON file
     """
     mocker.patch('demistomock.getFilePath', return_value={
-        "path": 'test_data/test2.pem',
+        "path": os.path.dirname(__file__) + '/test_data/test2.pem',
         "name": 'test'
     })
 
