@@ -15,10 +15,10 @@
 				"Cybersixgill DVE Score": {
 					"simple": "additional_info.score.current"
 				},
-				"Suspicious domain": {
+				"Cybersixgill Suspicious domain": {
 					"simple": "additional_info.tables.suspicious_domain"
 				},
-				"Triggered domain": {
+				"Cybersixgill Triggered domain": {
 					"simple": "additional_info.tables.triggered_domain"
 				}
 			}
