@@ -6,10 +6,10 @@
         - infra
       policy: pull
     - key:
-      files:
-        - "poetry.lock"
-        - "package-lock.json"
-      prefix: dev-content
+        files:
+          - "poetry.lock"
+          - "package-lock.json"
+        prefix: dev-content
       paths:
         - $PIP_CACHE_DIR
         - .venv/
