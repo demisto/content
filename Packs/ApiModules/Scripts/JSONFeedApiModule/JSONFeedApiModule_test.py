@@ -203,6 +203,7 @@ Stam : Ba
     assert res['Stam'] == 'Ba'
     assert len(res) == 3
 
+
 @freeze_time("2023-11-30T13:00:44Z")
 def test_get_no_update_value(mocker):
     """
@@ -224,7 +225,7 @@ def test_get_no_update_value(mocker):
         'feed_name': {
             'last_modified': 'Fri, 30 Jul 2021 00:24:13 GMT',
             'etag': 'd309ab6e51ed310cf869dab0dfd0d34b',
-            'last_updated':'2023-11-30T13:00:44Z'}
+            'last_updated': '2023-11-30T13:00:44Z'}
     }
 
     class MockResponse:
