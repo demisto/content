@@ -2,10 +2,8 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-import json
 import urllib3
-import dateparser
-from typing import Any, Dict, Tuple, List, Optional, Union, cast
+from typing import Any, Dict,List
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -70,7 +68,8 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def ip_geolocation_command(client: Client, args: Dict[str, Any], reliability: DBotScoreReliability, api_key: str) -> List[CommandResults]:
+def ip_geolocation_command(client: Client, args: Dict[str, Any], reliability: DBotScoreReliability,
+                           api_key: str) -> List[CommandResults]:
     """
     ip command: Returns IP geolocation for a list of IPs
 
