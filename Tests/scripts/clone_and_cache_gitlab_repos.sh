@@ -94,7 +94,8 @@ get_cache_gitlab_repositories() {
   local branch=$5
   local retry_count=$6
   local sleep_time=${7:-10}  # default sleep time is 10 seconds.
-  local repo=$8
+  local fallback_branch="${8:-master}"
+  local repo=$9
 
   if [ -z "${user}" ] && [ -z "${token}" ]; then
     user_info=""
@@ -103,17 +104,14 @@ get_cache_gitlab_repositories() {
     user_info="${user}:${token}@"
   fi
 
-  echo "./${repo}"
   if [ -d "./${repo}" ] ; then
     cd ./"${repo}"
-    echo "test"
     git remote set-url origin "https://${user_info}${host}/${repo_name}.git"
-    echo "test2"
     git fetch -p -P
     cd ..
   else
     echo "Getting ${repo_name} repository with branch:${SEARCHED_BRANCH_NAME}, with fallback to master"
-    clone_repository_with_fallback_branch "${host}" "${user}" "${token}" "${repo_name}" "${branch}" "${retry_count}" "${sleep_time}"
+    clone_repository_with_fallback_branch "${host}" "${user}" "${token}" "${repo_name}" "${branch}" "${retry_count}" "${sleep_time}" "${fallback_branch}"
   fi
 
 }
