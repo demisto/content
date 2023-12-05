@@ -7,7 +7,7 @@ from CommonServerPython import *  # noqa: F401
 
 def get_additonal_info() -> List[Dict]:
     alerts = demisto.context().get('Core', {}).get('OriginalAlert')
-    if isinstance(alert, list):
+    if isinstance(alerts, list):
         alerts = alerts[0]
     if not alerts:
         raise DemistoException('Original Alert is not configured in context')
