@@ -86,7 +86,7 @@ configuration:
   advanced: true
   required: false
 script:
-  dockerimage: demisto/python3:3.10.13.82076
+  dockerimage: demisto/python3:3.10.13.82467
   type: python
   subtype: python3
   script: '-'
@@ -453,6 +453,9 @@ script:
       - last_modified_date|desc
     - name: slug
       description: 'Search by ''slug'' or short descriptive name. For example, "anchor-panda".'
+    - name: display_full_fields
+      description: Whether to return and display full data from CS API. (For example full description, which by default is short).
+      defaultValue: false
     outputs:
     - contextPath: FalconIntel.Actor.ImageURL
       description: The URL of the actor image.
@@ -471,6 +474,9 @@ script:
       type: String
     - contextPath: FalconIntel.Actor.ShortDescription
       description: The short description of the actor.
+      type: String
+    - contextPath: FalconIntel.Actor.Description
+      description: The full description of the actor.
       type: String
     - contextPath: FalconIntel.Actor.FirstActivityDate
       description: The first activity date of the actor.
@@ -799,6 +805,9 @@ script:
       - created_date|desc
       - last_modified_date|asc
       - last_modified_date|desc
+    - name: display_full_fields
+      description: Whether to display the full fields result from CS API.
+      defaultValue: false
     outputs:
     - contextPath: FalconIntel.Report.ID
       description: The ID of the report.
@@ -826,6 +835,9 @@ script:
       type: Date
     - contextPath: FalconIntel.Report.ShortDescription
       description: The short description of the report.
+      type: String
+    - contextPath: FalconIntel.Report.Description
+      description: The full description of the report.
       type: String
     - contextPath: FalconIntel.Report.TargetIndustries
       description: "Targeted industries included in the report. For example, aerospace."

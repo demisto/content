@@ -93,16 +93,22 @@ class Client:
         return self.cs_client.http_request(method='GET', url_suffix='intel/combined/indicators/v1', params=params)
 
     def cs_actors(self, args: dict[str, str]) -> dict[str, Any]:
+        url_suffix = 'intel/combined/actors/v1'
+        if argToBoolean(args.pop('display_full_fields', False)):
+            url_suffix += '?fields=__full__'
         params: dict[str, Any] = self.build_request_params(args)
-        return self.cs_client.http_request(method='GET', url_suffix='intel/combined/actors/v1', params=params)
+        return self.cs_client.http_request(method='GET', url_suffix=url_suffix, params=params)
 
     def cs_indicators(self, args: dict[str, str]) -> dict[str, Any]:
         params: dict[str, Any] = self.build_request_params(args)
         return self.cs_client.http_request(method='GET', url_suffix='intel/combined/indicators/v1', params=params)
 
     def cs_reports(self, args: dict[str, str]) -> dict[str, Any]:
+        url_suffix = 'intel/combined/reports/v1'
+        if argToBoolean(args.pop('display_full_fields', False)):
+            url_suffix += '?fields=__full__'
         params: dict[str, Any] = self.build_request_params(args)
-        return self.cs_client.http_request(method='GET', url_suffix='intel/combined/reports/v1', params=params)
+        return self.cs_client.http_request(method='GET', url_suffix=url_suffix, params=params)
 
 
 ''' HELPER FUNCTIONS '''
@@ -279,6 +285,8 @@ def get_values(items_list: List[Any], return_type: str = 'str', keys: str | List
     :return: The values list
     """
     new_list: List[Any] = []
+    if not items_list:
+        return new_list
     if isinstance(keys, str):
         new_list = [item.get(keys) for item in items_list]
     elif isinstance(keys, list):
@@ -394,6 +402,7 @@ def cs_actors_command(client: Client, args: dict[str, str]) -> CommandResults:
             url = r.get('url')
             slug = r.get('slug')
             short_description = r.get('short_description')
+            description = r.get('description')
             first_activity_date = r.get('first_activity_date')
             last_activity_date = r.get('last_activity_date')
             active = r.get('active')
@@ -414,6 +423,7 @@ def cs_actors_command(client: Client, args: dict[str, str]) -> CommandResults:
                 'URL': url,
                 'Slug': slug,
                 'ShortDescription': short_description,
+                'Description': description,
                 'FirstActivityDate': datetime.fromtimestamp(first_activity_date, timezone.utc).isoformat()
                 if first_activity_date else None,
                 'LastActivityDate': datetime.fromtimestamp(last_activity_date, timezone.utc).isoformat()
@@ -445,7 +455,7 @@ def cs_actors_command(client: Client, args: dict[str, str]) -> CommandResults:
         outputs=outputs,
         outputs_key_field='ID',
         outputs_prefix='FalconIntel.Actor',
-        readable_output=md if md else tableToMarkdown(name=title, t=md_outputs, headerTransform=pascalToSpace),
+        readable_output=md if md else tableToMarkdown(name=title, t=md_outputs, headerTransform=pascalToSpace, removeNull=True),
         raw_response=res
     )
 
@@ -515,6 +525,7 @@ def cs_reports_command(client: Client, args: dict[str, str]) -> CommandResults:
             created_date: int = r.get('created_date')
             last_modified_date: int = r.get('last_modified_date')
             short_description: str = r.get('short_description')
+            description: str = r.get('description')
             target_industries: List[Any] = r.get('target_industries') or []
             target_countries: List[Any] = r.get('target_countries') or []
             motivations: List[Any] = r.get('motivations') or []
@@ -533,6 +544,7 @@ def cs_reports_command(client: Client, args: dict[str, str]) -> CommandResults:
                 'LastModifiedSate': datetime.fromtimestamp(last_modified_date, timezone.utc).isoformat()
                 if last_modified_date else None,
                 'ShortDescription': short_description,
+                'Description': description,
                 'TargetIndustries': get_values(target_industries, return_type='list'),
                 'TargetCountries': get_values(target_countries, return_type='list'),
                 'Motivations': get_values(motivations, return_type='list'),
@@ -555,7 +567,7 @@ def cs_reports_command(client: Client, args: dict[str, str]) -> CommandResults:
         outputs_prefix='FalconIntel.Report',
         outputs=outputs,
         outputs_key_field='ID',
-        readable_output=md if md else tableToMarkdown(name=title, t=outputs, headerTransform=pascalToSpace),
+        readable_output=md if md else tableToMarkdown(name=title, t=outputs, headerTransform=pascalToSpace, removeNull=True),
         raw_response=res
     )
 
