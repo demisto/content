@@ -1,6 +1,6 @@
 import os
 import json
-
+from pathlib import Path
 import pytest
 from VirusTotalV3 import (ScoreCalculator, encode_to_base64,
                           encode_url_to_base64, epoch_to_timestamp,
@@ -32,11 +32,16 @@ class TestScoreCalculator:
                 'ipThreshold': 1,
                 'urlThreshold': 1,
                 'domainThreshold': 1,
+                'fileSuspiciousThreshold': 0,
+                'ipSuspiciousThreshold': 0,
+                'urlSuspiciousThreshold': 0,
+                'domainSuspiciousThreshold': 0,
                 'crowdsourced_yara_rules_enabled': True,
                 'yaraRulesThreshold': 1,
                 'SigmaIDSThreshold': 1,
                 'domain_popularity_ranking': 1,
-                'relationship_threshold': 1
+                'relationship_threshold': 1,
+                'relationship_suspicious_threshold': 0
             }
         )
 
@@ -203,7 +208,7 @@ def test_get_whois_unexpected_value():
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with open(Path(__file__).parent / path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -218,11 +223,16 @@ DEFAULT_PARAMS = {
     'ipThreshold': 1,
     'urlThreshold': 1,
     'domainThreshold': 1,
+    'fileSuspiciousThreshold': 0,
+    'ipSuspiciousThreshold': 0,
+    'urlSuspiciousThreshold': 0,
+    'domainSuspiciousThreshold': 0,
     'crowdsourced_yara_rules_enabled': True,
     'yaraRulesThreshold': 1,
     'SigmaIDSThreshold': 1,
     'domain_popularity_ranking': 1,
     'relationship_threshold': 1,
+    'relationship_suspicious_threshold': 0,
     'is_premium_api': 'false',
     'feedReliability': 'A - Completely reliable',
     'insecure': 'false',
@@ -252,23 +262,18 @@ def test_domain_command(mocker, requests_mock):
     params = demisto.params()
     mocked_score_calculator = ScoreCalculator(params=params)
     domain_relationships = (','.join(argToList(params.get('domain_relationships')))).replace('* ', '').replace(" ", "_")
-    client = Client(
-        params=params
-    )
+    client = Client(params=params)
 
     # Load assertions and mocked request data
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/domain.json')
-    expected_results = util_load_json(os.path.dirname(__file__) + '/test_data/domain_results.json')
+    mock_response = util_load_json('test_data/domain.json')
+    expected_results = util_load_json('test_data/domain_results.json')
     requests_mock.get(f'https://www.virustotal.com/api/v3/domains/testing.com?relationships={domain_relationships}',
                       json=mock_response)
 
     # Run command and collect result array
     results = domain_command(
-        client=client,
-        score_calculator=mocked_score_calculator,
-        args=demisto.args(),
-        relationships=domain_relationships
-    )
+        client=client, score_calculator=mocked_score_calculator,
+        args=demisto.args(), relationships=domain_relationships)
 
     assert results[1].execution_metrics == [{'APICallsCount': 1, 'Type': 'Successful'}]
     assert results[0].execution_metrics is None
@@ -278,7 +283,7 @@ def test_domain_command(mocker, requests_mock):
 def test_ip_command(mocker, requests_mock):
     """
     Given:
-    - A valid testing ip (8.8.8.8)
+    - A valid (and private) testing ip (192.168.0.1)
 
     When:
     - Running the !ip command
@@ -289,7 +294,7 @@ def test_ip_command(mocker, requests_mock):
     from VirusTotalV3 import ip_command, ScoreCalculator, Client
     import CommonServerPython
     # Setup Mocks
-    mocker.patch.object(demisto, 'args', return_value={'ip': '8.8.8.8', 'extended_data': 'false'})
+    mocker.patch.object(demisto, 'args', return_value={'ip': '192.168.0.1', 'extended_data': 'false'})
     mocker.patch.object(demisto, 'params', return_value=DEFAULT_PARAMS)
     mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
 
@@ -297,24 +302,42 @@ def test_ip_command(mocker, requests_mock):
     params = demisto.params()
     mocked_score_calculator = ScoreCalculator(params=params)
     ip_relationships = (','.join(argToList(params.get('ip_relationships')))).replace('* ', '').replace(" ", "_")
-    client = Client(
-        params=params
-    )
+    client = Client(params=params)
 
     # Load assertions and mocked request data
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/ip.json')
-    expected_results = util_load_json(os.path.dirname(__file__) + '/test_data/ip_results.json')
-    requests_mock.get(f'https://www.virustotal.com/api/v3/ip_addresses/8.8.8.8?relationships={ip_relationships}',
+    mock_response = util_load_json('test_data/ip.json')
+    expected_results = util_load_json('test_data/ip_results.json')
+    requests_mock.get(f'https://www.virustotal.com/api/v3/ip_addresses/192.168.0.1?relationships={ip_relationships}',
                       json=mock_response)
 
     # Run command and collect result array
     results = ip_command(
-        client=client,
-        score_calculator=mocked_score_calculator,
-        args=demisto.args(),
-        relationships=ip_relationships,
-        disable_private_ip_lookup=False
-    )
+        client=client, score_calculator=mocked_score_calculator,
+        args=demisto.args(), relationships=ip_relationships,
+        disable_private_ip_lookup=False)
+
+    assert results[1].execution_metrics == [{'APICallsCount': 1, 'Type': 'Successful'}]
+    assert results[0].execution_metrics is None
+    assert results[0].outputs == expected_results
+
+    # Run command but disabling private IP enrichment
+    results = ip_command(
+        client=client, score_calculator=mocked_score_calculator,
+        args=demisto.args(), relationships=ip_relationships,
+        disable_private_ip_lookup=True)
+
+    assert results[1].execution_metrics == [{'APICallsCount': 1, 'Type': 'Successful'}]
+    assert results[0].execution_metrics is None
+    assert results[0].readable_output == ('Reputation lookups have been disabled for private IP addresses. '
+                                          'Enrichment skipped for 192.168.0.1')
+
+    # Run command but enabling private IP enrichment after disabling it
+    mocker.patch.object(demisto, 'args', return_value={'ip': '192.168.0.1', 'extended_data': 'false',
+                                                       'override_private_lookup': 'true'})
+    results = ip_command(
+        client=client, score_calculator=mocked_score_calculator,
+        args=demisto.args(), relationships=ip_relationships,
+        disable_private_ip_lookup=True)
 
     assert results[1].execution_metrics == [{'APICallsCount': 1, 'Type': 'Successful'}]
     assert results[0].execution_metrics is None
@@ -344,23 +367,18 @@ def test_url_command_success(mocker, requests_mock):
     params = demisto.params()
     mocked_score_calculator = ScoreCalculator(params=params)
     url_relationships = (','.join(argToList(params.get('url_relationships')))).replace('* ', '').replace(" ", "_")
-    client = Client(
-        params=params
-    )
+    client = Client(params=params)
 
     # Load assertions and mocked request data
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/url.json')
-    expected_results = util_load_json(os.path.dirname(__file__) + '/test_data/url_results.json')
+    mock_response = util_load_json('test_data/url.json')
+    expected_results = util_load_json('test_data/url_results.json')
     requests_mock.get(f'https://www.virustotal.com/api/v3/urls/{encode_url_to_base64(testing_url)}'
                       f'?relationships={url_relationships}', json=mock_response)
 
     # Run command and collect result array
     results = url_command(
-        client=client,
-        score_calculator=mocked_score_calculator,
-        args=demisto.args(),
-        relationships=url_relationships
-    )
+        client=client, score_calculator=mocked_score_calculator,
+        args=demisto.args(), relationships=url_relationships)
 
     assert results[1].execution_metrics == [{'APICallsCount': 1, 'Type': 'Successful'}]
     assert results[0].execution_metrics is None
@@ -382,28 +400,22 @@ def test_private_file_command(mocker, requests_mock):
     import CommonServerPython
     # Setup Mocks
     sha256 = 'Example_sha256_with_64_characters_000000000000000000000000000000'
-    mocker.patch.object(demisto, 'args',
-                        return_value={'file': sha256})
+    mocker.patch.object(demisto, 'args', return_value={'file': sha256})
     mocker.patch.object(demisto, 'params', return_value=DEFAULT_PARAMS)
     mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
 
     # Assign arguments
     params = demisto.params()
-    client = Client(
-        params=params
-    )
+    client = Client(params=params)
 
     # Load assertions and mocked request data
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/private_file.json')
-    expected_results = util_load_json(os.path.dirname(__file__) + '/test_data/private_file_results.json')
+    mock_response = util_load_json('test_data/private_file.json')
+    expected_results = util_load_json('test_data/private_file_results.json')
     requests_mock.get(f'https://www.virustotal.com/api/v3/private/files/{sha256}',
                       json=mock_response)
 
     # Run command and collect result array
-    results = private_file_command(
-        client=client,
-        args=demisto.args(),
-    )
+    results = private_file_command(client=client, args=demisto.args())
 
     assert results[1].execution_metrics == [{'APICallsCount': 1, 'Type': 'Successful'}]
     assert results[0].execution_metrics is None
