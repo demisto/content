@@ -4,20 +4,30 @@ from EntryWidgetRegionNameXCLOUD import main
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
-class TestYourScript(unittest.TestCase):
-
-    @patch('demistomock.context')
-    @patch('CommonServerPython.return_results')
-    def test_main_success(self, mock_return_results, mock_context):
-        # Mocking context() to return a sample alert
-        mock_context.return_value.get.return_value = {
+CASES =[({
             'Core': {
                 'OriginalAlert': {
                     'event': {'region': 'TestRegion'}
                 }
             }
-        }
+        }),({
+            'Core': {
+                'OriginalAlert': [{
+                    'event': {'region': 'TestRegion'}
+                }]
+            }
+        })]
+
+
+class TestYourScript(unittest.TestCase):
+
+
+    @patch('demistomock.context')
+    @patch('CommonServerPython.return_results')
+    @pytest.mark.parametrize('input', CASES)
+    def test_main_success(self, mock_return_results, mock_context, input):
+        # Mocking context() to return a sample alert
+        mock_context.return_value.get.return_value = input
 
         # Calling the main function
         main()
