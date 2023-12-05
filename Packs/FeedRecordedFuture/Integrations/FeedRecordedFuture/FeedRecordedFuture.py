@@ -8,7 +8,6 @@ import csv
 import requests
 import traceback
 import urllib.parse
-from typing import Optional
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -49,7 +48,7 @@ class Client(BaseClient):
     def __init__(self, indicator_type: str, api_token: str, services: list, risk_rule: str = None,
                  fusion_file_path: str = None, insecure: bool = False,
                  polling_timeout: int = 20, proxy: bool = False, threshold: int = 65, risk_score_threshold: int = 0,
-                 tags: Optional[list] = None, tlp_color: Optional[str] = None):
+                 tags: list | None = None, tlp_color: str | None = None):
         """
         Attributes:
              indicator_type: string, the indicator type of the feed.
@@ -83,7 +82,7 @@ class Client(BaseClient):
         self.tlp_color = tlp_color
         super().__init__(self.BASE_URL, proxy=proxy, verify=not insecure)
 
-    def _build_request(self, service, indicator_type, risk_rule: Optional[str] = None) -> requests.PreparedRequest:
+    def _build_request(self, service, indicator_type, risk_rule: str | None = None) -> requests.PreparedRequest:
         """Builds the request for the Recorded Future feed.
         Args:
             service (str): The service from recorded future. Can be 'connectApi' or 'fusion'
@@ -125,7 +124,7 @@ class Client(BaseClient):
             raise DemistoException(f'Service unknown: {service}')
         return response.prepare()
 
-    def build_iterator(self, service, indicator_type, risk_rule: Optional[str] = None):
+    def build_iterator(self, service, indicator_type, risk_rule: str | None = None):
         """Retrieves all entries from the feed.
         Args:
             service (str): The service from recorded future. Can be 'connectApi' or 'fusion'
@@ -160,7 +159,7 @@ class Client(BaseClient):
             else:
                 return_error(
                     f'{self.SOURCE_NAME} - exception in request: {response.status_code} {response.content}'
-                    )  # type: ignore
+                )  # type: ignore
 
         if service == 'connectApi':
             self.stream_compressed_data(response=response, chunk_size=CHUNK_SIZE)
@@ -224,14 +223,14 @@ class Client(BaseClient):
                             chunk_to_decode = decompressed_chunk[:len(decompressed_chunk) - bytes_to_cut]
         demisto.debug(f'{CHUNK_SIZE=}. Number of chunks received = {chunks_counter}.'
                       f' Number of failed decoding = {decoded_counter-chunks_counter}')
-    
+
     def decode_bytes(self, bytes_to_decode: bytes, encoding: str = 'utf-8') -> str:
         """
         The decoding of the bytes was outsourced to this function, in order to test the decoding mechanism
         in the 'stream_compressed_data' function.
         """
         return bytes_to_decode.decode(encoding=encoding)
-    
+
     def get_batches_from_file(self, limit):
         demisto.info('reading from file')
         # we do this try to make sure the file gets deleted at the end
@@ -298,12 +297,11 @@ class Client(BaseClient):
                                      f"please make sure you entered it correctly. \n"
                                      f"To see all available risk rules run the '!rf-get-risk-rules' command.")
 
-        if self.fusion_file_path is not None:
-            if 'fusion' not in self.services:
-                return_error("You entered a fusion file path but the 'fusion' service is not chosen. "
-                             "Add the 'fusion' service to the list or remove the fusion file path.")
+        if self.fusion_file_path is not None and 'fusion' not in self.services:
+            return_error("You entered a fusion file path but the 'fusion' service is not chosen. "
+                         "Add the 'fusion' service to the list or remove the fusion file path.")
 
-    def get_risk_rules(self, indicator_type: Optional[str] = None) -> dict:
+    def get_risk_rules(self, indicator_type: str | None = None) -> dict:
         if indicator_type is None:
             indicator_type = self.indicator_type
         return self._http_request(
@@ -321,10 +319,7 @@ def is_valid_risk_rule(client: Client, risk_rule):
     """
     risk_rule_response: dict = client.get_risk_rules()
     risk_rules_list = [single_risk_rule['name'] for single_risk_rule in risk_rule_response['data']['results']]
-    if risk_rule in risk_rules_list:
-        return True
-    else:
-        return False
+    return risk_rule in risk_rules_list
 
 
 def test_module(client: Client, *args) -> tuple[str, dict, dict]:
@@ -369,6 +364,7 @@ def get_indicator_type(indicator_type, item):
         return FeedIndicatorType.URL
     elif indicator_type == 'vulnerability':
         return FeedIndicatorType.CVE
+    return None
 
 
 def ip_to_indicator_type(ip):
@@ -420,7 +416,7 @@ def format_risk_string(risk_string):
     return f'{splitted_risk_string[0]} of {splitted_risk_string[1]} Risk Rules Triggered'
 
 
-def fetch_and_create_indicators(client, risk_rule: Optional[str] = None):
+def fetch_and_create_indicators(client, risk_rule: str | None = None):
     """Fetches indicators from the Recorded Future feeds,
     and from each fetched indicator creates an indicator in XSOAR.
 
@@ -435,7 +431,7 @@ def fetch_and_create_indicators(client, risk_rule: Optional[str] = None):
         demisto.createIndicators(indicators)
 
 
-def fetch_indicators_command(client, indicator_type, risk_rule: Optional[str] = None, limit: Optional[int] = None):
+def fetch_indicators_command(client, indicator_type, risk_rule: str | None = None, limit: int | None = None):
     """Fetches indicators from the Recorded Future feeds.
     Args:
         client(Client): Recorded Future Feed client
@@ -474,7 +470,7 @@ def fetch_indicators_command(client, indicator_type, risk_rule: Optional[str] = 
                     if evidence_details:
                         raw_json['EvidenceDetails'] = evidence_details
                         for rule in evidence_details:
-                            rule = dict((key.lower(), value) for key, value in rule.items())
+                            rule = {key.lower(): value for key, value in rule.items()}
                             lower_case_evidence_details_keys.append(rule)
                 risk_string = item.get('RiskString')
                 if isinstance(risk_string, str):
