@@ -11,7 +11,6 @@ from splunklib import client
 from splunklib import results
 import SplunkPy as splunk
 from pytest_mock import MockerFixture
-import pytest
 
 RETURN_ERROR_TARGET = 'SplunkPy.return_error'
 
