@@ -55,7 +55,7 @@ class TestHelpers:
 
     @pytest.mark.parametrize('path, count', data_test_fix_rsa_data)
     def test_fix_rsa_data(self, path, count):
-        with open(path) as _file:
+        with open(Path(__file__).parent / path) as _file:
             data = _file.read()
         demisto_data = data.replace('\n', ' ')
         fixed_data = fix_rsa_data(demisto_data, count)
@@ -78,14 +78,14 @@ class TestHelpers:
 
     @pytest.mark.parametrize('input_key, input_public', data_test_ssl_files_checker)
     def test_ssl_files_checker(self, input_key, input_public):
-        with open(input_key) as input_key, open(input_public) as input_public:
+        with open(Path(__file__).parent / input_key) as input_key, open(Path(__file__).parent / input_public) as input_public:
             ssl_files_checker(input_public.read(), input_key.read())
 
     @pytest.mark.parametrize('input_key, input_public', data_test_ssl_files_checker)
     def test_ssl_files_checker_with_invalid_files(self, input_key, input_public):
-        with open(input_key) as input_key:
+        with open(Path(__file__).parent / input_key) as input_key:
             input_key = input_key.read()
-        with open(input_public) as input_public:
+        with open(Path(__file__).parent / input_public) as input_public:
             input_public = input_public.read()
         with pytest.raises(ValueError):
             temp_input_public = input_public.split('\n')[:-6]
