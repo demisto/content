@@ -1,25 +1,25 @@
 {
     "posts": [
         {
-            "url": "https://test.com/CimTrakRestAPI/v1/Client.updateTaskDisposition",
             "reply": {
-                "results": [],
-                "resultDetails": [
-                    {
-                        "taskId": 2,
-                        "status": "Access denied or task not found."
-                    }
-                ],
-                "status": "success",
                 "errorCode": "",
                 "errorDescription": "",
-                "errorDetails": []
-            }
+                "errorDetails": [],
+                "resultDetails": [
+                    {
+                        "status": "Access denied or task not found.",
+                        "taskId": 2
+                    }
+                ],
+                "results": [],
+                "status": "success"
+            },
+            "url": "https://test.com/CimTrakRestAPI/v1/Client.updateTaskDisposition"
         }
     ],
     "response": {
-        "status": "success",
         "errorCode": "",
-        "errorDescription": ""
+        "errorDescription": "",
+        "status": "success"
     }
 }

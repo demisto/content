@@ -1,18 +1,18 @@
 {
     "posts": [
         {
-            "url": "https://test.com/CimTrakRestAPI/v1/Client.checkFileAgainstTrustedFileRegistryByHash",
             "reply": {
-                "status": "success",
                 "errorCode": "",
                 "errorDescription": "",
-                "results": []
-            }
+                "results": [],
+                "status": "success"
+            },
+            "url": "https://test.com/CimTrakRestAPI/v1/Client.checkFileAgainstTrustedFileRegistryByHash"
         }
     ],
     "response": {
-        "status": "success",
         "errorCode": "",
-        "errorDescription": ""
+        "errorDescription": "",
+        "status": "success"
     }
 }

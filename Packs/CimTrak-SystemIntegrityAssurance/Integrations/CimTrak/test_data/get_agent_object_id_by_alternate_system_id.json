@@ -1,27 +1,27 @@
 {
     "posts": [
         {
-            "url": "https://test.com/CimTrakRestAPI/v1/Client.getAgentObjectIdByAlternateSystemId",
             "reply": {
-                "status": "success",
                 "errorCode": "",
                 "errorDescription": "",
                 "results": [
                     {
                         "agentObjectId": 1
                     }
-                ]
-            }
+                ],
+                "status": "success"
+            },
+            "url": "https://test.com/CimTrakRestAPI/v1/Client.getAgentObjectIdByAlternateSystemId"
         }
     ],
     "response": {
-        "status": "success",
         "errorCode": "",
         "errorDescription": "",
         "results": [
             {
                 "agentObjectId": 1
             }
-        ]
+        ],
+        "status": "success"
     }
 }

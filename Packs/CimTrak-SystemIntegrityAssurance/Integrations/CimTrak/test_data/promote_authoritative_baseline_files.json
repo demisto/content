@@ -1,20 +1,20 @@
 {
     "posts": [
         {
-            "url": "https://test.com/CimTrakRestAPI/v1/Client.promoteAuthoritativeBaselineFiles",
             "reply": {
-                "results": [],
-                "resultDetails": [],
-                "status": "success",
                 "errorCode": "",
                 "errorDescription": "",
-                "errorDetails": []
-            }
+                "errorDetails": [],
+                "resultDetails": [],
+                "results": [],
+                "status": "success"
+            },
+            "url": "https://test.com/CimTrakRestAPI/v1/Client.promoteAuthoritativeBaselineFiles"
         }
     ],
     "response": {
-        "status": "success",
         "errorCode": "",
-        "errorDescription": ""
+        "errorDescription": "",
+        "status": "success"
     }
 }

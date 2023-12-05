@@ -1,19 +1,19 @@
 {
     "posts": [
         {
-            "url": "https://test.com/CimTrakRestAPI/v1/Client.unlock",
             "reply": {
-                "results": [],
-                "status": "success",
                 "errorCode": "",
                 "errorDescription": "",
-                "errorDetails": []
-            }
+                "errorDetails": [],
+                "results": [],
+                "status": "success"
+            },
+            "url": "https://test.com/CimTrakRestAPI/v1/Client.unlock"
         }
     ],
     "response": {
-        "status": "success",
         "errorCode": "",
-        "errorDescription": ""
+        "errorDescription": "",
+        "status": "success"
     }
 }
