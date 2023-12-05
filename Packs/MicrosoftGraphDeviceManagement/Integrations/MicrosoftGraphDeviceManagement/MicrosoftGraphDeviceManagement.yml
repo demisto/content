@@ -132,7 +132,7 @@ script:
     - description: The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command).
       name: device_id
       required: true
-    description: Get managed devices.
+    description: Get managed devices. PhysicalMemoryInBytes will return 0 by default.
     name: msgraph-get-managed-device-by-id
     outputs:
     - contextPath: MSGraphDeviceManagement.Device.ID
