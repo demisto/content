@@ -621,7 +621,6 @@ class TestFetchForLateIndexedEvents:
 
 
 # If (num_of_dropped == FETCH_LIMIT and '`notable`' in fetch_query), then late_indexed_pagination should be set to True
-
     def test_first_condition_for_late_indexed_pagination(self, mocker: MockerFixture, monkeypatch: pytest.MonkeyPatch):
         """
         Given
