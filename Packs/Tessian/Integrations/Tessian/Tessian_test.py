@@ -4,7 +4,7 @@ import pytest
 from Tessian import (
     format_url,
     Client,
-    get_events_command,
+    list_events_command,
     release_from_quarantine_command,
     delete_from_quarantine_command,
     delete_from_inbox_command,
@@ -25,22 +25,26 @@ def create_mock_client():
 #  endregion
 
 
-def test_get_events_command(mocker):
+def test_list_events_command(mocker):
     """
-    Tests the get_events_command function.
+    Tests the list_events_command function.
     """
 
     #  Mock the client
     client = create_mock_client()
     mocker.patch.object(
         client,
-        'get_events',
+        'list_events',
         return_value={
             'checkpoint': "dummy_checkpoint",
             'additional_results': True,
             'results': [
                 {
-                    "dummy_key": "dummy_value"
+                    "id": "dummy_id",
+                    "type": "dummy_type",
+                    "created_at": "dummy_created_at",
+                    "updated_at": "dummy_updated_at",
+                    "portal_link": "dummy_portal_link",
                 },
             ],
         }
@@ -52,14 +56,18 @@ def test_get_events_command(mocker):
         "created_after": None,
     }
 
-    response = get_events_command(client, input)
+    response = list_events_command(client, input)
 
     assert response.outputs == {
         "checkpoint": "dummy_checkpoint",
         "additional_results": True,
         "results": [
             {
-                "dummy_key": "dummy_value",
+                "id": "dummy_id",
+                "type": "dummy_type",
+                "created_at": "dummy_created_at",
+                "updated_at": "dummy_updated_at",
+                "portal_link": "dummy_portal_link",
             },
         ],
     }

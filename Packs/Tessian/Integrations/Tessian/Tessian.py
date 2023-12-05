@@ -104,9 +104,25 @@ def list_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     results = client.list_events(limit, after_checkpoint, created_after)
 
-    markdown = '### Tessian Events\n'
-    markdown += f'## Checkpoint: {results.get("checkpoint")} | Additional Results: {results.get("additional_results")}\n'
-    markdown += f'# Number of events returned: {len(results.get("results", []))}\n'
+    summary_results = [
+        {
+            "Event ID": event.get("id"),
+            "Event Type": event.get("type"),
+            "Event Created At": event.get("created_at"),
+            "Event Updated At": event.get("updated_at"),
+            "Portal Link": event.get("portal_link")
+        } for event in results.get("results", [])
+    ]
+
+    markdown = '# Tessian Events\n'
+    markdown += f'## Checkpoint: {results.get("checkpoint")}\n'
+    markdown += f'## Additional Results: {results.get("additional_results")}\n'
+    markdown += f'### Number of events returned: {len(results.get("results", []))}\n'
+    markdown += tableToMarkdown(
+        name="Results",
+        t=summary_results,
+        headers=['Event ID', 'Event Type', 'Event Created At', 'Event Update At', 'Portal Link'],
+    )
 
     return CommandResults(
         outputs_prefix='Tessian.EventsOutput',
@@ -126,9 +142,9 @@ def release_from_quarantine_command(client: Client, args: dict[str, Any]) -> Com
     results = client.release_from_quarantine(event_id)
     results["event_id"] = event_id
 
-    markdown = f'### Release from Quarantine Action for Event ID: {event_id}\n'
-    markdown += f'## Number of Actions Attemped: {results.get("number_of_actions_attempted")}\n'
-    markdown += f'## Number of Actions Succeeded: {results.get("number_of_actions_succeeded")}\n'
+    markdown = f'# Release from Quarantine Action for Event ID: {event_id}\n'
+    markdown += f'## Number of Release Actions Attemped: {results.get("number_of_actions_attempted")}\n'
+    markdown += f'## Number of Release Actions Successfully Initiated: {results.get("number_of_actions_succeeded")}\n'
 
     return CommandResults(
         outputs_prefix='Tessian.ReleaseFromQuarantineOutput',
@@ -148,9 +164,9 @@ def delete_from_quarantine_command(client: Client, args: dict[str, Any]) -> Comm
     results = client.delete_from_quarantine(event_id)
     results["event_id"] = event_id
 
-    markdown = f'### Delete from Quarantine Action for Event ID: {event_id}\n'
-    markdown += f'## Number of Actions Attemped: {results.get("number_of_actions_attempted")}\n'
-    markdown += f'## Number of Actions Succeeded: {results.get("number_of_actions_succeeded")}\n'
+    markdown = f'# Delete from Quarantine Action for Event ID: {event_id}\n'
+    markdown += f'## Number of Delete Actions Attemped: {results.get("number_of_actions_attempted")}\n'
+    markdown += f'## Number of Delete Actions Successfully Initiated: {results.get("number_of_actions_succeeded")}\n'
     return CommandResults(
         outputs_prefix='Tessian.DeleteFromQuarantineOutput',
         outputs_key_field='event_id',
@@ -169,9 +185,9 @@ def delete_from_inbox_command(client: Client, args: dict[str, Any]) -> CommandRe
     results = client.delete_from_inbox(event_id)
     results["event_id"] = event_id
 
-    markdown = f'### Delete from Inbox Action for Event ID: {event_id}\n'
-    markdown += f'## Number of Actions Attemped: {results.get("number_of_actions_attempted")}\n'
-    markdown += f'## Number of Actions Succeeded: {results.get("number_of_actions_succeeded")}\n'
+    markdown = f'# Delete from Inbox Action for Event ID: {event_id}\n'
+    markdown += f'## Number of Delete Actions Attemped: {results.get("number_of_actions_attempted")}\n'
+    markdown += f'## Number of Delete Actions Successfully Initiated: {results.get("number_of_actions_succeeded")}\n'
 
     return CommandResults(
         outputs_prefix='Tessian.DeleteFromInboxOutput',
