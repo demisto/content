@@ -1,6 +1,5 @@
 import unittest
 from unittest.mock import patch
-import pytest
 from XCloudAdditionalAlertInformationWidget import get_additonal_info
 
 
@@ -34,7 +33,7 @@ class TestXCloudAdditionalAlertInformationWidget(unittest.TestCase):
                             'User Agent': 'Browser1'}]
 
         result = get_additonal_info()
-        self.assertEqual(result, expected_result)
+        assert result == expected_result
 
     # Add more test cases as needed
 
