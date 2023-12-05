@@ -8,6 +8,7 @@ from ReadPDFFileV2 import PdfInvalidCredentialsException, PdfPermissionsExceptio
 
 CWD = os.path.join(os.path.dirname(__file__), "test_data")
 
+
 def open_html_file(file):
     with open(Path(__file__).parent / file, encoding='utf-8') as f:
         return f.read()

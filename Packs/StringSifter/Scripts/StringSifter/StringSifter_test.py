@@ -4,6 +4,7 @@ from StringSifter import *
 import pytest
 from pathlib import Path
 
+
 def open_file(path):
     with open(Path(__file__).parent / path) as file:
         return file.read()
@@ -29,14 +30,16 @@ def test_create_rank_strings_args(args, result):
 
 
 def test_stringsifter_entryID(mocker):
-    mocker.patch.object(demisto, 'getFilePath', return_value={'path': str(Path(__file__).parent / 'test_data/test_words.txt'), 'name': 'name'})
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': str(
+        Path(__file__).parent / 'test_data/test_words.txt'), 'name': 'name'})
     cr = stringsifter({'entryID': '123'})
     assert cr.readable_output == open_file('test_data/stringsifter_result.md')
     assert cr.outputs == open_json('test_data/words_rating.json')
 
 
 def test_main_with_flags(mocker):
-    mocker.patch.object(demisto, 'getFilePath', return_value={'path': Path(__file__).parent / 'test_data/test_words.txt', 'name': 'name'})
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': Path(
+        __file__).parent / 'test_data/test_words.txt', 'name': 'name'})
     cr = stringsifter({'limit': '20', 'min_score': '6.34', 'entryID': '123'})
     assert cr.readable_output == open_file('test_data/stringsifter_results_with_filters.md')
     assert cr.outputs == open_json('test_data/words_rating_with_filter.json')

@@ -1,4 +1,3 @@
-import os
 import json
 import pytest
 import demistomock as demisto
@@ -6,6 +5,7 @@ from unittest.mock import patch
 from JiraV3 import (JiraBaseClient, JiraCloudClient, JiraOnPremClient)
 from CommonServerPython import *
 from pathlib import Path
+
 
 def util_load_json(path: str):
     with open(Path(__file__).parent / path, encoding='utf-8') as f:

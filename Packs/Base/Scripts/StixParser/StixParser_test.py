@@ -3,6 +3,7 @@ import json
 import pytest
 from pathlib import Path
 
+
 @pytest.mark.parametrize('indicators_file, expected_result', [
     ('file-stix-ioc.xml', 'file-stix-ioc-results.json'),
     ('ip-stix-ioc.xml', 'ip-stix-ioc-results.json'),

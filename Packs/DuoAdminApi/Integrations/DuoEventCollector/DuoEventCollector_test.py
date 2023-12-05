@@ -6,6 +6,7 @@ from unittest.mock import MagicMock, patch
 from DuoEventCollector import Client, GetEvents, LogType, Params, parse_events, main, parse_mintime, validate_request_order_array
 from pathlib import Path
 
+
 @pytest.fixture
 def ret_fresh_client(ret_fresh_parameters):
     return Client(Params(**ret_fresh_parameters, mintime={}))   # type: ignore

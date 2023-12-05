@@ -1,6 +1,7 @@
 import demistomock as demisto
 import os
 
+
 def test_convert_file(mocker):
     """
     Given:

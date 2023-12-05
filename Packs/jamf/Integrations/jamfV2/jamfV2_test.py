@@ -14,6 +14,7 @@ import json
 from CommonServerPython import *
 from pathlib import Path
 
+
 def load_xml_response(file_name: str) -> str:
     with open(Path(__file__).parent / file_name, encoding='utf-8') as xml_file:
         return xml_file.read()

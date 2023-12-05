@@ -1,6 +1,7 @@
 import demistomock as demisto
 import os
 
+
 class TestParseWordDoc:
     @staticmethod
     def mock_results(mocker):

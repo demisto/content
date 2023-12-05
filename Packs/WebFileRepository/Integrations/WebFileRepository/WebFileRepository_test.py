@@ -396,8 +396,8 @@ def test_process_root_get_download_not_found(mocker, integration_context_filenam
                                   'x/あいうえお/f.dat',
                                   'y/g.dat',
                                   'z.dat',
-                              ]
-                              ),
+                             ]
+                             ),
                          ])
 def test_process_root_get_archive_zip(mocker, integration_context_filename, filenames):
     """

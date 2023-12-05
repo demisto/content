@@ -4,6 +4,7 @@ import demistomock as demisto
 from CommonServerPython import entryTypes
 import os
 
+
 def test_main(mocker):
     rule = '''rule PE_file_identifier
 {

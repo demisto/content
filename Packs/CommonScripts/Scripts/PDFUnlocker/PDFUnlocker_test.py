@@ -1,6 +1,7 @@
 import demistomock as demisto
 from pathlib import Path
 
+
 class TestPDFUnlocker:
     @staticmethod
     def mock_results(mocker):
