@@ -378,7 +378,10 @@ def get_indicator_fields(line, url, feed_tags: list, tlp_color: Optional[str], c
                 field = {f: {}}
                 if 'regex' in fattrs:
                     field[f]['regex'] = re.compile(fattrs['regex'])
-                field[f]['transform'] = fattrs.get('transform', '\\g<0>')
+                if 'transform' not in fattrs:
+                    field[f]['transform'] = r'\g<0>'
+                else:
+                    field[f]['transform'] = fattrs['transform']
                 fields_to_extract.append(field)
 
     line = line.strip()
