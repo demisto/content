@@ -152,17 +152,16 @@ def unpack_all_data_from_dict(entry_context: dict[Any, Any], keys: list[str], co
 
 
 @logger
-def get_current_table(grid_id: str, incident_id: str | None) -> pd.DataFrame:
+def get_current_table(grid_id: str) -> pd.DataFrame:
     """ Get current Data from the grid
 
     Args:
         grid_id: Grid ID to retrieve data from.
-        incident_id: The incident ID.
 
     Returns:
         DataFrame: Existing grid data.
     """
-    custom_fields = get_incident(incident_id).get("CustomFields", {}) or {}
+    custom_fields = demisto.incident().get("CustomFields", {})
     current_table: list[dict] | None = custom_fields.get(grid_id)
     return pd.DataFrame(current_table) if current_table else pd.DataFrame()
 
@@ -290,7 +289,7 @@ def build_grid(context_path: str, keys: list[str], columns: list[str], unpack_ne
 
 @logger
 def build_grid_command(grid_id: str, context_path: str, keys: list[str], columns: list[str], overwrite: bool,
-                       sort_by: list[str], unpack_nested_elements: bool, keys_from_nested: list[str], incident_id: str | None) \
+                       sort_by: list[str], unpack_nested_elements: bool, keys_from_nested: list[str]) \
         -> list[dict[Any, Any]]:
     """ Build Grid in one of the 3 options:
             1. Context_path contains list of dicts where values are of primitive types (str, int, float, bool),
@@ -311,7 +310,6 @@ def build_grid_command(grid_id: str, context_path: str, keys: list[str], columns
             sort_by: Name(s) of the columns to sort by.
             unpack_nested_elements: True for unpacking nested elements, False otherwise.
             keys_from_nested: Keys to extract from nested dictionaries.
-            incident_id: The number of the incident.
 
         Returns:
             list: Table representation for the Grid.
@@ -320,7 +318,7 @@ def build_grid_command(grid_id: str, context_path: str, keys: list[str], columns
     if keys[0] != '*' and (len(columns) != len(keys)):
         raise DemistoException(f'The number of keys: {len(keys)} should match the number of columns: {len(columns)}.')
     # Get old Data
-    old_table = get_current_table(grid_id=grid_id, incident_id=incident_id)
+    old_table = get_current_table(grid_id=grid_id)
     # Change columns to all lower case (underscores allowed).
     columns = [normalized_column_name(phrase) for phrase in columns]
     # Create new Table from the given context path.
@@ -346,23 +344,12 @@ def build_grid_command(grid_id: str, context_path: str, keys: list[str], columns
     return filtered_table
 
 
-def get_incident(incident_id: str | None):
-    if incident_id:
-        res = demisto.executeCommand('GetIncidentsByQuery', {
-            'query': f"id:({incident_id})"
-        })
-        for res_obj in res:
-            if content := res_obj['Contents']:
-                return json.loads(content)[0]
-    return demisto.incident()
-
-
 def main():  # pragma: no cover
     args = demisto.args()
     try:
         # Normalize grid id from any form to connected lower words, e.g. my_word/myWord -> myword
         grid_id = normalized_string(args.get('grid_id'))
-        incident_id = args.get('incident_id')
+
         context_path = args.get('context_path')
         # Build updated table
         table = build_grid_command(grid_id=grid_id,
@@ -372,24 +359,23 @@ def main():  # pragma: no cover
                                    columns=argToList(args.get('columns')),
                                    sort_by=argToList(args.get('sort_by')),
                                    unpack_nested_elements=argToBoolean(args.get('unpack_nested_elements')),
-                                   keys_from_nested=argToList(args.get('keys_from_nested')),
-                                   incident_id=incident_id
+                                   keys_from_nested=argToList(args.get('keys_from_nested'))
                                    )
         # Execute automation 'setIncident` which change the Context data in the incident
-        res = demisto.executeCommand("setIncident", remove_empty_elements({
-            "id": incident_id,
+        res = demisto.executeCommand("setIncident", {
             'customFields': {
                 grid_id: table,
-            }})
-        )
+            },
+        })
         # we want to check if the incident was succefully updated
         # we execute command and not using `demisto.incident()` because we want to get the updated incident and context
-        res = demisto.executeCommand("getIncidents", {"id": get_incident(incident_id).get("id")})
+        res = demisto.executeCommand("getIncidents", {"id": demisto.incident().get("id")})
         custom_fields = {}
         for res_obj in res:
             if res_obj['Contents']:
                 data = res_obj["Contents"]["data"]
                 custom_fields = data[0].get("CustomFields") if data else {}
+
         if table and grid_id not in custom_fields:
             raise ValueError(f"The following grid id was not found: {grid_id}. Please make sure you entered the correct "
                              f"incident type with the \"Machine name\" as it appears in the incident field editor in "
