@@ -573,6 +573,7 @@ pre_job:
       policy: pull-push
   script:
     - source .gitlab/helper_functions.sh
+    - *create_artifacts_and_server_type_instance_folders
     - *setup-artifactory
     - *stop_contrib_external_build
     - *check_build_files_are_up_to_date
