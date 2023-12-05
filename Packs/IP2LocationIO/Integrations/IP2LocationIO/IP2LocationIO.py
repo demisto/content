@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 
 
 import urllib3
-from typing import Any, Dict,List
+from typing import Any, Dict, List
 
 # Disable insecure warnings
 urllib3.disable_warnings()
