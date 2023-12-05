@@ -571,6 +571,17 @@ pre_job:
         - content-test-conf
         - infra
       policy: pull-push
+    - key:
+        files:
+          - "poetry.lock"
+          - "package-lock.json"
+        prefix: dev-content
+      paths:
+        - $PIP_CACHE_DIR
+        - .venv/
+        - node_modules/
+        - .npm/
+      policy: pull-push
   script:
     - source .gitlab/helper_functions.sh
     - *create_artifacts_and_server_type_instance_folders

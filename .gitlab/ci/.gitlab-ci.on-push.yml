@@ -128,7 +128,7 @@ validate-content-conf:
     - if: "$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/"
     - if: "$NIGHTLY"
   cache:
-    policy: pull-push
+    policy: pull
   variables:
     KUBERNETES_CPU_REQUEST: 2000m
     EXTRACT_PRIVATE_TESTDATA: "true"
