@@ -188,6 +188,11 @@
         "VirusTotal": {
             "mandatory": false,
             "display_name": "Analyze suspicious hashes, URLs, domains and IP addresses"
+        },
+
+        "CIRCL": {
+            "mandatory": false,
+            "display_name": "Searches for CVE information using [circl.lu](https://www.circl.lu/services/cve-search/)."
         }
 
     },

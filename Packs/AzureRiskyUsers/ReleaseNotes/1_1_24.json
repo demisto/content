@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The *page* argument for the ***azure-risky-users-list*** command is now depracated. Please use the *page_size* and *next_token* arguments instead."
+}

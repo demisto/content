@@ -173,3 +173,38 @@ def test_context_path_are_correct(mocker, data, parse_all, header, value, expect
     res = parse_list(parse_all, header, value, list_name="getListRow", list_separator='\n')
     assert res.outputs_prefix == 'GetListRow'
     assert res.outputs_key_field == expected_context_key
+
+
+@pytest.mark.parametrize(
+    "list_data, expected_headers, expected_lines",
+    [
+        ("header_a ,header_b\nline_1_item_a,line_1_item_b\nline_2_item_a,line_2_item_b",
+         ['header_a ', 'header_b'],
+         [['line_1_item_a', 'line_1_item_b'], ['line_2_item_a', 'line_2_item_b']]),
+        ("header_a ,header_b\nline\r_1_item_a,line_1_item_b\nline\r_2_item_a,line_2_item_b",
+         ['header_a ', 'header_b'],
+         [['line\r_1_item_a', 'line_1_item_b'], ['line\r_2_item_a', 'line_2_item_b']]),
+        ("header_a ,header_b\r\nline_1_item_a,line_1_item_b\r\nline_2_item_a,line_2_item_b",
+         ['header_a ', 'header_b'],
+         [['line_1_item_a', 'line_1_item_b'], ['line_2_item_a', 'line_2_item_b']])
+    ]
+)
+def test_list_to_headers_and_lines(list_data, expected_headers, expected_lines):
+    """
+    Given:
+        - list_data.
+        - Case 1: list data without any \r.
+        - Case 2: list data with \r in the middle of a line.
+        - Case 3: list data with \r followed by \n at the end of each line (except for last).
+    When:
+        - Running list_to_headers_and_lines.
+    Then:
+        - Ensure that the right parts of line was parsed into headers & lines.
+        - Case 1: Should split the lines by \n.
+        - Case 2: Should split the lines by \n and not do anything about the \r.
+        - Case 3: Should split the lines by \r\n.
+    """
+    from GetListRow import list_to_headers_and_lines
+    headers, lines = list_to_headers_and_lines(list_data, ",")
+    assert expected_headers == headers
+    assert expected_lines == lines

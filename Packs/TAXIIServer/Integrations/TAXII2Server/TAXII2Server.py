@@ -643,12 +643,12 @@ def create_sco_stix_uuid(xsoar_indicator: dict, stix_type: str) -> str:
     """
     Create uuid for sco objects.
     """
-    if stixid := xsoar_indicator.get('CustomFields', {}).get('stixid'):
+    if stixid := (xsoar_indicator.get('CustomFields') or {}).get('stixid'):
         return stixid
     value = xsoar_indicator.get('value')
     if stix_type == 'user-account':
-        account_type = xsoar_indicator.get('CustomFields', {}).get('accounttype')
-        user_id = xsoar_indicator.get('CustomFields', {}).get('userid')
+        account_type = (xsoar_indicator.get('CustomFields') or {}).get('accounttype')
+        user_id = (xsoar_indicator.get('CustomFields') or {}).get('userid')
         unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE,
                                f'{{"account_login":"{value}","account_type":"{account_type}","user_id":"{user_id}"}}')
     elif stix_type == 'windows-registry-key':
@@ -675,11 +675,11 @@ def create_sdo_stix_uuid(xsoar_indicator: dict, stix_type: str) -> str:
     """
     Create uuid for sdo objects.
     """
-    if stixid := xsoar_indicator.get('CustomFields', {}).get('stixid'):
+    if stixid := (xsoar_indicator.get('CustomFields') or {}).get('stixid'):
         return stixid
     value = xsoar_indicator.get('value')
     if stix_type == 'attack-pattern':
-        if mitre_id := xsoar_indicator.get('CustomFields', {}).get('mitreid'):
+        if mitre_id := (xsoar_indicator.get('CustomFields') or {}).get('mitreid'):
             unique_id = uuid.uuid5(SERVER.namespace_uuid, f'{stix_type}:{mitre_id}')
         else:
             unique_id = uuid.uuid5(SERVER.namespace_uuid, f'{stix_type}:{value}')
@@ -757,7 +757,7 @@ def convert_sco_to_indicator_sdo(stix_object: dict, xsoar_indicator: dict) -> di
         pattern=pattern,
         valid_from=stix_object['created'],
         valid_until=expiration_parsed,
-        description=xsoar_indicator.get('CustomFields', {}).get('description', ''),
+        description=(xsoar_indicator.get('CustomFields') or {}).get('description', ''),
         pattern_type='stix',
         labels=labels
     )
@@ -831,7 +831,7 @@ def create_stix_object(xsoar_indicator: dict, xsoar_type: str, extensions_dict: 
         for field in SERVER.fields_to_present:
             value = xsoar_indicator.get(field)
             if not value:
-                value = xsoar_indicator.get('CustomFields', {}).get(field)
+                value = (xsoar_indicator.get('CustomFields') or {}).get(field)
             xsoar_indicator_to_return[field] = value
     else:
         xsoar_indicator_to_return = xsoar_indicator
@@ -843,7 +843,7 @@ def create_stix_object(xsoar_indicator: dict, xsoar_type: str, extensions_dict: 
                                                                                          stix_object, xsoar_indicator_to_return)
 
     if is_sdo:
-        stix_object['description'] = xsoar_indicator.get('CustomFields', {}).get('description', "")
+        stix_object['description'] = (xsoar_indicator.get('CustomFields') or {}).get('description', "")
     return stix_object, extension_definition, extensions_dict
 
 
@@ -859,7 +859,7 @@ def build_sco_object(stix_object: Dict[str, Any], xsoar_indicator: Dict[str, Any
         Dict[str, Any]: A JSON object of a STIX indicator
     """
 
-    custom_fields = xsoar_indicator.get('CustomFields', {})
+    custom_fields = xsoar_indicator.get('CustomFields') or {}
 
     if stix_object['type'] == 'asn':
         stix_object['number'] = xsoar_indicator.get('value', '')
@@ -1411,7 +1411,7 @@ def create_entity_b_stix_objects(relationships: list[dict[str, Any]], iocs_value
     entity_b_values = ""
     for relationship in relationships:
         if relationship:
-            if relationship.get('CustomFields', {}).get('revoked', False):
+            if (relationship.get('CustomFields') or {}).get('revoked', False):
                 continue
             if (entity_b_value := relationship.get('entityB')) and entity_b_value not in iocs_value_to_id:
                 iocs_value_to_id[entity_b_value] = ""

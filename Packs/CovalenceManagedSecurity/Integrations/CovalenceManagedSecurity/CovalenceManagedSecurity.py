@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 import os
 import requests
 import traceback
@@ -35,7 +37,7 @@ class Portal():
         else:
             raise ValueError('Bearer is missing')
 
-    class AuthScheme(object):
+    class AuthScheme:
         FES = 'FieldEffectAuth'
         BEARER = 'Bearer'
         KEY = 'FieldEffectKey'
@@ -59,6 +61,9 @@ class Portal():
         return self._request(uri, method='GET', query=query, headers=headers, remove_subdomain=remove_subdomain,
                              **kwargs)
 
+    def post(self, uri, query=None, headers=None, remove_subdomain=False, **kwargs):
+        return self._request(uri, method='POST', query=query, headers=headers, remove_subdomain=remove_subdomain, **kwargs)
+
     def _request(self, uri, method='GET', query=None, json=None, data=None, files=None, headers=None,
                  remove_subdomain=False, **kwargs):
         all_headers = {
@@ -76,7 +81,7 @@ class Portal():
             url = url.replace('services.', '')
 
         if self.verbose:
-            sys.stdout.write('{} {} '.format(method, url))
+            sys.stdout.write(f'{method} {url} ')
 
         if method == 'GET':
             r = requests.get(url, headers=all_headers, params=query)
@@ -87,7 +92,7 @@ class Portal():
         elif method == 'DELETE':
             r = requests.delete(url, headers=all_headers, params=query)
         else:
-            raise AssertionError('Unsupported HTTP method: {}'.format(method))
+            raise AssertionError(f'Unsupported HTTP method: {method}')
 
         if self.verbose:
             sys.stdout.write(str(r.status_code) + '\n')
@@ -140,6 +145,17 @@ class Portal():
         org_details = r.json()
         return org_details.get('active_response_profile', None)
 
+    def transition_aro(self, aro_id, resolution, comment="", is_comment_sensitive=False):
+        request = {
+            "status": "Open",
+            "resolution": resolution
+        }
+        if comment:
+            request["comment"] = {"text": comment, "sensitive": is_comment_sensitive}
+
+        r = self.post("aros/{aro_id}/transition", aro_id=aro_id, json=request)
+        return r.json()
+
 
 ''' Commands '''
 
@@ -158,8 +174,7 @@ def portal_check():
 
 def fetch_incidents(last_run, first_run_time_range):
     last_fetch = last_run.get('last_fetch', None)
-    last_aro_id = last_run.get('last_aro_id', None)
-    aro_time_max = datetime.utcnow()
+    aro_time_max = datetime.utcnow() - timedelta(seconds=1)
 
     if last_fetch is None:
         aro_time_min = aro_time_max - timedelta(days=first_run_time_range)
@@ -175,14 +190,13 @@ def fetch_incidents(last_run, first_run_time_range):
 
     incidents = []
 
-    latest_created_time = aro_time_min
-    # aros is ordered by most recent ARO
+    # AROs are ordered by most recent ARO
     # it's required to traverse aros in chronological order (so last element first)
     # to avoid duplicating incidents
     for a in reversed(aros):
-        if a['ID'] != last_aro_id:
-            created_time = dateparser.parse(a['creation_time'])
-            assert created_time is not None, f'could not parse {a["creation_time"]}'
+        created_time = dateparser.parse(a['creation_time'])
+        assert created_time is not None, f'could not parse {a["creation_time"]}'
+        if created_time != last_fetch:
             created_time_str = created_time.strftime(DATE_FORMAT)
 
             if a.get('organization', None):
@@ -226,11 +240,10 @@ def fetch_incidents(last_run, first_run_time_range):
                 incident['severity'] = 0
             if a.get('details', None):
                 incident['details'] = a['details']
-                if a.get('steps', None):
-                    if len(a['steps']) > 0:
-                        incident['details'] += '\n\nMitigation Steps\n'
-                        for step in a['steps']:
-                            incident['details'] += f'''- {step['label']}\n'''
+                if a.get('steps', None) and len(a['steps']) > 0:
+                    incident['details'] += '\n\nMitigation Steps\n'
+                    for step in a['steps']:
+                        incident['details'] += f'''- {step['label']}\n'''
                 if org_id:
                     active_response_profile = p.get_active_response_profile(org_id)
                     if active_response_profile:
@@ -242,12 +255,7 @@ def fetch_incidents(last_run, first_run_time_range):
 
             incidents.append(incident)
 
-            if created_time > latest_created_time:
-                latest_created_time = created_time
-                last_aro_id = a['ID']
-
-    next_run = {'last_fetch': latest_created_time.strftime(DATE_FORMAT),
-                'last_aro_id': last_aro_id}
+    next_run = {'last_fetch': aro_time_max.strftime(DATE_FORMAT)}
 
     return next_run, incidents
 
@@ -299,6 +307,12 @@ def list_organizations():
     return p.get_organizations()
 
 
+def transition_aro_command():
+    p = Portal(bearer=API_KEY)
+    args = demisto.args()
+    return p.transition_aro(**args)
+
+
 def main():
     demisto.info(f'{demisto.command()} is called')
     try:
@@ -337,6 +351,21 @@ def main():
                                                   headerTransform=string_to_table_header)
             else:
                 readable_output = 'No organizations found'
+
+            results = CommandResults(
+                outputs_prefix='FESPortal.Org',
+                outputs_key_field='ID',
+                outputs=r,
+                readable_output=readable_output
+            )
+            return_results(results)
+        elif demisto.command() == 'cov-mgsec-transition-aro':
+            r = transition_aro_command()
+            if r:
+                readable_output = tableToMarkdown('ARO', r, removeNull=True,
+                                                  headerTransform=string_to_table_header)
+            else:
+                readable_output = 'Error transitioning ARO.'
 
             results = CommandResults(
                 outputs_prefix='FESPortal.Org',
