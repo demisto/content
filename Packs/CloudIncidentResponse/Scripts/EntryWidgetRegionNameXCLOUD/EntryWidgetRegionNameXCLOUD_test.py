@@ -1,6 +1,8 @@
 import unittest
 from unittest.mock import patch
 from EntryWidgetRegionNameXCLOUD import main
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 
 class TestYourScript(unittest.TestCase):
