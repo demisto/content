@@ -103,7 +103,7 @@ def test_get_files_names_in_path():
     assert 'scanned.pdf' in pdf_file_names
 
     pdf_file_names = get_files_names_in_path(CWD, '*.pdf', full_path=True)
-    assert f"{CWD}/text-only.pdf' in pdf_file_names
+    assert f"{CWD}/text-only.pdf" in pdf_file_names
 
 
 def test_get_images_paths_in_path():

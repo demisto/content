@@ -183,17 +183,17 @@ class TestCreateFile:
     @classmethod
     def setup_method(cls):
         # creates the file
-        with open(TestCreateFile.path, 'w') as _file:
+        with open(Path(__file__).parent / TestCreateFile.path, 'w') as _file:
             _file.write('')
 
     @classmethod
     def teardown_method(cls):
         # removes the file when done
-        os.remove(TestCreateFile.path)
+        os.remove(Path(__file__). parent / TestCreateFile.path)
 
     @staticmethod
     def get_file(path):
-        with open(path) as _file:
+        with open(Path(__file__).parent / path) as _file:
             return _file.read()
 
     @staticmethod

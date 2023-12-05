@@ -5,23 +5,24 @@ from CommonServerPython import DemistoException
 import CreateIncidents
 import demistomock as demisto
 import pytest
+from pathlib import Path
 
 Attachment = namedtuple('Attachment', ['name', 'content'])
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with open(Path(__file__).parent / path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
 def util_loaf_file(path):
-    with open(path, mode='rb') as f:
+    with open(Path(__file__).parent / path, mode='rb') as f:
         return f.read()
 
 
-incident_list = util_load_json(os.path.dirname(__file__) + '/test_data/incidents_examples.json')
+incident_list = util_load_json('/test_data/incidents_examples.json')
 incident = util_loaf_file('test_data/incidents.json')
-context_list = util_load_json(os.path.dirname(__file__) + '/test_data/context_examples.json')
+context_list = util_load_json('/test_data/context_examples.json')
 attachment_content = util_loaf_file('test_data/YOU HAVE WON 10000$.eml')
 CLIENT_MOCK = CreateIncidents.Client('example_url.com', False, False)
 

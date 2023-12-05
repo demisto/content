@@ -1,6 +1,7 @@
 import pytest
 import json
 import re
+from pathlib import Path
 from datetime import datetime, timedelta
 from CommonServerPython import parse_date_range, DemistoException
 from CortexDataLake import FIRST_FAILURE_TIME_CONST, LAST_FAILURE_TIME_CONST
@@ -30,7 +31,7 @@ QUERY_TIMESTAMPS_TEST_CASES = [
 
 
 def load_test_data(json_path):
-    with open(json_path) as f:
+    with open(Path(__file__).parent / json_path) as f:
         return json.load(f)
 
 

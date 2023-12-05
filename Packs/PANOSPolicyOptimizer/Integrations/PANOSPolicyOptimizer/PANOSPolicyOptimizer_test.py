@@ -3,7 +3,7 @@ from CommonServerPython import *
 from PANOSPolicyOptimizer import Client, policy_optimizer_get_rules_command, policy_optimizer_get_dag_command, define_position, \
     get_policy_optimizer_statistics_command, policy_optimizer_no_apps_command, policy_optimizer_get_unused_apps_command, \
     is_cms_selected
-
+from pathlib import Path
 BASE_URL = 'https://test.com'
 
 
@@ -16,7 +16,7 @@ def get_panorama_instance_client():
 
 
 def read_json_file(path):
-    with open(path, encoding='utf-8') as f:
+    with open(Path(__file__).parent / path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
