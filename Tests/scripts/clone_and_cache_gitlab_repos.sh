@@ -103,9 +103,12 @@ get_cache_gitlab_repositories() {
     user_info="${user}:${token}@"
   fi
 
+  echo "./${repo}"
   if [ -d "./${repo}" ] ; then
     cd ./"${repo}"
+    echo "test"
     git remote set-url origin "https://${user_info}${host}/${repo_name}.git"
+    echo "test2"
     git fetch -p -P
     cd ..
   else
