@@ -11368,12 +11368,15 @@ def replace_spaces_in_credential(credential):
 
 def has_passed_time_threshold(timestamp_str, seconds_threshold):
     """
-    Cheks if the time difference between the current time and the timestamp is greater than the threshold, in seconds.
-    Args:
-        timestamp_str (str): The timestamp string in the folloing format: '%Y-%m-%dT%H:%M:%SZ'
-        seconds_threshold (int): The threshold in seconds.
-    Returns:
-        boolean: True if the threshold has passed, False otherwise.
+    Checks if the time difference between the current time and the timestamp is greater than the threshold.
+    
+    :type timestamp_str: ``str``
+    :param timestamp_str: The timestamp to compare the current time to.
+    :type seconds_threshold: ``int``
+    :param seconds_threshold: The threshold in seconds.
+    
+    :return: True if the time difference is greater than the threshold, otherwise False.
+    :rtype: ``bool``
     """
     try:
         timestampt = dateparser.parse(timestamp_str,['%Y-%m-%dT%H:%M:%SZ'])
