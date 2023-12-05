@@ -100,21 +100,25 @@ fi
 
 CI_SERVER_HOST=${CI_SERVER_HOST:-code.pan.run}
 
-echo "Getting content-test-conf and infra repositories with branch:${SEARCHED_BRANCH_NAME}, with fallback to master"
+echo "Getting content-test-conf and infra repositories with branch:${SEARCHED_BRANCH_NAME}"
 
 if [ -d "./infra" ] ; then
   cd ./infra
+  git remote set-url origin https://"${user_info}""${host}"/infra.git
   git fetch -p -P
   cd ..
 else
+  echo "Getting infra repository with branch:${SEARCHED_BRANCH_NAME}, with fallback to master"
   clone_repository_with_fallback_branch "${CI_SERVER_HOST}" "gitlab-ci-token" "${CI_JOB_TOKEN}" "${CI_PROJECT_NAMESPACE}/infra" "${SEARCHED_BRANCH_NAME}" 3 10 "master"
 fi
 
 if [ -d "./content-test-conf" ] ; then
   cd ./content-test-conf
+  git remote set-url origin https://"${user_info}""${host}"/content-test-conf.git
   git fetch -p -P
   cd ..
 else
+  echo "Getting content-test-conf repository with branch:${SEARCHED_BRANCH_NAME}, with fallback to master"
   clone_repository_with_fallback_branch "${CI_SERVER_HOST}" "gitlab-ci-token" "${CI_JOB_TOKEN}" "${CI_PROJECT_NAMESPACE}/content-test-conf" "${SEARCHED_BRANCH_NAME}" 3 10 "master"
 fi
 
