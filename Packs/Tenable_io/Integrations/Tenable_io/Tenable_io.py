@@ -658,6 +658,25 @@ def try_get_assets_chunks(client: Client, export_uuid: str, assets_last_run):
     return status
 
 
+def try_get_chunks(client: Client, export_uuid: str):
+    """
+    If job has succeeded (status FINISHED) get all information from all chunks available.
+    Args:
+        client: Client class object.
+        export_uuid: The UUID of the vulnerabilities export job.
+
+    Returns: All information from all chunks available.
+
+    """
+    vulnerabilities = []
+    status, chunks_available = client.get_vuln_export_status(export_uuid=export_uuid)
+    demisto.info(f'Report status is {status}, and number of available chunks is {chunks_available}')
+    if status == 'FINISHED':
+        for chunk_id in chunks_available:
+            vulnerabilities.extend(client.download_vulnerabilities_chunk(export_uuid=export_uuid, chunk_id=chunk_id))
+    return vulnerabilities, status
+
+
 def call_send_data_to_xsiam(assets, vulnerabilities):
     """Sends assets and vulnerabilities to XSIAM"""
 
@@ -1587,29 +1606,28 @@ def export_scan_command(args: dict[str, Any], client: Client) -> PollResult:
     status_response = client.check_export_scan_status(scan_id, file_id)
     demisto.debug(f'{status_response=}')
 
-    # match status_response.get('status'):
-    #     case 'ready':
-    #         return PollResult(
-    #             client.download_export_scan(
-    #                 scan_id, file_id, args['format']),
-    #             continue_to_poll=False)
-    #
-    #     case 'loading':
-    #         return PollResult(
-    #             None,
-    #             continue_to_poll=True,
-    #             args_for_next_run={
-    #                 'fileId': file_id,
-    #                 'scanId': scan_id,
-    #                 'format': args['format'],  # not necessary but avoids confusion
-    #             })
-    #
-    #     case _:
-    #         raise DemistoException(
-    #             'Tenable IO encountered an error while exporting the scan report file.\n'
-    #             f'Scan ID: {scan_id}\n'
-    #             f'File ID: {file_id}\n')
+    match status_response.get('status'):
+        case 'ready':
+            return PollResult(
+                client.download_export_scan(
+                    scan_id, file_id, args['format']),
+                continue_to_poll=False)
 
+        case 'loading':
+            return PollResult(
+                None,
+                continue_to_poll=True,
+                args_for_next_run={
+                    'fileId': file_id,
+                    'scanId': scan_id,
+                    'format': args['format'],  # not necessary but avoids confusion
+                })
+
+        case _:
+            raise DemistoException(
+                'Tenable IO encountered an error while exporting the scan report file.\n'
+                f'Scan ID: {scan_id}\n'
+                f'File ID: {file_id}\n')
 
 
 def get_audit_logs_command(client: Client, from_date: Optional[str] = None, to_date: Optional[str] = None,
@@ -1732,8 +1750,10 @@ def fetch_assets_command(client: Client, assets_last_run):
         assets fetched from the API.
     """
     assets = []
-    export_uuid = assets_last_run.get('assets_export_uuid')    # if already in assets_last_run meaning its still polling chunks from api
-    available_chunks = assets_last_run.get('assets_available_chunks', [])  # if exists, still downloading chunks from prev fetch call
+    # if already in assets_last_run meaning its still polling chunks from api
+    export_uuid = assets_last_run.get('assets_export_uuid')
+    # if exists, still downloading chunks from prev fetch call
+    available_chunks = assets_last_run.get('assets_available_chunks', [])
     if available_chunks:
         assets, assets_last_run = handle_assets_chunks(client, assets_last_run)
     elif export_uuid:
@@ -1753,23 +1773,14 @@ def fetch_assets_command(client: Client, assets_last_run):
     return assets, assets_last_run
 
 
-def try_get_chunks(client: Client, export_uuid: str):
-    """
-    If job has succeeded (status FINISHED) get all information from all chunks available.
-    Args:
-        client: Client class object.
-        export_uuid: The UUID of the vulnerabilities export job.
+def run_assets_fetch(client, last_run):
 
-    Returns: All information from all chunks available.
+    demisto.info("fetch assets from the API")
+    # starting new fetch for assets, not polling from prev call
+    if not last_run.get('assets_export_uuid'):
+        generate_assets_export_uuid(client, last_run)
 
-    """
-    vulnerabilities = []
-    status, chunks_available = client.get_vuln_export_status(export_uuid=export_uuid)
-    demisto.info(f'Report status is {status}, and number of available chunks is {chunks_available}')
-    if status == 'FINISHED':
-        for chunk_id in chunks_available:
-            vulnerabilities.extend(client.download_vulnerabilities_chunk(export_uuid=export_uuid, chunk_id=chunk_id))
-    return vulnerabilities, status
+    return fetch_assets_command(client, last_run)
 
 
 def fetch_vulnerabilities(client: Client, last_run: dict, severity: List[str]):
@@ -1810,19 +1821,11 @@ def run_vulnerabilities_fetch(client, last_run, severity):
     return fetch_vulnerabilities(client, last_run, severity)
 
 
-def run_assets_fetch(client, last_run):
-
-    demisto.info("fetch assets from the API")
-    # starting new fetch for assets, not polling from prev call
-    if not last_run.get('assets_export_uuid'):
-        generate_assets_export_uuid(client, last_run)
-
-    return fetch_assets_command(client, last_run)
-
-
 ASSETS = 'assets'
 EVENTS = 'events'
 DATA_TYPES = [ASSETS, EVENTS]
+
+
 def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
                          chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type="events"):
     """
@@ -1973,11 +1976,6 @@ def main():  # pragma: no cover
 
     demisto.debug(f'Command being called is {command}')
     try:
-        h = AUTH_HEADERS | {
-    'accept': "application/json",
-    'content-type': "application/json",
-    'User-Agent': USER_AGENT_HEADERS_VALUE
-}
         headers = {'X-ApiKeys': f'accessKey={access_key}; secretKey={secret_key}',
                    "Accept": "application/json"}
         client = Client(

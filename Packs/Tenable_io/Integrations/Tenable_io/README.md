@@ -1599,7 +1599,8 @@ Scans that are actively running cannot be exported (run "tenable-io-list-scans" 
 >Preparing scan report:
 
 >Returned file: scan_16_SSE-144f3dc6-cb2d-42fc-b6cc-dd20b807735f-html.html [Download](https://www.paloaltonetworks.com/cortex)
-> 
+
+
 ### tenable-get-audit-logs
 ***
 Returns audit logs extracted from Tenable io.
