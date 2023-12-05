@@ -20,7 +20,7 @@ MOCK_INVALID_IPS = ['b', '2.2.2', 'n', '2001:0db8:85a3:0000:0000:8a2e:0370:7334'
 MOCK_VALID_IPS = ['1.1.1.1', '3.3.3.3', '8.8.8.8', '4.4.4.4', '1.1.2.2', '6.6.6.6', '1.1.2.2']
 MOCK_FILE_RES = {
     'id': 'test_id',
-    'path': 'test_data/test_ips_file.csv',
+    'path': str(Path(__file__).parent / 'test_data/test_ips_file.csv'),
     'name': 'test_ips_file.csv',
 }
 DEFAULT_RELIABILITY = 'B - Usually reliable'

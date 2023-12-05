@@ -11,7 +11,7 @@ BASE_URL = 'https://cve.circl.lu/api/'
 
 
 def util_load_json(path: str):
-    with open(path, encoding='utf-8') as f:
+    with open(Path(__file__).parent / path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -67,8 +67,8 @@ def test_indicator_creation():
         return a Common.CVE indicator type.
     """
 
-    response = util_load_json(os.path.join(Path.cwd(), 'test_data', 'response.json'))
-    correct_indicator = util_load_json(os.path.join(Path.cwd(), 'test_data', 'indicator.json'))
+    response = util_load_json(os.path.join('test_data', 'response.json'))
+    correct_indicator = util_load_json(os.path.join('test_data', 'indicator.json'))
     indicator = generate_indicator(response).to_context()
     assert set(indicator["CVE(val.ID && val.ID == obj.ID)"]["Tags"]) == set(
         correct_indicator["CVE(val.ID && val.ID == obj.ID)"]["Tags"])
@@ -139,7 +139,7 @@ def test_multiple_cve(cve_id_arg, response_data, expected, requests_mock):
     """
     cves = argToList(cve_id_arg.get('cve'))
     for test_file, cve in zip(response_data, cves):
-        response = util_load_json(os.path.join(os.path.join(Path.cwd(), 'test_data', test_file)))
+        response = util_load_json(os.path.join(os.path.join('test_data', test_file)))
         url_for_mock = os.path.join('https://cve.circl.lu/api/cve', cve)
         requests_mock.get(url_for_mock, json=response)
     client = Client(base_url=BASE_URL, verify=False, proxy=False)
