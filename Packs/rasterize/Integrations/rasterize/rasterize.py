@@ -175,7 +175,8 @@ def is_chrome_running_locally(port):
             exp_str = str(exp)
             demisto.debug(f"Failed to connect to Chrome on port {port=} on iteration {i+1}. ConnectionError, {exp_str=}, {exp=}")
 
-        time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS)  # pylint: disable=E9003
+        # mild backoff
+        time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS + i * 2)  # pylint: disable=E9003
 
     return None
 
