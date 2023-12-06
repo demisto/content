@@ -27,7 +27,7 @@ from AbnormalSecurity import (Client, check_the_status_of_an_action_requested_on
                               get_a_list_of_unanalyzed_abuse_mailbox_campaigns_command, fetch_incidents, ISO_8601_FORMAT)
 from CommonServerPython import DemistoException
 from datetime import datetime
-
+from pathlib import Path
 from test_data.fixtures \
     import BASE_URL, apikey
 
@@ -49,7 +49,7 @@ def util_load_json(path):
 
 
 def util_load_response(path):
-    with open(path, encoding='utf-8') as f:
+    with open(Path(__file__).parent / path, encoding='utf-8') as f:
         return MockResponse(f.read(), 200)
 
 

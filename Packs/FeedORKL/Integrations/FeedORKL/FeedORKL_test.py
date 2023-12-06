@@ -4,7 +4,6 @@ from importlib import import_module
 from test_data.feed_data import RESPONSE_DATA
 from unittest.mock import patch
 from FeedORKL import Client, fetch_indicator_command, get_reports_command, module_of_testing, DemistoException
-
 FeedORKL = import_module('FeedORKL')
 main = FeedORKL.main
 
