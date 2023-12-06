@@ -9112,6 +9112,7 @@ class TestIsIntegrationCommandExecution:
 
 @pytest.mark.parametrize("timestamp_str, seconds_threshold, expected", [
     ("2019-01-01T00:00:00Z", 60, True), 
+    ("2022-01-01T00:00:00GMT+2", 60, True), 
     ("2022-01-01T00:00:00Z", 60, False),
     ("invalid", 60, ValueError)
 ])
@@ -9124,8 +9125,9 @@ def test_has_passed_time_threshold__different_timestamps(timestamp_str, seconds_
     Then:
         Test - Assert the function returns the expected result.
         Case 1: The timestamp is in the past.
-        Case 2: The timestamp did not pass the threshold.
-        Case 3: The timestamp is invalid.
+        Case 2: The timestamp is in the past only becuas the time zone is GMT+2.
+        Case 3: The timestamp did not pass the threshold.
+        Case 4: The timestamp is invalid.
     """
     from CommonServerPython import has_passed_time_threshold
     mocker.patch('CommonServerPython.datetime', autospec=True)
