@@ -93,20 +93,17 @@ filter _raw_log ~= "^(?:\S+\s+){5}\{" // JSON Format
     target_client_name = if(target_client_id != null, resource_name),
     verdict = if(is_malicious = "1", "MALICIOUS", is_prohibited = "1", "PROHIBITED", is_quarantined = "1", "QUARANTINED", is_skipped = "1", "SKIPPED")
 
-| alter attachments_md5_fingerprints = arraymap(attachments, arraystring(arrayfilter("@element" -> fingerprints[], "@element" -> algo = "md5"), ","))
-| alter attachments_sha256_fingerprints = arraymap(attachments, arraystring(arrayfilter("@element" -> fingerprints[], "@element" -> algo ~= "sha.*256"), ","))
+| alter attachments_md5_fingerprints = arraymap(email_attachments, arraystring(arrayfilter("@element" -> fingerprints[], "@element" -> algo = "md5"), ","))
+| alter attachments_sha256_fingerprints = arraymap(email_attachments, arraystring(arrayfilter("@element" -> fingerprints[], "@element" -> algo ~= "sha.*256"), ","))
 | alter attachments_md5_hashes = arraystring(arraymap(attachments_md5_fingerprints, "@element" -> hash), ",")
 | alter attachments_sha256_hashes = arraystring(arraymap(attachments_sha256_fingerprints, "@element" -> hash), ",")
-
-| alter 
-    file_hash_md5 = coales
 | alter 
     xdm.alert.severity = syslog_severity,
     xdm.email.attachment.extension = email_attachments_extension, 
     xdm.email.attachment.filename = email_attachments_filename,
     xdm.email.attachment.file_type = email_attachments_mime_type, 
-    xdm.email.attachment.md5 = email_attachments_md5, 
-    xdm.email.attachment.sha256 = email_attachments_sha256, 
+    xdm.email.attachment.md5 = arraystring(email_attachments_md5, ","),
+    xdm.email.attachment.sha256 = arraystring(email_attachments_sha256, ","),
     xdm.email.attachment.size = email_attachments_size,
     xdm.email.message_id = email_id,
     xdm.email.recipients = if(array_length(email_recipients) > 0, email_recipients),
@@ -139,7 +136,7 @@ filter _raw_log ~= "^(?:\S+\s+){5}\{" // JSON Format
     xdm.target.application.name = concat(target_client_id, " (", target_client_name, ")"),
     xdm.target.application.version = sw_version,
     xdm.target.file.directory = folder_name,
-    xdm.target.file.file_type = mime_type,
+    xdm.target.file.file_type = file_mime_type,
     xdm.target.file.filename = coalesce(file_name, if(event ~= "file|upload" or description ~= "file", resource_name)),
     xdm.target.file.md5 = coalesce(file_hash_md5, file_fingerprints_md5),
     xdm.target.file.path = coalesce(file_path, folder_path, syscheck_path, syscheck_symbolic_path),
