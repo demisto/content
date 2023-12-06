@@ -36,6 +36,9 @@ repos:
   rev: "v0.0.272"
   hooks:
   - id: ruff
+    args: [ "--fix" ]
+    args:nightly: [ "--config=nightly_ruff.toml" ]
+    args:ci: [ "--config=nightly_ruff.toml" ]
 
 - repo: https://github.com/pre-commit/mirrors-autopep8
   rev: "v2.0.4"
@@ -43,6 +46,22 @@ repos:
   - id: autopep8
 - repo: local
   hooks:
+
+  - id: pylint-in-docker
+    name: pylint-in-docker
+    description: Run pylint on the code in content packs
+    docker_image:nightly: native:ga,native:maintenance,from-yml
+    docker_image:ci: native:ga,from-yml,native:dev,native:maintenance
+    docker_image:native: native:ga,from-yml,native:dev,native:maintenance
+    docker_image: from-yml
+    entry: pylint
+    files: Packs\/.*\.py$
+    exclude: (_test\.py)|(.vulture_whitelist\.py)$
+    args: ['--ignore=demistomock.py,CommonServerPython.py,CommonServerUserPython.py,conftest.py,.venv', '-E', '--disable=bad-option-value,unsubscriptable-object', '-d duplicate-string-formatting-argument', "--msg-template='{path}:{line}:{column}: {msg_id} {obj}: {msg}'", '--generated-members=requests.packages.urllib3,requests.codes.ok']
+    config_file_arg:
+      arg_name: '--rcfile'
+      file_name: '.pylintrc'
+
   - id: is-circle-changed
     name: is-circle-changed
     description: Checks if circle files are changed, and checkout to current if it is.
@@ -73,6 +92,12 @@ repos:
           # enable with --test
   - id: run-unit-tests
 
+  - id: merge-pytest-reports
+
+  - id: coverage-analyze
+    args: [ "-i", ".coverage", "--report-dir", "coverage_report", "--report-type", "all", "--previous-coverage-report-url", "https://storage.googleapis.com/marketplace-dist-dev/code-coverage-reports/coverage-min.json"]
+    args:nightly: [ "-i", ".coverage", "--report-dir", "coverage_report", "--report-type", "all", "--allowed-coverage-degradation-percentage", "100"]
+
   - id: secrets
     args: ["--ignore-entropy"]
 
@@ -84,7 +109,9 @@ repos:
   rev: "v1.6.0"
   hooks:
   - id: sourcery
-    args: [--no-summary, --diff, "git diff HEAD"]
+    args: [ --no-summary, --diff, "git diff HEAD", "--fix" ]
+    args:nightly: [ --no-summary, --diff, "git diff HEAD" ]
+    args:ci: [ --no-summary, --diff, "git diff HEAD" ]
     skip: true
 
 - repo: https://github.com/pre-commit/mirrors-mypy

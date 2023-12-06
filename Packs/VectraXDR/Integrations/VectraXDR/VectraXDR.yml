@@ -1,0 +1,2187 @@
+category: Network Security
+commonfields:
+  id: VectraXDR
+  version: -1
+configuration:
+- additionalinfo: URL of the Vectra AI platform.
+  display: Server URL
+  name: server_url
+  required: true
+  type: 0
+- display: Client ID
+  displaypassword: Client Secret Key
+  name: credentials
+  type: 9
+  required: true
+- additionalinfo: When checked, no SSL certificates check will be done when interacting with the Vectra XDR API. It's insecure. (Default - unchecked)
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- additionalinfo: Use the system proxy settings to reach with the Vectra XDR API.
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- additionalinfo: The maximum number of entities to fetch each time. If the value is greater than 200, it will be considered as 200. The maximum is 200.
+  defaultvalue: '50'
+  display: Max Fetch
+  hidden: false
+  name: max_fetch
+  required: false
+  type: 0
+- additionalinfo: "The date or relative timestamp from which to begin fetching entities.\n\nSupported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n    \nFor example: 01 May 2023, 01 Mar 2021 04:45:33, 2022-04-17T14:05:44Z."
+  defaultvalue: 1 hour
+  display: First Fetch Time
+  hidden: false
+  name: first_fetch
+  required: false
+  type: 0
+- additionalinfo: The mirroring direction in which to mirror the entities. You can mirror "Incoming" (from Vectra to XSOAR), "Outgoing" (from XSOAR to Vectra), or in both directions.
+  display: Mirroring Direction
+  hidden: false
+  name: mirror_direction
+  options:
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  required: false
+  type: 15
+- additionalinfo: The tag value should be used to mirror the entity note by adding the same tag in the notes.
+  defaultvalue: note
+  display: Mirror tag for notes
+  hidden: false
+  name: note_tag
+  required: false
+  type: 0
+- additionalinfo: Entity Type(Host, Account).
+  display: Entity Type
+  hidden: false
+  name: entity_type
+  options:
+  - Account
+  - Host
+  required: false
+  type: 16
+- additionalinfo: Retrieve only prioritize entities based on the configuration on the Vectra platform. If not selected will fetch all entities.
+  defaultvalue: 'Yes'
+  display: Prioritized
+  hidden: false
+  name: is_prioritized
+  options:
+  - 'Yes'
+  - 'No'
+  required: false
+  type: 15
+- additionalinfo: Retrieve entities that contain any of the tags specified. Supports comma-separated values.
+  display: Tags
+  hidden: false
+  name: tags
+  required: false
+  type: 0
+- additionalinfo: Retrieve detections belonging to a specified category.
+  display: Detection Category
+  hidden: false
+  name: detection_category
+  options:
+  - Command & Control
+  - Botnet
+  - Reconnaissance
+  - Lateral Movement
+  - Exfiltration
+  - Info
+  required: false
+  type: 15
+- additionalinfo: Retrieve detections belonging to a specified detection type.
+  display: Detection Type
+  hidden: false
+  name: detection_type
+  required: false
+  type: 0
+- additionalinfo: If the entity's urgency score is equal to or less than the configured threshold, it would be considered as a "Low" Severity Incident. Default is 30.
+  defaultvalue: '30'
+  display: Specify the numeric value of "Urgency Score" for mapping the Low Incident Severity.
+  hidden: false
+  name: urgency_score_low_threshold
+  required: false
+  type: 0
+- additionalinfo: If the entity's urgency score is equal to or less than the configured threshold, it would be considered as a "Medium" Severity Incident.Default is 50.
+  defaultvalue: '50'
+  display: Specify the numeric value of "Urgency Score" for mapping the Medium Incident Severity.
+  hidden: false
+  name: urgency_score_medium_threshold
+  required: false
+  type: 0
+- additionalinfo: "If the entity's urgency score is equal to or less than the configured threshold, \nit would be considered as a \"High\" Severity Incident and if urgency score greater than threshold, it would be considered as a \"Critical\" Severity Incident. Default is 80."
+  defaultvalue: '80'
+  display: Specify the numeric value of "Urgency Score" for mapping the High Incident Severity.
+  hidden: false
+  name: urgency_score_high_threshold
+  required: false
+  type: 0
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+description: This integration allows to create incidents based on Vectra XDR Entities.
+display: Vectra XDR
+name: VectraXDR
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Filter by username.
+      isArray: false
+      name: username
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Filter users with the specified role.
+      isArray: false
+      name: role
+      predefined:
+      - Admin
+      - Read-Only
+      - Restricted Admin
+      - Security Analyst
+      - Setting Admin
+      - Super Admin
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Return only the users which have a last login timestamp equal to or after the given timestamp.
+
+        Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.
+
+        For example: 01 May 2023, 01 Mar 2021 04:45:33, 2022-04-17T14:05:44Z.
+      isArray: false
+      name: last_login_timestamp
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of users.
+    execution: false
+    name: vectra-user-list
+    outputs:
+    - contextPath: Vectra.User.id
+      description: The ID of the User.
+      type: Number
+    - contextPath: Vectra.User.user_id
+      description: The ID of the User.
+      type: Number
+    - contextPath: Vectra.User.username
+      description: Username of the user.
+      type: String
+    - contextPath: Vectra.User.email
+      description: The email associated with the user.
+      type: String
+    - contextPath: Vectra.User.role
+      description: The role associated with the user.
+      type: String
+    - contextPath: Vectra.User.last_login_timestamp
+      description: Last login timestamp in UTC format of the user.
+      type: String
+    - contextPath: Vectra.User.last_login
+      description: Last login timestamp of the user.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Fetch only entities whose priority score is above the configured priority threshold will be included in the response.
+      isArray: false
+      name: prioritized
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Specify the type of the entity.
+      isArray: false
+      name: entity_type
+      predefined:
+      - account
+      - host
+      required: false
+      secret: false
+    - default: false
+      description: Filter by a tag or a comma-separated list of tags.
+      isArray: false
+      name: tags
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Filter on entity activation state.
+      isArray: false
+      name: state
+      predefined:
+      - active
+      - inactive
+      required: false
+      secret: false
+    - default: false
+      description: Orders records by last timestamp or urgency score. Default sorting is by urgency score in descending order. Use the minus symbol (-) to sort scores in descending order. Multiple ordering fields can be specified with a comma-separated list (e.g., ordering=urgency_score,-name).
+      isArray: false
+      name: ordering
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Return only the entities which have a last detection timestamp equal to or after the given timestamp.
+
+        Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.
+
+        For example: 01 May 2023, 01 Mar 2021 04:45:33, 2022-04-17T14:05:44Z.
+      isArray: false
+      name: last_detection_timestamp
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: Enables the caller to specify a particular page of results.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Specify the desired page size for the request. Maximum is 5000.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Return only the entities which have a last modified timestamp equal to or after the given timestamp.
+
+        Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.
+
+        For example: 01 May 2023, 01 Mar 2021 04:45:33, 2022-04-17T14:05:44Z.
+      isArray: false
+      name: last_modified_timestamp
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of entities.
+    execution: false
+    name: vectra-entity-list
+    outputs:
+    - contextPath: Vectra.Entity.id
+      description: ID of the entity.
+      type: Number
+    - contextPath: Vectra.Entity.name
+      description: Name of the entity.
+      type: String
+    - contextPath: Vectra.Entity.breadth_contrib
+      description: Breadth contribution of the entity.
+      type: Number
+    - contextPath: Vectra.Entity.importance
+      description: Entity importance.
+      type: Number
+    - contextPath: Vectra.Entity.type
+      description: Type of the entity.
+      type: String
+    - contextPath: Vectra.Entity.is_prioritized
+      description: Entity is prioritized or not.
+      type: Boolean
+    - contextPath: Vectra.Entity.severity
+      description: Severity of the entity.
+      type: String
+    - contextPath: Vectra.Entity.urgency_score
+      description: Urgency score of the entity.
+      type: Number
+    - contextPath: Vectra.Entity.velocity_contrib
+      description: Velocity contribution of the entity.
+      type: Number
+    - contextPath: Vectra.Entity.detection_set
+      description: Set of detections related to entity.
+      type: String
+    - contextPath: Vectra.Entity.last_detection_timestamp
+      description: Time of the last detection activity related to entity.
+      type: Date
+    - contextPath: Vectra.Entity.notes.id
+      description: Notes of the entity.
+      type: String
+    - contextPath: Vectra.Entity.notes.dateCreated
+      description: Created date of the Note.
+      type: String
+    - contextPath: Vectra.Entity.notes.dateModified
+      description: Modified date of the Note.
+      type: String
+    - contextPath: Vectra.Entity.notes.createdBy
+      description: Created user of the Note.
+      type: String
+    - contextPath: Vectra.Entity.notes.ModifiedBy
+      description: Modified user of the Note.
+      type: String
+    - contextPath: Vectra.Entity.notes.note
+      description: Note of the entity.
+      type: String
+    - contextPath: Vectra.Entity.attack_rating
+      description: Attack Ratting of the entity.
+      type: Number
+    - contextPath: Vectra.Entity.privilege_level
+      description: Privilege Level of the entity.
+      type: String
+    - contextPath: Vectra.Entity.privilege_category
+      description: Privilege Category of the entity.
+      type: String
+    - contextPath: Vectra.Entity.attack_profile
+      description: Attack Profile of the entity.
+      type: String
+    - contextPath: Vectra.Entity.sensors
+      description: Sensors of the entity.
+      type: Unknown
+    - contextPath: Vectra.Entity.state
+      description: State of the entity.
+      type: String
+    - contextPath: Vectra.Entity.tags
+      description: Tags of the entity.
+      type: Unknown
+    - contextPath: Vectra.Entity.url
+      description: Url link of the entity.
+      type: String
+    - contextPath: Vectra.Entity.host_type
+      description: Host type of the entity.
+      type: Unknown
+    - contextPath: Vectra.Entity.account_type
+      description: Account type of the entity.
+      type: String
+  - arguments:
+    - default: false
+      description: Specify the id of the entity.
+      isArray: false
+      name: entity_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Specify the type of the entity.
+      isArray: false
+      name: entity_type
+      predefined:
+      - host
+      - account
+      required: true
+      secret: false
+    deprecated: false
+    description: Describes an entity by ID.
+    execution: false
+    name: vectra-entity-describe
+    outputs:
+    - contextPath: Vectra.Entity.id
+      description: ID of the entity.
+      type: Number
+    - contextPath: Vectra.Entity.name
+      description: Name of the entity.
+      type: String
+    - contextPath: Vectra.Entity.breadth_contrib
+      description: Breadth contribution of the entity.
+      type: Number
+    - contextPath: Vectra.Entity.importance
+      description: Entity importance.
+      type: Number
+    - contextPath: Vectra.Entity.type
+      description: Type of the entity.
+      type: String
+    - contextPath: Vectra.Entity.is_prioritized
+      description: Entity is prioritized or not.
+      type: Boolean
+    - contextPath: Vectra.Entity.severity
+      description: Severity of the entity.
+      type: String
+    - contextPath: Vectra.Entity.urgency_score
+      description: Urgency score of the entity.
+      type: Number
+    - contextPath: Vectra.Entity.velocity_contrib
+      description: Velocity contribution of the entity.
+      type: Number
+    - contextPath: Vectra.Entity.detection_set
+      description: Set of detections related to the entity.
+      type: String
+    - contextPath: Vectra.Entity.last_detection_timestamp
+      description: Time of the last detection activity related to the entity.
+      type: Date
+    - contextPath: Vectra.Entity.last_modified_timestamp
+      description: Time of the last modification activity related to the entity.
+      type: Date
+    - contextPath: Vectra.Entity.notes.id
+      description: Notes of the entity.
+      type: String
+    - contextPath: Vectra.Entity.notes.dateCreated
+      description: Created date of the Note.
+      type: String
+    - contextPath: Vectra.Entity.notes.dateModified
+      description: Modified date of the Note.
+      type: String
+    - contextPath: Vectra.Entity.notes.createdBy
+      description: Created user of the Note.
+      type: String
+    - contextPath: Vectra.Entity.notes.ModifiedBy
+      description: Modified user of the Note.
+      type: String
+    - contextPath: Vectra.Entity.notes.note
+      description: Note of the entity.
+      type: String
+    - contextPath: Vectra.Entity.attack_rating
+      description: Attack Ratting of the entity.
+      type: Number
+    - contextPath: Vectra.Entity.privilege_level
+      description: Privilege Level of the entity.
+      type: String
+    - contextPath: Vectra.Entity.privilege_category
+      description: Privilege Category of the entity.
+      type: String
+    - contextPath: Vectra.Entity.attack_profile
+      description: Attack Profile of the entity.
+      type: String
+    - contextPath: Vectra.Entity.sensors
+      description: Sensors of the entity.
+      type: Unknown
+    - contextPath: Vectra.Entity.state
+      description: State of the entity.
+      type: String
+    - contextPath: Vectra.Entity.tags
+      description: Tags of the entity.
+      type: Unknown
+    - contextPath: Vectra.Entity.url
+      description: Url link of the entity.
+      type: String
+    - contextPath: Vectra.Entity.host_type
+      description: Host type of the entity.
+      type: Unknown
+    - contextPath: Vectra.Entity.account_type
+      description: Account type of the entity.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Specify the id of the entity.
+      isArray: false
+      name: entity_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Specify the type of the entity.
+      isArray: false
+      name: entity_type
+      predefined:
+      - account
+      - host
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: Enables the caller to specify a particular page of results.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Specify the desired page size for the request. Maximum is 5000.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The category of the detection.
+      isArray: false
+      name: detection_category
+      predefined:
+      - Command & Control
+      - Botnet
+      - Reconnaissance
+      - Lateral Movement
+      - Exfiltration
+      - Info
+      required: false
+      secret: false
+    - default: false
+      description: Filter by detection type.
+      isArray: false
+      name: detection_type
+      required: false
+      secret: false
+    - default: false
+      description: "Return only the detections which have a last timestamp equal to or after the given timestamp. \nFormats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.\nExample: 2023-04-25T00:00:00Z, 2023-04-25, 2 days, 5 hours, 01 Mar 2023, 01 Feb 2023 04:45:33, 15 Jun."
+      isArray: false
+      name: last_timestamp
+      required: false
+      secret: false
+    - default: false
+      description: Filter by detection name.
+      isArray: false
+      name: detection_name
+      required: false
+      secret: false
+    - default: false
+      defaultValue: active
+      description: Filter by state.
+      isArray: false
+      name: state
+      required: false
+      secret: false
+    - default: false
+      description: Filter by a tag or a comma-separated list of tags.
+      isArray: false
+      name: tags
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of detections for a specified entity.
+    execution: false
+    name: vectra-entity-detection-list
+    outputs:
+    - contextPath: Vectra.Entity.Detections.id
+      description: Entity detection ID.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.assigned_date
+      description: Date assigned to the detection.
+      type: Unknown
+    - contextPath: Vectra.Entity.Detections.assigned_to
+      description: User or entity assigned to the detection.
+      type: Unknown
+    - contextPath: Vectra.Entity.Detections.category
+      description: Category of the detection.
+      type: String
+    - contextPath: Vectra.Entity.Detections.certainty
+      description: Certainty level of the detection.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.c_score
+      description: Confidence score of the detection.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.description
+      description: Description of the detection.
+      type: String
+    - contextPath: Vectra.Entity.Detections.detection
+      description: Detection information.
+      type: String
+    - contextPath: Vectra.Entity.Detections.detection_category
+      description: Category of the detection.
+      type: String
+    - contextPath: Vectra.Entity.Detections.detection_type
+      description: Type of the detection.
+      type: String
+    - contextPath: Vectra.Entity.Detections.grouped_details.external_target.ip
+      description: IP address of the external target in the detection group.
+      type: String
+    - contextPath: Vectra.Entity.Detections.grouped_details.external_target.name
+      description: Name of the external target in the detection group.
+      type: String
+    - contextPath: Vectra.Entity.Detections.grouped_details.num_sessions
+      description: Number of sessions in the detection group.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.grouped_details.bytes_received
+      description: Total bytes received in the detection group.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.grouped_details.bytes_sent
+      description: Total bytes sent in the detection group.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.grouped_details.ja3_hashes
+      description: JA3 hashes in the detection group.
+      type: String
+    - contextPath: Vectra.Entity.Detections.grouped_details.ja3s_hashes
+      description: JA3S hashes in the detection group.
+      type: String
+    - contextPath: Vectra.Entity.Detections.grouped_details.sessions.tunnel_type
+      description: Tunnel type used in the sessions of the detection group.
+      type: String
+    - contextPath: Vectra.Entity.Detections.grouped_details.sessions.protocol
+      description: Protocol used in the sessions of the detection group.
+      type: String
+    - contextPath: Vectra.Entity.Detections.grouped_details.sessions.app_protocol
+      description: Application protocol used in the sessions of the detection group.
+      type: String
+    - contextPath: Vectra.Entity.Detections.grouped_details.sessions.dst_port
+      description: Destination port in the sessions of the detection group.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.grouped_details.sessions.dst_ip
+      description: Destination IP address in the sessions of the detection group.
+      type: String
+    - contextPath: Vectra.Entity.Detections.grouped_details.sessions.bytes_received
+      description: Total bytes received in the sessions of the detection group.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.grouped_details.sessions.bytes_sent
+      description: Total bytes sent in the sessions of the detection group.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.grouped_details.sessions.first_timestamp
+      description: First timestamp of the sessions in the detection group.
+      type: Date
+    - contextPath: Vectra.Entity.Detections.grouped_details.sessions.last_timestamp
+      description: Last timestamp of the sessions in the detection group.
+      type: Date
+    - contextPath: Vectra.Entity.Detections.grouped_details.sessions.dst_geo
+      description: Geolocation of the destination IP in the sessions of the detection group.
+      type: Unknown
+    - contextPath: Vectra.Entity.Detections.grouped_details.sessions.dst_geo_lat
+      description: Latitude of the destination IP in the sessions of the detection group.
+      type: Unknown
+    - contextPath: Vectra.Entity.Detections.grouped_details.sessions.dst_geo_lon
+      description: Longitude of the destination IP in the sessions of the detection group.
+      type: Unknown
+    - contextPath: Vectra.Entity.Detections.grouped_details.first_timestamp
+      description: First timestamp of the detection group.
+      type: Date
+    - contextPath: Vectra.Entity.Detections.grouped_details.last_timestamp
+      description: Last timestamp of the detection group.
+      type: Date
+    - contextPath: Vectra.Entity.Detections.grouped_details.dst_ips
+      description: Destination IP addresses in the detection group.
+      type: String
+    - contextPath: Vectra.Entity.Detections.grouped_details.dst_ports
+      description: Destination ports in the detection group.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.grouped_details.target_domains
+      description: Target domains in the detection group.
+      type: String
+    - contextPath: Vectra.Entity.Detections.is_targeting_key_asset
+      description: Indicates if the detection is targeting a key asset.
+      type: Boolean
+    - contextPath: Vectra.Entity.Detections.last_timestamp
+      description: Last timestamp of the detection.
+      type: Date
+    - contextPath: Vectra.Entity.Detections.note
+      description: Note associated with the detection.
+      type: Unknown
+    - contextPath: Vectra.Entity.Detections.note_modified_by
+      description: User or entity who last modified the note.
+      type: Unknown
+    - contextPath: Vectra.Entity.Detections.note_modified_timestamp
+      description: Timestamp when the note was last modified.
+      type: Unknown
+    - contextPath: Vectra.Entity.Detections.notes
+      description: Additional notes related to the detection.
+      type: Unknown
+    - contextPath: Vectra.Entity.Detections.sensor_name
+      description: Name of the sensor associated with the detection.
+      type: String
+    - contextPath: Vectra.Entity.Detections.src_account.id
+      description: ID of the source account associated with the detection.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.src_account.name
+      description: Name of the source account associated with the detection.
+      type: String
+    - contextPath: Vectra.Entity.Detections.src_account.url
+      description: URL of the source account associated with the detection.
+      type: String
+    - contextPath: Vectra.Entity.Detections.src_account.threat
+      description: Threat level of the source account associated with the detection.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.src_account.certainty
+      description: Certainty level of the source account associated with the detection.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.src_account.privilege_level
+      description: Privilege level of the source account associated with the detection.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.src_account.privilege_category
+      description: Privilege category of the source account associated with the detection.
+      type: String
+    - contextPath: Vectra.Entity.Detections.src_host.id
+      description: ID of the source host in the detection.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.src_host.ip
+      description: IP address of the source host in the detection.
+      type: String
+    - contextPath: Vectra.Entity.Detections.src_host.name
+      description: Name of the source host in the detection.
+      type: String
+    - contextPath: Vectra.Entity.Detections.src_host.url
+      description: URL associated with the source host in the detection.
+      type: String
+    - contextPath: Vectra.Entity.Detections.src_host.is_key_asset
+      description: Indicates if the source host is a key asset.
+      type: Boolean
+    - contextPath: Vectra.Entity.Detections.src_host.groups
+      description: Groups associated with the source host in the detection.
+      type: Unknown
+    - contextPath: Vectra.Entity.Detections.src_host.threat
+      description: Threat level associated with the source host in the detection.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.src_host.certainty
+      description: Certainty level associated with the source host in the detection.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.src_ip
+      description: Source IP address in the detection.
+      type: String
+    - contextPath: Vectra.Entity.Detections.state
+      description: State of the detection.
+      type: String
+    - contextPath: Vectra.Entity.Detections.summary.bytes_received
+      description: Total bytes received in the detection summary.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.summary.bytes_sent
+      description: Total bytes sent in the detection summary.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.summary.cnc_server
+      description: CNC server associated with the detection summary.
+      type: String
+    - contextPath: Vectra.Entity.Detections.summary.num_events
+      description: Total number of events related to the detection.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.summary.probable_owner
+      description: Probable owner of the detection summary.
+      type: Unknown
+    - contextPath: Vectra.Entity.Detections.summary.sessions
+      description: Total sessions in the detection summary.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.tags
+      description: Tags associated with the detection.
+      type: Unknown
+    - contextPath: Vectra.Entity.Detections.threat
+      description: Threat level of the detection.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.t_score
+      description: T-score of the detection.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.type
+      description: Type of the detection.
+      type: String
+    - contextPath: Vectra.Entity.Detections.url
+      description: URL associated with the detection.
+      type: String
+  - arguments:
+    - default: false
+      description: Specify the ID(s) of the detections.
+      isArray: true
+      name: detection_ids
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: Enables the caller to specify a particular page of results.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Specify the desired page size for the request. Maximum is 5000.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of detections for the specified detection ID(s).
+    execution: false
+    name: vectra-detection-describe
+    outputs:
+    - contextPath: Vectra.Entity.Detections.id
+      description: Entity detection ID.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.assigned_date
+      description: Date assigned to the detection.
+      type: Unknown
+    - contextPath: Vectra.Entity.Detections.assigned_to
+      description: User or entity assigned to the detection.
+      type: Unknown
+    - contextPath: Vectra.Entity.Detections.category
+      description: Category of the detection.
+      type: String
+    - contextPath: Vectra.Entity.Detections.certainty
+      description: Certainty level of the detection.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.c_score
+      description: Confidence score of the detection.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.description
+      description: Description of the detection.
+      type: String
+    - contextPath: Vectra.Entity.Detections.detection
+      description: Detection information.
+      type: String
+    - contextPath: Vectra.Entity.Detections.detection_category
+      description: Category of the detection.
+      type: String
+    - contextPath: Vectra.Entity.Detections.detection_type
+      description: Type of the detection.
+      type: String
+    - contextPath: Vectra.Entity.Detections.grouped_details.external_target.ip
+      description: IP address of the external target in the detection group.
+      type: String
+    - contextPath: Vectra.Entity.Detections.grouped_details.external_target.name
+      description: Name of the external target in the detection group.
+      type: String
+    - contextPath: Vectra.Entity.Detections.grouped_details.num_sessions
+      description: Number of sessions in the detection group.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.grouped_details.bytes_received
+      description: Total bytes received in the detection group.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.grouped_details.bytes_sent
+      description: Total bytes sent in the detection group.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.grouped_details.ja3_hashes
+      description: JA3 hashes in the detection group.
+      type: String
+    - contextPath: Vectra.Entity.Detections.grouped_details.ja3s_hashes
+      description: JA3S hashes in the detection group.
+      type: String
+    - contextPath: Vectra.Entity.Detections.grouped_details.sessions.tunnel_type
+      description: Tunnel type used in the sessions of the detection group.
+      type: String
+    - contextPath: Vectra.Entity.Detections.grouped_details.sessions.protocol
+      description: Protocol used in the sessions of the detection group.
+      type: String
+    - contextPath: Vectra.Entity.Detections.grouped_details.sessions.app_protocol
+      description: Application protocol used in the sessions of the detection group.
+      type: String
+    - contextPath: Vectra.Entity.Detections.grouped_details.sessions.dst_port
+      description: Destination port in the sessions of the detection group.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.grouped_details.sessions.dst_ip
+      description: Destination IP address in the sessions of the detection group.
+      type: String
+    - contextPath: Vectra.Entity.Detections.grouped_details.sessions.bytes_received
+      description: Total bytes received in the sessions of the detection group.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.grouped_details.sessions.bytes_sent
+      description: Total bytes sent in the sessions of the detection group.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.grouped_details.sessions.first_timestamp
+      description: First timestamp of the sessions in the detection group.
+      type: Date
+    - contextPath: Vectra.Entity.Detections.grouped_details.sessions.last_timestamp
+      description: Last timestamp of the sessions in the detection group.
+      type: Date
+    - contextPath: Vectra.Entity.Detections.grouped_details.sessions.dst_geo
+      description: Geolocation of the destination IP in the sessions of the detection group.
+      type: Unknown
+    - contextPath: Vectra.Entity.Detections.grouped_details.sessions.dst_geo_lat
+      description: Latitude of the destination IP in the sessions of the detection group.
+      type: Unknown
+    - contextPath: Vectra.Entity.Detections.grouped_details.sessions.dst_geo_lon
+      description: Longitude of the destination IP in the sessions of the detection group.
+      type: Unknown
+    - contextPath: Vectra.Entity.Detections.grouped_details.first_timestamp
+      description: First timestamp of the detection group.
+      type: Date
+    - contextPath: Vectra.Entity.Detections.grouped_details.last_timestamp
+      description: Last timestamp of the detection group.
+      type: Date
+    - contextPath: Vectra.Entity.Detections.grouped_details.dst_ips
+      description: Destination IP addresses in the detection group.
+      type: String
+    - contextPath: Vectra.Entity.Detections.grouped_details.dst_ports
+      description: Destination ports in the detection group.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.grouped_details.target_domains
+      description: Target domains in the detection group.
+      type: String
+    - contextPath: Vectra.Entity.Detections.is_targeting_key_asset
+      description: Indicates if the detection is targeting a key asset.
+      type: Boolean
+    - contextPath: Vectra.Entity.Detections.last_timestamp
+      description: Last timestamp of the detection.
+      type: Date
+    - contextPath: Vectra.Entity.Detections.note
+      description: Note associated with the detection.
+      type: Unknown
+    - contextPath: Vectra.Entity.Detections.note_modified_by
+      description: User or entity who last modified the note.
+      type: Unknown
+    - contextPath: Vectra.Entity.Detections.note_modified_timestamp
+      description: Timestamp when the note was last modified.
+      type: Unknown
+    - contextPath: Vectra.Entity.Detections.notes
+      description: Additional notes related to the detection.
+      type: Unknown
+    - contextPath: Vectra.Entity.Detections.sensor_name
+      description: Name of the sensor associated with the detection.
+      type: String
+    - contextPath: Vectra.Entity.Detections.src_account.id
+      description: ID of the source account associated with the detection.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.src_account.name
+      description: Name of the source account associated with the detection.
+      type: String
+    - contextPath: Vectra.Entity.Detections.src_account.url
+      description: URL of the source account associated with the detection.
+      type: String
+    - contextPath: Vectra.Entity.Detections.src_account.threat
+      description: Threat level of the source account associated with the detection.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.src_account.certainty
+      description: Certainty level of the source account associated with the detection.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.src_account.privilege_level
+      description: Privilege level of the source account associated with the detection.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.src_account.privilege_category
+      description: Privilege category of the source account associated with the detection.
+      type: String
+    - contextPath: Vectra.Entity.Detections.src_host.id
+      description: ID of the source host in the detection.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.src_host.ip
+      description: IP address of the source host in the detection.
+      type: String
+    - contextPath: Vectra.Entity.Detections.src_host.name
+      description: Name of the source host in the detection.
+      type: String
+    - contextPath: Vectra.Entity.Detections.src_host.url
+      description: URL associated with the source host in the detection.
+      type: String
+    - contextPath: Vectra.Entity.Detections.src_host.is_key_asset
+      description: Indicates if the source host is a key asset.
+      type: Boolean
+    - contextPath: Vectra.Entity.Detections.src_host.groups
+      description: Groups associated with the source host in the detection.
+      type: Unknown
+    - contextPath: Vectra.Entity.Detections.src_host.threat
+      description: Threat level associated with the source host in the detection.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.src_host.certainty
+      description: Certainty level associated with the source host in the detection.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.src_ip
+      description: Source IP address in the detection.
+      type: String
+    - contextPath: Vectra.Entity.Detections.state
+      description: State of the detection.
+      type: String
+    - contextPath: Vectra.Entity.Detections.summary.bytes_received
+      description: Total bytes received in the detection summary.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.summary.bytes_sent
+      description: Total bytes sent in the detection summary.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.summary.cnc_server
+      description: CNC server associated with the detection summary.
+      type: String
+    - contextPath: Vectra.Entity.Detections.summary.num_events
+      description: Total number of events related to the detection.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.summary.probable_owner
+      description: Probable owner of the detection summary.
+      type: Unknown
+    - contextPath: Vectra.Entity.Detections.summary.sessions
+      description: Total sessions in the detection summary.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.tags
+      description: Tags associated with the detection.
+      type: Unknown
+    - contextPath: Vectra.Entity.Detections.threat
+      description: Threat level of the detection.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.t_score
+      description: T-score of the detection.
+      type: Number
+    - contextPath: Vectra.Entity.Detections.type
+      description: Type of the detection.
+      type: String
+    - contextPath: Vectra.Entity.Detections.url
+      description: URL associated with the detection.
+      type: String
+  - arguments:
+    - default: false
+      description: Specify the id of the entity.
+      isArray: false
+      name: entity_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Specify the type of the entity.
+      isArray: false
+      name: entity_type
+      predefined:
+      - account
+      - host
+      required: true
+      secret: false
+    - default: false
+      description: Note to be added in the specified entity_id.
+      isArray: false
+      name: note
+      required: true
+      secret: false
+    deprecated: false
+    description: Add a note to the entity.
+    execution: false
+    name: vectra-entity-note-add
+    outputs:
+    - contextPath: Vectra.Entity.Notes.entity_id
+      description: ID of the entity associated with the note.
+      type: String
+    - contextPath: Vectra.Entity.Notes.note_id
+      description: ID of the note.
+      type: Number
+    - contextPath: Vectra.Entity.Notes.date_created
+      description: Date when the note was created.
+      type: Date
+    - contextPath: Vectra.Entity.Notes.date_modified
+      description: Date when the note was last modified.
+      type: Unknown
+    - contextPath: Vectra.Entity.Notes.created_by
+      description: User who created the note.
+      type: String
+    - contextPath: Vectra.Entity.Notes.modified_by
+      description: User who last modified the note.
+      type: Unknown
+    - contextPath: Vectra.Entity.Notes.note
+      description: Content of the note.
+      type: String
+  - arguments:
+    - default: false
+      description: Specify the id of the entity.
+      isArray: false
+      name: entity_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Specify the type of the entity.
+      isArray: false
+      name: entity_type
+      predefined:
+      - account
+      - host
+      required: true
+      secret: false
+    - default: false
+      description: Specify the ID of the note.
+      isArray: false
+      name: note_id
+      required: true
+      secret: false
+    - default: false
+      description: Note to be updated for the specified note_id.
+      isArray: false
+      name: note
+      required: true
+      secret: false
+    deprecated: false
+    description: Update a note in the entity.
+    execution: false
+    name: vectra-entity-note-update
+    outputs:
+    - contextPath: Vectra.Entity.Notes.entity_id
+      description: ID of the entity associated with the note.
+      type: String
+    - contextPath: Vectra.Entity.Notes.note_id
+      description: ID of the note.
+      type: Number
+    - contextPath: Vectra.Entity.Notes.date_created
+      description: Date when the note was created.
+      type: Date
+    - contextPath: Vectra.Entity.Notes.date_modified
+      description: Date when the note was last modified.
+      type: Unknown
+    - contextPath: Vectra.Entity.Notes.created_by
+      description: User who created the note.
+      type: String
+    - contextPath: Vectra.Entity.Notes.modified_by
+      description: User who last modified the note.
+      type: Unknown
+    - contextPath: Vectra.Entity.Notes.note
+      description: Content of the note.
+      type: String
+  - arguments:
+    - default: false
+      description: Specify the ID of the entity.
+      isArray: false
+      name: entity_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Specify the type of the entity.
+      isArray: false
+      name: entity_type
+      predefined:
+      - account
+      - host
+      required: true
+      secret: false
+    - default: false
+      description: Specify the ID of the note.
+      isArray: false
+      name: note_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Remove a note from the entity.
+    execution: false
+    name: vectra-entity-note-remove
+  - arguments:
+    - default: false
+      description: Provide a list of detection IDs separated by commas or a single detection ID.
+      isArray: false
+      name: detection_ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Mark detection as fixed with provided detection IDs in argument.
+    execution: false
+    name: vectra-detections-mark-fixed
+  - arguments:
+    - default: false
+      description: Provide a list of detection IDs separated by commas or a single detection ID.
+      isArray: false
+      name: detection_ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Unmark detection as fixed with provided detection IDs in argument.
+    execution: false
+    name: vectra-detections-unmark-fixed
+  - arguments:
+    - default: false
+      description: Specify the id of the entity.
+      isArray: false
+      name: entity_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Specify the type of the entity.
+      isArray: false
+      name: entity_type
+      predefined:
+      - account
+      - host
+      required: true
+      secret: false
+    - default: false
+      description: Comma-separated values of tags to be included in the entity.
+      isArray: true
+      name: tags
+      required: true
+      secret: false
+    deprecated: false
+    description: Add tags in the entity.
+    execution: false
+    name: vectra-entity-tag-add
+    outputs:
+    - contextPath: Vectra.Entity.Tags.tag_id
+      description: ID of the tag.
+      type: String
+    - contextPath: Vectra.Entity.Tags.entity_id
+      description: ID of the entity associated with the tag.
+      type: String
+    - contextPath: Vectra.Entity.Tags.entity_type
+      description: Type of the entity.
+      type: String
+    - contextPath: Vectra.Entity.Tags.tags
+      description: A list of tags linked to an entity.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Specify the id of the entity.
+      isArray: false
+      name: entity_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Specify the type of the entity.
+      isArray: false
+      name: entity_type
+      predefined:
+      - account
+      - host
+      required: true
+      secret: false
+    - default: false
+      description: Comma-separated values of tags to be removed from the entity.
+      isArray: true
+      name: tags
+      required: true
+      secret: false
+    deprecated: false
+    description: Remove tags from the entity.
+    execution: false
+    name: vectra-entity-tag-remove
+    outputs:
+    - contextPath: Vectra.Entity.Tags.tag_id
+      description: ID of the tag.
+      type: String
+    - contextPath: Vectra.Entity.Tags.entity_id
+      description: ID of the entity associated with the tag.
+      type: String
+    - contextPath: Vectra.Entity.Tags.entity_type
+      description: Type of the entity.
+      type: String
+    - contextPath: Vectra.Entity.Tags.tags
+      description: A list of tags linked to an entity.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Specify the id of the entity.
+      isArray: false
+      name: entity_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Specify the type of the entity.
+      isArray: false
+      name: entity_type
+      predefined:
+      - account
+      - host
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns a list of tags for a specified entity.
+    execution: false
+    name: vectra-entity-tag-list
+    outputs:
+    - contextPath: Vectra.Entity.Tags.tag_id
+      description: ID of the tag.
+      type: String
+    - contextPath: Vectra.Entity.Tags.entity_id
+      description: ID of the entity associated with the tag.
+      type: String
+    - contextPath: Vectra.Entity.Tags.entity_type
+      description: Type of the entity.
+      type: String
+    - contextPath: Vectra.Entity.Tags.tags
+      description: A list of tags linked to an entity.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Specify the ID of the entity.
+      isArray: false
+      name: entity_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Specify the type of the entity.
+      isArray: false
+      name: entity_type
+      predefined:
+      - account
+      - host
+      required: true
+      secret: false
+    - default: false
+      description: Specify the ID of the user.
+      isArray: false
+      name: user_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Add an assignment for the entity.
+    execution: false
+    name: vectra-entity-assignment-add
+    outputs:
+    - contextPath: Vectra.Entity.Assignments.id
+      description: ID of the assignment.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.assignment_id
+      description: ID of the assignment.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.assigned_by.id
+      description: ID of the user who assigned the entity.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.assigned_by.username
+      description: Username of the user who assigned the entity.
+      type: String
+    - contextPath: Vectra.Entity.Assignments.date_assigned
+      description: Date when the entity was assigned.
+      type: Date
+    - contextPath: Vectra.Entity.Assignments.date_resolved
+      description: Date when the entity was resolved.
+      type: Date
+    - contextPath: Vectra.Entity.Assignments.events.assignment_id
+      description: ID of the assignment event.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.events.actor
+      description: ID of the actor who performed the assignment event.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.events.event_type
+      description: Type of assignment event.
+      type: String
+    - contextPath: Vectra.Entity.Assignments.events.datetime
+      description: Date of the assignment event.
+      type: Date
+    - contextPath: Vectra.Entity.Assignments.events.context.to
+      description: ID of the entity that was assigned to.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.events.context.entity_t_score
+      description: Threat score of the entity that was assigned to.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.events.context.entity_c_score
+      description: Certainty score of the entity that was assigned to.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.outcome.id
+      description: ID of the assignment outcome.
+      type: String
+    - contextPath: Vectra.Entity.Assignments.outcome.builtin
+      description: Whether the assignment outcome is builtin or not.
+      type: String
+    - contextPath: Vectra.Entity.Assignments.outcome.user_selectable
+      description: Whether the assignment outcome is user selectable or not.
+      type: String
+    - contextPath: Vectra.Entity.Assignments.outcome.title
+      description: Title of the assignment outcome.
+      type: String
+    - contextPath: Vectra.Entity.Assignments.outcome.category
+      description: Category of the assignment outcome.
+      type: String
+    - contextPath: Vectra.Entity.Assignments.resolved_by.id
+      description: ID of the user who resolved the entity.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.resolved_by.username
+      description: Username of the user who resolved the entity.
+      type: String
+    - contextPath: Vectra.Entity.Assignments.triaged_detections
+      description: Number of detections that have been triaged for the entity.
+      type: Unknown
+    - contextPath: Vectra.Entity.Assignments.host_id
+      description: ID of the host that the entity is associated with.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.account_id
+      description: ID of the account that the entity is associated with.
+      type: Unknown
+    - contextPath: Vectra.Entity.Assignments.assigned_to.id
+      description: ID of the user who is currently assigned to the entity.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.assigned_to.username
+      description: Username of the user who is currently assigned to the entity.
+      type: String
+  - arguments:
+    - default: false
+      description: Specify the ID of the assignment.
+      isArray: false
+      name: assignment_id
+      required: true
+      secret: false
+    - default: false
+      description: Specify the ID of the user.
+      isArray: false
+      name: user_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Update an assignment in the entity.
+    execution: false
+    name: vectra-entity-assignment-update
+    outputs:
+    - contextPath: Vectra.Entity.Assignments.id
+      description: ID of the assignment.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.assignment_id
+      description: ID of the assignment.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.assigned_by.id
+      description: ID of the user who assigned the entity.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.assigned_by.username
+      description: Username of the user who assigned the entity.
+      type: String
+    - contextPath: Vectra.Entity.Assignments.date_assigned
+      description: Date when the entity was assigned.
+      type: Date
+    - contextPath: Vectra.Entity.Assignments.date_resolved
+      description: Date when the entity was resolved.
+      type: Date
+    - contextPath: Vectra.Entity.Assignments.events.assignment_id
+      description: ID of the assignment event.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.events.actor
+      description: ID of the actor who performed the assignment event.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.events.event_type
+      description: Type of assignment event.
+      type: String
+    - contextPath: Vectra.Entity.Assignments.events.datetime
+      description: Date of the assignment event.
+      type: Date
+    - contextPath: Vectra.Entity.Assignments.events.context.to
+      description: ID of the entity that was assigned to.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.events.context.from
+      description: ID of the entity that was assigned.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.events.context.entity_t_score
+      description: Threat score of the entity that was assigned to.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.events.context.entity_c_score
+      description: Certainty score of the entity that was assigned to.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.outcome.id
+      description: ID of the assignment outcome.
+      type: String
+    - contextPath: Vectra.Entity.Assignments.outcome.builtin
+      description: Whether the assignment outcome is builtin or not.
+      type: String
+    - contextPath: Vectra.Entity.Assignments.outcome.user_selectable
+      description: Whether the assignment outcome is user selectable or not.
+      type: String
+    - contextPath: Vectra.Entity.Assignments.outcome.title
+      description: Title of the assignment outcome.
+      type: String
+    - contextPath: Vectra.Entity.Assignments.outcome.category
+      description: Category of the assignment outcome.
+      type: String
+    - contextPath: Vectra.Entity.Assignments.resolved_by.id
+      description: ID of the user who resolved the entity.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.resolved_by.username
+      description: Username of the user who resolved the entity.
+      type: String
+    - contextPath: Vectra.Entity.Assignments.triaged_detections
+      description: Number of detections that have been triaged for the entity.
+      type: Unknown
+    - contextPath: Vectra.Entity.Assignments.host_id
+      description: ID of the host that the entity is associated with.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.account_id
+      description: ID of the account that the entity is associated with.
+      type: Unknown
+    - contextPath: Vectra.Entity.Assignments.assigned_to.id
+      description: ID of the user who is currently assigned to the entity.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.assigned_to.username
+      description: Username of the user who is currently assigned to the entity.
+      type: String
+  - arguments:
+    - default: false
+      description: Specify the ID of the assignment.
+      isArray: false
+      name: assignment_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Specify the Outcome for resolving an assignment in the entity. The custom outcome is allowed.
+      isArray: false
+      name: outcome
+      predefined:
+      - Benign True Positive
+      - Malicious True Positive
+      - False Positive
+      required: true
+      secret: false
+    - default: false
+      defaultValue: Updated by XSOAR.
+      description: A note to be added for resolving an assignment in the entity.
+      isArray: false
+      name: note
+      required: false
+      secret: false
+    - default: false
+      description: Triage rule for resolving an assignment in the entity.
+      isArray: false
+      name: triage_as
+      required: false
+      secret: false
+    - default: false
+      description: Provide a list of detection IDs separated by commas or a single detection ID.
+      isArray: false
+      name: detection_ids
+      required: false
+      secret: false
+    deprecated: false
+    description: Resolve an assignment in the entity.
+    execution: false
+    name: vectra-entity-assignment-resolve
+    outputs:
+    - contextPath: Vectra.Entity.Assignments.id
+      description: ID of the assignment.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.assignment_id
+      description: ID of the assignment.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.assigned_by.id
+      description: ID of the user who assigned the entity.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.assigned_by.username
+      description: Username of the user who assigned the entity.
+      type: String
+    - contextPath: Vectra.Entity.Assignments.date_assigned
+      description: Date when the entity was assigned.
+      type: Date
+    - contextPath: Vectra.Entity.Assignments.date_resolved
+      description: Date when the entity was resolved.
+      type: Date
+    - contextPath: Vectra.Entity.Assignments.events.assignment_id
+      description: ID of the assignment event.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.events.actor
+      description: ID of the actor who performed the assignment event.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.events.event_type
+      description: Type of the assignment event.
+      type: String
+    - contextPath: Vectra.Entity.Assignments.events.datetime
+      description: Date of the assignment event.
+      type: Date
+    - contextPath: Vectra.Entity.Assignments.events.context.to
+      description: ID of the entity that was assigned to.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.events.context.entity_t_score
+      description: Threat score of the entity that was assigned to.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.events.context.entity_c_score
+      description: Certainty score of the entity that was assigned to.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.events.context.triage_as
+      description: Triage status of the entity.
+      type: String
+    - contextPath: Vectra.Entity.Assignments.events.context.triaged_detection_ids
+      description: IDs of the detections that have been triaged for the entity.
+      type: Array
+    - contextPath: Vectra.Entity.Assignments.events.context.fixed_detection_ids
+      description: IDs of the detections that have been fixed.
+      type: Array
+    - contextPath: Vectra.Entity.Assignments.events.context.created_rule_ids
+      description: IDs of the rules that have been created for the entity.
+      type: Array
+    - contextPath: Vectra.Entity.Assignments.outcome.id
+      description: ID of the assignment outcome.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.outcome.builtin
+      description: Whether the assignment outcome is builtin or not.
+      type: Boolean
+    - contextPath: Vectra.Entity.Assignments.outcome.user_selectable
+      description: Whether the assignment outcome is user selectable or not.
+      type: Boolean
+    - contextPath: Vectra.Entity.Assignments.outcome.title
+      description: Title of the assignment outcome.
+      type: String
+    - contextPath: Vectra.Entity.Assignments.outcome.category
+      description: Category of the assignment outcome.
+      type: String
+    - contextPath: Vectra.Entity.Assignments.resolved_by.id
+      description: ID of the user who resolved the entity.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.resolved_by.username
+      description: Username of the user who resolved the entity.
+      type: String
+    - contextPath: Vectra.Entity.Assignments.triaged_detections
+      description: Number of detections that have been triaged for the entity.
+      type: Array
+    - contextPath: Vectra.Entity.Assignments.host_id
+      description: ID of the host that the entity is associated with.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.account_id
+      description: ID of the account that the entity is associated with.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.assigned_to.id
+      description: ID of the user who is currently assigned to the entity.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.assigned_to.username
+      description: Username of the user who is currently assigned to the entity.
+      type: String
+  - arguments:
+    - default: false
+      description: Specify the ID of the detection.
+      isArray: false
+      name: detection_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Download pcap of the detection.
+    execution: false
+    name: vectra-detection-pcap-download
+    outputs:
+    - contextPath: File.Size
+      description: The size of the file.
+      type: Number
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.SHA512
+      description: The SHA512 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The entry ID of the file.
+      type: String
+    - contextPath: File.Info
+      description: File information.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Extension
+      description: The file extension.
+      type: String
+  - arguments:
+    - default: false
+      description: Specify the ID of the entity.
+      isArray: false
+      name: entity_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Specify the type of the entity.
+      isArray: false
+      name: entity_type
+      predefined:
+      - account
+      - host
+      required: true
+      secret: false
+    deprecated: false
+    description: Mark the detections of the entity as fixed with the provided entity ID in the argument.
+    execution: false
+    name: vectra-entity-detections-mark-fixed
+  - arguments:
+    - default: false
+      description: Specify the IDs of the entities. Comma-separated values supported.
+      isArray: false
+      name: entity_ids
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Specify the type of the entity.
+      isArray: false
+      name: entity_type
+      predefined:
+      - account
+      - host
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Filter by resolved status.
+      isArray: false
+      name: resolved
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
+      description: Filter by user ids of the assignment. Comma-separated values supported.
+      isArray: false
+      name: assignees
+      required: false
+      secret: false
+    - default: false
+      description: Filter by outcome ids of the resolution. Comma-separated values supported.
+      isArray: false
+      name: resolution
+      required: false
+      secret: false
+    - default: false
+      description: "Filter by created after the timestamp.\n\nSupported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n    \nFor example: 01 May 2023, 01 Mar 2021 04:45:33, 2022-04-17T14:05:44Z."
+      isArray: false
+      name: created_after
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: Enables the caller to specify a particular page of results.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Specify the desired page size for the request.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of all assignments.
+    execution: false
+    name: vectra-assignment-list
+    outputs:
+    - contextPath: Vectra.Entity.Assignments.id
+      description: ID of the assignment.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.assignment_id
+      description: ID of the assignment.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.assigned_by.id
+      description: ID of the user who assigned the entity.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.assigned_by.username
+      description: Username of the user who assigned the entity.
+      type: String
+    - contextPath: Vectra.Entity.Assignments.date_assigned
+      description: Date when the entity was assigned.
+      type: Date
+    - contextPath: Vectra.Entity.Assignments.date_resolved
+      description: Date when the entity was resolved.
+      type: Date
+    - contextPath: Vectra.Entity.Assignments.events.assignment_id
+      description: ID of the assignment event.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.events.actor
+      description: ID of the actor who performed the assignment event.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.events.event_type
+      description: Type of the assignment event.
+      type: String
+    - contextPath: Vectra.Entity.Assignments.events.datetime
+      description: Date of the assignment event.
+      type: Date
+    - contextPath: Vectra.Entity.Assignments.events.context.to
+      description: ID of the entity that was assigned to.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.events.context.entity_t_score
+      description: Threat score of the entity that was assigned to.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.events.context.entity_c_score
+      description: Certainty score of the entity that was assigned to.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.events.context.triage_as
+      description: Triage status of the entity.
+      type: String
+    - contextPath: Vectra.Entity.Assignments.events.context.triaged_detection_ids
+      description: IDs of the detections that have been triaged for the entity.
+      type: Array
+    - contextPath: Vectra.Entity.Assignments.events.context.fixed_detection_ids
+      description: IDs of the detections that have been fixed.
+      type: Array
+    - contextPath: Vectra.Entity.Assignments.events.context.created_rule_ids
+      description: IDs of the rules that have been created for the entity.
+      type: Array
+    - contextPath: Vectra.Entity.Assignments.outcome.id
+      description: ID of the assignment outcome.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.outcome.builtin
+      description: Whether the assignment outcome is builtin or not.
+      type: Boolean
+    - contextPath: Vectra.Entity.Assignments.outcome.user_selectable
+      description: Whether the assignment outcome is user selectable or not.
+      type: Boolean
+    - contextPath: Vectra.Entity.Assignments.outcome.title
+      description: Title of the assignment outcome.
+      type: String
+    - contextPath: Vectra.Entity.Assignments.outcome.category
+      description: Category of the assignment outcome.
+      type: String
+    - contextPath: Vectra.Entity.Assignments.resolved_by.id
+      description: ID of the user who resolved the entity.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.resolved_by.username
+      description: Username of the user who resolved the entity.
+      type: String
+    - contextPath: Vectra.Entity.Assignments.triaged_detections
+      description: Number of detections that have been triaged for the entity.
+      type: Array
+    - contextPath: Vectra.Entity.Assignments.host_id
+      description: ID of the host that the entity is associated with.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.account_id
+      description: ID of the account that the entity is associated with.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.assigned_to.id
+      description: ID of the user who is currently assigned to the entity.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.assigned_to.username
+      description: Username of the user who is currently assigned to the entity.
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: '1'
+      description: Enables the caller to specify a particular page of results.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Specify the desired page size for the request.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of all entity assignment outcomes.
+    execution: false
+    name: vectra-assignment-outcome-list
+    outputs:
+    - contextPath: Vectra.Entity.Assignments.Outcomes.id
+      description: ID of the assignment outcome.
+      type: Number
+    - contextPath: Vectra.Entity.Assignments.Outcomes.builtin
+      description: Whether the assignment outcome is builtin or not.
+      type: Boolean
+    - contextPath: Vectra.Entity.Assignments.Outcomes.user_selectable
+      description: Whether the assignment outcome is user selectable or not.
+      type: Boolean
+    - contextPath: Vectra.Entity.Assignments.Outcomes.title
+      description: Title of the assignment outcome.
+      type: String
+    - contextPath: Vectra.Entity.Assignments.Outcomes.category
+      description: Category of the assignment outcome.
+      type: String
+  - arguments:
+    - default: false
+      description: Specify the ID of the entity.
+      isArray: false
+      name: entity_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Specify the type of the entity.
+      isArray: false
+      name: entity_type
+      predefined:
+      - host
+      - account
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns a list of notes for a specified entity.
+    execution: false
+    name: vectra-entity-note-list
+    outputs:
+    - contextPath: Vectra.Entity.Notes.note_id
+      description: ID of the note.
+      type: Number
+    - contextPath: Vectra.Entity.Notes.id
+      description: ID of the note.
+      type: Number
+    - contextPath: Vectra.Entity.Notes.date_created
+      description: Date when the note was created.
+      type: Date
+    - contextPath: Vectra.Entity.Notes.date_modified
+      description: Date when the note was last modified.
+      type: Unknown
+    - contextPath: Vectra.Entity.Notes.created_by
+      description: User who created the note.
+      type: String
+    - contextPath: Vectra.Entity.Notes.modified_by
+      description: User who last modified the note.
+      type: Unknown
+    - contextPath: Vectra.Entity.Notes.note
+      description: Content of the note.
+      type: String
+    - contextPath: Vectra.Entity.Notes.entity_id
+      description: ID of the entity associated with the note.
+      type: String
+    - contextPath: Vectra.Entity.Notes.entity_type
+      description: Type of the entity associated with the note.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Filter by group type.
+      isArray: false
+      name: group_type
+      predefined:
+      - account
+      - host
+      - ip
+      - domain
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Filter by Account Names. Supports comma-separated values.
+
+        Note: Only valid when the group_type parameter is set to "account".
+      isArray: true
+      name: account_names
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Filter by Domains. Supports comma-separated values.
+
+        Note: Only valid when the group_type parameter is set to "domain".
+      isArray: true
+      name: domains
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Filter by Host IDs. Supports comma-separated values.
+
+        Note: Only valid when the group_type parameter is set to "host".
+      isArray: true
+      name: host_ids
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Filter by Host Names. Supports comma-separated values.
+
+        Note: Only valid when the group_type parameter is set to "host".
+      isArray: true
+      name: host_names
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Filter by group importance.
+      isArray: false
+      name: importance
+      predefined:
+      - high
+      - medium
+      - low
+      - never_prioritize
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Filter by IPs. Supports comma-separated values.
+
+        Note: Only valid when the group_type parameter is set to "ip".
+      isArray: true
+      name: ips
+      required: false
+      secret: false
+    - default: false
+      description: Filter by group description.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Return only the groups which have a last modification timestamp equal to or after the given timestamp.
+
+        Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.
+
+        For example: 01 May 2023, 01 Mar 2023 04:45:33, 2023-04-17T14:05:44Z.
+      isArray: false
+      name: last_modified_timestamp
+      required: false
+      secret: false
+    - default: false
+      description: Filters by the user id who made the most recent modification to the group.
+      isArray: false
+      name: last_modified_by
+      required: false
+      secret: false
+    - default: false
+      description: Filters by group name.
+      isArray: false
+      name: group_name
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of all groups.
+    execution: false
+    name: vectra-group-list
+    outputs:
+    - contextPath: Vectra.Group.group_id
+      description: ID of the group.
+      type: Number
+    - contextPath: Vectra.Group.id
+      description: ID of the group.
+      type: Number
+    - contextPath: Vectra.Group.name
+      description: Name of the group.
+      type: String
+    - contextPath: Vectra.Group.description
+      description: Description of the group.
+      type: String
+    - contextPath: Vectra.Group.last_modified
+      description: Date when the group was last modified.
+      type: Date
+    - contextPath: Vectra.Group.last_modified_by
+      description: Name of the user who last modified the group.
+      type: String
+    - contextPath: Vectra.Group.type
+      description: Type of the group.
+      type: String
+    - contextPath: Vectra.Group.members
+      description: Members of the group.
+      type: Unknown
+    - contextPath: Vectra.Group.members.id
+      description: Entity ID of member.
+      type: Number
+    - contextPath: Vectra.Group.members.name
+      description: Entity name of member.
+      type: String
+    - contextPath: Vectra.Group.members.is_key_asset
+      description: Indicates key asset.
+      type: Boolean
+    - contextPath: Vectra.Group.members.url
+      description: Entity URL of member.
+      type: String
+    - contextPath: Vectra.Group.members.uid
+      description: Entity UID of member.
+      type: String
+    - contextPath: Vectra.Group.rules.triage_category
+      description: Triage category of rule.
+      type: String
+    - contextPath: Vectra.Group.rules.id
+      description: Id of the rule.
+      type: Number
+    - contextPath: Vectra.Group.rules.description
+      description: Description of the rule.
+      type: String
+    - contextPath: Vectra.Group.importance
+      description: Importance level of the group.
+      type: String
+    - contextPath: Vectra.Group.cognito_managed
+      description: Whether the group is managed by Cognito or not.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: Specify Group ID to unassign members.
+      isArray: false
+      name: group_id
+      required: true
+      secret: false
+    - default: false
+      description: "Member values based on the group type. Supports comma-separated values.\n\n Note: \nIf the group type is host, then the \"Host IDs\". \nIf the group type is account, then \"Account Names\".\nIf the group type is ip, then the list of \"IPs\".\nIf the group type is domain, then the list of \"Domains\" ."
+      isArray: true
+      name: members
+      required: true
+      secret: false
+    deprecated: false
+    description: Unassign members from the specified group.
+    execution: false
+    name: vectra-group-unassign
+    outputs:
+    - contextPath: Vectra.Group.group_id
+      description: ID of the group.
+      type: Number
+    - contextPath: Vectra.Group.id
+      description: ID of the group.
+      type: Number
+    - contextPath: Vectra.Group.name
+      description: Name of the group.
+      type: String
+    - contextPath: Vectra.Group.description
+      description: Description of the group.
+      type: String
+    - contextPath: Vectra.Group.last_modified
+      description: Date when the group was last modified.
+      type: Date
+    - contextPath: Vectra.Group.last_modified_by
+      description: Name of the user who last modified the group.
+      type: String
+    - contextPath: Vectra.Group.type
+      description: Type of the group.
+      type: String
+    - contextPath: Vectra.Group.members
+      description: Members of the group.
+      type: Unknown
+    - contextPath: Vectra.Group.members.id
+      description: Entity ID of member.
+      type: Number
+    - contextPath: Vectra.Group.members.name
+      description: Entity name of member.
+      type: String
+    - contextPath: Vectra.Group.members.is_key_asset
+      description: Indicates key asset.
+      type: Boolean
+    - contextPath: Vectra.Group.members.url
+      description: Entity URL of member.
+      type: String
+    - contextPath: Vectra.Group.members.uid
+      description: Entity UID of member.
+      type: String
+    - contextPath: Vectra.Group.rules.triage_category
+      description: Triage category of rule.
+      type: String
+    - contextPath: Vectra.Group.rules.id
+      description: Id of the rule.
+      type: Number
+    - contextPath: Vectra.Group.rules.description
+      description: Description of the rule.
+      type: String
+  - arguments:
+    - default: false
+      description: Specify Group ID to assign members.
+      isArray: false
+      name: group_id
+      required: true
+      secret: false
+    - default: false
+      description: "Member values based on the group type. Supports comma-separated values.\n\n Note: \nIf the group type is host, then the \"Host IDs\". \nIf the group type is account, then \"Account Names\".\nIf the group type is ip, then the list of \"IPs\".\nIf the group type is domain, then the list of \"Domains\" ."
+      isArray: true
+      name: members
+      required: true
+      secret: false
+    deprecated: false
+    description: Assign members to the specified group.
+    execution: false
+    name: vectra-group-assign
+    outputs:
+    - contextPath: Vectra.Group.group_id
+      description: ID of the group.
+      type: Number
+    - contextPath: Vectra.Group.id
+      description: ID of the group.
+      type: Number
+    - contextPath: Vectra.Group.name
+      description: Name of the group.
+      type: String
+    - contextPath: Vectra.Group.description
+      description: Description of the group.
+      type: String
+    - contextPath: Vectra.Group.last_modified
+      description: Date when the group was last modified.
+      type: Date
+    - contextPath: Vectra.Group.last_modified_by
+      description: Name of the user who last modified the group.
+      type: String
+    - contextPath: Vectra.Group.type
+      description: Type of the group.
+      type: String
+    - contextPath: Vectra.Group.members
+      description: Members of the group.
+      type: Unknown
+    - contextPath: Vectra.Group.members.id
+      description: Entity ID of member.
+      type: Number
+    - contextPath: Vectra.Group.members.name
+      description: Entity name of member.
+      type: String
+    - contextPath: Vectra.Group.members.is_key_asset
+      description: Indicates key asset.
+      type: Boolean
+    - contextPath: Vectra.Group.members.url
+      description: Entity URL of member.
+      type: String
+    - contextPath: Vectra.Group.members.uid
+      description: Entity UID of member.
+      type: String
+    - contextPath: Vectra.Group.rules.triage_category
+      description: Triage category of rule.
+      type: String
+    - contextPath: Vectra.Group.rules.id
+      description: Id of the rule.
+      type: Number
+    - contextPath: Vectra.Group.rules.description
+      description: Description of the rule.
+      type: String
+  dockerimage: demisto/python3:3.10.13.80593
+  feed: false
+  isfetch: true
+  isremotesyncin: true
+  isremotesyncout: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2
+fromversion: 6.8.0

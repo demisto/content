@@ -81,11 +81,8 @@ def determine_reviewer(potential_reviewers: list[str], repo: Repository) -> str:
         if label_to_consider not in pr_labels:
             continue
         assignees = {assignee.login for assignee in pull.assignees}
-        requested_reviewers, _ = pull.get_review_requests()
-        reviewers_info = {requested_reviewer.login for requested_reviewer in requested_reviewers}
-        combined_list = assignees.union(reviewers_info)
         for reviewer in potential_reviewers:
-            if reviewer in combined_list:
+            if reviewer in assignees:
                 assigned_prs_per_potential_reviewer[reviewer] = assigned_prs_per_potential_reviewer.get(reviewer, 0) + 1
     print(f'{assigned_prs_per_potential_reviewer=}')
     selected_reviewer = sorted(assigned_prs_per_potential_reviewer,
@@ -116,7 +113,7 @@ def packs_to_check_in_pr(file_paths: list[str]) -> set:
     return pack_dirs_to_check
 
 
-def get_packs_support_level_label(file_paths: list[str], external_pr_branch: str) -> str:
+def get_packs_support_level_label(file_paths: list[str], external_pr_branch: str, repo_name: str = 'content') -> str:
     """
     Get The contributions' support level label.
 
@@ -132,6 +129,7 @@ def get_packs_support_level_label(file_paths: list[str], external_pr_branch: str
     Args:
         file_paths(str): file paths
         external_pr_branch (str): the branch of the external PR.
+        repo_name(str): the name of the forked repo (without the owner)
 
     Returns:
         highest support level of the packs that were changed, empty string in case no packs were changed.
@@ -151,7 +149,8 @@ def get_packs_support_level_label(file_paths: list[str], external_pr_branch: str
             repo=Repo(Path().cwd(), search_parent_directories=True),
             branch_to_checkout=external_pr_branch,
             # in marketplace contributions the name of the owner should be xsoar-contrib
-            fork_owner=fork_owner if fork_owner != 'xsoar-bot' else 'xsoar-contrib'
+            fork_owner=fork_owner if fork_owner != 'xsoar-bot' else 'xsoar-contrib',
+            repo_name=repo_name
         ):
             packs_support_levels = get_support_level(pack_dirs_to_check_support_levels_labels)
     except Exception as error:
@@ -272,13 +271,17 @@ def main():
     content_repo = gh.get_repo(f'{org_name}/{repo_name}')
 
     pr_number = payload.get('pull_request', {}).get('number')
+    repo_name = payload.get('pull_request', {}).get('head', {}).get('repo', {}).get('name')
+
+    print(f'{t.cyan}PR origin repo: {repo_name} {t.normal}')
+
     pr = content_repo.get_pull(pr_number)
 
     pr_files = [file.filename for file in pr.get_files()]
     print(f'{pr_files=} for {pr_number=}')
 
     labels_to_add = [CONTRIBUTION_LABEL, EXTERNAL_LABEL]
-    if support_label := get_packs_support_level_label(pr_files, pr.head.ref):
+    if support_label := get_packs_support_level_label(pr_files, pr.head.ref, repo_name):
         labels_to_add.append(support_label)
 
     # Add the initial labels to PR:

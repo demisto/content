@@ -1,0 +1,31 @@
+{
+    "id": "incident_vectraxdrentitydetectiondetails",
+    "version": -1,
+    "modified": "2023-07-21T18:06:03.660695029+05:30",
+    "name": "Vectra XDR Entity Detection Details",
+    "ownerOnly": false,
+    "cliName": "vectraxdrentitydetectiondetails",
+    "type": "multiSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": true,
+    "associatedTypes": [
+        "Vectra XDR Entity"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.8.0"
+}
