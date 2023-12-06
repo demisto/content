@@ -4,7 +4,6 @@ from CommonServerPython import *  # noqa: F401
 import base64
 import os
 import pychrome
-import random
 import requests
 import subprocess
 import tempfile
@@ -94,6 +93,7 @@ class TabLifecycleManager:
 
 
 class PychromeEventHandler:
+    request_id = None
     screen_lock = threading.Lock()
 
     def __init__(self, browser, tab, tab_ready):
@@ -120,6 +120,10 @@ class PychromeEventHandler:
                     demisto.debug('Tab ready event set')
             except pychrome.exceptions.PyChromeException as e:
                 demisto.error(f'Error stopping page loading: {self.tab=}, {frameId=}, {e}')
+
+    def network_data_received(self, requestId, timestamp, dataLength, encodedDataLength):
+        demisto.debug(f"network_data_received, {requestId=}")
+        self.request_id = requestId
 
 # endregion
 
@@ -216,14 +220,15 @@ def ensure_chrome_running():  # pragma: no cover
 def setup_tab_event(browser, tab):
     tab_ready_event = Event()
     tab_event_handler = PychromeEventHandler(browser, tab, tab_ready_event)
+    tab.Network.dataReceived = tab_event_handler.network_data_received
     tab.Page.frameStartedLoading = tab_event_handler.frame_started_loading
     tab.Page.frameStoppedLoading = tab_event_handler.frame_stopped_loading
 
-    return tab_ready_event
+    return tab_event_handler, tab_ready_event
 
 
 def navigate_to_path(browser, tab, path, wait_time, navigation_timeout):  # pragma: no cover
-    tab_ready_event = setup_tab_event(browser, tab)
+    tab_event_handler, tab_ready_event = setup_tab_event(browser, tab)
 
     try:
         demisto.debug(f'Starting tab navigation to given path: {path}')
@@ -241,7 +246,9 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout):  # prag
             return_error(message)
 
         time.sleep(wait_time)  # pylint: disable=E9003
-        demisto.debug(f"navigate_to_path, Navigated to {path=}")
+        request_id = tab_event_handler.request_id
+        demisto.debug(f"navigate_to_path, Navigated to {path=}, {request_id=}")
+        return request_id
 
     except pychrome.exceptions.TimeoutException as ex:
         message = f'Navigation timeout: {ex} thrown while trying to navigate to {path}'
@@ -253,21 +260,40 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout):  # prag
         return_error(message)
 
 
-def screenshot_image(browser, tab, path, wait_time, navigation_timeout):  # pragma: no cover
-    navigate_to_path(browser, tab, path, wait_time, navigation_timeout)
+def screenshot_image(browser, tab, path, wait_time, navigation_timeout, include_source=False):  # pragma: no cover
+    """
+    :param include_source: Whether to include the page source in the response
+    """
+    request_id = navigate_to_path(browser, tab, path, wait_time, navigation_timeout)
 
+    # Screenshot data
     screenshot_data = tab.Page.captureScreenshot()['data']
     # Make sure that the (asynchronous) screenshot data is available before continuing with execution
     operation_time = 0
     while screenshot_data is None and operation_time < DEFAULT_WAIT_TIME:
         time.sleep(DEFAULT_POLLING_INTERVAL)  # pylint: disable=E9003
         operation_time +=DEFAULT_POLLING_INTERVAL
-
     demisto.debug(f"Screenshot image available after {operation_time} seconds.")
 
     ret_value = base64.b64decode(screenshot_data)
     demisto.debug(f"Captured snapshot, {len(ret_value)=}")
-    return ret_value
+
+    # Page source, if needed
+    response_body = None
+    demisto.debug(f"{include_source=}, {request_id=}")
+    if include_source:
+        # response_body = tab.call_method("Network.getResponseBody", requestId=request_id, _timeout=navigation_timeout)
+        response_body = tab.Network.getResponseBody(requestId=request_id, _timeout=navigation_timeout)['body']
+        # Make sure that the (asynchronous) screenshot data is available before continuing with execution
+        # operation_time = 0
+        # while screenshot_data is None and operation_time < DEFAULT_WAIT_TIME:
+        #     time.sleep(DEFAULT_POLLING_INTERVAL)  # pylint: disable=E9003
+        #     operation_time +=DEFAULT_POLLING_INTERVAL
+
+        demisto.debug(f"{len(response_body)=}")
+        demisto.debug(f"{response_body=}")
+
+    return ret_value, response_body
 
 
 def screenshot_pdf(browser, tab, path, wait_time, navigation_timeout, include_url):  # pragma: no cover
@@ -286,7 +312,7 @@ def screenshot_pdf(browser, tab, path, wait_time, navigation_timeout, include_ur
     demisto.debug(f"PDF data available after {operation_time} seconds.")
 
     ret_value = base64.b64decode(pdf_data)
-    return ret_value
+    return ret_value, None
 
 
 def rasterize(path: str,
@@ -296,7 +322,7 @@ def rasterize(path: str,
               navigation_timeout: int = DEFAULT_PAGE_LOAD_TIME,
               include_url: bool = False,
               width=DEFAULT_WIDTH,
-              height=DEFAULT_HEIGHT,
+              height=DEFAULT_HEIGHT
               ):
     """
     Capturing a snapshot of a path (url/file), using Chrome Driver
@@ -313,9 +339,11 @@ def rasterize(path: str,
     if browser := ensure_chrome_running():
         with TabLifecycleManager(browser) as tab:
             if offline_mode:
-                tab.call_method("Network.disable")
+                # tab.call_method("Network.disble")
+                tab.Network.disable(offline="True")
             else:
-                tab.call_method("Network.enable")
+                # tab.call_method("Network.enable")
+                tab.Network.enable()
             # tab.call_method("Browser.Bounds.width=600")
             tab.call_method("Emulation.setVisibleSize", width=width, height=height)
 
@@ -325,6 +353,10 @@ def rasterize(path: str,
             elif rasterize_type == RasterizeType.PDF or str(rasterize_type).lower == RasterizeType.PDF.value:
                 return screenshot_pdf(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout,
                                       include_url=include_url)
+
+            elif rasterize_type == RasterizeType.JSON or str(rasterize_type).lower == RasterizeType.JSON.value:
+                return screenshot_image(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout,
+                                        include_source=True)
             else:
                 message = 'Unsupported rasterization type {rasterize_type}'
                 demisto.error(message)
@@ -352,7 +384,7 @@ def rasterize_image_command():
     file_name = f'{file_name}.pdf'
 
     with open(file_path, 'rb') as f:
-        output = rasterize(path=f'file://{os.path.realpath(f.name)}', width=width, height=height,
+        output, _ = rasterize(path=f'file://{os.path.realpath(f.name)}', width=width, height=height,
                            rasterize_type=RasterizeType.PDF)
         res = fileResult(filename=file_name, data=output, file_type=entryTypes['entryInfoFile'])
         demisto.results(res)
@@ -372,7 +404,7 @@ def rasterize_email_command():  # pragma: no cover
 
     path = f'file://{os.path.realpath(f.name)}'
 
-    output = rasterize(path=path, rasterize_type=rasterize_type, width=width, height=height, offline_mode=offline,
+    output, _ = rasterize(path=path, rasterize_type=rasterize_type, width=width, height=height, offline_mode=offline,
                        navigation_timeout=navigation_timeout)
 
     res = fileResult(filename=file_name, data=output)
@@ -451,7 +483,7 @@ def rasterize_html_command():
     file_path = demisto.getFilePath(entry_id).get('path')
     os.rename(f'./{file_path}', 'file.html')
 
-    output = rasterize(path=f"file://{os.path.realpath('file.html')}", width=width, height=height,
+    output, _ = rasterize(path=f"file://{os.path.realpath('file.html')}", width=width, height=height,
                        rasterize_type=rasterize_type, wait_time=wait_time)
 
     res = fileResult(filename=file_name, data=output)
@@ -487,12 +519,18 @@ def rasterize_command():  # pragma: no cover
         url = f'http://{url}'
     file_name = f'{file_name}.{"pdf" if rasterize_type == RasterizeType.PDF else "png"}'  # type: ignore
 
-    output = rasterize(path=url, rasterize_type=rasterize_type, wait_time=wait_time, navigation_timeout=navigation_timeout,
-                       include_url=include_url)
+    output, response_body = rasterize(path=url, rasterize_type=rasterize_type, wait_time=wait_time,
+                                      navigation_timeout=navigation_timeout, include_url=include_url)
 
-    if rasterize_type == RasterizeType.JSON:
+    if rasterize_type == RasterizeType.JSON or str(rasterize_type).lower == RasterizeType.JSON.value:
+        # html = driver.page_source
+        # url = driver.current_url
+        # output = {'image_b64': base64.b64encode(get_image(driver, width, height, full_screen, include_url)).decode('utf8'),
+        #             'html': html, 'current_url': url}
+        output = {'image_b64': base64.b64encode(output).decode('utf8'),
+                    'html': response_body, 'current_url': url}
         return_results(CommandResults(raw_response=output, readable_output="Successfully rasterize url: " + url))
-        return
+        # return output
 
     res = fileResult(filename=file_name, data=output)
     if rasterize_type == RasterizeType.PNG:
