@@ -161,7 +161,7 @@ def get_current_table(grid_id: str) -> pd.DataFrame:
     Returns:
         DataFrame: Existing grid data.
     """
-    custom_fields = demisto.incident().get("CustomFields", {})
+    custom_fields = demisto.incident().get("CustomFields", {}) or {}
     current_table: list[dict] | None = custom_fields.get(grid_id)
     return pd.DataFrame(current_table) if current_table else pd.DataFrame()
 
@@ -334,7 +334,7 @@ def build_grid_command(grid_id: str, context_path: str, keys: list[str], columns
 
     # Sort by column name if specified, support multi columns sort
     if sort_by and set(sort_by) <= set(new_table.columns):
-        new_table = new_table.sort_values(by=sort_by)
+        new_table.sort_values(by=sort_by, inplace=True)
 
     # filter empty values in the generated table
     filtered_table = []
