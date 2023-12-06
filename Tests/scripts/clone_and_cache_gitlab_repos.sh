@@ -78,6 +78,7 @@ clone_repository_with_fallback_branch() {
       echo -e "${RED}ERROR: Failed to clone ${repo_name} with fallback branch:${fallback_branch}, exit code:${exit_code}, exiting!${NC}"
       exit ${exit_code}
     else
+      echo "${branch}" > "${repo}".txt
       echo -e "${GREEN}Successfully cloned ${repo_name} with fallback branch:${fallback_branch}${NC}"
       return 0
     fi
@@ -110,7 +111,6 @@ get_cache_gitlab_repositories() {
   local branch_exists=$?
   if [ "${branch_exists}" -eq 0 ]; then
     cached_branch=$(cat "${repo}.txt")
-    echo "${cached_branch}" # for testing
     if [ "${cached_branch}" != "${branch}" ]; then
       rm -rf "./${repo}"
     fi
