@@ -4,7 +4,16 @@ from CommonServerPython import *
 
 
 def test_extract_info_from_qr_code(mocker):
+    """
+    Given:
+        A QR code image file.
 
+    When:
+        - Calling the ReadQRCode script.
+
+    Then:
+        Extract the text of the QR code and get indicators from it.
+    """
     from ReadQRCode import extract_info_from_qr_code
 
     mocker.patch.object(
@@ -22,7 +31,16 @@ def test_extract_info_from_qr_code(mocker):
 
 
 def test_with_non_qr_code_file(mocker):
+    """
+    Given:
+        An image file that does not contain a QR code.
 
+    When:
+        - Calling the ReadQRCode script.
+
+    Then:
+        Return an informative error. 
+    """
     from ReadQRCode import extract_info_from_qr_code
 
     mocker.patch.object(
@@ -34,7 +52,16 @@ def test_with_non_qr_code_file(mocker):
 
 
 def test_with_non_image_file(mocker):
+    """
+    Given:
+        A file that is not an image.
 
+    When:
+        - Calling the ReadQRCode script.
+
+    Then:
+        Return an informative error. 
+    """
     from ReadQRCode import extract_info_from_qr_code
 
     mocker.patch.object(
