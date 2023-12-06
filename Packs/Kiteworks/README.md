@@ -16,7 +16,7 @@ Follow the steps below from your Kiteworks admin console web interface:
     - `Syslog Server` - Enter the IP address of the target [Cortex XSIAM Syslog Broker VM](#broker-vm). 
     - `Protocol` - Select **UDP** or **TCP**. Note: If you wish to use TLS, select **TCP**.
     - `Port` - Enter the syslog service port that the target Cortex XSIAM Broker VM would be listening on for receiving forwarded syslog messages from Kiteworks. 
-    - `Use TLS` - Check this checkbox if the syslog messages should be transported over TLS. 
+    - `Use TLS` - Select this checkbox if the syslog messages should be transported over TLS. 
     - `Format` - Select **JSON Format**. 
    
 ## Collect Events from Vendor
