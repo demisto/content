@@ -80,8 +80,12 @@ def sg_fix(sg_info: list, port: int, protocol: str, assume_role: str, instance_t
             # Check if 'FromPort' is in rule, else it is an "all traffic rule".
             if rule.get('FromPort'):
                 # Don't recreate if it targets just the port of interest.
-                if rule['FromPort'] == port and port == rule['ToPort'] and rule['IpRanges'][0]['CidrIp'] == "0.0.0.0/0" and \
-                rule['IpProtocol'] == protocol:
+                if (
+                    rule['FromPort'] == port
+                    and port == rule['ToPort']
+                    and rule['IpRanges'][0]['CidrIp'] == "0.0.0.0/0"
+                    and rule['IpProtocol'] == protocol
+                ):
                     change = True
                 elif (
                     rule["FromPort"] == port and port == rule["ToPort"]
@@ -90,8 +94,11 @@ def sg_fix(sg_info: list, port: int, protocol: str, assume_role: str, instance_t
                 ):
                     # If condition to check for Quad 0 in the rules list for matching port.
                     change = True
-                elif rule['FromPort'] <= port and port <= rule['ToPort'] and rule['IpRanges'][0]['CidrIp'] == "0.0.0.0/0" and \
-                    rule['IpProtocol'] == protocol:  # noqa: E127
+                elif (
+                    rule['FromPort'] <= port and port <= rule['ToPort']
+                    and rule['IpRanges'][0]['CidrIp'] == "0.0.0.0/0"
+                    and rule['IpProtocol'] == protocol
+                ):  # noqa: E127
                     fixed = split_rule(rule, port, protocol)
                     for rule_fix in fixed:
                         new_rule = (str([rule_fix])).replace("'", "\"")
