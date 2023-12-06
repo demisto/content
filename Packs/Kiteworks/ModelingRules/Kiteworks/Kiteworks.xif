@@ -1,5 +1,7 @@
 [MODEL: dataset="kiteworks_kiteworks_raw"]
-filter _raw_log ~= "^(?:\S+\s+){5}\{" // JSON Format 
+
+// JSON Format 
+filter _raw_log ~= "^(?:\S+\s+){5}\{" 
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\s*\w+"), 0)),
     syslog_hostname = arrayindex(regextract(_raw_log, "(?:\S+\s+){3}(\S+)"), 0),
@@ -92,7 +94,6 @@ filter _raw_log ~= "^(?:\S+\s+){5}\{" // JSON Format
     src_ipv6 = if(src_ip ~= "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}", src_ip),
     target_client_name = if(target_client_id != null, resource_name),
     verdict = if(is_malicious = "1", "MALICIOUS", is_prohibited = "1", "PROHIBITED", is_quarantined = "1", "QUARANTINED", is_skipped = "1", "SKIPPED")
-
 | alter attachments_md5_fingerprints = arraymap(email_attachments, arraystring(arrayfilter("@element" -> fingerprints[], "@element" -> algo = "md5"), ","))
 | alter attachments_sha256_fingerprints = arraymap(email_attachments, arraystring(arrayfilter("@element" -> fingerprints[], "@element" -> algo ~= "sha.*256"), ","))
 | alter attachments_md5_hashes = arraystring(arraymap(attachments_md5_fingerprints, "@element" -> hash), ",")
@@ -115,7 +116,6 @@ filter _raw_log ~= "^(?:\S+\s+){5}\{" // JSON Format
     xdm.event.outcome = if(is_successful = "1", XDM_CONST.OUTCOME_SUCCESS, is_successful = "0", XDM_CONST.OUTCOME_FAILED),
     xdm.event.outcome_reason = coalesce(error_msg, status_reason),
     xdm.event.type = event,
-    xdm.intermediate.process.name = syslog_process_name,
     xdm.network.rule = concat(rule_id, " (", rule_name, ")"),
     xdm.network.session_id = coalesce(session_id, context),
     xdm.observer.action = verdict,
@@ -128,6 +128,7 @@ filter _raw_log ~= "^(?:\S+\s+){5}\{" // JSON Format
     xdm.source.host.hostname = if(client_device != "None", client_device),
     xdm.source.ipv4 = src_ipv4,
     xdm.source.ipv6 = src_ipv6,
+    xdm.source.process.name = syslog_process_name,
     xdm.source.user_agent = user_agent,
     xdm.source.user.groups = if(syscheck_gname_after != null, arraycreate(syscheck_gname_after)),
     xdm.source.user.identifier = coalesce(user_id, syscheck_uid_after),
@@ -153,3 +154,76 @@ filter _raw_log ~= "^(?:\S+\s+){5}\{" // JSON Format
     xdm.target.resource.value = token,
     xdm.target.user.identifier = target_user_id,
     xdm.target.user.username = coalesce(target_user_name, target_users_names, email, file_owner_name);
+
+// Single-Line Format
+filter _raw_log !~= "^(?:\S+\s+){5}\{" and _raw_log not contains "Activity Type:"
+| alter 
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\s*\w+"), 0)),
+    syslog_hostname = arrayindex(regextract(_raw_log, "(?:\S+\s+){3}(\S+)"), 0),
+    syslog_process_name = rtrim(arrayindex(regextract(_raw_log, "(?:\S+\s+){4}(\S+)"), 0), ":"),
+    syslog_payload = arrayindex(regextract(_raw_log, "(?:\S+\s+){5}(.+)"), 0)
+| alter syslog_facility = floor(divide(syslog_priority, 8))
+| alter syslog_severity = to_string(subtract(syslog_priority, multiply(syslog_facility, 8)))
+| alter 
+    activity_type = arrayindex(regextract(syslog_payload, "type=(\S+)"), 0),
+    audit_uid = arrayindex(regextract(syslog_payload, "auid=(\d+)"), 0),
+    auth_service = arrayindex(regextract(syslog_payload, "grantors=(\S+)"), 0),
+    command_name = trim(arrayindex(regextract(syslog_payload, "comm=(\S+)"), 0), "\""),
+    effective_group_id = arrayindex(regextract(syslog_payload, "egid=(\d+)"), 0),
+    effective_uid = arrayindex(regextract(syslog_payload, "euid=(\d+)"), 0),
+    event_id = arrayindex(regextract(syslog_payload, "audit\(\d+[^\:]+\:(\d+)"), 0),
+    executable = trim(arrayindex(regextract(syslog_payload, "(?:comm|exe|cmd|proctitle)=(\S+)"), 0), "\""),
+    exec_args = arraystring(regextract(_raw_log, "a\d+=\"([^\"]+)"), " "),
+    group_id = arrayindex(regextract(syslog_payload, "\s+gid=(\d+)"), 0),
+    hostname = arrayindex(regextract(syslog_payload, "hostname=([\w\.\-]+)"), 0),
+    ip_address = arrayindex(regextract(syslog_payload, "addr=([\d\.\:a-fA-F]+)"), 0),
+    is_successful = arrayindex(regextract(syslog_payload, "success=(\w+)"), 0), // yes/no
+    msg = rtrim(arrayindex(regextract(syslog_payload, "msg=\'(.+)"), 0), "\'"),
+    name = trim(arrayindex(regextract(syslog_payload, "name=(\S+)"), 0), "\""),
+    node = arrayindex(regextract(syslog_payload, "node=(\S+)"), 0),
+    o_uid = arrayindex(regextract(syslog_payload, "ouid=(\d+)"), 0),
+    objtype = arrayindex(regextract(syslog_payload, "objtype=(\S+)"), 0),
+    operation = arrayindex(regextract(syslog_payload, "op=(\S+)"), 0),
+    pid = arrayindex(regextract(syslog_payload, "\s+pid=(\d+)"), 0),
+    ppid = arrayindex(regextract(syslog_payload, "ppid=(\d+)"), 0),
+    result = arrayindex(regextract(syslog_payload, "res=(\w+)"), 0),
+    session_id = arrayindex(regextract(syslog_payload, "ses=(\S+)"), 0),
+    set_group_id = arrayindex(regextract(syslog_payload, "sgid=(\d+)"), 0),
+    syscall_number = arrayindex(regextract(syslog_payload, "syscall=(\d+)"), 0),
+    user_id = arrayindex(regextract(syslog_payload, "\s+uid=(\d+)"), 0),
+    user_account = arrayindex(regextract(syslog_payload, "acct=\"?([^\"]+)"), 0),
+    working_directory = arrayindex(regextract(syslog_payload, "cwd=\"?([^\"]+)"), 0)
+| alter 
+    process_cmd = coalesce(executable, exec_args, command_name),
+    src_ipv4 = if(ip_address ~= "(?:\d{1,3}\.){3}\d{1,3}", ip_address),
+    src_ipv6 = if(ip_address ~= "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}", ip_address)
+| alter 
+    xdm.alert.severity = syslog_severity,
+    xdm.auth.service = auth_service,
+    xdm.event.description = coalesce(msg, syslog_payload),
+    xdm.event.id = event_id,
+    xdm.event.log_level = if(syslog_severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY, syslog_severity = "1", XDM_CONST.LOG_LEVEL_ALERT, syslog_severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, syslog_severity = "3", XDM_CONST.LOG_LEVEL_ERROR, syslog_severity = "4", XDM_CONST.LOG_LEVEL_WARNING, syslog_severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, syslog_severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, syslog_severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, syslog_severity),
+    xdm.event.operation = operation,
+    xdm.event.outcome = if(is_successful = "yes" or result = "success", XDM_CONST.OUTCOME_SUCCESS, is_successful = "no" or result ~= "fail", XDM_CONST.OUTCOME_FAILED),
+    xdm.event.type = activity_type,
+    xdm.network.session_id = session_id,
+    xdm.observer.name = syslog_hostname,
+    xdm.session_context_id = session_id,
+    xdm.source.host.hostname = node,
+    xdm.source.ipv4 = src_ipv4,
+    xdm.source.ipv6 = src_ipv6,
+    xdm.source.process.name = syslog_process_name,
+    xdm.source.user.groups = if(group_id != null, arraycreate(group_id)),
+    xdm.source.user.identifier = coalesce(audit_uid, user_id),
+    xdm.source.user.username = user_account,
+    xdm.target.host.hostname = hostname, 
+    xdm.target.process.command_line = process_cmd,
+    xdm.target.process.name = coalesce(command_name, syscall_number), 
+    xdm.target.process.pid = to_integer(pid),
+    xdm.target.process.parent_id = ppid, 
+    xdm.target.process.executable.path = working_directory,
+    xdm.target.resource.name = name,
+    xdm.target.resource.type = objtype,
+    xdm.target.user.groups = arraycreate(set_group_id, effective_group_id),
+    xdm.target.user.identifier = coalesce(effective_uid, o_uid, user_id, audit_uid),
+    xdm.target.user.username = user_account;
