@@ -45,6 +45,7 @@ clone_repository_with_fallback_branch() {
   local retry_count=$6
   local sleep_time=${7:-10}  # default sleep time is 10 seconds.
   local fallback_branch="${8:-master}"
+  local repo=$9
 
   # Check if branch exists in the repository.
   echo -e "${GREEN}Checking if branch ${branch} exists in ${repo_name}${NC}"
@@ -81,7 +82,7 @@ clone_repository_with_fallback_branch() {
       return 0
     fi
   else
-    echo "${branch}" > "${repo_name}".txt
+    echo "${branch}" > "${repo}".txt
     echo -e "${GREEN}Successfully cloned ${repo_name} with branch:${branch}${NC}"
     return 0
   fi
@@ -108,7 +109,7 @@ get_cache_gitlab_repositories() {
   git ls-remote --exit-code --quiet --heads "https://${user_info}${host}/${repo_name}.git" "refs/heads/${branch}" 1>/dev/null 2>&1
   local branch_exists=$?
   if [ "${branch_exists}" -eq 0 ]; then
-    cached_branch=$(cat "${repo_name}.txt")
+    cached_branch=$(cat "${repo}.txt")
     if [ "${cached_branch}" != "${branch}" ]; then
       rm -rf "./${repo}"
     fi
@@ -122,7 +123,7 @@ get_cache_gitlab_repositories() {
     cd ..
   else
     echo "Getting ${repo_name} repository with branch:${SEARCHED_BRANCH_NAME}, with fallback to master"
-    clone_repository_with_fallback_branch "${host}" "${user}" "${token}" "${repo_name}" "${branch}" "${retry_count}" "${sleep_time}" "${fallback_branch}"
+    clone_repository_with_fallback_branch "${host}" "${user}" "${token}" "${repo_name}" "${branch}" "${retry_count}" "${sleep_time}" "${fallback_branch}" "${repo}"
   fi
 
 }
