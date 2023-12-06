@@ -493,6 +493,9 @@
     - cp "./Tests/conf.json" "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json"
     - section_end "Copy conf.json To Server Type Artifacts Folder"
     - section_start "Validate Files and Yaml"
+    - echo "Remove content-test-conf and infra repositories"
+    - rm -rf ./content-test-conf
+    - rm -rf ./infra
     - |
       if [[ -n $FORCE_BUCKET_UPLOAD ]]; then
         echo "Skipping the -Validate Files and Yaml- step when force uploading to a bucket."
