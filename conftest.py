@@ -65,7 +65,7 @@ def pytest_sessionfinish(session, exitstatus):
 def pytest_configure(config):
     junit_xml = config.option.xmlpath
     if junit_xml:
-        image =  os.getenv("DOCKER_IMAGE")
+        image = os.getenv("DOCKER_IMAGE")
         if image:
             config.option.xmlpath = junit_xml.replace(".xml", "-{}.xml".format(image.replace("/", "_")))
         else:
