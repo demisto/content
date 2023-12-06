@@ -465,7 +465,7 @@ def main():  # pragma: no cover
             return_results(list_roles_command(client, args))
 
         elif command == 'core-get-incidents':
-            return_results(*get_incidents_command(client, args))
+            return_outputs(*get_incidents_command(client, args))
 
         elif command in ('core-set-user-role', 'core-remove-user-role'):
             return_results(change_user_role_command(client, args))
