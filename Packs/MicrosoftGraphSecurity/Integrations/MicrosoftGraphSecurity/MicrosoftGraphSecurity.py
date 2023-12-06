@@ -1437,9 +1437,7 @@ def get_threat_assessment_request(client: MsGraphClient, request_id):
                   requires_polling_arg=False)
 def create_mail_assessment_request_command(args, client: MsGraphClient) -> PollResult | CommandResults:
 
-    request_id = args.get('request_id')
-
-    if not request_id:
+    if not (request_id := args.get('request_id')):
         message_user = get_message_user(client, args.get('message_user'))
         result = client.create_mail_assessment_request(args.get('recipient_email'),
                                                        args.get('expected_assessment'),
@@ -1472,9 +1470,7 @@ def create_mail_assessment_request_command(args, client: MsGraphClient) -> PollR
                   requires_polling_arg=False)
 def create_email_file_request_command(args, client: MsGraphClient) -> PollResult | CommandResults:
 
-    request_id = args.get('request_id')
-
-    if not request_id:
+    if not (request_id := args.get('request_id')):
         content_data = get_content_data(args.get('entry_id'), args.get('content_data'))
         result = client.create_email_file_assessment_request(args.get('recipient_email'),
                                                              args.get('expected_assessment'),
@@ -1502,9 +1498,8 @@ def create_email_file_request_command(args, client: MsGraphClient) -> PollResult
 
 @polling_function('msg-create-file-assessment-request', requires_polling_arg=False)
 def create_file_assessment_request_command(args, client) -> PollResult | CommandResults:
-    request_id = args.get('request_id')
 
-    if not request_id:
+    if not (request_id := args.get('request_id')):
         content_data = get_content_data(args.get('entry_id'), args.get('content_data'))
         demisto.debug(f"got content data: {content_data}")
         result = client.create_file_assessment_request(args.get('expected_assessment'),
@@ -1539,9 +1534,7 @@ def create_file_assessment_request_command(args, client) -> PollResult | Command
                   requires_polling_arg=False)
 def create_url_assessment_request_command(args, client: MsGraphClient) -> PollResult | CommandResults:
 
-    request_id = args.get('request_id')
-
-    if not request_id:
+    if not (request_id := args.get('request_id')):
         result = client.create_url_assessment_request(args.get('expected_assessment'),
                                                       args.get('category'),
                                                       args.get('url'))
@@ -1569,8 +1562,8 @@ def create_url_assessment_request_command(args, client: MsGraphClient) -> PollRe
 def list_threat_assessment_requests_command(client: MsGraphClient, args) -> list[CommandResults]:
     command_results = []
     limit = args.get('limit')
-    request_id = args.get('request_id')
-    if request_id:
+
+    if request_id := args.get('request_id'):
         return get_threat_assessment_request(client, request_id)
 
     result = client.list_threat_assessment_requests(
