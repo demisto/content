@@ -40,23 +40,24 @@ class TestXCloudAdditionalAlertInformationWidget(unittest.TestCase):
         assert result == expected_result
 
     def test_verify_list_type_dict(self):
-        input_dict = {
-            "EntryContext": {"Core.OriginalAlert(val.internal_id && val.internal_id == obj.internal_id)": {"id": "123"}}}
-        expected_output = {"EntryContext": {"OriginalAlert": {"id": "123"}}}
+        input_dict = [{
+            "EntryContext": {"Core.OriginalAlert(val.internal_id && val.internal_id == obj.internal_id)": {"id": "123"}}}]
+        expected_output =  {"OriginalAlert": {"id": "123"}}
         output = verify_list_type(input_dict)
         self.assertEqual(output, expected_output)
 
     def test_verify_list_type_list(self):
         input_list = [
             {"EntryContext": {"Core.OriginalAlert(val.internal_id && val.internal_id == obj.internal_id)": {"id": "123"}}}]
-        expected_output = {"EntryContext": {"OriginalAlert": {"id": "123"}}}
+        expected_output = {"OriginalAlert": {"id": "123"}}
         output = verify_list_type(input_list)
         self.assertEqual(output, expected_output)
 
     def test_verify_list_type_empty(self):
         input = None
-        with self.assertRaises(Exception):
-            verify_list_type(input)
+        expected_output = None
+        output = verify_list_type(input)
+        self.assertEqual(output, expected_output)
 
     @patch('demistomock.investigation')
     @patch('demistomock.context')
