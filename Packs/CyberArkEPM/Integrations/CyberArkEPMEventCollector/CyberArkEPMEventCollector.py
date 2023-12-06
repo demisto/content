@@ -4,6 +4,7 @@ import json
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from typing import Any
+from dateutil import parser
 from bs4 import BeautifulSoup as bs
 import urllib3
 
@@ -12,8 +13,10 @@ urllib3.disable_warnings()
 
 """ CONSTANTS """
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-API_VERSION = '11.5.6'
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+MAX_LIMIT = 1000
+ADMIN_AUDITS_MAX_LIMIT = 500
+MAX_FETCH = 5000
 VENDOR = 'CyberArk'
 PRODUCT = 'EPM'
 
@@ -72,28 +75,31 @@ class Client(BaseClient):
     def get_set_list(self) -> dict:
         return self._http_request('GET', url_suffix='Sets')
 
-    def get_policy_audits(self, set_id: str, from_date: str = '', limit: int = 1000, next_cursor: str = '') -> dict:
-        url_suffix = f'Sets/{set_id}/policyaudits/search'
-        if limit:
-            url_suffix = f'{url_suffix}?limit={limit}'
-        if next_cursor:
-            url_suffix = f'{url_suffix}?nextCursor={next_cursor}'
-
-        data = {}
-        if from_date:
-            # data['filter'] = f'eventDate GE {from_date}'
-            data['filter'] = 'eventDate GE 2023-11-30T14:55:21Z'
-
+    def get_policy_audits(self, set_id: str, from_date: str = '', limit: int = MAX_LIMIT) -> dict:
+        url_suffix = f'Sets/{set_id}/policyaudits/search?sortDir=asc&limit={min(limit, MAX_LIMIT)}'
+        data = assign_params(filter=f'arrivalTime GE {from_date}')
         return self._http_request('POST', url_suffix=url_suffix, json_data=data)
 
-    def get_admin_audits(self, set_id: str) -> dict:
-        return self._http_request('GET', url_suffix=f'Sets/{set_id}/AdminAudit')
+    def get_admin_audits(self, set_id: str, from_date: str = '', limit: int = ADMIN_AUDITS_MAX_LIMIT) -> dict:
+        url_suffix = f'Sets/{set_id}/AdminAudit?datefrom={from_date}&limit={min(limit, ADMIN_AUDITS_MAX_LIMIT)}'
+        return self._http_request('GET', url_suffix=url_suffix)
 
-    def get_events(self, set_id: str) -> dict:
-        return self._http_request('POST', url_suffix=f'Sets/{set_id}/Events/Search')
+    def get_events(self, set_id: str, from_date: str = '', limit: int = MAX_LIMIT) -> dict:
+        url_suffix = f'Sets/{set_id}/Events/Search?sortDir=asc&limit={min(limit, MAX_LIMIT)}'
+        data = assign_params(filter=f'arrivalTime GE {from_date}')
+        return self._http_request('POST', url_suffix=url_suffix, json_data=data)
 
 
 """ HELPER FUNCTIONS """
+
+
+def prepare_datetime(date_time: datetime | str, increase: bool = False) -> str:
+    if isinstance(date_time, str):
+        date_time = parser.parse(date_time, ignoretz=True)
+    if increase:
+        date_time += timedelta(milliseconds=1)
+    date_time_str = date_time.isoformat(timespec="milliseconds")
+    return f'{date_time_str}Z'
 
 
 def get_set_ids_by_set_names(client: Client) -> list[str]:
@@ -102,7 +108,7 @@ def get_set_ids_by_set_names(client: Client) -> list[str]:
     Args:
         client (Client): CyberArkEPM client to use.
     Returns:
-        (list) A list of IDs associated with the names.
+        (dict) A dict of {set_id: events (list events associated with a list of set names)}.
     """
     set_names = argToList(demisto.params().get('set_name'))
     context_set_items = get_integration_context().get('set_items', {})
@@ -119,60 +125,88 @@ def get_set_ids_by_set_names(client: Client) -> list[str]:
     return list(context_set_items.values())
 
 
-def get_policy_audits(client: Client, from_date: str, limit: int) -> list:
+def get_policy_audits(client: Client, set_ids_with_from_date: dict, limit: int) -> dict[str, list]:
     """
     Args:
         client (Client): CyberArkEPM client to use.
-        from_date (str): Date from where to get events.
+        set_ids_with_from_date (dict): A dict of set_ids and dates form where to get the events. {'123': '01-02-2023T23:20:50Z'}.
         limit (int): The sum of events to get.
     Returns:
-        (list) A list events associated with a list of set names.
+        (dict) A dict of {set_id: events (list events associated with a list of set names)}.
     """
-    policy_audits = []
+    policy_audits = {}
 
-    for set_id in get_set_ids_by_set_names(client):
-        result = client.get_policy_audits(set_id, from_date, limit)
-        policy_audits.extend(result.get('events'))
+    for set_id, from_date in set_ids_with_from_date.items():
+        result = client.get_policy_audits(set_id, from_date.get('policy_audits'), limit)
+        policy_audits[set_id] = result.get('events')
+        total_events = result.get('filteredCount')
 
-        while next_cursor := result.get('nextCursor'):
-            result = client.get_policy_audits(set_id, from_date, limit, next_cursor)
-            policy_audits.extend(result.get('events'))
+        while len(policy_audits[set_id]) < total_events and len(policy_audits[set_id]) < limit:
+            latest_event_date = policy_audits[set_id][-1].get('arrivalTime')
+            result = client.get_policy_audits(set_id, prepare_datetime(latest_event_date, increase=True), limit)
+            policy_audits[set_id].extend(result.get('events'))
+
+        policy_audits[set_id] = policy_audits[set_id][:limit]
 
     return policy_audits
 
 
-def get_admin_audits(client: Client) -> list:
+def get_admin_audits(client: Client, set_ids_with_from_date: dict, limit: int) -> dict[str, list]:
     """
     Args:
         client (Client): CyberArkEPM client to use.
+        set_ids_with_from_date (dict): A dict of set_ids and dates form where to get the events. {'123': '01-02-2023T23:20:50Z'}.
+        limit (int): The sum of events to get.
     Returns:
-        (list) A list of admin audits associated with a list of set names.
+        (dict) A dict of {set_id: events (list events associated with a list of set names)}.
     """
-    admin_audits = []
-    for set_id in get_set_ids_by_set_names(client):
-        events = client.get_admin_audits(set_id).get('AdminAudits')
-        admin_audits.extend(events)
+    admin_audits = {}
+
+    for set_id, from_date in set_ids_with_from_date.items():
+        result = client.get_admin_audits(set_id, from_date.get('admin_audits'), limit)
+        admin_audits[set_id] = result.get('AdminAudits')
+        total_events = result.get('TotalCount')
+
+        while len(admin_audits[set_id]) < total_events and len(admin_audits[set_id]) < limit:
+            latest_event_date = max(parser.parse(event.get('EventTime'), ignoretz=True) for event in result.get('AdminAudits'))
+            result = client.get_admin_audits(set_id, prepare_datetime(latest_event_date, increase=True), limit)
+            admin_audits[set_id].extend(result.get('AdminAudits'))
+
+        admin_audits[set_id] = admin_audits[set_id][:limit]
+
     return admin_audits
 
 
-def get_detailed_events(client: Client):
+def get_detailed_events(client: Client, set_ids_with_from_date: dict, limit: int) -> dict[str, list]:
     """
     Args:
         client (Client): CyberArkEPM client to use.
+        set_ids_with_from_date (dict): A dict of set_ids and dates form where to get the events. {'123': '01-02-2023T23:20:50Z'}.
+        limit (int): The sum of events to get.
     Returns:
-        (list) A list of detailed events associated with a list of set names.
+        (dict) A dict of {set_id: events (list events associated with a list of set names)}.
     """
-    detailed_events = []
-    for set_id in get_set_ids_by_set_names(client):
-        events = client.get_events(set_id).get('events')
-        detailed_events.extend(events)
+    detailed_events = {}
+
+    for set_id, from_date in set_ids_with_from_date.items():
+        result = client.get_events(set_id, from_date.get('detailed_events'), limit)
+        detailed_events[set_id] = result.get('events')
+        total_events = result.get('filteredCount')
+
+        while len(detailed_events[set_id]) < total_events and len(detailed_events[set_id]) < limit:
+            latest_event_date = result.get('events')[-1].get('arrivalTime')
+            result = client.get_policy_audits(set_id, prepare_datetime(latest_event_date, increase=True), limit)
+            detailed_events[set_id].extend(result.get('events'))
+
+        detailed_events[set_id] = detailed_events[set_id][:limit]
+
     return detailed_events
 
 
 """ COMMAND FUNCTIONS """
 
 
-def fetch_events(client: Client, max_fetch: int = 5000) -> list:
+def fetch_events(client: Client, max_fetch: int = MAX_FETCH) -> list:
     """ Fetches 3 types of events from CyberArkEPM
         - policy_audits
         - admin_audits
@@ -183,21 +217,55 @@ def fetch_events(client: Client, max_fetch: int = 5000) -> list:
     Return:
         (list) A list of events to push to XSIAM
     """
+    events = []
+    next_run = {}
+    set_ids = get_set_ids_by_set_names(client)
 
     if not (last_run := demisto.getLastRun()):
-        demisto.debug('First fetch')
-        now = datetime.datetime.now().strftime(DATE_FORMAT)
+        demisto.debug('First fetch....')
+        now = (datetime.now() - timedelta(weeks=50))
         last_run = {
-            'policy_audits': now,
-            'admin_audits': now,
-            'detailed_events': now,
+            set_id: {
+                'policy_audits': prepare_datetime(now),
+                'admin_audits': prepare_datetime(now),
+                'detailed_events': prepare_datetime(now),
+            } for set_id in set_ids
         }
+
     demisto.debug(f'Start fetching last run: {last_run}')
 
-    events = get_policy_audits(client) + get_admin_audits(client) + get_detailed_events(client)
-    next_run = {}
+    for set_id, policy_audits in get_policy_audits(client, last_run, max_fetch).items():
+        if policy_audits:
+            events.extend(policy_audits)
+            latest_event_date = policy_audits[-1]['arrivalTime']
+            if next_run.get(set_id):
+                next_run[set_id].update({'policy_audits': prepare_datetime(latest_event_date, increase=True)})
+            else:
+                next_run[set_id] = {'policy_audits': prepare_datetime(latest_event_date, increase=True)}
+        else:
+            next_run[set_id] = {'policy_audits': last_run[set_id]['policy_audits']}
+    for set_id, admin_audits in get_admin_audits(client, last_run, max_fetch).items():
+        if admin_audits:
+            events.extend(admin_audits)
+            latest_event_date = max(parser.parse(event.get('EventTime'), ignoretz=True) for event in admin_audits)
+            if next_run.get(set_id):
+                next_run[set_id].update({'admin_audits': prepare_datetime(latest_event_date, increase=True)})
+            else:
+                next_run[set_id] = {'admin_audits': prepare_datetime(latest_event_date, increase=True)}
+        else:
+            next_run[set_id] = {'admin_audits': last_run[set_id]['admin_audits']}
+    for set_id, detailed_events in get_detailed_events(client, last_run, max_fetch).items():
+        if detailed_events:
+            events.extend(detailed_events)
+            latest_event_date = detailed_events[-1]['arrivalTime']
+            if next_run.get(set_id):
+                next_run[set_id].update({'detailed_events': prepare_datetime(latest_event_date)})
+            else:
+                next_run[set_id] = {'detailed_events': prepare_datetime(latest_event_date)}
+        else:
+            next_run[set_id] = {'detailed_events': last_run[set_id]['detailed_events']}
 
-    demisto.setLastRun(next_run)
+    demisto.setLastRun(last_run)
     demisto.info(f'Sending len{len(events)} to XSIAM. updated_next_run={next_run}.')
 
     return events
@@ -213,8 +281,8 @@ def test_module(client: Client) -> str:
     Returns:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
-    if len(fetch_events(client=client, max_fetch=5)) == 5:
-        return 'ok'
+    fetch_events(client=client, max_fetch=5)
+    return 'ok'
 
 
 """ MAIN FUNCTION """
@@ -225,7 +293,6 @@ def main():  # pragma: no cover
     command = demisto.command()
 
     # Parse parameters
-    # base_url = urljoin(params.get('url'), f'/EPM/{API_VERSION}')
     base_url = params.get('url')
     application_id = params.get('application_id')
     authentication_url = params.get('authentication_url')
@@ -234,7 +301,7 @@ def main():  # pragma: no cover
     password = params.get('credentials').get('password')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    max_fetch = arg_to_number(params.get('max_fetch', '5000'))
+    max_fetch = max(arg_to_number(params.get('max_fetch', MAX_FETCH)), 1)
 
     demisto.info(f'Command being called is {command}')
 
@@ -249,9 +316,6 @@ def main():  # pragma: no cover
             authentication_url=authentication_url,
             application_url=application_url,
         )
-
-        get_policy_audits(client, datetime.now().strftime(DATE_FORMAT), 5)
-        # result = get_policy_audits(client) + get_admin_audits(client) + get_detailed_events(client)
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.

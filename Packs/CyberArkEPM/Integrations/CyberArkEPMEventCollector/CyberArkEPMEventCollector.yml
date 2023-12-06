@@ -1,4 +1,7 @@
 category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: CyberArkEPMEventCollector
   version: -1
@@ -8,43 +11,52 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: Username
   name: credentials
   required: true
   type: 9
+  section: Connect
 - display: Set name
   additionalinfo: A comma-separated list of set names
   name: set_name
   required: true
   type: 0
+  section: Connect
 - additionalinfo: Required for local(EPM) authentication only
   display: Application ID
   name: application_id
   required: false
   type: 0
+  section: Connect
 - additionalinfo: 'Required for SAML authentication only, Example for PAN OKTA: https://paloaltonetworks.okta.com/api/v1/authn'
   display: Authentication URL
   name: authentication_url
   required: false
   type: 0
+  section: Connect
 - additionalinfo: 'Required for SAML authentication only, Example for PAN OKTA: https://paloaltonetworks.okta.com/home/[APP_NAME]/[APP_ID]'
   display: Application URL
   name: application_url
   required: false
   type: 0
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
 - defaultvalue: '5000'
   display: Maximum number of events per fetch
   name: max_fetch
   required: false
   type: 0
+  section: Collect
 description: CyberArk EPM Event Collector fetches events.
 display: CyberArk EPM Event Collector
 name: CyberArkEPMEventCollector
@@ -85,20 +97,14 @@ script:
     description: Gets activity logs from Qualys.
     execution: false
     name: qualys-get-activity-logs
-  dockerimage: demisto/python3:3.10.12.66339
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/btfl-soup:1.0.1.82271
+  isfetchevents: true
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
-tests:
-- No tests (auto formatted)
 marketplaces:
 - marketplacev2
-sectionOrder:
-- Connect
-- Collect
 fromversion: 8.2.0
+tests:
+- No tests (auto formatted)
