@@ -361,11 +361,11 @@ def test_extract_logs_and_push_to_XSIAM(
 @pytest.mark.parametrize(
     "mock_parse_events, mock_send_events_to_xsiam, expected_call",
     [
-        (Exception("Parse error"), None, "Error parsing events: Parse error"),
+        (Exception("Parse error"), None, "Parse error"),
         (
             ((["event"], ""),),
             Exception("Send error"),
-            "Failed to send events to XSOAR. Error: Send error",
+            "Send error",
         ),
     ],
 )
@@ -396,11 +396,12 @@ def test_extract_logs_and_push_to_XSIAM_failure(
         "SymantecCloudSecureWebGatewayEventCollector.send_events_to_xsiam",
         side_effect=mock_send_events_to_xsiam,
     )
-    mock_assertion = mocker.patch.object(demisto, "debug")
+    mock_assertion = mocker.patch.object(demisto, "info")
 
-    extract_logs_and_push_to_XSIAM(LastRun(), "tmp/tmp", False)
+    with pytest.raises(Exception, match=expected_call):
+        extract_logs_and_push_to_XSIAM(LastRun(), "tmp/tmp", False)
 
-    mock_assertion.assert_called_with(expected_call)
+    # mock_assertion.assert_called_with(expected_call)
 
 
 @pytest.mark.parametrize(

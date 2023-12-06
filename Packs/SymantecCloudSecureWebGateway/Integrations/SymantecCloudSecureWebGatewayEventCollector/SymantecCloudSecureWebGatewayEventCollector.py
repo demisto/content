@@ -1,4 +1,3 @@
-from enum import Enum
 from typing import NamedTuple
 from collections.abc import Generator
 import demistomock as demisto
@@ -483,22 +482,22 @@ def extract_logs_and_push_to_XSIAM(
                 new_events_suspected_duplicates,
                 handling_duplicates=handling_duplicates,
             )
-
-            try:
-                if events:
-                    # Send events to XSIAM in batches
-                    send_events_to_xsiam(
-                        events,
-                        VENDOR,
-                        PRODUCT,
-                        chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT // 2,
-                    )
-                    demisto.debug(f"len of the events is: {len(events)}")
-            except Exception as e:
-                demisto.info(f"Failed to send events to XSOAR. Error: {e}")
-                raise e
         except Exception as e:
             demisto.info(f"Error parsing events: {e}")
+            raise e
+
+        try:
+            if events:
+                # Send events to XSIAM in batches
+                send_events_to_xsiam(
+                    events,
+                    VENDOR,
+                    PRODUCT,
+                    chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT // 2,
+                )
+                demisto.debug(f"len of the events is: {len(events)}")
+        except Exception as e:
+            demisto.info(f"Failed to send events to XSOAR. Error: {e}")
             raise e
 
     return (
@@ -629,6 +628,7 @@ def test_module(client: Client, fetch_interval: str | None) -> str:
             raise ValueError("Authorization Error: make sure API Key is correctly set")
         else:
             raise e
+    return "ok"
 
 
 def perform_long_running_loop(client: Client):
