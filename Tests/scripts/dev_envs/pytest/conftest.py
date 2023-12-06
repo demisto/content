@@ -53,19 +53,10 @@ def check_std_out_err(capfd):
     if err:
         pytest.fail("Found output in stderr: [{}]".format(err.strip()))
 
-@pytest.fixture(autouse=True)
-def delete_files():
-    yield
-    if os.path.exists("demistomock.py"):
-        os.remove("demistomock.py")
-    shutil.rmtree("test_data", ignore_errors=True)
-
 def pytest_sessionfinish(session, exitstatus):
     if exitstatus == NO_TESTS_COLLECTED:
         session.exitstatus = SUCCESS
     
-
-
 def pytest_configure(config):
     junit_xml = config.option.xmlpath
     if junit_xml:
