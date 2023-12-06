@@ -1,5 +1,5 @@
 import pytest
-from .test_data.api_responses_for_test import GET_MEMBERS_RESPONSE, FINDING, LIST_MEMBERS_RESPONSE, \
+from test_data.api_responses_for_test import GET_MEMBERS_RESPONSE, FINDING, LIST_MEMBERS_RESPONSE, \
     THREAT_INTEL_SET_RESPONSE, IP_SET_RESPONSE, DETECTOR_RESPONSE, RESPONSE_METADATA
 from AWSGuardDuty import get_members, parse_incident_from_finding, connection_test, list_members, \
     update_findings_feedback, archive_findings, unarchive_findings, create_sample_findings, get_findings, \
