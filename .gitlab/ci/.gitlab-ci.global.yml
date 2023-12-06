@@ -587,6 +587,9 @@ init:
         - node_modules/
         - .npm/
       policy: pull-push
+  rules:
+    - if: '$SLACK_JOB == "true"'
+      when: never
   script:
     - source .gitlab/helper_functions.sh
     - *create_artifacts_and_server_type_instance_folders
