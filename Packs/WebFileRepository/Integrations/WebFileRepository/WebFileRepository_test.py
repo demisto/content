@@ -316,6 +316,8 @@ def test_process_root_get_download(mocker, integration_context_filename, path, o
         Then:
             Validate the right response returns.
     """
+    integration_context_filename = Path(__file__).parent / integration_context_filename
+    output_filename = Path(__file__).parent / output_filename
     mocker.patch.object(demisto, 'params', return_value={
         'longRunningPort': '8000',
         'rwCredentials': {},
@@ -1455,6 +1457,8 @@ def test_command_list_files(mocker,
         Then:
             Validate the right response returns.
     """
+    response_filename = Path(__file__).parent / response_filename
+    results_filename = Path(__file__).parent / results_filename
     params = {
         'longRunningPort': '8000',
         'rwCredentials': {},
@@ -1567,6 +1571,7 @@ def test_command_download_file(mocker, path, save_as, content_filename):
         Then:
             Validate the right response returns.
     """
+    content_filename = Path(__file__).parent / content_filename
     params = {
         'longRunningPort': '8000',
         'rwCredentials': {},

@@ -1,18 +1,14 @@
-import json
-from contextlib import nullcontext as does_not_raise
-import demistomock as demisto  # noqa: F401
-import sys
-from pathlib import Path
-sys.path.append(str(Path(__file__).parent))
+import pytest
+from .test_data.api_responses_for_test import GET_MEMBERS_RESPONSE, FINDING, LIST_MEMBERS_RESPONSE, \
+    THREAT_INTEL_SET_RESPONSE, IP_SET_RESPONSE, DETECTOR_RESPONSE, RESPONSE_METADATA
 from AWSGuardDuty import get_members, parse_incident_from_finding, connection_test, list_members, \
     update_findings_feedback, archive_findings, unarchive_findings, create_sample_findings, get_findings, \
     list_findings, update_threat_intel_set, list_threat_intel_sets, get_threat_intel_set, delete_threat_intel_set, \
     create_threat_intel_set, update_ip_set, delete_ip_set, update_detector, delete_detector, list_ip_sets, get_ip_set, \
     create_ip_set, list_detectors, get_detector, create_detector, fetch_incidents
-from test_data.api_responses_for_test import GET_MEMBERS_RESPONSE, FINDING, LIST_MEMBERS_RESPONSE, \
-    THREAT_INTEL_SET_RESPONSE, IP_SET_RESPONSE, DETECTOR_RESPONSE, RESPONSE_METADATA
-
-import pytest
+import json
+from contextlib import nullcontext as does_not_raise
+import demistomock as demisto  # noqa: F401
 
 
 class MockedBoto3Client:
