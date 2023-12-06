@@ -34,9 +34,9 @@ This script is used in the following playbooks and scripts.
 | **Argument Name** | **Description** |
 | --- | --- |
 | similarIncidentKeys | A comma-separated list of identical incident keys. |
-| similarLabelsKeys | A comma-separated list of similar label keys. Comma separated value. Also supports allowing X different words between labels, within the following way: label_name:X, where X is the number of words. X can also be '\*' for contains. For example: the value "Email/subject:\*" will consider  email subject similar, if one is substring of the other. |
+| similarLabelsKeys | A comma-separated list of similar label keys. Comma separated value. Also supports allowing X different words between labels, within the following way: label_name:X, where X is the number of words. X can also be '\*' for contains. For example: the value "Email/subject:\*" will consider  email subject similar, if one is substring of the other. Deprecated, please use other arguments.|
 | similarContextKeys | A comma-separated list of similar context keys. Also supports allowing X different words between values \(see the labels description\). |
-| similarCustomFields | A comma-separated list of Similar custom fields keys. Also supports allowing X different words between values \(see the labels description\). |
+| similarCustomFields | A comma-separated list of Similar custom fields keys. Also supports allowing X different words between values \(see the labels description\). Deprecated, please use other arguments.|
 | ignoreClosedIncidents | Whether to ignore closed incidents as duplicate candidates. Can be "yes" \(ignore\) or "no" \(don't ignore\). The default value is "yes". |
 | maxNumberOfIncidents | Maximum number of incidents to query. |
 | hoursBack | Query incidents in the last X hours. Supports float value. |
