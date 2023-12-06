@@ -9121,6 +9121,6 @@ def test_has_passed_time_threshold__invalid_input():
         - Assert the function raises the expected exception
     """
     from CommonServerPython import has_passed_time_threshold
-    with pytest.raises(Exception) as e:
+    with pytest.raises(ValueError) as e:
         has_passed_time_threshold(timestamp_str="invalid_datetime", seconds_threshold=4500)
-    assert str(e.value) == "unsupported operand type(s) for -: 'FakeDatetime' and 'NoneType'"
+    assert str(e.value) == "Failed to parse timestamp: invalid_datetime"

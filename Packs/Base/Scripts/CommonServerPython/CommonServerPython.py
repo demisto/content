@@ -28,6 +28,7 @@ from abc import abstractmethod
 from distutils.version import LooseVersion
 from threading import Lock
 from inspect import currentframe
+import dateparser
 
 import demistomock as demisto
 import warnings
@@ -11378,14 +11379,14 @@ def has_passed_time_threshold(timestamp_str, seconds_threshold):
     :return: True if the time difference is greater than the threshold, otherwise False.
     :rtype: ``bool``
     """
-    try:
-        timestampt = dateparser.parse(timestamp_str,['%Y-%m-%dT%H:%M:%SZ'])
-        current_time = datetime.utcnow()
-        time_difference = current_time - timestampt         # type: ignore[attr-defined]
-    except Exception as e:
-        demisto.debug('Error parsing timestamp: {timestamp_str} :' + str(e))
-        raise
-    return time_difference.total_seconds() > seconds_threshold
+
+    timestamp = dateparser.parse(timestamp_str,['%Y-%m-%dT%H:%M:%SZ'])
+    current_time = datetime.utcnow()
+    if timestamp:
+        time_difference = current_time - timestamp
+        return time_difference.total_seconds() > seconds_threshold
+    else:
+        raise ValueError("Failed to parse timestamp: {timestamp_str}".format(timestamp_str=timestamp_str))
 
 ###########################################
 #     DO NOT ADD LINES AFTER THIS ONE     #
