@@ -704,7 +704,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -776,17 +776,7 @@ outputs:
   type: unknown
 quiet: true
 tests:
-- Containment Plan - Test
-- Calculate Severity - Generic v2 - Test
-- Endpoint Enrichment - Generic v2.1.6.8 - Test
-- Wait Until Datetime - Test
-- URL Enrichment - Generic v2 - Test
-- File Enrichment - Generic v2 - Test
-- Domain Enrichment - Generic v2 - Test
-- Eradication plan - Test
-- Detonate URL - Generic Test
-- Email Address Enrichment - Generic v2.1 - Test
-- Endpoint Enrichment - Generic v2.1 - Test
+  - No tests
 fromversion: 6.5.0
 contentitemexportablefields:
   contentitemfields: {}
