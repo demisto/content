@@ -153,6 +153,14 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- defaultvalue: '60'
+  display: "Timeout for http-requests"
+  name: timeout
+  additionalinfo: The timeout of the HTTP requests sent to the Qradar API (in seconds). If no value is provided, the timeout will be set to 60 seconds.
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
 script:
   commands:
   - name: qradar-offenses-list
