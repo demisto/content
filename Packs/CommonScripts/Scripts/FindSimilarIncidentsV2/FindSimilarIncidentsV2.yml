@@ -1,12 +1,12 @@
 args:
 - description: A comma-separated list of identical incident keys.
   name: similarIncidentKeys
-- description: A comma-separated list of similar label keys. Deprecated, please use other arguments.
+- description: Deprecated, use other available arguments.
   name: similarLabelsKeys
   deprecated: true
 - description: A comma-separated list of similar context keys. Also supports allowing X different words between values (see the labels description).
   name: similarContextKeys
-- description: A comma-separated list of Similar custom fields keys. Deprecated, please use other arguments.
+- description: Deprecated, please use other available arguments.
   name: similarCustomFields
   deprecated: true
 - auto: PREDEFINED
