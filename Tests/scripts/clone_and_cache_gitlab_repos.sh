@@ -110,6 +110,7 @@ get_cache_gitlab_repositories() {
   local branch_exists=$?
   if [ "${branch_exists}" -eq 0 ]; then
     cached_branch=$(cat "${repo}.txt")
+    echo "${cached_branch}" # for testing
     if [ "${cached_branch}" != "${branch}" ]; then
       rm -rf "./${repo}"
     fi
