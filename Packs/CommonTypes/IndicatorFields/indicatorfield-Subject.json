@@ -1,122 +1,89 @@
 {
-	"incidentFields": [
-		{
-			"id": "indicator_subject",
-			"version": 5,
-			"cacheVersn": 0,
-			"modified": "2023-09-28T11:38:19.851120204Z",
-			"packID": "",
-			"packName": "",
-			"itemVersion": "",
-			"fromServerVersion": "",
-			"toServerVersion": "",
-			"definitionId": "",
-			"vcShouldIgnore": false,
-			"vcShouldKeepItemLegacyProdMachine": false,
-			"commitMessage": "",
-			"shouldCommit": false,
-			"name": "Subject",
-			"prevName": "Subject",
-			"ownerOnly": false,
-			"placeholder": "",
-			"template": "",
-			"description": "",
-			"cliName": "subject",
-			"type": "grid",
-			"orgType": "grid",
-			"closeForm": false,
-			"editForm": true,
-			"required": false,
-			"script": "",
-			"runScriptAfterUpdate": false,
-			"fieldCalcScript": "",
-			"neverSetAsRequired": false,
-			"isReadOnly": false,
-			"selectValues": [],
-			"autoCompleteTags": null,
-			"validationRegex": "",
-			"x2_fields": "",
-			"useAsKpi": false,
-			"locked": false,
-			"system": false,
-			"content": false,
-			"group": 2,
-			"mergeStrategy": "",
-			"hidden": false,
-			"openEnded": false,
-			"associatedTypes": [],
-			"systemAssociatedTypes": null,
-			"associatedToAll": true,
-			"unmapped": false,
-			"unsearchable": false,
-			"caseInsensitive": true,
-			"columns": [
-				{
-					"key": "title",
-					"displayName": "Title",
-					"type": "singleSelect",
-					"orgType": "singleSelect",
-					"required": false,
-					"script": "",
-					"width": 150,
-					"isDefault": true,
-					"fieldCalcScript": "",
-					"isReadOnly": false,
-					"selectValues": [
-						"",
-						"C",
-						"CN",
-						"L",
-						"O",
-						"OU",
-						"ST",
-						"aggregated",
-						"emailAddress"
-					]
-				},
-				{
-					"key": "data",
-					"displayName": "Data",
-					"type": "shortText",
-					"orgType": "shortText",
-					"required": false,
-					"script": "",
-					"width": 150,
-					"isDefault": true,
-					"fieldCalcScript": "",
-					"isReadOnly": false,
-					"selectValues": null
-				}
-			],
-			"defaultRows": [
-				{
-					"title": "C"
-				},
-				{
-					"title": "CN"
-				},
-				{
-					"title": "L"
-				},
-				{
-					"title": "O"
-				},
-				{
-					"title": "OU"
-				},
-				{
-					"title": "ST"
-				},
-				{
-					"title": "emailAddress"
-				}
-			],
-			"sla": 0,
-			"threshold": 72,
-			"breachScript": "",
-			"validatedError": "",
-			"aliases": null,
-			"aliasTo": ""
-		}
-	]
+    "id": "indicator_subject",
+    "version": -1,
+    "modified": "2023-09-28T11:38:19.851120204Z",
+    "name": "Subject",
+    "ownerOnly": false,
+    "cliName": "subject",
+    "type": "grid",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "openEnded": false,
+    "associatedToAll": true,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "title",
+            "displayName": "Title",
+            "type": "singleSelect",
+            "orgType": "singleSelect",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": [
+                "",
+                "C",
+                "CN",
+                "L",
+                "O",
+                "OU",
+                "ST",
+                "aggregated",
+                "emailAddress"
+            ]
+        },
+        {
+            "key": "data",
+            "displayName": "Data",
+            "type": "shortText",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {
+            "title": "C"
+        },
+        {
+            "title": "CN"
+        },
+        {
+            "title": "L"
+        },
+        {
+            "title": "O"
+        },
+        {
+            "title": "OU"
+        },
+        {
+            "title": "ST"
+        },
+        {
+            "title": "emailAddress"
+        }
+    ],
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
 }
