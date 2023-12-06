@@ -173,7 +173,7 @@ def delete_ip_objects_command(client: Client, args: dict[str, Any]):
     list_type = args['list_type']
     object_id = args.get('object_id')
     object_ip = args.get('object_ip')
-    object_id_list = []
+    object_id_list: list[Any] = []
     list_target = args.get('list_target', 'proxy')
 
     demisto.debug(f'debug-log: {list_type=}, {object_id=}, {object_ip=}, {object_id_list=}, {list_target=}')
