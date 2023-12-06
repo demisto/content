@@ -18,6 +18,7 @@ import freezegun
 from typing import Any
 from pathlib import Path
 
+
 def equals_object(obj1, obj2) -> bool:
     if type(obj1) != type(obj2):
         return False

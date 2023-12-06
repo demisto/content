@@ -1,6 +1,6 @@
-import os
 import json
 from pathlib import Path
+
 
 def util_load_json(path):
     with open(Path(__file__).parent / path, encoding="utf-8") as f:

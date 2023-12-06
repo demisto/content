@@ -63,7 +63,7 @@ from test_data.inputs import TIME_SERIES_POINT_QUERY_RESPONSE, TIME_SERIES_POINT
     METRIC_METADATA_GET_CONTEXT, METRIC_METADATA_UPDATE_RESPONSE, METRIC_METADATA_UPDATE_CONTEXT, EVENT_MOCK, EXPECTED_EVENT_MOCK
 import datetime
 import demistomock as demisto
-from pathlib import Pathlib
+
 
 def util_load_json(path):
     with open(Path(__file__).parent / path, encoding="utf-8") as f:
