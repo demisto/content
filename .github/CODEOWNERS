@@ -87,6 +87,7 @@
 /Tests/scripts/download_demisto_conf.sh @daryakoval
 Tests/scripts/test_modeling_rules.sh @daryakoval
 Tests/scripts/lock_cloud_machines.py @daryakoval
+Tests/Marketplace/server_content_items.json @dantavori
 
 # Test Collection
 /Tests/scripts/collect_tests @dorschw
