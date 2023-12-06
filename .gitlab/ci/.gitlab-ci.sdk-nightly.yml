@@ -103,8 +103,6 @@ demisto-sdk-nightly:xsoar-prepare-testing-bucket:
     KUBERNETES_CPU_REQUEST: 2000m
     MARKETPLACE_VERSION: "xsoar"
     MARKETPLACE_BUCKET: "$GCS_MARKET_BUCKET"
-  cache:
-    policy: pull
   needs: []
   stage: prepare-testing-bucket
   script:
@@ -130,8 +128,6 @@ demisto-sdk-nightly:mpv2-prepare-testing-bucket:
     PRODUCT_NAME: "Cortex XSIAM"
     IFRA_ENV_TYPE: "Server Master"
     KUBERNETES_CPU_REQUEST: 2000m
-  cache:
-    policy: pull
   needs: []
   stage: prepare-testing-bucket
   script:
@@ -155,8 +151,6 @@ demisto-sdk-nightly:xpanse-prepare-testing-bucket:
     MARKETPLACE_BUCKET: "$GCS_MARKET_XPANSE_BUCKET"
     IFRA_ENV_TYPE: "Server Master"
     KUBERNETES_CPU_REQUEST: 2000m
-  cache:
-    policy: pull
   needs: []
   stage: prepare-testing-bucket
   script:
