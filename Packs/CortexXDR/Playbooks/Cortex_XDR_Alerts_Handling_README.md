@@ -6,7 +6,8 @@ Supported alert categories:
 - Cloud Token Theft
 - RDP Brute-Force
 - First SSO Access
-- Cloud IAM User Access Investigation
+- Cloud IAM User Access Investigation.
+- Remote PsExec with LOLBIN command execution alert.
 
 ## Dependencies
 
@@ -14,14 +15,16 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cortex XDR - Possible External RDP Brute-Force
-* Cortex XDR - Malware Investigation
-* Cortex XDR - XCloud Cryptojacking
-* Cortex XDR - Port Scan - Adjusted
 * Cortex XDR - First SSO Access
-* Cortex XDR - XCloud Token Theft Response
+* Cortex XDR - Malware Investigation
+* Cortex XDR - Port Scan - Adjusted
+* Cortex XDR Remote PsExec with LOLBIN command execution alert
 * Cortex XDR - Cloud IAM User Access Investigation
 * GenericPolling
+* Cortex XDR - Cloud Data Exfiltration Response
+* Cortex XDR - XCloud Cryptojacking
+* Cortex XDR - XCloud Token Theft Response
+* Cortex XDR - Possible External RDP Brute-Force
 
 ### Integrations
 
@@ -70,7 +73,7 @@ This playbook does not use any scripts.
 | PaloAltoNetworksXDR.Incident.alerts.is_whitelisted | Whether the alert is on the allow list. | unknown |
 | PaloAltoNetworksXDR.Incident.network_artifacts.type | Network artifact type: "IP". | unknown |
 | PaloAltoNetworksXDR.Incident.network_artifacts.network_domain | The domain related to the artifact. | unknown |
-| PaloAltoNetworksXDR.Incident.network_artifacts.network_country | The country related to the artifact | unknown |
+| PaloAltoNetworksXDR.Incident.network_artifacts.network_country | The country related to the artifact. | unknown |
 | PaloAltoNetworksXDR.Incident.network_artifacts.network_remote_ip | The remote IP related to the artifact. | unknown |
 | PaloAltoNetworksXDR.Incident.file_artifacts.file_signature_status | Digital signature status of the file: "SIGNATURE_UNAVAILABLE", "SIGNATURE_SIGNED", "SIGNATURE_INVALID", "SIGNATURE_UNSIGNED", "SIGNATURE_WEAK_HASH". | unknown |
 | PaloAltoNetworksXDR.Incident.file_artifacts.is_process | Whether the file artifact is related to a process execution. | unknown |
