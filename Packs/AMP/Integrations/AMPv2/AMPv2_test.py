@@ -34,7 +34,7 @@ def load_mock_response(file_name: str) -> str | io.TextIOWrapper:
     Returns:
         str: Mock file content.
     """
-    path = os.path.join("test_data", file_name)
+    path = os.path.join(os.path.dirname(__file__), "test_data", file_name)
 
     with open(path, encoding="utf-8") as mock_file:
         if os.path.splitext(file_name)[1] == ".json":

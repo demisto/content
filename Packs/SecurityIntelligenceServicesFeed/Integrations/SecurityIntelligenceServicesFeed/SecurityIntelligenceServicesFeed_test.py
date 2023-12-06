@@ -151,7 +151,7 @@ def test_build_iterator(mocker):
         next(CLIENT.build_iterator(feed_type='Domain', key='key'))
 
     # With limit parameter.
-    with open(Path(__file__) / 'test_data/response_get_object.json') as f:
+    with open(Path(__file__).parent / 'test_data/response_get_object.json') as f:
         expected_response = json.load(f)
     event_stream = [{
         'Records': {

@@ -4,6 +4,10 @@ from datetime import datetime
 from unittest.mock import call
 
 from AWSGuardDutyEventCollector import get_events
+from pathlib import Path
+import sys
+sys.path.append(str(Path(__file__).parent))
+
 from test_data.finding_for_test import FINDING, FINDING_OUTPUT, MOST_GENERAL_FINDING, MOST_GENERAL_FINDING_STR
 
 

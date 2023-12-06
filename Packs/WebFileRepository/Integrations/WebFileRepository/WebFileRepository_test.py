@@ -1355,7 +1355,7 @@ def test_command_upload_file(mocker, entry_id, name):
     mocker.patch.object(demisto, 'params', return_value=params)
     mocker.patch.object(demisto, 'getFilePath', return_value={
         'name': 'upload_file.dat',
-        'path': 'test_data/upload_file.dat'
+        'path': os.path.dirname(__file__) + '/test_data/upload_file.dat'
     })
 
     client = MockBaseClient(mocker, headers={}, json_data={
@@ -1407,7 +1407,7 @@ def test_command_upload_files(mocker, entry_ids):
     mocker.patch.object(demisto, 'params', return_value=params)
     mocker.patch.object(demisto, 'getFilePath', return_value={
         'name': 'upload_file.dat',
-        'path': 'test_data/upload_file.dat'
+        'path': os.path.dirname(__file__) + '/test_data/upload_file.dat'
     })
 
     client = MockBaseClient(mocker, headers={}, json_data={

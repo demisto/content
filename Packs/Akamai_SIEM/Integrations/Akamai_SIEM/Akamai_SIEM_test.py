@@ -6,7 +6,7 @@ import os
 # 3-rd party packages
 import pytest
 from freezegun import freeze_time
-
+from pathlib import Path
 # Local imports
 from CommonServerPython import urljoin
 
@@ -19,7 +19,7 @@ with open(os.path.dirname(__file__) + '/test_data/sec_events.txt') as sec_events
 
 
 def load_params_from_json(json_path, type=''):
-    with open(json_path) as f:
+    with open(Path(__file__).parent / json_path) as f:
         file = json.load(f)
         if type == "incidents":
             for incident in file:

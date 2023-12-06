@@ -1,7 +1,9 @@
 import json
 from contextlib import nullcontext as does_not_raise
 import demistomock as demisto  # noqa: F401
-
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent))
 from AWSGuardDuty import get_members, parse_incident_from_finding, connection_test, list_members, \
     update_findings_feedback, archive_findings, unarchive_findings, create_sample_findings, get_findings, \
     list_findings, update_threat_intel_set, list_threat_intel_sets, get_threat_intel_set, delete_threat_intel_set, \
