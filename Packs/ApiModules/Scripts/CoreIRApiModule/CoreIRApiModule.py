@@ -274,7 +274,7 @@ class CoreClient(BaseClient):
 
         return incidents
 
-    def handle_fetch_starred_incidents(self):
+    def handle_fetch_starred_incidents(self, limit: int, page_number: int, request_data: Dict[Any, Any]) -> List[Any]:
         """Called from get_incidents if the command is fetch-incidents. Implement in child classes."""
         return []
 
