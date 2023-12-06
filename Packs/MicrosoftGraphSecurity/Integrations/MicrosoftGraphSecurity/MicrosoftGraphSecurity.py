@@ -1382,7 +1382,7 @@ def is_base_64(string: str) -> bool:    # pragma: no cover
 def get_content_data(entry_id, content_data):   # pragma: no cover
 
     if not (entry_id or content_data) or (entry_id and content_data):
-        raise DemistoException('One of entry_id or content_data arguments has to be provided.')
+        raise DemistoException('Just one of entry_id or content_data arguments has to be provided.')
     try:
         if entry_id:
             file = demisto.getFilePath(entry_id)
