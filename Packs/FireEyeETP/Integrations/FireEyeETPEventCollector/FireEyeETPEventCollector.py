@@ -315,7 +315,6 @@ class EventCollector:
     def fetch_activity_log(
         self, event_type: EventType, start_time: datetime, fetched_ids: set = set()
     ) -> tuple[list[dict], str]:
-        res_count = 0
         res = []
 
         results_left = True
@@ -329,7 +328,6 @@ class EventCollector:
             demisto.debug(
                 f"{LOG_LINE} getting user activity: {results_left=}, {res_count=}, {iso_start_time=}, {iso_end_time=}"
             )
-
             current_batch = self.client.get_activity_log(from_LastModifiedOn=iso_start_time,
                                                          size=event_type.api_max,
                                                          to_LastModifiedOn=iso_end_time)
@@ -355,10 +353,11 @@ class EventCollector:
                         demisto.debug("Got equal start and end time, this was the last page.")
                         results_left = False
 
-                    # Getting last item's modification date, Assuming Asc order.
-                    # iso_start_time = demisto.get(dedup_data[0], "attributes.time")
-                    iso_end_time = dedup_data[-1]["attributes"]["time"]
-
+                    # Getting last item's modification date, Assuming Asc order. 
+                    # We have to format as the response are not have to be in invalid format
+                    end_time = parse_special_iso_format(dedup_data[-1]["attributes"]["time"])
+                    iso_end_time = f"{datetime.strftime(end_time.astimezone(timezone.utc), '%Y-%m-%dT%H:%M:%S%z')}Z"
+                    
                 else:
                     demisto.debug("Avoiding infinite loop due to multiple alerts in the same time blocking pagination.")
                     results_left = False
