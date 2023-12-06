@@ -5,7 +5,7 @@ from dateutil import parser
 
 
 
-def get_pipelines_and_commits(gitlab_url:str, gitlab_access_token:str, project_id:str, lookback_hours:int):
+def get_pipelines_and_commits(gitlab_url:str, gitlab_access_token:str, project_id:str, look_back_hours:int):
     """
     Get all pipelines and commits on the master branch in the last X hours,
     pipelines are filtered to only include successful and failed pipelines.
@@ -13,16 +13,16 @@ def get_pipelines_and_commits(gitlab_url:str, gitlab_access_token:str, project_i
         gitlab_url - the url of the gitlab instance
         gitlab_access_token - the access token to use to authenticate with gitlab
         project_id - the id of the project to query
-        lookback_hours - the number of hours to look back for commits and pipeline
+        look_back_hours - the number of hours to look back for commits and pipeline
     Return:
         a list of gitlab pipelines and a list of gitlab commits in ascending order
     """
     gl = gitlab.Gitlab(gitlab_url, private_token=gitlab_access_token)
     project = gl.projects.get(project_id)
 
-    # Calculate the timestamp for lookback_hours ago
+    # Calculate the timestamp for look_back_hours ago
     time_threshold = (
-        datetime.utcnow() - timedelta(hours=lookback_hours)).isoformat()
+        datetime.utcnow() - timedelta(hours=look_back_hours)).isoformat()
 
     commits = project.commits.list(all=True, since=time_threshold, order_by='updated_at', sort='asc')
     pipelines = project.pipelines.list(all=True, updated_after=time_threshold, ref='master',
@@ -65,7 +65,7 @@ def are_pipelines_in_order_as_commits(commits, current_pipeline_sha, previous_pi
         previous_pipeline_sha: string
 
     Returns:
-        boolean
+        boolean , the commit that triggered the current pipeline
     """
     current_pipeline_commit_timestamp = None
     previous_pipeline_commit_timestamp = None
@@ -81,13 +81,13 @@ def are_pipelines_in_order_as_commits(commits, current_pipeline_sha, previous_pi
 
 def is_pivot(single_pipeline_id, list_of_pipelines, commits):
     """
-    Check if a given pipeline is a negative pivot, i.e. if the previous pipeline was successful and the current pipeline failed
+    Check if a given pipeline is a pivot, i.e. if the previous pipeline was successful and the current pipeline failed and vise versa
    Args:
     single_pipeline_id: gitlab pipeline ID
     list_of_pipelines: list of gitlab pipelines
     commits: list of gitlab commits
     Return:
-        string
+        boolean | None, gitlab commit object| None
     """
     current_pipeline = next((pipeline for pipeline in list_of_pipelines if pipeline.id == int(single_pipeline_id)), None)
     pipeline_index = list_of_pipelines.index(current_pipeline) if current_pipeline else 0

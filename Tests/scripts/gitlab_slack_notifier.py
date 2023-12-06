@@ -49,7 +49,7 @@ CI_COMMIT_SHA = os.getenv('CI_COMMIT_SHA', '')
 CI_SERVER_HOST = os.getenv('CI_SERVER_HOST', '')
 DEFAULT_BRANCH = 'master'
 ALL_FAILURES_WERE_CONVERTED_TO_JIRA_TICKETS = ' (All failures were converted to Jira tickets)'
-LOOKBACK_HOURS = 48
+LOOK_BACK_HOURS = 48
 
 
 def options_handler() -> argparse.Namespace:
@@ -319,12 +319,14 @@ def construct_slack_msg(triggering_workflow: str,
                         pipeline_url: str,
                         pipeline_failed_jobs: list[ProjectPipelineJob],
                         pull_request: GithubPullRequest | None,
-                        shame_message: str | None) -> list[dict[str, Any]]:
+                        shame_message: tuple[str, str] | None) -> list[dict[str, Any]]:
     # report failing jobs
     content_fields = []
     if shame_message:
+        shame_title, shame_value = shame_message
         content_fields.append({
-            "title": shame_message,
+            "title": shame_title,
+            "value": shame_value,
             "short": False
         })
 
@@ -520,14 +522,14 @@ def main():
     if options.current_branch == DEFAULT_BRANCH and triggering_workflow == CONTENT_MERGE:
         # We check if the previous build failed and this one passed, or wise versa.
         list_of_pipelines, commits = get_pipelines_and_commits(gitlab_url=server_url, gitlab_access_token=ci_token,
-                                                               project_id=project_id, lookback_hours=LOOKBACK_HOURS)
+                                                               project_id=project_id, look_back_hours=LOOK_BACK_HOURS)
         pipeline_changed_status, pivot_commit = is_pivot(single_pipeline_id=pipeline_id,
                                                          list_of_pipelines=list_of_pipelines,
                                                          commits=commits)
         if pipeline_changed_status is not None:
             name, email, pr = shame(pivot_commit)
             msg = "broke" if pipeline_changed_status else "fixed"  
-            shame_message = f"Hi @{name}, You {msg} the build. That was done in this PR: {pr}" 
+            shame_message = (f"Hi @{name}, You {msg} the build.", f" That was done in this {slack_link(pr,'PR.')}")
 
             computed_slack_channel = "test_slack_notifier_when_master_is_broken"
         else:
