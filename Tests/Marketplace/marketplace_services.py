@@ -3262,8 +3262,7 @@ def is_pack_changed_before_previous_commit(pack_id: str, content_repo: git.Repo,
     Returns:
         bool: Whether pack's index commit is not updated and need to be uploaded in current upload-flow run.
     """
-    pack_metadata = load_json(os.path.join(index_folder_path, pack_id, Pack.METADATA))
-    last_pack_commit = pack_metadata.get(Metadata.COMMIT)
+    last_pack_commit = load_json(os.path.join(index_folder_path, pack_id, Pack.METADATA)).get(Metadata.COMMIT)
 
     if not last_pack_commit:
         logging.warning(f"Could not find the commit in index pack's metadata for pack {pack_id}. "

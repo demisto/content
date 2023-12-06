@@ -3139,3 +3139,65 @@ def test_write_json(tmp_path):
     assert metadata[Metadata.NAME] == 'Impossible Traveler'
     assert metadata[Metadata.DOWNLOADS] == 245
     assert metadata[Metadata.SEARCH_RANK] == 10
+
+
+class TestIsPackModified:
+    class DiffFile:
+        def __init__(self, path) -> None:
+            self.a_path = path
+
+    def prepare_mocks(self, diff_result, mocker):
+        mocker.patch("os.path.exists", return_value=True)
+        commit = mocker.MagicMock()
+        commit.hexsha.return_value = ""
+        commit.diff.return_value = diff_result
+        content_repo = mocker.MagicMock()
+        content_repo.commit.return_value = commit
+        open_mocker = MockOpen()
+        open_mocker[os.path.join("dummy_pack_id", Pack.METADATA)].read_data = '{"commit": "commit_hash_a"}'
+        open_mocker[os.path.join("other_pack_id", Pack.METADATA)].read_data = '{"commit": "commit_hash_b"}'
+        open_mocker[f'{GCPConfig.INDEX_NAME}.json'].read_data = '{"commit": "commit_hash_c"}'
+        mocker.patch('builtins.open', open_mocker)
+        return content_repo
+
+    @pytest.mark.parametrize("pack_to_upload, diff_result, expected", [
+        (["dummy_pack_id"], [DiffFile("Packs/dummy_pack_id/pack_metadata.json")], True),
+        (["dummy_pack_id"], [], True),
+        ([], [DiffFile("Packs/dummy_pack_id/pack_metadata.json")], True),
+        ([], [DiffFile("Packs/other_pack_id/pack_metadata.json")], False)
+    ])
+    def test_is_pack_modified(self, mocker, pack_to_upload, diff_result, expected):
+        """
+        Given:
+            Pack ID and packs_to_upload list.
+        When:
+            Running is_pack_modified.
+        Then:
+            Ensure the pack is detected as modified if it's in the list or it was modified between commits.
+        """
+        from Tests.Marketplace.marketplace_services import is_pack_modified
+        content_repo = self.prepare_mocks(diff_result, mocker)
+        assert is_pack_modified("dummy_pack_id", content_repo, "", pack_to_upload) == expected
+
+    @pytest.mark.parametrize("diff_result, expected", [
+        ([DiffFile("Packs/dummy_pack_id/pack_metadata.json")], True),
+        ([DiffFile("Packs/dummy_pack_id/Integrations/Integration/Integration.yml"),
+          DiffFile("Packs/other_pack_id/Integrations/Integration/Integration.yml"),
+          DiffFile("Packs/other_pack_id/pack_metadata.json")], True),
+        ([DiffFile("Packs/dummy_pack_id/pack_metadata.json"), DiffFile("Packs/other_pack_id/pack_metadata.json")], True),
+        ([DiffFile("Packs/other_pack_id/pack_metadata.json"),
+          DiffFile("Packs/other_pack_id/Integrations/Integration/Integration.yml")], False),
+        ([DiffFile("Tests/other_pack_id/pack_metadata.json")], False)
+    ])
+    def test_is_pack_changed_before_previous_commit(self, mocker, diff_result, expected):
+        """
+        Given:
+            Pack ID.
+        When:
+            Running is_pack_changed_before_previous_commit.
+        Then:
+            Ensure the pack is detected as modified if it was modified between commits.
+        """
+        from Tests.Marketplace.marketplace_services import is_pack_changed_before_previous_commit
+        content_repo = self.prepare_mocks(diff_result, mocker)
+        assert is_pack_changed_before_previous_commit("dummy_pack_id", content_repo, "") == expected
