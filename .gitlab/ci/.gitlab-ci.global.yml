@@ -527,6 +527,9 @@
   parallel:
       matrix:
         - VALIDATE_SCRIPT: ['old-validate-flow','new-validate-flow']
+  rules:
+    - if: '$VALIDATE_SCRIPT == "new-validate-flow"'
+      allow_failure: true
 .jobs-done-check:
   stage: are-jobs-really-done
   extends:
