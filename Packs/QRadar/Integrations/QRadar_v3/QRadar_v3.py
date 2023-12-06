@@ -403,7 +403,8 @@ class Client(BaseClient):
                         error.exception, requests.ConnectionError) or _time == CONNECTION_ERRORS_RETRIES
                 ):
                     raise
-                time.sleep(CONNECTION_ERRORS_INTERVAL)  # pylint: disable=sleep-exists
+                else:
+                    time.sleep(CONNECTION_ERRORS_INTERVAL)  # pylint: disable=sleep-exists
         return None
 
     @staticmethod
