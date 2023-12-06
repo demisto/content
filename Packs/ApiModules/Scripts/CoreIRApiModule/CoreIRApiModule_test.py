@@ -3725,10 +3725,14 @@ class TestGetIncidents:
         get_incidents_list_response = load_test_data('./test_data/get_incidents_list.json')
         requests_mock.post(f'{Core_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
 
+        client = CoreClient(
+            base_url=f'{Core_URL}/public_api/v1', headers={}
+        )
+
         args = {
             'incident_id_list': '1 day'
         }
-        _, outputs, _ = get_incidents_command(test_client, args)
+        _, outputs, _ = get_incidents_command(client, args)
 
         expected_output = {
             'CoreApiModule.Incident(val.incident_id==obj.incident_id)':
@@ -3745,16 +3749,20 @@ class TestGetIncidents:
 
         get_incidents_list_response = load_test_data('./test_data/get_incidents_list.json')
 
+        client = CoreClient(
+            base_url=f'{Core_URL}/public_api/v1', headers={}
+        )
+
         args = {
             'incident_id_list': '1 day',
             'status': 'under_investigation,new'
         }
         mocker.patch.object(test_client, 'get_incidents', side_effect=get_incident_by_status)
 
-        _, outputs, _ = get_incidents_command(test_client, args)
+        _, outputs, _ = get_incidents_command(client, args)
 
         expected_output = {
-            'PaloAltoNetworksXDR.Incident(val.incident_id==obj.incident_id)':
+            'CoreApiModule.Incident(val.incident_id==obj.incident_id)':
                 get_incidents_list_response.get('reply').get('incidents')
         }
         assert expected_output == outputs
@@ -3769,11 +3777,15 @@ class TestGetIncidents:
         get_incidents_list_response = load_test_data('./test_data/get_starred_incidents_list.json')
         requests_mock.post(f'{Core_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
 
+        client = CoreClient(
+            base_url=f'{Core_URL}/public_api/v1', headers={}
+        )
+
         args = {
             'incident_id_list': '1 day',
             'starred': True,
             'starred_incidents_fetch_window': '3 days'
         }
-        _, outputs, _ = get_incidents_command(test_client, args)
+        _, outputs, _ = get_incidents_command(client, args)
 
         assert outputs['CoreApiModule.Incident(val.incident_id==obj.incident_id)'][0]['starred'] is True
