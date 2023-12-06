@@ -133,11 +133,12 @@ class PychromeEventHandler:
                 demisto.error(f'Error stopping page loading: {self.tab=}, {frameId=}, {e}')
 
     def network_data_received(self, requestId, timestamp, dataLength, encodedDataLength):  # pylint: disable=unused-argument
-        demisto.debug(f"network_data_received, {requestId=}")
-        if not self.request_id:
-            self.request_id = requestId
-        else:
-            demisto.debug(f"network_data_received, {requestId=}, already using {self.request_id}")
+        if requestId:
+            demisto.debug(f"network_data_received, {requestId=}")
+            if not self.request_id:
+                self.request_id = requestId
+            else:
+                demisto.debug(f"network_data_received, {requestId=}, already using {self.request_id}")
 
 # endregion
 
