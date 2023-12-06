@@ -11381,7 +11381,7 @@ def has_passed_time_threshold(timestamp_str, seconds_threshold):
     try:
         timestampt = dateparser.parse(timestamp_str,['%Y-%m-%dT%H:%M:%SZ'])
         current_time = datetime.utcnow()
-        time_difference = current_time - timestampt
+        time_difference = current_time - timestampt         # type: ignore[attr-defined]
     except Exception as e:
         demisto.debug('Error parsing timestamp: {timestamp_str} :' + str(e))
         raise
