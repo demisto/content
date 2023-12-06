@@ -28,7 +28,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, \
     remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, ExecutionMetrics, \
     response_to_context, is_integration_command_execution, is_xsiam_or_xsoar_saas, is_xsoar, is_xsoar_on_prem, \
-    is_xsoar_hosted, is_xsoar_saas, is_xsiam
+    is_xsoar_hosted, is_xsoar_saas, is_xsiam, timezone
 
 
 try:
@@ -9131,7 +9131,7 @@ def test_has_passed_time_threshold__different_timestamps(timestamp_str, seconds_
     """
     from CommonServerPython import has_passed_time_threshold
     mocker.patch('CommonServerPython.datetime', autospec=True)
-    mocker.patch.object(CommonServerPython.datetime, 'now', return_value=datetime(2022, 1, 1, 0, 0, 0))
+    mocker.patch.object(CommonServerPython.datetime, 'now', return_value=datetime(2022, 1, 1, 0, 0, 0, tzinfo=timezone.utc))
     if expected == ValueError:
         with pytest.raises(expected) as e:
             has_passed_time_threshold(timestamp_str, seconds_threshold)
