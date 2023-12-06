@@ -15,6 +15,5 @@ dockerimage: demisto/python3:3.10.13.82467
 runas: DBotWeakRole
 engineinfo: {}
 fromversion: 6.10.0
-marketplace: marketplacev2
 tests:
 - No tests (auto formatted)
