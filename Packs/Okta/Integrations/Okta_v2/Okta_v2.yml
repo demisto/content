@@ -18,12 +18,45 @@ configuration:
   section: Connect
   required: false
   display: ''
-- display: API Token (see detailed instructions)
+- display: API Token
+  additionalinfo: See detailed instructions on the 'Help' tab.
   name: apitoken
   type: 4
   hidden: true
   section: Connect
   required: false
+- display: Use OAuth 2.0 Authentication
+  additionalinfo: See detailed instructions on the 'Help' tab.
+  name: use_oauth
+  type: 8
+  section: Connect
+  required: false
+- display: Client ID
+  additionalinfo: Required and used if OAuth 2.0 is used for authentication. See detailed instructions on the 'Help' tab.
+  name: client_id
+  type: 0
+  section: Connect
+  required: false
+- display: Private Key
+  additionalinfo: Required and used if OAuth 2.0 is used for authentication. See detailed instructions on the 'Help' tab.
+  name: private_key
+  type: 14
+  section: Connect
+  required: false
+- display: JWT Encoding Algorithm
+  additionalinfo: Required and used if OAuth 2.0 is used for authentication. See detailed instructions on the 'Help' tab.
+  name: jwt_algorithm
+  type: 15
+  section: Connect
+  required: false
+  options:
+  - RS256
+  - RS384
+  - RS512
+  - ES256
+  - ES384
+  - ES512
+  defaultvalue: RS256
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -1451,7 +1484,7 @@ script:
     - contextPath: Account.Username
       description: Okta account usernames returned by the search.
       type: String
-  dockerimage: demisto/python3:3.10.13.74666
+  dockerimage: demisto/crypto:1.0.0.82278
   runonce: false
   script: ""
   subtype: python3
