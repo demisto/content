@@ -364,7 +364,7 @@ class EventCollector:
                         {get_activity_log_id(item) for item in dedup_data}
                     )
 
-                    # Last run of pagination, avoiding endless loop if all page has the same time. 
+                    # Last run of pagination, avoiding endless loop if all page has the same time.
                     # We do not have other eay to handle this case.
                     if iso_end_time == iso_start_time:
                         demisto.debug(
@@ -558,7 +558,7 @@ def parse_special_iso_format(datetime_str: str) -> datetime:
             # getting length of milliseconds part, as API only return with 'Z' of both tz and 'Z'.
             end_index = tz_index if tz_index else len(datetime_str) - 1
 
-            if len(datetime_str[decimal_index + 1 : end_index]) < 6:
+            if len(datetime_str[decimal_index + 1: end_index]) < 6:
                 datetime_str = f"{datetime_str[:decimal_index+1]}000{datetime_str[decimal_index+1:]}"
         date_obj = dateparser.parse(datetime_str, settings={"TIMEZONE": "UTC"})
 
