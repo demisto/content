@@ -11378,10 +11378,10 @@ def has_passed_time_threshold(timestamp_str, seconds_threshold):
     :return: True if the time difference is greater than the threshold, otherwise False.
     :rtype: ``bool``
     """
-    from datetime import timezone
+    import pytz
     to_utc_timestamp = dateparser.parse(timestamp_str, settings={'TIMEZONE': 'UTC'})
     # using astimezone since utcnow() returns a naive datetime object
-    current_time = datetime.now().astimezone(timezone.utc)
+    current_time = datetime.now().astimezone(pytz.utc)
     if to_utc_timestamp:
         time_difference = current_time - to_utc_timestamp
         return time_difference.total_seconds() > seconds_threshold

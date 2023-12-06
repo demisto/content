@@ -9130,9 +9130,8 @@ def test_has_passed_time_threshold__different_timestamps(timestamp_str, seconds_
         Case 4: The timestamp is invalid.
     """
     from CommonServerPython import has_passed_time_threshold
-    from datetime import timezone
     mocker.patch('CommonServerPython.datetime', autospec=True)
-    mocker.patch.object(CommonServerPython.datetime, 'now', return_value=datetime(2022, 1, 1, 0, 0, 0, tzinfo=timezone.utc))
+    mocker.patch.object(CommonServerPython.datetime, 'now', return_value=datetime(2022, 1, 1, 0, 0, 0, tzinfo=pytz.utc))
     if expected == ValueError:
         with pytest.raises(expected) as e:
             has_passed_time_threshold(timestamp_str, seconds_threshold)
