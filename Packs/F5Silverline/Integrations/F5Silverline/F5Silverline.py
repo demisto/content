@@ -170,7 +170,6 @@ def delete_ip_objects_command(client: Client, args: dict[str, Any]):
     """
     demisto.debug("debug-log: delete_ip_objects_command function called")
 
-
     list_type = args['list_type']
     object_id = args.get('object_id')
     object_ip = args.get('object_ip')
@@ -199,6 +198,7 @@ def delete_ip_objects_command(client: Client, args: dict[str, Any]):
                                       'list_target': list_target}, resp_type='content')
             human_readable += f"IP object with ID: {object_id} deleted successfully from the {list_type} list. \n"
         return CommandResults(readable_output=human_readable)
+    return None
 
 
 def get_object_id_by_ip(client, list_type, object_ip):
