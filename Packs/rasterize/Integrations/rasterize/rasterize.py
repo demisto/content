@@ -68,14 +68,22 @@ class RasterizeType(Enum):
 # region utility classes
 
 class TabLifecycleManager:
-    def __init__(self, browser):
+    def __init__(self, browser, offline_mode):
         self.browser = browser
+        self.offline_mode = offline_mode
         self.tab = None
+
         demisto.debug(f'TabLifecycleManager, __init__, active tabs len: {len(self.browser.list_tab())}')
 
     def __enter__(self):
         self.tab = self.browser.new_tab()
+
         self.tab.start()
+        if self.offline_mode:
+            self.tab.Network.disable(offline="True")
+        else:
+            self.tab.Network.enable()
+
         self.tab.Page.enable()
         demisto.debug(f'TabLifecycleManager, entering tab {self.tab.id}, tabs len: {len(self.browser.list_tab())}')
         return self.tab
@@ -123,7 +131,10 @@ class PychromeEventHandler:
 
     def network_data_received(self, requestId, timestamp, dataLength, encodedDataLength):
         demisto.debug(f"network_data_received, {requestId=}")
-        self.request_id = requestId
+        if not self.request_id:
+            self.request_id = requestId
+        else:
+            demisto.debug(f"network_data_received, {requestId=}, already using {self.request_id}")
 
 # endregion
 
@@ -260,6 +271,14 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout):  # prag
         return_error(message)
 
 
+def backoff(polled_item, wait_time=DEFAULT_WAIT_TIME, polling_interval=DEFAULT_POLLING_INTERVAL):
+    operation_time = 0
+    while polled_item is None and operation_time < wait_time:
+        time.sleep(polling_interval)  # pylint: disable=E9003
+        operation_time +=polling_interval
+    return polled_item, operation_time
+
+
 def screenshot_image(browser, tab, path, wait_time, navigation_timeout, include_source=False):  # pragma: no cover
     """
     :param include_source: Whether to include the page source in the response
@@ -269,14 +288,17 @@ def screenshot_image(browser, tab, path, wait_time, navigation_timeout, include_
     # Screenshot data
     screenshot_data = tab.Page.captureScreenshot()['data']
     # Make sure that the (asynchronous) screenshot data is available before continuing with execution
-    operation_time = 0
-    while screenshot_data is None and operation_time < DEFAULT_WAIT_TIME:
-        time.sleep(DEFAULT_POLLING_INTERVAL)  # pylint: disable=E9003
-        operation_time +=DEFAULT_POLLING_INTERVAL
-    demisto.debug(f"Screenshot image available after {operation_time} seconds.")
+    screenshot_data, operation_time = backoff(screenshot_data)
+    if screenshot_data:
+        demisto.debug(f"Screenshot image available after {operation_time} seconds.")
+    else:
+        demisto.info(f"Screenshot image not available available after {operation_time} seconds.")
 
     ret_value = base64.b64decode(screenshot_data)
-    demisto.debug(f"Captured snapshot, {len(ret_value)=}")
+    if ret_value:
+        demisto.debug(f"Captured snapshot, {len(ret_value)=}")
+    else:
+        demisto.info(f"Empty snapshot, {screenshot_data=}")
 
     # Page source, if needed
     response_body = None
@@ -285,13 +307,12 @@ def screenshot_image(browser, tab, path, wait_time, navigation_timeout, include_
         # response_body = tab.call_method("Network.getResponseBody", requestId=request_id, _timeout=navigation_timeout)
         response_body = tab.Network.getResponseBody(requestId=request_id, _timeout=navigation_timeout)['body']
         # Make sure that the (asynchronous) screenshot data is available before continuing with execution
-        # operation_time = 0
-        # while screenshot_data is None and operation_time < DEFAULT_WAIT_TIME:
-        #     time.sleep(DEFAULT_POLLING_INTERVAL)  # pylint: disable=E9003
-        #     operation_time +=DEFAULT_POLLING_INTERVAL
-
-        demisto.debug(f"{len(response_body)=}")
-        demisto.debug(f"{response_body=}")
+        response_body, operation_time = backoff(response_body)
+        if response_body:
+            demisto.debug(f"Response Body available after {operation_time} seconds.")
+            demisto.debug(f"{len(response_body)=}")
+        else:
+            demisto.info(f"Response Body not available available after {operation_time} seconds.")
 
     return ret_value, response_body
 
@@ -304,12 +325,11 @@ def screenshot_pdf(browser, tab, path, wait_time, navigation_timeout, include_ur
 
     pdf_data = tab.Page.printToPDF(headerTemplate=header_template)['data']
     # Make sure that the (asynchronous) PDF data is available before continuing with execution
-    operation_time = 0
-    while pdf_data is None and operation_time < DEFAULT_WAIT_TIME:
-        time.sleep(DEFAULT_POLLING_INTERVAL)  # pylint: disable=E9003
-        operation_time += DEFAULT_POLLING_INTERVAL
-
-    demisto.debug(f"PDF data available after {operation_time} seconds.")
+    pdf_data, operation_time = backoff(pdf_data)
+    if pdf_data:
+        demisto.debug(f"PDF Data available after {operation_time} seconds.")
+    else:
+        demisto.info(f"PDF Data not available available after {operation_time} seconds.")
 
     ret_value = base64.b64decode(pdf_data)
     return ret_value, None
@@ -337,13 +357,7 @@ def rasterize(path: str,
     """
 
     if browser := ensure_chrome_running():
-        with TabLifecycleManager(browser) as tab:
-            if offline_mode:
-                # tab.call_method("Network.disble")
-                tab.Network.disable(offline="True")
-            else:
-                # tab.call_method("Network.enable")
-                tab.Network.enable()
+        with TabLifecycleManager(browser, offline_mode) as tab:
             # tab.call_method("Browser.Bounds.width=600")
             tab.call_method("Emulation.setVisibleSize", width=width, height=height)
 
@@ -529,14 +543,14 @@ def rasterize_command():  # pragma: no cover
         #             'html': html, 'current_url': url}
         output = {'image_b64': base64.b64encode(output).decode('utf8'),
                     'html': response_body, 'current_url': url}
-        return_results(CommandResults(raw_response=output, readable_output="Successfully rasterize url: " + url))
-        # return output
+        # return_results(CommandResults(raw_response=output, readable_output="Successfully rasterize url: " + url))
+        demisto.results(CommandResults(raw_response=output, readable_output="Successfully rasterize url: " + url))
+    else:
+        res = fileResult(filename=file_name, data=output)
+        if rasterize_type == RasterizeType.PNG:
+            res['Type'] = entryTypes['image']
 
-    res = fileResult(filename=file_name, data=output)
-    if rasterize_type == RasterizeType.PNG:
-        res['Type'] = entryTypes['image']
-
-    demisto.results(res)
+        demisto.results(res)
 
 # endregion
 
