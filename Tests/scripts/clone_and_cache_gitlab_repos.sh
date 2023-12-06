@@ -105,6 +105,7 @@ get_cache_gitlab_repositories() {
   fi
 
   if [ -d "./${repo}" ] ; then
+    echo "Fetching ${repo_name} repository with branch:${SEARCHED_BRANCH_NAME}"
     cd ./"${repo}"
     git remote set-url origin "https://${user_info}${host}/${repo_name}.git"
     git fetch -p -P
