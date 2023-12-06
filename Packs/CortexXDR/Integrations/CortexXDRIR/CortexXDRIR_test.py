@@ -1,6 +1,6 @@
 import copy
 import json
-
+from pathlib import Path
 import pytest
 from freezegun import freeze_time
 
@@ -14,7 +14,7 @@ XDR_URL = 'https://api.xdrurl.com'
 
 
 def load_test_data(json_path):
-    with open(json_path) as f:
+    with open(Path(__file__).parent / json_path) as f:
         return json.load(f)
 
 

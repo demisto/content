@@ -1,6 +1,6 @@
 """Imports"""
 from epoV2 import *
-
+from pathlib import Path
 """
 import pytest
 import demistomock as demisto
@@ -13,12 +13,12 @@ EPO_URL = 'https://test.com'
 
 
 def load_test_data_txt(file_path):
-    with open(file_path) as f:
+    with open(Path(__file__).parent / file_path) as f:
         return f.read()
 
 
 def load_test_data(json_path):
-    with open(json_path) as f:
+    with open(Path(__file__).parent / json_path) as f:
         return json.load(f)
 
 
