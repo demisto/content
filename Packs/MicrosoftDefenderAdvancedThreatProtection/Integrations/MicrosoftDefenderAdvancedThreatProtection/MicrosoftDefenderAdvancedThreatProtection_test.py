@@ -7,7 +7,7 @@ from freezegun import freeze_time
 import demistomock as demisto
 import json
 import pytest
-
+from pathlib import Path
 from CommonServerPython import DemistoException
 from MicrosoftDefenderAdvancedThreatProtection import MsClient, get_future_time, build_std_output, parse_ip_addresses, \
     print_ip_addresses, get_machine_details_command, run_polling_command, run_live_response_script_action, \
@@ -33,7 +33,7 @@ client_mocker = MsClient(
 
 
 def atp_mocker(mocker, file_name):
-    with open(f'test_data/{file_name}') as f:
+    with open(Path(__file__).parent / f'test_data/{file_name}') as f:
         alerts = json.loads(f.read())
     mocker.patch.object(client_mocker, 'list_alerts_by_params', return_value=alerts)
 
