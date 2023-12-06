@@ -24,7 +24,7 @@ from Tests.scripts.common import CONTENT_NIGHTLY, CONTENT_PR, WORKFLOW_TYPES, ge
     get_test_results_files, CONTENT_MERGE, UNIT_TESTS_WORKFLOW_SUBSTRINGS, TEST_PLAYBOOKS_REPORT_FILE_NAME, \
     replace_escape_characters
 from Tests.scripts.github_client import GithubPullRequest
-from Tests.scripts.is_pivot import get_pipelines_and_commits, is_pivot, shame
+from Tests.scripts.common import get_pipelines_and_commits, is_pivot, shame
 from Tests.scripts.test_modeling_rule_report import calculate_test_modeling_rule_results, \
     read_test_modeling_rule_to_jira_mapping, get_summary_for_test_modeling_rule, TEST_MODELING_RULES_TO_JIRA_TICKETS_CONVERTED
 from Tests.scripts.test_playbooks_report import read_test_playbook_to_jira_mapping, TEST_PLAYBOOKS_TO_JIRA_TICKETS_CONVERTED
@@ -526,6 +526,8 @@ def main():
         pipeline_changed_status, pivot_commit = is_pivot(single_pipeline_id=pipeline_id,
                                                          list_of_pipelines=list_of_pipelines,
                                                          commits=commits)
+        logging.info(f'we are investigating pipeline {pipeline_id}')
+        logging.info(f'Pivot commit is {pivot_commit}, pipeline changed status is {pipeline_changed_status}')
         if pipeline_changed_status is not None:
             name, email, pr = shame(pivot_commit)
             msg = "broke" if pipeline_changed_status else "fixed"  
