@@ -380,8 +380,6 @@ fan-in-nightly:
       when: always
   script:
     - echo "fan in nightly"
-  needs:
-    - job: pre_job
 
 jobs-done-check-nightly:
   extends:
@@ -409,6 +407,7 @@ jobs-done-check-nightly:
     WORKFLOW: 'Content Nightly'
 
 fan-in-on-push:
+  when: always
   stage: fan-in
   rules:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
@@ -419,8 +418,6 @@ fan-in-on-push:
     - echo "fan in on push"
   variables:
     master_branch_name: master
-  needs:
-    - job: pre_job
 
 jobs-done-check-on-push:
   rules:
@@ -453,8 +450,7 @@ jobs-done-check-on-push:
     master_branch_name: master
 
 fan-in-on-merge:
-  needs:
-    - job: pre_job
+  when: always
   stage: fan-in
   rules:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
