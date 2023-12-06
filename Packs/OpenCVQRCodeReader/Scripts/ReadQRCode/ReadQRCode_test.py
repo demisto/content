@@ -20,7 +20,7 @@ def test_extract_info_from_qr_code(mocker):
         demisto, 'getFilePath', return_value={'path': 'test_data/qr_code.png'},
     )
     mocker.patch.object(
-        demisto, 'executeCommand', return_value=[{'Contents': {'Domain': 'xsoar.pan.dev'}}],
+        demisto, 'executeCommand', return_value='[{"Contents": {"Domain": "xsoar.pan.dev"}}]',
     )
 
     result = extract_info_from_qr_code('entry_id')
