@@ -256,18 +256,18 @@ def build_grid(context_path: str, keys: list[str], columns: list[str], unpack_ne
 
         # Handle entry context as dict, with unpacking of nested elements
         table = pd.DataFrame(unpack_all_data_from_dict(entry_context_data, keys, columns))
-        table = table.rename(columns=dict(zip(table.columns, columns)))
+        table.rename(columns=dict(zip(table.columns, columns)), inplace=True)
     elif data_type == 'list':
         # Handle entry context as list of value
         table = pd.DataFrame(entry_context_data)
-        table = table.rename(columns=dict(zip(table.columns, columns)))
+        table.rename(columns=dict(zip(table.columns, columns)), inplace=True)
     elif isinstance(entry_context_data, list):
         # Handle entry context as list of dicts
         entry_context_data = [entry_dicts_to_string(dict_obj=filter_dict(item, keys, len(columns)),
                                                     keys_to_choose=keys_from_nested)
                               for item in entry_context_data]
         table = pd.DataFrame(entry_context_data)
-        table = table.rename(columns=dict(zip(table.columns, columns)))
+        table.rename(columns=dict(zip(table.columns, columns)), inplace=True)
     elif isinstance(entry_context_data, dict):
         # Handle entry context key-value
         # If the keys arg is * it means we don't know which keys we have in the context - Will create key-value table.
@@ -279,7 +279,7 @@ def build_grid(context_path: str, keys: list[str], columns: list[str], unpack_ne
         else:
             entry_context_data = entry_context_data
             table = pd.DataFrame([entry_context_data])
-            table = table.rename(columns=dict(zip(table.columns, columns)))
+            table.rename(columns=dict(zip(table.columns, columns)), inplace=True)
 
     else:
         table = []
