@@ -3,7 +3,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: SecurityAndComplianceV2_debug
+  id: SecurityAndComplianceV2
   version: -1
 configuration:
 - display: Certificate Password
@@ -74,7 +74,7 @@ configuration:
   required: false
 description: This integration allows you to manage and interact with Microsoft security and compliance content search.
 display: O365 - Security And Compliance - Content Search v2
-name: SecurityAndComplianceV2_debug
+name: SecurityAndComplianceV2
 script:
   commands:
   - description: OAuth2.0 - Start authorization.
@@ -1102,7 +1102,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-  dockerimage: demisto/pwsh-exchangev3:1.0.0.67595
+  dockerimage: demisto/pwsh-exchangev3:1.0.0.80547
   runonce: true
   script: '-'
   type: powershell
