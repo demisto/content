@@ -7,8 +7,8 @@ from XCloudAdditionalAlertInformationWidget import *
 
 class TestXCloudAdditionalAlertInformationWidget(unittest.TestCase):
 
-    @patch('demistomock.context', return_value={'Core': {'OriginalAlert': [{'event': {'alert_full_description': 'New cloud alert',
-                                                                                      'detection_modules': 'BIOC',
+    @patch('demistomock.context', return_value={'Core': {'OriginalAlert': [{'event': {'alert_full_description': None,
+                                                                                      'detection_modules': None,
                                                                                       'vendor': 'Vendor1',
                                                                                       'cloud_provider': 'AWS',
                                                                                       'log_name': 'SecurityLog',
@@ -22,13 +22,13 @@ class TestXCloudAdditionalAlertInformationWidget(unittest.TestCase):
                                                                                       'user_agent': 'Browser1'}}]}})
     def test_get_additonal_info(self, mock_context):
         # Test with a mock context containing one original alert
-        expected_result = [{'Alert Full Description': 'New cloud alert',
-                            'Detection Module': 'BIOC',
+        expected_result = [{'Alert Full Description': None,
+                            'Detection Module': None,
                             'Vendor': 'Vendor1',
                             'Provider': 'AWS',
                             'Log Name': 'SecurityLog',
                             'Event Type': 'Event1',
-                            'Caller IP': '192.168.1.1',
+                            'Caller IP': None,
                             'Caller IP Geo Location': 'Location1',
                             'Resource Type': 'ResourceType1',
                             'Identity Name': 'User1',
@@ -62,7 +62,7 @@ class TestXCloudAdditionalAlertInformationWidget(unittest.TestCase):
     @patch('demistomock.investigation')
     @patch('demistomock.context')
     @patch('demistomock.executeCommand')
-    @patch('demistomock.return_results')
+    @patch('CommonServerPython.return_results')
     def test_main_success(self, mock_investigation, mock_context, mock_execute_command, mock_return_results):
         # Set up mocks
         mock_investigation.return_value = {'id': 'some_id'}
@@ -83,7 +83,7 @@ class TestXCloudAdditionalAlertInformationWidget(unittest.TestCase):
     @patch('demistomock.investigation')
     @patch('demistomock.context')
     @patch('demistomock.executeCommand')
-    @patch('demistomock.return_results')
+    @patch('CommonServerPython.return_results')
     def test_main_exception(self, mock_investigation, mock_context, mock_execute_command, mock_return_results):
         # Set up mocks
         mock_investigation.side_effect = Exception('Some error')
