@@ -16,20 +16,21 @@ from time import time as get_current_time_in_seconds
 
 disable_warnings()
 
+# CONSTANTS
 VENDOR = "symantec"
 PRODUCT = "swg"
 DEFAULT_FETCH_SLEEP = 30
-REGEX_FOR_STATUS = re.compile(r"X-sync-status: (?P<status>.*?)(?=\\r\\n|$)")
-REGEX_FOR_TOKEN = re.compile(r"X-sync-token: (?P<token>.*?)(?=\\r\\n|$)")
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 MAX_CHUNK_SIZE_TO_READ = 1024 * 1024 * 150  # 150 MB
 MAX_CHUNK_SIZE_TO_WRITE = 200 * (10**6)  # ~200 MB
+TEST_MODULE_READ_CHUNK_SIZE = 2000  # 2 KB
+STATUS_DONE = "done"
+STATUS_MORE = "more"
+STATUS_ABORT = "abort"
 
-
-class StatusType(Enum):
-    DONE = "done"
-    MORE = "more"
-    ABORT = "abort"
+# REGEX
+REGEX_FOR_STATUS = re.compile(r"X-sync-status: (?P<status>.*?)(?=\\r\\n|$)")
+REGEX_FOR_TOKEN = re.compile(r"X-sync-token: (?P<token>.*?)(?=\\r\\n|$)")
 
 
 class LastRun(NamedTuple):
@@ -384,7 +385,7 @@ def get_start_date_for_next_fetch(
     return start_date_for_next_fetch
 
 
-def management_next_fetch(
+def calculate_next_fetch(
     start_date: int,
     new_token: str,
     time_of_last_fetched_event: str,
@@ -494,9 +495,11 @@ def extract_logs_and_push_to_XSIAM(
                     )
                     demisto.debug(f"len of the events is: {len(events)}")
             except Exception as e:
-                demisto.debug(f"Failed to send events to XSOAR. Error: {e}")
+                demisto.info(f"Failed to send events to XSOAR. Error: {e}")
+                raise e
         except Exception as e:
-            demisto.debug(f"Error parsing events: {e}")
+            demisto.info(f"Error parsing events: {e}")
+            raise e
 
     return (
         time_of_last_fetched_event,
@@ -513,8 +516,8 @@ def get_events_command(
     last_run_model: LastRun,
 ) -> None:
     # Make API call in streaming to fetch events and writing to a temporary file on the disk.
-    status = StatusType.MORE
-    while status != StatusType.DONE:
+    status = STATUS_MORE
+    while status != STATUS_DONE:
         token_expired = last_run_model.token_expired
 
         # Set the fetch times, where the `end_time` is consistently set to the current time.
@@ -572,23 +575,20 @@ def get_events_command(
 
         # If status is "abort", deletes the tmp file
         # and continue the loop to fetch with the same parameters.
-        if status == StatusType.ABORT:
+        if status == STATUS_ABORT:
             tmp_file_path.unlink()
             continue
 
-        try:
-            (
-                time_of_last_fetched_event,
-                new_events_suspected_duplicates,
-                handling_duplicates,
-            ) = extract_logs_and_push_to_XSIAM(last_run_model, tmp_file_path, token_expired)
-        except Exception:
-            tmp_file_path.unlink()
+        (
+            time_of_last_fetched_event,
+            new_events_suspected_duplicates,
+            handling_duplicates,
+        ) = extract_logs_and_push_to_XSIAM(last_run_model, tmp_file_path, token_expired)
 
         # Removes the tmp file
         tmp_file_path.unlink()
 
-        last_run_model = management_next_fetch(
+        last_run_model = calculate_next_fetch(
             start_date,
             new_token,
             time_of_last_fetched_event,
@@ -617,8 +617,18 @@ def test_module(client: Client, fetch_interval: str | None) -> str:
         "token": "none",
     }
 
-    client.get_logs(params)
-    return "ok"
+    # In order to shorten the test time It attempts to retrieve a small chunk of logs.
+    # If successful, it returns `ok`, otherwise it raises an exception
+    # with details of the reason.
+    try:
+        with client.get_logs(params) as res:
+            for _ in res.iter_content(chunk_size=TEST_MODULE_READ_CHUNK_SIZE):
+                return "ok"
+    except Exception as e:
+        if "HTTP Status 401" in str(e):
+            raise ValueError("Authorization Error: make sure API Key is correctly set")
+        else:
+            raise e
 
 
 def perform_long_running_loop(client: Client):

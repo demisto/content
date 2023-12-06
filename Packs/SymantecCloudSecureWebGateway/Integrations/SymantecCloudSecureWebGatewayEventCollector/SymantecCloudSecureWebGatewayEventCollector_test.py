@@ -17,7 +17,7 @@ from SymantecCloudSecureWebGatewayEventCollector import (
     get_start_date_for_next_fetch,
     get_status_and_token_from_file,
     get_the_last_row_that_incomplete,
-    management_next_fetch,
+    calculate_next_fetch,
     parse_events,
     extract_logs_from_zip_file,
     perform_long_running_loop,
@@ -281,7 +281,7 @@ def test_get_start_date_for_next_fetch(
         ),
     ],
 )
-def test_management_next_fetch(
+def test_calculate_next_fetch(
     time_of_last_fetched_event: str,
     new_events_suspected_duplicates: list[str],
     handling_duplicates: HandlingDuplicates,
@@ -295,7 +295,7 @@ def test_management_next_fetch(
         2. `time_of_last_fetched_event` equal to `handling_duplicates.max_time`
         3. `time_of_last_fetched_event` less than `handling_duplicates.max_time`
     When:
-        - run `management_next_fetch` function
+        - run `calculate_next_fetch` function
     Then:
         Ensure:
         - For case 1, the `last_run_model` updated with
@@ -304,7 +304,7 @@ def test_management_next_fetch(
         - For case 3, not updated time_of_last_fetched_event
           and events_suspected_duplicates in last_run_model.
     """
-    last_run_model = management_next_fetch(
+    last_run_model = calculate_next_fetch(
         start_date=123,
         new_token="test",
         time_of_last_fetched_event=time_of_last_fetched_event,
