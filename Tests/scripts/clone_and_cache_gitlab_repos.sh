@@ -89,6 +89,13 @@ clone_repository_with_fallback_branch() {
   fi
 }
 
+remove_repo_cache() {
+    local repo=$1
+    echo "Remove $repo from cache"
+    rm -rf "./$repo"
+    sleep 1
+}
+
 get_cache_gitlab_repositories() {
   local host=$1
   local user=$2
@@ -107,13 +114,18 @@ get_cache_gitlab_repositories() {
     user_info="${user}:${token}@"
   fi
 
-  if [ -s "${repo}.txt" ]; then
-    cached_branch=$(cat "${repo}.txt")
-    if [ "${cached_branch}" != "${branch}" ]; then
-      echo "Remove ${repo} from cache"
-      rm -rf "./${repo}"
-      sleep 1
-    fi
+  if [ -f "${repo}.txt" ]; then
+    git ls-remote --exit-code --quiet --heads "https://${user_info}${host}/${repo_name}.git" "refs/heads/${branch}" 1>/dev/null 2>&1
+    local branch_exists=$?
+    if [ "${branch_exists}" -eq 0 ]; then
+        if ! grep -q "$branch" "${repo}.txt"; then
+          remove_repo_cache "${repo}"
+        fi
+      else
+        if ! grep -q "$fallback_branch" "${repo}.txt"; then
+          remove_repo_cache "${repo}"
+        fi
+      fi
   fi
 
   if [ -d "./${repo}" ] ; then
