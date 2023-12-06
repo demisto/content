@@ -359,7 +359,9 @@ FIELDS_MIRRORING = 'id,start_time,event_count,last_persisted_time,close_time'
 
 class Client(BaseClient):
 
-    def __init__(self, server: str, verify: bool, proxy: bool, api_version: str, credentials: dict, timeout: int):
+    def __init__(
+        self, server: str, verify: bool, proxy: bool, api_version: str, credentials: dict, timeout: Optional[int] = None
+    ):
         username = credentials.get('identifier')
         password = credentials.get('password')
         if username == API_USERNAME:
