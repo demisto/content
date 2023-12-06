@@ -248,7 +248,8 @@ class TestFetchStarredIncident:
             'incident_id_list': '1 day',
             'starred': True,
             'limit': 1,
-            'starred_incidents_fetch_window': '3 days'
+            'starred_incidents_fetch_window': '3 days',
+            'integration_context_brand': 'PaloAltoNetworksXDR'
         }
         _, outputs, _ = get_incidents_command(client, args)
         res = outputs['PaloAltoNetworksXDR.Incident(val.incident_id==obj.incident_id)']

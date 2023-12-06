@@ -3757,7 +3757,7 @@ class TestGetIncidents:
             'incident_id_list': '1 day',
             'status': 'under_investigation,new'
         }
-        mocker.patch.object(test_client, 'get_incidents', side_effect=get_incident_by_status)
+        mocker.patch.object(client, 'get_incidents', side_effect=get_incident_by_status)
 
         _, outputs, _ = get_incidents_command(client, args)
 
