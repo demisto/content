@@ -43,6 +43,7 @@ def verify_list_type(original_alert_data):
         if isinstance(res['OriginalAlert'], list):
             res['OriginalAlert'] = res['OriginalAlert'][0]
         return res
+    return None
 
 
 ''' MAIN FUNCTION '''

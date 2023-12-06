@@ -37,19 +37,19 @@ class TestXCloudAdditionalAlertInformationWidget(unittest.TestCase):
                             'User Agent': 'Browser1'}]
 
         result = get_additonal_info()  # Corrected function name
-        self.assertEqual(result, expected_result)
+        assert result == expected_result
 
     def test_verify_list_type_dict(self):
         input_dict = {"EntryContext": {"Core.OriginalAlert": {"id": "123"}}}
         expected_output = {"EntryContext": {"OriginalAlert": {"id": "123"}}}
         output = verify_list_type(input_dict)
-        self.assertEqual(output, expected_output)
+        assert output == expected_output
 
     def test_verify_list_type_list(self):
         input_list = [{"EntryContext": {"Core.OriginalAlert": {"id": "123"}}}]
         expected_output = {"EntryContext": {"OriginalAlert": {"id": "123"}}}
         output = verify_list_type(input_list)
-        self.assertEqual(output, expected_output)
+        assert output == expected_output
 
     def test_verify_list_type_empty(self):
         input = None
@@ -70,6 +70,7 @@ class TestXCloudAdditionalAlertInformationWidget(unittest.TestCase):
         # Assert that the necessary functions and methods were called
         mock_execute_command.assert_called_with('core-get-cloud-original-alerts', {"alert_ids": 'some_id'})
         mock_return_results.assert_called_once()
+
 
 if __name__ == '__main__':
     unittest.main()
