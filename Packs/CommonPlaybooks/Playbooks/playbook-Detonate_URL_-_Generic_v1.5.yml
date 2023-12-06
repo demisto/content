@@ -374,7 +374,7 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: d1eb756a-f615-40b1-80fe-88179b28a4ac
+    taskid: 48e0c334-003e-4e26-80df-808e542ad988
     type: playbook
     task:
       id: 48e0c334-003e-4e26-80df-808e542ad988
@@ -651,7 +651,7 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 153f7c5c-e457-4b7f-8da8-d2b332bbdf7c
+    taskid: aaaae5ac-95e9-4542-81c2-a3f634f13437
     type: playbook
     task:
       id: aaaae5ac-95e9-4542-81c2-a3f634f13437
