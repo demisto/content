@@ -11379,8 +11379,9 @@ def has_passed_time_threshold(timestamp_str, seconds_threshold):
     :rtype: ``bool``
     """
 
-    timestamp = dateparser.parse(timestamp_str,['%Y-%m-%dT%H:%M:%SZ'])
-    current_time = datetime.utcnow()
+    timestamp = dateparser.parse(timestamp_str, settings={'TIMEZONE': 'UTC'})
+    # using astimezone since utcnow() returns a naive datetime object
+    current_time = datetime.now().astimezone(timezone.utc)
     if timestamp:
         time_difference = current_time - timestamp
         return time_difference.total_seconds() > seconds_threshold
