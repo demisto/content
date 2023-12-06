@@ -113,16 +113,16 @@ class Client(BaseClient):  # pragma: no cover
 
         return res
 
-    def get_activity_log(self, from_LastModifiedOn: str, size: int, to_LastModifiedOn: str) -> dict:
+    def get_activity_log(
+        self, from_LastModifiedOn: str, size: int, to_LastModifiedOn: str
+    ) -> dict:
         time = {"from": from_LastModifiedOn}
         if to_LastModifiedOn:
             time["to"] = to_LastModifiedOn
-        
+
         req_body = assign_params(
             size=size,
-            attributes=assign_params(
-                time=time
-            ),
+            attributes=assign_params(time=time),
         )
 
         return self._http_request(
@@ -134,7 +134,9 @@ class Client(BaseClient):  # pragma: no cover
 
 class LastRun:
     class LastRunEvent:
-        def __init__(self, start_time: datetime | None = None, last_ids: set[str] | None = None) -> None:
+        def __init__(
+            self, start_time: datetime | None = None, last_ids: set[str] | None = None
+        ) -> None:
             self.last_ids = last_ids if last_ids else set()
             self.last_run_timestamp = start_time if start_time else datetime.now()
 
@@ -147,8 +149,12 @@ class LastRun:
         def set_ids(self, ids: set[str] = set()) -> None:
             self.last_ids = set(ids) if isinstance(ids, list) else ids
 
-    def __init__(self, event_types: list | None = None,
-                 start_time: datetime | None = None, last_ids: set | None = None) -> None:
+    def __init__(
+        self,
+        event_types: list | None = None,
+        start_time: datetime | None = None,
+        last_ids: set | None = None,
+    ) -> None:
         self.event_types = event_types if event_types else []
         if event_types:
             for event_type in event_types:
@@ -223,7 +229,9 @@ class EventCollector:
             demisto.debug(
                 f"{LOG_LINE} First fetch recognized, setting first_datetime to {first_fetch}"
             )
-            next_run = LastRun(self.event_types_to_run_on, start_time=first_fetch, last_ids=set())
+            next_run = LastRun(
+                self.event_types_to_run_on, start_time=first_fetch, last_ids=set()
+            )
 
         else:
             demisto.debug(
@@ -258,7 +266,9 @@ class EventCollector:
         for event_type in self.event_types_to_run_on:
             _, new_events = self.get_events(
                 event_type=event_type,
-                last_run=LastRun(self.event_types_to_run_on, start_time, last_ids=set()),
+                last_run=LastRun(
+                    self.event_types_to_run_on, start_time, last_ids=set()
+                ),
             )
             events += new_events
 
@@ -323,20 +333,26 @@ class EventCollector:
         # formatting to iso z format without microseconds due to api lack of support,
         # api response should be already in this format.
         iso_start_time = f"{datetime.strftime(start_time.astimezone(timezone.utc), '%Y-%m-%dT%H:%M:%S%z')}Z"
-        
+
         while results_left and ((not iso_end_time) or iso_end_time >= iso_start_time):
             demisto.debug(
                 f"{LOG_LINE} getting user activity: {results_left=}, {iso_start_time=}, {iso_end_time=}"
             )
-            current_batch = self.client.get_activity_log(from_LastModifiedOn=iso_start_time,
-                                                         size=event_type.api_max,
-                                                         to_LastModifiedOn=iso_end_time)
+            current_batch = self.client.get_activity_log(
+                from_LastModifiedOn=iso_start_time,
+                size=event_type.api_max,
+                to_LastModifiedOn=iso_end_time,
+            )
             current_batch_data = current_batch.get("data", [])
 
             demisto.debug(f"{LOG_LINE} raw: {current_batch_data}")
 
             if current_batch_data:
-                dedup_data = [item for item in current_batch_data if get_activity_log_id(item) not in fetched_ids]
+                dedup_data = [
+                    item
+                    for item in current_batch_data
+                    if get_activity_log_id(item) not in fetched_ids
+                ]
                 if dedup_data:
                     demisto.debug(
                         f"Fetching {len(dedup_data)} non duplicates alerts from\
@@ -348,18 +364,25 @@ class EventCollector:
                         {get_activity_log_id(item) for item in dedup_data}
                     )
 
-                    # Last run of pagination, avoiding endless loop if all page has the same time. We do not have how to handle this case.
+                    # Last run of pagination, avoiding endless loop if all page has the same time. 
+                    # We do not have other eay to handle this case.
                     if iso_end_time == iso_start_time:
-                        demisto.debug("Got equal start and end time, this was the last page.")
+                        demisto.debug(
+                            "Got equal start and end time, this was the last page."
+                        )
                         results_left = False
 
-                    # Getting last item's modification date, Assuming Asc order. 
+                    # Getting last item's modification date, Assuming Asc order.
                     # We have to format as the response are not have to be in invalid format
-                    end_time = parse_special_iso_format(dedup_data[-1]["attributes"]["time"])
+                    end_time = parse_special_iso_format(
+                        dedup_data[-1]["attributes"]["time"]
+                    )
                     iso_end_time = f"{datetime.strftime(end_time.astimezone(timezone.utc), '%Y-%m-%dT%H:%M:%S%z')}Z"
-                    
+
                 else:
-                    demisto.debug("Avoiding infinite loop due to multiple alerts in the same time blocking pagination.")
+                    demisto.debug(
+                        "Avoiding infinite loop due to multiple alerts in the same time blocking pagination."
+                    )
                     results_left = False
             else:
                 results_left = False
@@ -405,7 +428,8 @@ class EventCollector:
                 )
                 if dedup_data:
                     demisto.debug(
-                        f"Fetching {len(dedup_data)} alerts from {len(current_batch_data)} found in API for {event_type.name}"
+                        f"Fetching {len(dedup_data)} alerts from {len(current_batch_data)} \
+                            found in API for {event_type.name}"
                     )
                     res.extend(dedup_data)
                     res_count += len(dedup_data)
@@ -446,7 +470,9 @@ class EventCollector:
                     item.get("id", "")
                     for item in filter(
                         lambda item: datetime.fromisoformat(
-                            item["attributes"]["meta"]["last_modified_on"]) == last_run_time,
+                            item["attributes"]["meta"]["last_modified_on"]
+                        )
+                        == last_run_time,
                         events,
                     )
                 }
@@ -462,7 +488,9 @@ class EventCollector:
                     item.get("id", "")
                     for item in filter(
                         lambda item: datetime.fromisoformat(
-                            item["attributes"]["lastModifiedDateTime"]) == last_run_time,
+                            item["attributes"]["lastModifiedDateTime"]
+                        )
+                        == last_run_time,
                         events,
                     )
                 }
@@ -476,8 +504,12 @@ class EventCollector:
                     fetched_ids=last_fetched_ids,
                 )
                 last_run_ids = set(
-                    [get_activity_log_id(item) for item in events
-                     if demisto.get(item, "attributes.time") == next_run_time])
+                    [
+                        get_activity_log_id(item)
+                        for item in events
+                        if demisto.get(item, "attributes.time") == next_run_time
+                    ]
+                )
 
                 format_activity_log(events)
                 last_run_time = parse_special_iso_format(next_run_time)
@@ -526,7 +558,7 @@ def parse_special_iso_format(datetime_str: str) -> datetime:
             # getting length of milliseconds part, as API only return with 'Z' of both tz and 'Z'.
             end_index = tz_index if tz_index else len(datetime_str) - 1
 
-            if len(datetime_str[decimal_index + 1: end_index]) < 6:
+            if len(datetime_str[decimal_index + 1 : end_index]) < 6:
                 datetime_str = f"{datetime_str[:decimal_index+1]}000{datetime_str[decimal_index+1:]}"
         date_obj = dateparser.parse(datetime_str, settings={"TIMEZONE": "UTC"})
 
@@ -574,13 +606,16 @@ def parse_date_for_api_3_digits(date_to_parse: datetime) -> str:
 def format_alerts(events: list[dict], hide_sensitive: bool):
     for event_data in events:
         create_time = datetime.fromisoformat(
-            event_data["attributes"]["meta"].get("last_modified_on"))
+            event_data["attributes"]["meta"].get("last_modified_on")
+        )
 
         if create_time:
             event_data["_ENTRY_STATUS"] = (
                 "modified"
                 if datetime.fromisoformat(
-                    event_data["attributes"]["alert"].get("timestamp")) < create_time
+                    event_data["attributes"]["alert"].get("timestamp")
+                )
+                < create_time
                 else "new"
             )
             event_data["_TIME"] = create_time.isoformat()
@@ -607,7 +642,9 @@ def format_email_trace(events: list[dict], hide_sensitive: bool):
             event_data["_ENTRY_STATUS"] = (
                 "modified"
                 if datetime.fromisoformat(
-                    event_data["attributes"].get("acceptedDateTime")) < create_time
+                    event_data["attributes"].get("acceptedDateTime")
+                )
+                < create_time
                 else "new"
             )
             event_data["_TIME"] = create_time.isoformat()
@@ -629,7 +666,8 @@ def format_email_trace(events: list[dict], hide_sensitive: bool):
 def format_activity_log(events: list[dict]):
     for event_data in events:
         event_time = event_data["attributes"]["time"]
-        valid_event_time = f"{event_time[:-3]}:{event_time[-3:-1]}"  # Removing Z letter and adding ":" to get valid iso format
+        # Removing Z letter and adding ":" to get valid iso format
+        valid_event_time = f"{event_time[:-3]}:{event_time[-3:-1]}"
         create_time = datetime.fromisoformat(valid_event_time)
         event_data["_TIME"] = create_time.strftime(DATE_FORMAT) if create_time else None
         event_data["event_type"] = "activity"
@@ -642,7 +680,11 @@ def test_module(client: Client, events_to_run_on: list[EventType]):
             event_type.client_max_fetch = 1
             collector.get_events(
                 event_type=event_type,
-                last_run=LastRun(events_to_run_on, datetime.now() - timedelta(minutes=1), last_ids=set()),
+                last_run=LastRun(
+                    events_to_run_on,
+                    datetime.now() - timedelta(minutes=1),
+                    last_ids=set(),
+                ),
             )
         return "ok"
     except DemistoException as e:
