@@ -1,7 +1,9 @@
+from typing import Any
+
+import urllib3
+
 import demistomock as demisto
 from CommonServerPython import *  # noqa #! pylint: disable=unused-wildcard-import
-from typing import Any
-import urllib3
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -1990,7 +1992,7 @@ def appliance_list_command(client: Client, args: dict[str, Any]) -> CommandResul
         raw_response=response,
         readable_output=tableToMarkdown(
             name="Appliances",
-            t=response.get("appliance-list"),
+            t=response,
             headers=["name", "uuid", "ipAddress", "appType", "branchId"],
             headerTransform=pascalToSpace,
         ),
@@ -2050,7 +2052,7 @@ def appliances_list_by_organization_command(client: Client, args: dict[str, Any]
         readable_output=tableToMarkdown(
             name="Organization List",
             headers=["name", "ipAddress", "type", "softwareVersion", "ownerOrg"],
-            t=response.get("appliances", {}),
+            t=response,
             headerTransform=pascalToSpace,
         ),
     )
@@ -2077,7 +2079,7 @@ def appliances_group_list_by_organization_command(client: Client, args: dict[str
         raw_response=response,
         readable_output=tableToMarkdown(
             name=f"Appliance groups associated with {organization}",
-            t=response.get("device-group", {}),
+            t=response,
             headerTransform=pascalToSpace,
             headers=[
                 "name",
@@ -2184,7 +2186,7 @@ def template_list_by_datastore_command(client: Client, args: dict[str, Any]) -> 
         raw_response=response,
         readable_output=tableToMarkdown(
             name=f"Templates associated with {organization} Data-Store",
-            t=response.get("org", {}),
+            t=response,
             headerTransform=pascalToSpace,
             removeNull=True,
             headers=[
@@ -2219,7 +2221,7 @@ def application_service_template_list_command(client: Client, args: dict[str, An
         raw_response=response,
         readable_output=tableToMarkdown(
             name=f"Application Service Templates associated with {organization}",
-            t=response.get("content", {}),
+            t=response,
             headerTransform=pascalToSpace,
             headers=[
                 "createDate",
@@ -2307,7 +2309,7 @@ def template_custom_url_category_list_command(client: Client, args: dict[str, An
         raw_response=response,
         readable_output=tableToMarkdown(
             name=f"Application Service Templates associated with {organization}",
-            t=response.get("url-category", {}),
+            t=response,
             headerTransform=pascalToSpace,
             headers=["category-name", "category-description", "confidence", "urls"],
             is_auto_json_transform=True,
@@ -2427,7 +2429,7 @@ def appliance_custom_url_category_list_command(client: Client, args: dict[str, A
         raw_response=response,
         readable_output=tableToMarkdown(
             name=f"Application Service Appliances associated with {organization}",
-            t=response.get("url-category", {}),
+            t=response,
             headerTransform=pascalToSpace,
             headers=["category-name", "category-description", "confidence", "urls"],
             is_auto_json_transform=True,
@@ -2551,7 +2553,7 @@ def template_access_policy_list_command(client: Client, args: dict[str, Any]) ->
         raw_response=response,
         readable_output=tableToMarkdown(
             name=f"Access policies associated with {organization}",
-            t=response.get("access-policy-group", {}),
+            t=response,
             headerTransform=pascalToSpace,
             headers=["name", "rules"],
             is_auto_json_transform=True,
@@ -2581,7 +2583,7 @@ def template_access_policy_rule_list_command(client: Client, args: dict[str, Any
         raw_response=response,
         readable_output=tableToMarkdown(
             name=f"Access policies associated with {organization}",
-            t=response.get("access-policy", {}),
+            t=response,
             headerTransform=pascalToSpace,
             headers=["name", "description", "tag", "rule-disable"],
             is_auto_json_transform=True,
@@ -2677,7 +2679,7 @@ def appliance_access_policy_list_command(client: Client, args: dict[str, Any]) -
         raw_response=response,
         readable_output=tableToMarkdown(
             name=f"Access policies associated with {organization}",
-            t=response.get("access-policy-group", {}),
+            t=response,
             headerTransform=pascalToSpace,
             headers=["name", "rules"],
             is_auto_json_transform=True,
@@ -2707,7 +2709,7 @@ def appliance_access_policy_rule_list_command(client: Client, args: dict[str, An
         raw_response=response,
         readable_output=tableToMarkdown(
             name=f"Access policies associated with {organization}",
-            t=response.get("access-policy", {}),
+            t=response,
             headerTransform=pascalToSpace,
             headers=["name", "description", "tag", "rule-disable"],
             is_auto_json_transform=True,
@@ -2803,7 +2805,7 @@ def template_sdwan_policy_list_command(client: Client, args: dict[str, Any]) -> 
         raw_response=response,
         readable_output=tableToMarkdown(
             name=f"SD-WAN policies associated with {organization}",
-            t=response.get("sdwan-policy-group", {}),
+            t=response,
             headerTransform=pascalToSpace,
             headers=["name", "rules"],
             is_auto_json_transform=True,
@@ -2833,7 +2835,7 @@ def template_sdwan_policy_rule_list_command(client: Client, args: dict[str, Any]
         raw_response=response,
         readable_output=tableToMarkdown(
             name=f"SD-WAN policy rules associated with {organization}",
-            t=response.get("rule"),
+            t=response,
             headerTransform=string_to_table_header,
             headers=["name", "match", "set"],
             is_auto_json_transform=True,
@@ -2935,7 +2937,7 @@ def appliance_sdwan_policy_list_command(client: Client, args: dict[str, Any]) ->
         raw_response=response,
         readable_output=tableToMarkdown(
             name=f"SD-WAN policies associated with {organization}",
-            t=response.get("sdwan-policy-group"),
+            t=response,
             headerTransform=pascalToSpace,
             headers=["name", "rules"],
             is_auto_json_transform=True,
@@ -2965,7 +2967,7 @@ def appliance_sdwan_policy_rule_list_command(client: Client, args: dict[str, Any
         raw_response=response,
         readable_output=tableToMarkdown(
             name=f"SD-WAN policy rules associated with {organization}",
-            t=response.get("rule", {}),
+            t=response,
             headerTransform=pascalToSpace,
             headers=["name", "description", "rule-disable", "action"],
             is_auto_json_transform=True,
@@ -3059,7 +3061,7 @@ def template_address_object_list_command(client: Client, args: dict[str, Any]) -
         raw_response=response,
         readable_output=tableToMarkdown(
             name=f"Address objects associated with {organization}",
-            t=response.get("address", {}),
+            t=response,
             headerTransform=pascalToSpace,
             headers=[
                 "name",
@@ -3307,7 +3309,7 @@ def template_user_defined_application_list_command(client: Client, args: dict[st
         raw_response=response,
         readable_output=tableToMarkdown(
             name=f"User defined application objects associated with {organization}",
-            t=response.get("user-defined-application", {}),
+            t=response,
             headerTransform=pascalToSpace,
             headers=["app-name", "description", "precedence", "tag", "risk", "family"],
             is_auto_json_transform=True,
@@ -3337,7 +3339,7 @@ def appliance_user_defined_application_list_command(client: Client, args: dict[s
         raw_response=response,
         readable_output=tableToMarkdown(
             name=f"User defined application objects associated with {organization}",
-            t=response.get("user-defined-application", {}),
+            t=response,
             headerTransform=pascalToSpace,
             headers=["app-name", "description", "precedence", "tag", "risk", "family"],
             is_auto_json_transform=True,
@@ -3367,7 +3369,7 @@ def template_user_modified_application_list_command(client: Client, args: dict[s
         raw_response=response,
         readable_output=tableToMarkdown(
             name=f"User modified predefined application objects associated with {organization}",
-            t=response.get("app-specific-option-list", {}),
+            t=response,
             headerTransform=pascalToSpace,
             headers=[
                 "app-name",
@@ -3403,7 +3405,7 @@ def appliance_user_modified_application_list_command(client: Client, args: dict[
         raw_response=response,
         readable_output=tableToMarkdown(
             name=f"User modified predefined application objects associated with {organization}",
-            t=response.get("app-specific-option-list", {}),
+            t=response,
             headerTransform=pascalToSpace,
             headers=[
                 "app-name",
