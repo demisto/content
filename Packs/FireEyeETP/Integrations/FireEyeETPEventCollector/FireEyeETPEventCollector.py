@@ -219,7 +219,7 @@ class EventCollector:
         events: list = []
 
         if not demisto_last_run:  # First fetch
-            first_fetch = first_fetch if first_fetch else datetime.now() - timedelta(days=30)
+            first_fetch = first_fetch if first_fetch else datetime.now()
             demisto.debug(
                 f"{LOG_LINE} First fetch recognized, setting first_datetime to {first_fetch}"
             )
