@@ -1683,6 +1683,7 @@ Machine.ReadWrite.All
 | type | The machine action type. Possible values are: RunAntiVirusScan, Offboard, CollectInvestigationPackage, Isolate, Unisolate, StopAndQuarantineFile, RestrictCodeExecution, UnrestrictCodeExecution. | Optional | 
 | requestor | The ID of the user that executed the action, only one can be added. | Optional | 
 | limit | The maximum number of machines to return. Default is 50. | Optional | 
+| filters | String representation of filters (Override every other filters). | Optional | 
 
 #### Context Output
 

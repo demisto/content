@@ -25,7 +25,7 @@ from demisto_sdk.commands.test_content.TestContentClasses import BuildContext
 from demisto_sdk.commands.test_content.constants import SSH_USER
 from demisto_sdk.commands.test_content.mock_server import MITMProxy, run_with_mock, RESULT
 from demisto_sdk.commands.test_content.tools import update_server_configuration, is_redhat_instance
-from demisto_sdk.commands.validate.validate_manager import ValidateManager
+from demisto_sdk.commands.validate.old_validate_manager import OldValidateManager
 from packaging.version import Version
 from ruamel import yaml
 
@@ -155,6 +155,10 @@ class XSOARServer(Server):
 
     def __str__(self):
         return self.internal_ip
+
+    @property
+    def server_numeric_version(self) -> str:
+        return get_server_numeric_version(self.client)
 
     @property
     def client(self):
@@ -360,6 +364,7 @@ class Build(ABC):
         for server in self.servers:
             try:
                 hostname = self.cloud_machine if self.is_cloud else ''
+                multithreading = False if self.is_cloud else multithreading
                 _, flag = search_and_install_packs_and_their_dependencies(pack_ids=pack_ids,
                                                                           client=server.client,
                                                                           hostname=hostname,
@@ -583,15 +588,17 @@ class Build(ABC):
 
 
 class XSOARBuild(Build):
+    DEFAULT_SERVER_VERSION = "6.99.99"
 
     def __init__(self, options):
         super().__init__(options)
         self.ami_env = options.ami_env
-        servers_list, self.server_numeric_version = self.get_servers(options.ami_env)
         self.servers = [XSOARServer(internal_ip,
                                     self.username,
                                     self.password,
-                                    self.ci_build_number) for internal_ip in servers_list]
+                                    self.ci_build_number) for internal_ip in self.get_servers(options.ami_env)]
+        self.server_numeric_version = self.servers[0].server_numeric_version if self.run_environment == Running.CI_RUN \
+            else self.DEFAULT_SERVER_VERSION
 
     @property
     def proxy(self) -> MITMProxy:
@@ -756,12 +763,7 @@ class XSOARBuild(Build):
     @staticmethod
     def get_servers(ami_env):
         env_conf = get_env_conf()
-        servers = get_servers(env_conf, ami_env)
-        if Build.run_environment == Running.CI_RUN:
-            server_numeric_version = get_server_numeric_version(ami_env)
-        else:
-            server_numeric_version = Build.DEFAULT_SERVER_VERSION
-        return servers, server_numeric_version
+        return get_servers(env_conf, ami_env)
 
     def concurrently_run_function_on_servers(
         self, function=None, pack_path=None, service_account=None, packs_to_install=None
@@ -1100,7 +1102,7 @@ def get_new_and_modified_integration_files(branch_name):
         (tuple): Returns a tuple of two lists, the file paths of the new integrations and modified integrations.
     """
     # get changed yaml files (filter only added and modified files)
-    file_validator = ValidateManager(skip_dependencies=True)
+    file_validator = OldValidateManager(skip_dependencies=True)
     file_validator.branch_name = branch_name
     modified_files, added_files, _, _, _ = file_validator.get_changed_files_from_git()
 

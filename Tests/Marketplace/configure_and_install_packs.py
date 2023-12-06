@@ -64,7 +64,7 @@ def xsoar_configure_and_install_flow(options, branch_name: str, build_number: st
         build_number(str): number of the current build flow
     """
     # Get the host by the ami env
-    server_to_port_mapping, server_version = XSOARBuild.get_servers(ami_env=options.ami_env)
+    server_to_port_mapping = XSOARBuild.get_servers(ami_env=options.ami_env)
 
     logging.info('Retrieving the credentials for Cortex XSOAR server')
     secret_conf_file = get_json(file_path=options.secret)
@@ -88,6 +88,8 @@ def xsoar_configure_and_install_flow(options, branch_name: str, build_number: st
     # Create a list of all packs that should be installed
     packs_to_install = set(Build.fetch_pack_ids_to_install(options.pack_ids_to_install))
     logging.info(f'Packs to install before filtering by minServerVersion: {packs_to_install}')
+
+    server_version = servers[0].server_numeric_version
 
     # Get packs with 'minServerVersion' that's higher than server's version
     packs_with_higher_server_version = get_packs_with_higher_min_version(

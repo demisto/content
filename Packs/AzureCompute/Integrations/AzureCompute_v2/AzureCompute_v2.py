@@ -8,8 +8,9 @@ from MicrosoftApiModule import *  # noqa: E402
 urllib3.disable_warnings()
 
 '''GLOBAL VARS'''
-API_VERSION = '2018-06-01'
+API_VERSION = '2023-03-01'
 APP_NAME = 'ms-azure-compute'
+DEFAULT_LIMIT = 50
 
 # Image options to be used in the create_vm_command
 IMAGES = {
@@ -161,7 +162,7 @@ def assign_image_attributes(image):
     return sku, publisher, offer, version
 
 
-def create_vm_parameters(args, subscription_id):
+def create_vm_parameters(args, subscription_id, resource_group):
     """
     Construct the VM object
 
@@ -185,7 +186,6 @@ def create_vm_parameters(args, subscription_id):
     version = args.get('version')
     offer = args.get('offer')
     vm_name = args.get('virtual_machine_name')
-    resource_group = args.get('resource_group')
     admin_username = args.get('admin_username')
     admin_password = args.get('admin_password')
     nic_name = args.get('nic_name')
@@ -245,7 +245,7 @@ def create_vm_parameters(args, subscription_id):
     return vm
 
 
-def create_nic_parameters(args, subscription_id):
+def create_nic_parameters(resource_group, subscription_id, args):
     """
     Construct the NIC object
 
@@ -261,7 +261,6 @@ def create_nic_parameters(args, subscription_id):
         NIC Object
     """
     # Retrieve relevant command arguments
-    resource_group = args.get('resource_group')
     location = args.get('nic_location')
     address_assignment_method = args.get('address_assignment_method')
     private_ip_address = args.get('private_ip_address')
@@ -351,67 +350,63 @@ class MsGraphClient:
 
         self.server = server
         self.subscription_id = subscription_id
+        self.default_params = {"api-version": API_VERSION}
 
-    def list_resource_groups(self):
-        parameters = {'api-version': '2018-05-01'}
-        return self.ms_client.http_request(method='GET', params=parameters, url_suffix='')
+    def list_resource_groups(self, limit: int, tag: str = '', full_url: Optional[str] = ''):
+        filter_by_tag = azure_tag_formatter(tag) if tag else None
+        parameters = {'$filter': filter_by_tag, '$top': limit, 'api-version': '2021-04-01'} if not full_url else {}
+        return self.ms_client.http_request(method='GET', params=parameters, url_suffix='', full_url=full_url)
 
     def list_subscriptions(self):
-        parameters = {'api-version': '2017-05-10'}
+        parameters = {'api-version': '2020-01-01'}
         url = self.server + '/subscriptions'
         return self.ms_client.http_request(method='GET', full_url=url, params=parameters, url_suffix='')
 
     def list_vms(self, resource_group):
         url_suffix = f"{resource_group}/providers/Microsoft.Compute/virtualMachines"
 
-        parameters = {'api-version': API_VERSION}
-        return self.ms_client.http_request(method='GET', url_suffix=url_suffix, params=parameters)
+        return self.ms_client.http_request(method='GET', url_suffix=url_suffix, params=self.default_params)
 
-    def get_vm(self, resource_group, vm_name):
+    def get_vm(self, resource_group, vm_name, expand='instanceView'):
         url_suffix = f"{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}"
-        parameters = {'$expand': 'instanceView', 'api-version': API_VERSION}
+        parameters = {'$expand': expand} | self.default_params
         return self.ms_client.http_request(method='GET', url_suffix=url_suffix, params=parameters)
 
-    def create_vm(self, args):
+    def create_vm(self, args, resource_group):
         # Retrieve relevant command argument
-        resource_group = args.get('resource_group')
         vm_name = args.get('virtual_machine_name')
 
         url_suffix = f"{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}"
-        parameters = {'api-version': API_VERSION}
 
         # Construct VM object utilizing parameters passed as command arguments
-        payload = create_vm_parameters(args, self.subscription_id)
-        return self.ms_client.http_request(method='PUT', url_suffix=url_suffix, params=parameters, json_data=payload)
+        payload = create_vm_parameters(args, self.subscription_id, resource_group)
+        return self.ms_client.http_request(method='PUT', url_suffix=url_suffix, params=self.default_params, json_data=payload)
 
     def delete_vm(self, resource_group, vm_name):
         # Construct endpoint URI suffix (for de-allocation of compute resources)
         url_suffix = f"{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}/deallocate"
-        parameters = {'api-version': API_VERSION}
 
         # Call API to deallocate compute resources
-        self.ms_client.http_request(method='POST', url_suffix=url_suffix, params=parameters, resp_type="response")
+        self.ms_client.http_request(method='POST', url_suffix=url_suffix, params=self.default_params, resp_type="response")
 
         # Construct endpoint URI suffix (for deletion)
         url_suffix = f"{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}"
-        parameters = {'api-version': API_VERSION}
 
         # Call API to delete
         return self.ms_client.http_request(
-            method='DELETE', url_suffix=url_suffix, params=parameters, resp_type="response")
+            method='DELETE', url_suffix=url_suffix, params=self.default_params, resp_type="response")
 
     def start_vm(self, resource_group, vm_name):
         # Retrieve relevant command arguments
         url_suffix = f"{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}/start"
-        parameters = {'api-version': API_VERSION}
 
         # Call API
         return self.ms_client.http_request(
-            method='POST', url_suffix=url_suffix, params=parameters, resp_type="response")
+            method='POST', url_suffix=url_suffix, params=self.default_params, resp_type="response")
 
-    def poweroff_vm(self, resource_group, vm_name):
+    def poweroff_vm(self, resource_group, vm_name, skip_shutdown):
         url_suffix = f"{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}/powerOff"
-        parameters = {'api-version': API_VERSION}
+        parameters = {'skipShutdown': skip_shutdown} | self.default_params
 
         return self.ms_client.http_request(
             method='POST', url_suffix=url_suffix, params=parameters, resp_type="response")
@@ -427,7 +422,7 @@ class MsGraphClient:
             https://learn.microsoft.com/en-us/rest/api/virtualnetwork/public-ip-addresses/list-all?tabs=HTTP
         """
         url_suffix = "/providers/Microsoft.Network/publicIPAddresses"
-        parameters = {'api-version': API_VERSION}
+        parameters = {'api-version': '2022-09-01'}
         base_url = f"{self.server}/subscriptions/{self.subscription_id}"
         self.ms_client._base_url = base_url
         return self.ms_client.http_request(method='GET', url_suffix=url_suffix, params=parameters)
@@ -473,30 +468,26 @@ class MsGraphClient:
 
     def get_network_interface(self, resource_group, interface_name):
         url_suffix = f"{resource_group}/providers/Microsoft.Network/networkInterfaces/{interface_name}"
-        parameters = {'api-version': API_VERSION}
-        return self.ms_client.http_request(method='GET', url_suffix=url_suffix, params=parameters)
+        return self.ms_client.http_request(method='GET', url_suffix=url_suffix, params=self.default_params)
 
     def get_public_ip_details(self, resource_group, address_name):
         url_suffix = f"{resource_group}/providers/Microsoft.Network/publicIPAddresses/{address_name}"
-        parameters = {'api-version': API_VERSION}
-        return self.ms_client.http_request(method='GET', url_suffix=url_suffix, params=parameters)
+        return self.ms_client.http_request(method='GET', url_suffix=url_suffix, params=self.default_params)
 
-    def create_nic(self, args):
+    def create_nic(self, resource_group, args):
         # Retrieve relevant command argument
-        resource_group = args.get('resource_group')
         nic_name = args.get('nic_name')
         url_suffix = f"{resource_group}/providers/Microsoft.Network/networkInterfaces/{nic_name}"
-        parameters = {'api-version': API_VERSION}
 
         # Construct VM object utilizing parameters passed as command arguments
-        payload = create_nic_parameters(args, self.subscription_id)
-        return self.ms_client.http_request(method='PUT', url_suffix=url_suffix, params=parameters, json_data=payload)
+        payload = create_nic_parameters(resource_group, self.subscription_id, args)
+        return self.ms_client.http_request(method='PUT', url_suffix=url_suffix, params=self.default_params, json_data=payload)
 
 
-def test_module(client: MsGraphClient, args: dict):
+def test_module(client: MsGraphClient):
     # Implicitly will test tenant, enc_token and subscription_id
-    client.list_resource_groups()
-    return 'ok', None, None
+    client.list_resource_groups(1)
+    return 'ok'
 
 
 # <-------- Resource Groups --------> #
@@ -508,28 +499,44 @@ def list_resource_groups_command(client: MsGraphClient, args: dict):
     returns:
         Resource-Group Objects
     """
-    response = client.list_resource_groups()
-    # Retrieve relevant properties to return to context
-    value = response.get('value')
-    resource_groups = []
-    for resource_group in value:
-        resource_group_context = {
-            'Name': resource_group.get('name'),
-            'ID': resource_group.get('id'),
-            'Location': resource_group.get('location'),
-            'ProvisioningState': resource_group.get('properties', {}).get('provisioningState')
-        }
-        resource_groups.append(resource_group_context)
+    tag = args.get('tag', '')
+    limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT
 
+    resource_groups: List[dict] = []
+
+    next_link = True
+    while next_link and len(resource_groups) < limit:
+        full_url = next_link if isinstance(next_link, str) else None
+        response = client.list_resource_groups(limit, tag, full_url=full_url)
+        # Retrieve relevant properties to return to context
+        value = response.get('value')
+        next_link = response.get('nextLink')
+
+        for resource_group in value:
+            resource_group_context = {
+                'Name': resource_group.get('name'),
+                'ID': resource_group.get('id'),
+                'Location': resource_group.get('location'),
+                'ProvisioningState': resource_group.get('properties', {}).get('provisioningState')
+            }
+            resource_groups.append(resource_group_context)
+
+    resource_groups = resource_groups[:limit]
     title = 'List of Resource Groups'
     human_readable = tableToMarkdown(title, resource_groups, removeNull=True)
-    entry_context = {'Azure.ResourceGroup(val.Name && val.Name === obj.Name)': resource_groups}
-    return human_readable, entry_context, response
+
+    return CommandResults(
+        outputs_prefix='Azure.ResourceGroup',
+        outputs_key_field='Name',
+        outputs=resource_groups,
+        readable_output=human_readable,
+        raw_response=response
+    )
 
 
 # <-------- Subscriptions --------> #
 
-def list_subscriptions_command(client: MsGraphClient, args: dict):
+def list_subscriptions_command(client: MsGraphClient):
     """
     List all subscriptions for this application
 
@@ -550,13 +557,19 @@ def list_subscriptions_command(client: MsGraphClient, args: dict):
 
     title = 'List of Subscriptions'
     human_readable = tableToMarkdown(title, subscriptions, removeNull=True)
-    entry_context = {'Azure.Subscription(val.ID && val.ID === obj.ID)': subscriptions}
-    return human_readable, entry_context, response
+
+    return CommandResults(
+        outputs_prefix='Azure.Subscription',
+        outputs_key_field='ID',
+        outputs=subscriptions,
+        readable_output=human_readable,
+        raw_response=response
+    )
 
 
 # <-------- Virtual Machines --------> #
 
-def list_vms_command(client: MsGraphClient, args: dict):
+def list_vms_command(client: MsGraphClient, args: dict, params: dict):
     """
     List the VM instances in the specified Resource Group
 
@@ -566,7 +579,7 @@ def list_vms_command(client: MsGraphClient, args: dict):
     returns:
         Virtual Machine Objects
     """
-    resource_group = args.get('resource_group')
+    resource_group = get_from_args_or_params(args=args, params=params, key='resource_group')
     response = client.list_vms(resource_group)
 
     vm_objects_list = response.get('value')
@@ -595,11 +608,17 @@ def list_vms_command(client: MsGraphClient, args: dict):
     title = f'Microsoft Azure - List of Virtual Machines in Resource Group "{resource_group}"'
     table_headers = ['Name', 'ID', 'Size', 'OS', 'Location', 'ProvisioningState', 'ResourceGroup']
     human_readable = tableToMarkdown(title, vms, headers=table_headers, removeNull=True)
-    entry_context = {'Azure.Compute(val.Name && val.Name === obj.Name)': vms}
-    return human_readable, entry_context, response
+
+    return CommandResults(
+        outputs_prefix='Azure.Compute',
+        outputs_key_field='Name',
+        outputs=vms,
+        readable_output=human_readable,
+        raw_response=response
+    )
 
 
-def get_vm_command(client: MsGraphClient, args: dict):
+def get_vm_command(client: MsGraphClient, args: dict, params: dict):
     """
     Get the properties of a specified Virtual Machine
 
@@ -612,9 +631,10 @@ def get_vm_command(client: MsGraphClient, args: dict):
     returns:
         Virtual Machine Object
     """
-    resource_group = args.get('resource_group')
+    resource_group = get_from_args_or_params(args=args, params=params, key='resource_group')
     vm_name = args.get('virtual_machine_name')
-    response = client.get_vm(resource_group, vm_name)
+    expand = args.get('expand', '')
+    response = client.get_vm(resource_group, vm_name, expand)
     # Retrieve relevant properties to return to context
     vm_name = vm_name.lower()  # type: ignore
     properties = response.get('properties')
@@ -624,8 +644,9 @@ def get_vm_command(client: MsGraphClient, args: dict):
     os_type = os_disk.get('osType')
     provisioning_state = properties.get('provisioningState')
     location = response.get('location')
+    user_data = properties.get('userData')
     network_interfaces = properties.get('networkProfile', {}).get('networkInterfaces')
-    statuses = properties.get('instanceView', {}).get('statuses')
+    statuses = properties.get('instanceView', {}).get('statuses', [])
     power_state = None
     for status in statuses:
         status_code = status.get('code')
@@ -641,18 +662,25 @@ def get_vm_command(client: MsGraphClient, args: dict):
         'ProvisioningState': provisioning_state,
         'Location': location,
         'PowerState': power_state,
-        'ResourceGroup': args.get('resource_group'),
-        'NetworkInterfaces': network_interfaces
+        'ResourceGroup': resource_group,
+        'NetworkInterfaces': network_interfaces,
+        'UserData': user_data
     }
 
     title = f'Properties of VM "{vm_name}"'
     table_headers = ['Name', 'ID', 'Size', 'OS', 'ProvisioningState', 'Location', 'PowerState']
     human_readable = tableToMarkdown(title, vm, headers=table_headers, removeNull=True)
-    entry_context = {'Azure.Compute(val.Name && val.Name === obj.Name)': vm}
-    return human_readable, entry_context, response
+
+    return CommandResults(
+        outputs_prefix='Azure.Compute',
+        outputs_key_field='Name',
+        outputs=vm,
+        readable_output=human_readable,
+        raw_response=response
+    )
 
 
-def create_vm_command(client: MsGraphClient, args: dict):
+def create_vm_command(client: MsGraphClient, args: dict, params: dict):
     """
     Create a virtual machine instance with the specified OS image
 
@@ -696,7 +724,8 @@ def create_vm_command(client: MsGraphClient, args: dict):
     returns:
         Virtual Machine Object
     """
-    response = client.create_vm(args)
+    resource_group = get_from_args_or_params(args=args, params=params, key='resource_group')
+    response = client.create_vm(args, resource_group)
 
     # Retrieve relevant properties to return to context
     vm_name = response.get('name').lower()
@@ -715,16 +744,22 @@ def create_vm_command(client: MsGraphClient, args: dict):
         'OS': os_type,
         'ProvisioningState': provisioning_state,
         'Location': location,
-        'ResourceGroup': args.get('resource_group')
+        'ResourceGroup': resource_group
     }
 
     title = f'Created Virtual Machine "{vm_name}"'
     human_readable = tableToMarkdown(title, vm, removeNull=True)
-    entry_context = {'Azure.Compute(val.Name && val.Name === obj.Name)': vm}
-    return human_readable, entry_context, response
+
+    return CommandResults(
+        outputs_prefix='Azure.Compute',
+        outputs_key_field='Name',
+        outputs=vm,
+        readable_output=human_readable,
+        raw_response=response
+    )
 
 
-def delete_vm_command(client: MsGraphClient, args: dict):
+def delete_vm_command(client: MsGraphClient, args: dict, params: dict):
     """
     Delete a specified Virtual Machine
 
@@ -737,15 +772,14 @@ def delete_vm_command(client: MsGraphClient, args: dict):
     returns:
         Success message to the war room
     """
-    resource_group = args.get('resource_group')
+    resource_group = get_from_args_or_params(args=args, params=params, key='resource_group')
     vm_name = args.get('virtual_machine_name')
 
     client.delete_vm(resource_group, vm_name)
-    success_msg = f'"{vm_name}" VM Deletion Successfully Initiated'
-    return success_msg, None, None
+    return f'"{vm_name}" VM Deletion Successfully Initiated'
 
 
-def start_vm_command(client: MsGraphClient, args: dict):
+def start_vm_command(client: MsGraphClient, args: dict, params: dict):
     """
     Power-on a specified Virtual Machine
 
@@ -758,7 +792,7 @@ def start_vm_command(client: MsGraphClient, args: dict):
     returns:
         Virtual Machine Object
     """
-    resource_group = args.get('resource_group')
+    resource_group = get_from_args_or_params(args=args, params=params, key='resource_group')
     vm_name = args.get('virtual_machine_name')
 
     # Raise an exception if the VM isn't in the proper provisioning state
@@ -768,18 +802,23 @@ def start_vm_command(client: MsGraphClient, args: dict):
     vm_name = vm_name.lower()   # type: ignore
     vm = {
         'Name': vm_name,
-        'ResourceGroup': args.get('resource_group'),
+        'ResourceGroup': resource_group,
         'PowerState': 'VM starting'
     }
 
     title = f'Power-on of Virtual Machine "{vm_name}" Successfully Initiated'
     human_readable = tableToMarkdown(title, vm, removeNull=True)
-    entry_context = {'Azure.Compute(val.Name && val.Name === obj.Name)': vm}
 
-    return human_readable, entry_context, vm
+    return CommandResults(
+        outputs_prefix='Azure.Compute',
+        outputs_key_field='Name',
+        outputs=vm,
+        readable_output=human_readable,
+        raw_response=vm
+    )
 
 
-def poweroff_vm_command(client: MsGraphClient, args: dict):
+def poweroff_vm_command(client: MsGraphClient, args: dict, params: dict):
     """
     Power-off a specified Virtual Machine
 
@@ -792,29 +831,35 @@ def poweroff_vm_command(client: MsGraphClient, args: dict):
     returns:
         Virtual Machine Object
     """
-    resource_group = args.get('resource_group')
+    resource_group = get_from_args_or_params(args=args, params=params, key='resource_group')
     vm_name = args.get('virtual_machine_name')
+    skip_shutdown = argToBoolean(args.get('skip_shutdown', False))
 
     # Raise an exception if the VM isn't in the proper provisioning state
     client.validate_provisioning_state(resource_group, vm_name)
 
-    client.poweroff_vm(resource_group, vm_name)
+    client.poweroff_vm(resource_group, vm_name, skip_shutdown)
 
     vm_name = vm_name.lower()   # type: ignore
     vm = {
         'Name': vm_name,
-        'ResourceGroup': args.get('resource_group'),
+        'ResourceGroup': resource_group,
         'PowerState': 'VM stopping'
     }
 
     title = f'Power-off of Virtual Machine "{vm_name}" Successfully Initiated'
     human_readable = tableToMarkdown(title, vm, removeNull=True)
-    entry_context = {'Azure.Compute(val.Name && val.Name === obj.Name)': vm}
 
-    return human_readable, entry_context, vm
+    return CommandResults(
+        outputs_prefix='Azure.Compute',
+        outputs_key_field='Name',
+        outputs=vm,
+        readable_output=human_readable,
+        raw_response=vm
+    )
 
 
-def get_network_interface_command(client: MsGraphClient, args: dict):
+def get_network_interface_command(client: MsGraphClient, args: dict, params: dict):
     """
     Get the properties of a specified Network Interface
 
@@ -827,7 +872,7 @@ def get_network_interface_command(client: MsGraphClient, args: dict):
     returns:
         Network Interface Object
     """
-    resource_group = args.get('resource_group')
+    resource_group = get_from_args_or_params(args=args, params=params, key='resource_group')
     interface_name = args.get('nic_name')
     response = client.get_network_interface(resource_group, interface_name)
     interface_name = interface_name.lower()  # type: ignore
@@ -861,7 +906,7 @@ def get_network_interface_command(client: MsGraphClient, args: dict):
         'IsPrimaryInterface': is_primay_interface,
         'Location': location,
         'AttachedVirtualMachine': attached_virtual_machine,
-        'ResourceGroup': args.get('resource_group'),
+        'ResourceGroup': resource_group,
         'NICType': nic_type,
         'DNSSuffix': dns_suffix,
         'IPConfigurations': ip_configs
@@ -882,11 +927,17 @@ def get_network_interface_command(client: MsGraphClient, args: dict):
     table_headers = ['Name', 'ID', 'MACAddress', 'PrivateIPAddresses', 'NetworkSecurityGroup',
                      'Location', 'NICType', 'AttachedVirtualMachine']
     human_readable = tableToMarkdown(title, human_readable_network_config, headers=table_headers, removeNull=True)
-    entry_context = {'Azure.Network.Interfaces(val.ID === obj.ID)': network_config}
-    return human_readable, entry_context, response
+
+    return CommandResults(
+        outputs_prefix='Azure.Network.Interfaces',
+        outputs_key_field='ID',
+        outputs=network_config,
+        readable_output=human_readable,
+        raw_response=response
+    )
 
 
-def get_public_ip_details_command(client: MsGraphClient, args: dict):
+def get_public_ip_details_command(client: MsGraphClient, args: dict, params: dict):
     """
     Get the properties of a specified Public IP Address
 
@@ -900,8 +951,7 @@ def get_public_ip_details_command(client: MsGraphClient, args: dict):
         Public IP Address Object
     """
     address_name = args.get('address_name')
-    if args.get('resource_group') is not None:
-        resource_group = args.get('resource_group')
+    if resource_group := (args.get('resource_group') or params.get('resource_group')):
         response = client.get_public_ip_details(resource_group, address_name)
         address_id = response.get('id')
     else:
@@ -950,12 +1000,17 @@ def get_public_ip_details_command(client: MsGraphClient, args: dict):
     table_headers = ['PublicConfigName', 'Location', 'PublicIPAddress', 'PublicIPAddressVersion',
                      'PublicIPAddressAllocationMethod', 'ResourceGroup']
     human_readable = tableToMarkdown(title, human_readable_ip_config, headers=table_headers, removeNull=True)
-    entry_context = {'Azure.Network.IPConfigurations(val.PublicIPAddressID === '
-                     'obj.PublicIPAddressID)': ip_config}
-    return human_readable, entry_context, response
+
+    return CommandResults(
+        outputs_prefix='Azure.Network.IPConfigurations',
+        outputs_key_field='PublicIPAddressID',
+        outputs=ip_config,
+        readable_output=human_readable,
+        raw_response=response
+    )
 
 
-def get_all_public_ip_details_command(client: MsGraphClient, args: dict):
+def get_all_public_ip_details_command(client: MsGraphClient):
     """
     Get the properties of all Public IP Addresses in the configured subscription
 
@@ -999,12 +1054,17 @@ def get_all_public_ip_details_command(client: MsGraphClient, args: dict):
     table_headers = ['PublicConfigName', 'Location', 'PublicIPAddress', 'PublicIPAddressVersion',
                      'PublicIPAddressAllocationMethod']
     human_readable = tableToMarkdown(title, ips, headers=table_headers, removeNull=True)
-    entry_context = {'Azure.Network.IPConfigurations(val.PublicIPAddressID === '
-                     'obj.PublicIPAddressID)': ips}
-    return human_readable, entry_context, response
+
+    return CommandResults(
+        outputs_prefix='Azure.Network.IPConfigurations',
+        outputs_key_field='PublicIPAddressID',
+        outputs=ips,
+        readable_output=human_readable,
+        raw_response=response
+    )
 
 
-def create_nic_command(client: MsGraphClient, args: dict):
+def create_nic_command(client: MsGraphClient, args: dict, params: dict):
     """
     Create a Network Interface with the specified interface parameters
 
@@ -1038,7 +1098,8 @@ def create_nic_command(client: MsGraphClient, args: dict):
     returns:
         Network Interface Object
     """
-    response = client.create_nic(args)
+    resource_group = get_from_args_or_params(args=args, params=params, key='resource_group')
+    response = client.create_nic(resource_group, args)
 
     # Retrieve relevant properties to return to context
     nic_name = response.get('name').lower()
@@ -1049,7 +1110,6 @@ def create_nic_command(client: MsGraphClient, args: dict):
     provisioning_state = properties.get('provisioningState', "NA")
     ip_configurations = properties.get('ipConfigurations', [])
     dns_suffix = properties.get('dnsSettings', {}).get('internalDomainNameSuffix')
-    resource_group = args.get('resource_group')
 
     ip_configs = []
     for ip_configuration in ip_configurations:
@@ -1083,12 +1143,19 @@ def create_nic_command(client: MsGraphClient, args: dict):
     title = f'Created Network Interface "{nic_name}"'
     table_headers = ['Name', 'ID', 'PrivateIPAddresses', 'NetworkSecurityGroup', 'Location']
     human_readable = tableToMarkdown(title, human_readable_nic, headers=table_headers, removeNull=True)
-    entry_context = {'Azure.Network.Interfaces(val.ID && val.Name === obj.ID)': nic}
-    return human_readable, entry_context, response
+
+    return CommandResults(
+        outputs_prefix='Azure.Network.Interfaces',
+        outputs_key_field=['ID', 'Name'],
+        outputs=nic,
+        readable_output=human_readable,
+        raw_response=response
+    )
 
 
 def main():
     params: dict = demisto.params()
+    args = demisto.args()
     server = params.get('host', 'https://management.azure.com').rstrip('/')
     tenant = params.get('cred_token', {}).get('password') or params.get('tenant_id')
     auth_and_token_url = params.get('cred_auth_id', {}).get('password') or params.get('auth_id')
@@ -1096,11 +1163,11 @@ def main():
         return_error('Token and ID must be provided.')
     enc_key = params.get('cred_enc_key', {}).get('password') or params.get('enc_key')
     certificate_thumbprint = params.get('cred_certificate_thumbprint', {}).get(
-        'password') or params.get('certificate_thumbprint', None)
+        'password') or params.get('certificate_thumbprint')
     private_key = params.get('private_key')
     verify = not params.get('unsecure', False)
-    subscription_id = params.get('cred_subscription_id', {}).get(
-        'password') or demisto.args().get('subscription_id') or params.get('subscription_id')
+    subscription_id = args.get('subscription_id') or params.get(
+        'cred_subscription_id', {}).get('password') or params.get('subscription_id')
     proxy: bool = params.get('proxy', False)
     self_deployed: bool = params.get('self_deployed', False)
     if not self_deployed and not enc_key:
@@ -1111,20 +1178,26 @@ def main():
                                'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
     ok_codes = (200, 201, 202, 204)
 
-    commands = {
+    commands_without_args = {
         'test-module': test_module,
+        'azure-list-subscriptions': list_subscriptions_command,
+        'azure-vm-get-all-public-ip-details': get_all_public_ip_details_command
+    }
+
+    commands_with_args = {
+        'azure-list-resource-groups': list_resource_groups_command
+    }
+
+    commands_with_args_and_params = {
         'azure-vm-list-instances': list_vms_command,
         'azure-vm-get-instance-details': get_vm_command,
         'azure-vm-start-instance': start_vm_command,
         'azure-vm-poweroff-instance': poweroff_vm_command,
         'azure-vm-create-instance': create_vm_command,
         'azure-vm-delete-instance': delete_vm_command,
-        'azure-list-resource-groups': list_resource_groups_command,
-        'azure-list-subscriptions': list_subscriptions_command,
-        'azure-vm-get-nic-details': get_network_interface_command,
         'azure-vm-get-public-ip-details': get_public_ip_details_command,
-        'azure-vm-get-all-public-ip-details': get_all_public_ip_details_command,
         'azure-vm-create-nic': create_nic_command,
+        'azure-vm-get-nic-details': get_network_interface_command
     }
 
     '''EXECUTION'''
@@ -1145,9 +1218,15 @@ def main():
 
         if command == 'azure-vm-auth-reset':
             return_results(reset_auth())
-        else:
-            human_readable, entry_context, raw_response = commands[command](client, demisto.args())
-            return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)
+
+        elif command in commands_without_args:
+            return_results(commands_without_args[command](client))
+
+        elif command in commands_with_args:
+            return_results(commands_with_args[command](client, args))
+
+        elif command in commands_with_args_and_params:
+            return_results(commands_with_args_and_params[command](client, args, params))
 
     except Exception as e:
         screened_error_message = screen_errors(str(e), tenant)

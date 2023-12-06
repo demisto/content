@@ -11,7 +11,8 @@ from Tests.scripts.common import calculate_results_table, TEST_MODELING_RULES_RE
     TEST_SUITE_CELL_EXPLANATION
 from Tests.scripts.jira_issues import JIRA_SERVER_URL, JIRA_VERIFY_SSL, JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, \
     JIRA_API_KEY, jira_server_information, jira_search_all_by_query, generate_query_by_component_and_issue_type, JIRA_LABELS
-from Tests.scripts.test_modeling_rule_report import TEST_MODELING_RULES_BASE_HEADERS, calculate_test_modeling_rule_results
+from Tests.scripts.test_modeling_rule_report import TEST_MODELING_RULES_BASE_HEADERS, calculate_test_modeling_rule_results, \
+    write_test_modeling_rule_to_jira_mapping
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 
@@ -55,17 +56,19 @@ def print_test_modeling_rule_summary(artifacts_path: Path, without_jira: bool) -
         calculate_test_modeling_rule_results(test_modeling_rules_results_files, issues)
     )
 
+    write_test_modeling_rule_to_jira_mapping(artifacts_path, jira_tickets_for_modeling_rule)
+
     if modeling_rules_to_test_suite:
         logging.info(f"Found {len(jira_tickets_for_modeling_rule)} Jira tickets out of {len(modeling_rules_to_test_suite)} "
                      "Test modeling rules")
 
-        headers, column_align, tabulate_data, xml, total_errors = calculate_results_table(jira_tickets_for_modeling_rule,
-                                                                                          modeling_rules_to_test_suite,
-                                                                                          server_versions,
-                                                                                          TEST_MODELING_RULES_BASE_HEADERS,
-                                                                                          without_jira=without_jira)
+        column_align, tabulate_data, xml, total_errors = calculate_results_table(jira_tickets_for_modeling_rule,
+                                                                                 modeling_rules_to_test_suite,
+                                                                                 server_versions,
+                                                                                 TEST_MODELING_RULES_BASE_HEADERS,
+                                                                                 without_jira=without_jira)
 
-        table = tabulate(tabulate_data, headers, tablefmt="pretty", colalign=column_align)
+        table = tabulate(tabulate_data, headers="firstrow", tablefmt="pretty", colalign=column_align)
         logging.info(f"Test Modeling rule Results: {TEST_SUITE_CELL_EXPLANATION}\n{table}")
         return total_errors != 0
 

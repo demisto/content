@@ -4,7 +4,7 @@ import json
 import requests
 import dateparser
 from datetime import timedelta
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 import urllib3
 
 # Disable insecure warnings
@@ -34,8 +34,8 @@ MIRROR_RESET = 'XSOARMirror_mirror_reset'
 
 
 class Client(BaseClient):
-    def search_incidents(self, query: Optional[str], max_results: Optional[int],
-                         start_time: Union[str, int], page: int = None, field: str = "id") -> List[Dict[str, Any]]:
+    def search_incidents(self, query: str | None, max_results: int | None,
+                         start_time: Union[str, int], page: int = None, field: str = "id") -> list[dict[str, Any]]:
         data = remove_empty_elements({
             "filter": {
                 "query": query,
@@ -54,7 +54,7 @@ class Client(BaseClient):
             json_data=data
         ).get('data')
 
-    def get_incident(self, incident_id: str) -> Dict[str, Any]:
+    def get_incident(self, incident_id: str) -> dict[str, Any]:
         return self._http_request(
             method='GET',
             url_suffix=f'/incident/load/{incident_id}'
@@ -67,9 +67,9 @@ class Client(BaseClient):
             resp_type='content'
         )
 
-    def get_incident_entries(self, incident_id: str, from_date: Optional[int], max_results: Optional[int],
-                             categories: Optional[List[str]], tags: Optional[List[str]],
-                             tags_and_operator: bool) -> List[Dict[str, Any]]:
+    def get_incident_entries(self, incident_id: str, from_date: int | None, max_results: int | None,
+                             categories: list[str] | None, tags: list[str] | None,
+                             tags_and_operator: bool) -> list[dict[str, Any]]:
         data = {
             'pageSize': max_results or 50,
             'fromTime': timestamp_to_datestring(from_date),
@@ -84,27 +84,27 @@ class Client(BaseClient):
         )
         return inv_with_entries.get('entries', [])
 
-    def get_incident_fields(self) -> List[Dict[str, Any]]:
+    def get_incident_fields(self) -> list[dict[str, Any]]:
         return self._http_request(
             method='GET',
             url_suffix='/incidentfields'
         )
 
-    def get_incident_types(self) -> List[Dict[str, Any]]:
+    def get_incident_types(self) -> list[dict[str, Any]]:
         return self._http_request(
             method='GET',
             url_suffix='/incidenttype'
         )
 
-    def update_incident(self, incident: Dict[str, Any]) -> Dict[str, Any]:
+    def update_incident(self, incident: dict[str, Any]) -> dict[str, Any]:
         return self._http_request(
             method='POST',
             url_suffix='/incident',
             json_data=incident
         )
 
-    def close_incident(self, incident_id: str, incident_ver: int, close_reason: Optional[str],
-                       close_notes: Optional[str]) -> Dict[str, Any]:
+    def close_incident(self, incident_id: str, incident_ver: int, close_reason: str | None,
+                       close_notes: str | None) -> dict[str, Any]:
         return self._http_request(
             method='POST',
             url_suffix='/incident/close',
@@ -116,7 +116,7 @@ class Client(BaseClient):
             }
         )
 
-    def add_incident_entry(self, incident_id: Optional[str], entry: Dict[str, Any]):
+    def add_incident_entry(self, incident_id: str | None, entry: dict[str, Any]):
         if entry.get('type') == 3:
             path_res = demisto.getFilePath(entry.get('id'))
             full_file_name = path_res.get('name')
@@ -145,7 +145,7 @@ class Client(BaseClient):
         else:
             demisto.debug(f'the entry has inv_id {incident_id}\ndata {entry.get("date")}\n'
                           f'markdown {entry.get("markdown")}')
-            entry_format = True if entry.get('format') == 'markdown' else False
+            entry_format = entry.get('format') == 'markdown'
             self._http_request(
                 method='POST',
                 url_suffix='/entry/note',
@@ -229,7 +229,7 @@ def arg_to_timestamp(arg: str, arg_name: str, required: bool = False):
             raise ValueError(f'Invalid date: {arg_name}')
 
         return int(date.timestamp())
-    if isinstance(arg, (int, float)):
+    if isinstance(arg, int | float):
         # Convert to int if the input is a float
         return int(arg)
     raise ValueError(f'Invalid date: "{arg_name}"')
@@ -338,7 +338,9 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict[str, Union[
 
     demisto.debug(f'XSOAR Mirroring: Fetching incidents since last fetch: {last_fetch}')
 
-    incidents, last_fetched_incidents = get_and_dedup_incidents(client, last_fetched_incidents, query, max_results, last_fetch)
+    incidents, last_fetched_incidents, last_fetched_incident_time = get_and_dedup_incidents(client, last_fetched_incidents, query,
+                                                                                            max_results, last_fetch)
+    demisto.debug(f"last_fetched_incident_time: {last_fetched_incident_time}")
     if fetch_incident_history:
         integration_context = get_integration_context()
         incident_mirror_reset: dict = {incident['id']: True for incident in incidents}
@@ -392,8 +394,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict[str, Union[
 
         incident_result['attachment'] = file_attachments
         incidents_result.append(incident_result)
-        incident_created_time = dateparser.parse(incident.get('created'))  # type: ignore[arg-type]
-
+        incident_created_time = dateparser.parse(incident.get('created'), settings={'TIMEZONE': 'Z'})  # type: ignore[arg-type]
         # Update last run and add incident if the incident is newer than last fetch
         if incident_created_time > latest_created_time:  # type: ignore[operator]
             latest_created_time = incident_created_time
@@ -406,7 +407,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict[str, Union[
     return next_run, incidents_result
 
 
-def search_incidents_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def search_incidents_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """xsoar-search-incidents command: Search XSOAR incidents
 
     :type client: ``Client``
@@ -457,7 +458,7 @@ def search_incidents_command(client: Client, args: Dict[str, Any]) -> CommandRes
     )
 
 
-def get_incident_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_incident_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """xsoar-get-incident command: Returns an incident and all entries with given categories and tags
 
     :type client: ``Client``
@@ -543,7 +544,7 @@ def get_mapping_fields_command(client: Client) -> GetMappingFieldsResponse:
     :rtype: ``Dict[str, Any]``
     """
     all_mappings = GetMappingFieldsResponse()
-    incident_fields: List[dict] = client.get_incident_fields()
+    incident_fields: list[dict] = client.get_incident_fields()
     types = client.get_incident_types()
     for incident_type_obj in types:
         custom_fields = {}
@@ -588,7 +589,7 @@ def demisto_debug(msg):
         demisto.debug(msg)
 
 
-def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> GetRemoteDataResponse:
+def get_remote_data_command(client: Client, args: dict[str, Any], params: dict[str, Any]) -> GetRemoteDataResponse:
     """get-remote-data command: Returns an updated incident and entries
 
     :type client: ``Client``
@@ -722,7 +723,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
         )
 
 
-def update_remote_system_command(client: Client, args: Dict[str, Any], mirror_tags: Set[str]) -> str:
+def update_remote_system_command(client: Client, args: dict[str, Any], mirror_tags: set[str]) -> str:
     """update-remote-system command: pushes local changes to the remote system
 
     :type client: ``Client``
@@ -757,9 +758,9 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], mirror_ta
         if parsed_args.remote_incident_id:
             # First, get the incident as we need the version
             old_incident = client.get_incident(incident_id=parsed_args.remote_incident_id)
-            for changed_key in parsed_args.delta.keys():
+            for changed_key in parsed_args.delta:
                 old_incident[changed_key] = parsed_args.delta[changed_key]  # type: ignore
-                if changed_key in old_incident.get('CustomFields', {}).keys():
+                if changed_key in old_incident.get('CustomFields', {}):
                     old_incident['CustomFields'][changed_key] = parsed_args.delta[changed_key]
 
             parsed_args.data = old_incident
@@ -800,8 +801,9 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], mirror_ta
     return new_incident_id
 
 
-def get_and_dedup_incidents(client: Client, last_fetched_incidents: List[Any],
-                            query: str, max_results: int, last_fetch: Union[str, int]) -> tuple[list[dict], list[dict]]:
+def get_and_dedup_incidents(client: Client, last_fetched_incidents: list[Any],
+                            query: str, max_results: int, last_fetch: Union[str, int]) -> tuple[list[dict], list[dict],
+                                                                                                Optional[datetime]]:
     """ get incidents and dedup the incidents response.
 
     Cases:
@@ -824,7 +826,7 @@ def get_and_dedup_incidents(client: Client, last_fetched_incidents: List[Any],
     Returns:
         tuple[list[dict], list[str]: The list of dedup incidents and ID list of incidents of current fetch.
     """
-    last_fatched_incident = dateparser.parse(str(last_fetch))
+    last_fetched_incident_time = dateparser.parse(str(last_fetch))
 
     new_incidents: list = []
     page = 0
@@ -836,6 +838,7 @@ def get_and_dedup_incidents(client: Client, last_fetched_incidents: List[Any],
             field="created",
             page=page,
         )
+        demisto.debug(f"incidents: {incidents}")
         # Case 1: Empty response.
         if len(incidents) == 0:
             break
@@ -843,10 +846,14 @@ def get_and_dedup_incidents(client: Client, last_fetched_incidents: List[Any],
             if len(new_incidents) >= max_results:
                 break
             incident_id = incident.get("id")
-            incident_creation_time = dateparser.parse(incident.get("created", last_fatched_incident))
+            created = incident.get("created", last_fetched_incident_time)
+            demisto.debug(f"before incident_creation_time with timezone: {created}")
+            incident_creation_time = dateparser.parse(incident.get("created", last_fetched_incident_time),
+                                                      settings={'TIMEZONE': 'Z'})
+            demisto.debug(f"{incident_id} incident_creation_time: {incident_creation_time}")
             if incident_id not in last_fetched_incidents:
                 # Case 3: The last fetched incident with the different timestamp then the previous incident.
-                if last_fatched_incident and incident_creation_time and last_fatched_incident < incident_creation_time:
+                if last_fetched_incident_time and incident_creation_time and last_fetched_incident_time < incident_creation_time:
                     demisto.debug(f"XSOAR Mirroring: reset the last_fetched_incidents list with id {incident_id}")
                     last_fetched_incidents = [incident_id]
                 # Case 2: The last fetched incident with the same timestamp as the previous incident.
@@ -854,9 +861,9 @@ def get_and_dedup_incidents(client: Client, last_fetched_incidents: List[Any],
                     demisto.debug(f"XSOAR Mirroring: attached id {incident_id} to the last_fetched_incidents list")
                     last_fetched_incidents.append(incident_id)
                 new_incidents.append(incident)
-                last_fatched_incident = incident_creation_time
+                last_fetched_incident_time = incident_creation_time
         page += 1
-    return new_incidents, last_fetched_incidents
+    return new_incidents, last_fetched_incidents, last_fetched_incident_time
 
 
 def main() -> None:  # pragma: no cover

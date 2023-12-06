@@ -25,9 +25,9 @@ This script is used in the following playbooks and scripts.
 | **Argument Name** | **Description** |
 | --- | --- |
 | incidentId | Incident ID to get the prediction of. If empty, predicts the the current incident ID. |
-| similarTextField | Comma-separated list of incident text fields to take into account when computing similarity. For example: commandline, URL |
-| similarCategoricalField | Comma-separated list of incident categorical fields to take into account whe computing similarity. For example: IP, URL |
-| similarJsonField | Comma-separated list of incident JSON fields to take into account whe computing similarity. For example: CustomFields |
+| similarTextField | Comma-separated list of incident text fields to take into account when computing similarity. For example: commandline, URL.  Note: In order to calculate similarity, fields must consist of a minimum of 2 letters. |
+| similarCategoricalField | Comma-separated list of incident categorical fields to take into account whe computing similarity. For example: IP, URL. Note: In order to calculate similarity, fields must consist of a minimum of 2 letters. |
+| similarJsonField | Comma-separated list of incident JSON fields to take into account whe computing similarity. For example: CustomFields. Note: In order to calculate similarity, fields must consist of a minimum of 2 letters. |
 | fieldsToDisplay | Comma-separated list of additional incident fields to display, but which will not be taken into account when computing similarity. |
 | fieldExactMatch | Comma-separated list of incident fields that have to be equal to the current incident fields. This helps reduce the query size. |
 | useAllFields | Whether to use a predefined set of fields and custom fields to compute similarity. If "True", it will ignore values in similarTextField, similarCategoricalField, similarJsonField. |

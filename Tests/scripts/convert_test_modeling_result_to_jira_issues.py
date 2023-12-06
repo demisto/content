@@ -11,13 +11,15 @@ from junitparser import TestSuite, JUnitXml
 from tabulate import tabulate
 
 from Tests.scripts.common import get_all_failed_results, calculate_results_table, TEST_MODELING_RULES_REPORT_FILE_NAME, \
-    get_test_results_files, TEST_SUITE_CELL_EXPLANATION
+    get_test_results_files, TEST_SUITE_CELL_EXPLANATION, get_properties_for_test_suite
 from Tests.scripts.jira_issues import JIRA_SERVER_URL, JIRA_VERIFY_SSL, JIRA_API_KEY, \
     JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME, JIRA_LABELS, \
     jira_server_information, jira_search_all_by_query, generate_query_by_component_and_issue_type
 from Tests.scripts.test_modeling_rule_report import (create_jira_issue_for_test_modeling_rule,
                                                      TEST_MODELING_RULES_BASE_HEADERS,
-                                                     calculate_test_modeling_rule_results)
+                                                     calculate_test_modeling_rule_results,
+                                                     write_test_modeling_rule_to_jira_mapping, get_summary_for_test_modeling_rule,
+                                                     TEST_MODELING_RULES_TO_JIRA_TICKETS_CONVERTED)
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 
@@ -47,8 +49,9 @@ def main():
         install_logging('convert_test_modeling_result_to_jira_issues.log', logger=logging)
         now = datetime.now(tz=timezone.utc)
         options = options_handler()
+        artifacts_path = Path(options.artifacts_path)
         logging.info("Converting test modeling rule report to Jira issues with the following settings:")
-        logging.info(f"\tArtifacts path: {options.artifacts_path}")
+        logging.info(f"\tArtifacts path: {artifacts_path}")
         logging.info(f"\tJira server url: {JIRA_SERVER_URL}")
         logging.info(f"\tJira verify SSL: {JIRA_VERIFY_SSL}")
         logging.info(f"\tJira project id: {JIRA_PROJECT_ID}")
@@ -60,9 +63,9 @@ def main():
 
         jira_server = JIRA(JIRA_SERVER_URL, token_auth=JIRA_API_KEY, options={'verify': JIRA_VERIFY_SSL})
         jira_server_information(jira_server)
-        if not (test_modeling_rules_results_files := get_test_results_files(Path(options.artifacts_path),
+        if not (test_modeling_rules_results_files := get_test_results_files(artifacts_path,
                                                                             TEST_MODELING_RULES_REPORT_FILE_NAME)):
-            logging.critical(f"Could not find any test modeling rules result files in {options.artifacts_path}")
+            logging.critical(f"Could not find any test modeling rules result files in {artifacts_path}")
             sys.exit(1)
 
         logging.info(f"Found {len(test_modeling_rules_results_files)} test modeling rules files")
@@ -81,11 +84,11 @@ def main():
         failed_test_modeling_rule = get_all_failed_results(modeling_rules_to_test_suite)
 
         if len(failed_test_modeling_rule) >= options.max_failures_to_handle:
-            headers, column_align, tabulate_data, _, _ = calculate_results_table(jira_tickets_for_modeling_rule,
-                                                                                 failed_test_modeling_rule,
-                                                                                 server_versions,
-                                                                                 TEST_MODELING_RULES_BASE_HEADERS)
-            table = tabulate(tabulate_data, headers, tablefmt="pretty", colalign=column_align)
+            column_align, tabulate_data, _, _ = calculate_results_table(jira_tickets_for_modeling_rule,
+                                                                        failed_test_modeling_rule,
+                                                                        server_versions,
+                                                                        TEST_MODELING_RULES_BASE_HEADERS)
+            table = tabulate(tabulate_data, headers="firstrow", tablefmt="pretty", colalign=column_align)
             logging.info(f"Test Modeling rule Results: {TEST_SUITE_CELL_EXPLANATION}\n{table}")
             logging.critical(f"Found {len(failed_test_modeling_rule)} failed test modeling rule, "
                              f"which is more than the max allowed limit of {options.max_failures_to_handle} to handle.")
@@ -95,7 +98,14 @@ def main():
         for result_file in test_modeling_rules_results_files.values():
             xml = JUnitXml.fromfile(result_file.as_posix())
             for test_suite in xml.iterchildren(TestSuite):
-                create_jira_issue_for_test_modeling_rule(jira_server, test_suite, options.max_days_to_reopen, now)
+                if issue := create_jira_issue_for_test_modeling_rule(jira_server, test_suite, options.max_days_to_reopen, now):
+                    # if the ticket was created/updated successfully, we add it to the mapping and override the previous ticket.
+                    properties = get_properties_for_test_suite(test_suite)
+                    if summary := get_summary_for_test_modeling_rule(properties):
+                        jira_tickets_for_modeling_rule[summary] = issue
+
+        write_test_modeling_rule_to_jira_mapping(artifacts_path, jira_tickets_for_modeling_rule)
+        open(artifacts_path / TEST_MODELING_RULES_TO_JIRA_TICKETS_CONVERTED, "w")
 
         logging.info("Finished creating/updating Jira issues for test modeling rules")
 

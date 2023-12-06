@@ -34,7 +34,7 @@
             "mandatory": false,
             "display_name": "Add a reputation for cryptocurrency addresses."
         },
-        "Dnstwist": {
+        "dnstwist": {
             "mandatory": false,
             "display_name": "Detect typosquatting, phishing, and corporate espionage."
         },
@@ -66,21 +66,21 @@
             "mandatory": false,
             "display_name": "Data Mining for Threat Intelligence"
         },
-        "URLhaus": {
+        "URLHaus": {
             "mandatory": false,
-            "display_name": "URLhaus has the goal of sharing malicious URLs that are being used for malware distribution."
+            "display_name": "URLHaus has the goal of sharing malicious URLs that are being used for malware distribution."
         },
         "Whois": {
             "mandatory": false,
             "display_name": "This Content Pack helps you run Whois commands as playbook tasks or real-time actions within Cortex XSOAR to obtain valuable domain metadata."
         },
 
-        "AbuseIPDB": {
+        "AbuseDB": {
             "mandatory": false,
             "display_name": "Central repository to report and identify IP addresses that have been associated with malicious activity online. Check the Detailed Information section for more information on how to configure the integration."
         },
 
-        "AlienVault OTX": {
+        "AlienVault_OTX": {
             "mandatory": false,
             "display_name": "Query Indicators of Compromise in AlienVault OTX."
         },
@@ -115,12 +115,12 @@
             "display_name": "Integrate with the IP-API.com IP enrichment service."
         },
 
-        "Ipinfo": {
+        "ipinfo": {
             "mandatory": false,
             "display_name": "Use the ipinfo.io API to get data about an IP address"
         },
 
-        "IPQualityScore (IPQS) Threat Risk Scoring" : {
+        "IPQualityScore" : {
             "mandatory": false,
             "display_name": "Detect threats with real-time risk scoring by IPQS. Playbook analyzes IP addresses, email addresses, and domains or URLs for high risk behavior."
         },
@@ -145,7 +145,7 @@
             "display_name": "MalwareBazaar offers an API to download malware samples, comment malware samples, and obtain intel based on file hash, tag, signature, file type, etc."
         },
 
-        "Mandiant Advantage Threat Intelligence": {
+        "MandiantAdvantageThreatIntelligence": {
             "mandatory": false,
             "display_name": "Integrate your Mandiant Advantage Threat Intelligence data with Cortex XSOAR"
         },
@@ -180,7 +180,7 @@
             "display_name": "Receive threat intelligence about applications, IP addresses, URLs and hashes, a service by Facebook"
         },
 
-        "URLScan.io": {
+        "UrlScan": {
             "mandatory": false,
             "display_name": "urlscan.io Web Threat Intelligence"
         },
@@ -188,6 +188,11 @@
         "VirusTotal": {
             "mandatory": false,
             "display_name": "Analyze suspicious hashes, URLs, domains and IP addresses"
+        },
+
+        "CIRCL": {
+            "mandatory": false,
+            "display_name": "Searches for CVE information using [circl.lu](https://www.circl.lu/services/cve-search/)."
         }
 
     },
