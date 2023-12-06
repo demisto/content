@@ -205,11 +205,11 @@ filter _raw_log !~= "^(?:\S+\s+){5}\{" and _raw_log not contains "Activity Type:
     xdm.event.log_level = if(syslog_severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY, syslog_severity = "1", XDM_CONST.LOG_LEVEL_ALERT, syslog_severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, syslog_severity = "3", XDM_CONST.LOG_LEVEL_ERROR, syslog_severity = "4", XDM_CONST.LOG_LEVEL_WARNING, syslog_severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, syslog_severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, syslog_severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, syslog_severity),
     xdm.event.operation = operation,
     xdm.event.outcome = if(is_successful = "yes" or result = "success", XDM_CONST.OUTCOME_SUCCESS, is_successful = "no" or result ~= "fail", XDM_CONST.OUTCOME_FAILED),
-    xdm.event.type = activity_type,
+    xdm.event.type = coalesce(event_type, syslog_process_name),
     xdm.network.session_id = session_id,
     xdm.observer.name = syslog_hostname,
     xdm.session_context_id = session_id,
-    xdm.source.host.hostname = node,
+    xdm.source.host.hostname = coalesce(node, syslog_hostname),
     xdm.source.ipv4 = src_ipv4,
     xdm.source.ipv6 = src_ipv6,
     xdm.source.process.name = syslog_process_name,
@@ -222,8 +222,39 @@ filter _raw_log !~= "^(?:\S+\s+){5}\{" and _raw_log not contains "Activity Type:
     xdm.target.process.pid = to_integer(pid),
     xdm.target.process.parent_id = ppid, 
     xdm.target.process.executable.path = working_directory,
-    xdm.target.resource.name = name,
+    xdm.target.resource.name = if(name != "?", name),
     xdm.target.resource.type = objtype,
-    xdm.target.user.groups = arraycreate(set_group_id, effective_group_id),
+    xdm.target.user.groups = arraydistinct(arraycreate(set_group_id, effective_group_id)),
     xdm.target.user.identifier = coalesce(effective_uid, o_uid, user_id, audit_uid),
     xdm.target.user.username = user_account;
+
+// Activity-Group & Activity-Type Format
+filter _raw_log !~= "^(?:\S+\s+){5}\{" and _raw_log contains "Activity Type:"
+| alter 
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\s*\w+"), 0)),
+    syslog_hostname = arrayindex(regextract(_raw_log, "(?:\S+\s+){3}(\S+)"), 0),
+    syslog_process_name = rtrim(arrayindex(regextract(_raw_log, "(?:\S+\s+){4}(\S+)"), 0), ":"),
+    syslog_payload = arrayindex(regextract(_raw_log, "(?:\S+\s+){5}(.+)"), 0)
+| alter syslog_facility = floor(divide(syslog_priority, 8))
+| alter syslog_severity = to_string(subtract(syslog_priority, multiply(syslog_facility, 8)))
+| alter 
+    activity_type = arrayindex(regextract(syslog_payload, "Activity Type:\s*([^,]+)"), 0),
+    activity_group = arrayindex(regextract(syslog_payload, "Activity Group:\s*([^,]+)"), 0),
+    activity = arrayindex(regextract(syslog_payload, "Activity:\s*([^,]+)"), 0),
+    server_ip = arrayindex(regextract(syslog_payload, "[:,]\s*([a-fA-F\d\.]+),\s*Activity"), 0),
+    username = arrayindex(regextract(syslog_payload, "(\S+)\s+id=\d+\s+\("), 0)
+| alter 
+    src_ipv4 = if(server_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", server_ip),
+    src_ipv6 = if(server_ip ~= "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}", server_ip)
+| alter 
+    xdm.alert.severity = syslog_severity,
+    xdm.event.description = coalesce(activity, syslog_payload),
+    xdm.event.log_level = if(syslog_severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY, syslog_severity = "1", XDM_CONST.LOG_LEVEL_ALERT, syslog_severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, syslog_severity = "3", XDM_CONST.LOG_LEVEL_ERROR, syslog_severity = "4", XDM_CONST.LOG_LEVEL_WARNING, syslog_severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, syslog_severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, syslog_severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, syslog_severity),
+    xdm.event.type = coalesce(activity_type, syslog_process_name),
+    xdm.observer.name = syslog_hostname,
+    xdm.observer.type = activity_group,
+    xdm.source.host.hostname = syslog_hostname,
+    xdm.source.ipv4 = src_ipv4,
+    xdm.source.ipv6 = src_ipv6,
+    xdm.source.process.name = syslog_process_name,
+    xdm.source.user.username = username;
