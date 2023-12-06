@@ -256,18 +256,18 @@ def build_grid(context_path: str, keys: list[str], columns: list[str], unpack_ne
 
         # Handle entry context as dict, with unpacking of nested elements
         table = pd.DataFrame(unpack_all_data_from_dict(entry_context_data, keys, columns))
-        table = table.rename(columns=dict(zip(table.columns, columns)))
+        table.rename(columns=dict(zip(table.columns, columns)), inplace=True)
     elif data_type == 'list':
         # Handle entry context as list of value
         table = pd.DataFrame(entry_context_data)
-        table = table.rename(columns=dict(zip(table.columns, columns)))
+        table.rename(columns=dict(zip(table.columns, columns)), inplace=True)
     elif isinstance(entry_context_data, list):
         # Handle entry context as list of dicts
         entry_context_data = [entry_dicts_to_string(dict_obj=filter_dict(item, keys, len(columns)),
                                                     keys_to_choose=keys_from_nested)
                               for item in entry_context_data]
         table = pd.DataFrame(entry_context_data)
-        table = table.rename(columns=dict(zip(table.columns, columns)))
+        table.rename(columns=dict(zip(table.columns, columns)), inplace=True)
     elif isinstance(entry_context_data, dict):
         # Handle entry context key-value
         # If the keys arg is * it means we don't know which keys we have in the context - Will create key-value table.
@@ -334,7 +334,7 @@ def build_grid_command(grid_id: str, context_path: str, keys: list[str], columns
 
     # Sort by column name if specified, support multi columns sort
     if sort_by and set(sort_by) <= set(new_table.columns):
-        new_table = new_table.sort_values(by=sort_by)
+        new_table.sort_values(by=sort_by, inplace=True)
 
     # filter empty values in the generated table
     filtered_table = []
@@ -369,24 +369,21 @@ def main():  # pragma: no cover
         })
         # we want to check if the incident was succefully updated
         # we execute command and not using `demisto.incident()` because we want to get the updated incident and context
-
-        custom_fields = {}
-        if demisto.incident().get("isPlayground"):
-            custom_fields = demisto.incident().get("CustomFields", {})
-        else:
-            res = demisto.executeCommand("getIncidents", {"id": demisto.incident().get("id")})
-            for res_obj in res:
-                if res_obj['Contents']:
-                    data = res_obj["Contents"]["data"]
-                    custom_fields = data[0].get("CustomFields") if data and data[0].get("CustomFields") else {}
-        if table and grid_id not in custom_fields:
+        res = demisto.executeCommand("getIncidents", {"id": demisto.incident().get("id")})
+        is_playground = demisto.incident().get("isPlayground")
+        for res_obj in res:
+            if res_obj['Contents']:
+                data = res_obj["Contents"]["data"]
+                custom_fields = data[0].get("CustomFields") if data and data[0].get("CustomFields") else {}
+        if (not is_playground) and table and grid_id not in custom_fields:
             raise ValueError(f"The following grid id was not found: {grid_id}. Please make sure you entered the correct "
                              f"incident type with the \"Machine name\" as it appears in the incident field editor in "
                              f"Settings->Advanced ->Fields (Incident). Also make sure that this value appears in the "
                              f"incident Context Data under incident - if not then please consult with support.")
+
         if is_error(res_set):
             demisto.error(f'failed to execute "setIncident" with table: {table}')
-            return_results(res_set)
+            return_results(res)
         else:
             return_results(f'Set grid {grid_id} using {context_path} successfully.')
 
