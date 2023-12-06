@@ -326,7 +326,7 @@ class EventCollector:
         
         while results_left and ((not iso_end_time) or iso_end_time >= iso_start_time):
             demisto.debug(
-                f"{LOG_LINE} getting user activity: {results_left=}, {res_count=}, {iso_start_time=}, {iso_end_time=}"
+                f"{LOG_LINE} getting user activity: {results_left=}, {iso_start_time=}, {iso_end_time=}"
             )
             current_batch = self.client.get_activity_log(from_LastModifiedOn=iso_start_time,
                                                          size=event_type.api_max,
