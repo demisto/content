@@ -122,7 +122,7 @@ def test_rasterize_html(mocker):
     mocker.patch.object(demisto, 'args', return_value={'EntryID': 'test'})
     mocker.patch.object(demisto, 'getFilePath', return_value={"path": path})
     mocker.patch.object(os, 'rename')
-    mocker.patch.object(os.path, 'realpath', return_value=f'{os.getcwd()}/test_data/file.html')
+    mocker.patch.object(os.path, 'realpath', return_value=f'{os.path.dirname(__file__)}/test_data/file.html')
     mocker_output = mocker.patch('rasterize.return_results')
     rasterize_html_command()
     assert mocker_output.call_args.args[0]['File'] == 'email.png'
@@ -230,6 +230,7 @@ TEST_DATA = [
 
 @pytest.mark.parametrize('file_path, max_pages, expected_length, pw', TEST_DATA)
 def test_convert_pdf_to_jpeg(file_path, max_pages, expected_length, pw):
+    file_path = os.path.join(os.path.dirname(__file__), file_path)
     from rasterize import convert_pdf_to_jpeg
     res = convert_pdf_to_jpeg(file_path, max_pages, pw)
 
@@ -354,7 +355,7 @@ def test_rasterize_html_no_internet_access(mocker):
     mocker.patch.object(demisto, 'args', return_value={'EntryID': 'test'})
     mocker.patch.object(demisto, 'getFilePath', return_value={"path": path})
     mocker.patch.object(os, 'rename')
-    mocker.patch.object(os.path, 'realpath', return_value=f'{os.getcwd()}/test_data/file.html')
+    mocker.patch.object(os.path, 'realpath', return_value=f'{os.path.dirname(__file__)}/test_data/file.html')
     mocker_output = mocker.patch('rasterize.return_results')
     rasterize_html_command()
     assert mocker_output.call_args.args[0]['File'] == 'email.png'
