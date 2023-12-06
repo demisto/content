@@ -24,7 +24,7 @@ HTTP_ERRORS = {
 
 '''VARIABLES FOR FETCH INDICATORS'''
 FETCH_SIZE = 50
-FETCH_LIMIT = 100000
+FETCH_LIMIT = 10000
 API_KEY_PREFIX = '_api_key_id:'
 MODULE_TO_FEEDMAP_KEY = 'moduleToFeedMap'
 FEED_TYPE_GENERIC = 'Generic Feed'
@@ -229,7 +229,7 @@ def fetch_indicators_command(client, feed_type, src_val, src_type, default_type,
         for hit in search:
             ioc_lst.extend(extract_indicators_from_generic_hit(hit, src_val, src_type, default_type, client.tags,
                                                                client.tlp_color))
-    ioc_lst = list(filter(lambda ioc: ioc.get("id") in prev_iocs_ids, ioc_lst))
+    ioc_lst = list(filter(lambda ioc: ioc.get("id") not in prev_iocs_ids, ioc_lst))
     if ioc_lst:
         for b in batch(ioc_lst, batch_size=2000):
             demisto.createIndicators(b)
@@ -278,7 +278,7 @@ def get_scan_generic_format(client, now, last_fetch_timestamp=None):
     if time_field:
         query = QueryString(query=time_field + ':*')
         range_field = {
-            time_field: {'gt': last_fetch_timestamp, 'lte': now}} if last_fetch_timestamp else {
+            time_field: {'gte': last_fetch_timestamp, 'lte': now}} if last_fetch_timestamp else {
             time_field: {'lte': now}}
         search = Search(using=es, index=fetch_index).filter({'range': range_field}).extra(size=FETCH_LIMIT).sort().query(query)
     else:
@@ -299,7 +299,7 @@ def get_scan_insight_format(client, now, last_fetch_timestamp=None, feed_type=No
     """Gets a scan object in insight format"""
     time_field = client.time_field
     range_field = {
-        time_field: {'gt': last_fetch_timestamp, 'lte': now}} if last_fetch_timestamp else {
+        time_field: {'gte': last_fetch_timestamp, 'lte': now}} if last_fetch_timestamp else {
         time_field: {'lte': now}}
     es = client.es
     query = QueryString(query=time_field + ":*")
