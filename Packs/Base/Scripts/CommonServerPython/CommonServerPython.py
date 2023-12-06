@@ -28,7 +28,6 @@ from abc import abstractmethod
 from distutils.version import LooseVersion
 from threading import Lock
 from inspect import currentframe
-import dateparser
 
 import demistomock as demisto
 import warnings
