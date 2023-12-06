@@ -78,7 +78,7 @@ clone_repository_with_fallback_branch() {
       echo -e "${RED}ERROR: Failed to clone ${repo_name} with fallback branch:${fallback_branch}, exit code:${exit_code}, exiting!${NC}"
       exit ${exit_code}
     else
-      echo "${branch}" > "${repo}".txt
+      echo "${fallback_branch}" > "${repo}".txt
       echo -e "${GREEN}Successfully cloned ${repo_name} with fallback branch:${fallback_branch}${NC}"
       return 0
     fi
