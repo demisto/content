@@ -21,7 +21,7 @@ configuration:
   name: is_azure
   type: 8
   required: false
-  additionalinfo: Whether to use Azure OpenAI (https://your-resource-name.openai.azure.com) instead of standard OpenAI (https://api.openai.com)
+  additionalinfo: Whether to use Azure OpenAI (https://your-resource-name.openai.azure.com) instead of standard OpenAI (https://api.openai.com). Default value is False.
   defaultvalue: "false"
 - display: Trust any certificate (not secure)
   name: insecure
