@@ -23,7 +23,7 @@ import ssl
 from random import randint
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from abc import abstractmethod
 from distutils.version import LooseVersion
 from threading import Lock
@@ -11378,7 +11378,7 @@ def has_passed_time_threshold(timestamp_str, seconds_threshold):
     :return: True if the time difference is greater than the threshold, otherwise False.
     :rtype: ``bool``
     """
-
+    from datetime import timezone
     to_utc_timestamp = dateparser.parse(timestamp_str, settings={'TIMEZONE': 'UTC'})
     # using astimezone since utcnow() returns a naive datetime object
     current_time = datetime.now().astimezone(timezone.utc)
