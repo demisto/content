@@ -35,7 +35,7 @@ rm -rf ./content-test-conf
 cp -r ./infra/xsiam_servers.json $XSIAM_SERVERS_PATH
 cp -r ./infra/xsoar_ng_servers.json $XSOAR_NG_SERVERS_PATH
 
-cp ./infra/gcp ./gcp
+mv ./infra/gcp ./gcp
 rm -rf ./infra
 
 echo "Successfully using! content-test-conf and infra repositories"

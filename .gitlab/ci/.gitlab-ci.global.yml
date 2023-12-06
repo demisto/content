@@ -4,6 +4,8 @@
       paths:
         - content-test-conf
         - infra
+        - content-test-conf.txt
+        - infra.txt
       policy: pull
     - key:
         files:

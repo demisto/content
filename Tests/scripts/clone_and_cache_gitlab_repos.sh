@@ -81,6 +81,7 @@ clone_repository_with_fallback_branch() {
       return 0
     fi
   else
+    echo "${branch}" > "${repo_name}".txt
     echo -e "${GREEN}Successfully cloned ${repo_name} with branch:${branch}${NC}"
     return 0
   fi
@@ -102,6 +103,15 @@ get_cache_gitlab_repositories() {
   else
     # If either user or token is not empty, then we need to add them to the url.
     user_info="${user}:${token}@"
+  fi
+
+  git ls-remote --exit-code --quiet --heads "https://${user_info}${host}/${repo_name}.git" "refs/heads/${branch}" 1>/dev/null 2>&1
+  local branch_exists=$?
+  if [ "${branch_exists}" -eq 0 ]; then
+    cached_branch=$(cat "${repo_name}.txt")
+    if [ "${cached_branch}" != "${branch}" ]; then
+      rm -rf "./${repo}"
+    fi
   fi
 
   if [ -d "./${repo}" ] ; then
