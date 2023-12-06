@@ -107,9 +107,7 @@ get_cache_gitlab_repositories() {
     user_info="${user}:${token}@"
   fi
 
-  git ls-remote --exit-code --quiet --heads "https://${user_info}${host}/${repo_name}.git" "refs/heads/${branch}" 1>/dev/null 2>&1
-  local branch_exists=$?
-  if [ "${branch_exists}" -eq 0 ]; then
+  if [ -s "${repo}.txt" ]; then
     cached_branch=$(cat "${repo}.txt")
     if [ "${cached_branch}" != "${branch}" ]; then
       echo "Remove ${repo} from cache"
