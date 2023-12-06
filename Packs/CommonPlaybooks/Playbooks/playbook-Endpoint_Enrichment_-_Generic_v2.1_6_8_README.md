@@ -6,8 +6,8 @@ Supported integrations:
 - Cylance Protect v2
 - CrowdStrike Falcon
 - ExtraHop Reveal(x)
-- Cortex XDR (endpoint enrichment and reputation)
-- Endpoint reputation using !endpoint command
+- Cortex XDR / Core (endpoint enrichment, reputation and risk)
+- Endpoint reputation using !endpoint command.
 
 ## Dependencies
 
@@ -23,18 +23,21 @@ This playbook does not use any integrations.
 
 ### Scripts
 
+* IsIntegrationAvailable
 * Exists
 
 ### Commands
 
-* ad-get-computer
-* epo-find-system
 * endpoint
-* extrahop-devices-search
-* xdr-get-endpoints
 * cs-falcon-search-device
-* cb-edr-sensors-list
+* core-list-risky-hosts
+* ad-get-computer
+* core-get-endpoints
+* xdr-get-endpoints
+* extrahop-devices-search
+* epo-find-system
 * xdr-list-risky-hosts
+* cb-edr-sensors-list
 
 ## Playbook Inputs
 
@@ -44,8 +47,8 @@ This playbook does not use any integrations.
 | --- | --- | --- | --- |
 | Hostname | The hostname of the endpoint to enrich. | Endpoint.Hostname | Optional |
 | UseReputationCommand | Define if you would like to use the \!endpoint command.<br/>Note: This input should be used whenever there is no auto-extract enabled in the investigation flow.<br/>Possible values: True / False. | False | Required |
-| IPAddress | The IP address of the endpoint to enrich. |  | Optional |
-| EndpointID | The endpoint ID of the endpoint to enrich. |  | Optional |
+| IPAddress | The IP address of the endpoint to enrich. | Endpoint.IPAddress | Optional |
+| EndpointID | The endpoint ID of the endpoint to enrich. | Endpoint.ID | Optional |
 
 ## Playbook Outputs
 
@@ -187,9 +190,93 @@ This playbook does not use any integrations.
 | PaloAltoNetworksXDR.RiskyHost.reasons | The endpoint risk objects. | string |
 | PaloAltoNetworksXDR.RiskyHost.reasons.date created | Date when the incident was created. | string |
 | PaloAltoNetworksXDR.RiskyHost.reasons.description | Description of the incident. | string |
-| PaloAltoNetworksXDR.RiskyHost.reasons.severity | The severity of the incident | string |
-| PaloAltoNetworksXDR.RiskyHost.reasons.status | The incident status | string |
+| PaloAltoNetworksXDR.RiskyHost.reasons.severity | The severity of the incident. | string |
+| PaloAltoNetworksXDR.RiskyHost.reasons.status | The incident status. | string |
 | PaloAltoNetworksXDR.RiskyHost.reasons.points | The score. | string |
+| Core.Endpoint | The endpoint object. | unknown |
+| Core.Endpoint.endpoint_id | The endpoint ID. | unknown |
+| Core.Endpoint.endpoint_name | The endpoint name. | unknown |
+| Core.Endpoint.endpoint_type | The endpoint type. | unknown |
+| Core.Endpoint.endpoint_status | The status of the endpoint. | unknown |
+| Core.Endpoint.os_type | The endpoint OS type. | unknown |
+| Core.Endpoint.ip | A list of IP addresses. | unknown |
+| Core.Endpoint.users | A list of users. | unknown |
+| Core.Endpoint.domain | The endpoint domain. | unknown |
+| Core.Endpoint.alias | The endpoint's aliases. | unknown |
+| Core.Endpoint.first_seen | First seen date/time in Epoch \(milliseconds\). | unknown |
+| Core.Endpoint.last_seen | Last seen date/time in Epoch \(milliseconds\). | unknown |
+| Core.Endpoint.content_version | Content version. | unknown |
+| Core.Endpoint.installation_package | Installation package. | unknown |
+| Core.Endpoint.active_directory | Active directory. | unknown |
+| Core.Endpoint.install_date | Install date in Epoch \(milliseconds\). | unknown |
+| Core.Endpoint.endpoint_version | Endpoint version. | unknown |
+| Core.Endpoint.is_isolated | Whether the endpoint is isolated. | unknown |
+| Core.Endpoint.group_name | The name of the group to which the endpoint belongs. | unknown |
+| Core.RiskyHost | The risky host object. | unknown |
+| Core.RiskyHost.type | Form of identification element. | unknown |
+| Core.RiskyHost.id | Identification value of the type field. | unknown |
+| Core.RiskyHost.score | The score assigned to the host. | unknown |
+| Core.RiskyHost.reasons | The reasons for the risk level. | unknown |
+| Core.RiskyHost.reasons.date created | Date when the incident was created. | unknown |
+| Core.RiskyHost.reasons.description | Description of the incident. | unknown |
+| Core.RiskyHost.reasons.severity | The severity of the incident. | unknown |
+| Core.RiskyHost.reasons.status | The incident status. | unknown |
+| Core.RiskyHost.reasons.points | The score. | unknown |
+| McAfee.ePO.Endpoint.ParentID | Endpoint parent ID. | unknown |
+| McAfee.ePO.Endpoint.ComputerName | Endpoint computer name. | unknown |
+| McAfee.ePO.Endpoint.Description | Endpoint description. | unknown |
+| McAfee.ePO.Endpoint.SystemDescription | Endpoint system description. | unknown |
+| McAfee.ePO.Endpoint.TimeZone | Endpoint time zone. | unknown |
+| McAfee.ePO.Endpoint.DefaultLangID | Endpoint default language ID. | unknown |
+| McAfee.ePO.Endpoint.UserName | Endpoint username. | unknown |
+| McAfee.ePO.Endpoint.Domain | Endpoint domain name. | unknown |
+| McAfee.ePO.Endpoint.Hostname | Endpoint IP host name. | unknown |
+| McAfee.ePO.Endpoint.IPV6 | Endpoint IPv6 address. | unknown |
+| McAfee.ePO.Endpoint.IPAddress | Endpoint IP address. | unknown |
+| McAfee.ePO.Endpoint.IPSubnet | Endpoint IP subnet. | unknown |
+| McAfee.ePO.Endpoint.IPSubnetMask | Endpoint IP subnet mask. | unknown |
+| McAfee.ePO.Endpoint.IPV4x | Endpoint IPV4x address. | unknown |
+| McAfee.ePO.Endpoint.IPXAddress | Endpoint IPX address. | unknown |
+| McAfee.ePO.Endpoint.SubnetAddress | Endpoint subnet address. | unknown |
+| McAfee.ePO.Endpoint.SubnetMask | Endpoint subnet mask. | unknown |
+| McAfee.ePO.Endpoint.NetAddress | Endpoint net address. | unknown |
+| McAfee.ePO.Endpoint.OSType | Endpoint OS type. | unknown |
+| McAfee.ePO.Endpoint.OSVersion | Endpoint OS version. | unknown |
+| McAfee.ePO.Endpoint.OSServicePackVer | Endpoint OS service pack version. | unknown |
+| McAfee.ePO.Endpoint.OSBuildNum | Endpoint OS build number. | unknown |
+| McAfee.ePO.Endpoint.OSPlatform | Endpoint OS platform. | unknown |
+| McAfee.ePO.Endpoint.OSOEMID | Endpoint OS OEM ID. | unknown |
+| McAfee.ePO.Endpoint.Processor | Endpoint CPU type. | unknown |
+| McAfee.ePO.Endpoint.CPUSpeed | Endpoint CPU speed. | unknown |
+| McAfee.ePO.Endpoint.Processors | Number of CPUs in the endpoint. | unknown |
+| McAfee.ePO.Endpoint.CPUSerialNum | Endpoint CPU serial number. | unknown |
+| McAfee.ePO.Endpoint.Memory | The total amount of physical memory in the endpoint. | unknown |
+| McAfee.ePO.Endpoint.FreeMemory | The amount of free memory in the endpoint. | unknown |
+| McAfee.ePO.Endpoint.FreeDiskSpace | The amount of free disk space in the endpoint. | unknown |
+| McAfee.ePO.Endpoint.TotalDiskSpace | The total amount of disk space in the endpoint. | unknown |
+| McAfee.ePO.Endpoint.UserProperty1 | Endpoint user property 1. | unknown |
+| McAfee.ePO.Endpoint.UserProperty2 | Endpoint user property 2. | unknown |
+| McAfee.ePO.Endpoint.UserProperty3 | Endpoint user property 3. | unknown |
+| McAfee.ePO.Endpoint.UserProperty4 | Endpoint user property 4. | unknown |
+| McAfee.ePO.Endpoint.SysvolFreeSpace | The amount of system volume free space in the endpoint. | unknown |
+| McAfee.ePO.Endpoint.SysvolTotalSpace | The total amount of system volume space in the endpoint. | unknown |
+| McAfee.ePO.Endpoint.Tags | Endpoint ePO tags. | unknown |
+| McAfee.ePO.Endpoint.ExcludedTags | Endpoint EPO excluded tags. | unknown |
+| McAfee.ePO.Endpoint.LastUpdate | The date the endpoint was last updated. | unknown |
+| McAfee.ePO.Endpoint.ManagedState | Endpoint managed state. | unknown |
+| McAfee.ePO.Endpoint.AgentGUID | Endpoint agent GUID. | unknown |
+| McAfee.ePO.Endpoint.AgentVersion | Endpoint agent version. | unknown |
+| McAfee.ePO.Endpoint.AutoID | Endpoint auto ID. | unknown |
+| CrowdStrike.Device.ID | The ID of the device. | unknown |
+| CrowdStrike.Device.LocalIP | The local IP address of the device. | unknown |
+| CrowdStrike.Device.ExternalIP | The external IP address of the device. | unknown |
+| CrowdStrike.Device.Hostname | The host name of the device. | unknown |
+| CrowdStrike.Device.OS | The operating system of the device. | unknown |
+| CrowdStrike.Device.MacAddress | The MAC address of the device. | unknown |
+| CrowdStrike.Device.FirstSeen | The first time the device was seen. | unknown |
+| CrowdStrike.Device.LastSeen | The last time the device was seen. | unknown |
+| CrowdStrike.Device.PolicyType | The policy type of the device. | unknown |
+| CrowdStrike.Device.Status | The device status. | unknown |
 
 ## Playbook Image
 
