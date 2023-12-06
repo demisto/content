@@ -20,7 +20,9 @@ MESSAGE_NO_FIELDS_USED = "- No field are used to find similarity. Possible reaso
 
 MESSAGE_NO_INCIDENT_FETCHED = f"- 0 {INCIDENT_ALIAS}s fetched with these exact match for the given dates."
 
-MESSAGE_WARNING_TRUNCATED = f"- {INCIDENT_ALIAS.capitalize()} fetched have been truncated to %s, please either add {INCIDENT_ALIAS} fields in " \
+MESSAGE_WARNING_TRUNCATED = f"- {INCIDENT_ALIAS.capitalize()} fetched have been truncated to "\
+                            "%s" \
+                            f", please either add {INCIDENT_ALIAS} fields in " \
                             "fieldExactMatch, enlarge the time period or increase the limit argument " \
                             "to more than %s."
 
@@ -793,7 +795,8 @@ def return_outputs_similar_incidents(show_actual_incident: bool, current_inciden
 
     if show_actual_incident == 'True':
         return_outputs(
-            readable_output=tableToMarkdown(f"Current {INCIDENT_ALIAS.capitalize()}", incident_json, col_current_incident_to_display))
+            readable_output=tableToMarkdown(
+                f"Current {INCIDENT_ALIAS.capitalize()}", incident_json, col_current_incident_to_display))
     readable_output = tableToMarkdown(f"Similar {INCIDENT_ALIAS.capitalize()}s", similar_incidents_json, colums_to_display)
     return_entry = {
         "Type": entryTypes["note"],
