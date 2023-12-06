@@ -15,10 +15,10 @@ def read_qr_code(filename: str) -> str:
 
 def extract_indicators_from_text(text: str) -> dict:
 
-    return demisto.executeCommand(
+    return json.loads(demisto.executeCommand(
         'extractIndicators',
         {'text': text}
-    )[0]['Contents']
+    )[0]['Contents'])
 
 
 def extract_info_from_qr_code(entry_id: str) -> CommandResults:
