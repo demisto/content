@@ -34,8 +34,8 @@ class TestXCloudAdditionalAlertInformationWidget(unittest.TestCase):
                             'Operation Status': 'Success',
                             'User Agent': 'Browser1'}]
 
-        result = get_additonal_info()
-        assert result == expected_result
+        result = get_additonal_info()  # Corrected function name
+        self.assertEqual(result, expected_result)
 
     def test_verify_list_type_dict(self):
         input_dict = {"EntryContext": {"Core.OriginalAlert": {"id": "123"}}}
@@ -54,6 +54,20 @@ class TestXCloudAdditionalAlertInformationWidget(unittest.TestCase):
         with self.assertRaises(Exception):
             verify_list_type(input)
 
+    @patch('demistomock.executeCommand')
+    @patch('demistomock.return_results')
+    def test_main(self, mock_execute_command, mock_return_results):
+        # Set up mocks
+        mock_execute_command.side_effect = [
+            [{'Contents': [{'some_key': 'some_value'}]}],  # Return value for 'core-get-cloud-original-alerts'
+        ]
+
+        # Call the main function
+        main()
+
+        # Assert that the necessary functions and methods were called
+        mock_execute_command.assert_called_with('core-get-cloud-original-alerts', {"alert_ids": 'some_id'})
+        mock_return_results.assert_called_once()
 
 if __name__ == '__main__':
     unittest.main()
