@@ -1,17 +1,16 @@
-import io
 import json
 import pytest
 
 from copy import deepcopy
 from SlackEventCollector import Client, prepare_query_params
 from requests import Session
-
+from CommonServerPython import DemistoException
 
 """ Helpers """
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -122,6 +121,44 @@ def test_fetch_events_with_two_iterations(mocker):
     mock_request = mocker.patch.object(Session, 'request', return_value=mock_response)
     fetch_events_command(Client(base_url=''), params={'limit': '300'}, last_run=last_run)
     assert mock_request.call_count == 2
+
+
+def test_fetch_events_with_bad_cursor(mocker):
+    """
+    Given:
+        - fetch-events command execution.
+    When:
+        - The first "get logs" was with a bad cursor, and we got a Bad Request error.
+        - Second, "get logs" we retry without a cursor and got a response with 3 events (that were already fetched)
+        - Third, "get logs"  with a cursor from the previous run and got a response with 3 events (that only 1 was fetched)
+    Then:
+        - Make sure 2 events were returned.
+        - Make sure last_id is set.
+    """
+    from SlackEventCollector import fetch_events_command, Client
+
+    err_msg = 'Error in API bad request[400] - Bad Request'
+
+    mock_response1 = MockResponse([
+        {'id': '3', 'date_create': 1521214345},
+        {'id': '2', 'date_create': 1521214343},
+        {'id': '1', 'date_create': 1521214343},
+    ])
+    mock_response1.data['response_metadata'] = {'next_cursor': 'mock_cursor'}
+
+    mock_response2 = MockResponse([
+        {'id': '6', 'date_create': 1521214345},
+        {'id': '5', 'date_create': 1521214343},
+        {'id': '4', 'date_create': 1521214343},
+    ])
+
+    mocker.patch.object(Client, '_http_request', side_effect=[DemistoException(err_msg, res={err_msg}),
+                                                              mock_response1.data,
+                                                              mock_response2.data])
+    events, last_run = fetch_events_command(Client(base_url=''), params={}, last_run={"first_id": "5"})
+
+    assert len(events) == 2
+    assert last_run == {'cursor': None, 'last_id': '5'}
 
 
 def test_get_events(mocker):
