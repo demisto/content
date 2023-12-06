@@ -359,7 +359,7 @@ FIELDS_MIRRORING = 'id,start_time,event_count,last_persisted_time,close_time'
 
 class Client(BaseClient):
 
-    def __init__(self, server: str, verify: bool, proxy: bool, api_version: str, credentials: dict):
+    def __init__(self, server: str, verify: bool, proxy: bool, api_version: str, credentials: dict, timeout: int):
         username = credentials.get('identifier')
         password = credentials.get('password')
         if username == API_USERNAME:
@@ -370,6 +370,7 @@ class Client(BaseClient):
             self.base_headers = {'Version': api_version}
         base_url = urljoin(server, '/api')
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, auth=auth)
+        self.timeout = timeout
         self.password = password
         self.server = server
 
@@ -384,7 +385,7 @@ class Client(BaseClient):
             json_data=json_data,
             headers=headers,
             error_handler=self.qradar_error_handler,
-            timeout=timeout,
+            timeout=timeout or self.timeout,
             resp_type=resp_type
         )
 
@@ -4211,6 +4212,7 @@ def main() -> None:  # pragma: no cover
     if api_version and float(api_version) < MINIMUM_API_VERSION:
         raise DemistoException(f'API version cannot be lower than {MINIMUM_API_VERSION}')
     credentials = params.get('credentials')
+    timeout = arg_to_number(params.get("timeout"))
 
     try:
 
@@ -4219,7 +4221,9 @@ def main() -> None:  # pragma: no cover
             verify=verify_certificate,
             proxy=proxy,
             api_version=api_version,
-            credentials=credentials)
+            credentials=credentials,
+            timeout=timeout
+        )
         # All command names with or are for supporting QRadar v2 command names for backward compatibility
         if command == 'test-module':
             validate_integration_context()
