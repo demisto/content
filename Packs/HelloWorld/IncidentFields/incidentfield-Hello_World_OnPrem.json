@@ -1,10 +1,10 @@
 {
-    "id": "incident_cyberintstatus",
+    "id": "incident_helloworldonprem",
     "version": -1,
-    "modified": "2021-02-22T21:54:13.647745282+02:00",
-    "name": "CyberInt Status",
+    "modified": "2023-12-06T12:44:09.399060603Z",
+    "name": "HelloWorld OnPrem",
     "ownerOnly": false,
-    "cliName": "cyberintstatus",
+    "cliName": "helloworldonprem",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
@@ -17,14 +17,18 @@
     "content": true,
     "group": 0,
     "hidden": false,
+    "openEnded": false,
     "associatedTypes": [
-        "Cyberint Incident"
+        "Hello World Alert"
     ],
     "associatedToAll": false,
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.0.0"
+    "marketplaces": [
+        "xsoar_on_prem"
+    ],
+    "fromVersion": "6.10.0"
 }
