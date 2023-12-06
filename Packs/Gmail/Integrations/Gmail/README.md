@@ -425,7 +425,16 @@ Retrieves attachments from a sent Gmail message.
 
 #### Context Output
 
-There is no context output for this command.
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.Name | String | The file name. | 
+| File.MD5 | String | The MD5 hash of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.SHA256 | String | The SHA256 hash of the file. | 
+| File.Type | String | The file type, as determined by libmagic \(same as displayed in file entries\). | 
+| File.Size | Number | The size of the file in bytes. | 
+| File.SSDeep | String | The SSDeep hash of the file \(same as displayed in file entries\). | 
 
 
 #### Command Example
@@ -466,7 +475,8 @@ Retrieves the Gmail message sent to a specified user.
 | Gmail.Bcc | string | The additional recipient email address \(BCC\). | 
 | Gmail.Subject | string | The subject of the email. | 
 | Gmail.Body | string | The content of the email. | 
-| Gmail.Attachments | unknown | The attachments of the email. Attachments IDs are separated by commas. | 
+| Gmail.Attachments.ID | String | The email attachment ID (as appear in gmail). | 
+| Gmail.Attachments.Name | String | The email attachment name. | 
 | Gmail.Headers | unknown | All headers of the specific email \(list\). | 
 | Gmail.Mailbox | string | The email mailbox. | 
 | Email.To | String | The recipient of the email. | 
@@ -478,9 +488,9 @@ Retrieves the Gmail message sent to a specified user.
 | Email.Body/Text | String | The plain-text version of the email. | 
 | Email.Subject | String | The subject of the email. | 
 | Email.Headers | String | The headers of the email. | 
-| Email.Attachments.entryID | Unknown | Comma-separated email attachment IDs. | 
-| Email.Date | String | The date the email was received. | 
-
+| Email.Attachments.ID | String | The email attachment ID (as appear in gmail). | 
+| Email.Attachments.Name | String | The email attachment name. | 
+| Email.Date | String | The date the email was received. |
 
 #### Command Example
 
