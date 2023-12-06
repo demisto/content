@@ -588,8 +588,8 @@ class TestFetchForLateIndexedEvents:
         def __init__(self):
             self.jobs = TestFetchForLateIndexedEvents.Jobs()
 
-# If late_indexed_pagination is True, then we exclude the last fetched ids (check by using fetch query),
-# and kwargs_oneshot['offset'] == 0
+    # If late_indexed_pagination is True, then we exclude the last fetched ids (check by using fetch query),
+    # and kwargs_oneshot['offset'] == 0
     def test_fetch_query_and_oneshot_args(self, mocker: MockerFixture):
         """
         Given
@@ -619,9 +619,7 @@ class TestFetchForLateIndexedEvents:
         assert oneshot_mocker.call_args_list[0][0][0] == 'something | where not event_id in ("1234","5678")'
         assert oneshot_mocker.call_args_list[0][1]['offset'] == 0
 
-
-# If (num_of_dropped == FETCH_LIMIT and '`notable`' in fetch_query), then late_indexed_pagination should be set to True
-
+    # If (num_of_dropped == FETCH_LIMIT and '`notable`' in fetch_query), then late_indexed_pagination should be set to True
     def test_first_condition_for_late_indexed_pagination(self, mocker: MockerFixture, monkeypatch: pytest.MonkeyPatch):
         """
         Given
@@ -652,7 +650,7 @@ class TestFetchForLateIndexedEvents:
         splunk.fetch_incidents(service, mapper, 'from_xsoar', 'from_splunk')
         assert set_last_run_mocker.call_args_list[0][0][0]['late_indexed_pagination'] is True
 
-# If (len(incidents) == FETCH_LIMIT and late_indexed_pagination), then late_indexed_pagination should be set to True
+    # If (len(incidents) == FETCH_LIMIT and late_indexed_pagination), then late_indexed_pagination should be set to True
     def test_second_condition_for_late_indexed_pagination(self, mocker: MockerFixture, monkeypatch: pytest.MonkeyPatch):
         """
         Given
