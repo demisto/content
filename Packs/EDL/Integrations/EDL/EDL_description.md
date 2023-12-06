@@ -19,8 +19,8 @@ Note: After a successful configuration of an instance, if the 'test button' is c
 curl -v -u test:password https://edl-my-xsiam-subdomain.us.paloaltonetworks.com/xsoar/instance/execute/EDL_instance_1
 ```
 
-
 </~XSIAM>
+
 <~XSOAR_SAAS>
 
 ### Access the Generic Export Indicators Service by URL and Port (HTTP) - only via engine
@@ -35,7 +35,7 @@ with curl, go to **http://<cortex-xsoar-server-address>:<listen_port>**.
 **Note**: The External Dynamic List is not accessible via web browsers and you will receive an unauthorized error if accessing the External Dynamic List via a browser.
 
 
-1. To access the **Generic Export Indicators Service** by instance name, set up the **username** and **password** values in the **External Dynamic List Integration** page (**Settings & info** > **setting** > **Long Running Integrations**).
+1. To access the **Generic Export Indicators Service** by instance name, set up the **username** and **password** values in the **External Dynamic List Integration** page (**Settings & info** > **SETTINGS** > **Long Running Integrations**).
 2. You can access the External Dynamic List at the following url: `https://edl-<cortex-xsoar-address>/xsoar/instance/execute/<instance-name>`.
 3. For example to test via curl with an instance with instance name: `EDL_instance_1`, XSOAR address `my-xsoar-subdomain.us.paloaltonetworks.com` and credentials test/password:
 ```
@@ -46,14 +46,13 @@ curl -v -u test:password https://edl-my-xsoar-subdomain.us.paloaltonetworks.com/
 
 <~XSOAR_ON_PREM>
 
-
 ### Access the Generic Export Indicators Service by URL and Port (HTTP)
 In a web browser, go to **http://<cortex-xsoar-server-address>:<listen_port>**.
 
 **Note**: For security purposes, Cortex XSOAR recommends that you use HTTPS when accessing the indicator service through the URL and port. To do so, you must provide a certificate and private key, in the respective fields. In addition, make sure to provide credentials that must be used to connect to the integration instance.
 
-
 **Note**: By default, the route to access the Generic Export Indicators Service by instance name will be open without security hardening and might expose you to network risks. Cortex XSOAR recommends that you use the service with a username and password. Click **Switch to username and password** and provide the credentials that must be used to access the service.
+
 **Note**: The `Listen Port` parameter is required.
 
 1. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
@@ -63,7 +62,6 @@ In a web browser, go to **http://<cortex-xsoar-server-address>:<listen_port>**.
 In Multi Tenant environments, go to `https://<cortex-xsoar-address>/acc-<account name>/instance/execute/<instance_name>/`
 
 </~XSOAR_ON_PREM>
-
 
 
 
