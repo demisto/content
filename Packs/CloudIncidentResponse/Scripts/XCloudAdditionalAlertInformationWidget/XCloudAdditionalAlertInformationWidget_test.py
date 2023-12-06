@@ -56,20 +56,43 @@ class TestXCloudAdditionalAlertInformationWidget(unittest.TestCase):
         with self.assertRaises(Exception):
             verify_list_type(input)
 
+    @patch('demistomock.investigation')
+    @patch('demistomock.context')
     @patch('demistomock.executeCommand')
     @patch('demistomock.return_results')
-    def test_main(self, mock_execute_command, mock_return_results):
+    def test_main_success(self, mock_investigation, mock_context, mock_execute_command, mock_return_results):
         # Set up mocks
+        mock_investigation.return_value = {'id': 'some_id'}
+        mock_context.return_value = {'Core': {'OriginalAlert': True}}
         mock_execute_command.side_effect = [
             [{'Contents': [{'some_key': 'some_value'}]}],  # Return value for 'core-get-cloud-original-alerts'
         ]
 
         # Call the main function
-        XCloudAdditionalAlertInformationWidget()
+        main()
 
         # Assert that the necessary functions and methods were called
+        mock_investigation.assert_called_once()
+        mock_context.assert_called_once()
         mock_execute_command.assert_called_with('core-get-cloud-original-alerts', {"alert_ids": 'some_id'})
         mock_return_results.assert_called_once()
+
+    @patch('demistomock.investigation')
+    @patch('demistomock.context')
+    @patch('demistomock.executeCommand')
+    @patch('demistomock.return_results')
+    def test_main_exception(self, mock_investigation, mock_context, mock_execute_command, mock_return_results):
+        # Set up mocks
+        mock_investigation.side_effect = Exception('Some error')
+
+        # Call the main function
+        main()
+
+        # Assert that the necessary functions and methods were called
+        mock_investigation.assert_called_once()
+        mock_context.assert_not_called()
+        mock_execute_command.assert_not_called()
+        mock_return_results.assert_not_called()
 
 
 if __name__ == '__main__':
