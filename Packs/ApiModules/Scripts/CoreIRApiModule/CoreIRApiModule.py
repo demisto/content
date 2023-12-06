@@ -267,13 +267,16 @@ class CoreClient(BaseClient):
             method='POST',
             url_suffix='/incidents/get_incidents/',
             json_data={'request_data': request_data},
-            headers=self.headers,
+            headers=self._headers,
             timeout=self.timeout
         )
         incidents = res.get('reply', {}).get('incidents', [])
 
         return incidents
 
+    def handle_fetch_starred_incidents(self):
+        """Called from get_incidents if the command is fetch-incidents. Implement in child classes."""
+        return []
 
     def get_endpoints(self,
                       endpoint_id_list=None,

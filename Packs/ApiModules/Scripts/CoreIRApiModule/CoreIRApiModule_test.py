@@ -3731,7 +3731,7 @@ class TestGetIncidents:
         _, outputs, _ = get_incidents_command(test_client, args)
 
         expected_output = {
-            'PaloAltoNetworksXDR.Incident(val.incident_id==obj.incident_id)':
+            'CoreApiModule.Incident(val.incident_id==obj.incident_id)':
                 get_incidents_list_response.get('reply').get('incidents')
         }
         assert expected_output == outputs
@@ -3776,6 +3776,4 @@ class TestGetIncidents:
         }
         _, outputs, _ = get_incidents_command(test_client, args)
 
-        assert outputs['PaloAltoNetworksXDR.Incident(val.incident_id==obj.incident_id)'][0]['starred'] is True
-
-
+        assert outputs['CoreApiModule.Incident(val.incident_id==obj.incident_id)'][0]['starred'] is True
