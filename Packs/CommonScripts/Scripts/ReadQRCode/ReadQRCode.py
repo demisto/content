@@ -8,8 +8,6 @@ def read_qr_code(filename: str) -> str:
     detect = cv2.QRCodeDetector()
     img = cv2.imread(filename)
     text, *_ = detect.detectAndDecode(img)
-    if not text:
-        raise DemistoException('Could not extract text from file. Make sure the file contains a valid QR code.')
     return text
 
 
@@ -26,6 +24,8 @@ def extract_info_from_qr_code(entry_id: str) -> CommandResults:
     try:
         filename = demisto.getFilePath(entry_id)['path']
         text = read_qr_code(filename)
+        if not text:
+            return CommandResults(readable_output='No QR code was found in the image.')
         indicators = extract_indicators_from_text(text)
     except cv2.error as e:  # generic error raised by cv2
         raise DemistoException('Error parsing file. Please make sure it is a valid image file') from e
