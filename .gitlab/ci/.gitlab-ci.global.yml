@@ -297,7 +297,7 @@
   needs:
     - job: cloning-content-repo-last-upload-commit
       optional: true
-    - job: pre_job
+    - job: init
 
 .trigger-slack-notification:
   stage: .post
