@@ -172,7 +172,7 @@ def test_module(client: Client, model: str) -> str:
     if result:
         return 'ok'
     else:
-        return 'Did not receive a response from OpenAI API'
+        raise DemistoException('Did not receive a response from OpenAI API')
 
 
 def chatgpt_send_prompt_command(client: Client, prompt: str,
