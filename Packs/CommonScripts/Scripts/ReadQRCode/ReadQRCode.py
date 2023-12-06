@@ -34,7 +34,7 @@ def extract_info_from_qr_code(entry_id: str) -> CommandResults:
 
     return CommandResults(
         outputs_prefix='OpenCVQRCodeReader',
-        outputs=({'text': text} | indicators),
+        outputs=({'Text': text} | indicators),
         readable_output=tableToMarkdown(
             'QR Code Read', {'Text': text}
         ),

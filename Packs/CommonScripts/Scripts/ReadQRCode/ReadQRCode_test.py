@@ -26,7 +26,7 @@ def test_extract_info_from_qr_code(mocker):
     result = extract_info_from_qr_code('entry_id')
 
     assert result.outputs_prefix == 'OpenCVQRCodeReader'
-    assert result.outputs == {'text': 'https://xsoar.pan.dev/', 'Domain': 'xsoar.pan.dev'}
+    assert result.outputs == {'Text': 'https://xsoar.pan.dev/', 'Domain': 'xsoar.pan.dev'}
     assert result.readable_output == '### QR Code Read\n|Text|\n|---|\n| https://xsoar.pan.dev/ |\n'
 
 

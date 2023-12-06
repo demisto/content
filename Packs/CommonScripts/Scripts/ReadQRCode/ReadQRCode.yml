@@ -9,7 +9,7 @@ commonfields:
   version: -1
 name: ReadQRCode
 outputs:
-- contextPath: OpenCVQRCodeReader.text
+- contextPath: OpenCVQRCodeReader.Text
   description: The text extracted from the QR code image.
   type: String
 script: '-'
