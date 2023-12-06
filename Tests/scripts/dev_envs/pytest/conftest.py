@@ -1,10 +1,12 @@
+import shutil
 import pytest
 import logging
-
-
-# File is copied to each package dir when running tests.
+import os
+from uuid import uuid4
 # More info about conftest.py at:
 #   https://docs.pytest.org/en/latest/writing_plugins.html#conftest-py-plugins  # disable-secrets-detection
+NO_TESTS_COLLECTED = 5
+SUCCESS = 0
 
 
 @pytest.fixture(autouse=True)
@@ -50,3 +52,24 @@ def check_std_out_err(capfd):
         pytest.fail("Found output in stdout: [{}]".format(out.strip()))
     if err:
         pytest.fail("Found output in stderr: [{}]".format(err.strip()))
+
+@pytest.fixture(autouse=True)
+def delete_files():
+    if os.path.exists("demistomock.py"):
+        os.remove("demistomock.py")
+    shutil.rmtree("test_data", ignore_errors=True)
+
+def pytest_sessionfinish(session, exitstatus):
+    if exitstatus == NO_TESTS_COLLECTED:
+        session.exitstatus = SUCCESS
+    
+
+
+def pytest_configure(config):
+    junit_xml = config.option.xmlpath
+    if junit_xml:
+        image = os.getenv("DOCKER_IMAGE")
+        if image:
+            config.option.xmlpath = junit_xml.replace(".xml", "-{}.xml".format(image.replace("/", "_")))
+        else:
+            config.option.xmlpath = junit_xml.replace(".xml", "-{}.xml".format(str(uuid4())))
