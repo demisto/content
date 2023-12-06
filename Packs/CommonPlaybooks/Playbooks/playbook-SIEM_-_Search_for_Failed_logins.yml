@@ -405,8 +405,8 @@ tasks:
     scriptarguments:
       array:
         complex:
-          root: QRadar.Search.Result
-          accessor: events
+          root: QRadar.SearchEvents
+          accessor: Events
       contextKey:
         simple: NumOfSiemFailedLogon
       extend-context:
@@ -496,8 +496,8 @@ tasks:
           left:
             value:
               complex:
-                root: QRadar.Search.Result
-                accessor: events
+                root: QRadar.SearchEvents
+                accessor: Events
             iscontext: true
           right:
             value: {}
@@ -767,7 +767,7 @@ outputs:
 - contextPath: NumOfSiemFailedLogon
   description: Number of failed login from Siem.
   type: unknown
-- contextPath: QRadar.Search.Result
+- contextPath: QRadar.SearchEvents
   description: The result of the QRadar search.
 - contextPath: Splunk.Result
   description: The results of the Splunk search. The results are a JSON array, in which each item is a Splunk event.

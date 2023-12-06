@@ -120,7 +120,7 @@ tasks:
       - '6'
     scriptarguments:
       SearchResults:
-        simple: ${QRadar.Search.Result}
+        simple: ${QRadar.SearchEvents}
     separatecontext: true
     loop:
       iscommand: false
@@ -239,7 +239,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: QRadar.Search.Result
+              simple: QRadar.SearchEvents
             iscontext: true
           right:
             value:
@@ -459,7 +459,7 @@ inputs:
   description: The QRadar Get Hunting Results playbook outputs the detected hosts, users, and IP addresses detected in the QRadar search results.
   playbookInputQuery:
 outputs:
-- contextPath: QRadar.Search.Result
+- contextPath: QRadar.SearchEvents
   description: The result of the search.
   type: string
 - contextPath: QRadar.DetectedUsers
