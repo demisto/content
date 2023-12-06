@@ -157,8 +157,7 @@ def is_chrome_running(port):
         return False
     except Exception as e:
         demisto.info(f'Unexpected error: {e}')
-        return Flase
-
+        return False
 
 
 def is_chrome_running_locally(port):
@@ -275,7 +274,7 @@ def backoff(polled_item, wait_time=DEFAULT_WAIT_TIME, polling_interval=DEFAULT_P
     operation_time = 0
     while polled_item is None and operation_time < wait_time:
         time.sleep(polling_interval)  # pylint: disable=E9003
-        operation_time +=polling_interval
+        operation_time += polling_interval
     return polled_item, operation_time
 
 
@@ -399,7 +398,7 @@ def rasterize_image_command():
 
     with open(file_path, 'rb') as f:
         output, _ = rasterize(path=f'file://{os.path.realpath(f.name)}', width=width, height=height,
-                           rasterize_type=RasterizeType.PDF)
+                              rasterize_type=RasterizeType.PDF)
         res = fileResult(filename=file_name, data=output, file_type=entryTypes['entryInfoFile'])
         demisto.results(res)
 
@@ -419,7 +418,7 @@ def rasterize_email_command():  # pragma: no cover
     path = f'file://{os.path.realpath(f.name)}'
 
     output, _ = rasterize(path=path, rasterize_type=rasterize_type, width=width, height=height, offline_mode=offline,
-                       navigation_timeout=navigation_timeout)
+                          navigation_timeout=navigation_timeout)
 
     res = fileResult(filename=file_name, data=output)
 
@@ -498,7 +497,7 @@ def rasterize_html_command():
     os.rename(f'./{file_path}', 'file.html')
 
     output, _ = rasterize(path=f"file://{os.path.realpath('file.html')}", width=width, height=height,
-                       rasterize_type=rasterize_type, wait_time=wait_time)
+                          rasterize_type=rasterize_type, wait_time=wait_time)
 
     res = fileResult(filename=file_name, data=output)
     if rasterize_type == 'png':
@@ -542,7 +541,7 @@ def rasterize_command():  # pragma: no cover
         # output = {'image_b64': base64.b64encode(get_image(driver, width, height, full_screen, include_url)).decode('utf8'),
         #             'html': html, 'current_url': url}
         output = {'image_b64': base64.b64encode(output).decode('utf8'),
-                    'html': response_body, 'current_url': url}
+                  'html': response_body, 'current_url': url}
         # return_results(CommandResults(raw_response=output, readable_output="Successfully rasterize url: " + url))
         demisto.results(CommandResults(raw_response=output, readable_output="Successfully rasterize url: " + url))
     else:
