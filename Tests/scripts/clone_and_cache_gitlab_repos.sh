@@ -112,7 +112,7 @@ get_cache_gitlab_repositories() {
   if [ "${branch_exists}" -eq 0 ]; then
     cached_branch=$(cat "${repo}.txt")
     if [ "${cached_branch}" != "${branch}" ]; then
-      echo "Remove ${repo}"
+      echo "Remove ${repo} from cache"
       rm -rf "./${repo}"
       sleep 1
     fi
