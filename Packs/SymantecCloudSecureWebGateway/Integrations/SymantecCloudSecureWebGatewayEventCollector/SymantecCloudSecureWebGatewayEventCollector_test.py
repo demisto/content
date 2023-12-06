@@ -359,13 +359,14 @@ def test_extract_logs_and_push_to_XSIAM(
 
 
 @pytest.mark.parametrize(
-    "mock_parse_events, mock_send_events_to_xsiam, expected_call",
+    "mock_parse_events, mock_send_events_to_xsiam, expected_raise, expected_call",
     [
-        (Exception("Parse error"), None, "Parse error"),
+        (Exception("Parse error"), None, "Parse error", "Error parsing events: Parse error"),
         (
             ((["event"], ""),),
             Exception("Send error"),
             "Send error",
+            "Failed to send events to XSOAR. Error: Send error"
         ),
     ],
 )
@@ -373,6 +374,7 @@ def test_extract_logs_and_push_to_XSIAM_failure(
     mocker,
     mock_parse_events: Exception | tuple[list[str], str],
     mock_send_events_to_xsiam: Exception | None,
+    expected_raise: str,
     expected_call: str,
 ):
     """
@@ -398,10 +400,10 @@ def test_extract_logs_and_push_to_XSIAM_failure(
     )
     mock_assertion = mocker.patch.object(demisto, "info")
 
-    with pytest.raises(Exception, match=expected_call):
+    with pytest.raises(Exception, match=expected_raise):
         extract_logs_and_push_to_XSIAM(LastRun(), "tmp/tmp", False)
 
-    # mock_assertion.assert_called_with(expected_call)
+    mock_assertion.assert_called_with(expected_call)
 
 
 @pytest.mark.parametrize(
