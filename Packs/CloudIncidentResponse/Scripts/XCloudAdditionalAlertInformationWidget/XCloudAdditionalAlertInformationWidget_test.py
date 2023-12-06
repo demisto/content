@@ -65,7 +65,7 @@ class TestXCloudAdditionalAlertInformationWidget(unittest.TestCase):
         ]
 
         # Call the main function
-        XCloudAdditionalAlertInformationWidget.main()
+        XCloudAdditionalAlertInformationWidget()
 
         # Assert that the necessary functions and methods were called
         mock_execute_command.assert_called_with('core-get-cloud-original-alerts', {"alert_ids": 'some_id'})
