@@ -207,6 +207,28 @@ script:
       required: true
     description: Retrieves attachments from a sent Gmail message.
     name: gmail-get-attachments
+    outputs:
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file (same as displayed in file entries).
+      type: String
+    - contextPath: File.Type
+      description: 'File type, for example: "PE".'
+      type: string
+    - contextPath: File.Size
+      description: File size.
+      type: number
   - arguments:
     - default: true
       description: The user's email address. The "me" special value can be used to indicate the authenticated user.
@@ -257,9 +279,12 @@ script:
     - contextPath: Gmail.Body
       description: The content of the email.
       type: string
-    - contextPath: Gmail.Attachments
-      description: The attachments of the email. Attachments IDs are separated by commas.
-      type: unknown
+    - contextPath: Gmail.Attachments.ID
+      description: The email attachment ID (as appear in gmail).
+      type: Unknown
+    - contextPath: Gmail.Attachments.Name
+      description: The email attachment name.
+      type: Unknown
     - contextPath: Gmail.Headers
       description: All headers of the specific email (list).
       type: unknown
@@ -293,8 +318,11 @@ script:
     - contextPath: Email.Headers
       description: The headers of the email.
       type: String
-    - contextPath: Email.Attachments.entryID
-      description: Comma-separated email attachment IDs.
+    - contextPath: Email.Attachments.ID
+      description: The email attachment ID (as appear in gmail).
+      type: Unknown
+    - contextPath: Email.Attachments.Name
+      description: The email attachment name.
       type: Unknown
     - contextPath: Email.Date
       description: The date the email was received.
