@@ -105,6 +105,7 @@ script:
       description: Request body.
     description: Send HTTP Multipart request to upload files to Demisto server.
   - name: demisto-delete-incidents
+    deprecated: true
     arguments:
     - name: ids
       required: true
@@ -197,6 +198,7 @@ script:
       description: Request body.
     description: Send HTTP Multipart request to upload files to Core server.
   - name: core-delete-incidents
+    deprecated: true
     arguments:
     - name: ids
       required: true
