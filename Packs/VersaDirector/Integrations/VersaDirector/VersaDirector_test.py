@@ -299,7 +299,6 @@ def test_template_custom_url_category_list_command(mocker, client):
     """
     from VersaDirector import template_custom_url_category_list_command
 
-
     http_request = mocker.patch.object(client, "_http_request")
     args = {"template_name": "temp_name", "organization": "org_name", "page_size": 0}
     template_custom_url_category_list_command(client, args)
@@ -567,8 +566,6 @@ def test_appliance_custom_url_category_list_command(mocker, client, url_category
     """
     from VersaDirector import appliance_custom_url_category_list_command
 
-
-
     http_request = mocker.patch.object(client, "_http_request")
     args = {
         "organization": "org_name",
@@ -674,8 +671,6 @@ def test_appliance_access_policy_list_command(mocker, client):
     """
 
     from VersaDirector import appliance_access_policy_list_command
-
-
 
     http_request = mocker.patch.object(client, "_http_request")
     args = {
@@ -987,8 +982,6 @@ def test_appliance_sdwan_policy_rule_list_command(mocker, client):
     """
     from VersaDirector import appliance_sdwan_policy_rule_list_command
 
-
-
     http_request = mocker.patch.object(client, "_http_request")
     args = {
         "organization": "organization",
@@ -1103,8 +1096,6 @@ def test_template_address_object_list_command(mocker, client):
     """
     from VersaDirector import template_address_object_list_command
 
-
-
     http_request = mocker.patch.object(client, "_http_request")
     args = {
         "organization": "organization",
@@ -1133,8 +1124,6 @@ def test_template_address_object_create_command(mocker, client):
         - The http request is called with the right arguments
     """
     from VersaDirector import template_address_object_create_command
-
-
 
     args = {
         "organization": "org_name",
@@ -1179,8 +1168,6 @@ def test_template_address_object_edit_command(mocker, client):
         - The http request is called with the right arguments
     """
     from VersaDirector import template_address_object_edit_command
-
-
 
     args = {
         "organization": "org_name",
@@ -1288,8 +1275,6 @@ def test_appliance_address_object_create_command(mocker, client):
     """
     from VersaDirector import appliance_address_object_create_command
 
-
-
     args = {
         "organization": "org_name",
         "appliance_name": "appliance_name",
@@ -1333,8 +1318,6 @@ def test_appliance_address_object_edit_command(mocker, client):
         - The http request is called with the right arguments
     """
     from VersaDirector import appliance_address_object_edit_command
-
-
 
     args = {
         "organization": "org_name",
@@ -1414,8 +1397,6 @@ def test_template_user_defined_application_list_command(mocker, client):
     """
     from VersaDirector import template_user_defined_application_list_command
 
-
-
     http_request = mocker.patch.object(client, "_http_request")
     args = {
         "organization": "org_name",
@@ -1446,8 +1427,6 @@ def test_appliance_user_defined_application_list_command(mocker, client):
         - The http request is called with the right arguments
     """
     from VersaDirector import appliance_user_defined_application_list_command
-
-
 
     http_request = mocker.patch.object(client, "_http_request")
     args = {
@@ -1480,8 +1459,6 @@ def test_template_user_modified_application_list_command(mocker, client):
     """
     from VersaDirector import template_user_modified_application_list_command
 
-
-
     http_request = mocker.patch.object(client, "_http_request")
     args = {
         "organization": "org_name",
@@ -1512,8 +1489,6 @@ def test_appliance_user_modified_application_list_command(mocker, client):
         - The http request is called with the right arguments
     """
     from VersaDirector import appliance_user_modified_application_list_command
-
-
 
     http_request = mocker.patch.object(client, "_http_request")
     args = {
