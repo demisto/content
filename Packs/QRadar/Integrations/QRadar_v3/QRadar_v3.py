@@ -1737,38 +1737,15 @@ def test_module_command(client: Client, params: dict) -> str:
         - (str): 'ok' if test passed
         - raises DemistoException if something had failed the test.
     """
-    global EVENTS_SEARCH_TRIES, EVENTS_POLLING_TRIES
-    EVENTS_SEARCH_TRIES = 1
-    EVENTS_POLLING_TRIES = 1
     try:
         ctx = get_integration_context()
         print_context_data_stats(ctx, "Test Module")
         is_long_running = params.get('longRunning')
         mirror_options = params.get('mirror_options', DEFAULT_MIRRORING_DIRECTION)
-        mirror_direction = MIRROR_DIRECTION.get(mirror_options)
 
         if is_long_running:
             validate_long_running_params(params)
-            ip_enrich, asset_enrich = get_offense_enrichment(params.get('enrichment', 'IPs And Assets'))
-            # Try to retrieve the last successfully retrieved offense
-            last_highest_id = max(ctx.get(LAST_FETCH_KEY, 0) - 1, 0)
-            get_incidents_long_running_execution(
-                client=client,
-                offenses_per_fetch=1,
-                user_query=params.get('query', ''),
-                fetch_mode=params.get('fetch_mode', ''),
-                events_columns=params.get('events_columns') or DEFAULT_EVENTS_COLUMNS,
-                events_limit=0,
-                ip_enrich=ip_enrich,
-                asset_enrich=asset_enrich,
-                last_highest_id=last_highest_id,
-                incident_type=params.get('incident_type'),
-                mirror_direction=mirror_direction,
-                first_fetch=params.get('first_fetch', '3 days'),
-                mirror_options=params.get('mirror_options', '')
-            )
-        else:
-            client.offenses_list(range_="items=0-0")
+        client.offenses_list(range_="items=0-0")
         message = 'ok'
     except DemistoException as e:
         err_msg = str(e)
