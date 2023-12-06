@@ -3187,7 +3187,7 @@ def appliance_address_object_list_command(client: Client, args: dict[str, Any]) 
         raw_response=response,
         readable_output=tableToMarkdown(
             name=f"Address objects associated with {organization}",
-            t=responseget("address", {}),
+            t=response,
             headerTransform=pascalToSpace,
             headers=[
                 "name",
