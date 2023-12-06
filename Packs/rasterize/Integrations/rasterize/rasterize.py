@@ -123,7 +123,8 @@ class PychromeEventHandler:
                     self.tab.Page.stopLoading()
                     # Activate current tab
                     activation_result = self.browser.activate_tab(self.tab.id)
-                    demisto.debug(f'Tab activated: {activation_result}')
+                    activation_result, operation_time = backoff(activation_result)
+                    demisto.debug(f'Tab activated: {activation_result=} after {operation_time} seconds.")')
                     self.tab_ready.set()
                     demisto.debug('Tab ready event set')
             except pychrome.exceptions.PyChromeException as e:
@@ -257,9 +258,8 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout):  # prag
             return_error(message)
 
         time.sleep(wait_time)  # pylint: disable=E9003
-        request_id = tab_event_handler.request_id
-        demisto.debug(f"navigate_to_path, Navigated to {path=}, {request_id=}")
-        return request_id
+        demisto.debug(f"navigate_to_path, Navigated to {path=}")
+        return tab_event_handler
 
     except pychrome.exceptions.TimeoutException as ex:
         message = f'Navigation timeout: {ex} thrown while trying to navigate to {path}'
@@ -283,7 +283,7 @@ def screenshot_image(browser, tab, path, wait_time, navigation_timeout, include_
     """
     :param include_source: Whether to include the page source in the response
     """
-    request_id = navigate_to_path(browser, tab, path, wait_time, navigation_timeout)
+    tab_event_handler = navigate_to_path(browser, tab, path, wait_time, navigation_timeout)
 
     # Screenshot data
     screenshot_data = tab.Page.captureScreenshot()['data']
@@ -302,11 +302,11 @@ def screenshot_image(browser, tab, path, wait_time, navigation_timeout, include_
 
     # Page source, if needed
     response_body = None
-    demisto.debug(f"{include_source=}, {request_id=}")
+    demisto.debug(f"{include_source=}")
     if include_source:
-        # response_body = tab.call_method("Network.getResponseBody", requestId=request_id, _timeout=navigation_timeout)
+        request_id, operation_time = backoff(tab_event_handler.request_id)
+        demisto.debug(f"Got {request_id=} after {operation_time} seconds.")
         response_body = tab.Network.getResponseBody(requestId=request_id, _timeout=navigation_timeout)['body']
-        # Make sure that the (asynchronous) screenshot data is available before continuing with execution
         response_body, operation_time = backoff(response_body)
         if response_body:
             demisto.debug(f"Response Body available after {operation_time} seconds.")
@@ -375,11 +375,13 @@ def rasterize(path: str,
                 message = 'Unsupported rasterization type {rasterize_type}'
                 demisto.error(message)
                 return_error(message)
+                return None
 
     else:
         message = 'Could not use local Chrome for rasterize command'
         demisto.error(message)
         return_error(message)
+        return None
 
 
 def return_err_or_warn(msg):  # pragma: no cover
