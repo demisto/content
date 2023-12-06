@@ -396,9 +396,12 @@ class Client(BaseClient):
                     resp_type=resp_type
                 )
             except (DemistoException, requests.ReadTimeout) as error:
-                if isinstance(error, DemistoException) and not isinstance(error.exception, requests.ConnectionError):
-                    raise
-                if _time == CONNECTION_ERRORS_RETRIES:
+                if (
+                    isinstance(
+                        error, DemistoException
+                    ) and not isinstance(
+                        error.exception, requests.ConnectionError) or _time == CONNECTION_ERRORS_RETRIES
+                ):
                     raise
                 time.sleep(CONNECTION_ERRORS_INTERVAL)  # pylint: disable=sleep-exists
         return None
