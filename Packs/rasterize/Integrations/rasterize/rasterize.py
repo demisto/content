@@ -124,9 +124,11 @@ class PychromeEventHandler:
                     # Activate current tab
                     activation_result = self.browser.activate_tab(self.tab.id)
                     activation_result, operation_time = backoff(activation_result)
-                    demisto.debug(f'Tab activated: {activation_result=} after {operation_time} seconds.")')
+                    if activation_result:
+                        demisto.debug(f'Tab activated: {activation_result=} after {operation_time} seconds.")')
+                    else:
+                        demisto.error('Tab not activated. Timeout.')
                     self.tab_ready.set()
-                    demisto.debug('Tab ready event set')
             except pychrome.exceptions.PyChromeException as e:
                 demisto.error(f'Error stopping page loading: {self.tab=}, {frameId=}, {e}')
 
