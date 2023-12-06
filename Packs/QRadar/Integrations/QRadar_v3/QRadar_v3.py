@@ -36,6 +36,9 @@ EVENTS_MODIFIED_SECS = 5  # interval between events status polling in modified
 EVENTS_SEARCH_TRIES = 3  # number of retries for creating a new search
 EVENTS_POLLING_TRIES = 10  # number of retries for events polling
 EVENTS_SEARCH_RETRY_SECONDS = 100  # seconds between retries to create a new search
+CONNECTION_ERRORS_RETRIES = 5  # num of times to retry in case of connection-errors
+CONNECTION_ERRORS_INTERVAL = 1  # num of seconds between each time to send an http-request in case of a connection error.
+
 
 ADVANCED_PARAMETERS_STRING_NAMES = [
     'DOMAIN_ENRCH_FLG',
@@ -372,7 +375,7 @@ class Client(BaseClient):
             self.base_headers = {'Version': api_version}
         base_url = urljoin(server, '/api')
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, auth=auth)
-        self.timeout = timeout
+        self.timeout = timeout  # type: ignore[assignment]
         self.password = password
         self.server = server
 
@@ -380,16 +383,25 @@ class Client(BaseClient):
                      json_data: Optional[dict] = None, additional_headers: Optional[dict] = None,
                      timeout: Optional[int] = None, resp_type: str = 'json'):
         headers = {**additional_headers, **self.base_headers} if additional_headers else self.base_headers
-        return self._http_request(
-            method=method,
-            url_suffix=url_suffix,
-            params=params,
-            json_data=json_data,
-            headers=headers,
-            error_handler=self.qradar_error_handler,
-            timeout=timeout or self.timeout,
-            resp_type=resp_type
-        )
+        for _time in range(1, CONNECTION_ERRORS_RETRIES + 1):
+            try:
+                return self._http_request(
+                    method=method,
+                    url_suffix=url_suffix,
+                    params=params,
+                    json_data=json_data,
+                    headers=headers,
+                    error_handler=self.qradar_error_handler,
+                    timeout=timeout or self.timeout,
+                    resp_type=resp_type
+                )
+            except (DemistoException, requests.ReadTimeout) as error:
+                if isinstance(error, DemistoException) and not isinstance(error.exception, requests.ConnectionError):
+                    raise
+                if _time == CONNECTION_ERRORS_RETRIES:
+                    raise
+                time.sleep(CONNECTION_ERRORS_INTERVAL)  # pylint: disable=sleep-exists
+        return None
 
     @staticmethod
     def qradar_error_handler(res: requests.Response):
@@ -1741,8 +1753,6 @@ def test_module_command(client: Client, params: dict) -> str:
         ctx = get_integration_context()
         print_context_data_stats(ctx, "Test Module")
         is_long_running = params.get('longRunning')
-        mirror_options = params.get('mirror_options', DEFAULT_MIRRORING_DIRECTION)
-
         if is_long_running:
             validate_long_running_params(params)
         client.offenses_list(range_="items=0-0")
