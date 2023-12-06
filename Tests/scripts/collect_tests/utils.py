@@ -111,6 +111,7 @@ class DictBased:
                 self.get('fromversion', warn_if_missing=False)
                 or self.get('fromVersion', warn_if_missing=False)
                 or self.get('fromServerVersion', warn_if_missing=False)
+                or self.get('serverMinVersion', warn_if_missing=False)
         ):
             return Version(value)
         return version.NegativeInfinity

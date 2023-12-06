@@ -583,8 +583,8 @@ def close_in_xsoar(entries: List, remote_incident_id: str, close_reason: str, cl
         'Type': EntryType.NOTE,
         'Contents': {
             'dbotIncidentClose': True,
-            'closeReason': f'{MIRROR_STATUS_DICT.get(close_reason, close_reason)} - Closed on Microsoft Sentinel',
-            'closeNotes': close_notes
+            'closeReason': MIRROR_STATUS_DICT.get(close_reason, close_reason),
+            'closeNotes': f'{close_notes}\nClosed on Microsoft Sentinel'.strip()
         },
         'ContentsFormat': EntryFormat.JSON
     })
@@ -648,17 +648,15 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     return mapping_response
 
 
-def close_incident_in_remote(delta: Dict[str, Any]) -> bool:
+def close_incident_in_remote(delta: Dict[str, Any], data: Dict[str, Any]) -> bool:
     """
     Closing in the remote system should happen only when both:
         1. The user asked for it
-        2. The closing field is in the delta
-
-    The second is mandatory, so a closing request will not be sent for all mirroring requests that occur after closing an incident
-    (in the case where the incident has been updated, but the status has not been changed).
+        2. A closing reason was provided (either in the delta or before in the data).
     """
     closing_field = 'classification'
-    return demisto.params().get('close_ticket') and closing_field in delta
+    closing_reason = delta.get(closing_field, data.get(closing_field, ''))
+    return demisto.params().get('close_ticket') and bool(closing_reason)
 
 
 def update_incident_request(client: AzureSentinelClient, incident_id: str, data: Dict[str, Any], delta: Dict[str, Any],
@@ -669,7 +667,7 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
         incident_id (str): the incident ID
         data (Dict[str, Any]): all the data of the incident
         delta (Dict[str, Any]): the delta of the changes in the incident's data
-        close_ticket (bool, optional): whether to close the ticket or not (defined by the close_incident_in_remote(delta)).
+        close_ticket (bool, optional): whether to close the ticket or not (defined by the close_incident_in_remote).
                                        Defaults to False.
 
     Returns:
@@ -694,9 +692,9 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
     if close_ticket:
         properties |= {
             'status': 'Closed',
-            'classification': delta.get('classification'),
-            'classificationComment': delta.get('classificationComment'),
-            'classificationReason': CLASSIFICATION_REASON.get(delta.get('classification', ''))
+            'classification': delta.get('classification') or data.get('classification'),
+            'classificationComment': delta.get('classificationComment') or data.get('classificationComment'),
+            'classificationReason': CLASSIFICATION_REASON.get(delta.get('classification', data.get('classification', '')))
         }
     remove_nulls_from_dictionary(properties)
     data = {
@@ -710,7 +708,7 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
 def update_remote_incident(client: AzureSentinelClient, data: Dict[str, Any], delta: Dict[str, Any],
                            incident_status: IncidentStatus, incident_id: str) -> str:
     if incident_status == IncidentStatus.DONE:
-        if close_incident_in_remote(delta):
+        if close_incident_in_remote(delta, data):
             demisto.debug(f'Closing incident with remote ID {incident_id} in remote system.')
             return str(update_incident_request(client, incident_id, data, delta, close_ticket=True))
         elif delta.keys() <= {'classification', 'classificationComment'}:
@@ -1252,7 +1250,7 @@ def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_tim
     last_incident_number = last_run.get('last_incident_number')
     demisto.debug(f"{last_fetch_time=}, {last_fetch_ids=}, {last_incident_number=}")
 
-    if last_fetch_time is None or last_incident_number is None:
+    if last_fetch_time is None or not last_incident_number:
         demisto.debug("handle via timestamp")
         if last_fetch_time is None:
             last_fetch_time_str, _ = parse_date_range(first_fetch_time, DATE_FORMAT)
@@ -1348,7 +1346,7 @@ def process_incidents(raw_incidents: list, min_severity: int, latest_created_tim
             incidents.append(xsoar_incident)
         else:
             demisto.debug(f"drop creation of {incident.get('IncidentNumber')=} "
-                          "due to the {incident_severity=} is lower then {min_severity=}")
+                          f"due to the {incident_severity=} is lower then {min_severity=}")
 
         # Update last run to the latest fetch time
         if incident_created_time is None:
@@ -1358,7 +1356,6 @@ def process_incidents(raw_incidents: list, min_severity: int, latest_created_tim
             latest_created_time = incident_created_time
         if incident.get('IncidentNumber') > last_incident_number:
             last_incident_number = incident.get('IncidentNumber')
-
     next_run = {
         'last_fetch_time': latest_created_time.strftime(DATE_FORMAT),
         'last_fetch_ids': current_fetch_ids,

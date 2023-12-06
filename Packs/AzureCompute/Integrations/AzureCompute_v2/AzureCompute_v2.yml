@@ -8,6 +8,7 @@ configuration:
   name: host
   required: true
   type: 0
+  section: Connect
 - display: ID (received from the admin consent - see Detailed Instructions (?)
   name: auth_id
   type: 4
@@ -34,27 +35,32 @@ configuration:
   displaypassword: ID (received from the admin consent - see Detailed Instructions (?)
   hiddenusername: true
   required: false
+  section: Connect
 - name: cred_token
   type: 9
   displaypassword: Token (received from the admin consent - see Detailed Instructions (?) section)
   hiddenusername: true
   required: false
+  section: Connect
 - name: cred_enc_key
   type: 9
   displaypassword: Key (received from the admin consent - see Detailed Instructions (?)
   hiddenusername: true
   required: false
+  section: Connect
 - name: cred_certificate_thumbprint
   type: 9
   displaypassword: Certificate Thumbprint
   additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   hiddenusername: true
   required: false
+  section: Connect
 - display: Private Key
   name: private_key
   type: 14
   additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   required: false
+  section: Connect
 - display: Default Subscription ID
   name: subscription_id
   type: 4
@@ -65,28 +71,45 @@ configuration:
   hiddenusername: true
   type: 9
   required: false
+  section: Connect
+- display: Default Resource Group Name
+  name: resource_group
+  type: 0
+  required: false
+  additionalinfo: This parameter can be overridden by the resource_group argument in any command.
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
   display: Use a self-deployed Azure Application
   name: self_deployed
   type: 8
   required: false
-description: Create and Manage Azure Virtual Machines
+  section: Connect
+  advanced: true
+description: Create and Manage Azure Virtual Machines.
 display: Azure Compute v2
 name: Azure Compute v2
 script:
   commands:
   - arguments:
-    - description: The resource group of the virtual machines. To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
+    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      name: subscription_id
+    - description: |
+        The resource group of the virtual machines.
+        To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
+        Note: This argument will override the instance parameter ‘Default Resource Group Name'.
       name: resource_group
-      required: true
     description: Lists the virtual machine instances in the given resource group.
     name: azure-vm-list-instances
     outputs:
@@ -112,9 +135,13 @@ script:
       description: The OS running on the virtual machine.
       type: string
   - arguments:
-    - description: Resource Group to which the virtual machine belongs. To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
+    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      name: subscription_id
+    - description: |
+        Resource Group to which the virtual machine belongs.
+        To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
+        Note: This argument will override the instance parameter ‘Default Resource Group Name'.
       name: resource_group
-      required: true
     - description: Name of the virtual machine to power on. To see all virtual machines and their associated names for a specific resource group, run the `azure-vm-list-instances` command.
       name: virtual_machine_name
       required: true
@@ -123,21 +150,32 @@ script:
     name: azure-vm-start-instance
     outputs:
     - contextPath: Azure.Compute.Name
-      description: Name of the VM that was started
+      description: Name of the VM that was started.
       type: string
     - contextPath: Azure.Compute.ResourceGroup
-      description: Resource group the VM resides in
+      description: Resource group the VM resides in.
       type: string
     - contextPath: Azure.Compute.PowerState
-      description: Whether the VM instance is powered on or off
+      description: Whether the VM instance is powered on or off.
       type: string
   - arguments:
-    - description: The resource group to which the virtual machine belongs. To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
+    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      name: subscription_id
+    - description: |
+        The resource group to which the virtual machine belongs.
+        To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
+        Note: This argument will override the instance parameter ‘Default Resource Group Name'.
       name: resource_group
-      required: true
     - description: The name of the virtual machine to power off. To see all virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command.
       name: virtual_machine_name
       required: true
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Set to True to request non-graceful VM shutdown. Default value is False.
+      name: skip_shutdown
+      predefined:
+      - 'true'
+      - 'false'
     description: Powers off a given virtual machine.
     execution: true
     name: azure-vm-poweroff-instance
@@ -152,12 +190,23 @@ script:
       description: Whether the virtual machine instance is powered on or off.
       type: string
   - arguments:
-    - description: The resource group to which the virtual machine belongs. To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
+    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      name: subscription_id
+    - description: |
+        The resource group to which the virtual machine belongs.
+        To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
+        Note: This argument will override the instance parameter ‘Default Resource Group Name'.
       name: resource_group
-      required: true
     - description: The name of the virtual machine you want to view the details of. To see all the virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command.
       name: virtual_machine_name
       required: true
+    - auto: PREDEFINED
+      defaultValue: instanceView
+      description: The expand expression to apply on the operation. 'instanceView' retrieves a snapshot of the runtime properties of the virtual machine that is managed by the platform and can change outside of control plane operations. 'userData' retrieves the UserData property as part of the VM model view that was provided by the user during the VM Create/Update operation. Default value is False.
+      name: expand
+      predefined:
+      - instanceView
+      - 'userData'
     description: Gets the properties of a given virtual machine.
     name: azure-vm-get-instance-details
     outputs:
@@ -188,16 +237,24 @@ script:
     - contextPath: Azure.Compute.NetworkInterfaces
       description: The list of network interfaces attached to this machine.
       type: string
+    - contextPath: Azure.Compute.UserData
+      description: UserData for the VM.
+      type: string
   - arguments:
-    - description: The resource group to which the new virtual machine will belong. To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
+    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      name: subscription_id
+    - description: |
+        The resource group to which the new virtual machine will belong.
+        To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
+        Note: This argument will override the instance parameter ‘Default Resource Group Name'.
       name: resource_group
-      required: true
     - description: The name of the virtual machine to create.
       name: virtual_machine_name
       required: true
-    - auto: PREDEFINED
-      description: The location in which to create the virtual machine.
+    - description: The location in which to create the virtual machine.
       name: virtual_machine_location
+      required: true
+      auto: PREDEFINED
       predefined:
       - westus2
       - westus
@@ -230,7 +287,6 @@ script:
       - australiacentral2
       - australiaeast
       - australiasoutheast
-      required: true
     - description: The name of the Network Interface to link the virtual machine with. Note that the virtual machine's location property must match that of the Network Interface you choose to link it to. To see a list of available Network Interfaces visit the Azure Web Portal, navigate to the search bar at the top of the page, type "network interfaces", and in the dynamic drop-down menu that appears, click the 'Network interfaces' option that appears under the 'Services' category. If none are present, you will need to create a new Network Interface.
       name: nic_name
       required: true
@@ -252,9 +308,9 @@ script:
       - Promo_DS2_v2
       - Promo_DS3_v2
       required: true
-    - auto: PREDEFINED
-      description: The base operating system image of the virtual machine.
+    - description: The base operating system image of the virtual machine.
       name: os_image
+      auto: PREDEFINED
       predefined:
       - Ubuntu Server 14.04 LTS
       - Ubuntu Server 16.04 LTS
@@ -309,8 +365,13 @@ script:
       description: The region in which the virtual machine is hosted.
       type: string
   - arguments:
-    - description: Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID will be used.
+    - description: "Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. Note: This argument will override the instance parameter ‘Default Subscription ID'."
       name: subscription_id
+    - description: A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list by.
+      name: tag
+    - defaultValue: '50'
+      description: Limit on the number of resource-groups to return. Default value is 50.
+      name: limit
     description: Lists all resource groups that belong to your Azure subscription.
     name: azure-list-resource-groups
     outputs:
@@ -327,9 +388,13 @@ script:
       description: The provisioning state of the resource group.
       type: string
   - arguments:
-    - description: The resource group to which the virtual machine belongs. To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
+    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      name: subscription_id
+    - description: |
+        The resource group to which the virtual machine belongs.
+        To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
+        Note: This argument will override the instance parameter ‘Default Resource Group Name'.
       name: resource_group
-      required: true
     - description: The name of the virtual machine to delete. To see all the virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command.
       name: virtual_machine_name
     description: Deletes a specified virtual machine.
@@ -347,9 +412,13 @@ script:
       description: The state of the subscription.
       type: String
   - arguments:
-    - description: The resource group to which the network interface belongs. To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
+    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      name: subscription_id
+    - description: |
+        The resource group to which the network interface belongs.
+        To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
+        Note: This argument will override the instance parameter ‘Default Resource Group Name'.
       name: resource_group
-      required: true
     - description: The name of the network interface you want to view the details of.
       name: nic_name
       required: true
@@ -396,7 +465,12 @@ script:
       description: The interface ID.
       type: String
   - arguments:
-    - description: The resource group to which the IP address belongs. To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
+    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      name: subscription_id
+    - description: |
+        The resource group to which the IP address belongs.
+        To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
+        Note: This argument will override the instance parameter ‘Default Resource Group Name'.
       name: resource_group
     - description: The IP address name.
       name: address_name
@@ -435,15 +509,20 @@ script:
       description: The address ID.
       type: String
   - arguments:
-    - description: The resource group to which the new network interface will belong. To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
+    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      name: subscription_id
+    - description: |
+        The resource group to which the new network interface will belong.
+        To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
+        Note: This argument will override the instance parameter ‘Default Resource Group Name'.
       name: resource_group
-      required: true
     - description: The network interface name.
       name: nic_name
       required: true
-    - auto: PREDEFINED
-      description: The location in which to create the network interface.
+    - description: The location in which to create the network interface.
       name: nic_location
+      required: true
+      auto: PREDEFINED
       predefined:
       - westus2
       - westus
@@ -476,17 +555,16 @@ script:
       - australiacentral2
       - australiaeast
       - australiasoutheast
-      required: true
     - description: The virtual network name of the interface.
       name: vnet_name
       required: true
     - description: The subnet name of the interface.
       name: subnet_name
       required: true
-    - auto: PREDEFINED
-      defaultValue: Dynamic
-      description: The address assignment method.
+    - description: The address assignment method.
       name: address_assignment_method
+      auto: PREDEFINED
+      defaultValue: Dynamic
       predefined:
       - Static
       - Dynamic
@@ -527,8 +605,10 @@ script:
     - contextPath: Azure.Network.Interfaces.ID
       description: The interface ID.
       type: String
-  - arguments: []
-    description: Gets the properties of a given public IP address.
+  - arguments:
+    - name: subscription_id
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    description: Gets the properties of all public ip address in a subscription.
     name: azure-vm-get-all-public-ip-details
     outputs:
     - contextPath: Azure.Network.IPConfigurations.PublicIPAddress
@@ -565,7 +645,7 @@ script:
     description: Run this command if for some reason you need to rerun the authentication process.
     execution: false
     name: azure-vm-auth-reset
-  dockerimage: demisto/crypto:1.0.0.66562
+  dockerimage: demisto/crypto:1.0.0.80214
   runonce: false
   script: '-'
   subtype: python3
@@ -573,3 +653,6 @@ script:
 tests:
 - Azure Compute - Test
 fromversion: 5.0.0
+sectionOrder:
+- Connect
+- Collect

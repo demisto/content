@@ -203,8 +203,8 @@ List all alerts. When an alert ID is given, only the relevant alert will be fetc
 >### Alerts
 >|alert_class|alert_type|id|importance|links|ongoing|start_time|subobject|type|
 >|---|---|---|---|---|---|---|---|---|
->| data | flow_down | 2799 | 1 | self: https://content.demisto.works:57585/api/sp/v7/alerts/2799 | true | 2021-05-08T16:07:13+00:00 |  | alert |
->| dos | dos_host_detection | 2798 | 2 | self: https://content.demisto.works:57585/api/sp/v7/alerts/2798 | false | 2021-05-08T16:00:02+00:00 |  | alert |
+>| data | flow_down | 2799 | 1 | self: https://xsoar-example:57585/api/sp/v7/alerts/2799 | true | 2021-05-08T16:07:13+00:00 |  | alert |
+>| dos | dos_host_detection | 2798 | 2 | self: https://xsoar-example:57585/api/sp/v7/alerts/2798 | false | 2021-05-08T16:00:02+00:00 |  | alert |
 
 
 ### na-sightline-mitigation-list
@@ -285,8 +285,8 @@ List all mitigations. When a mitigation ID is given, only the relevant mitigatio
 >### Mitigation list
 >|description|id|ip_version|is_automitigation|links|name|ongoing|start|subtype|type|user|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| TMS mitigation for alert 101 | flowspec-36 | 4 | false | self: https://content.demisto.works:57585/api/sp/v7/mitigations/flowspec-36 | DoS Alert 1079 | true | 2021-04-22T07:39:27.849350+00:00 | flowspec | mitigation | demisto |
->| Some annotation description | flowspec-12 | 4 | false | self: https://content.demisto.works:57585/api/sp/v7/mitigations/flowspec-12 | Mitigation Annotation Name1 | true | 2021-04-17T18:03:54.875020+00:00 | flowspec | mitigation | demisto |
+>| TMS mitigation for alert 101 | flowspec-36 | 4 | false | self: https://xsoar-example:57585/api/sp/v7/mitigations/flowspec-36 | DoS Alert 1079 | true | 2021-04-22T07:39:27.849350+00:00 | flowspec | mitigation | demisto |
+>| Some annotation description | flowspec-12 | 4 | false | self: https://xsoar-example:57585/api/sp/v7/mitigations/flowspec-12 | Mitigation Annotation Name1 | true | 2021-04-17T18:03:54.875020+00:00 | flowspec | mitigation | demisto |
 
 
 ### na-sightline-mitigation-create
@@ -366,7 +366,7 @@ Add a TMS or flowspec mitigation with the attributes and relationships passed in
 >### Mitigation was created
 >|description|id|ip_version|is_automitigation|links|name|ongoing|start|subtype|type|user|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| Some mitigation description | flowspec-58 | 4 | false | self: https://content.demisto.works:57585/api/sp/v7/mitigations/flowspec-58 | Mitigation Annotation Name | true | 2021-05-08T20:16:53.251710+00:00 | flowspec | mitigation | demisto |
+>| Some mitigation description | flowspec-58 | 4 | false | self: https://xsoar-example:57585/api/sp/v7/mitigations/flowspec-58 | Mitigation Annotation Name | true | 2021-05-08T20:16:53.251710+00:00 | flowspec | mitigation | demisto |
 
 
 ### na-sightline-mitigation-delete
@@ -525,15 +525,15 @@ Get a list of available mitigation templates.
 >### Mitigation template list
 >|description|id|ip_version|links|name|subtype|system|type|
 >|---|---|---|---|---|---|---|---|
->| Default mitigation values inherited by all new IPv4 mitigations (unless otherwise scoped) | 1 | 4 | self: https://content.demisto.works:57585/api/sp/v7/mitigation_templates/1 | Default IPv4 | tms | true | mitigation_template |
->| Auto-Mitigation template use by default for all IPv4 auto-mitigations. Auto-mitigation must be enabled for the managed object. | 2 | 4 | self: https://content.demisto.works:57585/api/sp/v7/mitigation_templates/2 | Auto-Mitigation IPv4 | tms | true | mitigation_template |
->| Template contains countermeasures that support TMS deployments focused on VoIP Gateway Flood Protection | 3 | 4 | self: https://content.demisto.works:57585/api/sp/v7/mitigation_templates/3 | VoIP Gateway Protection | tms | true | mitigation_template |
->| Template provides example countermeasures that would support deployments for DNS infrastructure protection | 4 | 4 | self: https://content.demisto.works:57585/api/sp/v7/mitigation_templates/4 | DNS Flood Protection | tms | true | mitigation_template |
->| Rogue DC++ P2P clients have been used to attack HTTP Server infrastructure. This template provides an example of payload REGEX inspection for filtering clients used for a DC++ HTTP attack | 5 | 4 | self: https://content.demisto.works:57585/api/sp/v7/mitigation_templates/5 | Rogue DC++ Protection | tms | true | mitigation_template |
->| TCP SYN flood countermeasure | 6 | 4 | self: https://content.demisto.works:57585/api/sp/v7/mitigation_templates/6 | TCP SYN Flood | tms | true | mitigation_template |
->| ICMP Flood Countermeasure | 7 | 4 | self: https://content.demisto.works:57585/api/sp/v7/mitigation_templates/7 | ICMP Flood | tms | true | mitigation_template |
->| Default mitigation values inherited by all new IPv6 mitigations (unless otherwise scoped) | 8 | 6 | self: https://content.demisto.works:57585/api/sp/v7/mitigation_templates/8 | Default IPv6 | tms | true | mitigation_template |
->| Auto-Mitigation template use by default for all IPv6 auto-mitigations. Auto-mitigation must be enabled for the managed object. | 9 | 6 | self: https://content.demisto.works:57585/api/sp/v7/mitigation_templates/9 | Auto-Mitigation IPv6 | tms | true | mitigation_template |
+>| Default mitigation values inherited by all new IPv4 mitigations (unless otherwise scoped) | 1 | 4 | self: https://xsoar-example:57585/api/sp/v7/mitigation_templates/1 | Default IPv4 | tms | true | mitigation_template |
+>| Auto-Mitigation template use by default for all IPv4 auto-mitigations. Auto-mitigation must be enabled for the managed object. | 2 | 4 | self: https://xsoar-example:57585/api/sp/v7/mitigation_templates/2 | Auto-Mitigation IPv4 | tms | true | mitigation_template |
+>| Template contains countermeasures that support TMS deployments focused on VoIP Gateway Flood Protection | 3 | 4 | self: https://xsoar-example:57585/api/sp/v7/mitigation_templates/3 | VoIP Gateway Protection | tms | true | mitigation_template |
+>| Template provides example countermeasures that would support deployments for DNS infrastructure protection | 4 | 4 | self: https://xsoar-example:57585/api/sp/v7/mitigation_templates/4 | DNS Flood Protection | tms | true | mitigation_template |
+>| Rogue DC++ P2P clients have been used to attack HTTP Server infrastructure. This template provides an example of payload REGEX inspection for filtering clients used for a DC++ HTTP attack | 5 | 4 | self: https://xsoar-example:57585/api/sp/v7/mitigation_templates/5 | Rogue DC++ Protection | tms | true | mitigation_template |
+>| TCP SYN flood countermeasure | 6 | 4 | self: https://xsoar-example:57585/api/sp/v7/mitigation_templates/6 | TCP SYN Flood | tms | true | mitigation_template |
+>| ICMP Flood Countermeasure | 7 | 4 | self: https://xsoar-example:57585/api/sp/v7/mitigation_templates/7 | ICMP Flood | tms | true | mitigation_template |
+>| Default mitigation values inherited by all new IPv6 mitigations (unless otherwise scoped) | 8 | 6 | self: https://xsoar-example:57585/api/sp/v7/mitigation_templates/8 | Default IPv6 | tms | true | mitigation_template |
+>| Auto-Mitigation template use by default for all IPv6 auto-mitigations. Auto-mitigation must be enabled for the managed object. | 9 | 6 | self: https://xsoar-example:57585/api/sp/v7/mitigation_templates/9 | Auto-Mitigation IPv6 | tms | true | mitigation_template |
 
 
 ### na-sightline-router-list
@@ -897,6 +897,6 @@ Get a list of available TMS groups.
 >### TMS group list
 >|check_available_bw|check_bgp_peering|check_group_allup|default_bgp_offramp|description|fail_open|flowspec_redirect_ipv4_type|flowspec_redirect_ipv6_type|id|links|member_limits_differ|mitigation_orchestration|name|system|type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| true | true | true | true | Default all mitigation group. Mitigations will use all ports on all configured TMS devices. | false |  |  | 3 | self: https://content.demisto.works:57585/api/sp/v7/tms_groups/3 | false | bandwidth_threshold_percent: 85<br/>enabled: false | All | true | tms_group |
->| true | true | true | false |  | true | route_target | route_target | 192 | self: https://content.demisto.works:57585/api/sp/v7/tms_groups/192 | false | bandwidth_threshold_percent: 85<br/>enabled: false | anar_test | false | tms_group |
+>| true | true | true | true | Default all mitigation group. Mitigations will use all ports on all configured TMS devices. | false |  |  | 3 | self: https://xsoar-example:57585/api/sp/v7/tms_groups/3 | false | bandwidth_threshold_percent: 85<br/>enabled: false | All | true | tms_group |
+>| true | true | true | false |  | true | route_target | route_target | 192 | self: https://xsoar-example:57585/api/sp/v7/tms_groups/192 | false | bandwidth_threshold_percent: 85<br/>enabled: false | anar_test | false | tms_group |
 

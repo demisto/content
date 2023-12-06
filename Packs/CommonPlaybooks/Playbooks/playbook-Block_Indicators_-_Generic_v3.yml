@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Block Indicators - Generic v3
-description: |+
+description: |-
   This playbook blocks malicious indicators using all integrations that are enabled, using the following sub-playbooks:
 
   - Block URL - Generic v2
@@ -11,8 +11,7 @@ description: |+
   - Block IP - Generic v3
   - Block File - Generic v2
   - Block Email - Generic v2
-  - Block Domain - Generic v2
-
+  - Block Domain - Generic v2.
 starttaskid: "0"
 tasks:
   "0":
@@ -186,6 +185,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "13":
     id: "13"
     taskid: 53c7faa6-ec4b-46c0-8322-71972e65dad0
@@ -1125,10 +1125,10 @@ tasks:
       id: ee795eae-1fc0-4458-864b-91b2f224db89
       version: -1
       name: Tag received from inputs?
+      description: Checks whether a tag for blocked indicators was specified.
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "14"
@@ -1488,7 +1488,8 @@ inputs:
     product: Proofpoint Threat Response
   playbookInputQuery:
 - key: Tag
-  value: {}
+  value:
+    simple: Blocked Indicator In Systems
   required: false
   description: Insert a tag name with which indicators will get tagged. This tag can be used later in the External Dynamic Lists integration by using the tag for filtering IPs in the indicator query.
   playbookInputQuery:
@@ -1589,13 +1590,13 @@ outputs:
 - contextPath: CheckpointFWRule.Hits
   description: Rule hits count.
 - contextPath: PanoramaRule.Direction
-  description: Direction of the Panorama rule. Can be 'to','from', 'both'
+  description: Direction of the Panorama rule. Can be 'to','from', 'both'.
   type: string
 - contextPath: PanoramaRule.IP
-  description: The IP the Panorama rule blocks
+  description: The IP the Panorama rule blocks.
   type: string
 - contextPath: PanoramaRule.Name
-  description: Name of the Panorama rule
+  description: Name of the Panorama rule.
   type: string
 - contextPath: CheckpointFWRule.Data.Name
   description: Rule data object name.
@@ -1614,15 +1615,15 @@ outputs:
 - contextPath: CheckpointFWRule.Hits.Level
   description: Level of rule hits.
 - contextPath: CheckpointFWRule.Hits.Percentage
-  description: Percentage of rule hits
+  description: Percentage of rule hits.
 - contextPath: CheckpointFWRule.Hits.Value
   description: Value of rule hits.
 - contextPath: IndicatorsToBlock
-  description: Selected indicators to block
+  description: Selected indicators to block.
   type: unknown
 tests:
 - Block IP - Generic V3_Test
 fromversion: 6.5.0
 marketplaces:
-  - xsoar
-  - marketplacev2
+- xsoar
+- marketplacev2

@@ -1,0 +1,819 @@
+id: playbook-AzureLogAnalytics-test
+version: -1
+name: playbook-AzureLogAnalytics-test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a24d7c28-cc11-4cd6-8cc2-11534b2508da
+    type: start
+    task:
+      id: a24d7c28-cc11-4cd6-8cc2-11534b2508da
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 5a33dede-c28b-4a4b-8a22-348c7299092e
+    type: regular
+    task:
+      id: 5a33dede-c28b-4a4b-8a22-348c7299092e
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 99ccfaba-521a-4584-8988-1845c23f02df
+    type: regular
+    task:
+      id: 99ccfaba-521a-4584-8988-1845c23f02df
+      version: -1
+      name: Create Saved Search
+      description: Creates or updates a saved search from the Log Analytics workspace.
+      script: "|||azure-log-analytics-create-or-update-saved-search"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      category:
+        simple: Test
+      display_name:
+        simple: Test
+      query:
+        simple: '*'
+      saved_search_id:
+        simple: test_playbook_${RandomString}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: b5b41d08-c9b7-4889-8102-cb59bc00ac63
+    type: condition
+    task:
+      id: b5b41d08-c9b7-4889-8102-cb59bc00ac63
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AzureLogAnalytics.SavedSearch.displayName
+            iscontext: true
+          right:
+            value:
+              simple: Test
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AzureLogAnalytics.SavedSearch.category
+            iscontext: true
+          right:
+            value:
+              simple: Test
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 17039ac1-7cc1-446c-8041-0bbd819ae1e0
+    type: regular
+    task:
+      id: 17039ac1-7cc1-446c-8041-0bbd819ae1e0
+      version: -1
+      name: 'Update Saved Search '
+      description: Creates or updates a saved search from the Log Analytics workspace.
+      script: '|||azure-log-analytics-create-or-update-saved-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      category:
+        simple: Test
+      display_name:
+        simple: Test 2
+      etag:
+        simple: '*'
+      query:
+        simple: '*'
+      saved_search_id:
+        simple: ${AzureLogAnalytics.SavedSearch.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 8efc189f-e2c7-4830-8e79-b866bd29eade
+    type: condition
+    task:
+      id: 8efc189f-e2c7-4830-8e79-b866bd29eade
+      version: -1
+      name: Verify Outputs, Verify that the display name has changed
+      description: |-
+        Pretty-print data using Python's pprint library.  This is useful for seeing the structure of incident and context data.  Here's how to use it:
+
+        !PrettyPrint value=${incident}
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AzureLogAnalytics.SavedSearch.displayName
+            iscontext: true
+          right:
+            value:
+              simple: Test 2
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 8ba64ebf-7264-4964-87b9-6680e79f8749
+    type: regular
+    task:
+      id: 8ba64ebf-7264-4964-87b9-6680e79f8749
+      version: -1
+      name: Delete Saved Search
+      description: Deletes a specified saved search in the Log Analytics workspace.
+      script: '|||azure-log-analytics-delete-saved-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      saved_search_id:
+        simple: ${AzureLogAnalytics.SavedSearch.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 2934a5a0-b122-4cae-8e20-533b197fb246
+    type: regular
+    task:
+      id: 2934a5a0-b122-4cae-8e20-533b197fb246
+      version: -1
+      name: List Saved Searches
+      description: Gets the saved searches of the Log Analytics workspace.
+      script: '|||azure-log-analytics-list-saved-searches'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      limit:
+        simple: "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: c6b3a7b4-8715-496d-8dc4-871d01e56d4d
+    type: condition
+    task:
+      id: c6b3a7b4-8715-496d-8dc4-871d01e56d4d
+      version: -1
+      name: Verify Outputs,  The list contains items as the limit number
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              simple: AzureLogAnalytics.SavedSearch
+            iscontext: true
+          right:
+            value:
+              simple: "10"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 038646c2-a471-4835-8d7e-cf75ff197995
+    type: regular
+    task:
+      id: 038646c2-a471-4835-8d7e-cf75ff197995
+      version: -1
+      name: Delete Context, specific AzureLogAnalytics.SavedSearch key
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      key:
+        simple: AzureLogAnalytics.SavedSearch
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: f8037603-c507-4356-8096-5a281d208364
+    type: regular
+    task:
+      id: f8037603-c507-4356-8096-5a281d208364
+      version: -1
+      name: Run Search Job
+      description: Run a search job to fetch records from large datasets into a new search results table in your workspace.
+      script: '|||azure-log-analytics-run-search-job'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      limit:
+        simple: "10"
+      query:
+        simple: AuditLogs
+      table_name:
+        simple: test_playbook_${RandomString}_SRCH
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 996c3c3a-e9cd-4138-8de9-5987e185865b
+    type: regular
+    task:
+      id: 996c3c3a-e9cd-4138-8de9-5987e185865b
+      version: -1
+      name: Get Search Job
+      description: Gets a Log Analytics workspace table.
+      script: '|||azure-log-analytics-get-search-job'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      table_name:
+        simple: ${AzureLogAnalytics.RunSearchJob.TableName}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: b43fa168-18ca-45bf-8884-302afd3330e1
+    type: condition
+    task:
+      id: b43fa168-18ca-45bf-8884-302afd3330e1
+      version: -1
+      name: Verify Outputs, that the search job table is created
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AzureLogAnalytics.SearchJob.properties.searchResults.query
+            iscontext: true
+          right:
+            value:
+              simple: AuditLogs
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AzureLogAnalytics.SearchJob.properties.searchResults.limit
+            iscontext: true
+          right:
+            value:
+              simple: "10"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AzureLogAnalytics.SearchJob.name
+            iscontext: true
+          right:
+            value:
+              simple: AzureLogAnalytics.RunSearchJob.TableName
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 9b164f1d-6e94-4725-840e-6c8e1b7a31f7
+    type: regular
+    task:
+      id: 9b164f1d-6e94-4725-840e-6c8e1b7a31f7
+      version: -1
+      name: 'Execute Query Command, '
+      description: Executes an Analytics query for data.
+      script: '|||azure-log-analytics-execute-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      query:
+        simple: ${AzureLogAnalytics.RunSearchJob.TableName}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 3dae5c91-72f4-4943-8080-fead28cec6c8
+    type: condition
+    task:
+      id: 3dae5c91-72f4-4943-8080-fead28cec6c8
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AzureLogAnalytics.Query.Query
+            iscontext: true
+          right:
+            value:
+              simple: AzureLogAnalytics.RunSearchJob.TableName
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: cd4be2b7-63f6-45e7-8dbb-2b842c08ef6a
+    type: regular
+    task:
+      id: cd4be2b7-63f6-45e7-8dbb-2b842c08ef6a
+      version: -1
+      name: Delete Search Job Table
+      description: Delete a Log Analytics workspace table. We recommend you delete the search job when you're done querying the table. This reduces workspace clutter and extra charges for data retention.
+      script: '|||azure-log-analytics-delete-search-job'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      table_name:
+        simple: ${AzureLogAnalytics.RunSearchJob.TableName}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 86061c45-4e15-4c5e-8ccd-c198130dec0a
+    type: title
+    task:
+      id: 86061c45-4e15-4c5e-8ccd-c198130dec0a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: ba526744-7705-4a17-87ec-f8986912ae98
+    type: regular
+    task:
+      id: ba526744-7705-4a17-87ec-f8986912ae98
+      version: -1
+      name: Generate random table name
+      description: Generates random string
+      scriptName: GenerateRandomString
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      Digits:
+        simple: "False"
+      Length:
+        simple: "20"
+      Lowercase:
+        simple: "True"
+      Punctuation:
+        simple: "False"
+      Uppercase:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 3376d070-8806-47d7-8ddb-58f96c5df521
+    type: regular
+    task:
+      id: 3376d070-8806-47d7-8ddb-58f96c5df521
+      version: -1
+      name: Generate random Saved Search id
+      description: Generates random string
+      scriptName: GenerateRandomString
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      Digits:
+        simple: "False"
+      Length:
+        simple: "6"
+      Lowercase:
+        simple: "True"
+      Punctuation:
+        simple: "False"
+      Uppercase:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 3c93903c-3638-44bb-8cb8-0ad7a321df0b
+    type: regular
+    task:
+      id: 3c93903c-3638-44bb-8cb8-0ad7a321df0b
+      version: -1
+      name: Delete Context, specific RandomString key
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      key:
+        simple: RandomString
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3360,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: true
+fromversion: 6.9.0
+description: ''

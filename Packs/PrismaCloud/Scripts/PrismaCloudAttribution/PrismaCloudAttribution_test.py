@@ -27,7 +27,7 @@ MOCK_RESULT = [
         "accountName": "aws-user-personal",
         "cloudType": "aws",
         "fqdn": [
-            "ec2-35-180-1-1.eu-west-3.compute.amazonaws.com"
+            "ec2.eu.compute-1.amazonaws.com"
         ],
         "hasAlert": False,
         "id": "i-654321b",

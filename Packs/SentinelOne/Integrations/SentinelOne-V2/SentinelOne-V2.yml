@@ -158,6 +158,9 @@ script:
       name: limit
     - description: Query params field=value pairs delimited by comma (e.g., activeThreats=3,gatewayIp=1.2.3.4). Query params are OR'd.
       name: params
+    - description: A comma-separated list of additionals fields to display.
+      name: columns
+      isArray: true
     description: Returns all agents that match the specified criteria.
     name: sentinelone-list-agents
     outputs:
@@ -510,8 +513,8 @@ script:
       description: Whether the threat was successfully mitigated.
       type: Boolean
     - contextPath: SentinelOne.Threat.Mitigation.Action
-      description: Number of threats affected.
-      type: Number
+      description: The mitigation action performed.
+      type: String
   - arguments:
     - description: A comma-separated list of threat IDs.
       isArray: true
@@ -1029,6 +1032,9 @@ script:
       required: true
     - description: Cursor pointer to get next page of results from query.
       name: cursor
+    - description: A comma-separated list of additionals fields to display.
+      name: columns
+      isArray: true
     description: Returns all Deep Visibility events that match the query.
     name: sentinelone-get-events
     outputs:
@@ -2313,7 +2319,66 @@ script:
       description: IP Address.
     - contextPath: SentinelOne.MAC.mac
       description: MAC Address.
-  dockerimage: demisto/python3:3.10.13.75921
+  - arguments:
+    - description: Can filter on one account ID. Otherwise, it returns information from all accounts.
+      name: account_id
+      required: false
+    description: Returns details of accounts.
+    name: sentinelone-get-accounts
+    outputs:
+    - contextPath: SentinelOne.Accounts.AccountType
+      description: The account type.
+      type: string
+    - contextPath: SentinelOne.Accounts.ActiveAgents
+      description: The account number of active agents.
+      type: number
+    - contextPath: SentinelOne.Accounts.NumberOfSites
+      description: The account number of sites.
+      type: number
+    - contextPath: SentinelOne.Accounts.State
+      description: The account state.
+      type: string
+    - contextPath: SentinelOne.Accounts.CreatedAt
+      description: The account creation date.
+      type: string
+    - contextPath: SentinelOne.Accounts.Expiration
+      description: The account expiration date.
+      type: string
+    - contextPath: SentinelOne.Accounts.ID
+      description: The account ID.
+      type: string
+    - contextPath: SentinelOne.Accounts.Name
+      description: The account name.
+      type: string
+  - arguments:
+    - description: The ID of the threat.
+      name: threat_id
+      required: true
+    description: Returns threat notes.
+    name: sentinelone-get-threat-notes
+    outputs:
+    - contextPath: SentinelOne.Notes.CreatedAt
+      description: The note creation date.
+      type: string
+    - contextPath: SentinelOne.Notes.Creator
+      description: The note creator.
+      type: string
+    - contextPath: SentinelOne.Notes.CreatorID
+      description: The note creator ID.
+      type: string
+    - contextPath: SentinelOne.Notes.Edited
+      description: Whether the note was edited or not.
+      type: boolean
+    - contextPath: SentinelOne.Notes.ID
+      description: The note ID.
+      type: string
+    - contextPath: SentinelOne.Notes.Text
+      description: The note text.
+      type: string
+    - contextPath: SentinelOne.Notes.UpdatedAt
+      description: The note updated time.
+      type: string
+  dockerimage: demisto/python3:3.10.13.82467
   isfetch: true
   ismappable: true
   isremotesyncin: true

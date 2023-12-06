@@ -12,3 +12,12 @@ ignore=RM106
 
 [file:README.md]
 ignore=RM106
+
+[file:incidentfield-XSOAR_Dev_Instance_Name.json]
+ignore=IF113
+
+[file:incidentfield-XSOAR_Dev_to_Prod_Method.json]
+ignore=IF113
+
+[file:incidentfield-XSOAR_Prod_Instance_Name.json]
+ignore=IF113

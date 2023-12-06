@@ -3,14 +3,15 @@ import logging
 import os
 import sys
 from argparse import Namespace, ArgumentParser
+from collections.abc import Callable
 from datetime import datetime, timedelta
 from pathlib import Path
-from collections.abc import Callable
+from typing import Any
 
 import humanize
 import urllib3
 from demisto_sdk.commands.test_content.constants import SSH_USER
-from paramiko import SSHClient, SSHException
+from paramiko import SSHClient, SSHException, MissingHostKeyPolicy
 from scp import SCPClient, SCPException
 from tqdm import tqdm
 
@@ -105,11 +106,16 @@ def download_logs(ssh: SSHClient, server_ip: str, artifacts_dir: str, readable_r
     return False
 
 
+class LogMissingHostKeyPolicy(MissingHostKeyPolicy):
+    def missing_host_key(self, client: SSHClient, hostname: str, key: Any) -> Any:
+        logging.warning(f"Missing host key for {hostname}, adding it automatically.")
+
+
 def destroy_server(artifacts_dir: str, readable_role: str, role: str, server_ip: str, time_to_live: int) -> bool:
     success = True
     with SSHClient() as ssh:
         try:
-            ssh.load_system_host_keys()
+            ssh.set_missing_host_key_policy(LogMissingHostKeyPolicy())
             ssh.connect(server_ip, username=SSH_USER)
             success &= chmod_logs(ssh, server_ip)
             success &= download_logs(ssh, server_ip, artifacts_dir, readable_role, role)

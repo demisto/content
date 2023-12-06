@@ -431,7 +431,7 @@ script:
           description: The type of threat the message represents.
           type: String
 
-    # Employee commands
+      # Employee commands
     - arguments:
         - description: Email address of the employee you want to retrieve data for.
           name: email_address
@@ -703,7 +703,7 @@ script:
       description: Get the latest threat intel feed.
       name: abnormal-security-get-latest-threat-intel-feed
       deprecated: true
-  dockerimage: demisto/python3:3.10.13.75921
+  dockerimage: demisto/python3:3.10.13.81631
   script: ""
   subtype: python3
   type: python
@@ -711,3 +711,4 @@ script:
 fromversion: 6.0.0
 tests:
   - No tests (auto formatted)
+defaultmapperin: Abnormal Security - Incoming Mapper

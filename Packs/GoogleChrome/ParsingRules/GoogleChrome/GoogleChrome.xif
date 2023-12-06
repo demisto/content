@@ -1,0 +1,10 @@
+[INGEST:vendor="Google", product="Workspace Chrome", target_dataset="google_workspace_chrome_raw", no_hit = keep]
+// Creating json fields with the value of the events field, organized in a key - value format.
+alter events = events -> []
+| arrayexpand events
+| alter parameters = events -> parameters[]
+| alter parameters = arraymap(parameters ,concat("{","\"",json_extract_scalar("@element", "$.name"),"\"", ":", "\"",json_extract_scalar("@element", "$.value"),"\"", "}"))
+| alter parameters = replace(arraystring(parameters, ","),"},{", ",") -> {}
+| alter parametersint = events -> parameters[]
+| alter parametersint = arraymap(parametersint ,concat("{","\"",json_extract_scalar("@element", "$.name"),"\"", ":", "\"",json_extract_scalar("@element", "$.intValue"),"\"", "}"))
+| alter parametersint = replace(arraystring(parametersint, ","),"},{", ",") -> {};

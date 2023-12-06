@@ -502,6 +502,16 @@
                     "sha256": "data[14]_file_identity_sha256",
                     "sha1": "data[14]_file_identity_sha1",
                     "md5": "data[14]_file_identity_md5"
+                },
+                "parent": {
+                    "process_id": "data[14]_file_parent_process_id",
+                    "disposition": "data[14]_file_parent_disposition",
+                    "file_name": "data[14]_file_parent_file_name",
+                    "identity": {
+                        "sha256": "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
+                        "sha1": "data[14]_file_parent_identity_sha1",
+                        "md5": "data[14]_file_parent_identity_md5"
+                    }
                 }
             },
             "tactics": [

@@ -5,6 +5,7 @@ import json
 from datetime import datetime
 from collections.abc import Callable
 import copy
+from requests.exceptions import ReadTimeout
 
 import QRadar_v3  # import module separately for mocker
 import pytest
@@ -12,7 +13,7 @@ import pytz
 from QRadar_v3 import LAST_FETCH_KEY, USECS_ENTRIES, OFFENSE_OLD_NEW_NAMES_MAP, MINIMUM_API_VERSION, REFERENCE_SETS_OLD_NEW_MAP, \
     Client, ASSET_PROPERTIES_NAME_MAP, \
     FULL_ASSET_PROPERTIES_NAMES_MAP, EntryType, EntryFormat, MIRROR_OFFENSE_AND_EVENTS, \
-    MIRRORED_OFFENSES_QUERIED_CTX_KEY, MIRRORED_OFFENSES_FINISHED_CTX_KEY, LAST_MIRROR_KEY, QueryStatus
+    MIRRORED_OFFENSES_QUERIED_CTX_KEY, MIRRORED_OFFENSES_FINISHED_CTX_KEY, LAST_MIRROR_KEY, QueryStatus, LAST_MIRROR_CLOSED_KEY
 from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_outputs, build_headers, \
     get_offense_types, get_offense_closing_reasons, get_domain_names, get_rules_names, enrich_assets_results, \
     get_offense_addresses, get_minimum_id_to_fetch, poll_offense_events, sanitize_outputs, \
@@ -964,7 +965,8 @@ def test_get_modified_remote_data_command(mocker):
                                       'Type': EntryType.NOTE,
                                       'Contents': {
                                           'dbotIncidentClose': True,
-                                          'closeReason': 'From QRadar: False-Positive, Tuned'
+                                          'closeReason': 'False-Positive, Tuned',
+                                          'closeNotes': 'From QRadar: False-Positive, Tuned'
                                       },
                                       'ContentsFormat': EntryFormat.JSON
                                   }])),
@@ -978,8 +980,9 @@ def test_get_modified_remote_data_command(mocker):
                                       'Type': EntryType.NOTE,
                                       'Contents': {
                                           'dbotIncidentClose': True,
-                                          'closeReason': 'From QRadar: This offense was closed with reason: '
-                                                         'False-Positive, Tuned.'
+                                          'closeReason': 'False-Positive, Tuned',
+                                          'closeNotes': 'From QRadar: This offense was closed with reason: '
+                                                         'False-Positive, Tuned.',
                                       },
                                       'ContentsFormat': EntryFormat.JSON
                                   }])),
@@ -994,9 +997,10 @@ def test_get_modified_remote_data_command(mocker):
                                       'Type': EntryType.NOTE,
                                       'Contents': {
                                           'dbotIncidentClose': True,
-                                          'closeReason': 'From QRadar: This offense was closed with reason: '
+                                          'closeReason': 'False-Positive, Tuned',
+                                          'closeNotes': 'From QRadar: This offense was closed with reason: '
                                                          'False-Positive, Tuned. Notes: Closed because it is on our '
-                                                         'white list.'
+                                                         'white list.',
                                       },
                                       'ContentsFormat': EntryFormat.JSON
                                   }]))
@@ -1135,7 +1139,7 @@ def test_get_modified_with_events(mocker):
                     MIRRORED_OFFENSES_FINISHED_CTX_KEY: {'3': '789', '4': '012'}, MIRRORED_OFFENSES_FETCHED_CTX_KEY: {}}
     expected_updated_context = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {'2': '456', '10': '555'},
                                 MIRRORED_OFFENSES_FINISHED_CTX_KEY: {'3': '789', '4': '012', '1': '123'},
-                                LAST_MIRROR_KEY: 3444, MIRRORED_OFFENSES_FETCHED_CTX_KEY: {}}
+                                LAST_MIRROR_KEY: 3444, MIRRORED_OFFENSES_FETCHED_CTX_KEY: {}, LAST_MIRROR_CLOSED_KEY: 3444}
     set_integration_context(context_data)
     status = {'123': {'status': 'COMPLETED'},
               '456': {'status': 'WAIT'},
@@ -1583,3 +1587,33 @@ def test_reference_set_upsert_commands_new_api(mocker, api_version, status, func
     else:
         assert results.readable_output == 'Reference set test_ref is still being updated in task 1234'
         assert results.scheduled_command._args.get('task_id') == 1234
+
+
+def test_qradar_reference_set_value_upsert_command_continue_polling_with_connection_issues(mocker):
+    """
+    Given:
+        - get_reference_data_bulk_task_status that returns ReadTimeout exception, IN_PROGRESS and COMPLETED statuses
+
+    When:
+        - qradar_reference_set_value_upsert_command function
+
+    Then:
+        - Verify the command would keep polling when there are temporary connection issues.
+    """
+    mocker.patch.object(QRadar_v3.ScheduledCommand, "raise_error_if_not_supported")
+    mocker.patch.object(client, "reference_set_entries", return_value={"id": 1234})
+    mocker.patch.object(client, "get_reference_data_bulk_task_status", side_effect=[
+                        ReadTimeout, {"status": "IN_PROGRESS"}, {"status": "COMPLETED"}])
+    args = {"ref_name": "test_ref", "value": "value1"}
+    api_version = {"api_version": "17.0"}
+    mocker.patch.object(client, "reference_sets_list", return_value=command_test_data["reference_set_bulk_load"]['response'])
+
+    result = qradar_reference_set_value_upsert_command(args, client=client, params=api_version)
+    # make sure in ReadTimeout that no outputs are returned
+    assert not result.outputs
+    result = qradar_reference_set_value_upsert_command(args, client=client, params=api_version)
+    # make sure when status is IN_PROGRESS no outputs are returned
+    assert not result.outputs
+    result = qradar_reference_set_value_upsert_command(args, client=client, params=api_version)
+    # make sure when status is COMPLETED that outputs are returned
+    assert result.outputs

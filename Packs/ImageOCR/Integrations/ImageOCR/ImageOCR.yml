@@ -22,9 +22,10 @@ script:
   - description: Lists supported languages for which the integration can extract text.
     name: image-ocr-list-languages
   - arguments:
-    - description: Entry ID of the image file to process.
+    - description: A comma-separated list of Entry IDs of image files to process.
       name: entryid
       required: true
+      isArray: true
     - description: A CSV of language codes of the language to use for OCR. Overrides the default configured language list.
       isArray: true
       name: langs
@@ -34,8 +35,10 @@ script:
     - contextPath: File.Text
       description: Extracted text from the passed image file.
       type: String
-  dockerimage: demisto/tesseract:1.0.0.62842
+  dockerimage: demisto/tesseract:1.0.0.81254
   runonce: false
   script: '-'
   type: python
   subtype: python3
+tests:
+- No tests (auto formatted)

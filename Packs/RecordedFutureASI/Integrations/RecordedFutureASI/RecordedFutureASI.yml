@@ -13,50 +13,57 @@ configuration:
 - display: API Key
   name: apikey
   type: 4
-  required: true
+  required: false
+  hidden: true
+- display: API Key
+  name: credentials
+  type: 9
+  required: false
+  displaypassword: API Key
+  hiddenusername: true
 - display: Project ID
   name: project_id
   type: 4
   required: true
-  additionalinfo: 'The Project ID to fetch issues from '
+  additionalinfo: The Project ID to fetch issues from
 - display: Incident type
   name: incidentType
   type: 13
   defaultvalue: Recorded Future ASI Alert
   required: false
-- display: Minimum severity of alerts to fetch
+- defaultvalue: 'Informational'
+  display: Minimum severity of alerts to fetch
   name: min_severity
-  defaultvalue: 'Informational'
   type: 15
+  required: false
   options:
   - Informational
   - Moderate
   - Critical
-  required: false
-- defaultvalue: 'By Issue'
-  display: How to group new issues
+- display: How to group new issues
   name: issue_grouping
+  defaultvalue: "By Issue"
   type: 15
+  required: false
   options:
   - By Host
   - By Issue
-  required: false
 - defaultvalue: 'false'
   display: Expand grouped By Host rules into separate Incidents (applicable if grouping By Host)
   name: expand_issues
   type: 8
   required: false
-- display: Fetch limit
-  additionalinfo: Maximum number of incidents per fetch
+- additionalinfo: Maximum number of incidents per fetch
+  defaultvalue: '200'
+  display: Fetch limit
   name: max_fetch
-  defaultvalue: "200"
-  type: 0
   required: false
+  type: 0
 - defaultvalue: 24 hours
   display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: first_fetch
-  type: 0
   required: false
+  type: 0
 script:
   script: '-'
   type: python
@@ -64,13 +71,13 @@ script:
   - name: asi-project-issues-fetch
     arguments:
     - name: issues_start
-      description: timestamp to get incidents after
+      description: timestamp to get incidents after.
     - name: group_by_host
-      description: true/false whether to group incidents by changed host
+      description: true/false whether to group incidents by changed host.
     - name: expand_issues
-      description: true/false to make an incident per host & per new issue
-    description: Gets the issues for a project from a particular snapshot (defaults to recent)
-  dockerimage: demisto/python3:3.10.13.72123
+      description: true/false to make an incident per host & per new issue.
+    description: Gets the issues for a project from a particular snapshot (defaults to recent).
+  dockerimage: demisto/python3:3.10.13.80014
   isfetch: true
   subtype: python3
 fromversion: 6.5.0

@@ -9,20 +9,24 @@ from distutils.util import strtobool
 from pathlib import Path
 from typing import Any
 
-import gitlab
 import requests
 from demisto_sdk.commands.coverage_analyze.tools import get_total_coverage
-from junitparser import TestSuite
+from gitlab.client import Gitlab
+from gitlab.v4.objects import ProjectPipelineJob
+from junitparser import JUnitXml, TestSuite
 from slack_sdk import WebClient
 from slack_sdk.web import SlackResponse
 
 from Tests.Marketplace.marketplace_constants import BucketUploadFlow
 from Tests.Marketplace.marketplace_services import get_upload_data
-from Tests.scripts.common import CONTENT_NIGHTLY, CONTENT_PR, TEST_NATIVE_CANDIDATE, WORKFLOW_TYPES, get_instance_directories, \
+from Tests.scripts.common import CONTENT_NIGHTLY, CONTENT_PR, WORKFLOW_TYPES, get_instance_directories, \
     get_properties_for_test_suite, BUCKET_UPLOAD, BUCKET_UPLOAD_BRANCH_SUFFIX, TEST_MODELING_RULES_REPORT_FILE_NAME, \
-    get_test_results_files, CONTENT_MERGE
+    get_test_results_files, CONTENT_MERGE, UNIT_TESTS_WORKFLOW_SUBSTRINGS, TEST_PLAYBOOKS_REPORT_FILE_NAME, \
+    replace_escape_characters
 from Tests.scripts.github_client import GithubPullRequest
-from Tests.scripts.test_modeling_rule_report import calculate_test_modeling_rule_results
+from Tests.scripts.test_modeling_rule_report import calculate_test_modeling_rule_results, \
+    read_test_modeling_rule_to_jira_mapping, get_summary_for_test_modeling_rule, TEST_MODELING_RULES_TO_JIRA_TICKETS_CONVERTED
+from Tests.scripts.test_playbooks_report import read_test_playbook_to_jira_mapping, TEST_PLAYBOOKS_TO_JIRA_TICKETS_CONVERTED
 from Tests.scripts.utils.log_util import install_logging
 
 ROOT_ARTIFACTS_FOLDER = Path(os.getenv('ARTIFACTS_FOLDER', './artifacts'))
@@ -41,7 +45,9 @@ SLACK_WORKSPACE_NAME = os.getenv('SLACK_WORKSPACE_NAME', '')
 GITHUB_TOKEN = os.getenv('GITHUB_TOKEN', '')
 CI_COMMIT_BRANCH = os.getenv('CI_COMMIT_BRANCH', '')
 CI_COMMIT_SHA = os.getenv('CI_COMMIT_SHA', '')
+CI_SERVER_HOST = os.getenv('CI_SERVER_HOST', '')
 DEFAULT_BRANCH = 'master'
+ALL_FAILURES_WERE_CONVERTED_TO_JIRA_TICKETS = ' (All failures were converted to Jira tickets)'
 
 
 def options_handler() -> argparse.Namespace:
@@ -87,18 +93,12 @@ def get_artifact_data(artifact_folder: Path, artifact_relative_path: str) -> str
     return None
 
 
-def get_failed_modeling_rule_name_from_test_suite(test_suite: TestSuite) -> str:
-
-    properties = get_properties_for_test_suite(test_suite)
-
-    return f"{properties['modeling_rule_file_name']} ({properties['pack_id']})"
-
-
 def get_test_report_pipeline_url(pipeline_url: str) -> str:
     return f"{pipeline_url}/test_report"
 
 
-def test_modeling_rules_results(artifact_folder: Path, pipeline_url: str, title: str) -> list[dict[str, Any]]:
+def test_modeling_rules_results(artifact_folder: Path,
+                                pipeline_url: str, title: str) -> tuple[list[dict[str, Any]], bool]:
 
     if not (test_modeling_rules_results_files := get_test_results_files(artifact_folder, TEST_MODELING_RULES_REPORT_FILE_NAME)):
         logging.error(f"Could not find any test modeling rule result files in {artifact_folder}")
@@ -107,7 +107,9 @@ def test_modeling_rules_results(artifact_folder: Path, pipeline_url: str, title:
             'fallback': title,
             'color': 'warning',
             'title': title,
-        }]
+        }], True
+
+    failed_test_to_jira_mapping = read_test_modeling_rule_to_jira_mapping(artifact_folder)
 
     modeling_rules_to_test_suite, _, _ = (
         calculate_test_modeling_rule_results(test_modeling_rules_results_files)
@@ -120,7 +122,7 @@ def test_modeling_rules_results(artifact_folder: Path, pipeline_url: str, title:
             'fallback': title,
             'color': 'good',
             'title': title,
-        }]
+        }], False
 
     failed_test_suites = []
     total_test_suites = 0
@@ -128,24 +130,34 @@ def test_modeling_rules_results(artifact_folder: Path, pipeline_url: str, title:
         for test_suite in test_suites.values():
             total_test_suites += 1
             if test_suite.failures or test_suite.errors:
-                failed_test_suites.append(get_failed_modeling_rule_name_from_test_suite(test_suite))
+                properties = get_properties_for_test_suite(test_suite)
+                if modeling_rule := get_summary_for_test_modeling_rule(properties):
+                    failed_test_suites.append(failed_test_data_to_slack_link(modeling_rule,
+                                                                             failed_test_to_jira_mapping.get(modeling_rule)))
 
     if failed_test_suites:
+        if (artifact_folder / TEST_MODELING_RULES_TO_JIRA_TICKETS_CONVERTED).exists():
+            title_suffix = ALL_FAILURES_WERE_CONVERTED_TO_JIRA_TICKETS
+            color = 'warning'
+        else:
+            title_suffix = ''
+            color = 'danger'
+
         title = (f"{title} - Failed Tests Modeling rules - Passed:{total_test_suites - len(failed_test_suites)}, "
                  f"Failed:{len(failed_test_suites)}")
         return [{
             'fallback': title,
-            'color': 'danger',
+            'color': color,
             'title': title,
             'title_link': get_test_report_pipeline_url(pipeline_url),
             'fields': [
                 {
-                    "title": "Failed Tests Modeling rules",
+                    "title": f"Failed Tests Modeling rules{title_suffix}",
                     "value": ' ,'.join(failed_test_suites),
                     "short": False
                 }
             ]
-        }]
+        }], True
 
     title = f"{title} - All Test Modeling rules Passed - ({total_test_suites})"
     return [{
@@ -153,30 +165,51 @@ def test_modeling_rules_results(artifact_folder: Path, pipeline_url: str, title:
         'color': 'good',
         'title': title,
         'title_link': get_test_report_pipeline_url(pipeline_url),
-    }]
+    }], False
+
+
+def failed_test_data_to_slack_link(failed_test: str, jira_ticket_data: dict[str, str] | None) -> str:
+    if jira_ticket_data:
+        return slack_link(jira_ticket_data['url'], f"{failed_test} [{jira_ticket_data['key']}]")
+    return failed_test
+
+
+def slack_link(url: str, text: str) -> str:
+    return f"<{url}|{text}>"
 
 
 def test_playbooks_results_to_slack_msg(instance_role: str,
-                                        succeeded_tests: list[str],
-                                        failed_tests: list[str],
-                                        skipped_integrations: list[str],
-                                        skipped_tests: list[str],
+                                        succeeded_tests: set[str],
+                                        failed_tests: set[str],
+                                        skipped_integrations: set[str],
+                                        skipped_tests: set[str],
+                                        playbook_to_jira_mapping: dict[str, Any],
+                                        test_playbook_tickets_converted: bool,
                                         title: str,
-                                        pipeline_url: str) -> list[dict[str, Any]]:
+                                        pipeline_url: str) -> tuple[list[dict[str, Any]], bool]:
     if failed_tests:
         title = (f"{title} ({instance_role}) - Test Playbooks - Passed:{len(succeeded_tests)}, Failed:{len(failed_tests)}, "
                  f"Skipped - {len(skipped_tests)}, Skipped Integrations - {len(skipped_integrations)}")
+        if test_playbook_tickets_converted:
+            title_suffix = ALL_FAILURES_WERE_CONVERTED_TO_JIRA_TICKETS
+            color = 'warning'
+        else:
+            title_suffix = ''
+            color = 'danger'
         return [{
             'fallback': title,
-            'color': 'danger',
+            'color': color,
             'title': title,
             'title_link': get_test_report_pipeline_url(pipeline_url),
+            "mrkdwn_in": ["fields"],
             'fields': [{
-                "title": "Failed Test Playbooks",
-                "value": ', '.join(failed_tests),
+                "title": f"Failed Test Playbooks{title_suffix}",
+                "value": ', '.join(
+                    failed_test_data_to_slack_link(playbook_id,
+                                                   playbook_to_jira_mapping.get(playbook_id)) for playbook_id in failed_tests),
                 "short": False
             }]
-        }]
+        }], True
     title = (f"{title} ({instance_role}) - All Tests Playbooks Passed - Passed:{len(succeeded_tests)}, "
              f"Skipped - {len(skipped_tests)}, Skipped Integrations - {len(skipped_integrations)})")
     return [{
@@ -184,26 +217,53 @@ def test_playbooks_results_to_slack_msg(instance_role: str,
         'color': 'good',
         'title': title,
         'title_link': get_test_report_pipeline_url(pipeline_url),
-    }]
+    }], False
 
 
 def split_results_file(tests_data: str | None) -> list[str]:
     return list(filter(None, tests_data.split('\n'))) if tests_data else []
 
 
-def test_playbooks_results(artifact_folder: Path, pipeline_url: str, title: str) -> list[dict[str, Any]]:
+def get_playbook_tests_data(artifact_folder: Path) -> tuple[set[str], set[str], set[str], set[str]]:
+    succeeded_tests = set()
+    failed_tests = set()
+    skipped_tests = set()
+    skipped_integrations = set(split_results_file(get_artifact_data(artifact_folder, 'skipped_integrations.txt')))
+    xml = JUnitXml.fromfile(artifact_folder / TEST_PLAYBOOKS_REPORT_FILE_NAME)
+    for test_suite in xml.iterchildren(TestSuite):
+        properties = get_properties_for_test_suite(test_suite)
+        if playbook_id := properties.get("playbook_id"):
+            if test_suite.failures or test_suite.errors:
+                failed_tests.add(playbook_id)
+            elif test_suite.skipped:
+                skipped_tests.add(playbook_id)
+            else:
+                succeeded_tests.add(playbook_id)
 
-    content_team_fields = []
+    return succeeded_tests, failed_tests, skipped_tests, skipped_integrations
+
+
+def test_playbooks_results(artifact_folder: Path, pipeline_url: str, title: str) -> tuple[list[dict[str, Any]], bool]:
+
+    test_playbook_to_jira_mapping = read_test_playbook_to_jira_mapping(artifact_folder)
+    test_playbook_tickets_converted = (artifact_folder / TEST_PLAYBOOKS_TO_JIRA_TICKETS_CONVERTED).exists()
+    has_failed_tests = False
+    test_playbook_slack_msg = []
     for instance_role, instance_directory in get_instance_directories(artifact_folder).items():
-        succeeded_tests = split_results_file(get_artifact_data(instance_directory, 'succeeded_tests.txt'))
-        failed_tests = split_results_file(get_artifact_data(instance_directory, 'failed_tests.txt'))
-        skipped_tests = split_results_file(get_artifact_data(instance_directory, 'skipped_tests.txt'))
-        skipped_integrations = split_results_file(get_artifact_data(instance_directory, 'skipped_integrations.txt'))
+        succeeded_tests, failed_tests, skipped_tests, skipped_integrations = get_playbook_tests_data(instance_directory)
+        instance_slack_msg, instance_has_failed_tests = test_playbooks_results_to_slack_msg(instance_role,
+                                                                                            succeeded_tests,
+                                                                                            failed_tests,
+                                                                                            skipped_integrations,
+                                                                                            skipped_tests,
+                                                                                            test_playbook_to_jira_mapping,
+                                                                                            test_playbook_tickets_converted,
+                                                                                            title,
+                                                                                            pipeline_url)
+        test_playbook_slack_msg += instance_slack_msg
+        has_failed_tests |= instance_has_failed_tests
 
-        content_team_fields += test_playbooks_results_to_slack_msg(instance_role, succeeded_tests, failed_tests,
-                                                                   skipped_integrations, skipped_tests, title, pipeline_url)
-
-    return content_team_fields
+    return test_playbook_slack_msg, has_failed_tests
 
 
 def unit_tests_results() -> list[dict[str, Any]]:
@@ -255,26 +315,34 @@ def bucket_upload_results(bucket_artifact_folder: Path,
 
 def construct_slack_msg(triggering_workflow: str,
                         pipeline_url: str,
-                        pipeline_failed_jobs: list,
+                        pipeline_failed_jobs: list[ProjectPipelineJob],
                         pull_request: GithubPullRequest | None) -> list[dict[str, Any]]:
     # report failing jobs
     content_fields = []
-    failed_jobs_names = {job.name for job in pipeline_failed_jobs}
+
+    failed_jobs_names = {job.name: job.web_url for job in pipeline_failed_jobs}
     if failed_jobs_names:
+        failed_jobs = [slack_link(url, name) for name, url in sorted(failed_jobs_names.items())]
         content_fields.append({
             "title": f'Failed Jobs - ({len(failed_jobs_names)})',
-            "value": '\n'.join(sorted(failed_jobs_names)),
+            "value": '\n'.join(failed_jobs),
+            "short": False
+        })
+
+    if pull_request:
+        content_fields.append({
+            "title": "Pull Request",
+            "value": slack_link(pull_request.data['html_url'], replace_escape_characters(pull_request.data['title'])),
             "short": False
         })
 
     # report failing unit-tests
     triggering_workflow_lower = triggering_workflow.lower()
-    check_unittests_substrings = {'lint', 'unit', 'demisto sdk nightly', TEST_NATIVE_CANDIDATE.lower()}
     failed_jobs_or_workflow_title = {job_name.lower() for job_name in failed_jobs_names}
     failed_jobs_or_workflow_title.add(triggering_workflow_lower)
 
     if any(substr in means_include_unittests_results
-           for substr in check_unittests_substrings
+           for substr in UNIT_TESTS_WORKFLOW_SUBSTRINGS
            for means_include_unittests_results in failed_jobs_or_workflow_title):
         content_fields += unit_tests_results()
 
@@ -286,11 +354,18 @@ def construct_slack_msg(triggering_workflow: str,
         content_fields += bucket_upload_results(ARTIFACTS_FOLDER_XPANSE_SERVER_TYPE, "XPANSE", False)
 
     slack_msg_append = []
+    has_failed_tests = False
     # report failing test-playbooks and test modeling rules.
     if triggering_workflow in {CONTENT_NIGHTLY, CONTENT_PR, CONTENT_MERGE}:
-        slack_msg_append += test_playbooks_results(ARTIFACTS_FOLDER_XSOAR, pipeline_url, title="XSOAR")
-        slack_msg_append += test_playbooks_results(ARTIFACTS_FOLDER_XSIAM, pipeline_url, title="XSIAM")
-        slack_msg_append += test_modeling_rules_results(ARTIFACTS_FOLDER_XSIAM, pipeline_url, title="XSIAM")
+        test_playbooks_slack_msg_xsoar, test_playbooks_has_failure_xsoar = test_playbooks_results(ARTIFACTS_FOLDER_XSOAR,
+                                                                                                  pipeline_url, title="XSOAR")
+        test_playbooks_slack_msg_xsiam, test_playbooks_has_failure_xsiam = test_playbooks_results(ARTIFACTS_FOLDER_XSIAM,
+                                                                                                  pipeline_url, title="XSIAM")
+        test_modeling_rules_slack_msg_xsiam, test_modeling_rules_has_failure_xsiam = test_modeling_rules_results(
+            ARTIFACTS_FOLDER_XSIAM, pipeline_url, title="XSIAM")
+        slack_msg_append += test_playbooks_slack_msg_xsoar + test_playbooks_slack_msg_xsiam + test_modeling_rules_slack_msg_xsiam
+        has_failed_tests |= (test_playbooks_has_failure_xsoar or test_playbooks_has_failure_xsiam
+                             or test_modeling_rules_has_failure_xsiam)
         slack_msg_append += missing_content_packs_test_conf(ARTIFACTS_FOLDER_XSOAR_SERVER_TYPE)
     if triggering_workflow == CONTENT_NIGHTLY:
         # The coverage Slack message is only relevant for nightly and not for PRs.
@@ -299,24 +374,34 @@ def construct_slack_msg(triggering_workflow: str,
     title = triggering_workflow
 
     if pull_request:
-        pr_number = pull_request.data.get('number')
-        pr_title = pull_request.data.get('title')
+        pr_number = pull_request.data['number']
+        pr_title = replace_escape_characters(pull_request.data['title'])
         title += f' (PR#{pr_number} - {pr_title})'
+
+    # In case we have failed tests we override the color only in case all the pipeline jobs have passed.
+    if has_failed_tests:
+        title_append = " [Has Failed Tests]"
+        color = 'warning'
+    else:
+        title_append = ""
+        color = 'good'
 
     if pipeline_failed_jobs:
         title += ' - Failure'
         color = 'danger'
     else:
         title += ' - Success'
-        color = 'good'
-    slack_msg = [{
+        # No color is needed in case of success, as it's controlled by the color of the test failures' indicator.
+
+    title += title_append
+    title += f' - @{CI_SERVER_HOST}' if CI_SERVER_HOST else ''
+    return [{
         'fallback': title,
         'color': color,
         'title': title,
         'title_link': pipeline_url,
         'fields': content_fields
     }] + slack_msg_append
-    return slack_msg
 
 
 def missing_content_packs_test_conf(artifact_folder: Path) -> list[dict[str, Any]]:
@@ -338,29 +423,31 @@ def missing_content_packs_test_conf(artifact_folder: Path) -> list[dict[str, Any
     return []
 
 
-def collect_pipeline_data(gitlab_client: gitlab.Gitlab,
+def collect_pipeline_data(gitlab_client: Gitlab,
                           project_id: str,
-                          pipeline_id: str) -> tuple[str, list]:
+                          pipeline_id: str) -> tuple[str, list[ProjectPipelineJob]]:
     project = gitlab_client.projects.get(int(project_id))
     pipeline = project.pipelines.get(int(pipeline_id))
 
-    failed_jobs = []
+    failed_jobs: list[ProjectPipelineJob] = []
     for job in pipeline.jobs.list(iterator=True):
         logging.info(f'status of gitlab job with id {job.id} and name {job.name} is {job.status}')
         if job.status == 'failed':
             logging.info(f'collecting failed job {job.name}')
             logging.info(f'pipeline associated with failed job is {job.pipeline.get("web_url")}')
-            failed_jobs.append(job)
+            failed_jobs.append(job)  # type: ignore[arg-type]
 
     return pipeline.web_url, failed_jobs
 
 
 def construct_coverage_slack_msg() -> list[dict[str, Any]]:
     coverage_today = get_total_coverage(filename=(ROOT_ARTIFACTS_FOLDER / "coverage_report" / "coverage-min.json").as_posix())
-    yesterday = datetime.now() - timedelta(days=1)
-    coverage_yesterday = get_total_coverage(date=yesterday)
+    coverage_yesterday = get_total_coverage(date=datetime.now() - timedelta(days=1))
+    # The artifacts are kept for 30 days, so we can get the coverage for the last month.
+    coverage_last_month = get_total_coverage(date=datetime.now() - timedelta(days=30))
     color = 'good' if coverage_today >= coverage_yesterday else 'danger'
-    title = f'Content code coverage: {coverage_today:.3f}%'
+    title = (f'Content code coverage: {coverage_today:.3f}% (Yesterday: {coverage_yesterday:.3f}%, '
+             f'Last month: {coverage_last_month:.3f}%)')
 
     return [{
         'fallback': title,
@@ -387,7 +474,7 @@ def main():
     server_url = options.url
     ci_token = options.ci_token
     computed_slack_channel = options.slack_channel
-    gitlab_client = gitlab.Gitlab(server_url, private_token=ci_token)
+    gitlab_client = Gitlab(server_url, private_token=ci_token)
     slack_token = options.slack_token
     slack_client = WebClient(token=slack_token)
 
@@ -425,22 +512,22 @@ def main():
 
     with contextlib.suppress(Exception):
         output_file = ROOT_ARTIFACTS_FOLDER / 'slack_msg.json'
-        logging.info(f'Writing slack message to {output_file}')
+        logging.info(f'Writing Slack message to {output_file}')
         with open(output_file, 'w') as f:
             f.write(json.dumps(slack_msg_data, indent=4, sort_keys=True, default=str))
-        logging.info(f'Successfully wrote slack message to {output_file}')
+        logging.info(f'Successfully wrote Slack message to {output_file}')
 
     try:
         response = slack_client.chat_postMessage(
             channel=computed_slack_channel, attachments=slack_msg_data, username=SLACK_USERNAME
         )
         link = build_link_to_message(response)
-        logging.info(f'Successfully sent slack message to channel {computed_slack_channel} link: {link}')
+        logging.info(f'Successfully sent Slack message to channel {computed_slack_channel} link: {link}')
     except Exception:
         if strtobool(options.allow_failure):
-            logging.warning(f'Failed to send slack message to channel {computed_slack_channel} not failing build')
+            logging.warning(f'Failed to send Slack message to channel {computed_slack_channel} not failing build')
         else:
-            logging.exception(f'Failed to send slack message to channel {computed_slack_channel}')
+            logging.exception(f'Failed to send Slack message to channel {computed_slack_channel}')
             sys.exit(1)
 
 
