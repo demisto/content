@@ -342,6 +342,9 @@ tasks:
       xdr_alert_id:
         complex:
           root: inputs.alert_id
+      InternalIPRanges:
+        complex:
+          root: inputs.InternalIPRanges
     separatecontext: true
     continueonerrortype: ""
     loop:
