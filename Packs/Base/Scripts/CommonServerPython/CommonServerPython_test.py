@@ -9108,14 +9108,13 @@ class TestIsIntegrationCommandExecution:
     def test_problematic_cases(self, mocker, calling_context_mock):
         mocker.patch.object(demisto, 'callingContext', calling_context_mock)
         assert is_integration_command_execution() == True
-    
+
 
 @pytest.mark.parametrize("timestamp_str, seconds_threshold, expected", [
     ("2019-01-01T00:00:00Z", 60, True), 
     ("2022-01-01T00:00:00Z", 60, False),
     ("invalid", 60, ValueError)
 ])
-
 def test_has_passed_time_threshold__different_timestamps(timestamp_str, seconds_threshold, expected, mocker):
     """
     Given:
