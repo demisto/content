@@ -42,122 +42,234 @@ name: Covalence Managed Security
 script:
   commands:
   - arguments:
-    - description: if details=true, will return the complete response from Covalence API
+    - description: if details=true, will return the complete response from Covalence API.
       name: details
-    - description: |-
-        Portal query, for example: "resolution=Unresolved&type=Recommendation"
-        Available Keys to filter on:
-        - id; eg: "id=<ARO_id>
-        - status; eg: "status=In Triage" or "status=Open" or "status=Closed"
-        - resolution; eg: "resolution=Unresolved" or "resolution=Resolved" or "resolution=Help Requested" or "resolution=Dismissed"
-        - type; eg: "type=Action" or "type=Recommendation" or "type=Observation"
-        - org; eg: "org=<organization_name>"
-        - since; eg: "since=2021-01-31 14:00:00"
-        - until; eg: "until=2021-01-31 14:00:00"
+      default: false
+      isArray: false
+      required: false
+      secret: false
+    - description: "Portal query, for example: \"resolution=Unresolved&type=Recommendation\"\nAvailable Keys to filter on:\n- id; eg: \"id=<ARO_id>\n- status; eg: \"status=In Triage\" or \"status=Open\" or \"status=Closed\"\n- resolution; eg: \"resolution=Unresolved\" or \"resolution=Resolved\" or \"resolution=Help Requested\" or \"resolution=Dismissed\"\n- type; eg: \"type=Action\" or \"type=Recommendation\" or \"type=Observation\"\n- org; eg: \"org=<organization_name>\"\n- since; eg: \"since=2021-01-31 14:00:00\"\n- until; eg: \"until=2021-01-31 14:00:00\"."
       name: query
       required: true
-    description: Query FES Portal for ARO
+      default: false
+      isArray: false
+      secret: false
+    description: Query FES Portal for ARO.
     name: cov-mgsec-get-aro
     outputs:
     - contextPath: FESPortal.Aro.ID
-      description: ID
+      description: ID.
       type: String
     - contextPath: FESPortal.Aro.alert_key
-      description: Alert_key
+      description: Alert_key.
       type: String
     - contextPath: FESPortal.Aro.analyst_notes
-      description: Analyst_notes
+      description: Analyst_notes.
       type: String
     - contextPath: FESPortal.Aro.count
-      description: Count
+      description: Count.
       type: Number
     - contextPath: FESPortal.Aro.creation_time
-      description: Creation_time
+      description: Creation_time.
       type: Date
     - contextPath: FESPortal.Aro.details
-      description: Details
+      description: Details.
       type: String
     - contextPath: FESPortal.Aro.details_markdown
-      description: Details_markdown
+      description: Details_markdown.
       type: String
     - contextPath: FESPortal.Aro.display_url
-      description: Display_url
+      description: Display_url.
       type: String
     - contextPath: FESPortal.Aro.external_bug_id
-      description: External_bug_id
+      description: External_bug_id.
       type: String
     - contextPath: FESPortal.Aro.last_updated_time
-      description: Last_updated_time
+      description: Last_updated_time.
       type: Date
     - contextPath: FESPortal.Aro.notes
-      description: Notes
+      description: Notes.
       type: String
     - contextPath: FESPortal.Aro.organization.ID
-      description: ID
+      description: ID.
       type: String
     - contextPath: FESPortal.Aro.organization.email
-      description: Email
+      description: Email.
       type: String
     - contextPath: FESPortal.Aro.organization.name
-      description: Name
+      description: Name.
       type: String
     - contextPath: FESPortal.Aro.resolution
-      description: Resolution
+      description: Resolution.
       type: String
     - contextPath: FESPortal.Aro.serial_id
-      description: Serial_id
+      description: Serial_id.
       type: String
     - contextPath: FESPortal.Aro.severity
-      description: Severity
+      description: Severity.
       type: String
     - contextPath: FESPortal.Aro.status
-      description: Status
+      description: Status.
       type: String
     - contextPath: FESPortal.Aro.steps.ID
-      description: ID
+      description: ID.
       type: String
     - contextPath: FESPortal.Aro.steps.completed
-      description: Completed
+      description: Completed.
       type: Boolean
     - contextPath: FESPortal.Aro.steps.label
-      description: Label
+      description: Label.
       type: String
     - contextPath: FESPortal.Aro.steps.last_updated_time
-      description: Last_updated_time
+      description: Last_updated_time.
       type: Date
     - contextPath: FESPortal.Aro.template_id
-      description: Template_id
+      description: Template_id.
       type: String
     - contextPath: FESPortal.Aro.title
-      description: Title
+      description: Title.
       type: String
     - contextPath: FESPortal.Aro.triage_id
-      description: Triage_id
+      description: Triage_id.
       type: String
     - contextPath: FESPortal.Aro.type
-      description: Type
+      description: Type.
       type: String
-  - description: List organizations
+    deprecated: false
+    execution: false
+  - description: List organizations.
     name: cov-mgsec-list-org
     outputs:
     - contextPath: FESPortal.Org.ID
-      description: ID
+      description: ID.
       type: String
     - contextPath: FESPortal.Org.email
-      description: Email
+      description: Email.
       type: String
     - contextPath: FESPortal.Org.email_aro_details
-      description: Email_aro_details
+      description: Email_aro_details.
       type: Boolean
     - contextPath: FESPortal.Org.name
-      description: Name
+      description: Name.
       type: String
-  dockerimage: demisto/python3:3.10.13.72123
+    deprecated: false
+    execution: false
+  - description: Transition an ARO.
+    name: cov-mgsec-transition-aro
+    arguments:
+    - name: aro_id
+      required: true
+      default: false
+      isArray: false
+      secret: false
+      description: This ARO ID to transition.
+    - name: resolution
+      required: true
+      default: false
+      isArray: false
+      secret: false
+      description: 'Resolution to transition the ARO to.  Options include: Unresolved, Help Requested, Resolved, or Dismissed.'
+    - name: comment
+      required: false
+      default: false
+      isArray: false
+      secret: false
+      description: Optional comment to leave on the ARO.
+    - name: is_comment_sensitive
+      required: false
+      default: false
+      isArray: false
+      secret: false
+      description: Optionally mark the comment as sensitive.
+    outputs:
+    - contextPath: FESPortal.Aro.ID
+      description: ID.
+      type: String
+    - contextPath: FESPortal.Aro.alert_key
+      description: Alert_key.
+      type: String
+    - contextPath: FESPortal.Aro.analyst_notes
+      description: Analyst_notes.
+      type: String
+    - contextPath: FESPortal.Aro.count
+      description: Count.
+      type: Number
+    - contextPath: FESPortal.Aro.creation_time
+      description: Creation_time.
+      type: Date
+    - contextPath: FESPortal.Aro.details
+      description: Details.
+      type: String
+    - contextPath: FESPortal.Aro.details_markdown
+      description: Details_markdown.
+      type: String
+    - contextPath: FESPortal.Aro.display_url
+      description: Display_url.
+      type: String
+    - contextPath: FESPortal.Aro.external_bug_id
+      description: External_bug_id.
+      type: String
+    - contextPath: FESPortal.Aro.last_updated_time
+      description: Last_updated_time.
+      type: Date
+    - contextPath: FESPortal.Aro.notes
+      description: Notes.
+      type: String
+    - contextPath: FESPortal.Aro.organization.ID
+      description: ID.
+      type: String
+    - contextPath: FESPortal.Aro.organization.email
+      description: Email.
+      type: String
+    - contextPath: FESPortal.Aro.organization.name
+      description: Name.
+      type: String
+    - contextPath: FESPortal.Aro.resolution
+      description: Resolution.
+      type: String
+    - contextPath: FESPortal.Aro.serial_id
+      description: Serial_id.
+      type: String
+    - contextPath: FESPortal.Aro.severity
+      description: Severity.
+      type: String
+    - contextPath: FESPortal.Aro.status
+      description: Status.
+      type: String
+    - contextPath: FESPortal.Aro.steps.ID
+      description: ID.
+      type: String
+    - contextPath: FESPortal.Aro.steps.completed
+      description: Completed.
+      type: Boolean
+    - contextPath: FESPortal.Aro.steps.label
+      description: Label.
+      type: String
+    - contextPath: FESPortal.Aro.steps.last_updated_time
+      description: Last_updated_time.
+      type: Date
+    - contextPath: FESPortal.Aro.template_id
+      description: Template_id.
+      type: String
+    - contextPath: FESPortal.Aro.title
+      description: Title.
+      type: String
+    - contextPath: FESPortal.Aro.triage_id
+      description: Triage_id.
+      type: String
+    - contextPath: FESPortal.Aro.type
+      description: Type.
+      type: String
+  dockerimage: demisto/python3:3.10.13.82467
   isfetch: true
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
+  feed: false
+  longRunning: false
+  longRunningPort: false
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0
+beta: false

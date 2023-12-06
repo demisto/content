@@ -86,7 +86,7 @@ configuration:
   advanced: true
   required: false
 script:
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.10.13.82467
   type: python
   subtype: python3
   script: '-'
@@ -452,7 +452,10 @@ script:
       - last_modified_date|asc
       - last_modified_date|desc
     - name: slug
-      description: 'Search by ''slug'' or short descriptive name. For example, "anchor-panda"'
+      description: 'Search by ''slug'' or short descriptive name. For example, "anchor-panda".'
+    - name: display_full_fields
+      description: Whether to return and display full data from CS API. (For example full description, which by default is short).
+      defaultValue: false
     outputs:
     - contextPath: FalconIntel.Actor.ImageURL
       description: The URL of the actor image.
@@ -471,6 +474,9 @@ script:
       type: String
     - contextPath: FalconIntel.Actor.ShortDescription
       description: The short description of the actor.
+      type: String
+    - contextPath: FalconIntel.Actor.Description
+      description: The full description of the actor.
       type: String
     - contextPath: FalconIntel.Actor.FirstActivityDate
       description: The first activity date of the actor.
@@ -609,7 +615,7 @@ script:
       description: For malicious files, the associated kill chain.
       type: String
     - contextPath: URL.Data
-      description: The URL
+      description: The URL.
       type: String
     - contextPath: URL.Malicious.Vendor
       description: The vendor reporting the URL as malicious.
@@ -666,7 +672,7 @@ script:
       description: For a malicious IP address, the associated actors.
       type: String
     - contextPath: IP.MalwareFamilies
-      description: For a malicious IP address, the associated malware family
+      description: For a malicious IP address, the associated malware family.
       type: String
     - contextPath: IP.KillChains
       description: For a malicious IP address, the associated kill chain.
@@ -799,6 +805,9 @@ script:
       - created_date|desc
       - last_modified_date|asc
       - last_modified_date|desc
+    - name: display_full_fields
+      description: Whether to display the full fields result from CS API.
+      defaultValue: false
     outputs:
     - contextPath: FalconIntel.Report.ID
       description: The ID of the report.
@@ -826,6 +835,9 @@ script:
       type: Date
     - contextPath: FalconIntel.Report.ShortDescription
       description: The short description of the report.
+      type: String
+    - contextPath: FalconIntel.Report.Description
+      description: The full description of the report.
       type: String
     - contextPath: FalconIntel.Report.TargetIndustries
       description: "Targeted industries included in the report. For example, aerospace."

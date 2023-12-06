@@ -569,6 +569,7 @@ Search known actors based on the given parameters.
 | limit | The maximum number of actors to retrieve. The default is 10. | Optional | 
 | sort | Sort by field and direction. | Optional | 
 | slug | Search by 'slug' or short descriptive name. Ex: "anchor-panda" | Optional | 
+| display_full_fields | Whether to display the full fields result from CS API. Default is False | Optional | 
 
 
 #### Context Output
@@ -581,6 +582,7 @@ Search known actors based on the given parameters.
 | FalconIntel.Actor.URL | String | The url of the actor | 
 | FalconIntel.Actor.Slug | String | Slug name ofactor | 
 | FalconIntel.Actor.ShortDescription | String | The actor short description. | 
+| FalconIntel.Actor.Description | String | The actor full description. | 
 | FalconIntel.Actor.FirstActivityDate | Date | The actor first activity date. | 
 | FalconIntel.Actor.LastActivityDate | Date | The actor last activity date. | 
 | FalconIntel.Actor.Active | Boolean | The actor active status. | 
@@ -617,7 +619,8 @@ Search known actors based on the given parameters.
                 "Eastern Europe",
                 "Russian Federation"
             ],
-            "ShortDescription": "TWISTED SPIDER is the criminal group behind the development and operation of Maze ransomware. While the ransomware was first observed in May 2019, the group gained notoriety in November 2019 with their brazen attitude toward victims and their willingness to speak with security researchers as they began using Big Game Hunting (BGH) tactics to target organizations and businesses. While other actors ...",
+            "ShortDescription": "TWISTED SPIDER is the criminal group behind the development and operation of Maze ransomware. While the ransomware was first observed in May 2019, the group gained notoriety in November 2019 with their brazen attitude toward victims and their willingness to speak with security researchers as they began using Big Game Hunting (BGH) tactics to target ...",
+            "Description": "TWISTED SPIDER is the criminal group behind the development and operation of Maze ransomware. While the ransomware was first observed in May 2019, the group gained notoriety in November 2019 with their brazen attitude toward victims and their willingness to speak with security researchers as they began using Big Game Hunting (BGH) tactics to target organizations and businesses.",
             "Slug": "twisted-spider",
             "TargetCountries": [
                 "Algeria",
@@ -900,6 +903,7 @@ The Falcon Intel Reports API allows to query CrowdStrike intelligence publicatio
 | offset | Used to paginate the response. You can then use limit to set the number of results for the next page. | Optional | 
 | limit | The maximum number of reports to retrieve. The default is 10. | Optional | 
 | sort | Sort by field and direction. | Optional | 
+| display_full_fields | Whether to display the full fields result from CS API. Default is False | Optional | 
 
 
 #### Context Output
@@ -915,6 +919,7 @@ The Falcon Intel Reports API allows to query CrowdStrike intelligence publicatio
 | FalconIntel.Report.CreatedDate | Date | The date the report was created. | 
 | FalconIntel.Report.LastModifiedSate | Date | The date the report was last modified. | 
 | FalconIntel.Report.ShortDescription | String | The report short description. | 
+| FalconIntel.Report.Description | String | The report full description. | 
 | FalconIntel.Report.TargetIndustries | String | Targeted industries included in the report. Ex: aerospace | 
 | FalconIntel.Report.TargetCountries | String | Targeted countries included in the report. Ex: afghanistan | 
 | FalconIntel.Report.Motivations | String | Motivations included in the report. Ex: criminal | 
@@ -933,7 +938,8 @@ The Falcon Intel Reports API allows to query CrowdStrike intelligence publicatio
             "ID": 7448,
             "LastModifiedSate": "2020-07-24T10:15:02.000Z",
             "Name": "Snort Changelog",
-            "ShortDescription": "Added one additional rule to detect Hancitor malware traffic decsribed in CSIT-16107. ",
+            "ShortDescription": "Added one additional rule to detect Hancitor ...",
+            "Description": "Added one additional rule to detect Hancitor malware traffic decsribed in CSIT-16107. ",
             "Slug": "slug_value",
             "SubType": "Snort/Suricata",
             "Type": "Feeds",

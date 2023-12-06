@@ -18,7 +18,7 @@ function escapeRegex(string) {
 
 function main() {
     const emails = argToList(args.email);
-    const domains = argToList(JSON.stringify(args.domain)).map(x => x.toLowerCase());
+    const domains = argToList(args.domain).map(x => x.toLowerCase());
     const includeSubdomains = toBoolean(args.include_subdomains);
 
     let results = [];

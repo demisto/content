@@ -3,9 +3,6 @@ from CommonServerUserPython import *
 
 from CommonServerPython import *
 
-# Disable insecure warnings
-import urllib3
-urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 # PagerDuty API works only with secured communication.
@@ -20,9 +17,11 @@ DEFAULT_REQUESTOR = demisto.params().get('DefaultRequestor', '')
 SERVER_URL = 'https://api.pagerduty.com/'
 CREATE_EVENT_URL = 'https://events.pagerduty.com/v2/enqueue'
 
+INCIDENT_API_LIMIT = 100
+
 DEFAULT_HEADERS = {
-    'Authorization': 'Token token=' + API_KEY,
-    'Accept': 'application/vnd.pagerduty+json;version=2'
+    'Authorization': f'Token token={API_KEY}',
+    'Accept': 'application/vnd.pagerduty+json;version=2',
 }
 
 '''HANDLE PROXY'''
@@ -90,8 +89,8 @@ INCIDENTS_HEADERS = ['ID', 'Title', 'Description', 'Status', 'Created On', 'Urge
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method, url, params_dict=None, data=None, json_data=None, additional_headers=None):  # pragma: no cover
-    LOG('running %s request with url=%s\nparams=%s' % (method, url, json.dumps(params_dict)))
+def http_request(method: str, url: str, params_dict=None, data=None, json_data=None, additional_headers=None):  # pragma: no cover
+    demisto.debug(f'running {method} request with url={url}\nparams={json.dumps(params_dict)}')
     headers = DEFAULT_HEADERS.copy()
     if not additional_headers:
         additional_headers = {}
@@ -110,11 +109,11 @@ def http_request(method, url, params_dict=None, data=None, json_data=None, addit
         return unicode_to_str_recur(res.json())
 
     except Exception as e:
-        LOG(e)
+        demisto.debug(e)
         raise
 
 
-def translate_severity(sev):
+def translate_severity(sev: str) -> int:
     if sev.lower() == 'high':
         return 3
     elif sev.lower() == 'low':
@@ -140,8 +139,8 @@ def test_module():  # pragma: no cover
     demisto.results('ok')
 
 
-def extract_on_call_user_data(users, schedule_id=None):
-    """Extact data about user from a given schedule."""
+def extract_on_call_user_data(users: list[dict], schedule_id=None) -> CommandResults:
+    """Extract data about user from a given schedule."""
     outputs = []
     contexts = []
     for user in users:
@@ -177,18 +176,18 @@ def extract_on_call_user_data(users, schedule_id=None):
     )
 
 
-def extract_on_call_now_user_data(users_on_call_now):
+def extract_on_call_now_user_data(users_on_call_now: dict[str, Any]) -> CommandResults:
     """Extract the user data from the oncalls json."""
-    outputs = []  # type: List[Dict]
-    contexts = []  # type: List[Dict]
-    oncalls = users_on_call_now.get('oncalls', {})
+    outputs: list[dict] = []
+    contexts: list[dict] = []
+    oncalls: list[dict] = users_on_call_now.get('oncalls', [{}])
 
-    for i in range(len(oncalls)):
+    for oncall in oncalls:
         output = {}
         context = {}
 
-        data = oncalls[i]
-        user = data.get('user')
+        data = oncall
+        user: dict = data.get('user', {})
         schedule_id = (data.get('schedule') or {}).get('id')
         if schedule_id:
             output['Schedule ID'] = schedule_id
@@ -220,12 +219,12 @@ def extract_on_call_now_user_data(users_on_call_now):
     )
 
 
-def parse_incident_data(incidents):
+def parse_incident_data(incidents) -> tuple[list, list, list]:
     """Parse incident data to output,context format"""
     outputs = []
     contexts = []
     raw_response = []
-    for i, incident in enumerate(incidents):
+    for _i, incident in enumerate(incidents):
         output = {}
         context = {}
 
@@ -268,7 +267,7 @@ def parse_incident_data(incidents):
         context['resolve_reason'] = output['Resolve reason'] = incident.get('resolve_reason', '')
 
         context['teams'] = []
-        for team in incident.get('teams', []):
+        for team in incident.get('teams', [{}]):
             team_id = team.get('id', '')
             team_name = team.get('summary', '')
 
@@ -306,8 +305,8 @@ def parse_incident_data(incidents):
     return outputs, contexts, raw_response
 
 
-def extract_incidents_data(incidents, table_name):
-    """Extact data about incidents."""
+def extract_incidents_data(incidents: list[dict], table_name: str) -> dict:
+    """Extract data about incidents."""
     outputs, contexts, _ = parse_incident_data(incidents)
 
     return {
@@ -322,21 +321,22 @@ def extract_incidents_data(incidents, table_name):
     }
 
 
-def extract_all_schedules_data(schedules):
+def extract_all_schedules_data(schedules: list[dict]) -> dict:
     """Extract the data about all the schedules."""
     outputs = []
     contexts = []
-    for i in range(len(schedules)):
-        output = {}
-        context = {}  # type: Dict
-        data = schedules[i]
+    for schedule in schedules:
+        context: dict = {}
+        data = schedule
 
-        output['ID'] = data.get('id')
-        output['Name'] = data.get('name')
-        output['Time Zone'] = data.get('time_zone')
-        output['Today'] = datetime.today().strftime('%Y-%m-%d')
-        escalation_policies = data.get('escalation_policies', [])
-        if len(escalation_policies) > 0:
+        output = {
+            'ID': data.get('id'),
+            'Name': data.get('name'),
+            'Time Zone': data.get('time_zone'),
+            'Today': datetime.today().strftime('%Y-%m-%d'),
+        }
+        escalation_policies: list[dict] = data.get('escalation_policies', [{}])
+        if escalation_policies:
             output['Escalation Policy ID'] = escalation_policies[0].get('id')
             output['Escalation Policy'] = escalation_policies[0].get('summary')
 
@@ -368,7 +368,7 @@ def extract_all_schedules_data(schedules):
 
 
 def create_new_incident(source, summary, severity, action, description='No description', group='',
-                        event_class='', component='', incident_key=None, service_key=SERVICE_KEY):
+                        event_class='', component='', incident_key=None, service_key=SERVICE_KEY) -> dict:
     """Create a new incident in the PagerDuty instance."""
     payload = {
         'routing_key': service_key,
@@ -392,7 +392,7 @@ def create_new_incident(source, summary, severity, action, description='No descr
     return http_request('POST', CREATE_EVENT_URL, data=json.dumps(payload))
 
 
-def resolve_or_ack_incident(action, incident_key, service_key=SERVICE_KEY):
+def resolve_or_ack_incident(action, incident_key, service_key=SERVICE_KEY) -> dict:
     """Resolve or Acknowledge an incident in the PagerDuty instance."""
     payload = {
         'routing_key': service_key,
@@ -403,19 +403,18 @@ def resolve_or_ack_incident(action, incident_key, service_key=SERVICE_KEY):
     return http_request('POST', CREATE_EVENT_URL, data=json.dumps(payload))
 
 
-def extract_new_event_data(table_name, response):
+def extract_new_event_data(table_name: str, response: dict) -> dict:
     """Extract the data from the response of creating a new command."""
-    output = {}
-    context = {}
-
-    output['Status'] = response.get('status', '')
-    output['Message'] = response.get('message', '')
-    output['Incident key'] = response.get('dedup_key', '')
-
-    context['Status'] = output['Status']
-    context['Message'] = output['Message']
-    context['incident_key'] = output['Incident key']
-
+    output = {
+        'Status': response.get('status', ''),
+        'Message': response.get('message', ''),
+        'Incident key': response.get('dedup_key', ''),
+    }
+    context = {
+        'Status': output['Status'],
+        'Message': output['Message'],
+        'incident_key': output['Incident key'],
+    }
     return {
         'Type': entryTypes['note'],
         'Contents': response,
@@ -429,11 +428,11 @@ def extract_new_event_data(table_name, response):
     }
 
 
-def extract_users_contact_methods(user_contact_methods):
+def extract_users_contact_methods(user_contact_methods: dict) -> dict:
     """Extract all the contact methods of a given user."""
     outputs = []
     contexts = []
-    contact_methods = user_contact_methods.get('contact_methods')
+    contact_methods: list[dict] = user_contact_methods.get('contact_methods', [{}])
     for contact_method in contact_methods:
         output = {
             'ID': contact_method.get('id'),
@@ -447,7 +446,7 @@ def extract_users_contact_methods(user_contact_methods):
         outputs.append(output)
 
         del contact_method['address']
-        if output['Type'] == 'SMS' or output['Type'] == 'Phone':
+        if output['Type'] in ['SMS', 'Phone']:
             del contact_method['country_code']
             contact_method['phone'] = output['Details']
         else:
@@ -467,10 +466,10 @@ def extract_users_contact_methods(user_contact_methods):
     }
 
 
-def extract_users_notification_role(user_notification_role):
+def extract_users_notification_role(user_notification_role: dict) -> dict:
     """Extract the notification role of a given user."""
     outputs = []
-    notification_rules = user_notification_role.get('notification_rules')
+    notification_rules: list[dict] = user_notification_role.get('notification_rules', [{}])
     for notification_rule in notification_rules:
         output = {
             'ID': notification_rule.get('id'),
@@ -492,15 +491,13 @@ def extract_users_notification_role(user_notification_role):
     }
 
 
-def extract_responder_request(responder_request_response):
+def extract_responder_request(responder_request_response) -> CommandResults:
     """Extract the users that were requested to respond"""
     outputs = []
     responder_request = responder_request_response.get("responder_request")
     for request in responder_request.get("responder_request_targets", []):
         request = request.get("responder_request_target")
-        output = {}
-        output["Type"] = request.get("type")
-        output["ID"] = request.get("id")
+        output = {"Type": request.get("type"), "ID": request.get("id")}
         if output["Type"] == "user":
             responder_user = request.get("incidents_responders", [])[0].get("user")
         else:
@@ -553,31 +550,102 @@ def fetch_incidents():
     demisto.setLastRun({'time': now})
 
 
-def configure_status(status='triggered,acknowledged'):
+def configure_status(status='triggered,acknowledged') -> str:
     statuses = status.split(',')
-    statuses_string = "&" + STATUSES + '='
+    statuses_string = f"&{STATUSES}="
     statuses = statuses_string.join(statuses)
-    status_request = '&' + STATUSES + '=' + statuses
+    status_request = f'&{STATUSES}={statuses}'
 
     status_request = status_request + INCLUDED_FIELDS + UTC_PARAM
     return status_request
 
 
-def get_incidents_command(since=None, until=None, status='triggered,acknowledged', sortBy=None, incident_key=None):
-    """Get incidents command."""
-    param_dict = {}
-    if since is not None:
-        param_dict['since'] = since
-    if until is not None:
-        param_dict['until'] = until
-    if sortBy is not None:
-        param_dict['sortBy'] = sortBy
-    if incident_key:
-        param_dict['incident_key'] = incident_key
+def pagination_incidents(param_dict: dict, pagination_dict: dict, url: str) -> list[dict]:
+    """
+    Retrieves incident data through paginated requests.
 
-    url = SERVER_URL + GET_INCIDENTS_SUFFIX + configure_status(status)
-    res = http_request('GET', url, param_dict)
-    return extract_incidents_data(res.get('incidents', []), INCIDENTS_LIST)
+    Args:
+        param_dict (dict): A dictionary containing parameters for controlling pagination, including:
+            - 'page': Current page number (optional).
+            - 'page_size': Number of incidents per page (optional).
+            - 'limit': Maximum number of incidents to retrieve (optional).
+            - Additional parameters to include in the API request.
+
+        url (str): The URL of the API endpoint for incident data.
+
+    Returns:
+        list[dict]: A list of dictionaries, where each dictionary represents an incident.
+
+    Notes:
+        This function supports pagination for efficient retrieval of large datasets. It calculates
+        the appropriate 'limit' and 'offset' values based on the provided arguments.
+
+    Examples:
+        To retrieve incidents for the second page with a page size of 20:
+        >>> pagination_incidents({'page': 2, 'page_size': 20}, 'https://api.example.com/incidents', {})
+
+        To retrieve the first 50 incidents without explicit pagination:
+        >>> pagination_incidents({'limit': 50}, 'https://api.example.com/incidents', {'status': 'open'})
+    """
+    def _get_page(**pagination_args) -> list[dict]:
+        # param_dict must be before pagination_args for merging to work correctly
+        return http_request('GET', url, param_dict | pagination_args).get("incidents", [{}])
+
+    page: list = []
+
+    page_number = arg_to_number(pagination_dict.get("page"))
+    page_size = arg_to_number(pagination_dict.get("page_size"))
+
+    if page_number is not None and page_size is not None:
+        if page_size > INCIDENT_API_LIMIT:
+            raise DemistoException(f"The max size for page is {INCIDENT_API_LIMIT}. Please provide a lower page size.")
+        limit = page_size
+        offset = (page_number - 1) * page_size
+
+    else:
+        limit = arg_to_number(pagination_dict.get("limit")) or 50
+        offset = 0
+
+        if limit > INCIDENT_API_LIMIT:
+            for offset in range(0, limit - INCIDENT_API_LIMIT, INCIDENT_API_LIMIT):
+                page += _get_page(
+                    limit=INCIDENT_API_LIMIT,
+                    offset=offset)
+
+            # the remaining call can be less than OR equal the api_limit but not empty
+            limit = limit % INCIDENT_API_LIMIT or INCIDENT_API_LIMIT
+            offset += INCIDENT_API_LIMIT
+
+    page += _get_page(
+        limit=limit,
+        offset=offset)
+
+    return page
+
+
+def get_incidents_command(args: dict[str, str]) -> dict:
+    """Get incidents command."""
+    param_dict: dict = {
+        "since": args.get("since"),
+        "until": args.get("until"),
+        "sortBy": args.get("sortBy"),
+        "incident_key": args.get("incident_key"),
+        "user_ids[]": argToList(args.get("user_id")),
+        "urgencies[]": args.get("urgencies"),
+        "date_range": args.get("date_range")
+    }
+    pagination_args = {
+        "page": arg_to_number(args.get("page")),
+        "page_size": arg_to_number(args.get("page_size")),
+        "limit": arg_to_number(args.get("limit", 50))
+    }
+    remove_nulls_from_dictionary(pagination_args)
+    remove_nulls_from_dictionary(param_dict)
+
+    url = SERVER_URL + GET_INCIDENTS_SUFFIX + configure_status(args.get("status", 'triggered,acknowledged'))
+    incidents: list[dict] = pagination_incidents(param_dict, pagination_args, url)
+
+    return extract_incidents_data(incidents, INCIDENTS_LIST)
 
 
 def submit_event_command(source, summary, severity, action, description='No description', group='',
@@ -592,7 +660,7 @@ def submit_event_command(source, summary, severity, action, description='No desc
     return extract_new_event_data(TRIGGER_EVENT, res)
 
 
-def get_all_schedules_command(query=None, limit=None):
+def get_all_schedules_command(query=None, limit=None) -> dict:
     """Get all the schedules."""
     param_dict = {}
     if query is not None:
@@ -602,11 +670,11 @@ def get_all_schedules_command(query=None, limit=None):
 
     url = SERVER_URL + GET_SCHEDULES_SUFFIX
     res = http_request('GET', url, param_dict)
-    schedules = res.get('schedules', [])
+    schedules = res.get('schedules', [{}])
     return extract_all_schedules_data(schedules)
 
 
-def get_on_call_users_command(scheduleID, since=None, until=None):
+def get_on_call_users_command(scheduleID: str, since=None, until=None) -> CommandResults:
     """Get the list of user on call in a from scheduleID"""
     param_dict = {}
     if since is not None:
@@ -616,10 +684,10 @@ def get_on_call_users_command(scheduleID, since=None, until=None):
 
     url = SERVER_URL + ON_CALL_BY_SCHEDULE_SUFFIX.format(scheduleID)
     users_on_call = http_request('GET', url, param_dict)
-    return extract_on_call_user_data(users_on_call.get('users', []), scheduleID)
+    return extract_on_call_user_data(users_on_call.get('users', [{}]), scheduleID)
 
 
-def get_on_call_now_users_command(limit=None, escalation_policy_ids=None, schedule_ids=None):
+def get_on_call_now_users_command(limit=None, escalation_policy_ids=None, schedule_ids=None) -> CommandResults:
     """Get the list of users that are on call now."""
     param_dict = {}
     if limit is not None:
@@ -630,25 +698,25 @@ def get_on_call_now_users_command(limit=None, escalation_policy_ids=None, schedu
         param_dict['schedule_ids[]'] = argToList(schedule_ids)
 
     url = SERVER_URL + ON_CALLS_USERS_SUFFIX
-    users_on_call_now = http_request('GET', url, param_dict)
+    users_on_call_now: dict = http_request('GET', url, param_dict)
     return extract_on_call_now_user_data(users_on_call_now)
 
 
-def get_users_contact_methods_command(UserID):
+def get_users_contact_methods_command(UserID: str):
     """Get the contact methods of a given user."""
     url = SERVER_URL + USERS_CONTACT_METHODS_SUFFIX.format(UserID)
     user_contact_methods = http_request('GET', url, {})
     return extract_users_contact_methods(user_contact_methods)
 
 
-def get_users_notification_command(UserID):
+def get_users_notification_command(UserID) -> dict:
     """Get the notification rule of a given user"""
     url = SERVER_URL + USERS_NOTIFICATION_RULE.format(UserID)
-    user_notification_role = http_request('GET', url, {})
+    user_notification_role: dict = http_request('GET', url, {})
     return extract_users_notification_role(user_notification_role)
 
 
-def resolve_event(incident_key=None, serviceKey=SERVICE_KEY):
+def resolve_event(incident_key=None, serviceKey=SERVICE_KEY) -> dict:
     if serviceKey is None:
         raise Exception('You must enter a ServiceKey at the integration '
                         'parameters or in the command to process this action.')
@@ -664,7 +732,7 @@ def resolve_event(incident_key=None, serviceKey=SERVICE_KEY):
     return extract_new_event_data(RESOLVE_EVENT, action_response)
 
 
-def acknowledge_event(incident_key=None, serviceKey=SERVICE_KEY):
+def acknowledge_event(incident_key=None, serviceKey=SERVICE_KEY) -> dict:
     if serviceKey is None:
         raise Exception('You must enter a ServiceKey at the integration '
                         'parameters or in the command to process this action.')
@@ -680,28 +748,24 @@ def acknowledge_event(incident_key=None, serviceKey=SERVICE_KEY):
     return extract_new_event_data(ACKNOWLEDGE_EVENT, action_response)
 
 
-def get_incident_data():
-    incident_id = demisto.args().get('incident_id')
+def get_incident_data(args: dict):
+    incident_id = args['incident_id']
 
     url = SERVER_URL + GET_INCIDENT_SUFFIX + incident_id
     res = http_request('GET', url, {})
     return extract_incidents_data([res.get('incident', {})], INCIDENT)
 
 
-def get_service_keys():
+def get_service_keys() -> dict:
     offset = 0
-    raw_response = []
-
     url = SERVER_URL + GET_SERVICES_SUFFIX
     res = http_request('GET', url, {"offset": offset})
-    raw_response.append(res)
-
+    raw_response = [res]
     outputs = []
     contexts = []
     while res.get('services', []):
-        services = res.get('services', [])
+        services: list[dict] = res.get('services', [{}])
         for service in services:
-            output = {}
             context = {'ID': service.get('id'), 'Name': service.get('name'), 'Status': service.get('status'),
                        'CreatedAt': service.get('created_at')}
 
@@ -710,9 +774,12 @@ def get_service_keys():
             for integration in service.get('integrations', []):
                 integration_url = integration.get('self', '')
                 if integration_url:
-                    integration_data = {}
                     integration_res = http_request('GET', integration_url, {}).get('integration', {})
-                    integration_data['Name'] = integration_res.get('service', {}).get('summary', '')
+                    integration_data = {
+                        'Name': integration_res.get('service', {}).get(
+                            'summary', ''
+                        )
+                    }
                     integration_data['Key'] = integration_res.get('integration_key', '')
                     vendor_value = integration_res.get('vendor', {})
                     if not vendor_value:
@@ -721,11 +788,12 @@ def get_service_keys():
                         integration_data['Vendor'] = vendor_value.get('summary', 'Missing Vendor information')
 
                     integration_list.append(integration_data)
-                    integration_string += "Name: {}, Vendor: {}, Key: {}\n".format(integration_data['Name'],
-                                                                                   integration_data['Vendor'],
-                                                                                   integration_data['Key'])
+                    integration_string += (f"Name: {integration_data['Name']}, "
+                                           f"Vendor: {integration_data['Vendor']}, "
+                                           f"Key: {integration_data['Key']}\n"
+                                           )
 
-            output['Integration'] = integration_string
+            output = {'Integration': integration_string}
             context['Integration'] = integration_list
 
             outputs.append(output)
@@ -809,10 +877,10 @@ def run_response_play(incident_id, from_email, response_play_uuid):
     }
     response = http_request('POST', url, json_data=body, additional_headers={"From": from_email})
     if response != {"status": "ok"}:
-        raise Exception("Status NOT Ok - {}".format(response))
+        raise Exception(f"Status NOT Ok - {response}")
     return CommandResults(
-        readable_output="Response play successfully run to the incident " + incident_id + " by " + from_email,
-        raw_response=response
+        readable_output=f"Response play successfully run to the incident {incident_id} by {from_email}",
+        raw_response=response,
     )
 
 
@@ -820,40 +888,45 @@ def run_response_play(incident_id, from_email, response_play_uuid):
 
 
 def main():
+    command = demisto.command()
+    args = demisto.args()
+
     if not API_KEY:
         raise DemistoException('API key must be provided.')
-    LOG('command is %s' % (demisto.command(),))
+    demisto.debug(f'command is {command}')
     try:
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             test_module()
-        elif demisto.command() == 'fetch-incidents':
+        elif command == 'fetch-incidents':
             fetch_incidents()
-        elif demisto.command() == 'PagerDuty-incidents':
-            demisto.results(get_incidents_command(**demisto.args()))
-        elif demisto.command() == 'PagerDuty-submit-event':
-            demisto.results(submit_event_command(**demisto.args()))
-        elif demisto.command() == 'PagerDuty-get-users-on-call':
-            return_results(get_on_call_users_command(**demisto.args()))
-        elif demisto.command() == 'PagerDuty-get-all-schedules':
-            demisto.results(get_all_schedules_command(**demisto.args()))
-        elif demisto.command() == 'PagerDuty-get-users-on-call-now':
-            return_results(get_on_call_now_users_command(**demisto.args()))
-        elif demisto.command() == 'PagerDuty-get-contact-methods':
-            demisto.results(get_users_contact_methods_command(**demisto.args()))
-        elif demisto.command() == 'PagerDuty-get-users-notification':
-            demisto.results(get_users_notification_command(**demisto.args()))
-        elif demisto.command() == 'PagerDuty-resolve-event':
-            demisto.results(resolve_event(**demisto.args()))
-        elif demisto.command() == 'PagerDuty-acknowledge-event':
-            demisto.results(acknowledge_event(**demisto.args()))
-        elif demisto.command() == 'PagerDuty-get-incident-data':
-            demisto.results(get_incident_data())
-        elif demisto.command() == 'PagerDuty-get-service-keys':
+        elif command == 'PagerDuty-incidents':
+            demisto.results(get_incidents_command(args))
+        elif command == 'PagerDuty-submit-event':
+            demisto.results(submit_event_command(**args))
+        elif command == 'PagerDuty-get-users-on-call':
+            return_results(get_on_call_users_command(**args))
+        elif command == 'PagerDuty-get-all-schedules':
+            demisto.results(get_all_schedules_command(**args))
+        elif command == 'PagerDuty-get-users-on-call-now':
+            return_results(get_on_call_now_users_command(**args))
+        elif command == 'PagerDuty-get-contact-methods':
+            demisto.results(get_users_contact_methods_command(**args))
+        elif command == 'PagerDuty-get-users-notification':
+            demisto.results(get_users_notification_command(**args))
+        elif command == 'PagerDuty-resolve-event':
+            demisto.results(resolve_event(**args))
+        elif command == 'PagerDuty-acknowledge-event':
+            demisto.results(acknowledge_event(**args))
+        elif command == 'PagerDuty-get-incident-data':
+            demisto.results(get_incident_data(args))
+        elif command == 'PagerDuty-get-service-keys':
             demisto.results(get_service_keys())
-        elif demisto.command() == 'PagerDuty-add-responders':
-            return_results(add_responders_to_incident(**demisto.args()))
-        elif demisto.command() == 'PagerDuty-run-response-play':
-            return_results(run_response_play(**demisto.args()))
+        elif command == 'PagerDuty-add-responders':
+            return_results(add_responders_to_incident(**args))
+        elif command == 'PagerDuty-run-response-play':
+            return_results(run_response_play(**args))
+        else:
+            raise NotImplementedError(f"Command {command} is not implemented")
     except Exception as err:
         return_error(str(err))
 

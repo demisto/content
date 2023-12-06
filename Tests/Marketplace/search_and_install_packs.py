@@ -551,7 +551,8 @@ def search_pack_and_its_dependencies(client: demisto_client,
                 ]
                 packs_to_install.extend([pack['id'] for pack in pack_and_its_dependencies_as_list])
                 list_packs_and_its_dependency_install_request_body.append(pack_and_its_dependencies_as_list)
-
+                logging.info(
+                    f"list_packs_and_its_dependency_install_request_body: {list_packs_and_its_dependency_install_request_body} ")
         else:  # multithreading
             for pack in current_packs_to_install:
                 if pack['id'] not in packs_to_install:
@@ -783,6 +784,8 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
 
     success = True
     if not multithreading:
+        pack_ids = sorted(pack_ids, key=lambda x: (x == "DeveloperTools", x == "Base"))
+        logging.info(f"pack_ids = {pack_ids}")
         for pack_id in pack_ids:
             success &= search_pack_and_its_dependencies(pack_id=pack_id, **kwargs)
 

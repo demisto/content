@@ -1,4 +1,4 @@
-Detonate one or more files using the CrowdStrike Falcon Intelligence Sandbox integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
+Deprecated. Use Detonate URL - CrowdStrike Falcon Intelligence Sandbox v2 instead.
 
 ## Dependencies
 
@@ -6,22 +6,22 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* GenericPolling
+GenericPolling
 
 ### Integrations
 
-* CrowdStrike Falcon X
 * CrowdStrikeFalconX
+* CrowdStrike Falcon X
 
 ### Scripts
 
-* Sleep
+Sleep
 
 ### Commands
 
 * cs-fx-get-report-summary
-* cs-fx-submit-url
 * cs-fx-get-full-report
+* cs-fx-submit-url
 
 ## Playbook Inputs
 

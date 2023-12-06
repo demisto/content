@@ -72,7 +72,8 @@ def create_jira_issue_for_test_modeling_rule(jira_server: JIRA,
         xml = JUnitXml()
         xml.add_testsuite(test_suite)
         xml.write(attachment_file_name.name, pretty=True)
-        jira_server.add_attachment(issue=jira_issue.key, attachment=attachment_file_name.name, filename=junit_file_name)
+        jira_server.add_attachment(issue=jira_issue.key, attachment=attachment_file_name.name,
+                                   filename=junit_file_name_with_suffix)
 
     back_link_to = f" with back link to {link_to_issue.key}" if link_to_issue else ""
     logging.info(f"{'Updated' if use_existing_issue else 'Created'} Jira issue: {jira_issue.key} {back_link_to}"

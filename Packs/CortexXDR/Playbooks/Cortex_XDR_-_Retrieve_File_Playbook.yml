@@ -4,10 +4,7 @@ contentitemexportablefields:
   contentitemfields: {}
 name: Cortex XDR - Retrieve File Playbook
 description: |-
-  Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints.
-  Inputs for this playbook are:
-  - A comma-separated list of endpoint IDs.
-  - A comma-separated list of file paths for your operating system, either Windows, Linux, or Mac. At least one file path is required.
+  Deprecated. Use Cortex XDR - Retrieve File Playbook v2 instead.
 starttaskid: "0"
 tasks:
   "0":
@@ -45,11 +42,7 @@ tasks:
       id: b5b9500b-4287-4ed4-85f7-8d65d06975d4
       version: -1
       name: xdr-retrieve-files
-      description: Retrieves files from selected endpoints. You can retrieve up to
-        20 files, from no more than 10 endpoints. At least one endpoint ID and one
-        file path are necessary in order to run the command. After running this command,
-        you can use the xdr-action-status-get command with returned action_id, to
-        check the action status.
+      description: Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints. At least one endpoint ID and one file path are necessary in order to run the command. After running this command, you can use the xdr-action-status-get command with returned action_id, to check the action status.
       script: '|||xdr-file-retrieve'
       type: regular
       iscommand: true
@@ -123,8 +116,7 @@ tasks:
       Timeout:
         simple: "10"
       dt:
-        simple: PaloAltoNetworksXDR.GetActionStatus(val.status == "PENDING" || val.status
-          == "IN_PROGRESS" || val.status == "PENDING_ABORT" ).action_id
+        simple: PaloAltoNetworksXDR.GetActionStatus(val.status == "PENDING" || val.status == "IN_PROGRESS" || val.status == "PENDING_ABORT" ).action_id
     separatecontext: true
     loop:
       iscommand: false
@@ -243,9 +235,7 @@ tasks:
       id: 0564ecf2-66a6-4447-8572-b0854d7f6162
       version: -1
       name: xdr-retrieve-file-details
-      description: View the file retrieved by the xdr-retrieve-files command according
-        to the action ID. Before running this command, you can use the xdr-action-status-get
-        command to check if this action completed successfully.
+      description: View the file retrieved by the xdr-retrieve-files command according to the action ID. Before running this command, you can use the xdr-action-status-get command to check if this action completed successfully.
       script: '|||xdr-retrieve-file-details'
       type: regular
       iscommand: true
@@ -294,10 +284,7 @@ inputs:
 - key: file_path
   value: {}
   required: false
-  description: "A comma-separated list of file paths in any platform. It can be used\
-    \ instead of the macOS/Windows/Linux file paths. \nThe order of the files path\
-    \ list must be parallel to the endpoints list order. Therefore, the first file\
-    \ path in the list is related to the first endpoint ID and so on."
+  description: "A comma-separated list of file paths in any platform. It can be used instead of the macOS/Windows/Linux file paths. \nThe order of the files path list must be parallel to the endpoints list order. Therefore, the first file path in the list is related to the first endpoint ID and so on."
   playbookInputQuery:
 - key: windows_file_paths
   value: {}
@@ -348,10 +335,9 @@ outputs:
   description: The file extension. For example, 'xls'.
   type: String
 - contextPath: File.Type
-  description: The file type, as determined by libmagic (same as displayed in the
-    file entries).
+  description: The file type, as determined by libmagic (same as displayed in the file entries).
   type: String
 tests:
-- Test XDR Playbook
-- Cortex XDR - IOC - Test
+- No tests (deprecated)
 fromversion: 5.0.0
+deprecated: true

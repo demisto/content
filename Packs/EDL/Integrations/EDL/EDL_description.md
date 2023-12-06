@@ -31,6 +31,22 @@ curl -v -u test:password https://edl-my-xsiam-subdomain.us.paloaltonetworks.com/
 
 
 </~XSIAM>
+<~XSOAR_SAAS>
+**Note**: Do not set `username` and `password` in the integration instance if you are running the integration via the hosted instance. The `username` and `password` fields are for usage when running the integration via an on-prem engine.
+
+**Note**: If no `Listen Port` param was given and the test button was clicked, the test will run with the default port 1111. After pressing `save & exit` a new free port will be assigned to the `Listen Port` parameter automatically.
+
+1. To access the **Generic Export Indicators Service** by instance name, set up the **username** and **password** values in the **External Dynamic List Integration** page (**Settings** > **Configurations** > **Integrations** > **External Dynamic List Integration**).
+2. You can access the External Dynamic List at the following url: `https://edl-<cortex-xsoar-address>/xsoar/instance/execute/<instance-name>`.
+3. For example to test via curl with an instance with instance name: `EDL_instance_1`, XSOAR address `my-xsoar-subdomain.us.paloaltonetworks.com` and credentials test/password:
+```
+curl -v -u test:password https://edl-my-xsoar-subdomain.us.paloaltonetworks.com/xsoar/instance/execute/EDL_instance_1
+```
+
+**Note**: The External Dynamic List is not accessible via web browsers and you will receive an unauthorized error if accessing the External Dynamic List via a browser.
+
+
+</~XSOAR_SAAS>
 <~XSOAR>
 **Note**: By default, the route to access the Generic Export Indicators Service by instance name will be open without security hardening and might expose you to network risks. Cortex XSOAR recommends that you use the service with a username and password. Click **Switch to username and password** and provide the credentials that must be used to access the service.
 

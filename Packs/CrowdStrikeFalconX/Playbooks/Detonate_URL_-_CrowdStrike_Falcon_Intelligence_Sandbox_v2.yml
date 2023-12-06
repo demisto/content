@@ -1,0 +1,434 @@
+id: Detonate URL - CrowdStrike Falcon Intelligence Sandbox v2
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Detonate URL - CrowdStrike Falcon Intelligence Sandbox v2
+description: Detonate one or more URL's using the CrowdStrike Falcon Intelligence Sandbox integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5efceda5-4236-42ed-882f-e26acb6f4756
+    type: start
+    task:
+      id: 5efceda5-4236-42ed-882f-e26acb6f4756
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: fc1f205f-4605-402d-805d-57b7d4b4cef7
+    type: condition
+    task:
+      id: fc1f205f-4605-402d-805d-57b7d4b4cef7
+      version: -1
+      name: Is CrowdStrike Falcon Intelligence Sandbox enabled?
+      description: |
+        Verify that there is a valid instance of CrowdStrike enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CrowdStrike Falcon X
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 175
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 66063116-5734-4166-82b3-aa4c0f629285
+    type: title
+    task:
+      id: 66063116-5734-4166-82b3-aa4c0f629285
+      version: -1
+      name: Done
+      description: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 9ab16bf8-de8e-4201-8561-992345b51280
+    type: regular
+    task:
+      id: 9ab16bf8-de8e-4201-8561-992345b51280
+      version: -1
+      name: CrowdStrike Falcon Intelligence Sandbox Get Full Report
+      description: Get a full version of a sandbox report.
+      script: CrowdStrike Falcon X|||cs-fx-get-full-report
+      type: regular
+      iscommand: true
+      brand: CrowdStrike Falcon X
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      ids:
+        complex:
+          root: csfalconx.resource
+          accessor: submitted_id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 81be8060-73f1-48e6-8b37-4ff7cc3fd8a8
+    type: regular
+    task:
+      id: 81be8060-73f1-48e6-8b37-4ff7cc3fd8a8
+      version: -1
+      name: CrowdStrike Falcon Intelligence Sandbox Submit URL
+      description: Submit a URL or FTP for sandbox analysis.
+      script: '|||cs-fx-submit-url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      environment_id:
+        simple: '160: Windows 10'
+      interval_in_seconds:
+        complex:
+          root: inputs.Interval
+      polling:
+        simple: "true"
+      url:
+        complex:
+          root: inputs.URL
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: defb49bb-c77d-496e-806f-5a75bcd1c982
+    type: condition
+    task:
+      id: defb49bb-c77d-496e-806f-5a75bcd1c982
+      version: -1
+      name: Is there a URL to detonate?
+      description: Checks whether there's a url to detonate.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.URL
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: df587308-bb0c-44ff-8729-c096af003e12
+    type: condition
+    task:
+      id: df587308-bb0c-44ff-8729-c096af003e12
+      version: -1
+      name: Full Report or Report Summary?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "19"
+      Full:
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: Full
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.Full Report
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: d8b4e7e6-c3d7-4303-8b63-35dee9bd508a
+    type: regular
+    task:
+      id: d8b4e7e6-c3d7-4303-8b63-35dee9bd508a
+      version: -1
+      name: CrowdStrike Falcon Intelligence Sandbox Get Report Summary
+      description: Gets a short summary version of a sandbox report.
+      script: '|||cs-fx-get-report-summary'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      ids:
+        complex:
+          root: csfalconx.resource
+          accessor: submitted_id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "14_6_#default#": 0.16,
+      "5_6_#default#": 0.26
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1105,
+        "width": 1110,
+        "x": 30,
+        "y": 40
+      }
+    }
+  }
+inputs:
+- key: URL
+  value:
+    complex:
+      root: URL
+      accessor: Data
+  required: false
+  description: URL to detonate.
+  playbookInputQuery:
+- key: Interval
+  value:
+    simple: "1"
+  required: false
+  description: Polling frequency - how often the polling command should run (in minutes).
+  playbookInputQuery:
+- key: Timeout
+  value:
+    simple: "10"
+  required: false
+  description: How much time to wait before a timeout occurs  (in minutes).
+  playbookInputQuery:
+- key: Full Report
+  value:
+    simple: "True"
+  required: false
+  description: |-
+    Whether to get a full report or report summary from Falcon X.
+    Set to "False" to get report summary.
+  playbookInputQuery:
+outputs:
+- contextPath: csfalconx.resource.id
+  description: Analysis ID.
+  type: String
+- contextPath: csfalconx.resource.verdict
+  description: Analysis verdict.
+  type: String
+- contextPath: csfalconx.resource.created_timestamp
+  description: Analysis start time.
+  type: String
+- contextPath: csfalconx.resource.environment_id
+  description: Environment ID.
+  type: String
+- contextPath: csfalconx.resource.environment_description
+  description: Environment description.
+  type: String
+- contextPath: csfalconx.resource.threat_score
+  description: Score of the threat.
+  type: Int
+- contextPath: csfalconx.resource.submit_url
+  description: URL submitted for analysis.
+  type: String
+- contextPath: csfalconx.resource.submission_type
+  description: Type of submitted artifact, for example file, URL, etc.
+  type: String
+- contextPath: csfalconx.resource.sha256
+  description: SHA256 hash of the submitted file.
+  type: String
+- contextPath: csfalconx.resource.ioc_report_strict_csv_artifact_id
+  description: ID of the IOC pack to download (CSV).
+  type: String
+- contextPath: csfalconx.resource.ioc_report_broad_csv_artifact_id
+  description: ID of the IOC pack to download (CSV).
+  type: String
+- contextPath: csfalconx.resource.ioc_report_strict_json_artifact_id
+  description: ID of the IOC pack to download (JSON).
+  type: Int
+- contextPath: csfalconx.resource.ioc_report_broad_json_artifact_id
+  description: ID of the IOC pack to download (JSON).
+  type: String
+- contextPath: csfalconx.resource.ioc_report_strict_stix_artifact_id
+  description: ID of the IOC pack to download (STIX).
+  type: String
+- contextPath: csfalconx.resource.ioc_report_broad_stix_artifact_id
+  description: ID of the IOC pack to download (STIX).
+  type: Int
+- contextPath: csfalconx.resource.ioc_report_strict_maec_artifact_id
+  description: ID of the IOC pack to download (MAEC).
+  type: String
+- contextPath: csfalconx.resource.ioc_report_broad_maec_artifact_id
+  description: ID of the IOC pack to download (MAEC).
+  type: String
+quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

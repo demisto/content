@@ -60,6 +60,7 @@ Returns all agents that match the specified criteria.
 | min_active_threats | Minimum number of threats per agent. | Optional | 
 | limit | The maximum number of agents to return. Default is 10. | Optional | 
 | params | Query params field=value pairs delimited by comma (e.g., activeThreats=3,gatewayIp=1.2.3.4). Query params are OR'd. | Optional | 
+| columns | A comma-separated list of additionals fields to display. | Optional |
 
 #### Context Output
 
@@ -288,7 +289,7 @@ Applies a mitigation action to a group of threats that match the specified input
 | --- | --- | --- |
 | SentinelOne.Threat.ID | String | The threat ID. | 
 | SentinelOne.Threat.Mitigated | Boolean | Whether the threat was successfully mitigated. | 
-| SentinelOne.Threat.Mitigation.Action | Number | Number of threats affected. | 
+| SentinelOne.Threat.Mitigation.Action | String | The mitigation action performed. | 
 
 ### sentinelone-resolve-threat
 
@@ -672,6 +673,7 @@ Returns all Deep Visibility events that match the query.
 | limit | Maximum number of items to return (1-100). Default is 50. | Optional | 
 | query_id | QueryId obtained when creating a query in the sentinelone-create-query command. Example: "q1xx2xx3". | Required | 
 | cursor | Cursor pointer to get next page of results from query. | Optional | 
+| columns | A comma-separated list of additionals fields to display. | Optional |
 
 #### Context Output
 
@@ -1742,6 +1744,61 @@ Returns network interface details for a given Agent ID. This includes MAC addres
 | SentinelOne.MAC.int_name | string | Interface Name | 
 | SentinelOne.MAC.ip | string | IP Address | 
 | SentinelOne.MAC.mac | string | MAC Address | 
+
+### sentinelone-get-accounts
+
+***
+Returns details of accounts.
+
+#### Base Command
+
+`sentinelone-get-accounts`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | Can filter on one account ID. Otherwise, it returns information from all accounts. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.Accounts.AccountType | string | The account type. | 
+| SentinelOne.Accounts.ActiveAgents | number | The account number of active agents. | 
+| SentinelOne.Accounts.NumberOfSites | number | The account number of sites. | 
+| SentinelOne.Accounts.State | string | The account state. | 
+| SentinelOne.Accounts.CreatedAt | string | The account creation date. | 
+| SentinelOne.Accounts.Expiration | string | The account expiration date. | 
+| SentinelOne.Accounts.ID | string | The account ID. | 
+| SentinelOne.Accounts.Name | string | The account name. | 
+
+### sentinelone-get-threat-notes
+
+***
+Returns threat notes.
+
+#### Base Command
+
+`sentinelone-get-threat-notes`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| threat_id | The ID of the threat. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.Notes.CreatedAt | string | The note creation date. | 
+| SentinelOne.Notes.Creator | string | The note creator. | 
+| SentinelOne.Notes.CreatorID | string | The note creator ID. | 
+| SentinelOne.Notes.Edited | boolean | Whether the note was edited or not.. | 
+| SentinelOne.Notes.ID | string | The note ID. | 
+| SentinelOne.Notes.Text | string | The note text. | 
+| SentinelOne.Notes.UpdatedAt | string | The note updated time. | 
 
 ### Incident Mirroring
 

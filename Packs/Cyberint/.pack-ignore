@@ -10,3 +10,8 @@ ignore=IF100
 [file:incidentfield-Cyberint_CyberInt_Vulnerable_CName_Record.json]
 ignore=BA116
 
+[known_words]
+Cyberint
+
+
+
