@@ -55,6 +55,7 @@ def check_std_out_err(capfd):
 
 @pytest.fixture(autouse=True)
 def delete_files():
+    yield
     if os.path.exists("demistomock.py"):
         os.remove("demistomock.py")
     shutil.rmtree("test_data", ignore_errors=True)
