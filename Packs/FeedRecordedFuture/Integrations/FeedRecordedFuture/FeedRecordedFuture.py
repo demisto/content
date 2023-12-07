@@ -162,7 +162,7 @@ class Client(BaseClient):
                 )
 
         if service == 'connectApi':
-            self.stream_compressed_data(response=response, chunk_size=CHUNK_SIZE)
+            self.stream_compressed_data(response=response, chunk_size=1024)
         else:
             demisto.debug("Will now stream the response's data")
             with open("response.txt", "w") as f:
@@ -196,22 +196,19 @@ class Client(BaseClient):
             for chunk in response.iter_content(chunk_size):
                 if chunk:
                     chunks_counter += 1
-                    should_cut_off_bytes = True
-                    bytes_to_cut = 0
                     decompressed_chunk = decompressor.decompress(chunk)
                     if cut_off_bytes:
                         # To concatenate cut off bytes from previous chunk
                         decompressed_chunk = cut_off_bytes + decompressed_chunk
                         cut_off_bytes = b''
                     chunk_to_decode = decompressed_chunk
-                    while should_cut_off_bytes:
+                    for bytes_to_cut in [1, 2, 3, 4]:
                         try:
                             decoded_counter += 1
                             decoded_str = self.decode_bytes(chunk_to_decode)
                             f.write(decoded_str)
-                            should_cut_off_bytes = False
+                            break
                         except UnicodeDecodeError as decode_error:
-                            bytes_to_cut += 1
                             demisto.debug('Decoding using UTF-8 failed due to cut-off character while streaming.'
                                           f' Will remove {bytes_to_cut} byte/s from the chunk and decode again.')
                             if bytes_to_cut >= 4:
@@ -235,7 +232,7 @@ class Client(BaseClient):
         demisto.info('reading from file')
         # we do this try to make sure the file gets deleted at the end
         try:
-            file_stream = open("response.txt")
+            file_stream = open("response.txt", 'rt')
             columns = file_stream.readline()  # get the headers from the csv file.
             columns = columns.replace("\"", "").strip().split(",")  # type:ignore  # '"a","b"\n' -> ["a", "b"]
 
