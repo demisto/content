@@ -459,7 +459,7 @@ Retrieves the Gmail message sent to a specified user.
 | user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required | 
 | message-id | The ID of the email to retrieve.  You can get the ID by running the gmail-search command, or by fetching mails and copy the incident.labels.Email/ID value from the fetched incident context. | Required | 
 | format | The format to return the message. Can be: "full": Returns the full email message data with body content parsed in the payload field; the raw field is not used. (default) / "metadata": Returns only the email message ID, labels, and email headers / "minimal": Returns only the email message ID and labels; does not return the email headers, body, or payload / "raw": Returns the full email message data with body content in the raw field as a base64url encoded string; the payload field is not used. Possible values are: full, metadata, minimal, raw. Default is full. | Optional | 
-| include-attachments | Wether ro run gmail-get-attachments as well or not. (Default: false). Possible values are: False, True. Default is False. | Optional |
+| include-attachments | Whether to include the attachment entries in the result or not. (Default: false). Possible values are: False, True. Default is False. | Optional |
 
 #### Context Output
 

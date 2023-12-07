@@ -248,7 +248,7 @@ script:
       - raw
     - auto: PREDEFINED
       defaultValue: False
-      description: Wether ro run gmail-get-attachments as well or not.
+      description: Whether to include the attachment entries in the result or not.
       name: include-attachments
       predefined:
       - 'False'
