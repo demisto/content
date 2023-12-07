@@ -66,7 +66,7 @@ def create_indicators_loop(args, indicators):
         if is_error(res[0]):
             errors.append(f'Error creating indicator - {(res[0]["Contents"])}')
 
-    if args.get('context') == 'True':
+    if add_context:
         result = CommandResults(
             readable_output=f"Create Indicators From STIX: {len(indicators) - len(errors)} indicators were created.",
             relationships=relationships_objects,
