@@ -52,10 +52,7 @@ class OktaClient(BaseClient):
             if not private_key:
                 raise ValueError('Private key must be provided when using OAuth authentication.')
 
-            # Add "SUPER_ADMIN" role to client application, which is required for OAuth authentication
-            self.assign_app_role(client_id=self.client_id, role="SUPER_ADMIN", use_oauth=False)
-
-            self.get_token()
+        self.initial_setup()
 
     def assign_app_role(self, client_id: str, role: str, use_oauth: bool | None = None) -> dict:
         """
@@ -78,20 +75,22 @@ class OktaClient(BaseClient):
             use_oauth=use_oauth,
         )
 
-    def generate_jwt_token(self, url_suffix: str):
+    def generate_jwt_token(self, url: str) -> str:
         """
         Generate a JWT token to use for OAuth authentication.
 
         Args:
-            url_suffix (str): The URL suffix to use for the JWT token (for the 'aud' claim).
+            url (str): The URL to use for the JWT token (for the 'aud' claim).
 
+        Returns:
+            str: The JWT token.
         """
         current_time = datetime.utcnow()
         expiration_time = current_time + timedelta(minutes=TOKEN_EXPIRATION_TIME)
 
         return jwt.encode(
             payload={
-                'aud': self._base_url + url_suffix,
+                'aud': url,
                 'iat': int((current_time - datetime(1970, 1, 1)).total_seconds()),
                 'exp': int((expiration_time - datetime(1970, 1, 1)).total_seconds()),
                 'iss': self.client_id,
@@ -102,31 +101,38 @@ class OktaClient(BaseClient):
             algorithm=self.jwt_algorithm.value,
         )
 
-    def generate_oauth_token(self, scopes: list[str]) -> dict:
+    def generate_oauth_token(self, scopes: list[str], use_oauth: bool = False) -> dict:
         """
         Generate an OAuth token to use for authentication.
 
         Args:
             scopes (list[str]): A list of scopes to request for the token.
+            use_oauth (bool, optional): Whether to use OAuth authentication. Defaults to False.
+
+        Notes:
+            Setting 'use_oauth' to True when there isn't an existing OAuth token will cause an infinite loop
+            (since this method is called by '_http_request').
 
         Returns:
             dict: The response from the API.
         """
-        auth_endpoint = '/oauth2/v1/token'
-        jwt_token = self.generate_jwt_token(url_suffix=auth_endpoint)
+        auth_url = self._base_url + '/oauth2/v1/token'
+        jwt_token = self.generate_jwt_token(url=auth_url)
 
         return self._http_request(
-            url_suffix=auth_endpoint,
+            use_oauth=use_oauth,
+            full_url=auth_url,
             method='POST',
             headers={
                 'Accept': 'application/json',
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            params={
+            data={
                 'grant_type': 'client_credentials',
                 'scope': ' '.join(scopes),
+                'client_assertion_type': 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer',
+                'client_assertion': jwt_token,
             },
-            client_assertion_type=jwt_token,
         )
 
     def get_token(self):
@@ -146,24 +152,52 @@ class OktaClient(BaseClient):
             token_expiration = integration_context['token_expiration'].strptime(expiration_time_format)
 
             if token_expiration > datetime.utcnow():
-                demisto.debug('An existing token was found valid, and will be used.')
                 return token
 
-            demisto.debug('An existing token was found but expired. A new token will be generated.')
+            demisto.debug('An existing token was found, but expired. A new token will be generated.')
 
         else:
             demisto.debug('No existing token was found. A new token will be generated.')
 
-        token_generation_response = self.generate_oauth_token(scopes=self.scopes)
+        token_generation_response = self.generate_oauth_token(scopes=self.scopes, use_oauth=False)
         token = token_generation_response['access_token']
         token_expiration = datetime.utcnow() + timedelta(minutes=TOKEN_EXPIRATION_TIME)
 
-        set_integration_context({
-            'token': token,
-            'token_expiration': token_expiration.strftime(expiration_time_format),
-        })
+        integration_context['token'] = token
+        integration_context['token_expiration'] = token_expiration.strftime(expiration_time_format)
+        set_integration_context(integration_context)
+        demisto.debug(f'New token generated. Expiration time: {token_expiration}')
 
         return token
+
+    def initial_setup(self):
+        """
+        Initial setup for the first time the integration is used.
+        """
+        integration_context = get_integration_context()
+
+        if integration_context.get('initialized', False):  # If the initial setup was already done, do nothing
+            return
+
+        if self.use_oauth:
+            # Add "SUPER_ADMIN" role to client application, which is required for OAuth authentication
+            try:
+                self.assign_app_role(client_id=self.client_id, role="SUPER_ADMIN", use_oauth=False)
+                demisto.debug("'SUPER_ADMIN' role has been assigned to the client application.")
+
+            except DemistoException as e:
+                # If the client application already has the "SUPER_ADMIN" role, ignore the error.
+                # E0000090 Error code official docs description: Duplicate role assignment exception.
+                if e.res.headers.get('content-type') == 'application/json' and e.res.json().get('errorCode') == 'E0000090':
+                    demisto.debug('The client application already has the "SUPER_ADMIN" role assigned.')
+
+                else:
+                    raise e
+
+            self.get_token()
+
+        integration_context['initialized'] = True
+        set_integration_context(integration_context)
 
     def _http_request(self, use_oauth: bool | None = None, **kwargs):
         """

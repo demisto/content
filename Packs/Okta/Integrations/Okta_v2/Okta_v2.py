@@ -678,7 +678,7 @@ class Client(BaseClient):
         )
 
 
-def test_module(client, args):
+def module_test(client, args):
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
 
@@ -1385,7 +1385,7 @@ def main():
         demisto.debug(f'Command being called is {demisto.command()}')
 
         commands = {
-            'test-module': test_module,
+            'test-module': module_test,
             'okta-unlock-user': unlock_user_command,
             'okta-deactivate-user': deactivate_user_command,
             'okta-activate-user': activate_user_command,
