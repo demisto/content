@@ -249,9 +249,9 @@ def test_main_raises_list_index_not_in_playground(mocker):
 def test_get_current_table_exception(mocker):
     """Unit test
      Given
-    - An output from executeCommand not in the playground.
+    - An output from demisto.incident in the playground.
      When
-    - Execute SetGridField not from the playground.
+    - Execute get_current_table.
     Then
     - Verify that an error message was raised.
     """
