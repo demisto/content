@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from XCloudAdditionalAlertInformationWidget import *
 
 
@@ -40,22 +40,22 @@ class TestXCloudAdditionalAlertInformationWidget(unittest.TestCase):
     def test_verify_list_type_dict(self):
         input_dict = [{
             "EntryContext": {"Core.OriginalAlert(val.internal_id && val.internal_id == obj.internal_id)": {"id": "123"}}}]
-        expected_output =  {"OriginalAlert": {"id": "123"}}
+        expected_output = {"OriginalAlert": {"id": "123"}}
         output = verify_list_type(input_dict)
-        self.assertEqual(output, expected_output)
+        assert output == expected_output
 
     def test_verify_list_type_list(self):
         input_list = [
             {"EntryContext": {"Core.OriginalAlert(val.internal_id && val.internal_id == obj.internal_id)": {"id": "123"}}}]
         expected_output = {"OriginalAlert": {"id": "123"}}
         output = verify_list_type(input_list)
-        self.assertEqual(output, expected_output)
+        assert output == expected_output
 
     def test_verify_list_type_empty(self):
         input = None
         expected_output = None
         output = verify_list_type(input)
-        self.assertEqual(output, expected_output)
+        assert output == expected_output
 
 
 if __name__ == '__main__':
