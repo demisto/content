@@ -11380,7 +11380,7 @@ def has_passed_time_threshold(timestamp_str, seconds_threshold):
     """
     import pytz
     to_utc_timestamp = dateparser.parse(timestamp_str, settings={'TIMEZONE': 'UTC'})
-    # using astimezone since utcnow() returns a naive datetime object
+    # using astimezone since utcnow() returns a naive datetime object when unitesting  
     current_time = datetime.now().astimezone(pytz.utc)
     if to_utc_timestamp:
         time_difference = current_time - to_utc_timestamp
