@@ -125,15 +125,13 @@ def chatgpt_output(response) -> CommandResults:
         :rtype: ``CommandResults``
     """
     if response and isinstance(response, dict):
-        rep = json.dumps(response)
-        repJSON = json.loads(rep)
-        model = repJSON.get('model')
-        createdTime = repJSON.get('created')
-        id = repJSON.get('id')
-        choices = repJSON.get('choices', [])[0].get('message', {}).get('content', "").strip('\n')
-        promptTokens = repJSON.get('usage', {}).get('prompt_tokens')
-        completionTokens = repJSON.get('usage', {}).get('completion_tokens')
-        totalTokens = repJSON.get('usage', {}).get('total_tokens')
+        model = response.get('model')
+        createdTime = response.get('created')
+        id = response.get('id')
+        choices = response.get('choices', [])[0].get('message', {}).get('content', "").strip('\n')
+        promptTokens = response.get('usage', {}).get('prompt_tokens')
+        completionTokens = response.get('usage', {}).get('completion_tokens')
+        totalTokens = response.get('usage', {}).get('total_tokens')
         context = [{'id': id, 'Model': model,
                     'ChatGPT Response': choices, 'Created Time': createdTime,
                     'Number of Prompt Tokens': promptTokens,

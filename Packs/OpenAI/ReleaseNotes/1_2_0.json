@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": null
+    "breakingChangesNotes": "This integration combines two previously existing integrations: `OpenAI` and `OpenAi ChatGPT v3`. The command `chatgpt-send-prompt` (in integration `OpenAi ChatGPT v3`) is now the `openai-chatgpt` commmand."
 }
