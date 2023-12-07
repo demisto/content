@@ -210,8 +210,8 @@ filter _raw_log !~= "^(?:\S+\s+){5}\{" and _raw_log not contains "Activity Type:
     working_directory = arrayindex(regextract(syslog_payload, "cwd=\"?([^\"]+)"), 0)
 | alter // post-extraction processing 
     process_cmd = coalesce(executable, exec_args, command_name),
-    src_ipv4 = if(ip_address ~= "(?:\d{1,3}\.){3}\d{1,3}", ip_address),
-    src_ipv6 = if(ip_address ~= "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}", ip_address),
+    ipv4 = if(ip_address ~= "(?:\d{1,3}\.){3}\d{1,3}", ip_address),
+    ipv6 = if(ip_address ~= "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}", ip_address),
     email_relay_ipv4 = if(email_relay_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", email_relay_ip),
     email_relay_ipv6 = if(email_relay_ip ~= "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}", email_relay_ip)
 | alter // xdm mapping 
@@ -236,14 +236,16 @@ filter _raw_log !~= "^(?:\S+\s+){5}\{" and _raw_log not contains "Activity Type:
     xdm.observer.name = syslog_hostname,
     xdm.session_context_id = session_id,
     xdm.source.host.hostname = coalesce(node, syslog_hostname),
-    xdm.source.ipv4 = src_ipv4,
-    xdm.source.ipv6 = src_ipv6,
+    xdm.source.ipv4 = ipv4,
+    xdm.source.ipv6 = ipv6,
     xdm.source.process.name = syslog_process_name,
     xdm.source.process.pid = to_integer(syslog_process_id),
     xdm.source.user.groups = if(group_id != null, arraycreate(group_id)),
     xdm.source.user.identifier = coalesce(audit_uid, user_id),
     xdm.source.user.username = user_account,
     xdm.target.host.hostname = hostname, 
+    xdm.target.ipv4 = ipv4,
+    xdm.target.ipv6 = ipv6,
     xdm.target.process.command_line = process_cmd,
     xdm.target.process.name = coalesce(command_name, syscall_number), 
     xdm.target.process.pid = to_integer(pid),
