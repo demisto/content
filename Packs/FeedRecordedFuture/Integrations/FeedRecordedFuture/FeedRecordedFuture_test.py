@@ -7,8 +7,9 @@ from FeedRecordedFuture import get_indicator_type, get_indicators_command, Clien
 from csv import DictReader
 from CommonServerPython import argToList
 
+
 class TestStreamCompressedData:
-    
+
     @pytest.fixture()
     def mock_response(self) -> requests.Response:
         """This is a fixture used to mock the response object when streaming compressed data.
@@ -26,7 +27,7 @@ class TestStreamCompressedData:
         response_mocker.raw = io.BytesIO(gzip_compressed_data)
         response_mocker.encoding = 'utf-8'
         return response_mocker
-    
+
     def test_stream_compressed_data_iterations(self, mocker: MockerFixture, mock_response: requests.Response):
         """
         Given:
@@ -54,7 +55,6 @@ class TestStreamCompressedData:
         assert call_args_list[3][0][0] == b''
         # We save the cut off bytes from the last chunk, and add it to the current chunk so we can decode
         assert call_args_list[4][0][0][0:3] == b'\xf0\x9f\x98'
-
 
     @pytest.mark.parametrize('chunk_size', [(1), (2), (3), (4), (8), (10), (25), (27)])
     def test_stream_compressed_data_file_content(self, chunk_size: int, mock_response: requests.Response):
