@@ -8,7 +8,7 @@ filter _raw_log ~= "^(?:\S+\s+){5}\{"
     syslog_hostname = arrayindex(regextract(_raw_log, "(?:\S+\s+){3}(\S+)"), 0),
     syslog_process_id = arrayindex(regextract(_raw_log, "^(?:\S+\s+){4}[\w\-\.\:]+\[(\d+)"), 0),
     syslog_process_name = rtrim(arrayindex(regextract(_raw_log, "(?:\S+\s+){4}(\S+)"), 0), ":"),
-    json_payload = arrayindex(regextract(_raw_log, "(?:\S+\s+){5}(\{.+)"), 0) -> {}
+    json_payload = arrayindex(regextract(_raw_log, "(?:\S+\s+){5}(\{.+)"), 0)
 | alter syslog_facility = floor(divide(syslog_priority, 8))
 | alter syslog_severity = to_string(subtract(syslog_priority, multiply(syslog_facility, 8)))
 | alter // extract json payload fields 
