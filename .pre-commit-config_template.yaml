@@ -83,7 +83,8 @@ repos:
      - -v
      - --rootdir=/src
      - --junitxml=/src/.pre-commit/pytest-junit/.report_pytest.xml
-
+    split_by_file: test_data/__init__.py
+    
   - id: is-circle-changed
     name: is-circle-changed
     description: Checks if circle files are changed, and checkout to current if it is.

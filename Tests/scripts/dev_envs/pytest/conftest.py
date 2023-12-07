@@ -54,6 +54,7 @@ def check_std_out_err(capfd):
         pytest.fail("Found output in stdout: [{}]".format(out.strip()))
     if err:
         pytest.fail("Found output in stderr: [{}]".format(err.strip()))
+
 @pytest.fixture(autouse=True)
 def chdir(monkeypatch):
     temp_dir = tempfile.mkdtemp()
@@ -64,9 +65,6 @@ def chdir(monkeypatch):
 def pytest_sessionfinish(session, exitstatus):
     if exitstatus == NO_TESTS_COLLECTED:
         session.exitstatus = SUCCESS
-    if os.getenv("CI"):
-        subprocess.run(["git", "clean", "-fdx"], check=True)
-
 
 def pytest_configure(config):
     junit_xml = config.option.xmlpath
