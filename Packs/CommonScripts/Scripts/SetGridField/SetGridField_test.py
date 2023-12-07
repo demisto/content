@@ -244,3 +244,19 @@ def test_main_raises_list_index_not_in_playground(mocker):
     mocker_return_error = mocker.patch('SetGridField.return_error')
     SetGridField.main()
     assert mocker_return_error.called
+
+
+def test_get_current_table_exception(mocker):
+    """Unit test
+     Given
+    - An output from executeCommand not in the playground.
+     When
+    - Execute SetGridField not from the playground.
+    Then
+    - Verify that an error message was raised.
+    """
+
+    import SetGridField
+    mocker.patch.object(demisto, 'incident', return_value={"CustomFields": None, "isPlayground": True})
+    with pytest.raises(Exception):
+        SetGridField.get_current_table("grid_id")
