@@ -43,6 +43,8 @@ def create_indicators_loop(args, indicators):
     relationships_objects = list()
     errors = list()
     context_data = []
+    add_context = argToBoolean(args.get('add_context', False))
+    tags = argToList(args.get('tags'))
 
     for indicator in indicators:
         indicator['type'] = indicator.get('indicator_type')
