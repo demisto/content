@@ -21,7 +21,7 @@ configuration:
   hidden: false
   name: apiKey
   required: true
-  type: 0
+  type: 4
 - display: Use system proxy settings
   hidden: false
   name: proxy
