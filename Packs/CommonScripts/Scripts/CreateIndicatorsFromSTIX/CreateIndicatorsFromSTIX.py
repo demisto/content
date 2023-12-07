@@ -52,11 +52,10 @@ def create_indicators_loop(args, indicators):
         if relationship_object:
             relationships_objects.extend(relationship_object)
 
-        if args.get('tags'):
+        if len(tags) > 0:
             if 'customFields' in indicator:
                 if 'tags' in indicator.get('customFields'):
-                    ntags = args.get('tags').split(',')
-                    [indicator['customFields']['tags'].append(ntag) for ntag in ntags]
+                    [indicator['customFields']['tags'].append(ntag) for ntag in tags]
 
         res = demisto.executeCommand("createNewIndicator", indicator)
 
@@ -71,7 +70,7 @@ def create_indicators_loop(args, indicators):
             readable_output=f"Create Indicators From STIX: {len(indicators) - len(errors)} indicators were created.",
             relationships=relationships_objects,
             outputs_prefix='StixIndicators',
-            outputs_key_field='value'
+            outputs_key_field='value',
             outputs=context_data
         )
     else:
