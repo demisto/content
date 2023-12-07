@@ -16,6 +16,8 @@ import tempfile
 
 # disable insecure warnings
 urllib3.disable_warnings()
+v21_logger = logging.getLogger("taxii2client.v21")
+v21_logger.setLevel(logging.CRITICAL)
 
 # CONSTANTS
 TAXII_VER_2_0 = "2.0"
@@ -1212,44 +1214,50 @@ class Taxii2FeedClient:
     def parse_generator_type_envelope(self, envelopes: types.GeneratorType, parse_objects_func, limit: int = -1):
         indicators = []
         relationships_lst = []
-        for envelope in envelopes:
-            stix_objects = envelope.get("objects")
-            if not stix_objects:
-                # no fetched objects
-                break
+        try:
+            for envelope in envelopes:
+                stix_objects = envelope.get("objects")
+                if not stix_objects:
+                    # no fetched objects
+                    break
 
-            # we should build the id_to_object dict before iteration as some object reference each other
-            self.id_to_object.update(
-                {
-                    obj.get('id'): obj for obj in stix_objects
-                    if obj.get('type') not in ['extension-definition', 'relationship']
-                }
-            )
+                # we should build the id_to_object dict before iteration as some object reference each other
+                self.id_to_object.update(
+                    {
+                        obj.get('id'): obj for obj in stix_objects
+                        if obj.get('type') not in ['extension-definition', 'relationship']
+                    }
+                )
 
-            # now we have a list of objects, go over each obj, save id with obj, parse the obj
-            for obj in stix_objects:
-                obj_type = obj.get('type')
+                # now we have a list of objects, go over each obj, save id with obj, parse the obj
+                for obj in stix_objects:
+                    obj_type = obj.get('type')
 
-                # we currently don't support extension object
-                if obj_type == 'extension-definition':
-                    continue
-                elif obj_type == 'relationship':
-                    relationships_lst.append(obj)
-                    continue
+                    # we currently don't support extension object
+                    if obj_type == 'extension-definition':
+                        continue
+                    elif obj_type == 'relationship':
+                        relationships_lst.append(obj)
+                        continue
 
-                if not parse_objects_func.get(obj_type):
-                    demisto.debug(f'There is no parsing function for object type {obj_type}, for object {obj}. The'
-                                  f'available parsing functions are for types: {",".join(parse_objects_func.keys())}.')
+                    if not parse_objects_func.get(obj_type):
+                        demisto.debug(f'There is no parsing function for object type {obj_type}, for object {obj}. The'
+                                      f'available parsing functions are for types: {",".join(parse_objects_func.keys())}.')
 
-                    continue
-                if result := parse_objects_func[obj_type](obj):
-                    demisto.debug(f"Extracted {len(result)} indicators from {obj_type} object")
-                    indicators.extend(result)
-                    self.update_last_modified_indicator_date(obj.get("modified"))
+                        continue
+                    if result := parse_objects_func[obj_type](obj):
+                        demisto.debug(f"Extracted {len(result)} indicators from {obj_type} object")
+                        indicators.extend(result)
+                        self.update_last_modified_indicator_date(obj.get("modified"))
 
-                if reached_limit(limit, len(indicators)):
-                    demisto.debug("Reached limit of indicators to fetch")
-                    return indicators, relationships_lst
+                    if reached_limit(limit, len(indicators)):
+                        demisto.debug("Reached limit of indicators to fetch")
+                        return indicators, relationships_lst
+        except Exception as e:
+            if len(indicators) == 0:
+                demisto.debug("No Indicator were parsed")
+                raise e
+            demisto.debug("Max retries exceeded but was able to fetch Indicators")
         demisto.debug("Finished parsing all objects")
         return indicators, relationships_lst
 
