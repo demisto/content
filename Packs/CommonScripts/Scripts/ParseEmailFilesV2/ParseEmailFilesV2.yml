@@ -37,6 +37,9 @@ outputs:
 - contextPath: Email.CC
   description: Email 'cc' addresses.
   type: string
+- contextPath: Email.BCC
+  description: Email 'bcc' addresses.
+  type: string
 - contextPath: Email.From
   description: This displays who the message is from, however, this can be easily forged and can be the least reliable.
   type: string
@@ -113,4 +116,4 @@ type: python
 fromversion: 5.0.0
 tests:
 - ParseEmailFilesV2-test
-dockerimage: demisto/parse-emails:1.0.0.78248
+dockerimage: demisto/parse-emails:1.0.0.82865
