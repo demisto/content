@@ -52,7 +52,7 @@ class LdapClient:
         self._fetch_groups = kwargs.get('fetch_groups', True)
         self._verify = not kwargs.get('insecure', False)
         self._ldap_server = self._initialize_ldap_server()
-        self._ldap_server_vendor = kwargs.get('ldap_server_vendor', self.OPENLDAP)  # OpenLDAP or Active Directory
+        self._ldap_server_vendor = kwargs.get('ldap_server_vendor', self.AUTO)  # OpenLDAP or Active Directory
         if self._ldap_server_vendor == self.AUTO:
             self._determine_ldap_vendor_automatically()
         self._page_size = int(kwargs.get('page_size', 500))

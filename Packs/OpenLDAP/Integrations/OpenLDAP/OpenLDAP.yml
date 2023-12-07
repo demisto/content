@@ -7,7 +7,7 @@ commonfields:
   version: -1
 configuration:
 - additionalinfo: The LDAP vendor to authenticate with.
-  defaultvalue: OpenLDAP
+  defaultvalue: Auto
   display: LDAP Server Vendor
   name: ldap_server_vendor
   options:
