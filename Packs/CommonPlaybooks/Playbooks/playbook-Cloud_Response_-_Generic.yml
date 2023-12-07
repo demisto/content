@@ -523,7 +523,7 @@ inputs:
 - key: autoAccessKeyRemediation
   value: {}
   required: false
-  description: Whether to execute the user remediation flow automatically.
+  description: Whether to execute the access key remediation flow automatically.
   playbookInputQuery:
 - key: AWS-accessKeyRemediationType
   value: {}
