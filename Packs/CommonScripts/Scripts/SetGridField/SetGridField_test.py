@@ -207,11 +207,13 @@ def test_main_does_not_raises_list_index_in_playground(mocker):
      When
     - Execute SetGridField from the playground.
     Then
-    - Verify that no error message was raised..
+    - Verify that no error message was raised.
     """
     import SetGridField
-    mocker.patch.object(demisto, 'args', return_value={"grid_id": "grid_id", "keys": "key1,key2", 'columns': "col1,col2", "sort_by": "col1",
-                                                       "overwrite": "True", "unpack_nested_elements": "False"})
+    mocker.patch.object(demisto, 'args', return_value={"grid_id": "grid_id", "keys": "key1,key2",
+                                                       'columns': "col1,col2", "sort_by": "col1",
+                                                       "overwrite": "True",
+                                                       "unpack_nested_elements": "False"})
     mocker.patch.object(demisto, 'incident', return_value={"CustomFields": None, "isPlayground": True})
     mocker.patch.object(SetGridField, 'get_current_table', return_value=[])
     mocker.patch.object(SetGridField, 'build_grid_command', return_value=[{"name": "name", "readable_name": "readable_name"}])
@@ -224,19 +226,21 @@ def test_main_does_not_raises_list_index_in_playground(mocker):
 def test_main_raises_list_index_not_in_playground(mocker):
     """Unit test
      Given
-    - An output from executeCommand in the playground.
+    - An output from executeCommand not in the playground.
      When
-    - Execute SetGridField from the playground.
+    - Execute SetGridField not from the playground.
     Then
-    - Verify that no error message was raised..
+    - Verify that an error message was raised.
     """
     import SetGridField
-    mocker.patch.object(demisto, 'args', return_value={"grid_id": "grid_id", "keys": "key1,key2", 'columns': "col1,col2", "sort_by": "col1",
-                                                       "overwrite": "True", "unpack_nested_elements": "False"})
+    mocker.patch.object(demisto, 'args', return_value={"grid_id": "grid_id", "keys": "key1,key2",
+                                                       'columns': "col1,col2", "sort_by": "col1",
+                                                       "overwrite": "True",
+                                                       "unpack_nested_elements": "False"})
     mocker.patch.object(demisto, 'incident', return_value={"CustomFields": None, "isPlayground": False})
     mocker.patch.object(SetGridField, 'get_current_table', return_value=[])
     mocker.patch.object(SetGridField, 'build_grid_command', return_value=[{"name": "name", "readable_name": "readable_name"}])
     mocker.patch.object(demisto, 'executeCommand', side_effect=side_effect_for_execute_command_in_playground)
-    with pytest.raises(ValueError) as e:
-        SetGridField.main()
-    assert "Failed to execute setGridField. Error: The following grid id was not found: gridid." in str(e.value)
+    mocker_return_error = mocker.patch('SetGridField.return_error')
+    SetGridField.main()
+    assert mocker_return_error.called
