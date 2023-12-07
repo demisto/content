@@ -23,7 +23,8 @@ CONTENT_NIGHTLY_JOBS = [
     'xsoar-test_playbooks_results',
     'xsiam-test_playbooks_results',
     'xsiam-test_modeling_rule_results',
-    'cloning-content-repo-last-upload-commit'
+    'cloning-content-repo-last-upload-commit',
+    'init'
 ]
 
 SDK_NIGHTLY_JOBS = [
@@ -36,6 +37,7 @@ SDK_NIGHTLY_JOBS = [
     'demisto-sdk-nightly:test-upload-flow',
     'demisto-sdk-nightly:run-commands-against-instance',
     'demisto-sdk-nightly:run-end-to-end-tests',
+    'init'
 ]
 
 BUCKET_UPLOAD_JOBS = [
@@ -55,6 +57,7 @@ BUCKET_UPLOAD_JOBS = [
     'upload-packs-to-marketplace',
     'upload-packs-to-marketplace-v2',
     'upload-packs-to-xpanse-marketplace',
+    'init'
 ]
 
 CONTENT_COMMON_JOBS = [
@@ -78,6 +81,7 @@ CONTENT_COMMON_JOBS = [
     'xsoar-test_playbooks_results',
     'xsiam-test_playbooks_results',
     'xsiam-test_modeling_rule_results',
+    'init'
 ]
 
 CONTENT_PR_JOBS = CONTENT_COMMON_JOBS + [

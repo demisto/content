@@ -491,9 +491,7 @@
     - cp "./Tests/conf.json" "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json"
     - section_end "Copy conf.json To Server Type Artifacts Folder"
     - section_start "Validate Files and Yaml"
-    - echo "Remove content-test-conf and infra repositories"
-    - rm -rf ./content-test-conf
-    - rm -rf ./infra
+    - !reference [.remove_cached_gitlab_repos]
     - |
       if [[ -n $FORCE_BUCKET_UPLOAD ]]; then
         echo "Skipping the -Validate Files and Yaml- step when force uploading to a bucket."
@@ -564,6 +562,12 @@ cloning-content-repo-last-upload-commit:
   - ./Tests/scripts/use_cached_gitlab_repos.sh 2>&1 | tee --append "${ARTIFACTS_FOLDER}/logs/use_cached_gitlab_repos.log"
   - section_end "Use gitlab cached repos"
 
+.remove_cached_gitlab_repos:
+  - section_start "Remove gitlab cached repos" # --collapsed
+  - rm -rf ./content-test-conf
+  - rm -rf ./infra
+  - section_end "Remove gitlab cached repos"
+
 init:
   stage: .pre
   cache:
@@ -596,3 +600,4 @@ init:
     - *stop_contrib_external_build
     - *check_build_files_are_up_to_date
     - *clone_and_cache_gitlab_repos
+    - job-done
