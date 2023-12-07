@@ -15,18 +15,15 @@ comment: Creates indicators from the submitted STIX file. Supports STIX 1.0 and 
 commonfields:
   id: CreateIndicatorsFromSTIX
   version: -1
-dockerimage: demisto/python3:3.10.12.63474
-enabled: true
-engineinfo: {}
-mainengineinfo: {}
 name: CreateIndicatorsFromSTIX
-pswd: ""
-runas: DBotWeakRole
-runonce: false
 script: '-'
-scripttarget: 0
 subtype: python3
 tags:
 - stix
 - ioc
+timeout: '0'
 type: python
+dockerimage: demisto/python3:3.10.12.63474
+tests:
+- No tests
+fromversion: 5.0.0
