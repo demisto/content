@@ -1,0 +1,30 @@
+{
+  "uuid": "123",
+  "status": "FINISHED",
+  "chunks_available": [
+    1
+  ],
+  "chunks_failed": [],
+  "chunks_cancelled": [],
+  "total_chunks": 1,
+  "chunks_available_count": 1,
+  "empty_chunks_count": 0,
+  "finished_chunks": 1,
+  "filters": {
+    "severity": [],
+    "state": [
+      "OPEN",
+      "REOPENED"
+    ],
+    "tags": {},
+    "since": 0,
+    "first_found": 0,
+    "last_found": 1657535560,
+    "last_fixed": 0,
+    "first_seen": 0,
+    "last_seen": 0,
+    "indexed_at": 0
+  },
+  "num_assets_per_chunk": 5000,
+  "created": 1663583560468
+}
