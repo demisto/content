@@ -22,7 +22,6 @@ from SymantecCloudSecureWebGatewayEventCollector import (
     parse_events,
     extract_logs_from_zip_file,
     perform_long_running_loop,
-    test_module,
 )
 import demistomock as demisto
 from pathlib import Path
@@ -680,11 +679,12 @@ def test_test_module(requests_mock, client: Client):
     Then:
         - Ensure that returns `ok`
     """
+    import SymantecCloudSecureWebGatewayEventCollector
     requests_mock.get(
         "https://api.example.com/reportpod/logs/sync", content=b"event1\nevent2"
     )
 
-    assert test_module(client, "60") == "ok"
+    assert SymantecCloudSecureWebGatewayEventCollector.test_module(client, "60") == "ok"
 
 
 @pytest.mark.parametrize(
@@ -703,7 +703,7 @@ def test_test_module_blocked_and_rate_limit_exception(
         - Ensure that returns `ok` when the api call
           raises exception with status code 423 or 429
     """
-
+    import SymantecCloudSecureWebGatewayEventCollector
     class MockException:
         status_code = mock_status_code
 
@@ -711,7 +711,7 @@ def test_test_module_blocked_and_rate_limit_exception(
         client, "get_logs", side_effect=DemistoException("Test", res=MockException())
     )
 
-    assert test_module(client, "60") == "ok"
+    assert SymantecCloudSecureWebGatewayEventCollector.test_module(client, "60") == "ok"
 
 
 @pytest.mark.parametrize(
@@ -746,7 +746,8 @@ def test_test_module_failure(
     Then:
         - Ensure function raises error as expected
     """
+    import SymantecCloudSecureWebGatewayEventCollector
     mocker.patch.object(client, "get_logs", side_effect=mock_exception)
 
     with pytest.raises(ValueError, match=expected_error_message):
-        test_module(client, fetch_interval)
+        SymantecCloudSecureWebGatewayEventCollector.test_module(client, fetch_interval)
