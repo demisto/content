@@ -881,7 +881,6 @@ outputs:
   type: string
 tests:
 - QRadar - Get Offense Logs Test
-- QRadar_v3-test
 fromversion: 6.0.0
 contentitemexportablefields:
   contentitemfields: {}
