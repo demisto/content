@@ -89,7 +89,8 @@ class TabLifecycleManager:
         demisto.debug(f'TabLifecycleManager, entering tab {self.tab.id}, tabs len: {len(self.browser.list_tab())}')
         return self.tab
 
-    def __exit__(self, exc_type, exc_val, exc_tb):  # pylint: disable=unused-argument
+    # def __exit__(self, exc_type, exc_val, exc_tb):  # pylint: disable=unused-argument
+    def __exit__(self, **kwargs):  # noqa: PLE0302
         if self.tab:
             try:
                 self.tab.Page.disable()
@@ -133,7 +134,9 @@ class PychromeEventHandler:
             except pychrome.exceptions.PyChromeException as e:
                 demisto.error(f'Error stopping page loading: {self.tab=}, {frameId=}, {e}')
 
-    def network_data_received(self, requestId, timestamp, dataLength, encodedDataLength):  # pylint: disable=unused-argument
+    # def network_data_received(self, requestId, timestamp, dataLength, encodedDataLength):  # pylint: disable=unused-argument
+    def network_data_received(self, requestId, **kwargs):
+
         if requestId:
             # demisto.debug(f"network_data_received, {requestId=}")
             if not self.request_id:
