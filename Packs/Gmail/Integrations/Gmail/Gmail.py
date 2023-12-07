@@ -1478,7 +1478,7 @@ def get_mail_command():
     user_id = args.get('user-id', ADMIN_EMAIL)
     _id = args.get('message-id')
     _format = args.get('format')
-    should_run_get_attachments = argToBoolean(args.get('run-get-attachments-command', 'false'))
+    should_run_get_attachments = argToBoolean(args.get('include-attachments', 'false'))
 
     mail = get_mail(user_id, _id, _format)
     email_entry = emails_to_entry('Email:', [mail], _format, user_id)
