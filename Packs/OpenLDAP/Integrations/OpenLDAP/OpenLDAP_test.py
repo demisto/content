@@ -5,6 +5,42 @@ import pytest
 from OpenLDAP import LdapClient
 
 
+class Entry:
+    def __init__(self):
+        self.value = 'OpenLDAProotDSE'
+
+
+class Connection:
+
+    def __init__(self, vendor):
+        if vendor == OPENLDAP:
+            self.entries = [{'objectClass': Entry()}]
+        else:
+            self.entries = [{}]
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        pass
+
+    @staticmethod
+    def search(search_base, search_filter, search_scope, attributes):
+        return None
+
+
+OPENLDAP = 'OpenLDAP'
+ACTIVE_DIRECTORY = 'Active Directory'
+
+
+class TestLDAPClient:
+    @pytest.mark.parametrize('vendor', [OPENLDAP, ACTIVE_DIRECTORY])
+    def test_ldap_vendor(self, mocker, vendor):
+        mocker.patch('OpenLDAP.Connection', return_value=Connection(vendor))
+        client = LdapClient({'ldap_server_vendor': 'Auto', 'host': 'server_ip'})
+        assert client._ldap_server_vendor == vendor
+
+
 class TestsActiveDirectory:
     """
         Contains unit tests for functions that deal with Active directory server only.
