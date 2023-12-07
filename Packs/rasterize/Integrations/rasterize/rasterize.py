@@ -79,10 +79,11 @@ class TabLifecycleManager:
         self.tab = self.browser.new_tab()
 
         self.tab.start()
+        demisto.debug(f"{self.offline_mode=}")
         if self.offline_mode:
-            self.tab.Network.disable(offline="True")
+            self.tab.Network.emulateNetworkConditions(offline=True, latency=-1, downloadThroughput=-1, uploadThroughput=-1)
         else:
-            self.tab.Network.enable()
+            self.tab.Network.emulateNetworkConditions(offline=False, latency=-1, downloadThroughput=-1, uploadThroughput=-1)
 
         self.tab.Page.enable()
         demisto.debug(f'TabLifecycleManager, entering tab {self.tab.id}, tabs len: {len(self.browser.list_tab())}')
