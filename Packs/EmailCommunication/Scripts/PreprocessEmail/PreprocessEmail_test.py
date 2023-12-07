@@ -1,25 +1,24 @@
-import os
 import json
 import demistomock as demisto
 import pytest
 from datetime import datetime
-
+from pathlib import Path
 
 def util_open_file(path):
-    with open(path) as f:
+    with open(Path(__file__).parent / path) as f:
         return f.read()
 
 
 def util_load_json(path):
-    with open(path) as f:
+    with open(Path(__file__).parent / path) as f:
         return json.loads(f.read())
 
 
 @pytest.mark.parametrize(
     "list_response, expected_result",
     [
-        (util_load_json(os.path.dirname(__file__) + '/test_data/getList_querywindow_success.json'), 'success'),
-        (util_load_json(os.path.dirname(__file__) + '/test_data/getList_querywindow_error.json'), 'fail')
+        (util_load_json('test_data/getList_querywindow_success.json'), 'success'),
+        (util_load_json('test_data/getList_querywindow_error.json'), 'fail')
     ]
 )
 def test_get_query_window(list_response, expected_result, mocker):
@@ -402,7 +401,7 @@ def test_main(return_incident_path, expected_return, create_context_called, mock
     """
     import PreprocessEmail
     from PreprocessEmail import main
-    incident = util_load_json(os.path.dirname(__file__) + '/test_data/get_incident_details_result.json')
+    incident = util_load_json('test_data/get_incident_details_result.json')
     mocker.patch.object(demisto, 'incident', return_value=incident)
     mocker.patch.object(PreprocessEmail, 'get_email_related_incident_id', return_value='123')
     mocker.patch.object(PreprocessEmail, 'get_incident_by_query',

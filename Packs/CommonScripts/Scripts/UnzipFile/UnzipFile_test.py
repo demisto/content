@@ -20,7 +20,7 @@ def test_unzip_no_password(file_name):
     """
     # Given
     # - valid zip file - no password required
-    main_dir = '/'.join(__file__.split('/')[0:-1])
+    main_dir = os.path.dirname(__file__)
     expected_file_unzipped = os.path.join(main_dir + '/data_test', file_name)
     zipped_file_path = expected_file_unzipped + '.zip'
     # Creation of file object
@@ -61,7 +61,7 @@ def test_unzip_with_password(zip_tool: str):
     # - valid zip file - no password required
     file_name = 'fix_unzip.png'
     password = 'demisto'
-    main_dir = '/'.join(__file__.split('/')[0:-1])
+    main_dir = os.path.dirname(__file__)
     expected_file_unzipped = os.path.join(main_dir + '/data_test', file_name)
     zipped_file_path = expected_file_unzipped + '.zip'
     # Creation of file object
@@ -104,7 +104,7 @@ def test_unzip_long_filename(file_name, mocker):
     import UnzipFile as unzip
     # Given
     # - valid zip file - includes a file with long filename
-    main_dir = '/'.join(__file__.split('/')[0:-1])
+    main_dir = os.path.dirname(__file__)
     zip_file_path = os.path.join(main_dir + '/data_test', file_name)
     # Creation of file object
     zipped_file_object = {
@@ -137,7 +137,7 @@ def test_unrar_no_password():
     - ensure that the saved file has expected content
     """
     file_name = 'Untitled_document.pdf'
-    main_dir = '/'.join(__file__.split('/')[0:-1])
+    main_dir = os.path.dirname(__file__)
     expected_file_unzipped = os.path.join(main_dir + '/data_test', file_name)
     zipped_file_path = expected_file_unzipped + '.rar'
     # Creation of file object
@@ -173,7 +173,7 @@ def test_extract_tarfile():
     - ensure that the saved file has expected content
     """
     file_name = 'test_file.txt'
-    main_dir = '/'.join(__file__.split('/')[0:-1])
+    main_dir = os.path.dirname(__file__)
     expected_file_unzipped = os.path.join(main_dir + '/data_test', file_name)
     zipped_file_path = expected_file_unzipped + '.tar.gz'
     # Creation of file object
@@ -243,7 +243,7 @@ def test_archive_with_slash_in_path():
     """
     zipped_file_object = {
         'name': 'Archive_with_slash_in_path.tar.gz',
-        'path': 'data_test/Archive_with_slash_in_path.tar.gz'
+        'path': f"{os.path.dirname(__file__)}/data_test/Archive_with_slash_in_path.tar.gz'
     }
     # - empty folder _dir
     _dir = mkdtemp()
