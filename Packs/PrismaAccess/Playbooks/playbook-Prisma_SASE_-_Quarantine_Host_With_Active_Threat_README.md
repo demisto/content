@@ -24,7 +24,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* PrismaSASE
+PrismaSASE
 
 ### Scripts
 
