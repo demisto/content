@@ -306,7 +306,9 @@ inputs:
   required: false
   description: Compliance issues for creating the compliance table in the layout.
   playbookInputQuery:
-outputs: []
+outputs:
+- contextPath: ComplianceTable
+  description: Table with compliance issues.
 quiet: true
 tests:
 - No tests (auto formatted)

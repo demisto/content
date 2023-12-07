@@ -32,7 +32,7 @@ This playbook does not use any integrations.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| AccountID | The account ID to search the owner for. | 1234 | Optional |
+| AccountID | The account ID to search the owner for. |  | Optional |
 | Provider | The account CSP.<br/>Available options:<br/>- PrismaCloud<br/>- GCP |  | Optional |
 
 ## Playbook Outputs
