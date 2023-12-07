@@ -3,12 +3,12 @@ args:
   name: entry_id
   required: true
 - auto: PREDEFINED
-  defaultValue: "False"
+  defaultValue: "false"
   description: Adds Indicators to context.
-  name: context
+  name: add_context
   predefined:
-  - "True"
-  - "False"
+  - "true"
+  - "false"
 - description: Adds tags to Indicators. Comma separated.
   name: tags
 comment: Creates indicators from the submitted STIX file. Supports STIX 1.0 and STIX 2.x. This automation creates indicators and adds an indicator's relationships if available.
