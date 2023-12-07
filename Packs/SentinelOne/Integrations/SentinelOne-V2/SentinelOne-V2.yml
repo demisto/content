@@ -395,6 +395,13 @@ script:
       name: site_ids
     - description: 'Incident status. Example: "IN_PROGRESS, UNRESOLVED".'
       name: incident_statuses
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Whether to include the resolved parameter in the query.
+      name: include_resolved_param
+      predefined:
+      - "false"
+      - "true"
     description: Returns threats according to the specified filters.
     name: sentinelone-get-threats
     outputs:
