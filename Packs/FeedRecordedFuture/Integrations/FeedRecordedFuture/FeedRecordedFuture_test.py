@@ -11,6 +11,11 @@ class TestStreamCompressedData:
     
     @pytest.fixture()
     def mock_response(self) -> requests.Response:
+        """This is a fixture used to mock the response object when streaming compressed data.
+
+        Returns:
+            requests.Response: The response object that will mock the streaming of compressed data.
+        """
         import io
         gzip_compressed_data = b''
         # The file below should be a gzip compressed file. The content of the compressed file was obtained by running:
