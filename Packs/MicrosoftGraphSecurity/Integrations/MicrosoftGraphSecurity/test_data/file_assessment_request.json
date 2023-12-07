@@ -1,0 +1,25 @@
+{
+  "id": "file_test_id",
+  "createdDateTime": "2019-11-27T05:44:00.4051536Z",
+  "contentType": "file",
+  "expectedAssessment": "block",
+  "category": "phishing",
+  "status": "completed",
+  "requestSource": "administrator",
+  "fileName": "file_name.csv",
+  "contentData": "",
+  "createdBy": {
+    "user": {
+      "id": "c52ce8db-3e4b-4181-93c4-7d6b6bffaf60",
+      "displayName": "Ronald Admin"
+    }
+  },
+    "results": [
+        {
+            "id": "id",
+            "createdDateTime": "2019-11-27T05:50:33.243Z",
+            "resultType": "rescan",
+            "message": "Phishing"
+        }
+    ]
+}
