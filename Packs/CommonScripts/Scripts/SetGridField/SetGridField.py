@@ -161,7 +161,14 @@ def get_current_table(grid_id: str) -> pd.DataFrame:
     Returns:
         DataFrame: Existing grid data.
     """
-    custom_fields = demisto.incident().get("CustomFields", {}) or {}
+    incident=demisto.incident()
+    custom_fields = incident.get("CustomFields", {}) or {}
+    is_playground = incident.get("isPlayground")
+    if is_playground and grid_id not in custom_fields:
+        raise ValueError(f"The following grid id was not found: {grid_id}. Please make sure you entered the correct "
+                         f"incident type with the \"Machine name\" as it appears in the incident field editor in "
+                         f"Settings->Advanced ->Fields (Incident). Also make sure that this value appears in the "
+                         f"incident Context Data under incident - if not then please consult with support.")
     current_table: list[dict] | None = custom_fields.get(grid_id)
     return pd.DataFrame(current_table) if current_table else pd.DataFrame()
 
@@ -279,7 +286,7 @@ def build_grid(context_path: str, keys: list[str], columns: list[str], unpack_ne
         else:
             entry_context_data = entry_context_data
             table = pd.DataFrame([entry_context_data])
-            table = table.rename(columns=dict(zip(table.columns, columns)))
+            table.rename(columns=dict(zip(table.columns, columns)), inplace=True)
 
     else:
         table = []
@@ -371,6 +378,7 @@ def main():  # pragma: no cover
         # we execute command and not using `demisto.incident()` because we want to get the updated incident and context
         res = demisto.executeCommand("getIncidents", {"id": demisto.incident().get("id")})
         is_playground = demisto.incident().get("isPlayground")
+        custom_fields = {}
         for res_obj in res:
             if res_obj['Contents']:
                 data = res_obj["Contents"]["data"]
