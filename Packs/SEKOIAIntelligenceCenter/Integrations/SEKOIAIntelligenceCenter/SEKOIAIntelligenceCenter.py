@@ -172,6 +172,9 @@ def extract_file_indicator_hashes(pattern_str: str) -> dict:
     """
     hashes = {"sha512": "", "sha256": "", "sha1": "", "md5": ""}
 
+    if not pattern_str:
+        return hashes
+
     # Remove enclosing brackets
     pattern_str = pattern_str.strip("[]")
     stix_object_hashes = pattern_str.split("OR")
@@ -261,7 +264,7 @@ def get_ip_indicator_reputation(
         reliability=reliability_score,
     )
 
-    indicator_value: str | None = extract_indicator_from_pattern(stix_object.get("pattern", None)) or stix_object.get("name")
+    indicator_value: str | None = extract_indicator_from_pattern(stix_object["pattern"]) or stix_object.get("name")
 
     ip = Common.IP(
         ip=indicator_value,
@@ -467,6 +470,7 @@ def extract_indicators(indicator: dict, indicator_context: dict) -> list:
         stix_object = {
             "name": indicator["value"],
             "x_ic_observable_types": [indicator["type"]],
+            "pattern": None
         }
         object_reputation = get_stix_object_reputation(stix_bundle={}, stix_object=stix_object)
         return [object_reputation]

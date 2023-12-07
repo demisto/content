@@ -407,6 +407,35 @@ def test_reputation_command(client, input, command, requests_mock):
         assert result.to_context != []
 
 
+@pytest.mark.parametrize(
+    "input_indicator, input_type, expected_type",
+    [
+        ("1.1.1.1", "ip", "ipv4-addr", DBotScoreType.IP),
+        ("2606:4700:4700::1111", "ipv6-addr", "ip", DBotScoreType.IP),
+        ("eicar@sekoia.io", "email", 'email-addr', DBotScoreType.EMAIL),
+        ("eicar.sekoia.io", "domain", 'domain-name', DBotScoreType.DOMAIN),
+        ("http://truesec.pro/", "url", 'url', DBotScoreType.URL),
+        ("90b6a021b4f2e478204998ea4c5f32155a7348be4afb620999fa708b4a9a30ab", 'file', "file", DBotScoreType.FILE),
+    ],
+)
+def test_reputation_command_unknown_indicator(client, input_indicator, input_type, expected_stix_type, expected_dbot_type, requests_mock):
+    mock_response = util_load_json("test_data/indicator_unknown.json")
+    requests_mock.get(
+        MOCK_URL + "/v2/inthreat/indicators/context",
+        json=mock_response,
+    )
+    args = {input_type: input_indicator}
+    command_results = SEKOIAIntelligenceCenter.reputation_command(client=client, args=args, indicator_type=input_type)
+
+    for result in command_results:
+        assert result is not None
+        assert result.outputs["items"] == mock_response["items"]
+        assert result.outputs["indicator"] == {"value": input_indicator, "type": input_type}
+        assert result.indicator.dbot_score.indicator_type == expected_dbot_type
+        assert result.indicator.dbot_score.score == Common.DBotScore.NONE
+        assert result.outputs == f"{input_indicator} of type {expected_stix_type} is an unknown indicator."
+
+
 def test_reputation_command_wrong_type(client):
     indicator_type = "wrong-type"
     args = {indicator_type: "1.1.1.1"}
