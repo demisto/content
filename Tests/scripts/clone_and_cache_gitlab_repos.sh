@@ -89,7 +89,7 @@ clone_repository_with_fallback_branch() {
   fi
 }
 
-remove_repo_cache() {
+remove_cached_gitlab_repo() {
     local repo_name=$1
     echo "Remove $repo_name from cache"
     rm -rf "./$repo_name"
