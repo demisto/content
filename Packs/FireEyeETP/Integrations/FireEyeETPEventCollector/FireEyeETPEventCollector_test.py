@@ -367,3 +367,32 @@ def test_set_events_max_multiple(mocker, event_names, new_max):
     for name in event_names:
         event = next(e for e in FireEyeETPEventCollector.ALL_EVENTS if e.name == name)
         assert event.client_max_fetch == new_max
+
+
+def test_limit_zero_skip_fetch_flow(mocker):
+    """
+    Given: 2 events with limit set to zero and one event with actual number.
+    When: running the fetch flow
+    Then: validates the flow was only running for the event with limit.
+    """
+
+    event_types = [
+        FireEyeETPEventCollector.EventType("alerts", 0, outbound=False),
+        FireEyeETPEventCollector.EventType("email_trace", 0, outbound=False),
+        FireEyeETPEventCollector.EventType("activity_log", 25, outbound=False),
+    ]
+    last_run = FireEyeETPEventCollector.LastRun(event_types=event_types)
+    collector = FireEyeETPEventCollector.EventCollector(mock_client(), event_types)
+    get_events_mock = mocker.patch.object(
+        collector, "get_events", return_value=(last_run, [])
+    )
+    mocker.patch.object(
+        FireEyeETPEventCollector.LastRun, "to_demisto_last_run", return_value={}
+    )
+
+    collector.fetch_command(demisto_last_run=LAST_RUN_MULTIPLE_EVENT)
+    get_events_mock.assert_called_once()
+    
+    get_events_mock.reset_mock()
+    collector.get_events_command(start_time=datetime(2023, 1, 15, 14, 30, 45, 123000))
+    get_events_mock.assert_called_once()

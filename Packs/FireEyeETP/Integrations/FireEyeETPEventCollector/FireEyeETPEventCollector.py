@@ -247,11 +247,11 @@ class EventCollector:
 
             for event_type in self.event_types_to_run_on:
                 demisto.debug(f"{LOG_LINE} getting events of type {event_type.name}")
-
-                next_run, new_events = self.get_events(
-                    event_type=event_type, last_run=next_run
-                )
-                events += new_events
+                if event_type.client_max_fetch > 0:
+                    next_run, new_events = self.get_events(
+                        event_type=event_type, last_run=next_run
+                    )
+                    events += new_events
 
         demisto.debug(f"{LOG_LINE} fetched {len(events)} to load. Setting last_run")
 
@@ -264,13 +264,14 @@ class EventCollector:
         events = []
         demisto.debug(f"{LOG_LINE}: running get-command")
         for event_type in self.event_types_to_run_on:
-            _, new_events = self.get_events(
-                event_type=event_type,
-                last_run=LastRun(
-                    self.event_types_to_run_on, start_time, last_ids=set()
-                ),
-            )
-            events += new_events
+            if event_type.client_max_fetch > 0:
+                _, new_events = self.get_events(
+                    event_type=event_type,
+                    last_run=LastRun(
+                        self.event_types_to_run_on, start_time, last_ids=set()
+                    ),
+                )
+                events += new_events
 
         hr = tableToMarkdown(name="Test Event", t=events)
         return events, CommandResults(readable_output=hr)
@@ -293,7 +294,6 @@ class EventCollector:
                 min(event_type.api_max, event_type.client_max_fetch - res_count),
                 self.client.outbound_traffic,
             )
-            demisto.debug(f"{LOG_LINE} got alerts full response: {current_batch=}")
             current_batch_data = current_batch.get("data", []) or []
             demisto.debug(f"{LOG_LINE} got {len(current_batch_data)} alerts from API")
             if current_batch_data:
@@ -344,8 +344,6 @@ class EventCollector:
                 to_LastModifiedOn=iso_end_time,
             )
             current_batch_data = current_batch.get("data", [])
-
-            demisto.debug(f"{LOG_LINE} raw: {current_batch_data}")
 
             if current_batch_data:
                 dedup_data = [
@@ -544,7 +542,18 @@ def parse_special_iso_format(datetime_str: str) -> datetime:
     It supports both existing and non-existing microseconds.
     """
 
-    def fix_format(datetime_str):
+    def fix_date_format(datetime_str: str):
+        """" Gets a time string according to the API standard, fix it and parse it.
+
+        Args:
+            datetime_str (str): A string representing time (Might be ISO, ISO Z).
+
+        Raises:
+            DemistoException: _description_
+
+        Returns:
+            datetime: A datetime object parsed from the fixed datetime string.
+        """
         tz_index = None
         demisto.debug(f"Fixing format of datetime string: {datetime_str}.")
         if datetime_str.endswith("Z") and "+" in datetime_str:
@@ -569,7 +578,7 @@ def parse_special_iso_format(datetime_str: str) -> datetime:
 
     try:
         date_obj = dateparser.parse(datetime_str, settings={"TIMEZONE": "UTC"})
-        date_obj = date_obj if date_obj else fix_format(datetime_str)
+        date_obj = date_obj if date_obj else fix_date_format(datetime_str)
 
         # The API sometimes returns dates without full data, causing the parsing to fail.
         return date_obj
