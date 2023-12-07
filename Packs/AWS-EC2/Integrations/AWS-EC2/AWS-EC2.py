@@ -3125,6 +3125,9 @@ def main():
                                aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate,
                                timeout, retries, sts_endpoint_url=sts_endpoint_url, endpoint_url=endpoint_url)
 
+        command = demisto.command()
+        args = demisto.args()
+
         # required for typing of IPAM commands
         client: 'EC2Client' = aws_client.aws_session(
             service='ec2',
@@ -3133,9 +3136,6 @@ def main():
             role_session_name=args.get('roleSessionName'),
             role_session_duration=args.get('roleSessionDuration'),
         )
-
-        command = demisto.command()
-        args = demisto.args()
 
         LOG(f'Command being called is {command}')
 
