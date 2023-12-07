@@ -1,6 +1,8 @@
 import pytest
 import logging
 import os
+import shutil
+import tempfile
 from uuid import uuid4
 # More info about conftest.py at:
 #   https://docs.pytest.org/en/latest/writing_plugins.html#conftest-py-plugins  # disable-secrets-detection
@@ -51,8 +53,13 @@ def check_std_out_err(capfd):
         pytest.fail("Found output in stdout: [{}]".format(out.strip()))
     if err:
         pytest.fail("Found output in stderr: [{}]".format(err.strip()))
-
-
+@pytest.fixture(autouse=True)
+def chdir(monkeypatch):
+    temp_dir = tempfile.mkdtemp()
+    monkeypatch.chdir(temp_dir)
+    yield
+    shutil.rmtree(temp_dir)
+    
 def pytest_sessionfinish(session, exitstatus):
     if exitstatus == NO_TESTS_COLLECTED:
         session.exitstatus = SUCCESS
