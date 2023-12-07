@@ -6,7 +6,7 @@ import json
 import time
 from hashlib import sha256
 from typing import Any
-
+from pathlib import Path
 import pytest
 import requests
 
@@ -212,7 +212,7 @@ def load_json(path):
         JSONDecodeError: If the file at the specified path contains invalid JSON.
 
     """
-    with open(path, encoding="utf-8") as file:
+    with open(Path(__file__).parent / path, encoding="utf-8") as file:
         return json.loads(file.read())
 
 

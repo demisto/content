@@ -9,7 +9,7 @@ SERVER_URL = 'https://test_url.com/'
 API_TOKEN = 'api_token'
 FILE_ENTRY = {
     'name': 'freshservice_ticket_create_update.json',
-    'path': 'test_data/freshservice_ticket_create_update.json'
+    'path': f'{os.path.dirname(__file__)}/test_data/freshservice_ticket_create_update.json'
 }
 
 

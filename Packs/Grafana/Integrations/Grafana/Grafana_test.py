@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 import dateparser
 import pytest
@@ -20,7 +21,7 @@ def create_client(url: str = 'url', verify_certificate: bool = True, proxy: bool
 
 ''' HELPER FUNCTIONS TESTS '''
 
-with open("TestData/change_key_values.json") as change_key_values_file:
+with open(Path(__file__).parent / Path(__file__).parent / "TestData/change_key_values.json") as change_key_values_file:
     change_key_values_data = json.load(change_key_values_file)
 
 alertId_to_id = change_key_values_data["alertId_to_id"]
@@ -59,7 +60,7 @@ def test_keys_to_lowercase():
         - Returns the dictionary with it's keys decapitalized
 
     """
-    with open("TestData/keys_to_lowercase.json") as keys_to_lowercase_file:
+    with open(Path(__file__).parent / "TestData/keys_to_lowercase.json") as keys_to_lowercase_file:
         keys_to_lowercase_data = json.load(keys_to_lowercase_file)
     dict_input = keys_to_lowercase_data["dict_input"]
     expected_result = keys_to_lowercase_data["expected_result"]
@@ -127,7 +128,7 @@ def test_calculate_fetch_start_time(last_fetch, first_fetch, expected_output):
     assert calculate_fetch_start_time(last_fetch, first_fetch) == expected_output
 
 
-with open("TestData/parse_alerts_values.json") as parse_alerts_values_file:
+with open(Path(__file__).parent / Path(__file__).parent / "TestData/parse_alerts_values.json") as parse_alerts_values_file:
     parse_alerts_values_data = json.load(parse_alerts_values_file)
 
 no_alerts_to_fetch = ([],
@@ -252,7 +253,7 @@ def test_alert_to_incident():
     assert incident == expected_incident
 
 
-with open("TestData/concatenate_url_values.json") as concatenate_url_values_file:
+with open(Path(__file__).parent / "TestData/concatenate_url_values.json") as concatenate_url_values_file:
     concatenate_url_values_data = json.load(concatenate_url_values_file)
 
 url_with_nothing_at_the_end = ('https://base_url',
@@ -285,7 +286,7 @@ def test_concatenate_url(base_url, dict_input, expected_result):
     assert client._concatenate_urls(dict_input) == expected_result
 
 
-with open("TestData/alerts_to_filter_by_time.json") as alerts_to_filter_by_time_file:
+with open(Path(__file__).parent / "TestData/alerts_to_filter_by_time.json") as alerts_to_filter_by_time_file:
     alerts_to_filter_by_time_data = json.load(alerts_to_filter_by_time_file)
 
 first_fetch_high_limit = (alerts_to_filter_by_time_data['keep_all_alerts'][0],
@@ -318,7 +319,7 @@ def test_filter_alerts_by_time(alerts, last_fetch, expected_alerts):
     assert filter_alerts_by_time(alerts, last_fetch) == expected_alerts
 
 
-with open("TestData/alerts_to_filter_by_date.json") as alerts_to_filter_by_date_file:
+with open(Path(__file__).parent / "TestData/alerts_to_filter_by_date.json") as alerts_to_filter_by_date_file:
     alerts_to_filter_by_date_data = json.load(alerts_to_filter_by_date_file)
 
 keep_all_alerts_first_fetch = (alerts_to_filter_by_date_data['keep_all_alerts_first_fetch'][0],
@@ -355,7 +356,7 @@ def test_filter_alerts_by_id(alerts, last_fetch, last_id_fetched, expected_alert
     assert filter_alerts_by_id(alerts, last_fetch, last_id_fetched) == expected_alerts
 
 
-with open("TestData/incidents_to_reduce.json") as incidents_to_reduce_file:
+with open(Path(__file__).parent / "TestData/incidents_to_reduce.json") as incidents_to_reduce_file:
     incidents_to_reduce_data = json.load(incidents_to_reduce_file)
 
 keep_all_incidents = (incidents_to_reduce_data["keep_all_incidents"][0],

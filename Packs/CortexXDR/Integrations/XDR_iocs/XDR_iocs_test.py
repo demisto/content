@@ -168,7 +168,7 @@ class TestPrepareCommands:
 
 
 class TestCreateFile:
-    path = 'test_data/sync_file_test.json'
+    path = str(Path(__file__).parent / 'test_data/sync_file_test.json')
     data_test_create_file_sync = [
         ('Domain_iocs', 'Domain_sync_file'),
         ('IP_iocs', 'IP_sync_file'),
@@ -183,7 +183,7 @@ class TestCreateFile:
     @classmethod
     def setup_method(cls):
         # creates the file
-        with open(Path(__file__).parent / TestCreateFile.path, 'w') as _file:
+        with open(TestCreateFile.path, 'w') as _file:
             _file.write('')
 
     @classmethod

@@ -1,7 +1,7 @@
 import json
 import os
 from urllib.parse import urljoin
-
+from pathlib import Path
 import demistomock as demisto
 from ForescoutEyeInspect import Client
 
@@ -10,12 +10,12 @@ MOCK_BASE_URL = urljoin(CLIENT_BASE_URL, "api/v1")
 
 
 def load_json_mock_response(filename: str) -> str:
-    with open(os.path.join("test_data", f"{filename}.json")) as test_file:
+    with open(os.path.join(Path(__file__).parent / "test_data", f"{filename}.json")) as test_file:
         return json.loads(test_file.read())
 
 
 def load_raw_mock_response(filename: str) -> bytes:
-    with open(os.path.join("test_data", filename), "rb") as test_file:
+    with open(os.path.join(Path(__file__).parent / "test_data", filename), "rb") as test_file:
         return test_file.read()
 
 

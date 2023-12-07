@@ -243,7 +243,7 @@ def test_archive_with_slash_in_path():
     """
     zipped_file_object = {
         'name': 'Archive_with_slash_in_path.tar.gz',
-        'path': f"{os.path.dirname(__file__)}/data_test/Archive_with_slash_in_path.tar.gz'
+        'path': f'{os.path.dirname(__file__)}/data_test/Archive_with_slash_in_path.tar.gz'
     }
     # - empty folder _dir
     _dir = mkdtemp()
