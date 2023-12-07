@@ -3061,7 +3061,7 @@ def describe_ipam_resource_discovery_associations_command(args: Dict[str, Any], 
     return command_results
 
 
-def get_ipam_discovered_public_addresses_command(args: Dict[str, Any], client: 'EC2Client') -> CommandResults:
+def get_ipam_discovered_public_addresses_command(args: Dict[str, Any], aws_client) -> CommandResults:
     """
     aws-ec2-get-ipam-discovered-public-addresses: Gets the public IP addresses that have been discovered by IPAM.
 
@@ -3073,6 +3073,14 @@ def get_ipam_discovered_public_addresses_command(args: Dict[str, Any], client: '
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains public IP addresses
         that have been discovered by IPAM.
     """
+    client = aws_client.aws_session(
+        service='ec2',
+        region=args.get('region'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration')
+    )
+
     if (args.get('IpamResourceDiscoveryId') is None) or (args.get('AddressRegion') is None):
         return_error('IpamResourceDiscoveryId and AddressRegion need to be defined')
 
@@ -3366,7 +3374,7 @@ def main():
             return_results(describe_ipam_resource_discovery_associations_command(args, client))
 
         elif command == 'aws-ec2-get-ipam-discovered-public-addresses':
-            return_results(get_ipam_discovered_public_addresses_command(args, client))
+            return_results(get_ipam_discovered_public_addresses_command(args, aws_client))
 
     except Exception as e:
         LOG(e)

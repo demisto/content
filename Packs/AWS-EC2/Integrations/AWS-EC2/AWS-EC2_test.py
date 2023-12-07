@@ -297,9 +297,11 @@ def test_get_ipam_discovered_public_addresses_command(mocker, return_boto, expec
     - Case 1: Should ensure that generic "nothing found" message returned.
     - Case 2: Should ensure that information on resource was returned.
     """
+    aws_client = create_client()
+    mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, 'get_ipam_discovered_public_addresses', return_value=return_boto)
     args = {"IpamResourceDiscoveryId": "ipam-res-disco-11111111111111111",
             "AddressRegion": "us-east-1",
             "Filters": "Name=address,Values=1.1.1.1"}
-    results = AWS_EC2.get_ipam_discovered_public_addresses_command(args, Boto3Client)
+    results = AWS_EC2.get_ipam_discovered_public_addresses_command(args, aws_client)
     assert results.readable_output == expected_results
