@@ -1,3 +1,4 @@
+import subprocess
 import pytest
 import logging
 import os
@@ -63,6 +64,8 @@ def chdir(monkeypatch):
 def pytest_sessionfinish(session, exitstatus):
     if exitstatus == NO_TESTS_COLLECTED:
         session.exitstatus = SUCCESS
+    if os.getenv("CI"):
+        subprocess.run(["git", "clean", "-fdx"], check=True)
 
 
 def pytest_configure(config):
