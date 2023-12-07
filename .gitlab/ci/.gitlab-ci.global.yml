@@ -64,10 +64,6 @@
   - if [ -f ./items_removed_manually_from_id_set.json ]; then cp ./items_removed_manually_from_id_set.json "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs"; fi
   - section_end "Create ID Set"
 
-#.download-demisto-conf:
-#  - section_start "Download content-test-conf and infra" --collapsed
-#  - ./Tests/scripts/download_conf_repos.sh 2>&1 | tee --append "${ARTIFACTS_FOLDER}/logs/download_conf_repos.log"
-#  - section_end "Download content-test-conf and infra"
 
 .secrets-fetch:
   - section_start "Secrets Fetch" --collapsed
