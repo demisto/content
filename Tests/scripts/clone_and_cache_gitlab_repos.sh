@@ -119,11 +119,11 @@ clone_and_cache_gitlab_repos() {
     local branch_exists=$?
     if [ "${branch_exists}" -eq 0 ]; then
         if [ "${cached_branch_name}" != "${branch}" ]; then
-          remove_repo_cache "${repo}"
+          remove_cached_gitlab_repo "${repo}"
         fi
       else
         if [ "${cached_branch_name}" != "${fallback_branch}" ]; then
-          remove_repo_cache "${repo}"
+          remove_cached_gitlab_repo "${repo}"
         fi
       fi
   fi
