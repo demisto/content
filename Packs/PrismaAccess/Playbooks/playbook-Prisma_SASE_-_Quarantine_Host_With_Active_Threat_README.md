@@ -11,8 +11,7 @@ This playbook is designed to automatically quarantine a SentinelOne host in resp
 ## Dependencies and Configuration
 - This playbook requires being set as the default in the SentinelOne instance configuration.
 - It specifically responds to events categorized as 'Threats'.
-
-**Note**: Ensure that the Prisma SASE, Cortex Data Lake and SentinelOne integrations are properly configured and operational for seamless execution of this playbook.
+- Ensure that the Prisma SASE, Cortex Data Lake and SentinelOne integrations are properly configured and operational for seamless execution of this playbook.
 
 
 ## Dependencies
