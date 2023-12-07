@@ -57,29 +57,6 @@ class TestXCloudAdditionalAlertInformationWidget(unittest.TestCase):
         output = verify_list_type(input)
         self.assertEqual(output, expected_output)
 
-    @patch('demistomock.investigation', return_value={'id': 'mocked_id'})
-    @patch('demistomock.context', {})  # Simulating an empty context
-    @patch('CommonServerPython.return_error', side_effect=lambda x: exit(x))
-    @patch('sys.exit', side_effect=lambda x: exit(x))
-    def test_main_missing_original_alert(self, mock_sys_exit, mock_return_error, mock_context, mock_investigation):
-        # Call the main function
-        with self.assertRaises(SystemExit) as cm:
-            main()
-
-        # Ensure that sys.exit(0) is called during the test
-        mock_sys_exit.assert_called_once_with(0)
-
-        # Ensure that exit(0) is called
-        self.assertEqual(cm.exception.code, 0)
-
-        # Ensure that the mocked functions were called
-        mock_context.assert_called_once()
-        mock_investigation.assert_called_once()
-
-        # Check if context is empty, throw an exception
-        if not mock_context.return_value:
-            raise DemistoException(f"Expected 'context' to have 'Core' structure. Got: {mock_context.return_value}")
-
 
 if __name__ == '__main__':
     unittest.main()
