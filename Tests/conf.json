@@ -2234,6 +2234,11 @@
             "is_mockable": false
         },
         {
+            "integrations": "Microsoft Graph",
+            "playbookID": "MSG-Threat-Assessment-test",
+            "instance_names": "ms_graph_security_ediscovery"
+        },
+        {
             "integrations": "Microsoft Graph User",
             "playbookID": "Microsoft Graph User - Test",
             "instance_names": "ms_graph_user_dev"
@@ -5791,7 +5796,8 @@
         "Microsoft Defender Advanced Threat Protection - Test self deployed": "Issue CIAC-7527",
         "Microsoft Defender Advanced Threat Protection - Test": "Issue CIAC-7527",
         "OpsGenieV3TestPlaybook": "Issue CIAC-7649",
-        "ThreatStream-Test": "Issue CRTX-96526"
+        "ThreatStream-Test": "Issue CRTX-96526",
+        "MSG-Threat-Assessment-test": "API limitation"
     },
     "skipped_integrations": {
         "CiscoWSAv2": "No instance - No license",

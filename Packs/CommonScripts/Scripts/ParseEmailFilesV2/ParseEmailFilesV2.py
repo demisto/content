@@ -33,6 +33,7 @@ def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_o
     md += f"""* From:\t{email_data.get('From') or ""}\n"""
     md += f"""* To:\t{email_data.get('To') or ""}\n"""
     md += f"""* CC:\t{email_data.get('CC') or ""}\n"""
+    md += f"""* BCC:\t{email_data.get('BCC') or ""}\n"""
     md += f"""* Subject:\t{email_data.get('Subject') or ""}\n"""
     if email_data.get('Text'):
         text = email_data['Text'].replace('<', '[').replace('>', ']')
