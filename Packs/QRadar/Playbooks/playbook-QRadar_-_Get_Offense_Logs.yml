@@ -134,7 +134,8 @@ tasks:
       inplace:
         simple: "False"
       input:
-        simple: ${QRadar.SearchEvents.Events}
+        complex:
+          root: QRadar.SearchEvents.Events
       input_key:
         simple: ${QRadar.Search.Result}
       key:
