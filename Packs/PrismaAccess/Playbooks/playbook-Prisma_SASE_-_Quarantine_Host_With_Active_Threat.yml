@@ -56,7 +56,7 @@ tasks:
       id: e6a6b01b-5d40-4bfb-8ccb-bc761acfe500
       version: -1
       name: Get Host ID from CDL Logs
-      description: Runs a query on  any table or field.
+      description: Runs a query on any table or field.
       script: '|||cdl-query-logs'
       type: regular
       iscommand: true
@@ -106,7 +106,7 @@ tasks:
       id: 7f2ad353-eb6f-4110-837d-d21daf4a93d2
       version: -1
       name: Was the host ID found?
-      description: Checks whether the host ID was found in the CDL logs
+      description: Checks whether the host ID was found in the CDL logs.
       type: condition
       iscommand: false
       brand: ""
@@ -147,7 +147,7 @@ tasks:
       id: 4df18bfe-7246-42cc-8450-e2f834e7ba6c
       version: -1
       name: Is the agent decommissioned?
-      description: Checks whether the agent is decommissioned
+      description: Checks whether the agent is decommissioned.
       type: condition
       iscommand: false
       brand: ""
@@ -260,7 +260,7 @@ tasks:
       id: ce581bda-eae3-4ae7-80b2-6172c932b51e
       version: -1
       name: Load SentinelOne agent details
-      description: Loads a json from string input, and returns a json object result
+      description: Loads a JSON from a string input, and returns a JSON object result.
       scriptName: LoadJSON
       type: regular
       iscommand: false
@@ -301,7 +301,7 @@ tasks:
       id: d729bc95-fdeb-4819-8349-8aef1a7c3ba5
       version: -1
       name: 'Error: Could not quarantine host'
-      description: Prints an error entry with a given message
+      description: Prints an error entry with a given message.
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
