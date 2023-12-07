@@ -251,8 +251,8 @@ script:
       description: Wether ro run gmail-get-attachments as well or not.
       name: run-get-attachments-command
       predefined:
-      - False
-      - True
+      - 'False'
+      - 'True'
     description: Retrieves the Gmail message sent to a specified user.
     name: gmail-get-mail
     outputs:
