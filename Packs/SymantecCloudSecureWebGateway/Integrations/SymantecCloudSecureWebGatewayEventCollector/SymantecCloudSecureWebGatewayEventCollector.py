@@ -623,6 +623,13 @@ def test_module(client: Client, fetch_interval: str | None) -> str:
         with client.get_logs(params) as res:
             for _ in res.iter_content(chunk_size=TEST_MODULE_READ_CHUNK_SIZE):
                 return "ok"
+    except DemistoException as e:
+        if e.res is not None and (e.res.status_code == 423 or e.res.status_code == 429):
+            return "ok"
+        elif "HTTP Status 401" in str(e):
+            raise ValueError("Authorization Error: make sure API Key is correctly set")
+        else:
+            raise e
     except Exception as e:
         if "HTTP Status 401" in str(e):
             raise ValueError("Authorization Error: make sure API Key is correctly set")

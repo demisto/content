@@ -3,6 +3,7 @@ import tempfile
 import zipfile
 from freezegun import freeze_time
 import pytest
+from CommonServerPython import DemistoException
 
 from SymantecCloudSecureWebGatewayEventCollector import (
     DEFAULT_FETCH_SLEEP,
@@ -21,6 +22,7 @@ from SymantecCloudSecureWebGatewayEventCollector import (
     parse_events,
     extract_logs_from_zip_file,
     perform_long_running_loop,
+    test_module,
 )
 import demistomock as demisto
 from pathlib import Path
@@ -361,12 +363,17 @@ def test_extract_logs_and_push_to_XSIAM(
 @pytest.mark.parametrize(
     "mock_parse_events, mock_send_events_to_xsiam, expected_raise, expected_call",
     [
-        (Exception("Parse error"), None, "Parse error", "Error parsing events: Parse error"),
+        (
+            Exception("Parse error"),
+            None,
+            "Parse error",
+            "Error parsing events: Parse error",
+        ),
         (
             ((["event"], ""),),
             Exception("Send error"),
             "Send error",
-            "Failed to send events to XSOAR. Error: Send error"
+            "Failed to send events to XSOAR. Error: Send error",
         ),
     ],
 )
@@ -662,3 +669,84 @@ def test_perform_long_running_loop(
         pass
 
     assert mock_sleep.call_count == expected_mock_sleep
+
+
+def test_test_module(requests_mock, client: Client):
+    """
+    Given:
+        - client with default value
+    When:
+        - run `test_module` function
+    Then:
+        - Ensure that returns `ok`
+    """
+    requests_mock.get(
+        "https://api.example.com/reportpod/logs/sync", content=b"event1\nevent2"
+    )
+
+    assert test_module(client, "60") == "ok"
+
+
+@pytest.mark.parametrize(
+    "mock_status_code",
+    [423, 429],
+)
+def test_test_module_blocked_and_rate_limit_exception(
+    mocker, client: Client, mock_status_code: int
+):
+    """
+    Given:
+        - client with default value
+    When:
+        - run `test_module` function
+    Then:
+        - Ensure that returns `ok` when the api call
+          raises exception with status code 423 or 429
+    """
+
+    class MockException:
+        status_code = mock_status_code
+
+    mocker.patch.object(
+        client, "get_logs", side_effect=DemistoException("Test", res=MockException())
+    )
+
+    assert test_module(client, "60") == "ok"
+
+
+@pytest.mark.parametrize(
+    "fetch_interval, mock_exception, expected_error_message",
+    [
+        ("60", ValueError("Test"), "Test"),
+        (
+            "60",
+            ValueError("HTTP Status 401"),
+            "Authorization Error: make sure API Key is correctly set",
+        ),
+        (
+            "20",
+            None,
+            f"The minimum fetch interval is {DEFAULT_FETCH_SLEEP} seconds"
+            "Please increase the fetch_interval value and try again.",
+        ),
+    ],
+)
+def test_test_module_failure(
+    mocker,
+    client: Client,
+    fetch_interval: str,
+    mock_exception: Exception | None,
+    expected_error_message: str,
+):
+    """
+    Given:
+        - client with default value
+    When:
+        - run `test_module` function
+    Then:
+        - Ensure function raises error as expected
+    """
+    mocker.patch.object(client, "get_logs", side_effect=mock_exception)
+
+    with pytest.raises(ValueError, match=expected_error_message):
+        test_module(client, fetch_interval)
