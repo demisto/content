@@ -417,8 +417,7 @@ view: |-
   }
 inputs:
 - key: Namespace
-  value:
-    simple: sock-shop
+  value: {}
   required: false
   description: The namespace that the playbook would search associated users with.
   playbookInputQuery:

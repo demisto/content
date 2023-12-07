@@ -29,8 +29,8 @@ This playbook does not use any sub-playbooks.
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
-| --- | --- | --- | --- |
-| Namespace | The namespace that the playbook would search associated users with. | sock-shop | Optional |
+| --- | --- | -- | --- |
+| Namespace | The namespace that the playbook would search associated users with. | | Optional |
 | EnrichUsers | Whether to enrich found users or not. | False | Optional |
 
 ## Playbook Outputs
