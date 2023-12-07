@@ -161,7 +161,7 @@ def get_current_table(grid_id: str) -> pd.DataFrame:
     Returns:
         DataFrame: Existing grid data.
     """
-    incident=demisto.incident()
+    incident = demisto.incident()
     custom_fields = incident.get("CustomFields", {}) or {}
     is_playground = incident.get("isPlayground")
     if is_playground and grid_id not in custom_fields:
