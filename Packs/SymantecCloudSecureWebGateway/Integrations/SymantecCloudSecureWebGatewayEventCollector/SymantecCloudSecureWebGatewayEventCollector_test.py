@@ -194,7 +194,7 @@ def test_get_size_gzip_file(tmpdir, data: bytes, expected_size: int):
     ],
 )
 def test_is_duplicate(id_, cur_time, last_time, dup_ids, expected):
-    '''
+    """
     Given:
         - A unique ID, current time, last time, and a list of duplicate IDs.
     When:
@@ -209,7 +209,7 @@ def test_is_duplicate(id_, cur_time, last_time, dup_ids, expected):
 
         - Case 3: Ensure the method returns False,
           since the cur_time is greater than last_time.
-    '''
+    """
     handling_duplicates = HandlingDuplicates(
         max_time=last_time, events_suspected_duplicates=dup_ids
     )
@@ -228,7 +228,7 @@ def test_is_duplicate(id_, cur_time, last_time, dup_ids, expected):
 def test_get_start_date_for_next_fetch(
     start_time: int, time_of_last_fetched_event: str | None, expected
 ):
-    '''
+    """
     Given:
         - A start time and a time of last fetched event.
     When:
@@ -236,7 +236,7 @@ def test_get_start_date_for_next_fetch(
     Then:
         - Ensure that as long as the argument `time_of_last_fetched_event` is either None
           or not in datetime format, the original start_time is returned.
-    '''
+    """
     next_start = get_start_date_for_next_fetch(start_time, time_of_last_fetched_event)
     assert next_start == expected
 
@@ -680,6 +680,7 @@ def test_test_module(requests_mock, client: Client):
         - Ensure that returns `ok`
     """
     import SymantecCloudSecureWebGatewayEventCollector
+
     requests_mock.get(
         "https://api.example.com/reportpod/logs/sync", content=b"event1\nevent2"
     )
@@ -704,6 +705,7 @@ def test_test_module_blocked_and_rate_limit_exception(
           raises exception with status code 423 or 429
     """
     import SymantecCloudSecureWebGatewayEventCollector
+
     class MockException:
         status_code = mock_status_code
 
@@ -747,6 +749,7 @@ def test_test_module_failure(
         - Ensure function raises error as expected
     """
     import SymantecCloudSecureWebGatewayEventCollector
+
     mocker.patch.object(client, "get_logs", side_effect=mock_exception)
 
     with pytest.raises(ValueError, match=expected_error_message):
