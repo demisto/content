@@ -1485,7 +1485,7 @@ def get_mail_command():
     results = [email_entry]
     if should_run_get_attachments:
         get_attachments_command_results = get_attachments_command()
-        results.append(get_attachments_command_results) # type: ignore
+        results.append(get_attachments_command_results)  # type: ignore
     return results
 
 
