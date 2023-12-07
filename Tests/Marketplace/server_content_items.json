@@ -479,5 +479,8 @@
         "kafka",
         "syslog",
         "fcm"
+    ],
+    "AlertType": [
+        "ASM"
     ]
 }
