@@ -1422,6 +1422,7 @@ def main():
         }
 
         command = demisto.command()
+        auth_type = AuthType.OAUTH if argToBoolean(params.get('use_oauth', False)) else AuthType.API_TOKEN
 
         client = OktaClient(
             base_url=base_url,
@@ -1433,7 +1434,7 @@ def main():
             proxy=proxy,
             ok_codes=(200, 201, 204),
             api_token=api_token,
-            use_oauth=params.get('use_oauth'),
+            auth_type=auth_type,
             client_id=params.get('client_id'),
             scopes=OAUTH_TOKEN_SCOPES,
             private_key=params.get('private_key'),

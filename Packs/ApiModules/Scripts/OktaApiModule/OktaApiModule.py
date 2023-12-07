@@ -19,27 +19,36 @@ class JWTAlgorithm(Enum):
     ES512 = 'ES512'
 
 
+class AuthType(Enum):
+    API_TOKEN = 1
+    OAUTH = 2
+    NO_AUTH = 3
+
+
 class OktaClient(BaseClient):
-    def __init__(self, api_token: str, use_oauth: bool = False, client_id: str | None = None, scopes: list[str] | None = None,
-                 private_key: str | None = None, jwt_algorithm: JWTAlgorithm | None = None, *args, **kwargs):
+    def __init__(self, api_token: str, auth_type: AuthType = AuthType.API_TOKEN,
+                 client_id: str | None = None, scopes: list[str] | None = None, private_key: str | None = None,
+                 jwt_algorithm: JWTAlgorithm | None = None, *args, **kwargs):
         """
         Args:
             api_token (str): API token for authentication.
-            use_oauth (bool, optional): Whether to use OAuth authentication.
-            client_id (str | None, optional): Client ID for OAuth authentication (required if 'use_oauth' is True).
-            scopes (list[str] | None, optional): A list of scopes to request for the token (required if 'use_oauth' is True).
-            private_key (str | None, optional): Private key for OAuth authentication (required if 'use_oauth' is True).
-            jwt_algorithm (str | None, optional): The algorithm to use for JWT signing (required if 'use_oauth' is True).
+            auth_type (AuthType, optional): The type of authentication to use.
+            client_id (str | None, optional): Client ID for OAuth authentication (required if 'auth_type' is AuthType.OAUTH).
+            scopes (list[str] | None, optional): A list of scopes to request for the token
+                (required if 'auth_type' is AuthType.OAUTH).
+            private_key (str | None, optional): Private key for OAuth authentication (required if 'auth_type' is AuthType.OAUTH).
+            jwt_algorithm (str | None, optional): The algorithm to use for JWT signing
+                (required if 'auth_type' is AuthType.OAUTH).
         """
         super().__init__(*args, **kwargs)
         self.api_token = api_token
-        self.use_oauth = use_oauth
+        self.auth_type = auth_type
         self.client_id = client_id
         self.scopes = scopes
         self.private_key = private_key
         self.jwt_algorithm = jwt_algorithm
 
-        if self.use_oauth:
+        if self.auth_type == AuthType.OAUTH:
             if not self.client_id:
                 raise ValueError('Client ID must be provided when using OAuth authentication.')
 
@@ -54,25 +63,25 @@ class OktaClient(BaseClient):
 
         self.initial_setup()
 
-    def assign_app_role(self, client_id: str, role: str, use_oauth: bool | None = None) -> dict:
+    def assign_app_role(self, client_id: str, role: str, auth_type: AuthType = AuthType.API_TOKEN) -> dict:
         """
         Assign a role to a client application.
 
         Args:
             client_id (str): The ID of the client application.
             role (str): The role to assign to the client application.
-            use_oauth (bool | None, optional): Whether to use OAuth authentication.
+            auth_type (bool | None, optional): Authentication type to use for the request. Defaults to AuthType.API_TOKEN.
 
         Returns:
             dict: The response from the API.
         """
         return self._http_request(
+            auth_type=auth_type,
             url_suffix=f'/oauth2/v1/clients/{client_id}/roles',
             method='POST',
             json_data={
                 'type': role,
             },
-            use_oauth=use_oauth,
         )
 
     def generate_jwt_token(self, url: str) -> str:
@@ -101,17 +110,12 @@ class OktaClient(BaseClient):
             algorithm=self.jwt_algorithm.value,
         )
 
-    def generate_oauth_token(self, scopes: list[str], use_oauth: bool = False) -> dict:
+    def generate_oauth_token(self, scopes: list[str]) -> dict:
         """
         Generate an OAuth token to use for authentication.
 
         Args:
             scopes (list[str]): A list of scopes to request for the token.
-            use_oauth (bool, optional): Whether to use OAuth authentication. Defaults to False.
-
-        Notes:
-            Setting 'use_oauth' to True when there isn't an existing OAuth token will cause an infinite loop
-            (since this method is called by '_http_request').
 
         Returns:
             dict: The response from the API.
@@ -120,7 +124,7 @@ class OktaClient(BaseClient):
         jwt_token = self.generate_jwt_token(url=auth_url)
 
         return self._http_request(
-            use_oauth=use_oauth,
+            auth_type=AuthType.NO_AUTH,
             full_url=auth_url,
             method='POST',
             headers={
@@ -159,7 +163,7 @@ class OktaClient(BaseClient):
         else:
             demisto.debug('No existing token was found. A new token will be generated.')
 
-        token_generation_response = self.generate_oauth_token(scopes=self.scopes, use_oauth=False)
+        token_generation_response = self.generate_oauth_token(scopes=self.scopes)
         token = token_generation_response['access_token']
         token_expiration = datetime.utcnow() + timedelta(minutes=TOKEN_EXPIRATION_TIME)
 
@@ -179,10 +183,10 @@ class OktaClient(BaseClient):
         if integration_context.get('initialized', False):  # If the initial setup was already done, do nothing
             return
 
-        if self.use_oauth:
+        if self.auth_type == AuthType.OAUTH:
             # Add "SUPER_ADMIN" role to client application, which is required for OAuth authentication
             try:
-                self.assign_app_role(client_id=self.client_id, role="SUPER_ADMIN", use_oauth=False)
+                self.assign_app_role(client_id=self.client_id, role="SUPER_ADMIN", auth_type=AuthType.API_TOKEN)
                 demisto.debug("'SUPER_ADMIN' role has been assigned to the client application.")
 
             except DemistoException as e:
@@ -199,20 +203,22 @@ class OktaClient(BaseClient):
         integration_context['initialized'] = True
         set_integration_context(integration_context)
 
-    def _http_request(self, use_oauth: bool | None = None, **kwargs):
+    def _http_request(self, auth_type: AuthType | None = None, **kwargs):
         """
         Override BaseClient._http_request() to automatically add authentication headers.
 
         Args:
-            use_oauth (bool): Whether to use OAuth authentication. If not provided, the value of 'self.use_oauth' will be used.
+            auth_type (AuthType | None): Type of authentication to use for the request.
+                If not provided, 'self.use_oauth' will be used.
         """
-        use_oauth = use_oauth if use_oauth is not None else self.use_oauth
+        auth_type = auth_type if auth_type is not None else self.auth_type
+        auth_headers = {}
 
-        if use_oauth:
-            auth_headers = {'Authorization': f'Bearer {self.get_token()}'}
+        if auth_type == AuthType.OAUTH:
+            auth_headers['Authorization'] = f'Bearer {self.get_token()}'
 
-        else:
-            auth_headers = {'Authorization': f'SSWS {self.api_token}'}
+        elif auth_type == AuthType.API_TOKEN:
+            auth_headers['Authorization'] = f'SSWS {self.api_token}'
 
         original_headers = kwargs.get('headers', {})
         kwargs['headers'] = {**auth_headers, **original_headers}
