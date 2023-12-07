@@ -95,7 +95,7 @@ remove_cached_gitlab_repo() {
     rm -rf "./$repo_name"
 }
 
-get_cache_gitlab_repositories() {
+clone_and_cache_gitlab_repos() {
   local host=$1
   local user=$2
   local token=$3
@@ -157,10 +157,8 @@ CI_SERVER_HOST=${CI_SERVER_HOST:-code.pan.run}
 
 echo "Getting content-test-conf and infra repositories with branch:${SEARCHED_BRANCH_NAME}"
 
-get_cache_gitlab_repositories "${CI_SERVER_HOST}" "gitlab-ci-token" "${CI_JOB_TOKEN}" "${CI_PROJECT_NAMESPACE}/content-test-conf" "${SEARCHED_BRANCH_NAME}" 3 10 "master" "content-test-conf"
-get_cache_gitlab_repositories "${CI_SERVER_HOST}" "gitlab-ci-token" "${CI_JOB_TOKEN}" "${CI_PROJECT_NAMESPACE}/infra" "${SEARCHED_BRANCH_NAME}" 3 10 "master" "infra"
+clone_and_cache_gitlab_repos "${CI_SERVER_HOST}" "gitlab-ci-token" "${CI_JOB_TOKEN}" "${CI_PROJECT_NAMESPACE}/content-test-conf" "${SEARCHED_BRANCH_NAME}" 3 10 "master" "content-test-conf"
+clone_and_cache_gitlab_repos "${CI_SERVER_HOST}" "gitlab-ci-token" "${CI_JOB_TOKEN}" "${CI_PROJECT_NAMESPACE}/infra" "${SEARCHED_BRANCH_NAME}" 3 10 "master" "infra"
 
-
-echo "Successfully cloned content-test-conf and infra repositories"
 set -e
-exit 0
+echo "Successfully cloned content-test-conf and infra repositories"
