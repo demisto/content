@@ -71,6 +71,7 @@ def create_indicators_loop(args, indicators):
             readable_output=f"Create Indicators From STIX: {len(indicators) - len(errors)} indicators were created.",
             relationships=relationships_objects,
             outputs_prefix='StixIndicators',
+            outputs_key_field='value'
             outputs=context_data
         )
     else:
