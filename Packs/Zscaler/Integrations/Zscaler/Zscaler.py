@@ -699,20 +699,34 @@ def category_add_ip(category_id, ip, retaining_parent_category_ip):
 
 
 def category_remove_url(category_id, url, retaining_parent_category_url):
+    if not (url, retaining_parent_category_url):
+        return_error('Either url argument or retaining_parent_category_url argument must be provided.')
+
     category_data = get_category_by_id(category_id)  # check if the category exists
+
     if category_data:
-        url_list = argToList(url)
-        updated_urls = [
-            url for url in category_data["urls"] if url not in url_list
-        ]  # noqa
-        retaining_parent_category_url_list = argToList(retaining_parent_category_url)
-        if not (url_list, retaining_parent_category_url_list):
-            return_error('Either url_list argument or retaining_parent_category_url_list argument must be provided.')
-        if updated_urls == category_data["urls"]:
-            return return_error("Could not find given URL in the category.")
+        removed_urls = ''
+        url_list = retaining_parent_category_url_list = []
+
+        if url:
+            url_list = argToList(url)
+            updated_urls = [
+                url for url in category_data["urls"] if url not in url_list
+            ]  # noqa
+            if updated_urls == category_data["urls"]:
+                return return_error("Could not find given URL in the category.")
+            category_data["urls"] = updated_urls
+            for url in url_list:
+                removed_urls += "- " + url + "\n"
+
+        if retaining_parent_category_url:
+            retaining_parent_category_url_list = argToList(retaining_parent_category_url)
+            for url in retaining_parent_category_url_list:
+                removed_urls += "- " + url + "\n"
+
         add_or_remove_urls_from_category(
             REMOVE, url_list, category_data, retaining_parent_category_url_list)  # remove the urls from list
-        category_data["urls"] = updated_urls
+
         context = {
             "ID": category_id,
             "CustomCategory": category_data.get("customCategory"),
@@ -721,11 +735,8 @@ def category_remove_url(category_id, url, retaining_parent_category_url):
         if category_data.get("description"):  # Custom might not have description
             context["Description"] = category_data["description"]
         ec = {"Zscaler.Category(val.ID && val.ID === obj.ID)": context}
-        urls = ""
-        for url in url_list:
-            urls += "- " + url + "\n"
         hr = "Removed the following URL addresses to category {}:\n{}".format(
-            category_id, urls
+            category_id, removed_urls
         )
         entry = {
             "Type": entryTypes["note"],
@@ -741,6 +752,10 @@ def category_remove_url(category_id, url, retaining_parent_category_url):
 
 
 def category_remove_ip(category_id, ip, retaining_parent_category_ip):
+    if not (ip, retaining_parent_category_ip):
+        return_error('Either ip argument or retaining_parent_category_ip argument must be provided.')
+
+    category_data = {}
     categories = get_categories()
     found_category = False
     for category in categories:
@@ -748,15 +763,25 @@ def category_remove_ip(category_id, ip, retaining_parent_category_ip):
             category_data = category
             found_category = True
             break
-    if found_category:
-        ip_list = argToList(ip)
-        updated_ips = [ip for ip in category_data["urls"] if ip not in ip_list]  # noqa
-        if updated_ips == category_data["urls"]:
-            return return_error("Could not find given IP in the category.")
-        category_data["urls"] = updated_ips
-        retaining_parent_category_ip_list = argToList(retaining_parent_category_ip)
-        if not (ip_list, retaining_parent_category_ip_list):
-            return_error('Either ip_list argument or retaining_parent_category_ip_list argument must be provided.')
+
+    if found_category and category_data:
+        removed_ips = ''
+        ip_list = retaining_parent_category_ip_list = []
+
+        if ip:
+            ip_list = argToList(ip)
+            updated_ips = [ip for ip in category_data["urls"] if ip not in ip_list]  # noqa
+            if updated_ips == category_data["urls"]:
+                return return_error("Could not find given IP in the category.")
+            category_data["urls"] = updated_ips
+            for ip in ip_list:
+                removed_ips += "- " + ip + "\n"
+
+        if retaining_parent_category_ip:
+            retaining_parent_category_ip_list = argToList(retaining_parent_category_ip)
+            for ip in retaining_parent_category_ip_list:
+                removed_ips += "- " + ip + "\n"
+
         response = category_ioc_update(category_data, retaining_parent_category_ip_list)
         context = {
             "ID": category_id,
@@ -768,11 +793,8 @@ def category_remove_ip(category_id, ip, retaining_parent_category_ip):
         ):  # Custom might not have description
             context["Description"] = category_data["description"]
         ec = {"Zscaler.Category(val.ID && val.ID === obj.ID)": context}
-        ips = ""
-        for ip in ip_list:
-            ips += "- " + ip + "\n"
         hr = "Removed the following IP addresses to category {}:\n{}".format(
-            category_id, ips
+            category_id, removed_ips
         )
         entry = {
             "Type": entryTypes["note"],
