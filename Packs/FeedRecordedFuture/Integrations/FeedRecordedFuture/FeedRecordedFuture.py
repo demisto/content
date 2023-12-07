@@ -162,7 +162,7 @@ class Client(BaseClient):
                 )
 
         if service == 'connectApi':
-            self.stream_compressed_data(response=response, chunk_size=1024)
+            self.stream_compressed_data(response=response, chunk_size=CHUNK_SIZE)
         else:
             demisto.debug("Will now stream the response's data")
             with open("response.txt", "w") as f:
