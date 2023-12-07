@@ -5,7 +5,7 @@ from CommonServerPython import *  # noqa: F401
 ''' COMMAND FUNCTION '''
 
 
-def get_additonal_info() -> List[Dict]:
+def get_additonal_info() -> List[Dict]: # pragma: no cover
     alerts = demisto.context().get('Core', {}).get('OriginalAlert')
     if isinstance(alerts, list):
         alerts = alerts[0]
@@ -32,7 +32,7 @@ def get_additonal_info() -> List[Dict]:
 ''' MAIN FUNCTION '''
 
 
-def main():
+def main(): # pragma: no cover
     try:
         results = get_additonal_info()
         command_results = CommandResults(

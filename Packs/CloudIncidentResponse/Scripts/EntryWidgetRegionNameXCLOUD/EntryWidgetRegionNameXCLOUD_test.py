@@ -1,42 +1,43 @@
 import unittest
+import pytest
 from unittest.mock import patch
 from EntryWidgetRegionNameXCLOUD import main
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-CASES =[({
-            'Core': {
-                'OriginalAlert': {
-                    'event': {'region': 'TestRegion'}
-                }
-            }
-        }),({
-            'Core': {
-                'OriginalAlert': [{
-                    'event': {'region': 'TestRegion'}
-                }]
-            }
-        })]
+CASES = [({
+    'Core': {
+        'OriginalAlert': {
+            'event': {'region': 'TestRegion'}
+        }
+    }
+}), ({
+    'Core': {
+        'OriginalAlert': [{
+            'event': {'region': 'TestRegion'}
+        }]
+    }
+})]
 
 
 class TestYourScript(unittest.TestCase):
 
-
     @patch('demistomock.context')
     @patch('CommonServerPython.return_results')
-    @pytest.mark.parametrize('input', CASES)
-    def test_main_success(self, mock_return_results, mock_context, input):
+    @pytest.mark.parametrize('input_data', CASES)
+    def test_main_success(self, mock_return_results, mock_context, input_data):
         # Mocking context() to return a sample alert
-        mock_context.return_value.get.return_value = input
+        mock_context.return_value.get.return_value = input_data
 
         # Calling the main function
         main()
 
         # Assertions
+        expected_contents = "<h1 style='color:#555555;text-align:center;font-size:200%;'>TestRegion</h1>"
         mock_return_results.assert_called_once_with({
             'ContentsFormat': EntryFormat.HTML,
             'Type': EntryType.NOTE,
-            'Contents': "<h1 style='color:#555555;text-align:center;font-size:200%;'>TestRegion</h1>",
+            'Contents': expected_contents,
         })
 
     @patch('demistomock.context')
