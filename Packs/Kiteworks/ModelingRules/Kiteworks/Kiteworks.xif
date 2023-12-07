@@ -46,7 +46,6 @@ filter _raw_log ~= "^(?:\S+\s+){5}\{"
     full_log = json_payload -> full_log,
     host_id = to_string(json_data -> host_id),
     id = to_string(json_payload -> id),
-    is_folder_upload = to_string(json_data -> is_folder_upload),
     is_malicious = to_string(json_data -> malicious),
     is_prohibited = to_string(json_data -> prohibited),
     is_quarantined = to_string(json_data -> quarantined),
