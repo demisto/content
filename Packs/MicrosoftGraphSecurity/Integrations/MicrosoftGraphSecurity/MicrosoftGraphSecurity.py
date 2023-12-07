@@ -5,6 +5,7 @@ from CommonServerPython import *  # noqa: F401
 from enum import Enum
 
 import urllib3
+import re
 from CommonServerUserPython import *
 
 from typing import Any
@@ -23,6 +24,7 @@ CMD_URL = API_V2_ENDPOINT
 API_VER = API_V2
 PAGE_SIZE_LIMIT_DICT = {API_V2: 2000, API_V1: 1000}
 API_V1_PAGE_LIMIT = 500
+THREAT_ASSESSMENT_URL_PREFIX = 'informationProtection/threatAssessmentRequests'
 
 DataSourceType = {
     'USER': {
@@ -44,6 +46,8 @@ DataSourceType = {
         'outputs_prefix': 'NoncustodialDataSource'
     }
 }
+
+EMAIL_REGEX = r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+"
 
 
 class HoldAction(Enum):
@@ -249,6 +253,73 @@ class MsGraphClient:
             'purgeAreas': purge_areas
         }
         return self.ms_client.http_request(method='POST', url_suffix=url, json_data=body, resp_type='response')
+
+    def create_mail_assessment_request(self, recipient_email, expected_assessment, category, user_id, message_id):
+        body = {
+            "@odata.type": "#microsoft.graph.mailAssessmentRequest",
+            "recipientEmail": recipient_email,
+            "expectedAssessment": expected_assessment,
+            "category": category,
+            "messageUri": f"https://graph.microsoft.com/v1.0/users/{user_id}/messages/{message_id}"
+        }
+        return self.ms_client.http_request(method='POST', url_suffix=THREAT_ASSESSMENT_URL_PREFIX, json_data=body)
+
+    def get_user_id(self, email):
+        return self.ms_client.http_request(method='GET', url_suffix='users', params={'$filter': f"mail eq '{email}'"})
+
+    def get_threat_assessment_request(self, request_id):
+        return self.ms_client.http_request(method='GET',
+                                           url_suffix=f'{THREAT_ASSESSMENT_URL_PREFIX}/{request_id}',
+                                           params={'$expand': 'results'})
+
+    def get_threat_assessment_request_status(self, request_id):
+        return self.ms_client.http_request(method='GET',
+                                           url_suffix=f'{THREAT_ASSESSMENT_URL_PREFIX}/{request_id}',
+                                           params={'$select': 'status'})
+
+    def create_email_file_assessment_request(self, recipient_email, expected_assessment, category, content_data):
+        body = {
+            "@odata.type": "#microsoft.graph.emailFileAssessmentRequest",
+            "recipientEmail": recipient_email,
+            "expectedAssessment": expected_assessment,
+            "category": category,
+            "contentData": content_data
+        }
+        return self.ms_client.http_request(method='POST', url_suffix=THREAT_ASSESSMENT_URL_PREFIX, json_data=body)
+
+    def create_file_assessment_request(self, expected_assessment, category, file_name, content_data):
+        body = {
+            "@odata.type": "#microsoft.graph.fileAssessmentRequest",
+            "expectedAssessment": expected_assessment,
+            "category": category,
+            "fileName": file_name,
+            "contentData": content_data
+        }
+        return self.ms_client.http_request(method='POST', url_suffix=THREAT_ASSESSMENT_URL_PREFIX, json_data=body)
+
+    def create_url_assessment_request(self, expected_assessment, category, url):
+        body = {
+            "@odata.type": "#microsoft.graph.urlAssessmentRequest",
+            "expectedAssessment": expected_assessment,
+            "category": category,
+            "url": url,
+        }
+        return self.ms_client.http_request(method='POST', url_suffix=THREAT_ASSESSMENT_URL_PREFIX, json_data=body)
+
+    def list_threat_assessment_requests(self, filters=None, order_by=None, sort_order=None, next_token=None):
+        params = {}
+        if next_token:
+            return self.ms_client.http_request(method='GET', url_suffix=THREAT_ASSESSMENT_URL_PREFIX,
+                                               params={'$skipToken': next_token}, retries=1, status_list_to_retry=[405])
+        if filters:
+            params['$filter'] = filters
+        if order_by:
+            params['$orderby'] = order_by
+            if sort_order:
+                params['$orderby'] = f"{order_by} {sort_order}"
+
+        return self.ms_client.http_request(method='GET', url_suffix=THREAT_ASSESSMENT_URL_PREFIX,
+                                           params=params, retries=1, status_list_to_retry=[405])
 
 
 ''' HELPER FUNCTIONS '''
@@ -1199,10 +1270,9 @@ def test_auth_code_command(client: MsGraphClient, args):
     Called to test authorization code flow (since integration context cant be accessed during test_module)
     Calls list cases with no arguments
     """
-
     permissions = args.get('permission_type', 'all')
     if permissions == 'all':
-        permissions = "ediscovery, alerts"
+        permissions = "ediscovery, alerts, threat assessment"
     for permission in argToList(permissions):
         try:
             demisto.debug(f'checking permission {permission}')
@@ -1211,13 +1281,15 @@ def test_auth_code_command(client: MsGraphClient, args):
                     list_ediscovery_case_command(client, {})
                 case 'alerts':
                     test_function(client, args, True)
+                case 'threat assessment':
+                    list_threat_assessment_requests_command(client, {})
         except Exception as e:
             raise DemistoException(f'Authorization was not successful for permission {permission} '
                                    'Check that you have the required permissions') from e
     return CommandResults(readable_output='Authentication was successful.')
 
 
-def test_function(client: MsGraphClient, args, has_access_to_context=False):
+def test_function(client: MsGraphClient, args, has_access_to_context=False):    # pragma: no cover
     """
     Args:
         has_access_to_context (bool): Whether this function is called from a command that allows this integration to access the
@@ -1274,8 +1346,261 @@ def test_function(client: MsGraphClient, args, has_access_to_context=False):
                      f'Please check authentication related parameters. [{response.status_code}]')
 
 
+def get_message_user(client, message_user):
+    is_email = re.search(EMAIL_REGEX, message_user)
+    if is_email:
+        user_result = (client.get_user_id(message_user)).get('value')
+        if not user_result:
+            raise DemistoException(f'{message_user} is not a valid user')
+        return user_result[0].get('id')
+    return message_user
+
+
+def is_base_64(string: str) -> bool:    # pragma: no cover
+    """
+    Validate if string is base 64 encoded.
+    Args:
+        string (str): String to validate.
+
+    Returns:
+        bool: True if the string is base 64 encoded ,  else False.
+
+    """
+    try:
+        if isinstance(string, str):
+            # If there's any unicode here, an exception will be thrown and the function will return false
+            string_bytes = bytes(string, 'ascii')
+        elif isinstance(string, bytes):
+            string_bytes = string
+        else:
+            raise ValueError("Argument must be string or bytes")
+        return base64.b64encode(base64.b64decode(string_bytes)) == string_bytes
+    except Exception:
+        return False
+
+
+def get_content_data(entry_id, content_data):   # pragma: no cover
+
+    if not (entry_id or content_data) or (entry_id and content_data):
+        raise DemistoException('Just one of entry_id or content_data arguments has to be provided.')
+    try:
+        if entry_id:
+            file = demisto.getFilePath(entry_id)
+            file_path = file['path']
+            with open(file_path, 'rb') as fp:
+                content = base64.b64encode(fp.read())
+                return str(content, encoding='utf-8')
+        if content_data:
+            return content_data if is_base_64(content_data) else base64.b64encode(content_data)
+
+    except Exception as e:
+        raise DemistoException(f'Failed loading content data: {e}')
+
+
+def get_result_outputs(result) -> Dict:
+    output = {
+        'ID': result.get('id'),
+        'Created DateTime': result.get('createdDateTime'),
+        'Content Type': result.get('contentType'),
+        'Expected Assessment': result.get('expectedAssessment'),
+        'Category': result.get('category'),
+        'Status': result.get('status'),
+        'Request Source': result.get('requestSource'),
+        'Recipient Email': result.get('recipientEmail'),
+        'Destination Routing Reason': result.get('destinationRoutingReason'),
+        'URL': result.get('url'),
+        'File Name': result.get('fileName'),
+    }
+    if created_by := result.get('createdBy'):
+        output['Created User ID'] = created_by.get('user', {}).get('id')
+        output['Created Username'] = created_by.get('user', {}).get('displayName')
+
+    if results := result.get('results'):
+        output['Result Type'] = results[0].get('resultType')
+        output['Result message'] = results[0].get('message')
+    return output
+
+
+def get_threat_assessment_request(client: MsGraphClient, request_id):
+    result = client.get_threat_assessment_request(request_id)
+    outputs = get_result_outputs(result)
+    readable_output = tableToMarkdown('Threat assessment request:', outputs, removeNull=True)
+
+    return [CommandResults(readable_output=readable_output,
+                           raw_response=result,
+                           outputs=outputs,
+                           outputs_prefix='MSGraphMail.AssessmentRequest')]
+
+
+@polling_function('msg-create-mail-assessment-request',
+                  timeout=arg_to_number(demisto.args().get("timeout_in_seconds", 720)),
+                  requires_polling_arg=False)
+def create_mail_assessment_request_command(args, client: MsGraphClient) -> PollResult | CommandResults:
+
+    if not (request_id := args.get('request_id')):
+        message_user = get_message_user(client, args.get('message_user'))
+        result = client.create_mail_assessment_request(args.get('recipient_email'),
+                                                       args.get('expected_assessment'),
+                                                       args.get('category'),
+                                                       message_user,
+                                                       args.get('message_id'))
+        request_id = result.get('id')
+
+    result = client.get_threat_assessment_request(request_id)
+    status = result.get('status')
+    demisto.debug(f"status is: {status}")
+    if status == 'completed' or result.get('results'):
+        outputs = get_result_outputs(result)
+        outputs['Message ID'] = args.get('message_id')
+        readable_output = tableToMarkdown('Mail assessment request:', outputs, removeNull=True)
+
+        results = CommandResults(readable_output=readable_output,
+                                 raw_response=result,
+                                 outputs=outputs,
+                                 outputs_prefix='MSGraphMail.MailAssessment')
+        return PollResult(response=results)
+    else:
+        return PollResult(continue_to_poll=True, args_for_next_run={"request_id": request_id, **args},
+                          response=None,
+                          partial_result=CommandResults(readable_output="The status is pending, still waiting to get results..."))
+
+
+@polling_function('msg-create-email-file-assessment-request',
+                  timeout=arg_to_number(demisto.args().get("timeout_in_seconds", 720)),
+                  requires_polling_arg=False)
+def create_email_file_request_command(args, client: MsGraphClient) -> PollResult | CommandResults:
+
+    if not (request_id := args.get('request_id')):
+        content_data = get_content_data(args.get('entry_id'), args.get('content_data'))
+        result = client.create_email_file_assessment_request(args.get('recipient_email'),
+                                                             args.get('expected_assessment'),
+                                                             args.get('category'),
+                                                             content_data)
+        request_id = result.get('id')
+    demisto.debug(f"got request id: {request_id}")
+    result = client.get_threat_assessment_request(request_id)
+    status = result.get('status')
+    demisto.debug(f"status is: {status}")
+    if status == 'completed' or result.get('results'):
+        outputs = get_result_outputs(result)
+        readable_output = tableToMarkdown('Email file assessment request results:', outputs, removeNull=True)
+
+        results = CommandResults(readable_output=readable_output,
+                                 raw_response=result,
+                                 outputs=outputs,
+                                 outputs_prefix='MSGraphMail.EmailAssessment')
+        return PollResult(response=results)
+    else:
+        return PollResult(continue_to_poll=True, args_for_next_run={"request_id": request_id, **args},
+                          response=None,
+                          partial_result=CommandResults(readable_output="The status is pending, still waiting to get results..."))
+
+
+@polling_function('msg-create-file-assessment-request', requires_polling_arg=False)
+def create_file_assessment_request_command(args, client) -> PollResult | CommandResults:
+
+    if not (request_id := args.get('request_id')):
+        content_data = get_content_data(args.get('entry_id'), args.get('content_data'))
+        demisto.debug(f"got content data: {content_data}")
+        result = client.create_file_assessment_request(args.get('expected_assessment'),
+                                                       args.get('category'),
+                                                       args.get('file_name'),
+                                                       content_data)
+        request_id = result.get('id')
+
+    demisto.debug(f"got request id: {request_id}")
+    result = client.get_threat_assessment_request_status(request_id)
+    status = result.get('status')
+
+    demisto.debug(f"status is: {status}")
+    if status == 'completed':
+        result = client.get_threat_assessment_request(request_id)
+        outputs = get_result_outputs(result)
+        readable_output = tableToMarkdown('File assessment request results:', outputs, removeNull=True)
+
+        results = CommandResults(readable_output=readable_output,
+                                 raw_response=result,
+                                 outputs=outputs,
+                                 outputs_prefix='MSGraphMail.FileAssessment')
+        return PollResult(response=results)
+    else:
+        return PollResult(continue_to_poll=True, args_for_next_run={"request_id": request_id, **args},
+                          response=None,
+                          partial_result=CommandResults(readable_output="The status is pending, still waiting to get results..."))
+
+
+@polling_function('msg-create-url-assessment-request',
+                  timeout=arg_to_number(demisto.args().get("timeout_in_seconds", 720)),
+                  requires_polling_arg=False)
+def create_url_assessment_request_command(args, client: MsGraphClient) -> PollResult | CommandResults:
+
+    if not (request_id := args.get('request_id')):
+        result = client.create_url_assessment_request(args.get('expected_assessment'),
+                                                      args.get('category'),
+                                                      args.get('url'))
+        request_id = result.get('id')
+
+    result = client.get_threat_assessment_request_status(request_id)
+    status = result.get('status')
+    demisto.debug(f"status is : {status}")
+    if status == 'completed':
+        result = client.get_threat_assessment_request(request_id)
+        outputs = get_result_outputs(result)
+        readable_output = tableToMarkdown('URL assessment request results:', outputs, removeNull=True)
+
+        results = CommandResults(readable_output=readable_output,
+                                 raw_response=result,
+                                 outputs=outputs,
+                                 outputs_prefix='MSGraphMail.UrlAssessment')
+        return PollResult(response=results)
+    else:
+        return PollResult(continue_to_poll=True, args_for_next_run={"request_id": request_id, **args},
+                          response=None,
+                          partial_result=CommandResults(readable_output="The status is pending, still waiting to get results..."))
+
+
+def list_threat_assessment_requests_command(client: MsGraphClient, args) -> list[CommandResults]:
+    command_results = []
+    limit = args.get('limit')
+
+    if request_id := args.get('request_id'):
+        return get_threat_assessment_request(client, request_id)
+
+    result = client.list_threat_assessment_requests(
+        args.get('filter'),
+        args.get('order_by'),
+        args.get('sort_order'),
+        args.get('next_token')
+    )
+    outputs = []
+    requests_list = result.get('value')
+    if limit:
+        requests_list = requests_list[:limit]
+    for req in requests_list:
+        outputs.append(get_result_outputs(req))
+    readable_outputs = tableToMarkdown('Threat assessment request results:', outputs, removeNull=True)
+    command_results.append(CommandResults(readable_output=readable_outputs,
+                                          raw_response=result,
+                                          outputs=outputs,
+                                          outputs_prefix='MSGraphMail.AssessmentRequest'))
+
+    skip_token_field = result.get('@odata.nextLink')
+    demisto.debug(f"skip_token_field: {skip_token_field}")
+    if skip_token_field:
+        next_token_value: List[str] = re.split(r'skip[t|T]oken=', skip_token_field)
+        if len(next_token_value) > 1:
+            next_token: str = next_token_value[1]
+
+            command_results.append(CommandResults(readable_output=f'Next token is: {next_token}\n' if next_token else None,
+                                                  outputs={"next_token": next_token},
+                                                  outputs_prefix='MsGraph.AssessmentRequestNextToken'))
+
+    return command_results
+
+
 def main():
     params: dict = demisto.params()
+    args: dict = demisto.args()
     url = params.get('host', '').rstrip('/') + '/v1.0/'
     tenant = params.get('creds_tenant_id', {}).get('password') or params.get('tenant_id')
     auth_and_token_url = params.get('creds_auth_id', {}).get('password') or params.get('auth_id', '')
@@ -1331,7 +1656,6 @@ def main():
         'msg-list-ediscovery-searchs': list_ediscovery_search_command,
         'msg-delete-ediscovery-search': delete_ediscovery_search_command,
         'msg-purge-ediscovery-data': purge_ediscovery_data_command,
-
     }
     command = demisto.command()
     LOG(f'Command being called is {command}')
@@ -1366,6 +1690,16 @@ def main():
                                         filter=fetch_filter, providers=fetch_providers,
                                         service_sources=fetch_service_sources)
             demisto.incidents(incidents)
+        elif command == 'msg-create-mail-assessment-request':
+            return_results(create_mail_assessment_request_command(args, client))
+        elif command == 'msg-create-email-file-assessment-request':
+            return_results(create_email_file_request_command(args, client))
+        elif command == 'msg-create-file-assessment-request':
+            return_results(create_file_assessment_request_command(args, client))
+        elif command == 'msg-create-url-assessment-request':
+            return_results(create_url_assessment_request_command(args, client))
+        elif command == 'msg-list-threat-assessment-requests':
+            return_results(list_threat_assessment_requests_command(client, args))
         elif command == "ms-graph-security-auth-reset":
             return_results(reset_auth())
         elif demisto.command() == 'msg-generate-login-url':
@@ -1373,7 +1707,7 @@ def main():
         else:
             if command not in commands:
                 raise NotImplementedError(f'The provided command {command} was not implemented.')
-            command_res = commands[command](client, demisto.args())  # type: ignore
+            command_res = commands[command](client, args)  # type: ignore
             if isinstance(command_res, CommandResults):
                 return_results(command_res)
             else:
