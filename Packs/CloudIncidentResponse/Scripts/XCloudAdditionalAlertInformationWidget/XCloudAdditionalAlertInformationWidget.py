@@ -49,7 +49,7 @@ def verify_list_type(original_alert_data):
 ''' MAIN FUNCTION '''
 
 
-def main():
+def main(): # pragma: no cover
     try:
         alert_context = demisto.investigation()
         core_alert_context = demisto.context().get('Core', {})
