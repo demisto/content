@@ -453,5 +453,6 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.10.0",
-    "description": ""
+    "description": "A layout used for ASM alerts in XSIAM.",
+    "marketplaces": ["marketplacev2"]
 }
