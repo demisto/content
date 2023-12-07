@@ -89,8 +89,7 @@ class TabLifecycleManager:
         demisto.debug(f'TabLifecycleManager, entering tab {self.tab.id}, tabs len: {len(self.browser.list_tab())}')
         return self.tab
 
-    # def __exit__(self, exc_type, exc_val, exc_tb):  # pylint: disable=unused-argument
-    def __exit__(self, **kwargs):  # noqa: PLE0302
+    def __exit__(self, exc_type, exc_val, exc_tb):  # pylint: disable=unused-argument
         if self.tab:
             try:
                 self.tab.Page.disable()
@@ -134,16 +133,9 @@ class PychromeEventHandler:
             except pychrome.exceptions.PyChromeException as e:
                 demisto.error(f'Error stopping page loading: {self.tab=}, {frameId=}, {e}')
 
-    # def network_data_received(self, requestId, timestamp, dataLength, encodedDataLength):  # pylint: disable=unused-argument
-    def network_data_received(self, requestId, **kwargs):
-
-        if requestId:
-            # demisto.debug(f"network_data_received, {requestId=}")
-            if not self.request_id:
-                self.request_id = requestId
-            else:
-                # demisto.debug(f"network_data_received, {requestId=}, already using {self.request_id}")
-                pass
+    def network_data_received(self, requestId, timestamp, dataLength, encodedDataLength):  # pylint: disable=unused-argument
+        if requestId and not self.request_id:
+            self.request_id = requestId
 
 # endregion
 
@@ -366,7 +358,6 @@ def rasterize(path: str,
 
     if browser := ensure_chrome_running():
         with TabLifecycleManager(browser, offline_mode) as tab:
-            # tab.call_method("Browser.Bounds.width=600")
             tab.call_method("Emulation.setVisibleSize", width=width, height=height)
 
             if rasterize_type == RasterizeType.PNG or str(rasterize_type).lower == RasterizeType.PNG.value:
