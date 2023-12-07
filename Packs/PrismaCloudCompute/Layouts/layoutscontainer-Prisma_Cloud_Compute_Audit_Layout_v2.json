@@ -400,18 +400,14 @@
                         "i": "caseinfoid-5hwygcoqct-caseinfoid-d8e8a170-fe17-11ec-8186-47081b53acb3",
                         "items": [
                             {
-                                "args": {
-                                    "severity": {
-                                        "simple": "Critical"
-                                    }
-                                },
+                                "args": {},
                                 "buttonClass": "error",
                                 "endCol": 2,
                                 "fieldId": "",
                                 "height": 44,
                                 "id": "229e25f0-fe19-11ec-8186-47081b53acb3",
                                 "index": 0,
-                                "name": "Escalate",
+                                "name": "Increase Incident Severity",
                                 "scriptId": "IncreaseIncidentSeverity",
                                 "sectionItemType": "button",
                                 "startCol": 0
@@ -512,7 +508,7 @@
                         "y": 3
                     },
                     {
-                        "description": "Review the alert type and host details to determine who should be emailed for this particular deployment. Then proceed to\n\n1. Container Alerts - review if there are multiple issues ongoing for the particular exploitation type. Check source IP address reputation and block if needed.\n\n2.  Container Forensics - review the processes currently running on the host and container. MD5s can be blocked via the Quick Action buttons on this page.\n\n3. Compliance - determine if the asset owner needs to be notified of the vulnerabilities and compliance violations present on the system.\n\n4. Policy Review - determine if there needs to be a policy update to make the WaaS more restrictive.",
+                        "description": "Review the alert type and host details to determine who should be emailed for this particular deployment. Then proceed to\n\n1. Container Alerts - review if there are multiple issues ongoing for the particular exploitation type. Check source IP address reputation and block if needed.\n\n2. Forensics - review the processes currently running on the host and container. MD5s can be blocked via the Quick Action buttons on this page.\n\n3. Compliance - determine if the asset owner needs to be notified of the vulnerabilities and compliance violations present on the system.\n\n4. Policy Review - determine if there needs to be a policy update to make the WaaS more restrictive.",
                         "displayType": "ROW",
                         "h": 3,
                         "hideName": false,
@@ -575,9 +571,7 @@
                         "static": false,
                         "w": 3,
                         "x": 0,
-                        "y": 0,
-                        "maxH": null,
-                        "minW": 3
+                        "y": 0
                     },
                     {
                         "h": 2,
@@ -591,9 +585,7 @@
                         "type": "linkedIncidents",
                         "w": 3,
                         "x": 0,
-                        "y": 6,
-                        "maxH": null,
-                        "minW": 3
+                        "y": 6
                     },
                     {
                         "h": 2,
@@ -602,16 +594,14 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Indicators",
+                        "name": "IP and File Indicators",
                         "query": " (type:IP or type:File)",
                         "queryType": "input",
                         "static": false,
                         "type": "indicators",
                         "w": 3,
                         "x": 0,
-                        "y": 4,
-                        "maxH": null,
-                        "minW": 3
+                        "y": 4
                     }
                 ],
                 "type": "custom"
@@ -753,28 +743,26 @@
                             }
                         ],
                         "h": 3,
-                        "i": "5hwygcoqct-caseinfoid-c2691c80-d894-11eb-9526-0138f2c993e4",
+                        "i": "caseinfoid-5hwygcoqct-caseinfoid-dhendfrlpj-caseinfoid-5hwygcoqct-caseinfoid-c2691c80-d894-11eb-9526-0138f2c993e4",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Malicious or Suspicious Indicators",
-                        "query": "reputation:Bad or reputation:Suspicious and type:CVE",
+                        "name": "CVEs",
+                        "query": "type:CVE",
                         "queryType": "input",
                         "static": false,
                         "type": "indicators",
                         "w": 3,
                         "x": 0,
-                        "y": 3,
-                        "maxH": null,
-                        "minW": 3
+                        "y": 3
                     },
                     {
                         "displayType": "ROW",
                         "h": 3,
                         "hideItemTitleOnlyOne": true,
                         "hideName": true,
-                        "i": "5hwygcoqct-caseinfoid-e1b77c30-d894-11eb-9526-0138f2c993e4",
+                        "i": "caseinfoid-5hwygcoqct-caseinfoid-dhendfrlpj-caseinfoid-5hwygcoqct-caseinfoid-e1b77c30-d894-11eb-9526-0138f2c993e4",
                         "items": [
                             {
                                 "endCol": 4,
@@ -786,23 +774,21 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxW": 2,
+                        "maxW": 3,
                         "minH": 1,
                         "moved": false,
                         "name": "Image Compliance Issues",
                         "static": false,
                         "w": 2,
                         "x": 0,
-                        "y": 0,
-                        "maxH": null,
-                        "minW": 2
+                        "y": 0
                     },
                     {
                         "description": "The following actions can quickly generate an HTML summary report of the compliance and vulnerability issues for this incident and email it off to the appropriate team",
                         "displayType": "ROW",
                         "h": 3,
                         "hideName": false,
-                        "i": "5hwygcoqct-caseinfoid-a94cb6d0-fe18-11ec-8186-47081b53acb3",
+                        "i": "caseinfoid-5hwygcoqct-caseinfoid-dhendfrlpj-caseinfoid-5hwygcoqct-caseinfoid-a94cb6d0-fe18-11ec-8186-47081b53acb3",
                         "items": [
                             {
                                 "args": {
@@ -826,7 +812,27 @@
                             {
                                 "args": {
                                     "table": {
-                                        "simple": "${PrismaCloudCompute.ReportsImagesScan.complianceIssues}"
+                                        "complex": {
+                                            "accessor": "complianceIssues",
+                                            "filters": [],
+                                            "root": "PrismaCloudCompute.ReportsImagesScan",
+                                            "transformers": [
+                                                {
+                                                    "args": {
+                                                        "applyIfEmpty": {
+                                                            "isContext": false
+                                                        },
+                                                        "defaultValue": {
+                                                            "isContext": true,
+                                                            "value": {
+                                                                "simple": "PrismaCloudCompute.ReportHostScan.complianceIssues"
+                                                            }
+                                                        }
+                                                    },
+                                                    "operator": "SetIfEmpty"
+                                                }
+                                            ]
+                                        }
                                     },
                                     "title": {
                                         "simple": "Compliance Issues"
@@ -843,16 +849,14 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxW": 1,
+                        "maxW": 3,
                         "minH": 1,
                         "moved": false,
                         "name": "Actions",
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 0,
-                        "maxH": null,
-                        "minW": 1
+                        "y": 0
                     }
                 ],
                 "type": "custom"
