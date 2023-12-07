@@ -1,6 +1,3 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
 from CreateIndicatorsFromSTIX import *
 
 
@@ -15,10 +12,11 @@ def test_create_indicators_loop(mocker):
     Then:
         - Validate the indicators extract without errors.
     """
+    args = {}
     with open('test_data/expected_result_example3.json') as json_f:
         indicators = json.load(json_f)
     mocker.patch.object(demisto, 'executeCommand', return_value=[None])
-    results, errors = create_indicators_loop(indicators=indicators)
+    results, errors = create_indicators_loop(args, indicators)
     assert errors == []
     assert results.readable_output == 'Create Indicators From STIX: 2 indicators were created.'
 
