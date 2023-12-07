@@ -246,6 +246,13 @@ script:
       - metadata
       - minimal
       - raw
+    - auto: PREDEFINED
+      defaultValue: False
+      description: Wether ro run gmail-get-attachments as well or not.
+      name: run-get-attachments-command
+      predefined:
+      - False
+      - True
     description: Retrieves the Gmail message sent to a specified user.
     name: gmail-get-mail
     outputs:
@@ -327,6 +334,27 @@ script:
     - contextPath: Email.Date
       description: The date the email was received.
       type: String
+    - contextPath: File.MD5
+      description: Relevant only when run-get-attachments-command is set to True. The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: Relevant only when run-get-attachments-command is set to True. The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: Relevant only when run-get-attachments-command is set to True. The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: Relevant only when run-get-attachments-command is set to True. The name of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: Relevant only when run-get-attachments-command is set to True. The SSDeep hash of the file (same as displayed in file entries).
+      type: String
+    - contextPath: File.Type
+      description: 'Relevant only when run-get-attachments-command is set to True. File type, for example: "PE".'
+      type: string
+    - contextPath: File.Size
+      description: Relevant only when run-get-attachments-command is set to True. File size.
+      type: number
   - arguments:
     - default: true
       description: The user's email address. The "me" special value can be used to indicate the authenticated user.
