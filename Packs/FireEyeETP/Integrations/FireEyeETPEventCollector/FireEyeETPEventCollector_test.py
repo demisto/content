@@ -392,7 +392,7 @@ def test_limit_zero_skip_fetch_flow(mocker):
 
     collector.fetch_command(demisto_last_run=LAST_RUN_MULTIPLE_EVENT)
     get_events_mock.assert_called_once()
-    
+
     get_events_mock.reset_mock()
     collector.get_events_command(start_time=datetime(2023, 1, 15, 14, 30, 45, 123000))
     get_events_mock.assert_called_once()
