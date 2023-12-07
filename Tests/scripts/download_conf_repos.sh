@@ -6,17 +6,6 @@ GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 NC='\033[0m'
 
-get_user_info() {
-  local user=$1
-  local token=$2
-  if [ -z "${user}" ] && [ -z "${token}" ]; then
-    echo ""
-  else
-    # If either user or token is not empty, then we need to add them to the url.
-    echo "${user}:${token}@"
-  fi
-}
-
 clone_repository() {
   local host=$1
   local user=$2
@@ -28,9 +17,12 @@ clone_repository() {
   local exit_code=0
   local i=1
   echo -e "${GREEN}Cloning ${full_repo_path} from ${host} branch:${branch} with ${retry_count} retries${NC}"
-
-  user_info=$(get_user_info "${user}" "${token}")
-
+  if [ -z "${user}" ] && [ -z "${token}" ]; then
+    user_info=""
+  else
+    user_info="${user}:${token}@"
+    # If either user or token is not empty, then we need to add them to the url.
+  fi
   for ((i=1; i <= retry_count; i++)); do
     git clone --depth=1 "https://${user_info}${host}/${full_repo_path}.git" --branch "${branch}" && exit_code=0 && break || exit_code=$?
     if [ ${i} -ne "${retry_count}" ]; then
@@ -57,9 +49,12 @@ clone_repository_with_fallback_branch() {
 
   # Check if branch exists in the repository.
   echo -e "${GREEN}Checking if branch ${branch} exists in ${full_repo_path}${NC}"
-
-  user_info=$(get_user_info "${user}" "${token}")
-
+  if [ -z "${user}" ] && [ -z "${token}" ]; then
+    user_info=""
+  else
+    # If either user or token is not empty, then we need to add them to the url.
+    user_info="${user}:${token}@"
+  fi
   git ls-remote --exit-code --quiet --heads "https://${user_info}${host}/${full_repo_path}.git" "refs/heads/${branch}" 1>/dev/null 2>&1
   local branch_exists=$?
 
@@ -112,7 +107,12 @@ clone_and_cache_gitlab_repos() {
   local repo_name=$9
   local full_repo_path="${project_namespace}/${repo_name}"
 
-  user_info=$(get_user_info "${user}" "${token}")
+  if [ -z "${user}" ] && [ -z "${token}" ]; then
+    user_info=""
+  else
+    # If either user or token is not empty, then we need to add them to the url.
+    user_info="${user}:${token}@"
+  fi
 
   if [ -f "${repo_name}.txt" ]; then
     cached_branch_name=$(cat "${repo_name}.txt")
