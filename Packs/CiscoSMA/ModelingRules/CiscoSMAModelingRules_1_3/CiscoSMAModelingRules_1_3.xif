@@ -104,7 +104,7 @@ filter
     xdm.email.attachment.signature_status = signature_status,
     xdm.email.attachment.filename = attachment,
     xdm.session_context_id = Mailer_Identifier;
-    
+
 filter
     _raw_log contains "gui_logs: Info: req:" or _raw_log contains "euqgui_logs: Info: req:"
 | alter Message = arrayindex(regextract(_raw_log,"I?i?nfo\:\s([^\!]+)"),0),
