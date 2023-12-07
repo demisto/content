@@ -134,11 +134,12 @@ class PychromeEventHandler:
 
     def network_data_received(self, requestId, timestamp, dataLength, encodedDataLength):  # pylint: disable=unused-argument
         if requestId:
-            demisto.debug(f"network_data_received, {requestId=}")
+            # demisto.debug(f"network_data_received, {requestId=}")
             if not self.request_id:
                 self.request_id = requestId
             else:
-                demisto.debug(f"network_data_received, {requestId=}, already using {self.request_id}")
+                # demisto.debug(f"network_data_received, {requestId=}, already using {self.request_id}")
+                pass
 
 # endregion
 
