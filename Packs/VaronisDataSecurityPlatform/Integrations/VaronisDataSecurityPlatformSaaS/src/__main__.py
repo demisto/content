@@ -6,8 +6,8 @@ from Client import Client
 from EventAttributes import EventAttributes
 from ThreatModelObjectMapper import ThreatModelObjectMapper
 import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
+from CommonServerPython import *
+from CommonServerUserPython import *
 
 import requests
 import traceback
@@ -194,21 +194,28 @@ def varonis_update_alert(client: Client, close_reason_id: int, status_id: int, a
     if len(alert_ids) == 0:
         raise ValueError('alert id(s) not specified')
 
-    update_status_query: Dict[str, Any] = {
-        'AlertGuids': alert_ids,
-        'CloseReasonId': close_reason_id,
-        'StatusId': status_id
-    }
-    update_status_result = client.varonis_update_alert_status(update_status_query)
+    if (not note and not status_id):
+        raise ValueError('To update update alert you must specify status or note')
+
+    update_status_result = False
+    add_note_result = False
 
     if note:
         add_note_query: Dict[str, Any] = {
             'AlertGuids': alert_ids,
             'Note': note
         }
-        client.varonis_add_note_to_alerts(add_note_query)
-        print('note added')
-    return update_status_result
+        add_note_result = client.varonis_add_note_to_alerts(add_note_query)
+
+    if status_id:
+        update_status_query: Dict[str, Any] = {
+            'AlertGuids': alert_ids,
+            'CloseReasonId': close_reason_id,
+            'StatusId': status_id
+        }
+        update_status_result = client.varonis_update_alert_status(update_status_query)
+
+    return True if update_status_result or add_note_result else False
 
 
 def convert_incident_alert_to_onprem_format(alert_saas_format):
@@ -681,6 +688,28 @@ def varonis_get_alerted_events_command(client: Client, args: Dict[str, Any]) -> 
     )
 
 
+def varonis_alert_add_note_command(client: Client, args: Dict[str, Any]) -> bool:
+    """Update Varonis alert status command
+
+    :type client: ``Client``
+    :param client: Http client
+
+    :type args: ``Dict[str, Any]``
+    :param args:
+        all command arguments, usually passed from ``demisto.args()``.
+        ``args['alert_id']`` Array of alert ids to be updated
+        ``args['note']`` Note for alert
+
+    :return: Result of execution
+    :rtype: ``bool``
+
+    """
+    note = args.get('note', None)
+
+    return varonis_update_alert(client, CLOSE_REASONS['none'], status_id=None, alert_ids=argToList(args.get('alert_id')),
+                                note=note)
+
+
 def varonis_update_alert_status_command(client: Client, args: Dict[str, Any]) -> bool:
     """Update Varonis alert status command
 
@@ -754,12 +783,13 @@ def main() -> None:
     args = demisto.args()
 
     if not is_xsoar_env():
-        url = 'https://int00eff.varonis-preprod.com/'
-        apiKey = 'vkey1_3aeb08d117534a2882094f04ee0cdff6_QzWu94W1G9TSBzQsIHsZPw7fKX8pBIVaST9WO9U5teA='
-        command = 'varonis-get-alerts'  # 'test-module'|
+        url = 'https://intfc35a.varonis-preprod.com/'
+        apiKey = 'vkey1_aa57d02a83af4ed5ad0655d186d83bff_F7AVsU0FwwzPRjvaATeC9Lq/Cr+HIR+uZaiImlntgjA='
+        command = 'varonis-update-alert-status'  # 'test-module'|
         # 'varonis-get-threat-models'|
         # 'varonis-get-alerts'|
         # 'varonis-get-alerted-events'|
+        # 'varonis-alert-add-note'
         # 'varonis-update-alert-status'|
         # 'varonis-close-alert'|
         # 'fetch-incidents'
@@ -775,6 +805,7 @@ def main() -> None:
             'first_fetch': '1 week'
         }
 
+        test_alert_id = '4D7A3206-5EBF-4C93-83E4-AA06D5DA81F1'
         if command == 'test-module':
             pass
 
@@ -801,21 +832,25 @@ def main() -> None:
             args['descending_order'] = None  # Indicates whether alerts should be ordered in newest to oldest order
 
         elif command == 'varonis-get-alerted-events':
-            args['alert_id'] = "1AB7D4A7-7BBF-43D2-B1B5-E0E5679C561B"  # Array of alert ids
+            args['alert_id'] = test_alert_id  # Array of alert ids
             args['start_time'] = None  # Start time of the range of events
             args['end_time'] = None  # End time of the range of events
             args['last_days'] = None  # Number of days you want the search to go back to
             args['extra_fields'] = ""  # extra fields
             args['descending_order'] = None  # Indicates whether events should be ordered in newest to oldest order
-
+        
+        elif command == 'varonis-alert-add-note':
+            args['alert_id'] = test_alert_id  # Array of alert ids to be updated
+            args['note'] = "user note"  # Note for alert
+            
         elif command == 'varonis-update-alert-status':
             args['status'] = 'under investigation'  # Alert's new status
-            args['alert_id'] = "E5E255ED-24FD-4461-A676-A1A980E24397"  # Array of alert ids to be updated
+            args['alert_id'] = test_alert_id  # Array of alert ids to be updated
             args['note'] = "user note"  # Note for alert
 
         elif command == 'varonis-close-alert':
             args['close_reason'] = 'resolved'  # Alert's close reason
-            args['alert_id'] = "E5E255ED-24FD-4461-A676-A1A980E24397"  # Array of alert ids to be closed
+            args['alert_id'] = test_alert_id  # Array of alert ids to be closed
             args['note'] = "user note"  # Note for alert
 
         elif command == 'fetch-incidents':
@@ -859,7 +894,10 @@ def main() -> None:
 
         elif command == 'varonis-get-alerted-events':
             return_results(varonis_get_alerted_events_command(client, args))
-
+       
+        elif command == 'varonis-alert-add-note':
+            return_results(varonis_alert_add_note_command(client, args))
+        
         elif command == 'varonis-update-alert-status':
             return_results(varonis_update_alert_status_command(client, args))
 

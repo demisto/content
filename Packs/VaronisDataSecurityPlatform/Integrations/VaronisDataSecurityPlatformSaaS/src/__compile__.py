@@ -18,20 +18,24 @@ def merge_files(source_directory, file_list, output_file):
         current_module = os.path.splitext(file_path)[0]
         with open(f'{source_directory}/{file_path}', 'r') as file:
             module_code = []
-            module_code.append(os.linesep)
             file_lines = file.readlines()
             for line in file_lines:
                 if (line.startswith('import') or line.startswith('from')):
                     if line not in imports and not any(substring in line for substring in module_names):
                         imports.add(line)
                 else:
-                    module_code.append(line)
+                    if len(module_code) == 0 and line.isspace():
+                        pass
+                    else:
+                        module_code.append(line)
             modules[current_module] = ''.join(module_code)
 
     result_code = []
     result_code.append(''.join(imports))
     sorted_modules = sort_modules(list(modules.items()))
     for module_name, module_code in sorted_modules:
+        result_code.append(os.linesep)
+        result_code.append(os.linesep)
         result_code.append(modules[module_name])
 
     try:

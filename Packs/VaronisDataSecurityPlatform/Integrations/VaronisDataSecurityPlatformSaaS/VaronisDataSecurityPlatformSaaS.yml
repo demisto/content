@@ -255,7 +255,24 @@ script:
       type: String
     - contextPath: Varonis.Alert.IngestTime
       description: Time when the alert was ingested into the system
-      type: Date    
+      type: Date
+  - arguments:
+      - default: false
+        description: Requested alerts
+        isArray: true
+        name: alert_id
+        required: true
+        secret: false
+      - default: false
+        description: Note
+        isArray: false
+        name: note
+        required: false
+        secret: false
+    deprecated: false
+    description: Add note to alerts
+    execution: false
+    name: varonis-alert-add-note
   - arguments:
     - default: false
       description: Requested alerts
