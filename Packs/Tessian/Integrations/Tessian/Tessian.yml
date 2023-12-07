@@ -8,10 +8,10 @@ configuration:
   additionalinfo: The URL that you use to access the Tessian Portal. Please include the extension, e.g. "example.tessian-platform.com" or "example.tessian-app.com"
   type: 0
   required: true
-- display: API Key
+- displaypassword: API Key
   additionalinfo: The API Key to use to connect to the Tessian API. This can be found under "Security Integrations" in your Tessian Portal (/0/admin/integrations/api/tokens)
   name: api_key
-  type: 4
+  type: 9
   hiddenusername: true
   required: true
 - display: Trust any certificate (not secure)

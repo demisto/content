@@ -281,7 +281,7 @@ def main() -> None:  #  pragma: no cover
     params = demisto.params()
     args = demisto.args()
     base_url = format_url(params.get('url'))
-    api_key = params.get('api_key')
+    api_key = params.get('api_key', {}).get('password')
 
     # if your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
