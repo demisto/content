@@ -1,8 +1,8 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+import demistomock as demisto  # noqa: F401  # pragma: no cover
+from CommonServerPython import *  # noqa: F401  # pragma: no cover
 
 
-''' COMMAND FUNCTION '''
+''' COMMAND FUNCTION '''  # pragma: no cover
 
 
 def get_additonal_info() -> List[Dict]:  # pragma: no cover
@@ -29,7 +29,7 @@ def get_additonal_info() -> List[Dict]:  # pragma: no cover
     return results
 
 
-''' MAIN FUNCTION '''
+''' MAIN FUNCTION '''  # pragma: no cover
 
 
 def main():  # pragma: no cover
@@ -43,7 +43,7 @@ def main():  # pragma: no cover
         return_error(f'Failed to execute XCloudIdentitiesWidget. Error: {str(ex)}')
 
 
-''' ENTRY POINT '''
+''' ENTRY POINT '''  # pragma: no cover
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
-    main()
+if __name__ in ('__main__', '__builtin__', 'builtins'): # pragma: no cover
+    main()  # pragma: no cover

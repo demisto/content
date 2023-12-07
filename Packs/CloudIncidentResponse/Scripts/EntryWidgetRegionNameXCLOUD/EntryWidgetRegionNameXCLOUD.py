@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-BLACK_HTML_STYLE = "color:#555555;text-align:center;font-size:200%;"
+BLACK_HTML_STYLE = "color:#555555;text-align:center;font-size:200%;" # pragma: no cover
 
 
 def main():  # pragma: no cover
