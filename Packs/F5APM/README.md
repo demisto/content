@@ -1,3 +1,4 @@
+<~XSIAM>
 # F5 APM
 This pack includes Cortex XSIAM content.
 
@@ -40,7 +41,7 @@ Create a publisher to specify where the BIG-IP system sends log messages for spe
 1. Navigate to **System** > **Logs** > **Configuration** > **Log Publishers**.
 2. Click **Create**.
 3. In the **Name** field, type "XSIAM".
-4. For the **Destinations** setting, select a destination from the **Available list**, and click **<<** to move the destination to the Selected list.
+4. For the **Destinations** setting, select a destination from the **Available list**, and click `**<<**` to move the destination to the Selected list.
 5. Click **Finished**. 
 
 ### Configuring log settings for access system and URL request events
@@ -84,3 +85,4 @@ You can configure the specific vendor and product for this instance.
 4. When configuring the Syslog Collector, set the following values:
    - vendor as f5 
    - product as apm
+</~XSIAM>
