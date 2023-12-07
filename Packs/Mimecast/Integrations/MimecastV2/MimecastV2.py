@@ -2004,12 +2004,14 @@ def get_message_metadata(message_id):
             'FileName': attachment.get('filename'),
             'SHA256': attachment.get('sha256'),
             'ID': attachment.get('id'),
-            'Size': attachment.get('size')
+            'Size': attachment.get('size'),
+            'Extension': attachment.get('extension')
         })
         attachments_contents.append(
             'FileName: {}, SHA256: {}, ID: {}, Size: {}'.format(str(attachment.get('filename')),
                                                                 str(attachment.get('sha256')),
-                                                                str(attachment.get('id')), str(attachment.get('size')))
+                                                                str(attachment.get('id')),
+                                                                str(attachment.get('size')))
         )
 
     contents = {

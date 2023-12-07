@@ -893,6 +893,9 @@ script:
     - contextPath: Mimecast.Message.Attachments.Size
       description: Message attachment's file size.
       type: number
+    - contextPath: Mimecast.Message.Attachments.Extension
+      description: Message attachment's file extension.
+      type: string
     - contextPath: Mimecast.Message.Processed
       description: The date the message was processed by Mimecast in ISO 8601 format.
       type: date
@@ -926,6 +929,9 @@ script:
     - contextPath: File.MD5
       description: MD5 hash of the file
       type: string
+    - contextPath: File.Extension
+      description: The extension of the file.
+      type: String  
   - arguments:
     - description: The Mimecast ID of the message attachment to return. (Can be retrieved from mimecast-get-message)
       name: attachmentID
@@ -960,6 +966,9 @@ script:
     - contextPath: File.MD5
       description: MD5 hash of the file
       type: string
+    - contextPath: File.Extension
+      description: The extension of the file.
+      type: String
   - arguments:
     - description: The string to query.
       name: query_string
