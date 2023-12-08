@@ -25,7 +25,7 @@ def test_extract_info_from_qr_code(mocker):
 
     result = extract_info_from_qr_code('entry_id')
 
-    assert result.outputs_prefix == 'OpenCVQRCodeReader'
+    assert result.outputs_prefix == 'QRCodeReader'
     assert result.outputs == {'Text': 'https://xsoar.pan.dev/', 'Domain': 'xsoar.pan.dev'}
     assert result.readable_output == '### QR Code Read\n|Text|\n|---|\n| https://xsoar.pan.dev/ |\n'
 
@@ -69,5 +69,5 @@ def test_with_non_image_file(mocker):
         demisto, 'getFilePath', return_value={'path': 'test_data/text.txt'},
     )
 
-    with pytest.raises(DemistoException, match='Error parsing file. Please make sure it is a valid image file'):
+    with pytest.raises(DemistoException, match='Error parsing file. Please make sure it is a valid image file.'):
         extract_info_from_qr_code('entry_id')

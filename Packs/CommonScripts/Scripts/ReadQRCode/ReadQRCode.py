@@ -28,12 +28,12 @@ def extract_info_from_qr_code(entry_id: str) -> CommandResults:
             return CommandResults(readable_output='No QR code was found in the image.')
         indicators = extract_indicators_from_text(text)
     except cv2.error as e:  # generic error raised by cv2
-        raise DemistoException('Error parsing file. Please make sure it is a valid image file') from e
+        raise DemistoException('Error parsing file. Please make sure it is a valid image file.') from e
     except ValueError:  # raised by demisto.getFilePath when the entry_id is not found
         raise DemistoException(f'Invalid entry ID: {entry_id=}')
 
     return CommandResults(
-        outputs_prefix='OpenCVQRCodeReader',
+        outputs_prefix='QRCodeReader',
         outputs=({'Text': text} | indicators),
         readable_output=tableToMarkdown(
             'QR Code Read', {'Text': text}
