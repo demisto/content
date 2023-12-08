@@ -7,6 +7,7 @@ from typing import Any, Dict, List
 
 urllib3.disable_warnings()
 
+
 class Client(BaseClient):
     def get_ip_geolocation(self, ip: str, api_key: str) -> Dict[str, Any]:
         return self._http_request(
@@ -17,6 +18,7 @@ class Client(BaseClient):
                 'key': api_key
             }
         )
+
 
 def test_module(client: Client) -> str:
     try:
