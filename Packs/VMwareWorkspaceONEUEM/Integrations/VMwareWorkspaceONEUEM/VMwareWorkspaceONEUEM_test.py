@@ -4,7 +4,7 @@ import pytest
 from CommonServerPython import *
 from VMwareWorkspaceONEUEM import Client, HTTP_ERROR, MESSAGES
 from test_data import input_data
-
+from pathlib import Path
 SERVER_URL = "https://host.awmdm.com"
 BASE_URL = "https://host.awmdm.com/API/mdm/"
 
@@ -12,7 +12,7 @@ client = Client("user", "user123", BASE_URL, {'aw-tenant-code': "abed", "Accept"
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with open(Path(__file__).parent / path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 

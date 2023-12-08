@@ -231,7 +231,7 @@ def test_get_password_invalid():
             raise AssertionError
 
 
-def test_archive_with_slash_in_path():
+def test_archive_with_slash_in_path(monkepatch):
     """
     Given
     - valid tar.gz file with slash in path
@@ -241,6 +241,7 @@ def test_archive_with_slash_in_path():
     Then
     - ensure no error was returned
     """
+    monkeypatch.chdir(os.path.dirname(__file__))
     zipped_file_object = {
         'name': 'Archive_with_slash_in_path.tar.gz',
         'path': f'{os.path.dirname(__file__)}/data_test/Archive_with_slash_in_path.tar.gz'

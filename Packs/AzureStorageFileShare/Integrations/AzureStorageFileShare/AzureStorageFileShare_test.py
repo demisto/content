@@ -1,7 +1,7 @@
 import os
 import pytest
 import defusedxml.ElementTree as defused_ET
-
+from pathlib import Path
 from CommonServerPython import *
 
 ACCOUNT_NAME = "test"
@@ -16,7 +16,7 @@ def load_xml_mock_response(file_name: str) -> str:
     Args:
         file_name (str): Name of the mock response XML file to return.
     """
-    file_path = f'test_data/{file_name}'
+    file_path = str(Path(__file__).parent / f'test_data/{file_name}')
 
     top = defused_ET.parse(file_path)
     return ET.tostring(top.getroot(), encoding='utf8').decode("utf-8")

@@ -1,5 +1,4 @@
 """Unit Tests file"""
-
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from GCenter import (
     gw_get_alert,
@@ -33,10 +32,10 @@ from GCenter import (
 import inspect
 import json
 import pytest
-
+from pathlib import Path
 
 def load_json(file):
-    with open(file) as f:
+    with open(Path(__file__).parent / file) as f:
         return json.load(f)
 
 

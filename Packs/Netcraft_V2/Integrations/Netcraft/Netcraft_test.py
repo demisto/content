@@ -3,7 +3,7 @@ from test_data.test_data import *  # nopycln: import
 from Netcraft import Client
 import demistomock as demisto
 from CommonServerPython import ScheduledCommand, DemistoException
-
+from pathlib import Path
 
 MOCK_CLIENT = Client(
     {
@@ -149,7 +149,7 @@ def test_attack_report_command(mocker):
     from Netcraft import attack_report_command
 
     getFilePath = mocker.patch.object(
-        demisto, 'getFilePath', return_value={'name': 'file name', 'path': 'test_data/mock_file.txt'})
+        demisto, 'getFilePath', return_value={'name': 'file name', 'path': str(Path(__file__).parent / 'test_data/mock_file.txt')})
     request = mocker.patch.object(Client, '_http_request', return_value=attack_report.api_response)
 
     result = attack_report_command(attack_report.args, MOCK_CLIENT)
@@ -159,7 +159,7 @@ def test_attack_report_command(mocker):
     assert attack_report.outputs.outputs_prefix == result.outputs_prefix
     assert attack_report.outputs.raw_response == result.raw_response
     assert attack_report.outputs.readable_output == result.readable_output
-    assert str(request.call_args.kwargs.pop('files')['evidence']) == "<_io.BufferedReader name='test_data/mock_file.txt'>"
+    assert str(request.call_args.kwargs.pop('files')['evidence']) == f"<_io.BufferedReader name='{str(Path(__file__).parent / "test_data/mock_file.txt")}'>"
 
     getFilePath.assert_called_with(attack_report.args.get('entry_id'))
     request.assert_called_with(
@@ -417,7 +417,7 @@ def test_file_report_submit_command(mocker, data):
 
     mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
     getFilePath = mocker.patch.object(
-        demisto, 'getFilePath', return_value={'name': 'file name', 'path': 'test_data/mock_file.txt'})
+        demisto, 'getFilePath', return_value={'name': 'file name', 'path': str(Path(__file__).parent / 'test_data/mock_file.txt')})
     request = mocker.patch.object(Client, '_http_request', return_value=data.api_response)
     get_submission = mocker.patch.object(Netcraft, 'get_submission')
 
