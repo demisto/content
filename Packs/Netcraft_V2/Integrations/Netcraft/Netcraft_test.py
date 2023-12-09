@@ -159,7 +159,8 @@ def test_attack_report_command(mocker):
     assert attack_report.outputs.outputs_prefix == result.outputs_prefix
     assert attack_report.outputs.raw_response == result.raw_response
     assert attack_report.outputs.readable_output == result.readable_output
-    assert str(request.call_args.kwargs.pop('files')['evidence']) == f"<_io.BufferedReader name='{str(Path(__file__).parent / "test_data/mock_file.txt")}'>"
+    name = str(Path(__file__).parent / "test_data/mock_file.txt")
+    assert str(request.call_args.kwargs.pop('files')['evidence']) == f"<_io.BufferedReader name='{name}'>"
 
     getFilePath.assert_called_with(attack_report.args.get('entry_id'))
     request.assert_called_with(
