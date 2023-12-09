@@ -59,7 +59,7 @@ POLLING = "polling"
 ARGUMENTS = "arguments"
 ACCOUNT_NAME = "account_name"
 INTEGRATION_RELIABILITY = "integrationReliability"
-INCIDENT_SEVERITY = "incidentSeverity"
+INCIDENT_SEVERITY = "incident_severity"
 EMPTY_STRING = ""
 API_TOKEN = "apikey"
 AGENT_GUID = "agent_guid"
@@ -1193,9 +1193,6 @@ def fetch_incidents(v1_client: pytmv1.Client):
         # Alerts are fetched per created_date_time in descending order
         # Set the last_event to the created_date_time for the first alert
         # in alert list to get the latest created_date_time
-        last_event = datetime.strptime(
-            alerts[0].created_date_time, "%Y-%m-%dT%H:%M:%SZ"
-        )
         for record in alerts:
             incident = {
                 "name": record.model,
@@ -1203,12 +1200,10 @@ def fetch_incidents(v1_client: pytmv1.Client):
                 "details": record.description if isinstance(record, SaeAlert) else None,
                 "occurred": record.created_date_time,
                 "severity": incident_severity_to_dbot_score(record.severity),
-                "rawJSON": json.dumps(record),
+                "rawJSON": record.json(),
             }
             incidents.append(incident)
-            next_search = last_event + timedelta(0, 1)
-            demisto.setLastRun({"start_time": next_search.isoformat()})
-
+    demisto.setLastRun({"start_time": end.isoformat()})
     demisto.incidents(incidents)
     return incidents
 
