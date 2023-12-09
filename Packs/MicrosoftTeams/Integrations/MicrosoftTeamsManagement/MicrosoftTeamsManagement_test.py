@@ -1,7 +1,8 @@
+import io
 import json
 
 import pytest
-from pathlib import Path
+
 from MicrosoftTeamsManagement import (Client, add_member, archive_team,
                                       clone_team, create_team,
                                       create_team_from_group, delete_team,
@@ -18,7 +19,7 @@ def client(mocker):
 
 
 def load_test_data(path):
-    with open(Path(__file__).parent / path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 

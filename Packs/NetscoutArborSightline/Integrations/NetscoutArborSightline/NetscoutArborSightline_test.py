@@ -1,5 +1,5 @@
-import os
 import json
+import io
 from copy import deepcopy
 
 import pytest
@@ -14,13 +14,13 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 # from Packs
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
 client = NetscoutClient(base_url='dummy_url', verify=False, proxy=False, first_fetch='3 days', max_fetch=10)
-http_responses = util_load_json(os.path.dirname(__file__) + '/test_data/http_responses.json')
-command_results = util_load_json(os.path.dirname(__file__) + '/test_data/command_results.json')
+http_responses = util_load_json('test_data/http_responses.json')
+command_results = util_load_json('test_data/command_results.json')
 
 
 @pytest.fixture(autouse=True)

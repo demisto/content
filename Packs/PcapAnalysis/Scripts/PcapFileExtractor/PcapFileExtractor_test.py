@@ -30,7 +30,7 @@ def test_extract_files(tmpdir):
     file_path = './TestData/tftp_rrq.pcap'
     results = upload_files(file_path, tmpdir)
     assert 'Pcap Extracted Files' in results.readable_output
-    assert results.outputs == OUTPUTS
+    assert OUTPUTS == results.outputs
     assert os.path.isfile(os.path.join(tmpdir, 'rfc1350.txt'))
 
 
@@ -91,7 +91,7 @@ def test_decryption_wpa_pwd(tmpdir):
     file_path = './TestData/wpa-Induction.pcap'
     password = 'Induction'
     results = upload_files(file_path, tmpdir, wpa_pwd=password)
-    assert len(results.outputs) == 5
+    assert 5 == len(results.outputs)
 
 
 def test_decryption_rsa(tmpdir):
@@ -109,7 +109,7 @@ def test_decryption_rsa(tmpdir):
     file_path = './TestData/rsa.cap'
     key_path = './TestData/rsa.key'
     results = upload_files(file_path, tmpdir, rsa_path=key_path)
-    assert len(results.outputs) == 5
+    assert 5 == len(results.outputs)
 
 
 def test_assertion_types_and_extension(tmpdir):

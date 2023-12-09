@@ -43,7 +43,6 @@ def test_GCPProjectHierarchy_command(mocker):
         elif name == "gcp-iam-folders-get":
             return [{'Type': 1, 'Contents': {'name': "folders/111111111111", 'displayName': 'folder-name',
                                              'parent': "organizations/111111111111"}}]
-        return None
 
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
     args = {"project_id": "project-name"}
@@ -72,7 +71,6 @@ def test_GCPProjectHierarchy_command_empty_folder(mocker):
         elif name == "gcp-iam-folders-get":
             return [{'Type': 1, 'Contents': {'name': '', 'displayName': '',
                                              'parent': ''}}]
-        return None
 
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
     args = {"project_id": "project-name"}
@@ -99,7 +97,6 @@ def test_GCPProjectHierarchy_command_no_folder_name(mocker):
         elif name == "gcp-iam-folders-get":
             return [{'Type': 1, 'Contents': {'name': None, 'displayName': 'folder-name',
                                              'parent': "organizations/111111111111"}}]
-        return None
 
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
     args = {"project_id": "project-name"}
@@ -134,7 +131,6 @@ def test_GCPProjectHierarchy_command_no_folder_parent(mocker):
         elif name == "gcp-iam-folders-get":
             return [{'Type': 1, 'Contents': {'name': "folders/111111111111", 'displayName': 'folder-name',
                                              'parent': None}}]
-        return None
 
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
     args = {"project_id": "project-name"}
@@ -162,7 +158,6 @@ def test_GCPProjectHierarchy_command_no_folder_displayname(mocker):
         elif name == "gcp-iam-folders-get":
             return [{'Type': 1, 'Contents': {'name': "folders/111111111111", 'displayName': None,
                                              'parent': "organizations/111111111111"}}]
-        return None
 
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
     args = {"project_id": "project-name"}

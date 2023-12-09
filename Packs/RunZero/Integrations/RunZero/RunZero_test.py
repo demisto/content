@@ -1,5 +1,5 @@
-import os
 import json
+import io
 import pytest
 from CommonServerPython import CommandResults
 
@@ -8,12 +8,12 @@ BASE_URL = 'https://console.runzero.com/api/v1.0'
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
 def util_load_file(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return f.read()
 
 
@@ -57,8 +57,8 @@ def test_parse_raw_asset():
         Then: Returns the expected parsed response
     """
     from RunZero import parse_raw_asset
-    raw_asset = util_load_json(os.path.dirname(__file__) + '/test_data/assets.json')[0]
-    expected_asset_res = util_load_json(os.path.dirname(__file__) + '/test_data/parsed_asset_result.json')
+    raw_asset = util_load_json('test_data/assets.json')[0]
+    expected_asset_res = util_load_json('test_data/parsed_asset_result.json')
     actual_response = parse_raw_asset(raw=raw_asset)
     assert actual_response[0] == expected_asset_res
 
@@ -71,8 +71,8 @@ def test_parse_raw_service():
         Then: Returns the expected parsed response
     """
     from RunZero import parse_raw_service
-    raw_service = util_load_json(os.path.dirname(__file__) + '/test_data/services.json')[0]
-    expected_service_res = util_load_json(os.path.dirname(__file__) + '/test_data/parsed_service_result.json')
+    raw_service = util_load_json('test_data/services.json')[0]
+    expected_service_res = util_load_json('test_data/parsed_service_result.json')
     actual_response = parse_raw_service(raw=raw_service)
     assert actual_response[0] == expected_service_res
 
@@ -85,8 +85,8 @@ def test_parse_raw_wireless():
         Then: Returns the expected parsed response
     """
     from RunZero import parse_raw_wireless
-    raw_service = util_load_json(os.path.dirname(__file__) + '/test_data/wireless.json')[0]
-    expected_wireless_res = util_load_json(os.path.dirname(__file__) + '/test_data/parsed_wireless_result.json')
+    raw_service = util_load_json('test_data/wireless.json')[0]
+    expected_wireless_res = util_load_json('test_data/parsed_wireless_result.json')
     actual_response = parse_raw_wireless(raw=raw_service)
     assert actual_response[0] == expected_wireless_res
 
@@ -99,7 +99,7 @@ def test_assets_search(requests_mock):
         Then: Returns the assets
     """
     from RunZero import asset_search_command
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/assets.json')
+    mock_response = util_load_json('test_data/assets.json')
     requests_mock.get(
         f'{BASE_URL}/org/assets',
         json=mock_response)
@@ -131,7 +131,7 @@ def test_assets_search_exits_if_invalid_args(requests_mock):
         Then: The command exits with SystemExit(0)
     """
     from RunZero import asset_search_command
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/assets.json')
+    mock_response = util_load_json('test_data/assets.json')
     requests_mock.get(
         f'{BASE_URL}/org/assets',
         json=mock_response)
@@ -153,7 +153,7 @@ def test_service_search_exits_if_invalid_args(requests_mock):
         Then: The command exits with SystemExit(0).
     """
     from RunZero import service_search_command
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/services.json')
+    mock_response = util_load_json('test_data/services.json')
     requests_mock.get(
         f'{BASE_URL}/org/services',
         json=mock_response)
@@ -175,7 +175,7 @@ def test_wireless_search_exits_if_invalid_args(requests_mock):
         Then: The command exits with SystemExit(0).
     """
     from RunZero import wireless_lan_search_command
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/wireless.json')
+    mock_response = util_load_json('test_data/wireless.json')
     requests_mock.get(
         f'{BASE_URL}/org/wireless',
         json=mock_response)
@@ -197,7 +197,7 @@ def test_asset_search(requests_mock):
         Then:
     """
     from RunZero import asset_search_command
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/assets.json')
+    mock_response = util_load_json('test_data/assets.json')
     requests_mock.get(
         f'{BASE_URL}/org/assets?search=address:192.168.1.91',
         json=mock_response)
@@ -226,7 +226,7 @@ def test_comment_add(requests_mock):
         Then: New comment is attached to asset.
     """
     from RunZero import comment_add_command
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/assets.json')
+    mock_response = util_load_json('test_data/assets.json')
     requests_mock.patch(
         f'{BASE_URL}/org/assets/{ASSET_ID}/comments',
         json=mock_response)
@@ -239,7 +239,7 @@ def test_comment_add(requests_mock):
               'comment': 'My comment2'}
     )
 
-    assert actual_commandResult.raw_response[0]['comments'] == 'My comment2'
+    assert 'My comment2' == actual_commandResult.raw_response[0]['comments']
     assert f'Comment added to {ASSET_ID} successfully.' == actual_commandResult.readable_output
 
 
@@ -251,7 +251,7 @@ def test_tag_add(requests_mock):
         Then: New tags are attached to asset.
     """
     from RunZero import tags_add_command
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/assets.json')
+    mock_response = util_load_json('test_data/assets.json')
     requests_mock.patch(
         f'{BASE_URL}/org/assets/{ASSET_ID}/tags',
         json=mock_response)
@@ -277,7 +277,7 @@ def test_service_search(requests_mock):
         Then: Returning the expected services
     """
     from RunZero import service_search_command
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/services.json')
+    mock_response = util_load_json('test_data/services.json')
     requests_mock.get(
         f'{BASE_URL}/org/services',
         json=mock_response)
@@ -308,7 +308,7 @@ def test_service_search_using_search_string(requests_mock):
         Then: Returning the desired service.
     """
     from RunZero import service_search_command
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/services.json')
+    mock_response = util_load_json('test_data/services.json')
     requests_mock.get(
         f'{BASE_URL}/org/services',
         json=mock_response)
@@ -343,7 +343,7 @@ def test_quota_get(requests_mock):
         Then: Returns information about api key (limit, usage, type ..)
     """
     from RunZero import quota_get_command
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/quota.json')
+    mock_response = util_load_json('test_data/quota.json')
     requests_mock.get(
         f'{BASE_URL}/org/key',
         json=mock_response)
@@ -369,7 +369,7 @@ def test__wireless_lan_search(requests_mock):
         Then: Returns the wireless_lan asset
     """
     from RunZero import wireless_lan_search_command
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/wireless.json')
+    mock_response = util_load_json('test_data/wireless.json')
     requests_mock.get(
         f'{BASE_URL}/org/wireless',
         json=mock_response)

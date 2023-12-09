@@ -1,4 +1,3 @@
-import os
 """HelloWorld Feed Integration for Cortex XSOAR - Unit Tests file
 
 This file contains the Unit Tests for the HelloWorld Integration based
@@ -57,13 +56,14 @@ https://xsoar.pan.dev/docs/integrations/unit-testing
 from FeedHelloWorld import Client, get_indicators_command, fetch_indicators_command
 from CommonServerPython import tableToMarkdown, string_to_table_header
 import json
+import io
 
 
 URL = "https://openphish.com/feed.txt"
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -78,7 +78,7 @@ def test_build_iterator(requests_mock):
         - Returns a list of the indicators parsed from the API's response
 
     """
-    with open(os.path.dirname(__file__) + '/test_data/FeedHelloWorld_mock.txt') as file:
+    with open('test_data/FeedHelloWorld_mock.txt', 'r') as file:
         response = file.read()
     requests_mock.get(URL, text=response)
     expected_url = 'https://url1.com/path'
@@ -91,7 +91,7 @@ def test_build_iterator(requests_mock):
     url_indicators = {indicator['value'] for indicator in indicators if indicator['type'] == 'URL'}
     url_relation_domains = [indicator['relations'] for indicator in indicators if indicator['type'] == 'URL']
     assert expected_url in url_indicators
-    assert url_relation_domains[0][0].get('value') == 'url1.com'
+    assert 'url1.com' == url_relation_domains[0][0].get('value')
 
 
 def test_fetch_indicators(mocker):
@@ -106,10 +106,9 @@ def test_fetch_indicators(mocker):
 
     """
     client = Client(base_url=URL)
-    mocker.patch.object(Client, 'build_iterator', return_value=util_load_json(
-        os.path.dirname(__file__) + '/test_data/build_iterator_results.json'))
+    mocker.patch.object(Client, 'build_iterator', return_value=util_load_json('./test_data/build_iterator_results.json'))
     results = fetch_indicators_command(client, params={'tlp_color': 'RED'})
-    assert results == util_load_json(os.path.dirname(__file__) + '/test_data/get_indicators_command_results.json')
+    assert results == util_load_json('./test_data/get_indicators_command_results.json')
 
 
 def test_get_indicators_command(mocker):
@@ -124,7 +123,7 @@ def test_get_indicators_command(mocker):
 
     """
     client = Client(base_url=URL)
-    indicators_list = util_load_json(os.path.dirname(__file__) + '/test_data/build_iterator_results.json')[:10]
+    indicators_list = util_load_json('./test_data/build_iterator_results.json')[:10]
     mocker.patch.object(Client, 'build_iterator', return_value=indicators_list)
     results = get_indicators_command(client, params={'tlp_color': 'RED', 'create_relationships': 'false'},
                                      args={'limit': '10'})

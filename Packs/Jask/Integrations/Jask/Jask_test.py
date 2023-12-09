@@ -1,4 +1,3 @@
-import os
 import demistomock as demisto
 
 DATE_WITHOUT_MS = '2019-05-03T03:01:54'

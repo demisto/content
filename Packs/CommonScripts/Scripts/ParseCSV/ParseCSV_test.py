@@ -1,4 +1,3 @@
-import os
 import json
 import pytest
 import demistomock as demisto
@@ -46,7 +45,7 @@ class TestParseCSV:
 
     def test_main_one_lined_csv(self, mocker):
         from ParseCSV import main
-        with open(os.path.dirname(__file__) + "/test_data/one_lined_csv_results.json") as f:
+        with open("./test_data/one_lined_csv_results.json") as f:
             expected = json.load(f)
         self.mock_demisto(
             mocker,
@@ -58,7 +57,7 @@ class TestParseCSV:
 
     def test_main_csv_utf8(self, mocker):
         from ParseCSV import main
-        with open(os.path.dirname(__file__) + "/test_data/simple_results.json") as f:
+        with open("./test_data/simple_results.json") as f:
             expected = json.load(f)
         self.mock_demisto(mocker, file_obj=self.create_file_object("./test_data/simple.csv"))
         main()
@@ -67,7 +66,7 @@ class TestParseCSV:
 
     def test_main_csv_non_utf8(self, mocker):
         from ParseCSV import main
-        with open(os.path.dirname(__file__) + "/test_data/simple_non_utf_results.json") as f:
+        with open("./test_data/simple_non_utf_results.json") as f:
             expected = json.load(f)
         self.mock_demisto(mocker, file_obj=self.create_file_object("./test_data/simple_non_utf.csv"))
         main()
@@ -76,7 +75,7 @@ class TestParseCSV:
 
     def test_main_empty_file(self, mocker):
         from ParseCSV import main
-        with open(os.path.dirname(__file__) + "/test_data/empty_result.json") as f:
+        with open("./test_data/empty_result.json") as f:
             expected = json.load(f)
         self.mock_demisto(mocker, file_obj=self.create_file_object("./test_data/empty.csv"))
         main()
@@ -85,7 +84,7 @@ class TestParseCSV:
 
     def test_main_with_hash(self, mocker):
         from ParseCSV import main
-        with open(os.path.dirname(__file__) + "/test_data/one_is_hash_results.json") as f:
+        with open("./test_data/one_is_hash_results.json") as f:
             expected = json.load(f)
         args = {
             "entryID": "entry_id",
@@ -118,7 +117,7 @@ class TestParseCSV:
         Then: Ensure each IOC type in context is expected.
         """
         from ParseCSV import main
-        with open(os.path.dirname(__file__) + "/test_data/IOCs_results.json") as f:
+        with open("./test_data/IOCs_results.json") as f:
             expected = json.load(f)
         args = {
             "entryID": "entry_id",
@@ -134,7 +133,7 @@ class TestParseCSV:
         result = self.get_demisto_results()
 
         ips_result = result.get('EntryContext', {}).get('IP', [])
-        if ips_result and ips_result[0].get('Address') != '1.1.1.1':
+        if ips_result and '1.1.1.1' != ips_result[0].get('Address'):
             result['EntryContext']['IP'].reverse()
 
         domains_result = result.get('EntryContext', {}).get('Domain', [])
@@ -158,7 +157,7 @@ class TestParseCSV:
 
     def test_main_with_nullbytes(self, mocker):
         from ParseCSV import main
-        with open(os.path.dirname(__file__) + "/test_data/nullbytes_results.json") as f:
+        with open("./test_data/nullbytes_results.json") as f:
             expeced = json.load(f)
         file_obj = self.create_file_object("./test_data/nullbytes.csv")
         self.mock_demisto(mocker, file_obj=file_obj)

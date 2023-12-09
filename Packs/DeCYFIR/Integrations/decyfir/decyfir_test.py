@@ -1,4 +1,3 @@
-import os
 from datetime import datetime, timedelta
 import json
 
@@ -11,7 +10,7 @@ def util_load_json(path):
 def test_fetch_incidents(mocker):
     from decyfir import Client, fetch_incidents
     date_format = '%Y-%m-%dT%H:%M:%SZ'
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/search_alerts.json')
+    mock_response = util_load_json('test_data/search_alerts.json')
 
     client = Client(
         base_url='test_url',

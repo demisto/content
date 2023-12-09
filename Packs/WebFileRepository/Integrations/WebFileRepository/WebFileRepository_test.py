@@ -15,8 +15,7 @@ import random
 import urllib.parse
 import WebFileRepository
 import freezegun
-from typing import Any
-from pathlib import Path
+from typing import Dict, Any, Tuple
 
 
 def equals_object(obj1, obj2) -> bool:
@@ -32,7 +31,7 @@ def equals_object(obj1, obj2) -> bool:
     elif isinstance(obj1, list):
         # Compare lists (ignore order)
         list2 = list(obj2)
-        for _i1, v1 in enumerate(obj1):
+        for i1, v1 in enumerate(obj1):
             for i2, v2 in enumerate(list2):
                 if equals_object(v1, v2):
                     list2.pop(i2)
@@ -46,20 +45,20 @@ def equals_object(obj1, obj2) -> bool:
 
 class MockIntegrationContext:
     @staticmethod
-    def encode_values(ctx: dict[str, Any]) -> dict[str, str]:
+    def encode_values(ctx: Dict[str, Any]) -> Dict[str, str]:
         return {
             k: json.dumps(v) if k.startswith(os.sep) and not isinstance(v, str) else v
             for k, v in ctx.items()
         }
 
-    def decode_values(ctx: dict[str, Any]) -> dict[str, Any]:
+    def decode_values(ctx: Dict[str, Any]) -> Dict[str, Any]:
         return {
             k: json.loads(v) if k.startswith(os.sep) and isinstance(v, str) else v
             for k, v in ctx.items()
         }
 
     def __init__(self,
-                 ctx: dict[str, Any],
+                 ctx: Dict[str, Any],
                  mocker: Optional[pytest_mock.plugin.MockerFixture] = None):
         self.__ctx = MockIntegrationContext.encode_values(ctx)
         if mocker:
@@ -68,13 +67,13 @@ class MockIntegrationContext:
             mocker.patch('WebFileRepository.set_integration_context',
                          side_effect=self.set_integration_context)
 
-    def get_integration_context(self) -> dict[str, str]:
+    def get_integration_context(self) -> Dict[str, str]:
         return copy.deepcopy(self.__ctx)
 
-    def set_integration_context(self, ctx: dict[str, str]):
+    def set_integration_context(self, ctx: Dict[str, str]):
         self.__ctx = copy.deepcopy(ctx)
 
-    def equals(self, ctx: dict[str, Any]) -> bool:
+    def equals(self, ctx: Dict[str, Any]) -> bool:
         return equals_object(MockIntegrationContext.decode_values(self.__ctx),
                              MockIntegrationContext.decode_values(ctx))
 
@@ -97,7 +96,7 @@ class MockUUID:
 class MockBaseClient:
     def __init__(self,
                  mocker: pytest_mock.plugin.MockerFixture,
-                 headers: dict[str, str],
+                 headers: Dict[str, str],
                  content: bytes = None,
                  json_data: Any = None):
         self.__headers = headers
@@ -111,7 +110,7 @@ class MockBaseClient:
                       error_handler=None, empty_valid_codes=None, **kwargs):
 
         class MockRequestsResponse:
-            def __init__(self, headers: dict[str, str], content: bytes):
+            def __init__(self, headers: Dict[str, str], content: bytes):
                 self.headers = headers
                 self.content = content
 
@@ -187,7 +186,7 @@ def test_process_root_get_resource(mocker, filename, content_type):
                                   'sandbox_usage, '
                                   'storage_usage',
                          argvalues=[
-                             (os.path.dirname(__file__) + '/test_data/integration_ctx_empty.json',
+                             ('./test_data/integration_ctx_empty.json',
                               'read/write',
                               '10000',
                               '100000',
@@ -226,7 +225,7 @@ def test_process_root_get_status(mocker,
     })
     importlib.reload(WebFileRepository)
 
-    with open(integration_context_filename) as f:
+    with open(integration_context_filename, 'r') as f:
         MockIntegrationContext(json.load(f), mocker)
 
     bottle.request = bottle.LocalRequest()
@@ -243,13 +242,13 @@ def test_process_root_get_status(mocker,
 
 @pytest.mark.parametrize(argnames='integration_context_filename, dir_name, recursive, output_filename',
                          argvalues=[
-                             (os.path.dirname(__file__) + '/test_data/integration_ctx_empty.json', '/', False, os.path.dirname(__file__) + '/test_data/ls_out_01.json'),  # noqa: E501
-                             (os.path.dirname(__file__) + '/test_data/integration_ctx_common.json', '/', False, os.path.dirname(__file__) + '/test_data/ls_out_02.json'),  # noqa: E501
-                             (os.path.dirname(__file__) + '/test_data/integration_ctx_common.json', '/', True, os.path.dirname(__file__) + '/test_data/ls_out_03.json'),  # noqa: E501
-                             (os.path.dirname(__file__) + '/test_data/integration_ctx_common.json', '/x', False, os.path.dirname(__file__) + '/test_data/ls_out_04.json'),  # noqa: E501
-                             (os.path.dirname(__file__) + '/test_data/integration_ctx_common.json', '/x/あいうえお', False, os.path.dirname(__file__) + '/test_data/ls_out_05.json'),  # noqa: E501
-                             (os.path.dirname(__file__) + '/test_data/integration_ctx_common.json', '/x/あいうえお', False, os.path.dirname(__file__) + '/test_data/ls_out_05.json'),  # noqa: E501
-                             (os.path.dirname(__file__) + '/test_data/integration_ctx_common.json', '/not-found', False, os.path.dirname(__file__) + '/test_data/ls_out_06.json'),  # noqa: E501
+                             ('./test_data/integration_ctx_empty.json', '/', False, './test_data/ls_out_01.json'),
+                             ('./test_data/integration_ctx_common.json', '/', False, './test_data/ls_out_02.json'),
+                             ('./test_data/integration_ctx_common.json', '/', True, './test_data/ls_out_03.json'),
+                             ('./test_data/integration_ctx_common.json', '/x', False, './test_data/ls_out_04.json'),
+                             ('./test_data/integration_ctx_common.json', '/x/あいうえお', False, './test_data/ls_out_05.json'),
+                             ('./test_data/integration_ctx_common.json', '/x/あいうえお', False, './test_data/ls_out_05.json'),
+                             ('./test_data/integration_ctx_common.json', '/not-found', False, './test_data/ls_out_06.json'),
                          ])
 def test_process_root_get_ls(mocker, integration_context_filename, dir_name, recursive, output_filename):
     """
@@ -276,10 +275,10 @@ def test_process_root_get_ls(mocker, integration_context_filename, dir_name, rec
     })
     importlib.reload(WebFileRepository)
 
-    with open(integration_context_filename) as f:
+    with open(integration_context_filename, 'r') as f:
         MockIntegrationContext(json.load(f), mocker)
 
-    with open(output_filename) as f:
+    with open(output_filename, 'r') as f:
         expected = json.load(f)
 
     bottle.request = bottle.LocalRequest()
@@ -317,8 +316,6 @@ def test_process_root_get_download(mocker, integration_context_filename, path, o
         Then:
             Validate the right response returns.
     """
-    integration_context_filename = Path(__file__).parent / integration_context_filename
-    output_filename = Path(__file__).parent / output_filename
     mocker.patch.object(demisto, 'params', return_value={
         'longRunningPort': '8000',
         'rwCredentials': {},
@@ -333,7 +330,7 @@ def test_process_root_get_download(mocker, integration_context_filename, path, o
     })
     importlib.reload(WebFileRepository)
 
-    with open(integration_context_filename) as f:
+    with open(integration_context_filename, 'r') as f:
         MockIntegrationContext(json.load(f), mocker)
 
     bottle.request = bottle.LocalRequest()
@@ -348,7 +345,7 @@ def test_process_root_get_download(mocker, integration_context_filename, path, o
 
 @pytest.mark.parametrize(argnames='integration_context_filename, path',
                          argvalues=[
-                             (os.path.dirname(__file__) + '/test_data/integration_ctx_common.json', '/zzz.dat'),
+                             ('./test_data/integration_ctx_common.json', '/zzz.dat'),
                          ])
 def test_process_root_get_download_not_found(mocker, integration_context_filename, path):
     """
@@ -375,7 +372,7 @@ def test_process_root_get_download_not_found(mocker, integration_context_filenam
     })
     importlib.reload(WebFileRepository)
 
-    with open(integration_context_filename) as f:
+    with open(integration_context_filename, 'r') as f:
         MockIntegrationContext(json.load(f), mocker)
 
     bottle.request = bottle.LocalRequest()
@@ -388,7 +385,7 @@ def test_process_root_get_download_not_found(mocker, integration_context_filenam
 
 @pytest.mark.parametrize(argnames='integration_context_filename, filenames',
                          argvalues=[
-                             (os.path.dirname(__file__) + '/test_data/integration_ctx_common.json',
+                             ('./test_data/integration_ctx_common.json',
                               [
                                   'a.dat',
                                   'b.dat',
@@ -399,8 +396,8 @@ def test_process_root_get_download_not_found(mocker, integration_context_filenam
                                   'x/あいうえお/f.dat',
                                   'y/g.dat',
                                   'z.dat',
-                             ]
-                             ),
+                              ]
+                              ),
                          ])
 def test_process_root_get_archive_zip(mocker, integration_context_filename, filenames):
     """
@@ -427,7 +424,7 @@ def test_process_root_get_archive_zip(mocker, integration_context_filename, file
     })
     importlib.reload(WebFileRepository)
 
-    with open(integration_context_filename) as f:
+    with open(integration_context_filename, 'r') as f:
         integration_context = MockIntegrationContext(json.load(f), mocker)
         ctx = integration_context.get_integration_context()
 
@@ -480,37 +477,37 @@ def test_process_root_get_html_main(mocker):
                                   'request_permission, '
                                   'ok',
                          argvalues=[
-                             (os.path.dirname(__file__) + '/test_data/integration_ctx_common.json',
+                             ('./test_data/integration_ctx_common.json',
                               'read/write',
                               'read/write',
                               'write',
                               True,
                               ),
-                             (os.path.dirname(__file__) + '/test_data/integration_ctx_common.json',
+                             ('./test_data/integration_ctx_common.json',
                               'read/write',
                               'read',
                               'write',
                               False,
                               ),
-                             (os.path.dirname(__file__) + '/test_data/integration_ctx_common.json',
+                             ('./test_data/integration_ctx_common.json',
                               'read-only',
                               'read',
                               'read',
                               True,
                               ),
-                             (os.path.dirname(__file__) + '/test_data/integration_ctx_common.json',
+                             ('./test_data/integration_ctx_common.json',
                               'read-only',
                               None,
                               'read',
                               False,
                               ),
-                             (os.path.dirname(__file__) + '/test_data/integration_ctx_common.json',
+                             ('./test_data/integration_ctx_common.json',
                               'sandbox',
                               'read/write',
                               'write',
                               True,
                               ),
-                             (os.path.dirname(__file__) + '/test_data/integration_ctx_common.json',
+                             ('./test_data/integration_ctx_common.json',
                               'sandbox',
                               None,
                               'read',
@@ -557,7 +554,7 @@ def test_process_root_post_health(mocker,
     rw_auth_header = f"Basic {base64.b64encode(b'RWuser:password').decode()}"
     ro_auth_header = f"Basic {base64.b64encode(b'ROuser:password').decode()}"
 
-    with open(integration_context_filename) as f:
+    with open(integration_context_filename, 'r') as f:
         MockIntegrationContext(json.load(f), mocker)
 
     post_data = json.dumps({
@@ -591,10 +588,10 @@ def test_process_root_post_health(mocker,
 @pytest.mark.parametrize(argnames='integration_context_filename, '
                                   'storage_protection',
                          argvalues=[
-                             (os.path.dirname(__file__) + '/test_data/integration_ctx_common.json',
+                             ('./test_data/integration_ctx_common.json',
                               'read/write'
                               ),
-                             (os.path.dirname(__file__) + '/test_data/integration_ctx_common.json',
+                             ('./test_data/integration_ctx_common.json',
                               'sandbox'
                               ),
                          ])
@@ -625,7 +622,7 @@ def test_process_root_post_cleanup(mocker,
     })
     importlib.reload(WebFileRepository)
 
-    with open(integration_context_filename) as f:
+    with open(integration_context_filename, 'r') as f:
         integration_context = MockIntegrationContext(json.load(f), mocker)
 
     post_data = json.dumps({
@@ -664,12 +661,12 @@ def test_process_root_post_cleanup(mocker,
                                   'integration_context_filename_after, '
                                   'storage_protection',
                          argvalues=[
-                             (os.path.dirname(__file__) + '/test_data/integration_ctx_common.json',
-                              os.path.dirname(__file__) + '/test_data/integration_ctx_empty.json',
+                             ('./test_data/integration_ctx_common.json',
+                              './test_data/integration_ctx_empty.json',
                               'read/write',
                               ),
-                             (os.path.dirname(__file__) + '/test_data/integration_ctx_common.json',
-                              os.path.dirname(__file__) + '/test_data/integration_ctx_common.json',
+                             ('./test_data/integration_ctx_common.json',
+                              './test_data/integration_ctx_common.json',
                               'sandbox',
                               ),
                          ])
@@ -701,7 +698,7 @@ def test_process_root_post_reset(mocker,
     })
     importlib.reload(WebFileRepository)
 
-    with open(integration_context_filename_before) as f:
+    with open(integration_context_filename_before, 'r') as f:
         integration_context = MockIntegrationContext(json.load(f), mocker)
 
     # Modify the repository
@@ -740,7 +737,7 @@ def test_process_root_post_reset(mocker,
     response = WebFileRepository.process_root_post()
     assert response.status_code == 200
     assert response.body.get('success') is True
-    with open(integration_context_filename_after) as f:
+    with open(integration_context_filename_after, 'r') as f:
         assert integration_context.equals(json.load(f))
 
 
@@ -769,7 +766,7 @@ def test_process_root_post_reset_in_read_only(mocker):
     })
     importlib.reload(WebFileRepository)
 
-    with open(os.path.dirname(__file__) + '/test_data/integration_ctx_common.json') as f:
+    with open('./test_data/integration_ctx_common.json', 'r') as f:
         MockIntegrationContext(json.load(f), mocker)
 
     # Reset the repository
@@ -796,17 +793,17 @@ def test_process_root_post_reset_in_read_only(mocker):
                                   'path_list, '
                                   'integration_context_filename_after',
                          argvalues=[
-                             (os.path.dirname(__file__) + '/test_data/integration_ctx_common.json',
+                             ('./test_data/integration_ctx_common.json',
                               ['/a.dat'],
-                              os.path.dirname(__file__) + '/test_data/delete_out_01.json',
+                              './test_data/delete_out_01.json',
                               ),
-                             (os.path.dirname(__file__) + '/test_data/integration_ctx_common.json',
+                             ('./test_data/integration_ctx_common.json',
                               ['/a.dat', '/x/XYZ/アイウエオ.txt'],
-                              os.path.dirname(__file__) + '/test_data/delete_out_02.json',
+                              './test_data/delete_out_02.json',
                               ),
-                             (os.path.dirname(__file__) + '/test_data/integration_ctx_common.json',
+                             ('./test_data/integration_ctx_common.json',
                               ['/a.dat', '/x'],
-                              os.path.dirname(__file__) + '/test_data/delete_out_03.json',
+                              './test_data/delete_out_03.json',
                               ),
                          ])
 def test_process_root_post_delete(mocker,
@@ -837,7 +834,7 @@ def test_process_root_post_delete(mocker,
     })
     importlib.reload(WebFileRepository)
 
-    with open(integration_context_filename_before) as f:
+    with open(integration_context_filename_before, 'r') as f:
         integration_context = MockIntegrationContext(json.load(f), mocker)
 
     post_data = json.dumps({
@@ -857,7 +854,7 @@ def test_process_root_post_delete(mocker,
     response = WebFileRepository.process_root_post()
     assert response.status_code == 200
     assert response.body.get('success') is True
-    with open(integration_context_filename_after) as f:
+    with open(integration_context_filename_after, 'r') as f:
         assert integration_context.equals(json.load(f))
 
 
@@ -886,7 +883,7 @@ def test_process_root_post_delete_in_read_only(mocker):
     })
     importlib.reload(WebFileRepository)
 
-    with open(os.path.dirname(__file__) + '/test_data/integration_ctx_common.json') as f:
+    with open('./test_data/integration_ctx_common.json', 'r') as f:
         MockIntegrationContext(json.load(f), mocker)
 
     post_data = json.dumps({
@@ -916,35 +913,35 @@ def test_process_root_post_delete_in_read_only(mocker):
                                   'extract_archive, '
                                   'integration_context_filename_after',
                          argvalues=[
-                             (os.path.dirname(__file__) + '/test_data/integration_ctx_empty.json',
-                              [os.path.dirname(__file__) + '/test_data/upload_file.txt'],
+                             ('./test_data/integration_ctx_empty.json',
+                              ['./test_data/upload_file.txt'],
                               '/',
                               False,
-                              os.path.dirname(__file__) + '/test_data/upload_out_01.json',
+                              './test_data/upload_out_01.json',
                               ),
-                             (os.path.dirname(__file__) + '/test_data/integration_ctx_empty.json',
-                              [os.path.dirname(__file__) + '/test_data/upload_file.txt', os.path.dirname(__file__) + '/test_data/upload_file.dat'],  # noqa: E501
+                             ('./test_data/integration_ctx_empty.json',
+                              ['./test_data/upload_file.txt', './test_data/upload_file.dat'],
                               '/',
                               False,
-                              os.path.dirname(__file__) + '/test_data/upload_out_02.json',
+                              './test_data/upload_out_02.json',
                               ),
-                             (os.path.dirname(__file__) + '/test_data/integration_ctx_empty.json',
-                              [os.path.dirname(__file__) + '/test_data/upload_file.zip'],
+                             ('./test_data/integration_ctx_empty.json',
+                              ['./test_data/upload_file.zip'],
                               '/',
                               True,
-                              os.path.dirname(__file__) + '/test_data/upload_out_03.json',
+                              './test_data/upload_out_03.json',
                               ),
-                             (os.path.dirname(__file__) + '/test_data/integration_ctx_empty.json',
-                              [os.path.dirname(__file__) + '/test_data/upload_file.tar.gz'],
+                             ('./test_data/integration_ctx_empty.json',
+                              ['./test_data/upload_file.tar.gz'],
                               '/',
                               True,
-                              os.path.dirname(__file__) + '/test_data/upload_out_04.json',
+                              './test_data/upload_out_04.json',
                               ),
-                             (os.path.dirname(__file__) + '/test_data/integration_ctx_empty.json',
-                              [os.path.dirname(__file__) + '/test_data/upload_file.txt'],
+                             ('./test_data/integration_ctx_empty.json',
+                              ['./test_data/upload_file.txt'],
                               '/あいうえお',
                               False,
-                              os.path.dirname(__file__) + '/test_data/upload_out_05.json',
+                              './test_data/upload_out_05.json',
                               ),
                          ])
 def test_process_root_post_upload(mocker,
@@ -979,7 +976,7 @@ def test_process_root_post_upload(mocker,
 
     importlib.reload(WebFileRepository)
 
-    with open(integration_context_filename_before) as f:
+    with open(integration_context_filename_before, 'r') as f:
         integration_context = MockIntegrationContext(json.load(f), mocker)
 
     boundary = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
@@ -1035,7 +1032,7 @@ def test_process_root_post_upload(mocker,
     response = WebFileRepository.process_root_post()
     assert response.status_code == 200
     assert response.body.get('success') is True
-    with open(integration_context_filename_after) as f:
+    with open(integration_context_filename_after, 'r') as f:
         assert integration_context.equals(json.load(f))
 
 
@@ -1358,7 +1355,7 @@ def test_command_upload_file(mocker, entry_id, name):
     mocker.patch.object(demisto, 'params', return_value=params)
     mocker.patch.object(demisto, 'getFilePath', return_value={
         'name': 'upload_file.dat',
-        'path': os.path.dirname(__file__) + '/test_data/upload_file.dat'
+        'path': 'test_data/upload_file.dat'
     })
 
     client = MockBaseClient(mocker, headers={}, json_data={
@@ -1410,7 +1407,7 @@ def test_command_upload_files(mocker, entry_ids):
     mocker.patch.object(demisto, 'params', return_value=params)
     mocker.patch.object(demisto, 'getFilePath', return_value={
         'name': 'upload_file.dat',
-        'path': os.path.dirname(__file__) + '/test_data/upload_file.dat'
+        'path': 'test_data/upload_file.dat'
     })
 
     client = MockBaseClient(mocker, headers={}, json_data={
@@ -1458,8 +1455,6 @@ def test_command_list_files(mocker,
         Then:
             Validate the right response returns.
     """
-    response_filename = Path(__file__).parent / response_filename
-    results_filename = Path(__file__).parent / results_filename
     params = {
         'longRunningPort': '8000',
         'rwCredentials': {},
@@ -1474,7 +1469,7 @@ def test_command_list_files(mocker,
     }
     mocker.patch.object(demisto, 'params', return_value=params)
 
-    with open(response_filename) as f:
+    with open(response_filename, 'r') as f:
         server_resp = json.load(f)
 
     client = MockBaseClient(mocker, headers={}, json_data=server_resp)
@@ -1491,7 +1486,7 @@ def test_command_list_files(mocker,
     res = WebFileRepository.command_list_files(args, settings).to_context()
     res = {k: v for k, v in res.items() if k in keys}
 
-    with open(results_filename) as f:
+    with open(results_filename, 'r') as f:
         expected = {k: v for k, v in json.load(f).items() if k in keys}
 
     assert equals_object(res, expected)
@@ -1572,7 +1567,6 @@ def test_command_download_file(mocker, path, save_as, content_filename):
         Then:
             Validate the right response returns.
     """
-    content_filename = Path(__file__).parent / content_filename
     params = {
         'longRunningPort': '8000',
         'rwCredentials': {},
@@ -1637,7 +1631,6 @@ def test_command_archive_zip(mocker, save_as, content_filename):
         Then:
             Validate the right response returns.
     """
-    content_filename = Path(__file__).parent / content_filename
     params = {
         'longRunningPort': '8000',
         'rwCredentials': {},
@@ -1681,28 +1674,28 @@ def test_command_archive_zip(mocker, save_as, content_filename):
                                   'mimetypes_output_filename, '
                                   'merge_mime_types',
                          argvalues=[
-                             (os.path.dirname(__file__) + '/test_data/mime_types_style_01.json',
-                              os.path.dirname(__file__) + '/test_data/mime_types_out_overwrite.json',
+                             ('./test_data/mime_types_style_01.json',
+                              './test_data/mime_types_out_overwrite.json',
                               False,
                               ),
-                             (os.path.dirname(__file__) + '/test_data/mime_types_style_02.txt',
-                              os.path.dirname(__file__) + '/test_data/mime_types_out_overwrite.json',
+                             ('./test_data/mime_types_style_02.txt',
+                              './test_data/mime_types_out_overwrite.json',
                               False,
                               ),
-                             (os.path.dirname(__file__) + '/test_data/mime_types_style_03.txt',
-                              os.path.dirname(__file__) + '/test_data/mime_types_out_overwrite.json',
+                             ('./test_data/mime_types_style_03.txt',
+                              './test_data/mime_types_out_overwrite.json',
                               False,
                               ),
-                             (os.path.dirname(__file__) + '/test_data/mime_types_style_01.json',
-                              os.path.dirname(__file__) + '/test_data/mime_types_out_merge.json',
+                             ('./test_data/mime_types_style_01.json',
+                              './test_data/mime_types_out_merge.json',
                               True,
                               ),
-                             (os.path.dirname(__file__) + '/test_data/mime_types_style_02.txt',
-                              os.path.dirname(__file__) + '/test_data/mime_types_out_merge.json',
+                             ('./test_data/mime_types_style_02.txt',
+                              './test_data/mime_types_out_merge.json',
                               True,
                               ),
-                             (os.path.dirname(__file__) + '/test_data/mime_types_style_03.txt',
-                              os.path.dirname(__file__) + '/test_data/mime_types_out_merge.json',
+                             ('./test_data/mime_types_style_03.txt',
+                              './test_data/mime_types_out_merge.json',
                               True,
                               ),
                          ])
@@ -1720,7 +1713,7 @@ def test_parse_mime_types(mocker,
         Then:
             Validate the right response returns.
     """
-    with open(mimetypes_input_filename) as f:
+    with open(mimetypes_input_filename, 'r') as f:
         input_mime_types = f.read()
 
     mocker.patch.object(demisto, 'params', return_value={
@@ -1736,7 +1729,7 @@ def test_parse_mime_types(mocker,
     })
     importlib.reload(WebFileRepository)
 
-    with open(mimetypes_output_filename) as f:
+    with open(mimetypes_output_filename, 'r') as f:
         assert equals_object(WebFileRepository.SETTINGS.ext_to_mimetype, json.loads(f.read()))
 
 
@@ -2210,7 +2203,7 @@ def test_handle_auth(mocker,
 
     auth_method, _, auth_value = auth_header.partition(' ')
     if auth_method == 'Digest':
-        def __new_nonce(nonce) -> tuple[int, str]:
+        def __new_nonce(nonce) -> Tuple[int, str]:
             gen_time, _, _ = nonce.partition(':')
             return int(gen_time), nonce
 

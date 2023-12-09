@@ -1,4 +1,3 @@
-import os
 import json
 import pytest
 from Akamai_WAF import Client
@@ -35,7 +34,7 @@ def test_get_cps_enrollment_deployment_command(environment, mocker, akamai_waf_c
 
     enrollment_id = 111111
 
-    test_data = util_load_json(os.path.dirname(__file__) + '/test_data/get_cps_enrollment_deployment_test.json')
+    test_data = util_load_json('test_data/get_cps_enrollment_deployment_test.json')
     expected_response = test_data.get(environment)
     expected_human_readable = test_data.get(f'{environment}_human_readable')
     expected_context_entry = test_data.get(f'{environment}_context_entry')
@@ -64,7 +63,7 @@ def test_list_cidr_blocks_command(mocker, akamai_waf_client):
     last_action = 'add'
     effective_date_gt = '2021-02-21'
 
-    test_data = util_load_json(os.path.dirname(__file__) + '/test_data/list_cidr_blocks_test.json')
+    test_data = util_load_json('test_data/list_cidr_blocks_test.json')
     expected_raw_response = test_data.get('raw_response')
     expected_human_readable = test_data.get('human_readable')
     expected_context_entry = test_data.get('context_entry')
@@ -97,7 +96,7 @@ def test_update_cps_enrollment_command(mocker, akamai_waf_client):
     }
     deploy_not_after = "2023-11-30T00:00:00Z"
     deploy_not_before = "2023-11-23T00:00:00Z"
-    test_data = util_load_json(os.path.dirname(__file__) + '/test_data/update-cps-enrollment_test.json')
+    test_data = util_load_json('test_data/update-cps-enrollment_test.json')
     enrollment = test_data.get('enrollment')
 
     expected_raw_response = test_data.get('raw_response')
@@ -132,7 +131,7 @@ def test_update_cps_enrollment_schedule_command(mocker, akamai_waf_client):
     change_id = '1111111'
     deploy_not_before = "2023-11-30T00:00:00Z"
 
-    test_data = util_load_json(os.path.dirname(__file__) + '/test_data/update-cps-enrollment-schedule_test.json')
+    test_data = util_load_json('test_data/update-cps-enrollment-schedule_test.json')
     expected_raw_response = test_data.get('raw_response')
     expected_human_readable = test_data.get('human_readable')
     expected_context_entry = test_data.get('context_entry')
@@ -160,7 +159,7 @@ def test_get_cps_change_status_command(mocker, akamai_waf_client):
     from Akamai_WAF import get_cps_change_status_command
     enrollment_path = "/cps/v2/enrollments/111111/changes/1111111"
 
-    test_data = util_load_json(os.path.dirname(__file__) + '/test_data/get_cps_change_status_test.json')
+    test_data = util_load_json('test_data/get_cps_change_status_test.json')
     expected_raw_response = test_data.get('raw_response')
     expected_human_readable = test_data.get('human_readable')
     expected_context_entry = test_data.get('context_entry')

@@ -1,6 +1,5 @@
-import os
 import json
-from pathlib import Path
+
 import pytest
 from VirusTotalV3 import (ScoreCalculator, encode_to_base64,
                           encode_url_to_base64, epoch_to_timestamp,
@@ -46,7 +45,7 @@ class TestScoreCalculator:
         )
 
     def test_there_are_logs(self):
-        with open(os.path.dirname(__file__) + '/test_data/file.json') as f:
+        with open('./test_data/file.json') as f:
             self.score_calculator.file_score('given hash', json.load(f))
         assert self.score_calculator.logs
         self.score_calculator.logs = []
@@ -182,7 +181,7 @@ def test_create_relationships():
     - Validate that the relationships were created as expected.
     """
     expected_name = ['communicates-with', 'communicates-with', 'related-to', 'related-to']
-    with open(os.path.dirname(__file__) + '/test_data/relationships.json') as f:
+    with open('./test_data/relationships.json') as f:
         relationships = create_relationships(entity_a='Test', entity_a_type='IP', relationships_response=json.load(f),
                                              reliability='B - Usually reliable')
     relation_entry = [relation.to_entry() for relation in relationships]
@@ -208,7 +207,7 @@ def test_get_whois_unexpected_value():
 
 
 def util_load_json(path):
-    with open(Path(__file__).parent / path, encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 

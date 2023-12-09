@@ -1,0 +1,33 @@
+{
+  "ResponseMetadata": {
+    "RequestId": "97010EC48BF5DC6C",
+    "HostId": "yAyZpu1QYk1/vh7pyQJpLfGLm04rbRLmyXKV1JLakaZbmC/cjD7HI9nYpYXXRWTCwvL3TPGR2R8=",
+    "HTTPStatusCode": 200,
+    "HTTPHeaders": {
+      "x-amz-id-2": "yAyZpu1QYk1/vh7pyQJpLfGLm04rbRLmyXKV1JLakaZbmCYpYXXRWTCwvL3TPGR2R8=",
+      "x-amz-request-id": "97010EC48BF5DC6C",
+      "date": "Wed, 03 Jun 2020 15:44:35 GMT",
+      "x-amz-bucket-region": "region",
+      "content-type": "application/xml",
+      "transfer-encoding": "chunked",
+      "server": "server"
+    },
+    "RetryAttempts": 1
+  },
+  "IsTruncated": false,
+  "Contents": [
+    {
+      "Key": "key",
+      "LastModified": "last modified",
+      "ETag": "cb4b5d90134c462ec98a1839f430ee2c",
+      "Size": 68768,
+      "StorageClass": "STANDARD"
+    }
+  ],
+  "Name": "sis-new-observations",
+  "Prefix": "",
+  "MaxKeys": 1000,
+  "EncodingType": "url",
+  "KeyCount": 35,
+  "StartAfter": "key"
+}

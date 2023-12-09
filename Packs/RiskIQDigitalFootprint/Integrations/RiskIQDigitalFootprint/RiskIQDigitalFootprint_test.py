@@ -1,4 +1,3 @@
-import os
 import json
 from unittest import mock
 from unittest.mock import patch
@@ -47,7 +46,7 @@ def test_http_request_missing_schema_error(mock_base_http_request, client):
         client.http_request('GET', '/test/url/suffix')
 
     # Assert
-    assert str(e.value) == 'Invalid API URL. No schema supplied: http(s).'
+    assert 'Invalid API URL. No schema supplied: http(s).' == str(e.value)
 
 
 @patch('RiskIQDigitalFootprint.Client._http_request')
@@ -63,7 +62,7 @@ def test_http_request_invalid_schema_error(mock_base_http_request, client):
         client.http_request('GET', '/test/url/suffix')
 
     # Assert
-    assert str(e.value) == 'Invalid API URL. Supplied schema is invalid, supports http(s).'
+    assert 'Invalid API URL. Supplied schema is invalid, supports http(s).' == str(e.value)
 
 
 @patch("RiskIQDigitalFootprint.Client._http_request")
@@ -77,8 +76,8 @@ def test_http_request_bad_request_error(mock_base_http_request, client):
         client.http_request('GET', '/test/url/suffix')
 
     # Assert
-    assert str(e.value) == 'An error occurred while fetching the data.' \
-        ' Reason: Id:dummy could not be normalized'
+    assert 'An error occurred while fetching the data.' \
+           ' Reason: Id:dummy could not be normalized' == str(e.value)
 
 
 @patch("RiskIQDigitalFootprint.Client._http_request")
@@ -91,7 +90,7 @@ def test_http_request_authentication_error(mock_base_http_request, client):
         client.http_request('GET', '/test/url/suffix')
 
     # Assert
-    assert str(e.value) == 'Unauthenticated. Check the configured API token and API secret.'
+    assert 'Unauthenticated. Check the configured API token and API secret.' == str(e.value)
 
 
 @patch("RiskIQDigitalFootprint.Client._http_request")
@@ -105,7 +104,7 @@ def test_http_request_page_not_found_error(mock_base_http_request, client):
         client.http_request('GET', '/test/url/suffix')
 
     # Assert
-    assert str(e.value) == 'No record(s) found. Reason: Asset with id: dummy not found'
+    assert 'No record(s) found. Reason: Asset with id: dummy not found' == str(e.value)
 
 
 @patch("RiskIQDigitalFootprint.Client._http_request")
@@ -118,8 +117,8 @@ def test_http_request_internal_server_error(mock_base_http_request, client):
         client.http_request('GET', '/test/url/suffix')
 
     # Assert
-    assert str(e.value) == 'The server encountered an internal error for RiskIQ Digital Footprint and' \
-        ' was unable to complete your request.'
+    assert 'The server encountered an internal error for RiskIQ Digital Footprint and' \
+           ' was unable to complete your request.' == str(e.value)
 
 
 @patch("RiskIQDigitalFootprint.Client._http_request")
@@ -187,8 +186,8 @@ def test_http_request_proxy_error(mock_base_http_request, client):
         client.http_request('GET', '/test/url/suffix')
 
     # Assert
-    assert str(e.value) == 'Proxy Error - cannot connect to proxy. Either try clearing the \'Use system proxy\' check-box or' \
-        ' check the host, authentication details and connection details for the proxy.'
+    assert 'Proxy Error - cannot connect to proxy. Either try clearing the \'Use system proxy\' check-box or' \
+           ' check the host, authentication details and connection details for the proxy.' == str(e.value)
 
 
 @patch('RiskIQDigitalFootprint.Client._http_request')
@@ -204,8 +203,8 @@ def test_http_request_proxy_error_based_on_status(mock_base_http_request, client
         client.http_request('GET', '/test/url/suffix')
 
     # Assert
-    assert str(e.value) == 'Proxy Error - cannot connect to proxy. Either try clearing the \'Use system proxy\' check-box or check ' \
-        'the host, authentication details and connection details for the proxy.'  # noqa: E501
+    assert 'Proxy Error - cannot connect to proxy. Either try clearing the \'Use system proxy\' check-box or check ' \
+           'the host, authentication details and connection details for the proxy.' == str(e.value)
 
 
 @patch('RiskIQDigitalFootprint.Client._http_request')
@@ -221,7 +220,7 @@ def test_http_request_connection_error(mock_base_http_request, client):
         client.http_request('GET', '/test/url/suffix')
 
     # Assert
-    assert str(e.value) == 'Connectivity failed. Check your internet connection or the API URL.'
+    assert 'Connectivity failed. Check your internet connection or the API URL.' == str(e.value)
 
 
 @patch('RiskIQDigitalFootprint.Client._http_request')
@@ -238,8 +237,8 @@ def test_http_request_connect_timeout_error(mock_base_http_request, client):
         client.http_request('GET', '/test/url/suffix')
 
     # Assert
-    assert str(e.value) == 'Connection timed out. Check your internet connection or try decreasing the' \
-        ' value of the size argument if specified.'
+    assert 'Connection timed out. Check your internet connection or try decreasing the' \
+           ' value of the size argument if specified.' == str(e.value)
 
 
 @patch('RiskIQDigitalFootprint.Client._http_request')
@@ -256,8 +255,8 @@ def test_http_request_read_timeout_error(mock_base_http_request, client):
         client.http_request('GET', '/test/url/suffix')
 
     # Assert
-    assert str(e.value) == 'Connection timed out. Check your internet connection or try decreasing the' \
-        ' value of the size argument if specified.'
+    assert 'Connection timed out. Check your internet connection or try decreasing the' \
+           ' value of the size argument if specified.' == str(e.value)
 
 
 @patch('RiskIQDigitalFootprint.Client._http_request')
@@ -273,7 +272,7 @@ def test_http_request_other_demisto_exception(mock_base_http_request, client):
         client.http_request('GET', '/test/url/suffix')
 
     # Assert
-    assert str(e.value) == 'custom'
+    assert 'custom' == str(e.value)
 
 
 @patch('RiskIQDigitalFootprint.Client.http_request')
@@ -300,17 +299,17 @@ def test_asset_connections_success(mocker_http_request, client):
     from RiskIQDigitalFootprint import asset_connections_command
 
     # Fetching expected raw response from file
-    with open(os.path.dirname(__file__) + '/test_data/asset_connections_resp.json', encoding='utf-8') as f:
+    with open('test_data/asset_connections_resp.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_res = json_file.get('success')
     mocker_http_request.return_value = expected_res
 
     # Fetching expected entry context details from file
-    with open(os.path.dirname(__file__) + '/test_data/asset_connections_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/asset_connections_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
 
     # Fetching expected human readable from file
-    with open(os.path.dirname(__file__) + '/test_data/asset_connections_hr.md') as f:
+    with open('test_data/asset_connections_hr.md') as f:
         expected_hr = f.read()
 
     result = asset_connections_command(client, args={'name': 'dummy', 'type': 'ASN', 'global': 'true',
@@ -336,7 +335,7 @@ def test_asset_connections_no_record_found(mocker_http_request, client):
     from RiskIQDigitalFootprint import asset_connections_command
 
     # Fetching expected raw response from file
-    with open(os.path.dirname(__file__) + '/test_data/asset_connections_resp.json', encoding='utf-8') as f:
+    with open('test_data/asset_connections_resp.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_res = json_file.get('zeroRecords')
     mocker_http_request.return_value = expected_res
@@ -355,9 +354,9 @@ def test_asset_connections_invalid_type(client):
     with pytest.raises(ValueError) as e:
         validate_asset_connections_args_and_get_params(args={'type': 'dummy'})
 
-    assert str(e.value) \
-        == 'The given value for type is invalid. Valid Types: Domain, Host,' \
-        ' IP Address, IP Block, ASN, Page, SSL Cert, Contact. This argument supports a single value only.'
+    assert 'The given value for type is invalid. Valid Types: Domain, Host,' \
+           ' IP Address, IP Block, ASN, Page, SSL Cert, Contact. This argument supports a single value only.' \
+           == str(e.value)
 
 
 def test_asset_connections_invalid_global(client):
@@ -369,8 +368,8 @@ def test_asset_connections_invalid_global(client):
     with pytest.raises(ValueError) as e:
         validate_asset_connections_args_and_get_params(args={'type': 'DOMAIN', 'global': 'dummy'})
 
-    assert str(e.value) == 'The given value for global argument is invalid. Valid values: true, false.' \
-        ' This argument supports a single value only.'
+    assert 'The given value for global argument is invalid. Valid values: true, false.' \
+           ' This argument supports a single value only.' == str(e.value)
 
 
 def test_asset_connections_exceeding_page_lower_limit(client):
@@ -383,8 +382,8 @@ def test_asset_connections_exceeding_page_lower_limit(client):
     with pytest.raises(ValueError) as e:
         validate_asset_connections_args_and_get_params(args={'type': 'DOMAIN', 'page': '-2'})
 
-    assert str(e.value)\
-        == 'Page argument must be 0 or a positive integer. The index is zero based so the first page is page 0.'
+    assert 'Page argument must be 0 or a positive integer. The index is zero based so the first page is page 0.'\
+           == str(e.value)
 
 
 def test_asset_connections_invalid_page(client):
@@ -397,8 +396,8 @@ def test_asset_connections_invalid_page(client):
     with pytest.raises(ValueError) as e:
         validate_asset_connections_args_and_get_params(args={'type': 'DOMAIN', 'page': '-2'})
 
-    assert str(e.value)\
-        == 'Page argument must be 0 or a positive integer. The index is zero based so the first page is page 0.'
+    assert 'Page argument must be 0 or a positive integer. The index is zero based so the first page is page 0.'\
+           == str(e.value)
 
 
 @patch('RiskIQDigitalFootprint.Client.http_request')
@@ -409,16 +408,16 @@ def test_asset_changes_summary_success(mocker_http_request, client):
     from RiskIQDigitalFootprint import asset_changes_summary_command
 
     # Fetching expected raw response from file
-    with open(os.path.dirname(__file__) + '/test_data/asset_changes_summary_resp.json', encoding='utf-8') as f:
+    with open('test_data/asset_changes_summary_resp.json', encoding='utf-8') as f:
         expected_res = json.load(f)
     mocker_http_request.return_value = expected_res
 
     # Fetching expected entry context details from file
-    with open(os.path.dirname(__file__) + '/test_data/asset_changes_summary_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/asset_changes_summary_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
 
     # Fetching expected human readable from file
-    with open(os.path.dirname(__file__) + '/test_data/asset_changes_summary_hr.md') as f:
+    with open('test_data/asset_changes_summary_hr.md') as f:
         expected_hr = f.read()
 
     result = asset_changes_summary_command(client, args={'date': '2020-05-12', 'range': '7', 'tag': 'Dummy',
@@ -443,12 +442,12 @@ def test_asset_changes_summary_deep_link_with_only_date(client):
     }
 
     # Fetching expected raw response from file
-    with open(os.path.dirname(__file__) + '/test_data/asset_changes_summary_resp.json', encoding='utf-8') as f:
+    with open('test_data/asset_changes_summary_resp.json', encoding='utf-8') as f:
         resp = json.load(f)
 
     deep_link = prepare_deep_link_for_asset_changes_summary(resp, args['date'], args['range'])
 
-    assert deep_link == 'https://app.riskiq.net/a/main/index#/dashboard/inventorychanges/2020-06-05'
+    assert 'https://app.riskiq.net/a/main/index#/dashboard/inventorychanges/2020-06-05' == deep_link
 
 
 def test_asset_changes_summary_deep_link_with_only_range(client):
@@ -463,12 +462,12 @@ def test_asset_changes_summary_deep_link_with_only_range(client):
     }
 
     # Fetching expected raw response from file
-    with open(os.path.dirname(__file__) + '/test_data/asset_changes_summary_resp.json', encoding='utf-8') as f:
+    with open('test_data/asset_changes_summary_resp.json', encoding='utf-8') as f:
         resp = json.load(f)
 
     deep_link = prepare_deep_link_for_asset_changes_summary(resp, args['date'], args['range'])
 
-    assert deep_link == 'https://app.riskiq.net/a/main/index#/dashboard/inventorychanges/2020-05-26/30'
+    assert 'https://app.riskiq.net/a/main/index#/dashboard/inventorychanges/2020-05-26/30' == deep_link
 
 
 def test_asset_changes_summary_invalid_date(client):
@@ -484,8 +483,8 @@ def test_asset_changes_summary_invalid_date(client):
     with pytest.raises(ValueError) as e:
         validate_asset_changes_summary_args(args['date'], args['range'])
 
-    assert str(e.value) == 'The given value for date is invalid. The accepted format for date is YYYY-MM-DD.' \
-        ' This argument supports a single value only.'
+    assert 'The given value for date is invalid. The accepted format for date is YYYY-MM-DD.' \
+           ' This argument supports a single value only.' == str(e.value)
 
 
 def test_asset_changes_summary_invalid_date_exception(client):
@@ -501,8 +500,8 @@ def test_asset_changes_summary_invalid_date_exception(client):
     with pytest.raises(ValueError) as e:
         validate_asset_changes_summary_args(args['date'], args['range'])
 
-    assert str(e.value) == 'The given value for date is invalid. The accepted format for date is YYYY-MM-DD.' \
-        ' This argument supports a single value only.'
+    assert 'The given value for date is invalid. The accepted format for date is YYYY-MM-DD.' \
+           ' This argument supports a single value only.' == str(e.value)
 
 
 def test_asset_changes_summary_invalid_range(client):
@@ -519,8 +518,8 @@ def test_asset_changes_summary_invalid_range(client):
     with pytest.raises(ValueError) as e:
         validate_asset_changes_summary_args(args['date'], args['range'])
 
-    assert str(e.value) == 'The given value for range is invalid. Valid values: 1, 7, 30.' \
-        ' This argument supports a single value only.'
+    assert 'The given value for range is invalid. Valid values: 1, 7, 30.' \
+           ' This argument supports a single value only.' == str(e.value)
 
 
 @patch('RiskIQDigitalFootprint.Client.http_request')
@@ -531,18 +530,18 @@ def test_asset_changes_success_asset_type(mocker_http_request, client):
     from RiskIQDigitalFootprint import asset_changes_command
 
     # Fetching expected raw response from file
-    with open(os.path.dirname(__file__) + '/test_data/asset_changes_resp.json', encoding='utf-8') as f:
+    with open('test_data/asset_changes_resp.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_res = json_file.get('successAssetType')
     mocker_http_request.return_value = expected_res
 
     # Fetching expected entry context details from file
-    with open(os.path.dirname(__file__) + '/test_data/asset_changes_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/asset_changes_custom_ec.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_custom_ec = json_file.get('successAssetType')
 
     # Fetching expected human readable from file
-    with open(os.path.dirname(__file__) + '/test_data/asset_changes_hr.md') as f:
+    with open('test_data/asset_changes_hr.md') as f:
         expected_hr = f.read()
 
     result = asset_changes_command(client, args={'range': '30', 'type': 'DOMAIN', 'organization': 'dummy',
@@ -563,18 +562,18 @@ def test_asset_changes_success_asset_detail_type(mocker_http_request, client):
     from RiskIQDigitalFootprint import asset_changes_command
 
     # Fetching expected raw response from file
-    with open(os.path.dirname(__file__) + '/test_data/asset_changes_resp.json', encoding='utf-8') as f:
+    with open('test_data/asset_changes_resp.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_res = json_file.get('successAssetDetailType')
     mocker_http_request.return_value = expected_res
 
     # Fetching expected entry context details from file
-    with open(os.path.dirname(__file__) + '/test_data/asset_changes_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/asset_changes_custom_ec.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_custom_ec = json_file.get('successAssetDetailType')
 
     # Fetching expected human readable from file
-    with open(os.path.dirname(__file__) + '/test_data/asset_changes_resource_hr.md') as f:
+    with open('test_data/asset_changes_resource_hr.md') as f:
         expected_hr = f.read()
 
     result = asset_changes_command(client, args={'type': 'SELF_HOSTED_RESOURCE', 'range': '1', 'measure': 'Added',
@@ -596,7 +595,7 @@ def test_asset_changes_no_record_found(mocker_http_request, client):
     from RiskIQDigitalFootprint import asset_changes_command
 
     # Fetching expected raw response from file
-    with open(os.path.dirname(__file__) + '/test_data/asset_changes_resp.json', encoding='utf-8') as f:
+    with open('test_data/asset_changes_resp.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_res = json_file.get('zeroRecords')
     mocker_http_request.return_value = expected_res
@@ -619,15 +618,15 @@ def test_asset_changes_deep_link_with_only_date(client):
     }
 
     # Fetching expected raw response from file
-    with open(os.path.dirname(__file__) + '/test_data/asset_changes_resp.json', encoding='utf-8') as f:
+    with open('test_data/asset_changes_resp.json', encoding='utf-8') as f:
         resp = json.load(f)
     resp = resp.get('successAssetType')
 
     deep_link = prepare_deep_link_for_asset_changes(resp.get('content')[0].get('runDate'), args['type'],
                                                     args['measure'], args['date'], args['range'])
 
-    assert deep_link == 'https://app.riskiq.net/a/main/index#/dashboard/inventorychanges/details/date=2020-06-05' \
-        '&measure=REMOVED&range=1&type=DOMAIN'
+    assert 'https://app.riskiq.net/a/main/index#/dashboard/inventorychanges/details/date=2020-06-05' \
+           '&measure=REMOVED&range=1&type=DOMAIN' == deep_link
 
 
 def test_asset_changes_deep_link_with_date_and_range(client):
@@ -644,15 +643,15 @@ def test_asset_changes_deep_link_with_date_and_range(client):
     }
 
     # Fetching expected raw response from file
-    with open(os.path.dirname(__file__) + '/test_data/asset_changes_resp.json', encoding='utf-8') as f:
+    with open('test_data/asset_changes_resp.json', encoding='utf-8') as f:
         resp = json.load(f)
     resp = resp.get('successAssetType')
 
     deep_link = prepare_deep_link_for_asset_changes(resp.get('content')[0].get('runDate'), args['type'],
                                                     args['measure'], args['date'], args['range'])
 
-    assert deep_link == 'https://app.riskiq.net/a/main/index#/dashboard/inventorychanges/details/date=2020-06-13' \
-        '&measure=ADDED&range=30&type=IP_ADDRESS'
+    assert 'https://app.riskiq.net/a/main/index#/dashboard/inventorychanges/details/date=2020-06-13' \
+           '&measure=ADDED&range=30&type=IP_ADDRESS' == deep_link
 
 
 def test_asset_changes_invalid_type(client):
@@ -664,10 +663,10 @@ def test_asset_changes_invalid_type(client):
     with pytest.raises(ValueError) as e:
         get_asset_changes_params(args={'type': 'dummy'})
 
-    assert str(e.value) \
-        == 'The given value for type is invalid. Valid asset types: Domain, Host, IP Address, IP Block, ASN, Page,' \
-        ' SSL Cert, Contact. Valid asset detail types: Self Hosted Resource, ThirdParty Hosted Resource.' \
-        ' This argument supports a single value only.'
+    assert 'The given value for type is invalid. Valid asset types: Domain, Host, IP Address, IP Block, ASN, Page,' \
+           ' SSL Cert, Contact. Valid asset detail types: Self Hosted Resource, ThirdParty Hosted Resource.' \
+           ' This argument supports a single value only.' \
+           == str(e.value)
 
 
 def test_asset_changes_invalid_date_exception(client):
@@ -679,8 +678,8 @@ def test_asset_changes_invalid_date_exception(client):
     with pytest.raises(ValueError) as e:
         get_asset_changes_params(args={'type': 'ASN', 'date': '2020-5-222'})
 
-    assert str(e.value) == 'The given value for date is invalid. The accepted format for date is YYYY-MM-DD.' \
-        ' This argument supports a single value only.'
+    assert 'The given value for date is invalid. The accepted format for date is YYYY-MM-DD.' \
+           ' This argument supports a single value only.' == str(e.value)
 
 
 def test_asset_changes_invalid_date(client):
@@ -692,8 +691,8 @@ def test_asset_changes_invalid_date(client):
     with pytest.raises(ValueError) as e:
         get_asset_changes_params(args={'type': 'ASN', 'date': '2020-05-2'})
 
-    assert str(e.value) == 'The given value for date is invalid. The accepted format for date is YYYY-MM-DD.' \
-        ' This argument supports a single value only.'
+    assert 'The given value for date is invalid. The accepted format for date is YYYY-MM-DD.' \
+           ' This argument supports a single value only.' == str(e.value)
 
 
 def test_asset_changes_invalid_range_for_asset_type(client):
@@ -706,8 +705,8 @@ def test_asset_changes_invalid_range_for_asset_type(client):
         get_asset_changes_params(args={'range': '5', 'tag': 'dummy', 'brand': 'dummy',
                                        'organization': 'dummy', 'type': 'DOMAIN', 'date': '2020-05-20'})
 
-    assert str(e.value) == 'The given value for range is invalid. Valid values: 1, 7, 30.' \
-        ' This argument supports a single value only.'
+    assert 'The given value for range is invalid. Valid values: 1, 7, 30.' \
+           ' This argument supports a single value only.' == str(e.value)
 
 
 def test_asset_changes_invalid_range_for_asset_detail_type(client):
@@ -720,8 +719,8 @@ def test_asset_changes_invalid_range_for_asset_detail_type(client):
         get_asset_changes_params(args={'range': '30', 'tag': 'dummy', 'brand': 'dummy',
                                        'organization': 'dummy', 'type': 'SELF_HOSTED_RESOURCE'})
 
-    assert str(e.value) == 'The given value for range is invalid. Only single day changes can be shown for Self Hosted Resource type.' \
-        ' Valid value: 1. This argument supports a single value only.'  # noqa: E501
+    assert 'The given value for range is invalid. Only single day changes can be shown for Self Hosted Resource type.' \
+           ' Valid value: 1. This argument supports a single value only.' == str(e.value)
 
 
 def test_asset_changes_invalid_measure_for_asset_type(client):
@@ -733,8 +732,8 @@ def test_asset_changes_invalid_measure_for_asset_type(client):
     with pytest.raises(ValueError) as e:
         get_asset_changes_params(args={'measure': 'CHANGED', 'type': 'DOMAIN'})
 
-    assert str(e.value) == 'The given value for measure(type of change) is invalid. Valid options are Added or Removed.' \
-        ' This argument supports a single value only.'
+    assert 'The given value for measure(type of change) is invalid. Valid options are Added or Removed.' \
+           ' This argument supports a single value only.' == str(e.value)
 
 
 def test_asset_changes_invalid_measure_for_asset_detail_type(client):
@@ -746,8 +745,8 @@ def test_asset_changes_invalid_measure_for_asset_detail_type(client):
     with pytest.raises(ValueError) as e:
         get_asset_changes_params(args={'measure': 'REMOVED', 'type': 'SELF_HOSTED_RESOURCE'})
 
-    assert str(e.value) == 'The given value for measure(type of change) is invalid. Valid options are Added or Changed.' \
-        ' This argument supports a single value only.'
+    assert 'The given value for measure(type of change) is invalid. Valid options are Added or Changed.' \
+           ' This argument supports a single value only.' == str(e.value)
 
 
 def test_asset_changes_exceeding_page_lower_limit(client):
@@ -760,8 +759,8 @@ def test_asset_changes_exceeding_page_lower_limit(client):
     with pytest.raises(ValueError) as e:
         get_asset_changes_params(args={'type': 'DOMAIN', 'size': 100, 'page': '-2'})
 
-    assert str(e.value)\
-        == 'Page argument must be 0 or a positive integer. The index is zero based so the first page is page 0.'
+    assert 'Page argument must be 0 or a positive integer. The index is zero based so the first page is page 0.'\
+           == str(e.value)
 
 
 def test_asset_changes_invalid_page(client):
@@ -774,8 +773,8 @@ def test_asset_changes_invalid_page(client):
     with pytest.raises(ValueError) as e:
         get_asset_changes_params(args={'type': 'DOMAIN', 'size': 100, 'page': 'dummy'})
 
-    assert str(e.value)\
-        == 'Page argument must be 0 or a positive integer. The index is zero based so the first page is page 0.'
+    assert 'Page argument must be 0 or a positive integer. The index is zero based so the first page is page 0.'\
+           == str(e.value)
 
 
 @patch('RiskIQDigitalFootprint.Client.http_request')
@@ -786,16 +785,16 @@ def test_get_asset_success_for_domain(mocker_http_request, client):
     from RiskIQDigitalFootprint import get_asset_command
 
     # Fetching expected raw response from file
-    with open(os.path.dirname(__file__) + '/test_data/get_asset_domain_resp.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_domain_resp.json', encoding='utf-8') as f:
         expected_res = json.load(f)
     mocker_http_request.return_value = expected_res
 
     # Fetching expected entry context details from file
-    with open(os.path.dirname(__file__) + '/test_data/get_asset_domain_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_domain_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
 
     # Fetching expected human readable from file
-    with open(os.path.dirname(__file__) + '/test_data/get_asset_domain_hr.md') as f:
+    with open('test_data/get_asset_domain_hr.md') as f:
         expected_hr = f.read()
 
     result = get_asset_command(client, args={'uuid': '42696470-7b2a-617b-2f5e-ab674438e4f5', 'global': 'true',
@@ -816,16 +815,16 @@ def test_get_asset_success_for_host(mocker_http_request, client):
     from RiskIQDigitalFootprint import get_asset_command
 
     # Fetching expected raw response from file
-    with open(os.path.dirname(__file__) + '/test_data/get_asset_host_resp.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_host_resp.json', encoding='utf-8') as f:
         expected_res = json.load(f)
     mocker_http_request.return_value = expected_res
 
     # Fetching expected entry context details from file
-    with open(os.path.dirname(__file__) + '/test_data/get_asset_host_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_host_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
 
     # Fetching expected human readable from file
-    with open(os.path.dirname(__file__) + '/test_data/get_asset_host_hr.md') as f:
+    with open('test_data/get_asset_host_hr.md') as f:
         expected_hr = f.read()
 
     result = get_asset_command(client, args={'uuid': 'dffa643e-7d39-4687-d35d-f37a217f339c', 'global': 'true'})
@@ -845,16 +844,16 @@ def test_get_asset_success_for_ip_address(mocker_http_request, client):
     from RiskIQDigitalFootprint import get_asset_command
 
     # Fetching expected raw response from file
-    with open(os.path.dirname(__file__) + '/test_data/get_asset_ip_address_resp.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_ip_address_resp.json', encoding='utf-8') as f:
         expected_res = json.load(f)
     mocker_http_request.return_value = expected_res
 
     # Fetching expected entry context details from file
-    with open(os.path.dirname(__file__) + '/test_data/get_asset_ip_address_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_ip_address_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
 
     # Fetching expected human readable from file
-    with open(os.path.dirname(__file__) + '/test_data/get_asset_ip_address_hr.md') as f:
+    with open('test_data/get_asset_ip_address_hr.md') as f:
         expected_hr = f.read()
 
     result = get_asset_command(client, args={'uuid': '72ca2677-2276-90cc-048a-546ebed63e2f'})
@@ -874,16 +873,16 @@ def test_get_asset_success_for_ip_block(mocker_http_request, client):
     from RiskIQDigitalFootprint import get_asset_command
 
     # Fetching expected raw response from file
-    with open(os.path.dirname(__file__) + '/test_data/get_asset_ip_block_resp.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_ip_block_resp.json', encoding='utf-8') as f:
         expected_res = json.load(f)
     mocker_http_request.return_value = expected_res
 
     # Fetching expected entry context details from file
-    with open(os.path.dirname(__file__) + '/test_data/get_asset_ip_block_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_ip_block_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
 
     # Fetching expected human readable from file
-    with open(os.path.dirname(__file__) + '/test_data/get_asset_ip_block_hr.md') as f:
+    with open('test_data/get_asset_ip_block_hr.md') as f:
         expected_hr = f.read()
 
     result = get_asset_command(client, args={'uuid': '92b3f425-d5ba-385a-f10c-6c6678d6369f'})
@@ -903,16 +902,16 @@ def test_get_asset_success_for_as(mocker_http_request, client):
     from RiskIQDigitalFootprint import get_asset_command
 
     # Fetching expected raw response from file
-    with open(os.path.dirname(__file__) + '/test_data/get_asset_as_resp.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_as_resp.json', encoding='utf-8') as f:
         expected_res = json.load(f)
     mocker_http_request.return_value = expected_res
 
     # Fetching expected entry context details from file
-    with open(os.path.dirname(__file__) + '/test_data/get_asset_as_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_as_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
 
     # Fetching expected human readable from file
-    with open(os.path.dirname(__file__) + '/test_data/get_asset_as_hr.md') as f:
+    with open('test_data/get_asset_as_hr.md') as f:
         expected_hr = f.read()
 
     result = get_asset_command(client, args={'uuid': '9ca2cd53-af69-cbca-f398-e891ecf413d3'})
@@ -932,16 +931,16 @@ def test_get_asset_success_for_page(mocker_http_request, client):
     from RiskIQDigitalFootprint import get_asset_command
 
     # Fetching expected raw response from file
-    with open(os.path.dirname(__file__) + '/test_data/get_asset_page_resp.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_page_resp.json', encoding='utf-8') as f:
         expected_res = json.load(f)
     mocker_http_request.return_value = expected_res
 
     # Fetching expected entry context details from file
-    with open(os.path.dirname(__file__) + '/test_data/get_asset_page_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_page_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
 
     # Fetching expected human readable from file
-    with open(os.path.dirname(__file__) + '/test_data/get_asset_page_hr.md') as f:
+    with open('test_data/get_asset_page_hr.md') as f:
         expected_hr = f.read()
 
     result = get_asset_command(client, args={'uuid': '8dfdd21e-5012-3bd6-f9a5-c3151f1b9e40'})
@@ -961,16 +960,16 @@ def test_get_asset_success_for_ssl_cert(mocker_http_request, client):
     from RiskIQDigitalFootprint import get_asset_command
 
     # Fetching expected raw response from file
-    with open(os.path.dirname(__file__) + '/test_data/get_asset_ssl_cert_resp.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_ssl_cert_resp.json', encoding='utf-8') as f:
         expected_res = json.load(f)
     mocker_http_request.return_value = expected_res
 
     # Fetching expected entry context details from file
-    with open(os.path.dirname(__file__) + '/test_data/get_asset_ssl_cert_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_ssl_cert_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
 
     # Fetching expected human readable from file
-    with open(os.path.dirname(__file__) + '/test_data/get_asset_ssl_cert_hr.md') as f:
+    with open('test_data/get_asset_ssl_cert_hr.md') as f:
         expected_hr = f.read()
 
     result = get_asset_command(client, args={'uuid': 'd02ea1d1-7129-094a-50b0-3b285798d28d'})
@@ -990,16 +989,16 @@ def test_get_asset_success_for_contact(mocker_http_request, client):
     from RiskIQDigitalFootprint import get_asset_command
 
     # Fetching expected raw response from file
-    with open(os.path.dirname(__file__) + '/test_data/get_asset_contact_resp.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_contact_resp.json', encoding='utf-8') as f:
         expected_res = json.load(f)
     mocker_http_request.return_value = expected_res
 
     # Fetching expected entry context details from file
-    with open(os.path.dirname(__file__) + '/test_data/get_asset_contact_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_contact_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
 
     # Fetching expected human readable from file
-    with open(os.path.dirname(__file__) + '/test_data/get_asset_contact_hr.md') as f:
+    with open('test_data/get_asset_contact_hr.md') as f:
         expected_hr = f.read()
 
     result = get_asset_command(client, args={'uuid': 'd02ea1d1-7129-094a-50b0-3b285798d28d'})
@@ -1019,16 +1018,16 @@ def test_get_asset_by_name_and_type_success_for_host(mocker_http_request, client
     from RiskIQDigitalFootprint import get_asset_command
 
     # Fetching expected raw response from file
-    with open(os.path.dirname(__file__) + '/test_data/get_asset_by_name_host_resp.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_by_name_host_resp.json', encoding='utf-8') as f:
         expected_res = json.load(f)
     mocker_http_request.return_value = expected_res
 
     # Fetching expected entry context details from file
-    with open(os.path.dirname(__file__) + '/test_data/get_asset_by_name_host_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_by_name_host_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
 
     # Fetching expected human readable from file
-    with open(os.path.dirname(__file__) + '/test_data/get_asset_by_name_host_hr.md') as f:
+    with open('test_data/get_asset_by_name_host_hr.md') as f:
         expected_hr = f.read()
 
     result = get_asset_command(client, args={'name': 'www.dummy.com', 'type': 'HOST', 'global': 'true',
@@ -1049,16 +1048,16 @@ def test_get_asset_by_name_and_type_success_for_ip_address(mocker_http_request, 
     from RiskIQDigitalFootprint import get_asset_command
 
     # Fetching expected raw response from file
-    with open(os.path.dirname(__file__) + '/test_data/get_asset_by_name_ip_address_resp.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_by_name_ip_address_resp.json', encoding='utf-8') as f:
         expected_res = json.load(f)
     mocker_http_request.return_value = expected_res
 
     # Fetching expected entry context details from file
-    with open(os.path.dirname(__file__) + '/test_data/get_asset_by_name_ip_address_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_by_name_ip_address_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
 
     # Fetching expected human readable from file
-    with open(os.path.dirname(__file__) + '/test_data/get_asset_by_name_ip_address_hr.md') as f:
+    with open('test_data/get_asset_by_name_ip_address_hr.md') as f:
         expected_hr = f.read()
 
     result = get_asset_command(client, args={'name': 'dummy.ip', 'type': 'IP_ADDRESS',
@@ -1079,16 +1078,16 @@ def test_get_asset_by_name_and_type_success_for_as(mocker_http_request, client):
     from RiskIQDigitalFootprint import get_asset_command
 
     # Fetching expected raw response from file
-    with open(os.path.dirname(__file__) + '/test_data/get_asset_by_name_as_resp.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_by_name_as_resp.json', encoding='utf-8') as f:
         expected_res = json.load(f)
     mocker_http_request.return_value = expected_res
 
     # Fetching expected entry context details from file
-    with open(os.path.dirname(__file__) + '/test_data/get_asset_by_name_as_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_by_name_as_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
 
     # Fetching expected human readable from file
-    with open(os.path.dirname(__file__) + '/test_data/get_asset_by_name_as_hr.md') as f:
+    with open('test_data/get_asset_by_name_as_hr.md') as f:
         expected_hr = f.read()
 
     result = get_asset_command(client, args={'name': '63245', 'type': 'ASN',
@@ -1115,8 +1114,8 @@ def test_get_asset_invalid_global(client):
     with pytest.raises(ValueError) as e:
         get_asset_params(args)
 
-    assert str(e.value) == 'The given value for global argument is invalid. Valid values: true, false.' \
-        ' This argument supports a single value only.'
+    assert 'The given value for global argument is invalid. Valid values: true, false.' \
+           ' This argument supports a single value only.' == str(e.value)
 
 
 def test_get_asset_invalid_recent(client):
@@ -1133,8 +1132,8 @@ def test_get_asset_invalid_recent(client):
     with pytest.raises(ValueError) as e:
         get_asset_params(args)
 
-    assert str(e.value) == 'The given value for recent argument is invalid. Valid values: true, false.' \
-        ' This argument supports a single value only.'
+    assert 'The given value for recent argument is invalid. Valid values: true, false.' \
+           ' This argument supports a single value only.' == str(e.value)
 
 
 def test_get_asset_invalid_asset_type(client):
@@ -1151,8 +1150,8 @@ def test_get_asset_invalid_asset_type(client):
     with pytest.raises(ValueError) as e:
         validate_and_fetch_get_asset_arguments(args)
 
-    assert str(e.value) == 'The given value for type is invalid. Valid Types: Domain, Host, IP Address, IP Block, ASN, Page,' \
-        ' SSL Cert, Contact. This argument supports a single value only.'
+    assert 'The given value for type is invalid. Valid Types: Domain, Host, IP Address, IP Block, ASN, Page,' \
+           ' SSL Cert, Contact. This argument supports a single value only.' == str(e.value)
 
 
 def test_get_asset_invalid_combination_of_arguments(client):
@@ -1169,7 +1168,7 @@ def test_get_asset_invalid_combination_of_arguments(client):
     with pytest.raises(ValueError) as e:
         validate_and_fetch_get_asset_arguments(args)
 
-    assert str(e.value) == 'Argument uuid cannot be used with other arguments except global and recent.'
+    assert 'Argument uuid cannot be used with other arguments except global and recent.' == str(e.value)
 
 
 def test_get_asset_when_type_is_not_passed_with_name_argument(client):
@@ -1185,8 +1184,8 @@ def test_get_asset_when_type_is_not_passed_with_name_argument(client):
     with pytest.raises(ValueError) as e:
         validate_and_fetch_get_asset_arguments(args)
 
-    assert str(e.value)\
-        == 'Required argument(s) uuid or [name, type] to get asset details. One or more of them are not present.'
+    assert 'Required argument(s) uuid or [name, type] to get asset details. One or more of them are not present.'\
+           == str(e.value)
 
 
 @patch('RiskIQDigitalFootprint.Client.http_request')
@@ -1197,12 +1196,12 @@ def test_add_asset_success_for_single_asset(mocker_http_request, client):
     from RiskIQDigitalFootprint import add_assets_command
 
     # Fetching expected raw response from file
-    with open(os.path.dirname(__file__) + '/test_data/add_and_update_assets_resp.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_resp.json', encoding='utf-8') as f:
         expected_res = json.load(f)
     mocker_http_request.return_value = expected_res['taskComplete']
 
     # Fetching expected entry context details from file
-    with open(os.path.dirname(__file__) + '/test_data/add_and_update_assets_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
     expected_custom_ec = expected_custom_ec['success']
 
@@ -1226,17 +1225,17 @@ def test_add_asset_success_for_asset_json(mocker_http_request, client):
     from RiskIQDigitalFootprint import add_assets_command
 
     # Fetching expected raw response from file
-    with open(os.path.dirname(__file__) + '/test_data/add_and_update_assets_resp.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_resp.json', encoding='utf-8') as f:
         expected_res = json.load(f)
     mocker_http_request.return_value = expected_res['taskComplete']
 
     # Fetching expected entry context details from file
-    with open(os.path.dirname(__file__) + '/test_data/add_and_update_assets_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
     expected_custom_ec = expected_custom_ec['success']
 
     # Fetching expected raw response from file
-    with open(os.path.dirname(__file__) + '/test_data/add_and_update_assets_asset_json.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_asset_json.json', encoding='utf-8') as f:
         asset_json_arg = json.load(f)
 
     result = add_assets_command(client, args={'asset_json': asset_json_arg})
@@ -1256,17 +1255,17 @@ def test_add_asset_failed_for_asset_json(mocker_http_request, client):
     from RiskIQDigitalFootprint import add_assets_command
 
     # Fetching expected raw response from file
-    with open(os.path.dirname(__file__) + '/test_data/add_and_update_assets_resp.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_resp.json', encoding='utf-8') as f:
         expected_res = json.load(f)
     mocker_http_request.return_value = expected_res['taskFailed']
 
     # Fetching expected entry context details from file
-    with open(os.path.dirname(__file__) + '/test_data/add_and_update_assets_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
     expected_custom_ec = expected_custom_ec['failed']
 
     # Fetching expected raw response from file
-    with open(os.path.dirname(__file__) + '/test_data/add_and_update_assets_asset_json.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_asset_json.json', encoding='utf-8') as f:
         asset_json_arg = json.load(f)
 
     result = add_assets_command(client, args={'asset_json': asset_json_arg})
@@ -1286,17 +1285,17 @@ def test_add_asset_incomplete_for_asset_json(mocker_http_request, client):
     from RiskIQDigitalFootprint import add_assets_command
 
     # Fetching expected raw response from file
-    with open(os.path.dirname(__file__) + '/test_data/add_and_update_assets_resp.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_resp.json', encoding='utf-8') as f:
         expected_res = json.load(f)
     mocker_http_request.return_value = expected_res['taskIncomplete']
 
     # Fetching expected entry context details from file
-    with open(os.path.dirname(__file__) + '/test_data/add_and_update_assets_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
     expected_custom_ec = expected_custom_ec['incomplete']
 
     # Fetching expected raw response from file
-    with open(os.path.dirname(__file__) + '/test_data/add_and_update_assets_asset_json.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_asset_json.json', encoding='utf-8') as f:
         asset_json_arg = json.load(f)
 
     result = add_assets_command(client, args={'asset_json': asset_json_arg})
@@ -1317,17 +1316,17 @@ def test_add_asset_warning_for_asset_json(mocker_http_request, client):
     from RiskIQDigitalFootprint import add_assets_command
 
     # Fetching expected raw response from file
-    with open(os.path.dirname(__file__) + '/test_data/add_and_update_assets_resp.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_resp.json', encoding='utf-8') as f:
         expected_res = json.load(f)
     mocker_http_request.return_value = expected_res['taskWarning']
 
     # Fetching expected entry context details from file
-    with open(os.path.dirname(__file__) + '/test_data/add_and_update_assets_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
     expected_custom_ec = expected_custom_ec['warning']
 
     # Fetching expected raw response from file
-    with open(os.path.dirname(__file__) + '/test_data/add_and_update_assets_asset_json.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_asset_json.json', encoding='utf-8') as f:
         asset_json_arg = json.load(f)
 
     result = add_assets_command(client, args={'asset_json': asset_json_arg})
@@ -1348,12 +1347,12 @@ def test_update_asset_success_for_single_asset(mocker_http_request, client):
     from RiskIQDigitalFootprint import update_assets_command
 
     # Fetching expected raw response from file
-    with open(os.path.dirname(__file__) + '/test_data/add_and_update_assets_resp.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_resp.json', encoding='utf-8') as f:
         expected_res = json.load(f)
     mocker_http_request.return_value = expected_res['taskComplete']
 
     # Fetching expected entry context details from file
-    with open(os.path.dirname(__file__) + '/test_data/add_and_update_assets_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
     expected_custom_ec = expected_custom_ec['success']
 
@@ -1376,17 +1375,17 @@ def test_update_asset_success_for_asset_json(mocker_http_request, client):
     from RiskIQDigitalFootprint import update_assets_command
 
     # Fetching expected raw response from file
-    with open(os.path.dirname(__file__) + '/test_data/add_and_update_assets_resp.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_resp.json', encoding='utf-8') as f:
         expected_res = json.load(f)
     mocker_http_request.return_value = expected_res['taskComplete']
 
     # Fetching expected entry context details from file
-    with open(os.path.dirname(__file__) + '/test_data/add_and_update_assets_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
     expected_custom_ec = expected_custom_ec['success']
 
     # Fetching expected raw response from file
-    with open(os.path.dirname(__file__) + '/test_data/add_and_update_assets_asset_json.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_asset_json.json', encoding='utf-8') as f:
         asset_json_arg = json.load(f)
 
     result = update_assets_command(client, args={'asset_json': asset_json_arg})
@@ -1410,9 +1409,9 @@ def test_add_and_update_asset_invalid_type(client):
     }
     with pytest.raises(ValueError) as e:
         prepare_single_asset_payload(args, operation='add')
-    assert str(e.value) \
-        == 'The given value for type is invalid. Valid Types: Domain, Host,' \
-        ' IP Address, IP Block, ASN, Page, SSL Cert, Contact. This argument supports a single value only.'
+    assert 'The given value for type is invalid. Valid Types: Domain, Host,' \
+           ' IP Address, IP Block, ASN, Page, SSL Cert, Contact. This argument supports a single value only.' \
+           == str(e.value)
 
 
 def test_add_and_update_asset_with_no_properties(client):
@@ -1427,9 +1426,9 @@ def test_add_and_update_asset_with_no_properties(client):
     }
     with pytest.raises(ValueError) as e:
         prepare_single_asset_payload(args, operation='update')
-    assert str(e.value) == 'At least one property argument should have a value in order to update the asset. ' \
-        'The property arguments are: state, priority, removed_state, brand, ' \
-        'organization, tag and enterprise.'
+    assert 'At least one property argument should have a value in order to update the asset. ' \
+           'The property arguments are: state, priority, removed_state, brand, ' \
+           'organization, tag and enterprise.' == str(e.value)
 
 
 def test_add_and_update_asset_invalid_state(client):
@@ -1446,9 +1445,9 @@ def test_add_and_update_asset_invalid_state(client):
     }
     with pytest.raises(ValueError) as e:
         prepare_single_asset_payload(args, operation='update')
-    assert str(e.value)\
-        == 'The given value for state is invalid. Valid States: Candidate, Approved Inventory, ' \
-        'Requires Investigation, Dependencies, Monitor Only. This argument supports a single value only.'
+    assert 'The given value for state is invalid. Valid States: Candidate, Approved Inventory, ' \
+           'Requires Investigation, Dependencies, Monitor Only. This argument supports a single value only.'\
+           == str(e.value)
 
 
 def test_add_and_update_asset_invalid_priority(client):
@@ -1465,8 +1464,8 @@ def test_add_and_update_asset_invalid_priority(client):
     }
     with pytest.raises(ValueError) as e:
         prepare_single_asset_payload(args, operation='add')
-    assert str(e.value) == 'The given value for priority is invalid. Valid Priority levels: High, Medium, Low, None. This argument' \
-        ' supports a single value only.'  # noqa: E501
+    assert 'The given value for priority is invalid. Valid Priority levels: High, Medium, Low, None. This argument' \
+           ' supports a single value only.' == str(e.value)
 
 
 def test_add_and_update_asset_invalid_enterprise(client):
@@ -1483,8 +1482,8 @@ def test_add_and_update_asset_invalid_enterprise(client):
     }
     with pytest.raises(ValueError) as e:
         prepare_single_asset_payload(args, operation='update')
-    assert str(e.value) == 'The given value for enterprise argument is invalid. Valid values: true, false. ' \
-        'This argument supports a single value only.'
+    assert 'The given value for enterprise argument is invalid. Valid values: true, false. ' \
+           'This argument supports a single value only.' == str(e.value)
 
 
 def test_add_and_update_asset_invalid_confirm(client):
@@ -1501,8 +1500,8 @@ def test_add_and_update_asset_invalid_confirm(client):
     }
     with pytest.raises(ValueError) as e:
         prepare_single_asset_payload(args, operation='add')
-    assert str(e.value) == 'The given value for confirm argument is invalid. Valid values: true, false. ' \
-        'This argument supports a single value only.'
+    assert 'The given value for confirm argument is invalid. Valid values: true, false. ' \
+           'This argument supports a single value only.' == str(e.value)
 
 
 def test_add_and_update_asset_invalid_removed_state(client):
@@ -1519,8 +1518,8 @@ def test_add_and_update_asset_invalid_removed_state(client):
     }
     with pytest.raises(ValueError) as e:
         prepare_single_asset_payload(args, operation='update')
-    assert str(e.value) == 'The given value for removed state is invalid. Valid value: Dismissed. This argument supports a' \
-        ' single value only.'
+    assert 'The given value for removed state is invalid. Valid value: Dismissed. This argument supports a' \
+           ' single value only.' == str(e.value)
 
 
 def test_update_asset_invalid_action(client):
@@ -1538,8 +1537,8 @@ def test_update_asset_invalid_action(client):
     }
     with pytest.raises(ValueError) as e:
         prepare_single_asset_payload(args, operation='update')
-    assert str(e.value) == 'The given value for action is invalid. Valid values: Add, Remove, Update. This argument supports' \
-        ' a single value only.'
+    assert 'The given value for action is invalid. Valid values: Add, Remove, Update. This argument supports' \
+           ' a single value only.' == str(e.value)
 
 
 def test_add_and_update_asset_invalid_arguments(client):
@@ -1556,7 +1555,7 @@ def test_add_and_update_asset_invalid_arguments(client):
     }
     with pytest.raises(ValueError) as e:
         validate_asset_payload(args, operation='add')
-    assert str(e.value) == 'Argument asset_json cannot be used with other arguments except fail_on_error.'
+    assert 'Argument asset_json cannot be used with other arguments except fail_on_error.' == str(e.value)
 
 
 def test_add_and_update_asset_required_arguments(client):
@@ -1571,7 +1570,7 @@ def test_add_and_update_asset_required_arguments(client):
     }
     with pytest.raises(ValueError) as e:
         validate_asset_payload(args, operation='add')
-    assert str(e.value) == 'Argument asset_json or arguments name and type are required to add an asset.'
+    assert 'Argument asset_json or arguments name and type are required to add an asset.' == str(e.value)
 
 
 def test_add_and_update_asset_required_keys(client):
@@ -1586,8 +1585,8 @@ def test_add_and_update_asset_required_keys(client):
     }
     with pytest.raises(ValueError) as e:
         validate_asset_payload(args, operation='add')
-    assert str(e.value) == "Required keys for add asset(s) are ['assets', 'properties']. One or more of them are not present in the" \
-        " asset JSON."  # noqa: E501
+    assert "Required keys for add asset(s) are ['assets', 'properties']. One or more of them are not present in the" \
+           " asset JSON." == str(e.value)
 
 
 def test_add_and_update_asset_required_keys_in_asset(client):
@@ -1602,8 +1601,8 @@ def test_add_and_update_asset_required_keys_in_asset(client):
     }
     with pytest.raises(ValueError) as e:
         validate_asset_payload(args, operation='update')
-    assert str(e.value) == "Required keys for update asset(s) are ['name', 'type'] in assets key." \
-        " One or more of them are not present in the asset JSON."
+    assert "Required keys for update asset(s) are ['name', 'type'] in assets key." \
+           " One or more of them are not present in the asset JSON." == str(e.value)
 
 
 def test_add_and_update_asset_invalid_value_fail_on_error(client):
@@ -1620,8 +1619,8 @@ def test_add_and_update_asset_invalid_value_fail_on_error(client):
     }
     with pytest.raises(ValueError) as e:
         get_add_and_update_assets_params(args)
-    assert str(e.value) == 'The given value for fail_on_error argument is invalid. Valid values: true, false. ' \
-        'This argument supports a single value only.'
+    assert 'The given value for fail_on_error argument is invalid. Valid values: true, false. ' \
+           'This argument supports a single value only.' == str(e.value)
 
 
 def test_update_asset_required_keys_in_asset_json(client):
@@ -1647,8 +1646,8 @@ def test_update_asset_required_keys_in_asset_json(client):
     }
     with pytest.raises(ValueError) as e:
         validate_asset_payload(args, operation='update')
-    assert str(e.value) == "Required keys for update asset(s) are ['assets', 'properties'] or ['query', 'properties']. One or more of" \
-        " them are not present in the asset JSON."  # noqa: E501
+    assert "Required keys for update asset(s) are ['assets', 'properties'] or ['query', 'properties']. One or more of" \
+           " them are not present in the asset JSON." == str(e.value)
 
 
 def test_add_and_update_asset_required_keys_in_asset_json(client):
@@ -1674,12 +1673,12 @@ def test_add_and_update_asset_required_keys_in_asset_json(client):
     }
     with pytest.raises(ValueError) as e:
         validate_asset_payload(args, operation='update')
-    assert str(e.value) == "Required keys for update asset(s) are ['assets', 'properties'] or ['query', 'properties']. One or more of" \
-        " them are not present in the asset JSON."  # noqa: E501
+    assert "Required keys for update asset(s) are ['assets', 'properties'] or ['query', 'properties']. One or more of" \
+           " them are not present in the asset JSON." == str(e.value)
 
 
 def task_status(client, resp):
-    with open(os.path.dirname(__file__) + '/test_data/add_and_update_assets_resp.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_resp.json', encoding='utf-8') as f:
         expected_res = json.load(f)
     task_resp = expected_res['taskRunning']
     return task_resp
@@ -1693,17 +1692,17 @@ def test_add_asset_success_for_asset_json_retries(mocker_http_request, client, m
     import RiskIQDigitalFootprint
 
     # Fetching expected raw response from file
-    with open(os.path.dirname(__file__) + '/test_data/add_and_update_assets_resp.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_resp.json', encoding='utf-8') as f:
         expected_res = json.load(f)
     mocker_http_request.return_value = expected_res['taskRunning']
 
     # Fetching expected entry context details from file
-    with open(os.path.dirname(__file__) + '/test_data/add_and_update_assets_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
     expected_custom_ec = expected_custom_ec['running']
 
     # Fetching expected raw response from file
-    with open(os.path.dirname(__file__) + '/test_data/add_and_update_assets_asset_json.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_asset_json.json', encoding='utf-8') as f:
         asset_json_arg = json.load(f)
 
     mocker.patch.object(RiskIQDigitalFootprint, 'check_task_status', side_effect=task_status)
@@ -1778,8 +1777,8 @@ def test_request_timeout_and_size_failure():
     with pytest.raises(ValueError) as e:
         get_timeout_and_size('1001')
 
-    assert str(e.value)\
-        == 'Size argument must be a positive integer. The value of this argument should be between 1 and 1000.'
+    assert 'Size argument must be a positive integer. The value of this argument should be between 1 and 1000.'\
+           == str(e.value)
 
 
 def test_request_timeout_and_size_invalid_value():
@@ -1791,8 +1790,8 @@ def test_request_timeout_and_size_invalid_value():
     with pytest.raises(ValueError) as e:
         get_timeout_and_size('dummy')
 
-    assert str(e.value)\
-        == 'Size argument must be a positive integer. The value of this argument should be between 1 and 1000.'
+    assert 'Size argument must be a positive integer. The value of this argument should be between 1 and 1000.'\
+           == str(e.value)
 
 
 def validate_size(client, args):

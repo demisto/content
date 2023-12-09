@@ -1,7 +1,7 @@
 import json
 from datetime import datetime, timedelta
 from unittest.mock import patch
-from pathlib import Path
+
 import pytest
 from CommonServerPython import *
 
@@ -15,7 +15,7 @@ def load_mock_response(file_name: str) -> str:
     Args:
         file_name (str): Name of the mock response JSON file to return.
     """
-    with open(Path(__file__).parent / f"test_data/{file_name}", encoding="utf-8") as mock_file:
+    with open(f"test_data/{file_name}", encoding="utf-8") as mock_file:
         return mock_file.read()
 
 
@@ -108,7 +108,7 @@ def test_fetch_incidents(requests_mock, duplicate_alerts, client) -> None:
     mock_response = load_mock_response("csv_example.csv")
     requests_mock.get(f"{BASE_URL}/api/v1/alerts/ARG-3/attachments/X", json=mock_response)
 
-    with open(Path(__file__).parent / "test_data/expert_analysis_mock.pdf", "rb") as pdf_content_mock:
+    with open("test_data/expert_analysis_mock.pdf", "rb") as pdf_content_mock:
         requests_mock.get(f"{BASE_URL}/api/v1/alerts/ARG-4/analysis_report", content=pdf_content_mock.read())
     requests_mock.get(f"{BASE_URL}/api/v1/alerts/ARG-4/attachments/X", json=mock_response)
 
@@ -142,7 +142,7 @@ def test_fetch_incidents_no_last_fetch(requests_mock, client):
     mock_response = load_mock_response("csv_example.csv")
     requests_mock.get(f"{BASE_URL}/api/v1/alerts/ARG-3/attachments/X", json=mock_response)
 
-    with open(Path(__file__).parent / "test_data/expert_analysis_mock.pdf", "rb") as pdf_content_mock:
+    with open("test_data/expert_analysis_mock.pdf", "rb") as pdf_content_mock:
         requests_mock.get(f"{BASE_URL}/api/v1/alerts/ARG-4/analysis_report", content=pdf_content_mock.read())
     requests_mock.get(f"{BASE_URL}/api/v1/alerts/ARG-4/attachments/X", json=mock_response)
 
@@ -250,7 +250,7 @@ def test_cyberint_alerts_analysis_report_command(requests_mock, client):
     """
     from Cyberint import cyberint_alerts_get_analysis_report_command
 
-    with open(Path(__file__).parent / "test_data/expert_analysis_mock.pdf", "rb") as pdf_content_mock:
+    with open("test_data/expert_analysis_mock.pdf", "rb") as pdf_content_mock:
         requests_mock.get(f"{BASE_URL}/api/v1/alerts/ARG-4/analysis_report", content=pdf_content_mock.read())
 
     result = cyberint_alerts_get_analysis_report_command(client, "ARG-4", "expert_analysis_mock.pdf")
@@ -273,7 +273,7 @@ def test_cyberint_alerts_get_attachment_command(requests_mock, client):
     """
     from Cyberint import cyberint_alerts_get_attachment_command
 
-    with open(Path(__file__).parent / "test_data/attachment_file_mock.png", "rb") as png_content_mock:
+    with open("test_data/attachment_file_mock.png", "rb") as png_content_mock:
         requests_mock.get(f"{BASE_URL}/api/v1/alerts/ARG-3/attachments/X", content=png_content_mock.read())
 
     result = cyberint_alerts_get_attachment_command(client, "ARG-3", "X", "attachment_file_mock.png")

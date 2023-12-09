@@ -2,7 +2,6 @@
 from YaraScan import main
 import demistomock as demisto
 from CommonServerPython import entryTypes
-import os
 
 
 def test_main(mocker):
@@ -26,14 +25,14 @@ def test_main(mocker):
                 {
                     'Type': entryTypes['note'],
                     'Contents': {
-                        'path': os.path.dirname(__file__) + '/test_data/unzip.exe',
+                        'path': 'test_data/unzip.exe',
                         'name': 'unzip.exe',
                         'ID': 'testfileid'
                     }
                 }
             ]
         else:
-            raise ValueError(f'Unimplemented command called: {name}')
+            raise ValueError('Unimplemented command called: {}'.format(name))
 
     mocker.patch.object(demisto, 'args', return_value={
         'entryIDs': 'test',

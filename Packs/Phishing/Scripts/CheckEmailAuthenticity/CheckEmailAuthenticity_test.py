@@ -48,20 +48,20 @@ def test_check_email_auth(mocker):
 
     # assert (str(results[0]['EntryContext'])) == '3'
 
-    dmarc = results[0]['EntryContext'][f'{EMAIL_KEY}.DMARC']
+    dmarc = results[0]['EntryContext']['{}.DMARC'.format(EMAIL_KEY)]
     assert dmarc['Validation-Result'] == 'pass'
     assert dmarc['Signing-Domain'] == 'test.com'
 
-    spf = results[0]['EntryContext'][f'{EMAIL_KEY}.SPF']
+    spf = results[0]['EntryContext']['{}.SPF'.format(EMAIL_KEY)]
     assert spf['Validation-Result'] == 'pass'
     assert spf['Sender-IP'] == '8.8.8.8'
 
-    dkim = results[0]['EntryContext'][f'{EMAIL_KEY}.DKIM']
+    dkim = results[0]['EntryContext']['{}.DKIM'.format(EMAIL_KEY)]
     assert dkim['Validation-Result'] == 'fail'
     assert dkim['Reason'] == 'body hash did not verify'
 
     # AuthenticityCheck fails because DKIM failed
-    assert results[0]['EntryContext'][f'{EMAIL_KEY}.AuthenticityCheck'] == 'Fail'
+    assert results[0]['EntryContext']['{}.AuthenticityCheck'.format(EMAIL_KEY)] == 'Fail'
 
 
 def test_get_authentication_value():

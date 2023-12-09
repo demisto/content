@@ -1,4 +1,3 @@
-import os
 import json
 import io
 import freezegun
@@ -202,7 +201,7 @@ def test_get_indicator_list():
     import FeedMandiant
 
     client = mock_client()
-    res_indicators = util_load_json(os.path.dirname(__file__) + '/test_data/result_indicators.json')
+    res_indicators = util_load_json('./test_data/result_indicators.json')
 
     def get_new_indicators_mock(a, b, c, d):
         return res_indicators['new_indicators']
@@ -226,7 +225,7 @@ def test_get_indicator_list_two_iterations(mocker):
     import demistomock as demisto
 
     client = mock_client()
-    res_indicators = util_load_json(os.path.dirname(__file__) + '/test_data/result_indicators.json')
+    res_indicators = util_load_json('./test_data/result_indicators.json')
 
     def get_new_indicators_mock(a, b, c, d):
         return res_indicators['new_indicators_2']

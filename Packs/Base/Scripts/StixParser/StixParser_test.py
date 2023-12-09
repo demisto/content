@@ -1,7 +1,6 @@
 import json
 
 import pytest
-from pathlib import Path
 
 
 @pytest.mark.parametrize('indicators_file, expected_result', [
@@ -27,9 +26,9 @@ def test_parse_stix1(indicators_file, expected_result):
     """
     from StixParser import parse_stix
 
-    res = parse_stix(str(Path(__file__).parent / f'test_data/stix1_tests/{indicators_file}'))
+    res = parse_stix(f'test_data/stix1_tests/{indicators_file}')
 
-    with open(Path(__file__).parent / f'test_data/stix1_tests/{expected_result}') as json_f:
+    with open(f'test_data/stix1_tests/{expected_result}') as json_f:
         expected_result = json.load(json_f)
 
     assert res == expected_result
@@ -62,12 +61,12 @@ def test_parse_stix2(indicators_file, expected_result):
     """
     from StixParser import STIX2Parser
 
-    with open(Path(__file__).parent / f'test_data/stix2_tests/{indicators_file}') as json_f:
+    with open(f'test_data/stix2_tests/{indicators_file}') as json_f:
         stix2 = json.load(json_f)
     taxii2_parser = STIX2Parser()
     observables = taxii2_parser.parse_stix2(stix2)
 
-    with open(Path(__file__).parent / f'test_data/stix2_tests/{expected_result}') as json_f:
+    with open(f'test_data/stix2_tests/{expected_result}') as json_f:
         expected_result = json.load(json_f)
 
     assert observables == expected_result

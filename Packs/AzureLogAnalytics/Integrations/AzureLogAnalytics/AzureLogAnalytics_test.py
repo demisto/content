@@ -1,4 +1,3 @@
-import os
 import json
 from collections.abc import Callable
 import pytest
@@ -21,7 +20,7 @@ from AzureLogAnalytics import (
 
 
 def util_load_json(path: str) -> dict:
-    return json.loads((Path(__file__).parent / path).read_text())
+    return json.loads(Path(path).read_text())
 
 
 MOCKED_SAVED_SEARCHES_OUTPUT = {
@@ -131,7 +130,7 @@ def load_mock_response(file_path: str) -> dict:
     Returns:
         str: Mock file content.
     """
-    with open(Path(__file__).parent / file_path, encoding='utf-8') as mock_file:
+    with open(file_path, encoding='utf-8') as mock_file:
         return json.loads(mock_file.read())
 
 
@@ -404,7 +403,7 @@ def test_get_search_job_command(requests_mock: MockerCore, index: str) -> None:
         it should retrieve the search job information and return a readable output with the expected table.
     """
     authorization_mock(requests_mock)
-    mock_data = util_load_json(os.path.dirname(__file__) + "/test_data/get_search_job.json")[index]
+    mock_data = util_load_json("test_data/get_search_job.json")[index]
     requests_mock.get(BASE_URL_SEARCH_JOB, json=mock_data)
     response = get_search_job_command(CLIENT, {"table_name": TABLE_NAME})
     assert response.readable_output == (

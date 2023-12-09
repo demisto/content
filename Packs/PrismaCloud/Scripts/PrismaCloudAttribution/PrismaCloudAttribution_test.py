@@ -1,7 +1,7 @@
-import os
 from PrismaCloudAttribution import attribution_command
 import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
 import json
+import io
 
 MOCK_RESULT = [
     {
@@ -44,7 +44,7 @@ MOCK_RESULT = [
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -57,7 +57,7 @@ def test_match_ip_in_cidr_indicators(mocker):
     Then
         - the expected subset of fields is returned to Context
     """
-    mock_assets = util_load_json(os.path.dirname(__file__) + '/test_data/assets.json')
+    mock_assets = util_load_json('test_data/assets.json')
 
     result = attribution_command({
         'assets': mock_assets

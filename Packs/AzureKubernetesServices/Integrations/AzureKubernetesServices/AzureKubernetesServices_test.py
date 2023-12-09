@@ -1,10 +1,10 @@
+import io
 import json
 import demistomock as demisto
 import pytest
 
 from AzureKubernetesServices import (API_VERSION, AKSClient,
                                      clusters_addon_update, clusters_list)
-from pathlib import Path
 
 app_id = 'app_id'
 subscription_id = 'subscription_id'
@@ -19,7 +19,7 @@ def client(mocker):
 
 
 def load_test_data(path):
-    with open(Path(__file__).parent / path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 

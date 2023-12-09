@@ -1,12 +1,12 @@
-import os
 import json
 import pytest
+import io
 from CommonServerPython import Common, DemistoException, ExecutionMetrics
 from typing import Any
 
 
 def util_load_json(path: str) -> Any:
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -17,13 +17,14 @@ def client():
 
 
 def mock_gen():
-    yield from range(0, 100)
+    for i in range(0, 100):
+        yield i
 
 
-PAGINATION_SUCCESS = [({'limit': '0'}, []), ({'limit': '1'}, [0]), ({'limit': '50'}, list(range(0, 50))),
-                      ({}, list(range(0, 50))), ({'page': '1', 'page_size': '1'}, [0]),
+PAGINATION_SUCCESS = [({'limit': '0'}, []), ({'limit': '1'}, [0]), ({'limit': '50'}, [i for i in range(0, 50)]),
+                      ({}, [i for i in range(0, 50)]), ({'page': '1', 'page_size': '1'}, [0]),
                       ({'page': '1', 'page_size': '5'}, [0, 1, 2, 3, 4]), ({'page': '11', 'page_size': '10'}, []),
-                      ({'page': '10', 'page_size': '10'}, list(range(90, 100)))]
+                      ({'page': '10', 'page_size': '10'}, [i for i in range(90, 100)])]
 
 
 @pytest.mark.parametrize('args,excepted', PAGINATION_SUCCESS)
@@ -94,8 +95,8 @@ def test_info_analysis_command(mocker, client):
     """
     from JoeSecurityV2 import analysis_info_command
 
-    result = util_load_json(os.path.dirname(__file__) + '/test_data/list_analysis_raw_response.json')
-    excepted = util_load_json(os.path.dirname(__file__) + '/test_data/list_analysis_expected_output.json')
+    result = util_load_json('test_data/list_analysis_raw_response.json')
+    excepted = util_load_json('test_data/list_analysis_expected_output.json')
 
     mocker.patch.object(client, 'analysis_info', return_value=result[0])
 
@@ -115,8 +116,8 @@ def test_list_analysis_command(mocker, client):
     """
     from JoeSecurityV2 import list_analysis_command
 
-    result = util_load_json(os.path.dirname(__file__) + '/test_data/list_analysis_raw_response.json')
-    excepted = util_load_json(os.path.dirname(__file__) + '/test_data/list_analysis_expected_output.json')
+    result = util_load_json('test_data/list_analysis_raw_response.json')
+    excepted = util_load_json('test_data/list_analysis_expected_output.json')
 
     mocker.patch.object(client, 'analysis_list_paged', return_value=[])
     mocker.patch.object(client, 'analysis_info', return_value={})
@@ -195,8 +196,8 @@ def test_file_command(mocker, client):
     """
     from JoeSecurityV2 import file_command
 
-    result = [util_load_json(os.path.dirname(__file__) + '/test_data/list_analysis_raw_response.json')[0]]
-    excepted = util_load_json(os.path.dirname(__file__) + '/test_data/list_analysis_expected_output.json')
+    result = [util_load_json('test_data/list_analysis_raw_response.json')[0]]
+    excepted = util_load_json('test_data/list_analysis_expected_output.json')
 
     mocker.patch.object(client, 'analysis_search', return_value=result)
 
@@ -219,8 +220,8 @@ def test_url_command(mocker, client):
     """
     from JoeSecurityV2 import url_command
 
-    result = util_load_json(os.path.dirname(__file__) + '/test_data/list_analysis_raw_response.json')[-1]
-    excepted = util_load_json(os.path.dirname(__file__) + '/test_data/list_analysis_expected_output.json')
+    result = util_load_json('test_data/list_analysis_raw_response.json')[-1]
+    excepted = util_load_json('test_data/list_analysis_expected_output.json')
 
     mocker.patch.object(client, 'analysis_search', return_value=[result])
     command_res = url_command(client, {'url': 'test_url'})[0]

@@ -1,4 +1,3 @@
-import os
 """Integration for Sumo Logic Cloud SIEM - Unit Tests file
 
 More information about Unit Tests in Cortex XSOAR:
@@ -9,6 +8,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 import json
+import io
 
 from datetime import datetime
 from datetime import timezone
@@ -21,7 +21,7 @@ RECORD_SUMMARY_FIELDS_DEFAULT = (
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -30,7 +30,7 @@ def test_insight_get_details(requests_mock):
     """
     from SumoLogicCloudSIEM import Client, insight_get_details, insight_signal_to_readable, DEFAULT_HEADERS
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/insight_details.json')
+    mock_response = util_load_json('test_data/insight_details.json')
     insight_id = 'INSIGHT-220'
     insight = insight_signal_to_readable(mock_response.get('data'))
 
@@ -72,11 +72,11 @@ def test_insight_get_comments(requests_mock):
     """
     from SumoLogicCloudSIEM import Client, insight_get_comments, DEFAULT_HEADERS
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/insight_comments.json')
+    mock_response = util_load_json('test_data/insight_comments.json')
     insight_id = 'INSIGHT-116'
     comments = mock_response['data']['comments']
 
-    requests_mock.get(f'{MOCK_URL}/sec/v1/insights/{insight_id}/comments', json=mock_response)
+    requests_mock.get('{}/sec/v1/insights/{}/comments'.format(MOCK_URL, insight_id), json=mock_response)
 
     client = Client(
         base_url=MOCK_URL,
@@ -104,7 +104,7 @@ def test_insight_add_comment(requests_mock):
     """
     from SumoLogicCloudSIEM import Client, insight_add_comment, DEFAULT_HEADERS
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/insight_add_comment.json')
+    mock_response = util_load_json('test_data/insight_add_comment.json')
     insight_id = 'INSIGHT-116'
     comment = mock_response['data']
     requests_mock.post(f'{MOCK_URL}/sec/v1/insights/{insight_id}/comments', json=mock_response)
@@ -135,13 +135,13 @@ def test_signal_get_details(requests_mock):
     """
     from SumoLogicCloudSIEM import Client, signal_get_details, insight_signal_to_readable, DEFAULT_HEADERS
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/signal_details.json')
+    mock_response = util_load_json('test_data/signal_details.json')
     signal_id = '2b449e56-f6e8-5306-980a-447a8c026b77'
     signal = mock_response.get('data')
     del signal['allRecords']
     signal = insight_signal_to_readable(signal)
 
-    requests_mock.get(f'{MOCK_URL}/sec/v1/signals/{signal_id}', json=mock_response)
+    requests_mock.get('{}/sec/v1/signals/{}'.format(MOCK_URL, signal_id), json=mock_response)
 
     client = Client(
         base_url=MOCK_URL,
@@ -168,11 +168,11 @@ def test_entity_get_details(requests_mock):
     """
     from SumoLogicCloudSIEM import Client, entity_get_details, entity_to_readable, DEFAULT_HEADERS
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/entity_details.json')
+    mock_response = util_load_json('test_data/entity_details.json')
     entity_id = '_hostname-win10--admin.b.test.com'
     entity = entity_to_readable(mock_response.get('data'))
 
-    requests_mock.get(f'{MOCK_URL}/sec/v1/entities/{entity_id}', json=mock_response)
+    requests_mock.get('{}/sec/v1/entities/{}'.format(MOCK_URL, entity_id), json=mock_response)
 
     client = Client(
         base_url=MOCK_URL,
@@ -198,12 +198,12 @@ def test_insight_search(requests_mock):
     """
     from SumoLogicCloudSIEM import Client, insight_search, insight_signal_to_readable, DEFAULT_HEADERS
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/insight_list.json')
+    mock_response = util_load_json('test_data/insight_list.json')
     insights = []
     for insight in mock_response['data']['objects']:
         insights.append(insight_signal_to_readable(insight))
 
-    requests_mock.get(f'{MOCK_URL}/sec/v1/insights?limit=2', json=mock_response)
+    requests_mock.get('{}/sec/v1/insights?limit=2'.format(MOCK_URL), json=mock_response)
 
     client = Client(
         base_url=MOCK_URL,
@@ -229,12 +229,12 @@ def test_entity_search(requests_mock):
     """
     from SumoLogicCloudSIEM import Client, entity_search, entity_to_readable, DEFAULT_HEADERS
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/entity_list.json')
+    mock_response = util_load_json('test_data/entity_list.json')
     entities = []
     for entity in mock_response['data']['objects']:
         entities.append(entity_to_readable(entity))
 
-    requests_mock.get(f'{MOCK_URL}/sec/v1/entities?q=hostname:matchesWildcard(\"*test*\")&limit=2', json=mock_response)
+    requests_mock.get('{}/sec/v1/entities?q=hostname:matchesWildcard(\"*test*\")&limit=2'.format(MOCK_URL), json=mock_response)
 
     client = Client(
         base_url=MOCK_URL,
@@ -261,13 +261,13 @@ def test_signal_search(requests_mock):
     """
     from SumoLogicCloudSIEM import Client, signal_search, insight_signal_to_readable, DEFAULT_HEADERS
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/signal_list.json')
+    mock_response = util_load_json('test_data/signal_list.json')
     signals = []
     for signal in mock_response['data']['objects']:
         del signal['allRecords']
         signals.append(insight_signal_to_readable(signal))
 
-    requests_mock.get(f'{MOCK_URL}/sec/v1/signals?q=contentType:\"ANOMALY\"&limit=2', json=mock_response)
+    requests_mock.get('{}/sec/v1/signals?q=contentType:\"ANOMALY\"&limit=2'.format(MOCK_URL), json=mock_response)
 
     client = Client(
         base_url=MOCK_URL,
@@ -295,13 +295,13 @@ def test_insight_set_status(requests_mock):
     """
     from SumoLogicCloudSIEM import Client, insight_set_status, insight_signal_to_readable, DEFAULT_HEADERS
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/insight_status.json')
+    mock_response = util_load_json('test_data/insight_status.json')
     insight_id = 'INSIGHT-221'
     for signal in mock_response['data']['signals']:
         del signal['allRecords']
     insight = insight_signal_to_readable(mock_response.get('data'))
 
-    requests_mock.put(f'{MOCK_URL}/sec/v1/insights/{insight_id}/status', json=mock_response)
+    requests_mock.put('{}/sec/v1/insights/{}/status'.format(MOCK_URL, insight_id), json=mock_response)
 
     client = Client(
         base_url=MOCK_URL,
@@ -329,12 +329,12 @@ def test_match_list_get(requests_mock):
     """
     from SumoLogicCloudSIEM import Client, match_list_get, DEFAULT_HEADERS
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/match_lists.json')
+    mock_response = util_load_json('test_data/match_lists.json')
     match_lists = []
     for match_list in mock_response['data']['objects']:
         match_lists.append({(k[0].capitalize() + k[1:]): v for k, v in match_list.items()})
 
-    requests_mock.get(f'{MOCK_URL}/sec/v1/match-lists?limit=5', json=mock_response)
+    requests_mock.get('{}/sec/v1/match-lists?limit=5'.format(MOCK_URL), json=mock_response)
 
     client = Client(
         base_url=MOCK_URL,
@@ -360,9 +360,9 @@ def test_match_list_update(requests_mock):
     """
     from SumoLogicCloudSIEM import Client, match_list_update, get_update_result, DEFAULT_HEADERS
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/update_result.json')
+    mock_response = util_load_json('test_data/update_result.json')
     match_list_id = '166'
-    requests_mock.post(f'{MOCK_URL}/sec/v1/match-lists/{match_list_id}/items', json=mock_response)
+    requests_mock.post('{}/sec/v1/match-lists/{}/items'.format(MOCK_URL, match_list_id), json=mock_response)
 
     client = Client(
         base_url=MOCK_URL,
@@ -391,12 +391,12 @@ def test_threat_intel_search_indicators(requests_mock):
     """
     from SumoLogicCloudSIEM import Client, threat_intel_search_indicators, DEFAULT_HEADERS
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/threat_intel_indicators.json')
+    mock_response = util_load_json('test_data/threat_intel_indicators.json')
     threat_intel_indicators = []
     for threat_intel_indicator in mock_response['data']['objects']:
         threat_intel_indicators.append({(k[0].capitalize() + k[1:]): v for k, v in threat_intel_indicator.items()})
 
-    requests_mock.get(f'{MOCK_URL}/sec/v1/threat-intel-indicators?value=11.22.33.44&sourceIds=54', json=mock_response)
+    requests_mock.get('{}/sec/v1/threat-intel-indicators?value=11.22.33.44&sourceIds=54'.format(MOCK_URL), json=mock_response)
 
     client = Client(
         base_url=MOCK_URL,
@@ -423,12 +423,12 @@ def test_threat_intel_get_sources(requests_mock):
     """
     from SumoLogicCloudSIEM import Client, threat_intel_get_sources, DEFAULT_HEADERS
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/threat_intel_sources.json')
+    mock_response = util_load_json('test_data/threat_intel_sources.json')
     threat_intel_sources = []
     for threat_intel_source in mock_response['data']['objects']:
         threat_intel_sources.append({(k[0].capitalize() + k[1:]): v for k, v in threat_intel_source.items()})
 
-    requests_mock.get(f'{MOCK_URL}/sec/v1/threat-intel-sources?limit=5', json=mock_response)
+    requests_mock.get('{}/sec/v1/threat-intel-sources?limit=5'.format(MOCK_URL), json=mock_response)
 
     client = Client(
         base_url=MOCK_URL,
@@ -454,9 +454,9 @@ def test_threat_intel_update_source(requests_mock):
     """
     from SumoLogicCloudSIEM import Client, threat_intel_update_source, get_update_result, DEFAULT_HEADERS
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/update_result.json')
+    mock_response = util_load_json('test_data/update_result.json')
     threat_intel_source_id = '54'
-    requests_mock.post(f'{MOCK_URL}/sec/v1/threat-intel-sources/{threat_intel_source_id}/items', json=mock_response)
+    requests_mock.post('{}/sec/v1/threat-intel-sources/{}/items'.format(MOCK_URL, threat_intel_source_id), json=mock_response)
 
     client = Client(
         base_url=MOCK_URL,
@@ -485,7 +485,7 @@ def test_fetch_incidents(requests_mock):
     """
     from SumoLogicCloudSIEM import Client, fetch_incidents, DEFAULT_HEADERS
 
-    mock_response1 = util_load_json(os.path.dirname(__file__) + '/test_data/insight_list_page1.json')
+    mock_response1 = util_load_json('test_data/insight_list_page1.json')
     requests_mock.get(
         '{}/sec/v1/insights?q=created%3A%3E%3D2021-05-18T00%3A00%3A00.000000+status%3Ain%28%22new%22%2C+%22inprogress%22%29'
         '&limit=20&recordSummaryFields=action%2Cdescription%2Cdevice_hostname%2Cdevice_ip%2CdstDevice_hostname'
@@ -494,7 +494,7 @@ def test_fetch_incidents(requests_mock):
         '%2Cthreat_url%2ClistMatches'.format(MOCK_URL),
         json=mock_response1)
 
-    mock_response2 = util_load_json(os.path.dirname(__file__) + '/test_data/insight_list_page2.json')
+    mock_response2 = util_load_json('test_data/insight_list_page2.json')
     requests_mock.get(
         '{}/sec/v1/insights?q=created%3A%3E%3D2021-05-18T00%3A00%3A00.000000+status%3Ain%28%22new%22%2C+%22inprogress%22%29'
         '&limit=20&recordSummaryFields=action%2Cdescription%2Cdevice_hostname%2Cdevice_ip%2CdstDevice_hostname'
@@ -530,7 +530,7 @@ def test_fetch_incidents_with_signals(requests_mock):
     """
     from SumoLogicCloudSIEM import Client, fetch_incidents, DEFAULT_HEADERS
 
-    mock_response1 = util_load_json(os.path.dirname(__file__) + '/test_data/insight_list_page1.json')
+    mock_response1 = util_load_json('test_data/insight_list_page1.json')
     requests_mock.get(
         '{}/sec/v1/insights?q=created%3A%3E%3D2021-05-18T00%3A00%3A00.000000+status%3Ain%28%22new%22%2C+%22inprogress%22%29'
         '&limit=20&recordSummaryFields=action%2Cdescription%2Cdevice_hostname%2Cdevice_ip%2CdstDevice_hostname'
@@ -539,7 +539,7 @@ def test_fetch_incidents_with_signals(requests_mock):
         '%2Cthreat_url%2ClistMatches'.format(MOCK_URL),
         json=mock_response1)
 
-    mock_response2 = util_load_json(os.path.dirname(__file__) + '/test_data/insight_list_page2.json')
+    mock_response2 = util_load_json('test_data/insight_list_page2.json')
     requests_mock.get(
         '{}/sec/v1/insights?q=created%3A%3E%3D2021-05-18T00%3A00%3A00.000000+status%3Ain%28%22new%22%2C+%22inprogress%22%29'
         '&limit=20&recordSummaryFields=action%2Cdescription%2Cdevice_hostname%2Cdevice_ip%2CdstDevice_hostname'
@@ -548,14 +548,14 @@ def test_fetch_incidents_with_signals(requests_mock):
         '%2Cthreat_url%2ClistMatches&offset=1'.format(MOCK_URL),
         json=mock_response2)
 
-    mock_response3 = util_load_json(os.path.dirname(__file__) + '/test_data/insight_signal_list1.json')
+    mock_response3 = util_load_json('test_data/insight_signal_list1.json')
     url_combo = f'{MOCK_URL}/sec/v1/signals?q=id:in("b4709a3c-c886-5cf0-9c98-88d976161edd","38c4bfea-23b5-5e4f-998c-5433dd093834'\
         + '","0f335c0d-5ffe-5637-a868-146e7f401775","3bea8bf1-430d-5f68-b13c-81cdcf614e20","ab1313bf-de71-539c-bae4-922475561a45'\
         + '","d1607da7-368b-5341-8aeb-927135c8f307","bc7fb3ac-a86e-57ab-bf34-3f98789bb16f","f845dfc7-dd64-58d9-a4d1-238da768ffd1'\
         + '","bb96f1eb-8794-5c69-9e20-f21c43be87aa","8fbe5ecf-c83f-5ed8-9d6f-e5488e34d49c")'
     requests_mock.get(url_combo, json=mock_response3)
 
-    mock_response4 = util_load_json(os.path.dirname(__file__) + '/test_data/insight_signal_list2.json')
+    mock_response4 = util_load_json('test_data/insight_signal_list2.json')
     requests_mock.get(f'{MOCK_URL}/sec/v1/signals?q=id:in("2e4f64c2-e8c5-53ae-b0aa-01e5005155a7",'
                       + '"ead54992-94f6-5aa3-b902-ec0fb5318dbc")', json=mock_response4)
 
@@ -623,7 +623,7 @@ def test_get_remote_data_command(requests_mock, mocker):
         'lastUpdate': 1621296000,
     }
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/insight_details.json')
+    mock_response = util_load_json('test_data/insight_details.json')
     requests_mock.get(f'{MOCK_URL}/sec/v1/insights/INSIGHT-220?exclude=signals.allRecords', json=mock_response)
 
     response = get_remote_data_command(client, args, True)
@@ -664,10 +664,10 @@ def test_update_remote_system_command(requests_mock, mocker):
     }
     params = {'close_insight': True}
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/insight_add_comment.json')
+    mock_response = util_load_json('test_data/insight_add_comment.json')
     requests_mock.post(f'{MOCK_URL}/sec/v1/insights/INSIGHT-220/comments', json=mock_response)
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/insight_status.json')
+    mock_response = util_load_json('test_data/insight_status.json')
     requests_mock.put(f'{MOCK_URL}/sec/v1/insights/INSIGHT-220/status', json=mock_response)
     response = update_remote_system_command(client, args, params)
     # This Insight ID comes from insight_status.json so it's different

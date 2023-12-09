@@ -1,17 +1,17 @@
-import os
 import demistomock as demisto
 from Penfield import main, get_assignee, Client
 import json
+import io
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
 def test_main(mocker):
     mock_users = "username1,username2"
-    mock_incident = util_load_json(os.path.dirname(__file__) + '/test_data/test_incident.json')
+    mock_incident = util_load_json('test_data/test_incident.json')
 
     mocker.patch.object(demisto, 'command', return_value="penfield-get-assignee")
     mocker.patch.object(demisto, 'args', return_value={'analysts': mock_users, 'incident': mock_incident})

@@ -1,4 +1,3 @@
-import os
 import pytest
 
 from SMIME_Messaging import Client, sign_email, encrypt_email_body, verify, decrypt_email_body, sign_and_encrypt, \
@@ -6,9 +5,9 @@ from SMIME_Messaging import Client, sign_email, encrypt_email_body, verify, decr
 import demistomock as demisto
 
 
-with open(os.path.dirname(__file__) + '/test_data/signer_key.pem') as f:
+with open('./test_data/signer_key.pem') as f:
     private_key = f.read()
-with open(os.path.dirname(__file__) + '/test_data/signer.pem') as file_:
+with open('./test_data/signer.pem') as file_:
     public_key = file_.read()
 
 client = Client(private_key, public_key)

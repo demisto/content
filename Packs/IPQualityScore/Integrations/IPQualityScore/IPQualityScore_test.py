@@ -1,15 +1,15 @@
-import os
 import json
+import io
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
 def test_ip_command(requests_mock):
     from IPQualityScore import Client, ip_command
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/ip_response.json')
+    mock_response = util_load_json('test_data/ip_response.json')
     requests_mock.get('https://ipqualityscore.com/api/json/ip/api_key_here/15.99.160.255', json=mock_response)
     client = Client(
         base_url='https://ipqualityscore.com/api/json/ip/api_key_here',
@@ -26,7 +26,7 @@ def test_ip_command(requests_mock):
 
 def test_email_command(requests_mock):
     from IPQualityScore import Client, email_command
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/email_response.json')
+    mock_response = util_load_json('test_data/email_response.json')
     requests_mock.get('https://ipqualityscore.com/api/json/email/api_key_here/someone%40gmail.com', json=mock_response)
     client = Client(
         base_url='https://ipqualityscore.com/api/json/email/api_key_here',
@@ -44,7 +44,7 @@ def test_email_command(requests_mock):
 
 def test_url_command(requests_mock):
     from IPQualityScore import Client, url_command
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/url_response.json')
+    mock_response = util_load_json('test_data/url_response.json')
     requests_mock.get('https://ipqualityscore.com/api/json/url/api_key_here/https%3A%2F%2Fgoogle.com',
                       json=mock_response)
     client = Client(

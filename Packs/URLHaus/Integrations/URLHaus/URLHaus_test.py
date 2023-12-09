@@ -1,6 +1,6 @@
-import os
 import json
 import pytest
+import io
 from CommonServerPython import Common
 from typing import *
 
@@ -14,7 +14,7 @@ params = {
 
 
 def util_load_json(path: str) -> Any:
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -45,7 +45,7 @@ def test_url_command(requests_mock, url_to_check, query_status: str, tags: List[
     """
     from URLHaus import run_url_command
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/url_command.json')
+    mock_response = util_load_json('test_data/url_command.json')
     mock_response['query_status'] = query_status
     mock_response['tags'] = tags
     requests_mock.post('http://test.com/api/v1/url/',
@@ -256,7 +256,7 @@ def test_domain_command(requests_mock, mocker, query_status: str, spamhaus_dbl: 
     from URLHaus import run_domain_command
 
     domain_to_check = "test.com"
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/domain_command.json')
+    mock_response = util_load_json('test_data/domain_command.json')
     mock_response['query_status'] = query_status
     mock_response['blacklists']['spamhaus_dbl'] = spamhaus_dbl
     requests_mock.post('http://test.com/api/v1/host/',
@@ -435,7 +435,7 @@ def test_file_command(mocker, requests_mock, query_status: str, ssdeep: str, exp
     from URLHaus import run_file_command
 
     file_to_check = 'a' * 32
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/file_command.json')
+    mock_response = util_load_json('test_data/file_command.json')
     mock_response['query_status'] = query_status
     mock_response['ssdeep'] = ssdeep
     requests_mock.post('http://test.com/api/v1/payload/',

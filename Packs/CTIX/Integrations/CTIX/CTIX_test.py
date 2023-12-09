@@ -1,4 +1,4 @@
-import os
+import io
 import json
 
 '''CONSTANTS'''
@@ -9,7 +9,7 @@ SECRET_KEY = "secret_key"
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -18,7 +18,7 @@ def test_ip(requests_mock):
     from CommonServerPython import Common
 
     ip_to_check = '6.7.8.9'
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/ip_details.json')
+    mock_response = util_load_json('test_data/ip_details.json')
     requests_mock.get(f'http://test.com/objects/indicator/?q={ip_to_check}',
                       json=mock_response)
 
@@ -79,7 +79,7 @@ def test_domain(requests_mock):
     from CommonServerPython import Common
 
     domain_to_check = 'testing.com'
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/domain_details.json')
+    mock_response = util_load_json('test_data/domain_details.json')
     requests_mock.get(f'http://test.com/objects/indicator/?q={domain_to_check}',
                       json=mock_response)
 
@@ -140,7 +140,7 @@ def test_url(requests_mock):
     from CommonServerPython import Common
 
     url_to_check = 'https://www.ibm.com/support/mynotifications/'
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/url_details.json')
+    mock_response = util_load_json('test_data/url_details.json')
     requests_mock.get(f'http://test.com/objects/indicator/?q={url_to_check}',
                       json=mock_response)
 
@@ -201,7 +201,7 @@ def test_file(requests_mock):
     from CommonServerPython import Common
 
     file_to_check = '4d552241543b8176a3189864a16b6052f9d163a124291ec9552e1b77'
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/file_details.json')
+    mock_response = util_load_json('test_data/file_details.json')
     requests_mock.get(f'http://test.com/objects/indicator/?q={file_to_check}',
                       json=mock_response)
 
@@ -260,7 +260,7 @@ def test_file_not_found(requests_mock):
 def test_create_intel(requests_mock):
     from CTIX import Client, create_intel_command
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/create_intel.json')
+    mock_response = util_load_json('test_data/create_intel.json')
     requests_mock.post('http://test.com/create-intel/', json=mock_response)
 
     client = Client(

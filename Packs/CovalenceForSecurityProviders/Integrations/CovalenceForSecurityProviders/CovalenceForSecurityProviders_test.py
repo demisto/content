@@ -15,10 +15,11 @@ import requests
 import demistomock as demisto
 
 import json
+import io
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -82,7 +83,7 @@ def test_send_request_direct_dict(mocker):
     # direct mode, no need to find cov from org_name
     mocker.patch.object(CovalenceForSecurityProviders, 'login', return_value=requests.Session())
 
-    mock_get_sensor = util_load_json(os.path.dirname(__file__) + '/test_data/get_sensor.json')
+    mock_get_sensor = util_load_json('test_data/get_sensor.json')
     r = requests.Response()
     r.status_code = 200
     r._content = json.dumps(mock_get_sensor).encode('utf-8')
@@ -101,7 +102,7 @@ def test_send_request_direct_list(mocker):
     # direct mode, no need to find cov from org_name
     mocker.patch.object(CovalenceForSecurityProviders, 'login', return_value=requests.Session())
 
-    mock_list_sensor = util_load_json(os.path.dirname(__file__) + '/test_data/list_sensor.json')
+    mock_list_sensor = util_load_json('test_data/list_sensor.json')
     r = requests.Response()
     r.status_code = 200
     r._content = json.dumps(mock_list_sensor).encode('utf-8')
@@ -123,7 +124,7 @@ def test_send_request_broker_dict(mocker):
     mocker.patch.object(CovalenceForSecurityProviders, 'find_covs', return_value=['2016-001-AB', '2016-001-AC'])
     mocker.patch.object(CovalenceForSecurityProviders, 'login', return_value=requests.Session())
 
-    mock_get_sensor = util_load_json(os.path.dirname(__file__) + '/test_data/get_sensor.json')
+    mock_get_sensor = util_load_json('test_data/get_sensor.json')
     r = requests.Response()
     r.status_code = 200
     r._content = json.dumps(mock_get_sensor).encode('utf-8')
@@ -148,7 +149,7 @@ def test_send_request_broker_list(mocker):
     mocker.patch.object(CovalenceForSecurityProviders, 'find_covs', return_value=['2016-001-AB', '2016-001-AC'])
     mocker.patch.object(CovalenceForSecurityProviders, 'login', return_value=requests.Session())
 
-    mock_list_sensor = util_load_json(os.path.dirname(__file__) + '/test_data/list_sensor.json')
+    mock_list_sensor = util_load_json('test_data/list_sensor.json')
     r = requests.Response()
     r.status_code = 200
     r._content = json.dumps(mock_list_sensor).encode('utf-8')
@@ -162,7 +163,7 @@ def test_send_request_broker_list(mocker):
 
 
 def test_list_alerts(mocker):
-    mock_list_alerts = util_load_json(os.path.dirname(__file__) + '/test_data/list_alerts.json')
+    mock_list_alerts = util_load_json('test_data/list_alerts.json')
 
     import CovalenceForSecurityProviders
     mocker.patch.object(demisto, 'args', return_value={
@@ -184,7 +185,7 @@ def test_list_alerts(mocker):
 
 
 def test_list_alerts_details(mocker):
-    mock_list_alerts = util_load_json(os.path.dirname(__file__) + '/test_data/list_alerts.json')
+    mock_list_alerts = util_load_json('test_data/list_alerts.json')
 
     import CovalenceForSecurityProviders
     mocker.patch.object(demisto, 'args', return_value={
@@ -247,7 +248,7 @@ def test_list_alerts_details(mocker):
 
 
 def test_list_sensors(mocker):
-    mock_list_sensor = util_load_json(os.path.dirname(__file__) + '/test_data/list_sensor.json')
+    mock_list_sensor = util_load_json('test_data/list_sensor.json')
 
     import CovalenceForSecurityProviders
     mocker.patch.object(demisto, 'args', return_value={
@@ -265,7 +266,7 @@ def test_list_sensors(mocker):
 
 
 def test_list_sensors_details(mocker):
-    mock_list_sensor = util_load_json(os.path.dirname(__file__) + '/test_data/list_sensor.json')
+    mock_list_sensor = util_load_json('test_data/list_sensor.json')
 
     import CovalenceForSecurityProviders
     mocker.patch.object(demisto, 'args', return_value={
@@ -288,7 +289,7 @@ def test_list_sensors_details(mocker):
 
 
 def test_get_sensor(mocker):
-    mock_get_sensor = [util_load_json(os.path.dirname(__file__) + '/test_data/get_sensor.json')]
+    mock_get_sensor = [util_load_json('test_data/get_sensor.json')]
 
     import CovalenceForSecurityProviders
     mocker.patch.object(demisto, 'args', return_value={
@@ -312,7 +313,7 @@ def test_get_sensor(mocker):
 
 
 def test_connections_summary_by_ip(mocker):
-    mock_connections_summary_by_ip = util_load_json(os.path.dirname(__file__) + '/test_data/connections_summary_by_ip.json')
+    mock_connections_summary_by_ip = util_load_json('test_data/connections_summary_by_ip.json')
 
     import CovalenceForSecurityProviders
     mocker.patch.object(demisto, 'args', return_value={
@@ -335,7 +336,7 @@ def test_connections_summary_by_ip(mocker):
 
 
 def test_connections_summary_by_ip_details(mocker):
-    mock_connections_summary_by_ip = util_load_json(os.path.dirname(__file__) + '/test_data/connections_summary_by_ip.json')
+    mock_connections_summary_by_ip = util_load_json('test_data/connections_summary_by_ip.json')
 
     import CovalenceForSecurityProviders
     mocker.patch.object(demisto, 'args', return_value={
@@ -374,7 +375,7 @@ def test_connections_summary_by_ip_details(mocker):
 
 
 def test_connections_summary_by_port(mocker):
-    mock_connections_summary_by_port = util_load_json(os.path.dirname(__file__) + '/test_data/connections_summary_by_port.json')
+    mock_connections_summary_by_port = util_load_json('test_data/connections_summary_by_port.json')
 
     import CovalenceForSecurityProviders
     mocker.patch.object(demisto, 'args', return_value={
@@ -397,7 +398,7 @@ def test_connections_summary_by_port(mocker):
 
 
 def test_connections_summary_by_port_details(mocker):
-    mock_connections_summary_by_port = util_load_json(os.path.dirname(__file__) + '/test_data/connections_summary_by_port.json')
+    mock_connections_summary_by_port = util_load_json('test_data/connections_summary_by_port.json')
 
     import CovalenceForSecurityProviders
     mocker.patch.object(demisto, 'args', return_value={
@@ -437,7 +438,7 @@ def test_connections_summary_by_port_details(mocker):
 
 
 def test_list_dns_resolutions(mocker):
-    mock_list_dns_resolutions = util_load_json(os.path.dirname(__file__) + '/test_data/list_dns_resolutions.json')
+    mock_list_dns_resolutions = util_load_json('test_data/list_dns_resolutions.json')
 
     import CovalenceForSecurityProviders
     mocker.patch.object(demisto, 'args', return_value={
@@ -456,7 +457,7 @@ def test_list_dns_resolutions(mocker):
 
 
 def test_list_dns_resolutions_details(mocker):
-    mock_list_dns_resolutions = util_load_json(os.path.dirname(__file__) + '/test_data/list_dns_resolutions.json')
+    mock_list_dns_resolutions = util_load_json('test_data/list_dns_resolutions.json')
 
     import CovalenceForSecurityProviders
     mocker.patch.object(demisto, 'args', return_value={
@@ -480,7 +481,7 @@ def test_list_dns_resolutions_details(mocker):
 
 
 def test_list_internal_networks(mocker):
-    mock_list_internal_networks = util_load_json(os.path.dirname(__file__) + '/test_data/list_internal_networks.json')
+    mock_list_internal_networks = util_load_json('test_data/list_internal_networks.json')
 
     import CovalenceForSecurityProviders
     mocker.patch.object(demisto, 'args', return_value={
@@ -497,7 +498,7 @@ def test_list_internal_networks(mocker):
 
 
 def test_list_endpoint_agents(mocker):
-    mock_list_endpoint_agents = util_load_json(os.path.dirname(__file__) + '/test_data/list_endpoint_agents.json')
+    mock_list_endpoint_agents = util_load_json('test_data/list_endpoint_agents.json')
 
     import CovalenceForSecurityProviders
     mocker.patch.object(demisto, 'args', return_value={
@@ -519,7 +520,7 @@ def test_list_endpoint_agents(mocker):
 
 
 def test_list_endpoint_agents_details(mocker):
-    mock_list_endpoint_agents = util_load_json(os.path.dirname(__file__) + '/test_data/list_endpoint_agents.json')
+    mock_list_endpoint_agents = util_load_json('test_data/list_endpoint_agents.json')
 
     import CovalenceForSecurityProviders
     mocker.patch.object(demisto, 'args', return_value={
@@ -559,7 +560,7 @@ def test_list_endpoint_agents_details(mocker):
 
 
 def test_search_endpoint_process(mocker):
-    mock_search_endpoint_process = util_load_json(os.path.dirname(__file__) + '/test_data/search_endpoint_process.json')
+    mock_search_endpoint_process = util_load_json('test_data/search_endpoint_process.json')
 
     import CovalenceForSecurityProviders
     mocker.patch.object(demisto, 'args', return_value={
@@ -579,7 +580,7 @@ def test_search_endpoint_process(mocker):
 
 
 def test_search_endpoint_process_details(mocker):
-    mock_search_endpoint_process = util_load_json(os.path.dirname(__file__) + '/test_data/search_endpoint_process.json')
+    mock_search_endpoint_process = util_load_json('test_data/search_endpoint_process.json')
 
     import CovalenceForSecurityProviders
     mocker.patch.object(demisto, 'args', return_value={
@@ -607,8 +608,7 @@ def test_search_endpoint_process_details(mocker):
 
 
 def test_search_endpoint_installed_software(mocker):
-    mock_search_endpoint_installed_software = util_load_json(os.path.dirname(
-        __file__) + '/test_data/search_endpoint_installed_software.json')
+    mock_search_endpoint_installed_software = util_load_json('test_data/search_endpoint_installed_software.json')
 
     import CovalenceForSecurityProviders
     mocker.patch.object(demisto, 'args', return_value={
@@ -628,8 +628,7 @@ def test_search_endpoint_installed_software(mocker):
 
 
 def test_search_endpoint_installed_software_details(mocker):
-    mock_search_endpoint_installed_software = util_load_json(os.path.dirname(
-        __file__) + '/test_data/search_endpoint_installed_software.json')
+    mock_search_endpoint_installed_software = util_load_json('test_data/search_endpoint_installed_software.json')
 
     import CovalenceForSecurityProviders
     mocker.patch.object(demisto, 'args', return_value={

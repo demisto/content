@@ -82,7 +82,7 @@ repos:
      - -v
      - --rootdir=/src
      - --junitxml=/src/.pre-commit/pytest-junit/.report_pytest.xml
-    split_by_file: test_data/__init__.py
+    split_by_obj: true
     
   - id: is-circle-changed
     name: is-circle-changed

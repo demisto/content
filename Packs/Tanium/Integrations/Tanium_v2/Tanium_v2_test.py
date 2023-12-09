@@ -1,11 +1,10 @@
-import os
 import pytest
 from Tanium_v2 import Client, get_question_result, get_action_result
 import json
 
 
 def get_fetch_data():
-    with open(os.path.dirname(__file__) + '/test_data/action_results.json') as f:
+    with open('test_data/action_results.json', 'r') as f:
         return json.loads(f.read())
 
 

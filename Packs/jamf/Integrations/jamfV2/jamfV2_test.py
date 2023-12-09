@@ -11,17 +11,17 @@ you are implementing with your integration
 """
 
 import json
+import io
 from CommonServerPython import *
-from pathlib import Path
 
 
 def load_xml_response(file_name: str) -> str:
-    with open(Path(__file__).parent / file_name, encoding='utf-8') as xml_file:
+    with io.open(file_name, mode='r', encoding='utf-8') as xml_file:
         return xml_file.read()
 
 
 def util_load_json(path):
-    with open(Path(__file__).parent / path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -433,7 +433,7 @@ def test_endpoint_command(mocker):
         }]
     }
     results = outputs[0].to_context()
-    for key, _val in results.get("EntryContext").items():
+    for key, val in results.get("EntryContext").items():
         assert results.get("EntryContext")[key] == get_endpoints_response[key]
     assert results.get("EntryContext") == get_endpoints_response
     assert len(outputs) == 1

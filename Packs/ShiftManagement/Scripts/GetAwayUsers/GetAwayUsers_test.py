@@ -1,4 +1,4 @@
-import os
+import io
 import json
 from copy import deepcopy
 
@@ -9,11 +9,11 @@ import demistomock as demisto
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
-away_user_data = util_load_json(os.path.dirname(__file__) + '/test_data/away_user.json')
+away_user_data = util_load_json('test_data/away_user.json')
 AWAY_USER = away_user_data
 NOT_AWAY_USER = deepcopy(away_user_data)
 NOT_AWAY_USER['isAway'] = False

@@ -1,10 +1,10 @@
-import os
 from Okta_v2 import Client, get_user_command, get_group_members_command, create_user_command, \
     verify_push_factor_command, get_groups_for_user_command, get_user_factors_command, get_logs_command, \
     get_zone_command, list_zones_command, update_zone_command, list_users_command, create_zone_command, \
     create_group_command, assign_group_to_app_command, get_after_tag, delete_limit_param, set_password_command
 import pytest
 import json
+import io
 import requests_mock
 
 
@@ -607,7 +607,7 @@ def util_load_json(path: str):
     """
     Utility to load json data from a local folder.
     """
-    with open(path, encoding='utf-8') as file:
+    with io.open(path, mode='r', encoding='utf-8') as file:
         return json.loads(file.read())
 
 
@@ -766,7 +766,7 @@ def test_get_groups_for_user_command(mocker, args):
     mocker.patch.object(client, 'get_groups_for_user', return_value=group_data)
     _, outputs, _ = get_groups_for_user_command(client, args)
     assert outputs.get('Account(val.ID && val.ID === obj.ID)').get('Group')[0] == expected_context
-    assert outputs.get('Account(val.ID && val.ID === obj.ID)').get('ID') == 'TestID'
+    assert 'TestID' == outputs.get('Account(val.ID && val.ID === obj.ID)').get('ID')
 
 
 @pytest.mark.parametrize(
@@ -848,14 +848,14 @@ def test_get_zone_command(mocker, args):
     mocker.patch.object(client, 'get_zone', return_value=okta_zone)
     readable, outputs, _ = get_zone_command(client, args)
     assert 'Test Zone' in readable
-    assert outputs.get('Okta.Zone(val.id && val.id === obj.id)').get('id', '') == 'nzoqsmcx1qWYJ6wYF7q0'
+    assert 'nzoqsmcx1qWYJ6wYF7q0' == outputs.get('Okta.Zone(val.id && val.id === obj.id)').get('id', '')
 
 
 def test_list_zones_command(mocker):
     mocker.patch.object(client, 'list_zones', return_value=okta_zone)
     readable, outputs, _ = list_zones_command(client, {})
     assert 'Test Zone' in readable
-    assert outputs.get('Okta.Zone(val.id && val.id === obj.id)').get('id', '') == 'nzoqsmcx1qWYJ6wYF7q0'
+    assert 'nzoqsmcx1qWYJ6wYF7q0' == outputs.get('Okta.Zone(val.id && val.id === obj.id)').get('id', '')
 
 
 @pytest.mark.parametrize(
@@ -869,7 +869,7 @@ def test_update_zone_command(mocker, args):
     mocker.patch.object(client, 'get_zone', return_value=okta_zone)
     mocker.patch.object(client, 'update_zone', return_value=my_okta_zone)
     readable, outputs, _ = update_zone_command(client, args)
-    assert outputs.get('Okta.Zone(val.id && val.id === obj.id)').get('name', '') == 'NewZoneName'
+    assert 'NewZoneName' == outputs.get('Okta.Zone(val.id && val.id === obj.id)').get('name', '')
 
 
 @pytest.mark.parametrize(
@@ -882,7 +882,7 @@ def test_create_zone_command(mocker, args):
     my_okta_zone['name'] = 'NewZoneName'
     mocker.patch.object(client, 'create_zone', return_value=okta_zone)
     readable, outputs, _ = create_zone_command(client, args)
-    assert outputs.get('Okta.Zone(val.id && val.id === obj.id)').get('name', '') == 'NewZoneName'
+    assert 'NewZoneName' == outputs.get('Okta.Zone(val.id && val.id === obj.id)').get('name', '')
 
 
 EXPEXTED_LOGS_RESULT = \
@@ -917,7 +917,7 @@ EXPEXTED_LOGS_RESULT = \
 
 
 def test_get_readable_logs():
-    logs_raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_logs_response.json')
+    logs_raw_response = util_load_json('test_data/get_logs_response.json')
     result = client.get_readable_logs(logs_raw_response)
     assert len(result) == 2
     assert result == EXPEXTED_LOGS_RESULT

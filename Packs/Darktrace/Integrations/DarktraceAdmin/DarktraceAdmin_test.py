@@ -1,9 +1,9 @@
-import os
+import io
 import json
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -23,7 +23,7 @@ def test_get_similar_devices(requests_mock):
     from DarktraceAdmin import Client, get_similar_devices_command
 
     # GIVEN an integration is configured and you would like to find similar devices
-    mock_api_response = util_load_json(os.path.dirname(__file__) + '/test_data/similar_devices.json')
+    mock_api_response = util_load_json('test_data/similar_devices.json')
     requests_mock.get('https://mock.darktrace.com/similardevices?did=1&count=2',
                       json=mock_api_response)
 
@@ -41,7 +41,7 @@ def test_get_similar_devices(requests_mock):
 
     # THEN the context will be updated and information about similar devices will be fetched and pulled
     integration_response = get_similar_devices_command(client, args)
-    expected_response = util_load_json(os.path.dirname(__file__) + '/test_data/formatted_similar_devices.json')
+    expected_response = util_load_json('test_data/formatted_similar_devices.json')
 
     assert integration_response.outputs == expected_response
     assert integration_response.outputs_prefix == 'Darktrace.Device'
@@ -59,7 +59,7 @@ def test_get_external_endpoint_details(requests_mock):
     from DarktraceAdmin import Client, get_external_endpoint_details_command
 
     # GIVEN an integration is configured and you would like to get external endpoint details
-    mock_api_response = util_load_json(os.path.dirname(__file__) + '/test_data/endpoint_details.json')
+    mock_api_response = util_load_json('test_data/endpoint_details.json')
     requests_mock.get('https://mock.darktrace.com/endpointdetails?hostname=cats.com&additionalinfo=true&devices=true&score=true',
                       json=mock_api_response)
 
@@ -80,7 +80,7 @@ def test_get_external_endpoint_details(requests_mock):
 
     # THEN the context will be updated and information about the external endpoint will be displayed
     integration_response = get_external_endpoint_details_command(client, args)
-    expected_response = util_load_json(os.path.dirname(__file__) + '/test_data/formatted_endpoint_details.json')
+    expected_response = util_load_json('test_data/formatted_endpoint_details.json')
 
     assert integration_response.outputs == expected_response
     assert integration_response.outputs_prefix == 'Darktrace.ExternalEndpointDetails'
@@ -96,7 +96,7 @@ def test_get_device_connection_info(requests_mock):
     from DarktraceAdmin import Client, get_device_connection_info_command
 
     # GIVEN an integration is configured and you would like to get device connection info
-    mock_api_response = util_load_json(os.path.dirname(__file__) + '/test_data/conn_info.json')
+    mock_api_response = util_load_json('test_data/conn_info.json')
     requests_mock.get('https://mock.darktrace.com/deviceinfo?did=1&datatype=co'
                       '&showallgraphdata=false&fulldevicedetails=false',
                       json=mock_api_response)
@@ -115,7 +115,7 @@ def test_get_device_connection_info(requests_mock):
 
     # THEN the context will be updated and information to graph the device's connections will be presented
     integration_response = get_device_connection_info_command(client, args)
-    expected_response = util_load_json(os.path.dirname(__file__) + '/test_data/formatted_conn_info.json')
+    expected_response = util_load_json('test_data/formatted_conn_info.json')
 
     assert integration_response.outputs == expected_response
     assert integration_response.outputs_prefix == 'Darktrace.DeviceConnectionInfo'
@@ -131,7 +131,7 @@ def test_run_advanced_search_analysis(requests_mock):
     from DarktraceAdmin import Client, run_advanced_search_analysis_command
 
     # GIVEN an integration is configured and you would like to find similar devices
-    mock_api_response = util_load_json(os.path.dirname(__file__) + '/test_data/advanced_search_analysis.json')
+    mock_api_response = util_load_json('test_data/advanced_search_analysis.json')
     requests_mock.get('https://mock.darktrace.com/advancedsearch/api/analyze/@fields.source_ip/'
                       + 'score/eyJzZWFyY2giOiAiQHR5cGU6Y29ubiIsICJmaWVsZHMiOiBbXSwgIm9mZnNldCI6ICIwIi'
                       + 'wgInRpbWVmcmFtZSI6ICJjdXN0b20iLCAiZ3JhcGhtb2RlIjogImNvdW50IiwgInRpbWUiOiB7ImZ'
@@ -159,7 +159,7 @@ def test_run_advanced_search_analysis(requests_mock):
 
     # THEN the context will be updated and information about similar devices will be fetched and pulled
     integration_response = run_advanced_search_analysis_command(client, args)
-    expected_response = util_load_json(os.path.dirname(__file__) + '/test_data/formatted_advanced_search_analysis.json')
+    expected_response = util_load_json('test_data/formatted_advanced_search_analysis.json')
 
     assert integration_response.outputs == expected_response
     assert integration_response.outputs_prefix == 'Darktrace.AdvancedSearch'
@@ -175,7 +175,7 @@ def test_post_to_watched_list(requests_mock):
     from DarktraceAdmin import Client, post_to_watched_list_command
 
     # GIVEN an integration is configured and you would like to find similar devices
-    mock_api_response = util_load_json(os.path.dirname(__file__) + '/test_data/watched_list_post.json')
+    mock_api_response = util_load_json('test_data/watched_list_post.json')
     requests_mock.post('https://mock.darktrace.com/intelfeed',
                        json=mock_api_response)
 
@@ -193,7 +193,7 @@ def test_post_to_watched_list(requests_mock):
 
     # THEN the context will be updated and information about similar devices will be fetched and pulled
     integration_response = post_to_watched_list_command(client, args)
-    expected_response = util_load_json(os.path.dirname(__file__) + '/test_data/formatted_watched_list_post.json')
+    expected_response = util_load_json('test_data/formatted_watched_list_post.json')
 
     assert integration_response.outputs == expected_response
     assert integration_response.outputs_prefix == 'Darktrace.Endpoint'
@@ -209,7 +209,7 @@ def test_get_tagged_devices(requests_mock):
     from DarktraceAdmin import Client, get_tagged_devices_command
 
     # GIVEN an integration is configured and you would like to find similar devices
-    mock_api_response = util_load_json(os.path.dirname(__file__) + '/test_data/tagged_devices.json')
+    mock_api_response = util_load_json('test_data/tagged_devices.json')
     requests_mock.get('https://mock.darktrace.com/tags/entities?tag=Admin&fulldevicedetails=true',
                       json=mock_api_response)
 
@@ -226,7 +226,7 @@ def test_get_tagged_devices(requests_mock):
 
     # THEN the context will be updated and information about similar devices will be fetched and pulled
     integration_response = get_tagged_devices_command(client, args)
-    expected_response = util_load_json(os.path.dirname(__file__) + '/test_data/formatted_tagged_devices.json')
+    expected_response = util_load_json('test_data/formatted_tagged_devices.json')
 
     assert integration_response.outputs == expected_response
     assert integration_response.outputs_prefix == 'Darktrace.Device'
@@ -242,7 +242,7 @@ def test_get_tags_for_device(requests_mock):
     from DarktraceAdmin import Client, get_tags_for_device_command
 
     # GIVEN an integration is configured and you would like to find similar devices
-    mock_api_response = util_load_json(os.path.dirname(__file__) + '/test_data/device_tags.json')
+    mock_api_response = util_load_json('test_data/device_tags.json')
     requests_mock.get('https://mock.darktrace.com/tags/entities?did=1',
                       json=mock_api_response)
 
@@ -259,7 +259,7 @@ def test_get_tags_for_device(requests_mock):
 
     # THEN the context will be updated and information about similar devices will be fetched and pulled
     integration_response = get_tags_for_device_command(client, args)
-    expected_response = util_load_json(os.path.dirname(__file__) + '/test_data/formatted_device_tags.json')
+    expected_response = util_load_json('test_data/formatted_device_tags.json')
 
     assert integration_response.outputs == expected_response
     assert integration_response.outputs_prefix == 'Darktrace.Device'
@@ -275,7 +275,7 @@ def test_post_tag_to_device(requests_mock):
     from DarktraceAdmin import Client, post_tag_to_device_command
 
     # GIVEN an integration is configured and you would like to find similar devices
-    mock_api_response = util_load_json(os.path.dirname(__file__) + '/test_data/device_tag_post.json')
+    mock_api_response = util_load_json('test_data/device_tag_post.json')
     requests_mock.post('https://mock.darktrace.com/tags/entities',
                        json=mock_api_response)
 
@@ -293,7 +293,7 @@ def test_post_tag_to_device(requests_mock):
 
     # THEN the context will be updated and information about similar devices will be fetched and pulled
     integration_response = post_tag_to_device_command(client, args)
-    expected_response = util_load_json(os.path.dirname(__file__) + '/test_data/formatted_device_tag_post.json')
+    expected_response = util_load_json('test_data/formatted_device_tag_post.json')
 
     assert integration_response.outputs == expected_response
     assert integration_response.outputs_prefix == 'Darktrace.Device'

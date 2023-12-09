@@ -1,11 +1,11 @@
-import os
 import json
+import io
 import demistomock as demisto
 import pytest
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -24,7 +24,7 @@ def test_crowdstrike_indicators_list_command(requests_mock):
 
     from CrowdStrikeIndicatorFeed import Client, crowdstrike_indicators_list_command
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/crowdstrike_indicators_list_command.json')
+    mock_response = util_load_json('test_data/crowdstrike_indicators_list_command.json')
     requests_mock.post('https://api.crowdstrike.com/oauth2/token', json={'access_token': '12345'})
     requests_mock.get(url='https://api.crowdstrike.com/intel/combined/indicators/v1', json=mock_response)
 
@@ -39,8 +39,7 @@ def test_crowdstrike_indicators_list_command(requests_mock):
     assert len(response.raw_response) == 3
     assert "Indicators from CrowdStrike Falcon Intel" in response.readable_output
     assert "domain_abc" in response.readable_output
-    assert feed_tags[0]
-    assert feed_tags[1] in response.raw_response[0]['fields']['tags']
+    assert feed_tags[0] and feed_tags[1] in response.raw_response[0]['fields']['tags']
 
 
 @pytest.mark.parametrize(
@@ -78,8 +77,8 @@ def test_create_indicators_from_response():
     """
     from CrowdStrikeIndicatorFeed import Client
 
-    raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/crowdstrike_indicators_list_command.json')
-    expected_result = util_load_json(os.path.dirname(__file__) + '/test_data/create_indicators_from_response.json')
+    raw_response = util_load_json('test_data/crowdstrike_indicators_list_command.json')
+    expected_result = util_load_json('test_data/create_indicators_from_response.json')
     res = Client.create_indicators_from_response(raw_response)
     assert res == expected_result
 
@@ -156,7 +155,7 @@ def test_fetch_no_indicators(mocker, requests_mock):
     """
     from CrowdStrikeIndicatorFeed import Client
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/crowdstrike_indicators_list_command.json')
+    mock_response = util_load_json('test_data/crowdstrike_indicators_list_command.json')
     requests_mock.post('https://api.crowdstrike.com/oauth2/token', json={'access_token': '12345'})
     requests_mock.get(url='https://api.crowdstrike.com/intel/combined/indicators/v1', json=mock_response)
 

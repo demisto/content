@@ -1,11 +1,11 @@
-import os
 import duo_client
+import io
 import json
 import demistomock as demisto
 
 
 def util_load_json(path: str):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -67,7 +67,7 @@ def test_get_users(mocker):
     """
     from DuoAdminApi import get_all_users
     client = mock_client()
-    mock_res = util_load_json(os.path.dirname(__file__) + '/test_data/get_users.json')
+    mock_res = util_load_json('test_data/get_users.json')
     mocker.patch.object(duo_client.Admin, 'get_users', return_value=mock_res)
     mocker.patch.object(demisto, 'results')
 
@@ -92,7 +92,7 @@ def test_get_bypass_codes(mocker):
     """
     from DuoAdminApi import get_all_bypass_codes
     client = mock_client()
-    mock_res = util_load_json(os.path.dirname(__file__) + '/test_data/get_all_bypass_codes.json')
+    mock_res = util_load_json('test_data/get_all_bypass_codes.json')
     mocker.patch.object(duo_client.Admin, 'get_bypass_codes', return_value=mock_res)
     mocker.patch.object(demisto, 'results')
 
@@ -116,7 +116,7 @@ def test_get_authentication_logs_by_user(mocker):
     from DuoAdminApi import get_authentication_logs_by_user
     client = mock_client()
     args = {'username': 'test@demisto.com', 'from': '10_years_ago'}
-    mock_res = util_load_json(os.path.dirname(__file__) + '/test_data/get_authentication_logs_by_user.json')
+    mock_res = util_load_json('test_data/get_authentication_logs_by_user.json')
 
     mocker.patch.object(duo_client.Admin, 'get_authentication_log', return_value=mock_res)
     mocker.patch.object(duo_client.Admin, 'get_users_by_name', return_value=[{'user_id': '1'}])
@@ -143,7 +143,7 @@ def test_get_all_devices(mocker):
     """
     from DuoAdminApi import get_all_devices
     client = mock_client()
-    mock_res = util_load_json(os.path.dirname(__file__) + '/test_data/get_all_devices.json')
+    mock_res = util_load_json('test_data/get_all_devices.json')
 
     mocker.patch.object(duo_client.Admin, 'get_phones', return_value=mock_res)
     mocker.patch.object(demisto, 'results')
@@ -170,7 +170,7 @@ def test_dissociate_device_by_user(mocker):
     from DuoAdminApi import dissociate_device_by_user
     client = mock_client()
     args = {'username': 'test@demisto.com', 'device_id': '1'}
-    mock_res = util_load_json(os.path.dirname(__file__) + '/test_data/get_authentication_logs_by_user.json')
+    mock_res = util_load_json('test_data/get_authentication_logs_by_user.json')
 
     mocker.patch.object(duo_client.Admin, 'delete_user_phone', return_value=mock_res)
     mocker.patch.object(duo_client.Admin, 'get_users_by_name', return_value=[{'user_id': '1'}])
@@ -196,7 +196,7 @@ def test_associate_device_to_user(mocker):
     from DuoAdminApi import associate_device_to_user
     client = mock_client()
     args = {'username': 'test@demisto.com', 'device_id': '1'}
-    mock_res = util_load_json(os.path.dirname(__file__) + '/test_data/get_authentication_logs_by_user.json')
+    mock_res = util_load_json('test_data/get_authentication_logs_by_user.json')
 
     mocker.patch.object(duo_client.Admin, 'add_user_phone', return_value=mock_res)
     mocker.patch.object(duo_client.Admin, 'get_users_by_name', return_value=[{'user_id': '1'}])
@@ -253,7 +253,7 @@ def test_get_u2f_tokens_by_user(mocker):
     """
     from DuoAdminApi import get_u2f_tokens_by_user
     client = mock_client()
-    mock_res = util_load_json(os.path.dirname(__file__) + '/test_data/get_users.json')
+    mock_res = util_load_json('test_data/get_users.json')
     mock_res.update({
         "credential_name": "test_credential",
         "date_added": 1662468518,

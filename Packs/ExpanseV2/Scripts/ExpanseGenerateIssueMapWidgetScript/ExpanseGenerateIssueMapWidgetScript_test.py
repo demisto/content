@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa
 
+from typing import Tuple, List
 from math import floor
 from functools import reduce
 
@@ -154,7 +155,7 @@ def test_latlon_to_yx():
     assert lat_to_y(90) is None
     assert lat_to_y(-90) is None
 
-    tests: list[tuple[tuple[int, int], tuple[int, int]]] = [
+    tests: List[Tuple[Tuple[int, int], Tuple[int, int]]] = [
         ((85, -180), (0, 0)),
         ((85, 180), (0, RESULT_IMAGE_X)),
         ((-85, -180), (RESULT_IMAGE_Y, 0)),

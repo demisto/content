@@ -1,4 +1,3 @@
-import os
 import pytest
 import demistomock as demisto
 import json
@@ -55,7 +54,7 @@ def self_deployed_client():
 
 @pytest.fixture()
 def expected_incident():
-    with open(os.path.dirname(__file__) + '/test_data/expected_incident.txt') as emails_json:
+    with open('test_data/expected_incident.txt') as emails_json:
         mocked_emails = json.load(emails_json)
         return mocked_emails
 
@@ -66,7 +65,7 @@ def emails_data_as_html():
 
 
 def emails_data_as_html_including_body():
-    with open(os.path.dirname(__file__) + '/test_data/emails_data_html.txt') as emails_json:
+    with open('test_data/emails_data_html.txt') as emails_json:
         mocked_emails = json.load(emails_json)
         return mocked_emails
 
@@ -77,38 +76,38 @@ def emails_data_as_text():
 
 
 def emails_data_as_text_including_body():
-    with open(os.path.dirname(__file__) + '/test_data/emails_data_text.txt') as emails_json:
+    with open('test_data/emails_data_text.txt') as emails_json:
         mocked_emails = json.load(emails_json)
         return mocked_emails
 
 
 def emails_data_as_html_without_body():
-    with open(os.path.dirname(__file__) + '/test_data/emails_data_html_without_body.txt') as emails_json:
+    with open('test_data/emails_data_html_without_body.txt') as emails_json:
         mocked_emails = json.load(emails_json)
         return mocked_emails
 
 
 def emails_data_as_text_without_body():
-    with open(os.path.dirname(__file__) + '/test_data/emails_data_text_without_body.txt') as emails_json:
+    with open('test_data/emails_data_text_without_body.txt') as emails_json:
         mocked_emails = json.load(emails_json)
         return mocked_emails
 
 
 @pytest.fixture()
 def emails_data_full_body_as_html():
-    with open(os.path.dirname(__file__) + '/test_data/emails_data_full_body_html.txt') as emails_json:
+    with open('test_data/emails_data_full_body_html.txt') as emails_json:
         return json.load(emails_json)
 
 
 @pytest.fixture()
 def emails_data_full_body_as_text():
-    with open(os.path.dirname(__file__) + '/test_data/emails_data_full_body_text.txt') as emails_json:
+    with open('test_data/emails_data_full_body_text.txt') as emails_json:
         return json.load(emails_json)
 
 
 @pytest.fixture()
 def expected_incident_full_body():
-    with open(os.path.dirname(__file__) + '/test_data/expected_incident_full_body.txt') as incident:
+    with open('test_data/expected_incident_full_body.txt') as incident:
         return json.load(incident)
 
 
@@ -731,7 +730,7 @@ def test_get_attachment(client):
     """
     from MicrosoftGraphListener import GraphMailUtils
     output_prefix = 'MSGraphMail(val.ID && val.ID == obj.ID)'
-    with open(os.path.dirname(__file__) + '/test_data/mail_with_attachment.txt') as mail_json:
+    with open('test_data/mail_with_attachment.txt') as mail_json:
         user_id = 'ex@example.com'
         raw_response = json.load(mail_json)
         res = GraphMailUtils.item_result_creator(raw_response, user_id)
@@ -756,7 +755,7 @@ def test_get_attachments_without_attachment_id(mocker, client):
     """
     from MicrosoftGraphListener import get_attachment_command
     output_prefix = 'MSGraphMail(val.ID && val.ID == obj.ID)'
-    with open(os.path.dirname(__file__) + '/test_data/mail_with_attachments.txt') as mail_json:
+    with open('test_data/mail_with_attachments.txt') as mail_json:
         test_args = {}
         raw_response = json.load(mail_json)
         mocker.patch.object(client, 'get_attachment', return_value=raw_response)
@@ -783,7 +782,7 @@ def test_get_attachment_unsupported_type(client):
 
     """
     from MicrosoftGraphListener import GraphMailUtils
-    with open(os.path.dirname(__file__) + '/test_data/mail_with_unsupported_attachment.txt') as mail_json:
+    with open('test_data/mail_with_unsupported_attachment.txt') as mail_json:
         user_id = 'ex@example.com'
         raw_response = json.load(mail_json)
         res = GraphMailUtils.item_result_creator(raw_response, user_id)
@@ -918,19 +917,19 @@ class TestCommandsWithLargeAttachments:
     def get_attachment_file_details_by_attachment_id(attach_id):
         attachment_info = {
             '1': {
-                'path': os.path.dirname(__file__) + '/test_data/world.jpg',  # bigger than 3mb attachment
+                'path': 'test_data/world.jpg',  # bigger than 3mb attachment
                 'name': 'world.jpg'
             },
             '2': {
-                'path': os.path.dirname(__file__) + '/test_data/plant.jpeg',  # smaller than 3mb attachment
+                'path': 'test_data/plant.jpeg',  # smaller than 3mb attachment
                 'name': 'plant.jpeg'
             },
             '3': {
-                'path': os.path.dirname(__file__) + '/test_data/test.pdf',  # bigger than 3mb attachment
+                'path': 'test_data/test.pdf',  # bigger than 3mb attachment
                 'name': 'test.pdf'
             },
             '4': {
-                'path': os.path.dirname(__file__) + '/test_data/sample.pdf',  # smaller than 3mb attachment
+                'path': 'test_data/sample.pdf',  # smaller than 3mb attachment
                 'name': 'sample-pdf'
             }
         }

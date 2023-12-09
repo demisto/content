@@ -4,7 +4,6 @@ import dateparser
 import demistomock as demisto
 from unittest.mock import MagicMock, patch
 from DuoEventCollector import Client, GetEvents, LogType, Params, parse_events, main, parse_mintime, validate_request_order_array
-from pathlib import Path
 
 
 @pytest.fixture
@@ -44,7 +43,7 @@ get_events = GetEvents(
 
 
 def load_json(file: str) -> dict:
-    with open(Path(__file__).parent / file) as f:
+    with open(file, 'r') as f:
         return json.load(f)
 
 

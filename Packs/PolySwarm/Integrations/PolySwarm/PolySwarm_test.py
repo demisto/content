@@ -1,4 +1,3 @@
-import os
 import pytest
 from mock import patch, mock_open
 

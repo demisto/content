@@ -1,5 +1,5 @@
-import os
 import datetime
+import io
 import json
 import pytest
 import demistomock as demisto
@@ -89,7 +89,7 @@ client = Client(
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -151,7 +151,7 @@ def test_exact_search_command_(mocker):
     """
     from CrowdStrikeMalquery import exact_search_command
     args = {"hex": "hex", "ascii": "ascii", "limit": "5", "filter_meta": 'sha256, type, size'}
-    exact_search_raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/exact_search_raw_response.json')
+    exact_search_raw_response = util_load_json('test_data/exact_search_raw_response.json')
     mocker.patch.object(client, "exact_search", return_value=exact_search_raw_response)
     result = exact_search_command(client, args)
     assert "ac1403c0-d095-4934-5bd2-4cd45f365a45" in result.readable_output
@@ -179,7 +179,7 @@ def test_fuzzy_search_command(mocker):
     """
     from CrowdStrikeMalquery import fuzzy_search_command
     args = {"hex": "hex", "ascii": "ascii", "limit": "10", "filter_meta": 'sha256, type, size'}
-    fuzzy_search_raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/fuzzy_search_raw_response.json')
+    fuzzy_search_raw_response = util_load_json('test_data/fuzzy_search_raw_response.json')
     mocker.patch.object(client, "fuzzy_search", return_value=fuzzy_search_raw_response)
     result = fuzzy_search_command(client, args)
     expected_context = [
@@ -218,7 +218,7 @@ def test_hunt_command(mocker):
     """
     from CrowdStrikeMalquery import hunt_command
     args = {"yara_rule": "yara", "limit": "5", "filter_meta": 'sha256, type, size'}
-    hunt_raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/hunt_raw_response.json')
+    hunt_raw_response = util_load_json('test_data/hunt_raw_response.json')
     mocker.patch.object(client, "hunt", return_value=hunt_raw_response)
     result = hunt_command(client, args)
     assert "096f6aa5-f245-4b09-790f-133bc89d4d26" in result.readable_output
@@ -228,9 +228,9 @@ def test_hunt_command(mocker):
 @pytest.mark.parametrize(
     "request_id, raw_response, expected_outputs, expected_hr",
     [
-        ('096f6aa5-f245-4b09-790f-133bc89d4d26', util_load_json(os.path.dirname(__file__) + '/test_data/get_hunt_request.json'),
+        ('096f6aa5-f245-4b09-790f-133bc89d4d26', util_load_json('test_data/get_hunt_request.json'),
          get_hunt_request_outputs, get_hunt_request_hr),
-        ('fc4db762-288c-40cc-5f4f-4f19b65649a', util_load_json(os.path.dirname(__file__) + '/test_data/get_exact_search_request.json'),  # noqa: E501
+        ('fc4db762-288c-40cc-5f4f-4f19b65649a', util_load_json('test_data/get_exact_search_request.json'),
          get_exact_search_request_outputs, get_exact_search_request_hr),
         ('abc-123', get_request_status_inprogress_raw, get_request_status_inprogress_outputs,
          get_request_status_inprogress_hr)
@@ -271,10 +271,10 @@ def test_get_file_metadata_command(mocker):
                 'filesize': 484872,
                 'label': 'malware', 'family': 'Arcyess', 'first_seen': '2014/05/09', 'filetype': 'PE32'}]
     mocker.patch.object(client, 'get_files_metadata',
-                        return_value=util_load_json(os.path.dirname(__file__) + '/test_data/get_metadata_raw_response.json'))
+                        return_value=util_load_json('test_data/get_metadata_raw_response.json'))
     result = get_file_metadata_command(client,
                                        {'file': 'accc6794951290467e01b7676e8b4ba177076d54f836589ea7d3298cdf6fc995'})
-    assert result[0].indicator.dbot_score.score == 3
+    assert 3 == result[0].indicator.dbot_score.score
     assert hr in result[0].readable_output
     assert outputs[0] == result[0].outputs
 
@@ -288,7 +288,7 @@ def test_samples_multidownload_command(mocker):
     """
     from CrowdStrikeMalquery import samples_multidownload_command
     mocker.patch.object(client, 'samples_multidownload',
-                        return_value=util_load_json(os.path.dirname(__file__) + '/test_data/multidownload_raw_response.json'))
+                        return_value=util_load_json('test_data/multidownload_raw_response.json'))
     result = samples_multidownload_command(client, {'samples': 'samples'})
     assert "93b55373-3b69-43cb-6ea1-2870a44e1c1e" in result.readable_output
     assert {'Request_ID': '93b55373-3b69-43cb-6ea1-2870a44e1c1e'} == result.outputs
@@ -302,8 +302,7 @@ def test_get_ratelimit_command(mocker):
                 - All data is provided - check context and human readable
     """
     from CrowdStrikeMalquery import get_ratelimit_command
-    mocker.patch.object(client, 'get_quotas', return_value=util_load_json(
-        os.path.dirname(__file__) + '/test_data/get_ratelimit_raw_respose.json'))
+    mocker.patch.object(client, 'get_quotas', return_value=util_load_json('test_data/get_ratelimit_raw_respose.json'))
     result = get_ratelimit_command(client, {})
     expected_hr = "|hunt_count|download_count|monitor_count|hunt_limit|download_limit|monitor_limit|refresh_time" \
                   "|days_left|"

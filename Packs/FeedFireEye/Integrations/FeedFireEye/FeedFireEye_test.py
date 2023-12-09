@@ -1,4 +1,5 @@
 import random
+from typing import Optional
 
 import pytest
 import requests_mock
@@ -11,7 +12,7 @@ import demistomock as demisto
 
 def create_client(public_key: str = 'public_key', private_key: str = 'secret_key', threshold: int = 70,
                   reputation_interval: int = 30, polling_timeout: int = 20, insecure: bool = False, proxy: bool = False,
-                  tags: list = [], tlp_color: str | None = 'AMBER'):
+                  tags: list = [], tlp_color: Optional[str] = 'AMBER'):
     return Client(public_key, private_key, threshold, reputation_interval, polling_timeout, insecure, proxy)
 
 
@@ -78,7 +79,7 @@ def test_parse_access_token_expiration_time():
         - Returns the expiration time of the newly fetched token
 
     """
-    for _i in range(5):
+    for i in range(5):
         random_value = random.randint(0, 1000)
         # 740314800 is the epoch converted time of 1993-06-17 11:00:00
         assert Client.parse_access_token_expiration_time(random_value) - 740314800 == random_value
@@ -167,7 +168,7 @@ def test_fetch_indicators_from_api(mocker, url, status_code, json_data, expected
                 client.fetch_all_indicators_from_api(-1)
 
             if not e:
-                raise AssertionError
+                assert False
 
 
 FETCH_REPORTS_PACKAGE = [
@@ -229,7 +230,7 @@ def test_fetch_reports_from_api(mocker, url, status_code, json_data, expected_re
                 client.fetch_all_reports_from_api(-1)
 
             if not e:
-                raise AssertionError
+                assert False
 
 
 PROCESS_INDICATOR_VALUE_PACKAGE = [

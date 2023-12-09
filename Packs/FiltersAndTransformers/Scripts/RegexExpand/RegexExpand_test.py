@@ -1,4 +1,3 @@
-import os
 import demistomock as demisto
 import json
 
@@ -6,7 +5,7 @@ import json
 def test_main(mocker):
     from RegexExpand import main
 
-    with open(os.path.dirname(__file__) + '/test_data/test-1.json') as f:
+    with open('./test_data/test-1.json', 'r') as f:
         test_list = json.load(f)
 
     for t in test_list:

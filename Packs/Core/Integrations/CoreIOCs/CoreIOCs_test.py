@@ -1,5 +1,3 @@
-import os
-from pathlib import Path
 from CoreIOCs import *
 import pytest
 from freezegun import freeze_time
@@ -152,7 +150,7 @@ class TestCreateFile:
 
     @staticmethod
     def get_file(path):
-        with open(Path(__file__).parent / path) as _file:
+        with open(path) as _file:
             return _file.read()
 
     @staticmethod

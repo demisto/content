@@ -1,7 +1,7 @@
 import json
 import os
 from http import HTTPStatus
-from collections.abc import Callable
+from typing import Callable
 from urllib.parse import urljoin
 
 import pytest
@@ -27,8 +27,8 @@ def load_mock_response(file_name: str) -> str:
     Returns:
         str: Mock file content.
     """
-    file_path = os.path.join(os.path.dirname(__file__), "test_data", file_name)
-    with open(file_path, encoding="utf-8") as mock_file:
+    file_path = os.path.join("test_data", file_name)
+    with open(file_path, mode="r", encoding="utf-8") as mock_file:
         return json.loads(mock_file.read())
 
 
@@ -225,7 +225,7 @@ def test_list_cyber_term_command(
     assert result.outputs_prefix == "ThreatCommand.CyberTerm"
     assert result.outputs_key_field == "id"
     assert isinstance(result.outputs, list)
-    assert {"type", "id"}.issubset(list(result.outputs[0].keys()))
+    assert set(["type", "id"]).issubset(list(result.outputs[0].keys()))
 
 
 @pytest.mark.parametrize(
@@ -1683,7 +1683,7 @@ def test_list_alert_image_command(
         "/v1/data/alerts/get-complete-alert/59490dabe57c281391e11ceb",
     )
     requests_mock.get(url=url, json=json_response, status_code=HTTPStatus.OK)
-    with open(os.path.dirname(__file__) + "/test_data/alert/alert_image.png", "rb") as img1:
+    with open("test_data/alert/alert_image.png", "rb") as img1:
         url = urljoin(
             mock_client._base_url,
             "/v1/data/alerts/alert-image/59490d78e57c281391e11cb9",
@@ -2374,7 +2374,7 @@ def test_get_alert_csv_command_with_comma_separated_content(
     """
     from Rapid7ThreatCommand import get_alert_csv_command
 
-    with open(os.path.dirname(__file__) + "/test_data/alert/alert_csv.csv", "rb") as csv:
+    with open("test_data/alert/alert_csv.csv", "rb") as csv:
         url = urljoin(
             mock_client._base_url,
             "/v1/data/alerts/csv-file/59490dabe57c281391e11ceb",
@@ -2408,7 +2408,7 @@ def test_get_alert_csv_command_with_tab_separated_content(
     """
     from Rapid7ThreatCommand import get_alert_csv_command
 
-    with open(os.path.dirname(__file__) + "/test_data/alert/alert_csv_2.csv", "rb") as csv:
+    with open("test_data/alert/alert_csv_2.csv", "rb") as csv:
         url = urljoin(
             mock_client._base_url,
             "/v1/data/alerts/csv-file/59490dabe57c281391e11ceb",
@@ -2850,10 +2850,10 @@ def test_fetch_incidents_with_empty_alert_list_response(
 @pytest.mark.parametrize(
     ("response", "args", "result"),
     (
-        (list(range(10)), {}, 10),
-        (list(range(70)), {}, 50),
-        (list(range(70)), {"limit": 3}, 3),
-        (list(range(70)), {"all_results": True}, 70),
+        ([x for x in range(10)], {}, 10),
+        ([x for x in range(70)], {}, 50),
+        ([x for x in range(70)], {"limit": 3}, 3),
+        ([x for x in range(70)], {"all_results": True}, 70),
     ),
 )
 def test_manual_pagination(

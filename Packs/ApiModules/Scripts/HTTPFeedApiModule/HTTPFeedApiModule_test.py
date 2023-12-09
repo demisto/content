@@ -1,4 +1,3 @@
-import os
 from HTTPFeedApiModule import get_indicators_command, Client, datestring_to_server_format, feed_main, \
     fetch_indicators_command, get_no_update_value
 import requests_mock
@@ -6,7 +5,7 @@ import demistomock as demisto
 
 
 def test_get_indicators():
-    with open(os.path.dirname(__file__) + '/test_data/asn_ranges.txt') as asn_ranges_txt:
+    with open('test_data/asn_ranges.txt') as asn_ranges_txt:
         asn_ranges = asn_ranges_txt.read().encode('utf8')
 
     with requests_mock.Mocker() as m:
@@ -57,7 +56,7 @@ def test_get_indicators():
 
 
 def test_get_indicators_json_params():
-    with open(os.path.dirname(__file__) + '/test_data/asn_ranges.txt') as asn_ranges_txt:
+    with open('test_data/asn_ranges.txt') as asn_ranges_txt:
         asn_ranges = asn_ranges_txt.read().encode('utf8')
 
     with requests_mock.Mocker() as m:
@@ -146,12 +145,12 @@ def test_datestring_to_server_format():
     datestring4 = "2020-02-10T13:39:14.123"
     datestring5 = "2020-02-10T13:39:14Z"
     datestring6 = "2020-11-01T04:16:13-04:00"
-    assert datestring_to_server_format(datestring1) == '2020-02-10T13:39:14Z'
-    assert datestring_to_server_format(datestring2) == '2020-02-10T13:39:14Z'
-    assert datestring_to_server_format(datestring3) == '2020-02-10T13:39:14Z'
-    assert datestring_to_server_format(datestring4) == '2020-02-10T13:39:14Z'
-    assert datestring_to_server_format(datestring5) == '2020-02-10T13:39:14Z'
-    assert datestring_to_server_format(datestring6) == '2020-11-01T08:16:13Z'
+    assert '2020-02-10T13:39:14Z' == datestring_to_server_format(datestring1)
+    assert '2020-02-10T13:39:14Z' == datestring_to_server_format(datestring2)
+    assert '2020-02-10T13:39:14Z' == datestring_to_server_format(datestring3)
+    assert '2020-02-10T13:39:14Z' == datestring_to_server_format(datestring4)
+    assert '2020-02-10T13:39:14Z' == datestring_to_server_format(datestring5)
+    assert '2020-11-01T08:16:13Z' == datestring_to_server_format(datestring6)
 
 
 def test_get_feed_config():
@@ -220,7 +219,7 @@ def test_feed_main_fetch_indicators(mocker, requests_mock):
     mocker.patch.object(demisto, 'command', return_value='fetch-indicators')
     mocker.patch.object(demisto, 'createIndicators')
 
-    with open(os.path.dirname(__file__) + '/test_data/asn_ranges.txt') as asn_ranges_txt:
+    with open('test_data/asn_ranges.txt') as asn_ranges_txt:
         asn_ranges = asn_ranges_txt.read().encode('utf8')
 
     requests_mock.get(feed_url, content=asn_ranges)
@@ -298,7 +297,7 @@ def test_feed_main_test_module(mocker, requests_mock):
     mocker.patch.object(demisto, 'command', return_value='test-module')
     mocker.patch.object(demisto, 'results')
 
-    with open(os.path.dirname(__file__) + '/test_data/asn_ranges.txt') as asn_ranges_txt:
+    with open('test_data/asn_ranges.txt') as asn_ranges_txt:
         asn_ranges = asn_ranges_txt.read().encode('utf8')
 
     requests_mock.get(feed_url, content=asn_ranges)

@@ -1,6 +1,6 @@
-import os
 from CommonServerPython import *
 import demistomock as demisto
+import io
 from freezegun import freeze_time
 import requests_mock
 
@@ -17,7 +17,7 @@ ALERTS_SECOND_MOCK_URL = 'https://test.com/web/api/v2.1/cloud-detection/alerts?l
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -64,9 +64,9 @@ def test_get_events_command():
     client = Client(base_url='https://test.com/web/api/v2.1')
 
     with requests_mock.Mocker() as m:
-        m.get(ACTIVITIES_MOCK_URL, json=util_load_json(os.path.dirname(__file__) + '/test_data/activities.json'))
-        m.get(THREATS_MOCK_URL, json=util_load_json(os.path.dirname(__file__) + '/test_data/threats.json'))
-        m.get(ALERTS_MOCK_URL, json=util_load_json(os.path.dirname(__file__) + '/test_data/alerts.json'))
+        m.get(ACTIVITIES_MOCK_URL, json=util_load_json('test_data/activities.json'))
+        m.get(THREATS_MOCK_URL, json=util_load_json('test_data/threats.json'))
+        m.get(ALERTS_MOCK_URL, json=util_load_json('test_data/alerts.json'))
 
         events, _ = get_events_command(client, str(arg_to_datetime('3 days')), ['activities', 'threats', 'alerts'])
 
@@ -94,10 +94,10 @@ def test_fetch_events():
     last_run = first_run(arg_to_datetime('3 days'))
 
     with requests_mock.Mocker() as m:
-        m.get(ACTIVITIES_MOCK_URL, json=util_load_json(os.path.dirname(__file__) + '/test_data/activities.json'))
-        m.get(THREATS_MOCK_URL, json=util_load_json(os.path.dirname(__file__) + '/test_data/threats.json'))
-        m.get(ALERTS_MOCK_URL, json=util_load_json(os.path.dirname(__file__) + '/test_data/alerts.json'))
-        m.get(ACTIVITIES_SECOND_MOCK_URL, json=util_load_json(os.path.dirname(__file__) + '/test_data/activities_second_fetch.json'))  # noqa: E501
+        m.get(ACTIVITIES_MOCK_URL, json=util_load_json('test_data/activities.json'))
+        m.get(THREATS_MOCK_URL, json=util_load_json('test_data/threats.json'))
+        m.get(ALERTS_MOCK_URL, json=util_load_json('test_data/alerts.json'))
+        m.get(ACTIVITIES_SECOND_MOCK_URL, json=util_load_json('test_data/activities_second_fetch.json'))
         m.get(THREATS_SECOND_MOCK_URL, json={})
         m.get(ALERTS_SECOND_MOCK_URL, json={})
 
@@ -136,12 +136,9 @@ def test_main(mocker):
     events = mocker.patch('SentinelOneEventCollector.send_events_to_xsiam', side_effect=mock_send_events_to_xsiam)
 
     with requests_mock.Mocker() as m:
-        m.get(ACTIVITIES_MOCK_URL.replace('limit=1000', 'limit=2'), json=util_load_json(
-            os.path.dirname(__file__) + '/test_data/activities.json'))
-        m.get(THREATS_MOCK_URL.replace('limit=1000', 'limit=2'), json=util_load_json(
-            os.path.dirname(__file__) + '/test_data/threats.json'))
-        m.get(ALERTS_MOCK_URL.replace('limit=1000', 'limit=2'), json=util_load_json(
-            os.path.dirname(__file__) + '/test_data/alerts.json'))
+        m.get(ACTIVITIES_MOCK_URL.replace('limit=1000', 'limit=2'), json=util_load_json('test_data/activities.json'))
+        m.get(THREATS_MOCK_URL.replace('limit=1000', 'limit=2'), json=util_load_json('test_data/threats.json'))
+        m.get(ALERTS_MOCK_URL.replace('limit=1000', 'limit=2'), json=util_load_json('test_data/alerts.json'))
 
         main()
 

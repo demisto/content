@@ -1,9 +1,9 @@
-import os
 import json
 import pytest
 import requests
 import requests_mock
 import sys
+import io
 import demistomock as demisto
 
 IP_ADDRESS = '127.0.0.1'
@@ -209,7 +209,7 @@ def init_tests(mocker):
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -268,8 +268,7 @@ def test_tag_details(mocker):
     mocker.patch.object(AutofocusV2, 'autofocus_tag_details', return_value=TAGS_DETAILS_RES)
     mocker.patch.object(demisto, 'results')
     AutofocusV2.tag_details_command()
-    assert demisto.results.call_args[0][0] == util_load_json(
-        os.path.dirname(__file__) + '/test_data/teg_details_command_outputs.json')
+    assert demisto.results.call_args[0][0] == util_load_json('test_data/teg_details_command_outputs.json')
 
 
 def test_get_tags_for_generic_context():

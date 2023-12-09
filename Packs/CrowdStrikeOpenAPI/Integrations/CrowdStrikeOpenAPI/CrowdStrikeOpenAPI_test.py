@@ -1,4 +1,4 @@
-import os
+import io
 import json
 
 import pytest
@@ -18,7 +18,7 @@ def client(requests_mock):
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -35,7 +35,7 @@ def test_query_behaviors(client, requests_mock):
     args = {
         'limit': '1'
     }
-    api_response = util_load_json(os.path.dirname(__file__) + '/test_data/query_behaviors_response.json')
+    api_response = util_load_json('./test_data/query_behaviors_response.json')
     requests_mock.get('https://api.crowdstrike.com/incidents/queries/behaviors/v1?limit=1', json=api_response)
 
     result = query_behaviors_command(client=client, args=args)

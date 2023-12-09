@@ -181,7 +181,7 @@ def test_get_violation_command(requests_mock, mocker, capfd):
     with capfd.disabled():
         main()
     content = demisto.results.call_args[0][0]['Contents'][0]['violation_id']
-    assert content == 2036
+    assert 2036 == content
 
 
 @pytest.mark.parametrize("demisto_args,output", [
@@ -318,8 +318,9 @@ def test_main_get_bad_violation(mocker, requests_mock, capfd):
     command = "gamma-get-violation"
     args = {"violation": "5100"}
     mock_demisto(mocker, args, command)
-    with pytest.raises(SystemExit), capfd.disabled():
-        main()
+    with pytest.raises(SystemExit):
+        with capfd.disabled():
+            main()
     assert demisto.results.call_args[0][0]['Contents'] == "Failed to execute gamma-get-violation " \
                                                           "command.\nError:\nViolation with this " \
                                                           "ID does not exist."
@@ -336,7 +337,7 @@ def test_main_get_violation(requests_mock, mocker, capfd):
     mock_demisto(mocker, args, command)
     with capfd.disabled():
         main()
-    assert demisto.results.call_args[0][0]["Contents"][0]["violation_id"] == 2036
+    assert 2036 == demisto.results.call_args[0][0]["Contents"][0]["violation_id"]
 
 
 def test_main_update(requests_mock, mocker, capfd):
@@ -364,8 +365,9 @@ def test_bad_command(mocker, capfd):
     args = {'violation': f"{test_violation}", 'status': 'resolved', 'notes': ''}
     command = 'gamma-violation-update'
     mock_demisto(mocker, args, command)
-    with pytest.raises(SystemExit), capfd.disabled():
-        main()
+    with pytest.raises(SystemExit):
+        with capfd.disabled():
+            main()
     assert demisto.results.call_args[0][0]['Contents'] == "Failed to execute " \
                                                           "gamma-violation-update " \
                                                           "command.\nError:\nCommand " \

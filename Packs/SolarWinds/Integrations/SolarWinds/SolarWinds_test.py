@@ -1,8 +1,9 @@
 import json
+import io
 import os
 
 import pytest
-from unittest import mock
+import unittest.mock as mock
 from CommonServerPython import DemistoException
 
 BASE_URL = "https://{}:17778/SolarWinds/InformationService/v3/Json"
@@ -10,7 +11,7 @@ SERVER_DOMAIN = "dummy.server"
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -25,7 +26,7 @@ def test_test_module_success(client, requests_mock):
     """Test for successful execution of test_module function"""
     from SolarWinds import test_module
     requests_mock.get(BASE_URL.format(SERVER_DOMAIN) + "/Query", json={"results": []}, status_code=200)
-    assert test_module(client, {}) == 'ok'
+    assert 'ok' == test_module(client, {})
 
 
 def test_test_module_authentication_failure(client, requests_mock):
@@ -126,7 +127,7 @@ def test_validate_and_prepare_query_for_event_list_failure(args, error_msg):
 def test_convert_events_outputs_to_hr():
     """Test case for convert_events_outputs_to_hr function"""
     from SolarWinds import convert_events_outputs_to_hr
-    expected_response = util_load_json(os.path.dirname(__file__) + "/test_data/test_swis_event_list_success.json")
+    expected_response = util_load_json("test_data/test_swis_event_list_success.json")
     hr_response = convert_events_outputs_to_hr(expected_response["outputs"])
     assert hr_response == expected_response["readable"]
 
@@ -142,7 +143,7 @@ def test_convert_events_outputs_to_hr_no_events():
 def test_swis_event_list_success(http_request, client):
     """Test case for success scenarios of swis-event-list command"""
     from SolarWinds import swis_event_list_command
-    expected_response = util_load_json(os.path.dirname(__file__) + "/test_data/test_swis_event_list_success.json")
+    expected_response = util_load_json("test_data/test_swis_event_list_success.json")
     http_request.return_value = expected_response["http_mock"]
     response = swis_event_list_command(client, {})
     assert response.outputs == expected_response["outputs"]
@@ -204,10 +205,10 @@ def test_validate_and_prepare_query_for_alert_list_failure(args, error_msg):
 def test_convert_alerts_outputs_to_hr():
     """Test case for convert_alerts_outputs_to_hr function"""
     from SolarWinds import convert_alerts_outputs_to_hr
-    with open(os.path.dirname(__file__) + '/test_data/test_swis_alert_list_success_context.json') as data:
+    with open('test_data/test_swis_alert_list_success_context.json') as data:
         expected_res = json.load(data)
 
-    with open(os.path.dirname(__file__) + '/test_data/test_swis_alert_list_success.md') as data:
+    with open('test_data/test_swis_alert_list_success.md') as data:
         expected_hr = data.read()
     hr_response = convert_alerts_outputs_to_hr(expected_res)
     assert hr_response == expected_hr
@@ -225,13 +226,13 @@ def test_swis_alert_list_success(http_request, client):
     """Test case for success scenarios of swis-alert-list command"""
     from SolarWinds import swis_alert_list_command
 
-    with open(os.path.dirname(__file__) + '/test_data/swis_alert_list_raw_response.json') as data:
+    with open('test_data/swis_alert_list_raw_response.json') as data:
         mock_response = json.load(data)
 
-    with open(os.path.dirname(__file__) + '/test_data/test_swis_alert_list_success_context.json') as data:
+    with open('test_data/test_swis_alert_list_success_context.json') as data:
         expected_res = json.load(data)
 
-    with open(os.path.dirname(__file__) + '/test_data/test_swis_alert_list_success.md') as data:
+    with open('test_data/test_swis_alert_list_success.md') as data:
         expected_hr = data.read()
 
     http_request.return_value = mock_response

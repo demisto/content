@@ -1,4 +1,3 @@
-import os
 import pytest
 import json
 import CommonServerPython
@@ -7,13 +6,13 @@ from MicrosoftGraphFiles import remove_identity_key, url_validation, parse_key_t
     download_file_command, list_sharepoint_sites_command, list_drive_content_command, create_new_folder_command, \
     list_drives_in_site_command, MsGraphClient, upload_new_file_command
 
-with open(os.path.dirname(__file__) + "/test_data/response.json", "rb") as test_data:
+with open("test_data/response.json", "rb") as test_data:
     commands_responses = json.load(test_data)
 
-with open(os.path.dirname(__file__) + "/test_data/test_inputs.json", "rb") as test_data:
+with open("test_data/test_inputs.json", "rb") as test_data:
     arguments = json.load(test_data)
 
-with open(os.path.dirname(__file__) + "/test_data/expected_results.json", "rb") as test_data:
+with open("test_data/expected_results.json", "rb") as test_data:
     commands_expected_results = json.load(test_data)
 
 EXCLUDE_LIST = ["eTag"]
@@ -509,7 +508,7 @@ def test_upload_command_with_upload_session(mocker, client, args):
             - return an result with upload session.
      """
     import requests
-    mocker.patch.object(demisto, 'getFilePath', return_value={'path': os.path.dirname(__file__) + '/test_data/shark.jpg',
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': 'test_data/shark.jpg',
                                                               'name': 'shark.jpg'})
     create_upload_mock = mocker.patch.object(MsGraphClient, 'create_an_upload_session',
                                              return_value=({"response": "", "uploadUrl": "test.com"}, "test.com"))
@@ -531,7 +530,7 @@ def test_upload_command_without_upload_session(mocker, client, args):
         Then:
             - return an result without upload session.
      """
-    mocker.patch.object(demisto, 'getFilePath', return_value={'path': os.path.dirname(__file__) + '/test_data/some_pdf.pdf',
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': 'test_data/some_pdf.pdf',
                                                               'name': 'some_pdf.pdf'})
     mocker_https = mocker.patch.object(client.ms_client, "http_request", return_value=return_value_upload_without_upload_session)
     create_upload_mock = mocker.patch.object(MsGraphClient, 'create_an_upload_session',

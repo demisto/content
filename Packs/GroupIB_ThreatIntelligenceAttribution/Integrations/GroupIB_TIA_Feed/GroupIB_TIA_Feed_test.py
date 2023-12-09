@@ -1,12 +1,11 @@
-import os
 import pytest
 from json import load
 from GroupIB_TIA_Feed import fetch_indicators_command, Client
 
 
-with open(os.path.dirname(__file__) + '/test_data/example.json') as examples:
+with open('test_data/example.json') as examples:
     RAW_JSON = load(examples)
-with open(os.path.dirname(__file__) + '/test_data/results.json') as results:
+with open('test_data/results.json') as results:
     RESULTS = load(results)
 COLLECTION_NAMES = [
     'compromised/mule', 'compromised/imei', 'attacks/ddos', 'attacks/deface',

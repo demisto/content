@@ -1,12 +1,12 @@
 import demistomock as demisto
 import jwt
-from pathlib import Path
+
 from Pcysys import Client, pentera_run_template_command, pentera_get_task_run_status_command, \
     pentera_get_task_run_full_action_report_command, pentera_authentication
 
 
 MOCK_PENTERA_FULL_ACTION_REPORT = 'penterascan-5e4530961deb8eda82b08730.csv'
-MOCK_CSV = open(Path(__file__).parent / 'test_data/mock_csv_file').read()
+MOCK_CSV = open('TestData/mock_csv_file', 'r').read()
 MOCK_AUTHENTICATION = {
     "token": "TOKEN",
     "tgt": "TGT"

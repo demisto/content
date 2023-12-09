@@ -1,8 +1,8 @@
 from pytest import raises
-import os
 
 
 def create_client():
+    import os
     from RecordedFutureLists import Client, __version__
 
     base_url = 'https://api.recordedfuture.com/gw/xsoar/'
@@ -225,8 +225,8 @@ class TestRFClient:
 
         assert result.outputs_prefix == ''
         assert result.outputs_key_field == ''
-        assert result.outputs == {}
-        assert result.raw_response == {}
+        assert result.outputs == dict()
+        assert result.raw_response == dict()
         assert result.readable_output == 'No results found.'
 
     def test_list_search(self, mocker):
@@ -526,11 +526,11 @@ class TestActions:
         result_actions = actions._process_result_actions(response=response)
         assert result_actions is None
 
-        response = {'data': 'mock', 'result_actions': []}
+        response = {'data': 'mock', 'result_actions': list()}
         result_actions = actions._process_result_actions(response=response)
         assert result_actions is None
 
-        response = {'data': 'mock', 'result_actions': {}}
+        response = {'data': 'mock', 'result_actions': dict()}
         result_actions = actions._process_result_actions(response=response)
         assert result_actions is None
 

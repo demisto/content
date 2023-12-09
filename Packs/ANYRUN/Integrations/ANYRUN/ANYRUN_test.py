@@ -43,7 +43,7 @@ def get_response():
     return response, response2, response3
 
 
-class TestUnderscoreToCamelCase:
+class TestUnderscoreToCamelCase(object):
     def test_one(self):
         assert underscore_to_camel_case({}) == {}
 
@@ -54,12 +54,12 @@ class TestUnderscoreToCamelCase:
         assert underscore_to_camel_case('capital_cAsE') == 'capitalCase'
 
 
-class TestMakeCapital:
+class TestMakeCapital(object):
     def test_make_capital_1(self):
         assert make_capital('heLLo') == 'HeLLo'
 
 
-class TestMakeSingular:
+class TestMakeSingular(object):
     def test_make_singular_1(self):
         assert make_singular('assess') == 'assess'
 
@@ -82,7 +82,7 @@ class TestMakeSingular:
         assert make_singular('os') == 'os'
 
 
-class TestMakeUpper:
+class TestMakeUpper(object):
     def test_make_upper_1(self):
         assert make_upper('id') == 'ID'
 
@@ -96,7 +96,7 @@ class TestMakeUpper:
         assert make_upper({}) == {}
 
 
-class TestGenerateDBotScore:
+class TestGenerateDBotScore(object):
     def test_generate_dbotscore_1(self, get_response):
         response1, response2, response3 = get_response
 
@@ -125,7 +125,7 @@ class TestGenerateDBotScore:
         assert dbot_score.get('Vendor') == 'ANYRUN'
 
 
-class TestTaskIDFromURL:
+class TestTaskIDFromURL(object):
     def test_taskid_from_url(self):
         url = 'https://www.madeup.com/madeup/tasks/'  # disable-secrets-detection
         url += 'this-is-the-task-id/blah/&someotherstuff'

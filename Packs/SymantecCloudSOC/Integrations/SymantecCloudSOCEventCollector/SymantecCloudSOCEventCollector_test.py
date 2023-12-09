@@ -1,4 +1,3 @@
-import os
 import requests_mock
 from freezegun import freeze_time
 import demistomock as demisto
@@ -15,9 +14,9 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-response_data = util_load_json(os.path.dirname(__file__) + '/test_data/test_data_dedup_by_id.json')
-response_pagination_incident = util_load_json(os.path.dirname(__file__) + '/test_data/test_data_pagination_incident.json')
-response_pagination_investigate = util_load_json(os.path.dirname(__file__) + '/test_data/test_data_pagination_investigate.json')
+response_data = util_load_json('./test_data/test_data_dedup_by_id.json')
+response_pagination_incident = util_load_json('./test_data/test_data_pagination_incident.json')
+response_pagination_investigate = util_load_json('./test_data/test_data_pagination_investigate.json')
 
 
 def get_mocked_url(app: str, subtype: str,

@@ -1,7 +1,5 @@
-import os
-
-
 def create_client():
+    import os
     from RecordedFuture import Client
 
     base_url = 'https://api.recordedfuture.com/gw/xsoar/'

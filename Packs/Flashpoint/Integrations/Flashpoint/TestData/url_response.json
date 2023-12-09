@@ -1,0 +1,27 @@
+[
+  {
+    "Attribute": {
+      "Event": {
+        "RelatedEvent": [],
+        "Tags": [],
+        "attack_ids": [],
+        "fpid": "hdjkfhdjkhfdjfhd",
+        "href": "http://123-fake-api.com/api/v4/indicators/event/hdjkfhdjkhfdjfhd",
+        "info": "info Page",
+        "reports": [],
+        "timestamp": "1572883071"
+      },
+      "category": "category1",
+      "fpid": "hdjkfhdjkhfdjfhd",
+      "href": "http://123-fake-api.com/api/v4/indicators/attribute/hdjkfhdjkhfdjfhd",
+      "timestamp": "1572882868",
+      "to_ids": true,
+      "type": "url",
+      "uuid": "dfhkj3-1111-2222-3333-334edfadf33",
+      "value": {
+        "comment": "",
+        "url": "http://123-fake-api.com"
+      }
+    }
+  }
+]

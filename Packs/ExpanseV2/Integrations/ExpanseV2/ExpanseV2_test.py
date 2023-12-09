@@ -1,9 +1,9 @@
-import os
 """Expanse V2 Integration for Cortex XSOAR - Unit Tests file
 
 """
 
 import json
+import io
 import copy
 import demistomock as demisto
 import pytest
@@ -18,7 +18,7 @@ def handle_calling_context(mocker):
 
 
 def util_load_json(path):
-    with open(path, encoding="utf-8") as f:
+    with io.open(path, mode="r", encoding="utf-8") as f:
         return json.loads(f.read())
 
 
@@ -203,7 +203,7 @@ def test_fetch_incidents(requests_mock):
     MOCK_NEXT_PAGE_TOKEN = "token1"
 
     MOCK_URL = f'https://example.com/api/v1/issues/issues?limit={int(MOCK_LIMIT) + 1}&businessUnitName={MOCK_BU}&sort=created'
-    mock_issues = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_get_issues.json")
+    mock_issues = util_load_json("test_data/expanse_get_issues.json")
     mock_issues_page1 = {
         "data": mock_issues["data"][:int(MOCK_LIMIT) + 1],
         "pagination": {
@@ -229,7 +229,7 @@ def test_fetch_incidents(requests_mock):
         }
     }
 
-    mock_incidents = util_load_json(os.path.dirname(__file__) + "/test_data/fetch_incidents_output.json")
+    mock_incidents = util_load_json("test_data/fetch_incidents_output.json")
 
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
 
@@ -281,9 +281,9 @@ class TestMirroringFunctionality:
             'id': 'a827f1a5-f223-4bf6-80e0-e8481bce8e2c'
         }
 
-        MOCK_ENTRIES = util_load_json(os.path.dirname(__file__) + "/test_data/get_remote_data_updated_entries.json")
+        MOCK_ENTRIES = util_load_json("test_data/get_remote_data_updated_entries.json")
 
-        mock_updates = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_get_issue_updates.json")
+        mock_updates = util_load_json("test_data/expanse_get_issue_updates.json")
         mock_updates["data"] = mock_updates["data"][: int(MOCK_LIMIT)]
         client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
 
@@ -320,8 +320,7 @@ class TestMirroringFunctionality:
             'id': 'a827f1a5-f223-4bf6-80e0-e8481bce8e2c'
         }
 
-        MOCK_ENTRIES = util_load_json(os.path.dirname(
-            __file__) + "/test_data/get_remote_data_updated_entries_incident_closure.json")
+        MOCK_ENTRIES = util_load_json("test_data/get_remote_data_updated_entries_incident_closure.json")
 
         client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
         mock_issue_updates = {
@@ -379,8 +378,7 @@ class TestMirroringFunctionality:
             'progressStatus': 'Investigating'
         }
 
-        MOCK_ENTRIES = util_load_json(os.path.dirname(
-            __file__) + "/test_data/get_remote_data_updated_entries_incident_reopening.json")
+        MOCK_ENTRIES = util_load_json("test_data/get_remote_data_updated_entries_incident_reopening.json")
 
         client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
         mock_issue_updates = {
@@ -522,7 +520,7 @@ class TestMirroringFunctionality:
         """
         from ExpanseV2 import get_modified_remote_data_command, Client
 
-        get_incidents_list_response = util_load_json(os.path.dirname(__file__) + '/test_data/expanse_get_issues.json')
+        get_incidents_list_response = util_load_json('./test_data/expanse_get_issues.json')
 
         client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
 
@@ -604,7 +602,7 @@ def test_expanse_get_issue(requests_mock):
     from ExpanseV2 import Client, get_issue_command
 
     MOCK_ISSUE_ID = "62089967-7b41-3d49-a21d-d12753d8fd91"
-    mock_issues = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_get_issues.json")
+    mock_issues = util_load_json("test_data/expanse_get_issues.json")
     mock_issue = [i for i in mock_issues["data"] if i["id"] == MOCK_ISSUE_ID][0]
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
 
@@ -631,7 +629,7 @@ def test_expanse_get_issues(requests_mock):
     MOCK_BU = "testcorp123 Dev,BU2 Prod"
     MOCK_LIMIT = "2"
     MOCK_SORT = "created"
-    mock_issues = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_get_issues.json")
+    mock_issues = util_load_json("test_data/expanse_get_issues.json")
 
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
 
@@ -660,7 +658,7 @@ def test_expanse_get_issue_comments_command(requests_mock):
 
     MOCK_ISSUE_ID = "a827f1a5-f223-4bf6-80e0-e8481bce8e2c"
     MOCK_LIMIT = "2"
-    mock_comments = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_get_issue_updates.json")
+    mock_comments = util_load_json("test_data/expanse_get_issue_updates.json")
     mock_comments["data"] = [d for d in mock_comments["data"] if d["updateType"] == "Comment"]
 
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
@@ -690,7 +688,7 @@ def test_expanse_get_issue_updates_command(requests_mock):
 
     MOCK_ISSUE_ID = "a827f1a5-f223-4bf6-80e0-e8481bce8e2c"
     MOCK_LIMIT = "3"
-    mock_updates = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_get_issue_updates.json")
+    mock_updates = util_load_json("test_data/expanse_get_issue_updates.json")
 
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
 
@@ -716,7 +714,7 @@ def test_expanse_get_service(requests_mock):
     from ExpanseV2 import Client, get_service_command
 
     MOCK_SERVICE_ID = "1c0cb095-2bf1-385f-a760-cb364cbe6f59"
-    mock_services = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_get_services.json")
+    mock_services = util_load_json("test_data/expanse_get_services.json")
     mock_service = [i for i in mock_services["data"] if i["id"] == MOCK_SERVICE_ID][0]
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
 
@@ -743,7 +741,7 @@ def test_expanse_get_services(requests_mock):
     MOCK_BU = "testcorp123 Dev"
     MOCK_LIMIT = "2"
     MOCK_SORT = "firstObserved"
-    mock_services = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_get_services.json")
+    mock_services = util_load_json("test_data/expanse_get_services.json")
 
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
 
@@ -771,7 +769,7 @@ def test_expanse_list_businessunits_command(requests_mock):
     from ExpanseV2 import Client, list_businessunits_command
 
     MOCK_LIMIT = "2"
-    mock_businessunits = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_list_businessunits.json")
+    mock_businessunits = util_load_json("test_data/expanse_list_businessunits.json")
 
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
 
@@ -796,7 +794,7 @@ def test_expanse_list_providers(requests_mock):
     from ExpanseV2 import Client, list_providers_command
 
     MOCK_LIMIT = "8"
-    mock_providers = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_list_providers.json")
+    mock_providers = util_load_json("test_data/expanse_list_providers.json")
 
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
 
@@ -821,7 +819,7 @@ def test_expanse_list_tags(requests_mock):
     from ExpanseV2 import Client, list_tags_command
 
     MOCK_LIMIT = "2"
-    mock_tags = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_list_tags.json")
+    mock_tags = util_load_json("test_data/expanse_list_tags.json")
 
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
 
@@ -846,7 +844,7 @@ def test_expanse_list_pocs(requests_mock):
     from ExpanseV2 import Client, list_pocs_command
 
     MOCK_LIMIT = "2"
-    mock_pocs = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_list_pocs.json")
+    mock_pocs = util_load_json("test_data/expanse_list_pocs.json")
 
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
 
@@ -873,7 +871,7 @@ def test_expanse_create_poc(requests_mock):
 
     MOCK_POC_EMAIL = "analyst@expanseinc.com"
     MOCK_POC_FIRST_NAME = "John"
-    mock_poc = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_create_poc.json")
+    mock_poc = util_load_json("test_data/expanse_create_poc.json")
 
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
 
@@ -912,7 +910,7 @@ def test_expanse_assign_single_poc_to_iprange(mocker, requests_mock):
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
 
     # For list tags
-    mock_pocs = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_list_pocs.json")
+    mock_pocs = util_load_json("test_data/expanse_list_pocs.json")
     requests_mock.get(f"https://example.com/api/v2/annotation/point-of-contact?limit={MOCK_PAGE_LIMIT}", json=mock_pocs)
 
     requests_mock.post(f"https://example.com/api/v2/{ASSET_TYPE_URL}/contact-assignments/bulk", json={})
@@ -953,7 +951,7 @@ def test_expanse_get_iprange(requests_mock):
 
     MOCK_BU = "BU 1 Dev,BU 2 Prod"
     MOCK_LIMIT = "2"
-    mock_ipranges = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_get_ip_range.json")
+    mock_ipranges = util_load_json("test_data/expanse_get_ip_range.json")
     # input has startAddress and endAddress, doesn't have CIDR
     mock_ipranges_input = copy.deepcopy(mock_ipranges)
     for d in mock_ipranges_input["data"]:
@@ -999,7 +997,7 @@ def test_expanse_create_tag(requests_mock):
 
     MOCK_TAGNAME = "xsoar-test-tag1"
     MOCK_TAGDESC = "Test tag"
-    mock_tag = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_create_tag.json")
+    mock_tag = util_load_json("test_data/expanse_create_tag.json")
 
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
 
@@ -1038,7 +1036,7 @@ def test_expanse_assign_single_tag_to_iprange(mocker, requests_mock):
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
 
     # For list tags
-    mock_tags = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_list_tags.json")
+    mock_tags = util_load_json("test_data/expanse_list_tags.json")
     requests_mock.get(f"https://example.com/api/v3/annotations/tags?limit={MOCK_PAGE_LIMIT}", json=mock_tags)
 
     requests_mock.post(f"https://example.com/api/v2/{ASSET_TYPE_URL}/tag-assignments/bulk", json={})
@@ -1087,7 +1085,7 @@ def test_expanse_unassign_single_tag_from_iprange(requests_mock, mocker):
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
 
     # For list tags
-    mock_tags = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_list_tags.json")
+    mock_tags = util_load_json("test_data/expanse_list_tags.json")
     requests_mock.get(f"https://example.com/api/v3/annotations/tags?limit={MOCK_PAGE_LIMIT}", json=mock_tags)
 
     requests_mock.post(f"https://example.com/api/v2/{ASSET_TYPE_URL}/tag-assignments/bulk", json={})
@@ -1138,7 +1136,7 @@ def test_expanse_assign_multiple_tags_to_iprange(mocker, requests_mock):
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
 
     # For list tags
-    mock_tags = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_list_tags.json")
+    mock_tags = util_load_json("test_data/expanse_list_tags.json")
     requests_mock.get(f"https://example.com/api/v3/annotations/tags?limit={MOCK_PAGE_LIMIT}", json=mock_tags)
 
     requests_mock.post(f"https://example.com/api/v2/{ASSET_TYPE_URL}/tag-assignments/bulk", json={})
@@ -1195,7 +1193,7 @@ def test_expanse_unassign_multiple_tags_from_iprange(mocker, requests_mock):
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
 
     # For list tags
-    mock_tags = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_list_tags.json")
+    mock_tags = util_load_json("test_data/expanse_list_tags.json")
     requests_mock.get(f"https://example.com/api/v3/annotations/tags?limit={MOCK_PAGE_LIMIT}", json=mock_tags)
 
     requests_mock.post(f"https://example.com/api/v2/{ASSET_TYPE_URL}/tag-assignments/bulk", json={})
@@ -1250,7 +1248,7 @@ def test_expanse_assign_single_tag_to_domain(mocker, requests_mock):
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
 
     # For list tags
-    mock_tags = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_list_tags.json")
+    mock_tags = util_load_json("test_data/expanse_list_tags.json")
     requests_mock.get(f"https://example.com/api/v3/annotations/tags?limit={MOCK_PAGE_LIMIT}", json=mock_tags)
 
     requests_mock.post(f"https://example.com/api/v2/{ASSET_TYPE_URL}/tag-assignments/bulk", json={})
@@ -1299,7 +1297,7 @@ def test_expanse_unassign_single_tag_from_domain(requests_mock, mocker):
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
 
     # For list tags
-    mock_tags = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_list_tags.json")
+    mock_tags = util_load_json("test_data/expanse_list_tags.json")
     requests_mock.get(f"https://example.com/api/v3/annotations/tags?limit={MOCK_PAGE_LIMIT}", json=mock_tags)
 
     requests_mock.post(f"https://example.com/api/v2/{ASSET_TYPE_URL}/tag-assignments/bulk", json={})
@@ -1350,7 +1348,7 @@ def test_expanse_assign_multiple_tags_to_domain(mocker, requests_mock):
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
 
     # For list tags
-    mock_tags = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_list_tags.json")
+    mock_tags = util_load_json("test_data/expanse_list_tags.json")
     requests_mock.get(f"https://example.com/api/v3/annotations/tags?limit={MOCK_PAGE_LIMIT}", json=mock_tags)
 
     requests_mock.post(f"https://example.com/api/v2/{ASSET_TYPE_URL}/tag-assignments/bulk", json={})
@@ -1407,7 +1405,7 @@ def test_expanse_unassign_multiple_tags_from_domain(mocker, requests_mock):
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
 
     # For list tags
-    mock_tags = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_list_tags.json")
+    mock_tags = util_load_json("test_data/expanse_list_tags.json")
     requests_mock.get(f"https://example.com/api/v3/annotations/tags?limit={MOCK_PAGE_LIMIT}", json=mock_tags)
 
     requests_mock.post(f"https://example.com/api/v2/{ASSET_TYPE_URL}/tag-assignments/bulk", json={})
@@ -1462,7 +1460,7 @@ def test_expanse_assign_single_tag_to_certificate(mocker, requests_mock):
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
 
     # For list tags
-    mock_tags = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_list_tags.json")
+    mock_tags = util_load_json("test_data/expanse_list_tags.json")
     requests_mock.get(f"https://example.com/api/v3/annotations/tags?limit={MOCK_PAGE_LIMIT}", json=mock_tags)
 
     requests_mock.post(f"https://example.com/api/v2/{ASSET_TYPE_URL}/tag-assignments/bulk", json={})
@@ -1511,7 +1509,7 @@ def test_expanse_unassign_single_tag_from_certificate(requests_mock, mocker):
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
 
     # For list tags
-    mock_tags = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_list_tags.json")
+    mock_tags = util_load_json("test_data/expanse_list_tags.json")
     requests_mock.get(f"https://example.com/api/v3/annotations/tags?limit={MOCK_PAGE_LIMIT}", json=mock_tags)
 
     requests_mock.post(f"https://example.com/api/v2/{ASSET_TYPE_URL}/tag-assignments/bulk", json={})
@@ -1562,7 +1560,7 @@ def test_expanse_assign_multiple_tags_to_certificate(mocker, requests_mock):
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
 
     # For list tags
-    mock_tags = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_list_tags.json")
+    mock_tags = util_load_json("test_data/expanse_list_tags.json")
     requests_mock.get(f"https://example.com/api/v3/annotations/tags?limit={MOCK_PAGE_LIMIT}", json=mock_tags)
 
     requests_mock.post(f"https://example.com/api/v2/{ASSET_TYPE_URL}/tag-assignments/bulk", json={})
@@ -1619,7 +1617,7 @@ def test_expanse_unassign_multiple_tags_from_certificate(mocker, requests_mock):
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
 
     # For list tags
-    mock_tags = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_list_tags.json")
+    mock_tags = util_load_json("test_data/expanse_list_tags.json")
     requests_mock.get(f"https://example.com/api/v3/annotations/tags?limit={MOCK_PAGE_LIMIT}", json=mock_tags)
 
     requests_mock.post(f"https://example.com/api/v2/{ASSET_TYPE_URL}/tag-assignments/bulk", json={})
@@ -1662,8 +1660,8 @@ def test_expanse_get_certificate_by_hash(requests_mock):
     """
     from ExpanseV2 import Client, get_certificate_command
 
-    mock_certificate_data = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_certificate.json")
-    mock_result_data = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_certificate_stdctx.json")
+    mock_certificate_data = util_load_json("test_data/expanse_certificate.json")
+    mock_result_data = util_load_json("test_data/expanse_certificate_stdctx.json")
 
     mock_result_data['Expanse.Certificate(val.id && val.id == obj.id)'] = [mock_certificate_data]
 
@@ -1699,7 +1697,7 @@ def test_expanse_get_certificate_by_query(requests_mock):
 
     MOCK_BU = "Test Company Dev,Test Company Prod"
     MOCK_LIMIT = "2"
-    mock_certs = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_get_certificate.json")
+    mock_certs = util_load_json("test_data/expanse_get_certificate.json")
 
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
 
@@ -1713,7 +1711,7 @@ def test_expanse_get_certificate_by_query(requests_mock):
     assert result[-1].outputs_key_field == "id"
     assert result[-1].outputs == mock_certs["data"][: int(MOCK_LIMIT)]
 
-    certs_sha256 = {base64.urlsafe_b64decode(c['certificate']['pemSha256']).hex() for c in mock_certs['data']}
+    certs_sha256 = set([base64.urlsafe_b64decode(c['certificate']['pemSha256']).hex() for c in mock_certs['data']])
     for indicator in result[:-1]:
         assert isinstance(indicator.indicator, Common.Certificate)
         assert indicator.indicator.sha256 == indicator.indicator.dbot_score.indicator
@@ -1738,9 +1736,9 @@ def test_certificate_command(requests_mock, mocker):
 
     MOCK_CERT_HASH = 'mRi21v8MwFzvzjB1abEnKw=='
 
-    mock_certificate_data = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_certificate.json")
-    mock_ioc_data = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_certcommand_ioc.json")
-    mock_result_data = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_certificate_stdctx.json")
+    mock_certificate_data = util_load_json("test_data/expanse_certificate.json")
+    mock_ioc_data = util_load_json("test_data/expanse_certcommand_ioc.json")
+    mock_result_data = util_load_json("test_data/expanse_certificate_stdctx.json")
 
     mock_result_data['Expanse.Certificate(val.id && val.id == obj.id)'] = [mock_certificate_data]
 
@@ -1775,7 +1773,7 @@ def test_expanse_get_domain(requests_mock):
 
     MOCK_BU = "Test Company Dev,Test Company Prod"
     MOCK_LIMIT = "2"
-    mock_domain_data = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_get_domain.json")
+    mock_domain_data = util_load_json("test_data/expanse_get_domain.json")
 
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
 
@@ -1826,11 +1824,10 @@ def test_get_associated_domains(requests_mock):
 
     CN_SEARCH = "*.0mizwwr0v7.gw.panclouddev.com"
     MOCK_LIMIT = "1"
-    mock_certificate_data = util_load_json(os.path.dirname(
-        __file__) + "/test_data/expanse_get_associated_domains_certificate.json")
-    mock_cdetailed_data = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_get_associated_domains_cdetailed.json")
+    mock_certificate_data = util_load_json("test_data/expanse_get_associated_domains_certificate.json")
+    mock_cdetailed_data = util_load_json("test_data/expanse_get_associated_domains_cdetailed.json")
     # we load response for only one IP query
-    mock_ips_data = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_get_associated_domains_ip.json")
+    mock_ips_data = util_load_json("test_data/expanse_get_associated_domains_ip.json")
 
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
 
@@ -1895,7 +1892,7 @@ def test_domain(requests_mock):
     from CommonServerPython import Common, DBotScoreType
 
     MOCK_DOMAIN = "tableau.example.com"
-    mock_domain_data = util_load_json(os.path.dirname(__file__) + "/test_data/domain.json")
+    mock_domain_data = util_load_json("test_data/domain.json")
 
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
 
@@ -1931,7 +1928,7 @@ def test_ip(requests_mock):
     from CommonServerPython import Common, DBotScoreType
 
     MOCK_IP = "1.1.1.1"
-    mock_ip_data = util_load_json(os.path.dirname(__file__) + "/test_data/ip.json")
+    mock_ip_data = util_load_json("test_data/ip.json")
 
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
 
@@ -1967,7 +1964,7 @@ def test_cidr(requests_mock):
 
     MOCK_INET = "203.0.112.0/22"
     MOCK_INCLUDE = "severityCounts,annotations,attributionReasons,relatedRegistrationInformation,locationInformation"
-    mock_cidr = util_load_json(os.path.dirname(__file__) + "/test_data/cidr.json")
+    mock_cidr = util_load_json("test_data/cidr.json")
     # input has startAddress and endAddress, doesn't have CIDR
     mock_cidr_input = copy.deepcopy(mock_cidr)
     for d in mock_cidr_input["data"]:
@@ -2021,10 +2018,9 @@ def test_domains_by_certificate(requests_mock):
     from ExpanseV2 import Client, domains_for_certificate_command
     domain_to_test = "base2.pets.com"
 
-    mock_domains_by_certificate = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_assets_for_certificate.json")
-    mock_domains_by_certificates = util_load_json(os.path.dirname(
-        __file__) + "/test_data/expanse_get_domains_for_certificates.json")
-    mock_ips = util_load_json(os.path.dirname(__file__) + "/test_data/expanse_assets_ips.json")
+    mock_domains_by_certificate = util_load_json("test_data/expanse_assets_for_certificate.json")
+    mock_domains_by_certificates = util_load_json("test_data/expanse_get_domains_for_certificates.json")
+    mock_ips = util_load_json("test_data/expanse_assets_ips.json")
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
     requests_mock.get("https://example.com/api/v2/assets/certificates/Jr8RiLR4OfFslz9VmELI9g==",
                       json=mock_domains_by_certificate)
@@ -2050,7 +2046,7 @@ def test_format_domain_data_empty_domainStatuses():
     """
     from ExpanseV2 import format_domain_data
 
-    mock_domain_data = util_load_json(os.path.dirname(__file__) + "/test_data/domain.json")
+    mock_domain_data = util_load_json("test_data/domain.json")
     mock_domain_data.get('whois')[0].get('domainStatuses').clear()
 
     results = format_domain_data([mock_domain_data])

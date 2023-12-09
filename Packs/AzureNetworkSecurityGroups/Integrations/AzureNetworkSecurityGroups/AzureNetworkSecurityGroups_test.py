@@ -1,5 +1,5 @@
-import os
 import json
+import io
 
 import pytest
 
@@ -23,7 +23,7 @@ def mock_client(mocker, http_request_result=None):
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -34,7 +34,7 @@ def test_format_rule():
 
     """
     from AzureNetworkSecurityGroups import format_rule
-    rule = util_load_json(os.path.dirname(__file__) + "/test_data/get_rule_result.json")
+    rule = util_load_json("test_data/get_rule_result.json")
     cr = format_rule(rule, "RuleName")
     assert cr.raw_response['name'] == 'wow'
     assert cr.raw_response['sourceAddressPrefix'] == '3.2.3.2'
@@ -46,7 +46,7 @@ def test_list_groups_command(mocker):
     Validate that list_groups_command returns the output in the correct format
     """
     from AzureNetworkSecurityGroups import list_groups_command
-    client = mock_client(mocker, util_load_json(os.path.dirname(__file__) + "/test_data/list_network_groups_result.json"))
+    client = mock_client(mocker, util_load_json("test_data/list_network_groups_result.json"))
     results = list_groups_command(client, args={}, params={'subscription_id': 'subscriptionID',
                                                            'resource_group_name': 'resourceGroupName'})
     assert '### Network Security Groups' in results.readable_output
@@ -60,7 +60,7 @@ def test_create_rule_command(mocker):
     Then: Validate protocol and source are converted to `*` and destination port is converted to list.
     """
     from AzureNetworkSecurityGroups import create_rule_command
-    client = mock_client(mocker, util_load_json(os.path.dirname(__file__) + "/test_data/list_network_groups_result.json"))
+    client = mock_client(mocker, util_load_json("test_data/list_network_groups_result.json"))
     create_rule_command(client, args={'security_group_name': 'securityGroup', 'security_rule_name': 'test_rule',
                         'direction': 'Inbound', 'action': 'Allow', 'protocol': 'Any', 'source': 'Any',
                                       'source_ports': '900-1000', 'destination_ports': '1,2,3,4-6'},
@@ -83,16 +83,16 @@ def test_update_rule_command(mocker):
 
     """
     from AzureNetworkSecurityGroups import update_rule_command
-    client = mock_client(mocker, util_load_json(os.path.dirname(__file__) + "/test_data/get_rule_result.json"))
+    client = mock_client(mocker, util_load_json("test_data/get_rule_result.json"))
     update_rule_command(client, args={'security_group_name': 'securityGroup', 'security_rule_name': 'wow', 'direction': 'Inbound',
                         'action': 'Allow', 'protocol': 'Any', 'source': 'Any', 'source_ports': '900-1000',
                                       'destination_ports': '1,2,3,4-6'}, params={'subscription_id': 'subscriptionID',
                                                                                  'resource_group_name': 'resourceGroupName'})
     properties = client.http_request.call_args_list[1][1].get('data').get('properties')
     assert 'destinationPortRange' not in properties.keys()
-    assert 'destinationPortRanges' in properties
+    assert 'destinationPortRanges' in properties.keys()
     assert 'sourcePortRanges' not in properties.keys()
-    assert 'sourcePortRange' in properties
+    assert 'sourcePortRange' in properties.keys()
     assert properties.get('protocol') == properties.get('sourceAddressPrefix') == '*'
 
 
@@ -101,7 +101,7 @@ def test_list_rules_command(mocker):
     Validate that list_rules_command returns the output in the correct format
     """
     from AzureNetworkSecurityGroups import list_rules_command
-    client = mock_client(mocker, util_load_json(os.path.dirname(__file__) + "/test_data/list_rule_results.json"))
+    client = mock_client(mocker, util_load_json("test_data/list_rule_results.json"))
     result = list_rules_command(client, args={'security_group_name': 'groupName'},
                                 params={'subscription_id': 'subscriptionID',
                                         'resource_group_name': 'resourceGroupName'})
@@ -114,7 +114,7 @@ def test_get_rule(mocker):
     Validate that get_rule_command returns the output in the correct format
     """
     from AzureNetworkSecurityGroups import get_rule_command
-    client = mock_client(mocker, util_load_json(os.path.dirname(__file__) + "/test_data/get_rule_result.json"))
+    client = mock_client(mocker, util_load_json("test_data/get_rule_result.json"))
     result = get_rule_command(client,
                               args={'security_group_name': 'groupName', 'security_rule_name': 'wow'},
                               params={'subscription_id': 'subscriptionID',

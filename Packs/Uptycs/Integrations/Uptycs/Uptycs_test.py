@@ -1,4 +1,3 @@
-import os
 import demistomock as demisto
 
 """GLOBAL VARS"""
@@ -58,7 +57,7 @@ def test_uptycs_get_carves(mocker, requests_mock):
         ]
     }
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/carves'
+    test_url = 'https://%s/public/api/customers/%s/carves' % (DOMAIN, CUSTOMER_ID)
     requests_mock.get(test_url, json=mock_response)
 
     response = uptycs_get_carves_source_command()
@@ -104,7 +103,7 @@ def test_uptycs_get_carves_link(mocker, requests_mock):
     })
 
     mock_response = {
-        "url": f"https://{DOMAIN}/{CUSTOMER_ID}/testurl?"
+        "url": "https://uptycs-carves-testing.s3.us-west-2.amazonaws.com/%s/testurl?" % CUSTOMER_ID
     }
     access_control_headers = ['x-amz-server-side-encryption-customer-algorithm',
                               'x-amz-server-side-encryption-customer-key',
@@ -114,16 +113,16 @@ def test_uptycs_get_carves_link(mocker, requests_mock):
         mock_response['url'] += header + '=' + 'testvalue&'
     mock_response['url'] = mock_response['url'][:-1]
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/carves/{carve_id}/link'
+    test_url = 'https://%s/public/api/customers/%s/carves/%s/link' % (DOMAIN, CUSTOMER_ID, carve_id)
     requests_mock.get(test_url, json=mock_response)
 
     response = uptycs_get_carves_link_command()
     assert response['Contents'] == mock_response
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/carves/{carve_id}/link'
+    test_url = 'https://%s/public/api/customers/%s/carves/%s/link' % (DOMAIN, CUSTOMER_ID, carve_id)
     requests_mock.get(test_url, json=mock_response)
 
-    with open(os.path.dirname(__file__) + '/test_data/blob.tar', 'rb') as file_mock:
+    with open('test_data/blob.tar', 'rb') as file_mock:
         requests_mock.get(mock_response['url'], content=file_mock.read())
 
     result = uptycs_get_carves_file_command()
@@ -186,7 +185,7 @@ def test_uptycs_get_assets(mocker, requests_mock):
             }
         ]
     }
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/query'
+    test_url = 'https://%s/public/api/customers/%s/query' % (DOMAIN, CUSTOMER_ID)
     requests_mock.post(test_url, json=mock_response)
 
     response = uptycs_get_assets_command()
@@ -255,7 +254,7 @@ def test_uptycs_get_asset_with_id(mocker, requests_mock):
         "location": "United States"
     }
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/assets/{asset_id}'
+    test_url = 'https://%s/public/api/customers/%s/assets/%s' % (DOMAIN, CUSTOMER_ID, asset_id)
     requests_mock.get(test_url, json=mock_response)
 
     response = uptycs_get_asset_id_command()
@@ -321,7 +320,7 @@ def test_uptycs_get_tag(mocker, requests_mock):
         "tagRuleId": ""
     }
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/tags/{tag_id}'
+    test_url = 'https://%s/public/api/customers/%s/tags/%s' % (DOMAIN, CUSTOMER_ID, tag_id)
     requests_mock.get(test_url, json=mock_response)
 
     response = uptycs_get_tag_with_id_source_command()
@@ -387,7 +386,7 @@ def test_uptycs_get_tags(mocker, requests_mock):
         ]
     }
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/tags'
+    test_url = 'https://%s/public/api/customers/%s/tags' % (DOMAIN, CUSTOMER_ID)
     requests_mock.get(test_url, json=mock_response)
 
     response = uptycs_get_tags_source_command()
@@ -446,7 +445,7 @@ def test_uptycs_get_lookuptable(mocker, requests_mock):
         "updatedBy": "f976bda8-d5dc-468f-8283-20d5368352e2"
     }
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/lookupTables/{table_id}'
+    test_url = 'https://%s/public/api/customers/%s/lookupTables/%s' % (DOMAIN, CUSTOMER_ID, table_id)
     requests_mock.get(test_url, json=mock_response)
 
     response = uptycs_get_lookuptable_command()
@@ -506,7 +505,7 @@ def test_uptycs_get_lookuptables(mocker, requests_mock):
         ]
     }
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/lookupTables'
+    test_url = 'https://%s/public/api/customers/%s/lookupTables' % (DOMAIN, CUSTOMER_ID)
     requests_mock.get(test_url, json=mock_response)
 
     response = uptycs_get_lookuptables_command()
@@ -570,7 +569,7 @@ def test_uptycs_edit_lookuptable(mocker, requests_mock):
         "updatedBy": "f976bda8-d5dc-468f-8283-20d5368352e2"
     }
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/lookupTables/{table_id}'
+    test_url = 'https://%s/public/api/customers/%s/lookupTables/%s' % (DOMAIN, CUSTOMER_ID, table_id)
     requests_mock.put(test_url, json=mock_response)
 
     response = uptycs_edit_lookuptable_command()
@@ -614,7 +613,7 @@ def test_uptycs_delete_lookuptable(mocker, requests_mock):
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/lookupTables/{table_id}'
+    test_url = 'https://%s/public/api/customers/%s/lookupTables/%s' % (DOMAIN, CUSTOMER_ID, table_id)
     requests_mock.delete(test_url, json={})
 
     response = uptycs_delete_lookuptable_command()
@@ -659,7 +658,7 @@ def test_uptycs_delete_assets_tag(mocker, requests_mock):
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/assets/tags'
+    test_url = 'https://%s/public/api/customers/%s/assets/tags' % (DOMAIN, CUSTOMER_ID)
     requests_mock.delete(test_url, json={})
 
     response = uptycs_delete_assets_tag_command()
@@ -702,7 +701,7 @@ def test_uptycs_delete_tag(mocker, requests_mock):
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/tags/{tag_id}'
+    test_url = 'https://%s/public/api/customers/%s/tags/%s' % (DOMAIN, CUSTOMER_ID, tag_id)
     requests_mock.delete(test_url, json={})
 
     response = uptycs_delete_tag_command()
@@ -758,7 +757,7 @@ def test_uptycs_get_threat_indicators(mocker, requests_mock):
         ]
     }
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/threatIndicators?limit=1'
+    test_url = 'https://%s/public/api/customers/%s/threatIndicators?limit=1' % (DOMAIN, CUSTOMER_ID)
     requests_mock.get(test_url, json=mock_response)
 
     response = uptycs_get_threat_indicators_command()
@@ -819,7 +818,7 @@ def test_uptycs_get_threat_indicator(mocker, requests_mock):
         }
     }
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/threatIndicators/{indicator_id}'
+    test_url = 'https://%s/public/api/customers/%s/threatIndicators/%s' % (DOMAIN, CUSTOMER_ID, indicator_id)
     requests_mock.get(test_url, json=mock_response)
 
     response = uptycs_get_threat_indicator_command()
@@ -875,7 +874,7 @@ def test_uptycs_get_threat_source(mocker, requests_mock):
         "description": "A feed of malicious domains and IP addresses"
     }
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/threatSources/{threat_source_id}'
+    test_url = 'https://%s/public/api/customers/%s/threatSources/%s' % (DOMAIN, CUSTOMER_ID, threat_source_id)
     requests_mock.get(test_url, json=mock_response)
 
     response = uptycs_get_threat_source_command()
@@ -931,7 +930,7 @@ def test_uptycs_get_threat_sources(mocker, requests_mock):
         ]
     }
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/threatSources?limit=1'
+    test_url = 'https://%s/public/api/customers/%s/threatSources?limit=1' % (DOMAIN, CUSTOMER_ID)
     requests_mock.get(test_url, json=mock_response)
 
     response = uptycs_get_threat_sources_command()
@@ -990,7 +989,7 @@ def test_uptycs_get_threat_vendors(mocker, requests_mock):
         ]
     }
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/threatVendors?limit=1'
+    test_url = 'https://%s/public/api/customers/%s/threatVendors?limit=1' % (DOMAIN, CUSTOMER_ID)
     requests_mock.get(test_url, json=mock_response)
 
     response = uptycs_get_threat_vendors_command()
@@ -1057,7 +1056,7 @@ def test_uptycs_get_alerts(mocker, requests_mock):
         ]
     }
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/query'
+    test_url = 'https://%s/public/api/customers/%s/query' % (DOMAIN, CUSTOMER_ID)
     requests_mock.post(test_url, json=mock_response)
 
     response = uptycs_get_alerts_command()
@@ -1126,7 +1125,7 @@ def test_uptycs_get_events(mocker, requests_mock):
         ]
     }
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/query'
+    test_url = 'https://%s/public/api/customers/%s/query' % (DOMAIN, CUSTOMER_ID)
     requests_mock.post(test_url, json=mock_response)
 
     response = uptycs_get_events_command()
@@ -1181,7 +1180,7 @@ def test_uptycs_get_alert_rules(mocker, requests_mock):
         ]
     }
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/alertRules?limit=1'
+    test_url = 'https://%s/public/api/customers/%s/alertRules?limit=1' % (DOMAIN, CUSTOMER_ID)
     requests_mock.get(test_url, json=mock_response)
 
     response = uptycs_get_alert_rules_command()
@@ -1236,7 +1235,7 @@ def test_uptycs_get_event_rules(mocker, requests_mock):
         ]
     }
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/eventRules?limit=1'
+    test_url = 'https://%s/public/api/customers/%s/eventRules?limit=1' % (DOMAIN, CUSTOMER_ID)
     requests_mock.get(test_url, json=mock_response)
 
     response = uptycs_get_event_rules_command()
@@ -1302,15 +1301,15 @@ def test_uptycs_get_users(mocker, requests_mock):
     mock_response = {}
     mock_response['items'] = [mock_user]
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/users?limit=1'
+    test_url = 'https://%s/public/api/customers/%s/users?limit=1' % (DOMAIN, CUSTOMER_ID)
     requests_mock.get(test_url, json=mock_response)
 
     response = uptycs_get_users_command()
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/users'
+    test_url = 'https://%s/public/api/customers/%s/users' % (DOMAIN, CUSTOMER_ID)
     requests_mock.get(test_url, json=mock_response)
 
-    test_url_extra = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/users/{user_id}'
+    test_url_extra = 'https://%s/public/api/customers/%s/users/%s' % (DOMAIN, CUSTOMER_ID, user_id)
     requests_mock.get(test_url_extra, json=mock_user)
 
     asset_groups = uptycs_get_user_asset_groups_command()
@@ -1377,7 +1376,7 @@ def test_uptycs_get_user_information(mocker, requests_mock):
         "userObjectGroups": "testuser"
     }
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/users/{user_id}'
+    test_url = 'https://%s/public/api/customers/%s/users/%s' % (DOMAIN, CUSTOMER_ID, user_id)
     requests_mock.get(test_url, json=mock_response)
 
     response = uptycs_get_user_information_command()
@@ -1434,7 +1433,7 @@ def test_uptycs_get_asset_groups(mocker, requests_mock):
         ]
     }
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/objectGroups?limit=1'
+    test_url = 'https://%s/public/api/customers/%s/objectGroups?limit=1' % (DOMAIN, CUSTOMER_ID)
     requests_mock.get(test_url, json=mock_response)
 
     response = uptycs_get_asset_groups_command()
@@ -1492,7 +1491,7 @@ def test_uptycs_get_saved_queries(mocker, requests_mock):
         ]
     }
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/queries/{query_id}?name={query_name}'
+    test_url = 'https://%s/public/api/customers/%s/queries/%s?name=%s' % (DOMAIN, CUSTOMER_ID, query_id, query_name)
     requests_mock.get(test_url, json=mock_response)
 
     response = uptycs_get_saved_queries_command()
@@ -1551,10 +1550,10 @@ def test_uptycs_run_saved_query(mocker, requests_mock):
         ]
     }
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/queries/{query_id}?name={query_name}'
+    test_url = 'https://%s/public/api/customers/%s/queries/%s?name=%s' % (DOMAIN, CUSTOMER_ID, query_id, query_name)
     requests_mock.get(test_url, json=mock_response)
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/assets/query'
+    test_url = 'https://%s/public/api/customers/%s/assets/query' % (DOMAIN, CUSTOMER_ID)
     requests_mock.post(test_url, json=mock_response)
 
     response = uptycs_run_saved_query_command()
@@ -1611,7 +1610,7 @@ def test_uptycs_run_query(mocker, requests_mock):
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/assets/query'
+    test_url = 'https://%s/public/api/customers/%s/assets/query' % (DOMAIN, CUSTOMER_ID)
     requests_mock.post(test_url, json=mock_response)
 
     response = uptycs_run_query_command()
@@ -1676,7 +1675,7 @@ def test_uptycs_get_process_open_sockets(mocker, requests_mock):
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/query'
+    test_url = 'https://%s/public/api/customers/%s/query' % (DOMAIN, CUSTOMER_ID)
     requests_mock.post(test_url, json=mock_response)
 
     response = uptycs_get_process_open_sockets_command()
@@ -1734,7 +1733,7 @@ def test_uptycs_get_process_information(mocker, requests_mock):
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/query'
+    test_url = 'https://%s/public/api/customers/%s/query' % (DOMAIN, CUSTOMER_ID)
     requests_mock.post(test_url, json=mock_response)
 
     response = uptycs_get_process_information_command()
@@ -1795,7 +1794,7 @@ def test_uptycs_get_process_child_processes(mocker, requests_mock):
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/query'
+    test_url = 'https://%s/public/api/customers/%s/query' % (DOMAIN, CUSTOMER_ID)
     requests_mock.post(test_url, json=mock_response)
 
     response = uptycs_get_process_child_processes_command()
@@ -1857,7 +1856,7 @@ def test_uptycs_processes(mocker, requests_mock):
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/query'
+    test_url = 'https://%s/public/api/customers/%s/query' % (DOMAIN, CUSTOMER_ID)
     requests_mock.post(test_url, json=mock_response)
 
     response = uptycs_get_processes_command()
@@ -1915,7 +1914,7 @@ def test_uptycs_process_open_files(mocker, requests_mock):
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/query'
+    test_url = 'https://%s/public/api/customers/%s/query' % (DOMAIN, CUSTOMER_ID)
     requests_mock.post(test_url, json=mock_response)
 
     response = uptycs_get_process_open_files_command()
@@ -1975,7 +1974,7 @@ def test_uptycs_process_event_information(mocker, requests_mock):
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/query'
+    test_url = 'https://%s/public/api/customers/%s/query' % (DOMAIN, CUSTOMER_ID)
     requests_mock.post(test_url, json=mock_response)
 
     response = uptycs_get_process_event_information_command()
@@ -2035,7 +2034,7 @@ def test_uptycs_process_events(mocker, requests_mock):
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/query'
+    test_url = 'https://%s/public/api/customers/%s/query' % (DOMAIN, CUSTOMER_ID)
     requests_mock.post(test_url, json=mock_response)
 
     response = uptycs_get_process_events_command()
@@ -2100,7 +2099,7 @@ def test_uptycs_socket_events(mocker, requests_mock):
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/query'
+    test_url = 'https://%s/public/api/customers/%s/query' % (DOMAIN, CUSTOMER_ID)
     requests_mock.post(test_url, json=mock_response)
 
     response = uptycs_get_socket_events_command()
@@ -2160,7 +2159,7 @@ def test_uptycs_parent_event_information(mocker, requests_mock):
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/query'
+    test_url = 'https://%s/public/api/customers/%s/query' % (DOMAIN, CUSTOMER_ID)
     requests_mock.post(test_url, json=mock_response)
 
     response = uptycs_get_parent_event_information_command()
@@ -2225,7 +2224,7 @@ def test_uptycs_socket_event_information(mocker, requests_mock):
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/query'
+    test_url = 'https://%s/public/api/customers/%s/query' % (DOMAIN, CUSTOMER_ID)
     requests_mock.post(test_url, json=mock_response)
 
     response = uptycs_get_socket_event_information_command()
@@ -2279,7 +2278,7 @@ def test_uptycs_get_asset_tags(mocker, requests_mock):
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/assets/{asset_id}'
+    test_url = 'https://%s/public/api/customers/%s/assets/%s' % (DOMAIN, CUSTOMER_ID, asset_id)
     requests_mock.get(test_url, json=mock_response)
 
     response = uptycs_get_asset_tags_command()
@@ -2335,7 +2334,7 @@ def test_uptycs_set_alert_status(mocker, requests_mock):
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/alerts/testalert'
+    test_url = 'https://%s/public/api/customers/%s/alerts/testalert' % (DOMAIN, CUSTOMER_ID)
     requests_mock.put(test_url, json=mock_response)
 
     response = uptycs_set_alert_status_command()
@@ -2392,7 +2391,7 @@ def test_uptycs_create_lookuptable(mocker, requests_mock):
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
     # Mocking demisto.getFilePath
     mocker.patch.object(demisto, "getFilePath", return_value={
-        'path': os.path.dirname(__file__) + '/test_data/look_up_table_test.csv'
+        'path': './test_data/look_up_table_test.csv'
     })
 
     mock_response = {
@@ -2412,20 +2411,20 @@ def test_uptycs_create_lookuptable(mocker, requests_mock):
         "id": table_id
     }
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/lookupTables'
+    test_url = 'https://%s/public/api/customers/%s/lookupTables' % (DOMAIN, CUSTOMER_ID)
     requests_mock.post(test_url, json=mock_response)
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/lookupTables/{table_id}/csvdata'
+    test_url = 'https://%s/public/api/customers/%s/lookupTables/%s/csvdata' % (DOMAIN, CUSTOMER_ID, table_id)
     requests_mock.post(test_url, json=mock_response)
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/lookupTables/{table_id}'
+    test_url = 'https://%s/public/api/customers/%s/lookupTables/%s' % (DOMAIN, CUSTOMER_ID, table_id)
     requests_mock.put(test_url, json=mock_response)
 
     response = uptycs_post_new_lookuptable_command()
 
     assert response['Contents'] == mock_response
 
-    test_url = f'https://{DOMAIN}/public/api/customers/{CUSTOMER_ID}/lookupTables/{table_id}/csvdata'
+    test_url = 'https://%s/public/api/customers/%s/lookupTables/%s/csvdata' % (DOMAIN, CUSTOMER_ID, table_id)
     requests_mock.post(test_url, json=mock_response)
 
     response = uptycs_post_lookuptable_data_source_command()

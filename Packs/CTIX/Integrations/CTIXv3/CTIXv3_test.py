@@ -1,4 +1,4 @@
-import os
+import io
 import json
 from CTIXv3 import (
     Client,
@@ -46,12 +46,12 @@ SECRET_KEY = "secret_key"
 
 
 def util_load_json(path):
-    with open(path, encoding="utf-8") as f:
+    with io.open(path, mode="r", encoding="utf-8") as f:
         return json.loads(f.read())
 
 
 def test_create_tag(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/create_tag.json")
+    mock_response = util_load_json("test_data/create_tag.json")
     requests_mock.post(f"{BASE_URL}ingestion/tags/", json=mock_response)
 
     client = Client(
@@ -92,7 +92,7 @@ def test_create_tag_command_already_exists(requests_mock):
 
 
 def test_get_tags(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/get_tags.json")
+    mock_response = util_load_json("test_data/get_tags.json")
     requests_mock.get(f"{BASE_URL}ingestion/tags/", json=mock_response)
 
     client = Client(
@@ -132,8 +132,8 @@ def test_get_tags_not_found(requests_mock):
 
 
 def test_delete_tag(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/delete_tag.json")
-    mock_response_get_tags = util_load_json(os.path.dirname(__file__) + "/test_data/get_tags.json")
+    mock_response = util_load_json("test_data/delete_tag.json")
+    mock_response_get_tags = util_load_json("test_data/get_tags.json")
     requests_mock.get(f"{BASE_URL}ingestion/tags/", json=mock_response_get_tags)
     requests_mock.post(f"{BASE_URL}ingestion/tags/bulk-actions/", json=mock_response)
 
@@ -157,8 +157,8 @@ def test_delete_tag(requests_mock):
 
 
 def test_delete_tags_no_input(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/delete_tag.json")
-    mock_response_get_tags = util_load_json(os.path.dirname(__file__) + "/test_data/get_tags.json")
+    mock_response = util_load_json("test_data/delete_tag.json")
+    mock_response_get_tags = util_load_json("test_data/get_tags.json")
     requests_mock.get(f"{BASE_URL}ingestion/tags/", json=mock_response_get_tags)
     requests_mock.post(f"{BASE_URL}ingestion/tags/bulk-actions/", json=mock_response)
 
@@ -181,7 +181,7 @@ def test_delete_tags_no_input(requests_mock):
 
 
 def test_whitelist_iocs_command(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/whitelist_iocs.json")
+    mock_response = util_load_json("test_data/whitelist_iocs.json")
     requests_mock.post(f"{BASE_URL}conversion/whitelist/", json=mock_response)
 
     client = Client(
@@ -205,7 +205,7 @@ def test_whitelist_iocs_command(requests_mock):
 
 
 def test_get_whitelist_iocs_command(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/get_whitelist_iocs.json")
+    mock_response = util_load_json("test_data/get_whitelist_iocs.json")
     requests_mock.get(f"{BASE_URL}conversion/whitelist/", json=mock_response)
 
     client = Client(
@@ -229,7 +229,7 @@ def test_get_whitelist_iocs_command(requests_mock):
 
 
 def test_remove_whitelisted_ioc_command(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/remove_whitelist_ioc.json")
+    mock_response = util_load_json("test_data/remove_whitelist_ioc.json")
     requests_mock.post(
         f"{BASE_URL}conversion/whitelist/bulk-actions/", json=mock_response
     )
@@ -254,7 +254,7 @@ def test_remove_whitelisted_ioc_command(requests_mock):
 
 
 def test_get_threat_data_command(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/get_threat_data.json")
+    mock_response = util_load_json("test_data/get_threat_data.json")
     requests_mock.post(f"{BASE_URL}ingestion/threat-data/list/", json=mock_response)
 
     client = Client(
@@ -280,7 +280,7 @@ def test_get_threat_data_command(requests_mock):
 
 
 def test_get_saved_searches_command(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/get_threat_data.json")
+    mock_response = util_load_json("test_data/get_threat_data.json")
     requests_mock.get(f"{BASE_URL}ingestion/saved-searches/", json=mock_response)
 
     client = Client(
@@ -306,7 +306,7 @@ def test_get_saved_searches_command(requests_mock):
 
 
 def test_get_server_collections_command(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/get_threat_data.json")
+    mock_response = util_load_json("test_data/get_threat_data.json")
     requests_mock.get(f"{BASE_URL}publishing/collection/", json=mock_response)
 
     client = Client(
@@ -332,7 +332,7 @@ def test_get_server_collections_command(requests_mock):
 
 
 def test_get_actions_command(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/get_actions.json")
+    mock_response = util_load_json("test_data/get_actions.json")
     requests_mock.get(f"{BASE_URL}ingestion/actions/", json=mock_response)
 
     client = Client(
@@ -360,7 +360,7 @@ def test_get_actions_command(requests_mock):
 
 
 def test_add_indicator_as_false_positive_command(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/add_indicator_as_false_positive.json")
+    mock_response = util_load_json("test_data/add_indicator_as_false_positive.json")
     requests_mock.post(
         f"{BASE_URL}ingestion/threat-data/bulk-action/false_positive/",
         json=mock_response,
@@ -386,7 +386,7 @@ def test_add_indicator_as_false_positive_command(requests_mock):
 
 
 def test_add_ioc_manual_review_command(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/ioc_manual_review.json")
+    mock_response = util_load_json("test_data/ioc_manual_review.json")
     requests_mock.post(
         f"{BASE_URL}ingestion/threat-data/bulk-action/manual_review/",
         json=mock_response,
@@ -412,7 +412,7 @@ def test_add_ioc_manual_review_command(requests_mock):
 
 
 def test_deprecate_ioc_command(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/deprecate_ioc.json")
+    mock_response = util_load_json("test_data/deprecate_ioc.json")
     requests_mock.post(
         f"{BASE_URL}ingestion/threat-data/bulk-action/deprecate/", json=mock_response
     )
@@ -437,7 +437,7 @@ def test_deprecate_ioc_command(requests_mock):
 
 
 def test_add_analyst_tlp_command(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/add_analyst_tlp.json")
+    mock_response = util_load_json("test_data/add_analyst_tlp.json")
     requests_mock.post(
         f"{BASE_URL}ingestion/threat-data/action/analyst_tlp/", json=mock_response
     )
@@ -466,7 +466,7 @@ def test_add_analyst_tlp_command(requests_mock):
 
 
 def test_add_analyst_score_command(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/add_analyst_score.json")
+    mock_response = util_load_json("test_data/add_analyst_score.json")
     requests_mock.post(
         f"{BASE_URL}ingestion/threat-data/action/analyst_score/", json=mock_response
     )
@@ -495,7 +495,7 @@ def test_add_analyst_score_command(requests_mock):
 
 
 def test_saved_result_set_command(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/saved_result_set.json")
+    mock_response = util_load_json("test_data/saved_result_set.json")
     requests_mock.post(f"{BASE_URL}ingestion/threat-data/list/", json=mock_response)
 
     client = Client(
@@ -518,8 +518,8 @@ def test_saved_result_set_command(requests_mock):
 
 
 def test_add_tag_indicator_updation_command(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/add_tag_indicator.json")
-    mock_response_get = util_load_json(os.path.dirname(__file__) + "/test_data/get_indicator_tags.json")
+    mock_response = util_load_json("test_data/add_tag_indicator.json")
+    mock_response_get = util_load_json("test_data/get_indicator_tags.json")
     requests_mock.get(
         f"{BASE_URL}ingestion/threat-data/indicator/foo/quick-actions/",
         json=mock_response_get,
@@ -557,8 +557,8 @@ def test_add_tag_indicator_updation_command(requests_mock):
 
 
 def test_remove_tag_indicator_updation_command(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/add_tag_indicator.json")
-    mock_response_get = util_load_json(os.path.dirname(__file__) + "/test_data/get_indicator_tags.json")
+    mock_response = util_load_json("test_data/add_tag_indicator.json")
+    mock_response_get = util_load_json("test_data/get_indicator_tags.json")
     requests_mock.get(
         f"{BASE_URL}ingestion/threat-data/indicator/foo/quick-actions/",
         json=mock_response_get,
@@ -596,7 +596,7 @@ def test_remove_tag_indicator_updation_command(requests_mock):
 
 
 def test_search_for_tag_command(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/search_for_tag.json")
+    mock_response = util_load_json("test_data/search_for_tag.json")
     requests_mock.get(f"{BASE_URL}ingestion/tags/", json=mock_response)
 
     client = Client(
@@ -622,7 +622,7 @@ def test_search_for_tag_command(requests_mock):
 
 
 def test_get_indicator_details_command(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/get_indicator_details.json")
+    mock_response = util_load_json("test_data/get_indicator_details.json")
     requests_mock.get(
         f"{BASE_URL}ingestion/threat-data/indicator/foo/basic/", json=mock_response
     )
@@ -647,7 +647,7 @@ def test_get_indicator_details_command(requests_mock):
 
 
 def test_get_indicator_tags_command(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/get_indicator_tags.json")
+    mock_response = util_load_json("test_data/get_indicator_tags.json")
     requests_mock.get(
         f"{BASE_URL}ingestion/threat-data/indicator/foo/quick-actions/",
         json=mock_response,
@@ -673,7 +673,7 @@ def test_get_indicator_tags_command(requests_mock):
 
 
 def test_get_indicator_relations_command(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/get_indicator_relations.json")
+    mock_response = util_load_json("test_data/get_indicator_relations.json")
     requests_mock.get(
         f"{BASE_URL}ingestion/threat-data/indicator/foo/relations/", json=mock_response
     )
@@ -698,7 +698,7 @@ def test_get_indicator_relations_command(requests_mock):
 
 
 def test_get_indicator_observations_command(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/get_indicator_observations.json")
+    mock_response = util_load_json("test_data/get_indicator_observations.json")
     requests_mock.get(
         f"{BASE_URL}ingestion/threat-data/source-references/", json=mock_response
     )
@@ -723,7 +723,7 @@ def test_get_indicator_observations_command(requests_mock):
 
 
 def test_get_conversion_feed_source_command(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/get_conversion_feed_source.json")
+    mock_response = util_load_json("test_data/get_conversion_feed_source.json")
     requests_mock.get(f"{BASE_URL}conversion/feed-sources/", json=mock_response)
 
     client = Client(
@@ -746,7 +746,7 @@ def test_get_conversion_feed_source_command(requests_mock):
 
 
 def test_get_lookup_threat_data_command(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/get_lookup_threat_data.json")
+    mock_response = util_load_json("test_data/get_lookup_threat_data.json")
     requests_mock.post(f"{BASE_URL}ingestion/threat-data/list/", json=mock_response)
 
     client = Client(
@@ -774,7 +774,7 @@ def test_get_lookup_threat_data_command(requests_mock):
 
 
 def test_domain(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/domain.json")
+    mock_response = util_load_json("test_data/domain.json")
     requests_mock.post(f"{BASE_URL}ingestion/threat-data/list/", json=mock_response)
 
     client = Client(
@@ -803,7 +803,7 @@ def test_domain(requests_mock):
 
 
 def test_url(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/url.json")
+    mock_response = util_load_json("test_data/url.json")
     requests_mock.post(f"{BASE_URL}ingestion/threat-data/list/", json=mock_response)
 
     client = Client(
@@ -832,7 +832,7 @@ def test_url(requests_mock):
 
 
 def test_ip(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/ip.json")
+    mock_response = util_load_json("test_data/ip.json")
     requests_mock.post(f"{BASE_URL}ingestion/threat-data/list/", json=mock_response)
 
     client = Client(
@@ -861,7 +861,7 @@ def test_ip(requests_mock):
 
 
 def test_file(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/file.json")
+    mock_response = util_load_json("test_data/file.json")
     requests_mock.post(f"{BASE_URL}ingestion/threat-data/list/", json=mock_response)
 
     client = Client(
@@ -890,7 +890,7 @@ def test_file(requests_mock):
 
 
 def test_get_all_notes(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/get_all_notes.json")
+    mock_response = util_load_json("test_data/get_all_notes.json")
     requests_mock.get(f"{BASE_URL}ingestion/notes/", json=mock_response)
 
     client = Client(
@@ -916,7 +916,7 @@ def test_get_all_notes(requests_mock):
 
 
 def test_get_note_details(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/get_note_details.json")
+    mock_response = util_load_json("test_data/get_note_details.json")
     id = "b1800a11-7fa5-423e-93bf-f8ef8d3890a4"
     requests_mock.get(f"{BASE_URL}ingestion/notes/{id}/", json=mock_response)
 
@@ -942,7 +942,7 @@ def test_get_note_details(requests_mock):
 
 
 def test_create_note(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/create_note.json")
+    mock_response = util_load_json("test_data/create_note.json")
     requests_mock.post(f"{BASE_URL}ingestion/notes/", json=mock_response)
 
     client = Client(
@@ -969,7 +969,7 @@ def test_create_note(requests_mock):
 
 
 def test_update_note(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/update_note.json")
+    mock_response = util_load_json("test_data/update_note.json")
     id = "04bb5f2c-78a6-4e84-82ae-011666733998"
     requests_mock.put(f"{BASE_URL}ingestion/notes/{id}/", json=mock_response)
 
@@ -998,7 +998,7 @@ def test_update_note(requests_mock):
 
 
 def test_delete_note(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/delete_note.json")
+    mock_response = util_load_json("test_data/delete_note.json")
     id = "04bb5f2c-78a6-4e84-82ae-011666733998"
     requests_mock.delete(f"{BASE_URL}ingestion/notes/{id}/", json=mock_response)
 
@@ -1024,7 +1024,7 @@ def test_delete_note(requests_mock):
 
 
 def test_make_request_get(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/make_request_get.json")
+    mock_response = util_load_json("test_data/make_request_get.json")
     requests_mock.get(f"{BASE_URL}ingestion/notes/", json=mock_response)
 
     client = Client(
@@ -1052,7 +1052,7 @@ def test_make_request_get(requests_mock):
 
 
 def test_make_request_post(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/make_request_post.json")
+    mock_response = util_load_json("test_data/make_request_post.json")
     requests_mock.post(f"{BASE_URL}ingestion/notes/", json=mock_response)
 
     client = Client(
@@ -1088,7 +1088,7 @@ def test_make_request_post(requests_mock):
 
 
 def test_make_request_put(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/make_request_put.json")
+    mock_response = util_load_json("test_data/make_request_put.json")
     requests_mock.put(f"{BASE_URL}ingestion/notes/40c57c4a-1b5d-4cb4-bd89-d146c0d30ed4/", json=mock_response)
 
     client = Client(
@@ -1124,7 +1124,7 @@ def test_make_request_put(requests_mock):
 
 
 def test_make_request_delete(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/make_request_delete.json")
+    mock_response = util_load_json("test_data/make_request_delete.json")
     requests_mock.delete(f"{BASE_URL}ingestion/notes/40c57c4a-1b5d-4cb4-bd89-d146c0d30ed4/", json=mock_response)
 
     client = Client(
@@ -1150,18 +1150,16 @@ def test_make_request_delete(requests_mock):
 
 
 def test_cve_command(requests_mock):
-    mock_threat_list_response = util_load_json(os.path.dirname(__file__) + "/test_data/get_cve_threat_data.json")
+    mock_threat_list_response = util_load_json("test_data/get_cve_threat_data.json")
     requests_mock.post(f"{BASE_URL}ingestion/threat-data/list/", json=mock_threat_list_response)
     obj_id = mock_threat_list_response["results"][0]["id"]
-    mock_product_details_response = util_load_json(os.path.dirname(
-        __file__) + "/test_data/get_vulnerability_product_details.json")
+    mock_product_details_response = util_load_json("test_data/get_vulnerability_product_details.json")
     requests_mock.get(f"{BASE_URL}ingestion/threat-data/vulnerability/{obj_id}/product-details/",
                       json=mock_product_details_response)
     source_id = mock_product_details_response["results"][0]["source"]["id"]
-    mock_cvss_score_response = util_load_json(os.path.dirname(__file__) + "/test_data/get_cvss_score.json")
+    mock_cvss_score_response = util_load_json("test_data/get_cvss_score.json")
     requests_mock.get(f"{BASE_URL}ingestion/threat-data/vulnerability/{obj_id}/cvss-score/", json=mock_cvss_score_response)
-    mock_source_description_response = util_load_json(os.path.dirname(
-        __file__) + "/test_data/get_vulnerability_source_description.json")
+    mock_source_description_response = util_load_json("test_data/get_vulnerability_source_description.json")
     requests_mock.get(f"{BASE_URL}ingestion/threat-data/vulnerability/{obj_id}/source-description/?source_id={source_id}",
                       json=mock_source_description_response)
 

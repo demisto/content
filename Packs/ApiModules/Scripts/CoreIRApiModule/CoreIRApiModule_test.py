@@ -6,7 +6,7 @@ import zipfile
 from typing import Any
 from pytest_mock import MockerFixture
 import pytest
-from pathlib import Path
+
 import demistomock as demisto
 from CommonServerPython import Common, tableToMarkdown, pascalToSpace, DemistoException
 from CoreIRApiModule import CoreClient
@@ -25,7 +25,7 @@ Core_URL = 'https://api.xdrurl.com'
 
 
 def load_test_data(json_path):
-    with open(Path(__file__).parent / json_path) as f:
+    with open(json_path) as f:
         return json.load(f)
 
 

@@ -1,5 +1,5 @@
-import os
 import json
+import io
 from datetime import datetime, timedelta
 
 
@@ -8,14 +8,14 @@ API_KEY = '1234'
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
 def test_fetch_indicators(requests_mock):
     from SecneurXThreatFeeds import Client, fetchThreatFeeds
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_indicators.json')
+    mock_response = util_load_json('test_data/fetch_indicators.json')
     requests_mock.get(f'{BASE_URL}/getfeeds', json=mock_response)
     client = Client(
         base_url=BASE_URL,
@@ -43,7 +43,7 @@ def test_get_list_days():
 
 def test_json_parse():
     from SecneurXThreatFeeds import parseIndicators
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_indicators.json')
+    mock_response = util_load_json('test_data/fetch_indicators.json')
     indicatorJson = parseIndicators(mock_response)
     assert len(indicatorJson) == 4
     assert indicatorJson[0]['fields']['indicatoridentification'] == mock_response['objects'][0]['id']
@@ -53,7 +53,7 @@ def test_json_parse():
 def test_module_connection(requests_mock):
     from SecneurXThreatFeeds import Client, test_module
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_indicators.json')
+    mock_response = util_load_json('test_data/fetch_indicators.json')
     requests_mock.get(f'{BASE_URL}/getfeeds', json=mock_response)
     client = Client(
         base_url=BASE_URL,

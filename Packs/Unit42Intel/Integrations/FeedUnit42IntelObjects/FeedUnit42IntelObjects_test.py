@@ -1,4 +1,4 @@
-import os
+import io
 import json
 
 import pytest
@@ -8,7 +8,7 @@ from FeedUnit42IntelObjects import (Client, fetch_indicators_command,
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -23,8 +23,7 @@ def test_build_iterator(mocker):
     """
 
     client = Client(api_key='1234', base_url='url', verify=False, proxy=False)
-    mocker.patch.object(client, 'get_tags', return_value=util_load_json(
-        os.path.dirname(__file__) + '/test_data/all_tags_result.json'))
+    mocker.patch.object(client, 'get_tags', return_value=util_load_json('test_data/all_tags_result.json'))
     mocker.patch.object(client, 'get_tag_details', return_value={'tag': []})
     indicators = client.build_iterator(is_get_command=True)
     assert len(indicators) == 2
@@ -41,10 +40,9 @@ def test_fetch_indicators(mocker):
     """
 
     client = Client(api_key='1234', base_url='url', verify=False, proxy=False)
-    mocker.patch.object(client, 'build_iterator', return_value=util_load_json(
-        os.path.dirname(__file__) + '/test_data/build_iterator_results.json'))
+    mocker.patch.object(client, 'build_iterator', return_value=util_load_json('test_data/build_iterator_results.json'))
     actual_results = fetch_indicators_command(client, params={'tlp_color': 'RED'})[0]
-    expected_results = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_indicators_results.json')[0]
+    expected_results = util_load_json('test_data/fetch_indicators_results.json')[0]
     assert actual_results["type"] == expected_results["type"]
     assert actual_results["value"] == expected_results["value"]
     assert actual_results["fields"] == expected_results["fields"]
@@ -55,10 +53,9 @@ def test_incremental_level_fetch(mocker):
     client = Client(api_key='1234', base_url='url', verify=False, proxy=False)
     mocker.patch('FeedUnit42IntelObjects.get_integration_context', return_value=context)
     mocker.patch('FeedUnit42IntelObjects.get_all_updated_tags_since_last_fetch', return_value=[{'publictag_name': 'Mock.mocktag1'}])  # noqa: E501
-    mocker.patch.object(client, 'get_tag_details', return_value=util_load_json(
-        os.path.dirname(__file__) + '/test_data/tag_details_result.json'))
+    mocker.patch.object(client, 'get_tag_details', return_value=util_load_json('test_data/tag_details_result.json'))
     actual_result = incremental_level_fetch(client)
-    assert actual_result == [util_load_json(os.path.dirname(__file__) + '/test_data/tag_details_result.json')]
+    assert actual_result == [util_load_json('test_data/tag_details_result.json')]
 
 
 def test_user_secrets():
@@ -70,7 +67,7 @@ def test_user_secrets():
 
 def test_validate_created_time_from_refs():
     from FeedUnit42IntelObjects import validate_created_time_from_refs
-    tags = util_load_json(os.path.dirname(__file__) + '/test_data/build_iterator_results.json')
+    tags = util_load_json('test_data/build_iterator_results.json')
     for tag in tags:
         refs = json.loads(tag.get("tag", {}).get("refs", ''))[0]
         created = refs.get("created", '')

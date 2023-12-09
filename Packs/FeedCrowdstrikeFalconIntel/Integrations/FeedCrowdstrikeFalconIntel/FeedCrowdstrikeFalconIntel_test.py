@@ -1,4 +1,3 @@
-import os
 import pytest
 import json
 
@@ -6,7 +5,7 @@ from FeedCrowdstrikeFalconIntel import Client
 
 
 def get_fetch_data():
-    with open(os.path.dirname(__file__) + '/test_data/test_data.json') as f:
+    with open('./test_data/test_data.json', 'r') as f:
         return json.loads(f.read())
 
 

@@ -1,11 +1,11 @@
-import os
 import json
+import io
 
 import pytest
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -33,9 +33,9 @@ def test_build_indicators(mocker):
     from FeedLOLBAS import build_indicators
 
     client = mock_client()
-    mock_pre_indicators = util_load_json(os.path.dirname(__file__) + '/test_data/response.json')
-    expected_response = util_load_json(os.path.dirname(__file__) + '/test_data/expected_build_indicators.json')
-    mocked_mitre_data = util_load_json(os.path.dirname(__file__) + '/test_data/mocked_mitre_data.json')
+    mock_pre_indicators = util_load_json('test_data/response.json')
+    expected_response = util_load_json('test_data/expected_build_indicators.json')
+    mocked_mitre_data = util_load_json('test_data/mocked_mitre_data.json')
     mocker.patch.object(client, 'get_mitre_data', return_value=mocked_mitre_data)
 
     response = build_indicators(client, mock_pre_indicators)
@@ -49,9 +49,9 @@ def test_create_relationship_list(mocker):
         Then: Ensure the relationships are created correctly.
     """
     from FeedLOLBAS import create_relationship_list
-    mock_indicators = util_load_json(os.path.dirname(__file__) + '/test_data/expected_build_indicators.json')
-    expected_response = util_load_json(os.path.dirname(__file__) + '/test_data/expected_create_relationships.json')
-    mocked_mitre_data = util_load_json(os.path.dirname(__file__) + '/test_data/mocked_mitre_data.json')
+    mock_indicators = util_load_json('test_data/expected_build_indicators.json')
+    expected_response = util_load_json('test_data/expected_create_relationships.json')
+    mocked_mitre_data = util_load_json('test_data/mocked_mitre_data.json')
     mocker.patch('FeedLOLBAS.build_mitre_tags', return_value=mocked_mitre_data)
     res = []
     for indicator in mock_indicators:
@@ -67,11 +67,11 @@ def test_fetch_indicators(mocker):
     """
     from FeedLOLBAS import fetch_indicators
     client = mock_client()
-    mocked_response = util_load_json(os.path.dirname(__file__) + '/test_data/response.json')
+    mocked_response = util_load_json('test_data/response.json')
     mocker.patch.object(client, 'get_indicators', return_value=mocked_response)
-    mocked_mitre_data = util_load_json(os.path.dirname(__file__) + '/test_data/mocked_mitre_data.json')
+    mocked_mitre_data = util_load_json('test_data/mocked_mitre_data.json')
     mocker.patch.object(client, 'get_mitre_data', return_value=mocked_mitre_data)
-    expected_response = util_load_json(os.path.dirname(__file__) + '/test_data/expected_fetch_indicators.json')
+    expected_response = util_load_json('test_data/expected_fetch_indicators.json')
 
     response, _ = fetch_indicators(client)
     assert response == expected_response
@@ -117,11 +117,11 @@ def test_get_indicators(mocker):
     from FeedLOLBAS import get_indicators
     client = mock_client()
     limit = 1
-    mocked_response = util_load_json(os.path.dirname(__file__) + '/test_data/response.json')
+    mocked_response = util_load_json('test_data/response.json')
     mocker.patch.object(client, 'get_indicators', return_value=mocked_response)
-    mocked_mitre_data = util_load_json(os.path.dirname(__file__) + '/test_data/mocked_mitre_data.json')
+    mocked_mitre_data = util_load_json('test_data/mocked_mitre_data.json')
     mocker.patch.object(client, 'get_mitre_data', return_value=mocked_mitre_data)
-    expected_outputs = util_load_json(os.path.dirname(__file__) + '/test_data/expected_get_indicators_outputs.json')
+    expected_outputs = util_load_json('test_data/expected_get_indicators_outputs.json')
     expected_hr = '### LOLBAS indicators\n|Name|Description|\n|---|---|\n' \
                   '| AppInstaller.exe | Tool used for installation of AppX/MSIX applications on Windows 10 |\n'
     res = get_indicators(client, limit)

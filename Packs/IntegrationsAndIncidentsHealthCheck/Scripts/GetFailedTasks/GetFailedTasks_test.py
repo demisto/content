@@ -10,7 +10,6 @@ def mock_execute_command(command_name, _):
         return INCIDENTS_RESULT
     elif command_name == 'demisto-api-post':
         return RESTAPI_TAS_RESULT
-    return None
 
 
 @pytest.mark.parametrize('rest_api_instacne', ['rest_api_instacne', None])

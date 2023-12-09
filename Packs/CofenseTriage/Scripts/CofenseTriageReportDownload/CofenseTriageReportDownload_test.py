@@ -1,4 +1,3 @@
-import os
 from unittest.mock import patch
 import json
 
@@ -10,7 +9,7 @@ def test_get_report_list_when_valid_response_is_returned(mock_execute_command):
     """
     from CofenseTriageReportDownload import get_report_list
 
-    with open(os.path.dirname(__file__) + "/test_data/report_list_response.json") as data:
+    with open("test_data/report_list_response.json") as data:
         mock_response = json.load(data)
 
     mock_execute_command.return_value = mock_response
@@ -29,10 +28,10 @@ def test_download_reports_when_valid_response_is_returned(mock_execute_command):
     """
     from CofenseTriageReportDownload import download_reports
 
-    with open(os.path.dirname(__file__) + "/test_data/report_download_response.json") as data:
+    with open("test_data/report_download_response.json") as data:
         mock_response = json.load(data)
 
-    with open(os.path.dirname(__file__) + "/test_data/report_list_response.json") as data:
+    with open("test_data/report_list_response.json") as data:
         reports = json.load(data)
 
     mock_execute_command.return_value = mock_response

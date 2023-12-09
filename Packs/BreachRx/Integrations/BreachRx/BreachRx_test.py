@@ -1,4 +1,3 @@
-import os
 import BreachRx
 from BreachRx import (
     BreachRxClient,
@@ -13,6 +12,7 @@ from BreachRx import (
     get_actions_for_incident
 )
 
+import io
 from CommonServerPython import json
 import requests_mock
 from graphql.language import print_ast
@@ -20,7 +20,7 @@ import pytest
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -64,34 +64,34 @@ def set_up_mocker(m, found_incident=True):
     m.post(
         requests_mock.ANY,
         additional_matcher=create_incident_matcher,
-        json=util_load_json(os.path.dirname(__file__) + "/test_data/create_incident.json")
+        json=util_load_json("test_data/create_incident.json")
     )
     m.post(
         requests_mock.ANY,
         additional_matcher=get_severities_matcher,
-        json=util_load_json(os.path.dirname(__file__) + "/test_data/incident_severities.json")
+        json=util_load_json("test_data/incident_severities.json")
     )
     m.post(
         requests_mock.ANY,
         additional_matcher=get_types_matcher,
-        json=util_load_json(os.path.dirname(__file__) + "/test_data/incident_types.json")
+        json=util_load_json("test_data/incident_types.json")
     )
     if found_incident:
         m.post(
             requests_mock.ANY,
             additional_matcher=get_incident_matcher,
-            json=util_load_json(os.path.dirname(__file__) + "/test_data/get_incident.json")
+            json=util_load_json("test_data/get_incident.json")
         )
     else:
         m.post(
             requests_mock.ANY,
             additional_matcher=get_incident_matcher,
-            json=util_load_json(os.path.dirname(__file__) + "/test_data/get_incident_empty.json")
+            json=util_load_json("test_data/get_incident_empty.json")
         )
     m.post(
         requests_mock.ANY,
         additional_matcher=get_actions_matcher,
-        json=util_load_json(os.path.dirname(__file__) + "/test_data/get_actions_for_incident.json")
+        json=util_load_json("test_data/get_actions_for_incident.json")
     )
 
     return BreachRxClient("mock://base_url", "api_key", "secret_key", "org_name", False)
@@ -137,10 +137,10 @@ def test_create_incident_command_no_description():
 
         create_incident_request = m.request_history[-1]
         assert incident_name == create_incident_request.json()['variables']['name']
-        assert create_incident_request.json()['variables']['description'] == """An Incident copied from the Palo Alto Networks XSOAR platform.
+        assert """An Incident copied from the Palo Alto Networks XSOAR platform.
             <br>
             <br>
-            XSOAR Incident Name: 1"""  # noqa: E501
+            XSOAR Incident Name: 1""" == create_incident_request.json()['variables']['description']
 
     assert results.outputs_prefix == "BreachRx.Incident"
     assert results.outputs_key_field == "id"
@@ -165,7 +165,7 @@ def test_create_incident_command_no_incident_name():
         )
 
         create_incident_request = m.request_history[-1]
-        assert create_incident_request.json()['variables']['name'] == "1"
+        assert "1" == create_incident_request.json()['variables']['name']
         assert incident_description == create_incident_request.json()['variables']['description']
 
     assert results.outputs_prefix == "BreachRx.Incident"

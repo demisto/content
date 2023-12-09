@@ -1,0 +1,34 @@
+[
+	{
+    "Attribute": {
+      "Event": {
+        "RelatedEvent": [],
+        "Tags": [
+          "tag1",
+          "tag2",
+          "tag3"
+        ],
+        "attack_ids": [],
+        "fpid": "fhdjkasfdddfdjfdhhsd",
+        "href": "http://123-fake-api.com/api/v4/indicators/event/fhdjkasfdddfdjfdhhsd",
+        "info": "info1",
+        "reports": [
+          "report_url1",
+          "report_url2"
+        ],
+        "timestamp": "1571934618"
+      },
+      "category": "category1",
+      "fpid": "fhdjkasfdddfdjfdhhsd",
+      "href": "http://123-fake-api.com/api/v4/indicators/attribute/fhdjkasfdddfdjfdhhsd",
+      "timestamp": "1553280019",
+      "to_ids": false,
+      "type": "filename",
+      "uuid": "5c952c13-d048-4741-a769-05cd0a640c05",
+      "value": {
+        "comment": "",
+        "filename": "fakefilename"
+      }
+    }
+  }
+]

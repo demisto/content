@@ -1,10 +1,9 @@
-import os
 import json
 from Netmiko import cmds_command
 
 
 def get_test_data():
-    with open(os.path.dirname(__file__) + '/test_data/test_data.json') as f:
+    with open('test_data/test_data.json', 'r') as f:
         return json.loads(f.read())
 
 

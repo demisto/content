@@ -1,17 +1,17 @@
-import os
 """OPNSense Integration for Cortex XSOAR - Unit Tests file"""
 
 import json
+import io
 import ast
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
 def util_load_mock(path):
-    with open(path) as f:
+    with open(path, 'r') as f:
         data = f.read()
     return ast.literal_eval(data)
 
@@ -63,7 +63,7 @@ def test_opnsense_alias_mod(requests_mock):
     from OPNSense import Client, alias_mod_command
     mock_args = {'uuid': '8abfa542-4031-4e63-9ccd-34ffd31886d4', 'description': 'MyRenamedAlias',
                  'content': '1.2.3.4', 'name': 'RenamedAlias'}
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/opnsense_alias_mod.json')
+    mock_response = util_load_json('test_data/opnsense_alias_mod.json')
     requests_mock.get("https://opnsense.mockserver.com/api/firewall/alias/getItem/8abfa542-4031-4e63-9ccd-34ffd31886d4/",
                       json=mock_response)
     mock_response2 = {'result': 'saved'}
@@ -112,7 +112,7 @@ def test_opnsense_alias_del(requests_mock):
 def test_opnsense_alias_get(requests_mock):
     from OPNSense import Client, alias_get_command
     mock_args = {'uuid': '8abfa542-4031-4e63-9ccd-34ffd31886d4'}
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/opnsense_alias_get.json')
+    mock_response = util_load_json('test_data/opnsense_alias_get.json')
     requests_mock.get("https://opnsense.mockserver.com/api/firewall/alias/getItem/8abfa542-4031-4e63-9ccd-34ffd31886d4/",
                       json=mock_response)
     client = Client(MOCK_PARAMETERS)
@@ -260,7 +260,7 @@ def test_opnsense_fw_rule_list(requests_mock):
 def test_opnsense_fw_rule_get(requests_mock):
     from OPNSense import Client, fw_rule_get_command
     mock_args = {'uuid': 'e37b5bb2-b96f-455a-a2cb-5542103e5ac2'}
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/opnsense_rule_get.json')
+    mock_response = util_load_json('test_data/opnsense_rule_get.json')
     requests_mock.get("https://opnsense.mockserver.com/api/firewall/filter/getRule/e37b5bb2-b96f-455a-a2cb-5542103e5ac2/",
                       json=mock_response)
     client = Client(MOCK_PARAMETERS)
@@ -296,7 +296,7 @@ def test_opnsense_fw_rule_add(requests_mock):
 def test_opnsense_fw_rule_mod(requests_mock):
     from OPNSense import Client, fw_rule_mod_command
     mock_args = {'uuid': 'e37b5bb2-b96f-455a-a2cb-5542103e5ac2', 'description': 'My renamed Rule'}
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/opnsense_rule_mod.json')
+    mock_response = util_load_json('test_data/opnsense_rule_mod.json')
     requests_mock.get("https://opnsense.mockserver.com/api/firewall/filter/getRule/e37b5bb2-b96f-455a-a2cb-5542103e5ac2/",
                       json=mock_response)
     mock_response2 = {'result': 'saved'}
@@ -352,12 +352,12 @@ def test_opnsense_device_reboot(requests_mock):
 
 def test_opnsense_firmware_info(requests_mock):
     from OPNSense import Client, firmware_info_command
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/opnsense_firmware_info.json')
+    mock_response = util_load_json('test_data/opnsense_firmware_info.json')
     requests_mock.get("https://opnsense.mockserver.com/api/core/firmware/info/", json=mock_response)
     client = Client(MOCK_PARAMETERS)
     response = firmware_info_command(client)
     assert response[0].outputs_prefix == 'OPNSense.Firmware'
-    assert response[0].outputs == util_load_json(os.path.dirname(__file__) + '/test_data/opnsense_firmware_info.json')
+    assert response[0].outputs == util_load_json('test_data/opnsense_firmware_info.json')
 
 
 def test_opnsense_firmware_status(requests_mock):

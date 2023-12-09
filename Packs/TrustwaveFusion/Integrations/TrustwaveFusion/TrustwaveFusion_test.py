@@ -1,5 +1,5 @@
-import os
 import json
+import io
 import urllib
 
 import pytest
@@ -24,7 +24,7 @@ from TrustwaveFusion import (
 
 
 def util_load_json(path):
-    with open(path, encoding="utf-8") as f:
+    with io.open(path, mode="r", encoding="utf-8") as f:
         return json.loads(f.read())
 
 
@@ -33,7 +33,7 @@ def util_quote_param(param):
 
 
 def test_test_module(requests_mock):
-    json_response = util_load_json(os.path.dirname(__file__) + "/test_data/trustwave_describe.json")
+    json_response = util_load_json("test_data/trustwave_describe.json")
     requests_mock.get("http://api.example.com/v2/describe", json=json_response)
     client = Client("http://api.example.com")
 
@@ -51,7 +51,7 @@ def test_test_module(requests_mock):
 
 
 def test_get_ticket_command(requests_mock):
-    json_response = util_load_json(os.path.dirname(__file__) + "/test_data/trustwave_get_ticket.json")
+    json_response = util_load_json("test_data/trustwave_get_ticket.json")
     test_id = "INA1976568"
     requests_mock.get(
         f"http://api.example.com/v2/tickets/{test_id}", json=json_response
@@ -104,7 +104,7 @@ def test_close_ticket_command(requests_mock):
 
 
 def test_get_finding_command(requests_mock):
-    json_response = util_load_json(os.path.dirname(__file__) + "/test_data/trustwave_get_finding.json")
+    json_response = util_load_json("test_data/trustwave_get_finding.json")
     test_id = "765432:THREAT:@AXv0k6GhG2zTcaogE1vG"
     requests_mock.get(
         f"http://api.example.com/v2/findings/{util_quote_param(test_id)}",
@@ -132,7 +132,7 @@ def test_get_finding_command_not_found(requests_mock):
 
 
 def test_get_asset_command(requests_mock):
-    json_response = util_load_json(os.path.dirname(__file__) + "/test_data/trustwave_get_asset.json")
+    json_response = util_load_json("test_data/trustwave_get_asset.json")
     test_id = "765432:DNA#DEVICE:AW2X-hCmXdgvNlcDpVGf"
     requests_mock.get(
         f"http://api.example.com/v2/assets/{util_quote_param(test_id)}",
@@ -156,7 +156,7 @@ def test_get_asset_command(requests_mock):
 
 
 def test_get_updated_tickets_command(requests_mock):
-    json_response = util_load_json(os.path.dirname(__file__) + "/test_data/trustwave_search_tickets.json")
+    json_response = util_load_json("test_data/trustwave_search_tickets.json")
     requests_mock.get(
         "http://api.example.com/v2/tickets?updatedSince=2021-12-29T16%3A00%3A00Z&type=INCIDENT&pageSize=10",
         json=json_response,
@@ -172,7 +172,7 @@ def test_get_updated_tickets_command(requests_mock):
 
 
 def test_search_tickets_command(requests_mock):
-    json_response = util_load_json(os.path.dirname(__file__) + "/test_data/trustwave_search_tickets.json")
+    json_response = util_load_json("test_data/trustwave_search_tickets.json")
     requests_mock.get(
         "http://api.example.com/v2/tickets?pageSize=10&priority=HIGH",
         json=json_response,
@@ -188,7 +188,7 @@ def test_search_tickets_command(requests_mock):
 
 
 def test_search_findings_command(requests_mock):
-    json_response = util_load_json(os.path.dirname(__file__) + "/test_data/trustwave_search_findings.json")
+    json_response = util_load_json("test_data/trustwave_search_findings.json")
     requests_mock.get(
         "http://api.example.com/v2/findings?pageSize=10&priority=HIGH",
         json=json_response,
@@ -204,7 +204,7 @@ def test_search_findings_command(requests_mock):
 
 
 def test_search_assets_command(requests_mock):
-    json_response = util_load_json(os.path.dirname(__file__) + "/test_data/trustwave_search_assets.json")
+    json_response = util_load_json("test_data/trustwave_search_assets.json")
 
     requests_mock.get(
         "http://api.example.com/v2/assets?pageSize=10&name=qa-20211026-ngfw-vfw-fw",
@@ -222,7 +222,7 @@ def test_search_assets_command(requests_mock):
 
 
 def test_fetch_incidents(requests_mock, mocker):
-    json_response = util_load_json(os.path.dirname(__file__) + "/test_data/trustwave_search_tickets.json")
+    json_response = util_load_json("test_data/trustwave_search_tickets.json")
     requests_mock.get(
         "http://api.example.com/v2/tickets?pageSize=10&createdSince=2022-01-31T13%3A00%3A00Z&sortField=createdOn&sortDescending=false",  # noqa: 501
         json=json_response,
@@ -239,7 +239,7 @@ def test_fetch_incidents(requests_mock, mocker):
 
 
 def test_fetch_incidents_last_fetch(requests_mock, mocker):
-    json_response = util_load_json(os.path.dirname(__file__) + "/test_data/trustwave_search_tickets.json")
+    json_response = util_load_json("test_data/trustwave_search_tickets.json")
     requests_mock.get(
         "http://api.example.com/v2/tickets?pageSize=10&createdSince=2022-01-22T03%3A03%3A20Z&sortField=createdOn&sortDescending=false",  # noqa: 501
         json=json_response,

@@ -1,4 +1,3 @@
-import os
 import dateparser
 import requests_mock
 from _pytest.python_api import raises
@@ -7,7 +6,7 @@ from freezegun import freeze_time
 import demistomock as demisto
 import json
 import pytest
-from pathlib import Path
+
 from CommonServerPython import DemistoException
 from MicrosoftDefenderAdvancedThreatProtection import MsClient, get_future_time, build_std_output, parse_ip_addresses, \
     print_ip_addresses, get_machine_details_command, run_polling_command, run_live_response_script_action, \
@@ -16,7 +15,7 @@ from MicrosoftDefenderAdvancedThreatProtection import MsClient, get_future_time,
     create_filters_disjunctions, create_filter, MICROSOFT_DEFENDER_FOR_ENDPOINT_API
 
 ARGS = {'id': '123', 'limit': '2', 'offset': '0'}
-with open(os.path.dirname(__file__) + '/test_data/expected_hunting_queries.json') as expected_json:
+with open('test_data/expected_hunting_queries.json') as expected_json:
     EXPECTED_HUNTING_QUERIES = json.load(expected_json)
 
 
@@ -33,7 +32,7 @@ client_mocker = MsClient(
 
 
 def atp_mocker(mocker, file_name):
-    with open(Path(__file__).parent / f'test_data/{file_name}') as f:
+    with open(f'test_data/{file_name}', 'r') as f:
         alerts = json.loads(f.read())
     mocker.patch.object(client_mocker, 'list_alerts_by_params', return_value=alerts)
 
@@ -45,9 +44,9 @@ def test_first_fetch_incidents(mocker):
 
     incidents, _ = fetch_incidents(client_mocker, {'last_alert_fetched_time': "2018-11-26T16:19:21"}, False)
     # Check that all 3 incidents are extracted
-    assert len(incidents) == 3
-    assert incidents[2].get('name') == \
-        'Microsoft Defender ATP Alert da636983472338927033_-2077013687'
+    assert 3 == len(incidents)
+    assert 'Microsoft Defender ATP Alert da636983472338927033_-2077013687' == \
+           incidents[2].get('name')
 
 
 def test_second_fetch_incidents(mocker):
@@ -84,8 +83,8 @@ def test_third_fetch_incidents(mocker):
     # Check that new incident is extracted
     incidents, _ = fetch_incidents(client_mocker, {'last_alert_fetched_time': "2019-09-01T13:29:37",
                                                    'existing_ids': ['da637029413772554314_295039533']}, False)
-    assert incidents[0].get('name') == \
-        'Microsoft Defender ATP Alert da637029414680409372_735564929'
+    assert 'Microsoft Defender ATP Alert da637029414680409372_735564929' == \
+           incidents[0].get('name')
 
 
 def test_get_alert_related_ips_command(mocker):
@@ -850,7 +849,7 @@ def tests_get_future_time(mocker):
     mocker.patch(
         'MicrosoftDefenderAdvancedThreatProtection.parse_date_range',
         return_value=(datetime(1992, 3, 18), datetime(1992, 3, 21)))
-    assert get_future_time('3 days') == '1992-03-24T00:00:00Z'
+    assert '1992-03-24T00:00:00Z' == get_future_time('3 days')
 
 
 def test_build_std_output_domain():

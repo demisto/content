@@ -3,7 +3,6 @@ import json
 import pytest
 from CommonServerPython import *  # noqa: F401
 from requests import Response
-from pathlib import Path
 
 entryTypes['warning'] = 11
 
@@ -1621,7 +1620,7 @@ def test_integration_health(mocker):
 
 
 def load_test_data(path):
-    with open(Path(__file__).parent / path) as f:
+    with open(path) as f:
         return json.load(f)
 
 

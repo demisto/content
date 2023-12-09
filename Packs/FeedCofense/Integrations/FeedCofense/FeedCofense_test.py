@@ -1,10 +1,9 @@
-import os
 import json
 import pytest
 from FeedCofense import Client, fetch_indicators_command
 from CommonServerPython import FeedIndicatorType
 
-with open(os.path.dirname(__file__) + "/test_data/search_output.json") as f:
+with open("test_data/search_output.json") as f:
     raw: dict = json.load(f)
 
 data = raw["data"]
@@ -142,7 +141,7 @@ class TestFetchIndicators:
         Then
             - Verify indicator fields
         """
-        with open(os.path.dirname(__file__) + "/test_data/fetch_indicators.json") as file:
+        with open("test_data/fetch_indicators.json") as file:
             indicators = json.load(file)
 
         mocker.patch.object(Client, "build_iterator", return_value=[threats[1]])

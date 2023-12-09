@@ -1,4 +1,3 @@
-import os
 import json
 import pytest
 from CommonServerPython import IncidentSeverity
@@ -41,7 +40,7 @@ def test_current_issues_command(requests_mock, client):
     Test !asi-project-issues-fetch correctly gets issues from the current issues endpoint and returns
     incidents
     """
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/current-issues.json')
+    mock_response = util_load_json('test_data/current-issues.json')
     requests_mock.get(f'https://api.securitytrails.com/v1/asi/rules/{TEST_PROJECT_ID}/recent/issues',
                       json=mock_response)
     last_run, incidents = fetch_incidents(client, {}, False, False)
@@ -60,7 +59,7 @@ def test_added_issues_command(requests_mock, client):
     added incidents
     """
     last_run = 1234
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/added-issues.json')
+    mock_response = util_load_json('test_data/added-issues.json')
     requests_mock.get(f'https://api.securitytrails.com/v1/asi/rules/history/{TEST_PROJECT_ID}/activity'
                       f'?rule_action=added&start={last_run}',
                       json=mock_response)
@@ -78,7 +77,7 @@ def test_min_severity_filtering(requests_mock, client):
     """
     Test that a min_severity of Moderate correctly filters out informational rules
     """
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/current-issues.json')
+    mock_response = util_load_json('test_data/current-issues.json')
     requests_mock.get(f'https://api.securitytrails.com/v1/asi/rules/{TEST_PROJECT_ID}/recent/issues',
                       json=mock_response)
     client.min_severity = 'Moderate'
@@ -95,7 +94,7 @@ def test_incident_count_limit(requests_mock, client):
     Test that a setting a max incident number to 2 returns 2 incidents with the last one being
     a warning that too many incidents were available
     """
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/current-issues.json')
+    mock_response = util_load_json('test_data/current-issues.json')
     requests_mock.get(f'https://api.securitytrails.com/v1/asi/rules/{TEST_PROJECT_ID}/recent/issues',
                       json=mock_response)
     client.host_incident_limit = 2
@@ -111,7 +110,7 @@ def test_incident_by_host_recent(requests_mock, client):
     """
     Test that By Host issues returns nothing if last_fetch is past any acans
     """
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/by-host-issues.json')
+    mock_response = util_load_json('test_data/by-host-issues.json')
     requests_mock.get(f'https://api.securitytrails.com/v1/asi/rules/history/{TEST_PROJECT_ID}/activity/by_host/compare',
                       json=mock_response)
     last_run, incidents = fetch_incidents(client, {'last_fetch': 99999999999}, True, False)
@@ -122,7 +121,7 @@ def test_incident_by_host(requests_mock, client):
     """
     Test that By Host issues are loaded correctly
     """
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/by-host-issues.json')
+    mock_response = util_load_json('test_data/by-host-issues.json')
     requests_mock.get(f'https://api.securitytrails.com/v1/asi/rules/history/{TEST_PROJECT_ID}/activity/by_host/compare',
                       json=mock_response)
     last_run, incidents = fetch_incidents(client, {'last_fetch': 1234}, True, False)
@@ -142,7 +141,7 @@ def test_incident_by_host_partial_filter(requests_mock, client):
     """
     Test that By Host issues filter severity correctly and can eliminate a subset of rules from a host
     """
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/by-host-issues.json')
+    mock_response = util_load_json('test_data/by-host-issues.json')
     requests_mock.get(f'https://api.securitytrails.com/v1/asi/rules/history/{TEST_PROJECT_ID}/activity/by_host/compare',
                       json=mock_response)
     client.min_severity = 'Moderate'
@@ -160,7 +159,7 @@ def test_incident_by_host_full_filter(requests_mock, client):
     """
     Test that By Host issues filter severity correctly and eliminates hosts entirely
     """
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/by-host-issues.json')
+    mock_response = util_load_json('test_data/by-host-issues.json')
     requests_mock.get(f'https://api.securitytrails.com/v1/asi/rules/history/{TEST_PROJECT_ID}/activity/by_host/compare',
                       json=mock_response)
     client.min_severity = 'Critical'
@@ -174,7 +173,7 @@ def test_incident_by_host_by_issue(requests_mock, client):
     """
     Test that By Host By Issue expands each array of rules for each host
     """
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/by-host-issues.json')
+    mock_response = util_load_json('test_data/by-host-issues.json')
     requests_mock.get(f'https://api.securitytrails.com/v1/asi/rules/history/{TEST_PROJECT_ID}/activity/by_host/compare',
                       json=mock_response)
     last_run, incidents = fetch_incidents(client, {'last_fetch': 1234}, True, True)
@@ -199,7 +198,7 @@ def test_incident_by_host_by_issue_filter(requests_mock, client):
     """
     Test that By Host By Issue expands each array of rules and applies min_severity correcctly
     """
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/by-host-issues.json')
+    mock_response = util_load_json('test_data/by-host-issues.json')
     requests_mock.get(f'https://api.securitytrails.com/v1/asi/rules/history/{TEST_PROJECT_ID}/activity/by_host/compare',
                       json=mock_response)
     client.min_severity = 'Moderate'
@@ -215,7 +214,7 @@ def test_incident_total_limit(requests_mock, client):
     Some APIs limit how many results are returned. So if the total is over the XSOAR limit, a warning Incident should
     be created
     """
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/by-host-issues.json')
+    mock_response = util_load_json('test_data/by-host-issues.json')
     requests_mock.get(f'https://api.securitytrails.com/v1/asi/rules/history/{TEST_PROJECT_ID}/activity/by_host/compare',
                       json=mock_response)
     client.host_incident_limit = 5

@@ -1,4 +1,3 @@
-import os
 
 import pytest
 
@@ -382,7 +381,7 @@ def test_search_message_command(mocker):
             - Make sure search data is returned.
     """
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/search_message_response.json')
+    mock_response = util_load_json('test_data/search_message_response.json')
     mocker.patch.object(MimecastV2, 'http_request', return_value=mock_response)
 
     args = {'message_id': '12345'}
@@ -402,7 +401,7 @@ def test_held_message_summary_command(mocker):
             - Make sure hold data is returned.
     """
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/hold_message_summary_response.json')
+    mock_response = util_load_json('test_data/hold_message_summary_response.json')
     mocker.patch.object(MimecastV2, 'http_request', return_value=mock_response)
 
     response = MimecastV2.held_message_summary_command()
@@ -435,7 +434,7 @@ def test_get_message_info_command(args, delivered, delivered_message_len, reques
             - Make sure correct data is returned.
     """
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_message_info_response.json')
+    mock_response = util_load_json('test_data/get_message_info_response.json')
     requests_mock.post('/api/message-finder/get-message-info', json=mock_response)
     response = MimecastV2.get_message_info_command(args)
 
@@ -456,7 +455,7 @@ def test_list_held_messages_command(mocker):
             - Make sure correct data is returned.
     """
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/list_hold_messages_response.json')
+    mock_response = util_load_json('test_data/list_hold_messages_response.json')
     mocker.patch.object(MimecastV2, 'http_request', return_value=mock_response)
     args = {'admin': 'true', 'limit': '10'}
     response = MimecastV2.list_held_messages_command(args)
@@ -566,7 +565,7 @@ def test_search_processing_message_command(mocker):
             - Make sure hold data is returned.
     """
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/search_processing_message_response.json')
+    mock_response = util_load_json('test_data/search_processing_message_response.json')
     mocker.patch.object(MimecastV2, 'http_request', return_value=mock_response)
     args = {'sort_order': 'ascending', 'from_date': '2015-11-16T14:49:18+0000', 'to_date': '2021-11-16T14:49:18+0000'}
     response = MimecastV2.search_processing_message_command(args)
@@ -585,7 +584,7 @@ def test_list_email_queues_command(mocker):
             - Make sure hold data is returned.
     """
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/search_processing_message_response.json')
+    mock_response = util_load_json('test_data/search_processing_message_response.json')
     mocker.patch.object(MimecastV2, 'http_request', return_value=mock_response)
     args = {'sort_order': 'ascending', 'from_date': '2015-11-16T14:49:18+0000', 'to_date': '2021-11-16T14:49:18+0000'}
     response = MimecastV2.search_processing_message_command(args)
@@ -612,7 +611,7 @@ def test_query(mocker):
         - 'query' function is called with the provided arguments,
     THEN:
         - Make sure all return-field values are returned to context and human-readable.    """
-    query_data = util_load_json(os.path.dirname(__file__) + "/test_data/query_response.json")
+    query_data = util_load_json("test_data/query_response.json")
     mocker.patch.object(MimecastV2, "http_request", return_value=query_data["response"])
 
     result = MimecastV2.query({"queryXml": QUERY_XML})

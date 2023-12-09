@@ -1,15 +1,15 @@
-import os
+import io
 import json
 
 
 def util_load_json(path) -> dict:
-    with open(path, encoding='utf-8') as file:
+    with io.open(path, mode='r', encoding='utf-8') as file:
         return json.loads(file.read())
 
 
 def test_cisco_stealthwatch_query_flows_initialize_command(requests_mock):
     from CiscoStealthwatch import Client, cisco_stealthwatch_query_flows_initialize_command
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/query_flow_initialize.json')
+    mock_response = util_load_json('test_data/query_flow_initialize.json')
     requests_mock.post('https://token/v2/authenticate', cookies={'cookies': 'jar', 'XSRF-TOKEN': 'some token'})
     req_mock = requests_mock.post('https://sw-reporting/v2/tenants//flows/queries', json=mock_response,
                                   headers={'X-XSRF-TOKEN': 'some token'})
@@ -24,7 +24,7 @@ def test_cisco_stealthwatch_query_flows_initialize_command(requests_mock):
 
 def test_cisco_stealthwatch_query_flows_status_command(requests_mock):
     from CiscoStealthwatch import Client, cisco_stealthwatch_query_flows_status_command
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/query_flow_status.json')
+    mock_response = util_load_json('test_data/query_flow_status.json')
     requests_mock.post('https://token/v2/authenticate', cookies={'cookies': 'jar'})
     requests_mock.get('https://sw-reporting/v2/tenants//flows/queries/602a96e7e4b0d6d2a200ea94',
                       json=mock_response, headers={'X-XSRF-TOKEN': 'some token'})
@@ -38,7 +38,7 @@ def test_cisco_stealthwatch_query_flows_status_command(requests_mock):
 
 def test_cisco_stealthwatch_query_flows_results_command(requests_mock):
     from CiscoStealthwatch import Client, cisco_stealthwatch_query_flows_results_command
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/query_flow_results.json')
+    mock_response = util_load_json('test_data/query_flow_results.json')
     requests_mock.post('https://token/v2/authenticate', cookies={'cookies': 'jar'})
     requests_mock.get('https://sw-reporting/v2/tenants//flows/queries//results',
                       json=mock_response)
@@ -53,7 +53,7 @@ def test_cisco_stealthwatch_query_flows_results_command(requests_mock):
 
 def test_cisco_stealthwatch_list_tags_command(requests_mock):
     from CiscoStealthwatch import Client, cisco_stealthwatch_list_tags_command
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/list_tags.json')
+    mock_response = util_load_json('test_data/list_tags.json')
     requests_mock.post('https://token/v2/authenticate', cookies={'cookies': 'jar'})
     requests_mock.get('https://sw-reporting/v1/tenants//internalHosts/tags',
                       json=mock_response)
@@ -67,7 +67,7 @@ def test_cisco_stealthwatch_list_tags_command(requests_mock):
 
 def test_cisco_stealthwatch_get_tag_command(requests_mock):
     from CiscoStealthwatch import Client, cisco_stealthwatch_get_tag_command
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_tag.json')
+    mock_response = util_load_json('test_data/get_tag.json')
     requests_mock.post('https://token/v2/authenticate', cookies={'cookies': 'jar'})
     requests_mock.get('https://smc-configuration/rest/v1/tenants//tags/',
                       json=mock_response)
@@ -81,7 +81,7 @@ def test_cisco_stealthwatch_get_tag_command(requests_mock):
 
 def test_cisco_stealthwatch_list_tenants_all_command(requests_mock):
     from CiscoStealthwatch import Client, cisco_stealthwatch_list_tenants_command
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/list_tenants.json')
+    mock_response = util_load_json('test_data/list_tenants.json')
     requests_mock.post('https://token/v2/authenticate', cookies={'cookies': 'jar'})
     requests_mock.get('https://sw-reporting/v1/tenants',
                       json=mock_response)
@@ -96,7 +96,7 @@ def test_cisco_stealthwatch_list_tenants_all_command(requests_mock):
 
 def test_cisco_stealthwatch_list_tenants_one_command(requests_mock):
     from CiscoStealthwatch import Client, cisco_stealthwatch_list_tenants_command
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_tenant.json')
+    mock_response = util_load_json('test_data/get_tenant.json')
     requests_mock.post('https://token/v2/authenticate', cookies={'cookies': 'jar'})
     requests_mock.get('https://sw-reporting/v1/tenants/x',
                       json=mock_response)
@@ -111,7 +111,7 @@ def test_cisco_stealthwatch_list_tenants_one_command(requests_mock):
 
 def test_cisco_stealthwatch_get_tag_hourly_traffic_report_command(requests_mock):
     from CiscoStealthwatch import Client, cisco_stealthwatch_get_tag_hourly_traffic_report_command
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_tag_hourly_traffic_report.json')
+    mock_response = util_load_json('test_data/get_tag_hourly_traffic_report.json')
     requests_mock.post('https://token/v2/authenticate', cookies={'cookies': 'jar'})
     requests_mock.get('https://sw-reporting/v1/tenants/x/internalHosts/tags/y/traffic/hourly',
                       json=mock_response)
@@ -126,7 +126,7 @@ def test_cisco_stealthwatch_get_tag_hourly_traffic_report_command(requests_mock)
 
 def test_cisco_stealthwatch_get_top_alarming_tags_command(requests_mock):
     from CiscoStealthwatch import Client, cisco_stealthwatch_get_top_alarming_tags_command
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_top_alarming_tags.json')
+    mock_response = util_load_json('test_data/get_top_alarming_tags.json')
     requests_mock.post('https://token/v2/authenticate', cookies={'cookies': 'jar'})
     requests_mock.get('https://sw-reporting/v1/tenants/x/internalHosts/alarms/topHosts',
                       json=mock_response)
@@ -141,7 +141,7 @@ def test_cisco_stealthwatch_get_top_alarming_tags_command(requests_mock):
 def test_cisco_stealthwatch_list_security_events_initialize_command(requests_mock):
     from CiscoStealthwatch import Client, \
         cisco_stealthwatch_list_security_events_initialize_command
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/list_security_events_initialize.json')
+    mock_response = util_load_json('test_data/list_security_events_initialize.json')
     requests_mock.post('https://token/v2/authenticate', cookies={'cookies': 'jar'})
     requests_mock.post('https://sw-reporting/v1/tenants/x/security-events/queries',
                        json=mock_response)
@@ -158,7 +158,7 @@ def test_cisco_stealthwatch_list_security_events_initialize_command(requests_moc
 
 def test_cisco_stealthwatch_list_security_events_status_command(requests_mock):
     from CiscoStealthwatch import Client, cisco_stealthwatch_list_security_events_status_command
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/list_security_events_status.json')
+    mock_response = util_load_json('test_data/list_security_events_status.json')
     requests_mock.post('https://token/v2/authenticate', cookies={'cookies': 'jar'})
     requests_mock.get('https://sw-reporting/v1/tenants//security-events/queries/x',
                       json=mock_response)
@@ -172,7 +172,7 @@ def test_cisco_stealthwatch_list_security_events_status_command(requests_mock):
 
 def test_cisco_stealthwatch_list_security_events_results_command(requests_mock):
     from CiscoStealthwatch import Client, cisco_stealthwatch_list_security_events_results_command
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/list_security_events_results.json')
+    mock_response = util_load_json('test_data/list_security_events_results.json')
     requests_mock.post('https://token/v2/authenticate', cookies={'cookies': 'jar'})
     requests_mock.get('https://sw-reporting/v1/tenants//security-events/results/x',
                       json=mock_response)

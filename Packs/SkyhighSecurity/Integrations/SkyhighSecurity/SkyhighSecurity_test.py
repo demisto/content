@@ -1,5 +1,5 @@
-import os
 import json
+import io
 import requests_mock
 from freezegun import freeze_time
 import demistomock as demisto
@@ -7,7 +7,7 @@ from SkyhighSecurity import main
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -28,7 +28,7 @@ def test_incident_query_command(mocker):
 
     with requests_mock.Mocker() as m:
         m.post('https://www.example.com/shnapi/rest/external/api/v1/queryIncidents?limit=3',
-               json=util_load_json(os.path.dirname(__file__) + '/test_data/incidents.json'))
+               json=util_load_json('test_data/incidents.json'))
         main()
 
     assert len(response.call_args[0][0]['Contents']) > 0
@@ -95,8 +95,7 @@ def test_policy_dictionary_list_command(mocker):
     response = mocker.patch.object(demisto, 'results')
 
     with requests_mock.Mocker() as m:
-        m.get('https://www.example.com/shnapi/rest/dlp/dictionary',
-              json=util_load_json(os.path.dirname(__file__) + '/test_data/policies.json'))
+        m.get('https://www.example.com/shnapi/rest/dlp/dictionary', json=util_load_json('test_data/policies.json'))
         main()
 
     assert len(response.call_args[0][0]['Contents']) > 0
@@ -129,7 +128,7 @@ def test_policy_dictionary_update_command(mocker):
 
 def mock_incident_query(limit, start_time):
     if start_time == '2022-06-17T00:00:00.000000Z':
-        return util_load_json(os.path.dirname(__file__) + '/test_data/incidents.json')
+        return util_load_json('test_data/incidents.json')
     else:
         return {}
 

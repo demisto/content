@@ -1,17 +1,15 @@
-import os
 import json
 from StringSifter import *
 import pytest
-from pathlib import Path
 
 
 def open_file(path):
-    with open(Path(__file__).parent / path) as file:
+    with open(path) as file:
         return file.read()
 
 
 def open_json(path):
-    with open(Path(__file__).parent / path) as json_file:
+    with open(path) as json_file:
         return json.load(json_file)
 
 
@@ -30,23 +28,21 @@ def test_create_rank_strings_args(args, result):
 
 
 def test_stringsifter_entryID(mocker):
-    mocker.patch.object(demisto, 'getFilePath', return_value={'path': str(
-        Path(__file__).parent / 'test_data/test_words.txt'), 'name': 'name'})
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': 'test_data/test_words.txt', 'name': 'name'})
     cr = stringsifter({'entryID': '123'})
     assert cr.readable_output == open_file('test_data/stringsifter_result.md')
     assert cr.outputs == open_json('test_data/words_rating.json')
 
 
 def test_main_with_flags(mocker):
-    mocker.patch.object(demisto, 'getFilePath', return_value={'path': Path(
-        __file__).parent / 'test_data/test_words.txt', 'name': 'name'})
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': 'test_data/test_words.txt', 'name': 'name'})
     cr = stringsifter({'limit': '20', 'min_score': '6.34', 'entryID': '123'})
     assert cr.readable_output == open_file('test_data/stringsifter_results_with_filters.md')
     assert cr.outputs == open_json('test_data/words_rating_with_filter.json')
 
 
 def test_text_as_string(mocker):
-    with open(os.path.dirname(__file__) + '/test_data/temp_out.txt') as f:
+    with open('test_data/temp_out.txt') as f:
         string_output = f.read()
         cr = stringsifter({'string_text': string_output, 'file_name': 'test_file', 'limit': '5'})
         assert cr.readable_output == open_file('test_data/redable_output_string_text.md')

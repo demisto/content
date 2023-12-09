@@ -1,4 +1,3 @@
-import os
 from datetime import datetime, timezone, timedelta
 import json
 import pytest
@@ -91,9 +90,9 @@ def test_fetch_alerts(mocker, hide_sensitive, alert_expected, trace_expected, ac
     """
     client = mock_client()
     client.hide_sensitive = hide_sensitive
-    mocked_alert_data = util_load_json(os.path.dirname(__file__) + '/test_data/alerts.json')
-    mocked_trace_data = util_load_json(os.path.dirname(__file__) + '/test_data/email_trace.json')
-    mocked_activity_data = util_load_json(os.path.dirname(__file__) + '/test_data/activity_log.json')
+    mocked_alert_data = util_load_json('test_data/alerts.json')
+    mocked_trace_data = util_load_json('test_data/email_trace.json')
+    mocked_activity_data = util_load_json('test_data/activity_log.json')
     event_types_to_run = [
         FireEyeETPEventCollector.EventType('alerts', 25, outbound=False),
         FireEyeETPEventCollector.EventType('email_trace', 1000, outbound=False),
@@ -169,9 +168,9 @@ class TestLastRun:
 
 @ freeze_time("2023-07-30 11:34:30")
 def test_get_command(mocker):
-    mocked_alert_data = util_load_json(os.path.dirname(__file__) + '/test_data/alerts.json')
-    mocked_trace_data = util_load_json(os.path.dirname(__file__) + '/test_data/email_trace.json')
-    mocked_activity_data = util_load_json(os.path.dirname(__file__) + '/test_data/activity_log.json')
+    mocked_alert_data = util_load_json('test_data/alerts.json')
+    mocked_trace_data = util_load_json('test_data/email_trace.json')
+    mocked_activity_data = util_load_json('test_data/activity_log.json')
     event_types_to_run = [
         FireEyeETPEventCollector.EventType('alerts', 25, outbound=False),
         FireEyeETPEventCollector.EventType('email_trace', 1000, outbound=False),

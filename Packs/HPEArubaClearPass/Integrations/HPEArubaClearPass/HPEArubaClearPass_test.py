@@ -1,5 +1,5 @@
-import os
 import json
+import io
 import HPEArubaClearPass
 from HPEArubaClearPass import *
 from freezegun import freeze_time
@@ -28,7 +28,7 @@ TEST_LOGIN_LIST = \
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -72,7 +72,7 @@ def test_get_endpoints_list_command(mocker):
     - Ensures that command outputs are valid.
     """
     client = create_client(mocker)
-    mock_endpoints_response = util_load_json(os.path.dirname(__file__) + "/test_data/endpoints_list_response.json")
+    mock_endpoints_response = util_load_json("test_data/endpoints_list_response.json")
     mocker.patch.object(client, "prepare_request", return_value=mock_endpoints_response)
     results = get_endpoints_list_command(client, {})
     assert results.outputs_prefix == "HPEArubaClearPass.Endpoints"
@@ -95,7 +95,7 @@ def test_update_endpoint_command(mocker):
     - Ensures that new endpoint has the required fields.
     """
     client = create_client(mocker)
-    mock_endpoint_response = util_load_json(os.path.dirname(__file__) + "/test_data/update_endpoint_response.json")
+    mock_endpoint_response = util_load_json("test_data/update_endpoint_response.json")
     mocker.patch.object(client, "prepare_request", return_value=mock_endpoint_response)
     args = {"endpoint_id": '1', "mac_address": "123456789", "description": "test1", "status": "Unknown"}
     results = update_endpoint_command(client, args)
@@ -119,7 +119,7 @@ def test_get_attributes_list_command(mocker):
     - Ensures that command outputs are valid.
     """
     client = create_client(mocker)
-    mock_attributes_response = util_load_json(os.path.dirname(__file__) + "/test_data/attributes_list_response.json")
+    mock_attributes_response = util_load_json("test_data/attributes_list_response.json")
     mocker.patch.object(client, "prepare_request", return_value=mock_attributes_response)
     results = get_attributes_list_command(client, {})
     assert results.outputs_prefix == "HPEArubaClearPass.Attributes"
@@ -144,7 +144,7 @@ def test_create_attribute_command(mocker):
     - Ensures that new attribute has the required fields.
     """
     client = create_client(mocker)
-    mock_endpoint_response = util_load_json(os.path.dirname(__file__) + "/test_data/create_attribute_response.json")
+    mock_endpoint_response = util_load_json("test_data/create_attribute_response.json")
     mocker.patch.object(client, "prepare_request", return_value=mock_endpoint_response)
     args = {"data_type": "Boolean", "name": "new123", "entity_name": "Device"}
     results = create_attribute_command(client, args)
@@ -170,7 +170,7 @@ def test_update_attribute_command(mocker):
     - Ensures that the attribute fields were updated as required.
     """
     client = create_client(mocker)
-    mock_endpoint_response = util_load_json(os.path.dirname(__file__) + "/test_data/create_attribute_response.json")
+    mock_endpoint_response = util_load_json("test_data/create_attribute_response.json")
     mocker.patch.object(client, "prepare_request", return_value=mock_endpoint_response)
     args = {"attribute_id": "1", "data_type": "Boolean", "name": "new123", "entity_name": "Device"}
     results = update_attribute_command(client, args)
@@ -215,7 +215,7 @@ def test_get_active_sessions_list_command(mocker):
     - Ensures that command outputs are valid.
     """
     client = create_client(mocker)
-    mock_sessions_response = util_load_json(os.path.dirname(__file__) + "/test_data/active_sessions_list_response.json")
+    mock_sessions_response = util_load_json("test_data/active_sessions_list_response.json")
     mocker.patch.object(client, "prepare_request", return_value=mock_sessions_response)
     results = get_active_sessions_list_command(client, {})
     assert results.outputs_prefix == "HPEArubaClearPass.Sessions"
@@ -239,7 +239,7 @@ def test_disconnect_active_session_command(mocker):
     - Ensures that the attribute session disconnected successfully.
     """
     client = create_client(mocker)
-    mock_sessions_response = util_load_json(os.path.dirname(__file__) + "/test_data/disconnect_active_session_response.json")
+    mock_sessions_response = util_load_json("test_data/disconnect_active_session_response.json")
     mocker.patch.object(client, "prepare_request", return_value=mock_sessions_response)
     results = disconnect_active_session_command(client, {'session_id': 1})
     assert results.outputs_prefix == "HPEArubaClearPass.Sessions"

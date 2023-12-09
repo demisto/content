@@ -1,7 +1,6 @@
 import json
 import urllib
 import pytest
-from pathlib import Path
 
 DEHASHED_URL = "https://url.com/"  # disable-secrets-detection
 INTEGRATION_CONTEXT_BRAND = "DeHashed"
@@ -9,7 +8,7 @@ DEFAULT_RELIABILITY = 'B - Usually reliable'
 
 
 def load_test_data(json_path):
-    with open(Path(__file__).parent / json_path) as f:
+    with open(json_path) as f:
         return json.load(f)
 
 

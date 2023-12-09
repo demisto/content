@@ -92,6 +92,6 @@ def test_there_is_no_id_in_incident(mocker):
     # run
     try:
         GetCampaignLowerSimilarityIncidentsIdsAsOptions.main()
-        raise AssertionError
+        assert False
     except SystemExit:
         assert demisto.results.call_args[0][0]['Contents'] == NO_ID_IN_CONTEXT

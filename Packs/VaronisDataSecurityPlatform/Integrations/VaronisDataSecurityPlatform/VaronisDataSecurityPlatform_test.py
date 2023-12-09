@@ -1,5 +1,5 @@
-import os
 import json
+import io
 import demistomock as demisto
 from pytest_mock import MockerFixture
 
@@ -7,7 +7,7 @@ from VaronisDataSecurityPlatform import Client
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -32,21 +32,21 @@ def test_varonis_get_alerts_command(mocker: MockerFixture):
     mocker.patch.object(
         client,
         'varonis_get_alerts',
-        return_value=util_load_json(os.path.dirname(__file__) + '/test_data/varonis_get_alerts_api_response.json')
+        return_value=util_load_json('test_data/varonis_get_alerts_api_response.json')
     )
     mocker.patch.object(
         client,
         'varonis_get_enum',
-        return_value=util_load_json(os.path.dirname(__file__) + '/test_data/varonis_get_enum_response.json')
+        return_value=util_load_json('test_data/varonis_get_enum_response.json')
     )
     mocker.patch.object(
         client,
         'varonis_get_users',
-        return_value=util_load_json(os.path.dirname(__file__) + '/test_data/varonis_get_users_api_response.json')
+        return_value=util_load_json('test_data/varonis_get_users_api_response.json')
     )
 
-    args = util_load_json(os.path.dirname(__file__) + "/test_data/demisto_search_alerts_args.json")
-    expected_outputs = util_load_json(os.path.dirname(__file__) + '/test_data/varonis_get_alerts_command_output.json')
+    args = util_load_json("test_data/demisto_search_alerts_args.json")
+    expected_outputs = util_load_json('test_data/varonis_get_alerts_command_output.json')
 
     result = varonis_get_alerts_command(client, args)
 
@@ -115,11 +115,11 @@ def test_varonis_get_alerted_events_command(mocker: MockerFixture):
     mocker.patch.object(
         client,
         'varonis_get_alerted_events',
-        return_value=util_load_json(os.path.dirname(__file__) + '/test_data/varonis_get_alerted_events_response.json')
+        return_value=util_load_json('test_data/varonis_get_alerted_events_response.json')
     )
 
-    args = util_load_json(os.path.dirname(__file__) + "/test_data/demisto_alerted_events_args.json")
-    expected_outputs = util_load_json(os.path.dirname(__file__) + '/test_data/varonis_get_alerted_events_command_output.json')
+    args = util_load_json("test_data/demisto_alerted_events_args.json")
+    expected_outputs = util_load_json('test_data/varonis_get_alerted_events_command_output.json')
 
     result = varonis_get_alerted_events_command(client, args)
 
@@ -130,7 +130,7 @@ def test_varonis_get_alerted_events_command(mocker: MockerFixture):
 def test_fetch_incidents(mocker: MockerFixture, requests_mock: MockerFixture):
     from VaronisDataSecurityPlatform import fetch_incidents
 
-    fetch_output = util_load_json(os.path.dirname(__file__) + '/test_data/varonis_fetch_incidents_response.json')
+    fetch_output = util_load_json('test_data/varonis_fetch_incidents_response.json')
 
     requests_mock.get(
         'https://test.com/api/alert/alert/GetAlerts'
@@ -147,7 +147,7 @@ def test_fetch_incidents(mocker: MockerFixture, requests_mock: MockerFixture):
     mocker.patch.object(
         client,
         'varonis_get_enum',
-        return_value=util_load_json(os.path.dirname(__file__) + '/test_data/varonis_get_enum_response.json')
+        return_value=util_load_json('test_data/varonis_get_enum_response.json')
     )
 
     mocker.patch.object(demisto, 'debug', return_value=None)
@@ -166,7 +166,7 @@ def test_fetch_incidents(mocker: MockerFixture, requests_mock: MockerFixture):
         first_fetch_time='3 days'
     )
 
-    expected_outputs = util_load_json(os.path.dirname(__file__) + '/test_data/varonis_fetch_incidents_output.json')
+    expected_outputs = util_load_json('test_data/varonis_fetch_incidents_output.json')
 
     assert next_run == {'last_fetched_id': 152}
     assert incidents == [
@@ -189,7 +189,7 @@ def test_fetch_incidents(mocker: MockerFixture, requests_mock: MockerFixture):
 
 def test_enrich_with_url():
     from VaronisDataSecurityPlatform import enrich_with_url
-    obj = {}
+    obj = dict()
     baseUrl = 'http://test.com'
     id = '1'
     expectedUrl = f'{baseUrl}/#/app/analytics/entity/Alert/{id}'
@@ -226,7 +226,7 @@ def test_get_sids_user(mocker: MockerFixture):
     mocker.patch.object(
         client,
         'varonis_get_users',
-        return_value=util_load_json(os.path.dirname(__file__) + '/test_data/varonis_get_users_api_response.json')
+        return_value=util_load_json('test_data/varonis_get_users_api_response.json')
     )
 
     result = get_sids(client, ['not_exist'], None, DISPLAY_NAME_KEY)
@@ -264,7 +264,7 @@ def test_varonis_get_auth_url(requests_mock: MockerFixture):
         proxy=False
     )
 
-    fetch_output = util_load_json(os.path.dirname(__file__) + '/test_data/demisto_auth_configuration_response.json')
+    fetch_output = util_load_json('test_data/demisto_auth_configuration_response.json')
 
     requests_mock.get(
         'https://test.com/auth/configuration',
@@ -280,7 +280,7 @@ def test_varonis_authenticate(requests_mock: MockerFixture):
         proxy=False
     )
 
-    fetch_output = util_load_json(os.path.dirname(__file__) + '/test_data/demisto_auth_response.json')
+    fetch_output = util_load_json('test_data/demisto_auth_response.json')
     auth_url = 'https://test.com/DatAdvantage/api/authentication/win'
 
     requests_mock.post(

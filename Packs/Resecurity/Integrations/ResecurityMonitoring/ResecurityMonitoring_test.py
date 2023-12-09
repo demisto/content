@@ -1,5 +1,5 @@
-import os
 import json
+import io
 import urllib.parse
 
 import pytest
@@ -8,7 +8,7 @@ from ResecurityMonitoring import PAGINATION_HEADER_NAME, MODULE_NAME_BREACHES, D
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -16,7 +16,7 @@ def test_test_module(requests_mock):
     from ResecurityMonitoring import Client, test_module, DemistoException
     url = 'https://test.com/api/monitor/check-connection'
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/test_module_result.json')
+    mock_response = util_load_json('test_data/test_module_result.json')
     requests_mock.get(url, json=mock_response)
 
     client = Client(
@@ -49,7 +49,7 @@ def test_get_task_monitor_results_command(requests_mock):
               }
     url = 'https://test.com/api/monitor/task-results-by-module?' + urllib.parse.urlencode(params)
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_task_monitor_results.json')
+    mock_response = util_load_json('test_data/get_task_monitor_results.json')
 
     requests_mock.get(url,
                       headers={PAGINATION_HEADER_NAME: str(page)},
@@ -82,7 +82,7 @@ def test_get_task_monitor_results_command(requests_mock):
               }
     url = 'https://test.com/api/monitor/task-results-by-module?' + urllib.parse.urlencode(params)
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_task_monitor_results.json')
+    mock_response = util_load_json('test_data/get_task_monitor_results.json')
     requests_mock.get(url,
                       headers={PAGINATION_HEADER_NAME: str(page)},
                       json=mock_response)
@@ -107,7 +107,7 @@ def test_get_task_monitor_results_command(requests_mock):
               }
     url = 'https://test.com/api/monitor/task-results-by-module?' + urllib.parse.urlencode(params)
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_task_monitor_results.json')
+    mock_response = util_load_json('test_data/get_task_monitor_results.json')
     requests_mock.get(url,
                       headers={PAGINATION_HEADER_NAME: str(page)},
                       json=mock_response)
@@ -128,5 +128,5 @@ def test_get_task_monitor_results_command(requests_mock):
     requests_mock.get(url,
                       json=mock_response)
     with pytest.raises((DemistoException),
-                       match=f"Something is wrong, header {PAGINATION_HEADER_NAME} is empty for API request"):
+                       match="Something is wrong, header {0} is empty for API request".format(PAGINATION_HEADER_NAME)):
         command_function(client, args)

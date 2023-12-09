@@ -1,5 +1,5 @@
-import os
 import demistomock as demisto  # noqa: F401
+import io
 import json
 import pytest
 
@@ -12,7 +12,7 @@ EVENT_RESULTS = events_result
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -26,8 +26,8 @@ def test_fetch_incidents(mocker):
     Then
     - validate the incidents values
     """
-    client_response = util_load_json(os.path.dirname(__file__) + '/test_data/json_raw_response.json')
-    mapped_user = util_load_json(os.path.dirname(__file__) + '/test_data/mapped_user.json')
+    client_response = util_load_json('test_data/json_raw_response.json')
+    mapped_user = util_load_json('test_data/mapped_user.json')
 
     mocker.patch.object(Client, 'get_full_report', return_value=client_response.get('Report_Entry'))
     mocker.patch('Workday_IAM.get_all_user_profiles', return_value=({}, {}, {}))

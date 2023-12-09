@@ -1,5 +1,5 @@
-import os
 import json
+import io
 import pytest
 from CommonServerPython import DemistoException
 import demistomock as demisto  # noqa: F401
@@ -8,7 +8,7 @@ BASE_URL = 'https://console.runzero.com/api/v1.0'
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -99,7 +99,7 @@ def get_client():
 
 def test_sort_events_by_ids():
     from RunZeroEventCollector import sort_events
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/system_event_logs.json')
+    mock_response = util_load_json('test_data/system_event_logs.json')
     events_sorted = sort_events(mock_response)
     for i in range(1, len(events_sorted)):
         assert events_sorted[i]['created_at'] > events_sorted[i - 1]['created_at']
@@ -120,7 +120,7 @@ def test_get_events_command(requests_mock):
             - Checks the output of the command function with the expected output.
     """
     from RunZeroEventCollector import get_events_command
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/system_event_logs.json')
+    mock_response = util_load_json('test_data/system_event_logs.json')
     requests_mock.post(
         'https://console.runzero.com/api/v1.0/account/api/token',
         json={'access_token': 'access_token'})
@@ -156,7 +156,7 @@ def test_fetch_events(requests_mock):
     """
     from RunZeroEventCollector import fetch_events
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/system_event_logs.json')
+    mock_response = util_load_json('test_data/system_event_logs.json')
 
     requests_mock.post(
         'https://console.runzero.com/api/v1.0/account/api/token',
@@ -184,14 +184,14 @@ def test_fetch_events(requests_mock):
 
 def test_parse_event():
     from RunZeroEventCollector import add_time_to_event
-    my_json = util_load_json(os.path.dirname(__file__) + '/test_data/system_event_logs.json')
+    my_json = util_load_json('test_data/system_event_logs.json')
     parsed_event = add_time_to_event(my_json[0])
     assert parsed_event == get_actual_events()[0]
 
 
 def test_fetch_system_event_logs(requests_mock):
     client = get_client()
-    expected_res = util_load_json(os.path.dirname(__file__) + '/test_data/system_event_logs.json')[0]
+    expected_res = util_load_json('test_data/system_event_logs.json')[0]
     requests_mock.post(
         'https://console.runzero.com/api/v1.0/account/api/token',
         json={'access_token': 'access_token'})
@@ -216,7 +216,7 @@ def test_get_api_token(requests_mock):
 
 def test_http_request(requests_mock):
     client = get_client()
-    expected_res = util_load_json(os.path.dirname(__file__) + '/test_data/system_event_logs.json')[0]
+    expected_res = util_load_json('test_data/system_event_logs.json')[0]
     requests_mock.post(
         'https://console.runzero.com/api/v1.0/account/api/token',
         json={'api_token': 'api_token'})
@@ -230,7 +230,7 @@ def test_http_request(requests_mock):
 def test_test_module(requests_mock):
     from RunZeroEventCollector import test_module
     client = get_client()
-    expected_res = util_load_json(os.path.dirname(__file__) + '/test_data/system_event_logs.json')
+    expected_res = util_load_json('test_data/system_event_logs.json')
 
     requests_mock.post(
         'https://console.runzero.com/api/v1.0/account/api/token',
@@ -263,8 +263,7 @@ def test_main(mocker):
         }
     )
     mocker.patch('RunZeroEventCollector.Client.get_api_token', return_value={'access_token': 'access_token'})
-    mocker.patch('RunZeroEventCollector.Client.http_request', return_value=util_load_json(
-        os.path.dirname(__file__) + '/test_data/system_event_logs.json'))
+    mocker.patch('RunZeroEventCollector.Client.http_request', return_value=util_load_json('test_data/system_event_logs.json'))
     mocker.patch.object(
         demisto, 'command',
         return_value='test-module'

@@ -1,4 +1,3 @@
-import os
 import demistomock as demisto
 import base64
 import pytest
@@ -138,7 +137,7 @@ class TestHelperFunctions:
         )
 
         datetime_with_ms = dateparser.parse(self.DATE_WITH_MS)
-        assert convert_datetime_to_iso_str(datetime_with_ms) == self.DATE_WITH_MS
+        assert self.DATE_WITH_MS == convert_datetime_to_iso_str(datetime_with_ms)
 
     def test_message_to_incident(self):
         """
@@ -150,7 +149,7 @@ class TestHelperFunctions:
             - message_to_incident should convert it correctly
         """
         incident = message_to_incident(self.MOCK_MESSAGE)
-        assert incident.get("occurred") == self.DATE_WITH_MS
+        assert self.DATE_WITH_MS == incident.get("occurred")
         assert (
             f'Google PubSub Message {self.MOCK_MESSAGE.get("messageId")}'
             == incident.get("name")
@@ -248,7 +247,7 @@ class TestHelperFunctions:
             Then:
                 - return attribute pairs
             """
-            assert attribute_pairs_to_dict("") == ""
+            assert "" == attribute_pairs_to_dict("")
             assert attribute_pairs_to_dict(None) is None
 
         def test_attribute_pairs_to_dict__single(self):
@@ -419,9 +418,9 @@ class TestCommands:
         def ack_messages(self, a, b):
             return ""
 
-    with open(os.path.dirname(__file__) + "/test_data/commands_outputs.json") as f:
+    with open("test_data/commands_outputs.json", "r") as f:
         COMMAND_OUTPUTS = json.load(f)
-    with open(os.path.dirname(__file__) + "/test_data/raw_responses.json") as f:
+    with open("test_data/raw_responses.json", "r") as f:
         RAW_RESPONSES = json.load(f)
 
     TEST_COMMANDS_LIST = [

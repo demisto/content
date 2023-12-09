@@ -1,6 +1,6 @@
-import os
 import json
-from collections.abc import Callable
+import io
+from typing import Callable
 
 import pytest
 from requests.auth import HTTPDigestAuth
@@ -11,12 +11,12 @@ from CommonServerPython import *
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
 def util_load_csv(path):
-    with open(path) as f:
+    with open(path, 'r') as f:
         lines = f.read()
     the_response = Response()
     the_response._content = str.encode(lines)
@@ -89,7 +89,7 @@ def test_connection_list_command_with_default_start(mocker, arkime_client):
     from Arkime import connection_list_command
 
     http_request = mocker.patch.object(arkime_client, '_http_request',
-                                       return_value=util_load_json(os.path.dirname(__file__) + '/test_data/connection_list.json'))
+                                       return_value=util_load_json('test_data/connection_list.json'))
     args = {'baseline_date': '720',
             'start_time': '1648817940',
             'stop_time': '1649595540',
@@ -125,7 +125,7 @@ def test_pcap_file_list_command(mocker, arkime_client):
     from Arkime import pcap_file_list_command
 
     http_request = mocker.patch.object(arkime_client, '_http_request',
-                                       return_value=util_load_json(os.path.dirname(__file__) + '/test_data/pcap_file_list.json'))
+                                       return_value=util_load_json('test_data/pcap_file_list.json'))
 
     res = pcap_file_list_command(arkime_client, limit=1)
 
@@ -157,7 +157,7 @@ def test_session_list_command(mocker, arkime_client):
     from Arkime import session_list_command
 
     http_request = mocker.patch.object(arkime_client, '_http_request',
-                                       return_value=util_load_json(os.path.dirname(__file__) + '/test_data/session_list.json'))
+                                       return_value=util_load_json('test_data/session_list.json'))
 
     res = session_list_command(arkime_client, start_time='1650190238', stop_time='1650363038')
 
@@ -264,7 +264,7 @@ def test_spigraph_get_command(mocker, arkime_client):
     from Arkime import spigraph_get_command
 
     http_request = mocker.patch.object(arkime_client, '_http_request',
-                                       return_value=util_load_json(os.path.dirname(__file__) + '/test_data/spi_graph.json'))
+                                       return_value=util_load_json('test_data/spi_graph.json'))
     args = {'start_time': '1648817940',
             'stop_time': '1649595540',
             'field': '220516-QHSdz21pJ_xCtJGoL8mbmyNv',
@@ -300,7 +300,7 @@ def test_spiview_get_command(mocker, arkime_client):
     from Arkime import spiview_get_command
 
     http_request = mocker.patch.object(arkime_client, '_http_request',
-                                       return_value=util_load_json(os.path.dirname(__file__) + '/test_data/spi_view.json'))
+                                       return_value=util_load_json('test_data/spi_view.json'))
 
     args = {'start_time': '1650868312',
             'spi': 'destination.ip:100',
@@ -338,7 +338,7 @@ def test_field_list_command(mocker, arkime_client):
     from Arkime import fields_list_command
 
     http_request = mocker.patch.object(arkime_client, '_http_request',
-                                       return_value=util_load_json(os.path.dirname(__file__) + '/test_data/field_list.json'))
+                                       return_value=util_load_json('test_data/field_list.json'))
 
     res = fields_list_command(arkime_client)
 
@@ -451,7 +451,7 @@ def test_session_tag_add_command(mocker, arkime_client):
     from Arkime import session_tag_add_command
 
     http_request = mocker.patch.object(arkime_client, '_http_request',
-                                       return_value=util_load_json(os.path.dirname(__file__) + '/test_data/session_tag_add.json'))
+                                       return_value=util_load_json('test_data/session_tag_add.json'))
 
     args = {'segments': ['no'],
             'ids': '220516-QHSdz21pJ_xCtJGoL8mbmyNv',
@@ -493,7 +493,7 @@ def test_session_tag_remove_command(mocker, arkime_client):
     from Arkime import session_tag_remove_command
 
     http_request = mocker.patch.object(arkime_client, '_http_request',
-                                       return_value=util_load_json(os.path.dirname(__file__) + '/test_data/session_tag_remove.json'))  # noqa: E501
+                                       return_value=util_load_json('test_data/session_tag_remove.json'))
 
     args = {'segments': ['no'],
             'ids': '220516-QHSdz21pJ_xCtJGoL8mbmyNv',
@@ -545,18 +545,18 @@ def test_page_size_validness_for_invalid_input(page_size: int, exception_msg_exp
     assert e.value.message == exception_msg_expected
 
 
-response_without_Histo = ({'items': [
+response_without_Histo = (dict(items=[
     {
         "name": "localhost",
         "count": 3527811,
         "map": {},
     }
-], 'map': {}, 'recordsTotal': 6420810, 'recordsFiltered': 3527811}, {"items": [{
+], map={}, recordsTotal=6420810, recordsFiltered=3527811), {"items": [{
     "name": "localhost",
     "count": 3527811,
     "map": {},
 }], "map": {}, "recordsTotal": 6420810, "recordsFiltered": 3527811})
-response_with_Histo = ({'items': [
+response_with_Histo = (dict(items=[
     {
         "name": "localhost",
         "count": 3527811,
@@ -650,7 +650,7 @@ response_with_Histo = ({'items': [
         "network.packetsHisto": 150692542,
         "totDataBytesHisto": 26114638647,
         "network.bytesHisto": 45699563388
-    }], 'graph': {
+    }], graph={
     "xmin": 1648817940000,
     "xmax": 1649595540000,
     "interval": 3600,
@@ -728,7 +728,7 @@ response_with_Histo = ({'items': [
         ],
     ],
     "totDataBytesTotal": 26114638647
-}, 'map': {}, 'recordsTotal': 6420810, 'recordsFiltered': 3527811}, {"items": [{
+}, map={}, recordsTotal=6420810, recordsFiltered=3527811), {"items": [{
     "name": "localhost",
     "count": 3527811,
     "graph": {

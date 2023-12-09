@@ -70,41 +70,40 @@ def executeCommand(find_indicators_result=FIND_INDICATORS_NORMAL,
                     "Contents": [{}],
                 }
             ]
-        return None
 
     return inner
 
 
 @pytest.mark.parametrize("args, expected_incident", [
     (
-        {},
-        {"name": "Cyren Threat InDepth Threat Hunt", "type": "Hunt",
-         "details": "indicator_type: URL\nvalue: http://google.de\n", "owner": "admin"}
+        dict(),
+        dict(name="Cyren Threat InDepth Threat Hunt", type="Hunt",
+             details="indicator_type: URL\nvalue: http://google.de\n", owner="admin")
     ),
     (
-        {"assignee": "other.user"},
-        {"name": "Cyren Threat InDepth Threat Hunt", "type": "Hunt",
-         "details": "indicator_type: URL\nvalue: http://google.de\n", "owner": "other.user"}
+        dict(assignee="other.user"),
+        dict(name="Cyren Threat InDepth Threat Hunt", type="Hunt",
+             details="indicator_type: URL\nvalue: http://google.de\n", owner="other.user")
     ),
     (
-        {"assignee": "other.user", "incident_type": "My Type"},
-        {"name": "Cyren Threat InDepth Threat Hunt", "type": "My Type",
-         "details": "indicator_type: URL\nvalue: http://google.de\n", "owner": "other.user"}
+        dict(assignee="other.user", incident_type="My Type"),
+        dict(name="Cyren Threat InDepth Threat Hunt", type="My Type",
+             details="indicator_type: URL\nvalue: http://google.de\n", owner="other.user")
     ),
     (
-        {"indicator_type": "ip_reputation"},
-        {"name": "Cyren Threat InDepth Threat Hunt", "type": "Hunt",
-         "details": "indicator_type: URL\nvalue: http://google.de\n", "owner": "admin"}
+        dict(indicator_type="ip_reputation"),
+        dict(name="Cyren Threat InDepth Threat Hunt", type="Hunt",
+             details="indicator_type: URL\nvalue: http://google.de\n", owner="admin")
     ),
     (
-        {"incident_type": "My Type"},
-        {"name": "Cyren Threat InDepth Threat Hunt", "type": "My Type",
-         "details": "indicator_type: URL\nvalue: http://google.de\n", "owner": "admin"}
+        dict(incident_type="My Type"),
+        dict(name="Cyren Threat InDepth Threat Hunt", type="My Type",
+             details="indicator_type: URL\nvalue: http://google.de\n", owner="admin")
     ),
     (
-        {"indicator_type": "ip_reputation", "incident_type": "My Type"},
-        {"name": "Cyren Threat InDepth Threat Hunt", "type": "My Type",
-         "details": "indicator_type: URL\nvalue: http://google.de\n", "owner": "admin"}
+        dict(indicator_type="ip_reputation", incident_type="My Type"),
+        dict(name="Cyren Threat InDepth Threat Hunt", type="My Type",
+             details="indicator_type: URL\nvalue: http://google.de\n", owner="admin")
     ),
 ])
 def test_create_random_hunt_incident(mocker, args, expected_incident):
@@ -133,7 +132,7 @@ def test_create_random_hunt_incident_find_indicators_error(mocker):
 
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand(find_indicators_error=True))
     with pytest.raises(DemistoException):
-        create_random_hunt_incident({})
+        create_random_hunt_incident(dict())
 
 
 def test_create_random_hunt_incident_find_indicators_empty(mocker):
@@ -145,7 +144,7 @@ def test_create_random_hunt_incident_find_indicators_empty(mocker):
     from CyrenThreatInDepthRandomHunt import create_random_hunt_incident
 
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand(find_indicators_result=FIND_INDICATORS_EMPTY))
-    result = create_random_hunt_incident({})
+    result = create_random_hunt_incident(dict())
 
     assert "Could not find any indicators for " in result.readable_output
 
@@ -159,7 +158,7 @@ def test_create_random_hunt_incident_get_current_user_error(mocker):
     from CyrenThreatInDepthRandomHunt import create_random_hunt_incident
 
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand(get_users_error=True))
-    result = create_random_hunt_incident({})
+    result = create_random_hunt_incident(dict())
 
     assert result.readable_output == ("Successfully created incident Cyren Threat InDepth Threat Hunt.\n"
                                       "Click here to investigate: [1234](#/incident/1234).")
@@ -176,7 +175,7 @@ def test_create_random_hunt_incident_create_new_incident_error(mocker):
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand(create_new_incident_error=True))
 
     with pytest.raises(DemistoException):
-        create_random_hunt_incident({})
+        create_random_hunt_incident(dict())
 
 
 def test_create_random_hunt_incident_investigate_error(mocker):
@@ -188,7 +187,7 @@ def test_create_random_hunt_incident_investigate_error(mocker):
     from CyrenThreatInDepthRandomHunt import create_random_hunt_incident
 
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand(investigate_error=True))
-    result = create_random_hunt_incident({})
+    result = create_random_hunt_incident(dict())
 
     assert result.readable_output == ("Successfully created incident Cyren Threat InDepth Threat Hunt.\n"
                                       "Click here to investigate: [1234](#/incident/1234).\n"

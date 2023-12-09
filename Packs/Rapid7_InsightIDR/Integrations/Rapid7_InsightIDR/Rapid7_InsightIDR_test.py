@@ -1,5 +1,5 @@
-import os
 """InsightIDR Integration for Cortex XSOAR - Unit Tests file"""
+import io
 import json
 
 import pytest
@@ -10,12 +10,12 @@ REGION = 'us'
 
 
 def util_load_json(path) -> dict:
-    with open(path, encoding='utf-8') as file:
+    with io.open(path, mode='r', encoding='utf-8') as file:
         return json.loads(file.read())
 
 
 def util_load_file(path) -> str:
-    with open(path, encoding='utf-8') as file:
+    with io.open(path, mode='r', encoding='utf-8') as file:
         return file.read()
 
 
@@ -33,7 +33,7 @@ def test_insight_idr_list_investigations(requests_mock) -> None:
     """
     from Rapid7_InsightIDR import Client, insight_idr_list_investigations_command
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/list_investigations.json')
+    mock_response = util_load_json('test_data/list_investigations.json')
     requests_mock.get(
         f'https://{REGION}.api.insight.rapid7.com/idr/v1/investigations', json=mock_response)
 
@@ -70,7 +70,7 @@ def test_insight_idr_get_investigation(requests_mock) -> None:
     """
     from Rapid7_InsightIDR import Client, insight_idr_get_investigation_command
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_investigation.json')
+    mock_response = util_load_json('test_data/get_investigation.json')
     requests_mock.get(
         f'https://{REGION}.api.insight.rapid7.com/idr/v1/investigations', json=mock_response)
 
@@ -105,7 +105,7 @@ def test_close_investigation(requests_mock) -> None:
     """
     from Rapid7_InsightIDR import Client, insight_idr_close_investigations_command
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/close_investigations.json')
+    mock_response = util_load_json('test_data/close_investigations.json')
     requests_mock.post(
         f'https://{REGION}.api.insight.rapid7.com/idr/v1/investigations/bulk_close',
         json=mock_response)
@@ -144,7 +144,7 @@ def test_assign_user(requests_mock) -> None:
     investigation_id = '174e4f99-2ac7-4481-9301-4d24c34baf06'
     email = 'example@test.com'
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/assign_user.json')
+    mock_response = util_load_json('test_data/assign_user.json')
     requests_mock.put(
         f'https://{REGION}.api.insight.rapid7.com/idr/v1/investigations/'
         f'{investigation_id}/assignee', json=mock_response)
@@ -186,7 +186,7 @@ def test_set_status(requests_mock) -> None:
     investigation_id = '174e4f99-2ac7-4481-9301-4d24c34baf06'
     status = 'OPEN'
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/set_status.json')
+    mock_response = util_load_json('test_data/set_status.json')
     requests_mock.put(
         f'https://{REGION}.api.insight.rapid7.com/idr/v1/investigations/{investigation_id}'
         f'/status/{status}', json=mock_response)
@@ -226,7 +226,7 @@ def test_insight_idr_add_threat_indicators(requests_mock) -> None:
     """
     from Rapid7_InsightIDR import Client, insight_idr_add_threat_indicators_command
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/add_threat_indicators.json')
+    mock_response = util_load_json('test_data/add_threat_indicators.json')
     requests_mock.post(
         f'https://{REGION}.api.insight.rapid7.com/idr/v1/customthreats/key/x/indicators/add',
         json=mock_response)
@@ -265,7 +265,7 @@ def test_insight_idr_replace_threat_indicators(requests_mock) -> None:
     """
     from Rapid7_InsightIDR import Client, insight_idr_replace_threat_indicators_command
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/replace_threat_indicators.json')
+    mock_response = util_load_json('test_data/replace_threat_indicators.json')
     requests_mock.post(
         f'https://{REGION}.api.insight.rapid7.com/idr/v1/customthreats/key/x/indicators/replace',
         json=mock_response)
@@ -303,7 +303,7 @@ def test_insight_idr_list_logs(requests_mock) -> None:
     """
     from Rapid7_InsightIDR import Client, insight_idr_list_logs_command
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/list_logs.json')
+    mock_response = util_load_json('test_data/list_logs.json')
     requests_mock.get(
         f'https://{REGION}.api.insight.rapid7.com/log_search/management/logs', json=mock_response)
 
@@ -340,7 +340,7 @@ def test_insight_idr_list_log_sets(requests_mock) -> None:
     """
     from Rapid7_InsightIDR import Client, insight_idr_list_log_sets_command
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/list_log_sets.json')
+    mock_response = util_load_json('test_data/list_log_sets.json')
     requests_mock.get(
         f'https://{REGION}.api.insight.rapid7.com/log_search/management/logsets',
         json=mock_response)
@@ -409,7 +409,7 @@ def test_insight_idr_query_log(requests_mock) -> None:
     """
     from Rapid7_InsightIDR import Client, insight_idr_query_log_command
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/query_log_set.json')
+    mock_response = util_load_json('test_data/query_log_set.json')
     requests_mock.get(
         f'https://{REGION}.api.insight.rapid7.com/log_search/query/logs/x', json=mock_response)
 
@@ -446,7 +446,7 @@ def test_insight_idr_query_log_set(requests_mock) -> None:
     """
     from Rapid7_InsightIDR import Client, insight_idr_query_log_set_command
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/query_log_set.json')
+    mock_response = util_load_json('test_data/query_log_set.json')
     requests_mock.get(
         f'https://{REGION}.api.insight.rapid7.com/log_search/query/logsets/x', json=mock_response)
 
@@ -487,10 +487,10 @@ def test_insight_idr_query_log_with_pagination(requests_mock, end_point) -> None
         "logsets": insight_idr_query_log_set_command,
         "logs": insight_idr_query_log_command
     }
-    mock_response_callback = util_load_json(os.path.dirname(__file__) + '/test_data/query_log_set_callback_with_pagination.json')
-    mock_response_page_1 = util_load_json(os.path.dirname(__file__) + '/test_data/query_log_set_page_1.json')
-    mock_response_page_2 = util_load_json(os.path.dirname(__file__) + '/test_data/query_log_set_page_2.json')
-    mock_response_page_3 = util_load_json(os.path.dirname(__file__) + '/test_data/query_log_set_page_3.json')
+    mock_response_callback = util_load_json('test_data/query_log_set_callback_with_pagination.json')
+    mock_response_page_1 = util_load_json('test_data/query_log_set_page_1.json')
+    mock_response_page_2 = util_load_json('test_data/query_log_set_page_2.json')
+    mock_response_page_3 = util_load_json('test_data/query_log_set_page_3.json')
 
     base_url = f'https://{REGION}.api.insight.rapid7.com'
 
@@ -539,9 +539,9 @@ def test_insight_idr_query_log_with_callback(mocker, requests_mock, end_point) -
         "logsets": insight_idr_query_log_set_command,
         "logs": insight_idr_query_log_command
     }
-    mock_response_callback = util_load_json(os.path.dirname(__file__) + '/test_data/query_log_set_callback.json')
-    mock_response_callback_1 = util_load_json(os.path.dirname(__file__) + '/test_data/query_log_set_callback_1.json')
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/query_log_set.json')
+    mock_response_callback = util_load_json('test_data/query_log_set_callback.json')
+    mock_response_callback_1 = util_load_json('test_data/query_log_set_callback_1.json')
+    mock_response = util_load_json('test_data/query_log_set.json')
 
     requests_mock.get(
         f'https://{REGION}.api.insight.rapid7.com/log_search/query/{end_point}/x', json=mock_response_callback)
@@ -578,7 +578,7 @@ def test_fetch_incidents(requests_mock) -> None:
     """
     from Rapid7_InsightIDR import Client, fetch_incidents
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/list_investigations.json')
+    mock_response = util_load_json('test_data/list_investigations.json')
     requests_mock.get(
         f'https://{REGION}.api.insight.rapid7.com/idr/v1/investigations', json=mock_response)
 

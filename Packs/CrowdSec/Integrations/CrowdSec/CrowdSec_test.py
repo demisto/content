@@ -1,8 +1,8 @@
-import os
 """
     Cortex XSOAR CrowdSec Integration Unit Tests
 """
 
+import io
 import json
 import pytest
 from unittest.mock import MagicMock
@@ -19,14 +19,14 @@ RELIABILITY = "B - Usually reliable"
 
 
 def util_load_json(path):
-    with open(path, encoding="utf-8") as f:
+    with io.open(path, mode="r", encoding="utf-8") as f:
         return json.loads(f.read())
 
 
 def test_ip_command(mocker):
     from CrowdSec import ip_command
 
-    test_data = util_load_json(os.path.dirname(__file__) + "/test_data/test_ip_command.json")
+    test_data = util_load_json("test_data/test_ip_command.json")
     args = test_data.get("args")
     mocker.patch(
         "CrowdSec.Client.get_ip_information",
@@ -50,7 +50,7 @@ def test_ip_command(mocker):
 def test_unknown_ip_command(mocker):
     from CrowdSec import ip_command
 
-    test_data = util_load_json(os.path.dirname(__file__) + "/test_data/test_unknown_ip_command.json")
+    test_data = util_load_json("test_data/test_unknown_ip_command.json")
 
     args = test_data.get("args")
 

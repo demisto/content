@@ -2,15 +2,15 @@ import json
 import demistomock as demisto
 import pytest
 from datetime import datetime
-from pathlib import Path
+
 
 def util_open_file(path):
-    with open(Path(__file__).parent / path) as f:
+    with open(path, mode='r') as f:
         return f.read()
 
 
 def util_load_json(path):
-    with open(Path(__file__).parent / path) as f:
+    with open(path, mode='r') as f:
         return json.loads(f.read())
 
 
@@ -440,7 +440,6 @@ def test_create_thread_context(email_code, scenario, mocker):
             return EMAIL_THREADS
         elif command == "executeCommandAt":
             return True
-        return None
 
     from PreprocessEmail import create_thread_context
 

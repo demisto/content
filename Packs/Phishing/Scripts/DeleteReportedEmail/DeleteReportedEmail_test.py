@@ -1,4 +1,3 @@
-import os
 from copy import deepcopy
 
 import CommonServerPython
@@ -70,7 +69,7 @@ def test_get_deletion_args(integration_name):
     Then:
     return the suitable deletion args
     """
-    with open(os.path.join(TEST_DATA, f'{integration_name}{SEARCH_RESPONSE_SUFFIX}')) as file:
+    with open(os.path.join(TEST_DATA, f'{integration_name}{SEARCH_RESPONSE_SUFFIX}'), 'r') as file:
         search_results = json.load(file)
     assert EXPECTED_DELETION_ARGS_RESULTS[integration_name] == ARGS_FUNC[integration_name](search_results, SEARCH_ARGS)
 
@@ -85,7 +84,7 @@ def test_delete_email(mocker, integration_name):
     Then:
         delete the email
     """
-    with open(os.path.join(TEST_DATA, f'{integration_name}{SEARCH_RESPONSE_SUFFIX}')) as file:
+    with open(os.path.join(TEST_DATA, f'{integration_name}{SEARCH_RESPONSE_SUFFIX}'), 'r') as file:
         search_results = json.load(file)
     mocker.patch.object(DeleteReportedEmail, 'execute_command', return_value=search_results)
     assert delete_email(SEARCH_ARGS, 'func', ARGS_FUNC[integration_name], 'func', lambda x: False) == 'Success'
@@ -136,7 +135,6 @@ def execute_command_search_and_compliance_not_deleted_yet(command, args):
         return None
     elif command == 'o365-sc-get-search-action':
         return {'Status': 'Starting'}
-    return None
 
 
 def execute_command_search_and_compliance_deleted_successfully(command, args):
@@ -148,7 +146,6 @@ def execute_command_search_and_compliance_deleted_successfully(command, args):
         return None
     elif command == 'o365-sc-get-search-action':
         return {'Status': 'Completed'}
-    return None
 
 
 class TestSecurityAndCompliance:

@@ -9,8 +9,10 @@ MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
 You must add at least a Unit Test function for every XSOAR command
 you are implementing with your integration
 """
-from pathlib import Path
+
 import json
+import io
+from typing import Dict
 
 from KnowBe4KMSAT import Client, UserEventClient
 
@@ -21,7 +23,7 @@ REPORTING_BASE_URL = "https://us.api.knowbe4.com/v1"
 
 
 def util_load_json(path):
-    with open(Path(__file__).parent / path, encoding="utf-8") as f:
+    with io.open(path, mode="r", encoding="utf-8") as f:
         return json.loads(f.read())
 
 
@@ -232,7 +234,7 @@ def test_phishing_security_tests_list(requests_mock):
             "Content-Type": "application/json",
         },
     )
-    args: dict = {}
+    args: Dict = {}
     result = kmsat_phishing_security_tests_list_command(client, args)
     assert result.outputs_prefix == "KMSAT.PhishingSecurity"
     assert result.outputs_key_field == "campaign_id"

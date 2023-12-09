@@ -3,7 +3,7 @@ from SetIRProceduresMarkdown import get_tasks_and_readable, set_incident_with_co
 
 
 def load_json(file):
-    with open(file) as f:
+    with open(file, 'r') as f:
         return json.load(f)
 
 

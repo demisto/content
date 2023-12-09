@@ -1,4 +1,3 @@
-import os
 from FeediDefense import custom_build_iterator
 import requests_mock
 import pytest

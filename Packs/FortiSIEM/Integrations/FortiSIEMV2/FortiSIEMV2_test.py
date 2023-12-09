@@ -2,7 +2,7 @@ import json
 from unittest.mock import patch
 from freezegun import freeze_time
 import defusedxml.ElementTree as defused_ET
-from pathlib import Path
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import pytest
@@ -25,7 +25,7 @@ def load_json_mock_response(file_name: str) -> dict:
     Returns:
         str: Mock file content.
     """
-    with open(Path(__file__).parent / f'test_data/{file_name}', encoding='utf-8') as mock_file:
+    with open(f'test_data/{file_name}', encoding='utf-8') as mock_file:
         return json.loads(mock_file.read())
 
 
@@ -37,7 +37,7 @@ def load_xml_mock_response(file_name: str) -> str:
     Returns:
         str: Mock file content.
     """
-    file_path = str(Path(__file__).parent / f'test_data/{file_name}')
+    file_path = f'test_data/{file_name}'
 
     top = defused_ET.parse(file_path)
     return ET.tostring(top.getroot(), encoding='utf8').decode("utf-8")

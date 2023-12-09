@@ -105,7 +105,7 @@ def test_get_relevant_incidents_with_results(mocker):
     email_to = email_from = "bark@demisto.com"
     from_date = "2016-01-02T15:04:05Z"
     mocker.patch.object(demisto, 'executeCommand', return_value=incident)
-    assert get_relevant_incidents(email_to, email_from, from_date) == (1, 1)
+    assert (1, 1) == get_relevant_incidents(email_to, email_from, from_date)
 
 
 no_incident = [
@@ -142,4 +142,4 @@ def test_get_relevant_incidents_without_results(mocker):
     email_to = email_from = "barka@demisto.com"
     from_date = "2016-01-02T15:04:05Z"
     mocker.patch.object(demisto, 'executeCommand', return_value=no_incident)
-    assert get_relevant_incidents(email_to, email_from, from_date) == (0, 0)
+    assert (0, 0) == get_relevant_incidents(email_to, email_from, from_date)

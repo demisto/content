@@ -1,4 +1,3 @@
-import os
 """Base Integration for Cortex XSOAR - Unit Tests file
 
 Pytest Unit Tests: all funcion names must start with "test_"
@@ -20,7 +19,7 @@ import demistomock as demisto
 
 
 def util_load_json(path):
-    with open(os.path.dirname(__file__) + "/test_data/" + path, encoding='utf-8') as f:
+    with open("test_data/" + path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 

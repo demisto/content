@@ -1,7 +1,7 @@
-import os
 """Qintel QSentry Integration for Cortex XSOAR - Unit Tests file"""
 
 import json
+import io
 
 MOCK_URL = 'https://this-is-only-a-test.local'
 MOCK_CLIENT_ID = 'client-id'
@@ -9,7 +9,7 @@ MOCK_CLIENT_SECRET = 'client-secret'
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -41,7 +41,7 @@ def test_test_module(mocker):
     client = Client(base_url=MOCK_URL, verify=False, client_id=MOCK_CLIENT_ID,
                     client_secret=MOCK_CLIENT_SECRET)
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/test_module.json')
+    mock_response = util_load_json('test_data/test_module.json')
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
 
     response = test_module(client)
@@ -60,7 +60,7 @@ def test_ip_command(mocker):
     client = Client(base_url=MOCK_URL, verify=False, client_id=MOCK_CLIENT_ID,
                     client_secret=MOCK_CLIENT_SECRET)
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/ip_command.json')
+    mock_response = util_load_json('test_data/ip_command.json')
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
 
     args = {

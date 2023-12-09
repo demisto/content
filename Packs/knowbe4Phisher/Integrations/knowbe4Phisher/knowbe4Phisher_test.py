@@ -1,4 +1,3 @@
-import os
 from CommonServerPython import CommandResults
 import knowbe4Phisher as phisher
 import pytest
@@ -93,8 +92,8 @@ def test_time_creation():
     assert result == expected_time
 
 
-mock_responses = util_load_json(os.path.dirname(__file__) + '/test_data/test_responses.json')
-command_results = util_load_json(os.path.dirname(__file__) + '/test_data/mock_responses.json')
+mock_responses = util_load_json('test_data/test_responses.json')
+command_results = util_load_json('test_data/mock_responses.json')
 
 
 @pytest.mark.parametrize(

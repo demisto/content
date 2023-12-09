@@ -1,4 +1,3 @@
-import os
 import demistomock as demisto
 from CommonServerPython import *
 from Accessdata import Client, create_jobstate_context, create_contents, wrap_jobstate_context, main

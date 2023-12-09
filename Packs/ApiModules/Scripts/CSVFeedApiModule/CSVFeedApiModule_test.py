@@ -1,6 +1,6 @@
-import os
 import requests_mock
 from CSVFeedApiModule import *
+import io
 import pytest
 
 
@@ -13,7 +13,7 @@ def test_get_indicators_1():
         }
     }
 
-    with open(os.path.dirname(__file__) + '/test_data/ip_ranges.txt') as ip_ranges_txt:
+    with open('test_data/ip_ranges.txt') as ip_ranges_txt:
         ip_ranges = ip_ranges_txt.read().encode('utf8')
 
     with requests_mock.Mocker() as m:
@@ -51,7 +51,7 @@ def test_get_indicators_with_mapping():
         }
     }
 
-    with open(os.path.dirname(__file__) + '/test_data/ip_ranges.txt') as ip_ranges_txt:
+    with open('test_data/ip_ranges.txt') as ip_ranges_txt:
         ip_ranges = ip_ranges_txt.read()
 
     with requests_mock.Mocker() as m:
@@ -88,7 +88,7 @@ def test_get_indicators_2():
         }
     }
 
-    with open(os.path.dirname(__file__) + '/test_data/ip_ranges.txt') as ip_ranges_txt:
+    with open('test_data/ip_ranges.txt') as ip_ranges_txt:
         ip_ranges = ip_ranges_txt.read().encode('utf8')
 
     with requests_mock.Mocker() as m:
@@ -116,10 +116,10 @@ def test_get_indicators_2():
 
 def test_get_feed_content():
     """Test that it can handle both zipped and unzipped files correctly"""
-    with open(os.path.dirname(__file__) + '/test_data/ip_ranges.txt', 'rb') as ip_ranges_txt:
+    with open('test_data/ip_ranges.txt', 'rb') as ip_ranges_txt:
         ip_ranges_unzipped = ip_ranges_txt.read()
 
-    with open(os.path.dirname(__file__) + '/test_data/ip_ranges.gz', 'rb') as ip_ranges_gz:
+    with open('test_data/ip_ranges.gz', 'rb') as ip_ranges_gz:
         ip_ranges_zipped = ip_ranges_gz.read()
 
     expected_output = ip_ranges_unzipped.decode('utf8').split('\n')
@@ -187,7 +187,7 @@ class TestTagsParam:
             }
         }
 
-        with open(os.path.dirname(__file__) + '/test_data/ip_ranges.txt') as ip_ranges_txt:
+        with open('test_data/ip_ranges.txt') as ip_ranges_txt:
             ip_ranges = ip_ranges_txt.read().encode('utf8')
 
         with requests_mock.Mocker() as m:
@@ -223,7 +223,7 @@ class TestTagsParam:
             }
         }
 
-        with open(os.path.dirname(__file__) + '/test_data/ip_ranges.txt') as ip_ranges_txt:
+        with open('test_data/ip_ranges.txt') as ip_ranges_txt:
             ip_ranges = ip_ranges_txt.read().encode('utf8')
 
         with requests_mock.Mocker() as m:
@@ -243,7 +243,7 @@ class TestTagsParam:
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -258,7 +258,7 @@ def test_create_fields_mapping():
     Then:
     - Validate the mapping is done correctly
     """
-    raw_json = util_load_json(os.path.dirname(__file__) + "/test_data/create_field_mapping_test.json")
+    raw_json = util_load_json("test_data/create_field_mapping_test.json")
     mapping = {
         'Value': ('Name', '^([A-Z]{1}[a-z]+)', None),
         'Country': 'Country Name',

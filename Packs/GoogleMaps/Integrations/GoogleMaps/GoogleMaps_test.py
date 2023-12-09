@@ -1,6 +1,6 @@
-import os
 """GoogleMaps Integration for Cortex XSOAR - Unit Tests file"""
 
+import io
 import json
 
 import pytest
@@ -12,7 +12,7 @@ search_address = 'Paloalto Networks TLV office'
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -26,7 +26,7 @@ def test_google_maps_geocode_command(requests_mock):
         Validate the output compared to the mock output
     """
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/geocode_paloalto_tlv_response.json')
+    mock_response = util_load_json('test_data/geocode_paloalto_tlv_response.json')
     requests_mock.get('https://maps.googleapis.com/maps/api/geocode/json?', json=mock_response)
 
     client = Client(api_key='',
@@ -37,13 +37,13 @@ def test_google_maps_geocode_command(requests_mock):
     result_note, result_map = google_maps_geocode_command(client=client,
                                                           search_address=search_address,
                                                           error_on_no_results=False)
-    expected_note_outputs = util_load_json(os.path.dirname(__file__) + '/test_data/geocode_paloalto_tlv_note_outputs.json')
+    expected_note_outputs = util_load_json('test_data/geocode_paloalto_tlv_note_outputs.json')
     actual_note_outputs = result_note.outputs
     assert actual_note_outputs == expected_note_outputs
 
     # noinspection PyTypeChecker
     actual_map_contents = result_map.to_context()['Contents']
-    expected_map_contents = util_load_json(os.path.dirname(__file__) + '/test_data/geocode_paloalto_tlv_map_contents.json')
+    expected_map_contents = util_load_json('test_data/geocode_paloalto_tlv_map_contents.json')
     assert actual_map_contents == expected_map_contents
 
 
@@ -62,7 +62,7 @@ def test_google_maps_geocode_bad_api_key(requests_mock):
                     proxy=False,
                     insecure=False)
 
-    mock_bad_api_response = util_load_json(os.path.dirname(__file__) + '/test_data/geocode_bad_api_key_response.json')
+    mock_bad_api_response = util_load_json('test_data/geocode_bad_api_key_response.json')
     requests_mock.get('https://maps.googleapis.com/maps/api/geocode/json?', json=mock_bad_api_response)
     with pytest.raises(DemistoException) as e:
         google_maps_geocode_command(client=client,
@@ -87,14 +87,14 @@ def test_google_maps_geocode_zero_results(requests_mock):
                     proxy=False,
                     insecure=False)
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/geocode_zero_results_response.json')
+    mock_response = util_load_json('test_data/geocode_zero_results_response.json')
     requests_mock.get('https://maps.googleapis.com/maps/api/geocode/json?', json=mock_response)
 
     actual_result = google_maps_geocode_command(client=client,
                                                 search_address=zero_results_search_address,
                                                 error_on_no_results=False)
     assert len(actual_result) == 1
-    expected_context = util_load_json(os.path.dirname(__file__) + '/test_data/geocode_zero_results_context.json')
+    expected_context = util_load_json('test_data/geocode_zero_results_context.json')
     assert actual_result[0].to_context() == expected_context
 
     # And now, with error_on_no_results=True, should raise an exception.

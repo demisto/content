@@ -40,7 +40,7 @@ example_dict = {
 #  disable-secrets-detection-end
 
 
-class TestDictToFormattedString:
+class TestDictToFormattedString(object):
     def test_dict_to_formatted_string_1(self):
         example_dict_string = dict_to_formatted_string(example_dict)
         assert not example_dict_string.startswith('{')

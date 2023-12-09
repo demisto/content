@@ -8,7 +8,6 @@ from MicrosoftDefenderForCloudEventCollector import (MsClient,
 import json
 import pytest
 import demistomock as demisto  # noqa: F401
-from pathlib import Path
 
 ALERTS_API_RAW = 'test_data/ListAlerts.json'
 ALERTS_TO_SORT = 'test_data/AlertsToSort.json'
@@ -24,7 +23,7 @@ def read_json_util(path: str):
     """
     Read json util functions
     """
-    with open(Path(__file__).parent / path) as f:
+    with open(path, 'r') as f:
         json_file = json.load(f)
 
     return json_file

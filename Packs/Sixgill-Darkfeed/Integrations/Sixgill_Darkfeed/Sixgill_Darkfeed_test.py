@@ -494,7 +494,7 @@ expected_ioc_output = [{'value': '9cd46027d63c36e53f4347d43554336c2ea050d38be3ff
                         'score': 3}]
 
 
-class MockedResponse:
+class MockedResponse(object):
     def __init__(self, status_code, text, reason=None, url=None, method=None):
         self.status_code = status_code
         self.text = text
@@ -502,7 +502,7 @@ class MockedResponse:
         self.url = url
         self.request = requests.Request('GET')
         self.headers = {}
-        self.ok = self.status_code == 200
+        self.ok = True if self.status_code == 200 else False
 
     def json(self):
         return json.loads(self.text)

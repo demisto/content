@@ -1,13 +1,13 @@
-import os
 from Inception import Client, variant_discovery_command, file_enrichment_command
 import json
+import io
 
 API_KEY = "FAKEAPIKEY"
 TEST_FILE_HASH = "e7762f90024c5366807c7c145d3456f0ac3be086c0ec3557427d3c2c10a2052d"
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -20,7 +20,7 @@ test_client = Client(
 
 
 def test_variant_discovery_command_success(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/variant_discovery_command_result.json')
+    mock_response = util_load_json('test_data/variant_discovery_command_result.json')
 
     requests_mock.get("https://fakeapi.stairwelldemo.com/" + TEST_FILE_HASH, json=mock_response)
 
@@ -29,7 +29,7 @@ def test_variant_discovery_command_success(requests_mock):
 
 
 def test_variant_discovery_command_none(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/variant_discovery_command_results_none.json')
+    mock_response = util_load_json('test_data/variant_discovery_command_results_none.json')
 
     requests_mock.get("https://fakeapi.stairwelldemo.com/" + TEST_FILE_HASH, json=mock_response)
 
@@ -38,7 +38,7 @@ def test_variant_discovery_command_none(requests_mock):
 
 
 def test_variant_discovery_command_notfound(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/variant_discovery_command_results_notfound.json')
+    mock_response = util_load_json('test_data/variant_discovery_command_results_notfound.json')
 
     requests_mock.get("https://fakeapi.stairwelldemo.com/" + TEST_FILE_HASH, json=mock_response, status_code=500)
 
@@ -47,7 +47,7 @@ def test_variant_discovery_command_notfound(requests_mock):
 
 
 def test_file_enrichment_command(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/file_enrichment_command_result.json')
+    mock_response = util_load_json('test_data/file_enrichment_command_result.json')
 
     requests_mock.get("https://fakeapi.stairwelldemo.com/" + TEST_FILE_HASH, json=mock_response)
 
@@ -60,8 +60,7 @@ def test_file_enrichment_command(requests_mock):
 
 
 def test_file_enrichment_command_multiple_occurrences(requests_mock):
-    mock_response = util_load_json(os.path.dirname(
-        __file__) + '/test_data/file_enrichment_command_result_multiple_occurrences.json')
+    mock_response = util_load_json('test_data/file_enrichment_command_result_multiple_occurrences.json')
 
     requests_mock.get("https://fakeapi.stairwelldemo.com/" + TEST_FILE_HASH, json=mock_response)
 
@@ -73,7 +72,7 @@ def test_file_enrichment_command_multiple_occurrences(requests_mock):
 
 
 def test_file_enrichment_command_notfound(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/file_enrichment_command_result.json')
+    mock_response = util_load_json('test_data/file_enrichment_command_result.json')
 
     requests_mock.get("https://fakeapi.stairwelldemo.com/" + TEST_FILE_HASH, json=mock_response, status_code=404)
 

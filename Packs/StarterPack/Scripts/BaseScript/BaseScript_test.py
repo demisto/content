@@ -1,4 +1,3 @@
-import os
 """Base Script for Cortex XSOAR - Unit Tests file
 
 Pytest Unit Tests: all funcion names must start with "test_"
@@ -10,10 +9,11 @@ MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
 """
 
 import json
+import io
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -33,7 +33,7 @@ def test_basescript_dummy():
     }
     response = basescript_dummy_command(args)
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/basescript-dummy.json')
+    mock_response = util_load_json('test_data/basescript-dummy.json')
 
     assert response.outputs == mock_response
 # TODO: ADD HERE your unit tests

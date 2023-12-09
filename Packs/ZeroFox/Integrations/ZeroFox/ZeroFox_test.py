@@ -26,7 +26,6 @@ from ZeroFox import (
     malicious_hash_command,
     search_exploits_command,
 )
-from pathlib import Path
 
 BASE_URL = "https://api.zerofox.com"
 OK_CODES = (200, 201)
@@ -35,7 +34,7 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
 
 
 def load_json(file: str):
-    with open(Path(__file__).parent / file) as f:
+    with open(file) as f:
         return json.load(f)
 
 

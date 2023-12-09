@@ -1,4 +1,3 @@
-import os
 import pytest
 
 from FeedMitreAttack import handle_multiple_dates_in_one_field

@@ -1,3 +1,4 @@
+from typing import Union
 import pytest
 import requests_mock
 import requests
@@ -5,7 +6,7 @@ import requests
 MOCK_ADDR = 'mock://'
 
 
-def custom_matcher(request: requests.Request) -> requests.Response | None:
+def custom_matcher(request: requests.Request) -> Union[requests.Response, None]:
     if request.url == f'{MOCK_ADDR}http://example.com':
         first_history = requests.Response()
         first_history.url = 'http://example.com/'
@@ -78,7 +79,7 @@ def test_valid_response_history(params, expected_results):
 
     url = params['url']
     use_head = params['useHead']
-    request_using_head = use_head == 'true'
+    request_using_head = True if use_head == 'true' else False
 
     adapter = requests_mock.Adapter()
     adapter.add_matcher(custom_matcher)

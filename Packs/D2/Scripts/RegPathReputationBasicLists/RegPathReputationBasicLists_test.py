@@ -1,4 +1,3 @@
-import os
 import pytest
 import demistomock as demisto  # noqa: F401
 from RegPathReputationBasicLists import main

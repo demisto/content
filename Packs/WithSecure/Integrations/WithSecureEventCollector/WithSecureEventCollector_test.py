@@ -1,5 +1,5 @@
-import os
 import json
+import io
 import pytest
 import demistomock as demisto
 from WithSecureEventCollector import Client, get_events_command, fetch_events_command
@@ -11,7 +11,7 @@ def mock_client():
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -39,7 +39,7 @@ def test_get_events_command(requests_mock, mocker):
     Checks the output of the command function with the expected output.
     """
     client = mock_client()
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_events.json')
+    mock_response = util_load_json('test_data/get_events.json')
     args = {
         'fetch_from': '2022-12-26T00:00:00Z',
         'limit': 2
@@ -62,7 +62,7 @@ def test_fetch_events_command(requests_mock, mocker):
     """
 
     client = mock_client()
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_events.json')
+    mock_response = util_load_json('test_data/fetch_events.json')
     mocker.patch.object(Client, 'get_access_token', return_value={'access_token': 'access_token'})
     mocker.patch.object(demisto, 'getLastRun', return_value={'fetch_from': '2023-03-15T14:39:13Z',
                                                              'event_id': 'test_id'})

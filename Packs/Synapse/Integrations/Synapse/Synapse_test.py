@@ -1,14 +1,14 @@
-import os
 import json
+import io
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
 def util_load_bytes(path):
-    with open(path) as f:
+    with io.open(path, mode='r') as f:
         return f.read()
 
 
@@ -18,9 +18,9 @@ def test_list_users(requests_mock):
     """
     from Synapse import Client, list_users_command
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/list_users.json')
+    mock_response = util_load_json('test_data/list_users.json')
     requests_mock.get('https://test.com/api/v1/auth/users', json=mock_response)
-    mock_roles = util_load_json(os.path.dirname(__file__) + '/test_data/list_roles.json')
+    mock_roles = util_load_json('test_data/list_roles.json')
     requests_mock.get('https://test.com/api/v1/auth/roles', json=mock_roles)
 
     client = Client(
@@ -44,9 +44,9 @@ def test_list_roles(requests_mock):
     """
     from Synapse import Client, list_roles_command
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/list_roles.json')
+    mock_response = util_load_json('test_data/list_roles.json')
     requests_mock.get('https://test.com/api/v1/auth/roles', json=mock_response)
-    mock_roles = util_load_json(os.path.dirname(__file__) + '/test_data/list_roles.json')
+    mock_roles = util_load_json('test_data/list_roles.json')
     requests_mock.get('https://test.com/api/v1/auth/roles', json=mock_roles)
 
     client = Client(
@@ -70,9 +70,9 @@ def test_create_user(requests_mock):
     """
     from Synapse import Client, add_user_command
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/add_user.json')
+    mock_response = util_load_json('test_data/add_user.json')
     requests_mock.post('https://test.com/api/v1/auth/adduser', json=mock_response)
-    mock_roles = util_load_json(os.path.dirname(__file__) + '/test_data/list_roles.json')
+    mock_roles = util_load_json('test_data/list_roles.json')
     requests_mock.get('https://test.com/api/v1/auth/roles', json=mock_roles)
 
     client = Client(
@@ -102,7 +102,7 @@ def test_create_role(requests_mock):
     """
     from Synapse import Client, add_role_command
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/add_role.json')
+    mock_response = util_load_json('test_data/add_role.json')
     requests_mock.post('https://test.com/api/v1/auth/addrole', json=mock_response)
 
     client = Client(
@@ -130,9 +130,9 @@ def test_grant_user_role(requests_mock):
     """
     from Synapse import Client, grant_user_role_command
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/grant_role.json')
+    mock_response = util_load_json('test_data/grant_role.json')
     requests_mock.post('https://test.com/api/v1/auth/grant', json=mock_response)
-    mock_roles = util_load_json(os.path.dirname(__file__) + '/test_data/list_roles.json')
+    mock_roles = util_load_json('test_data/list_roles.json')
     requests_mock.get('https://test.com/api/v1/auth/roles', json=mock_roles)
 
     client = Client(
@@ -161,7 +161,7 @@ def test_query_model(requests_mock):
     """
     from Synapse import Client, query_model_command
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/query_model.json')
+    mock_response = util_load_json('test_data/query_model.json')
     requests_mock.get('https://test.com/api/v1/model', json=mock_response)
 
     client = Client(

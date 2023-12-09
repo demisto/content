@@ -1,10 +1,10 @@
-import os
 import json
+import io
 from datetime import datetime
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -69,7 +69,7 @@ def test_fetch_incidents(requests_mock):
     last_run: dict = {}
     max_results = '100'
     fetch_time = '3 days'
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/mock_incident.json')
+    mock_response = util_load_json('test_data/mock_incident.json')
     requests_mock.post('https://mock-url.com/graphql-third-party', json=mock_response['response'])
     # when : Actual function call
     _, new_incidents = fetch_incidents(loginClient, queryClient, last_run, max_results, fetch_time)
@@ -95,7 +95,7 @@ def test_fetch_file_information(requests_mock):
     loginClient, queryClient = setup()
     path = 'path'
     name = 'file-name-1'
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/mock_file_information.json')
+    mock_response = util_load_json('test_data/mock_file_information.json')
     requests_mock.post('https://mock-url.com/graphql-third-party', json=mock_response['response'])
     # when : Actual function call
     result = fetch_file_information(loginClient, queryClient, path, name)
@@ -109,7 +109,7 @@ def test_get_users_overview(requests_mock):
     # given : Mock response and arguments needed for the given call
     from ConcentricAI import get_users_overview
     loginClient, queryClient = setup()
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/mock_user_overview.json')
+    mock_response = util_load_json('test_data/mock_user_overview.json')
     requests_mock.post('https://mock-url.com/graphql-third-party', json=mock_response['response'])
     max_users = '10'
     # when : Actual function call
@@ -123,7 +123,7 @@ def test_get_user_details(requests_mock):
     # given : Mock response and arguments needed for the given call
     from ConcentricAI import get_user_details
     loginClient, queryClient = setup()
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/mock_user_details.json')
+    mock_response = util_load_json('test_data/mock_user_details.json')
     requests_mock.post('https://mock-url.com/graphql-third-party', json=mock_response['response'])
     user = 'joe'
     # when : Actual function call
@@ -137,7 +137,7 @@ def test_get_file_sharing_details(requests_mock):
     # given : Mock response and arguments needed for the given call
     from ConcentricAI import get_file_sharing_details
     loginClient, queryClient = setup()
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/mock_file_permissions.json')
+    mock_response = util_load_json('test_data/mock_file_permissions.json')
     requests_mock.post('https://mock-url.com/graphql-third-party', json=mock_response['response'])
     cid = 'lsknadkl12312'
     # when : Actual function call

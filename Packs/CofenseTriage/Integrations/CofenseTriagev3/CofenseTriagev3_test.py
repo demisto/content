@@ -1,4 +1,5 @@
 import json
+import io
 import time
 import os
 import pytest
@@ -27,7 +28,7 @@ MOCKER_HTTP_METHOD = 'CofenseTriagev3.Client.http_request'
 
 def util_load_json(path: str) -> dict:
     """Load a json to python dict."""
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -123,13 +124,13 @@ def test_cofense_report_list_command_when_valid_response_is_returned(mocker_http
     """Test case scenario for successful execution of cofense-report-list command."""
     from CofenseTriagev3 import cofense_report_list_command
 
-    with open(os.path.dirname(__file__) + '/test_data/report/report_list_response.json') as data:
+    with open('test_data/report/report_list_response.json') as data:
         mock_response = json.load(data)
 
-    with open(os.path.dirname(__file__) + '/test_data/report/report_list_context.json') as data:
+    with open('test_data/report/report_list_context.json') as data:
         expected_res = json.load(data)
 
-    with open(os.path.dirname(__file__) + '/test_data/report/report_list.md') as data:
+    with open('test_data/report/report_list.md') as data:
         expected_hr = data.read()
 
     mocker_http_request.return_value = mock_response
@@ -259,7 +260,7 @@ def test_cofense_threat_indicator_list_command_when_valid_response_is_returned(m
     context_output = util_load_json(
         os.path.join("test_data", "threat_indicator/threat_indicators_command_context.json"))
 
-    with open(os.path.join("test_data", "threat_indicator/threat_indicators_command_readable_output.md")) as f:
+    with open(os.path.join("test_data", "threat_indicator/threat_indicators_command_readable_output.md"), 'r') as f:
         readable_output = f.read()
 
     # Execute
@@ -371,13 +372,13 @@ def test_cofense_category_list_command_when_valid_response_is_returned(mocker_ht
     """Test case scenario for successful execution of cofense-category-list command."""
     from CofenseTriagev3 import cofense_category_list_command
 
-    with open(os.path.dirname(__file__) + '/test_data/category/category_list_response.json') as data:
+    with open('test_data/category/category_list_response.json') as data:
         mock_response = json.load(data)
 
-    with open(os.path.dirname(__file__) + '/test_data/category/category_list_context.json') as data:
+    with open('test_data/category/category_list_context.json') as data:
         expected_res = json.load(data)
 
-    with open(os.path.dirname(__file__) + '/test_data/category/category_list.md') as data:
+    with open('test_data/category/category_list.md') as data:
         expected_hr = data.read()
 
     mocker_http_request.return_value = mock_response
@@ -505,7 +506,7 @@ def test_cofense_url_list_command_when_valid_response_is_returned(mocked_client)
     context_output = util_load_json(
         os.path.join("test_data", "url/list_url_command_context.json"))
 
-    with open(os.path.join("test_data", "url/list_url_command_readable_output.md")) as f:
+    with open(os.path.join("test_data", "url/list_url_command_readable_output.md"), 'r') as f:
         readable_output = f.read()
 
     # Execute
@@ -554,13 +555,13 @@ def test_cofense_rule_list_command_when_valid_response_is_returned(mocker_http_r
     """Test case scenario for successful execution of cofense-rule-list command."""
     from CofenseTriagev3 import cofense_rule_list_command
 
-    with open(os.path.dirname(__file__) + '/test_data/rule/rule_list_response.json') as data:
+    with open('test_data/rule/rule_list_response.json') as data:
         mock_response = json.load(data)
 
-    with open(os.path.dirname(__file__) + '/test_data/rule/rule_list_context.json') as data:
+    with open('test_data/rule/rule_list_context.json') as data:
         expected_res = json.load(data)
 
-    with open(os.path.dirname(__file__) + '/test_data/rule/rule_list.md') as data:
+    with open('test_data/rule/rule_list.md') as data:
         expected_hr = data.read()
 
     mocker_http_request.return_value = mock_response
@@ -637,7 +638,7 @@ def test_cofense_threat_indicator_create_command_when_valid_response_is_returned
     context_output = util_load_json(
         os.path.join("test_data", "threat_indicator/threat_indicators_command_context.json"))
 
-    with open(os.path.join("test_data", "threat_indicator/threat_indicators_command_readable_output.md")) as f:
+    with open(os.path.join("test_data", "threat_indicator/threat_indicators_command_readable_output.md"), 'r') as f:
         readable_output = f.read()
 
     # Execute
@@ -687,7 +688,8 @@ def test_cofense_integration_submission_get_command_when_valid_response_is_retur
     context_output = util_load_json(
         os.path.join("test_data", "integration_submission/integration_submission_context.json"))
 
-    with open(os.path.join("test_data", "integration_submission/integration_submission_command_readable_output.md")) as f:
+    with open(os.path.join("test_data", "integration_submission/integration_submission_command_readable_output.md"),
+              'r') as f:
         readable_output = f.read()
 
     # Execute
@@ -739,7 +741,7 @@ def test_cofense_reporter_list_command_when_valid_response_is_returned(mocked_cl
     context_output = util_load_json(
         os.path.join("test_data", "reporter/reporter_list_context.json"))
 
-    with open(os.path.join("test_data", "reporter/reporter_list.md")) as f:
+    with open(os.path.join("test_data", "reporter/reporter_list.md"), 'r') as f:
         readable_output = f.read()
 
     # Execute
@@ -795,7 +797,7 @@ def test_cofense_attachment_payload_list_command_when_valid_response_is_returned
     context_output = util_load_json(
         os.path.join("test_data", "attachment_payload/attachment_payload_list_context.json"))
 
-    with open(os.path.join("test_data", "attachment_payload/attachment_payload_list.md")) as f:
+    with open(os.path.join("test_data", "attachment_payload/attachment_payload_list.md"), 'r') as f:
         readable_output = f.read()
 
     # Execute
@@ -844,12 +846,12 @@ def test_cofense_comment_list_command_when_valid_response_is_returned(mocker_htt
     """Test case scenario for successful execution of cofense-comment-list command."""
     from CofenseTriagev3 import cofense_comment_list_command
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/comment/comment_list_response.json')
+    mock_response = util_load_json('test_data/comment/comment_list_response.json')
     mocker_http_request.return_value = mock_response
 
-    expected_res = util_load_json(os.path.dirname(__file__) + '/test_data/comment/comment_list_context.json')
+    expected_res = util_load_json('test_data/comment/comment_list_context.json')
 
-    with open(os.path.dirname(__file__) + '/test_data/comment/comment_list_hr.md') as data:
+    with open('test_data/comment/comment_list_hr.md') as data:
         expected_hr = data.read()
 
     args = {'page_size': '20'}
@@ -915,7 +917,7 @@ def test_cofense_threat_indicator_update_command_when_valid_response_is_returned
     context_output = util_load_json(
         os.path.join("test_data", "threat_indicator/threat_indicators_command_context.json"))
 
-    with open(os.path.join("test_data", "threat_indicator/threat_indicators_command_readable_output.md")) as f:
+    with open(os.path.join("test_data", "threat_indicator/threat_indicators_command_readable_output.md"), 'r') as f:
         readable_output = f.read()
 
     # Execute
@@ -946,13 +948,13 @@ def test_cofense_cluster_list_command_when_valid_response_is_returned(mocker_htt
     """Test case scenario for successful execution of cofense-cluster-list command."""
     from CofenseTriagev3 import cofense_cluster_list_command
 
-    with open(os.path.dirname(__file__) + '/test_data/cluster/cluster_list_response.json') as data:
+    with open('test_data/cluster/cluster_list_response.json') as data:
         mock_response = json.load(data)
 
-    with open(os.path.dirname(__file__) + '/test_data/cluster/cluster_list_context.json') as data:
+    with open('test_data/cluster/cluster_list_context.json') as data:
         expected_res = json.load(data)
 
-    with open(os.path.dirname(__file__) + '/test_data/cluster/cluster_list.md') as data:
+    with open('test_data/cluster/cluster_list.md') as data:
         expected_hr = data.read()
 
     mocker_http_request.return_value = mock_response
@@ -1060,7 +1062,7 @@ def test_cofense_report_attachment_payload_list_command_when_valid_response_is_r
     context_output = util_load_json(
         os.path.join("test_data", "report_attachment_payload/report_attachment_payload_list_context.json"))
 
-    with open(os.path.join("test_data", "report_attachment_payload/report_attachment_payload_list.md")) as f:
+    with open(os.path.join("test_data", "report_attachment_payload/report_attachment_payload_list.md"), 'r') as f:
         readable_output = f.read()
 
     # Execute

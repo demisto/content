@@ -1,17 +1,17 @@
-import os
 import json
+import io
 
 MOCKED_BASE_URL = 'https://api.test.com/api/'
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
 def test_get_domain_state(mocker):
     from Cyberpion import Client
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/domain_state.json')
+    mock_response = util_load_json('test_data/domain_state.json')
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
     client = Client(
         base_url=MOCKED_BASE_URL,
@@ -32,7 +32,7 @@ def test_get_domain_state(mocker):
 def test_get_domain_state_command(mocker):
     from Cyberpion import Client, get_domain_state_command
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/domain_state.json')
+    mock_response = util_load_json('test_data/domain_state.json')
     # requests_mock.get(
     #     f'{MOCKED_BASE_URL}domainstate/?verbosity=details&domain=$anon100-2.com',
     #     json=mock_response)
@@ -46,8 +46,7 @@ def test_get_domain_state_command(mocker):
     )
     domain = '$anon100-2.com'
     response = get_domain_state_command(client, {'domain': domain})
-    mocker.patch.object(Client, '_http_request', return_value=util_load_json(
-        os.path.dirname(__file__) + '/test_data/domain_state.json'))
+    mocker.patch.object(Client, '_http_request', return_value=util_load_json('test_data/domain_state.json'))
     assert response.outputs['DomainState'] == client.get_domain_state(domain)
     assert response.outputs_prefix == 'Cyberpion'
     assert response.outputs_key_field == 'id'
@@ -62,7 +61,7 @@ def test_fetch_incidents(mocker):
     """
     from Cyberpion import Client, fetch_incidents
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/new_incidents.json')
+    mock_response = util_load_json('test_data/new_incidents.json')
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
 
     client = Client(

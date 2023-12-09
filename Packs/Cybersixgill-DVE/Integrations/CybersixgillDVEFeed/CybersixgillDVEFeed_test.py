@@ -844,7 +844,7 @@ NVD Vector - V3.1: None
 ]
 
 
-class MockedResponse:
+class MockedResponse(object):
     def __init__(
         self,
         status_code,
@@ -858,7 +858,7 @@ class MockedResponse:
         self.reason = reason
         self.url = url
         self.request = requests.Request("GET")
-        self.ok = self.status_code == 200
+        self.ok = True if self.status_code == 200 else False
         self.headers = ""
 
     def json(self):

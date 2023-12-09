@@ -1,4 +1,3 @@
-import os
 import pytest
 from CommonServerPython import *
 import json
@@ -28,7 +27,7 @@ def test_append_email_signature(mocker):
     - Validate that the returned message includes the appended signature content
     """
     from SendEmailReply import append_email_signature
-    signature_list = util_load_json(os.path.dirname(__file__) + '/test_data/getList_signature_success.json')
+    signature_list = util_load_json('test_data/getList_signature_success.json')
     mocker.patch.object(demisto, 'executeCommand', return_value=signature_list)
     result = append_email_signature('<html><body>Simple HTML message.\r\n</body></html>')
     assert result == EMAIL_SIGNATURE_APPENDED
@@ -45,7 +44,7 @@ def test_append_email_signature_fails(mocker):
     - Validate that a debug message is saved indicating the list couldn't be fetched
     """
     from SendEmailReply import append_email_signature
-    get_list_error_response = util_load_json(os.path.dirname(__file__) + '/test_data/getList_signature_error.json')
+    get_list_error_response = util_load_json('test_data/getList_signature_error.json')
     mocker.patch.object(demisto, 'executeCommand', return_value=get_list_error_response)
     debug_mocker = mocker.patch.object(demisto, 'debug')
     append_email_signature('<html><body>Simple HTML message.\r\n</body></html>')
@@ -75,7 +74,7 @@ def test_validate_email_sent(email_cc, email_bcc, expected_result, mocker):
     - Validate that the successful message is returned.
     """
     from SendEmailReply import validate_email_sent
-    email_reply_response = util_load_json(os.path.dirname(__file__) + '/test_data/email_reply.json')
+    email_reply_response = util_load_json('test_data/email_reply.json')
     mocker.patch("SendEmailReply.execute_reply_mail", return_value=email_reply_response)
     result = validate_email_sent(
         '123',
@@ -105,7 +104,7 @@ def test_validate_email_sent_fails(mocker):
         an error message would be returned.
     """
     from SendEmailReply import validate_email_sent
-    reply_mail_error = util_load_json(os.path.dirname(__file__) + '/test_data/reply_mail_error.json')
+    reply_mail_error = util_load_json('test_data/reply_mail_error.json')
     mocker.patch('SendEmailReply.execute_reply_mail', return_value=reply_mail_error)
 
     result = validate_email_sent('', '', False, '', '', '', '', '', '', {}, '', '', '')
@@ -229,8 +228,8 @@ def test_get_email_recipients(email_to, email_from, service_mail, mailbox, excep
 @pytest.mark.parametrize(
     "list_response, expected_result",
     [
-        (util_load_json(os.path.dirname(__file__) + '/test_data/getList_querywindow_success.json'), 'success'),
-        (util_load_json(os.path.dirname(__file__) + '/test_data/getList_querywindow_error.json'), 'fail')
+        (util_load_json('test_data/getList_querywindow_success.json'), 'success'),
+        (util_load_json('test_data/getList_querywindow_error.json'), 'fail')
     ]
 )
 def test_get_query_window(list_response, expected_result, mocker):
@@ -313,7 +312,7 @@ def test_create_file_data_json():
         - Validate that the file data is in the right json format.
         """
     from SendEmailReply import create_file_data_json
-    attachment_response = util_load_json(os.path.dirname(__file__) + '/test_data/attachment_example.json')
+    attachment_response = util_load_json('test_data/attachment_example.json')
     expected_result = util_open_file('test_data/file_data.txt')
     result = create_file_data_json(attachment_response, 'attachment')
     assert result == expected_result
@@ -352,7 +351,7 @@ def test_get_email_threads(mocker):
     """
     from SendEmailReply import get_email_threads
     import SendEmailReply
-    email_threads = util_load_json(os.path.dirname(__file__) + '/test_data/email_threads.json')
+    email_threads = util_load_json('test_data/email_threads.json')
     mocker.patch.object(demisto, 'executeCommand')
     mocker.patch.object(SendEmailReply, 'dict_safe_get', return_value=email_threads)
     result = get_email_threads('1')
@@ -362,8 +361,8 @@ def test_get_email_threads(mocker):
 @pytest.mark.parametrize(
     "email_code, email_threads, scenario",
     [
-        ('69433507', util_load_json(os.path.dirname(__file__) + '/test_data/email_threads.json'), 'thread_found'),
-        ('123', util_load_json(os.path.dirname(__file__) + '/test_data/email_threads.json'), 'thread_notfound'),
+        ('69433507', util_load_json('test_data/email_threads.json'), 'thread_found'),
+        ('123', util_load_json('test_data/email_threads.json'), 'thread_notfound'),
         ('69433507',
          [{'EmailCommsThreadId': '69433507',
            'EmailCommsThreadNumber': '0',
@@ -478,8 +477,8 @@ def test_send_new_email(test_args, expected_result, expected_message, mocker):
 @pytest.mark.parametrize(
     "email_selected_thread, email_thread, expected_result",
     [
-        ('0', util_load_json(os.path.dirname(__file__) + '/test_data/email_threads.json')[0], 'success'),
-        ('42', util_load_json(os.path.dirname(__file__) + '/test_data/email_threads.json')[0], 'fail')
+        ('0', util_load_json('test_data/email_threads.json')[0], 'success'),
+        ('42', util_load_json('test_data/email_threads.json')[0], 'fail')
     ]
 )
 def test_resend_first_contact(email_selected_thread, email_thread, expected_result, mocker):
@@ -697,7 +696,7 @@ def test_collect_thread_details():
                       'sRJWC0zdXEMqsAAAAAAEMAAAkkBJFBb0fRJWC0zdXEMqsABApcWVYAAA=', False, '87692312',
                 'Re: <87692312> Test Email 4', 'end_user@company.com, soc_sender@company.com',
                 'soc_sender@company.com', '', '', 3)
-    actual = collect_thread_details(util_load_json(os.path.dirname(__file__) + '/test_data/email_threads.json'), '1')
+    actual = collect_thread_details(util_load_json('test_data/email_threads.json'), '1')
     assert actual == expected
 
 
@@ -741,7 +740,7 @@ def test_multi_thread_reply(scenario, mocker):
     from SendEmailReply import multi_thread_reply
     import SendEmailReply
 
-    email_threads = util_load_json(os.path.dirname(__file__) + '/test_data/email_threads.json')
+    email_threads = util_load_json('test_data/email_threads.json')
     resend_first_contact_mocker = mocker.patch.object(SendEmailReply, 'resend_first_contact', return_value=True)
     mocker.patch.object(SendEmailReply, 'reset_fields', return_value=True)
     mocker.patch.object(SendEmailReply, 'return_results', return_value=True)
@@ -862,7 +861,7 @@ def test_main(new_thread, mocker):
     """
     from SendEmailReply import main
     import SendEmailReply
-    incident = util_load_json(os.path.dirname(__file__) + '/test_data/incident_data.json')
+    incident = util_load_json('test_data/incident_data.json')
     input_args = {
         'service_mail': 'soc_sender@company.com',
         'files': {},

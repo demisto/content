@@ -1,4 +1,4 @@
-import os
+import io
 import json
 
 import pytest
@@ -9,7 +9,7 @@ SOCRADAR_API_ENDPOINT = 'https://platform.socradar.com/api'
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -21,7 +21,7 @@ def test_test_module(requests_mock):
     mock_socradar_api_key = "APIKey"
     mock_socradar_company_id = "0"
     suffix = f'company/{mock_socradar_company_id}/incidents/check/auth?key={mock_socradar_api_key}'
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/check_auth_response.json')
+    mock_response = util_load_json('test_data/check_auth_response.json')
     requests_mock.get(f'{SOCRADAR_API_ENDPOINT}/{suffix}', json=mock_response)
 
     client = Client(
@@ -45,7 +45,7 @@ def test_test_module_handles_authorization_error(requests_mock):
     mock_socradar_api_key = "WrongAPIKey"
     mock_socradar_company_id = "0"
     suffix = f'company/{mock_socradar_company_id}/incidents/check/auth?key={mock_socradar_api_key}'
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/check_auth_response_auth_error.json')
+    mock_response = util_load_json('test_data/check_auth_response_auth_error.json')
     requests_mock.get(f'{SOCRADAR_API_ENDPOINT}/{suffix}', json=mock_response, status_code=401)
     client = Client(
         base_url=SOCRADAR_API_ENDPOINT,
@@ -69,7 +69,7 @@ def test_fetch_incidents(requests_mock):
 
     mock_socradar_company_id = "0"
     mock_socradar_api_key = "APIKey"
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_incidents_response.json')
+    mock_response = util_load_json('test_data/fetch_incidents_response.json')
     suffix = f'company/{mock_socradar_company_id}/incidents/v2?key={mock_socradar_api_key}' \
              f'&severity=Medium%2CHigh' \
              f'&limit=2' \
@@ -105,7 +105,7 @@ def test_fetch_incidents(requests_mock):
         incident_sub_type=None
     )
 
-    expected_output = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_incidents_expected_output.json')
+    expected_output = util_load_json('test_data/fetch_incidents_expected_output.json')
 
     assert new_incidents == expected_output
     assert len(new_incidents) <= 2
@@ -165,7 +165,7 @@ def test_mark_incident_as_fp(requests_mock):
     mock_incident_id = 0
     mock_comment = "Mock Comment"
     mock_socradar_api_key = "APIKey"
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/mark_incident_fp_response.json')
+    mock_response = util_load_json('test_data/mark_incident_fp_response.json')
     suffix = f'company/{mock_socradar_company_id}/incidents/fp?key={mock_socradar_api_key}'
     requests_mock.post(f'{SOCRADAR_API_ENDPOINT}/{suffix}', json=mock_response)
 
@@ -184,7 +184,7 @@ def test_mark_incident_as_fp(requests_mock):
         args=mock_args
     )
 
-    expected_output = util_load_json(os.path.dirname(__file__) + '/test_data/mark_incident_fp_expected_output.json')
+    expected_output = util_load_json('test_data/mark_incident_fp_expected_output.json')
 
     assert isinstance(response, CommandResults)
     assert response.raw_response == expected_output
@@ -203,7 +203,7 @@ def test_mark_incident_as_fp_handles_error(requests_mock):
     mock_incident_id = 0
     mock_comment = "Mock Comment"
     mock_socradar_api_key = "APIKey"
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/mark_incident_fp_response_error.json')
+    mock_response = util_load_json('test_data/mark_incident_fp_response_error.json')
     suffix = f'company/{mock_socradar_company_id}/incidents/fp?key={mock_socradar_api_key}'
     requests_mock.post(f'{SOCRADAR_API_ENDPOINT}/{suffix}', json=mock_response)
 
@@ -237,7 +237,7 @@ def test_mark_incident_as_resolved(requests_mock):
     mock_incident_id = 0
     mock_comment = "Mock Comment"
     mock_socradar_api_key = "APIKey"
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/mark_incident_resolved_response.json')
+    mock_response = util_load_json('test_data/mark_incident_resolved_response.json')
     suffix = f'company/{mock_socradar_company_id}/incidents/resolve?key={mock_socradar_api_key}'
     requests_mock.post(f'{SOCRADAR_API_ENDPOINT}/{suffix}', json=mock_response)
 
@@ -256,7 +256,7 @@ def test_mark_incident_as_resolved(requests_mock):
         args=mock_args
     )
 
-    expected_output = util_load_json(os.path.dirname(__file__) + '/test_data/mark_incident_resolved_expected_output.json')
+    expected_output = util_load_json('test_data/mark_incident_resolved_expected_output.json')
 
     assert isinstance(response, CommandResults)
     assert response.raw_response == expected_output
@@ -271,7 +271,7 @@ def test_mark_incident_as_resolved_handles_error(requests_mock):
     mock_incident_id = 0
     mock_comment = "Mock Comment"
     mock_socradar_api_key = "APIKey"
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/mark_incident_resolved_response_error.json')
+    mock_response = util_load_json('test_data/mark_incident_resolved_response_error.json')
     suffix = f'company/{mock_socradar_company_id}/incidents/resolve?key={mock_socradar_api_key}'
     requests_mock.post(f'{SOCRADAR_API_ENDPOINT}/{suffix}', json=mock_response)
 

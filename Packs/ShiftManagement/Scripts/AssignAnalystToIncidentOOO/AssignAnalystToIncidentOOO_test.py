@@ -1,17 +1,17 @@
-import os
+import io
 import json
 
 import pytest
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
-user_data = util_load_json(os.path.dirname(__file__) + '/test_data/user_data.json')
-away_user_data = util_load_json(os.path.dirname(__file__) + '/test_data/away_user_data.json')
-ooo_user_data = util_load_json(os.path.dirname(__file__) + '/test_data/ooo_user_data.json')
+user_data = util_load_json('test_data/user_data.json')
+away_user_data = util_load_json('test_data/away_user_data.json')
+ooo_user_data = util_load_json('test_data/ooo_user_data.json')
 
 
 def execute_command_mock(command, args):

@@ -1,4 +1,3 @@
-import os
 import json
 import pytest
 import demistomock as demisto
@@ -43,8 +42,8 @@ def test_fetch_incidents__2_1(mocker, requests_mock, demisto_mocker_2_1):
     Returns:
         All the threats received by the API as incidents regardless to the rank.
     """
-    raw_threat_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_threats_2_1_raw_response.json')
-    incidents_for_fetch = util_load_json(os.path.dirname(__file__) + '/test_data/incidents_2_1.json')
+    raw_threat_response = util_load_json('test_data/get_threats_2_1_raw_response.json')
+    incidents_for_fetch = util_load_json('test_data/incidents_2_1.json')
     mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
     requests_mock.get('https://usea1.sentinelone.net/web/api/v2.1/threats', json=raw_threat_response)
 
@@ -67,8 +66,8 @@ def test_fetch_incidents__2_0(mocker, requests_mock, demisto_mocker_2_0):
     Returns:
         List of incidents with rank threshold matches to the fetch_threat_rank.
     """
-    raw_threat_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_threats_2_0_raw_response.json')
-    incidents_for_fetch = util_load_json(os.path.dirname(__file__) + '/test_data/incidents_2_0.json')
+    raw_threat_response = util_load_json('test_data/get_threats_2_0_raw_response.json')
+    incidents_for_fetch = util_load_json('test_data/incidents_2_0.json')
     mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
     requests_mock.get('https://usea1.sentinelone.net/web/api/v2.0/threats', json=raw_threat_response)
 
@@ -89,8 +88,8 @@ def test_get_threats_outputs():
     Returns:
         List of threat outputs.
     """
-    raw_threat_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_threats_2_1_raw_response.json')['data']
-    expected = util_load_json(os.path.dirname(__file__) + '/test_data/threats_outputs.json')
+    raw_threat_response = util_load_json('test_data/get_threats_2_1_raw_response.json')['data']
+    expected = util_load_json('test_data/threats_outputs.json')
     threats_output = list(sentinelone_v2.get_threats_outputs(raw_threat_response))
     assert expected == threats_output
 
@@ -102,8 +101,8 @@ def test_get_agents_outputs():
     Returns:
         List of agents.
     """
-    raw_agent_response = util_load_json(os.path.dirname(__file__) + '/test_data/agents_raw_response.json')
-    expected = util_load_json(os.path.dirname(__file__) + '/test_data/agent_outputs.json')
+    raw_agent_response = util_load_json('test_data/agents_raw_response.json')
+    expected = util_load_json('test_data/agent_outputs.json')
     agent_output = list(sentinelone_v2.get_agents_outputs(raw_agent_response))
     assert expected == agent_output
 
@@ -143,7 +142,7 @@ def test_download_fetched_file(mocker, requests_mock, capfd):
         File entry of the file downloaded
     """
     agent_id = 1
-    with open(os.path.dirname(__file__) + '/test_data/download_fetched_file.zip', 'rb') as f:
+    with open('test_data/download_fetched_file.zip', 'rb') as f:
         dffzip_contents = f.read()
 
     requests_mock.get(f'https://usea1.sentinelone.net/web/api/v2.1/agents/{agent_id}/uploads/1', content=dffzip_contents)
@@ -174,8 +173,8 @@ def test_get_blocklist(mocker, requests_mock):
     Return:
         The blocklist
     """
-    raw_blockist_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_blocklist.json')
-    blocklist_results = util_load_json(os.path.dirname(__file__) + '/test_data/get_blocklist_results.json')
+    raw_blockist_response = util_load_json('test_data/get_blocklist.json')
+    blocklist_results = util_load_json('test_data/get_blocklist_results.json')
     requests_mock.get("https://usea1.sentinelone.net/web/api/v2.1/restrictions?tenant=True&groupIds=group_id&siteIds=site_id"
                       "&accountIds=account_id&skip=0&limit=1&sortBy=updatedAt&sortOrder=desc",
                       json=raw_blockist_response)
@@ -210,7 +209,7 @@ def test_remove_hash_from_blocklist(mocker, requests_mock):
     Return:
         Status that it has been removed from the blocklist
     """
-    raw_blockist_response = util_load_json(os.path.dirname(__file__) + '/test_data/remove_hash_from_blocklist.json')
+    raw_blockist_response = util_load_json('test_data/remove_hash_from_blocklist.json')
     requests_mock.get("https://usea1.sentinelone.net/web/api/v2.1/restrictions?tenant=True&skip=0&limit=4&sortBy=updatedAt&"
                       "sortOrder=asc&value__contains=f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2",
                       json=raw_blockist_response)
@@ -293,7 +292,7 @@ def test_remove_item_from_whitelist(mocker, requests_mock):
     Return:
         Status that it has been removed from the whitelist
     """
-    raw_whitelist_response = util_load_json(os.path.dirname(__file__) + '/test_data/remove_item_from_whitelist.json')
+    raw_whitelist_response = util_load_json('test_data/remove_item_from_whitelist.json')
     requests_mock.get("https://usea1.sentinelone.net/web/api/v2.1/exclusions?osTypes=windows&type=white_hash"
                       "&value__contains=f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2&"
                       "includeChildren=True&includeParents=True&limit=5",
@@ -401,7 +400,7 @@ def test_update_alert_status(mocker, requests_mock):
 
 
 def test_create_star_rule(mocker, requests_mock):
-    raw_star_rule_response = util_load_json(os.path.dirname(__file__) + '/test_data/create_star_rule_response.json')
+    raw_star_rule_response = util_load_json('test_data/create_star_rule_response.json')
     requests_mock.post("https://usea1.sentinelone.net/web/api/v2.1/cloud-detection/rules", json=raw_star_rule_response)
     mocker.patch.object(demisto, 'params', return_value={'token': 'token',
                                                          'url': 'https://usea1.sentinelone.net',

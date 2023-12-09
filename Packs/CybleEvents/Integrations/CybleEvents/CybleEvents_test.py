@@ -1,4 +1,3 @@
-import os
 from datetime import datetime, timedelta
 import demistomock as demisto
 import json
@@ -11,7 +10,7 @@ def load_json_file(filename):
     :param filename:
     :return:
     """
-    with open(os.path.dirname(__file__) + f"/test_data/{filename}") as f:
+    with open("test_data/{0}".format(filename), 'r') as f:
         return json.load(f)
 
 
@@ -277,7 +276,7 @@ def test_cyble_vision_fetch_detail(requests_mock, eID, eType):
 
     mock_response_1 = load_json_file("dummy_fetch_detail.json")
 
-    requests_mock.post(f'https://test.com/api/v2/events/{eType}/{eID}', json=mock_response_1)
+    requests_mock.post('https://test.com/api/v2/events/{}/{}'.format(eType, eID), json=mock_response_1)
 
     client = Client(
         base_url='https://test.com',
@@ -297,11 +296,11 @@ def test_cyble_vision_fetch_detail(requests_mock, eID, eType):
 
     for i, el in enumerate(response['events']):
         assert el['id'] == i + 1
-        assert el['eventtitle'] == f'some_event_title_{i + 1}'
+        assert el['eventtitle'] == 'some_event_title_{0}'.format(i + 1)
         assert el['createdat'] == '2020-06-15T07:34:20.062000'
         assert el['modified'] == 'Mar 01 2022'
-        assert el['type'] == f'some_type_{i + 1}'
-        assert el['indicator'] == f'some_indicator_{i + 1}'
+        assert el['type'] == 'some_type_{0}'.format(i + 1)
+        assert el['indicator'] == 'some_indicator_{0}'.format(i + 1)
         assert el['references'] == ''
         assert el['lastseenon'] == '2022-03-02'
 
@@ -341,9 +340,10 @@ def test_limit_cyble_vision_fetch_detail(requests_mock, capfd, offset, limit):
         'limit': limit
     }
 
-    with capfd.disabled(), pytest.raises(ValueError,
-                                         match=f"Limit should a positive number up to 1000, limit: {limit}"):
-        fetch_alert_details(client=client, args=args)
+    with capfd.disabled():
+        with pytest.raises(ValueError,
+                           match=f"Limit should a positive number up to 1000, limit: {limit}"):
+            fetch_alert_details(client=client, args=args)
 
 
 def test_offset_cyble_vision_fetch_detail(requests_mock, capfd):
@@ -376,9 +376,10 @@ def test_offset_cyble_vision_fetch_detail(requests_mock, capfd):
         'limit': 1
     }
 
-    with capfd.disabled(), pytest.raises(ValueError,
-                                         match="Parameter having negative value, from: -1'"):
-        fetch_alert_details(client=client, args=args)
+    with capfd.disabled():
+        with pytest.raises(ValueError,
+                           match="Parameter having negative value, from: -1'"):
+            fetch_alert_details(client=client, args=args)
 
 
 def test_etype_cyble_vision_fetch_detail(requests_mock, capfd):
@@ -407,9 +408,10 @@ def test_etype_cyble_vision_fetch_detail(requests_mock, capfd):
         'event_id': 'eID'
     }
 
-    with capfd.disabled(), pytest.raises(ValueError,
-                                         match="Event Type not specified"):
-        fetch_alert_details(client=client, args=args)
+    with capfd.disabled():
+        with pytest.raises(ValueError,
+                           match="Event Type not specified"):
+            fetch_alert_details(client=client, args=args)
 
 
 def test_eid_cyble_vision_fetch_detail(requests_mock, capfd):
@@ -438,9 +440,10 @@ def test_eid_cyble_vision_fetch_detail(requests_mock, capfd):
         'event_type': 'eType'
     }
 
-    with capfd.disabled(), pytest.raises(ValueError,
-                                         match="Event ID not specified"):
-        fetch_alert_details(client=client, args=args)
+    with capfd.disabled():
+        with pytest.raises(ValueError,
+                           match="Event ID not specified"):
+            fetch_alert_details(client=client, args=args)
 
 
 def test_validate_input(capfd):
@@ -452,8 +455,9 @@ def test_validate_input(capfd):
         'from': '-1',
         'limit': '1',
     }
-    with capfd.disabled(), pytest.raises(ValueError, match=f"Parameter having negative value, from: {args.get('from')}"):
-        validate_input(args=args)
+    with capfd.disabled():
+        with pytest.raises(ValueError, match=f"Parameter having negative value, from: {args.get('from')}"):
+            validate_input(args=args)
 
 
 def test_limit_validate_input(capfd):
@@ -479,9 +483,10 @@ def test_sdate_validate_input(capfd):
         'from': '0',
         'limit': '1'
     }
-    with capfd.disabled(), pytest.raises(ValueError,
-                                         match=f"Start date must be a date before or equal to {datetime.today().strftime('%Y/%m/%d')}"):  # noqa: E501
-        validate_input(args=args)
+    with capfd.disabled():
+        with pytest.raises(ValueError,
+                           match=f"Start date must be a date before or equal to {datetime.today().strftime('%Y/%m/%d')}"):
+            validate_input(args=args)
 
 
 def test_edate_validate_input(capfd):
@@ -493,9 +498,10 @@ def test_edate_validate_input(capfd):
         'from': '0',
         'limit': '1'
     }
-    with capfd.disabled(), pytest.raises(ValueError,
-                                         match=f"End date must be a date before or equal to {datetime.today().strftime('%Y/%m/%d')}"):  # noqa: E501
-        validate_input(args=args)
+    with capfd.disabled():
+        with pytest.raises(ValueError,
+                           match=f"End date must be a date before or equal to {datetime.today().strftime('%Y/%m/%d')}"):
+            validate_input(args=args)
 
 
 def test_date_validate_input(capfd):
@@ -508,9 +514,10 @@ def test_date_validate_input(capfd):
         'limit': '1'
     }
 
-    with capfd.disabled(), pytest.raises(ValueError,
-                                         match=f"Start date {args.get('start_date')} cannot be after end date {args.get('end_date')}"):  # noqa: E501
-        validate_input(args=args)
+    with capfd.disabled():
+        with pytest.raises(ValueError,
+                           match=f"Start date {args.get('start_date')} cannot be after end date {args.get('end_date')}"):
+            validate_input(args=args)
 
 
 def test_datecheck_validate_input(capfd):
@@ -523,6 +530,7 @@ def test_datecheck_validate_input(capfd):
         'limit': '1'
     }
 
-    with capfd.disabled(), pytest.raises(ValueError,
-                                         match=f"Start date {args.get('start_date')} cannot be after end date {args.get('end_date')}"):  # noqa: E501
-        validate_input(args=args, is_iocs=True)
+    with capfd.disabled():
+        with pytest.raises(ValueError,
+                           match=f"Start date {args.get('start_date')} cannot be after end date {args.get('end_date')}"):
+            validate_input(args=args, is_iocs=True)

@@ -1,7 +1,7 @@
-import os
+import io
 import json
 
-import pytest
+import pytest as pytest
 import demistomock as demisto
 
 from CommonServerPython import arg_to_datetime
@@ -9,16 +9,16 @@ from TenableioEventCollector import Client
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
-MOCK_AUDIT_LOGS = util_load_json(os.path.dirname(__file__) + '/test_data/mock_events.json')
-MOCK_CHUNKS_STATUS = util_load_json(os.path.dirname(__file__) + '/test_data/mock_chunks_status.json')
-MOCK_CHUNKS_STATUS_PROCESSING = util_load_json(os.path.dirname(__file__) + '/test_data/mock_chunks_status_processing.json')
-MOCK_CHUNKS_STATUS_ERROR = util_load_json(os.path.dirname(__file__) + '/test_data/mock_chunks_status_error.json')
-MOCK_UUID = util_load_json(os.path.dirname(__file__) + '/test_data/mock_export_uuid.json')
-MOCK_CHUNK_CONTENT = util_load_json(os.path.dirname(__file__) + '/test_data/mock_chunk_content.json')
+MOCK_AUDIT_LOGS = util_load_json('test_data/mock_events.json')
+MOCK_CHUNKS_STATUS = util_load_json('test_data/mock_chunks_status.json')
+MOCK_CHUNKS_STATUS_PROCESSING = util_load_json('test_data/mock_chunks_status_processing.json')
+MOCK_CHUNKS_STATUS_ERROR = util_load_json('test_data/mock_chunks_status_error.json')
+MOCK_UUID = util_load_json('test_data/mock_export_uuid.json')
+MOCK_CHUNK_CONTENT = util_load_json('test_data/mock_chunk_content.json')
 BASE_URL = 'https://cloud.tenable.com'
 
 

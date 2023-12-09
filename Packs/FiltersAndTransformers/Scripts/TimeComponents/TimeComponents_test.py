@@ -1,4 +1,3 @@
-import os
 import demistomock as demisto
 import TimeComponents
 import json
@@ -17,7 +16,7 @@ class TestTimeComponents:
 
     @freezegun.freeze_time('2022-01-23 12:34:56')
     def test_main(self, mocker, monkeypatch):
-        with open(os.path.dirname(__file__) + '/test_data/test.json') as f:
+        with open('./test_data/test.json', 'r') as f:
             test_list = json.load(f)
 
         for test_case in test_list:

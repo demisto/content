@@ -8,7 +8,6 @@ def execute_command(command, args):
         return [{'Contents': {'path': './test_data/test_file.txt'}}]
     if command == "extractIndicators":
         return [{'Contents': '{"IP": ["1.1.1.1"]}'}]
-    return None
 
 
 def test_extract_indicators(mocker):
@@ -46,7 +45,7 @@ def test_extract_indicators_no_file():
     with pytest.raises(FileNotFoundError) as e:
         extract_indicators_from_file(args)
         if not e:
-            raise AssertionError
+            assert False
 
 
 @pytest.mark.parametrize("params", [('{"IP": ["1.1.1.1"]}', '### IP\n- 1.1.1.1\n'),
@@ -78,7 +77,7 @@ def test_read_encoded_file(filePath, res):
     # this breaks encoding.
     # instead use encoding script like this -
         import binascii
-        open(os.path.dirname(__file__) + '/test_data/latin-file.txt', mode='w', encoding='latin-1').write('áÈË')
+        open('./test_data/latin-file.txt', mode='w', encoding='latin-1').write('áÈË')
 
         Given:
             file path to an encoded file.

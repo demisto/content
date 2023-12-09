@@ -1,11 +1,10 @@
-import os
 import json
 
 import pytest
 
 from GSuiteApiModule import DemistoException, COMMON_MESSAGES, GSuiteClient
 
-with open(os.path.dirname(__file__) + '/test_data/service_account_json.txt') as f:
+with open('test_data/service_account_json.txt') as f:
     TEST_JSON = f.read()
 
 PROXY_METHOD_NAME = 'GSuiteApiModule.handle_proxy'

@@ -1,5 +1,5 @@
-import os
 import json
+import io
 
 import pytest
 
@@ -7,7 +7,7 @@ from GsuiteAuditor import GSuiteClient, activities_list_command
 
 MOCKER_HTTP_METHOD = 'GSuiteApiModule.GSuiteClient.http_request'
 
-with open(os.path.dirname(__file__) + '/test_data/service_account_json.txt') as j:
+with open('test_data/service_account_json.txt') as j:
     TEST_JSON = j.read()
 
 
@@ -20,7 +20,7 @@ def gsuite_client():
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -42,8 +42,8 @@ def test_activities_list_command(gsuite_client, mocker):
         'user_key': 'all',
         'application_name': 'admin'
     }
-    api_response = util_load_json(os.path.dirname(__file__) + '/test_data/activities_list_response.json')
-    expected_entry_context = util_load_json(os.path.dirname(__file__) + '/test_data/activities_list_entry_context.json')
+    api_response = util_load_json('test_data/activities_list_response.json')
+    expected_entry_context = util_load_json('test_data/activities_list_entry_context.json')
 
     mocker.patch.object(gsuite_client, 'http_request', return_value=api_response)
 

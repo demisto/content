@@ -1,4 +1,3 @@
-import os
 import json
 from tempfile import mkdtemp
 
@@ -352,7 +351,9 @@ def test_commands(command, args, response, expected_result, mocker):
         assert expected_result[0].get('File') == result[1].get('File')
     elif command == list_violation_data:
         assert expected_result == result[0].outputs  # list_violation_data returns CommandResult object
-    elif command in (add_whitelist_entry, create_lookup_table, get_incident_workflow, get_incident_status, get_incident_available_actions, add_comment_to_incident):  # noqa: E501
+    elif command == add_whitelist_entry or command == create_lookup_table or command == get_incident_workflow or \
+            command == get_incident_status or command == get_incident_available_actions \
+            or command == add_comment_to_incident:
         assert expected_result == result[0]
     else:
         assert expected_result == result[1]  # entry context is found in the 2nd place in the result of the command
@@ -412,7 +413,7 @@ def test_get_remote_data(mocker):
 
 def add_comment_to_incident_request(*args):
     """Side effect function to replicate add_comment_request function."""
-    assert args[1] == '[Mirrored From XSOAR] XSOAR Incident ID: 345\nAdded By: Admin\nComment: This is a comment'
+    assert '[Mirrored From XSOAR] XSOAR Incident ID: 345\nAdded By: Admin\nComment: This is a comment' == args[1]
     return 'Comment was added to the incident successfully.'
 
 

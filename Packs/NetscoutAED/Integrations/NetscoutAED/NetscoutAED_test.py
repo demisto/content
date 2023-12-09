@@ -1,5 +1,5 @@
-import os
 import json
+import io
 import pytest
 import requests_mock
 from NetscoutAED import Client
@@ -19,7 +19,7 @@ outbound_whitelisted = {'direction': 'outbound', 'list_color': 'whitelist'}
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -44,7 +44,7 @@ def test_objects_time_to_readable_time():
     expected_output = [{'country_name': 'country', 'created_time': '2021-03-16T09:55:47.000Z'},
                        {'country_name': 'country', 'created_time': '2021-03-15T20:02:26.000Z'}]
     assert len(list_of_objects) == len(expected_output)
-    assert all(x == y for x, y in zip(list_of_objects, expected_output))
+    assert all([x == y for x, y in zip(list_of_objects, expected_output)])
 
 
 def test_objects_time_to_readable_time_key_mismatch():
@@ -119,7 +119,7 @@ def test_deserialize_protection_groups():
     ]
     deserialize_protection_groups(protection_groups_list)
     assert len(protection_groups_list) == len(expected_output)
-    assert all(x == y for x, y in zip(protection_groups_list, expected_output))
+    assert all([x == y for x, y in zip(protection_groups_list, expected_output)])
 
 
 def test_country_code_list_command(mocker):
@@ -137,7 +137,7 @@ def test_country_code_list_command(mocker):
     """
     from NetscoutAED import country_code_list_command
 
-    countries_code_raw_response = util_load_json(os.path.dirname(__file__) + '/test_data/countries_codes/countries_code_raw.json')
+    countries_code_raw_response = util_load_json('test_data/countries_codes/countries_code_raw.json')
     mocker.patch.object(client, "country_code_list_command", return_value=countries_code_raw_response)
     result = country_code_list_command(client, {})
     assert "Anguilla" in result.readable_output
@@ -214,7 +214,7 @@ def test_handle_country_addition_commands(mocker, country, func_mock, raw_respon
     """
     from NetscoutAED import handle_country_addition_commands
 
-    blacklisted_countries_raw = util_load_json(os.path.dirname(__file__) + '/test_data/countries/' + raw_respond)
+    blacklisted_countries_raw = util_load_json('test_data/countries/' + raw_respond)
     if country == 'BS':
         blacklisted_countries_raw = blacklisted_countries_raw["single_country_output"]
     elif country == 'BS,AU':
@@ -224,7 +224,7 @@ def test_handle_country_addition_commands(mocker, country, func_mock, raw_respon
     result = handle_country_addition_commands(client, {"country": country}, direction_color)
     assert "Test" in result.readable_output
     assert "| BS | 2021-03-14T12:18:05.000Z |" in result.readable_output
-    assert all(x == y for x, y in zip(expected_output, result.outputs))
+    assert all([x == y for x, y in zip(expected_output, result.outputs)])
 
 
 def test_handle_country_addition_commands_no_country_given():
@@ -330,8 +330,7 @@ def test_handle_host_list_commands(mocker, direction_color, func_mock, raw_respo
     mocker.patch.object(client, func_mock,
                         return_value=outbound_blacklisted_hosts_raw_response)
     result = handle_host_list_commands(client, {}, direction_color)
-    assert direction_color['direction']
-    assert direction_color['list_color'] in result.readable_output
+    assert direction_color['direction'] and direction_color['list_color'] in result.readable_output
     assert "2021-03-15T13:16:11.000Z" in result.readable_output
     assert expected_output[0] == result.outputs[0]
 
@@ -399,7 +398,7 @@ def test_handle_host_addition_commands(mocker, host, func_mock, raw_respond, dir
     """
     from NetscoutAED import handle_host_addition_and_replacement_commands
 
-    hosts_raw = util_load_json(os.path.dirname(__file__) + '/test_data/hosts/' + raw_respond)
+    hosts_raw = util_load_json('test_data/hosts/' + raw_respond)
     if host == '1.1.1.1':
         hosts_raw = hosts_raw["single_host_output"]
     elif host == '2.2.2.2,3.3.3.3':
@@ -408,7 +407,7 @@ def test_handle_host_addition_commands(mocker, host, func_mock, raw_respond, dir
     mocker.patch.object(client, func_mock, return_value=hosts_raw)
     result = handle_host_addition_and_replacement_commands(client, {"host_address": host}, direction_color)
     assert "Hosts were successfully" in result.readable_output
-    assert all(x == y for x, y in zip(expected_output, result.outputs))
+    assert all([x == y for x, y in zip(expected_output, result.outputs)])
 
 
 def test_handle_host_addition_commands_no_host_given():
@@ -504,8 +503,7 @@ def test_handle_protection_groups_list_commands(mocker):
     """
     from NetscoutAED import handle_protection_groups_list_commands
 
-    protection_groups_raw_response = util_load_json(os.path.dirname(
-        __file__) + '/test_data/protection_groups/protection_groups_list_raw.json')
+    protection_groups_raw_response = util_load_json('test_data/protection_groups/protection_groups_list_raw.json')
     mocker.patch.object(client, 'protection_group_list_command',
                         return_value=protection_groups_raw_response)
     expected_output = {
@@ -622,8 +620,7 @@ def test_handle_domain_list_commands(mocker):
     """
     from NetscoutAED import handle_domain_list_commands
 
-    inbound_blacklisted_domains_raw_response = util_load_json(os.path.dirname(
-        __file__) + '/test_data/domains/inbound_blacklisted_domains_raw.json')
+    inbound_blacklisted_domains_raw_response = util_load_json('test_data/domains/inbound_blacklisted_domains_raw.json')
     mocker.patch.object(client, 'inbound_blacklisted_domain_list_command',
                         return_value=inbound_blacklisted_domains_raw_response)
     result = handle_domain_list_commands(client, {})
@@ -660,7 +657,7 @@ def test_handle_domain_addition_commands(mocker, domain, expected_output):
     """
     from NetscoutAED import handle_domain_addition_commands
 
-    domains_raw = util_load_json(os.path.dirname(__file__) + '/test_data/domains/added_inbound_blacklisted_domains_raw.json')
+    domains_raw = util_load_json('test_data/domains/added_inbound_blacklisted_domains_raw.json')
     if domain == 'google.com':
         domains_raw = domains_raw["single_domain_output"]
     elif domain == 'google.com,sport.com':
@@ -670,7 +667,7 @@ def test_handle_domain_addition_commands(mocker, domain, expected_output):
     result = handle_domain_addition_commands(client, {"domain": domain})
     assert "Domains were successfully added to the inbound blacklisted list" in result.readable_output
     assert "google.com" in result.readable_output
-    assert all(x == y for x, y in zip(expected_output, result.outputs))
+    assert all([x == y for x, y in zip(expected_output, result.outputs)])
 
 
 def test_handle_domain_addition_commands_no_domain_given():
@@ -748,8 +745,7 @@ def test_handle_url_list_commands(mocker):
     """
     from NetscoutAED import handle_url_list_commands
 
-    inbound_blacklisted_urls_raw_response = util_load_json(os.path.dirname(
-        __file__) + '/test_data/urls/inbound_blacklisted_urls_raw.json')
+    inbound_blacklisted_urls_raw_response = util_load_json('test_data/urls/inbound_blacklisted_urls_raw.json')
     mocker.patch.object(client, 'inbound_blacklisted_url_list_command',
                         return_value=inbound_blacklisted_urls_raw_response)
     result = handle_url_list_commands(client, {})
@@ -786,7 +782,7 @@ def test_handle_url_addition_commands(mocker, url, expected_output):
     """
     from NetscoutAED import handle_url_addition_commands
 
-    urls_raw = util_load_json(os.path.dirname(__file__) + '/test_data/urls/added_inbound_blacklisted_urls_raw.json')
+    urls_raw = util_load_json('test_data/urls/added_inbound_blacklisted_urls_raw.json')
     if url == 'maps.google.com':
         urls_raw = urls_raw["single_url_output"]
     elif url == 'maps.google.com,sport.com':
@@ -796,7 +792,7 @@ def test_handle_url_addition_commands(mocker, url, expected_output):
     result = handle_url_addition_commands(client, {"url": url})
     assert "Urls were successfully added to the inbound blacklisted list" in result.readable_output
     assert "maps.google.com" in result.readable_output
-    assert all(x == y for x, y in zip(expected_output, result.outputs))
+    assert all([x == y for x, y in zip(expected_output, result.outputs)])
 
 
 def test_handle_url_addition_commands_no_url_given():

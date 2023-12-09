@@ -1,4 +1,3 @@
-import os
 import pytest
 import defusedxml.ElementTree as defused_ET
 
@@ -25,7 +24,7 @@ def load_mock_response(file_name: str, file_type: str = "json"):
         return ET.tostring(top.getroot(), encoding='utf8').decode("utf-8")
 
     else:
-        with open(f'test_data/{file_name}', encoding='utf-8') as mock_file:
+        with open(f'test_data/{file_name}', mode='r', encoding='utf-8') as mock_file:
             return mock_file.read()
 
 
@@ -233,7 +232,7 @@ def test_azure_storage_get_blob_command(requests_mock):
     blob_name = "blob.txt"
     url = f'{BASE_URL}{container_name}/{blob_name}{SAS_TOKEN}'
 
-    with open(os.path.dirname(__file__) + '/test_data/blob.txt', 'rb') as text_file_mock:
+    with open('test_data/blob.txt', 'rb') as text_file_mock:
         requests_mock.get(url, content=text_file_mock.read())
 
     client = Client(server_url=BASE_URL, verify=False, proxy=False,

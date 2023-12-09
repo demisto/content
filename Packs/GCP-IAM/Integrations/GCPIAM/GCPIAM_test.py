@@ -1,7 +1,7 @@
 import importlib
 import json
 from unittest.mock import patch, Mock
-from pathlib import Path
+
 import pytest
 
 GCP_IAM = importlib.import_module("GCPIAM")
@@ -29,7 +29,7 @@ def load_mock_response(file_path: str) -> str:
     Returns:
         str: Mock file content.
     """
-    with open(Path(__file__).parent / f'test_data/{file_path}', encoding='utf-8') as mock_file:
+    with open(f'test_data/{file_path}', encoding='utf-8') as mock_file:
         return json.loads(mock_file.read())
 
 

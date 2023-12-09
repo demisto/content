@@ -1,10 +1,10 @@
-import os
+import io
 from UBIRCH import AUTHENTICITY_TYPE, get_error_definition, create_incidents, AUTHENTICATION_TYPE, LOW_SEVERITY, \
     HIGH_SEVERITY, SEQUENCE_TYPE
 
 
 def util_load_json(path: str) -> str:
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return f.read()
 
 
@@ -80,7 +80,7 @@ def test_create_incidents() -> None:
 
     No mock is needed here.
     """
-    ERROR_MESSAGE = util_load_json(os.path.dirname(__file__) + '/test_data/raw_json_error_message.json')
+    ERROR_MESSAGE = util_load_json('test_data/raw_json_error_message.json')
     incidents = create_incidents(ERROR_MESSAGE)
     assert incidents == INCIDENT_RESPONSE
 

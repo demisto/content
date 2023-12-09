@@ -1,16 +1,16 @@
-import os
 import demistomock as demisto
 import json
+import io
 import pytest
 from freezegun import freeze_time
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
-test_get_alerts_json = util_load_json(os.path.dirname(__file__) + '/test_data/get_alerts_test.json')
+test_get_alerts_json = util_load_json('test_data/get_alerts_test.json')
 get_alerts_dict = test_get_alerts_json.get('test_1')
 
 

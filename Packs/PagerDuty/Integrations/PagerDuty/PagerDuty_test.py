@@ -1,4 +1,3 @@
-import os
 from CommonServerPython import *
 import pytest
 from pytest_mock import MockerFixture
@@ -16,7 +15,7 @@ def load_mock_response(file_name: str) -> dict:
         str: Mock file content.
 
     """
-    with open(os.path.dirname(__file__) + '/test_data/' + file_name) as f:
+    with open(f'test_data/{file_name}') as f:
         return json.loads(f.read())
 
 

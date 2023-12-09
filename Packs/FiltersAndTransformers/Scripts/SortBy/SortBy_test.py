@@ -1,4 +1,3 @@
-import os
 import demistomock as demisto
 import SortBy
 import json
@@ -6,14 +5,14 @@ import random
 import math
 import itertools
 import unittest
-from typing import Any
+from typing import List, Union, Any, Optional
 
 
 def run_test(mocker: unittest.mock,
-             value: list[Any] | None,
-             keys: str | list[str] | None,
-             descending_keys: str | list[str] | None,
-             result: list[Any]):
+             value: Optional[List[Any]],
+             keys: Optional[Union[str, List[str]]],
+             descending_keys: Optional[Union[str, List[str]]],
+             result: List[Any]):
 
     mocker.patch.object(demisto, 'args', return_value={
         'value': value,
@@ -28,7 +27,7 @@ def run_test(mocker: unittest.mock,
 
 
 def test_shuffleable(mocker):
-    with open(os.path.dirname(__file__) + '/test_data/test-shuffleable.json') as f:
+    with open('./test_data/test-shuffleable.json', 'r') as f:
         test_list = json.load(f)
 
     for case in test_list:

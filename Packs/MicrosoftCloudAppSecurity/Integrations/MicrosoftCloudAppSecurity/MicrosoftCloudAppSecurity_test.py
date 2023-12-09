@@ -1,4 +1,3 @@
-import os
 from datetime import datetime
 import json
 from typing import Any
@@ -14,7 +13,7 @@ from MicrosoftApiModule import AZURE_WORLDWIDE_CLOUD
 
 
 def get_fetch_data():
-    with open(os.path.dirname(__file__) + '/test_data/test_data.json') as f:
+    with open('test_data/test_data.json') as f:
         return json.loads(f.read())
 
 

@@ -420,7 +420,7 @@ def test_get_groups_for_user_command(mocker, args):
     _, outputs, _ = get_groups_for_user_command(client, args)
 
     assert outputs.get('PingOne.Account(val.ID && val.ID === obj.ID)').get('Group') == expected_context
-    assert outputs.get('PingOne.Account(val.ID && val.ID === obj.ID)').get('ID') == 'emma.sharp'
+    assert 'emma.sharp' == outputs.get('PingOne.Account(val.ID && val.ID === obj.ID)').get('ID')
 
 
 @pytest.mark.parametrize(

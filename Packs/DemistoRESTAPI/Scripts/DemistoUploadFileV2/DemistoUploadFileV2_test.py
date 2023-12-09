@@ -1,4 +1,3 @@
-import os
 import pytest
 from DemistoUploadFileV2 import upload_file_command
 

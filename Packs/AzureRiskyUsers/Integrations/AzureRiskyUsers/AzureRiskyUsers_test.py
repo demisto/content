@@ -1,7 +1,7 @@
 import pytest
 from AzureRiskyUsers import Client, CLIENT_CREDENTIALS_FLOW, DEVICE_FLOW
 import json
-from pathlib import Path
+
 
 BASE_URL = 'https://graph.microsoft.com/v1.0/'
 ACCESS_TOKEN_REQUEST_URL = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
@@ -13,7 +13,7 @@ def load_mock_response(file_name: str) -> dict:
     Args:
         file_name (str): Name of the mock response JSON file to return.
     """
-    with open(Path(__file__).parent / f'test_data/{file_name}', encoding='utf-8') as json_file:
+    with open(f'test_data/{file_name}', encoding='utf-8') as json_file:
         return json.loads(json_file.read())
 
 

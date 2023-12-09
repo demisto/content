@@ -112,17 +112,17 @@ def test_merge_options():
 
 @pytest.mark.parametrize("r_mode", [RasterizeMode.WEBDRIVER_ONLY, RasterizeMode.HEADLESS_CLI_ONLY])
 def test_rasterize_large_html(r_mode):
-    path = os.path.dirname(__file__) + '/test_data/large.html'
+    path = os.path.realpath('test_data/large.html')
     res = rasterize(path=f'file://{path}', width=250, height=250, r_type=RasterizeType.PNG, r_mode=r_mode)
     assert res
 
 
 def test_rasterize_html(mocker):
-    path = os.path.dirname(__file__) + '/test_data/file.html'
+    path = os.path.realpath('test_data/file.html')
     mocker.patch.object(demisto, 'args', return_value={'EntryID': 'test'})
     mocker.patch.object(demisto, 'getFilePath', return_value={"path": path})
     mocker.patch.object(os, 'rename')
-    mocker.patch.object(os.path, 'realpath', return_value=f'{os.path.dirname(__file__)}/test_data/file.html')
+    mocker.patch.object(os.path, 'realpath', return_value=f'{os.getcwd()}/test_data/file.html')
     mocker_output = mocker.patch('rasterize.return_results')
     rasterize_html_command()
     assert mocker_output.call_args.args[0]['File'] == 'email.png'
@@ -188,7 +188,7 @@ def test_rasterize_url_long_load(r_mode, mocker, http_wait_server):
 
 @pytest.mark.filterwarnings('ignore::ResourceWarning')
 def test_rasterize_image_to_pdf(mocker):
-    path = os.path.dirname(__file__) + '/test_data/image.png'
+    path = os.path.realpath('test_data/image.png')
     mocker.patch.object(demisto, 'args', return_value={'EntryID': 'test'})
     mocker.patch.object(demisto, 'getFilePath', return_value={"path": path})
     mocker.patch.object(demisto, 'results')
@@ -230,7 +230,6 @@ TEST_DATA = [
 
 @pytest.mark.parametrize('file_path, max_pages, expected_length, pw', TEST_DATA)
 def test_convert_pdf_to_jpeg(file_path, max_pages, expected_length, pw):
-    file_path = os.path.join(os.path.dirname(__file__), file_path)
     from rasterize import convert_pdf_to_jpeg
     res = convert_pdf_to_jpeg(file_path, max_pages, pw)
 
@@ -351,11 +350,11 @@ def test_rasterize_html_no_internet_access(mocker):
     import requests
     mock = Mock()
     requests.get = mock
-    path = os.path.dirname(__file__) + '/test_data/file.html'
+    path = os.path.realpath('test_data/file.html')
     mocker.patch.object(demisto, 'args', return_value={'EntryID': 'test'})
     mocker.patch.object(demisto, 'getFilePath', return_value={"path": path})
     mocker.patch.object(os, 'rename')
-    mocker.patch.object(os.path, 'realpath', return_value=f'{os.path.dirname(__file__)}/test_data/file.html')
+    mocker.patch.object(os.path, 'realpath', return_value=f'{os.getcwd()}/test_data/file.html')
     mocker_output = mocker.patch('rasterize.return_results')
     rasterize_html_command()
     assert mocker_output.call_args.args[0]['File'] == 'email.png'

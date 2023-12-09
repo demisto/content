@@ -1,4 +1,3 @@
-import os
 from FeedTalos import Client
 
 
@@ -6,7 +5,7 @@ URL = "https://talosintelligence.com/documents/ip-blacklist"
 
 
 def test_build_iterator(requests_mock):
-    with open(os.path.dirname(__file__) + '/test_data/FeedTalos_mock.txt') as file:
+    with open('test_data/FeedTalos_mock.txt', 'r') as file:
         response = file.read()
     requests_mock.get(URL, text=response)
     expected_ipv4 = '91.212.135.158'

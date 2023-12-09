@@ -1,7 +1,6 @@
-import os
 import pytest
 import defusedxml.ElementTree as defused_ET
-from pathlib import Path
+
 from CommonServerPython import *
 
 ACCOUNT_NAME = "test"
@@ -16,7 +15,7 @@ def load_xml_mock_response(file_name: str) -> str:
     Args:
         file_name (str): Name of the mock response XML file to return.
     """
-    file_path = str(Path(__file__).parent / f'test_data/{file_name}')
+    file_path = f'test_data/{file_name}'
 
     top = defused_ET.parse(file_path)
     return ET.tostring(top.getroot(), encoding='utf8').decode("utf-8")
@@ -222,7 +221,7 @@ def test_azure_storage_get_file_command(requests_mock):
     file_name = "test_file.txt"
     url = f'{BASE_URL}{share_name}/{file_name}{SAS_TOKEN}'
 
-    with open(os.path.dirname(__file__) + '/test_data/test_file.txt', 'rb') as text_file_mock:
+    with open('test_data/test_file.txt', 'rb') as text_file_mock:
         requests_mock.get(url, content=text_file_mock.read())
 
     client = Client(server_url=BASE_URL, verify=False, proxy=False,
@@ -308,8 +307,8 @@ def test_create_file_command(requests_mock, mocker):
     directory_path = "xsoar/path"
     file_name = "test_file.txt"
 
-    command_arguments = {"share_name": share_name, "file_entry_id": file_entry_id,
-                         "directory_path": directory_path, "file_name": file_name}
+    command_arguments = dict(share_name=share_name, file_entry_id=file_entry_id,
+                             directory_path=directory_path, file_name=file_name)
     url = f'{BASE_URL}{share_name}/{directory_path}/{file_name}{SAS_TOKEN}'
 
     requests_mock.put(url, text='', status_code=201)

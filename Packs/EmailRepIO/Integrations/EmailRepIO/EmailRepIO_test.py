@@ -1,4 +1,3 @@
-import os
 """EmailRepIO Integration for Cortex XSOAR - Unit Tests file"""
 from CommonServerPython import Common, DBotScoreType
 import demistomock as demisto
@@ -45,7 +44,7 @@ def test_email_reputation_get(requests_mock):
     """
     from EmailRepIO import INTEGRATION_NAME, email_reputation_command
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/reputation_get_results.json')
+    mock_response = util_load_json('test_data/reputation_get_results.json')
     requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS_1}', json=mock_response)
     client = emailrep_client()
     args = {
@@ -211,7 +210,7 @@ def test_email(requests_mock):
     """
     from EmailRepIO import INTEGRATION_NAME, email_command
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/reputation_get_results.json')
+    mock_response = util_load_json('test_data/reputation_get_results.json')
     requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS_1}', json=mock_response)
 
     client = emailrep_client()
@@ -284,7 +283,7 @@ def test_email_different_reliability(requests_mock, reliability):
     """
     from EmailRepIO import email_command
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/reputation_get_results.json')
+    mock_response = util_load_json('test_data/reputation_get_results.json')
     requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS_1}', json=mock_response)
 
     client = emailrep_client()
@@ -307,7 +306,7 @@ def test_email_multiple(requests_mock):
     """
     from EmailRepIO import INTEGRATION_NAME, email_command
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/multiple_reputation_get_results.json')
+    mock_response = util_load_json('test_data/multiple_reputation_get_results.json')
     requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS_1}', json=mock_response[0])
     requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS_2}', json=mock_response[1])
 
@@ -333,7 +332,7 @@ def test_email_score_good(requests_mock):
     """
     from EmailRepIO import email_command
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/reputation_get_results.json')
+    mock_response = util_load_json('test_data/reputation_get_results.json')
     requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS_1}', json=mock_response)
     client = emailrep_client()
     args = {
@@ -358,7 +357,7 @@ def test_email_score_suspicious(requests_mock):
     """
     from EmailRepIO import email_command
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/reputation_get_results.json')
+    mock_response = util_load_json('test_data/reputation_get_results.json')
     requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS_1}', json=mock_response)
     client = emailrep_client()
     args = {
@@ -386,7 +385,7 @@ def test_email_score_bad_malicious_activity_recent(requests_mock):
     """
     from EmailRepIO import email_command
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/reputation_get_results.json')
+    mock_response = util_load_json('test_data/reputation_get_results.json')
     requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS_1}', json=mock_response)
     client = emailrep_client()
     args = {
@@ -415,7 +414,7 @@ def test_email_score_bad_credentials_leaked_recent(requests_mock):
     """
     from EmailRepIO import email_command
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/reputation_get_results.json')
+    mock_response = util_load_json('test_data/reputation_get_results.json')
     requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS_1}', json=mock_response)
     client = emailrep_client()
     args = {
@@ -444,7 +443,7 @@ def test_email_score_bad_malicious_activity_and_credentials_leaked_recent(reques
     """
     from EmailRepIO import email_command
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/reputation_get_results.json')
+    mock_response = util_load_json('test_data/reputation_get_results.json')
     requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS_1}', json=mock_response)
     client = emailrep_client()
     args = {

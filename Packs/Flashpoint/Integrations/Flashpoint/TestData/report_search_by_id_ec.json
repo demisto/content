@@ -1,0 +1,11 @@
+{
+  "Flashpoint.Report(val.ReportId == obj.ReportId)": {
+    "ReportId": "test_scan_id",
+    "UpdatedAt": "2019-09-23T20:27:20.638+00:00",
+    "PostedAt": "2019-09-23T20:27:20.638+00:00",
+    "NotifiedAt": "2019-09-23T20:27:20.638+00:00",
+    "PlatformUrl": "http://123-fake-api.com/home/intelligence/reports/report/test_scan_id",
+    "Title": "faketitle",
+    "Summary": "fakesummary"
+  }
+}

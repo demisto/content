@@ -1,4 +1,3 @@
-import os
 import json
 
 from Polygon import Client, ANALGIN_UPLOAD, ATTACH, FILE_TYPE, \
@@ -14,7 +13,7 @@ def handle_calling_context(mocker):
     mocker.patch.object(demisto, 'callingContext', {'context': {'IntegrationBrand': INTEGRATION_NAME}})
 
 
-with open(os.path.dirname(__file__) + "/test_data/args.json") as f:
+with open("test_data/args.json", "r") as f:
     data = json.load(f)
     MOCKED_CLIENT_KWARGS = data["client_kwargs"]
     MOCKED_UPLOAD_FILE_ARGS = data["upload_file_args"]
@@ -22,22 +21,22 @@ with open(os.path.dirname(__file__) + "/test_data/args.json") as f:
     MOCKED_ANALYSIS_INFO_ARGS = data["analysis_info_args"]
     MOCKED_FILE_ARGS = data["file_args"]
 
-with open(os.path.dirname(__file__) + "/test_data/get_report.json") as f:
+with open("test_data/get_report.json", "r") as f:
     MOCKED_REPORT = json.load(f)
 
-with open(os.path.dirname(__file__) + "/test_data/get_result.json") as f:
+with open("test_data/get_result.json", "r") as f:
     MOCKED_REPORT_RESULT = json.load(f)
 
-with open(os.path.dirname(__file__) + "/test_data/get_file_reputation.json") as f:
+with open("test_data/get_file_reputation.json", "r") as f:
     MOCKED_FILE_REPUTATION_DATA = json.load(f)
 
-with open(os.path.dirname(__file__) + "/test_data/upload.json") as f:
+with open("test_data/upload.json", "r") as f:
     MOCKED_UPLOAD_DATA = json.load(f)
 
-with open(os.path.dirname(__file__) + "/test_data/get_analysis_info.json") as f:
+with open("test_data/get_analysis_info.json", "r") as f:
     MOCKED_ANALYSIS_INFO_DATA = json.load(f)
 
-with open(os.path.dirname(__file__) + "/test_data/results.json") as f:
+with open("test_data/results.json", "r") as f:
     data = json.load(f)
     MOCKED_UPLOAD_FILE_RESULTS = data["upload_file_results"]
     MOCKED_UPLOAD_URL_RESULTS = data["upload_url_results"]
@@ -60,7 +59,7 @@ class MockedClient(Client):
         elif url_suffix == HASH_REPUTATION.format("sha1",
                                                   MOCKED_FILE_ARGS["file"][0]):
             return MOCKED_FILE_REPUTATION_DATA
-        return {}
+        return dict()
 
     def upload_file(self, file_name, file_path, password=""):
         return 100
@@ -70,7 +69,7 @@ def test_file_command(mocker):
     from Polygon import file_command
     mocked_client = MockedClient(**MOCKED_CLIENT_KWARGS)
     results = file_command(mocked_client, MOCKED_FILE_ARGS)
-    assert [r.to_context() for r in results] == MOCKED_FILE_REPUTATION_RESULTS
+    assert MOCKED_FILE_REPUTATION_RESULTS == [r.to_context() for r in results]
 
 
 def test_upload_file_command(mocker):
@@ -115,7 +114,7 @@ def test_get_packages_indicators(mocker):
     indicators_list = []
     for command_result in results:
         indicators_list.append(command_result.to_context())
-    assert [r['EntryContext'] for r in indicators_list] == MOCKED_PACKAGES_INDICATORS
+    assert MOCKED_PACKAGES_INDICATORS == [r['EntryContext'] for r in indicators_list]
 
 
 def test_get_network_indicators(mocker):
@@ -124,7 +123,7 @@ def test_get_network_indicators(mocker):
     indicators_list = []
     for command_result in results:
         indicators_list.append(command_result.to_context())
-    assert [r['EntryContext'] for r in indicators_list] == MOCKED_NETWORK_INDICATORS
+    assert MOCKED_NETWORK_INDICATORS == [r['EntryContext'] for r in indicators_list]
 
 
 def test_get_monitor_indicators(mocker):
@@ -133,4 +132,4 @@ def test_get_monitor_indicators(mocker):
     indicators_list = []
     for command_result in results:
         indicators_list.append(command_result.to_context())
-    assert [r['EntryContext'] for r in indicators_list] == MOCKED_MONITOR_INDICATORS
+    assert MOCKED_MONITOR_INDICATORS == [r['EntryContext'] for r in indicators_list]

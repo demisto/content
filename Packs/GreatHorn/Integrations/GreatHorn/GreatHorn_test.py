@@ -1,15 +1,15 @@
-import os
 import json
+import io
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
 def test_gh_get_policy_command(requests_mock):
     from GreatHorn import Client, gh_get_policy_command
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/policy.json')
+    mock_response = util_load_json('test_data/policy.json')
 
     requests_mock.get('https://api.greathorn.com/v2/policy/4018', json=mock_response)
 
@@ -32,7 +32,7 @@ def test_gh_get_policy_command(requests_mock):
 
 def test_gh_search_message_command(requests_mock):
     from GreatHorn import Client, gh_search_message_command
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/message.json')
+    mock_response = util_load_json('test_data/message.json')
     requests_mock.post('https://api.greathorn.com/v2/search/events', json=mock_response)
 
     client = Client(
@@ -54,7 +54,7 @@ def test_gh_search_message_command(requests_mock):
 
 def test_gh_get_message_command(requests_mock):
     from GreatHorn import Client, gh_get_message_command
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/message.json')
+    mock_response = util_load_json('test_data/message.json')
     requests_mock.post('https://api.greathorn.com/v2/search/events', json=mock_response)
 
     client = Client(
@@ -76,7 +76,7 @@ def test_gh_get_message_command(requests_mock):
 
 def test_gh_remediate_message_command(requests_mock):
     from GreatHorn import Client, gh_remediate_message_command
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/remediate_success.json')
+    mock_response = util_load_json('test_data/remediate_success.json')
     requests_mock.post('https://api.greathorn.com/v2/remediation/quarantine', json=mock_response)
 
     client = Client(
@@ -99,7 +99,7 @@ def test_gh_remediate_message_command(requests_mock):
 
 def test_gh_revert_remediate_message_command(requests_mock):
     from GreatHorn import Client, gh_revert_remediate_message_command
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/revert_success.json')
+    mock_response = util_load_json('test_data/revert_success.json')
     requests_mock.post('https://api.greathorn.com/v2/remediation/revert/quarantine', json=mock_response)
 
     client = Client(
@@ -122,7 +122,7 @@ def test_gh_revert_remediate_message_command(requests_mock):
 
 def test_gh_set_policy_command(requests_mock):
     from GreatHorn import Client, gh_set_policy_command
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/set_policy_success.json')
+    mock_response = util_load_json('test_data/set_policy_success.json')
     requests_mock.patch('https://api.greathorn.com/v2/policy/16567', json=mock_response)
 
     client = Client(

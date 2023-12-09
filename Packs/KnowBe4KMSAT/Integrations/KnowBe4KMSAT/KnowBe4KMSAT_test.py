@@ -13,7 +13,7 @@ you are implementing with your integration
 import json
 import io
 from typing import Dict
-from pathlib import Path
+
 from KnowBe4KMSAT import Client, UserEventClient
 
 KMSAT_BASE_URL = "https://us.api.knowbe4.com"
@@ -23,7 +23,7 @@ REPORTING_BASE_URL = "https://us.api.knowbe4.com/v1"
 
 
 def util_load_json(path):
-    with io.open(Path(__file__).parent / path, mode="r", encoding="utf-8") as f:
+    with io.open(path, mode="r", encoding="utf-8") as f:
         return json.loads(f.read())
 
 

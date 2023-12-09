@@ -1,4 +1,3 @@
-import os
 import json
 import pytest
 import demistomock as demisto
@@ -30,8 +29,8 @@ def write_to_json(path, new_data):
 client = Client(server_url='http://test.com', verify=False, proxy=False, headers={}, service_id='abc',
                 fetch_time='1 year',
                 fetch_limit='1', cred={'identifier': 'test', 'password': 'test'})
-http_responses = util_load_json(os.path.dirname(__file__) + '/test_data/http_responses.json')
-command_results = util_load_json(os.path.dirname(__file__) + '/test_data/command_results.json')
+http_responses = util_load_json('test_data/http_responses.json')
+command_results = util_load_json('test_data/command_results.json')
 args_single_inc = {'id': 'INC-1'}
 
 
@@ -178,7 +177,7 @@ def test_create_filter():
 
     """
     args = {'agentId': '1', 'riskScore': '1', 'ip': '1.1.1.1,2.3.4.5', 'hostName': 'host_name_test'}
-    expected_filter = util_load_json(os.path.dirname(__file__) + '/test_data/create_filter_res.json')
+    expected_filter = util_load_json('test_data/create_filter_res.json')
     res = create_filter(args)
     assert res == expected_filter
 
@@ -253,7 +252,7 @@ def test_get_incidents(mocker):
 
         """
 
-    fetch_responses = util_load_json(os.path.dirname(__file__) + '/test_data/get_incidents_results.json')
+    fetch_responses = util_load_json('test_data/get_incidents_results.json')
     mocked_http_response = fetch_responses['get_inc_response']
     mocker.patch.object(client, 'list_incidents_request', return_value=mocked_http_response)
 
@@ -277,7 +276,7 @@ def test_fetch_alerts_related_incident(mocker, alerts_limit: int):
     Then:
             Assert that the amount of response from the fetch_alerts_related_incident is as the limit given.
     """
-    fetch_responses = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_alerts.json')
+    fetch_responses = util_load_json('test_data/fetch_alerts.json')
     mocker.patch.object(client, 'incident_list_alerts_request', return_value=fetch_responses)
     res = fetch_alerts_related_incident(client, 'test_id', alerts_limit)
     assert len(res) == alerts_limit
@@ -302,7 +301,7 @@ def test_fetch_incidents(mocker, import_alerts: bool, test_data_key: str):
              Assert that the incidents received are as expected
 
         """
-    fetch_responses = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_incidents.json')
+    fetch_responses = util_load_json('test_data/fetch_incidents.json')
     mocked_http__incidents_response = fetch_responses['list_incidents_request'][0]
     mocked_http__alerts_response = fetch_responses['incident_list_alerts_request'][0]
     mocker.patch.object(client, 'list_incidents_request', return_value=mocked_http__incidents_response)
@@ -324,7 +323,7 @@ def test_generate_token(mocker):
         Make api request and save the new token and refresh token
 
     """
-    token_resp = util_load_json(os.path.dirname(__file__) + '/test_data/token_resp.json')
+    token_resp = util_load_json('test_data/token_resp.json')
     mocker.patch.object(client, '_http_request', return_value=token_resp)
     mocker.patch.object(demisto, 'setIntegrationContext')
     client.generate_new_token()
@@ -344,7 +343,7 @@ def test_paging_command(mocker):
         Assert results are as expected and paging happens.
 
     """
-    paging_data = util_load_json(os.path.dirname(__file__) + '/test_data/paging_command_data.json')
+    paging_data = util_load_json('test_data/paging_command_data.json')
     mocker.patch.object(client, 'list_incidents_request', return_value=paging_data['api_response'])
     _, no_limit_results = paging_command(None, '2', None, client.list_incidents_request)
     _, limit_req_results = paging_command(2, None, None, client.list_incidents_request)
@@ -362,7 +361,7 @@ def test_get_mapping_fields_command():
     Then
         - the result fits the expected mapping.
     """
-    paging_data = util_load_json(os.path.dirname(__file__) + '/test_data/command_results.json')
+    paging_data = util_load_json('test_data/command_results.json')
     res = get_mapping_fields_command()
 
     assert paging_data['get_mapping_fields'] == res.extract_mapping()

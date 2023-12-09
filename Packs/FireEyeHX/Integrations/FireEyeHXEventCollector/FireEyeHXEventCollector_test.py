@@ -1,4 +1,4 @@
-import os
+import io
 import json
 import demistomock as demisto
 from CommonServerPython import BaseClient
@@ -6,13 +6,13 @@ from FireEyeHXEventCollector import populate_modeling_rule_fields, fetch_events,
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
 BASE_URL = 'https://example.com'
-EVENTS_RES = util_load_json(os.path.dirname(__file__) + '/test_data/events_res.json')
-EVENTS_RAW = util_load_json(os.path.dirname(__file__) + '/test_data/events_raw.json')
+EVENTS_RES = util_load_json('test_data/events_res.json')
+EVENTS_RAW = util_load_json('test_data/events_raw.json')
 
 
 def test_populate_modeling_rule_fields():

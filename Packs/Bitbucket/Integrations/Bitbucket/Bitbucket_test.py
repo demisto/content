@@ -1,5 +1,5 @@
-import os
 import json
+import io
 
 import pytest
 from Bitbucket import Client
@@ -16,7 +16,7 @@ def bitbucket_client():
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -30,8 +30,7 @@ def test_get_paged_results(mocker, bitbucket_client):
             - return a list with all the results after pagination
         """
     from Bitbucket import get_paged_results
-    get_paged_results_object = util_load_json(os.path.dirname(
-        __file__) + '/test_data/commands_test_data.json').get('get_paged_results')
+    get_paged_results_object = util_load_json('test_data/commands_test_data.json').get('get_paged_results')
     response1 = get_paged_results_object.get('response1')
     response2 = get_paged_results_object.get('response2')
     res = get_paged_results_object.get('results')
@@ -53,8 +52,7 @@ def test_check_pagination(bitbucket_client):
             - return a list with all the results after pagination
     """
     from Bitbucket import check_pagination
-    response = util_load_json(os.path.dirname(__file__)
-                              + '/test_data/commands_test_data.json').get('check_pagination').get('response')
+    response = util_load_json('test_data/commands_test_data.json').get('check_pagination').get('response')
     res = response.get('values', [])
     results10 = check_pagination(bitbucket_client, response, 10)
     results1 = check_pagination(bitbucket_client, response, 1)
@@ -104,8 +102,7 @@ def test_project_list_command(mocker, bitbucket_client):
     """
     from Bitbucket import project_list_command
     args = {'limit': '10', 'partial_response': 'false'}
-    check_pagination_object = util_load_json(os.path.dirname(
-        __file__) + '/test_data/commands_test_data.json').get('check_pagination')
+    check_pagination_object = util_load_json('test_data/commands_test_data.json').get('check_pagination')
     response = check_pagination_object.get('response2')
     expected_result = response.get('values')
     mocker.patch.object(bitbucket_client, 'get_project_list_request', return_value=response)
@@ -132,7 +129,7 @@ def test_project_list_command_with_project_key(mocker, bitbucket_client):
     """
     from Bitbucket import project_list_command
     args = {'project_key': 'T1', 'partial_response': 'true'}
-    test_json = util_load_json(os.path.dirname(__file__) + '/test_data/commands_test_data.json')
+    test_json = util_load_json('test_data/commands_test_data.json')
     response = test_json.get('test_project_list_command_with_project_key').get('response')
     expected_partial_result = [test_json.get('test_project_list_command_with_project_key_partial_result')]
     mocker.patch.object(bitbucket_client, 'get_project_list_request', return_value=response)
@@ -155,8 +152,7 @@ def test_open_branch_list_command(mocker, bitbucket_client):
         and returns a command result with a list of the open branches.
     """
     from Bitbucket import open_branch_list_command
-    response = util_load_json(os.path.dirname(__file__)
-                              + '/test_data/commands_test_data.json').get('test_open_branch_list_command')
+    response = util_load_json('test_data/commands_test_data.json').get('test_open_branch_list_command')
     mocker.patch.object(bitbucket_client, 'get_open_branch_list_request', return_value=response)
     expected_result = response.get('values')
     expected_human_readable = '### Open Branches\n' \
@@ -180,7 +176,7 @@ def test_branch_get_command(mocker, bitbucket_client):
     """
     from Bitbucket import branch_get_command
     args = {'branch_name': 'master', 'partial_response': 'true'}
-    test_json = util_load_json(os.path.dirname(__file__) + '/test_data/commands_test_data.json')
+    test_json = util_load_json('test_data/commands_test_data.json')
     response = test_json.get('test_branch_get_command')
     expected_partial_result = test_json.get('test_branch_partial_result')
     mocker.patch.object(bitbucket_client, 'get_branch_request', return_value=response)
@@ -277,7 +273,7 @@ def test_commit_list_command(mocker, bitbucket_client):
     """
     from Bitbucket import commit_list_command
     args = {'included_branches': 'master', 'limit': '3', 'partial_response': 'false'}
-    response = util_load_json(os.path.dirname(__file__) + '/test_data/commands_test_data.json').get('test_commit_list_command')
+    response = util_load_json('test_data/commands_test_data.json').get('test_commit_list_command')
     mocker.patch.object(bitbucket_client, 'commit_list_request', return_value=response)
     expected_human_readable = '### The list of commits\n' \
                               '|Author|Commit|Message|CreatedAt|\n' \
@@ -338,7 +334,7 @@ def test_issue_list_command(mocker, bitbucket_client):
     """
     from Bitbucket import issue_list_command
     args = {'limit': '3', 'partial_response': 'true'}
-    test_object = util_load_json(os.path.dirname(__file__) + '/test_data/commands_test_data.json')
+    test_object = util_load_json('test_data/commands_test_data.json')
     response = test_object.get('test_issue_list_command')
     expected_partial_result = test_object.get('test_issue_partial_result')
     mocker.patch.object(bitbucket_client, 'issue_list_request', return_value=response)
@@ -452,7 +448,7 @@ def test_pull_request_update_command(mocker, bitbucket_client):
         'pull_request_id': '8',
         'partial_response': 'true'
     }
-    test_obj = util_load_json(os.path.dirname(__file__) + '/test_data/commands_test_data.json')
+    test_obj = util_load_json('test_data/commands_test_data.json')
     response = test_obj.get('test_pull_request_update_command')
     expected_partial_result = test_obj.get('test_pull_request_partial_result')
     mocker.patch.object(bitbucket_client, 'pull_request_update_request', return_value=response)
@@ -526,8 +522,7 @@ def test_pull_request_list_command(mocker, bitbucket_client):
     """
     from Bitbucket import pull_request_list_command
     args = {'limit': '2', 'partial_response': 'false'}
-    response = util_load_json(os.path.dirname(__file__)
-                              + '/test_data/commands_test_data.json').get('test_pull_request_list_command')
+    response = util_load_json('test_data/commands_test_data.json').get('test_pull_request_list_command')
     mocker.patch.object(bitbucket_client, 'pull_request_list_request', return_value=response)
     expected_human_readable = '### List of the pull requests\n' \
                               '|Id|Title|Description|SourceBranch|DestinationBranch|State|CreatedBy|CreatedAt' \
@@ -553,8 +548,7 @@ def test_issue_comment_list_command(mocker, bitbucket_client):
     """
     from Bitbucket import issue_comment_list_command
     args = {'limit': '2', 'issue_id': '8', 'partial_response': 'false'}
-    response = util_load_json(os.path.dirname(__file__)
-                              + '/test_data/commands_test_data.json').get('test_issue_comment_list_command')
+    response = util_load_json('test_data/commands_test_data.json').get('test_issue_comment_list_command')
     mocker.patch.object(bitbucket_client, 'issue_comment_list_request', return_value=response)
     expected_human_readable = '### List of the comments on issue "8"\n' \
                               '|Id|Content|CreatedBy|CreatedAt|UpdatedAt|IssueId|IssueTitle|\n' \
@@ -578,7 +572,7 @@ def test_pull_request_comment_list_command(mocker, bitbucket_client):
     """
     from Bitbucket import pull_request_comment_list_command
     args = {'limit': '3', 'pull_request_id': '6', 'partial_response': 'true'}
-    test_json = util_load_json(os.path.dirname(__file__) + '/test_data/commands_test_data.json')
+    test_json = util_load_json('test_data/commands_test_data.json')
     response = test_json.get('test_pull_request_comment_list_command')
     expected_partial_result = test_json.get('test_comment_partial_result')
     mocker.patch.object(bitbucket_client, 'pull_request_comment_list_request', return_value=response)
@@ -605,7 +599,7 @@ def test_workspace_member_list_command(mocker, bitbucket_client):
     """
     from Bitbucket import workspace_member_list_command
     args = {'limit': '2', 'partial_response': 'true'}
-    test_json = util_load_json(os.path.dirname(__file__) + '/test_data/commands_test_data.json')
+    test_json = util_load_json('test_data/commands_test_data.json')
     response = test_json.get('test_workspace_member_list_command')
     expected_partial_result = test_json.get('test_workspace_member_list_partial_result')
     mocker.patch.object(bitbucket_client, 'workspace_member_list_request', return_value=response)
@@ -631,7 +625,7 @@ def test_pull_request_comment_update_command(mocker, bitbucket_client):
         """
     from Bitbucket import pull_request_comment_update_command
     args = {'partial_response': 'false'}
-    test_json = util_load_json(os.path.dirname(__file__) + '/test_data/commands_test_data.json')
+    test_json = util_load_json('test_data/commands_test_data.json')
     response = test_json.get('test_pull_request_comment_update_command')
     mocker.patch.object(bitbucket_client, 'pull_request_comment_update_request', return_value=response)
     expected_human_readable = 'The comment was updated successfully'

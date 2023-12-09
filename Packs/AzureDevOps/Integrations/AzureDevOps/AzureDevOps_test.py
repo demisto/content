@@ -1,6 +1,5 @@
-import os
 import pytest
-from pathlib import Path
+
 from CommonServerPython import *
 
 ORGANIZATION = "XSOAR"
@@ -16,7 +15,7 @@ def load_mock_response(file_name: str) -> str:
     Returns:
         str: Mock file content.
     """
-    with open(Path(__file__).parent / f'test_data/{file_name}', encoding='utf-8') as mock_file:
+    with open(f'test_data/{file_name}', encoding='utf-8') as mock_file:
         return mock_file.read()
 
 
@@ -1910,7 +1909,7 @@ def test_blob_zip_get_command(mocker, requests_mock):
         proxy=False,
         auth_type='Device Code')
 
-    with open(os.path.dirname(__file__) + '/test_data/response_content') as content:
+    with open('test_data/response_content') as content:
         response = Response()
         response._content = content
 

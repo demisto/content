@@ -1,4 +1,3 @@
-import os
 import base64
 import json
 import demistomock as demisto
@@ -14,9 +13,9 @@ from EWSO365 import (ExpandGroup, GetSearchableMailboxes, EWSClient, fetch_email
                      get_expanded_group, get_searchable_mailboxes, handle_html,
                      handle_transient_files, parse_incident_from_item, parse_item_as_dict)
 
-with open(os.path.dirname(__file__) + "/test_data/commands_outputs.json") as f:
+with open("test_data/commands_outputs.json") as f:
     COMMAND_OUTPUTS = json.load(f)
-with open(os.path.dirname(__file__) + "/test_data/raw_responses.json") as f:
+with open("test_data/raw_responses.json") as f:
     RAW_RESPONSES = json.load(f)
 
 

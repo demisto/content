@@ -1,0 +1,97 @@
+{
+  "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
+    {
+      "Indicator": "test_scan_dummy_file",
+      "Type": "file",
+      "Vendor": "Flashpoint",
+      "Score": 3
+    }
+  ],
+  "File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)": [{
+    "SHA256": "test_scan_dummy_file",
+    "Malicious": {
+      "Vendor": "Flashpoint",
+      "Description": "Found in malicious indicators dataset"
+    }
+  }],
+  "Flashpoint.File.Event(val.Fpid == obj.Fpid)": [
+    {
+      "SHA256": "test_scan_dummy_file",
+      "EventDetails": {
+        "RelatedEvent": [
+          {
+            "Event": {
+              "fpid": "djfndkjfndkfdkffndfdjnda",
+              "info": "info"
+            }
+          }
+        ],
+        "Tags": [
+          "tags1",
+          "tags2",
+          "tags3",
+          "tags3",
+          "tags4"
+        ],
+        "attack_ids": [],
+        "fpid": "djfndkjfndkfdkffndfdjnda",
+        "href": "http://123-fake-api.com/api/v4/indicators/event/djfndkjfndkfdkffndfdjnda",
+        "info": "info",
+        "reports": [],
+        "timestamp": "1574316193"
+      },
+      "Category": "Payload delivery",
+      "Fpid": "djfndkjfndkfdkffndfdjnda",
+      "Href": "http://123-fake-api.com/api/v4/indicators/attribute/djfndkjfndkfdkffndfdjnda",
+      "Timestamp": "1560826915",
+      "Type": "sha256",
+      "Uuid": "f161c532-26fa-422d-ad71-3781b6619894",
+      "Comment": ""
+    },
+    {
+      "SHA256": "test_scan_dummy_file",
+      "EventDetails": {
+        "RelatedEvent": [
+          {
+            "Event": {
+              "fpid": "djfndkjfndkfdkffndfdjnda",
+              "info": "info"
+            }
+          },
+          {
+            "Event": {
+              "fpid": "djfndkjfndkfdkffndfdjnda",
+              "info": "info1"
+            }
+          },
+          {
+            "Event": {
+              "fpid": "djfndkjfndkfdkffndfdjnda",
+              "info": "info2"
+            }
+          }
+        ],
+        "Tags": [
+          "tags1",
+          "tags2",
+          "tags3",
+          "tags3",
+          "tags4"
+        ],
+        "attack_ids": [],
+        "fpid": "djfndkjfndkfdkffndfdjnda",
+        "href": "http://123-fake-api.com/api/v4/indicators/event/djfndkjfndkfdkffndfdjnda",
+        "info": "info2",
+        "reports": [],
+        "timestamp": "1563386535"
+      },
+      "Category": "category1",
+      "Fpid": "djfndkjfndkfdkffndfdjnda",
+      "Href": "http://123-fake-api.com/api/v4/indicators/attribute/djfndkjfndkfdkffndfdjnda",
+      "Timestamp": "1560826913",
+      "Type": "sha256",
+      "Uuid": "08f5ac60-45cb-4bc1-be05-591eb51071dc",
+      "Comment": ""
+    }
+  ]
+}

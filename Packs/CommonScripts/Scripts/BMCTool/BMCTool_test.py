@@ -1,7 +1,5 @@
-import os
 import demistomock as demisto  # noqa: F401
 import pytest
-from pathlib import Path
 from CommonServerPython import *  # noqa: F401
 from BMCTool import BMCContainer, main
 
@@ -250,20 +248,17 @@ def test_b_import_already_loaded(bmc_container):
 
 def test_b_import_valid_file(bmc_container):
     # Test importing valid bin file
-    file = Path(__file__).parent / "test_data/valid_bin.bin"
-    assert bmc_container.b_import(file) is True
+    assert bmc_container.b_import("test_data/valid_bin.bin") is True
 
 
 def test_b_import_empty_file_contents(bmc_container):
     # Test importing empty bin file
     bmc_container.bdat = b""
-    file = Path(__file__).parent / "test_data/empty_file.bin"
-    assert bmc_container.b_import(file) is False
+    assert bmc_container.b_import("test_data/empty_file.bin") is False
 
 
 def test_b_import_else_case(bmc_container):
-    file = Path(__file__).parent / "test_data/text_test_file.bin"
-    assert bmc_container.b_import(file) is False
+    assert bmc_container.b_import("test_data/text_test_file.bin") is False
 
 
 # Tests that BMCContainer object is initialized with default parameters
@@ -407,7 +402,7 @@ def test_edge_case_cmd_0x20():
 def test_b_process_btype_is_bin():
     bmcc = BMCContainer()
     bmcc.btype = b".BIN"
-    with open(os.path.dirname(__file__) + "/test_data/valid_bin.bin", "rb") as f:
+    with open("test_data/valid_bin.bin", "rb") as f:
         bmcc.bdat = f.read()
     assert bmcc.b_process() is True
 
@@ -541,7 +536,7 @@ def test_main(mocker):
     mocker.patch.object(demisto, 'getFilePath', return_value={
         'id': 1,
         'name': 'valid_bin.bin',
-        'path': os.path.dirname(__file__) + '/test_data/valid_bin.bin'})
+        'path': 'test_data/valid_bin.bin'})
     mocker.patch.object(demisto, 'args', return_value={
         'verbose': False,
         'width': 64,

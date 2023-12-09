@@ -1,4 +1,3 @@
-import os
 """Base Integration for Cortex XSOAR - Unit Tests file
 
 Pytest Unit Tests: all funcion names must start with "test_"
@@ -12,6 +11,7 @@ you are implementing with your integration
 """
 
 import json
+import io
 from pytest import raises
 from Inventa import main, Client, format_pii_entities, generate_datasubject_payload, validate_incident_inputs_command
 import demistomock as demisto
@@ -99,16 +99,16 @@ def mock_args(command_name):
         return mock_arguments_ticket
     if command_name in noarg_cmds:
         return {}
-    raise ValueError(f'Unimplemented command called: {command_name}')
+    raise ValueError('Unimplemented command called: {}'.format(command_name))
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
-mock_data = util_load_json(os.path.dirname(__file__) + "/test_data/test_commands.json")
-mock_response = util_load_json(os.path.dirname(__file__) + "/test_data/test_client.json")
+mock_data = util_load_json("test_data/test_commands.json")
+mock_response = util_load_json("test_data/test_client.json")
 
 client_get_entities_mock_data = mock_response.get("get_entities", "")
 client_get_datasubject_mock_data = mock_response.get("get_datasubject", "")

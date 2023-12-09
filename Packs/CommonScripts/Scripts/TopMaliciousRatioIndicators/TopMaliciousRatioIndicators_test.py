@@ -1,11 +1,11 @@
-import os
 import demistomock as demisto
 from TopMaliciousRatioIndicators import main, find_indicators_with_mal_ratio
+import io
 import json
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -21,16 +21,16 @@ def test_find_indicators_with_mal_ratio(mocker):
 
     mocker.patch.object(demisto, 'args', return_value={})
     mocker.patch.object(demisto, 'executeCommand', side_effect=[
-        util_load_json(os.path.dirname(__file__) + '/test_data/indicators_found.json'),
-        util_load_json(os.path.dirname(__file__) + '/test_data/malicious_ratio_result.json')
+        util_load_json('./test_data/indicators_found.json'),
+        util_load_json('./test_data/malicious_ratio_result.json')
     ])
     widget_table, sorted_indicators = find_indicators_with_mal_ratio(max_indicators=1000, min_number_of_invs=4,
                                                                      max_results=1000,
                                                                      from_date="30 days ago")
-    assert widget_table == '{"total": 2, "data": [{"ID": "7570", "Type": "URL", "Malicious Ratio": "0.11", "Value":' \
-        ' "http://8.16.1.2/8.16.1.2", "Last Seen": "2021-11-22T15:15:54.958327+02:00"},' \
-        ' {"ID": "7569", "Type": "Domain", "Malicious Ratio": "0.08", "Value": "gmail.com",' \
-        ' "Last Seen": "2021-11-22T15:15:54.958278+02:00"}]}'
+    assert '{"total": 2, "data": [{"ID": "7570", "Type": "URL", "Malicious Ratio": "0.11", "Value":' \
+           ' "http://8.16.1.2/8.16.1.2", "Last Seen": "2021-11-22T15:15:54.958327+02:00"},' \
+           ' {"ID": "7569", "Type": "Domain", "Malicious Ratio": "0.08", "Value": "gmail.com",' \
+           ' "Last Seen": "2021-11-22T15:15:54.958278+02:00"}]}' == widget_table
     assert len(sorted_indicators) == 2
 
 
@@ -45,12 +45,11 @@ def test_find_indicators_with_mal_ratio__no_indicators(mocker):
     """
 
     mocker.patch.object(demisto, 'args', return_value={})
-    mocker.patch.object(demisto, 'executeCommand', return_value=util_load_json(
-        os.path.dirname(__file__) + '/test_data/no_indicators.json'))
+    mocker.patch.object(demisto, 'executeCommand', return_value=util_load_json('./test_data/no_indicators.json'))
     widget_table, sorted_indicators = find_indicators_with_mal_ratio(max_indicators=1000, min_number_of_invs=5,
                                                                      max_results=1000,
                                                                      from_date="30 days ago")
-    assert widget_table == '{"total": 0, "data": []}'
+    assert '{"total": 0, "data": []}' == widget_table
     assert not sorted_indicators
 
 
@@ -77,10 +76,10 @@ def test_main(mocker):
                             "maximumNumberOfResults": "1000"
                         })
     mocker.patch.object(demisto, 'executeCommand', side_effect=[
-        util_load_json(os.path.dirname(__file__) + '/test_data/indicators_found.json'),
-        util_load_json(os.path.dirname(__file__) + '/test_data/malicious_ratio_result.json')
+        util_load_json('./test_data/indicators_found.json'),
+        util_load_json('./test_data/malicious_ratio_result.json')
     ])
 
     mocker.patch.object(demisto, 'results')
     main()
-    assert demisto.results.call_args[0][0]['HumanReadable'] == EXPECTED_HR
+    assert EXPECTED_HR == demisto.results.call_args[0][0]['HumanReadable']

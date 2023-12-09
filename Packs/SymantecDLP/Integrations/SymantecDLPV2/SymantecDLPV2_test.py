@@ -1,24 +1,22 @@
-import os
 import pytest
 from freezegun import freeze_time
 from pytest import raises
 from CommonServerPython import *
+import io
 import copy
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
-SINGLE_INCIDENTS_MOCK_RESPONSE = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_single_incident.json')
-MULTIPLE_INCIDENTS_MOCK_RESPONSE = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_multiple_incident.json')
-FIRST_STATIC_ATT_MOCK_RESPONSE = util_load_json(os.path.dirname(__file__) + '/test_data/incident_static_attributes_first.json')
-FIRST_EDITABLE_ATT_MOCK_RESPONSE = util_load_json(os.path.dirname(
-    __file__) + '/test_data/incident_editable_attributes_first.json')
-SECOND_STATIC_ATT_MOCK_RESPONSE = util_load_json(os.path.dirname(__file__) + '/test_data/incident_static_attributes_second.json')
-SECOND_EDITABLE_ATT_MOCK_RESPONSE = util_load_json(os.path.dirname(
-    __file__) + '/test_data/incident_editable_attributes_second.json')
+SINGLE_INCIDENTS_MOCK_RESPONSE = util_load_json('test_data/fetch_single_incident.json')
+MULTIPLE_INCIDENTS_MOCK_RESPONSE = util_load_json('test_data/fetch_multiple_incident.json')
+FIRST_STATIC_ATT_MOCK_RESPONSE = util_load_json('test_data/incident_static_attributes_first.json')
+FIRST_EDITABLE_ATT_MOCK_RESPONSE = util_load_json('test_data/incident_editable_attributes_first.json')
+SECOND_STATIC_ATT_MOCK_RESPONSE = util_load_json('test_data/incident_static_attributes_second.json')
+SECOND_EDITABLE_ATT_MOCK_RESPONSE = util_load_json('test_data/incident_editable_attributes_second.json')
 
 FIRST_INCIDENT_DETAILS = json.dumps({"ID": 3620, "severity": "High", "customAttributeGroup": [
     {"name": "custom_attribute_group.default",
@@ -231,12 +229,12 @@ def test_get_incidents_list_command(mocker):
     client = Client(base_url='https://SymantecDLPV2.com/', auth=("test", "pass"), verify=False, proxy=False,
                     headers={"Content-type": "application/json"})
     args = {}
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/incidents_list_response.json')
+    mock_response = util_load_json('test_data/incidents_list_response.json')
 
     mocker.patch.object(client, 'get_incidents_request', return_value=mock_response)
 
     incidents_response = list_incidents_command(client, args)
-    expected_response = util_load_json(os.path.dirname(__file__) + '/test_data/incidents_list_context.json')
+    expected_response = util_load_json('test_data/incidents_list_context.json')
     assert incidents_response.outputs == expected_response
 
 
@@ -254,12 +252,12 @@ def test_get_incidents_list_command_with_filters(mocker):
     client = Client(base_url='https://SymantecDLPV2.com/', auth=("test", "pass"), verify=False, proxy=False,
                     headers={"Content-type": "application/json"})
     args = {'severity': 'High, Medium', 'status_id': '21, 42'}
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/incidents_list_response_with_filters.json')
+    mock_response = util_load_json('test_data/incidents_list_response_with_filters.json')
 
     mocker.patch.object(client, 'get_incidents_request', return_value=mock_response)
 
     incidents_response = list_incidents_command(client, args)
-    expected_response = util_load_json(os.path.dirname(__file__) + '/test_data/incidents_list_context_with_filters.json')
+    expected_response = util_load_json('test_data/incidents_list_context_with_filters.json')
     assert incidents_response.outputs == expected_response
 
 
@@ -284,7 +282,7 @@ def test_get_incident_details_command(mocker):
                         return_value=incident_editable_attributes_res)
 
     incidents_response = get_incident_details_command(client, args)
-    expected_response = util_load_json(os.path.dirname(__file__) + '/test_data/incident_details_context.json')
+    expected_response = util_load_json('test_data/incident_details_context.json')
     assert incidents_response.outputs == expected_response
 
 
@@ -302,7 +300,7 @@ def test_get_incident_details_unauthorized_command(mocker):
     client = Client(base_url='https://SymantecDLPV2.com/', auth=("test", "pass"), verify=False, proxy=False,
                     headers={"Content-type": "application/json"})
     args = {'incident_id': '3620', 'custom_attributes': 'all'}
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/incident_details_error.json')
+    mock_response = util_load_json('test_data/incident_details_error.json')
     mocker.patch.object(client, '_http_request', side_effect=DemistoException(mock_response, res=mock_response))
 
     with pytest.raises(DemistoException):
@@ -322,12 +320,12 @@ def test_list_incident_status_command(mocker):
 
     client = Client(base_url='https://SymantecDLPV2.com/', auth=("test", "pass"), verify=False, proxy=False,
                     headers={"Content-type": "application/json"})
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/incidents_status_response.json')
+    mock_response = util_load_json('test_data/incidents_status_response.json')
 
     mocker.patch.object(client, 'get_incidents_status_request', return_value=mock_response)
 
     incidents_response = list_incident_status_command(client)
-    expected_response = util_load_json(os.path.dirname(__file__) + '/test_data/incidents_status_context.json')
+    expected_response = util_load_json('test_data/incidents_status_context.json')
     assert incidents_response.outputs == expected_response
 
 
@@ -346,12 +344,12 @@ def test_get_incident_history_command(mocker):
                     headers={"Content-type": "application/json"})
     args = {'incident_id': '3536'}
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/incident_history_response.json')
+    mock_response = util_load_json('test_data/incident_history_response.json')
 
     mocker.patch.object(client, 'get_incident_history_request', return_value=mock_response)
 
     history_response = get_incident_history_command(client, args)
-    expected_response = util_load_json(os.path.dirname(__file__) + '/test_data/incident_history_context.json')
+    expected_response = util_load_json('test_data/incident_history_context.json')
     assert history_response.outputs == expected_response
 
 
@@ -368,12 +366,12 @@ def test_get_list_remediation_status(mocker):
 
     client = Client(base_url='https://SymantecDLPV2.com/', auth=("test", "pass"), verify=False, proxy=False,
                     headers={"Content-type": "application/json"})
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/remediation_status_response.json')
+    mock_response = util_load_json('test_data/remediation_status_response.json')
 
     mocker.patch.object(client, 'get_list_remediation_status_request', return_value=mock_response)
 
     incidents_response = get_list_remediation_status(client)
-    expected_response = util_load_json(os.path.dirname(__file__) + '/test_data/remediation_status_context.json')
+    expected_response = util_load_json('test_data/remediation_status_context.json')
     assert incidents_response.outputs == expected_response
 
 
@@ -524,7 +522,7 @@ def test_get_incident_details_fetch(mocker):
         "incidentId": 3620,
         "incidentStatusId": 1
     }
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/incident_details_error.json')
+    mock_response = util_load_json('test_data/incident_details_error.json')
 
     client = Client(base_url="https://SymantecDLPV2.com", auth=("test", "pass"), verify=False, proxy=False,
                     headers={"Content-type": "application/json"})
@@ -551,7 +549,7 @@ def test_get_incident_original_message_command(requests_mock):
 
     requests_mock.get(
         'https://SymantecDLPV2.com/ProtectManager/webservices/v2/incidents/1234/originalMessage',
-        content=b'123'
+        content='123'.encode()
     )
 
     client = Client(

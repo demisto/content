@@ -1,12 +1,13 @@
 import pytest
 import importlib
 import json
+import io
 import os
 import demistomock as demisto
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -27,7 +28,7 @@ def init_tests(mocker):
 
 
 def test_get_aros(mocker):
-    mock_get_aros = util_load_json(os.path.dirname(__file__) + '/test_data/get_aros.json')
+    mock_get_aros = util_load_json('test_data/get_aros.json')
 
     Fes_portal = importlib.import_module('CovalenceManagedSecurity')
     mocker.patch.object(demisto, 'args', return_value={
@@ -48,7 +49,7 @@ def test_get_aros(mocker):
 
 
 def test_get_aros_details(mocker):
-    mock_get_aros = util_load_json(os.path.dirname(__file__) + '/test_data/get_aros.json')
+    mock_get_aros = util_load_json('test_data/get_aros.json')
 
     Fes_portal = importlib.import_module('CovalenceManagedSecurity')
     mocker.patch.object(demisto, 'args', return_value={
@@ -85,7 +86,7 @@ def test_get_aros_details(mocker):
 
 
 def test_list_org(mocker):
-    mock_list_org = util_load_json(os.path.dirname(__file__) + '/test_data/get_org.json')
+    mock_list_org = util_load_json('test_data/get_org.json')
 
     import CovalenceManagedSecurity
     mock_p = CovalenceManagedSecurity.Portal(bearer='gan ceann')

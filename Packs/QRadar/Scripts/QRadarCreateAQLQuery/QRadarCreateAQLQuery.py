@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from enum import Enum
+from typing import Dict, List
 
 
 REPLACE_KEYS = [
@@ -27,10 +28,10 @@ class MatchRule(Enum):
     NOT_ILIKE = "{} NOT ILIKE '%{}%'"
 
 
-def fields_section(fields_list: list[str], values_list: list[str], operator: Operators = Operators.OR,
+def fields_section(fields_list: List[str], values_list: List[str], operator: Operators = Operators.OR,
                    match_rule: MatchRule = MatchRule.EQUAL) -> str:
-    condition_list: list[str] = []
-    for field in (x if ' ' not in x else f"'{x}'" for x in fields_list):
+    condition_list: List[str] = []
+    for field in map(lambda x: x if ' ' not in x else f"'{x}'", fields_list):
         for value in values_list:
             condition_list.append(match_rule.value.format(field, value))
 
@@ -41,7 +42,7 @@ def complete_query(select_fields: str, combined_sections: str, time_frame: str) 
     return f"select {select_fields} from events where {combined_sections} {time_frame}"
 
 
-def prepare_section(args: dict, section_prefix: str) -> dict:
+def prepare_section(args: Dict, section_prefix: str) -> Dict:
     try:
         values_list = argToList(args[f'{section_prefix}_additional_values'])
     except KeyError:
@@ -68,7 +69,7 @@ def prepare_section(args: dict, section_prefix: str) -> dict:
     }
 
 
-def prepare_args(args: dict) -> dict:
+def prepare_args(args: Dict) -> Dict:
     for key in list(args):
         if not args[key]:
             args.pop(key)
@@ -89,7 +90,7 @@ def original_key_name(key_name) -> str:
     return key_name
 
 
-def create_sections_str(args: dict[str, str], operator: Operators = Operators.AND) -> str:
+def create_sections_str(args: Dict[str, str], operator: Operators = Operators.AND) -> str:
     sections = []
     for section_prefix in ['base', 'first', 'second']:
         try:

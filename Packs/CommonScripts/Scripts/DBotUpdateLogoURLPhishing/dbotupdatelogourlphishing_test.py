@@ -1,4 +1,3 @@
-import os
 from DBotUpdateLogoURLPhishing import *
 
 MSG_LOGO_ADDED = "Logo was added successfully"
@@ -141,7 +140,7 @@ def test_get_concat_logo_single_image(mocker):
         logo_content = file.read()
     logo_list = [logo_content] * 3
     concat_image_found = get_concat_logo_single_image(logo_list)
-    with open(os.path.dirname(__file__) + '/test_data/image.png', 'rb') as f:
+    with open('test_data/image.png', 'rb') as f:
         image_concat_true = f.read()
     assert concat_image_found == image_concat_true
 

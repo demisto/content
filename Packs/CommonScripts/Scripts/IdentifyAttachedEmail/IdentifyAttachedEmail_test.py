@@ -14,7 +14,6 @@ def execute_command(command, args):
         ]
     if command == "getEntries":
         return {}
-    return None
 
 
 def test_is_email():

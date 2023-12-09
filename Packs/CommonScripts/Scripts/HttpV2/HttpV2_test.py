@@ -1,10 +1,11 @@
 import json
+import io
 import pytest
 from CommonServerPython import DemistoException
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 

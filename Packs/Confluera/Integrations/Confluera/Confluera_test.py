@@ -1,18 +1,18 @@
-import os
 ''' IMPORTS '''
 from CommonServerPython import *
 from CommonServerUserPython import *
 
 import json
+import io
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
 def util_mock_login(requests_mock):
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/login.json')
+    mock_response = util_load_json('test_data/login.json')
     requests_mock.post(
         'https://test.com/login',
         json=mock_response)
@@ -22,7 +22,7 @@ def test_fetch_detections(mocker, requests_mock):
     from Confluera import Client, fetch_detections_command
 
     util_mock_login(requests_mock)
-    mock_response1 = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_detections.json')
+    mock_response1 = util_load_json('test_data/fetch_detections.json')
 
     args = {
         'hours': '72'
@@ -57,7 +57,7 @@ def test_fetch_progressions(mocker, requests_mock):
     from Confluera import Client, fetch_progressions_command
 
     util_mock_login(requests_mock)
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_progressions.json')
+    mock_response = util_load_json('test_data/fetch_progressions.json')
 
     args = {
         'hours': '72'
@@ -86,7 +86,7 @@ def test_fetch_trail_details(mocker, requests_mock):
     from Confluera import Client, fetch_trail_details_command
 
     util_mock_login(requests_mock)
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_progressions.json')
+    mock_response = util_load_json('test_data/fetch_progressions.json')
 
     requests_mock.get(
         'https://test.com/trails/prod_0_11_.agent-11:17869700',

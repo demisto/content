@@ -56,7 +56,7 @@ def test_markdown_image_server(mocker, capfd):
     with capfd.disabled():
         mocker.patch.object(demisto, 'results')
         fileName = '1234-5678-9012-3456.png'
-        path = Path(__file__).parent / f'TestData/{fileName}'
+        path = f'./TestData/{fileName}'
         mocker.patch.object(demisto, 'getFilePath', return_value={'path': path, 'name': fileName})
         mocker.patch.object(SanePdfReport, 'is_demisto_version_ge', return_value=True)
 

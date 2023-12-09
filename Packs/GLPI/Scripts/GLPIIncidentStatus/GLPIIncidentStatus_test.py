@@ -8,7 +8,7 @@ from GLPIIncidentStatus import glpi_incident_status, glpi_incident_status_comman
 
 
 def util_load_mock(path):
-    with open(path) as f:
+    with open(path, 'r') as f:
         data = f.read()
     return ast.literal_eval(data)
 

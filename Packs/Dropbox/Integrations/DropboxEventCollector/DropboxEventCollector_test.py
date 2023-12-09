@@ -1,5 +1,5 @@
-import os
 import json
+import io
 import requests_mock
 from freezegun import freeze_time
 import demistomock as demisto
@@ -19,7 +19,7 @@ EVENTS_URL = 'https://api.dropbox.com/2/team_log/get_events'
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -48,8 +48,8 @@ def test_fetch_incidents_few_incidents(mocker):
 
     with requests_mock.Mocker() as m:
         m.post(AUTH_URL, json={'access_token': '222222'})
-        m.post(EVENTS_URL, json=util_load_json(os.path.dirname(__file__) + '/test_data/events_1_.json'))
-        m.post(f'{EVENTS_URL}/continue', json=util_load_json(os.path.dirname(__file__) + '/test_data/events_2_.json'))
+        m.post(EVENTS_URL, json=util_load_json('test_data/events_1_.json'))
+        m.post(f'{EVENTS_URL}/continue', json=util_load_json('test_data/events_2_.json'))
 
         from DropboxEventCollector import main
         main('dropbox-get-events', demisto.params() | demisto.args())
@@ -114,8 +114,8 @@ def test_fetch_events_max_fetch_set_to_one(mocker):
 
     with requests_mock.Mocker() as m:
         m.post(AUTH_URL, json={'access_token': '222222'})
-        m.post(EVENTS_URL, json=util_load_json(os.path.dirname(__file__) + '/test_data/events_1_.json'))
-        m.post(f'{EVENTS_URL}/continue', json=util_load_json(os.path.dirname(__file__) + '/test_data/events_2_.json'))
+        m.post(EVENTS_URL, json=util_load_json('test_data/events_1_.json'))
+        m.post(f'{EVENTS_URL}/continue', json=util_load_json('test_data/events_2_.json'))
 
         from DropboxEventCollector import main
         main('dropbox-get-events', demisto.params() | demisto.args())

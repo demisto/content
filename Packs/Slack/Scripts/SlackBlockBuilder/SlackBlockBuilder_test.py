@@ -1,12 +1,12 @@
-import os
 import json
+import io
 import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerPython import entryTypes
-from typing import Any
+from typing import List, Dict, Any
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -36,14 +36,13 @@ def test_block_carrier_with_url(mocker):
     """
     from SlackBlockBuilder import BlockCarrier
 
-    def executeCommand(command: str, args: dict[str, Any]) -> list[dict[str, Any]]:
+    def executeCommand(command: str, args: Dict[str, Any]) -> List[Dict[str, Any]]:
         if command == 'addEntitlement':
             return [{'Type': entryTypes['note'], 'Contents': 'some-guid'}]
-        return None
 
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     block_carrier = BlockCarrier(url=BLOCKS_URL)
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/blocks.json')
+    mock_response = util_load_json('test_data/blocks.json')
 
     assert block_carrier.blocks_dict == mock_response
 
@@ -55,15 +54,14 @@ def test_block_carrier_with_list_name(mocker):
     """
     from SlackBlockBuilder import BlockCarrier
 
-    blocks_dict = util_load_json(os.path.dirname(__file__) + '/test_data/blocks.json')
-    mock_list = util_load_json(os.path.dirname(__file__) + '/test_data/list.json')
+    blocks_dict = util_load_json('test_data/blocks.json')
+    mock_list = util_load_json('test_data/list.json')
 
-    def executeCommand(command: str, args: dict[str, Any]) -> list[dict[str, Any]]:
+    def executeCommand(command: str, args: Dict[str, Any]) -> List[Dict[str, Any]]:
         if command == 'getList':
             return [{"Contents": json.dumps(mock_list)}]
         elif command == 'addEntitlement':
             return [{'Type': entryTypes['note'], 'Contents': 'some-guid'}]
-        return None
 
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
 
@@ -89,9 +87,9 @@ def test_block_builder_command_list(mocker):
     """
     from SlackBlockBuilder import slack_block_builder_command
 
-    mock_list = util_load_json(os.path.dirname(__file__) + '/test_data/list.json')
+    mock_list = util_load_json('test_data/list.json')
 
-    def executeCommand(command: str, args: dict[str, Any]) -> list[dict[str, Any]]:
+    def executeCommand(command: str, args: Dict[str, Any]) -> List[Dict[str, Any]]:
         if command == 'getList':
             return [{"Contents": json.dumps(mock_list)}]
         elif command == 'addEntitlement':
@@ -99,7 +97,6 @@ def test_block_builder_command_list(mocker):
         elif command == 'send-notification':
             return [{'Type': entryTypes['note'], 'HumanReadable': 'Message sent to Slack successfully.\nThread ID is: '
                                                                   '1660645689.649679'}]
-        return None
 
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     COMMAND_ARGS["list_name"] = "SomeList"
@@ -117,9 +114,9 @@ def test_block_builder_command_url(mocker):
     """
     from SlackBlockBuilder import slack_block_builder_command
 
-    mock_list = util_load_json(os.path.dirname(__file__) + '/test_data/list.json')
+    mock_list = util_load_json('test_data/list.json')
 
-    def executeCommand(command: str, args: dict[str, Any]) -> list[dict[str, Any]]:
+    def executeCommand(command: str, args: Dict[str, Any]) -> List[Dict[str, Any]]:
         if command == 'getList':
             return [{"Contents": json.dumps(mock_list)}]
         elif command == 'addEntitlement':
@@ -127,7 +124,6 @@ def test_block_builder_command_url(mocker):
         elif command == 'send-notification':
             return [{'Type': entryTypes['note'], 'HumanReadable': 'Message sent to Slack successfully.\nThread ID is: '
                                                                   '1660645689.649679'}]
-        return None
 
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     COMMAND_ARGS["blocks_url"] = BLOCKS_URL

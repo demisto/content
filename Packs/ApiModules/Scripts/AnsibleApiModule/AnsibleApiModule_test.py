@@ -165,7 +165,7 @@ def test_generate_ansible_inventory_creds():
     assert winrm_inv.get('all').get('hosts').get('123.123.123.123:45678').get('ansible_connection') == 'winrm'
 
 
-class Object:
+class Object(object):
     pass
 
 
@@ -252,7 +252,7 @@ def test_generic_ansible_with_problematic_stdout():
     # Mock results from Ansible run
     mock_ansible_results = Object()
 
-    with open(os.path.join(os.path.join(os.path.dirname(__file__), "test_data", "stdout.txt")), encoding='unicode_escape') as f:
+    with open(os.path.join(os.path.join("test_data", "stdout.txt")), encoding='unicode_escape') as f:
         stdout = f.read()
 
     mock_ansible_results.events = [{'uuid': 'cf26f7c4-6eca-48b2-8294-4bd263cfb2e0', 'counter': 1, 'stdout': '',
@@ -298,7 +298,7 @@ class TestCleanAnsiCodes(unittest.TestCase):
         result = clean_ansi_codes(input_string)
 
         # Then: The returned string should be cleaned of ANSI codes.
-        assert result == "Hello World!"
+        self.assertEqual(result, "Hello World!")
 
     def test_without_ansi_codes(self):
         # Given: A string without any ANSI escape codes.
@@ -308,4 +308,4 @@ class TestCleanAnsiCodes(unittest.TestCase):
         result = clean_ansi_codes(input_string)
 
         # Then: The returned string should remain unchanged.
-        assert result == "Hello World!"
+        self.assertEqual(result, "Hello World!")

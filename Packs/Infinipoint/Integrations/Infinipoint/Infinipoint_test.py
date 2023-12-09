@@ -1,5 +1,5 @@
-import os
 import json
+import io
 from Infinipoint import COMMANDS_CONFIG
 
 BASE_URL = 'https://test.com'
@@ -11,14 +11,14 @@ MAX_INCIDENTS_TO_FETCH = 1000
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
 def test_get_programs_command(requests_mock):
     from Infinipoint import infinipoint_command, Client
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_assets_programs.json')
+    mock_response = util_load_json('test_data/get_assets_programs.json')
 
     requests_mock.post('http://test.com/api/assets/programs',
                        json=mock_response)
@@ -38,7 +38,7 @@ def test_get_programs_command(requests_mock):
 
 def test_get_hardware_command(requests_mock):
     from Infinipoint import infinipoint_command, Client
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_assets_hardware.json')
+    mock_response = util_load_json('test_data/get_assets_hardware.json')
     requests_mock.post('http://test.com/api/assets/hardware',
                        json=mock_response)
     args = {"os_type": "4"}
@@ -55,7 +55,7 @@ def test_get_hardware_command(requests_mock):
 
 def test_get_cloud_command(requests_mock):
     from Infinipoint import infinipoint_command, Client
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_assets_hardware.json')
+    mock_response = util_load_json('test_data/get_assets_hardware.json')
     requests_mock.post('http://test.com/api/assets/cloud',
                        json=mock_response)
     args = {"source": "GCP API"}
@@ -72,7 +72,7 @@ def test_get_cloud_command(requests_mock):
 
 def test_get_users_command(requests_mock):
     from Infinipoint import infinipoint_command, Client
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_assets_users.json')
+    mock_response = util_load_json('test_data/get_assets_users.json')
     requests_mock.post('http://test.com/api/assets/users',
                        json=mock_response)
     args = {"source": "GCP API"}
@@ -89,7 +89,7 @@ def test_get_users_command(requests_mock):
 
 def test_get_devices_command(requests_mock):
     from Infinipoint import infinipoint_command, Client
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_assets_devices.json')
+    mock_response = util_load_json('test_data/get_assets_devices.json')
     requests_mock.post('http://test.com/api/devices',
                        json=mock_response)
     args = {
@@ -108,7 +108,7 @@ def test_get_devices_command(requests_mock):
 
 def test_get_vulnerable_devices_command(requests_mock):
     from Infinipoint import infinipoint_command, Client
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_vulnerable_devices.json')
+    mock_response = util_load_json('test_data/get_vulnerable_devices.json')
     requests_mock.post('http://test.com/api/vulnerability/devices',
                        json=mock_response)
     args = {
@@ -127,7 +127,7 @@ def test_get_vulnerable_devices_command(requests_mock):
 
 def test_get_tag_command(requests_mock):
     from Infinipoint import infinipoint_command, Client
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_tag.json')
+    mock_response = util_load_json('test_data/get_tag.json')
     requests_mock.post('http://test.com/api/tags',
                        json=mock_response)
     args = {
@@ -146,7 +146,7 @@ def test_get_tag_command(requests_mock):
 
 def test_get_networks_command(requests_mock):
     from Infinipoint import infinipoint_command, Client
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_networks.json')
+    mock_response = util_load_json('test_data/get_networks.json')
     requests_mock.post('http://test.com/api/networks',
                        json=mock_response)
     args = {
@@ -165,7 +165,7 @@ def test_get_networks_command(requests_mock):
 
 def test_get_queries_command(requests_mock):
     from Infinipoint import infinipoint_command, Client
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_queries.json')
+    mock_response = util_load_json('test_data/get_queries.json')
     requests_mock.post('http://test.com/api/all-scripts/search',
                        json=mock_response)
     args = {
@@ -184,7 +184,7 @@ def test_get_queries_command(requests_mock):
 
 def test_run_queries_command(requests_mock):
     from Infinipoint import run_queries_command, Client
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/run-queries.json')
+    mock_response = util_load_json('test_data/run-queries.json')
     requests_mock.post('http://test.com/api/all-scripts/execute',
                        json=mock_response)
     args = {
@@ -203,7 +203,7 @@ def test_run_queries_command(requests_mock):
 
 def test_device_details_command(requests_mock):
     from Infinipoint import infinipoint_command, Client
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_devices_details.json')
+    mock_response = util_load_json('test_data/get_devices_details.json')
     args = {
         "discoveryId": "23eb50e7ceb907975686ba5cebbd3520"
     }
@@ -223,7 +223,7 @@ def test_device_details_command(requests_mock):
 def test_cve_command(requests_mock):
     from Infinipoint import infinipoint_command, Client
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_cve.json')
+    mock_response = util_load_json('test_data/get_cve.json')
     args = {
         "cve_id": "CVE-2020-1301"
     }

@@ -1,4 +1,4 @@
-import os
+import io
 import json
 
 import pytest
@@ -9,7 +9,7 @@ SOCRADAR_API_ENDPOINT = 'https://platform.socradar.com/api'
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -20,7 +20,7 @@ def test_test_module(requests_mock):
 
     mock_socradar_api_key = "APIKey"
     auth_suffix = f'threat/intelligence/check/auth?key={mock_socradar_api_key}'
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/check_auth_response.json')
+    mock_response = util_load_json('test_data/check_auth_response.json')
     requests_mock.get(f'{SOCRADAR_API_ENDPOINT}/{auth_suffix}', json=mock_response)
 
     collection_name_list = ['MockCollectionName']
@@ -28,7 +28,7 @@ def test_test_module(requests_mock):
                        f'&collection_names={collection_name_list[0]}' \
                        f'&limit=1' \
                        f'&offset=0'
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_indicators_response.json')
+    mock_response = util_load_json('test_data/get_indicators_response.json')
     requests_mock.get(f'{SOCRADAR_API_ENDPOINT}/{indicator_suffix}', json=mock_response)
 
     client = Client(
@@ -52,7 +52,7 @@ def test_test_module_handles_authorization_error(requests_mock):
 
     mock_socradar_api_key = "WrongAPIKey"
     suffix = f'threat/intelligence/check/auth?key={mock_socradar_api_key}'
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/check_auth_response_auth_error.json')
+    mock_response = util_load_json('test_data/check_auth_response_auth_error.json')
     requests_mock.get(f'{SOCRADAR_API_ENDPOINT}/{suffix}', json=mock_response, status_code=401)
     client = Client(
         base_url=SOCRADAR_API_ENDPOINT,
@@ -76,7 +76,7 @@ def test_fetch_indicators(requests_mock):
     from FeedSOCRadarThreatFeed import Client, fetch_indicators
 
     mock_socradar_api_key = "APIKey"
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_indicators_response.json')
+    mock_response = util_load_json('test_data/fetch_indicators_response.json')
     suffix = f'threat/intelligence/socradar_collections?key={mock_socradar_api_key}' \
              f'&collection_names=MockCollectionName'
     requests_mock.get(f'{SOCRADAR_API_ENDPOINT}/{suffix}', json=mock_response)
@@ -98,7 +98,7 @@ def test_fetch_indicators(requests_mock):
         limit=1
     )
 
-    expected_output = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_indicators_expected_output.json')
+    expected_output = util_load_json('test_data/fetch_indicators_expected_output.json')
 
     assert indicators == expected_output
     assert len(indicators) == 1
@@ -114,7 +114,7 @@ def test_fetch_indicators_handles_error(requests_mock):
     from FeedSOCRadarThreatFeed import Client, fetch_indicators
 
     mock_socradar_api_key = "APIKey"
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_indicators_response_error.json')
+    mock_response = util_load_json('test_data/fetch_indicators_response_error.json')
     suffix = f'threat/intelligence/socradar_collections?key={mock_socradar_api_key}' \
              f'&collection_names=MockCollectionName'
     requests_mock.get(f'{SOCRADAR_API_ENDPOINT}/{suffix}', json=mock_response)
@@ -147,7 +147,7 @@ def test_get_indicators_command(requests_mock):
     from FeedSOCRadarThreatFeed import Client, get_indicators_command
 
     mock_socradar_api_key = "APIKey"
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_indicators_response.json')
+    mock_response = util_load_json('test_data/get_indicators_response.json')
     suffix = f'threat/intelligence/socradar_collections?key={mock_socradar_api_key}' \
              f'&collection_names=MockCollectionName'
     requests_mock.get(f'{SOCRADAR_API_ENDPOINT}/{suffix}', json=mock_response)
@@ -168,8 +168,8 @@ def test_get_indicators_command(requests_mock):
 
     result = get_indicators_command(client, mock_args)
 
-    expected_output = util_load_json(os.path.dirname(__file__) + '/test_data/get_indicators_expected_output.json')
-    expected_context = util_load_json(os.path.dirname(__file__) + '/test_data/get_indicators_expected_context.json')
+    expected_output = util_load_json('test_data/get_indicators_expected_output.json')
+    expected_context = util_load_json('test_data/get_indicators_expected_context.json')
 
     assert isinstance(result, CommandResults)
     assert 'Indicators from SOCRadar ThreatFeed Collections (MockCollectionName):' in result.readable_output
@@ -187,7 +187,7 @@ def test_get_indicators_command_handles_error(requests_mock):
     from FeedSOCRadarThreatFeed import Client, get_indicators_command
 
     mock_socradar_api_key = "APIKey"
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/get_indicators_response_error.json')
+    mock_response = util_load_json('test_data/get_indicators_response_error.json')
     suffix = f'threat/intelligence/socradar_collections?key={mock_socradar_api_key}' \
              f'&collection_names=MockCollectionName'
     requests_mock.get(f'{SOCRADAR_API_ENDPOINT}/{suffix}', json=mock_response)
@@ -225,9 +225,9 @@ def test_build_entry_context():
     """
     from FeedSOCRadarThreatFeed import build_entry_context
 
-    mock_indicators = util_load_json(os.path.dirname(__file__) + '/test_data/build_entry_context_input.json')
+    mock_indicators = util_load_json('test_data/build_entry_context_input.json')
     context_entry = build_entry_context(mock_indicators)
-    expected_context_entry = util_load_json(os.path.dirname(__file__) + '/test_data/build_entry_context_expected_entry.json')
+    expected_context_entry = util_load_json('test_data/build_entry_context_expected_entry.json')
 
     assert context_entry == expected_context_entry
 

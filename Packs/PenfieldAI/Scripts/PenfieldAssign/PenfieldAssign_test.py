@@ -1,4 +1,3 @@
-import os
 """Base Script for Cortex XSOAR - Unit Tests file
 
 Pytest Unit Tests: all funcion names must start with "test_"
@@ -10,12 +9,13 @@ MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
 """
 import demistomock as demisto
 import json
+import io
 from PenfieldAssign import penfield_assign, main
 # from pytest import *
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -49,8 +49,8 @@ def test_penfield_assign(mocker):
 
 
 def test_main(mocker):
-    mock_users = util_load_json(os.path.dirname(__file__) + '/test_data/test_2_users.json')
-    mock_incident = util_load_json(os.path.dirname(__file__) + '/test_data/test_incident.json')
+    mock_users = util_load_json('test_data/test_2_users.json')
+    mock_incident = util_load_json('test_data/test_incident.json')
     # overwrite get users, incidents, and args
     mocker.patch.object(demisto, 'executeCommand', return_value=mock_users)
     mocker.patch.object(demisto, 'incidents', return_value=mock_incident)

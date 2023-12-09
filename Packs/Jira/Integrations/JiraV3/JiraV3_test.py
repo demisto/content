@@ -4,16 +4,15 @@ import demistomock as demisto
 from unittest.mock import patch
 from JiraV3 import (JiraBaseClient, JiraCloudClient, JiraOnPremClient)
 from CommonServerPython import *
-from pathlib import Path
 
 
 def util_load_json(path: str):
-    with open(Path(__file__).parent / path, encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
 def util_load_bytes_file(path: str):
-    with open(Path(__file__).parent / path, mode='rb') as f:
+    with open(path, mode='rb') as f:
         return f.read()
         # return json.loads(f.read())
 
@@ -1237,8 +1236,7 @@ class TestJiraSprintIssuesCommand:
         """
         from JiraV3 import sprint_issues_list_command
         client = jira_base_client_mock()
-        sprint_issues_raw_response: Dict[str, Any] = util_load_json(
-            'test_data/get_sprint_issues_test/raw_response.json')
+        sprint_issues_raw_response: Dict[str, Any] = util_load_json('test_data/get_sprint_issues_test/raw_response.json')
         issues_from_sprint_mocker = mocker.patch.object(client, 'get_issues_from_sprint', return_value=sprint_issues_raw_response)
         sprint_issues_from_board_mocker = mocker.patch.object(client,
                                                               'get_sprint_issues_from_board',
@@ -1305,7 +1303,7 @@ class TestJiraUploadFileCommand:
             the required data.
         """
         from JiraV3 import get_file_name_and_content
-        file_path = str(Path(__file__).parent / 'test_data/get_issue_test/dummy_attachment_content.txt')
+        file_path = 'test_data/get_issue_test/dummy_attachment_content.txt'
         expected_file_name = 'dummy_attachment_content.txt'
         mocker.patch.object(demisto, 'getFilePath',
                             return_value={'name': expected_file_name,

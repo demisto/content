@@ -1,7 +1,5 @@
-import os
 import pytest
 from DHS_Feed import *
-from pathlib import Path
 
 
 def compare(object_a, object_b):
@@ -21,21 +19,27 @@ def compare_list(list_a, list_b):
         pass
     if len(list_a) != len(list_b):
         return False
-    return all(compare(a_obj, b_obj) for a_obj, b_obj in zip(list_a, list_b))
+    for a_obj, b_obj in zip(list_a, list_b):
+        if not compare(a_obj, b_obj):
+            return False
+    return True
 
 
 def compare_dict(dict_a, dict_b):
     keys = dict_a.keys()
     if not compare_list(keys, dict_b.keys()):
         return False
-    return all(compare(dict_a[key], dict_b[key]) for key in keys)
+    for key in keys:
+        if not compare(dict_a[key], dict_b[key]):
+            return False
+    return True
 
 
 class TestTempFile:
     def test_create_file(self):
         data = 'test'
         temp_file = TempFile(data)
-        with open(temp_file.path) as _file:
+        with open(temp_file.path, 'r') as _file:
             assert _file.read() == data, 'temp file content failed'
 
     def test_removing_file(self):
@@ -56,7 +60,7 @@ class TestHelpers:
 
     @pytest.mark.parametrize('path, count', data_test_fix_rsa_data)
     def test_fix_rsa_data(self, path, count):
-        with open(Path(__file__).parent / path) as _file:
+        with open(path, 'r') as _file:
             data = _file.read()
         demisto_data = data.replace('\n', ' ')
         fixed_data = fix_rsa_data(demisto_data, count)
@@ -79,14 +83,15 @@ class TestHelpers:
 
     @pytest.mark.parametrize('input_key, input_public', data_test_ssl_files_checker)
     def test_ssl_files_checker(self, input_key, input_public):
-        with open(Path(__file__).parent / input_key) as input_key, open(Path(__file__).parent / input_public) as input_public:
-            ssl_files_checker(input_public.read(), input_key.read())
+        with open(input_key, 'r') as input_key:
+            with open(input_public, 'r') as input_public:
+                ssl_files_checker(input_public.read(), input_key.read())
 
     @pytest.mark.parametrize('input_key, input_public', data_test_ssl_files_checker)
     def test_ssl_files_checker_with_invalid_files(self, input_key, input_public):
-        with open(Path(__file__).parent / input_key) as input_key:
+        with open(input_key, 'r') as input_key:
             input_key = input_key.read()
-        with open(Path(__file__).parent / input_public) as input_public:
+        with open(input_public, 'r') as input_public:
             input_public = input_public.read()
         with pytest.raises(ValueError):
             temp_input_public = input_public.split('\n')[:-6]
@@ -183,8 +188,9 @@ class TestIndicators:
 
     @staticmethod
     def read_json(path):
-        with open(Path(__file__).parent / path) as json_file:
-            return json.load(json_file)
+        with open(path, 'r') as json_file:
+            json_file = json_file.read()
+        return json.loads(json_file)
 
     @staticmethod
     def get_stix_header(block):
@@ -217,7 +223,7 @@ class TestIndicators:
     @pytest.mark.parametrize('data_type', data_types)
     def test_indicators_to_indicator_data(self, data_type):
         indicators = self.read_json(f'test_data/indicators/indicators_from_{data_type}_data.json')
-        test_data_indicators = [Indicators._indicator_data(x, 'source', 'color', ['tag']) for x in indicators]
+        test_data_indicators = list(map(lambda x: Indicators._indicator_data(x, 'source', 'color', ['tag']), indicators))
         data_indicators = self.read_json(f'test_data/data_indicators/{data_type}_data_indicators.json')
         assert test_data_indicators == data_indicators
 

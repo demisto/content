@@ -1,4 +1,3 @@
-import os
 """CyberTotal Integration for Cortex XSOAR - Unit Tests file
 This file contains the Unit Tests for the CyberTotal Integration based
 on pytest. Cortex XSOAR contribution requirements mandate that every
@@ -10,7 +9,7 @@ import json
 
 
 def util_load_json(path):
-    with open(path) as f:
+    with open(path, 'r') as f:
         return json.load(f)
 
 
@@ -24,7 +23,7 @@ def test_ip(requests_mock):
     from CommonServerPython import Common
 
     ip_to_check = '1.1.1.1'
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/reputation.json')
+    mock_response = util_load_json('test_data/reputation.json')
     requests_mock.get(f'http://test.com/_api/search/ip/basic/{ip_to_check}',
                       json=mock_response)
 
@@ -69,7 +68,7 @@ def test_url(requests_mock):
     from CommonServerPython import Common
 
     url_to_check = 'http://abc.com'
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/reputation.json')
+    mock_response = util_load_json('test_data/reputation.json')
     requests_mock.get(f'http://test.com/_api/search/url/basic?q={url_to_check}',
                       json=mock_response)
 
@@ -114,7 +113,7 @@ def test_domain(requests_mock):
     from CommonServerPython import Common
 
     domain_to_check = 'abc.com'
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/reputation.json')
+    mock_response = util_load_json('test_data/reputation.json')
     requests_mock.get(f'http://test.com/_api/search/domain/basic/{domain_to_check}',
                       json=mock_response)
 
@@ -159,7 +158,7 @@ def test_file(requests_mock):
     from CommonServerPython import Common
 
     file_to_check = 'e594b31feb5f31c2bf611593f1651354'
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/reputation.json')
+    mock_response = util_load_json('test_data/reputation.json')
     requests_mock.get(f'http://test.com/_api/search/hash/basic/{file_to_check}',
                       json=mock_response)
 
@@ -201,7 +200,7 @@ def test_ip_whois(requests_mock):
     from CyberTotal import Client, ip_whois_command
 
     ip_to_check = '1.1.1.1'
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/whois.json')
+    mock_response = util_load_json('test_data/whois.json')
     requests_mock.get(f'http://test.com/_api/search/ip/whois/{ip_to_check}',
                       json=mock_response)
 
@@ -232,7 +231,7 @@ def test_url_whois(requests_mock):
     from CyberTotal import Client, url_whois_command
 
     url_to_check = 'http://abc.com'
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/whois.json')
+    mock_response = util_load_json('test_data/whois.json')
     requests_mock.get(f'http://test.com/_api/search/url/whois?q={url_to_check}',
                       json=mock_response)
 
@@ -263,7 +262,7 @@ def test_domain_whois(requests_mock):
     from CyberTotal import Client, domain_whois_command
 
     domain_to_check = 'abc.com'
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/whois.json')
+    mock_response = util_load_json('test_data/whois.json')
     requests_mock.get(f'http://test.com/_api/search/domain/whois/{domain_to_check}',
                       json=mock_response)
 

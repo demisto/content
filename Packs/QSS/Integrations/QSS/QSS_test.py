@@ -1,9 +1,9 @@
-import os
 import json
+import io
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -11,7 +11,7 @@ def test_fetch_incidents(requests_mock):
 
     from QSS import Client, fetch_incidents
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/soc_monitoring_cases.json')
+    mock_response = util_load_json('test_data/soc_monitoring_cases.json')
     requests_mock.get('https://test.com/api/v1/rest/noauth/third_party/read_object/xsoar/v1', json=mock_response['alerts'])
     client = Client(
         base_url='https://test.com/api/v1',

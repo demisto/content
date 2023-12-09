@@ -1,0 +1,44 @@
+{
+  "DBotScore": {
+    "Indicator": "fakefilename",
+    "Type": "filename",
+    "Vendor": "Flashpoint",
+    "Score": 3
+  },
+  "Filename(val.Name == obj.Name)": {
+    "Name": "fakefilename",
+    "Malicious": {
+      "Vendor": "Flashpoint",
+      "Description": "Found in malicious indicators dataset"
+    }
+  },
+  "Flashpoint.Filename.Event(val.Fpid && val.Fpid == obj.Fpid)": [
+    {
+      "Filename": "fakefilename",
+      "Category": "category1",
+      "Fpid": "fhdjkasfdddfdjfdhhsd",
+      "Href": "http://123-fake-api.com/api/v4/indicators/attribute/fhdjkasfdddfdjfdhhsd",
+      "Timestamp": "1553280019",
+      "Type": "filename",
+      "Uuid": "5c952c13-d048-4741-a769-05cd0a640c05",
+      "EventDetails": {
+        "RelatedEvent": [],
+        "Tags": [
+          "tag1",
+          "tag2",
+          "tag3"
+        ],
+        "attack_ids": [],
+        "fpid": "fhdjkasfdddfdjfdhhsd",
+        "href": "http://123-fake-api.com/api/v4/indicators/event/fhdjkasfdddfdjfdhhsd",
+        "info": "info1",
+        "reports": [
+          "report_url1",
+          "report_url2"
+        ],
+        "timestamp": "1571934618"
+      },
+      "Comment": ""
+    }
+  ]
+}

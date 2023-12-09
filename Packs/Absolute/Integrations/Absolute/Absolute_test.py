@@ -1,5 +1,5 @@
-import os
 import json
+import io
 import re
 from datetime import datetime
 from freezegun import freeze_time
@@ -148,7 +148,7 @@ def absolute_client():
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -215,7 +215,7 @@ def test_add_authorization_header(signature, expected_authorization_header):
 
 def test_get_custom_device_field_list_command(mocker, absolute_client):
     from Absolute import get_custom_device_field_list_command
-    response = util_load_json(os.path.dirname(__file__) + '/test_data/custom_device_field_list_response.json')
+    response = util_load_json('test_data/custom_device_field_list_response.json')
     mocker.patch.object(absolute_client, 'api_request_absolute', return_value=response)
     command_result = get_custom_device_field_list_command(client=absolute_client,
                                                           args={'device_id': '02b9daa4-8e60-4640-8b15-76d41ecf6a94'})
@@ -289,7 +289,7 @@ def test_prepare_payload_to_freeze_request_valid_args(args, expected_payload):
 
 def test_get_device_freeze_request_command(mocker, absolute_client):
     from Absolute import get_device_freeze_request_command
-    response = util_load_json(os.path.dirname(__file__) + '/test_data/custom_get_device_freeze_request_response.json')
+    response = util_load_json('test_data/custom_get_device_freeze_request_response.json')
     mocker.patch.object(absolute_client, 'api_request_absolute', return_value=response)
     command_results = get_device_freeze_request_command(args={'request_uid': '1'}, client=absolute_client)
     assert command_results.outputs == FREEZE_REQ_EXPECTED_OUTPUT
@@ -297,7 +297,7 @@ def test_get_device_freeze_request_command(mocker, absolute_client):
 
 def test_list_device_freeze_message_command(mocker, absolute_client):
     from Absolute import list_device_freeze_message_command
-    response = util_load_json(os.path.dirname(__file__) + '/test_data/device_freeze_message_list_response.json')
+    response = util_load_json('test_data/device_freeze_message_list_response.json')
     mocker.patch.object(absolute_client, 'api_request_absolute', return_value=response)
     command_results = list_device_freeze_message_command(args={'message_id': "1"}, client=absolute_client)
     assert command_results.outputs == [{'ChangedBy': 'example2@test.com',
@@ -312,7 +312,7 @@ def test_list_device_freeze_message_command(mocker, absolute_client):
 
 def test_device_unenroll_command(mocker, absolute_client):
     from Absolute import device_unenroll_command
-    response = util_load_json(os.path.dirname(__file__) + '/test_data/unenroll_device_response.json')
+    response = util_load_json('test_data/unenroll_device_response.json')
     mocker.patch.object(absolute_client, 'api_request_absolute', return_value=response)
     outputs = device_unenroll_command(args={'device_ids': "1,2"}, client=absolute_client).outputs
     assert outputs == [{'DeviceUid': '1',
@@ -477,7 +477,7 @@ def test_parse_paging(page, limit, query, expected_query):
 
 def test_get_device_location_command(mocker, absolute_client):
     from Absolute import get_device_location_command
-    response = util_load_json(os.path.dirname(__file__) + '/test_data/device_location_get.json')
+    response = util_load_json('test_data/device_location_get.json')
     mocker.patch.object(absolute_client, 'api_request_absolute', return_value=response)
     outputs = get_device_location_command(args={'device_ids': "1,2"}, client=absolute_client).outputs
     assert outputs == [{'Accuracy': 10,

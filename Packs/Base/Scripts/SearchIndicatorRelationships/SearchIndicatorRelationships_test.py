@@ -1,5 +1,5 @@
-import os
 import json
+import io
 import demistomock as demisto
 import pytest
 
@@ -8,7 +8,7 @@ from SearchIndicatorRelationships import to_context, handle_stix_types, search_r
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -23,9 +23,9 @@ def test_to_context_verbose_false():
     Then:
     - Ensure that the context is as expected.
     """
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/searchRelationships-response.json')
+    mock_response = util_load_json('test_data/searchRelationships-response.json')
     response = to_context(mock_response, False)
-    expected = util_load_json(os.path.dirname(__file__) + '/test_data/verbose_false_expected.json')
+    expected = util_load_json('test_data/verbose_false_expected.json')
     assert expected == response
 
 
@@ -40,9 +40,9 @@ def test_to_context_verbose_true():
     Then:
     - Ensure that the context is as expected.
     """
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/searchRelationships-response.json')
+    mock_response = util_load_json('test_data/searchRelationships-response.json')
     response = to_context(mock_response, True)
-    expected = util_load_json(os.path.dirname(__file__) + '/test_data/verbose_true_expected.json')
+    expected = util_load_json('test_data/verbose_true_expected.json')
     assert expected == response
 
 

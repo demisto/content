@@ -1,4 +1,4 @@
-import os
+import io
 import json
 
 import pytest
@@ -57,7 +57,7 @@ class paginator:
 
 
 def util_load_json(path: str):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -181,7 +181,7 @@ def test_get_bucket_policy_command(mocker):
     """
     args = {'bucket': 'test_bucket'}
     args.update(TEST_PARAMS)
-    excepted = util_load_json(os.path.dirname(__file__) + '/test_data/get_bucket_policy.json')
+    excepted = util_load_json('test_data/get_bucket_policy.json')
     mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, "get_bucket_policy", return_value=TEST_POLICY)
     client = AWSClient()

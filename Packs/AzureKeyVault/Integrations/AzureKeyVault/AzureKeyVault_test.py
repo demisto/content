@@ -6,7 +6,6 @@ from AzureKeyVault import KeyVaultClient, create_or_update_key_vault_command, li
     get_certificate_command, get_certificate_policy_command, convert_attributes_to_readable, \
     convert_key_info_to_readable, convert_time_attributes_to_iso
 import pytest
-from pathlib import Path
 
 '''MOCK PARAMETERS '''
 CLIENT_ID = "client_id"
@@ -42,7 +41,7 @@ def load_mock_response(file_name: str) -> str:
     Returns:
         str: Mock file content.
     """
-    with open(Path(__file__).parent / f'test_data/{file_name}', encoding='utf-8') as mock_file:
+    with open(f'test_data/{file_name}', mode='r', encoding='utf-8') as mock_file:
         return mock_file.read()
 
 

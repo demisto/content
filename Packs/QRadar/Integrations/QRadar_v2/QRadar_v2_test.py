@@ -1,4 +1,3 @@
-import os
 from copy import deepcopy
 
 from CommonServerPython import DemistoException

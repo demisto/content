@@ -1,16 +1,15 @@
-import os
 import pytest
 import json
 import demistomock as demisto
 
 
 def util_open_file(path):
-    with open(path) as f:
+    with open(path, mode='r') as f:
         return f.read()
 
 
 def util_load_json(path):
-    with open(path) as f:
+    with open(path, mode='r') as f:
         return json.loads(f.read())
 
 
@@ -67,8 +66,8 @@ no_entries_message = """<!DOCTYPE html>
     "emailselectedthread, email_threads, expected_result_type",
     [
         (1, {}, 'no_threads'),
-        (1, {'EmailThreads': util_load_json(os.path.dirname(__file__) + '/test_data/email_threads.json')}, 'good_result'),
-        (5, {'EmailThreads': util_load_json(os.path.dirname(__file__) + '/test_data/email_threads.json')}, 'error_result')
+        (1, {'EmailThreads': util_load_json('test_data/email_threads.json')}, 'good_result'),
+        (5, {'EmailThreads': util_load_json('test_data/email_threads.json')}, 'error_result')
     ]
 )
 def test_main(emailselectedthread, email_threads, expected_result_type, mocker):

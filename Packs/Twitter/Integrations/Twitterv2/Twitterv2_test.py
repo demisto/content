@@ -1,5 +1,5 @@
-import os
 import json
+import io
 import freezegun
 import pytest
 from CommonServerPython import DemistoException
@@ -13,11 +13,11 @@ expected_hr_twitter_user_get = '### Twitter user get results:'\
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
-test_data = util_load_json(os.path.dirname(__file__) + '/test_data/test_data.json')
+test_data = util_load_json('test_data/test_data.json')
 
 
 def side_effect_twitter_tweet_search(method, url_suffix, headers, params, ok_codes):

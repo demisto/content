@@ -1,12 +1,12 @@
-import os
+import io
 import json
 
 from CommonServerPython import *
-from typing import Any
+from typing import Dict, Any
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -14,7 +14,7 @@ def test_api_success(requests_mock: Any) -> None:
     '''Successful test for the test-api command'''
     from BinalyzeAIR import Client, test_connection
 
-    mock_response: dict[str, bool] = {
+    mock_response: Dict[str, bool] = {
         'statusCode': 200
     }
 
@@ -87,7 +87,7 @@ def test_get_profile_id_preset() -> None:
 
 def test_get_profile_id_custom(requests_mock: Any) -> None:
     from BinalyzeAIR import Client
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/profile_id.json')
+    mock_response = util_load_json('test_data/profile_id.json')
     requests_mock.get('https://nonexistent-domain.com/api/public/acquisitions/profiles?'
                       'filter[name]=profile&filter[organizationIds]=0',
                       json=mock_response)
@@ -102,33 +102,33 @@ def test_get_profile_id_custom(requests_mock: Any) -> None:
 
 def test_air_acquire_command(requests_mock: Any) -> None:
     from BinalyzeAIR import Client, air_acquire_command
-    args: dict[str, Any] = {
+    args: Dict[str, Any] = {
         'hostname': 'endpointhostname',
         'profile': "quick",
         'case_id': 'case_id will be here',
         'organization_id': 0
     }
-    headers: dict[str, Any] = {
+    headers: Dict[str, Any] = {
         'Authorization': 'Bearer api_key',
         'User-Agent': 'Binalyze AIR',
         'Content-type': 'application/json',
         'Accept-Charset': 'UTF-8'
     }
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/test_acquire_success.json')
+    mock_response = util_load_json('test_data/test_acquire_success.json')
 
     client: Client = Client(
         base_url='https://nonexistent-domain.com',
         verify=False,
         headers=headers
     )
-    mock_get_response = util_load_json(os.path.dirname(__file__) + '/test_data/profile_id.json')
+    mock_get_response = util_load_json('test_data/profile_id.json')
     requests_mock.get('https://nonexistent-domain.com/api/public/acquisitions/profiles?'
                       'filter[name]=profile_name&filter[organizationIds]=0',
                       json=mock_get_response)
     requests_mock.post('https://nonexistent-domain.com/api/public/acquisitions/acquire', json=mock_response)
 
     mocked_command_result: CommandResults = air_acquire_command(client, args)
-    mocked_readable_output = util_load_json(os.path.dirname(__file__) + '/test_data/test_acquire_success.json').get('results')
+    mocked_readable_output = util_load_json('test_data/test_acquire_success.json').get('results')
     mocked_command_output = {
         'Result': mock_response.get('result'),
         'Success': mock_response.get('success')
@@ -143,18 +143,18 @@ def test_air_acquire_command(requests_mock: Any) -> None:
 
 def test_air_isolate_command(requests_mock: Any) -> None:
     from BinalyzeAIR import Client, air_isolate_command
-    args: dict[str, Any] = {
+    args: Dict[str, Any] = {
         'hostname': 'endpointhostname',
         'organization_id': 0,
         'isolation': True
     }
-    headers: dict[str, Any] = {
+    headers: Dict[str, Any] = {
         'Authorization': 'Bearer api_key',
         'User-Agent': 'Binalyze AIR',
         'Content-type': 'application/json',
         'Accept-Charset': 'UTF-8'
     }
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/test_isolate_success.json')
+    mock_response = util_load_json('test_data/test_isolate_success.json')
 
     client: Client = Client(
         base_url='https://nonexistent-domain.com',
@@ -164,7 +164,7 @@ def test_air_isolate_command(requests_mock: Any) -> None:
     requests_mock.post('https://nonexistent-domain.com/api/public/endpoints/tasks/isolation', json=mock_response)
 
     mocked_command_result: CommandResults = air_isolate_command(client, args)
-    mocked_readable_output = util_load_json(os.path.dirname(__file__) + '/test_data/test_isolate_success.json').get('results')
+    mocked_readable_output = util_load_json('test_data/test_isolate_success.json').get('results')
     mocked_command_output = {
         'Result': mock_response.get('result'),
         'Success': mock_response.get('success')

@@ -1,7 +1,6 @@
 import json
 
 import pytest
-from pathlib import Path
 
 '''MOCK PARAMETERS '''
 CLUSTER_URL = "https://help.kusto.windows.net"
@@ -22,7 +21,7 @@ def load_mock_response(file_name: str) -> str:
     Returns:
         str: Mock file content.
     """
-    with open(Path(__file__).parent / f'test_data/{file_name}', encoding='utf-8') as mock_file:
+    with open(f'test_data/{file_name}', mode='r', encoding='utf-8') as mock_file:
         return mock_file.read()
 
 

@@ -1,11 +1,11 @@
-import os
 import pytest
 import json
+import io
 import Intel471WatcherAlerts as feed
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -51,7 +51,7 @@ def test_fetch_incidents(requests_mock):
     """
     from Intel471WatcherAlerts import Client, fetch_incidents
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/search_alerts.json')
+    mock_response = util_load_json('test_data/search_alerts.json')
     requests_mock.get(
         'https://api.test.com/v1/alerts?showRead=true&displayWatchers=true&markAsRead=false&sort=earliest&count=1&'
         'from=1581944401',

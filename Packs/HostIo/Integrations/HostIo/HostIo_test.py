@@ -1,12 +1,12 @@
-import os
 """Base Integration for Cortex XSOAR - Unit Tests file"""
 
 import json
+import io
 import pytest
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -21,7 +21,7 @@ def test_domain(requests_mock):
     from CommonServerPython import Common
 
     domain_to_check = 'google.com'
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/domain.json')
+    mock_response = util_load_json('test_data/domain.json')
     requests_mock.get(f'https://test.com/api/full/{domain_to_check}',
                       json=mock_response)
 
@@ -60,7 +60,7 @@ def test_search(requests_mock):
 
     field_to_check = 'googleanalytics'
     value_to_check = 'UA-61330992'
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/search.json')
+    mock_response = util_load_json('test_data/search.json')
 
     requests_mock.get(f'https://test.com/api/domains/{field_to_check}/{value_to_check}',
                       json=mock_response)

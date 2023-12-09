@@ -1,4 +1,3 @@
-import os
 
 import json
 
@@ -26,7 +25,7 @@ def test_fetch_incidents(requests_mock):
     from Stamus import Client, fetch_incidents
 
     url = 'https://stamus-test.com/rest/appliances/threat_history_incident/?timestamp=1689340848&page_size=200'
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_incidents.json')
+    mock_response = util_load_json('test_data/fetch_incidents.json')
     requests_mock.get(url, json=mock_response)
 
     client = Client(
@@ -67,7 +66,7 @@ def test_fetch_by_ioc(requests_mock):
 
     filter = ('src_ip', '10.7.5.101')
     url = f'https://stamus-test.com/rest/rules/es/events_tail/?qfilter={filter[0]}%3A{filter[1]}'
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_by_ioc.json')
+    mock_response = util_load_json('test_data/fetch_by_ioc.json')
     requests_mock.get(url, json=mock_response)
 
     client = Client(
@@ -112,7 +111,7 @@ def test_fetch_events(requests_mock):
 
     id_to_check = 3
     url = f'https://stamus-test.com/rest/appliances/threat_history_incident/{id_to_check}/get_events'
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_events.json')
+    mock_response = util_load_json('test_data/fetch_events.json')
     requests_mock.get(url, json=mock_response)
 
     client = Client(
@@ -163,7 +162,7 @@ def test_fetch_host_id(requests_mock):
 
     ip = '217.116.0.227'
     url = f'https://stamus-test.com/rest/appliances/host_id/{ip}'
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/fetch_host_id.json')
+    mock_response = util_load_json('test_data/fetch_host_id.json')
     requests_mock.get(url, json=mock_response)
 
     client = Client(

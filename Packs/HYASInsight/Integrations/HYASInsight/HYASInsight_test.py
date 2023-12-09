@@ -1,4 +1,3 @@
-import os
 import pytest
 import json
 
@@ -22,20 +21,20 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-PASSIVE_DNS_RESPONSE = util_load_json(os.path.dirname(__file__) + '/test_data/passivedns_response.json')
-DYNAMIC_DNS_RESPONSE = util_load_json(os.path.dirname(__file__) + '/test_data/dynamicdns_response.json')
-WHOIS_RESPONSE = util_load_json(os.path.dirname(__file__) + '/test_data/whois_response.json')
+PASSIVE_DNS_RESPONSE = util_load_json('test_data/passivedns_response.json')
+DYNAMIC_DNS_RESPONSE = util_load_json('test_data/dynamicdns_response.json')
+WHOIS_RESPONSE = util_load_json('test_data/whois_response.json')
 C2_ATTRIBUTION_RESPONSE = util_load_json(
     'test_data/c2_attribution_response.json')
 
-WHOIS_CURRENT_RAW_RESPONSE = util_load_json(os.path.dirname(__file__) + '/test_data/whoiscurrent_input.json')
-MALWARE_SAMPLE_RESPONSE = util_load_json(os.path.dirname(__file__) + '/test_data/malwaresample_response.json')
-PASSIVE_HASH_RESPONSE = util_load_json(os.path.dirname(__file__) + '/test_data/passive_hash_response.json')
-SSL_CERTIFICATE_RESPONSE = util_load_json(os.path.dirname(__file__) + '/test_data/ssl_certificate_response.json')
-DEVICE_GEO_RESPONSE = util_load_json(os.path.dirname(__file__) + '/test_data/device_geo_repsponse.json')
-OPEN_SOURCE_RESPONSE = util_load_json(os.path.dirname(__file__) + '/test_data/open_source_response.json')
-SINKHOLE_RESPONSE = util_load_json(os.path.dirname(__file__) + '/test_data/sinkhole_response.json')
-MALWARE_INFO_RESPONSE = util_load_json(os.path.dirname(__file__) + '/test_data/malware_info_response.json')
+WHOIS_CURRENT_RAW_RESPONSE = util_load_json('test_data/whoiscurrent_input.json')
+MALWARE_SAMPLE_RESPONSE = util_load_json('test_data/malwaresample_response.json')
+PASSIVE_HASH_RESPONSE = util_load_json('test_data/passive_hash_response.json')
+SSL_CERTIFICATE_RESPONSE = util_load_json('test_data/ssl_certificate_response.json')
+DEVICE_GEO_RESPONSE = util_load_json('test_data/device_geo_repsponse.json')
+OPEN_SOURCE_RESPONSE = util_load_json('test_data/open_source_response.json')
+SINKHOLE_RESPONSE = util_load_json('test_data/sinkhole_response.json')
+MALWARE_INFO_RESPONSE = util_load_json('test_data/malware_info_response.json')
 ASSOCIATED_IPS_INPUT = [{'ipv4': '8.8.8.8'}]
 ASSOCIATED_DOMAINS_INPUT = [{'domain': 'google.com'}]
 ASSOCIATED_IPS = {'md5': '1d0a97c41afe5540edd0a8c1fb9a0f2d', 'ips': ['8.8.8.8']}

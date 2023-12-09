@@ -1,8 +1,8 @@
 """Axonius Integration for Cortex XSOAR - Unit Tests file."""
 
 import warnings
-from test_data.Raw_data import USERS_SQS, DUMMY_TAGS, DUMMY_DEVICES_IDS, DUMMY_USER_IDS, DUMMY_DEVICES
-from test_data.Expected_data import EXPECTED_USERS_SQS, EXPECTED_DEVICE_TAGS, EXPECTED_DEVICE
+from TestData.Raw_data import USERS_SQS, DUMMY_TAGS, DUMMY_DEVICES_IDS, DUMMY_USER_IDS, DUMMY_DEVICES
+from TestData.Expected_data import EXPECTED_USERS_SQS, EXPECTED_DEVICE_TAGS, EXPECTED_DEVICE
 from Axonius import run_command
 from marshmallow.warnings import RemovedInMarshmallow4Warning
 warnings.filterwarnings('ignore', category=RemovedInMarshmallow4Warning)
@@ -89,7 +89,7 @@ def test_get_tags():
     client = DummyConnect()
     args: dict = {"type": "devices"}
     result = run_command(client=client, args=args, command="axonius-get-tags")
-    assert result.outputs == EXPECTED_DEVICE_TAGS
+    assert EXPECTED_DEVICE_TAGS == result.outputs
 
 
 def test_add_tags():

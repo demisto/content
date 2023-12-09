@@ -9,7 +9,6 @@ from GitHub import main, list_branch_pull_requests, list_all_projects_command, \
     add_issue_to_project_board_command, get_path_data, github_releases_list_command, get_branch_command, \
     list_issue_comments
 import GitHub
-from pathlib import Path
 
 REGULAR_BASE_URL = 'https://api.github.com'
 
@@ -21,7 +20,7 @@ MOCK_PARAMS = {
 
 
 def load_test_data(json_path):
-    with open(Path(__file__).parent / json_path) as f:
+    with open(json_path) as f:
         return json.load(f)
 
 

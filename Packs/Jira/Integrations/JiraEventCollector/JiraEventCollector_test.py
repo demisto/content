@@ -1,5 +1,5 @@
-import os
 import json
+import io
 import requests_mock
 from freezegun import freeze_time
 import demistomock as demisto
@@ -24,7 +24,7 @@ DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -53,7 +53,7 @@ def test_fetch_incidents_few_incidents(mocker):
     mocker.patch('JiraEventCollector.send_events_to_xsiam')
 
     with requests_mock.Mocker() as m:
-        m.get(f'{URL}?{FIRST_REQUESTS_PARAMS}', json=util_load_json(os.path.dirname(__file__) + '/test_data/events.json'))
+        m.get(f'{URL}?{FIRST_REQUESTS_PARAMS}', json=util_load_json('test_data/events.json'))
         m.get(f'{URL}?{SECOND_REQUESTS_PARAMS}', json={})
 
         from JiraEventCollector import main
@@ -119,7 +119,7 @@ def test_fetch_events_max_fetch_set_to_one(mocker):
     mocker.patch('JiraEventCollector.send_events_to_xsiam')
 
     with requests_mock.Mocker() as m:
-        m.get(f'{URL}?{FIRST_REQUESTS_PARAMS}', json=util_load_json(os.path.dirname(__file__) + '/test_data/events.json'))
+        m.get(f'{URL}?{FIRST_REQUESTS_PARAMS}', json=util_load_json('test_data/events.json'))
         m.get(f'{URL}?{SECOND_REQUESTS_PARAMS}', json={})
 
         from JiraEventCollector import main

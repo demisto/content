@@ -13,6 +13,7 @@ import demistomock as demisto
 from CommonServerPython import *
 import pytest
 import json
+import io
 from SaasSecurityEventCollector import Client
 
 
@@ -37,7 +38,7 @@ class MockedResponse:
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -283,7 +284,7 @@ class TestFetchEvents:
         """
         import SaasSecurityEventCollector
 
-        should_push_events = max_fetch == 100
+        should_push_events = True if max_fetch == 100 else False
         mocker.patch.object(Client, 'http_request', side_effect=queue)
         send_events_mocker = mocker.patch.object(SaasSecurityEventCollector, 'send_events_to_xsiam')
 

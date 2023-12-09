@@ -1,0 +1,39 @@
+{
+  "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [{
+    "Indicator": "0.0.0.0",
+    "Type": "ip",
+    "Vendor": "Flashpoint",
+    "Score": 3
+  }],
+  "IP(val.Address && val.Address == obj.Address)": [{
+    "Address": "0.0.0.0",
+    "Malicious": {
+      "Vendor": "Flashpoint",
+      "Description": "Found in malicious indicators dataset"
+    }
+  }],
+  "Flashpoint.IP.Event(val.Fpid == obj.Fpid)": [
+    {
+      "Address": "0.0.0.0",
+      "EventDetails": {
+        "RelatedEvent": [],
+        "Tags": [
+          "tag1"
+        ],
+        "attack_ids": [],
+        "fpid": "hdjfhdjfhdjhfjdhdf",
+        "href": "http://123-fake-api.com/api/v4/indicators/event/hdjfhdjfhdjhfjdhdf",
+        "info": "testing information",
+        "reports": [],
+        "timestamp": "1518471985"
+      },
+      "Category": "category1",
+      "Fpid": "hdjfhdjfhdjhfjdhdf",
+      "Href": "http://123-fake-api.com/api/v4/indicators/attribute/hdjfhdjfhdjhfjdhdf",
+      "Timestamp": "1518471985",
+      "Type": "ip-dst",
+      "Uuid": "5a820b31-3894-4ed9-bd2a-29d6ac110002",
+      "Comment": ""
+    }
+  ]
+}

@@ -1,4 +1,3 @@
-import os
 """Base Integration for Cortex XSOAR - Unit Tests file
 
 Pytest Unit Tests: all funcion names must start with "test_"
@@ -12,10 +11,11 @@ you are implementing with your integration
 """
 
 import json
+import io
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -36,7 +36,7 @@ def test_baseintegration_dummy():
     }
     response = baseintegration_dummy_command(client, args)
 
-    mock_response = util_load_json(os.path.dirname(__file__) + '/test_data/baseintegration-dummy.json')
+    mock_response = util_load_json('test_data/baseintegration-dummy.json')
 
     assert response.outputs == mock_response
 # TODO: ADD HERE unit tests for every command

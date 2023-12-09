@@ -1,5 +1,5 @@
 from CompareIndicators import collect_unique_indicators_from_lists, extract_list_from_args, demisto
-from pathlib import Path
+
 
 def test_collect_unique_indicators_from_lists__empty():
     """
@@ -104,6 +104,6 @@ def test_extract_list_from_args__file_exists(mocker):
         - Return a list with the iocs in the file
     """
     mocker.patch.object(demisto, 'getFilePath',
-                        return_value={'path': str(Path(__file__).parent / 'test_files/ips.txt')})
+                        return_value={'path': 'test_files/ips.txt'})
     actual = extract_list_from_args({'test': '12@1'}, 'test')
     assert actual == ['1.1.1.1', '2.2.2.2']

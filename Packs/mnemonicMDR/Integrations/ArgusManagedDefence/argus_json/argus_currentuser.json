@@ -1,0 +1,100 @@
+{
+    "responseCode": 0,
+    "limit": 0,
+    "offset": 0,
+    "count": 0,
+    "size": 0,
+    "metaData": {},
+    "messages": [
+        {
+            "message": "string",
+            "messageTemplate": "string",
+            "type": "FIELD_ERROR",
+            "field": "string",
+            "parameter": {},
+            "timestamp": 0
+        }
+    ],
+    "data": {
+        "id": 0,
+        "userName": "string",
+        "name": "string",
+        "customer": {
+            "id": 0,
+            "name": "string",
+            "shortName": "string",
+            "domain": {
+                "id": 0,
+                "name": "string"
+            }
+        },
+        "createdTimestamp": 0,
+        "createdByUser": {
+            "id": 0,
+            "customer": {
+                "id": 0,
+                "name": "string",
+                "shortName": "string",
+                "domain": {
+                    "id": 0,
+                    "name": "string"
+                }
+            },
+            "domain": {
+                "id": 0,
+                "name": "string"
+            },
+            "userName": "string",
+            "name": "string",
+            "type": "user",
+            "customerID": 0
+        },
+        "lastUpdatedTimestamp": 0,
+        "lastUpdatedByUser": {
+            "id": 0,
+            "customer": {
+                "id": 0,
+                "name": "string",
+                "shortName": "string",
+                "domain": {
+                    "id": 0,
+                    "name": "string"
+                }
+            },
+            "domain": {
+                "id": 0,
+                "name": "string"
+            },
+            "userName": "string",
+            "name": "string",
+            "type": "user",
+            "customerID": 0
+        },
+        "domain": {
+            "id": 0,
+            "name": "string"
+        },
+        "properties": {
+            "additionalProp1": "string",
+            "additionalProp2": "string",
+            "additionalProp3": "string"
+        },
+        "imageURL": "string",
+        "mobile": "string",
+        "email": "string",
+        "lastLoginTimestamp": 0,
+        "lastImpersonationTimestamp": 0,
+        "lastLoginIP": "string",
+        "timeZone": {
+            "description": "string"
+        },
+        "language": "ENGLISH",
+        "publicKey": "string",
+        "ascendantIDs": [
+            0
+        ],
+        "flags": [
+            "DISABLED"
+        ]
+    }
+}
