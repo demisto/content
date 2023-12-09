@@ -100,7 +100,7 @@ def test_confluence_cloud_group_list_command_when_valid_response_is_returned(req
     requests_mock.get(BASE_URL + URL_SUFFIX["GROUP"], json=expected_response)
     expected_context_output = util_load_json(os.path.join("test_data", "group/group_list_command_context.json"))
 
-    with open(os.path.join("test_data", "group/group_list_command.md")) as f:
+    with open(os.path.join(os.path.dirname(__file__), "test_data", "group/group_list_command.md")) as f:
         expected_readable_output = f.read()
 
     args = {
@@ -200,8 +200,7 @@ def test_confluence_cloud_content_delete_command_when_api_returns_error(requests
     """
     from AtlassianConfluenceCloud import confluence_cloud_content_delete_command
 
-    api_error_msg = util_load_json(os.path.dirname(
-        __file__) + "/test_data/content_delete/content_delete_command_bad_request_error.json")
+    api_error_msg = util_load_json("test_data/content_delete/content_delete_command_bad_request_error.json")
     requests_mock.delete(BASE_URL + URL_SUFFIX["CONTENT"] + "/123", json=api_error_msg, status_code=400)
 
     args = {
@@ -232,7 +231,7 @@ def test_confluence_cloud_content_create_command_when_valid_response_is_returned
     expected_context_output = util_load_json(os.path.join("test_data", "content_create"
                                                                        "/content_create_command_context.json"))
 
-    with open(os.path.join("test_data", "content_create/content_create_command.md")) as f:
+    with open(os.path.join(os.path.dirname(__file__), "test_data", "content_create/content_create_command.md")) as f:
         expected_readable_output = f.read()
 
     args = {
@@ -283,7 +282,7 @@ def test_confluence_cloud_content_create_command_when_object_not_present(request
     expected_context_output = util_load_json(os.path.join("test_data", "content_create"
                                                                        "/content_create_object_not_present.json"))
 
-    with open(os.path.join("test_data", "content_create/content_create_object_not_present.md")) as f:
+    with open(os.path.join(os.path.dirname(__file__), "test_data", "content_create/content_create_object_not_present.md")) as f:
         expected_readable_output = f.read()
 
     args = {
@@ -316,7 +315,7 @@ def test_confluence_cloud_comment_create_command_when_valid_response_is_returned
     expected_context_output = util_load_json(os.path.join("test_data", "comment_create"
                                                                        "/comment_create_command_context.json"))
 
-    with open(os.path.join("test_data", "comment_create/comment_create_command.md")) as f:
+    with open(os.path.join(os.path.dirname(__file__), "test_data", "comment_create/comment_create_command.md")) as f:
         expected_readable_output = f.read()
 
     args = {

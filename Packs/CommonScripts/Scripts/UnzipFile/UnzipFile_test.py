@@ -231,7 +231,7 @@ def test_get_password_invalid():
             raise AssertionError
 
 
-def test_archive_with_slash_in_path(monkepatch):
+def test_archive_with_slash_in_path(monkeypatch):
     """
     Given
     - valid tar.gz file with slash in path

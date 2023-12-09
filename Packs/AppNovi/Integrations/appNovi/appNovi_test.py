@@ -1,5 +1,5 @@
 import json
-
+from pathlib import Path
 import pytest
 
 from appNovi import (
@@ -66,7 +66,7 @@ def create_connected_components_mock(requests_mock):
 
 
 def util_load_json(path):
-    with open(path, encoding="utf-8") as f:
+    with open(Path(__file__).parent / path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
