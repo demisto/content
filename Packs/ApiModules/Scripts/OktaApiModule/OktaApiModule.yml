@@ -8,7 +8,7 @@ subtype: python3
 tags:
 - infra
 - server
-comment: Common Okta code for all Okta-related integrations
+comment: Common Okta code for all Okta-related integrations.
 system: true
 scripttarget: 0
 dependson: {}
