@@ -889,8 +889,7 @@ tasks:
         simple: "10"
       URL:
         complex:
-          root: URL
-          accessor: Data
+          root: inputs.URL
     separatecontext: true
     continueonerrortype: ""
     loop:

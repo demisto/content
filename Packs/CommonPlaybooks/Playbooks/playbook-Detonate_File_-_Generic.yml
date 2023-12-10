@@ -592,7 +592,7 @@ tasks:
       id: 8febf391-f313-4539-89c1-bd4df099dc51
       version: -1
       name: Detonate file - CrowdStrike Falcon Sandbox v2
-      description: Detonates a File using CrowdStrike Falcon.
+      description: Detonates a File using CrowdStrike Falcon sandbox.
       playbookName: Detonate file - CrowdStrike Falcon Sandbox v2
       type: playbook
       iscommand: false
@@ -606,6 +606,8 @@ tasks:
       File:
         complex:
           root: inputs.File
+          transformers:
+          - operator: uniq
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -715,6 +717,8 @@ tasks:
       File:
         complex:
           root: inputs.File
+          transformers:
+          - operator: uniq
       FullReport:
         simple: "True"
       Interval:
@@ -731,7 +735,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4677.5,
+          "x": 4680,
           "y": 370
         }
       }
@@ -1270,7 +1274,7 @@ outputs:
   description: The SHA1 hash of the sample in submission.
   type: string
 - contextPath: VMRay.Submission.SHA256
-  description: 'The SHA256 hash of the sample in submission.'
+  description: The SHA256 hash of the sample in submission.
   type: string
 - contextPath: VMRay.Submission.Verdict
   description: Verdict for the sample (Malicious, Suspicious, Clean, Not Available).
@@ -1309,7 +1313,7 @@ outputs:
   description: File Hashes Object.
   type: unknown
 - contextPath: VMRay.Sample.IOC.File.Hashes.MD5
-  description: 'The MD5 hash of the given file.'
+  description: The MD5 hash of the given file.
   type: string
 - contextPath: VMRay.Sample.IOC.File.Hashes.SSDeep
   description: The SSDeep hash of the given file.
@@ -1345,7 +1349,7 @@ outputs:
   description: The IDs of the other analyses that contain the given domain.
   type: number
 - contextPath: VMRay.Sample.IOC.Domain.Domain
-  description: 'The domain.'
+  description: The domain.
   type: string
 - contextPath: VMRay.Sample.IOC.Domain.ID
   description: The ID of the domain.
@@ -1363,7 +1367,7 @@ outputs:
   description: The IP address.
   type: string
 - contextPath: VMRay.Sample.IOC.IP.Operation
-  description: 'The operation of the given IP address.'
+  description: The operation of the given IP address.
   type: string
 - contextPath: VMRay.Sample.IOC.IP.ID
   description: The ID of the IP address.
@@ -1378,7 +1382,7 @@ outputs:
   description: The IDs of other analyses that contain the given IP address.
   type: number
 - contextPath: VMRay.Sample.IOC.Mutex.Name
-  description: 'The name of the mutex.'
+  description: The name of the mutex.
   type: string
 - contextPath: VMRay.Sample.IOC.Mutex.Operation
   description: The operation of the given mutex.
@@ -1396,7 +1400,7 @@ outputs:
   description: The list of connected analysis IDs.
   type: number
 - contextPath: VMRay.ThreatIndicator.Category
-  description: 'The category of threat indicators.'
+  description: The category of threat indicators.
   type: string
 - contextPath: VMRay.ThreatIndicator.Classification
   description: The classifications of threat indicators.
@@ -1411,7 +1415,7 @@ outputs:
   description: SHA256 value of the analyzed sample.
   type: string
 - contextPath: SecneurXAnalysis.Report.Verdict
-  description: 'Summary result of the analyzed sample.'
+  description: Summary result of the analyzed sample.
   type: string
 - contextPath: SecneurXAnalysis.Report.Tags
   description: More details of the analyzed sample.
@@ -1429,7 +1433,7 @@ outputs:
   description: List of HTTP data observed in the analyzed sample.
   type: string
 - contextPath: SecneurXAnalysis.Report.JA3Digests
-  description: 'List of JA3 data observed in the analyzed sample.'
+  description: List of JA3 data observed in the analyzed sample.
   type: string
 - contextPath: SecneurXAnalysis.Report.ProcessCreated
   description: Process behaviour data observed in the analyzed sample.
@@ -1447,7 +1451,7 @@ outputs:
   description: List of File drops observed in the analyzed sample.
   type: string
 - contextPath: SecneurXAnalysis.Report.FileDeleted
-  description: 'List of File deletions observed in the analyzed sample.'
+  description: List of File deletions observed in the analyzed sample.
   type: string
 - contextPath: SecneurXAnalysis.Report.FileModified
   description: List of File changes observed in the analyzed sample.
