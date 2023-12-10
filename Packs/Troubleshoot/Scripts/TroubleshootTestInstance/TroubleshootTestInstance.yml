@@ -36,4 +36,3 @@ dependson:
   - core-api-post
 tests:
 - No tests (auto formatted)
-

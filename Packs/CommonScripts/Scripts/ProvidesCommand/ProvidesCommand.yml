@@ -13,7 +13,7 @@ enabled: true
 args:
 - name: command
   required: true
-  description: The integration command to find
+  description: The integration command to find.
 - name: enabled
   auto: PREDEFINED
   predefined:

@@ -18,13 +18,13 @@ enabled: true
 name: ListInstalledContentPacks
 outputs:
 - contextPath: InstalledPacks.Name
-  description: Pack Name
+  description: Pack Name.
   type: string
 - contextPath: InstalledPacks.Version
-  description: Pack Version
+  description: Pack Version.
   type: string
 - contextPath: InstalledPacks.Update
-  description: Is there an update available
+  description: Is there an update available.
   type: boolean
 runas: DBotWeakRole
 script: ''

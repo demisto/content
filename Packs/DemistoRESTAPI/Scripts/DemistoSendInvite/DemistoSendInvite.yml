@@ -12,10 +12,10 @@ args:
 - name: email
   required: true
   default: true
-  description: Email of user being invited
+  description: Email of user being invited.
 - name: roles
   required: true
-  description: Roles of invited user
+  description: Roles of invited user.
 scripttarget: 0
 dependson:
   must:

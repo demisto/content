@@ -31,11 +31,11 @@ enabled: true
 args:
 - name: incident_id
   required: true
-  description: ID of incident to upload to
+  description: ID of incident to upload to.
 - name: entryID
-  description: Entry ID of file to upload
+  description: Entry ID of file to upload.
 - name: body
-  description: Request body
+  description: Request body.
 scripttarget: 0
 dependson:
   must:

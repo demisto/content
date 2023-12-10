@@ -6,15 +6,15 @@ script: ''
 type: javascript
 tags:
 - DemistoAPI
-comment: Create a new list
+comment: Create a new list.
 enabled: true
 args:
 - name: listName
   required: true
   default: true
-  description: Name of list to create
+  description: Name of list to create.
 - name: listData
-  description: Initial data of list
+  description: Initial data of list.
 scripttarget: 0
 dependson:
   must:

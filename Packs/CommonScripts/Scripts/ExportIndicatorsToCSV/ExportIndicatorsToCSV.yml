@@ -5,7 +5,7 @@ args:
 - defaultValue: "7"
   description: Indicator last seen days  (default is 7).  Needs to be a number.
   name: seenDays
-- description: 'Comma separated list of columns (fields) for the CSV.  (Default is: id,indicator_type,value,source,score,relatedIncCount,setBy,sourceBrands,modified)'
+- description: 'Comma separated list of columns (fields) for the CSV.  (Default is: id,indicator_type,value,source,score,relatedIncCount,setBy,sourceBrands,modified).'
   name: columns
 comment: This automation uses the Demisto REST API Integration to batch export Indicators to CSV and return the resulting CSV file to the war room.
 commonfields:
