@@ -134,8 +134,7 @@ def send_email_to_mailbox(
     reply_to: List[str],
     html_body: Optional[str] = None,
     attachments: Optional[List[str]] = None,
-    raw_message
-: Optional[str] = None,
+    raw_message: Optional[str] = None,
     from_address: Optional[str] = None
 ):      # pragma: no cover
     """
