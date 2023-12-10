@@ -13,6 +13,7 @@ urllib3.disable_warnings()
 
 # Globals
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+THRESHOLD_IN_SECONDS = 43200    # 12 hours in seconds
 
 
 class Client(BaseClient):
@@ -140,6 +141,15 @@ class Client(BaseClient):
                 last_run = demisto.getLastRun()
                 etag = last_run.get(url, {}).get('etag')
                 last_modified = last_run.get(url, {}).get('last_modified')
+                last_updated = last_run.get(url, {}).get('last_updated')
+                # To avoid issues with indicators expiring, if 'last_updated' is over X hours old,
+                # we'll refresh the indicators to ensure their expiration time is updated.
+                # For further details, refer to : https://confluence-dc.paloaltonetworks.com/display/DemistoContent/Json+Api+Module     # noqa: E501
+                if last_updated and has_passed_time_threshold(timestamp_str=last_updated, seconds_threshold=THRESHOLD_IN_SECONDS):
+                    last_modified = None
+                    etag = None
+                    demisto.debug("Since it's been a long time with no update, to make sure we are keeping the indicators alive, \
+                        we will refetch them from scratch")
 
                 if etag:
                     self.headers['If-None-Match'] = etag
@@ -250,6 +260,9 @@ def get_no_update_value(response: requests.models.Response, url: str) -> bool:
 
     etag = response.headers.get('ETag')
     last_modified = response.headers.get('Last-Modified')
+    current_time = datetime.utcnow()
+    # Save the current time as the last updated time. This will be used to indicate the last time the feed was updated in XSOAR.
+    last_updated = current_time.strftime(DATE_FORMAT)
 
     if not etag and not last_modified:
         demisto.debug('Last-Modified and Etag headers are not exists,'
@@ -257,7 +270,7 @@ def get_no_update_value(response: requests.models.Response, url: str) -> bool:
         return False
 
     last_run = demisto.getLastRun()
-    last_run[url] = {'last_modified': last_modified, 'etag': etag}
+    last_run[url] = {'last_modified': last_modified, 'etag': etag, 'last_updated': last_updated}
     demisto.setLastRun(last_run)
 
     demisto.debug('New indicators fetched - the Last-Modified value has been updated,'
@@ -344,7 +357,7 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, auto_d
     config = client.feed_url_to_config or {}
 
     # set noUpdate flag in createIndicators command True only when all the results from all the urls are True.
-    no_update = all([next(iter(item.values())).get('no_update', False) for item in iterator])
+    no_update = all(next(iter(item.values())).get('no_update', False) for item in iterator)
 
     for url_to_reader in iterator:
         for url, reader in url_to_reader.items():
