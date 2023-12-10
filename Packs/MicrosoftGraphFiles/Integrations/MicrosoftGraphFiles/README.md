@@ -6,35 +6,49 @@ For more details about the authentication used in this integration, see <a href=
 
 ### Required Permissions
 
-- Files.ReadWrite.All - Application
-- Sites.ReadWrite.All - Application
+- `Files.ReadWrite.All - Application`
+- `Sites.ReadWrite.All - Application`
 
-Or you can give to the user access to specific site by using Site.Selected permission:
+OR
+
+- `Site.Selected - Application`: Provides read and write access to specific sites.
+
+Note: Using `Site.Selected` requires additional configuration steps outlined below.
 
 #### Steps to use the Site.Selected permission:
 
-1. It requires two applications, one for the administrator and one for the user.
-2. Add the Sites.FullControl.All - Application permission to the admin
-application.
-3. Add the Site.Selected - Application permission to the user application.
-4. Navigate to **Settings** > **Integrations**.
-5. Search for O365 File Management (Onedrive/Sharepoint/Teams).
-6. Click **Add instance** to create and configure a new integration instance for the admin app.
-7. Enter the admin application credentials.
-8. Click **Test** to validate the connection.
-9. Run commands to give the user application access to specific sites:
-    - `msgraph-list-site-permissions` - Get permissions for a site
-    - `msgraph-create-site-permissions` - Add permissions for a site
-    - `msgraph-update-site-permissions` - Update permissions for a site
-    - `msgraph-delete-site-permissions` - Delete permissions for a site
-10. Delete the admin instance after configuring user access.
-11. Repeat steps 6-8 to create an instance for the user application.
+1. Requirement: Two applications are required, one for the administrator and one for the user.
+2. Admin application:
+    - Add the `Sites.FullControl.All - Application` permission.
+3. User application:
+    - Add the `Site.Selected - Application` permission.
+4. Configuration:
+    - Navigate to **Settings** > **Integrations**.
+    - Search for O365 File Management (Onedrive/Sharepoint/Teams).
+    - Admin application
+        - Click **Add instance** to create and configure a new integration instance.
+        - Enter the admin application credentials.
+        - Click **Test** to validate the connection.
+        - Use commands to give the user application access to specific sites:
+            - `msgraph-list-site-permissions` - Get permissions for a site
+            - `msgraph-create-site-permissions` - Add permissions for a site
+            - `msgraph-update-site-permissions` - Update permissions for a site
+            - `msgraph-delete-site-permissions` - Delete permissions for a site
+        - Delete the admin instance after configuring user access.
+    - User application:
+        - Create and configure a new integration instance.
+        - Enter the user application credentials.
+        - Click **Test** to validate the connection.
 
-Note: The command `msgraph-list-sharepoint-sites` cannot be run, because for this command the app need permission to read all the sites `Sites.Read.All - Application`
+5. Note: The `msgraph-list-sharepoint-sites` command cannot be run, as it requires the `Sites.Read.All - Application` permission.
+
+- [YouTube tutorial](https://www.youtube.com/watch?v=pPfxHvugnTA) from Microsoft.
+- [Microsoft documentation](https://learn.microsoft.com/en-us/graph/api/resources/permission?view=graph-rest-1.0).
+
 
 ## Configure O365 File Management (Onedrive/Sharepoint/Teams) on Cortex XSOAR
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. Navigate to **Settings** > **Integrations**.
 2. Search for O365 File Management (Onedrive/Sharepoint/Teams).
 3. Click **Add instance** to create and configure a new integration instance.
 
