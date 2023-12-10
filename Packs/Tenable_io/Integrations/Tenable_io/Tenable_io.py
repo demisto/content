@@ -1,6 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import os
 import sys
 import time
 import traceback
@@ -166,6 +165,7 @@ CHUNK_SIZE = 5000
 MAX_CHUNKS_PER_FETCH = 10
 ASSETS_FETCH_FROM = '90 days'
 
+
 class Client(BaseClient):
 
     def list_scan_filters(self):
@@ -329,6 +329,45 @@ class Client(BaseClient):
         """
         return self._http_request(method='GET', url_suffix=f'/assets/export/{export_uuid}/chunks/{chunk_id}',
                                   headers=self._headers)
+
+    def get_export_uuid(self, num_assets: int, last_found: Optional[float], severity: List[str]):
+        """
+
+        Args:
+            num_assets: number of assets used to chunk the vulnerabilities.
+            last_found: vulnerabilities that were last found between the specified date (in Unix time) and now.
+            severity: severity of the vulnerabilities to include in the export.
+
+        Returns: The UUID of the vulnerabilities export job.
+
+        """
+        payload: dict[str, Any] = {
+            "filters":
+                {
+                    "severity": severity
+                },
+            "num_assets": num_assets
+        }
+        if last_found:
+            payload['filters'].update({"last_found": last_found})
+
+        res = self._http_request(method='POST', url_suffix='/vulns/export', headers=self._headers, json_data=payload)
+        return res.get('export_uuid', '')
+
+    def get_export_status(self, export_uuid: str):
+        """
+
+        Args:
+            export_uuid: The UUID of the vulnerabilities export job.
+
+        Returns: The status of the job, and number of chunks available if succeeded.
+
+        """
+        res = self._http_request(method='GET', url_suffix=f'/vulns/export/{export_uuid}/status',
+                                 headers=self._headers)
+        status = res.get('status')
+        chunks_available = res.get('chunks_available', [])
+        return status, chunks_available
 
 
 def flatten(d):
@@ -574,6 +613,7 @@ def send_asset_attributes_request(asset_id: str) -> Dict[str, Any]:
         return_error(f'Error calling for url {full_url}: error message {exc}')
 
     return res.json()
+
 
 def get_timestamp(timestamp):
     return time.mktime(timestamp.timetuple())
@@ -1827,7 +1867,7 @@ DATA_TYPES = [ASSETS, EVENTS]
 
 
 def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
-                         chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type="events"):
+                       chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type="events"):
     """
     Send the fetched events or assets into the XDR data-collector private api.
 
@@ -1911,7 +1951,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         headers['snapshot-id'] = str(round(time.time() * 1000))
         headers['total-items-count'] = str(items_count)
 
-    header_msg = 'Error sending new {data_type} into XSIAM.\n'.format(data_type = data_type)
+    header_msg = 'Error sending new {data_type} into XSIAM.\n'.format(data_type=data_type)
 
     def data_error_handler(res):
         """
@@ -1953,6 +1993,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
                                     zipped_data=zipped_data, is_json_response=True)
 
     demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
+
 
 def main():  # pragma: no cover
     """main function, parses params and runs command functions
