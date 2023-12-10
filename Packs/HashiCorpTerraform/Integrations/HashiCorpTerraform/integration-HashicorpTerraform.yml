@@ -1,0 +1,492 @@
+commonfields:
+  id: HashicorpTerraform
+  version: -1
+name: HashicorpTerraform
+display: HashiCorp Terraform
+category: Utilities
+description: Generated description - REPLACE THIS
+configuration:
+- name: url
+  display: Server URL
+  defaultvalue: https://www.example.com
+  type: 0
+  required: true
+- name: proxy
+  display: Use system proxy
+  defaultvalue: 'false'
+  type: 8
+  required: false
+- name: insecure
+  display: Trust any certificate
+  defaultvalue: 'false'
+  type: 8
+  required: false
+script:
+  script: >2
+
+
+
+
+    class Client(BaseClient):
+        def __init__(self, server_url, verify, proxy, headers, auth):
+            super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
+
+        def runs_list_request(self, workspace_id, run_id, filter_status):
+            headers = self._headers
+
+            response = self._http_request('GET', f'api/v2/workspaces/{workspace_id}/runs', headers=headers)
+
+            return response
+
+
+    def runs_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+        workspace_id = args.get('workspace_id')
+        run_id = args.get('run_id')
+        filter_status = args.get('filter_status', 'confirmed')
+
+        response = client.runs_list_request(workspace_id, run_id, filter_status)
+        command_results = CommandResults(
+            outputs_prefix='HashicorpTerraformCloud.Run',
+            outputs_key_field='',
+            outputs=response,
+            raw_response=response
+        )
+
+        return command_results
+
+
+    def test_module(client: Client) -> None:
+        # Test functions here
+        return_results('ok')
+
+
+    def main() -> None:
+
+        params: Dict[str, Any] = demisto.params()
+        args: Dict[str, Any] = demisto.args()
+        url = params.get('url')
+        verify_certificate: bool = not params.get('insecure', False)
+        proxy = params.get('proxy', False)
+
+        headers = {}
+        headers['Authorization'] = f'Bearer {params["token"]}'
+
+        command = demisto.command()
+        demisto.debug(f'Command being called is {command}')
+
+        try:
+            requests.packages.urllib3.disable_warnings()
+            client: Client = Client(urljoin(url, ''), verify_certificate, proxy, headers=headers, auth=None)
+
+            commands = {
+                'terraform-runs-list': runs_list_command,
+            }
+
+            if command == 'test-module':
+                test_module(client)
+            elif command in commands:
+                return_results(commands[command](client, args))
+            else:
+                raise NotImplementedError(f'{command} command is not implemented.')
+
+        except Exception as e:
+            return_error(str(e))
+
+
+    if __name__ in ['__main__', 'builtin', 'builtins']:
+        main()
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.13.81631
+  isfetch: false
+  commands:
+  - name: terraform-runs-list
+    description: ''
+    arguments:
+    - name: workspace_id
+      description: The workspace ID to list runs for
+      required: false
+      isArray: false
+    - name: run_id
+      description: The run id
+      required: false
+      isArray: false
+    - name: filter_status
+      description: The run status to filter by
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - pending
+      - fetching
+      - fetching_completed
+      - pre_plan_running
+      - pre_plan_completed
+      - queuing
+      - plan_queued
+      - planning
+      - planned
+      - cost_estimating
+      - cost_estimated
+      - policy_checking
+      - policy_override
+      - policy_soft_failed
+      - policy_checked
+      - confirmed
+      - post_plan_running
+      - post_plan_completed
+      - planned_and_finished
+      - planned_and_saved
+      - apply_queued
+      - applying
+      - applied
+      - discarded
+      - errored
+      - canceled
+      - force_canceled
+    outputs:
+    - type: String
+      contextPath: HashicorpTerraformCloud.Run.data.id
+      description: ''
+    - type: String
+      contextPath: HashicorpTerraformCloud.Run.data.type
+      description: ''
+    - type: Boolean
+      contextPath: HashicorpTerraformCloud.Run.data.attributes.actions.is-cancelable
+      description: ''
+    - type: Boolean
+      contextPath: HashicorpTerraformCloud.Run.data.attributes.actions.is-confirmable
+      description: ''
+    - type: Boolean
+      contextPath: HashicorpTerraformCloud.Run.data.attributes.actions.is-discardable
+      description: ''
+    - type: Boolean
+      contextPath: HashicorpTerraformCloud.Run.data.attributes.actions.is-force-cancelable
+      description: ''
+    - type: Boolean
+      contextPath: HashicorpTerraformCloud.Run.data.attributes.allow-config-generation
+      description: ''
+    - type: Boolean
+      contextPath: HashicorpTerraformCloud.Run.data.attributes.allow-empty-apply
+      description: ''
+    - type: Boolean
+      contextPath: HashicorpTerraformCloud.Run.data.attributes.auto-apply
+      description: ''
+    - type: Unknown
+      contextPath: HashicorpTerraformCloud.Run.data.attributes.canceled-at
+      description: ''
+    - type: Date
+      contextPath: HashicorpTerraformCloud.Run.data.attributes.created-at
+      description: ''
+    - type: Boolean
+      contextPath: HashicorpTerraformCloud.Run.data.attributes.has-changes
+      description: ''
+    - type: Boolean
+      contextPath: HashicorpTerraformCloud.Run.data.attributes.is-destroy
+      description: ''
+    - type: String
+      contextPath: HashicorpTerraformCloud.Run.data.attributes.message
+      description: ''
+    - type: Boolean
+      contextPath: HashicorpTerraformCloud.Run.data.attributes.plan-only
+      description: ''
+    - type: Boolean
+      contextPath: HashicorpTerraformCloud.Run.data.attributes.refresh
+      description: ''
+    - type: Boolean
+      contextPath: HashicorpTerraformCloud.Run.data.attributes.refresh-only
+      description: ''
+    - type: Unknown
+      contextPath: HashicorpTerraformCloud.Run.data.attributes.replace-addrs
+      description: ''
+    - type: Boolean
+      contextPath: HashicorpTerraformCloud.Run.data.attributes.save-plan
+      description: ''
+    - type: String
+      contextPath: HashicorpTerraformCloud.Run.data.attributes.source
+      description: ''
+    - type: Date
+      contextPath: HashicorpTerraformCloud.Run.data.attributes.status-timestamps.planned-at
+      description: ''
+    - type: Date
+      contextPath: HashicorpTerraformCloud.Run.data.attributes.status-timestamps.queuing-at
+      description: ''
+    - type: Date
+      contextPath: HashicorpTerraformCloud.Run.data.attributes.status-timestamps.planning-at
+      description: ''
+    - type: Date
+      contextPath: HashicorpTerraformCloud.Run.data.attributes.status-timestamps.plan-queued-at
+      description: ''
+    - type: Date
+      contextPath: HashicorpTerraformCloud.Run.data.attributes.status-timestamps.plan-queueable-at
+      description: ''
+    - type: Date
+      contextPath: HashicorpTerraformCloud.Run.data.attributes.status-timestamps.planned-and-finished-at
+      description: ''
+    - type: String
+      contextPath: HashicorpTerraformCloud.Run.data.attributes.status
+      description: ''
+    - type: Unknown
+      contextPath: HashicorpTerraformCloud.Run.data.attributes.target-addrs
+      description: ''
+    - type: String
+      contextPath: HashicorpTerraformCloud.Run.data.attributes.trigger-reason
+      description: ''
+    - type: String
+      contextPath: HashicorpTerraformCloud.Run.data.attributes.terraform-version
+      description: ''
+    - type: Boolean
+      contextPath: HashicorpTerraformCloud.Run.data.attributes.permissions.can-apply
+      description: ''
+    - type: Boolean
+      contextPath: HashicorpTerraformCloud.Run.data.attributes.permissions.can-cancel
+      description: ''
+    - type: Boolean
+      contextPath: HashicorpTerraformCloud.Run.data.attributes.permissions.can-comment
+      description: ''
+    - type: Boolean
+      contextPath: HashicorpTerraformCloud.Run.data.attributes.permissions.can-discard
+      description: ''
+    - type: Boolean
+      contextPath: HashicorpTerraformCloud.Run.data.attributes.permissions.can-force-execute
+      description: ''
+    - type: Boolean
+      contextPath: HashicorpTerraformCloud.Run.data.attributes.permissions.can-force-cancel
+      description: ''
+    - type: Boolean
+      contextPath: HashicorpTerraformCloud.Run.data.attributes.permissions.can-override-policy-check
+      description: ''
+    - type: Unknown
+      contextPath: HashicorpTerraformCloud.Run.data.attributes.variables
+      description: ''
+    - type: String
+      contextPath: HashicorpTerraformCloud.Run.data.relationships.workspace.data.id
+      description: ''
+    - type: String
+      contextPath: HashicorpTerraformCloud.Run.data.relationships.workspace.data.type
+      description: ''
+    - type: String
+      contextPath: HashicorpTerraformCloud.Run.data.relationships.apply.data.id
+      description: ''
+    - type: String
+      contextPath: HashicorpTerraformCloud.Run.data.relationships.apply.data.type
+      description: ''
+    - type: String
+      contextPath: HashicorpTerraformCloud.Run.data.relationships.apply.links.related
+      description: ''
+    - type: String
+      contextPath: HashicorpTerraformCloud.Run.data.relationships.configuration-version.data.id
+      description: ''
+    - type: String
+      contextPath: HashicorpTerraformCloud.Run.data.relationships.configuration-version.data.type
+      description: ''
+    - type: String
+      contextPath: HashicorpTerraformCloud.Run.data.relationships.configuration-version.links.related
+      description: ''
+    - type: String
+      contextPath: HashicorpTerraformCloud.Run.data.relationships.created-by.data.id
+      description: ''
+    - type: String
+      contextPath: HashicorpTerraformCloud.Run.data.relationships.created-by.data.type
+      description: ''
+    - type: String
+      contextPath: HashicorpTerraformCloud.Run.data.relationships.created-by.links.related
+      description: ''
+    - type: String
+      contextPath: HashicorpTerraformCloud.Run.data.relationships.plan.data.id
+      description: ''
+    - type: String
+      contextPath: HashicorpTerraformCloud.Run.data.relationships.plan.data.type
+      description: ''
+    - type: String
+      contextPath: HashicorpTerraformCloud.Run.data.relationships.plan.links.related
+      description: ''
+    - type: String
+      contextPath: HashicorpTerraformCloud.Run.data.relationships.run-events.data.id
+      description: ''
+    - type: String
+      contextPath: HashicorpTerraformCloud.Run.data.relationships.run-events.data.type
+      description: ''
+    - type: String
+      contextPath: HashicorpTerraformCloud.Run.data.relationships.run-events.links.related
+      description: ''
+    - type: Unknown
+      contextPath: HashicorpTerraformCloud.Run.data.relationships.task-stages.data
+      description: ''
+    - type: String
+      contextPath: HashicorpTerraformCloud.Run.data.relationships.task-stages.links.related
+      description: ''
+    - type: Unknown
+      contextPath: HashicorpTerraformCloud.Run.data.relationships.policy-checks.data
+      description: ''
+    - type: String
+      contextPath: HashicorpTerraformCloud.Run.data.relationships.policy-checks.links.related
+      description: ''
+    - type: Unknown
+      contextPath: HashicorpTerraformCloud.Run.data.relationships.comments.data
+      description: ''
+    - type: String
+      contextPath: HashicorpTerraformCloud.Run.data.relationships.comments.links.related
+      description: ''
+    - type: String
+      contextPath: HashicorpTerraformCloud.Run.data.links.self
+      description: ''
+    - type: Date
+      contextPath: HashicorpTerraformCloud.Run.data.attributes.status-timestamps.applied-at
+      description: ''
+    - type: Date
+      contextPath: HashicorpTerraformCloud.Run.data.attributes.status-timestamps.applying-at
+      description: ''
+    - type: Date
+      contextPath: HashicorpTerraformCloud.Run.data.attributes.status-timestamps.confirmed-at
+      description: ''
+    - type: Date
+      contextPath: HashicorpTerraformCloud.Run.data.attributes.status-timestamps.apply-queued-at
+      description: ''
+    - type: Date
+      contextPath: HashicorpTerraformCloud.Run.data.attributes.status-timestamps.queuing-apply-at
+      description: ''
+    - type: String
+      contextPath: HashicorpTerraformCloud.Run.links.self
+      description: ''
+    - type: String
+      contextPath: HashicorpTerraformCloud.Run.links.first
+      description: ''
+    - type: Unknown
+      contextPath: HashicorpTerraformCloud.Run.links.prev
+      description: ''
+    - type: Unknown
+      contextPath: HashicorpTerraformCloud.Run.links.next
+      description: ''
+    - type: String
+      contextPath: HashicorpTerraformCloud.Run.links.last
+      description: ''
+    - type: Number
+      contextPath: HashicorpTerraformCloud.Run.meta.pagination.current-page
+      description: ''
+    - type: Number
+      contextPath: HashicorpTerraformCloud.Run.meta.pagination.page-size
+      description: ''
+    - type: Unknown
+      contextPath: HashicorpTerraformCloud.Run.meta.pagination.prev-page
+      description: ''
+    - type: Unknown
+      contextPath: HashicorpTerraformCloud.Run.meta.pagination.next-page
+      description: ''
+    - type: Number
+      contextPath: HashicorpTerraformCloud.Run.meta.pagination.total-pages
+      description: ''
+    - type: Number
+      contextPath: HashicorpTerraformCloud.Run.meta.pagination.total-count
+      description: ''
+    - type: Number
+      contextPath: HashicorpTerraformCloud.Run.meta.status-counts.pending
+      description: ''
+    - type: Number
+      contextPath: HashicorpTerraformCloud.Run.meta.status-counts.fetching
+      description: ''
+    - type: Number
+      contextPath: HashicorpTerraformCloud.Run.meta.status-counts.fetching-completed
+      description: ''
+    - type: Number
+      contextPath: HashicorpTerraformCloud.Run.meta.status-counts.pre-plan-running
+      description: ''
+    - type: Number
+      contextPath: HashicorpTerraformCloud.Run.meta.status-counts.pre-plan-completed
+      description: ''
+    - type: Number
+      contextPath: HashicorpTerraformCloud.Run.meta.status-counts.queuing
+      description: ''
+    - type: Number
+      contextPath: HashicorpTerraformCloud.Run.meta.status-counts.plan-queued
+      description: ''
+    - type: Number
+      contextPath: HashicorpTerraformCloud.Run.meta.status-counts.planning
+      description: ''
+    - type: Number
+      contextPath: HashicorpTerraformCloud.Run.meta.status-counts.planned
+      description: ''
+    - type: Number
+      contextPath: HashicorpTerraformCloud.Run.meta.status-counts.confirmed
+      description: ''
+    - type: Number
+      contextPath: HashicorpTerraformCloud.Run.meta.status-counts.queuing-apply
+      description: ''
+    - type: Number
+      contextPath: HashicorpTerraformCloud.Run.meta.status-counts.apply-queued
+      description: ''
+    - type: Number
+      contextPath: HashicorpTerraformCloud.Run.meta.status-counts.applying
+      description: ''
+    - type: Number
+      contextPath: HashicorpTerraformCloud.Run.meta.status-counts.applied
+      description: ''
+    - type: Number
+      contextPath: HashicorpTerraformCloud.Run.meta.status-counts.discarded
+      description: ''
+    - type: Number
+      contextPath: HashicorpTerraformCloud.Run.meta.status-counts.errored
+      description: ''
+    - type: Number
+      contextPath: HashicorpTerraformCloud.Run.meta.status-counts.canceled
+      description: ''
+    - type: Number
+      contextPath: HashicorpTerraformCloud.Run.meta.status-counts.cost-estimating
+      description: ''
+    - type: Number
+      contextPath: HashicorpTerraformCloud.Run.meta.status-counts.cost-estimated
+      description: ''
+    - type: Number
+      contextPath: HashicorpTerraformCloud.Run.meta.status-counts.policy-checking
+      description: ''
+    - type: Number
+      contextPath: HashicorpTerraformCloud.Run.meta.status-counts.policy-override
+      description: ''
+    - type: Number
+      contextPath: HashicorpTerraformCloud.Run.meta.status-counts.policy-checked
+      description: ''
+    - type: Number
+      contextPath: HashicorpTerraformCloud.Run.meta.status-counts.policy-soft-failed
+      description: ''
+    - type: Number
+      contextPath: HashicorpTerraformCloud.Run.meta.status-counts.planned-and-finished
+      description: ''
+    - type: Number
+      contextPath: HashicorpTerraformCloud.Run.meta.status-counts.planned-and-saved
+      description: ''
+    - type: Number
+      contextPath: HashicorpTerraformCloud.Run.meta.status-counts.post-plan-running
+      description: ''
+    - type: Number
+      contextPath: HashicorpTerraformCloud.Run.meta.status-counts.post-plan-completed
+      description: ''
+    - type: Number
+      contextPath: HashicorpTerraformCloud.Run.meta.status-counts.pre-apply-running
+      description: ''
+    - type: Number
+      contextPath: HashicorpTerraformCloud.Run.meta.status-counts.pre-apply-completed
+      description: ''
+    - type: Number
+      contextPath: HashicorpTerraformCloud.Run.meta.status-counts.post-apply-running
+      description: ''
+    - type: Number
+      contextPath: HashicorpTerraformCloud.Run.meta.status-counts.post-apply-completed
+      description: ''
+    - type: Number
+      contextPath: HashicorpTerraformCloud.Run.meta.status-counts.assessing
+      description: ''
+    - type: Number
+      contextPath: HashicorpTerraformCloud.Run.meta.status-counts.assessed
+      description: ''
+    - type: Number
+      contextPath: HashicorpTerraformCloud.Run.meta.status-counts.pre-plan-awaiting-decision
+      description: ''
+    - type: Number
+      contextPath: HashicorpTerraformCloud.Run.meta.status-counts.post-plan-awaiting-decision
+      description: ''
+    - type: Number
+      contextPath: HashicorpTerraformCloud.Run.meta.status-counts.pre-apply-awaiting-decision
+      description: ''
+    - type: Number
+      contextPath: HashicorpTerraformCloud.Run.meta.status-counts.total
+      description: ''

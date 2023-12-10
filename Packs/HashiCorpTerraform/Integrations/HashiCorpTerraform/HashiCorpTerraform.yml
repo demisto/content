@@ -1,0 +1,258 @@
+commonfields:
+  id: HashicorpTerraform
+  version: -1
+configuration:
+- displaypassword: API Token
+  additionalinfo: The API Key to use for connection
+  name: credentials
+  required: true
+  hiddenusername: true
+  type: 9
+  section: Connect
+- display: Server URL
+  name: server_url
+  required: true
+  type: 0
+  defaultvalue: https://app.terraform.io/api/v2
+  section: Connect
+- display: Default Organization Name
+  name: default_organization_name
+  type: 0
+  required: false
+  section: Connect
+  additionalinfo: There is an option to override with a command input parameter. If not provided, policies commands should require the Org name.
+- display: Default Workspace Id
+  name: default_workspace_id
+  type: 0
+  required: false
+  section: Collect
+  additionalinfo: There is an option to override with an input parameter. If not provided, some commands should require the workspace id.
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+name: HashicorpTerraform
+display: HashiCorp Terraform
+category: IT Services
+description: Hashicorp Terraform provide infrastructure automation to provision and manage resources in any cloud or data center with Terraform.
+script:
+  commands:
+  - name: terraform-runs-list
+    description: List Runs in a Workspace.
+    arguments:
+    - name: workspace_id
+      description: The workspace ID to list runs for.
+    - name: run_id
+      description: The run id to get a specific run.
+    - name: filter_status
+      description: The run status to filter by.
+      auto: PREDEFINED
+      predefined:
+      - pending
+      - fetching
+      - fetching_completed
+      - pre_plan_running
+      - pre_plan_completed
+      - queuing
+      - plan_queued
+      - planning
+      - planned
+      - cost_estimating
+      - cost_estimated
+      - policy_checking
+      - policy_override
+      - policy_soft_failed
+      - policy_checked
+      - confirmed
+      - post_plan_running
+      - post_plan_completed
+      - planned_and_finished
+      - planned_and_saved
+      - apply_queued
+      - applying
+      - applied
+      - discarded
+      - errored
+      - canceled
+      - force_canceled
+    - name: page_number
+      description: The page number of the results to return. Default is 1.
+    - name: page_size
+      description: The number of results to return per page. Default is 20, maximum is 100.
+    outputs:
+    - type: String
+      contextPath: Terraform.Run.data.id
+      description: The run id.
+    - type: String
+      contextPath: Terraform.Run.data.attributes.status
+      description: The run status.
+    - type: String
+      contextPath: Terraform.Run.data.relationships.plan.data.id
+      description: The Plan id.
+    - type: Date
+      contextPath: Terraform.Run.data.attributes.status-timestamps.planned-at
+      description: The date time the plan was planned.
+  - name: terraform-run-action
+    arguments:
+    - name: run_id
+      required: true
+      description: The Terraform run ID to execute the action on.
+    - name: action
+      auto: PREDEFINED
+      required: true
+      predefined:
+      - apply
+      - cancel
+      - discard
+      - force-cancel
+      - force-execute
+      description: The action to execute on the Terraform run.
+    - name: comment
+      description: An optional comment to associate with the action. not available for the action "force-execute".
+    description: 'Perform an action on a Terraform run. The available actions are: apply, cancel, discard, force-cancel, force-execute.'
+  - name: terraform-plan-get
+    arguments:
+    - name: plan_id
+      required: true
+      description: The ID of the Terraform plan to retrieve.
+    - name: json_output
+      description: Whether to return the plan as JSON fileResult. Defaults to false.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: "false"
+    outputs:
+    - contextPath: Terraform.Plan.id
+      type: String
+      description: The plan id.
+    - contextPath: Terraform.Plan.attributes.status-timestamps.queued-at
+      type: Date
+      description: The time the plan was queued.
+    - contextPath: Terraform.Plan.attributes.status
+      type: String
+      description: The plan status.
+    description: Get plan JSON file or the plan meta data.
+  - name: terraform-policies-list
+    description: List the policies for an organization or get a specific policy.
+    arguments:
+    - name: organization_name
+      description: The name of the organization.
+    - name: policy_kind
+      description: If specified, restricts results to those with the matching policy kind value. Valid values are sentinel and opa.
+      auto: PREDEFINED
+      predefined:
+      - sentinel
+      - opa
+    - name: policy_name
+      description: If specified, searching the organization's policies by name.
+    - name: policy_id
+      description: If specified, get the specific policy.
+    outputs:
+    - contextPath: Terraform.Policy.id
+      type: String
+      description: The policy id.
+    - contextPath: Terraform.Policy.attributes.name
+      type: String
+      description: The policy name.
+    - contextPath: Terraform.Policy.attributes.description
+      type: String
+      description: The policy description.
+    - contextPath: Terraform.Policy.attributes.kind
+      type: String
+      description: The policy kind.
+    - contextPath: Terraform.Policy.relationships.policy-sets
+      type: Unknwon
+      description: The Policy sets that the returned policy are members of.
+    - contextPath: Terraform.Policy.relationships.organization.data.id
+      type: String
+      description: The policy organization id.
+  - name: terraform-policy-set-list
+    description: List the policy sets for an organization or get a specific policy set.
+    arguments:
+    - name: organization_name
+      required: false
+      description: The name of the organization.
+    - name: policy_set_id
+      description: If specified, get the specific policy set.
+    - name: versioned
+      description: Allows filtering policy sets based on whether they are versioned, or use individual policy relationships. A true value returns versioned sets, and a false value returns sets with individual policy relationships. If omitted, all policy sets are returned.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    - name: policy_set_kind
+      description: If specified, restricts results to those with the matching policy kind value. Valid values are sentinel and opa.
+      auto: PREDEFINED
+      predefined:
+      - sentinel
+      - opa
+    - name: include
+      description: Enables you to include related resource data. Value must be a comma-separated list containing one or more of projects, workspaces, workspace-exclusions, policies, newest_version, or current_version.
+    - name: policy_set_name
+      description: Allows searching the organization's policy sets by name.
+    - name: page_number
+      description: The page number of the results to return. Default is 1.
+    - name: page_size
+      description: The number of results to return per page. Default is 20, maximum is 100.
+    outputs:
+    - contextPath: Terraform.PolicySet.data.id
+      type: String
+      description: The policy set id.
+    - contextPath: Terraform.PolicySet.data.attributes.name
+      type: String
+      description: The policy set name.
+    - contextPath: Terraform.PolicySet.data.attributes.description
+      type: String
+      description: The policy set description.
+    - contextPath: Terraform.PolicySet.data.relationships.organization.data.id
+      type: String
+      description: The policy set organization id.
+    - contextPath: Terraform.PolicySet.data.relationships.policies.data.id
+      type: Unknown
+      description: The policy set policies ids.
+    - contextPath: Terraform.PolicySet.data.relationships.workspaces.data.id
+      type: Unknown
+      description: The policy set workspaces ids.
+    - contextPath: Terraform.PolicySet.data.relationships.projects.data.id
+      type: Unknown
+      description: The policy set projects ids.
+    - contextPath: Terraform.PolicySet.next
+      type: String
+      description: The url for the next policies set page results.
+  - name: terraform-policies-checks-list
+    description: List the policy checks for a Terraform run.
+    arguments:
+    - name: run_id
+      description: The run ID to list results for.
+    - name: policy_check_id
+      description: The policy check ID to retrieve details for.
+    - name: page_number
+      description: The page number of the results to return. Default is 1.
+    - name: page_size
+      description: The number of results to return per page. Default is 20, maximum is 100.
+    outputs:
+    - contextPath: Terraform.PolicyCheck.id
+      type: String
+      description: The policy check id.
+    - contextPath: Terraform.PolicyCheck.attributes.result
+      type: Unknown
+      description: The policy check results.
+    - contextPath: Terraform.PolicyCheck.attributes.status
+      type: String
+      description: The policy check status.
+    - contextPath: Terraform.PolicyCheck.attributes.scope
+      type: String
+      description: The policy check scope.
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.13.82467
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
