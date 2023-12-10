@@ -102,6 +102,8 @@ The main active response playbook is the `Cortex ASM - ASM Alert` playbook. This
   - [GetProjectOwners](#getprojectowners)
   - [RankServiceOwners](#rankserviceowners)
   - [RemediationPathRuleEvaluation](#remediationpathruleevaluation)
+- Layouts
+  - [ASM Alert Layout](#asmalertlayout)
 
 ### Playbooks
 
@@ -282,3 +284,9 @@ This automation parses a GCP service account email for the project ID, then look
 An automation that is used to find a matching remediation path rule based on criteria.  If multiple rules match, it will return the most recently created rule.  This assumes that the rules passed in are filtered to correlate with the alert's attack surface rule (Xpanse only).
 
 ![RemediationPathRuleEvaluation](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/RemediationPathRuleEvaluation.png)
+
+### Layouts
+
+#### ASM Alert Layout
+
+This layout is provides enrichment information such as system IDs, tags, and service owners for a given Attack Surface Management alert.
