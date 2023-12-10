@@ -58,16 +58,13 @@ GROUP_PROFILE_ARGS = [
 
 
 def module_test(client, args):
-    """
-    Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
+    if client.auth_type == AuthType.OAUTH:
+        # For OAuth 2.0, there's no user the token belongs to, but an app. So the '/users/me' endpoint won't work.
+        uri = '/api/v1/users'
 
-    Args:
-        client: HelloWorld client
+    else:
+        uri = '/api/v1/users/me'
 
-    Returns:
-        'ok' if test passed, anything else will fail the test.
-    """
-    uri = '/api/v1/users/me'
     client._http_request(method='GET', url_suffix=uri)
     return 'ok', None, None
 
