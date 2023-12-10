@@ -199,7 +199,8 @@
             "playbookID": "SetAndHandleEmpty_Test"
         },
         {
-            "playbookID": "ExtractEmailTransformer_Test"
+            "playbookID": "ExtractEmailTransformer_Test",
+            "fromversion": "6.11.0"
         },
         {
             "integrations": "Tripwire",
