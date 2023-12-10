@@ -59,7 +59,6 @@ LOCAL_CHROME_HOST = "127.0.0.1"
 class RasterizeType(Enum):
     PNG = 'png'
     PDF = 'pdf'
-    # TODO: handle JSON
     JSON = 'json'
 
 
@@ -105,10 +104,10 @@ class PychromeEventHandler:
     request_id = None
     screen_lock = threading.Lock()
 
-    def __init__(self, browser, tab, tab_ready):
+    def __init__(self, browser, tab, tab_ready_event):
         self.browser = browser
         self.tab = tab
-        self.tab_ready = tab_ready
+        self.tab_ready_event = tab_ready_event
         self.start_frame = None
 
     def frame_started_loading(self, frameId):
@@ -129,7 +128,7 @@ class PychromeEventHandler:
                         demisto.debug(f'Tab activated: {activation_result=} after {operation_time} seconds.")')
                     else:
                         demisto.error('Tab not activated. Timeout.')
-                    self.tab_ready.set()
+                    self.tab_ready_event.set()
             except pychrome.exceptions.PyChromeException as e:
                 demisto.error(f'Error stopping page loading: {self.tab=}, {frameId=}, {e}')
 
@@ -371,7 +370,7 @@ def rasterize(path: str,
                 return screenshot_image(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout,
                                         include_source=True)
             else:
-                message = f'Unsupported rasterization type {rasterize_type}'
+                message = f'Unsupported rasterization type: {rasterize_type}.'
                 demisto.error(message)
                 return_error(message)
                 return None
