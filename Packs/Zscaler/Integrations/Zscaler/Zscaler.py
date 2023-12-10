@@ -619,7 +619,7 @@ def category_add_url(category_id, url, retaining_parent_category_url):
         category_data["urls"] = all_urls
         retaining_parent_category_url_list = argToList(retaining_parent_category_url)
         if not (url_list, retaining_parent_category_url_list):
-            return_error('Either url argument or retaining_parent_category_url argument must be provided.')
+            return_error('Please provide retaining_parent_category_url or url argument.')
         add_or_remove_urls_from_category(
             ADD, url_list, category_data, retaining_parent_category_url_list
         )  # add the urls to the category
@@ -652,7 +652,7 @@ def category_add_url(category_id, url, retaining_parent_category_url):
 
 def category_add_ip(category_id, ip, retaining_parent_category_ip):
     if not (ip, retaining_parent_category_ip):
-        return_error('Either ip argument or retaining_parent_category_ip argument must be provided.')
+        return_error('Please provide ip or retaining_parent_category_ip argument.')
 
     categories = get_categories()
     found_category = False
@@ -668,7 +668,7 @@ def category_add_ip(category_id, ip, retaining_parent_category_ip):
         category_data["urls"] = all_ips
         retaining_parent_category_ip_list = argToList(retaining_parent_category_ip)
         if not (ip_list, retaining_parent_category_ip_list):
-            return_error('Either ip_list argument or retaining_parent_category_ip_list argument must be provided.')
+            return_error('Please provide ip_list argument or retaining_parent_category_ip_list argument.')
         response = category_ioc_update(category_data, retaining_parent_category_ip_list)
         context = {
             "ID": category_id,
@@ -701,7 +701,7 @@ def category_add_ip(category_id, ip, retaining_parent_category_ip):
 
 def category_remove_url(category_id, url, retaining_parent_category_url):
     if not (url, retaining_parent_category_url):
-        return_error('Either url argument or retaining_parent_category_url argument must be provided.')
+        return_error('Please provide  url or retaining_parent_category_url argument.')
 
     category_data = get_category_by_id(category_id)  # check if the category exists
 
