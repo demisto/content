@@ -544,7 +544,7 @@ def test_single_thread_reply(email_code, mocker):
     mocker.patch.object(SendEmailReply, 'get_email_cc', return_value='')
     mocker.patch.object(SendEmailReply, 'get_reply_body', side_effect=get_reply_body_side_effect)
     validate_email_sent_mocker = mocker.patch.object(SendEmailReply, 'validate_email_sent', return_value=True)
-    single_thread_reply(email_code, 1, 'cc_user@company.com', '', ['5'], 'html',  '', '', 'Email Subject', False,
+    single_thread_reply(email_code, 1, 'cc_user@company.com', '', ['5'], 'html', '', '', 'Email Subject', False,
                         'end_user@company.com', 'soc_sender@company.com', 10, 'soc_sender@company.com')
     validate_mail_sent_call_args = validate_email_sent_mocker.call_args
     execute_command_call_args = execute_command_mocker.call_args
