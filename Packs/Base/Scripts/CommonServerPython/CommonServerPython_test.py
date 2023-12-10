@@ -9108,4 +9108,33 @@ class TestIsIntegrationCommandExecution:
     def test_problematic_cases(self, mocker, calling_context_mock):
         mocker.patch.object(demisto, 'callingContext', calling_context_mock)
         assert is_integration_command_execution() == True
-        
+
+
+@pytest.mark.parametrize("timestamp_str, seconds_threshold, expected", [
+    ("2019-01-01T00:00:00Z", 60, True), 
+    ("2022-01-01T00:00:00GMT+1", 60, True), 
+    ("2022-01-01T00:00:00Z", 60, False),
+    ("invalid", 60, ValueError)
+])
+def test_has_passed_time_threshold__different_timestamps(timestamp_str, seconds_threshold, expected, mocker):
+    """
+    Given:
+        A timestamp string and a seconds threshold.
+    When:
+        Running has_passed_time_threshold function.
+    Then:
+        Test - Assert the function returns the expected result.
+        Case 1: The timestamp is in the past.
+        Case 2: Though the timestamp appears identical, it is in a different timezone, so the time passed the threshold.
+        Case 3: The timestamp did not pass the threshold.
+        Case 4: The timestamp is invalid.
+    """
+    from CommonServerPython import has_passed_time_threshold
+    mocker.patch('CommonServerPython.datetime', autospec=True)
+    mocker.patch.object(CommonServerPython.datetime, 'now', return_value=datetime(2022, 1, 1, 0, 0, 0, tzinfo=pytz.utc))
+    if expected == ValueError:
+        with pytest.raises(expected) as e:
+            has_passed_time_threshold(timestamp_str, seconds_threshold)
+        assert str(e.value) == "Failed to parse timestamp: invalid"
+    else:
+        assert has_passed_time_threshold(timestamp_str, seconds_threshold) == expected
