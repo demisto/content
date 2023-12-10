@@ -456,6 +456,8 @@ script:
       predefined:
       - batch
       - single
+    - description: A batch ID to execute the command on.
+      name: batch_id
     description: Sends commands to hosts.
     name: cs-falcon-run-command
     outputs:
@@ -486,6 +488,9 @@ script:
     - contextPath: CrowdStrike.Command.NextSequenceID
       description: (For single host) The next sequence ID.
       type: number
+    - contextPath: CrowdStrike.Command.BatchID
+      description: The Batch ID that the command was executed on.
+      type: String
   - arguments:
     - description: The script name to upload.
       name: name
