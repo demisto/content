@@ -16,6 +16,10 @@ def parse_rows_response(rows_data: list[dict]) -> list[dict]:
     Args:
         rows_data (list[dict]): The 'Rows' data from the response.
 
+    Note:
+        The 'Rows' data is returned in a table format, where each item in the list is a row.
+        Example for such a response can be seen on 'test_data/raw_data_mock/get_query_results.json'
+
     Returns:
         list[dict]: The data in a parsed and arranged format.
     """

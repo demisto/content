@@ -123,7 +123,11 @@ script:
     - name: region
       description: The AWS Region, if not specified the default region will be used.
     - name: QueryExecutionId
+      hidden: true
       description: ID of the newly created query. Used internally for polling.
+    - name: hide_polling_output
+      hidden: true
+      description: ''
     description: Execute a new query, wait for the query to complete (using polling), and return query's execution information, and query's results (if successful). Either 'OutputLocation' or 'WorkGroup' must be specified for the query to run.
     polling: true
     outputs:
@@ -187,46 +191,46 @@ script:
     - contextPath: AWS.Athena.Query.Status.AthenaError.ErrorMessage
       description: Contains a short description of the error that occurred.
       type: String
-    - contextPath: AWS.Athena.Statistics.EngineExecutionTimeInMillis
+    - contextPath: AWS.Athena.Query.Statistics.EngineExecutionTimeInMillis
       description: The number of milliseconds that the query took to execute.
       type: Number
-    - contextPath: AWS.Athena.Statistics.DataScannedInBytes
+    - contextPath: AWS.Athena.Query.Statistics.DataScannedInBytes
       description: The number of bytes in the data that was queried.
       type: Number
-    - contextPath: AWS.Athena.Statistics.DataManifestLocation
+    - contextPath: AWS.Athena.Query.Statistics.DataManifestLocation
       description: The location and file name of a data manifest file. The manifest file is saved to the Athena query results location in Amazon S3.
       type: String
-    - contextPath: AWS.Athena.Statistics.TotalExecutionTimeInMillis
+    - contextPath: AWS.Athena.Query.Statistics.TotalExecutionTimeInMillis
       description: The number of milliseconds that Athena took to run the query.
       type: Number
-    - contextPath: AWS.Athena.Statistics.QueryQueueTimeInMillis
+    - contextPath: AWS.Athena.Query.Statistics.QueryQueueTimeInMillis
       description: The number of milliseconds that the query was in your query queue waiting for resources.
       type: Number
-    - contextPath: AWS.Athena.Statistics.ServicePreProcessingTimeInMillis
+    - contextPath: AWS.Athena.Query.Statistics.ServicePreProcessingTimeInMillis
       description: The number of milliseconds that Athena took to preprocess the query before submitting the query to the query engine.
       type: Number
-    - contextPath: AWS.Athena.Statistics.QueryPlanningTimeInMillis
+    - contextPath: AWS.Athena.Query.Statistics.QueryPlanningTimeInMillis
       description: The number of milliseconds that Athena took to plan the query processing flow. This includes the time spent retrieving table partitions from the data source.
       type: Number
-    - contextPath: AWS.Athena.Statistics.ServiceProcessingTimeInMillis
+    - contextPath: AWS.Athena.Query.Statistics.ServiceProcessingTimeInMillis
       description: The number of milliseconds that Athena took to finalize and publish the query results after the query engine finished running the query.
       type: Number
-    - contextPath: AWS.Athena.ResultReuseInformation.ReusedPreviousResult
+    - contextPath: AWS.Athena.Query.ResultReuseInformation.ReusedPreviousResult
       description: True if a previous query result was reused; false if the result was generated from a new run of the query.
       type: Boolean
-    - contextPath: AWS.Athena.WorkGroup
+    - contextPath: AWS.Athena.Query.WorkGroup
       description: The name of the workgroup in which the query ran.
       type: String
-    - contextPath: AWS.Athena.EngineVersion.SelectedEngineVersion
+    - contextPath: AWS.Athena.Query.EngineVersion.SelectedEngineVersion
       description: The engine version requested by the user. Possible values are determined by the output of ListEngineVersions, including AUTO.
       type: String
-    - contextPath: AWS.Athena.EngineVersion.EffectiveEngineVersion
+    - contextPath: AWS.Athena.Query.EngineVersion.EffectiveEngineVersion
       description: The engine version on which the query runs.
       type: String
-    - contextPath: AWS.Athena.ExecutionParameters
+    - contextPath: AWS.Athena.Query.ExecutionParameters
       description: A list of values for the parameters in a query. The values are applied sequentially to the parameters in the query in the order in which the parameters occur. The list of parameters is not returned in the response.
       type: List
-    - contextPath: AWS.Athena.SubstatementType
+    - contextPath: AWS.Athena.Query.SubstatementType
       description: The kind of query statement that was run.
       type: String
     - contextPath: AWS.Athena.QueryResults
@@ -357,46 +361,46 @@ script:
     - contextPath: AWS.Athena.Query.Status.AthenaError.ErrorMessage
       description: Contains a short description of the error that occurred.
       type: String
-    - contextPath: AWS.Athena.Statistics.EngineExecutionTimeInMillis
+    - contextPath: AWS.Athena.Query.Statistics.EngineExecutionTimeInMillis
       description: The number of milliseconds that the query took to execute.
       type: Number
-    - contextPath: AWS.Athena.Statistics.DataScannedInBytes
+    - contextPath: AWS.Athena.Query.Statistics.DataScannedInBytes
       description: The number of bytes in the data that was queried.
       type: Number
-    - contextPath: AWS.Athena.Statistics.DataManifestLocation
+    - contextPath: AWS.Athena.Query.Statistics.DataManifestLocation
       description: The location and file name of a data manifest file. The manifest file is saved to the Athena query results location in Amazon S3.
       type: String
-    - contextPath: AWS.Athena.Statistics.TotalExecutionTimeInMillis
+    - contextPath: AWS.Athena.Query.Statistics.TotalExecutionTimeInMillis
       description: The number of milliseconds that Athena took to run the query.
       type: Number
-    - contextPath: AWS.Athena.Statistics.QueryQueueTimeInMillis
+    - contextPath: AWS.Athena.Query.Statistics.QueryQueueTimeInMillis
       description: The number of milliseconds that the query was in your query queue waiting for resources.
       type: Number
-    - contextPath: AWS.Athena.Statistics.ServicePreProcessingTimeInMillis
+    - contextPath: AWS.Athena.Query.Statistics.ServicePreProcessingTimeInMillis
       description: The number of milliseconds that Athena took to preprocess the query before submitting the query to the query engine.
       type: Number
-    - contextPath: AWS.Athena.Statistics.QueryPlanningTimeInMillis
+    - contextPath: AWS.Athena.Query.Statistics.QueryPlanningTimeInMillis
       description: The number of milliseconds that Athena took to plan the query processing flow. This includes the time spent retrieving table partitions from the data source.
       type: Number
-    - contextPath: AWS.Athena.Statistics.ServiceProcessingTimeInMillis
+    - contextPath: AWS.Athena.Query.Statistics.ServiceProcessingTimeInMillis
       description: The number of milliseconds that Athena took to finalize and publish the query results after the query engine finished running the query.
       type: Number
-    - contextPath: AWS.Athena.ResultReuseInformation.ReusedPreviousResult
+    - contextPath: AWS.Athena.Query.ResultReuseInformation.ReusedPreviousResult
       description: True if a previous query result was reused; false if the result was generated from a new run of the query.
       type: Boolean
-    - contextPath: AWS.Athena.WorkGroup
+    - contextPath: AWS.Athena.Query.WorkGroup
       description: The name of the workgroup in which the query ran.
       type: String
-    - contextPath: AWS.Athena.EngineVersion.SelectedEngineVersion
+    - contextPath: AWS.Athena.Query.EngineVersion.SelectedEngineVersion
       description: The engine version requested by the user. Possible values are determined by the output of ListEngineVersions, including AUTO.
       type: String
-    - contextPath: AWS.Athena.EngineVersion.EffectiveEngineVersion
+    - contextPath: AWS.Athena.Query.EngineVersion.EffectiveEngineVersion
       description: The engine version on which the query runs.
       type: String
-    - contextPath: AWS.Athena.ExecutionParameters
+    - contextPath: AWS.Athena.Query.ExecutionParameters
       description: A list of values for the parameters in a query. The values are applied sequentially to the parameters in the query in the order in which the parameters occur. The list of parameters is not returned in the response.
       type: List
-    - contextPath: AWS.Athena.SubstatementType
+    - contextPath: AWS.Athena.Query.SubstatementType
       description: The kind of query statement that was run.
       type: String
   - name: aws-athena-get-query-results

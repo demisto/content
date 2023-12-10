@@ -77,20 +77,20 @@ Execute a new query, wait for the query to complete (using polling), and return 
 | AWS.Athena.Query.Status.AthenaError.ErrorType | Number | An integer value that provides specific information about an Athena query error. For the meaning of specific values, see the Error Type Reference in the Amazon Athena User Guide. | 
 | AWS.Athena.Query.Status.AthenaError.Retryable | Boolean | True if the query might succeed if resubmitted. | 
 | AWS.Athena.Query.Status.AthenaError.ErrorMessage | String | Contains a short description of the error that occurred. | 
-| AWS.Athena.Statistics.EngineExecutionTimeInMillis | Number | The number of milliseconds that the query took to execute. | 
-| AWS.Athena.Statistics.DataScannedInBytes | Number | The number of bytes in the data that was queried. | 
-| AWS.Athena.Statistics.DataManifestLocation | String | The location and file name of a data manifest file. The manifest file is saved to the Athena query results location in Amazon S3. | 
-| AWS.Athena.Statistics.TotalExecutionTimeInMillis | Number | The number of milliseconds that Athena took to run the query. | 
-| AWS.Athena.Statistics.QueryQueueTimeInMillis | Number | The number of milliseconds that the query was in your query queue waiting for resources. | 
-| AWS.Athena.Statistics.ServicePreProcessingTimeInMillis | Number | The number of milliseconds that Athena took to preprocess the query before submitting the query to the query engine. | 
-| AWS.Athena.Statistics.QueryPlanningTimeInMillis | Number | The number of milliseconds that Athena took to plan the query processing flow. This includes the time spent retrieving table partitions from the data source. | 
-| AWS.Athena.Statistics.ServiceProcessingTimeInMillis | Number | The number of milliseconds that Athena took to finalize and publish the query results after the query engine finished running the query. | 
-| AWS.Athena.ResultReuseInformation.ReusedPreviousResult | Boolean | True if a previous query result was reused; false if the result was generated from a new run of the query. | 
-| AWS.Athena.WorkGroup | String | The name of the workgroup in which the query ran. | 
-| AWS.Athena.EngineVersion.SelectedEngineVersion | String | The engine version requested by the user. Possible values are determined by the output of ListEngineVersions, including AUTO. | 
-| AWS.Athena.EngineVersion.EffectiveEngineVersion | String | The engine version on which the query runs. | 
-| AWS.Athena.ExecutionParameters | List | A list of values for the parameters in a query. The values are applied sequentially to the parameters in the query in the order in which the parameters occur. The list of parameters is not returned in the response. | 
-| AWS.Athena.SubstatementType | String | The kind of query statement that was run. | 
+| AWS.Athena.Query.Statistics.EngineExecutionTimeInMillis | Number | The number of milliseconds that the query took to execute. | 
+| AWS.Athena.Query.Statistics.DataScannedInBytes | Number | The number of bytes in the data that was queried. | 
+| AWS.Athena.Query.Statistics.DataManifestLocation | String | The location and file name of a data manifest file. The manifest file is saved to the Athena query results location in Amazon S3. | 
+| AWS.Athena.Query.Statistics.TotalExecutionTimeInMillis | Number | The number of milliseconds that Athena took to run the query. | 
+| AWS.Athena.Query.Statistics.QueryQueueTimeInMillis | Number | The number of milliseconds that the query was in your query queue waiting for resources. | 
+| AWS.Athena.Query.Statistics.ServicePreProcessingTimeInMillis | Number | The number of milliseconds that Athena took to preprocess the query before submitting the query to the query engine. | 
+| AWS.Athena.Query.Statistics.QueryPlanningTimeInMillis | Number | The number of milliseconds that Athena took to plan the query processing flow. This includes the time spent retrieving table partitions from the data source. | 
+| AWS.Athena.Query.Statistics.ServiceProcessingTimeInMillis | Number | The number of milliseconds that Athena took to finalize and publish the query results after the query engine finished running the query. | 
+| AWS.Athena.Query.ResultReuseInformation.ReusedPreviousResult | Boolean | True if a previous query result was reused; false if the result was generated from a new run of the query. | 
+| AWS.Athena.Query.WorkGroup | String | The name of the workgroup in which the query ran. | 
+| AWS.Athena.Query.EngineVersion.SelectedEngineVersion | String | The engine version requested by the user. Possible values are determined by the output of ListEngineVersions, including AUTO. | 
+| AWS.Athena.Query.EngineVersion.EffectiveEngineVersion | String | The engine version on which the query runs. | 
+| AWS.Athena.Query.ExecutionParameters | List | A list of values for the parameters in a query. The values are applied sequentially to the parameters in the query in the order in which the parameters occur. The list of parameters is not returned in the response. | 
+| AWS.Athena.Query.SubstatementType | String | The kind of query statement that was run. | 
 | AWS.Athena.QueryResults | List | List of query results. | 
 
 ### aws-athena-start-query
@@ -191,20 +191,20 @@ Return execution information of a query.
 | AWS.Athena.Query.Status.AthenaError.ErrorType | Number | An integer value that provides specific information about an Athena query error. For the meaning of specific values, see the Error Type Reference in the Amazon Athena User Guide. | 
 | AWS.Athena.Query.Status.AthenaError.Retryable | Boolean | True if the query might succeed if resubmitted. | 
 | AWS.Athena.Query.Status.AthenaError.ErrorMessage | String | Contains a short description of the error that occurred. | 
-| AWS.Athena.Statistics.EngineExecutionTimeInMillis | Number | The number of milliseconds that the query took to execute. | 
-| AWS.Athena.Statistics.DataScannedInBytes | Number | The number of bytes in the data that was queried. | 
-| AWS.Athena.Statistics.DataManifestLocation | String | The location and file name of a data manifest file. The manifest file is saved to the Athena query results location in Amazon S3. | 
-| AWS.Athena.Statistics.TotalExecutionTimeInMillis | Number | The number of milliseconds that Athena took to run the query. | 
-| AWS.Athena.Statistics.QueryQueueTimeInMillis | Number | The number of milliseconds that the query was in your query queue waiting for resources. | 
-| AWS.Athena.Statistics.ServicePreProcessingTimeInMillis | Number | The number of milliseconds that Athena took to preprocess the query before submitting the query to the query engine. | 
-| AWS.Athena.Statistics.QueryPlanningTimeInMillis | Number | The number of milliseconds that Athena took to plan the query processing flow. This includes the time spent retrieving table partitions from the data source. | 
-| AWS.Athena.Statistics.ServiceProcessingTimeInMillis | Number | The number of milliseconds that Athena took to finalize and publish the query results after the query engine finished running the query. | 
-| AWS.Athena.ResultReuseInformation.ReusedPreviousResult | Boolean | True if a previous query result was reused; false if the result was generated from a new run of the query. | 
-| AWS.Athena.WorkGroup | String | The name of the workgroup in which the query ran. | 
-| AWS.Athena.EngineVersion.SelectedEngineVersion | String | The engine version requested by the user. Possible values are determined by the output of ListEngineVersions, including AUTO. | 
-| AWS.Athena.EngineVersion.EffectiveEngineVersion | String | The engine version on which the query runs. | 
-| AWS.Athena.ExecutionParameters | List | A list of values for the parameters in a query. The values are applied sequentially to the parameters in the query in the order in which the parameters occur. The list of parameters is not returned in the response. | 
-| AWS.Athena.SubstatementType | String | The kind of query statement that was run. | 
+| AWS.Athena.Query.Statistics.EngineExecutionTimeInMillis | Number | The number of milliseconds that the query took to execute. | 
+| AWS.Athena.Query.Statistics.DataScannedInBytes | Number | The number of bytes in the data that was queried. | 
+| AWS.Athena.Query.Statistics.DataManifestLocation | String | The location and file name of a data manifest file. The manifest file is saved to the Athena query results location in Amazon S3. | 
+| AWS.Athena.Query.Statistics.TotalExecutionTimeInMillis | Number | The number of milliseconds that Athena took to run the query. | 
+| AWS.Athena.Query.Statistics.QueryQueueTimeInMillis | Number | The number of milliseconds that the query was in your query queue waiting for resources. | 
+| AWS.Athena.Query.Statistics.ServicePreProcessingTimeInMillis | Number | The number of milliseconds that Athena took to preprocess the query before submitting the query to the query engine. | 
+| AWS.Athena.Query.Statistics.QueryPlanningTimeInMillis | Number | The number of milliseconds that Athena took to plan the query processing flow. This includes the time spent retrieving table partitions from the data source. | 
+| AWS.Athena.Query.Statistics.ServiceProcessingTimeInMillis | Number | The number of milliseconds that Athena took to finalize and publish the query results after the query engine finished running the query. | 
+| AWS.Athena.Query.ResultReuseInformation.ReusedPreviousResult | Boolean | True if a previous query result was reused; false if the result was generated from a new run of the query. | 
+| AWS.Athena.Query.WorkGroup | String | The name of the workgroup in which the query ran. | 
+| AWS.Athena.Query.EngineVersion.SelectedEngineVersion | String | The engine version requested by the user. Possible values are determined by the output of ListEngineVersions, including AUTO. | 
+| AWS.Athena.Query.EngineVersion.EffectiveEngineVersion | String | The engine version on which the query runs. | 
+| AWS.Athena.Query.ExecutionParameters | List | A list of values for the parameters in a query. The values are applied sequentially to the parameters in the query in the order in which the parameters occur. The list of parameters is not returned in the response. | 
+| AWS.Athena.Query.SubstatementType | String | The kind of query statement that was run. | 
 
 ### aws-athena-get-query-results
 
