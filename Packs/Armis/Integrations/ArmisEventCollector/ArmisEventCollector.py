@@ -347,13 +347,26 @@ def fetch_by_event_type(client: Client, event_type: EVENT_TYPE, events: dict, ma
 
 
 def fetch_events_for_specific_alert_ids(client: Client, alert, aql_alert_id):
-    demisto.debug(f'debug-log: Fetching Activities and Devices for specific alert IDs. {aql_alert_id}')
+    """Fetches Activities and Devices for specific Armis alert IDs.
+
+    Args:
+        client (Client): The Armis API client.
+        alert (dict): The alert dict.
+        aql_alert_id (str): The AQL alert ID to fetch events for.
+
+    Returns:
+        None: Alert dict is updated in-place with activitiesData and devicesData.
+
+    """
+    demisto.debug(f'debug-log: Fetching Activities and Devices for specific alert IDs: {aql_alert_id}')
     activities_aql_query = f'{EVENT_TYPES["Activities"].aql_query}  {aql_alert_id}'
     devices_aql_query = f'{EVENT_TYPES["Devices"].aql_query}  {aql_alert_id}'
     activities_response = client.fetch_by_ids_in_aql_query(aql_query=activities_aql_query,
                                                            order_by=EVENT_TYPES["Activities"].order_by)
     devices_response = client.fetch_by_ids_in_aql_query(aql_query=devices_aql_query,
                                                         order_by=EVENT_TYPES["Devices"].order_by)
+    demisto.debug(f'debug-log: fetch by alert ids\
+fetched {len(activities_response)} Activities and {len(devices_response)} Devices')
     alert['activitiesData'] = activities_response if activities_response else {}
     alert['devicesData'] = devices_response if devices_response else {}
 
@@ -382,6 +395,7 @@ def fetch_events(client: Client,
     next_run: dict[str, list | str] = {}
     if 'Devices' in event_types_to_fetch\
             and not should_run_device_fetch(last_run, device_fetch_interval, datetime.now()):
+        demisto.debug('debug-log: skipping Devices fetch as it is not yet reached the device interval.')
         event_types_to_fetch.remove('Devices')
 
     if 'Alerts' in event_types_to_fetch:
