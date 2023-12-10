@@ -30,7 +30,7 @@ The content update flow can be triggered in one of the following ways.
 - MarketplacePackInstaller
 
 ### Commands
-- demisto-api-get
+- core-api-get
 - Set
 - setIncident
 - closeInvestigation

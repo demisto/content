@@ -12,7 +12,7 @@ Use this Script to re-run failed tasks. Run in the same incident after running `
 ## Dependencies
 ---
 This script uses the following commands and scripts.
-* demisto-api-post
+* core-api-post
 
 ## Inputs
 ---

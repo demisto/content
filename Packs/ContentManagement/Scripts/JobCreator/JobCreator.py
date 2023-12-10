@@ -28,7 +28,7 @@ def configure_job(job_name: str, existing_job: Optional[Dict[str, Any]] = None, 
         args['using'] = instance_name
 
     status, res = execute_command(
-        'demisto-api-post',
+        'core-api-post',
         args,
         fail_on_error=False,
     )
@@ -63,7 +63,7 @@ def search_existing_job(job_name: str, instance_name: str = None) -> Dict[str, A
         args['using'] = instance_name
 
     status, res = execute_command(
-        'demisto-api-post',
+        'core-api-post',
         args,
         fail_on_error=False,
     )

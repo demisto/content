@@ -60,7 +60,7 @@ This playbook does not use any integrations.
 * HealthCheckUnpack
 
 ### Commands
-* demisto-api-download
+* core-api-download
 
 ## Playbook Inputs
 ---

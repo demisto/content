@@ -94,7 +94,7 @@ def get_incident_tasks_using_rest_api_instance(incident: dict, rest_api_instance
     uri = f'investigation/{str(incident["id"])}/workplan/tasks'
 
     response = demisto.executeCommand(
-        "demisto-api-post",
+        "core-api-post",
         {
             "uri": uri,
             "body": {

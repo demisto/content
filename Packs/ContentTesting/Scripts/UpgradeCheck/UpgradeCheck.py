@@ -55,7 +55,7 @@ def CheckUpdates(packs, types, playbook, layout):
 
 
 def GetUpgradedPacks():
-    response = demisto.executeCommand("demisto-api-get", {
+    response = demisto.executeCommand("core-api-get", {
         'uri': "/contentpacks/installed-expired",
         'body': ""
     })[0]['Contents']['response']
@@ -104,7 +104,7 @@ def FilterPacks(packs, upgradePacks, changesPacks):
 
 
 def GetUpgradedIntegrations(packs):
-    response = demisto.executeCommand("demisto-api-post", {
+    response = demisto.executeCommand("core-api-post", {
         'uri': "/settings/integration/search",
         "body": {}
     })[0]['Contents']['response']
@@ -145,7 +145,7 @@ def GetUpgradedIntegrations(packs):
 
 
 def GetCustomPlaybooks():
-    response = demisto.executeCommand("demisto-api-post", {
+    response = demisto.executeCommand("core-api-post", {
         'uri': "/playbook/search",
         "body": {'query': "system:F AND hidden:F AND deprecated:F"}
     })[0]['Contents']['response']['playbooks']
@@ -223,7 +223,7 @@ def GetUpgradedScripts(packs, scripts):
     upgscripts = []
 
     for p in packs:
-        response = demisto.executeCommand("demisto-api-get", {
+        response = demisto.executeCommand("core-api-get", {
             "uri": f"/contentpacks/marketplace/{p}",
             "body": ""
         }
@@ -240,7 +240,7 @@ def GetUpgradedScripts(packs, scripts):
 
 
 def GetUpgradedIncidentTypes(packs):
-    response = demisto.executeCommand("demisto-api-get", {
+    response = demisto.executeCommand("core-api-get", {
         'uri': "/incidenttype",
         'body': ""
     }

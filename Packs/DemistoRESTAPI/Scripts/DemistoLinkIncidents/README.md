@@ -12,7 +12,7 @@ Links two or more incidents.
 ## Dependencies
 ---
 This script uses the following commands and scripts.
-* demisto-api-post
+* core-api-post
 
 ## Inputs
 ---

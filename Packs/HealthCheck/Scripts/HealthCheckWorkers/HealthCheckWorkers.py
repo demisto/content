@@ -66,7 +66,7 @@ def main(args):
 
     is_widget = argToBoolean(args.get('isWidget', True))
     if is_widget is True:
-        workers = demisto.executeCommand("demisto-api-get", {"uri": f"{account_name}workers/status"})[0]['Contents']
+        workers = demisto.executeCommand("core-api-get", {"uri": f"{account_name}workers/status"})[0]['Contents']
 
         if not workers['response']['ProcessInfo']:
             table = [{'Details': '-', 'Duration': '-', 'StartedAt': '-'}]
@@ -87,7 +87,7 @@ def main(args):
 
         return dmst_entry
     else:
-        workers = demisto.executeCommand("demisto-api-get", {"uri": f"{account_name}workers/status"})[0]['Contents']
+        workers = demisto.executeCommand("core-api-get", {"uri": f"{account_name}workers/status"})[0]['Contents']
         demisto.executeCommand("setIncident", {
             'healthcheckworkerstotal': workers['response']['Total'],
             'healthcheckworkersbusy': workers['response']['Busy']

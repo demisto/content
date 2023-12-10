@@ -555,7 +555,7 @@ def post_api_request(url, body):
         "uri": url,
         "body": body
     }
-    raw_res = demisto.executeCommand("demisto-api-post", api_args)
+    raw_res = demisto.executeCommand("core-api-post", api_args)
     try:
         res = raw_res[0]['Contents']['response']
         return res
@@ -577,7 +577,7 @@ def get_api_request(url):
     api_args = {
         "uri": url
     }
-    raw_res = demisto.executeCommand("demisto-api-get", api_args)
+    raw_res = demisto.executeCommand("core-api-get", api_args)
 
     try:
         res = raw_res[0]['Contents']['response']

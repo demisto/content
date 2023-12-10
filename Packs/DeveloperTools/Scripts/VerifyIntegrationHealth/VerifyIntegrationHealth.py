@@ -17,7 +17,7 @@ def health_check_command(args: Dict[str, Any]) -> CommandResults:
     integration_name = args.get('integration_name', '')
 
     raw_result = demisto.executeCommand(
-        "demisto-api-post",
+        "core-api-post",
         {
             "uri": "/settings/integration/search",
             "body": {

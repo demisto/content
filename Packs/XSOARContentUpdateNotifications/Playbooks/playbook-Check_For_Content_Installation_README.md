@@ -14,7 +14,7 @@ This playbook does not use any integrations.
 * Set
 
 ### Commands
-* demisto-api-get
+* core-api-get
 
 ## Playbook Inputs
 ---

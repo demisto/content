@@ -61,7 +61,7 @@ function getStates(states) {
 
 var states = getStates(args.states || '');
 var inc_id = args.inc_id;
-var res = executeCommand('demisto-api-get', {'uri': '/investigation/' + inc_id + '/workplan'});
+var res = executeCommand('core-api-get', {'uri': '/investigation/' + inc_id + '/workplan'});
 if (isError(res[0])) {
     return res;
 }

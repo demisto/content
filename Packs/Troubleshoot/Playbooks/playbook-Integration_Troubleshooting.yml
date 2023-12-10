@@ -1186,7 +1186,7 @@ tasks:
       version: -1
       name: Get server logs
       description: Download files from the Cortex XSOAR server.
-      script: '|||demisto-api-download'
+      script: '|||core-api-download'
       type: regular
       iscommand: true
       brand: ""
@@ -1220,7 +1220,7 @@ tasks:
       version: -1
       name: Get advanced parameters
       description: Send HTTP GET requests.
-      script: '|||demisto-api-get'
+      script: '|||core-api-get'
       type: regular
       iscommand: true
       brand: ""

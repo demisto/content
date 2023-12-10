@@ -61,7 +61,7 @@ accountName = f"acc_{accountName}/" if accountName != "" else ""
 args = demisto.args()
 isWidget = argToBoolean(args.get('isWidget', True))
 stats = demisto.executeCommand(
-    "demisto-api-post",
+    "core-api-post",
     {
         "uri": f"{accountName}/statistics/widgets/query",
         "body": {

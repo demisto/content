@@ -11,7 +11,7 @@ Uses the Demisto REST API integration to query the server audit trail logs, and 
 ## Dependencies
 ---
 This script uses the following commands and scripts.
-* demisto-api-post
+* core-api-post
 
 ## Inputs
 ---

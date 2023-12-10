@@ -42,5 +42,5 @@ tests:
 - No tests (auto formatted)
 dependson:
   must:
-  - demisto-api-post
+  - core-api-post
 fromversion: 6.0.0

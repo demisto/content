@@ -358,7 +358,7 @@ tasks:
       version: -1
       name: Get File Comment (File With Comment)
       description: send HTTP GET requests
-      script: '|||demisto-api-get'
+      script: '|||core-api-get'
       type: regular
       iscommand: true
       brand: ""
@@ -415,7 +415,7 @@ tasks:
       version: -1
       name: Get File Comment (File Without Comment)
       description: send HTTP GET requests
-      script: '|||demisto-api-get'
+      script: '|||core-api-get'
       type: regular
       iscommand: true
       brand: ""

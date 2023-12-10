@@ -16,7 +16,7 @@ import ast
 
 
 def GetAutomation(scriptid: str):
-    results = demisto.executeCommand("demisto-api-post", {
+    results = demisto.executeCommand("core-api-post", {
         "uri": f"/automation/load/{scriptid}"
     })
     if is_error(results):
@@ -29,7 +29,7 @@ def GetAutomationName(scriptid: str) -> str:
     octets = scriptid.split('-')
     if len(octets) == 5:
         if len(octets[0]) == 8 and len(octets[1]) == 4 and len(octets[2]) == 4 and len(octets[3]) == 4 and len(octets[4]) == 12:
-            results = demisto.executeCommand("demisto-api-post", {
+            results = demisto.executeCommand("core-api-post", {
                 "uri": f"/automation/load/{scriptid}"
             })
             if is_error(results):
@@ -102,7 +102,7 @@ def CalledAutomation(scrname: str, script: str) -> list:
 def GetPlaybooks(query: str) -> list:
     if query != "":
         query = " AND " + query
-    playbooks = demisto.executeCommand("demisto-api-post", {
+    playbooks = demisto.executeCommand("core-api-post", {
         "uri": "/playbook/search",
         "body": {"query": f"hidden:F AND deprecated:F {query}"}
     })[0]['Contents']['response']['playbooks']

@@ -11,7 +11,7 @@ Returns a dict of all incident fields that exist in the system.
 ## Dependencies
 ---
 This script uses the following commands and scripts.
-* demisto-api-get
+* core-api-get
 
 ## Inputs
 ---

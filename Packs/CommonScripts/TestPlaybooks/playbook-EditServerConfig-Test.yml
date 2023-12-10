@@ -80,7 +80,7 @@ tasks:
       version: -1
       name: Get server config
       description: send HTTP GET requests
-      script: '|||demisto-api-get'
+      script: '|||core-api-get'
       type: regular
       iscommand: true
       brand: ""
@@ -220,7 +220,7 @@ tasks:
       version: -1
       name: Get server config
       description: send HTTP GET requests
-      script: '|||demisto-api-get'
+      script: '|||core-api-get'
       type: regular
       iscommand: true
       brand: ""
@@ -332,7 +332,7 @@ tasks:
       version: -1
       name: Get server config
       description: send HTTP GET requests
-      script: '|||demisto-api-get'
+      script: '|||core-api-get'
       type: regular
       iscommand: true
       brand: ""

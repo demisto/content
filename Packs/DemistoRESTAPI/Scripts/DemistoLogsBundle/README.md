@@ -12,7 +12,7 @@ Gets the Cortex XSOAR Log Bundle to the War Room.
 ## Dependencies
 ---
 This script uses the following commands and scripts.
-* demisto-api-download
+* core-api-download
 
 ## Inputs
 ---

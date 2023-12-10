@@ -12,7 +12,7 @@ commonfields:
   version: -1
 dependson:
   must:
-  - '|||demisto-api-get'
+  - '|||core-api-get'
 dockerimage: demisto/python3:3.10.12.63474
 enabled: true
 name: ListInstalledContentPacks

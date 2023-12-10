@@ -666,7 +666,7 @@ tasks:
       version: -1
       name: Get Incident Fields to search
       description: send HTTP GET requests
-      script: '|||demisto-api-get'
+      script: '|||core-api-get'
       type: regular
       iscommand: true
       brand: ""

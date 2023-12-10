@@ -21,7 +21,7 @@ args:
 scripttarget: 0
 dependson:
   must:
-  - demisto-api-multipart
+  - core-api-multipart
 runas: DBotWeakRole
 tests:
 - DemistoUploadFileToIncident Test

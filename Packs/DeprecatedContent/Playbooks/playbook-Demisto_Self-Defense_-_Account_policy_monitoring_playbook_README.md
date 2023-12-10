@@ -19,7 +19,7 @@ This playbook does not use any sub-playbooks.
 * slack-send
 * TwilioSendSMS
 * setIncident
-* demisto-api-get
+* core-api-get
 
 ## Playbook Inputs
 ---

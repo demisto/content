@@ -12,7 +12,7 @@ Creates a new list.
 ## Dependencies
 ---
 This script uses the following commands and scripts.
-* demisto-api-post
+* core-api-post
 
 ## Inputs
 ---

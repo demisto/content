@@ -12,8 +12,8 @@ Finds which integrations implement a specific Demisto command.  The results will
 ## Dependencies
 ---
 This script uses the following commands and scripts.
-* demisto-api-post
-* demisto-api-get
+* core-api-post
+* core-api-get
 
 ## Inputs
 ---

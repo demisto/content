@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 
 
 def GetTasks(incid: str, playbookname: str) -> dict:
-    response = execute_command("demisto-api-get", {
+    response = execute_command("core-api-get", {
         "uri": f"/inv-playbook/{incid}"})
 
     tasks = {}
@@ -41,7 +41,7 @@ def TaskCoverageMarkdown(tasks: Dict) -> str:
 
 
 def GetAutomationName(scriptid) -> str:
-    results = demisto.executeCommand("demisto-api-post", {
+    results = demisto.executeCommand("core-api-post", {
         "uri": f"/automation/load/{scriptid}"
     })[0]
     if "response" not in results.keys():

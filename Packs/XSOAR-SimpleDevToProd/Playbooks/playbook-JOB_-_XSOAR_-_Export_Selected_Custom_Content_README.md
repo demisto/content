@@ -24,7 +24,7 @@ This playbook does not use any sub-playbooks.
 ### Commands
 
 * setIncident
-* demisto-api-download
+* core-api-download
 * closeInvestigation
 
 ## Playbook Inputs

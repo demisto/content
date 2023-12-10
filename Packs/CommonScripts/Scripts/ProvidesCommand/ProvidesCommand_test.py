@@ -3,9 +3,9 @@ import json
 
 
 def executeCommand(name, args=None):
-    if name == 'demisto-api-get' and args and 'uri' in args and args['uri'] == "/settings/integration-commands":
+    if name == 'core-api-get' and args and 'uri' in args and args['uri'] == "/settings/integration-commands":
         file_name = 'TestData/integration_commands.json'
-    elif name == 'demisto-api-post' and args and 'uri' in args and args['uri'] == "/settings/integration/search":
+    elif name == 'core-api-post' and args and 'uri' in args and args['uri'] == "/settings/integration/search":
         file_name = 'TestData/integration_search.json'
     else:
         raise ValueError('Unimplemented command called: {}'.format(name))

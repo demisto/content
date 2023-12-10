@@ -4,7 +4,7 @@ from CommonServerPython import *
 
 
 def get_configurations_from_xsoar() -> dict:
-    res = demisto.executeCommand('demisto-api-post', {
+    res = demisto.executeCommand('core-api-post', {
         'uri': 'settings/integration/search',
         'body': """{"size": 500}"""
     })

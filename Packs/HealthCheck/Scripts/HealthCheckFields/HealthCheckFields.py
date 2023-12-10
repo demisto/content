@@ -25,7 +25,7 @@ incident = demisto.incidents()[0]
 account_name = incident.get('account')
 account_name = f'acc_{account_name}/' if account_name != "" else ""
 
-res = demisto.executeCommand('demisto-api-get', {'uri': f'{account_name}incidentfields'})
+res = demisto.executeCommand('core-api-get', {'uri': f'{account_name}incidentfields'})
 
 if is_error(res):
     return_error(res[0]['Contents'])

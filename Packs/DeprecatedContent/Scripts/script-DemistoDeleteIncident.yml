@@ -10,7 +10,7 @@ script: >-
   };
 
 
-  var res = executeCommand('demisto-api-post', {uri: '/incident/batchDelete', body: body});
+  var res = executeCommand('core-api-post', {uri: '/incident/batchDelete', body: body});
 
   if (isError(res[0])) {
       throw res[0].Contents;
@@ -41,6 +41,6 @@ args:
 scripttarget: 0
 dependson:
   must:
-  - demisto-api-post
+  - core-api-post
 deprecated: true
 fromversion: 5.0.0

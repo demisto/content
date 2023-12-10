@@ -26,7 +26,7 @@ args:
 scripttarget: 0
 dependson:
   must:
-  - demisto-api-post
+  - core-api-post
 fromversion: 5.0.0
 marketplaces:
 - xsoar

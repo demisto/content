@@ -5,14 +5,14 @@ import uuid
 
 
 def GetAutomationId(name):
-    autoId = demisto.executeCommand("demisto-api-post", {
+    autoId = demisto.executeCommand("core-api-post", {
         'uri': f"/automation/load/{name}"
     })[0]['Contents']['response']['id']
     return autoId
 
 
 def GetPlaybookId(name):
-    playbook = demisto.executeCommand("demisto-api-post", {
+    playbook = demisto.executeCommand("core-api-post", {
         'uri': "/playbook/search",
         "body": {"query": "name:" + f'"{name}"'}
     })[0]['Contents']['response']['playbooks']
@@ -56,7 +56,7 @@ def RunUTResults(args):
         # Add the task to display unit test results
         attempts = 0
         while attempts < 5:
-            results = demisto.executeCommand("demisto-api-post", {
+            results = demisto.executeCommand("core-api-post", {
                 'uri': f"/inv-playbook/task/add/{incid}",
                 'body': task
             })[0]['Contents']
@@ -85,7 +85,7 @@ def RunUTResults(args):
         contents = demisto.executeCommand("demisto-lock-get", {'name': gridfld, 'timeout': 60})[0]['Contents']
         if "Lock acquired successfully" in contents:
             while attempts < 5:
-                start_response = demisto.executeCommand("demisto-api-post", {
+                start_response = demisto.executeCommand("core-api-post", {
                     'uri': "/inv-playbook/task/execute",
                     'body': {
                         'taskinfo': {
@@ -130,7 +130,7 @@ def RunAdhocPlaybook(playbookname, taskname, addafter, incid):
             'version': -1
         }
         # Add the playbook as a task
-        tasks = demisto.executeCommand("demisto-api-post", {
+        tasks = demisto.executeCommand("core-api-post", {
             'uri': f"/inv-playbook/task/add/{incid}",
             'body': task
         })[0]['Contents']['response']['tasks']
@@ -139,7 +139,7 @@ def RunAdhocPlaybook(playbookname, taskname, addafter, incid):
         for key, task in tasks.items():
             if "name" in task['task']:
                 if task['task']['name'] == taskname:
-                    demisto.executeCommand("demisto-api-post", {
+                    demisto.executeCommand("core-api-post", {
                         'uri': "/inv-playbook/task/execute",
                         'body': {
                             'taskinfo': {

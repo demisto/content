@@ -32,8 +32,8 @@ dockerimage: demisto/python3:3.10.12.63474
 fromversion: 5.0.0
 dependson:
   must:
-  - demisto-api-put
-  - demisto-api-post
+  - core-api-put
+  - core-api-post
 tests:
 - No tests (auto formatted)
 

@@ -114,7 +114,7 @@ tasks:
       version: -1
       name: Get Indicator Field to search
       description: send HTTP GET requests
-      script: '|||demisto-api-get'
+      script: '|||core-api-get'
       type: regular
       iscommand: true
       brand: ""

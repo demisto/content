@@ -8,7 +8,7 @@ from test_data.constants import INCIDENTS_RESULT, RESTAPI_TAS_RESULT, INTERNAL_T
 def mock_execute_command(command_name, _):
     if command_name == 'getIncidents':
         return INCIDENTS_RESULT
-    elif command_name == 'demisto-api-post':
+    elif command_name == 'core-api-post':
         return RESTAPI_TAS_RESULT
 
 

@@ -6,7 +6,7 @@ from typing import Dict
 
 
 def GetAutomationName(id):
-    results = demisto.executeCommand("demisto-api-post", {
+    results = demisto.executeCommand("core-api-post", {
         "uri": f"/automation/load/{id}"
     })[0]['Contents']
     if 'response' in results:
@@ -16,7 +16,7 @@ def GetAutomationName(id):
 
 
 def GetPlaybooks():
-    response = demisto.executeCommand("demisto-api-post", {
+    response = demisto.executeCommand("core-api-post", {
         "uri": "/playbook/search",
         "body": {"query": "hidden:F AND deprecated:F"}
     })[0]['Contents']['response']['playbooks']

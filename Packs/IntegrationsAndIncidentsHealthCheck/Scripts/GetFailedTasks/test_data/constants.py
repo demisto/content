@@ -390,7 +390,7 @@ RESTAPI_TAS_RESULT = [
             "parentId": "158@51",
             "pinned": False,
             "fileMetadata": None,
-            "parentContent": "!demisto-api-post uri=\"investigation/7/workplan/tasks\" body=\"{\\\"states\\\":[\\\"Error\\\"],\\\"types\\\":[\\\"regular\\\",\\\"condition\\\",\\\"collection\\\"]}\"",
+            "parentContent": "!core-api-post uri=\"investigation/7/workplan/tasks\" body=\"{\\\"states\\\":[\\\"Error\\\"],\\\"types\\\":[\\\"regular\\\",\\\"condition\\\",\\\"collection\\\"]}\"",
             "parentEntryTruncated": False,
             "system": "",
             "reputations": None,

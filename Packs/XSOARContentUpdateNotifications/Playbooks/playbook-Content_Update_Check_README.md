@@ -18,7 +18,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * send-notification
 * setIncident
 * send-mail
-* demisto-api-get
+* core-api-get
 
 ## Playbook Inputs
 ---

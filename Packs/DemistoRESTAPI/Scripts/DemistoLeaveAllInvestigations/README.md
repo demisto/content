@@ -11,7 +11,7 @@ Leaves all investigations that the user is part of (clears out the incidents in 
 ## Dependencies
 ---
 This script uses the following commands and scripts.
-* demisto-api-post
+* core-api-post
 
 ## Inputs
 ---

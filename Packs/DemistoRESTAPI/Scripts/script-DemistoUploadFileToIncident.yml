@@ -13,7 +13,7 @@ script: >-
   body = args.get('body', None)
 
 
-  response = demisto.executeCommand("demisto-api-multipart", {"uri":"incident/upload/{}".format(incident_id),"entryID":entry_id,"body":body})[0]
+  response = demisto.executeCommand("core-api-multipart", {"uri":"incident/upload/{}".format(incident_id),"entryID":entry_id,"body":body})[0]
 
   if isError(response):
       demisto.results({ "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : "There was an issue uploading file.  Check API key and input arguments."})
@@ -39,7 +39,7 @@ args:
 scripttarget: 0
 dependson:
   must:
-  - demisto-api-multipart
+  - core-api-multipart
 runas: DBotWeakRole
 fromversion: 5.0.0
 dockerimage: demisto/python:2.7.18.24066

@@ -12,8 +12,8 @@ Sends an invitation to join Cortex XSOAR.
 ## Dependencies
 ---
 This script uses the following commands and scripts.
-* demisto-api-post
-* demisto-api-get
+* core-api-post
+* core-api-get
 
 ## Inputs
 ---

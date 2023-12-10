@@ -37,7 +37,7 @@ tasks:
       version: -1
       name: List Demisto users
       description: List all Demisto users via Demisto REST API integration
-      script: Demisto REST API|||demisto-api-get
+      script: Demisto REST API|||core-api-get
       type: regular
       iscommand: true
       brand: Demisto REST API

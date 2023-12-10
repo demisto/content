@@ -20,7 +20,7 @@ vcuris = [
 def main():
     try:
         # Get the local, uncommitted changed objects
-        changes = demisto.executeCommand("demisto-api-get", {
+        changes = demisto.executeCommand("core-api-get", {
             'uri': "/vc/changes/uncommitted"
         })[0]['Contents']['response']
 
@@ -41,7 +41,7 @@ def main():
         # Get all the commit histories
         commits = []
         for uri in vcuris:
-            commits.append(demisto.executeCommand("demisto-api-get", {
+            commits.append(demisto.executeCommand("core-api-get", {
                 "uri": uri
             })[0]['Contents']['response']['commits'])
 

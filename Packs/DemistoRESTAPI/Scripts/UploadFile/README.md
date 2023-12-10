@@ -12,7 +12,7 @@ Copies a file from this incident to the specified incident. The file is recorded
 ## Dependencies
 ---
 This script uses the following commands and scripts.
-* demisto-api-multipart
+* core-api-multipart
 
 ## Inputs
 ---

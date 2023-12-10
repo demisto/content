@@ -11,7 +11,7 @@ This script will show all installed content packs and whether they have an updat
 ## Dependencies
 ---
 This script uses the following commands and scripts.
-* demisto-api-get
+* core-api-get
 
 ## Inputs
 ---

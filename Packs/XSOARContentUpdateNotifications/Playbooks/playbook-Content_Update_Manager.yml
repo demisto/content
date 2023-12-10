@@ -47,7 +47,7 @@ tasks:
       version: -1
       name: Check for updates
       description: Sends an HTTP GET request to check for updates.
-      script: '|||demisto-api-get'
+      script: '|||core-api-get'
       type: regular
       iscommand: true
       brand: ""

@@ -11,8 +11,8 @@ This automation uses the Demisto REST API Integration to batch export Indicators
 ## Dependencies
 ---
 This script uses the following commands and scripts.
-* demisto-api-get
-* demisto-api-post
+* core-api-get
+* core-api-post
 
 ## Inputs
 ---

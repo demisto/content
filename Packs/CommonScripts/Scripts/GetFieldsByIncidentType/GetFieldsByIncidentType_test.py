@@ -3,7 +3,7 @@ import json
 
 
 def executeCommand(name, args=None):
-    if name == 'demisto-api-get' and args and 'uri' in args and args['uri'] == "/incidentfields":
+    if name == 'core-api-get' and args and 'uri' in args and args['uri'] == "/incidentfields":
         file_name = 'TestData/integration_incidentfields.json'
     else:
         raise ValueError('Unimplemented command called: {}'.format(name))

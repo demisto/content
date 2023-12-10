@@ -37,7 +37,7 @@ timeout: '0'
 type: python
 dependson:
   must:
-  - demisto-api-multipart
+  - core-api-multipart
 tests:
 - No tests (auto formatted)
 deprecated: true

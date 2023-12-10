@@ -8,14 +8,14 @@ SERVER_SYSTEM_CONFIG_PATH = '/system/config'
 
 
 def get_current_server_config() -> dict:
-    res = execute_command("demisto-api-get", {"uri": SERVER_SYSTEM_CONFIG_PATH})
+    res = execute_command("core-api-get", {"uri": SERVER_SYSTEM_CONFIG_PATH})
     config_json = res['response']
     return config_json.get('sysConf', {})
 
 
 def set_system_config(server_config: dict):
     execute_command(
-        "demisto-api-post",
+        "core-api-post",
         {
             "uri": SERVER_SYSTEM_CONFIG_PATH,
             "body": {"data": server_config,

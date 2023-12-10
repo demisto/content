@@ -114,7 +114,7 @@ tasks:
       id: 855437f4-5e4f-45b6-8430-9aa92004787d
       iscommand: true
       name: Check for updates
-      script: '|||demisto-api-get'
+      script: '|||core-api-get'
       type: regular
       version: -1
     taskid: 855437f4-5e4f-45b6-8430-9aa92004787d

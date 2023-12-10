@@ -366,7 +366,7 @@ def get_entry_id_list(incident_id, attachments, new_email_attachments, files):
         for attachment in attachment_list:
             attachment_name = attachment.get('name', '')
             file_data = create_file_data_json(attachment, field_name)
-            demisto.executeCommand("demisto-api-post", {"uri": f"/incident/remove/{incident_id}", "body": file_data})
+            demisto.executeCommand("core-api-post", {"uri": f"/incident/remove/{incident_id}", "body": file_data})
             if not isinstance(files, list):
                 files = [files]
             for file in files:
@@ -439,7 +439,7 @@ def get_reply_body(notes, incident_id, attachments, reputation_calc_async=False)
         entry_tags_res = demisto.executeCommand(
             "addEntries", {"entries": entry_note, 'id': incident_id, 'reputationCalcAsync': reputation_calc_async})
 
-        entry_note_res = demisto.executeCommand("demisto-api-post", {"uri": "/entry/note", "body": json.dumps(
+        entry_note_res = demisto.executeCommand("core-api-post", {"uri": "/entry/note", "body": json.dumps(
             {"id": note.get('ID'), "version": -1, "investigationId": incident_id, "data": "false"})})
         if is_error(entry_note_res):
             return_error(get_error(entry_note_res))

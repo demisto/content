@@ -41,7 +41,7 @@ def GetSubpbTasks(subplaybook, t, tasks):
 
 
 def GetTasks(incid: str, subplaybook: str) -> list:
-    resp = execute_command("demisto-api-get", {
+    resp = execute_command("core-api-get", {
         "uri": f"/inv-playbook/{incid}"})
     tasks: list = []
 

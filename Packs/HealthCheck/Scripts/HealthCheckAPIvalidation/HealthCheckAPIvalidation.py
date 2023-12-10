@@ -27,7 +27,7 @@ def isAdminAPIInstance():
     accountName = f"acc_{accountName}" if accountName != "" else ""
 
     res = demisto.executeCommand(
-        "demisto-api-post",
+        "core-api-post",
         {
             "uri": f"{accountName}/user/preferences",
             "body": {

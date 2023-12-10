@@ -24,7 +24,7 @@ contentitemexportablefields:
     fromServerVersion: ""
 dependson:
   must:
-  - demisto-api-post
+  - core-api-post
 dockerimage: demisto/python3:3.10.13.74666
 enabled: true
 name: ExportAuditLogsToFile
