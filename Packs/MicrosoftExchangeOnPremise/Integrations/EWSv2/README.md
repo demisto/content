@@ -2,7 +2,9 @@ Exchange Web Services (EWS) provides the functionality to enable client applicat
 
 The EWS v2 integration implants EWS leading services. The integration allows getting information on emails and activities in a target mailbox, and some active operations on the mailbox such as deleting emails and attachments or moving emails from folder to folder.
 
-**Note:**
+**Note:** Starting from pack version 2.0.0 the EWS v2 integration requires the Exchange server to support TLS v1.2 and up in order to connect.
+
+**Multi-Factor Authentication (MFA)**
 EWS v2 does not support Multi-Factor Authentication (MFA).
 
 If using MFA, use EWS O365 (see https://xsoar.pan.dev/docs/reference/integrations/ewso365) 
