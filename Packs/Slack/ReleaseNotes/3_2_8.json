@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "SlackBlockBuilder no longer relies on the XSOAR API in order to update an incident's context. As such, playbooks which currently use the SlackBlockBuilder script should be modified as described in the documentation."
+}
