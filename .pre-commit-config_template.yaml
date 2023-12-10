@@ -69,13 +69,15 @@ repos:
     docker_image:ci: native:ga,from-yml,native:dev,native:maintenance
     docker_image:native: native:ga,from-yml,native:dev,native:maintenance
     docker_image: from-yml
-    entry: coverage
+    entry: python
     files: Packs\/.*_test\.py$
     exclude: test_data
     env:
       # the data-file argument is not supported in coverage-py 5.5 which is the LTS on python2
       COVERAGE_FILE: /src/.pre-commit/coverage/.coverage
     args: 
+     - /src/Tests/scripts/script_runner.py
+     - coverage
      - run
      - --parallel
      - -m
@@ -83,7 +85,7 @@ repos:
      - -v
      - --rootdir=/src
      - --junitxml=/src/.pre-commit/pytest-junit/.report_pytest.xml
-    split_by_obj: true
+     - --files
     
   - id: is-circle-changed
     name: is-circle-changed
