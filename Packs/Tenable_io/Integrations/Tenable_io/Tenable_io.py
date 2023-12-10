@@ -1810,7 +1810,7 @@ def fetch_assets_command(client: Client, assets_last_run):
             assets_last_run.update({'nextTrigger': '30', "type": 1})
 
     demisto.info(f'Done fetching {len(assets)} assets, {assets_last_run=}.')
-    return assets, assets_last_run
+    return assets
 
 
 def run_assets_fetch(client, last_run):
@@ -1839,6 +1839,8 @@ def fetch_vulnerabilities(client: Client, last_run: dict, severity: List[str]):
     if export_uuid:
         demisto.info(f'Got export uuid from API {export_uuid}')
         vulnerabilities, status = try_get_chunks(client=client, export_uuid=export_uuid)
+        if status in ['PROCESSING', 'QUEUED']:
+            last_run.update({'nextTrigger': '30', "type": 1})
         # set params for next run
         if status == 'FINISHED':
             last_run.pop('vuln_export_uuid')
@@ -1849,7 +1851,7 @@ def fetch_vulnerabilities(client: Client, last_run: dict, severity: List[str]):
             last_run.update({'vuln_export_uuid': export_uuid})
 
     demisto.info(f'Done fetching {len(vulnerabilities)} vulnerabilities, {last_run=}.')
-    return vulnerabilities, last_run
+    return vulnerabilities
 
 
 def run_vulnerabilities_fetch(client, last_run, severity):
@@ -2086,20 +2088,23 @@ def main():  # pragma: no cover
             demisto.setLastRun(new_last_run)
 
         elif command == 'fetch-assets':
-
+            assets = []
+            vulnerabilities = []
             assets_last_run = demisto.getAssetsLastRun()
             demisto.debug(f"saved lastrun assets: {assets_last_run}")
-
-            # Fetch Assets
-            assets, new_assets_last_run = run_assets_fetch(client, assets_last_run)
+            assets_last_run_copy = assets_last_run.copy()
+            # Fetch Assets (no nextTrigger -> new fetch, or assets_export_uuid -> continue prev fetch)
+            if assets_last_run_copy.get('assets_export_uuid') or not assets_last_run_copy.get('nextTrigger'):
+                assets = run_assets_fetch(client, assets_last_run)
 
             # Fetch Vulnerabilities
-            vulnerabilities, new_assets_last_run = run_vulnerabilities_fetch(client, last_run=assets_last_run, severity=severity)
+            if assets_last_run_copy.get('vuln_export_uuid') or not assets_last_run_copy.get('nextTrigger'):
+                vulnerabilities = run_vulnerabilities_fetch(client, last_run=assets_last_run, severity=severity)
 
             call_send_data_to_xsiam(assets, vulnerabilities)
 
-            demisto.debug(f"new lastrun assets: {new_assets_last_run}")
-            demisto.setAssetsLastRun(new_assets_last_run)
+            demisto.debug(f"new lastrun assets: {assets_last_run}")
+            demisto.setAssetsLastRun(assets_last_run)
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
