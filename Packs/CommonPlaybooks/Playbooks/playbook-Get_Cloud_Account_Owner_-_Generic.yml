@@ -570,8 +570,7 @@ view: |-
   }
 inputs:
 - key: AccountID
-  value:
-    simple: {}
+  value: {}
   description: The account ID to search the owner for.
   playbookInputQuery:
 - key: Provider
