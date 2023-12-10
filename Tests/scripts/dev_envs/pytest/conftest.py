@@ -1,9 +1,11 @@
 import pytest
 import logging
 import os
-from uuid import uuid4
+
+# File is copied to each package dir when running tests.
 # More info about conftest.py at:
 #   https://docs.pytest.org/en/latest/writing_plugins.html#conftest-py-plugins  # disable-secrets-detection
+
 
 @pytest.fixture(autouse=True)
 def check_logging(caplog):
