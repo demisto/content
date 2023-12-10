@@ -153,7 +153,7 @@ class OktaClient(BaseClient):
             if 'token_expiration' not in integration_context:
                 raise ValueError('Token expiration data must be assigned along with the token.')
 
-            token_expiration = integration_context['token_expiration'].strptime(expiration_time_format)
+            token_expiration = datetime.strptime(integration_context['token_expiration'], expiration_time_format)
 
             if token_expiration > datetime.utcnow():
                 return token
