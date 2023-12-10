@@ -31,6 +31,7 @@ The following permissions are required for all commands:
 - Mail.ReadWrite - Delegated
 - Mail.Send - Delegated
 - User.Read - Delegated 
+- MailboxSettings.ReadWrite - Delegated 
 
 ## Configure Microsoft Graph Mail Single User on Cortex XSOAR
 
@@ -596,3 +597,77 @@ Returns the folder list under the specified folder.
 | MSGraphMail.Folders.ParentFolderID | String | The parent folder ID. | 
 | MSGraphMail.Folders.TotalItemCount | Number | The total number of email messages in the folder. | 
 | MSGraphMail.Folders.UnreadItemCount | Number | The number of unread email messages in the folder. | 
+### msgraph-mail-list-rules
+
+***
+List email rules for a user's mailbox using Microsoft Graph API.
+
+#### Base Command
+
+`msgraph-mail-list-rules`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | Maximum number of results to return. Default is 50. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphMail.Rule.conditions | Unknown | Conditions that when fulfilled, will trigger the corresponding actions for that rule. | 
+| MSGraphMail.Rule.actions | Unknown | Actions to be taken on a message when the corresponding conditions are fulfilled. | 
+| MSGraphMail.Rule.displayName | String | The display name of the rule. | 
+| MSGraphMail.Rule.exceptions | Unknown | Exception conditions for the rule. | 
+| MSGraphMail.Rule.hasError | Boolean | Indicates whether the rule is in an error condition. | 
+| MSGraphMail.Rule.id | String | The ID of the rule. | 
+| MSGraphMail.Rule.isEnabled | Boolean | Indicates whether the rule is enabled to be applied to messages. | 
+| MSGraphMail.Rule.isReadOnly | Boolean | Indicates if the rule is read-only and cannot be modified or deleted by the rules REST API. | 
+| MSGraphMail.Rule.sequence | Number | Indicates the order in which the rule is executed, among other rules. | 
+### msgraph-mail-get-rule
+
+***
+Get details of a specific email rule by ID for a user's mailbox using Microsoft Graph API.
+
+#### Base Command
+
+`msgraph-mail-get-rule`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rule_id | The ID of the rule to retrieve. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphMail.Rule.conditions | Unknown | Conditions that when fulfilled, will trigger the corresponding actions for that rule. | 
+| MSGraphMail.Rule.actions | Unknown | Actions to be taken on a message when the corresponding conditions are fulfilled. | 
+| MSGraphMail.Rule.displayName | String | The display name of the rule. | 
+| MSGraphMail.Rule.exceptions | Unknown | Exception conditions for the rule. | 
+| MSGraphMail.Rule.hasError | Boolean | Indicates whether the rule is in an error condition. | 
+| MSGraphMail.Rule.id | String | The ID of the rule. | 
+| MSGraphMail.Rule.isEnabled | Boolean | Indicates whether the rule is enabled to be applied to messages. | 
+| MSGraphMail.Rule.isReadOnly | Boolean | Indicates if the rule is read-only and cannot be modified or deleted by the rules REST API. | 
+| MSGraphMail.Rule.sequence | Number | Indicates the order in which the rule is executed, among other rules. | 
+### msgraph-mail-delete-rule
+
+***
+Delete a specific email rule by ID for a user's mailbox using Microsoft Graph API.
+
+#### Base Command
+
+`msgraph-mail-delete-rule`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rule_id | The ID of the rule to delete. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
