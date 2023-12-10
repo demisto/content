@@ -282,7 +282,7 @@ def unblacklist_ip(ip):
     )
 
 
-def whitelist_url(url):  # pragma: no cover
+def whitelist_url(url):
     cmd_url = "/security"
     urls_to_whitelist = argToList(url)
     # Get the current whitelist
@@ -299,7 +299,7 @@ def whitelist_url(url):  # pragma: no cover
     return "Added the following URLs to the whitelist successfully:\n" + list_of_urls
 
 
-def unwhitelist_url(url):  # pragma: no cover
+def unwhitelist_url(url):
     cmd_url = "/security"
     urls_to_unwhitelist = argToList(url)
     # Get the current whitelist
