@@ -115,7 +115,7 @@ configuration:
 #  advanced: true
 #  section: Collect - assets
 description: Use Tenable.io Event Collector integration to get Audit and Endpoint logs, assets and their vulnerabilities from Tenable.
-display: Tenable.io Event Collector
+display: Tenable.io Event Collector (Deprecated)
 name: Tenable.io Event Collector
 deprecated: true
 script:
