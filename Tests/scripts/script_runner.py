@@ -9,7 +9,7 @@ def run_script(args, files):
     try:
         results = []
         for file in files:
-            results.append(subprocess.run(args + [file], cwd=os.path.dirname(file)))        
+            results.append(subprocess.run(args + [os.path.abspath(file)], cwd=os.path.dirname(file)))        
         if any(result.returncode != 0 for result in results):
             print("Script failed")
             return 1
