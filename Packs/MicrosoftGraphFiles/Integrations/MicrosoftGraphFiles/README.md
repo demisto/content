@@ -437,6 +437,7 @@ Returns the list of document libraries (drives) available for a target site.
 | MsGraphFiles.ListDrives.Value.ID | String | The drive ID. | 
 | MsGraphFiles.ListDrives.Value.Name | String | The name of the drive. | 
 | MsGraphFiles.ListDrives.OdataContext | String | The OData query. |
+| MsGraphFiles.ListDrives.NextToken | String | The token for the next page. |
 
 #### Command Example
 
@@ -530,6 +531,7 @@ Returns a list of files and folders in the specified drive.
 | MsGraphFiles.ListChildren.ID | String | The file ID or folder ID. | 
 | MsGraphFiles.ListChildren.Children.Size | Number | The file size or folder size. | 
 | MsGraphFiles.ListChildren.Children.OdataContext | String | The OData query. |
+| MsGraphFiles.ListChildren.NextToken | String | The token for the next page. |
 
 
 #### Command Example
