@@ -5797,7 +5797,8 @@
         "Microsoft Defender Advanced Threat Protection - Test": "Issue CIAC-7527",
         "OpsGenieV3TestPlaybook": "Issue CIAC-7649",
         "ThreatStream-Test": "Issue CRTX-96526",
-        "MSG-Threat-Assessment-test": "API limitation"
+        "MSG-Threat-Assessment-test": "API limitation",
+        "BambenekConsultingFeed_Test": "Issue CRTX-99480"
     },
     "skipped_integrations": {
         "CiscoWSAv2": "No instance - No license",
