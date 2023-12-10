@@ -51,7 +51,7 @@ class TestClientFunctions:
 
         expected_args = {
             'url_suffix': '/search/', 'method': 'GET',
-            'params': {'aql': 'example_query after:2023-01-01T01:00:00', 'includeTotal':
+            'params': {'aql': 'example_query after:2023-01-01T00:59:00', 'includeTotal':
                        'true', 'length': 2, 'orderBy': 'time', 'from': 1},
             'headers': {'Authorization': 'test_access_token', 'Accept': 'application/json'}
         }
@@ -313,16 +313,17 @@ class TestHelperFunction:
             - A command result with readable output will be printed to the war-room.
         """
         from ArmisEventCollector import CommandResults, VENDOR, PRODUCT, events_to_command_results, tableToMarkdown
-        response_with_two_events = {'events': [{'time': '2023-01-01T01:00:10.123456+00:00',
-                                                '_time': '2023-01-01T01:00:10',
-                                                'unique_id': '1'},
-                                               {'time': '2023-01-01T01:00:20.123456+00:00',
-                                                '_time': '2023-01-01T01:00:20', 'unique_id': '2'}]}
+        events_fetched = {'events': [{'time': '2023-01-01T01:00:10.123456+00:00',
+                                      '_time': '2023-01-01T01:00:10',
+                                      'unique_id': '1'},
+                                     {'time': '2023-01-01T01:00:20.123456+00:00',
+                                      '_time': '2023-01-01T01:00:20', 'unique_id': '2'}]}
+        expected_events_result = events_fetched['events']
         expected_result = CommandResults(
-            raw_response=response_with_two_events,
-            readable_output=tableToMarkdown(name=f'{VENDOR} {PRODUCT}_events events', t=response_with_two_events['events'],
+            raw_response=events_fetched,
+            readable_output=tableToMarkdown(name=f'{VENDOR} {PRODUCT}_events events', t=expected_events_result,
                                             removeNull=True))
-        assert events_to_command_results(response_with_two_events)[0].readable_output == expected_result.readable_output
+        assert events_to_command_results(events_fetched, 'events').readable_output == expected_result.readable_output
 
     @freeze_time("2023-01-01 01:00:00")
     def test_set_last_run_with_current_time_initial(self, mocker):
@@ -335,14 +336,13 @@ class TestHelperFunction:
         Then:
             - Set the last_run dictionary with the current time for each event type key.
         """
-        from ArmisEventCollector import set_last_run_with_current_time
+        from ArmisEventCollector import set_last_run_for_last_minute
 
         last_run: dict[Any, Any] = {}
-        event_types: list[str] = ['Alerts', 'Activities']
 
-        set_last_run_with_current_time(last_run, event_types)
+        set_last_run_for_last_minute(last_run)
 
-        assert last_run['alerts_last_fetch_time'] == last_run['activity_last_fetch_time'] == '2023-01-01T01:00:00'
+        assert last_run['alerts_last_fetch_time'] == last_run['activity_last_fetch_time'] == '2023-01-01T00:59:00'
 
     @pytest.mark.parametrize('time_delta_since_last_fetch, expected_result', [
         (2, True),
@@ -366,6 +366,11 @@ class TestHelperFunction:
         time_in_last_fetch = datetime.now() - addition_to_fetch_interval
         last_run: dict = {'devices_last_fetch_time': time_in_last_fetch.strftime('%Y-%m-%dT%H:%M:%S')}
         assert should_run_device_fetch(last_run, timedelta(hours=1), datetime.now()) is expected_result
+
+    def test_handle_from_date_argument(self):
+        from ArmisEventCollector import handle_from_date_argument
+        from_date_datetime = handle_from_date_argument('2023-01-01T01:00:00')
+        assert from_date_datetime == datetime(2023, 1, 1, 1, 0, 0)
 
 
 class TestFetchFlow:

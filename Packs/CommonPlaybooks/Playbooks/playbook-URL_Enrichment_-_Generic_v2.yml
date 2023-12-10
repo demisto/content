@@ -6,10 +6,10 @@ description: |-
   Enrich URLs using one or more integrations.
 
   URL enrichment includes:
-  * SSL verification for URLs
-  * Threat information
-  * Providing of URL screenshots
-  * URL Reputation using !url
+  * SSL verification for URLs.
+  * Threat information.
+  * Providing of URL screenshots.
+  * URL Reputation using !url.
 starttaskid: "0"
 tasks:
   "0":
@@ -31,7 +31,7 @@ tasks:
       {
         "position": {
           "x": 490,
-          "y": -39
+          "y": 41
         }
       }
     note: false
@@ -44,13 +44,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: f7198345-28e9-4d23-8e05-7d4b443f807b
+    taskid: 2e1b93fe-512d-4fba-80dd-2912bf3382f5
     type: condition
     task:
-      id: f7198345-28e9-4d23-8e05-7d4b443f807b
+      id: 2e1b93fe-512d-4fba-80dd-2912bf3382f5
       version: -1
-      name: Are there URLs?
-      description: Determine whtether the playbook's input contains at least one URL.
+      name: Is there a URL to enrich?
+      description: Checks whether there is at least one URL to enrich.
       type: condition
       iscommand: false
       brand: ""
@@ -73,11 +73,13 @@ tasks:
             value:
               simple: inputs.URL
             iscontext: true
+          right:
+            value: {}
     view: |-
       {
         "position": {
           "x": 490,
-          "y": 155
+          "y": 175
         }
       }
     note: false
@@ -105,7 +107,7 @@ tasks:
       {
         "position": {
           "x": 490,
-          "y": 1125
+          "y": 1095
         }
       }
     note: false
@@ -173,10 +175,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 6b4658d8-898a-47b0-8b7d-09e6400c6109
+    taskid: 13c4e2ea-abb5-49b0-8139-79ba102250c7
     type: regular
     task:
-      id: 6b4658d8-898a-47b0-8b7d-09e6400c6109
+      id: 13c4e2ea-abb5-49b0-8139-79ba102250c7
       version: -1
       name: Get URL screenshot
       description: Gets a screenshot of the URL page.
@@ -196,7 +198,6 @@ tasks:
           transformers:
           - operator: uniq
     reputationcalc: 1
-    continueonerror: true
     separatecontext: false
     view: |-
       {
@@ -323,13 +324,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 84825bf9-7b64-4953-8ba8-e4d4d1f6d884
+    taskid: ab4dd806-764c-4b25-8e34-98b9a0fc87f7
     type: regular
     task:
-      id: 84825bf9-7b64-4953-8ba8-e4d4d1f6d884
+      id: ab4dd806-764c-4b25-8e34-98b9a0fc87f7
       version: -1
       name: Verify SSL for URLs
-      description: Verify URL SSL certificate
+      description: Verify URL SSL certificate.
       scriptName: URLSSLVerification
       type: regular
       iscommand: false
@@ -464,7 +465,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1030,
+          "x": 1010,
           "y": 360
         }
       }
@@ -483,24 +484,26 @@ tasks:
       url:
         complex:
           root: inputs.URL
+          transformers:
+          - operator: uniq
     separatecontext: false
     skipunavailable: true
     task:
       brand: ""
       description: Checks the reputation of a URL.
-      id: 0a97859d-7608-47b2-8c81-38009df2a4dd
+      id: 66cd353d-652e-4786-8d2e-af0fbd9c63e7
       iscommand: true
       name: Check Reputation
       script: '|||url'
       type: regular
       version: -1
-    taskid: 0a97859d-7608-47b2-8c81-38009df2a4dd
+    taskid: 66cd353d-652e-4786-8d2e-af0fbd9c63e7
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 1030,
+          "x": 1010,
           "y": 710
         }
       }
@@ -534,19 +537,19 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: e0b1281a-38c2-4cbd-8d6d-4330057e5729
+      id: e0db6ab1-2c0e-4859-84eb-e764c3fd01e5
       iscommand: false
       name: Should use !url command?
       description: Check if should run URL reputation command
       type: condition
       version: -1
-    taskid: e0b1281a-38c2-4cbd-8d6d-4330057e5729
+    taskid: e0db6ab1-2c0e-4859-84eb-e764c3fd01e5
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": 1030,
+          "x": 1010,
           "y": 500
         }
       }
@@ -557,14 +560,15 @@ view: |-
       "25_26_yes": 0.47,
       "27_25_yes": 0.5,
       "33_24_#default#": 0.13,
-      "33_32_yes": 0.67
+      "33_32_yes": 0.67,
+      "40_24_#default#": 0.31
     },
     "paper": {
       "dimensions": {
-        "height": 1229,
-        "width": 1920,
+        "height": 1119,
+        "width": 1900,
         "x": -510,
-        "y": -39
+        "y": 41
       }
     }
   }
@@ -577,24 +581,31 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: URLs to enrich.
+  description: The URLs to enrich.
   playbookInputQuery:
 - key: Rasterize
   value:
     simple: "True"
   required: false
-  description: Should the system take safe screenshots of input URLs?
+  description: |-
+    Define if you would like the system take safe screenshots of input URLs.
+    Possible values: True / False.
+    The default value is true.
   playbookInputQuery:
 - key: VerifyURL
   value:
     simple: "False"
   required: false
-  description: Should the system perform SSL certificate verification on the URLs?
+  description: |-
+    Define if you would like the system perform SSL certificate verification on the URLs.
+    Possible values: True / False.
+    The default value is false.
   playbookInputQuery:
 - description: |-
     Define if you would like to use the !url command.
     Note: This input should be used whenever there is no auto-extract enabled in the investigation flow.
     Possible values: True / False.
+    The default value is false.
   key: UseReputationCommand
   playbookInputQuery:
   required: true
@@ -613,12 +624,6 @@ outputs:
 - contextPath: URL.Malicious
   description: Whether the detected URL was malicious.
   type: unknown
-- contextPath: URL.Vendor
-  description: Vendor that labeled the URL as malicious.
-  type: string
-- contextPath: URL.Description
-  description: Additional information for the URL.
-  type: string
 - contextPath: URL.Malicious.Vendor
   description: For malicious URLs, the vendor that made the decision.
 - contextPath: URL.Malicious.Description
@@ -637,6 +642,28 @@ outputs:
   type: number
 - contextPath: DBotScore.Reliability
   description: Reliability of the source providing the intelligence data.
+- contextPath: URL.Relationships.EntityA
+  description: The source of the relationship.
+- contextPath: URL.Relationships.EntityB
+  description: The destination of the relationship.
+- contextPath: URL.Relationships.Relationship
+  description: The name of the relationship.
+- contextPath: URL.Relationships.EntityAType
+  description: The type of the source of the relationship.
+- contextPath: URL.Relationships.EntityBType
+  description: The type of the destination of the relationship.
+- contextPath: InfoFile.EntryID
+  description: The EntryID of the image/pdf file.
+- contextPath: InfoFile.Extension
+  description: The extension of the image/pdf file.
+- contextPath: InfoFile.Name
+  description: The name of the image/pdf file.
+- contextPath: InfoFile.Info
+  description: The info of the image/pdf file.
+- contextPath: InfoFile.Size
+  description: The size of the image/pdf file.
+- contextPath: InfoFile.Type
+  description: The type of the image/pdf file.
 tests:
 - URL Enrichment - Generic v2 - Test
 system: true
