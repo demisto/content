@@ -196,6 +196,10 @@ validate-content-conf:
       if [[ ${MARKETPLACE_VERSION} = "xsoar" ]]; then
         echo "Creating Instances, only for XSOAR."
         [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
+        if [[ "${DEMISTO_SDK_NIGHTLY}" == "true" ]]; then
+          echo "Creating Xsoar Instances for SDK nightly- changing the filter_envs json."
+          jq '.' <<< '{"Server 6.9": false, "Server 6.10": false, "Server 6.11": false, "Server 6.12": false, "Server Master": true}' > "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_envs.json"
+        fi
         python3 ./gcp/create_instance.py --env-type "${IFRA_ENV_TYPE}" --outfile "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json" --filter-envs "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_envs.json" --creds "${CONTENT_BUILD_GCP}" --zone "${GCP_ZONE}"
       fi
     - section_end "Create Instances for XSOAR"
@@ -681,10 +685,6 @@ xsoar_ng_server_ga:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
     - if: '$NIGHTLY'
       when: always
-      variables:
-        CLOUD_MACHINES_TYPE: "nightly"
-        CLOUD_MACHINES_COUNT: 1
-        GCS_LOCKS_PATH: "content-locks/locks-xsoar-ng-nightly"
   variables:
     CLOUD_MACHINES_TYPE: "build"
     CLOUD_MACHINES_COUNT: 1
