@@ -569,8 +569,8 @@ def checkAPIerrors(query, variables):
     if "errors" in result.json():
         error_message = f"Error details: {get_error_output(result.json())}"
 
-    elif 'data' in result.json() and 'issues' in result.json()['data'] and len(result.json()['data']['issues'].get('nodes')) == 0:
-        error_message = "Error details: The Issue ID is not correct"
+    if "data" in result.json() and "issues" in result.json()['data'] and len(result.json()['data']['issues'].get('nodes')) == 0:
+        demisto.info("No Issue(/s) available to fetch.")
 
     if error_message:
         demisto.error("An error has occurred using:\n"

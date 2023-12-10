@@ -679,7 +679,7 @@ script:
     - contextPath: MicrosoftTeams.Team.description
       description: An optional description for the group.
       type: String
-  dockerimage: demisto/crypto:1.0.0.79610
+  dockerimage: demisto/crypto:1.0.0.82278
   runonce: false
   script: '-'
   subtype: python3

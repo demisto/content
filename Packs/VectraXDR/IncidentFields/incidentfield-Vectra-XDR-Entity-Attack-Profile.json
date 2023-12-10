@@ -1,0 +1,31 @@
+{
+    "id": "incident_vectraxdrentityattackprofile",
+    "version": -1,
+    "modified": "2023-07-20T12:37:12.437287114+05:30",
+    "name": "Vectra XDR Entity Attack Profile",
+    "ownerOnly": false,
+    "cliName": "vectraxdrentityattackprofile",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Vectra XDR Entity"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.8.0"
+}

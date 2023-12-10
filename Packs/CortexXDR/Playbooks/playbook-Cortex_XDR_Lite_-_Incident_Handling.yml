@@ -1,27 +1,21 @@
 id: Cortex XDR Lite - Incident Handling
 version: -1
 name: Cortex XDR Lite - Incident Handling
-description: |-
-  ---
+description: |
+  The Cortex XDR Lite - Incident Handling playbook is triggered by fetching a Palo Alto Networks Cortex XDR incident and executes the following:
 
-  ## Cortex XDR Lite - Incident Handling
-
-  The **Cortex XDR Lite - Incident Handling** playbook is triggered by fetching a Palo Alto Networks Cortex XDR incident and executes the following:
-
-  **Analysis:**
+  Analysis:
   - Enriches all the indicators from XDR incidents and alerts, providing additional context and information about these indicators.
 
-  **Investigation:**
+  Investigation:
   - Checks for related XDR alerts to the user and the endpoint by Mitre tactics to identify malicious activity.
   - Checks for specific arguments for malicious usage from the command line.
 
-  **Verdict:**
+  Verdict:
   - Determines the incident's verdict by considering indicator enrichment results, user and host risk levels, command line analysis, and the number of related XDR alerts (medium severity or higher) to the user and the endpoint by Mitre tactics.
 
-  **Verdict Handling:**
+  Verdict Handling:
   - Handles malicious incidents by initiating appropriate response actions, including blocking malicious indicators, isolating endpoints, and disabling user accounts.
-
-  ---
 starttaskid: "0"
 tasks:
   "0":
@@ -1402,8 +1396,7 @@ tasks:
     scriptarguments:
       incident_id:
         complex:
-          root: incident
-          accessor: xdrincidentid
+          root: inputs.incident_id
     reputationcalc: 2
     separatecontext: false
     continueonerrortype: ""
@@ -2185,3 +2178,5 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.9.0
+marketplaces:
+- xsoar

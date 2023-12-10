@@ -1,0 +1,5 @@
+[INGEST:vendor="manageengine", product="adssp", target_dataset="manageengine_adssp_raw", no_hit=keep]
+filter msg ~= "TIME=\d{13}"
+| alter time = to_integer(arrayindex(regextract(msg, "TIME=([^\]]+)"), 0))
+| alter _time = to_timestamp(time, "MILLIS")
+| fields -time;

@@ -134,7 +134,7 @@
 <tbody>
 <tr>
 <td style="width: 162.333px;">entryid</td>
-<td style="width: 506.667px;">Entry ID of the image file to process.</td>
+<td style="width: 506.667px;">A comma-separated list of Entry IDs of image files to process.</td>
 <td style="width: 71px;">Required</td>
 </tr>
 <tr>

@@ -10,10 +10,10 @@ from typing import Any
 from demisto_sdk.commands.common.tools import str2bool
 
 from Tests.Marketplace.marketplace_constants import PackStatus, GCPConfig, CONTENT_ROOT_PATH
-from Tests.Marketplace.marketplace_services import init_storage_client, Pack, load_json, \
+from Tests.private_build.marketplace_services_private import init_storage_client, Pack, load_json, \
     get_content_git_client, get_recent_commits_data
 from Tests.Marketplace.marketplace_statistics import StatisticsHandler
-from Tests.Marketplace.upload_packs import get_packs_names, extract_packs_artifacts, download_and_extract_index, \
+from Tests.Marketplace.upload_packs import get_packs_ids_to_upload, extract_packs_artifacts, download_and_extract_index, \
     update_index_folder, clean_non_existing_packs, upload_index_to_storage, create_corepacks_config, \
     check_if_index_is_updated, print_packs_summary, get_packs_summary, prepare_index_json
 from Tests.scripts.utils.log_util import install_logging
@@ -190,7 +190,8 @@ def add_private_packs_to_index(index_folder_path: str, private_index_path: str):
     """
     for d in os.scandir(private_index_path):
         if os.path.isdir(d.path):
-            update_index_folder(index_folder_path, d.name, d.path)
+            pack = Pack(d.name, d.path)
+            update_index_folder(index_folder_path, pack, is_private_pack=True)  # type:ignore[arg-type]
 
 
 def update_index_with_priced_packs(private_storage_bucket: Any, extract_destination_path: str,
@@ -285,7 +286,7 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Pack, storage_b
 
     task_status = pack.load_user_metadata()
     if not task_status:
-        pack.status = PackStatus.FAILED_LOADING_USER_METADATA.name  # type: ignore[misc]
+        pack.status = PackStatus.FAILED_LOADING_PACK_METADATA.name  # type: ignore[misc]
         pack.cleanup()
         return
 
@@ -377,15 +378,8 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Pack, storage_b
         pack.cleanup()
         return
 
-    task_status = pack.prepare_for_index_upload()
-    if not task_status:
-        pack.status = PackStatus.FAILED_PREPARING_INDEX_FOLDER.name  # type: ignore[misc]
-        pack.cleanup()
-        return
-
-    task_status = update_index_folder(index_folder_path=index_folder_path, pack_name=pack.name,
-                                      pack_path=pack.path, pack_version=pack.latest_version,
-                                      hidden_pack=pack.hidden, pack_versions_to_keep=pack_versions_to_keep)
+    task_status = update_index_folder(index_folder_path=index_folder_path, pack=pack,  # type:ignore[arg-type]
+                                      pack_versions_to_keep=pack_versions_to_keep)
     if not task_status:
         pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name  # type: ignore[misc]
         pack.cleanup()
@@ -493,7 +487,7 @@ def main():
         content_repo = None
 
     # detect packs to upload
-    pack_names = get_packs_names(target_packs)
+    pack_names = get_packs_ids_to_upload(target_packs)
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
     packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in pack_names
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
@@ -536,7 +530,7 @@ def main():
         prepare_index_json(index_folder_path=index_folder_path,
                            build_number=build_number,
                            private_packs=private_packs,
-                           current_commit_hash=current_commit_hash,
+                           commit_hash=current_commit_hash,
                            landing_page_sections=landing_page_sections
                            )
 
@@ -550,7 +544,7 @@ def main():
         prepare_index_json(index_folder_path=index_folder_path,
                            build_number=build_number,
                            private_packs=private_packs,
-                           current_commit_hash=current_commit_hash,
+                           commit_hash=current_commit_hash,
                            landing_page_sections=landing_page_sections)
 
         upload_index_to_storage(index_folder_path=index_folder_path,

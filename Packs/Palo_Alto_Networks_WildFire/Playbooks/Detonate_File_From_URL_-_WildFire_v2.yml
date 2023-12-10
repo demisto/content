@@ -1,0 +1,397 @@
+id: Detonate File From URL - WildFire v2
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Detonate File From URL - WildFire v2
+description: |-
+  Detonate one or more files using the Wildfire v2 integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
+  The detonation supports the following file types -
+  APK, JAR, DOC, DOCX, RTF, XLS, XLSX, PPT, PPTX, XML, PE32, PDF, DMG, PKG, RAR, 7Z.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 219dcb92-ee7d-420e-816e-3f70b24bd953
+    type: start
+    task:
+      id: 219dcb92-ee7d-420e-816e-3f70b24bd953
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 11650265-0035-421f-8e92-143af887b7a7
+    type: title
+    task:
+      id: 11650265-0035-421f-8e92-143af887b7a7
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -60,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 4a6315f7-7947-4cfc-8554-4e6b3edb4478
+    type: condition
+    task:
+      id: 4a6315f7-7947-4cfc-8554-4e6b3edb4478
+      version: -1
+      name: Is there a File to detonate?
+      description: Look for file URLs to detonate
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.FileURL
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: efcfaf80-ceaa-4a4e-8534-c8b9d905db8b
+    type: condition
+    task:
+      id: efcfaf80-ceaa-4a4e-8534-c8b9d905db8b
+      version: -1
+      name: Is WildFire sandbox enabled?
+      description: Check if integration instance is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: WildFire-v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: e308b16b-fa8f-4898-8d17-228ea6638a33
+    type: regular
+    task:
+      id: e308b16b-fa8f-4898-8d17-228ea6638a33
+      version: -1
+      name: WildFire Get Report
+      description: Retrieve results for a file hash using WildFire.
+      script: '|||wildfire-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      format:
+        complex:
+          root: inputs.ReportFileType
+      sha256:
+        complex:
+          root: WildFire.Report
+          accessor: SHA256
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: f70f9254-9f72-4947-8e9b-75836952ab68
+    type: regular
+    task:
+      id: f70f9254-9f72-4947-8e9b-75836952ab68
+      version: -1
+      name: WildFire Upload File URL
+      description: Uploads the URL of a remote file to WildFire for analysis.
+      script: '|||wildfire-upload-file-url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      interval_in_seconds:
+        complex:
+          root: inputs.Interval
+      polling:
+        simple: "true"
+      timeout_in_seconds:
+        complex:
+          root: inputs.Timeout
+      upload:
+        complex:
+          root: inputs.FileURL
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 925,
+        "width": 920,
+        "x": -60,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: FileURL
+  value:
+    complex:
+      root: FileURL
+      transformers:
+      - operator: uniq
+  required: false
+  description: URL of the web file to detonate. The FileUrl is taken from the context.
+  playbookInputQuery:
+- key: Interval
+  value:
+    simple: "1"
+  required: false
+  description: Duration for executing the pooling (in minutes).
+  playbookInputQuery:
+- key: Timeout
+  value:
+    simple: "8"
+  required: false
+  description: The duration after which to stop pooling and to resume the playbook (in minutes).
+  playbookInputQuery:
+- key: ReportFileType
+  value: {}
+  required: false
+  description: The resource type to download. Default is pdf. XML is also possible.
+  playbookInputQuery:
+outputs:
+- contextPath: DBotScore
+  description: The DBotScore object.
+  type: unknown
+- contextPath: DBotScore.Score
+  description: The actual score.
+  type: number
+- contextPath: File.Size
+  description: File size.
+  type: number
+- contextPath: File.MD5
+  description: MD5 hash of the file.
+  type: string
+- contextPath: File.SHA1
+  description: SHA1 hash of the file.
+  type: string
+- contextPath: File.Type
+  description: File type, e.g., "PE".
+  type: string
+- contextPath: File.SHA256
+  description: SHA256 hash of the file.
+  type: string
+- contextPath: File.EntryID
+  description: The Entry ID of the sample.
+  type: string
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision.
+  type: string
+- contextPath: File.Name
+  description: Filename.
+  type: string
+- contextPath: File.Malicious.Description
+  description: For malicious files, the reason the vendor made the decision.
+  type: string
+- contextPath: DBotScore.Indicator
+  description: The indicator tested.
+  type: string
+- contextPath: DBotScore.Type
+  description: The type of the indicator.
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score.
+  type: string
+- contextPath: IP.Address
+  description: IPs relevant to the sample.
+  type: string
+- contextPath: File
+  description: The file object.
+  type: unknown
+- contextPath: InfoFile
+  description: The report file object.
+  type: unknown
+- contextPath: InfoFile.EntryID
+  description: The EntryID of the report file.
+  type: string
+- contextPath: InfoFile.Extension
+  description: The extension of the report file.
+  type: string
+- contextPath: InfoFile.Name
+  description: The name of the report file.
+  type: string
+- contextPath: InfoFile.Info
+  description: The info of the report file.
+  type: string
+- contextPath: InfoFile.Size
+  description: The size of the report file.
+  type: number
+- contextPath: InfoFile.Type
+  description: The type of the report file.
+  type: string
+- contextPath: File.Malicious
+  description: The malicious object.
+  type: unknown
+- contextPath: WildFire.Report
+  description: The submission object.
+  type: unknown
+- contextPath: WildFire.Report.MD5
+  description: MD5 of the submission.
+  type: string
+- contextPath: WildFire.Report.SHA256
+  description: SHA256 of the submission.
+  type: string
+- contextPath: WildFire.Report.FileType
+  description: The type of the submission.
+  type: string
+- contextPath: WildFire.Report.Status
+  description: The status of the submission.
+  type: string
+- contextPath: WildFire.Report.Size
+  description: The size of the submission.
+  type: number
+- contextPath: WildFire.Report.ExtractedURL.URL
+  description: The extracted URL.
+  type: string
+- contextPath: WildFire.Report.ExtractedURL.Verdict
+  description: The extracted verdict.
+  type: number
+tests:
+- Wildfire Test With Polling
+- Wildfire Test
+fromversion: 6.10.0

@@ -5,6 +5,7 @@ import json
 from datetime import datetime
 from collections.abc import Callable
 import copy
+from requests.exceptions import ReadTimeout
 
 import QRadar_v3  # import module separately for mocker
 import pytest
@@ -964,7 +965,8 @@ def test_get_modified_remote_data_command(mocker):
                                       'Type': EntryType.NOTE,
                                       'Contents': {
                                           'dbotIncidentClose': True,
-                                          'closeReason': 'From QRadar: False-Positive, Tuned'
+                                          'closeReason': 'False-Positive, Tuned',
+                                          'closeNotes': 'From QRadar: False-Positive, Tuned'
                                       },
                                       'ContentsFormat': EntryFormat.JSON
                                   }])),
@@ -978,8 +980,9 @@ def test_get_modified_remote_data_command(mocker):
                                       'Type': EntryType.NOTE,
                                       'Contents': {
                                           'dbotIncidentClose': True,
-                                          'closeReason': 'From QRadar: This offense was closed with reason: '
-                                                         'False-Positive, Tuned.'
+                                          'closeReason': 'False-Positive, Tuned',
+                                          'closeNotes': 'From QRadar: This offense was closed with reason: '
+                                                         'False-Positive, Tuned.',
                                       },
                                       'ContentsFormat': EntryFormat.JSON
                                   }])),
@@ -994,9 +997,10 @@ def test_get_modified_remote_data_command(mocker):
                                       'Type': EntryType.NOTE,
                                       'Contents': {
                                           'dbotIncidentClose': True,
-                                          'closeReason': 'From QRadar: This offense was closed with reason: '
+                                          'closeReason': 'False-Positive, Tuned',
+                                          'closeNotes': 'From QRadar: This offense was closed with reason: '
                                                          'False-Positive, Tuned. Notes: Closed because it is on our '
-                                                         'white list.'
+                                                         'white list.',
                                       },
                                       'ContentsFormat': EntryFormat.JSON
                                   }]))
@@ -1583,3 +1587,33 @@ def test_reference_set_upsert_commands_new_api(mocker, api_version, status, func
     else:
         assert results.readable_output == 'Reference set test_ref is still being updated in task 1234'
         assert results.scheduled_command._args.get('task_id') == 1234
+
+
+def test_qradar_reference_set_value_upsert_command_continue_polling_with_connection_issues(mocker):
+    """
+    Given:
+        - get_reference_data_bulk_task_status that returns ReadTimeout exception, IN_PROGRESS and COMPLETED statuses
+
+    When:
+        - qradar_reference_set_value_upsert_command function
+
+    Then:
+        - Verify the command would keep polling when there are temporary connection issues.
+    """
+    mocker.patch.object(QRadar_v3.ScheduledCommand, "raise_error_if_not_supported")
+    mocker.patch.object(client, "reference_set_entries", return_value={"id": 1234})
+    mocker.patch.object(client, "get_reference_data_bulk_task_status", side_effect=[
+                        ReadTimeout, {"status": "IN_PROGRESS"}, {"status": "COMPLETED"}])
+    args = {"ref_name": "test_ref", "value": "value1"}
+    api_version = {"api_version": "17.0"}
+    mocker.patch.object(client, "reference_sets_list", return_value=command_test_data["reference_set_bulk_load"]['response'])
+
+    result = qradar_reference_set_value_upsert_command(args, client=client, params=api_version)
+    # make sure in ReadTimeout that no outputs are returned
+    assert not result.outputs
+    result = qradar_reference_set_value_upsert_command(args, client=client, params=api_version)
+    # make sure when status is IN_PROGRESS no outputs are returned
+    assert not result.outputs
+    result = qradar_reference_set_value_upsert_command(args, client=client, params=api_version)
+    # make sure when status is COMPLETED that outputs are returned
+    assert result.outputs

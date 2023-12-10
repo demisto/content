@@ -647,7 +647,7 @@ def test_reputation_file(
         client, args={"file": "0cc22fd05a3e771b09b584db0a16aaaa"}
     )
 
-    results_dict = results.to_context()["Contents"][0]
+    results_dict = results[0].to_context()["Contents"]
 
     assert results_dict["score"] == 3
     assert results_dict["type"] == "File"
@@ -655,7 +655,7 @@ def test_reputation_file(
         results_dict["fields"]["stixid"] == "md5--7c8be1f2-b949-aaaa-af7f-18908175108f"
     )
     assert (
-        results_dict["fields"]["DBotScore"]["Indicator"]
+        results_dict["fields"]["dbotscore"]["Indicator"]
         == "0cc22fd05a3e771b09b584db0a16aaaa"
     )
     assert results_dict["fields"]["md5"] == "0cc22fd05a3e771b09b584db0a16aaaa"
@@ -686,14 +686,14 @@ def test_reputation_domain(
         client, args={"domain": "some.url.com"}
     )
 
-    results_dict = results.to_context()["Contents"][0]
+    results_dict = results[0].to_context()["Contents"]
 
     assert results_dict["score"] == 3
     assert results_dict["type"] == "Domain"
     assert (
         results_dict["fields"]["stixid"] == "fqdn--be2e92a7-aaaa-5f35-8c6e-0731685aee19"
     )
-    assert results_dict["fields"]["DBotScore"]["Indicator"] == "some.url.com"
+    assert results_dict["fields"]["dbotscore"]["Indicator"] == "some.url.com"
     assert results_dict["fields"]["dns"] == "some.url.com"
     assert results_dict["fields"]["domain"] == "some.url.com"
     assert results_dict["fields"]["trafficlightprotocol"] == "GREEN"
@@ -715,14 +715,14 @@ def test_reputation_ip(
 
     results = MandiantAdvantageThreatIntelligence.fetch_reputation(client, args={"ip": "154.91.84.82"})
 
-    results_dict = results.to_context()["Contents"][0]
+    results_dict = results[0].to_context()["Contents"]
 
     assert results_dict["score"] == 0
     assert results_dict["type"] == "IP"
     assert (
         results_dict["fields"]["stixid"] == "ipv4--27063181-abcd-53ec-b785-3b9772febd50"
     )
-    assert results_dict["fields"]["DBotScore"]["Indicator"] == "192.168.84.82"
+    assert results_dict["fields"]["dbotscore"]["Indicator"] == "192.168.84.82"
     assert results_dict["fields"]["ip"] == "192.168.84.82"
     assert results_dict["fields"]["trafficlightprotocol"] == "GREEN"
 
@@ -745,14 +745,14 @@ def test_reputation_url(
         client, args={"url": "https://someurl.com"}
     )
 
-    results_dict = results.to_context()["Contents"][0]
+    results_dict = results[0].to_context()["Contents"]
 
     assert results_dict["score"] == 1
     assert results_dict["type"] == "URL"
     assert (
         results_dict["fields"]["stixid"] == "url--02183bee-dcba-5d25-956b-765650f9e42a"
     )
-    assert results_dict["fields"]["DBotScore"]["Indicator"] == "https://someurl.com"
+    assert results_dict["fields"]["dbotscore"]["Indicator"] == "https://someurl.com"
     assert results_dict["fields"]["url"] == "https://someurl.com"
     assert results_dict["fields"]["trafficlightprotocol"] == "RED"
 
@@ -771,7 +771,7 @@ def test_reputation_cve(
         client, args={"cve": "CVE-1234-12345"}
     )
 
-    results_dict = results.to_context()["Contents"][0]
+    results_dict = results[0].to_context()["Contents"]
 
     assert results_dict["score"] == 0
     assert results_dict["type"] == "CVE"
@@ -780,7 +780,7 @@ def test_reputation_cve(
         == "vulnerability--e3b6a556-abcd-dcba-b1df-8e1f0444e978"
     )
     assert results_dict["fields"]["trafficlightprotocol"] == "RED"
-    assert results_dict["fields"]["DBotScore"]["Score"] == 0
+    assert results_dict["fields"]["dbotscore"]["Score"] == 1
     assert results_dict["fields"]["cvss"] == "v2.0"
     assert len(results_dict["fields"]["cvss2"]) > 0
 
