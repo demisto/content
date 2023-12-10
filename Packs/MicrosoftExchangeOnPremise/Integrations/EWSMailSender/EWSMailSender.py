@@ -128,7 +128,6 @@ def send_email_to_mailbox(
     to: List[str],
     subject: str,
     body: str,
-    body_type: str,
     bcc: List[str],
     cc: List[str],
     reply_to: List[str],
@@ -156,7 +155,7 @@ def send_email_to_mailbox(
     """
     if not attachments:
         attachments = []
-    message_body = HTMLBody(html_body) if html_body else body```
+    message_body = HTMLBody(html_body) if html_body else body
     m = Message(
         account=account,
         mime_content=raw_message.encode('UTF-8') if raw_message else None,
