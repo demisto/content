@@ -611,14 +611,13 @@ def lookup_request(ioc, multiple=True):
 def category_add_url(category_id, url, retaining_parent_category_url):
     demisto.debug('##### category_add_url function now running')
     category_data = get_category_by_id(category_id)
-    demisto.debug(f'##### {category_data=}')
+    demisto.debug(f'{category_data=}')
     if category_data:  # check if the category exists
         url_list = argToList(url)
         all_urls = url_list[:]
         all_urls.extend([x.strip() for x in category_data["urls"]])
         category_data["urls"] = all_urls
         retaining_parent_category_url_list = argToList(retaining_parent_category_url)
-        demisto.debug(f'##### {retaining_parent_category_url_list=}')
         if not (url_list, retaining_parent_category_url_list):
             return_error('Either url_list argument or retaining_parent_category_url_list argument must be provided.')
         add_or_remove_urls_from_category(
@@ -665,7 +664,6 @@ def category_add_ip(category_id, ip, retaining_parent_category_ip):
         all_ips.extend(category_data["urls"])
         category_data["urls"] = all_ips
         retaining_parent_category_ip_list = argToList(retaining_parent_category_ip)
-        demisto.debug(f'##### {retaining_parent_category_ip_list=}')
         if not (ip_list, retaining_parent_category_ip_list):
             return_error('Either ip_list argument or retaining_parent_category_ip_list argument must be provided.')
         response = category_ioc_update(category_data, retaining_parent_category_ip_list)
@@ -853,7 +851,7 @@ def add_or_remove_urls_from_category(action, urls, category_data, retaining_pare
         data["description"] = category_data["description"]
     if "configuredName" in category_data:
         data["configuredName"] = category_data["configuredName"]
-    demisto.debug(f'##### {data=}')
+    demisto.debug(f'{data=}')
     json_data = json.dumps(data)
     http_request(
         "PUT", cmd_url, json_data
