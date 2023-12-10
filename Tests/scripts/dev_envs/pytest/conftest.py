@@ -1,7 +1,7 @@
 import pytest
 import logging
 import os
-import uuid4
+from uuid import uuid4
 
 # File is copied to each package dir when running tests.
 # More info about conftest.py at:
@@ -51,7 +51,8 @@ def check_std_out_err(capfd):
         pytest.fail("Found output in stdout: [{}]".format(out.strip()))
     if err:
         pytest.fail("Found output in stderr: [{}]".format(err.strip()))
-    
+
+
 def pytest_configure(config):
     junit_xml = config.option.xmlpath
     if junit_xml:

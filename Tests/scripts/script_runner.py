@@ -5,29 +5,31 @@
 import subprocess
 import os
 import sys
+
+
 def run_script(args, files):
     try:
-        results = []
-        for file in files:
-            results.append(subprocess.run(args + [os.path.abspath(file)], cwd=os.path.dirname(file)))        
+        results = [subprocess.run(args + [os.path.abspath(file)], cwd=os.path.dirname(file)) for file in files]
         if any(result.returncode != 0 for result in results):
-            print("Script failed")  # noqa: T201
             return 1
     except subprocess.CalledProcessError as e:
         print("Error: {e}".format(e=e))  # noqa: T201,UP032
     except Exception as e:
         print("An error occurred: {e}".format(e=e))  # noqa: T201,UP032
     return 0
+
+
 def main():
     args = sys.argv[1:]
     files_index = args.index("--files") if "--files" in args else -1
     script_args = args[:files_index]
     files = None
     if files_index != -1:
-        files = args[files_index+1:]
+        files = args[files_index + 1:]
 
     # Run the script
     return run_script(script_args, files)
+
 
 if __name__ == "__main__":
     SystemExit(main())

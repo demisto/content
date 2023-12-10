@@ -83,10 +83,13 @@ repos:
      - -m
      - pytest
      - -v
+     - --override-ini='asyncio_mode=auto'
      - --rootdir=/src
      - --junitxml=/src/.pre-commit/pytest-junit/.report_pytest.xml
      - --files
-    
+    copy_files: 
+      - Tests/scripts/dev_envs/pytest/conftest.py
+
   - id: is-circle-changed
     name: is-circle-changed
     description: Checks if circle files are changed, and checkout to current if it is.
