@@ -363,6 +363,7 @@ def main():
         # For any other integration command exception, return an error
         return_error(f'Failed to execute {command} command. Error: {str(e)}')
 
+
 from IAMApiModule import *  # noqa E402
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
