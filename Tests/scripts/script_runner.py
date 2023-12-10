@@ -1,16 +1,17 @@
-# This script should support python2
+# This script receives a command to run and a list of files to run it on.
+# It will execute the command in parallel processes using multiprocessing Pool in the file working directory
+# This is needed because some of our scripts should run in the same working directory as the file they are running on
+# This script should support python2 and should not use external libraries, as it will run in minimal docker containers
 import subprocess
 import os
 import sys
-import logging
-import multiprocessing
 def run_script(args, files):
     try:
-        with multiprocessing.Pool() as pool:
-            results = pool.map(lambda file: subprocess.run(args + [file], cwd=os.path.dirname(file)), files)
-        
+        results = []
+        for file in files:
+            results.append(subprocess.run(args + [file], cwd=os.path.dirname(file)))        
         if any(result.returncode != 0 for result in results):
-            print("Script failed to run")
+            print("Script failed")
             return 1
     except subprocess.CalledProcessError as e:
         print("Error: {e}".format(e=e))
