@@ -100,8 +100,8 @@ script:
       required: true
       description: The SQL query statements to be executed.
     - name: QueryLimit
-      defaultValue: 50
       description: A limit (number) to use for the query. If the keyword 'LIMIT' exists within 'QueryString', this parameter will be ignored.
+      defaultValue: 50
     - name: ClientRequestToken
       description: A unique case-sensitive string used to ensure the request to create the query is idempotent (executes only once). If another StartQueryExecution request is received, the same response is returned and another query is not created.
     - name: Database
@@ -242,8 +242,8 @@ script:
       required: true
       description: The SQL query statements to be executed.
     - name: QueryLimit
-      defaultValue: 50
       description: A limit (number) to use for the query. If the keyword 'LIMIT' exists within 'QueryString', this parameter will be ignored.
+      defaultValue: 50
     - name: ClientRequestToken
       description: A unique case-sensitive string used to ensure the request to create the query is idempotent (executes only once). If another StartQueryExecution request is received, the same response is returned and another query is not created.
     - name: Database
@@ -275,8 +275,8 @@ script:
   - name: aws-athena-stop-query
     arguments:
     - name: QueryExecutionId
-      required: true
       description: The unique ID of the query execution to stop.  This field is auto-populated if not provided.
+      required: true
     - name: region
       description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
@@ -297,8 +297,8 @@ script:
     - name: roleSessionDuration
       description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
     - name: QueryExecutionId
-      required: true
       description: The unique ID of the query execution.
+      required: true
     description: Return execution information of a query.
     outputs:
     - contextPath: AWS.Athena.Query.QueryExecutionId
@@ -421,7 +421,7 @@ script:
     - contextPath: AWS.Athena.QueryResults
       description: List of query results.
       type: List
-  dockerimage: demisto/boto3py3:1.0.0.82269
+  dockerimage: demisto/boto3py3:1.0.0.83094
   subtype: python3
 tests:
 - No tests
