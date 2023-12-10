@@ -51,6 +51,11 @@ configuration:
   name: fetch_time
   type: 0
   required: false
+- defaultvalue: '10000'
+  display: Fetch Limit
+  name: fetch_limit
+  type: 0
+  required: false
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: feedInstanceReputationNotSet
   display: Indicator Reputation
