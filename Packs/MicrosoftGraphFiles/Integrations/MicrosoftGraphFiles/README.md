@@ -6,12 +6,31 @@ For more details about the authentication used in this integration, see <a href=
 
 ### Required Permissions
 
-- Directory.Read.All - Delegated
 - Files.ReadWrite.All - Application
-- Files.ReadWrite.All - Delegated
 - Sites.ReadWrite.All - Application
-- Sites.ReadWrite.All - Delegated
-- User.Read - Delegated
+
+Or you can give to the user access to specific site by using Site.Selected permission:
+
+#### Steps to use the Site.Selected permission:
+
+1. It requires two applications, one for the administrator and one for the user.
+2. Add the Sites.FullControl.All - Application permission to the admin
+application.
+3. Add the Site.Selected - Application permission to the user application.
+4. Navigate to **Settings** > **Integrations**.
+5. Search for O365 File Management (Onedrive/Sharepoint/Teams).
+6. Click **Add instance** to create and configure a new integration instance for the admin app.
+7. Enter the admin application credentials.
+8. Click **Test** to validate the connection.
+9. Run commands to give the user application access to specific sites:
+    * `msgraph-list-site-permissions` - Get permissions for a site
+    * `msgraph-create-site-permissions` - Add permissions for a site
+    * `msgraph-update-site-permissions` - Update permissions for a site
+    * `msgraph-delete-site-permissions` - Delete permissions for a site
+10. Delete the admin instance after configuring user access.
+11. Repeat steps 6-8 to create an instance for the user application.
+
+Note: The command `msgraph-list-sharepoint-sites` cannot be run, because for this command the app need permission to read all the sites `Sites.Read.All - Application`
 
 ## Configure O365 File Management (Onedrive/Sharepoint/Teams) on Cortex XSOAR
 
@@ -22,14 +41,14 @@ For more details about the authentication used in this integration, see <a href=
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | host | Server URL | True |
-| auth_id | ID \(received from the admin consent - see Detailed Instructions\) | False |
-| tenant_id | Token \(received from the admin consent - see Detailed Instructions\) | False |
-| enc_key | Key \(received from the admin consent - see Detailed Instructions\) | False |
+| auth_id | Application ID / Client ID | False |
+| tenant_id | Token / Tenant ID | False |
+| enc_key | Key / Client Secret | False |
 | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | False |
 | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
 | Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
 | Azure Managed Identities Client ID | The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM. | False |
-| insecure | Trust any certificate \(not secure\) | False |
+| insecure | Trust any certificate (not secure) | False |
 | proxy | Use system proxy settings | False |
 | self_deployed | Use a self-deployed Azure Application | False |
 
@@ -44,6 +63,9 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 ***
 Deletes an item from OneDrive.
+
+#### Permission required
+`Files.ReadWrite.All - Application`
 
 #### Base Command
 
@@ -76,6 +98,9 @@ There is no context output for this command.
 
 ***
 Uploads a file from Cortex XSOAR to the specified MS Graph resource.
+
+#### Permission required
+`Files.ReadWrite.All - Application`
 
 #### Base Command
 
@@ -281,6 +306,9 @@ Replaces the content of the file in the specified MS Graph resource.
 ***
 Creates a new folder in a drive with the specified parent item or path.
 
+#### Permission required
+`Files.ReadWrite.All - Application`
+
 #### Base Command
 
 `msgraph-create-new-folder`
@@ -377,6 +405,10 @@ Creates a new folder in a drive with the specified parent item or path.
 ***
 Returns the list of document libraries (drives) available for a target site.
 
+#### Permission required
+
+`Sites.Read.All - Application` or `Files.Read.All - Application`
+
 #### Base Command
 
 `msgraph-list-drives-in-site`
@@ -456,6 +488,10 @@ Returns the list of document libraries (drives) available for a target site.
 
 ***
 Returns a list of files and folders in the specified drive.
+
+#### Permission required
+`Files.Read.All - Application` or
+`Sites.Read.All - Application`
 
 #### Base Command
 
@@ -560,6 +596,9 @@ Returns a list of files and folders in the specified drive.
 ***
 Returns a list of the tenant sites.
 
+#### Permission required
+`Sites.Read.All - Application`
+
 #### Base Command
 
 `msgraph-list-sharepoint-sites`
@@ -628,6 +667,9 @@ Returns a list of the tenant sites.
 ***
 Downloads the file contents of the drive item.
 
+#### Permission required
+`Files.Read.All - Application` or `Site.Read.All - Application`
+
 #### Base Command
 
 `msgraph-download-file`
@@ -683,6 +725,11 @@ There is no context output for this command.
 ***
 List of apps with permissions for the site, if permission_id is provide it will return the details of that permission.
 
+#### Permission required
+
+`Sites.FullControl.All  - Application`
+The command only runs from admin instance.
+
 #### Base Command
 
 `msgraph-list-site-permissions`
@@ -691,7 +738,7 @@ List of apps with permissions for the site, if permission_id is provide it will 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of results to return. Default is 50. Default is 50. | Optional | 
+| limit | The maximum number of results to return. Default is 50. | Optional | 
 | site_id | The ID of the site. Must provide either site_id or site_name. | Optional | 
 | site_name | The name of the site. Must provide either site_id or site_name. | Optional | 
 | permission_id | The ID of the permission. | Optional | 
@@ -774,6 +821,11 @@ List of apps with permissions for the site, if permission_id is provide it will 
 ***
 Create a new application permission for a site.
 
+#### Permission required
+
+`Sites.FullControl.All  - Application`
+The command only runs from admin instance.
+
 #### Base Command
 
 `msgraph-create-site-permissions`
@@ -842,6 +894,11 @@ There is no context output for this command.
 ***
 Updates an existing permission for a site.
 
+#### Permission required
+
+`Sites.FullControl.All  - Application`
+The command only runs from admin instance.
+
 #### Base Command
 
 `msgraph-update-site-permissions`
@@ -871,6 +928,11 @@ There is no context output for this command.
 
 ***
 Deletes a app permission from a site.
+
+#### Permission required
+
+`Sites.FullControl.All  - Application`
+The command only runs from admin instance.
 
 #### Base Command
 

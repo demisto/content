@@ -78,7 +78,7 @@ tasks:
       name: Upload New File To Demisto
       description: |
         Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
-      scriptName: FileCreateAndUpload
+      scriptName: FileCreateAndUploadV2
       type: regular
       iscommand: false
       brand: ""
@@ -221,8 +221,8 @@ tasks:
       version: -1
       name: Upload New File To Demisto
       description: |
-        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
-      scriptName: FileCreateAndUpload
+        Creates a file (using the given data input or entry ID) and uploads it to the current investigation War Room.
+      scriptName: FileCreateAndUploadV2
       type: regular
       iscommand: false
       brand: ""
@@ -258,10 +258,10 @@ tasks:
       id: 02fbec73-ae9e-4b5b-886d-b5ea36121505
       version: -1
       name: Replace File's Content In MS Graph
-      script: Microsoft_Graph_Files|||msgraph-replace-existing-file
+      script: "|||msgraph-replace-existing-file"
       type: regular
       iscommand: true
-      brand: Microsoft_Graph_Files
+      brand: ""
     nexttasks:
       '#none#':
       - "37"
@@ -339,7 +339,7 @@ tasks:
       version: -1
       name: Save File ID
       description: Sets key/value pair in incident's context
-      scriptName: SetContext
+      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
@@ -507,10 +507,10 @@ tasks:
       id: 082ee983-c3fa-4122-8584-e1cdebb35494
       version: -1
       name: Create New Folder In MS Graph
-      script: Microsoft_Graph_Files|||msgraph-create-new-folder
+      script: "|||msgraph-create-new-folder"
       type: regular
       iscommand: true
-      brand: Microsoft_Graph_Files
+      brand: ""
     nexttasks:
       '#none#':
       - "14"
@@ -612,7 +612,7 @@ tasks:
       version: -1
       name: Save Folder ID In Context
       description: Sets key/value pair in incident's context
-      scriptName: SetContext
+      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
@@ -681,10 +681,10 @@ tasks:
       id: 272a261e-5947-40ee-8c1b-fe38c2494324
       version: -1
       name: Test Download File From Graph
-      script: Microsoft_Graph_Files|||msgraph-download-file
+      script: "|||msgraph-download-file"
       type: regular
       iscommand: true
-      brand: Microsoft_Graph_Files
+      brand: ""
     nexttasks:
       '#none#':
       - "19"
@@ -834,10 +834,10 @@ tasks:
       version: -1
       name: Test List Sites
       description: Returns a list of the tenant sites.
-      script: Microsoft_Graph_Files|||msgraph-list-sharepoint-sites
+      script: "|||msgraph-list-sharepoint-sites"
       type: regular
       iscommand: true
-      brand: Microsoft_Graph_Files
+      brand: ""
     nexttasks:
       '#none#':
       - "39"
@@ -957,10 +957,10 @@ tasks:
       id: ced77071-d2da-437d-8199-5b837ae84446
       version: -1
       name: List Drives In Site
-      script: Microsoft_Graph_Files|||msgraph-list-drives-in-site
+      script: "|||msgraph-list-drives-in-site"
       type: regular
       iscommand: true
-      brand: Microsoft_Graph_Files
+      brand: ""
     nexttasks:
       '#none#':
       - "34"
@@ -1093,10 +1093,10 @@ tasks:
       version: -1
       name: List All Drive's Children
       description: This command list all the drive's files and folders
-      script: Microsoft_Graph_Files|||msgraph-list-drive-content
+      script: "|||msgraph-list-drive-content"
       type: regular
       iscommand: true
-      brand: Microsoft_Graph_Files
+      brand: ""
     nexttasks:
       '#none#':
       - "38"
@@ -1216,10 +1216,10 @@ tasks:
       id: 523b9b2c-a240-44b1-8832-676088be7d4c
       version: -1
       name: Delete File From Graph
-      script: Microsoft_Graph_Files|||msgraph-delete-file
+      script: "|||msgraph-delete-file"
       type: regular
       iscommand: true
-      brand: Microsoft_Graph_Files
+      brand: ""
     nexttasks:
       '#none#':
       - "43"
@@ -1257,7 +1257,7 @@ tasks:
       version: -1
       name: Save File DriveID
       description: Sets key/value pair in incident's context
-      scriptName: SetContext
+      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
@@ -1296,7 +1296,7 @@ tasks:
       version: -1
       name: Save Folder Parent ID
       description: Sets key/value pair in incident's context
-      scriptName: SetContext
+      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
@@ -1334,10 +1334,10 @@ tasks:
       id: b42d0bd8-0c2c-471d-8fd7-7d23c1ad8d6c
       version: -1
       name: Delete Folder From Graph
-      script: Microsoft_Graph_Files|||msgraph-delete-file
+      script: "|||msgraph-delete-file"
       type: regular
       iscommand: true
-      brand: Microsoft_Graph_Files
+      brand: ""
     nexttasks:
       '#none#':
       - "42"
@@ -1922,10 +1922,10 @@ tasks:
       version: -1
       name: Replace existing file
       description: Replaces the content of the file in the specified MS Graph resource.
-      script: Microsoft_Graph_Files|||msgraph-replace-existing-file
+      script: "|||msgraph-replace-existing-file"
       type: regular
       iscommand: true
-      brand: Microsoft_Graph_Files
+      brand: ""
     nexttasks:
       '#none#':
       - "54"
@@ -2101,10 +2101,10 @@ tasks:
       version: -1
       name: delete file
       description: Deletes an item from OneDrive.
-      script: Microsoft_Graph_Files|||msgraph-delete-file
+      script: "|||msgraph-delete-file"
       type: regular
       iscommand: true
-      brand: Microsoft_Graph_Files
+      brand: ""
     nexttasks:
       '#none#':
       - "45"

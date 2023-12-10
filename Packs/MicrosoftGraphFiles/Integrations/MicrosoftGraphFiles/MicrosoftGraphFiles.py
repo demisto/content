@@ -42,7 +42,7 @@ def parse_key_to_context(obj: dict) -> dict:
             parsed_obj[new_key] = parse_key_to_context(value)
 
     under_score_obj = createContext(parsed_obj, keyTransform=camel_case_to_underscore)
-    context_entry = createContext(under_score_obj, keyTransform=string_to_context_key)
+    context_entry: dict = createContext(under_score_obj, keyTransform=string_to_context_key)
 
     if "Id" in list(context_entry.keys()):
         context_entry["ID"] = context_entry["Id"]
@@ -141,7 +141,6 @@ class MsGraphClient:
             raise DemistoException(
                 "Please pass at least one argument to this command: \n"
                 "site_id: if you want to get all sites.\n"
-                "limit: if you want to limit the number of command's results. \n"
                 "next_page_url: if you have used the limit argument."
             )
 
@@ -186,7 +185,7 @@ class MsGraphClient:
         url_suffix = f"/sites/{site_id}/permissions/{permission_id}"
         return self.ms_client.http_request(method="DELETE", url_suffix=url_suffix, return_empty_response=True)
 
-    def list_drive_content(self, object_type, object_type_id, item_id=None, limit=None, next_page_url=None):
+    def list_drive_content(self, object_type: str, object_type_id: str, item_id: str, limit=None, next_page_url=None) -> dict:
         """
         This command list all the drive's files and folders
         :param object_type: ms graph resource.
@@ -204,7 +203,7 @@ class MsGraphClient:
 
         if object_type == "drives":
             uri = f"{object_type}/{object_type_id}/items/{item_id}/children"
-        elif object_type in ["groups", "sites", "users"]:
+        elif object_type in {"groups", "sites", "users"}:
             uri = f"{object_type}/{object_type_id}/drive/items/{item_id}/children"
 
         return self.ms_client.http_request(
@@ -222,7 +221,7 @@ class MsGraphClient:
         :param entry_id: demisto file entry id
         :return: graph api raw response
         """
-
+        uri = ""
         file_path = demisto.getFilePath(entry_id).get("path", None)
         if not file_path:
             raise DemistoException(
@@ -242,7 +241,7 @@ class MsGraphClient:
 
     def replace_existing_file_with_upload_session(self, object_type: str,
                                                   object_type_id: str, item_id: str, entry_id: str, file_data: bytes,
-                                                  file_size: int, file_name: str) -> dict:
+                                                  file_size: int, file_name: str) -> requests.Response:
         """
         Replace a file with upload session.
 
@@ -261,6 +260,7 @@ class MsGraphClient:
                 f"Could not find file path to the next entry id: {entry_id}. \n"
                 f"Please provide another one."
             )
+        uri = ""
         # create suitable upload session
         if object_type == 'drives':
             uri = f'/drives/{object_type_id}/items/{item_id}/createUploadSession'
@@ -304,7 +304,7 @@ class MsGraphClient:
     @staticmethod
     def upload_attachment(
             upload_url, start_chunk_idx, end_chunk_idx, chunk_data, attachment_size
-    ):
+    ) -> requests.Response:
         """
         Upload an attachment to the upload URL.
 
@@ -331,7 +331,7 @@ class MsGraphClient:
             raise (e)
         return response
 
-    def upload_file_with_upload_session(self, upload_url: str, file_data: bytes, file_size: int) -> dict:
+    def upload_file_with_upload_session(self, upload_url: str, file_data: bytes, file_size: int) -> requests.Response:
         """
         Add an attachment using an upload session by dividing the file bytes into chunks and sent each chunk each time.
         more info here -
@@ -393,7 +393,7 @@ class MsGraphClient:
         return response, response.get("uploadUrl")
 
     def upload_file_with_upload_session_flow(self, object_type: str, object_type_id: str, parent_id: str, file_name: str,
-                                             file_data: bytes, file_size: int) -> dict:
+                                             file_data: bytes, file_size: int) -> requests.Response:
         """
         Uploads a file with the upload session flow, this is used only when the file is larger
         than 3 MB.
@@ -410,6 +410,7 @@ class MsGraphClient:
                       201 (created) if the file was uploaded completely. 400 in case of errors.
         """
         # create suitable upload session
+        uri = ""
         if object_type == 'drives':
             uri = f'/drives/{object_type_id}/items/{parent_id}:/{file_name}:/createUploadSession'
         elif object_type == 'groups':
@@ -426,7 +427,7 @@ class MsGraphClient:
         demisto.debug(f'response of "upload_file_with_upload_session": {response}')
         return response_file_upload
 
-    def upload_new_file(self, object_type, object_type_id, parent_id, file_name, entry_id):
+    def upload_new_file(self, object_type: str, object_type_id: str, parent_id: str, file_name: str, entry_id: str):
         """
         this function upload new file to a selected folder(parent_id)
         :param object_type: drive/ group/ site/ users
@@ -436,12 +437,12 @@ class MsGraphClient:
         :param entry_id: demisto file entry ID.
         :return: graph api raw response.
         """
-        file_path = demisto.getFilePath(entry_id).get("path")
-
+        file_path: str = demisto.getFilePath(entry_id).get("path", "")
+        uri = ""
         if object_type == "drives":
             uri = f"{object_type}/{object_type_id}/items/{parent_id}:/{file_name}:/content"
 
-        elif object_type in ["groups", "users", "sites"]:
+        elif object_type in {"groups", "users", "sites"}:
             uri = f"{object_type}/{object_type_id}/drive/items/{parent_id}:/{file_name}:/content"
 
         with open(file_path, "rb") as file:
@@ -449,7 +450,7 @@ class MsGraphClient:
             return self.ms_client.http_request(
                 method="PUT", headers=headers, url_suffix=uri, data=file)
 
-    def download_file(self, object_type: str, object_type_id: str, item_id: str):
+    def download_file(self, object_type: str, object_type_id: str, item_id: str) -> requests.Response:
         """
         Download the contents of the file of a DriveItem.
         :param object_type: ms graph resource.
@@ -461,13 +462,12 @@ class MsGraphClient:
         if object_type == "drives":
             uri = f"{object_type}/{object_type_id}/items/{item_id}/content"
 
-        elif object_type in ["groups", "sites", "users"]:
+        elif object_type in {"groups", "sites", "users"}:
             uri = f"{object_type}/{object_type_id}/drive/items/{item_id}/content"
 
-        # send request
         return self.ms_client.http_request(method="GET", url_suffix=uri, resp_type='response')
 
-    def create_new_folder(self, object_type, object_type_id, parent_id, folder_name):
+    def create_new_folder(self, object_type: str, object_type_id: str, parent_id: str, folder_name: str) -> dict:
         """
         Create a new folder in a Drive with a specified parent item or path.
         :param object_type: ms graph resource.
@@ -476,10 +476,11 @@ class MsGraphClient:
         :param folder_name: folder name
         :return: graph api raw response
         """
+        uri = ""
         if object_type == "drives":
             uri = f"{object_type}/{object_type_id}/items/{parent_id}/children"
 
-        elif object_type in ["groups", "sites", "users"]:
+        elif object_type in {"groups", "sites", "users"}:
             uri = f"{object_type}/{object_type_id}/drive/items/{parent_id}/children"
 
         # send request
@@ -510,7 +511,7 @@ def test_module(client: MsGraphClient) -> str:
     return 'ok'
 
 
-def download_file_command(client: MsGraphClient, args: dict) -> dict:
+def download_file_command(client: MsGraphClient, args: dict[str, str]) -> dict:
     """
     This function runs download file command
     :return: FileResult object
@@ -543,14 +544,11 @@ def list_drive_content_command(client: MsGraphClient, args: dict[str, str]) -> t
     This function runs list drive children command
     :return: human_readable, context, result
     """
-    object_type = args.get("object_type")
-    object_type_id = args.get("object_type_id")
-    item_id = args.get("item_id")
+    object_type = args["object_type"]
+    object_type_id = args["object_type_id"]
+    item_id = args.get("item_id", "root")
     limit = args.get("limit")
     next_page_url = args.get("next_page_url")
-
-    if not item_id:
-        item_id = "root"
 
     result = client.list_drive_content(
         object_type=object_type,
@@ -578,6 +576,7 @@ def list_drive_content_command(client: MsGraphClient, args: dict[str, str]) -> t
         f"{INTEGRATION_NAME}.ListChildren(val.ItemID == obj.ItemID)": {
             "ParentID": item_id,
             "Children": drive_items_outputs,
+            "NextToken": result.get("@odata.nextLink")
         }
     }
 
@@ -594,7 +593,7 @@ def list_share_point_sites_human_readable_object(parsed_drive_items: dict) -> di
     }
 
 
-def list_sharepoint_sites_command(client: MsGraphClient, args: dict) -> tuple[str, dict, dict]:
+def list_sharepoint_sites_command(client: MsGraphClient, args: dict[str, str]) -> tuple[str, dict, dict]:
     """
     This function runs list tenant site command
     :return: human_readable, context, result
@@ -622,21 +621,20 @@ def list_sharepoint_sites_command(client: MsGraphClient, args: dict) -> tuple[st
     return human_readable, context, result
 
 
-def list_drives_human_readable_object(parsed_drive_items):
-    human_readable_content_obj = {
+def list_drives_human_readable_object(parsed_drive_items: dict) -> dict:
+    return {
         "Name": parsed_drive_items.get("Name"),
         "ID": parsed_drive_items.get("ID"),
-        "CreatedBy": parsed_drive_items.get("CreatedBy").get("DisplayName"),
+        "CreatedBy": parsed_drive_items.get("CreatedBy", {}).get("DisplayName"),
         "CreatedDateTime": parsed_drive_items.get("CreatedDateTime"),
         "Description": parsed_drive_items.get("Description"),
         "DriveType": parsed_drive_items.get("DriveType"),
         "LastModifiedDateTime": parsed_drive_items.get("LastModifiedDateTime"),
         "WebUrl": parsed_drive_items.get("WebUrl"),
     }
-    return human_readable_content_obj
 
 
-def list_drives_in_site_command(client: MsGraphClient, args: dict) -> tuple[str, dict, dict]:
+def list_drives_in_site_command(client: MsGraphClient, args: dict[str, str]) -> tuple[str, dict, dict]:
     """
     This function run the list drives in site command
     :return: human_readable, context, result
@@ -660,6 +658,7 @@ def list_drives_in_site_command(client: MsGraphClient, args: dict) -> tuple[str,
     context_entry = {
         "OdataContext": result.get("@odata.context"),
         "Value": parsed_drive_items,
+        "NextToken": result.get("@odata.nextLink")
     }
 
     title = f"{INTEGRATION_NAME} - Drives information:"
@@ -674,7 +673,7 @@ def list_drives_in_site_command(client: MsGraphClient, args: dict) -> tuple[str,
     return human_readable, context, result
 
 
-def replace_an_existing_file_command(client: MsGraphClient, args: dict) -> tuple[str, dict, dict]:
+def replace_an_existing_file_command(client: MsGraphClient, args: dict[str, str]) -> tuple[str, dict, dict]:
     """
     This function runs the replace existing file command
     :return: human_readable, context, result
@@ -741,7 +740,7 @@ def read_file(attach_id: str) -> tuple[bytes, int, str]:
         ) from e
 
 
-def upload_new_file_command(client: MsGraphClient, args: dict):
+def upload_new_file_command(client: MsGraphClient, args: dict[str, str]) -> tuple[str, dict, dict]:
     """
     This function uploads new file to graph api
     :return: human_readable, context, result
@@ -782,15 +781,15 @@ def upload_new_file_command(client: MsGraphClient, args: dict):
     return human_readable, context, result
 
 
-def create_new_folder_command(client: MsGraphClient, args: dict):
+def create_new_folder_command(client: MsGraphClient, args: dict[str, str]) -> tuple[str, dict, dict]:
     """
     This function runs create new folder command
     :return: human_readable, context, result
     """
-    object_type = args.get("object_type")
-    parent_id = args.get("parent_id")
-    folder_name = args.get("folder_name")
-    object_type_id = args.get("object_type_id")
+    object_type = args["object_type"]
+    parent_id = args["parent_id"]
+    folder_name = args["folder_name"]
+    object_type_id = args["object_type_id"]
 
     result = client.create_new_folder(
         object_type, object_type_id, parent_id, folder_name
@@ -821,7 +820,7 @@ def create_new_folder_command(client: MsGraphClient, args: dict):
     return human_readable, context, result
 
 
-def delete_file_command(client: MsGraphClient, args: dict) -> tuple[str, str]:
+def delete_file_command(client: MsGraphClient, args: dict[str, str]) -> tuple[str, str]:
     """
     runs delete file command
     :return: raw response and action result test
@@ -841,36 +840,29 @@ def delete_file_command(client: MsGraphClient, args: dict) -> tuple[str, str]:
     return human_readable, text  # == raw response
 
 
-def get_site_id(client: MsGraphClient, site_id: str | None, site_name: str | None) -> str:
+def get_site_id_from_site_name(client: MsGraphClient, site_name: str | None) -> str:
     """
     Retrieves the SharePoint site ID based on either the provided site ID or site name.
 
     Args:
         client (MsGraphClient): An instance of the Microsoft Graph client.
-        site_id (Optional[str]): The ID of the SharePoint site. If not provided, it will be fetched using the site_name.
-        site_name (Optional[str]): The name of the SharePoint site. If site_id is not provided,
-                                    it will be used to fetch the site ID.
+        site_name (Optional[str]): The name of the SharePoint site.
 
     Returns:
-        str: The SharePoint site ID extracted from the provided parameters.
+        str: The SharePoint site ID.
 
     Raises:
         DemistoException: If neither site_id nor site_name is provided,
         or if the specified site_name does not correspond to a valid SharePoint site.
-
-    Note:
-        The SharePoint site ID is extracted from a string in the format "sharepoint.com,site_id,additional_info".
     """
-    if not site_id and not site_name:
-        raise DemistoException("Either site_id or site_name parameter is required.")
+    if site_name:
+        site_details = client.list_sharepoint_sites(site_name)["value"]
+        if site_details:
+            return site_details[0]["id"]
+        else:
+            raise DemistoException(f"Site '{site_name}' not found. Please provide a valid site name.")
 
-    if not site_id and site_name:
-        if not (site_details := client.list_sharepoint_sites(site_name)["value"]):
-            raise DemistoException("Site not found. Please provide a valid site name or id.")
-        site_id = site_details[0]["id"]  # .split(",")[1] #TODO
-    if site_id is None:
-        raise DemistoException("Site not found. Please provide a valid site name or id.")
-    return site_id
+    raise DemistoException("Either 'site_id' or 'site_name' parameter is required.")
 
 
 def _parse_permission(permission: dict):
@@ -901,7 +893,7 @@ def list_site_permissions_command(client: MsGraphClient, args: dict[str, str]) -
     permission_id = args.get("permission_id")
     limit = arg_to_number(args.get("limit", 50))
     all_results = argToBoolean(args.get("all_results", False))
-    site_id = get_site_id(client, args.get("site_id"), args.get("site_name"))
+    site_id = args.get("site_id") or get_site_id_from_site_name(client, args.get("site_name"))
     results = client.list_site_permissions(site_id, permission_id)
     if permission_id:
         return CommandResults(
@@ -948,7 +940,7 @@ def create_site_permissions_command(client: MsGraphClient, args: dict[str, str])
     app_id = args["app_id"]
     role = argToList(args["role"])
     display_name = args["display_name"]
-    site_id = get_site_id(client, args.get("site_id"), args.get("site_name"))
+    site_id = args.get("site_id") or get_site_id_from_site_name(client, args.get("site_name"))
 
     results = client.create_site_permission(site_id, app_id, display_name, role)
 
@@ -977,7 +969,7 @@ def update_site_permissions_command(client: MsGraphClient, args: dict[str, str])
     """
     permission_id = args["permission_id"]
     role = argToList(args["role"])
-    site_id = get_site_id(client, args.get("site_id"), args.get("site_name"))
+    site_id = args.get("site_id") or get_site_id_from_site_name(client, args.get("site_name"))
 
     results = client.update_site_permission(site_id, permission_id, role)
 
@@ -1003,7 +995,7 @@ def delete_site_permission_command(client: MsGraphClient, args: dict[str, str]) 
 
     """
     permission_id = args["permission_id"]
-    site_id = get_site_id(client, args.get("site_id"), args.get("site_name"))
+    site_id = args.get("site_id") or get_site_id_from_site_name(client, args.get("site_name"))
 
     client.delete_site_permission(site_id, permission_id)
     return CommandResults(
