@@ -479,8 +479,5 @@
         "kafka",
         "syslog",
         "fcm"
-    ],
-    "IncidentType": [
-        "ASM"
     ]
 }
