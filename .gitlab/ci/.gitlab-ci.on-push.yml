@@ -396,6 +396,7 @@ jobs-done-check-nightly:
     - xsoar-prepare-testing-bucket
     - xsoar-saas-prepare-testing-bucket
     - xsiam_server_ga
+    - xsoar_ng_server_ga
     - tests_xsoar_server
     - xsoar-test_playbooks_results
     - xsiam-test_playbooks_results
@@ -676,7 +677,7 @@ xsoar_ng_server_ga:
     - .test_content_on_cloud_server_instances_base
   rules:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
-    - if: $TEST_XDR_ENV && ($CI_PIPELINE_SOURCE =~ /^(push|contrib)$/)
+    - if: $TEST_XDR_ENV && ($CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ || $NIGHTLY)
       when: always
       variables:
         CLOUD_MACHINES_TYPE: "testing"
