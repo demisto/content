@@ -31,9 +31,8 @@ def analyzeData(res):
             else:
                 medFound = 0
 
-        if not highRes:
-            if item['data'][0] >= 90:
-                highRes = True
+        if not highRes and item['data'][0] >= 90:
+            highRes = True
     if lowRes or medRes or highRes:
         addActions = []
 

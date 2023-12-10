@@ -1,6 +1,6 @@
 from CommonServerPython import *
 
-from typing import Dict, Any
+from typing import Any
 import traceback
 
 SERVER_SYSTEM_CONFIG_PATH = '/system/config'
@@ -37,7 +37,7 @@ def update_server_config(key: str, value: str, server_config: dict):
     set_system_config(server_config)
 
 
-def edit_server_config(args: Dict[str, Any]) -> CommandResults:
+def edit_server_config(args: dict[str, Any]) -> CommandResults:
     action = args.get('action', "")
     key = args.get('key', "")
     value = args.get('value', "")

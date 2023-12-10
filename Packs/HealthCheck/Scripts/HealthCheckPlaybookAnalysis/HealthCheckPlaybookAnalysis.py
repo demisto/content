@@ -81,10 +81,10 @@ thresholds = args.get('Thresholds', Thresholds)
 
 customPlaybooks = demisto.executeCommand(
     "core-api-post", {"uri": f"{account_name}playbook/search",
-                         "body": {"query": "system:F"}})[0]["Contents"]["response"]["playbooks"]
+                      "body": {"query": "system:F"}})[0]["Contents"]["response"]["playbooks"]
 builtinPlaybooks = demisto.executeCommand(
     "core-api-post", {"uri": f"{account_name}playbook/search",
-                         "body": {"query": "system:T"}})[0]["Contents"]["response"]["playbooks"]
+                      "body": {"query": "system:T"}})[0]["Contents"]["response"]["playbooks"]
 
 builtinPlaybooksNames = []
 copyDetected = []

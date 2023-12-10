@@ -118,6 +118,7 @@ def main(args):
                     }
                 }
             }
+            return None
     else:
         add_actions = analyze_data(stats)
         return CommandResults(

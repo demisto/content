@@ -376,12 +376,13 @@ class TableData:
                 value = row.get(search_key)
                 if value == search_value:
                     return row
+        return None
 
 
 class SortedTableData(TableData):
     def __init__(self, data, name, sort_key):
         sorted_data = sorted(data, key=lambda i: i[sort_key].lower())
-        super(SortedTableData, self).__init__(sorted_data, name)
+        super().__init__(sorted_data, name)
 
 
 class SingleFieldData:

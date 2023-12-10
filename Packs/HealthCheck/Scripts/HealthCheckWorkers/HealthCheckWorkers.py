@@ -34,7 +34,7 @@ def nano_to_secs(table):
         else:
             minutes = int(secs / 60)
             mod_sec = secs % 60
-            entry['Duration'] = "{} Minutes and {} seconds".format(str(minutes), mod_sec)
+            entry['Duration'] = f"{str(minutes)} Minutes and {mod_sec} seconds"
 
 
 def format_time(table):

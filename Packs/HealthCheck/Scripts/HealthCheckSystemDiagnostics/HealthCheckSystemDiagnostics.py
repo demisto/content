@@ -47,7 +47,7 @@ def FormatSize(size):
     while size > power:
         size /= power
         n += 1
-    return "{:.2f} {}".format(size, power_labels[n])
+    return f"{size:.2f} {power_labels[n]}"
 
 
 def format_time(time):
@@ -102,7 +102,7 @@ SystemDiagnosticsResults = {
 }
 
 out = []
-for key in SystemDiagnosticsResults.keys():
+for key in SystemDiagnosticsResults:
     if key != "bigTasks":
         res = FormatTableAndSet(SystemDiagnosticsResults[key], key)
         SystemDiagnosticsResults[key] = res

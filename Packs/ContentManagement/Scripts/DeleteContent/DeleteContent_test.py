@@ -2,7 +2,7 @@ import pytest
 
 from DeleteContent import get_and_delete_needed_ids, CORE_PACKS_LIST_URL
 from abc import ABC, abstractmethod
-from typing import Tuple, Any
+from typing import Any
 
 
 XSOAR_IDS_FULL_STATE = {
@@ -31,11 +31,11 @@ class MockEntityResponses(ABC):
         self.xsoar_state_ids = xsoar_state.get(self.entity_name)
 
     @abstractmethod
-    def search_response(self, command_name, command_args) -> Tuple[bool, Any]:
+    def search_response(self, command_name, command_args) -> tuple[bool, Any]:
         pass
 
     @abstractmethod
-    def delete_response(self, command_name, command_args) -> Tuple[bool, Any]:
+    def delete_response(self, command_name, command_args) -> tuple[bool, Any]:
         pass
 
 

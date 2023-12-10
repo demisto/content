@@ -71,7 +71,7 @@ def RunUTResults(args):
         new_id = "0"
         task_id = "0"
         if attempts < 5:
-            for key, val in tasks.items():
+            for _key, val in tasks.items():
                 if "scriptId" in val['task']:
                     if val['task']['scriptId'] == scriptid and val['task']['name'] == "DisplayUnitTestResults":
                         new_id = val['id']
@@ -137,22 +137,21 @@ def RunAdhocPlaybook(playbookname, taskname, addafter, incid):
 
         # Find the new task ID in the updated playbook and execute the task
         for key, task in tasks.items():
-            if "name" in task['task']:
-                if task['task']['name'] == taskname:
-                    demisto.executeCommand("core-api-post", {
-                        'uri': "/inv-playbook/task/execute",
-                        'body': {
-                            'taskinfo': {
-                                'invId': incid,
-                                'inTaskID': key,
-                                'version': -1,
-                                'args': {},
-                                'loopArgs': {}
-                            },
-                            'playbooksdebuginfo': {},
-                            'pageSize': 50
-                        }
-                    })
+            if "name" in task['task'] and task['task']['name'] == taskname:
+                demisto.executeCommand("core-api-post", {
+                    'uri': "/inv-playbook/task/execute",
+                    'body': {
+                        'taskinfo': {
+                            'invId': incid,
+                            'inTaskID': key,
+                            'version': -1,
+                            'args': {},
+                            'loopArgs': {}
+                        },
+                        'playbooksdebuginfo': {},
+                        'pageSize': 50
+                    }
+                })
     except Exception as ex:
         demisto.error(traceback.format_exc())
         return_error(f"RunAdhocPlaybook: Exception failed to execute. Error: {str(ex)}")

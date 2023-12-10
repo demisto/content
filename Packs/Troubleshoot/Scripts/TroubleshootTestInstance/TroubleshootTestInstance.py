@@ -1,7 +1,7 @@
 """
 Gets an instance configuration and a parameter to modify, to check if is works.
 """
-from typing import Iterable
+from collections.abc import Iterable
 
 from CommonServerPython import *
 

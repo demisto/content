@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-from typing import Dict, Any
+from typing import Any
 
 vcuris = [
     "/vc/history/list/all/-1",
@@ -25,15 +25,12 @@ def main():
         })[0]['Contents']['response']
 
         # Build the changed object dictionary
-        itypes: Dict[str, Dict[str, Dict[str, Any]]]
+        itypes: dict[str, dict[str, dict[str, Any]]]
         itypes = {}
 
         if changes is not None:
             for item in changes:
-                if "message" in item:
-                    msg = item['message']
-                else:
-                    msg = "no message"
+                msg = item.get("message", "no message")
                 if item['type'] not in itypes:
                     itypes[item['type']] = {}
                 itypes[item['type']][item['name']] = {"action": item['action'], "message": msg, "history": []}
