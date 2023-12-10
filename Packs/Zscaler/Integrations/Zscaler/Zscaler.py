@@ -619,7 +619,7 @@ def category_add_url(category_id, url, retaining_parent_category_url):
         category_data["urls"] = all_urls
         retaining_parent_category_url_list = argToList(retaining_parent_category_url)
         if not (url_list, retaining_parent_category_url_list):
-            return_error('Either url_list argument or retaining_parent_category_url_list argument must be provided.')
+            return_error('Either url argument or retaining_parent_category_url argument must be provided.')
         add_or_remove_urls_from_category(
             ADD, url_list, category_data, retaining_parent_category_url_list
         )  # add the urls to the category
@@ -651,6 +651,9 @@ def category_add_url(category_id, url, retaining_parent_category_url):
 
 
 def category_add_ip(category_id, ip, retaining_parent_category_ip):
+    if not (ip, retaining_parent_category_ip):
+        return_error('Either ip argument or retaining_parent_category_ip argument must be provided.')
+
     categories = get_categories()
     found_category = False
     for category in categories:
