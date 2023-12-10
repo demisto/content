@@ -8,6 +8,7 @@ from enum import Enum
 
 AUTH_ENDPOINT = '/oauth2/v1/token'
 TOKEN_EXPIRATION_TIME = 60  # In minutes. This value must be a maximum of only an hour (according to Okta's documentation).
+TOKEN_RENEWAL_TIME_LIMIT = 60  # In seconds. The minimum time before the token expires to renew it.
 
 
 class JWTAlgorithm(Enum):
@@ -155,7 +156,7 @@ class OktaClient(BaseClient):
 
             token_expiration = datetime.strptime(integration_context['token_expiration'], expiration_time_format)
 
-            if token_expiration > datetime.utcnow():
+            if token_expiration > datetime.utcnow() + timedelta(seconds=TOKEN_RENEWAL_TIME_LIMIT):
                 return token
 
             demisto.debug('An existing token was found, but expired. A new token will be generated.')
