@@ -13,7 +13,7 @@ import tldextract
 from urllib.parse import urlparse
 import re
 
-no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=None)
+no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=None, cache_dir=None)
 pd.options.mode.chained_assignment = None  # default='warn'
 
 SIMILARITY_THRESHOLD = float(demisto.args().get('threshold', 0.97))
@@ -79,10 +79,16 @@ def get_existing_incidents(input_args, current_incident_type):
         get_incidents_args['populateFields'] = ','.join([','.join(fields), input_args['populateFields']])
     else:
         get_incidents_args['populateFields'] = ','.join(fields)
+
+    demisto.debug(f'Calling GetIncidentsByQuery with {get_incidents_args=}')
     incidents_query_res = demisto.executeCommand('GetIncidentsByQuery', get_incidents_args)
     if is_error(incidents_query_res):
         return_error(get_error(incidents_query_res))
-    incidents = json.loads(incidents_query_res[-1]['Contents'])
+    incidents_query_contents = '{}'
+    for res in incidents_query_res:
+        if res['Contents']:
+            incidents_query_contents = res['Contents']
+    incidents = json.loads(incidents_query_contents)
     return incidents
 
 
@@ -97,6 +103,7 @@ def extract_domain(address):
     global no_fetch_extract
     if address == '':
         return ''
+    demisto.debug(f'Going to extract domain from {address=}')
     email_address = parseaddr(address)[1]
     ext = no_fetch_extract(email_address)
     return '{}.{}'.format(ext.domain, ext.suffix)
@@ -125,7 +132,10 @@ def eliminate_urls_extensions(text):
     formatted_urls_list_res = demisto.executeCommand('FormatURL', {'input': ','.join(urls_list)})
     if is_error(formatted_urls_list_res):
         return_error(formatted_urls_list_res)
-    formatted_urls_list = [entry["Contents"][-1] for entry in formatted_urls_list_res]
+    formatted_urls_list = []
+    for entry in formatted_urls_list_res:
+        if entry['Contents'] and isinstance(entry['Contents'], list):
+            formatted_urls_list.append(entry['Contents'][-1])
     for url, formatted_url in zip(urls_list, formatted_urls_list):
         parsed_uri = urlparse(formatted_url)
         url_with_no_path = '{uri.scheme}://{uri.netloc}/'.format(uri=parsed_uri)

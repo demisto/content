@@ -1,27 +1,36 @@
-id: SetIfEmpty - non-ascii chars - Test
+id: SetIfEmpty_Test
 version: -1
-name: SetIfEmpty - non-ascii chars - Test
-description: Test playbook for SetIfEmpty. checks for non-ascii chars in value (cannot be tested with unit-test).
+name: SetIfEmpty_Test
+description: Test playbook for SetIfEmpty.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 802a500a-1580-4563-81ea-605369e66228
+    taskid: 011ae1dd-1110-48f4-8f86-c9c06248e074
     type: start
     task:
-      id: 802a500a-1580-4563-81ea-605369e66228
+      id: 011ae1dd-1110-48f4-8f86-c9c06248e074
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
+      - "6"
+      - "7"
+      - "8"
+      - "9"
+      - "10"
+      - "11"
+      - "13"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 1555,
           "y": 50
         }
       }
@@ -30,14 +39,16 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 2340b207-b4e4-4fd7-8884-96c5c2feec5f
+    taskid: 09b509e4-4b3c-4e93-85c1-55ec08c5fb3b
     type: regular
     task:
-      id: 2340b207-b4e4-4fd7-8884-96c5c2feec5f
+      id: 09b509e4-4b3c-4e93-85c1-55ec08c5fb3b
       version: -1
-      name: Setup context
+      name: Setup context - Non-ASCII Chars
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -45,20 +56,19 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "17"
     scriptarguments:
-      append: {}
       key:
-        simple: Test
-      stringify: {}
+        simple: Test1
       value:
         simple: abc-Ä‡e-paymeÅnt in $
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 180
+          "x": 50,
+          "y": 195
         }
       }
     note: false
@@ -66,14 +76,16 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "2":
-    id: "2"
-    taskid: b9dd6e13-ce26-4544-86a8-dcf87ac81dfd
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 4b6c9c49-158e-4bea-8e11-adaa2f0a8c2b
     type: regular
     task:
-      id: b9dd6e13-ce26-4544-86a8-dcf87ac81dfd
+      id: 4b6c9c49-158e-4bea-8e11-adaa2f0a8c2b
       version: -1
-      name: Test SetIfEmpty - using non-ascii chars
+      name: Setup context -  Valid String
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -81,28 +93,19 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "18"
     scriptarguments:
-      append: {}
       key:
         simple: Test2
-      stringify: {}
       value:
-        complex:
-          root: Test
-          transformers:
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: hello
+        simple: validString
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 390
+          "x": 480,
+          "y": 195
         }
       }
     note: false
@@ -110,22 +113,249 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "3":
-    id: "3"
-    taskid: 1b66283b-a9d5-4cc3-8d08-bdf01f4137d1
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: c2724ab7-209d-4039-8f9e-e43401cfc06c
+    type: regular
+    task:
+      id: c2724ab7-209d-4039-8f9e-e43401cfc06c
+      version: -1
+      name: Setup context - Number
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      key:
+        simple: Test3
+      value:
+        simple: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 07498c70-a3b8-4455-8747-de91140b632d
+    type: regular
+    task:
+      id: 07498c70-a3b8-4455-8747-de91140b632d
+      version: -1
+      name: Setup context - Dictionary
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      key:
+        simple: Test4
+      value:
+        simple: ' {"name": "John", "lastName": "Doe"}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: f296fada-cb6a-4586-85f0-ecaaf2308baf
+    type: regular
+    task:
+      id: f296fada-cb6a-4586-85f0-ecaaf2308baf
+      version: -1
+      name: Setup context -  Empty String
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      key:
+        simple: Test5
+      value:
+        simple: '""'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 965c5c6f-1474-4914-8d94-64d4f7931e3d
+    type: regular
+    task:
+      id: 965c5c6f-1474-4914-8d94-64d4f7931e3d
+      version: -1
+      name: Setup context -  Empty Dictionary
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      key:
+        simple: Test6
+      value:
+        simple: '{}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: f9fe7eaa-b054-4eb5-827f-81222514c700
+    type: regular
+    task:
+      id: f9fe7eaa-b054-4eb5-827f-81222514c700
+      version: -1
+      name: Setup context -  Null
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      force:
+        simple: "true"
+      key:
+        simple: Test7
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: e47723b8-28e0-4d2a-8cfd-de22001203cf
+    type: regular
+    task:
+      id: e47723b8-28e0-4d2a-8cfd-de22001203cf
+      version: -1
+      name: Setup context -  NULL Text
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      key:
+        simple: Test8
+      value:
+        simple: "NULL"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3060,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: e8920a94-d496-43b1-8411-5b748db0f04c
     type: condition
     task:
-      id: 1b66283b-a9d5-4cc3-8d08-bdf01f4137d1
+      id: e8920a94-d496-43b1-8411-5b748db0f04c
       version: -1
-      name: Compare results
+      name: Test SetIfEmpty
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "5"
       "yes":
-      - "4"
+      - "15"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -133,17 +363,25 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: Test
+              complex:
+                root: Test8
+                transformers:
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: defaultValue
             iscontext: true
           right:
             value:
-              simple: Test2
-            iscontext: true
+              simple: defaultValue
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 580
+          "x": 3060,
+          "y": 370
         }
       }
     note: false
@@ -151,23 +389,27 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "4":
-    id: "4"
-    taskid: c330c50a-ea84-4bd3-855d-06cb56178bec
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: f682db95-5801-4c7f-8f5e-7a5251c45eae
     type: title
     task:
-      id: c330c50a-ea84-4bd3-855d-06cb56178bec
+      id: f682db95-5801-4c7f-8f5e-7a5251c45eae
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 720
+          "x": 1555,
+          "y": 545
         }
       }
     note: false
@@ -175,31 +417,48 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "5":
-    id: "5"
-    taskid: add34e74-ea79-46e0-8484-84f91f5ef0c5
-    type: regular
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 12e75377-d5fe-460a-8353-f2318e355dd2
+    type: condition
     task:
-      id: add34e74-ea79-46e0-8484-84f91f5ef0c5
+      id: 12e75377-d5fe-460a-8353-f2318e355dd2
       version: -1
-      name: Test failed
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
+      name: Test SetIfEmpty
+      type: condition
       iscommand: false
       brand: ""
-    scriptarguments:
-      message:
-        simple: |-
-          Did not get the expected results.
-          Test: ${Test}
-          Test2: ${Test2}
+    nexttasks:
+      "yes":
+      - "15"
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Test1
+                transformers:
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: defaultValue
+            iscontext: true
+          right:
+            value:
+              simple: abc-Ä‡e-paymeÅnt in $
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 690,
-          "y": 720
+          "x": 50,
+          "y": 370
         }
       }
     note: false
@@ -207,18 +466,330 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 0ba6b14d-ae7f-4687-895f-fab71a29df50
+    type: condition
+    task:
+      id: 0ba6b14d-ae7f-4687-895f-fab71a29df50
+      version: -1
+      name: Test SetIfEmpty
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Test2
+                transformers:
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: defaultValue
+            iscontext: true
+          right:
+            value:
+              simple: validString
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 1195b62c-eb96-4653-8ea7-779df3cdd1ce
+    type: condition
+    task:
+      id: 1195b62c-eb96-4653-8ea7-779df3cdd1ce
+      version: -1
+      name: Test SetIfEmpty
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Test3
+                transformers:
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: defaultValue
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 5507290c-5c2f-4695-8d38-1da36d8d058d
+    type: condition
+    task:
+      id: 5507290c-5c2f-4695-8d38-1da36d8d058d
+      version: -1
+      name: Test SetIfEmpty
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Test4
+                transformers:
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: defaultValue
+                - operator: StringifyArray
+            iscontext: true
+          right:
+            value:
+              simple: '[{"lastName":"Doe","name":"John"}]'
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: c3c604d7-d5b1-4599-8338-c8588d2a4dfb
+    type: condition
+    task:
+      id: c3c604d7-d5b1-4599-8338-c8588d2a4dfb
+      version: -1
+      name: Test SetIfEmpty
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Test5
+                transformers:
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: defaultValue
+            iscontext: true
+          right:
+            value:
+              simple: defaultValue
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: Test5
+                transformers:
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty:
+                      value:
+                        simple: "false"
+                    defaultValue:
+                      value:
+                        simple: defaultValue
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 96817e3e-f291-49fb-8a50-6641d937833a
+    type: condition
+    task:
+      id: 96817e3e-f291-49fb-8a50-6641d937833a
+      version: -1
+      name: Test SetIfEmpty
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Test6
+                transformers:
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: defaultValue
+            iscontext: true
+          right:
+            value:
+              simple: defaultValue
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 2f9d511f-2599-4bd7-8ad5-75e0d693a80e
+    type: condition
+    task:
+      id: 2f9d511f-2599-4bd7-8ad5-75e0d693a80e
+      version: -1
+      name: Test SetIfEmpty
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Test7
+                transformers:
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: defaultValue
+            iscontext: true
+          right:
+            value:
+              simple: defaultValue
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 765,
-        "width": 620,
-        "x": 450,
+        "height": 560,
+        "width": 3390,
+        "x": 50,
         "y": 50
       }
     }
   }
 inputs: []
 outputs: []
-fromversion: 5.0.0
+fromversion: 6.9.0

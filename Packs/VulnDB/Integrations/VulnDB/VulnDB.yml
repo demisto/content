@@ -42,7 +42,7 @@ configuration:
   - F - Reliability cannot be judged
   required: false
   type: 15
-description: Lists all of the security vulnerabilities for various products (OS,Applications) etc)
+description: Lists all of the security vulnerabilities for various products (OS,Applications) etc).
 display: VulnDB
 name: VulnDB
 script:
@@ -140,9 +140,9 @@ script:
       description: Classification description (human readable).
       type: string
   - arguments:
-    - description: specific vendor id
+    - description: specific vendor id.
       name: vendor_id
-    - description: specific vendor name (only human readable)
+    - description: specific vendor name (only human readable).
       name: vendor_name
     - defaultValue: '20'
       description: Maximum number of entries to return. A high number of entries might affect performance. The default value is "20".
@@ -249,7 +249,7 @@ script:
       description: CVSS access vector.
       type: string
     - contextPath: VulnDB.CvssMetrics.AccessComplexity
-      description: Cvss access complexity
+      description: Cvss access complexity.
       type: string
     - contextPath: VulnDB.CvssMetrics.Authentication
       description: CVSS metric authentication.
@@ -773,9 +773,11 @@ script:
   - arguments:
     - description: Deprecated. Use the `cve` argument instead.
       name: cve_id
+      isArray: true
     - default: true
-      description: CVE ID.
+      description: Comma separated list of CVE IDs.
       name: cve
+      isArray: true
     - description: Maximum number of entries to return. A high number of entries might affect performance. The default value is "20".
       name: max_size
     description: Returns CVE information by CVE ID.
@@ -808,7 +810,7 @@ script:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.10.13.80593
   runonce: false
   script: '-'
   subtype: python3
