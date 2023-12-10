@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 from datetime import date
 
 """CONSTANTS"""
-ARN_TEMPLATE = 'arn:{partition}:ec2:{region}:{account_id}:{resource_id}'
+ROLE_ARN_TEMPLATE = 'arn:aws:iam::{account_id}:{role_name}'
 
 """HELPER FUNCTIONS"""
 
@@ -72,6 +72,10 @@ def parse_date(dt):
     except ValueError as e:
         return_error(f"Date could not be parsed. Please check the date again.\n{e}")
     return parsed_date
+
+
+def run_on_all_accounts(func):
+    def account_runner(args: dict, )
 
 
 """MAIN FUNCTIONS"""
@@ -263,7 +267,7 @@ def describe_images_command(args, aws_client):
     return_outputs(human_readable, ec)
 
 
-def describe_addresses_command(args, aws_client):
+def describe_addresses_command(args: dict, aws_client: 'AWSClient') -> CommandResults:
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
@@ -286,8 +290,7 @@ def describe_addresses_command(args, aws_client):
     response = client.describe_addresses(**kwargs)
 
     if len(response['Addresses']) == 0:
-        demisto.results('No addresses were found.')
-        return
+        return CommandResults(readable_output='No addresses were found.')
 
     for i, address in enumerate(response['Addresses']):
         data.append({
@@ -309,12 +312,15 @@ def describe_addresses_command(args, aws_client):
                 data[i].update({
                     tag['Key']: tag['Value']
                 })
-
     raw = response['Addresses']
     raw[0].update({'Region': obj['_user_provided_options']['region_name']})
-    ec = {'AWS.EC2.ElasticIPs(val.AllocationId === obj.AllocationId)': raw}
-    human_readable = tableToMarkdown('AWS EC2 ElasticIPs', data)
-    return_outputs(human_readable, ec)
+
+    return CommandResults(
+        outputs=raw,
+        outputs_key_field='AllocationId',
+        outputs_prefix='AWS.EC2.ElasticIPs',
+        readable_output=tableToMarkdown('AWS EC2 ElasticIPs', data)
+    )
 
 
 def describe_snapshots_command(args, aws_client):
@@ -2998,6 +3004,9 @@ def main():
         aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
                                aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
                                retries, sts_endpoint_url=sts_endpoint_url, endpoint_url=endpoint_url)
+        
+        accounts_to_access = argToList(params.get('accounts_to_access'))
+        access_role_name = params.get('access_role_name')
 
         command = demisto.command()
         args = demisto.args()
@@ -3024,7 +3033,7 @@ def main():
             describe_images_command(args, aws_client)
 
         elif command == 'aws-ec2-describe-addresses':
-            describe_addresses_command(args, aws_client)
+            return_results(describe_addresses_command(args, aws_client))
 
         elif command == 'aws-ec2-describe-snapshots':
             describe_snapshots_command(args, aws_client)
