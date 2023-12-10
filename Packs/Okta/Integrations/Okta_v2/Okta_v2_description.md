@@ -1,5 +1,3 @@
-Before using Okta v2, you need to perform several configuration steps in your Okta environment.
-
 ## Authentication using API Token
 Okta API tokens are used to authenticate requests to Okta APIs. 
 
