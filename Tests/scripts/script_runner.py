@@ -13,9 +13,9 @@ def run_script(args, files):
             print("Script failed to run")
             return 1
     except subprocess.CalledProcessError as e:
-        logging.error("Error: {e}".format(e=e))
+        print("Error: {e}".format(e=e))
     except Exception as e:
-        logging.error("An error occurred: {e}".format(e=e))
+        print("An error occurred: {e}".format(e=e))
     return 0
 def main():
     args = sys.argv[1:]
