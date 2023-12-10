@@ -147,6 +147,7 @@ configuration:
   advanced: true
   required: false
 - display: ''
+  hidden: true
   name: demisto_api_key
   type: 9
   section: Connect
