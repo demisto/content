@@ -1,15 +1,9 @@
-import subprocess
 import pytest
 import logging
 import os
-import shutil
-import tempfile
 from uuid import uuid4
 # More info about conftest.py at:
 #   https://docs.pytest.org/en/latest/writing_plugins.html#conftest-py-plugins  # disable-secrets-detection
-NO_TESTS_COLLECTED = 5
-SUCCESS = 0
-
 
 @pytest.fixture(autouse=True)
 def check_logging(caplog):

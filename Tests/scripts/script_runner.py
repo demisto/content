@@ -11,12 +11,12 @@ def run_script(args, files):
         for file in files:
             results.append(subprocess.run(args + [os.path.abspath(file)], cwd=os.path.dirname(file)))        
         if any(result.returncode != 0 for result in results):
-            print("Script failed")
+            print("Script failed")  # noqa: T201
             return 1
     except subprocess.CalledProcessError as e:
-        print("Error: {e}".format(e=e))
+        print("Error: {e}".format(e=e))  # noqa: T201,UP032
     except Exception as e:
-        print("An error occurred: {e}".format(e=e))
+        print("An error occurred: {e}".format(e=e))  # noqa: T201,UP032
     return 0
 def main():
     args = sys.argv[1:]
