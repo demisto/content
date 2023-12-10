@@ -13,7 +13,7 @@ filter _raw_log !~= "Timer_ConnectionIdle"
     sc_status = arrayindex(regextract(_raw_log,"\w+\s(\d+)\s\d+\s\d+"),0),
     sc_bytes = arrayindex(regextract(_raw_log,"\w+\s\d+\s\d+\s\d+\s(\d+)"),0),
     cs_bytes = arrayindex(regextract(_raw_log,"\w+\s\d+\s\d+\s\d+\s\d+\s(\d+)"),0),
-    time_taken = arrayindex(regextract(_raw_log,"\s\d+\s[^\s]+\s\d+\s[^\s]+\s[^\s]+\s([^\s]+)"),0),
+    time_taken = arrayindex(regextract(_raw_log,"\s\d+\s[^\s]+\s\d+\s[^\s]+\s[^\s]+\s+(\d+)"),0),
     c_ip = arrayindex(regextract(_raw_log,"\s\w+\s\/[^\-]+[^\d+]+\d+\s[^\s]+\s([^\s]+)"),0),
     s_ip = arrayindex(regextract(_raw_log,"\d+\:\d+\:\d+\s[^\s]+\s[^\s]+\s([^\s]+)"),0)
 | alter
