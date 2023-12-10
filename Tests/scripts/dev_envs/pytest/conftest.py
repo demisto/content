@@ -1,6 +1,7 @@
 import pytest
 import logging
 import os
+import uuid4
 
 # File is copied to each package dir when running tests.
 # More info about conftest.py at:
