@@ -1,5 +1,5 @@
 var res = executeCommand("getIncidents", {
-    'query': 'status:closed and investigation.users:""',
+    'query': 'status:closed and closingUser:DBot',
     'fromdate': args.from,
     'todate': args.to,
     'size': 0

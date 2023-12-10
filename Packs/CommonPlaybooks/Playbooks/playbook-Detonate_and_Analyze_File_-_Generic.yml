@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Detonate and Analyze File - Generic
-description: 'This playbook uploads, detonates, and analyzes files for supported sandboxes. Currently supported sandboxes are Falcon Intelligence Sandbox and Wildfire. '
+description: 'This playbook uploads, detonates, and analyzes files for supported sandboxes. Currently supported sandboxes are Falcon Intelligence Sandbox, JoeSecurity, and Wildfire. '
 starttaskid: "0"
 tasks:
   "0":
@@ -26,7 +26,7 @@ tasks:
       {
         "position": {
           "x": 1590,
-          "y": 70
+          "y": 80
         }
       }
     note: false
@@ -38,13 +38,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 2d74acbf-eb10-4ede-8880-21e9afb7325a
+    taskid: 1efe544b-f18b-467c-8a8c-de784c146ef9
     type: playbook
     task:
-      id: 2d74acbf-eb10-4ede-8880-21e9afb7325a
+      id: 1efe544b-f18b-467c-8a8c-de784c146ef9
       version: -1
       name: CrowdStrike Falcon Intelligence Sandbox Detonate and Analyze File
-      description: Env ID - return to transformer.
+      description: This playbook uploads, detonates, and analyzes files for the CrowdStrike Falcon Intelligence Sandbox.
       playbookName: CrowdStrike Falcon Intelligence Sandbox Detonate and Analyze File
       type: playbook
       iscommand: false
@@ -67,7 +67,12 @@ tasks:
                 value:
                   simple: '160: Windows 10,300: Linux Ubuntu 16.04,300: Linux Ubuntu 16.04'
       File:
-        simple: ${inputs.File}
+        complex:
+          root: inputs.File
+      EnableTor:
+        simple: "false"
+      EnvironmentID:
+        simple: '''160: Windows 10'''
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -78,8 +83,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 920,
-          "y": 580
+          "x": 1840,
+          "y": 570
         }
       }
     note: false
@@ -91,23 +96,25 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: a10b7555-36b7-444e-874c-20c10a692311
+    taskid: 215ed959-df27-4580-8ed0-a95b3246f65d
     type: playbook
     task:
-      id: a10b7555-36b7-444e-874c-20c10a692311
+      id: 215ed959-df27-4580-8ed0-a95b3246f65d
       version: -1
       name: Wildfire Detonate and Analyze File
       playbookName: Wildfire Detonate and Analyze File
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
+      description: |
+        This playbook uploads, detonates, and analyzes files for the Wildfire sandbox.
     nexttasks:
       '#none#':
       - "3"
     scriptarguments:
       File:
-        simple: ${inputs.File}
+        complex:
+          root: inputs.File
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -118,8 +125,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1350,
-          "y": 580
+          "x": 2300,
+          "y": 570
         }
       }
     note: false
@@ -147,7 +154,7 @@ tasks:
       {
         "position": {
           "x": 1590,
-          "y": 1630
+          "y": 1640
         }
       }
     note: false
@@ -185,8 +192,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 920,
-          "y": 390
+          "x": 1840,
+          "y": 380
         }
       }
     note: false
@@ -269,8 +276,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1350,
-          "y": 390
+          "x": 2300,
+          "y": 380
         }
       }
     note: false
@@ -319,8 +326,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 920,
-          "y": 760
+          "x": 1840,
+          "y": 750
         }
       }
     note: false
@@ -332,16 +339,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 9392e375-e991-4914-8db3-0bf4a52f77bc
+    taskid: 93344bc1-a4e8-4997-8879-3ecb04041bd1
     type: playbook
     task:
-      id: 9392e375-e991-4914-8db3-0bf4a52f77bc
+      id: 93344bc1-a4e8-4997-8879-3ecb04041bd1
       version: -1
       name: Mitre Attack - Extract Technique Information From ID
       description: |-
-        This playbook accepts as an input MITRE technique IDs.
-        It provides the MITRE technique name and all the technique data using the MITRE integration.
-        After extracting the MITRE data, the techniques are associated with the incident.
+        This playbook accepts as input MITRE techniques IDs.
+        It returns the MITRE technique name and full technique data using the MITRE integration.
       playbookName: Mitre Attack - Extract Technique Information From ID
       type: playbook
       iscommand: false
@@ -351,7 +357,9 @@ tasks:
       - "3"
     scriptarguments:
       TechniqueID:
-        simple: ${csfalconx.resource.sandbox.mitre_attacks.attack_id}
+        complex:
+          root: csfalconx.resource.sandbox.mitre_attacks
+          accessor: attack_id
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -374,8 +382,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 920,
-          "y": 925
+          "x": 1840,
+          "y": 945
         }
       }
     note: false
@@ -413,8 +421,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 520,
-          "y": 390
+          "x": 1330,
+          "y": 380
         }
       }
     note: false
@@ -454,8 +462,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 70,
-          "y": 925
+          "x": 1090,
+          "y": 945
         }
       }
     note: false
@@ -504,7 +512,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 280,
+          "x": 1090,
           "y": 750
         }
       }
@@ -545,8 +553,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
-          "y": 925
+          "x": 690,
+          "y": 945
         }
       }
     note: false
@@ -562,10 +570,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 0084c14e-9249-4b06-88e8-f20622097744
+    taskid: 3ef64df5-ef9a-4a40-8fd8-ee5a4e3e9274
     type: regular
     task:
-      id: 0084c14e-9249-4b06-88e8-f20622097744
+      id: 3ef64df5-ef9a-4a40-8fd8-ee5a4e3e9274
       version: -1
       name: Rasterize PDF
       description: Converts a PDF file to an image file.
@@ -598,8 +606,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
-          "y": 1450
+          "x": 690,
+          "y": 1470
         }
       }
     note: false
@@ -651,8 +659,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 70,
-          "y": 1085
+          "x": 1090,
+          "y": 1105
         }
       }
     note: false
@@ -696,8 +704,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 70,
-          "y": 1450
+          "x": 1090,
+          "y": 1470
         }
       }
     note: false
@@ -746,8 +754,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 70,
-          "y": 1250
+          "x": 1090,
+          "y": 1270
         }
       }
     note: false
@@ -793,8 +801,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 280,
-          "y": 580
+          "x": 1090,
+          "y": 570
         }
       }
     note: false
@@ -804,24 +812,33 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
 view: |-
   {
     "linkLabelsPosition": {
-      "5_3_#default#": 0.51
+      "12_3_#default#": 0.1,
+      "15_3_#default#": 0.25,
+      "21_3_#default#": 0.27,
+      "4_1_yes": 0.61,
+      "4_3_no": 0.15,
+      "5_3_#default#": 0.1,
+      "6_3_no": 0.14,
+      "9_11_yes": 0.59,
+      "9_3_#default#": 0.13
     },
     "paper": {
       "dimensions": {
         "height": 1625,
-        "width": 1900,
-        "x": 70,
-        "y": 70
+        "width": 1990,
+        "x": 690,
+        "y": 80
       }
     }
   }
 inputs:
 - key: File
-  value: {}
+  value:
+    complex:
+      root: File
   required: false
   description: The details of the file to search for.
   playbookInputQuery:
@@ -846,16 +863,142 @@ outputs:
   type: string
 - contextPath: AttackPattern
   description: The MITRE Attack pattern information.
-  type: unknown
+  type: string
 - contextPath: MITREATTACK
   description: Full MITRE data for the attack pattern.
-  type: unknown
+  type: string
 - contextPath: DBotScore
   description: DBotScore object.
-  type: unknown
+  type: string
 - contextPath: Joe.Analysis
   description: Joe Analysis object.
-  type: unknown
+  type: string
+- contextPath: DBotScore.Vendor
+  description: The vendor used to calculate the score.
+  type: string
+- contextPath: DBotScore.Indicator
+  description: The indicator that was tested.
+  type: string
+- contextPath: DBotScore.Type
+  description: The indicator type.
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score.
+  type: string
+- contextPath: DBotScore.Malicious
+  description: DBotScore Malicious object
+  type: string
+- contextPath: DBotScore.Malicious.Vendor
+  description: The vendor used to calculate the score.
+  type: string
+- contextPath: DBotScore.Malicious.Detections
+  description: The sub analysis detection statuses
+  type: string
+- contextPath: DBotScore.Malicious.SHA1
+  description: The SHA1 of the file
+  type: string
+- contextPath: Joe.Analysis.ID
+  description: Web ID
+  type: string
+- contextPath: Joe.Analysis.Status
+  description: Analysis Status
+  type: string
+- contextPath: Joe.Analysis.Comments
+  description: Analysis Comments
+  type: string
+- contextPath: Joe.Analysis.Time
+  description: Submitted Time
+  type: date
+- contextPath: Joe.Analysis.Runs
+  description: Sub-Analysis Information
+  type: string
+- contextPath: Joe.Analysis.Result
+  description: Analysis Results
+  type: string
+- contextPath: Joe.Analysis.Errors
+  description: Raised errors during sampling
+  type: string
+- contextPath: Joe.Analysis.Systems
+  description: Analysis OS
+  type: string
+- contextPath: Joe.Analysis.MD5
+  description: MD5 of analysis sample
+  type: string
+- contextPath: Joe.Analysis.SHA1
+  description: SHA1 of analysis sample
+  type: string
+- contextPath: Joe.Analysis.SHA256
+  description: SHA256 of analysis sample
+  type: string
+- contextPath: Joe.Analysis.SampleName
+  description: Sample Data, could be a file name or URL
+  type: string
+- contextPath: InfoFile
+  description: Report file object
+  type: string
+- contextPath: InfoFile.Name
+  description: The filename.
+  type: string
+- contextPath: InfoFile.EntryID
+  description: The entry ID of the report.
+  type: string
+- contextPath: InfoFile.Size
+  description: File size.
+  type: number
+- contextPath: InfoFile.Type
+  description: File type, e.g., "PE".
+  type: string
+- contextPath: InfoFile.Info
+  description: Basic information of the file.
+  type: string
+- contextPath: InfoFile.Extension
+  description: The extension of the image file.
+  type: string
+- contextPath: File
+  description: File object
+  type: string
+- contextPath: File.Extension
+  description: File extension.
+  type: string
+- contextPath: File.MD5
+  description: The MD5 hash of the file.
+  type: string
+- contextPath: File.Name
+  description: The full file name.
+  type: string
+- contextPath: File.SHA1
+  description: The SHA1 hash of the file.
+  type: string
+- contextPath: File.SHA256
+  description: The SHA256 hash of the file.
+  type: string
+- contextPath: ExtractedIndicators
+  description: outputs.extractindicators
+  type: string
+- contextPath: AttackPattern.STIXID
+  description: The STIX ID of the Attack Pattern.
+  type: string
+- contextPath: AttackPattern.KillChainPhases
+  description: The kill chain phases of the Attack Pattern.
+  type: string
+- contextPath: AttackPattern.FirstSeenBySource
+  description: The first seen by source of the Attack Pattern.
+  type: string
+- contextPath: AttackPattern.Description
+  description: The description of the Attack Pattern.
+  type: string
+- contextPath: AttackPattern.OperatingSystemRefs
+  description: The operating system references of the Attack Pattern.
+  type: string
+- contextPath: AttackPattern.Publications
+  description: The publications of the Attack Pattern.
+  type: string
+- contextPath: AttackPattern.MITREID
+  description: The MITRE ID of the Attack Pattern.
+  type: string
+- contextPath: AttackPattern.Tags
+  description: The tags of the Attack Pattern.
+  type: string
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0

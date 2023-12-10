@@ -25,8 +25,8 @@ def calculate_test_playbooks_results(test_playbooks_result_files_list: dict[str,
         xml = JUnitXml.fromfile(test_playbook_result_file.as_posix())
         for test_suite_item in xml.iterchildren(TestSuite):
             properties = get_properties_for_test_suite(test_suite_item)
-            if "playbook_id" in properties:
-                playbooks_result = playbooks_results.setdefault(properties["playbook_id"], {})
+            if playbook_id := properties.get("playbook_id"):
+                playbooks_result = playbooks_results.setdefault(playbook_id, {})
                 server_version = properties["server_version"]
                 server_versions.add(server_version)
                 playbooks_result[server_version] = test_suite_item

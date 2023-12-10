@@ -12,6 +12,7 @@ This integration was integrated and tested with version 2.0 of cybleeventsv2
     | URL                                | Server URL \(e.g., <https://example.net\>)                              | True         |
     | Access Token                       | Access Token                                                            | True         |
     | Collections to Fetch               | Select collections of incidents to be fetched from the dropdown menu    | False        |
+    | Severities to Fetch                | Select severities of incident to be fetched from the dropdown menu      | False        |
     | Trust any certificate (not secure) |                                                                         | False        |
     | Use system proxy settings          |                                                                         | False        |
     | Incident Fetch Limit               | Maximum incidents to be fetched every time. Upper limit is 50 incidents | False        |

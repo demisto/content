@@ -26,6 +26,10 @@
                         "isVisible": true
                     },
                     {
+                        "fieldId": "incident_cybleeventsv2status",
+                        "isVisible": true
+                    },
+                    {
                         "fieldId": "incident_eventtype",
                         "isVisible": true
                     },
@@ -92,22 +96,31 @@
                                 "startCol": 0
                             },
                             {
-                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "cybleeventsv2status",
+                                "height": 22,
+                                "id": "943f6350-7efa-11ee-898b-954bdb8450cf",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
                                 "endCol": 2,
                                 "fieldId": "cybleeventsv2keyword",
                                 "height": 22,
                                 "id": "8e1b3d30-7a56-11ee-8189-632627f06ba5",
-                                "index": 3,
-                                "listId": "caseinfoid-field-changed-caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "index": 4,
                                 "sectionItemType": "field",
-                                "startCol": 0
+                                "startCol": 0,
+                                "dropEffect": "move",
+                                "listId": "caseinfoid-field-changed-caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8"
                             },
                             {
                                 "endCol": 2,
                                 "fieldId": "sourcebrand",
                                 "height": 22,
                                 "id": "incident-sourceBrand-field",
-                                "index": 4,
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -116,7 +129,7 @@
                                 "fieldId": "sourceinstance",
                                 "height": 22,
                                 "id": "incident-sourceInstance-field",
-                                "index": 5,
+                                "index": 6,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -666,6 +679,10 @@
                     },
                     {
                         "fieldId": "incident_severity",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_cybleeventsv2status",
                         "isVisible": true
                     },
                     {

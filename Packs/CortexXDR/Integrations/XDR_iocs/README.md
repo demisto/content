@@ -170,3 +170,15 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
+
+#### Base Command
+
+`xdr-iocs-to-keep-file`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.

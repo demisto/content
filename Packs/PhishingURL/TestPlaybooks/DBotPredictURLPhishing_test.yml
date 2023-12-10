@@ -335,7 +335,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "False"
+              simple: "True"
       - - operator: isEqualString
           left:
             value:

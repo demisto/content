@@ -1,17 +1,15 @@
 id: Cortex XDR Alerts Handling
 version: -1
-contentitemexportablefields:
-  contentitemfields: {}
 name: Cortex XDR Alerts Handling
-description: "This playbook is used to loop over every alert in a Cortex XDR incident. \nSupported alert categories:\n- Malware\n- Port Scan\n- Cloud Cryptojacking\n- Cloud Token Theft\n- RDP Brute-Force\n- First SSO Access\n- Cloud IAM User Access Investigation"
+description: "This playbook is used to loop over every alert in a Cortex XDR incident. \nSupported alert categories:\n- Malware\n- Port Scan\n- Cloud Cryptojacking\n- Cloud Token Theft\n- RDP Brute-Force\n- First SSO Access\n- Cloud IAM User Access Investigation.\n- Remote PsExec with LOLBIN command execution alert."
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 9c36d95d-b324-4c82-8a03-1994ede59fdf
+    taskid: cbacb0a9-4a29-41fb-81ef-2390c2e87217
     type: start
     task:
-      id: 9c36d95d-b324-4c82-8a03-1994ede59fdf
+      id: cbacb0a9-4a29-41fb-81ef-2390c2e87217
       version: -1
       name: ""
       iscommand: false
@@ -38,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: a47291e4-58cb-40b4-8eb5-306b2ffbbd0b
+    taskid: 438c49ce-ea4b-4149-8bc7-c8c45e4cad64
     type: condition
     task:
-      id: a47291e4-58cb-40b4-8eb5-306b2ffbbd0b
+      id: 438c49ce-ea4b-4149-8bc7-c8c45e4cad64
       version: -1
       name: Choose playbook by category
       description: Choose the playbook to run by the alert category.
@@ -61,6 +59,8 @@ tasks:
       - "8"
       RDP Brute-Force:
       - "13"
+      Remote PsExec with LOLBIN command:
+      - "20"
     separatecontext: false
     conditions:
     - label: Malware
@@ -186,6 +186,28 @@ tasks:
           right:
             value:
               simple: First successful SSO connection from a country in organization
+    - label: Remote PsExec with LOLBIN command
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.Incident.alerts
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.alert_id
+                      iscontext: true
+                accessor: name
+            iscontext: true
+          right:
+            value:
+              simple: Remote PsExec-like LOLBIN command execution from an unsigned non-standard PsExec service
     continueonerrortype: ""
     view: |-
       {
@@ -203,10 +225,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 3ee49877-ed34-469e-8f5b-73536d3d40bd
+    taskid: 1be989c8-f6e6-4bb6-86f6-8f37141cae45
     type: title
     task:
-      id: 3ee49877-ed34-469e-8f5b-73536d3d40bd
+      id: 1be989c8-f6e6-4bb6-86f6-8f37141cae45
       version: -1
       name: Done
       type: title
@@ -231,14 +253,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 12258730-025a-4931-8da9-9f68bfb6a32c
+    taskid: e2e4e72b-7c0a-4d3a-8ca1-f7dfb321b488
     type: regular
     task:
-      id: 12258730-025a-4931-8da9-9f68bfb6a32c
+      id: e2e4e72b-7c0a-4d3a-8ca1-f7dfb321b488
       version: -1
       name: Cortex XDR - get incident extra data
-      description: Returns additional data for the specified incident, for example,
-        related alerts, file artifacts, network artifacts, and so on.
+      description: Returns additional data for the specified incident, for example, related alerts, file artifacts, network artifacts, and so on.
       script: Cortex XDR - IR|||xdr-get-incident-extra-data
       type: regular
       iscommand: true
@@ -268,10 +289,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 73393504-1664-4f81-8baf-f5e29f222cea
+    taskid: 749d29c6-d590-40f2-8a76-811fa05b67b4
     type: title
     task:
-      id: 73393504-1664-4f81-8baf-f5e29f222cea
+      id: 749d29c6-d590-40f2-8a76-811fa05b67b4
       version: -1
       name: Other alert category
       type: title
@@ -286,7 +307,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1360,
+          "x": 1850,
           "y": 575
         }
       }
@@ -299,10 +320,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: dbf4c20e-2308-41d5-88df-477133c8e571
+    taskid: ca064f45-bb38-42eb-8b69-10bfb3d305f8
     type: playbook
     task:
-      id: dbf4c20e-2308-41d5-88df-477133c8e571
+      id: ca064f45-bb38-42eb-8b69-10bfb3d305f8
       version: -1
       name: Cortex XDR - Port Scan - Adjusted
       playbookName: Cortex XDR - Port Scan - Adjusted
@@ -344,10 +365,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: af3de00a-e938-41a9-8756-de6e561c3b20
+    taskid: f256c719-4967-475a-82d1-3059c97431a1
     type: playbook
     task:
-      id: af3de00a-e938-41a9-8756-de6e561c3b20
+      id: f256c719-4967-475a-82d1-3059c97431a1
       version: -1
       name: Cortex XDR - Malware Investigation
       description: |
@@ -481,10 +502,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 819510f8-39d8-4237-82e5-fb57fd806749
+    taskid: 027558f4-e4c6-44ee-871f-efa714fff038
     type: playbook
     task:
-      id: 819510f8-39d8-4237-82e5-fb57fd806749
+      id: 027558f4-e4c6-44ee-871f-efa714fff038
       version: -1
       name: Cortex XDR - XCloud Cryptojacking
       playbookName: Cortex XDR - XCloud Cryptojacking
@@ -538,10 +559,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 0aa062ec-14be-440b-8606-a05efe27dd8f
+    taskid: a4015a04-d851-4e90-8bbb-7a79e79494e8
     type: playbook
     task:
-      id: 0aa062ec-14be-440b-8606-a05efe27dd8f
+      id: a4015a04-d851-4e90-8bbb-7a79e79494e8
       version: -1
       name: GenericPolling
       description: |-
@@ -595,10 +616,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: d876d66f-ca83-4565-8c73-bfcf47d74473
+    taskid: c36b1abe-f071-41d2-86c2-c10456393d68
     type: condition
     task:
-      id: d876d66f-ca83-4565-8c73-bfcf47d74473
+      id: c36b1abe-f071-41d2-86c2-c10456393d68
       version: -1
       name: Which XCLOUD alert was found?
       description: Checks which XCLOUD alert was found in the incident.
@@ -847,10 +868,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: f2999d13-c387-4ef3-8e20-c44109eec244
+    taskid: 8fcf9f0e-34c6-48f7-859b-77544d2ac26d
     type: playbook
     task:
-      id: f2999d13-c387-4ef3-8e20-c44109eec244
+      id: 8fcf9f0e-34c6-48f7-859b-77544d2ac26d
       version: -1
       name: Cortex XDR - Possible External RDP Brute-Force
       description: "This playbook investigates a “Possible External RDP Brute Force” XDR Alert by gathering user, IP, and hostname information, and investigating if the following suspicious elements exists:\n- \"IP Reputation\" - Dbot Score is 2-3 \n- \"Source geolocation\" - Connection from unusual country \n-  Related to campaign - IP address related to campaign, based on TIM module\n-  Hunting results - hunt for indicators related to the source IP and the related campaign returned results\n-  XDR Alert search -XDR Alerts related to the same username and endpoint\n\nSet verdict method:\n* Suspicious Element - The \"Suspicious Element\" input allows you to select a specific element that, if identified as suspicious,  the investigation's final verdict will be deemed a \"True Positive\".\n\n* Final Verdict -  Each suspicious element is being added to an array called \"Suspicious Elements\", which is used to count potential security threats. The array size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a \"True Positive\".\n\n* User Engagement - The \"UserEngagementThreshold\" input allows you to set the number of suspicious elements that trigger user engagement. When this threshold is met, an email will be sent to the user and their manager asking for authorization of RDP activity. If the RDP activity is not authorized by the user, the investigation's final verdict will be deemed a \"True Positive\".\n\nUsed Sub-playbooks:\n* Account Enrichment - Generic v2.1\n* Block Indicators - Generic v3\n* Cortex XDR - Get entity alerts by MITRE tactics - Endpoint\n* Cortex XDR - Get entity alerts by MITRE tactics - user\n* User Investigation - Generic\n* TIM - Indicator Relationships Analysis\n* Threat Hunting - Generic\n* Cortex XDR - Possible External RDP Brute Force - Set Verdict\n* Cortex XDR - Isolate Endpoint\n"
@@ -988,10 +1009,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 14129f69-d407-4640-8114-b5548a37dbc0
+    taskid: b3ea3bb8-5e8f-4c98-8f86-ae46eb3a5244
     type: playbook
     task:
-      id: 14129f69-d407-4640-8114-b5548a37dbc0
+      id: b3ea3bb8-5e8f-4c98-8f86-ae46eb3a5244
       version: -1
       name: Cortex XDR - First SSO Access
       description: |-
@@ -1124,10 +1145,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: f9856c2e-ccdd-4156-8173-1867d2bd48f9
+    taskid: 6f4c3834-ed13-491c-81d8-3d0698006ef6
     type: playbook
     task:
-      id: f9856c2e-ccdd-4156-8173-1867d2bd48f9
+      id: 6f4c3834-ed13-491c-81d8-3d0698006ef6
       version: -1
       name: Cortex XDR - Cloud IAM User Access Investigation
       description: "Investigate and respond to Cortex XDR Cloud alerts where a Cloud IAM user`s access key is used suspiciously to access the cloud environment. \nThe following alerts are supported for AWS, Azure, and GCP environments.\n- Penetration testing tool attempt\n- Penetration testing tool activity\n- Suspicious API call from a Tor exit node\n\n"
@@ -1189,10 +1210,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: ad830609-c796-44fc-8de4-76d6ec8ce8dd
+    taskid: 7c5ac2f6-d3fc-4b4d-8524-30f9857d803c
     type: playbook
     task:
-      id: ad830609-c796-44fc-8de4-76d6ec8ce8dd
+      id: 7c5ac2f6-d3fc-4b4d-8524-30f9857d803c
       version: -1
       name: Cortex XDR - XCloud Token Theft Response
       description: |-
@@ -1273,10 +1294,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: be0cb5ec-08ca-4334-8efd-9c7c004aa362
+    taskid: a5b1918f-69e9-4ff2-8ae5-1927b61604f3
     type: playbook
     task:
-      id: be0cb5ec-08ca-4334-8efd-9c7c004aa362
+      id: a5b1918f-69e9-4ff2-8ae5-1927b61604f3
       version: -1
       name: Cortex XDR - Cloud Data Exfiltration Response
       playbookName: Cortex XDR - Cloud Data Exfiltration Response
@@ -1322,7 +1343,86 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
+  "20":
+    id: "20"
+    taskid: c9cf37ed-321c-4469-8d37-dbd0e850ddf1
+    type: playbook
+    task:
+      id: c9cf37ed-321c-4469-8d37-dbd0e850ddf1
+      version: -1
+      name: Cortex XDR Remote PsExec with LOLBIN command execution alert
+      description: "The \"Remote PsExec-like LOLBIN Command Execution\" playbook is designed to address and respond to alerts indicating suspicious activities related to remote PsExec-like LOLBIN command execution from an unsigned non-standard source. \nThe playbook aims to efficiently:\n\n- Get the alert data and check if the execution is blocked. If not will terminate the process (manually by default).\n- Enrich any entities and indicators from the alert and find any related campaigns.\n- Perform command analysis to provide insights and a verdict for the executed command.\n- Perform further endpoint investigation using Cortex XDR.\n- Checks for any malicious verdicts found to raise the severity of the alert.\n- Perform automatic/manual remediation response by blocking any malicious indicators found.\n\nThe playbook is designed to run as a sub-playbook in ‘Cortex XDR Incident Handling - v3 & Cortex XDR Alerts Handling’.\nIt depends on the data from the parent playbooks and cannot be used as a standalone version."
+      playbookName: Cortex XDR Remote PsExec with LOLBIN command execution alert
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      AutoRemediation:
+        simple: "false"
+      CriticalAlertsThreshold:
+        simple: "1"
+      EndpointIDs:
+        complex:
+          root: incident.xdralerts
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: incident.xdralerts.name
+                iscontext: true
+              right:
+                value:
+                  simple: Remote PsExec-like LOLBIN command execution from an unsigned
+              ignorecase: true
+          accessor: endpoint_id
+      HighAlertsThreshold:
+        simple: "1"
+      LOLBASFeedLimit:
+        simple: "100"
+      SrcIPAddress:
+        complex:
+          root: incident.xdralerts
+          accessor: actionremoteip
+          transformers:
+          - operator: uniq
+      alerts_ids:
+        complex:
+          root: incident.xdralerts
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: incident.xdralerts.name
+                iscontext: true
+              right:
+                value:
+                  simple: Remote PsExec-like LOLBIN command execution from an unsigned
+              ignorecase: true
+          accessor: alert_id
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1390,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1330,13 +1430,13 @@ view: |-
       "12_16_Token Theft": 0.58,
       "1_11_Cloud": 0.81,
       "1_14_First SSO Access": 0.82,
-      "1_7_#default#": 0.63,
+      "1_7_#default#": 0.8,
       "1_9_Malware": 0.65
     },
     "paper": {
       "dimensions": {
         "height": 1095,
-        "width": 3940,
+        "width": 4430,
         "x": -2200,
         "y": 70
       }
@@ -1371,8 +1471,7 @@ outputs:
 - contextPath: PaloAltoNetworksXDR.Incident.alerts.name
   description: Calculated name of the alert.
 - contextPath: PaloAltoNetworksXDR.Incident.alerts.category
-  description: Category of the alert, for example, Spyware Detected via Anti-Spyware
-    profile.
+  description: Category of the alert, for example, Spyware Detected via Anti-Spyware profile.
 - contextPath: PaloAltoNetworksXDR.Incident.alerts.host_ip
   description: Host IP involved in the alert.
 - contextPath: PaloAltoNetworksXDR.Incident.alerts.host_name
@@ -1380,38 +1479,17 @@ outputs:
 - contextPath: PaloAltoNetworksXDR.Incident.alerts.user_name
   description: User name involved with the alert.
 - contextPath: PaloAltoNetworksXDR.Incident.alerts.event_type
-  description: 'Event type: "Process Execution","Network Event","File Event","Registry
-    Event","Injection Event","Load Image Event","Windows Event Log".'
+  description: 'Event type: "Process Execution","Network Event","File Event","Registry Event","Injection Event","Load Image Event","Windows Event Log".'
 - contextPath: PaloAltoNetworksXDR.Incident.alerts.action
-  description: 'The action that triggered the alert. "REPORTED", "BLOCKED", "POST_DETECTED",
-    "SCANNED", "DOWNLOAD", "PROMPT_ALLOW", "PROMPT_BLOCK", "DETECTED", "BLOCKED_1",
-    "BLOCKED_2", "BLOCKED_3", "BLOCKED_5", "BLOCKED_6", "BLOCKED_7", "BLOCKED_8",
-    "BLOCKED_9", "BLOCKED_10", "BLOCKED_11", "BLOCKED_13", "BLOCKED_14", "BLOCKED_15",
-    "BLOCKED_16", "BLOCKED_17", "BLOCKED_24", "BLOCKED_25", "DETECTED_0", "DETECTED_4",
-    "DETECTED_18", "DETECTED_19", "DETECTED_20", "DETECTED_21", "DETECTED_22", "DETECTED_23".'
+  description: 'The action that triggered the alert. "REPORTED", "BLOCKED", "POST_DETECTED", "SCANNED", "DOWNLOAD", "PROMPT_ALLOW", "PROMPT_BLOCK", "DETECTED", "BLOCKED_1", "BLOCKED_2", "BLOCKED_3", "BLOCKED_5", "BLOCKED_6", "BLOCKED_7", "BLOCKED_8", "BLOCKED_9", "BLOCKED_10", "BLOCKED_11", "BLOCKED_13", "BLOCKED_14", "BLOCKED_15", "BLOCKED_16", "BLOCKED_17", "BLOCKED_24", "BLOCKED_25", "DETECTED_0", "DETECTED_4", "DETECTED_18", "DETECTED_19", "DETECTED_20", "DETECTED_21", "DETECTED_22", "DETECTED_23".'
 - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_pretty
-  description: 'The action that triggered the alert: "Detected (Reported)" "Prevented
-    (Blocked)" "Detected (Post Detected)" "Detected (Scanned)" "Detected (Download)"
-    "Detected (Prompt Allow)" "Prevented (Prompt Block)" "Detected" "Prevented (Denied
-    The Session)" "Prevented (Dropped The Session)" "Prevented (Dropped The Session
-    And Sent a TCP Reset)" "Prevented (Blocked The URL)" "Prevented (Blocked The IP)"
-    "Prevented (Dropped The Packet)" "Prevented (Dropped All Packets)" "Prevented
-    (Terminated The Session And Sent a TCP Reset To Both Sides Of The Connection)"
-    "Prevented (Terminated The Session And Sent a TCP Reset To The Client)" "Prevented
-    (Terminated The Session And Sent a TCP Reset To The Server)" "Prevented (Continue)"
-    "Prevented (Block-Override)" "Prevented (Override-Lockout)" "Prevented (Override)"
-    "Prevented (Random-Drop)" "Prevented (Silently Dropped The Session With An ICMP
-    Unreachable Message To The Host Or Application)" "Prevented (Block)" "Detected
-    (Allowed The Session)" "Detected (Raised An Alert)" "Detected (Syncookie Sent)"
-    "Detected (Forward)" "Detected (Wildfire Upload Success)" "Detected (Wildfire
-    Upload Failure)" "Detected (Wildfire Upload Skip)" "Detected (Sinkhole)".'
+  description: 'The action that triggered the alert: "Detected (Reported)" "Prevented (Blocked)" "Detected (Post Detected)" "Detected (Scanned)" "Detected (Download)" "Detected (Prompt Allow)" "Prevented (Prompt Block)" "Detected" "Prevented (Denied The Session)" "Prevented (Dropped The Session)" "Prevented (Dropped The Session And Sent a TCP Reset)" "Prevented (Blocked The URL)" "Prevented (Blocked The IP)" "Prevented (Dropped The Packet)" "Prevented (Dropped All Packets)" "Prevented (Terminated The Session And Sent a TCP Reset To Both Sides Of The Connection)" "Prevented (Terminated The Session And Sent a TCP Reset To The Client)" "Prevented (Terminated The Session And Sent a TCP Reset To The Server)" "Prevented (Continue)" "Prevented (Block-Override)" "Prevented (Override-Lockout)" "Prevented (Override)" "Prevented (Random-Drop)" "Prevented (Silently Dropped The Session With An ICMP Unreachable Message To The Host Or Application)" "Prevented (Block)" "Detected (Allowed The Session)" "Detected (Raised An Alert)" "Detected (Syncookie Sent)" "Detected (Forward)" "Detected (Wildfire Upload Success)" "Detected (Wildfire Upload Failure)" "Detected (Wildfire Upload Skip)" "Detected (Sinkhole)".'
 - contextPath: PaloAltoNetworksXDR.Incident.alerts.actor_process_image_name
   description: Image name.
 - contextPath: PaloAltoNetworksXDR.Incident.alerts.actor_process_command_line
   description: Command line.
 - contextPath: PaloAltoNetworksXDR.Incident.alerts.actor_process_signature_status
-  description: 'Signature status: "Signed" "Invalid Signature" "Unsigned" "Revoked"
-    "Signature Fail" "N/A" "Weak Hash".'
+  description: 'Signature status: "Signed" "Invalid Signature" "Unsigned" "Revoked" "Signature Fail" "N/A" "Weak Hash".'
 - contextPath: PaloAltoNetworksXDR.Incident.alerts.actor_process_signature_vendor
   description: Signature vendor name.
 - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_process_image_sha256
@@ -1423,31 +1501,27 @@ outputs:
 - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.network_domain
   description: The domain related to the artifact.
 - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.network_country
-  description: The country related to the artifact
+  description: The country related to the artifact.
 - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.network_remote_ip
   description: The remote IP related to the artifact.
 - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.file_signature_status
-  description: 'Digital signature status of the file: "SIGNATURE_UNAVAILABLE", "SIGNATURE_SIGNED",
-    "SIGNATURE_INVALID", "SIGNATURE_UNSIGNED", "SIGNATURE_WEAK_HASH".'
+  description: 'Digital signature status of the file: "SIGNATURE_UNAVAILABLE", "SIGNATURE_SIGNED", "SIGNATURE_INVALID", "SIGNATURE_UNSIGNED", "SIGNATURE_WEAK_HASH".'
 - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.is_process
   description: Whether the file artifact is related to a process execution.
 - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.file_name
   description: Name of the file.
 - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.file_wildfire_verdict
-  description: 'The file verdict, calculated by Wildfire: "BENIGN", "MALWARE", "GRAYWARE",
-    "PHISHING", "UNKNOWN".'
+  description: 'The file verdict, calculated by Wildfire: "BENIGN", "MALWARE", "GRAYWARE", "PHISHING", "UNKNOWN".'
 - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.is_malicious
   description: Whether the artifact is malicious, decided by the Wildfire verdict.
 - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.type
-  description: 'The artifact type: "META", "GID", "CID", "HASH", "IP", "DOMAIN", "REGISTRY",
-    "HOSTNAME".'
+  description: 'The artifact type: "META", "GID", "CID", "HASH", "IP", "DOMAIN", "REGISTRY", "HOSTNAME".'
 - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.file_sha256
   description: SHA256 hash of the file.
 - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.file_signature_vendor_name
   description: File signature vendor name.
 - contextPath: PortScan.BlockPorts
-  description: Indicates whether there's a need to block the ports used for exploitation
-    on the scanned host.
+  description: Indicates whether there's a need to block the ports used for exploitation on the scanned host.
   type: unknown
 - contextPath: PortScan.AttackerIPs
   description: Attacker IPs from the port scan alert.
@@ -1473,3 +1547,5 @@ outputs:
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0
+marketplaces:
+- xsoar

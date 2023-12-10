@@ -6006,6 +6006,13 @@ script:
     - description: whether to hide the polling result (automatically filled by polling).
       name: hide_polling_output
       deprecated: true
+    - description: Whether to show only `after-change-preview`, and `before-change-preview`, or get full data for it.  The full data are under the fields `after-change-detail`, and `before-change-detail`.
+      name: show-detail
+      predefined:
+      - yes
+      - no
+      auto: PREDEFINED
+      defaultValue: no
     description: The query logs in Panorama.
     name: pan-os-query-logs
     outputs:
@@ -9359,7 +9366,7 @@ script:
       description: The job ID to use when polling.
     description: Exports a tech support file (TSF).
     polling: true
-  dockerimage: demisto/pan-os-python:1.0.0.80157
+  dockerimage: demisto/pan-os-python:1.0.0.81877
   isfetch: true
   runonce: false
   script: ''

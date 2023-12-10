@@ -68,9 +68,13 @@ script:
     - defaultValue: '50'
       description: Limit of results to retrieve.
       name: limit
-    - defaultValue: '1'
-      description: Page number.
+    - description: Page number.
       name: page
+      hidden: true
+    - description: Amount of results per request. Value can be between 1 and 500. When only page_size is given, the first page results will be fetched.
+      name: page_size
+    - description: The URL for the next set of items to return during pagination. (This URL can be retrieved from a previous call).
+      name: next_token
     - auto: PREDEFINED
       description: Sets the Risk Level to retrieve.
       name: risk_level
@@ -78,7 +82,7 @@ script:
       - low
       - medium
       - high
-    description: Returns a comma-separated list of all risky users and their properties.
+    description: Returns a list of all risky users and their properties.
     name: azure-risky-users-list
     outputs:
     - contextPath: AzureRiskyUsers.RiskyUser.id
@@ -107,6 +111,9 @@ script:
       type: Boolean
     - contextPath: AzureRiskyUsers.RiskyUser.riskDetail
       description: 'Details of the detected risk. Possible values are: none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, unknownFutureValue.'
+      type: String
+    - contextPath: AzureRiskyUsers.RiskyUserListNextToken
+      description: A property in the response that contains a URL to the next page of results.
       type: String
   - arguments:
     - description: Risky user ID to retrieve.
@@ -308,7 +315,7 @@ script:
     - contextPath: AzureRiskyUsers.RiskDetection.tokenIssuerType
       description: 'Indicates the type of token issuer for the detected sign-in risk. Possible values are: AzureAD, ADFederationServices, UnknownFutureValue.'
       type: String
-  dockerimage: demisto/crypto:1.0.0.79610
+  dockerimage: demisto/crypto:1.0.0.82278
   runonce: false
   script: '-'
   subtype: python3

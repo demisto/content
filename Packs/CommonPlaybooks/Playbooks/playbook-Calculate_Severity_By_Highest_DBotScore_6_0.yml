@@ -181,10 +181,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 7082757c-758b-4cda-803e-526f85f26a68
+    taskid: 8ad27555-7d81-4dd4-86e5-598b2c445def
     type: condition
     task:
-      id: 7082757c-758b-4cda-803e-526f85f26a68
+      id: 8ad27555-7d81-4dd4-86e5-598b2c445def
       version: -1
       name: Evaluate severity based on DBotScore of indicators
       description: |-
@@ -475,10 +475,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: b894e09e-1a9a-4c62-80df-f1b53961c7c9
+    taskid: 5acf56ba-5b7b-4472-86e2-637756c34822
     type: regular
     task:
-      id: b894e09e-1a9a-4c62-80df-f1b53961c7c9
+      id: 5acf56ba-5b7b-4472-86e2-637756c34822
       version: -1
       name: Get DBotScore from XSOAR
       description: Get the overall score for the indicator as calculated by DBot.
@@ -494,6 +494,8 @@ tasks:
         complex:
           root: DBotScore
           accessor: Indicator
+          transformers:
+          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -544,3 +546,4 @@ outputs:
 tests:
 - Calculate Severity - Standard - Test
 fromversion: 6.0.0
+system: true

@@ -1,23 +1,18 @@
----
+The Cortex XDR Lite - Incident Handling playbook is triggered by fetching a Palo Alto Networks Cortex XDR incident and executes the following:
 
-## Cortex XDR Lite - Incident Handling
-
-The **Cortex XDR Lite - Incident Handling** playbook is triggered by fetching a Palo Alto Networks Cortex XDR incident and executes the following:
-
-**Analysis:**
+Analysis:
 - Enriches all the indicators from XDR incidents and alerts, providing additional context and information about these indicators.
 
-**Investigation:**
+Investigation:
 - Checks for related XDR alerts to the user and the endpoint by Mitre tactics to identify malicious activity.
 - Checks for specific arguments for malicious usage from the command line.
 
-**Verdict:**
+Verdict:
 - Determines the incident's verdict by considering indicator enrichment results, user and host risk levels, command line analysis, and the number of related XDR alerts (medium severity or higher) to the user and the endpoint by Mitre tactics.
 
-**Verdict Handling:**
+Verdict Handling:
 - Handles malicious incidents by initiating appropriate response actions, including blocking malicious indicators, isolating endpoints, and disabling user accounts.
 
----
 
 ## Dependencies
 
@@ -25,16 +20,16 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cortex XDR - Get entity alerts by MITRE tactics
-* Command-Line Analysis
-* Block Indicators - Generic v3
 * Cortex XDR - Isolate Endpoint
 * Entity Enrichment - Generic v3
+* Command-Line Analysis
+* Block Indicators - Generic v3
+* Cortex XDR - Get entity alerts by MITRE tactics
 
 ### Integrations
 
-* CortexXDRIR
 * Cortex XDR - IR
+* CortexXDRIR
 
 ### Scripts
 
@@ -43,8 +38,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
-* xdr-update-incident
 * xdr-get-incident-extra-data
+* xdr-update-incident
 
 ## Playbook Inputs
 
