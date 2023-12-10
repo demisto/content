@@ -71,6 +71,7 @@ repos:
     docker_image: from-yml
     entry: coverage
     files: Packs\/.*_test\.py$
+    exclude: test_data
     env:
       # the data-file argument is not supported in coverage-py 5.5 which is the LTS on python2
       COVERAGE_FILE: /src/.pre-commit/coverage/.coverage
