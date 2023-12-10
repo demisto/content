@@ -371,7 +371,7 @@ def rasterize(path: str,
                 return screenshot_image(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout,
                                         include_source=True)
             else:
-                message = 'Unsupported rasterization type {rasterize_type}'
+                message = f'Unsupported rasterization type {rasterize_type}'
                 demisto.error(message)
                 return_error(message)
                 return None
