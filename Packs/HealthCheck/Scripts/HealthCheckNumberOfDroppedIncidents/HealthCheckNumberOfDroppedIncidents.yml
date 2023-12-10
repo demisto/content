@@ -1,14 +1,14 @@
 args:
 - auto: PREDEFINED
   default: true
-  description: Is widget or playbook command
+  description: Is widget or playbook command.
   name: isWidget
   predefined:
   - 'False'
   - 'True'
-- description: Define the thresholds
+- description: Define the thresholds.
   name: Thresholds
-comment: Number of dropped incidents
+comment: Number of dropped incidents.
 commonfields:
   id: HealthCheckNumberOfDroppedIncidents
   version: -1
@@ -17,7 +17,7 @@ enabled: true
 name: HealthCheckNumberOfDroppedIncidents
 outputs:
 - contextPath: NumberOfDroppedIncidents
-  description: Number of dropped incidents
+  description: Number of dropped incidents.
 runas: DBotWeakRole
 script: ''
 scripttarget: 0

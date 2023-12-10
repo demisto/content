@@ -1,7 +1,7 @@
 args:
 - description: Define the thresholds.
   name: Thresholds
-comment: Reports on common indicators
+comment: Reports on common indicators.
 commonfields:
   id: HealthCheckCommonIndicators
   version: -1

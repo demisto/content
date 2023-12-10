@@ -1,5 +1,5 @@
-comment: |
-  Check Upgrade and Display Changes
+comment: |-
+  Check Upgrade and Display Changes.
 commonfields:
   id: ListPlaybookAutomationsCommands
   version: -1

@@ -1,4 +1,4 @@
-comment: Parsing custom fields to detect indexed fields for risky field types
+comment: Parsing custom fields to detect indexed fields for risky field types.
 commonfields:
   id: HealthCheckFields
   version: -1

@@ -1,4 +1,4 @@
-comment: Collect data from System Diagnostics tool
+comment: Collect data from System Diagnostics tool.
 commonfields:
   id: HealthCheckSystemDiagnostics
   version: -1

@@ -1,9 +1,9 @@
 args:
-- description: Define the thresholds
+- description: Define the thresholds.
   name: Thresholds
-- description: un
+- description: un.
   name: Inadvisable
-comment: Parsing playbooks
+comment: Parsing playbooks.
 commonfields:
   id: HealthCheckPlaybookAnalysis
   version: -1

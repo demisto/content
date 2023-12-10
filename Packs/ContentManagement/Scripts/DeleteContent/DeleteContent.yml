@@ -33,13 +33,13 @@ name: DeleteContent
 comment: Delete content to keep XSOAR tidy.
 outputs:
 - contextPath: ConfigurationSetup.Deletion.successfully_deleted
-  description: Deleted ids
+  description: Deleted ids.
   type: String
 - contextPath: ConfigurationSetup.Deletion.not_deleted
-  description: Not deleted ids
+  description: Not deleted ids.
   type: String
 - contextPath: ConfigurationSetup.Deletion.status
-  description: Deletion status
+  description: Deletion status.
   type: String
 script: '-'
 tags:

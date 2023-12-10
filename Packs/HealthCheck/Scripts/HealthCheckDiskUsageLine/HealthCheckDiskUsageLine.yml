@@ -1,4 +1,4 @@
-comment: Present Disk usage stats line widget
+comment: Present Disk usage stats line widget.
 commonfields:
   id: HealthCheckDiskUsageLine
   version: -1

@@ -1,4 +1,4 @@
-comment: Trend graph for incidents created per day
+comment: Trend graph for incidents created per day.
 commonfields:
   id: HealthCheckIncidentsCreatedDaily
   version: -1

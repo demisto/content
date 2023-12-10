@@ -1,4 +1,4 @@
-comment: Trend graph for incidents created per month
+comment: Trend graph for incidents created per month.
 commonfields:
   id: HealthCheckIncidentsCreatedMonthly
   version: -1

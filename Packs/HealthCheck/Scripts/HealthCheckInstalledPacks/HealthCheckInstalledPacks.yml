@@ -1,4 +1,4 @@
-comment: "Read the installedpacks.json. \n\nCount and get packs names"
+comment: "Read the installedpacks.json. \n\nCount and get packs names."
 commonfields:
   id: HealthCheckInstalledPacks
   version: -1
@@ -7,7 +7,7 @@ enabled: true
 name: HealthCheckInstalledPacks
 outputs:
 - contextPath: FileData
-  description: Data read from war room file
+  description: Data read from war room file.
 runas: DBotWeakRole
 script: ''
 scripttarget: 0

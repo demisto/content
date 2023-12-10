@@ -1,4 +1,4 @@
-comment: Trend graph for incident creation
+comment: Trend graph for incident creation.
 commonfields:
   id: HealthCheckIncidentsCreatedWeekly
   version: -1

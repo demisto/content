@@ -1,4 +1,4 @@
-comment: Containers status
+comment: Containers status.
 commonfields:
   id: HealthCheckContainersStatus
   version: -1
@@ -7,7 +7,7 @@ enabled: true
 name: HealthCheckContainersStatus
 outputs:
 - contextPath: containers
-  description: Containers status table
+  description: Containers status table.
 runas: DBotWeakRole
 script: ''
 scripttarget: 0
