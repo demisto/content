@@ -551,21 +551,26 @@ class TestFetchFlow:
               to fetch events for the current event type iteration.
         """
         from ArmisEventCollector import fetch_events
-        events_with_different_time = [
-            {
-                'unique_id': '1',
-                'time': '2023-01-01T01:00:10.123456+00:00'
-            },
-            {
-                'unique_id': '2',
-                'time': '2023-01-01T01:00:20.123456+00:00'
-            },
-            {
-                'unique_id': '3',
-                'time': '2023-01-01T01:00:30.123456+00:00'
-            }]
+        events_with_different_time = {
+            'data':
+                {
+                    'results': [
+                        {
+                            'unique_id': '1',
+                            'time': '2023-01-01T01:00:10.123456+00:00'
+                        },
+                        {
+                            'unique_id': '2',
+                            'time': '2023-01-01T01:00:20.123456+00:00'
+                        },
+                        {
+                            'unique_id': '3',
+                            'time': '2023-01-01T01:00:30.123456+00:00'
+                        }
+                    ]
+                }}
         fetch_start_time = arg_to_datetime('2023-01-01T01:00:00')
-        mocker.patch.object(Client, 'fetch_by_aql_query', side_effect=[DemistoException(
+        mocker.patch.object(Client, '_http_request', side_effect=[DemistoException(
             message='Invalid access token'), events_with_different_time])
         mocker.patch.dict(EVENT_TYPES, {'Events': EVENT_TYPE('unique_id', 'events_query', 'events', 'time', 'events')})
         mocker.patch.object(Client, 'update_access_token')
@@ -574,4 +579,4 @@ class TestFetchFlow:
                         'events_last_fetch_time': '2023-01-01T01:00:30.123456+00:00',
                         'access_token': 'test_access_token'}
             assert fetch_events(dummy_client, 1000, 1000, {}, fetch_start_time, [
-                'Events'], None) == ({'events': events_with_different_time}, last_run)
+                'Events'], None) == ({'events': events_with_different_time['data']['results']}, last_run)

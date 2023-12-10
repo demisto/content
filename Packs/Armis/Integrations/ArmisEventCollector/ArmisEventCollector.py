@@ -67,6 +67,19 @@ class Client(BaseClient):
         self._headers = headers
         self._access_token = access_token
 
+    def perform_fetch(self, params):
+        try:
+            raw_response = self._http_request(url_suffix='/search/', method='GET', params=params, headers=self._headers)
+        except Exception as e:
+            if "Invalid access token" in str(e):
+                demisto.debug("debug-log: Invalid access token")
+                self.update_access_token()
+                raw_response = self._http_request(url_suffix='/search/', method='GET', params=params, headers=self._headers)
+            else:
+                demisto.debug(f"debug-log: Error occurred while fetching events: {e}")
+                raise e
+        return raw_response
+
     def fetch_by_ids_in_aql_query(self, aql_query: str, order_by: str = 'time'):
         """ Fetches events using AQL query.
 
@@ -78,7 +91,7 @@ class Client(BaseClient):
             list[dict]: List of events objects represented as dictionaries.
         """
         params: dict[str, Any] = {'aql': aql_query, 'includeTotal': 'true', 'orderBy': order_by}
-        raw_response = self._http_request(url_suffix='/search/', method='GET', params=params, headers=self._headers)
+        raw_response = self.perform_fetch(params)
         return raw_response.get('data', {}).get('results', [])
 
     def fetch_by_aql_query(self, aql_query: str, max_fetch: int, after: None | datetime = None,
@@ -97,7 +110,7 @@ class Client(BaseClient):
         if not after:  # this should only happen when get-events command is used without from_date argument
             after = datetime.now() - timedelta(minutes=1)
         params['aql'] += f' after:{after.strftime(DATE_FORMAT)}'  # add 'after' date filter to AQL query in the desired format
-        raw_response = self._http_request(url_suffix='/search/', method='GET', params=params, headers=self._headers)
+        raw_response = self.perform_fetch(params)
         results = raw_response.get('data', {}).get('results', [])
 
         # perform pagination if needed (until max_fetch limit),  cycle through all pages and add results to results list.
@@ -107,7 +120,7 @@ class Client(BaseClient):
             if next < max_fetch:
                 params['length'] = max_fetch - next
             params['from'] = next
-            raw_response = self._http_request(url_suffix='/search/', method='GET', params=params, headers=self._headers)
+            raw_response = self.perform_fetch(params)
             results.extend(raw_response.get('data', {}).get('results', []))
 
         return results
@@ -333,29 +346,6 @@ def fetch_by_event_type(client: Client, event_type: EVENT_TYPE, events: dict, ma
         next_run.update(last_run)
 
 
-def fetch_events_by_type_with_retry(client: Client, event_type: EVENT_TYPE, events,
-                                    max_fetch, last_run, next_run, fetch_start_time):
-    try:
-        fetch_by_event_type(client, event_type, events,
-                            max_fetch, last_run, next_run, fetch_start_time)
-    except Exception as e:
-        if "Invalid access token" in str(e):
-            demisto.debug("debug-log: Invalid access token")
-            client.update_access_token()
-            fetch_by_event_type(client, event_type, events,
-                                max_fetch, last_run, next_run, fetch_start_time)
-
-
-def fetch_events_for_specific_alert_ids_with_retry(client, alert, aql_with_alerts_id):
-    try:
-        fetch_events_for_specific_alert_ids(client, alert, aql_with_alerts_id)
-    except Exception as e:
-        if "Invalid access token" in str(e):
-            demisto.debug("debug-log: Invalid access token")
-            client.update_access_token()
-            fetch_events_for_specific_alert_ids(client, alert, aql_with_alerts_id)
-
-
 def fetch_events_for_specific_alert_ids(client: Client, alert, aql_alert_id):
     demisto.debug(f'debug-log: Fetching Activities and Devices for specific alert IDs. {aql_alert_id}')
     activities_aql_query = f'{EVENT_TYPES["Activities"].aql_query}  {aql_alert_id}'
@@ -379,7 +369,8 @@ def fetch_events(client: Client,
 
     Args:
         client (Client): Armis client to use for API calls.
-        max_fetch (int): Max number of alerts to fetch.
+        max_fetch (int): Max number of alerts and activities to fetch.
+        devices_max_fetch (int): Max number of devices to fetch.
         last_run (dict): Last run dictionary.
         fetch_start_time (datetime | None): Fetch start time.
         event_types_to_fetch (list[str]): List of event types to fetch.
@@ -394,19 +385,19 @@ def fetch_events(client: Client,
         event_types_to_fetch.remove('Devices')
 
     if 'Alerts' in event_types_to_fetch:
-        # begin Alerts fetch flow which means fetch Alerts extract activity and devices from it and fetch it
-        fetch_events_by_type_with_retry(client, EVENT_TYPES['Alerts'], events, max_fetch, last_run,
-                                        next_run, fetch_start_time,)
+        # begin Alerts fetch flow: fetch Alerts extract and fetch activities and devices from alert response.
+        fetch_by_event_type(client, EVENT_TYPES['Alerts'], events, max_fetch, last_run,
+                            next_run, fetch_start_time,)
         if events and events.get(EVENT_TYPE_ALERTS):
             for alert in events[EVENT_TYPE_ALERTS]:
                 alert_id = alert.get('alertId')
                 aql_with_alerts_id = f'alert:(alertId:({alert_id}))'
-                fetch_events_for_specific_alert_ids_with_retry(client, alert, aql_with_alerts_id)
+                fetch_events_for_specific_alert_ids(client, alert, aql_with_alerts_id)
         event_types_to_fetch.remove('Alerts')
     for event_type in event_types_to_fetch:
         event_max_fetch = max_fetch if event_type != "Devices" else devices_max_fetch
-        fetch_events_by_type_with_retry(client, EVENT_TYPES[event_type], events, event_max_fetch, last_run,
-                                        next_run, fetch_start_time,)
+        fetch_by_event_type(client, EVENT_TYPES[event_type], events, event_max_fetch, last_run,
+                            next_run, fetch_start_time,)
 
     next_run['access_token'] = client._access_token
 
