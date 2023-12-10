@@ -238,7 +238,7 @@ class DemistoObject {
         if ( -not $this.IsIntegration ) {
             throw "Method not supported"
         }
-        $Incidents = $Incidents | ConvertTo-Json -Depth 6
+        $Incidents = $Incidents | ConvertTo-Json -Depth 6 -AsArray
         return $this.Results(@{Type = 1; Contents = $Incidents; ContentsFormat = "json" })
     }
 

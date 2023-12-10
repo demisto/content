@@ -628,19 +628,21 @@ class ScoreCalculator:
     trusted_vendors: List[str]
 
     # IP
-    ip_threshold: int
-    url_threshold: int
+    ip_threshold: dict[str, int]
+
+    # URL
+    url_threshold: dict[str, int]
 
     # Domain
-    domain_threshold: int
+    domain_threshold: dict[str, int]
     domain_popularity_ranking: int
 
     # File
-    file_threshold: int
+    file_threshold: dict[str, int]
     sigma_ids_threshold: int
     crowdsourced_yara_rules_enabled: bool
     crowdsourced_yara_rules_threshold: int
-    relationship_threshold: int
+    relationship_threshold: dict[str, int]
 
     def __init__(self, params: dict):
         self.trusted_vendors = argToList(params['preferredVendors'])
@@ -655,26 +657,46 @@ class ScoreCalculator:
             arg_name='Preferred Vendor Threshold',
             required=True
         )
-        self.file_threshold = arg_to_number_must_int(
-            params['fileThreshold'],
-            arg_name='File Threshold',
-            required=True
-        )
-        self.ip_threshold = arg_to_number_must_int(
-            params['ipThreshold'],
-            arg_name='IP Threshold',
-            required=True
-        )
-        self.url_threshold = arg_to_number_must_int(
-            params['urlThreshold'],
-            arg_name='URL Threshold',
-            required=True
-        )
-        self.domain_threshold = arg_to_number_must_int(
-            params['domainThreshold'],
-            arg_name='Domain Threshold',
-            required=True
-        )
+        self.file_threshold = {
+            'malicious': arg_to_number_must_int(
+                params['fileThreshold'],
+                arg_name='File Malicious Threshold',
+                required=True),
+            'suspicious': arg_to_number_must_int(
+                params['fileSuspiciousThreshold'],
+                arg_name='File Suspicious Threshold',
+                required=True)
+        }
+        self.ip_threshold = {
+            'malicious': arg_to_number_must_int(
+                params['ipThreshold'],
+                arg_name='IP Malicious Threshold',
+                required=True),
+            'suspicious': arg_to_number_must_int(
+                params['ipSuspiciousThreshold'],
+                arg_name='IP Suspicious Threshold',
+                required=True)
+        }
+        self.url_threshold = {
+            'malicious': arg_to_number_must_int(
+                params['urlThreshold'],
+                arg_name='URL Malicious Threshold',
+                required=True),
+            'suspicious': arg_to_number_must_int(
+                params['urlSuspiciousThreshold'],
+                arg_name='URL Suspicious Threshold',
+                required=True)
+        }
+        self.domain_threshold = {
+            'malicious': arg_to_number_must_int(
+                params['domainThreshold'],
+                arg_name='Domain Malicious Threshold',
+                required=True),
+            'suspicious': arg_to_number_must_int(
+                params['domainSuspiciousThreshold'],
+                arg_name='Domain Suspicious Threshold',
+                required=True)
+        }
         self.crowdsourced_yara_rules_enabled = argToBoolean(params['crowdsourced_yara_rules_enabled'])
         self.crowdsourced_yara_rules_threshold = arg_to_number_must_int(params['yaraRulesThreshold'])
         self.sigma_ids_threshold = arg_to_number_must_int(
@@ -687,11 +709,16 @@ class ScoreCalculator:
             arg_name='Domain Popularity Ranking Threshold',
             required=True
         )
-        self.relationship_threshold = arg_to_number_must_int(
-            params['relationship_threshold'],
-            arg_name='Relationship Files Threshold',
-            required=True
-        )
+        self.relationship_threshold = {
+            'malicious': arg_to_number_must_int(
+                params['relationship_threshold'],
+                arg_name='Relationship Files Malicious Threshold',
+                required=True),
+            'suspicious': arg_to_number_must_int(
+                params['relationship_suspicious_threshold'],
+                arg_name='Relationship Files Suspicious Threshold',
+                required=True)
+        }
         self.logs = []
 
     def get_logs(self) -> str:
@@ -699,10 +726,33 @@ class ScoreCalculator:
         """
         return '\n'.join(self.logs)
 
+    def _is_by_threshold(self, analysis_stats: dict, threshold: int, suspicious: bool = False) -> bool:
+        """Determines whatever the indicator malicious/suspicious by threshold.
+        if number of malicious (+ suspicious) >= threshold -> Malicious (Suspicious)
+
+        Args:
+            analysis_stats: the analysis stats from the response.
+            threshold: the threshold of the indicator type.
+            suspicious: whether suspicious is also added.
+
+        Returns:
+            Whatever the indicator is malicious/suspicious by threshold.
+        """
+        total = analysis_stats.get('malicious', 0)
+        if suspicious:
+            total += analysis_stats.get('suspicious', 0)
+        veredict = 'suspicious' if suspicious else 'malicious'
+        self.logs.append(f'{total} vendors found {veredict}.\n'
+                         f'The {veredict} threshold is {threshold}.')
+        if total >= threshold:
+            self.logs.append(f'Found as {veredict}: {total} >= {threshold}.')
+            return True
+        self.logs.append(f'Not found {veredict} by threshold: {total} < {threshold}.')
+        return False
+
     def is_suspicious_by_threshold(self, analysis_stats: dict, threshold: int) -> bool:
         """Determines whatever the indicator suspicious by threshold.
-        if number of malicious >= threshold /2 ||
-        number of suspicious >= threshold -> Suspicious
+        if number of malicious + suspicious >= threshold -> Suspicious
 
         Args:
             analysis_stats: the analysis stats from the response
@@ -711,17 +761,7 @@ class ScoreCalculator:
         Returns:
             Whatever the indicator is suspicious by threshold.
         """
-        if analysis_stats.get('malicious', 0) >= threshold / 2:
-            self.logs.append(
-                f'Found at least suspicious by {(analysis_stats.get("malicious", 0) >= threshold / 2)=}. '
-            )
-            return True
-        elif analysis_stats.get('suspicious', 0) >= threshold:
-            self.logs.append(
-                f'Found at least suspicious by {(analysis_stats.get("suspicious", 0) >= threshold)=}. '
-            )
-            return True
-        return False
+        return self._is_by_threshold(analysis_stats, threshold, suspicious=True)
 
     def is_good_by_popularity_ranks(self, popularity_ranks: dict) -> Optional[bool]:
         """Analyzing popularity ranks.
@@ -733,13 +773,10 @@ class ScoreCalculator:
             Whatever the indicator is good or not by popularity rank.
         """
         if popularity_ranks:
-            self.logs.append(
-                'Found popularity ranks. Analyzing. '
-            )
+            self.logs.append('Found popularity ranks. Analyzing.')
             average = sum(rank.get('rank', 0) for rank in popularity_ranks.values()) / len(popularity_ranks)
             self.logs.append(
-                f'The average of the ranks is {average} and the threshold is {self.domain_popularity_ranking}'
-            )
+                f'The average of the ranks is {average} and the threshold is {self.domain_popularity_ranking}')
             if average <= self.domain_popularity_ranking:
                 self.logs.append('Indicator is good by popularity ranks.')
                 return True
@@ -754,7 +791,7 @@ class ScoreCalculator:
 
         crowdsourced_yara_results >= yara_rules_threshold ||
         sigma_analysis_stats.high + critical >= sigma_id_threshold ||
-         crowdsourced_ids_stats.high + critical >= sigma_id_threshold -> suspicious
+        crowdsourced_ids_stats.high + critical >= sigma_id_threshold -> suspicious
 
         Args:
             file_response: the file response
@@ -764,56 +801,37 @@ class ScoreCalculator:
         """
         data = file_response.get('data', {})
         if self.crowdsourced_yara_rules_enabled:
-            self.logs.append(
-                'Crowdsourced Yara Rules analyzing enabled. '
-            )
+            self.logs.append('Crowdsourced Yara Rules analyzing enabled.')
             if (total_yara_rules := len(
                     data.get('crowdsourced_yara_results', []))) >= self.crowdsourced_yara_rules_threshold:
                 self.logs.append(
                     'Found malicious by finding more Crowdsourced Yara Rules than threshold. \n'
-                    f'{total_yara_rules=} >= {self.crowdsourced_yara_rules_threshold=}'
-                )
+                    f'{total_yara_rules} >= {self.crowdsourced_yara_rules_threshold}')
                 return True
             if sigma_rules := data.get('sigma_analysis_stats'):
-                self.logs.append(
-                    'Found sigma rules, analyzing. '
-                )
+                self.logs.append('Found sigma rules, analyzing.')
                 sigma_high, sigma_critical = sigma_rules.get('high', 0), sigma_rules.get('critical', 0)
                 if (sigma_high + sigma_critical) >= self.sigma_ids_threshold:
                     self.logs.append(
-                        f'Found malicious, {(sigma_high + sigma_critical)=} >= {self.sigma_ids_threshold=}. '
-                    )
+                        f'Found malicious, {sigma_high + sigma_critical} >= {self.sigma_ids_threshold}. ')
                     return True
                 else:
-                    self.logs.append(
-                        'Not found malicious by sigma. '
-                    )
+                    self.logs.append('Not found malicious by sigma. ')
             else:
-                self.logs.append(
-                    'Not found sigma analysis. Skipping. '
-                )
+                self.logs.append('Not found sigma analysis. Skipping. ')
             if crowdsourced_ids_stats := data.get('crowdsourced_ids_stats'):
-                self.logs.append(
-                    'Found crowdsourced IDS analysis, analyzing. '
-                )
+                self.logs.append('Found crowdsourced IDS analysis, analyzing. ')
                 ids_high, ids_critical = crowdsourced_ids_stats.get('high'), crowdsourced_ids_stats.get('critical')
                 if (ids_high + ids_critical) >= self.sigma_ids_threshold:
                     self.logs.append(
-                        f'Found malicious, {((ids_high + ids_critical) >= self.sigma_ids_threshold)=}. '
-                    )
+                        f'Found malicious, {(ids_high + ids_critical) >= self.sigma_ids_threshold}.')
                     return True
                 else:
-                    self.logs.append(
-                        'Not found malicious by sigma. '
-                    )
+                    self.logs.append('Not found malicious by sigma.')
             else:
-                self.logs.append(
-                    'Not found crowdsourced IDS analysis. Skipping. '
-                )
+                self.logs.append('Not found crowdsourced IDS analysis. Skipping.')
         else:
-            self.logs.append(
-                'Crowdsourced Yara Rules analyzing is not enabled. Skipping. '
-            )
+            self.logs.append('Crowdsourced Yara Rules analyzing is not enabled. Skipping.')
         return False
 
     def is_preferred_vendors_pass_malicious(self, analysis_results: dict) -> bool:
@@ -850,7 +868,7 @@ class ScoreCalculator:
 
     def is_malicious_by_threshold(self, analysis_stats: dict, threshold: int) -> bool:
         """Determines whatever the indicator malicious by threshold.
-        if number of malicious >= threshold -< Malicious
+        if number of malicious >= threshold -> Malicious
 
         Args:
             analysis_stats: the analysis stats from the response
@@ -859,31 +877,22 @@ class ScoreCalculator:
         Returns:
             Whatever the indicator is malicious by threshold.
         """
-        total_malicious = analysis_stats.get('malicious', 0)
-        self.logs.append(
-            f'{total_malicious} vendors found malicious. \n'
-            f'The malicious threshold is {threshold}. '
-        )
-        if total_malicious >= threshold:
-            self.logs.append(f'Found as malicious: {total_malicious=} >= {threshold=}. ')
-            return True
-        self.logs.append(f'Not found malicious by threshold: {total_malicious=} >= {threshold=}. ')
-        return False
+        return self._is_by_threshold(analysis_stats, threshold)
 
-    def score_by_threshold(self, analysis_stats: dict, threshold: int) -> int:
+    def score_by_threshold(self, analysis_stats: dict, threshold: dict[str, int]) -> int:
         """Determines the DBOTSCORE of the indicator by threshold only.
 
         Returns:
             DBotScore of the indicator. Can by Common.DBotScore.BAD, Common.DBotScore.SUSPICIOUS or
             Common.DBotScore.GOOD
         """
-        if self.is_malicious_by_threshold(analysis_stats, threshold):
+        if self.is_malicious_by_threshold(analysis_stats, threshold['malicious']):
             return Common.DBotScore.BAD
-        if self.is_suspicious_by_threshold(analysis_stats, threshold):
+        if self.is_suspicious_by_threshold(analysis_stats, threshold['suspicious']):
             return Common.DBotScore.SUSPICIOUS
         return Common.DBotScore.GOOD
 
-    def score_by_results_and_stats(self, indicator: str, raw_response: dict, threshold: int) -> int:
+    def score_by_results_and_stats(self, indicator: str, raw_response: dict, threshold: dict[str, int]) -> int:
         """Determines indicator score by popularity preferred vendors and threshold.
 
         Args:
@@ -922,7 +931,7 @@ class ScoreCalculator:
             DBotScore of the indicator. Can by Common.DBotScore.BAD, Common.DBotScore.SUSPICIOUS or
             Common.DBotScore.GOOD
         """
-        self.logs.append(f'Analysing file hash {given_hash}. ')
+        self.logs.append(f'Analysing file hash {given_hash}.')
         data = raw_response.get('data', {})
         attributes = data.get('attributes', {})
         analysis_results = attributes.get('last_analysis_results', {})
@@ -939,23 +948,18 @@ class ScoreCalculator:
         suspicious_by_rules = self.is_suspicious_by_rules(raw_response)
         if score == Common.DBotScore.SUSPICIOUS and suspicious_by_rules:
             self.logs.append(
-                f'Hash: "{given_hash}" was found malicious as the hash is suspicious both by threshold and rules '
-                f'analysis.'
-            )
+                f'Hash: "{given_hash}" was found malicious as the '
+                'hash is suspicious both by threshold and rules analysis.')
             return Common.DBotScore.BAD
         elif suspicious_by_rules:
             self.logs.append(
-                f'Hash: "{given_hash}" was found suspicious by rules analysis.'
-            )
+                f'Hash: "{given_hash}" was found suspicious by rules analysis.')
             return Common.DBotScore.SUSPICIOUS
         elif score == Common.DBotScore.SUSPICIOUS:
             self.logs.append(
-                f'Hash: "{given_hash}" was found suspicious by passing the threshold analysis.'
-            )
+                f'Hash: "{given_hash}" was found suspicious by passing the threshold analysis.')
             return Common.DBotScore.SUSPICIOUS
-        self.logs.append(
-            f'Hash: "{given_hash}" was found good'
-        )
+        self.logs.append(f'Hash: "{given_hash}" was found good.')
         return Common.DBotScore.GOOD  # Nothing caught
 
     def ip_score(self, ip: str, raw_response: dict) -> int:
@@ -973,9 +977,7 @@ class ScoreCalculator:
             DBotScore of the indicator. Can by Common.DBotScore.BAD, Common.DBotScore.SUSPICIOUS or
             Common.DBotScore.GOOD
         """
-        return self.score_by_results_and_stats(
-            ip, raw_response, self.ip_threshold
-        )
+        return self.score_by_results_and_stats(ip, raw_response, self.ip_threshold)
 
     def url_score(self, indicator: str, raw_response: dict) -> int:
         """Determines indicator score by popularity preferred vendors and threshold.
@@ -1006,8 +1008,8 @@ class ScoreCalculator:
     # region Premium analysis
     def is_malicious_or_suspicious_by_relationship_files(self, relationship_files_response: dict, lookback=20) -> int:
         """Checks maliciousness of indicator on relationship files. Look on the recent 20 results returned.
-            if (number of relationship files that are malicious > threshold) -> Bad
-            if (number of relationship files that are malicious > threshold / 2) -> suspicious
+            if (number of relationship files that are malicious >= malicious threshold) -> Bad
+            if (number of relationship files that are malicious + suspicious >= suspicious threshold) -> suspicious
             else good
         Args:
             relationship_files_response: The raw_response of the relationship call
@@ -1019,24 +1021,25 @@ class ScoreCalculator:
         """
         files = relationship_files_response.get('data', [])[:lookback]  # lookback on recent 20 results. By design
         total_malicious = 0
+        total_suspicious = 0
         for file in files:
-            if (file_hash := file.get('sha256', file.get('sha1', file.get('md5', file.get('ssdeep'))))) and (
-                    self.file_score(file_hash, files) == Common.DBotScore.BAD):
+            file_hash = file.get('sha256', file.get('sha1', file.get('md5', file.get('ssdeep'))))
+            if file_hash and self.file_score(file_hash, files) == Common.DBotScore.BAD:
                 total_malicious += 1
+            elif file_hash and self.file_score(file_hash, files) == Common.DBotScore.SUSPICIOUS:
+                total_suspicious += 1
 
-        if total_malicious >= self.url_threshold:
+        if total_malicious >= self.relationship_threshold['malicious']:
             self.logs.append(
-                f'Found malicious by relationship files. {total_malicious=} >= {self.relationship_threshold}'
-            )
+                f'Found malicious by relationship files. {total_malicious} >= {self.relationship_threshold["malicious"]}')
             return Common.DBotScore.BAD
-        if total_malicious >= self.url_threshold / 2:
+        if total_suspicious >= self.relationship_threshold['suspicious']:
             self.logs.append(
-                f'Found suspicious by relationship files. {total_malicious=} >= {self.relationship_threshold}'
-            )
+                'Found suspicious by relationship files. '
+                f'{total_malicious + total_suspicious} >= {self.relationship_threshold["suspicious"]}')
             return Common.DBotScore.SUSPICIOUS
         self.logs.append(
-            f'Found safe by relationship files. {total_malicious=} >= {self.relationship_threshold}'
-        )
+            f'Found safe by relationship files. {total_malicious} < {self.relationship_threshold["suspicious"]}')
         return Common.DBotScore.GOOD
 
     def analyze_premium_scores(
@@ -1062,9 +1065,7 @@ class ScoreCalculator:
         is_suspicious = False
         for func in relationship_functions:
             self.logs.append(f'Analyzing by {func.__name__}')
-            premium_score = self.is_malicious_or_suspicious_by_relationship_files(
-                func(indicator)
-            )
+            premium_score = self.is_malicious_or_suspicious_by_relationship_files(func(indicator))
             if premium_score == Common.DBotScore.BAD:
                 return premium_score
             if premium_score == Common.DBotScore.SUSPICIOUS and base_score == Common.DBotScore.SUSPICIOUS:
@@ -1675,12 +1676,8 @@ def merge_two_dicts(dict_a, dict_b):
 # region Reputation commands
 
 
-def ip_command(client: Client,
-               score_calculator: ScoreCalculator,
-               args: dict,
-               relationships: str,
-               disable_private_ip_lookup: bool
-               ) -> List[CommandResults]:
+def ip_command(client: Client, score_calculator: ScoreCalculator, args: dict,
+               relationships: str, disable_private_ip_lookup: bool) -> List[CommandResults]:
     """
     1 API Call for regular
     1-4 API Calls for premium subscriptions
@@ -1688,18 +1685,17 @@ def ip_command(client: Client,
     ips = argToList(args['ip'])
     results: List[CommandResults] = []
     execution_metrics = ExecutionMetrics()
-    override_private_lookup = argToBoolean(args.get("override_private_lookup", "False"))
+    override_private_lookup = argToBoolean(args.get('override_private_lookup', False))
 
     for ip in ips:
         raise_if_ip_not_valid(ip)
+        if disable_private_ip_lookup and ipaddress.ip_address(ip).is_private and not override_private_lookup:
+            result = CommandResults(
+                readable_output=f'Reputation lookups have been disabled for private IP addresses. Enrichment skipped for {ip}')
+            results.append(result)
+            execution_metrics.success += 1
+            continue
         try:
-            if disable_private_ip_lookup and ipaddress.ip_address(ip).is_private and not override_private_lookup:
-                readable_output = (f'Reputation lookups have been disabled for private IP addresses.'
-                                   f'Enrichment skipped for {ip}')
-                result = CommandResults(readable_output=readable_output)
-                results.append(result)
-                execution_metrics.success += 1
-                continue
             raw_response = client.ip(ip, relationships)
             if raw_response.get('error', {}).get('code') == "QuotaExceededError":
                 execution_metrics.quota_error += 1
@@ -2478,7 +2474,7 @@ def main(params: dict, args: dict, command: str):
     domain_relationships = (','.join(argToList(params.get('domain_relationships')))).replace('* ', '').replace(" ", "_")
     file_relationships = (','.join(argToList(params.get('file_relationships')))).replace('* ', '').replace(" ", "_")
 
-    disable_private_ip_lookup = argToBoolean(params.get("disable_private_ip_lookup", "False"))
+    disable_private_ip_lookup = argToBoolean(params.get('disable_private_ip_lookup', False))
 
     demisto.debug(f'Command called {command}')
     if command == 'test-module':
