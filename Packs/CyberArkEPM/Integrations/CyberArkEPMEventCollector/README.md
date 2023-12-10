@@ -1,24 +1,24 @@
-Qualys Event Collector fetches Activity Logs (Audit Logs) and Host Vulnerabilities.
-This integration was integrated and tested with version 3.15.2.0-1 of Qualys.
+CyberArk EPM Event Collector fetches events.
+This integration was integrated and tested with version 23.12.0 of CyberArk EPM.
 
-## Configure Qualys Event Collector on Cortex XSOAR
+## Configure CyberArk EPM Event Collector on Cortex XSIAM
 
-1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**. 
-2. Search for Qualys Event Collector.
+1. Navigate to **Settings** > **Automation & Feed Integrations**.
+2. Search for CyberArk EPM Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Server URL |  | True |
+    | SAML/EPM Logon URL | SAML example: https://login.epm.cyberark.com/SAML/Logon | True |
     | Username |  | True |
     | Password |  | True |
+    | Set name | A comma-separated list of set names | True |
+    | Application ID | Required for local\(EPM\) authentication only | False |
+    | Authentication URL | Required for SAML authentication only, Example for PAN OKTA: https://paloaltonetworks.okta.com/api/v1/authn | False |
+    | Application URL | Required for SAML authentication only, Example for PAN OKTA: https://paloaltonetworks.okta.com/home/\[APP_NAME\]/\[APP_ID\] | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
-    | First fetch time | If "First Fetch Time" is set for a long time ago, it may cause performance issues. | True |
-    | Vulnerability Fetch Interval | Time between fetches of vulnerabilities \(for example 12 hours, 60 minutes, etc.\). | True |
-    | Activity Logs Fetch Interval | Time between fetches of activity logs. | False |
-    | Activity Logs Fetch Limit | Maximum number of activity logs to fetch per fetch iteration. | True |
-    | Host Detections Fetch Limit | Maximum number of hosts to return in a single fetch iteration. | True |
+    | Maximum number of events per fetch |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -27,35 +27,14 @@ This integration was integrated and tested with version 3.15.2.0-1 of Qualys.
 You can execute these commands from the Cortex XSIAM CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### qualys-get-activity-logs
+### cyberarkepm-get-events
 
 ***
-Gets activity logs from Qualys.
+Gets events from Cyber Ark EPM.
 
 #### Base Command
 
-`qualys-get-activity-logs`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
-| limit | Maximum results to return. | Optional | 
-| since_datetime | Date to return results from. | Optional | 
-| offset | Offset which events to return. | Optional | 
-
-#### Context Output
-
-There is no context output for this command.
-### qualys-get-host-detections
-
-***
-Gets host detections from Qualys.
-
-#### Base Command
-
-`qualys-get-host-detections`
+`cyberarkepm-get-events`
 
 #### Input
 
@@ -63,8 +42,6 @@ Gets host detections from Qualys.
 | --- | --- | --- |
 | should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
 | limit | Maximum number of results to return. | Optional | 
-| offset | Offset which events to return. | Optional | 
-| vm_scan_date_after | Date to return results from. | Optional | 
 
 #### Context Output
 

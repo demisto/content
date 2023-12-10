@@ -1,20 +1,31 @@
 ## Qualys Vulnerability Management Help
 
-- You need a Qualys user account to use the Qualys integration. If a subscription has multiple users, all users with any user role (except Contact) can use the Qualys integration. Each user’s permissions correspond to their assigned user role.
-  
-- Qualys Vulnerability Management uses basic authentication. You'll need your Qualys login credentials in order to use this integration.
-  
-- You can get your server URL by identifying your platform in this link: https://www.qualys.com/platform-identification/
-  
-- Qualys user accounts that have been enabled with VIP two-factor authentication can be used with the Qualys API, however two-factor authentication will not be used when making API requests. Two-factor authentication is only supported when logging into the Qualys GUI.
+### Authentication
+There are two methods to authenticate EPM and SAML,
+Every method needs different parameters as following.
+
+* EPM authentication
+    - url: `https://<EPM_server>`
+    - username: `admin`
+    - password: `123456`
+    - application ID: `1111`
+    - set name: `admin, jhon`
+
+
+* SAML authentication
+    - url: `https://<EPM_server>`
+    - username: `admin`
+    - password: `123456`
+    - authentication URL: `https://paloaltonetworks.okta.com/api/v1/authn`
+    - application URL: `https://paloaltonetworks.okta.com/home/[APP_NAME]/[APP_ID]`
+    - set name: `admin, jhon`
 
 ### Fetch Information
 
-- There are two event types that are fetched for the Event Collector: 
-    * Activity logs.
-    * Hosts Vulnerability.
-You can adjust the fetch interval using the *Activity Logs Fetch Interval* and *Vulnerability Fetch Interval* arguments.
+- There are three event types that are fetched for the Event Collector: 
+    * Policy audits.
+    * Admin audits.
+    * Events.
 
-- **Note**: We recommend setting "First Fetch Time" to fetch logs from no more than the last 3 days for each fetch. Using a greater fetch time, may cause performance issues.
-
-- Vulnerabilities in the dataset have event_type = "host_list_detections".
+* The `set name` parameter contains a list of names to which the events are related.
+* The `max fetch` parameter is for every event type and for every name in the `set name` parameter which means that for `max fetch` that equals 1000 the actually max events fetched will be 3000 * sum of names in the `set name` parameter.
