@@ -29,8 +29,8 @@ filter _raw_log !~= "Timer_ConnectionIdle"
     xdm.event.duration = to_integer(time_taken),
     xdm.network.rule = cs_cookie,
     xdm.network.http.referrer = cs_reffer,
-    xdm.source.sent_bytes = to_number(sc_bytes),
-    xdm.target.sent_bytes = to_number(cs_bytes),
+    xdm.source.sent_bytes = to_integer(sc_bytes),
+    xdm.target.sent_bytes = to_integer(cs_bytes),
     xdm.source.user_agent = cs_user_agent;
 
 filter _raw_log ~= "Timer_ConnectionIdle"
