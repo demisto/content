@@ -1738,7 +1738,7 @@ def fetch_events_command(client: Client, first_fetch: datetime, last_run: dict, 
 
 
 @polling_function('tenable-get-vulnerabilities', requires_polling_arg=False)
-def get_vulnerabilities_command(args: dict[str, Any], client: Client):
+def get_vulnerabilities_command(args: dict[str, Any], client: Client) -> CommandResults | PollResult:
     """
     Getting vulnerabilities from Tenable. Polling as long as the report is not ready (status FINISHED or failed)
     Args:
