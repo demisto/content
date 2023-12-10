@@ -914,7 +914,7 @@ def list_site_permissions_command(client: MsGraphClient, args: dict[str, str]) -
         readable_output=tableToMarkdown(
             name="Site Permission",
             t=[_parse_permission(permission) for permission in list_permissions],
-            # when the permission_id is not provided, return a list of permissions, and the Roles filed is empty.
+            # when the permission_id is not provided, return a list of permissions, and the Roles field is empty.
             removeNull=True
         )
     )
