@@ -204,34 +204,58 @@ class Client:
     def policy_optimizer_get_rules(
             self, timeframe: str, usage: str, exclude: bool, position: str, rule_type: str
     ) -> dict:
-        self.session_metadata['tid'] += 1  # Increment TID
-        json_cmd = {
-            "action": "PanDirect", "method": "run",
-            "data": [
-                self.token_generator(),
-                "PoliciesDirect.getPoliciesByUsage",
-                [
-                    {
-                        "type": rule_type,
-                        "position": position,
-                        "vsysName": self.machine,
-                        "isCmsSelected": self.is_cms_selected,
-                        "isMultiVsys": False,
-                        "showGrouped": False,
-                        "usageAttributes": {
-                            "timeframe": timeframe,
-                            "usage": usage, "exclude": exclude,
-                            "exclude-reset-text": "90"
-                        },
-                        "pageContext": "rule_usage"
-                    }
-                ]
-            ], "type": "rpc",
-            "tid": self.session_metadata['tid']}
+        def generate_paginated_request(start: int, limit: int = 200) -> dict:
+            return {
+                "action": "PanDirect", "method": "run",
+                "data": [
+                    self.token_generator(),
+                    "PoliciesDirect.getPoliciesByUsage",
+                    [
+                        {
+                            "type": rule_type,
+                            "position": position,
+                            "vsysName": self.machine,
+                            "isCmsSelected": self.is_cms_selected,
+                            "isMultiVsys": False,
+                            "showGrouped": False,
+                            "usageAttributes": {
+                                "timeframe": timeframe,
+                                "usage": usage, "exclude": exclude,
+                                "exclude-reset-text": "90"
+                            },
+                            "pageContext": "rule_usage",
+                            "start": start,
+                            "limit": limit,
+                        }
+                    ]
+                ],
+                "type": "rpc",
+                "tid": self.session_metadata['tid'],
+            }
 
-        return self.session_post(
+        self.session_metadata['tid'] += 1  # Increment TID
+
+        response = self.session_post(
             url=f'{self.session_metadata["base_url"]}/php/utils/router.php/PoliciesDirect.getPoliciesByUsage',
-            json_cmd=json_cmd)
+            json_cmd=generate_paginated_request(start=0),
+        )
+
+        # Handle pagination
+        total_results_count = int(response.get('result', {}).get('result', {}).get('@total-count', 0))
+        collected_results_count = int(response.get('result', {}).get('result', {}).get('@count', 0))
+
+        while collected_results_count < total_results_count:
+            current_response = self.session_post(
+                url=f'{self.session_metadata["base_url"]}/php/utils/router.php/PoliciesDirect.getPoliciesByUsage',
+                json_cmd=generate_paginated_request(start=collected_results_count),
+            )
+            current_entry_data = current_response.get('result', {}).get('result', {}).get('entry', [])
+            response['result']['result']['entry'].extend(current_entry_data)
+            current_results_count = int(current_response.get('result', {}).get('result', {}).get('@count', 0))
+            collected_results_count += current_results_count
+            response['result']['result']['@count'] = str(collected_results_count)
+
+        return response
 
     def policy_optimizer_app_and_usage(self, rule_uuid: str) -> dict:
         self.session_metadata['tid'] += 1  # Increment TID
@@ -292,10 +316,11 @@ def get_unused_rules_by_position(client: Client, position, exclude, rule_type, u
         timeframe=timeframe, usage=usage, exclude=exclude, position=position, rule_type=rule_type  # type: ignore
     )
 
-    stats = raw_response.get('result') or {}
-    if (stats.get('@status') or '') == 'error':
-        raise Exception(f'Operation Failed with: {stats}')
-    return raw_response, (stats.get('result') or {}).get('entry') or []
+    stats = raw_response.get('result', {})
+    if stats.get('@status') == 'error':
+        raise Exception(f'Operation failed: {stats}')
+
+    return raw_response, stats.get('result', {}).get('entry', [])
 
 
 def get_policy_optimizer_statistics_command(client: Client, args: dict) -> CommandResults:
