@@ -23,10 +23,10 @@ application.
 7. Enter the admin application credentials.
 8. Click **Test** to validate the connection.
 9. Run commands to give the user application access to specific sites:
-    * `msgraph-list-site-permissions` - Get permissions for a site
-    * `msgraph-create-site-permissions` - Add permissions for a site
-    * `msgraph-update-site-permissions` - Update permissions for a site
-    * `msgraph-delete-site-permissions` - Delete permissions for a site
+    - `msgraph-list-site-permissions` - Get permissions for a site
+    - `msgraph-create-site-permissions` - Add permissions for a site
+    - `msgraph-update-site-permissions` - Update permissions for a site
+    - `msgraph-delete-site-permissions` - Delete permissions for a site
 10. Delete the admin instance after configuring user access.
 11. Repeat steps 6-8 to create an instance for the user application.
 
@@ -65,6 +65,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 Deletes an item from OneDrive.
 
 #### Permission required
+
 `Files.ReadWrite.All - Application`
 
 #### Base Command
@@ -100,6 +101,7 @@ There is no context output for this command.
 Uploads a file from Cortex XSOAR to the specified MS Graph resource.
 
 #### Permission required
+
 `Files.ReadWrite.All - Application`
 
 #### Base Command
@@ -307,6 +309,7 @@ Replaces the content of the file in the specified MS Graph resource.
 Creates a new folder in a drive with the specified parent item or path.
 
 #### Permission required
+
 `Files.ReadWrite.All - Application`
 
 #### Base Command
@@ -491,6 +494,7 @@ Returns the list of document libraries (drives) available for a target site.
 Returns a list of files and folders in the specified drive.
 
 #### Permission required
+
 `Files.Read.All - Application` or
 `Sites.Read.All - Application`
 
@@ -599,6 +603,7 @@ Returns a list of files and folders in the specified drive.
 Returns a list of the tenant sites.
 
 #### Permission required
+
 `Sites.Read.All - Application`
 
 #### Base Command
@@ -670,6 +675,7 @@ Returns a list of the tenant sites.
 Downloads the file contents of the drive item.
 
 #### Permission required
+
 `Files.Read.All - Application` or `Site.Read.All - Application`
 
 #### Base Command

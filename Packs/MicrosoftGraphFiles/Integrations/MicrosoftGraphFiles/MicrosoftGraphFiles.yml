@@ -441,7 +441,7 @@ script:
       description: The OData query.
       type: String
     - contextPath: MsGraphFiles.ListDrives.NextToken
-      description: The token for the next page. 
+      description: The token for the next page.
       type: String
   - arguments:
     - auto: PREDEFINED
@@ -538,7 +538,7 @@ script:
       description: The OData query.
       type: String
     - contextPath: MsGraphFiles.ListChildren.NextToken
-      description: The token for the next page. 
+      description: The token for the next page.
       type: String
   - arguments:
     - description: Keyword used to search for sites across a SharePoint tenant. If a keyword is not provided, it returns all sites.
