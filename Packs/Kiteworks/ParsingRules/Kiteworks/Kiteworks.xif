@@ -1,0 +1,36 @@
+[INGEST:vendor="kiteworks", product="kiteworks", target_dataset="kiteworks_kiteworks_raw", no_hit = keep]
+/* Supports Legacy RFC 3164 compatible timestamps format in GMT 0 timezone: "MMM dd HH:MM:SS"
+   The day of month is represented as a decimal number (1-31), single digits are preceded by a space.
+   Examples: "Dec  4 17:36:35", "Dec 14 17:36:35" 
+*/
+filter _raw_log ~= "^\<\d+\>\w+\s+\d+\s+\d+\:\d+\:\d+"
+| alter // extract current year and raw timestamp
+    tmp_current_year = arrayindex(regextract(to_string(_insert_time), "\d{4}"), 0),
+    tmp_raw_timestamp_string = arrayindex(regextract(_raw_log ,"^\<\d+\>(\w+\s+\d+\s+\d+\:\d+\:\d+)\s"), 0)
+
+// add current year to the raw timestamp representation
+| alter tmp_current_year_timestamp_string = concat(tmp_current_year, " ", tmp_raw_timestamp_string)
+
+// convert the timestamp string representation to datetime format
+| alter tmp_current_year_timestamp_datetime = parse_timestamp("%Y %b %e %H:%M:%S", tmp_current_year_timestamp_string)
+
+// check if the calculated date is in the future (due to year transitioning during log ingestion )
+| alter tmp_time_difference = timestamp_diff(tmp_current_year_timestamp_datetime, current_time(), "DAY")
+
+// calculate previous year
+| alter tmp_previous_year = if(tmp_time_difference > 0, to_string(subtract(to_integer(tmp_current_year), 1)), null)
+
+// adjust timestamp to previous year if required
+| alter tmp_previous_year_timestamp_string = if(tmp_previous_year != null, concat(tmp_previous_year, " ", tmp_raw_timestamp_string), null)
+
+ // convert the previous year string representation to datetime format 
+| alter tmp_previous_year_timestamp_datetime = if(tmp_previous_year_timestamp_string != null, parse_timestamp("%Y %b %e %H:%M:%S", tmp_previous_year_timestamp_string), null)
+
+// set to the relevant timestamp 
+| alter tmp_final_timestamp = coalesce(tmp_previous_year_timestamp_datetime, tmp_current_year_timestamp_datetime, _insert_time) 
+
+// Assign the timestamp
+| alter _time = tmp_final_timestamp
+
+// remove all temporary fields 
+| fields - tmp*;
