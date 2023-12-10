@@ -253,7 +253,7 @@ class TestHelperFunction:
         ]
         mocker.patch.object(Client, 'fetch_by_aql_query', return_value=response)
 
-        fetch_by_event_type(event_type, events, next_run, dummy_client, 1, last_run, fetch_start_time_param)
+        fetch_by_event_type(dummy_client, event_type, events, 1, last_run, next_run, fetch_start_time_param)
 
         assert events['events'] == [{'unique_id': '3', 'time': '2023-01-01T01:00:30.123456+00:00'}]
         assert next_run == {'events_last_fetch_ids': ['3'], 'events_last_fetch_time': '2023-01-01T01:00:30.123456+00:00'}
