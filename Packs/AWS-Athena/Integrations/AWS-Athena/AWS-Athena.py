@@ -120,7 +120,7 @@ def start_query_command(args: dict, client):
                                      kms_key=args.get('KmsKey'), work_group=args.get('WorkGroup'))
 
     context_data = {
-        'QueryString': query_string,
+        'Query': query_string,
         'QueryExecutionId': response['QueryExecutionId']
     }
 
