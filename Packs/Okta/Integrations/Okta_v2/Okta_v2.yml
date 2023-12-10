@@ -13,13 +13,12 @@ configuration:
   section: Connect
 - name: credentials
   type: 9
-  displaypassword: API Token (see detailed instructions)
+  displaypassword: API Token
   hiddenusername: true
   section: Connect
   required: false
   display: ''
-- display: API Token
-  additionalinfo: See detailed instructions on the 'Help' tab.
+- display: API Token (see detailed instructions)
   name: apitoken
   type: 4
   hidden: true

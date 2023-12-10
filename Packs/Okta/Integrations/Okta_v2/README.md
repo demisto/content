@@ -6,31 +6,38 @@ Integration with Okta's cloud-based identity management service.
 2. Search for Okta v2.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Okta URL (https://&lt;domain&gt;.okta.com) | True |
-    | API Token (see Detailed Instructions) | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Okta URL (https://&lt;domain&gt;.okta.com) |  | True |
+    | API Token |  | False |
+    | Use OAuth 2.0 Authentication | See detailed instructions on the 'Help' tab. | False |
+    | Client ID | Required and used if OAuth 2.0 is used for authentication. See detailed instructions on the 'Help' tab. | False |
+    | Private Key | Required and used if OAuth 2.0 is used for authentication. See detailed instructions on the 'Help' tab. | False |
+    | JWT Encoding Algorithm | Required and used if OAuth 2.0 is used for authentication. See detailed instructions on the 'Help' tab. | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### okta-unlock-user
+
 ***
 Unlocks a single user.
-
 
 #### Base Command
 
 `okta-unlock-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | username | Username to unlock. | Required | 
-
 
 #### Context Output
 
@@ -43,19 +50,19 @@ There is no context output for this command.
 >User testForDocs@test.com unlocked
 
 ### okta-deactivate-user
+
 ***
 Deactivates a single user.
-
 
 #### Base Command
 
 `okta-deactivate-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | username | Username to deactivate. | Required | 
-
 
 #### Context Output
 
@@ -68,19 +75,19 @@ There is no context output for this command.
 >User testForDocs@test.com deactivated
 
 ### okta-activate-user
+
 ***
 Activates a single user.
-
 
 #### Base Command
 
 `okta-activate-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | username | Username to activate. | Required | 
-
 
 #### Context Output
 
@@ -93,19 +100,19 @@ There is no context output for this command.
 >### testForDocs@test.com is active now
 
 ### okta-suspend-user
+
 ***
 Suspends a single user. This operation can only be performed on users with an ACTIVE status. After the porcess is completed, the user's status is SUSPENDED.
-
 
 #### Base Command
 
 `okta-suspend-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | username | Username to suspend. | Required | 
-
 
 #### Context Output
 
@@ -118,19 +125,19 @@ There is no context output for this command.
 >### testForDocs@test.com status is Suspended
 
 ### okta-unsuspend-user
+
 ***
 Returns a single user to ACTIVE status. This operation can only be performed on users that have a SUSPENDED status.
-
 
 #### Base Command
 
 `okta-unsuspend-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | username | Username to change the status to ACTIVE. | Required | 
-
 
 #### Context Output
 
@@ -143,13 +150,14 @@ There is no context output for this command.
 >### testForDocs@test.com is no longer SUSPENDED
 
 ### okta-get-user-factors
+
 ***
 Returns all the enrolled factors for the specified user.
-
 
 #### Base Command
 
 `okta-get-user-factors`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -157,14 +165,13 @@ Returns all the enrolled factors for the specified user.
 | username | Username for which to return all enrolled factors. | Optional | 
 | userId | User ID of the user for which to get all enrolled factors. | Optional | 
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Account.ID | String | Okta account ID. | 
 | Account.Factor.ID | String | Okta account factor ID. | 
-| Account.Factor.Provider | String | Okta account factor provider | 
+| Account.Factor.Provider | String | Okta account factor provider. | 
 | Account.Factor.Profile | String | Okta account factor profile. | 
 | Account.Factor.FactorType | String | Okta account factor type. | 
 | Account.Factor.Status | Unknown | Okta account factor status. | 
@@ -219,13 +226,14 @@ Returns all the enrolled factors for the specified user.
 
 
 ### okta-reset-factor
+
 ***
 Un-enrolls an existing factor for the specified user. This enables the user to enroll a new factor.
-
 
 #### Base Command
 
 `okta-reset-factor`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -233,7 +241,6 @@ Un-enrolls an existing factor for the specified user. This enables the user to e
 | userId | The user ID. | Optional | 
 | username | Username for which to un-enroll an existing factor. | Optional | 
 | factorId | The ID of the factor to reset. | Required | 
-
 
 #### Context Output
 
@@ -246,21 +253,21 @@ There is no context output for this command.
 >Factor: ufsq7cvptfbjQa72c0h7 deleted
 
 ### okta-set-password
+
 ***
 Sets passwords without validating existing user credentials.
-
 
 #### Base Command
 
 `okta-set-password`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | username | Okta username for which to set the password. | Required | 
 | password | The new password to set for the user. | Required | 
-| temporary_password | When true, you'll need to change the password in the next login. | Optional | 
-
+| temporary_password | When true, you'll need to change the password in the next login. Possible values are: true, false. Default is false. | Optional | 
 
 #### Context Output
 
@@ -273,13 +280,14 @@ There is no context output for this command.
 >testForDocs@test.com password was last changed on 2020-03-26T13:57:13.000Z
 
 ### okta-add-to-group
+
 ***
 Adds a user to a group with OKTA_GROUP type.
-
 
 #### Base Command
 
 `okta-add-to-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -288,7 +296,6 @@ Adds a user to a group with OKTA_GROUP type.
 | username | Name of the user to add to the group. | Optional | 
 | groupId | ID of the group to add the user to. | Optional | 
 | groupName | Name of the group to add the user to. | Optional | 
-
 
 #### Context Output
 
@@ -301,13 +308,14 @@ There is no context output for this command.
 >User: 00uqk1qesl3k0SRbH0h7 added to group: Demisto successfully
 
 ### okta-remove-from-group
-***
-Removes a user from a group with OKTA_GROUP type
 
+***
+Removes a user from a group with OKTA_GROUP type.
 
 #### Base Command
 
 `okta-remove-from-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -316,7 +324,6 @@ Removes a user from a group with OKTA_GROUP type
 | username | Name of the user to remove from the group. | Optional | 
 | groupId | ID of the group to remove the user from. | Optional | 
 | groupName | Name of the group to remove the user from. | Optional | 
-
 
 #### Context Output
 
@@ -329,19 +336,19 @@ There is no context output for this command.
 >User: 00uqk1qesl3k0SRbH0h7 was removed from group: demisto successfully
 
 ### okta-get-groups
+
 ***
 Returns all user groups associated with a specified user.
-
 
 #### Base Command
 
 `okta-get-groups`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | username | Username in Okta for which to get the associated groups. | Required | 
-
 
 #### Context Output
 
@@ -408,20 +415,20 @@ Returns all user groups associated with a specified user.
 
 
 ### okta-verify-push-factor
+
 ***
 Enrolls and verifies a push factor for the specified user.
-
 
 #### Base Command
 
 `okta-verify-push-factor`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | userId | The ID of the user to enroll and verify. | Required | 
 | factorId | The push factor ID. | Required | 
-
 
 #### Context Output
 
@@ -481,22 +488,22 @@ Enrolls and verifies a push factor for the specified user.
 ```
 
 ### okta-search
+
 ***
 Searches for Okta users.
-
 
 #### Base Command
 
 `okta-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | term | Term by which to search. Can be a first name, last name, or email address. The argument `term` or `advanced_search` is required. | Optional | 
-| advanced_search | Searches for users with a supported [filtering expression](https://developer.okta.com/docs/reference/core-okta-api/#filter) for most properties, including custom-defined properties. [Supported operators](https://developer.okta.com/docs/reference/core-okta-api/#operators). The argument `term` or `advanced_search` is required. | Optional | 
+| advanced_search | Searches for users with a supported filtering expression for most properties, including custom-defined properties. The argument `term` or `advanced_search` is required. | Optional | 
 | limit | The maximum number of results to return. The default and maximum is 200. | Optional | 
 | verbose | Whether to return details of users that match the found term. Can be "true" or "false". The default is "false". Possible values are: true, false. Default is false. | Optional | 
-
 
 #### Context Output
 
@@ -594,13 +601,14 @@ Searches for Okta users.
 | 2020-03-26T13:56:52.000Z | 2020-03-26T13:56:49.000Z | password: {}recovery_question: {"question": "whats is your favourite integration"}provider: {"type": "OKTA", "name": "OKTA"} | 00uqk1qesl3k0SRbH0h7 |  | 2020-03-26T13:56:52.000Z | 2020-03-26T13:56:50.000Z | ACTIVE |  | id: oty66lckcvDyVcGzS0h7 | self: {"href": "https://yourdomain.okta.com/api/v1/users/00uqk1qesl3k0SRbH0h7"} |
 
 ### okta-get-user
+
 ***
 Fetches information for a single user. You must enter one or more parameters for the command to run.
-
 
 #### Base Command
 
 `okta-get-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -608,7 +616,6 @@ Fetches information for a single user. You must enter one or more parameters for
 | username | Okta username for which to get information. | Optional | 
 | userId | User ID of the user for which to get information. | Optional | 
 | verbose | Whether to return extended user information. Can be "true" or "false". The default is "false". Possible values are: true, false. Default is false. | Optional | 
-
 
 #### Context Output
 
@@ -662,14 +669,50 @@ Fetches information for a single user. You must enter one or more parameters for
 | 2020-03-26T13:56:52.000Z | 2020-03-26T13:56:49.000Z | password: {}recovery_question: {"question": "whats is your favourite integration"} provider: {"type": "OKTA", "name": "OKTA"} | 00uqk1qesl3k0SRbH0h7 |  | 2020-03-26T13:56:52.000Z | 2020-03-26T13:56:50.000Z | ACTIVE |  | id: oty66lckcvDyVcGzS0h7 | links|
 
 
+### okta-list-users
+
+***
+Lists users in your organization.
+
+#### Base Command
+
+`okta-list-users`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| after | The cursor in which to retrive the results from and on. if the query didn't reach the end of results, the tag can be obtained from the bottom of the grid in the readable output, or in the context path Okta.User.tag. | Optional | 
+| limit | The maximum number of results to return, the default is 200. Default is 200. | Optional | 
+| verbose | Whether to return extended user information. Can be "true" or "false". The default is "false". Possible values are: true, false. Default is false. | Optional | 
+| query | Searches the name property of groups for matching values. | Optional | 
+| filter | Useful for performing structured queries where constraints on group attribute values can be explicitly targeted. <br/>The following expressions are supported(among others) for groups with the filter query parameter: <br/> type eq "OKTA_GROUP" - Groups that have a type of OKTA_GROUP; lastUpdated lt "yyyy-MM-dd''T''HH:mm:ss.SSSZ" - Groups with profile last updated before a specific timestamp; lastMembershipUpdated eq "yyyy-MM-dd''T''HH:mm:ss.SSSZ" - Groups with memberships last updated at a specific timestamp; id eq "00g1emaKYZTWRYYRRTSK" - Group with a specified ID. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Account.ID | String | Okta account ID. | 
+| Account.Email | String | Okta account email. | 
+| Account.Username | String | Okta account username. | 
+| Account.DisplayName | String | Okta account display name. | 
+| Account.Status | String | Okta account status. | 
+| Account.Created | Date | Timestamp for when the user was created. | 
+| Account.Activated | Date | Timestamp for when the user was activated. | 
+| Account.StatusChanged | Date | Timestamp for when the user's status was last changed. | 
+| Account.PasswordChanged | Date | Timestamp for when the user's password was last changed. | 
+| Okta.User.tag | String | The location of the next item, used with after param. | 
+
+
 ### okta-create-user
+
 ***
 Creates a new user with an option of setting a password, recovery question, and answer. The new user will immediately be able to log in after activation with the assigned password. This flow is common when developing a custom user registration experience.
 
-
-##### Base Command
+#### Base Command
 
 `okta-create-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -712,7 +755,6 @@ Creates a new user with an option of setting a password, recovery question, and 
 | providerName | Name of the provider. | Optional | 
 | groupIds | IDs of groups that the user will be immediately added to at time of creation (does Not include default group). | Optional | 
 | activate | Whether to activate the lifecycle operation when creating the user. Can be "true" or "false". Possible values are: true, false. | Optional | 
-
 
 #### Context Output
 
@@ -759,13 +801,14 @@ Creates a new user with an option of setting a password, recovery question, and 
 
 
 ### okta-update-user
+
 ***
 Updates a user with a given login. All fields are optional. Fields which are not set, will not be overwritten.
-
 
 #### Base Command
 
 `okta-update-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -807,7 +850,6 @@ Updates a user with a given login. All fields are optional. Fields which are not
 | providerType | The provider type. Can be "OKTA", "ACTIVE_DIRECTORY", "LDAP", "FEDERATION", or "SOCIAL". Possible values are: OKTA, ACTIVE_DIRECTORY, FEDERATION, SOCIAL. | Optional | 
 | providerName | Name of the provider. | Optional | 
 
-
 #### Context Output
 
 There is no context output for this command.
@@ -823,13 +865,14 @@ There is no context output for this command.
 
 
 ### okta-get-group-members
+
 ***
 Enumerates all users that are members of a group.
-
 
 #### Base Command
 
 `okta-get-group-members`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -838,7 +881,6 @@ Enumerates all users that are members of a group.
 | limit | The maximum number of results to return. | Optional | 
 | verbose | Whether to print extended user details. Can be "true" or "false". The default is "false". Possible values are: true, false. Default is false. | Optional | 
 | groupName | Name of the group. | Optional | 
-
 
 #### Context Output
 
@@ -891,21 +933,21 @@ Enumerates all users that are members of a group.
 
 
 ### okta-list-groups
+
 ***
 Lists groups in your organization. A subset of groups can be returned that match a supported filter expression or query.
-
 
 #### Base Command
 
 `okta-list-groups`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | Searches the name property of groups for matching values. | Optional | 
-| filter | Useful for performing structured queries where constraints on group attribute values can be explicitly targeted. <br/>The following expressions are supported(among others) for groups with the filter query parameter: <br/>type eq "OKTA_GROUP" - Groups that have a type of OKTA_GROUP; lastUpdated lt "yyyy-MM-dd''T''HH:mm:ss.SSSZ" - Groups with profile last updated before a specific timestamp; lastMembershipUpdated eq "yyyy-MM-dd''T''HH:mm:ss.SSSZ" - Groups with memberships last updated at a specific timestamp; id eq "00g1emaKYZTWRYYRRTSK" - Group with a specified ID. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering. | Optional | 
+| filter | Useful for performing structured queries where constraints on group attribute values can be explicitly targeted. <br/>The following expressions are supported(among others) for groups with the filter query parameter: <br/> type eq "OKTA_GROUP" - Groups that have a type of OKTA_GROUP; lastUpdated lt "yyyy-MM-dd''T''HH:mm:ss.SSSZ" - Groups with profile last updated before a specific timestamp; lastMembershipUpdated eq "yyyy-MM-dd''T''HH:mm:ss.SSSZ" - Groups with memberships last updated at a specific timestamp; id eq "00g1emaKYZTWRYYRRTSK" - Group with a specified ID. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering. | Optional | 
 | limit | The maximum number of results to return. The default is 200. Default is 200. | Optional | 
-
 
 #### Context Output
 
@@ -951,13 +993,14 @@ Lists groups in your organization. A subset of groups can be returned that match
 
 
 ### okta-get-failed-logins
+
 ***
 Returns failed login events.
-
 
 #### Base Command
 
 `okta-get-failed-logins`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -966,7 +1009,6 @@ Returns failed login events.
 | until | Filters the upper time bound of the log events in the Internet Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z. | Optional | 
 | sortOrder | The order of the returned events. Can be "ASCENDING" or "DESCENDING". The default is "ASCENDING". Possible values are: ASCENDING, DESCENDING. Default is ASCENDING. | Optional | 
 | limit | The maximum number of results to return. The default is 100. | Optional | 
-
 
 #### Context Output
 
@@ -1117,13 +1159,14 @@ Returns failed login events.
 
 
 ### okta-get-logs
+
 ***
 Gets logs by providing optional filters.
-
 
 #### Base Command
 
 `okta-get-logs`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1134,7 +1177,6 @@ Gets logs by providing optional filters.
 | until | Filters the upper  time bound of the log events in the Internet Date/Time Format profile of ISO 8601. For example: 2017-05-03T16:22:18Z. | Optional | 
 | sortOrder | The order of the returned events. Can be "ASCENDING" or "DESCENDING". The default is "ASCENDING". Possible values are: ASCENDING, DESCENDING. Default is ASCENDING. | Optional | 
 | limit | The maximum number of results to return. The default is 100. Default is 100. | Optional | 
-
 
 #### Context Output
 
@@ -1300,13 +1342,14 @@ Gets logs by providing optional filters.
 
 
 ### okta-get-group-assignments
+
 ***
 Gets events for when a user was added to a group.
-
 
 #### Base Command
 
 `okta-get-group-assignments`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1315,7 +1358,6 @@ Gets events for when a user was added to a group.
 | until | Filters the upper time bound of the log event in the Internet Date\Time format profile of ISO 8601. For example, 2020-02-14T16:00:18Z. | Optional | 
 | sortOrder | The order of the returned events. Can be "ASCENDING" or "DESCENDING". The default is "ASCENDING". Possible values are: ASCENDING, DESCENDING. Default is ASCENDING. | Optional | 
 | limit | The maximum number of results to return. The default is 100. Default is 100. | Optional | 
-
 
 #### Context Output
 
@@ -1480,13 +1522,14 @@ Gets events for when a user was added to a group.
 
 
 ### okta-get-application-assignments
+
 ***
 Returns events for when a user was assigned to an application.
-
 
 #### Base Command
 
 `okta-get-application-assignments`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1495,7 +1538,6 @@ Returns events for when a user was assigned to an application.
 | until | Filters the upper time bound of the log event in the Internet Date\Time format profile of ISO 8601. For example, 2020-02-14T16:00:18Z. | Optional | 
 | sortOrder | The order of the returned events. Can be "ASCENDING" or "DESCENDING". The default is "ASCENDING". Possible values are: ASCENDING, DESCENDING. Default is ASCENDING. | Optional | 
 | limit | The maximum number of results to return. The default is 100. Default is 100. | Optional | 
-
 
 #### Context Output
 
@@ -1668,13 +1710,14 @@ Returns events for when a user was assigned to an application.
 
 
 ### okta-get-application-authentication
+
 ***
 Returns logs using specified filters.
-
 
 #### Base Command
 
 `okta-get-application-authentication`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1683,7 +1726,6 @@ Returns logs using specified filters.
 | until | Filters the upper time bound of the log event in the Internet Date\Time format profile of ISO 8601. For example, 2020-02-14T16:00:18Z. | Optional | 
 | sortOrder | The order of the returned events. Can be "ASCENDING" or "DESCENDING". The default is "ASCENDING". Possible values are: ASCENDING, DESCENDING. Default is ASCENDING. | Optional | 
 | limit | The maximum number of results to return. The default is 100. Default is 100. | Optional | 
-
 
 #### Context Output
 
@@ -1853,20 +1895,20 @@ Returns logs using specified filters.
 
 
 ### okta-delete-user
+
 ***
 Deletes the specified user.
-
 
 #### Base Command
 
 `okta-delete-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | userId | Okta User ID. | Optional | 
 | username | Username of the user. | Optional | 
-
 
 #### Context Output
 
@@ -1880,21 +1922,21 @@ There is no context output for this command.
 >User: testForDocs@test.com was Deleted successfully
 
 ### okta-clear-user-sessions
+
 ***
 Removes all active identity provider sessions. This forces the user to authenticate upon the next operation. Optionally revokes OpenID Connect and OAuth refresh and access tokens issued to the user.
 For more information and examples:
 https://developer.okta.com/docs/reference/api/users/#user-sessions
 
-
 #### Base Command
 
 `okta-clear-user-sessions`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | userId | Okta User ID. | Required | 
-
 
 #### Context Output
 
@@ -1909,19 +1951,19 @@ There is no context output for this command.
 
 
 ### okta-list-zones
-***
-Get an Okta Zone object
 
+***
+Get an Okta Zone object.
 
 #### Base Command
 
 `okta-list-zones`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | The maximum number of results to return. | Optional | 
-
 
 #### Context Output
 
@@ -1933,7 +1975,7 @@ Get an Okta Zone object
 | Okta.Zone.id | String | Zone ID, e.g., nzoqsmcx1qWYJ6wYF0h7. | 
 | Okta.Zone.lastUpdated | Date | Zone last update timestamp, e.g., 2020-04-06T22:23:12.000Z. | 
 | Okta.Zone.name | String | Zone name. | 
-| Okta.Zone.proxies.type | String | Proxies IP entry type e.g. CIDR | 
+| Okta.Zone.proxies.type | String | Proxies IP entry type e.g. CIDR. | 
 | Okta.Zone.proxies.value | Unknown | Proxies IP entry value, e.g., 34.103.1.108/32. | 
 | Okta.Zone.status | String | Zone status, e.g., ACTIVE. | 
 | Okta.Zone.system | Number | True if this is a system zone, false if user-created. | 
@@ -2046,13 +2088,14 @@ Get an Okta Zone object
 
 
 ### okta-update-zone
-***
-Update an Okta Zone
 
+***
+Update an Okta Zone.
 
 #### Base Command
 
 `okta-update-zone`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2061,7 +2104,6 @@ Update an Okta Zone
 | zoneName | Updates the zone name. | Optional | 
 | gatewayIPs | Updates Gateway IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2). | Optional | 
 | proxyIPs | Update Proxy IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2). | Optional | 
-
 
 #### Context Output
 
@@ -2148,19 +2190,19 @@ Update an Okta Zone
 
 
 ### okta-get-zone
-***
-Get a Zone by its ID
 
+***
+Get a Zone by its ID.
 
 #### Base Command
 
 `okta-get-zone`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | zoneID | Zone ID to get, e.g., nzoqsmcx1qWYJ6wYF0h.7. | Required | 
-
 
 #### Context Output
 
@@ -2317,13 +2359,14 @@ For more information about filtering, visit https://developer.okta.com/docs/api/
 > 
 > ### tag: test12tag
 ### okta-create-zone
-***
-Creates a Zone with the specified name
 
+***
+Creates a Zone with the specified name.
 
 #### Base Command
 
 `okta-create-zone`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2332,19 +2375,18 @@ Creates a Zone with the specified name
 | gateway_ips | Update Gateway IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2). | Optional | 
 | proxies | Update Proxy IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2). | Optional | 
 
-
 #### Context Output
 
 There is no context output for this command.
-
 ### okta-create-group
+
 ***
 Create a new group in Okta tenant.
-
 
 #### Base Command
 
 `okta-create-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2352,16 +2394,14 @@ Create a new group in Okta tenant.
 | name | Name of the group to add. | Required | 
 | description | Description of the group to add. | Optional | 
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OktaGroup.ID | unknown | Group ID in Okta | 
-| OktaGroup.Name | unknown | Group Name in Okta | 
-| OktaGroup.Description | unknown | Group Description in Okta | 
-| OktaGroup.Type | unknown | Group Type in Okta | 
-
+| OktaGroup.ID | Unknown | Group ID in Okta. | 
+| OktaGroup.Name | Unknown | Group name in Okta. | 
+| OktaGroup.Description | Unknown | Group description in Okta. | 
+| OktaGroup.Type | Unknown | Group type in Okta. | 
 #### Command example
 ```!okta-create-group name="TestGroup" description="TestGroup description."```
 #### Context Example
@@ -2381,13 +2421,14 @@ Create a new group in Okta tenant.
 >Group Created: [GroupID:00g3qb398kItYXzKd1d7, GroupName: TestGroup]
 
 ### okta-assign-group-to-app
-***
-Assign a group to an application
 
+***
+Assign a group to an application.
 
 #### Base Command
 
 `okta-assign-group-to-app`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2395,7 +2436,6 @@ Assign a group to an application
 | groupName | Name of the group to assign to the app. | Optional | 
 | groupId | ID of the group to assign to the app. | Optional | 
 | appName | Friendly name of the app that the group will be assigned to. | Optional | 
-
 
 #### Context Output
 
