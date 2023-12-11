@@ -11366,6 +11366,27 @@ def replace_spaces_in_credential(credential):
                       lambda match: match.group(0).replace(' ', '\n'), credential)
     return credential
 
+def has_passed_time_threshold(timestamp_str, seconds_threshold):
+    """
+    Checks if the time difference between the current time and the timestamp is greater than the threshold.
+    
+    :type timestamp_str: ``str``
+    :param timestamp_str: The timestamp to compare the current time to.
+    :type seconds_threshold: ``int``
+    :param seconds_threshold: The threshold in seconds.
+    
+    :return: True if the time difference is greater than the threshold, otherwise False.
+    :rtype: ``bool``
+    """
+    import pytz
+    to_utc_timestamp = dateparser.parse(timestamp_str, settings={'TIMEZONE': 'UTC'})
+    # using astimezone since utcnow() returns a naive datetime object when unitesting  
+    current_time = datetime.now().astimezone(pytz.utc)
+    if to_utc_timestamp:
+        time_difference = current_time - to_utc_timestamp
+        return time_difference.total_seconds() > seconds_threshold
+    else:
+        raise ValueError("Failed to parse timestamp: {timestamp_str}".format(timestamp_str=timestamp_str))
 
 ###########################################
 #     DO NOT ADD LINES AFTER THIS ONE     #
