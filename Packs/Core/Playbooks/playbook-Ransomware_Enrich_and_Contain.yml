@@ -171,7 +171,7 @@ tasks:
       id: 25f7c2e8-f0e2-4ac5-81e8-78eb6cacc629
       version: -1
       name: Robust search of IoCs
-      description: 'Searches Cortex XSIAM indicators. '
+      description: Searches Cortex XSIAM indicators.
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
