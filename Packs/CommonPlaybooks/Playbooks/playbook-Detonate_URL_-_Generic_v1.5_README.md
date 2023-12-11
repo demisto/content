@@ -17,7 +17,7 @@ Supported integrations:
 - ANYRUN
 -  VirusTotal
 - Anomali ThreatStream
-- Hatching Triage
+- Hatching Triage.
 
 ## Dependencies
 
@@ -25,19 +25,19 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Detonate URL - McAfee ATD
-* Detonate URL - Group-IB TDS Polygon
-* Detonate URL - VMRay
-* Detonate URL - Hatching Triage
-* Detonate URL - ThreatGrid v2
-* Detonate URL - SecneurX Analysis
-* Detonate URL - Lastline v2
 * Detonate URL - Cuckoo
-* Detonate URL - ANYRUN
+* Detonate URL - ThreatGrid v2
+* Detonate URL - Lastline v2
 * Detonate URL - ThreatStream
-* Detonate URL - CrowdStrike Falcon Intelligence Sandbox
-* Detonate URL - VirusTotal (API v3)
 * Detonate URL - FireEye AX
+* Detonate URL - McAfee ATD
+* Detonate URL - VMRay
+* Detonate URL - SecneurX Analysis
+* Detonate URL - Hatching Triage
+* Detonate URL - CrowdStrike Falcon Intelligence Sandbox v2
+* Detonate URL - ANYRUN
+* Detonate URL - VirusTotal (API v3)
+* Detonate URL - Group-IB TDS Polygon
 
 ### Integrations
 
@@ -49,10 +49,9 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* joe-submit-url
 * wildfire-upload-url
 * opswat-filescan-scan-url
-* cs-falcon-sandbox-submit-url
+* joe-submit-url
 
 ## Playbook Inputs
 
@@ -68,43 +67,43 @@ This playbook does not use any scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| ThreatGrid.Sample.id | The sample id | string |
-| ThreatGrid.Sample.filename | The sample filename | string |
-| ThreatGrid.Sample.state | The state of the sample, one of a stable set of strings "wait, prep, run, proc, succ, fail" | string |
-| ThreatGrid.Sample.status | The sample status | string |
-| ThreatGrid.Sample.md5 | The sample md5 | string |
-| ThreatGrid.Sample.sha1 | The sample sha1 | string |
-| ThreatGrid.Sample.sha256 | The sample sha256 | string |
-| ThreatGrid.Sample.os | The sample os | string |
-| ThreatGrid.Sample.submitted_at | The sample submission time | string |
-| ATD.Task.taskId | The task ID of the sample uploaded | string |
-| ATD.Task.jobId | The job ID of the sample uploaded | string |
-| ATD.Task.messageId | The message Id relevant to the sample uploaded | string |
-| ATD.Task.url | The URL detonated | string |
-| ATD.Task.srcIp | Source IPv4 address | string |
-| ATD.Task.destIp | Destination IPv4 address | string |
-| ATD.Task.MD5 | MD5 of the sample uploaded | string |
-| ATD.Task.SHA1 | SHA1 of the sample uploaded | string |
-| ATD.Task.SHA256 | SHA256 of the sample uploaded | string |
-| File.Name | Filename \(only in case of report type=json\) | string |
-| File.Type | File type e.g. "PE" \(only in case of report type=json\) | string |
-| File.MD5 | MD5 hash of the file \(only in case of report type=json\) | string |
-| File.SHA1 | SHA1 hash of the file \(only in case of report type=json\) | string |
-| File.SHA256 | SHA256 hash of the file \(only in case of report type=json\) | string |
-| File.EntryID | The Entry ID of the sample | string |
-| File.Malicious | File Malicious object | unknown |
-| DBotScore.Indicator | The indicator we tested \(only in case of report type=json\) | string |
-| DBotScore.Type | The type of the indicator \(only in case of report type=json\) | string |
-| DBotScore.Vendor | Vendor used to calculate the score \(only in case of report type=json\) | string |
-| DBotScore.Score | The actual score \(only in case of report type=json\) | number |
-| IP.Address | IP's relevant to the sample | string |
-| InfoFile.EntryID | The EntryID of the report file | string |
-| InfoFile.Extension | The extension of the report file | string |
-| InfoFile.Name | The name of the report file | string |
-| InfoFile.Info | The info of the report file | string |
-| InfoFile.Size | The size of the report file | number |
-| InfoFile.Type | The type of the report file | string |
-| URL.Malicious | URL Malicious object | string |
+| ThreatGrid.Sample.id | The sample id. | string |
+| ThreatGrid.Sample.filename | The sample filename. | string |
+| ThreatGrid.Sample.state | The state of the sample, one of a stable set of strings "wait, prep, run, proc, succ, fail". | string |
+| ThreatGrid.Sample.status | The sample status. | string |
+| ThreatGrid.Sample.md5 | The sample md5. | string |
+| ThreatGrid.Sample.sha1 | The sample sha1. | string |
+| ThreatGrid.Sample.sha256 | The sample sha256. | string |
+| ThreatGrid.Sample.os | The sample os. | string |
+| ThreatGrid.Sample.submitted_at | The sample submission time. | string |
+| ATD.Task.taskId | The task ID of the sample uploaded. | string |
+| ATD.Task.jobId | The job ID of the sample uploaded. | string |
+| ATD.Task.messageId | The message Id relevant to the sample uploaded. | string |
+| ATD.Task.url | The URL detonated. | string |
+| ATD.Task.srcIp | Source IPv4 address. | string |
+| ATD.Task.destIp | Destination IPv4 address. | string |
+| ATD.Task.MD5 | MD5 of the sample uploaded. | string |
+| ATD.Task.SHA1 | SHA1 of the sample uploaded. | string |
+| ATD.Task.SHA256 | SHA256 of the sample uploaded. | string |
+| File.Name | Filename \(only in case of report type=json\). | string |
+| File.Type | File type e.g. "PE" \(only in case of report type=json\). | string |
+| File.MD5 | MD5 hash of the file \(only in case of report type=json\). | string |
+| File.SHA1 | SHA1 hash of the file \(only in case of report type=json\). | string |
+| File.SHA256 | SHA256 hash of the file \(only in case of report type=json\). | string |
+| File.EntryID | The Entry ID of the sample. | string |
+| File.Malicious | File Malicious object. | unknown |
+| DBotScore.Indicator | The indicator we tested \(only in case of report type=json\). | string |
+| DBotScore.Type | The type of the indicator \(only in case of report type=json\). | string |
+| DBotScore.Vendor | Vendor used to calculate the score \(only in case of report type=json\). | string |
+| DBotScore.Score | The actual score \(only in case of report type=json\). | number |
+| IP.Address | IP's relevant to the sample. | string |
+| InfoFile.EntryID | The EntryID of the report file. | string |
+| InfoFile.Extension | The extension of the report file. | string |
+| InfoFile.Name | The name of the report file. | string |
+| InfoFile.Info | The info of the report file. | string |
+| InfoFile.Size | The size of the report file. | number |
+| InfoFile.Type | The type of the report file. | string |
+| URL.Malicious | URL Malicious object. | string |
 | DBotScore.Reliability | The reliability of the source providing the intelligence data. | string |
 | URL.Data | The URL. | string |
 | Joe.Analysis.AnalysisID | The analysis ID. | string |
@@ -134,19 +133,19 @@ This playbook does not use any scripts.
 | Joe.Submission.status | The submission status. | string |
 | Joe.Submission.submission_id | The submission ID. | string |
 | Joe.Submission.time | The submission time. | string |
-| File.Size | File size \(only in case of report type=json\) | number |
+| File.Size | File size \(only in case of report type=json\). | number |
 | File.Malicious.Vendor | The vendor that determined that a file is malicious. | string |
 | File.Malicious.Description | The reason that the vendor determined that the file is malicious. | string |
 | File.Malicious.Score | The score that the malicious file received from the vendor. | number |
 | URL.Malicious.Vendor | The vendor that determined that a URL is malicious. | string |
 | URL.Malicious.Description | The reason that the vendor determined that the URL is malicious. | string |
 | URL.Malicious.Score | The score that the malicious URL received from the vendor. | number |
-| Lastline.Submission.Status | Status of the submission | string |
-| Lastline.Submission.DNSqueries | List of DNS queries done by the analysis subject | string |
-| Lastline.Submission.NetworkConnections | List of network connections done by the analysis subject | string |
+| Lastline.Submission.Status | Status of the submission. | string |
+| Lastline.Submission.DNSqueries | List of DNS queries done by the analysis subject. | string |
+| Lastline.Submission.NetworkConnections | List of network connections done by the analysis subject. | string |
 | Lastline.Submission.DownloadedFiles | List of files that were downloaded using the Microsoft Windows file-download API functions. Each element is a tuple of file-origin URL and a File element. | string |
-| Lastline.Submission.UUID | ID of the submission | string |
-| Lastline.Submission.YaraSignatures.name | Yara signatures name | string |
+| Lastline.Submission.UUID | ID of the submission. | string |
+| Lastline.Submission.YaraSignatures.name | Yara signatures name. | string |
 | Lastline.Submission.YaraSignatures.score | The score according to the yara signatures. from 0 to 100. | number |
 | Lastline.Submission.YaraSignatures.internal | True if the signature is only for internal use. | boolean |
 | Lastline.Submission.Process.arguments | Argument of the process. | string |
@@ -154,28 +153,28 @@ This playbook does not use any scripts.
 | Lastline.Submission.Process.executable.abs_path | Absolute path of the executable of the process. | string |
 | Lastline.Submission.Process.executable.filename | Filename of the executable. | string |
 | Lastline.Submission.Process.executable.yara_signature_hits | Yara signature of the executable of the process. | string |
-| Cuckoo.Task.Category | Category of task | string |
-| Cuckoo.Task.Machine | Machine of task | string |
-| Cuckoo.Task.Errors | Errors of task | string |
-| Cuckoo.Task.Traget | Traget of task | string |
-| Cuckoo.Task.Package | Package of task | string |
-| Cuckoo.Task.SampleID | Sample ID of task | string |
-| Cuckoo.Task.Guest | Task guest | string |
-| Cuckoo.Task.Custom | Custom values of task | string |
-| Cuckoo.Task.Owner | Task owner | string |
-| Cuckoo.Task.Priority | Priority of task | string |
-| Cuckoo.Task.Platform | Platform of task | string |
-| Cuckoo.Task.Options | Task options | string |
-| Cuckoo.Task.Status | Task status | string |
-| Cuckoo.Task.EnforceTimeout | Is timeout of task enforced | string |
-| Cuckoo.Task.Timeout | Task timeout | string |
-| Cuckoo.Task.Memory | Task memory | string |
-| Cuckoo.Task.Tags | Task tags | string |
-| Cuckoo.Task.ID | ID of task | string |
-| Cuckoo.Task.AddedOn | Date on which the task was added | string |
-| Cuckoo.Task.CompletedOn | Date on which the task was completed | string |
-| Cuckoo.Task.Score | Reported score of the the task | string |
-| Cuckoo.Task.Monitor | Monitor of the reported task | string |
+| Cuckoo.Task.Category | Category of task. | string |
+| Cuckoo.Task.Machine | Machine of task. | string |
+| Cuckoo.Task.Errors | Errors of task. | string |
+| Cuckoo.Task.Traget | Traget of task. | string |
+| Cuckoo.Task.Package | Package of task. | string |
+| Cuckoo.Task.SampleID | Sample ID of task. | string |
+| Cuckoo.Task.Guest | Task guest. | string |
+| Cuckoo.Task.Custom | Custom values of task. | string |
+| Cuckoo.Task.Owner | Task owner. | string |
+| Cuckoo.Task.Priority | Priority of task. | string |
+| Cuckoo.Task.Platform | Platform of task. | string |
+| Cuckoo.Task.Options | Task options. | string |
+| Cuckoo.Task.Status | Task status. | string |
+| Cuckoo.Task.EnforceTimeout | Is timeout of task enforced. | string |
+| Cuckoo.Task.Timeout | Task timeout. | string |
+| Cuckoo.Task.Memory | Task memory. | string |
+| Cuckoo.Task.Tags | Task tags. | string |
+| Cuckoo.Task.ID | ID of task. | string |
+| Cuckoo.Task.AddedOn | Date on which the task was added. | string |
+| Cuckoo.Task.CompletedOn | Date on which the task was completed. | string |
+| Cuckoo.Task.Score | Reported score of the the task. | string |
+| Cuckoo.Task.Monitor | Monitor of the reported task. | string |
 | ANYRUN.Task.AnalysisDate | Date and time the analysis was executed. | String |
 | ANYRUN.Task.FileInfo | Details of the submitted file. | String |
 | ANYRUN.Task.OS | OS of the sandbox in which the file was analyzed. | String |
@@ -229,39 +228,39 @@ This playbook does not use any scripts.
 | ANYRUN.Task.Process.Version.Company | Company responsible for the program executed. | String |
 | ANYRUN.Task.Process.Version.Description | Description of the type of program. | String |
 | ANYRUN.Task.Process.Version.Version | Version of the program executed. | String |
-| Domain.Name | The Domain name | string |
+| Domain.Name | The Domain name. | string |
 | Domain.DNS | A list of IP objects resolved by DNS. | string |
-| RegistryKey.Path | The path to the registry key | string |
+| RegistryKey.Path | The path to the registry key. | string |
 | RegistryKey.Value | The value at the given RegistryKey. | string |
-| Process.Name | Process name | string |
-| Process.PID | Process PID | number |
-| Process.CommandLine | Process Command Line | string |
-| Process.Path | Process path | string |
-| Process.StartTime | Process start time | date |
-| Process.EndTime | Process end time | date |
-| Polygon.Analysis.ID | Analysis ID in THF | number |
-| Polygon.Analysis.Name | File Name | string |
-| Polygon.Analysis.Size | File Size | number |
-| Polygon.Analysis.Started | Analysis start timestamp | date |
-| Polygon.Analysis.Analyzed | Analysis finish timestamp | date |
-| Polygon.Analysis.MD5 | Analyzed file MD5 hash | string |
-| Polygon.Analysis.SHA1 | Analyzed file SHA1 hash | string |
-| Polygon.Analysis.SHA256 | Analyzed file SHA256 | string |
-| Polygon.Analysis.Result | Analysis verdict | string |
-| Polygon.Analysis.Status | The analysis status | string |
-| Polygon.Analysis.Verdict | Analysis verdict | boolean |
-| Polygon.Analysis.Probability | Verdict probability | string |
-| Polygon.Analysis.Families | Malware families | string |
-| Polygon.Analysis.Score | Polygon score | number |
-| Polygon.Analysis.Internet-connection | Internet availability | string |
-| Polygon.Analysis.Type | File type | string |
-| Polygon.Analysis.DumpExists | Network activity dump exists | boolean |
-| Polygon.Analysis.File | The information about files in analysis | string |
-| Polygon.Analysis.URL | The information about URL indicators | string |
-| Polygon.Analysis.IP | The information about IP indicators | string |
-| Polygon.Analysis.Domain | The information about Domain indicators | string |
-| Polygon.Analysis.RegistryKey | The information about registry keys which were modified during the analysis | string |
-| Polygon.Analysis.Process | The information about processes started during the analysis | string |
+| Process.Name | Process name. | string |
+| Process.PID | Process PID. | number |
+| Process.CommandLine | Process Command Line. | string |
+| Process.Path | Process path. | string |
+| Process.StartTime | Process start time. | date |
+| Process.EndTime | Process end time. | date |
+| Polygon.Analysis.ID | Analysis ID in THF. | number |
+| Polygon.Analysis.Name | File Name. | string |
+| Polygon.Analysis.Size | File Size. | number |
+| Polygon.Analysis.Started | Analysis start timestamp. | date |
+| Polygon.Analysis.Analyzed | Analysis finish timestamp. | date |
+| Polygon.Analysis.MD5 | Analyzed file MD5 hash. | string |
+| Polygon.Analysis.SHA1 | Analyzed file SHA1 hash. | string |
+| Polygon.Analysis.SHA256 | Analyzed file SHA256. | string |
+| Polygon.Analysis.Result | Analysis verdict. | string |
+| Polygon.Analysis.Status | The analysis status. | string |
+| Polygon.Analysis.Verdict | Analysis verdict. | boolean |
+| Polygon.Analysis.Probability | Verdict probability. | string |
+| Polygon.Analysis.Families | Malware families. | string |
+| Polygon.Analysis.Score | Polygon score. | number |
+| Polygon.Analysis.Internet-connection | Internet availability. | string |
+| Polygon.Analysis.Type | File type. | string |
+| Polygon.Analysis.DumpExists | Network activity dump exists. | boolean |
+| Polygon.Analysis.File | The information about files in analysis. | string |
+| Polygon.Analysis.URL | The information about URL indicators. | string |
+| Polygon.Analysis.IP | The information about IP indicators. | string |
+| Polygon.Analysis.Domain | The information about Domain indicators. | string |
+| Polygon.Analysis.RegistryKey | The information about registry keys which were modified during the analysis. | string |
+| Polygon.Analysis.Process | The information about processes started during the analysis. | string |
 | CrowdStrike.Submit.job_id | The The submitted report job ID. | string |
 | CrowdStrike.Submit.submission_type | The type of the submission. | string |
 | CrowdStrike.Submit.submission_id | The submission ID. | string |
@@ -284,7 +283,7 @@ This playbook does not use any scripts.
 | CrowdStrike.Report.sha512 | The SHA512 hash of the file. | string |
 | CrowdStrike.Report.ssdeep | The SSDeep hash of the file. | string |
 | CrowdStrike.Report.imphash | The imphash hash of the file. | string |
-| CrowdStrike.Report.av_detect | The AV Multiscan range, for example 50-70 \(min 0, max 100\) | string |
+| CrowdStrike.Report.av_detect | The AV Multiscan range, for example 50-70 \(min 0, max 100\). | string |
 | CrowdStrike.Report.vx_family | The file malware famil. | string |
 | CrowdStrike.Report.url_analysis | Whether this report is url analysis. | string |
 | CrowdStrike.Report.analysis_start_time | The start time of the analysis. | string |
@@ -357,12 +356,12 @@ This playbook does not use any scripts.
 | VirusTotal.Analysis.data.attributes.stats.suspicious | Number of engines found the indicator suspicious. | number |
 | VirusTotal.Analysis.data.attributes.stats.timeout | Number of engines found the indicator timeout. | number |
 | VirusTotal.Analysis.data.attributes.stats.undetected | Number of engines found the indicator undetected. | number |
-| VirusTotal.Analysis.data.attributes.date | Date of the analysis in epoch | number |
-| VirusTotal.Analysis.data.attributes.status | Status of the analysis | string |
+| VirusTotal.Analysis.data.attributes.date | Date of the analysis in epoch. | number |
+| VirusTotal.Analysis.data.attributes.status | Status of the analysis. | string |
 | VirusTotal.Analysis.data.id | ID of the analysis. | string |
-| VirusTotal.Analysis.data.type | Type of object \(analysis\) | string |
-| VirusTotal.Analysis.meta.url_info.id | ID of the url | string |
-| VirusTotal.Analysis.meta.url_info.url | The URL | string |
+| VirusTotal.Analysis.data.type | Type of object \(analysis\). | string |
+| VirusTotal.Analysis.meta.url_info.id | ID of the url. | string |
+| VirusTotal.Analysis.meta.url_info.url | The URL. | string |
 | VirusTotal.Analysis.id | The analysis ID. | string |
 | VMRay.Job.JobID | The ID of a new job. | number |
 | VMRay.Job.SampleID | The ID of sample. | number |
@@ -408,7 +407,7 @@ This playbook does not use any scripts.
 | VMRay.Sample.IOC.IP.Type | The type of the IP address. | string |
 | VMRay.Sample.IOC.Mutex.AnalysisID | The IDs of other analyses that contain the given IP address. | string |
 | VMRay.Sample.IOC.Mutex.Name | The name of the mutex. | string |
-| VMRay.Sample.IOC.Mutex.Operation | The operation of the given mutex | string |
+| VMRay.Sample.IOC.Mutex.Operation | The operation of the given mutex. | string |
 | VMRay.Sample.IOC.Mutex.ID | The ID of the mutex. | string |
 | VMRay.Sample.IOC.Mutex.Type | The type of the mutex. | string |
 | VMRay.Sample.IOC.File.AnalysisID | The IDs of other analyses that contain the given file. | string |
@@ -458,28 +457,28 @@ This playbook does not use any scripts.
 | Triage.sample-summaries.created | Date the analysis report was created. | date |
 | Triage.sample-summaries.custom | Custom sample analysis. | string |
 | Triage.sample-summaries.owner | Owner of the sample analysis. | string |
-| Triage.sample-summaries.sample | Unique identifier of the sample, | string |
+| Triage.sample-summaries.sample | Unique identifier of the sample,. | string |
 | Triage.sample-summaries.score | Score of the sample on a scale of 0 to 10. | number |
 | Triage.sample-summaries.sha256 | SHA256 hash of the sample. | string |
 | Triage.sample-summaries.status | Status of the analysis. | string |
 | Triage.sample-summaries.target | Target for the analysis. | string |
 | Triage.sample-summaries.tasks | Tasks performed in the analysis. | string |
-| SecneurXAnalysis.Report.SHA256 | SHA256 value of the analyzed sample | string |
-| SecneurXAnalysis.Report.Platform | Platform of the analyzed sample | String |
-| SecneurXAnalysis.Report.Verdict | Summary result of the analyzed sample | string |
-| SecneurXAnalysis.Report.Tags | More details of the analyzed sample | string |
-| SecneurXAnalysis.Report.DnsRequests | List of DNS data observed in the analyzed sample | string |
-| SecneurXAnalysis.Report.HttpRequests | List of HTTP data observed in the analyzed sample | string |
-| SecneurXAnalysis.Report.JA3Digests | List of JA3 data observed in the analyzed sample | string |
-| SecneurXAnalysis.Report.ProcessCreated | Process behaviour data observed in the analyzed sample | string |
-| SecneurXAnalysis.Report.RegistrySet | List of Registry creations observed in the analyzed sample | string |
-| SecneurXAnalysis.Report.RegistryDeleted | List of Registry deletions observed in the analyzed sample | string |
-| SecneurXAnalysis.Report.FileCreated | List of File creations observed in the analyzed sample | string |
-| SecneurXAnalysis.Report.FileDropped | List of File drops observed in the analyzed sample | string |
-| SecneurXAnalysis.Report.FileDeleted | List of File deletions observed in the analyzed sample | string |
-| SecneurXAnalysis.Report.FileModified | List of File changes observed in the analyzed sample | string |
-| SecneurXAnalysis.Report.IOC | List of IOC's observed in the analyzed sample | string |
-| SecneurXAnalysis.Report.Status | Analysis queued sample state | String |
+| SecneurXAnalysis.Report.SHA256 | SHA256 value of the analyzed sample. | string |
+| SecneurXAnalysis.Report.Platform | Platform of the analyzed sample. | String |
+| SecneurXAnalysis.Report.Verdict | Summary result of the analyzed sample. | string |
+| SecneurXAnalysis.Report.Tags | More details of the analyzed sample. | string |
+| SecneurXAnalysis.Report.DnsRequests | List of DNS data observed in the analyzed sample. | string |
+| SecneurXAnalysis.Report.HttpRequests | List of HTTP data observed in the analyzed sample. | string |
+| SecneurXAnalysis.Report.JA3Digests | List of JA3 data observed in the analyzed sample. | string |
+| SecneurXAnalysis.Report.ProcessCreated | Process behaviour data observed in the analyzed sample. | string |
+| SecneurXAnalysis.Report.RegistrySet | List of Registry creations observed in the analyzed sample. | string |
+| SecneurXAnalysis.Report.RegistryDeleted | List of Registry deletions observed in the analyzed sample. | string |
+| SecneurXAnalysis.Report.FileCreated | List of File creations observed in the analyzed sample. | string |
+| SecneurXAnalysis.Report.FileDropped | List of File drops observed in the analyzed sample. | string |
+| SecneurXAnalysis.Report.FileDeleted | List of File deletions observed in the analyzed sample. | string |
+| SecneurXAnalysis.Report.FileModified | List of File changes observed in the analyzed sample. | string |
+| SecneurXAnalysis.Report.IOC | List of IOC's observed in the analyzed sample. | string |
+| SecneurXAnalysis.Report.Status | Analysis queued sample state. | String |
 | csfalconx.resource.id | Analysis ID. | String |
 | csfalconx.resource.verdict | Analysis verdict. | String |
 | csfalconx.resource.created_timestamp | Analysis start time. | String |
@@ -498,22 +497,22 @@ This playbook does not use any scripts.
 | csfalconx.resource.ioc_report_strict_maec_artifact_id | ID of the IOC pack to download \(MAEC\). | String |
 | csfalconx.resource.ioc_report_broad_maec_artifact_id | ID of the IOC pack to download \(MAEC\). | String |
 | OPSWAT.Filescan.Submission.flow_id | The flow ID. | string |
-| OPSWAT.Filescan.Analysis.finalVerdict.verdict | The final verdict | string |
-| OPSWAT.Filescan.Analysis.allTags | All tags | string |
-| OPSWAT.Filescan.Analysis.overallState | Overall state of the scan | string |
-| OPSWAT.Filescan.Analysis.subtaskReferences | Status of scan subtasks | string |
-| OPSWAT.Filescan.Analysis.allSignalGroups | All signal groups | string |
-| OPSWAT.Filescan.Analysis.resources | Resources | string |
-| OPSWAT.Filescan.Analysis.taskReference.name | Name of the main scan task | string |
-| OPSWAT.Filescan.Analysis.taskReference.additionalInfo | Additional informations about the main scan task | string |
-| OPSWAT.Filescan.Analysis.taskReference.ID | ID of the main scan task | string |
-| OPSWAT.Filescan.Analysis.taskReference.state | State of the main scan task | string |
-| OPSWAT.Filescan.Analysis.taskReference.resourceReference | Resource reference of the main scan task | string |
-| OPSWAT.Filescan.Analysis.taskReference.opcount | Counter | string |
-| OPSWAT.Filescan.Analysis.taskReference.processTime | processTime | string |
-| OPSWAT.Filescan.Analysis.file.name | The name of the file | string |
-| OPSWAT.Filescan.Analysis.file.hash | The SHA256 of the file | string |
-| OPSWAT.Filescan.Analysis.file.type | The type of the submission | string |
+| OPSWAT.Filescan.Analysis.finalVerdict.verdict | The final verdict. | string |
+| OPSWAT.Filescan.Analysis.allTags | All tags. | string |
+| OPSWAT.Filescan.Analysis.overallState | Overall state of the scan. | string |
+| OPSWAT.Filescan.Analysis.subtaskReferences | Status of scan subtasks. | string |
+| OPSWAT.Filescan.Analysis.allSignalGroups | All signal groups. | string |
+| OPSWAT.Filescan.Analysis.resources | Resources. | string |
+| OPSWAT.Filescan.Analysis.taskReference.name | Name of the main scan task. | string |
+| OPSWAT.Filescan.Analysis.taskReference.additionalInfo | Additional informations about the main scan task. | string |
+| OPSWAT.Filescan.Analysis.taskReference.ID | ID of the main scan task. | string |
+| OPSWAT.Filescan.Analysis.taskReference.state | State of the main scan task. | string |
+| OPSWAT.Filescan.Analysis.taskReference.resourceReference | Resource reference of the main scan task. | string |
+| OPSWAT.Filescan.Analysis.taskReference.opcount | Counter. | string |
+| OPSWAT.Filescan.Analysis.taskReference.processTime | processTime. | string |
+| OPSWAT.Filescan.Analysis.file.name | The name of the file. | string |
+| OPSWAT.Filescan.Analysis.file.hash | The SHA256 of the file. | string |
+| OPSWAT.Filescan.Analysis.file.type | The type of the submission. | string |
 
 ## Playbook Image
 
