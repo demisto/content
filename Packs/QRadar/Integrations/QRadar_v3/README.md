@@ -8,7 +8,7 @@ This integration was integrated and tested with version 14-20 of QRadar v3
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
+    | --- | -- | --- |
     | Server URL | \(e.g., https://1.1.1.1\) | True |
     | Username |  | True |
     | Password |  | True |
@@ -29,6 +29,7 @@ This integration was integrated and tested with version 14-20 of QRadar v3
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Timeout for http-requests | The timeout of the HTTP requests sent to the Qradar API (in seconds). If no value is provided, the timeout will be set to 60 seconds. | False |
+    | Fetch Incidents Interval | The fetch interval between before each fetch-incidents execution. | False |
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Required Permissions
