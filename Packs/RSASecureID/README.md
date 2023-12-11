@@ -18,20 +18,18 @@ In /etc/rsylog.conf define the rest of the configuration related to rsyslog.
 7. Append the remote syslog servers in the **/etc/rsyslog.d/remote.conf** file.
 8. Restart the syslog daemon and verify the status with the following commands:
    ```<bash>
-   <rcsyslog restart
-   rcsyslog status>
+   rcsyslog restart
+   rcsyslog status
    ```
 9.  Configure Security Console Logging to send to localhost **127.0.0.1**, [Link](https://community.rsa.com/docs/DOC-77156).
 10. Monitor the outgoing traffic to the remote syslog server with the commands:
     * To monitor all traffic 
-    ```
-    <bash>
-    <tcpdump -nvv -i eth0 port 514>
+    ```<bash>
+    tcpdump -nvv -i eth0 port 514
     ```
     * To monitor more targeted traffic on port 514:
-    ```
-    <bash>
-    <tcpdump -nvv -i eth0 "dst host n.n.n.n and dst port 514">
+    ```<bash>
+    tcpdump -nvv -i eth0 "dst host n.n.n.n and dst port 514"
     ```
 11. When the configuration is completed on the primary server, repeat steps 1 through 9 on each replica server in your deployment.  Be sure to complete the tasks on one server before moving to another server.
 
