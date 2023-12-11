@@ -7,7 +7,7 @@ This pack includes Cortex XSIAM content.
 You need to configure RSA SecureID to forward Syslog messages.
  
 In RSA Authentication Manager 8.4 there is rsyslog instead of syslog-ng.
-There is a configuration file in /etc/rsyslog.d/remote.conf where you could define the syslog server(s) to which you want to connect.
+In the configuration file in /etc/rsyslog.d/remote.conf you define the syslog server(s) to which you want to connect.
 There is /etc/rsylog.conf for rest of the configuration related to rsyslog.
 1. Launch an SSH client, such as PuTTY.
 2. Login to the primary Authentication Manager server as **rsaadmin** and enter the operating system password.
