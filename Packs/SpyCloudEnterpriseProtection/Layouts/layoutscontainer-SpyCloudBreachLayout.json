@@ -11,143 +11,126 @@
                 "name": "Incident Info",
                 "sections": [
                     {
-                        "displayType": "ROW",
-                        "h": 3,
-                        "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
-                        "isVisible": true,
-                        "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "spyclouddocumentid",
-                                "height": 22,
-                                "id": "3057d750-e59e-11ed-8a6e-c34d060e36eb",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "spycoudseverity",
-                                "height": 22,
-                                "id": "38b31f90-e59e-11ed-8a6e-c34d060e36eb",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "sourceid",
-                                "height": 22,
-                                "id": "573fa1f0-6e6e-11ee-9869-6db608ab47c6",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "spycloudemail",
-                                "height": 22,
-                                "id": "3e610d30-6e79-11ee-a6f4-5f509c30fd2c",
-                                "index": 2,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "spycloudusername",
-                                "height": 22,
-                                "id": "48539740-6e79-11ee-a6f4-5f509c30fd2c",
-                                "index": 3,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "spycloudpublishdate",
-                                "height": 22,
-                                "id": "49cf4fb0-e59e-11ed-8a6e-c34d060e36eb",
-                                "index": 4,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "domainname",
-                                "height": 22,
-                                "id": "295ea330-6e6e-11ee-9869-6db608ab47c6",
-                                "index": 5,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "sourceip",
-                                "height": 22,
-                                "id": "6e95fbf0-e59e-11ed-8a6e-c34d060e36eb",
-                                "index": 6,
-                                "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "username",
-                                "height": 22,
-                                "id": "433d68e0-6e6e-11ee-9869-6db608ab47c6",
-                                "index": 7,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "spycloudpassword",
-                                "height": 22,
-                                "id": "5ea52c70-e59e-11ed-8a6e-c34d060e36eb",
-                                "index": 8,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "spycloudpasswordplaintext",
-                                "height": 22,
-                                "id": "60cc2b20-e59e-11ed-8a6e-c34d060e36eb",
-                                "index": 9,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "spycloudrecordmodificationdate",
-                                "height": 22,
-                                "id": "218683e0-fa1e-11ed-8bab-81535210db50",
-                                "index": 10,
-                                "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "severity",
-                                "height": 22,
-                                "id": "36eca380-6e6e-11ee-9869-6db608ab47c6",
-                                "index": 11,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxH": null,
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "SpyCloud Watchlist Record",
-                        "static": false,
-                        "w": 1,
-                        "x": 0,
-                        "y": 0
-                    },
+						"displayType": "ROW",
+						"h": 4,
+						"i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "spyclouddocumentid",
+								"height": 22,
+								"id": "3057d750-e59e-11ed-8a6e-c34d060e36eb",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourceid",
+								"height": 22,
+								"id": "573fa1f0-6e6e-11ee-9869-6db608ab47c6",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "username",
+								"height": 22,
+								"id": "931864b0-9802-11ee-81a8-8bb0c7d3f735",
+								"index": 2,
+								"listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "email",
+								"height": 22,
+								"id": "8b1611e0-9802-11ee-81a8-8bb0c7d3f735",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "spycloudpublishdate",
+								"height": 22,
+								"id": "49cf4fb0-e59e-11ed-8a6e-c34d060e36eb",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "domainname",
+								"height": 22,
+								"id": "295ea330-6e6e-11ee-9869-6db608ab47c6",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "sourceip",
+								"height": 22,
+								"id": "6e95fbf0-e59e-11ed-8a6e-c34d060e36eb",
+								"index": 6,
+								"listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "spycloudpassword",
+								"height": 22,
+								"id": "5ea52c70-e59e-11ed-8a6e-c34d060e36eb",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "spycloudpasswordplaintext",
+								"height": 22,
+								"id": "60cc2b20-e59e-11ed-8a6e-c34d060e36eb",
+								"index": 8,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "spycloudrecordmodificationdate",
+								"height": 22,
+								"id": "218683e0-fa1e-11ed-8bab-81535210db50",
+								"index": 9,
+								"listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "severity",
+								"height": 22,
+								"id": "36eca380-6e6e-11ee-9869-6db608ab47c6",
+								"index": 10,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "SpyCloud Watchlist Record",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
                     {
                         "displayType": "ROW",
                         "h": 1,
