@@ -85,7 +85,6 @@ class Client(BaseClient):
         else:
             self.execution_metrics.general_error += 1
 
-        return_results(self.execution_metrics.metrics)
         self.client_error_handler(res)
 
     def _http_request(self, **kwargs):
@@ -367,6 +366,7 @@ def main() -> None:
 
     demisto.debug(f'Command being called is {command}')
     res: list[CommandResults] = []
+    client = None
     try:
         client = Client(
             more_api_key=more_api_key,
@@ -395,6 +395,8 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
+        if client:
+            return_results(client.execution_metrics.metrics)
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
