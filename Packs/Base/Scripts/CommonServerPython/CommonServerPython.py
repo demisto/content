@@ -9838,7 +9838,6 @@ class IndicatorsSearcher:
             search_args['sort'] = self._sort
         res = demisto.searchIndicators(**search_args)
         self._total = res.get('total')
-        self._total = None
         demisto.debug('IndicatorsSearcher: page {}, result size: {}'.format(self._page, self._total))
         # when total is None, there is a problem with the server, hence need to restart the container, see XSUP-26699
         # container can only reset for SaaS enviorments
