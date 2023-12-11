@@ -704,7 +704,7 @@ tasks:
       id: bd03837d-6714-4e64-8afb-99aa81aeb6b5
       version: -1
       name: Detonate URL - Hatching Triage
-      description: Detonating URL with Hatching Triage.
+      description: Detonates a URL with Hatching Triage.
       playbookName: Detonate URL - Hatching Triage
       type: playbook
       iscommand: false
