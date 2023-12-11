@@ -6,7 +6,7 @@ The playbook executes the following:
 2.Retrieves the WildFire sandbox report and extract the indicators within it.
     * The playbook tries to retrieve the report, but if there is no report available, the playbook tries to fetch the ransomware file for detonation.
 
-3.Hunts for the ransomware alert indicators from the alert table, searches for endpoints that have been seen with them, and allows containing the identified endpoints.
+3. Hunts for the ransomware alert indicators from the alert table, searches for endpoints that have been seen with them, and allows containing the identified endpoints.
 
 ## Dependencies
 
