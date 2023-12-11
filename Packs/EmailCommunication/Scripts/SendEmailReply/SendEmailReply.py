@@ -48,7 +48,7 @@ def validate_email_sent(incident_id, email_subject, subject_include_incident_id,
         subject_include_incident_id: Should we include the incident id in the email subject.
         email_to: The email's recipients.
         reply_body: The email body.
-        body_type: The body type of the email.
+        body_type: The type of the email body.
         service_mail: The service mail (mail listener).
         email_cc: The email cc.
         email_bcc: The email bcc.
@@ -287,10 +287,10 @@ def send_new_mail_request(incident_id, email_subject, subject_include_incident_i
         "cc": email_cc,
         "bcc": email_bcc,
         "htmlBody": email_html_body,
+        "bodyType": body_type,
         "body": email_body,
         "attachIDs": ",".join(entry_id_list),
         "replyTo": service_mail,
-        "bodyType": body_type,
     }
     # If a mail sender instance has been set, set the "using" parameter with it. Otherwise, do not set "using"
     if mail_sender_instance:
@@ -631,7 +631,6 @@ def single_thread_reply(email_code, incident_id, email_cc, add_cc, notes, body_t
     """
         Retrieve all entries in the EmailThreads context key
     Args:
-        reputation_calc_async:
         email_code: The random code that was generated when the incident was created.
         incident_id: The incident ID.
         email_cc: The email cc.
