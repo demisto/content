@@ -1,7 +1,10 @@
 #!/bin/bash
+echo "-----------------------------------------"
 pwd
 ls -la
-# ./darwin -p 9980 &pid=$!
+echo "-----------------------------------------"
+chmod +x darwin # grant permissions to execute
+./microsocks_darwin -p 9980 &pid=$!
 echo "running darwin on pid: $pid"
 sleep 5
 netstat -p tcp -l -n | grep 9980
