@@ -188,7 +188,7 @@ def get_policy_audits(client: Client, set_ids_with_from_date: dict, limit: int) 
             results = client.get_policy_audits(set_id, from_date.get('policy_audits'), limit, next_cursor)
             policy_audits[set_id].extend(results.get('events', []))
 
-        sorted_events = sorted(policy_audits.get(set_id), key=lambda e: parser.parse(e.get('arrivalTime')))
+        sorted_events = sorted(policy_audits.get(set_id, []), key=lambda e: parser.parse(e.get('arrivalTime')))
         add_fields_to_events(sorted_events, 'arrivalTime', 'policy_audits')
         policy_audits[set_id] = sorted_events[:limit]
 
@@ -211,7 +211,7 @@ def get_admin_audits(client: Client, set_ids_with_from_date: dict, limit: int) -
         admin_audits[set_id] = result.get('AdminAudits', [])
         total_events = arg_to_number(result.get('TotalCount', 0))
 
-        while len(admin_audits[set_id]) < total_events and len(admin_audits[set_id]) < limit:
+        while len(admin_audits[set_id]) < total_events and len(admin_audits[set_id]) < limit:  # type: ignore
             latest_event_date = admin_audits[set_id][-1].get('EventTime')
             result = client.get_admin_audits(set_id, prepare_datetime(latest_event_date, increase=True), limit)
             admin_audits[set_id].extend(result.get('AdminAudits', []))
@@ -251,37 +251,37 @@ def get_detailed_events(client: Client, set_ids_with_from_date: dict, limit: int
 """ COMMAND FUNCTIONS """
 
 
-def get_policy_audits_command(client: Client, set_ids_with_from_date: dict, args: dict) -> [list, CommandResults]:
+def get_policy_audits_command(client: Client, set_ids_with_from_date: dict, args: dict) -> tuple[list, CommandResults]:
     limit = arg_to_number(args.get('limit', 5))
 
-    events = get_policy_audits(client, set_ids_with_from_date, limit)
+    events = get_policy_audits(client, set_ids_with_from_date, limit)  # type: ignore
     events_list = list(chain(*events.values()))
     human_readable = tableToMarkdown('Policy Audits', events_list)
 
     return events_list, CommandResults(readable_output=human_readable, raw_response=events_list)
 
 
-def get_admin_audits_command(client: Client, set_ids_with_from_date: dict, args: dict) -> [list, CommandResults]:
+def get_admin_audits_command(client: Client, set_ids_with_from_date: dict, args: dict) -> tuple[list, CommandResults]:
     limit = arg_to_number(args.get('limit', 5))
 
-    events = get_admin_audits(client, set_ids_with_from_date, limit)
+    events = get_admin_audits(client, set_ids_with_from_date, limit)  # type: ignore
     events_list = list(chain(*events.values()))
     human_readable = tableToMarkdown('Admin Audits', events_list)
 
     return events_list, CommandResults(readable_output=human_readable, raw_response=events_list)
 
 
-def get_detailed_events_command(client: Client, set_ids_with_from_date: dict, args: dict) -> [list, CommandResults]:
+def get_detailed_events_command(client: Client, set_ids_with_from_date: dict, args: dict) -> tuple[list, CommandResults]:
     limit = arg_to_number(args.get('limit', 5))
 
-    events = get_detailed_events(client, set_ids_with_from_date, limit)
+    events = get_detailed_events(client, set_ids_with_from_date, limit)  # type: ignore
     events_list = list(chain(*events.values()))
     human_readable = tableToMarkdown('Events', events_list)
 
     return events_list, CommandResults(readable_output=human_readable, raw_response=events_list)
 
 
-def fetch_events(client: Client, last_run: dict, max_fetch: int = MAX_FETCH) -> [list, dict]:
+def fetch_events(client: Client, last_run: dict, max_fetch: int = MAX_FETCH) -> tuple[list, dict]:
     """ Fetches 3 types of events from CyberArkEPM
         - policy_audits
         - admin_audits
@@ -293,8 +293,8 @@ def fetch_events(client: Client, last_run: dict, max_fetch: int = MAX_FETCH) -> 
     Return:
         (list) A list of events to push to XSIAM
     """
-    events = []
-    next_run = {}
+    events: list = []
+    next_run: dict = {}
 
     demisto.info(f'Start fetching last run: {last_run}')
 
@@ -347,7 +347,7 @@ def main():  # pragma: no cover
     proxy = params.get('proxy', False)
     max_fetch = arg_to_number(args.get('limit') or params.get('max_fetch') or DEFAULT_LIMIT)
 
-    if not 0 < max_fetch <= MAX_FETCH:
+    if not 0 < max_fetch <= MAX_FETCH:  # type: ignore
         demisto.debug(f'`max_fetch` is not in the correct value, setting it to {DEFAULT_LIMIT}.')
         max_fetch = DEFAULT_LIMIT
 
@@ -378,25 +378,25 @@ def main():  # pragma: no cover
             return_results(result)
 
         if command == 'cyberarkepm-get-policy-audits':
-            events, result = get_policy_audits_command(client, last_run, args)
+            events, command_result = get_policy_audits_command(client, last_run, args)
             if argToBoolean(args.get('should_push_events', False)):
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-            return_results(result)
+            return_results(command_result)
 
         if command == 'cyberarkepm-get-admin-audits':
-            events, result = get_admin_audits_command(client, last_run, args)
+            events, command_result = get_admin_audits_command(client, last_run, args)
             if argToBoolean(args.get('should_push_events', False)):
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-            return_results(result)
+            return_results(command_result)
 
         if command == 'cyberarkepm-get-events':
-            events, result = get_detailed_events_command(client, last_run, args)
+            events, command_result = get_detailed_events_command(client, last_run, args)
             if argToBoolean(args.get('should_push_events', False)):
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-            return_results(result)
+            return_results(command_result)
 
         elif command in 'fetch-events':
-            events, next_run = fetch_events(client, last_run, max_fetch)
+            events, next_run = fetch_events(client, last_run, max_fetch)  # type: ignore
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(next_run)
 
