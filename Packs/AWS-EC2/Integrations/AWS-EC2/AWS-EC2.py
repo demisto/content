@@ -2,9 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from datetime import date
 
-"""CONSTANTS"""
-ROLE_ARN_TEMPLATE = 'arn:aws:iam::{account_id}:{role_name}'
-
 """HELPER FUNCTIONS"""
 
 
@@ -74,7 +71,7 @@ def parse_date(dt):
     return parsed_date
 
 
-def run_on_all_accounts(func):
+def run_on_all_accounts(func: type()):
     params = demisto.params()
     accounts = argToList(params.get('accounts_to_access'))
     role_name = params.get('access_role_name')
@@ -85,7 +82,7 @@ def run_on_all_accounts(func):
         results = []
         for account_id in accounts:
             args.update({
-                'roleArn': ROLE_ARN_TEMPLATE.format(account_id=account_id, role_name=role_name),
+                'roleArn': f'arn:aws:iam::{account_id}:{role_name}',
                 'roleSessionName': args.get('roleSessionName', f'account_{account_id}'),
                 'roleSessionDuration': args.get('roleSessionDuration', 900),
             })
