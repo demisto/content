@@ -6,21 +6,11 @@
   "trigger_name": "Azure SQL Misconfiguration",
   "alerts_filter": {
     "filter": {
-      "OR": [
+      "AND": [
         {
-            "SEARCH_FIELD": "alert_name",
+            "SEARCH_FIELD": "alert_type",
             "SEARCH_TYPE": "CONTAINS",
-            "SEARCH_VALUE": "Azure SQL Database with Auditing Retention less than 90 days"
-        },
-        {
-            "SEARCH_FIELD": "alert_name",
-            "SEARCH_TYPE": "CONTAINS",
-            "SEARCH_VALUE": "Azure SQL database auditing is disabled"
-        },
-        {
-            "SEARCH_FIELD": "alert_name",
-            "SEARCH_TYPE": "CONTAINS",
-            "SEARCH_VALUE": "Azure SQL databases Defender setting is set to Off"
+            "SEARCH_VALUE": "Azure SQL Misconfiguration"
         }
       ]
     }

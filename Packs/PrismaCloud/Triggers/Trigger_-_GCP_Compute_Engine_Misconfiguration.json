@@ -6,16 +6,11 @@
   "trigger_name": "GCP Compute Engine Misconfiguration",
   "alerts_filter": {
     "filter": {
-      "OR": [
+      "AND": [
         {
-            "SEARCH_FIELD": "alert_name",
+            "SEARCH_FIELD": "alert_type",
             "SEARCH_TYPE": "CONTAINS",
-            "SEARCH_VALUE": "GCP VM Instances without any Custom metadata information"
-        },
-        {
-            "SEARCH_FIELD": "alert_name",
-            "SEARCH_TYPE": "CONTAINS",
-            "SEARCH_VALUE": "GCP VM instances have block project-wide SSH keys feature disabled"
+            "SEARCH_VALUE": "GCP Compute Engine Misconfiguration"
         }
       ]
     }

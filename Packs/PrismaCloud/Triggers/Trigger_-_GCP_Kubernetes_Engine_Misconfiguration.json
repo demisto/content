@@ -6,56 +6,11 @@
   "trigger_name": "GCP Kubernetes Engine Misconfiguration",
   "alerts_filter": {
     "filter": {
-      "OR": [
+      "AND": [
         {
-          "SEARCH_FIELD": "alert_name",
+          "SEARCH_FIELD": "alert_type",
           "SEARCH_TYPE": "CONTAINS",
-          "SEARCH_VALUE": "GCP VM Instances without any Custom metadata information"
-        },
-        {
-          "SEARCH_FIELD": "alert_name",
-          "SEARCH_TYPE": "CONTAINS",
-          "SEARCH_VALUE": "GCP VM instances have block project-wide SSH keys feature disabled"
-        },
-        {
-          "SEARCH_FIELD": "alert_name",
-          "SEARCH_TYPE": "CONTAINS",
-          "SEARCH_VALUE": "GCP Kubernetes Engine Clusters have Cloud Logging disabled"
-        },
-        {
-          "SEARCH_FIELD": "alert_name",
-          "SEARCH_TYPE": "CONTAINS",
-          "SEARCH_VALUE": "GCP Kubernetes Engine Clusters have Cloud Monitoring disabled"
-        },
-        {
-          "SEARCH_FIELD": "alert_name",
-          "SEARCH_TYPE": "CONTAINS",
-          "SEARCH_VALUE": "GCP Kubernetes Engine Clusters have HTTP load balancing disabled"
-        },
-        {
-          "SEARCH_FIELD": "alert_name",
-          "SEARCH_TYPE": "CONTAINS",
-          "SEARCH_VALUE": "GCP Kubernetes Engine Clusters have Legacy Authorization enabled"
-        },
-        {
-          "SEARCH_FIELD": "alert_name",
-          "SEARCH_TYPE": "CONTAINS",
-          "SEARCH_VALUE": "GCP Kubernetes Engine Clusters have Master authorized networks disabled"
-        },
-        {
-          "SEARCH_FIELD": "alert_name",
-          "SEARCH_TYPE": "CONTAINS",
-          "SEARCH_VALUE": "GCP Kubernetes Engine Clusters have Network policy disabled"
-        },
-        {
-          "SEARCH_FIELD": "alert_name",
-          "SEARCH_TYPE": "CONTAINS",
-          "SEARCH_VALUE": "GCP Kubernetes Engine Clusters have binary authorization disabled"
-        },
-        {
-          "SEARCH_FIELD": "alert_name",
-          "SEARCH_TYPE": "CONTAINS",
-          "SEARCH_VALUE": "GCP Kubernetes cluster intra-node visibility disabled"
+          "SEARCH_VALUE": "GCP Kubernetes Engine Misconfiguration"
         }
       ]
     }

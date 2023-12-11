@@ -6,51 +6,11 @@
   "trigger_name": "AWS IAM Policy Misconfiguration",
   "alerts_filter": {
     "filter": {
-      "OR": [
+      "AND": [
         {
-            "SEARCH_FIELD": "alert_name",
+            "SEARCH_FIELD": "alert_type",
             "SEARCH_TYPE": "CONTAINS",
-            "SEARCH_VALUE": "AWS IAM Password policy is unsecure"
-        },
-        {
-            "SEARCH_FIELD": "alert_name",
-            "SEARCH_TYPE": "CONTAINS",
-            "SEARCH_VALUE": "AWS IAM password policy allows password reuse"
-        },
-        {
-            "SEARCH_FIELD": "alert_name",
-            "SEARCH_TYPE": "CONTAINS",
-            "SEARCH_VALUE": "AWS IAM password policy does not expire in 90 days"
-        },
-        {
-            "SEARCH_FIELD": "alert_name",
-            "SEARCH_TYPE": "CONTAINS",
-            "SEARCH_VALUE": "AWS IAM password policy does not have a lowercase character"
-        },
-        {
-            "SEARCH_FIELD": "alert_name",
-            "SEARCH_TYPE": "CONTAINS",
-            "SEARCH_VALUE": "AWS IAM password policy does not have a minimum of 14 characters"
-        },
-        {
-            "SEARCH_FIELD": "alert_name",
-            "SEARCH_TYPE": "CONTAINS",
-            "SEARCH_VALUE": "AWS IAM password policy does not have a number"
-        },
-        {
-            "SEARCH_FIELD": "alert_name",
-            "SEARCH_TYPE": "CONTAINS",
-            "SEARCH_VALUE": "AWS IAM password policy does not have a symbol"
-        },
-        {
-            "SEARCH_FIELD": "alert_name",
-            "SEARCH_TYPE": "CONTAINS",
-            "SEARCH_VALUE": "AWS IAM password policy does not have an uppercase character"
-        },
-        {
-            "SEARCH_FIELD": "alert_name",
-            "SEARCH_TYPE": "CONTAINS",
-            "SEARCH_VALUE": "AWS IAM password policy does not have password expiration period"
+            "SEARCH_VALUE": "AWS IAM Policy Misconfiguration"
         }
       ]
     }
