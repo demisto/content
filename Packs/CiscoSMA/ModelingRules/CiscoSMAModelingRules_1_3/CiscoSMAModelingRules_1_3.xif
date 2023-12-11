@@ -31,7 +31,7 @@ filter (_raw_log contains "system_logs" or _raw_log contains "ftpd_logs" or _raw
     xdm.network.http.method=httpMethod,
     xdm.network.http.url=url,
     xdm.source.user.identifier=id;
-​
+
 filter _raw_log contains "cli_logs" or _raw_log contains "Event: User logged out" or _raw_log contains "Event: User input was" or _raw_log contains "Event: Successful login" or _raw_log contains "Event: Permission denied" or _raw_log contains "Event: User visited the web page"
     or _raw_log contains "euqgui_logs: Info: login:" or _raw_log contains "euqgui_logs: Info: logout:"
 | alter Message1 = arrayindex(regextract(_raw_log,"PID\s\d+\:\s([^\@]+)"),0),
@@ -61,7 +61,7 @@ filter _raw_log contains "cli_logs" or _raw_log contains "Event: User logged out
     xdm.observer.product = appliance,
     xdm.intermediate.process.executable.path = location,
     xdm.event.type = event;
-​
+
 filter
     _raw_log contains "mail_logs"
 | alter Message = arrayindex(regextract(_raw_log,"mail\_logs\:\s[A-Z][^\s]+([^\!]+)"),0),
@@ -104,7 +104,7 @@ filter
     xdm.email.attachment.signature_status = signature_status,
     xdm.email.attachment.filename = attachment,
     xdm.session_context_id = Mailer_Identifier;
-​
+
 filter
     _raw_log contains "gui_logs: Info: req:" or _raw_log contains "euqgui_logs: Info: req:"
 | alter Message = arrayindex(regextract(_raw_log,"I?i?nfo\:\s([^\!]+)"),0),
