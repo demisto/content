@@ -21,6 +21,7 @@ STATUS_MAP = {
     '2': 'Closed',
     '3': 'Closed'
 }
+INCIDENT_ALIAS = 'incident' if (demisto.demistoVersion().get('platform') == 'xsoar') else 'alert'
 
 
 def parse_input(csv):
@@ -76,7 +77,7 @@ def get_map_from_nested_dict(nested_dict, keys, raise_error=False):
             elif key in nested_dict:
                 result[key] = nested_dict[key]
             else:
-                message = "Missing key\label\custom\context field for incident: %s" % key
+                message = f"Missing key\label\custom\context field for {INCIDENT_ALIAS}: {key}"
                 if raise_error:
                     return_error(message)
                 else:
@@ -154,7 +155,7 @@ def get_incidents_by_keys(similar_incident_keys, time_field, incident_time, inci
     min_date = incident_time - timedelta(hours=hours_back)
     query = build_incident_query(similar_keys_query, ignore_closed, incident_id, extra_query)
 
-    demisto.debug("Find similar incidents based on initial query: %s" % query)
+    demisto.debug(f"Find similar {INCIDENT_ALIAS}s based on initial query: {query}")
 
     get_incidents_argument = {'query': query, 'size': max_number_of_results, 'sort': '%s.desc' % time_field}
 
@@ -256,7 +257,7 @@ def did_not_found_duplicates():
     }
     demisto.results({'ContentsFormat': formats['markdown'],
                      'Type': entryTypes['note'],
-                     'Contents': 'No duplicate incidents has been found.',
+                     'Contents': f'No duplicate {INCIDENT_ALIAS}s has been found.',
                      'EntryContext': context})
     sys.exit(0)
 
@@ -333,14 +334,14 @@ def main():
             response = demisto.dt(incident_similar_context, key)
             original_context_map[key] = response
             if not response and RAISE_ERROR_MISSING_VALUES:
-                raise ValueError("Error: Missing context key for incident: %s" % key)
+                raise ValueError(f"Error: Missing context key for {INCIDENT_ALIAS}: {key}")
 
-    log_message = 'Incident fields with exact match: %s' % exact_match_incident_fields
+    log_message = f'{INCIDENT_ALIAS.capitalize()} fields with exact match: %s' % exact_match_incident_fields
     if len(exact_match_incident_fields) > 1:
         log_message += ', applied with %s condition' % INCIDENT_FIELDS_APPLIED_CONDITION
     demisto.debug(log_message)
     if len(similar_incident_fields) > 0:
-        demisto.debug('Similar incident fields (not exact match): %s' % similar_incident_fields)
+        demisto.debug(f'Similar {INCIDENT_ALIAS} fields (not exact match): {similar_incident_fields}')
     if len(incident_similar_labels) > 0:
         demisto.debug('Similar labels: %s' % incident_similar_labels)
     if len(incident_similar_context) > 0:
@@ -348,7 +349,7 @@ def main():
 
     if len(exact_match_incident_fields) == 0 and len(similar_incident_fields) == 0 and len(
             incident_similar_labels) == 0 and len(original_context_map) == 0:
-        return_error("Does not have any field to compare in the current incident")
+        return_error(f"Does not have any field to compare in the current {INCIDENT_ALIAS}")
 
     duplicate_incidents = get_incidents_by_keys(exact_match_incident_fields, TIME_FIELD, incident[TIME_FIELD],
                                                 incident['id'],
@@ -408,7 +409,7 @@ def main():
         duplicate_incidents_rows = duplicate_incidents_rows[:MAX_CANDIDATES_IN_LIST]
         hr_result = [dict((camel_case_to_space(k), v) for k, v in list(row.items())) for row in
                      duplicate_incidents_rows]
-        markdown_result = tableToMarkdown("Duplicate incidents",
+        markdown_result = tableToMarkdown(f"Duplicate {INCIDENT_ALIAS}s",
                                           hr_result,
                                           headers=['Id', 'Name', 'Closed time', 'Time'])
         return {'ContentsFormat': formats['markdown'],
