@@ -382,7 +382,7 @@ tasks:
       name: Detonate URL - ANYRUN
       description: |-
         Detonates one or more URLs using the ANYRUN sandbox integration.
-        Returns relevant reports to the War Room and url reputations to the context data.
+        Returns relevant reports to the War Room and URL reputations to the context data.
       playbookName: Detonate URL - ANYRUN
       type: playbook
       iscommand: false
