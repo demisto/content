@@ -499,7 +499,7 @@ def install_packs(client: demisto_client,
                                         success_handler=success_handler,
                                         api_exception_handler=api_exception_handler,
                                         should_try_handler=should_try_handler,
-                                        request_timeout=30,
+                                        request_timeout=request_timeout,
                                         )
 
 
