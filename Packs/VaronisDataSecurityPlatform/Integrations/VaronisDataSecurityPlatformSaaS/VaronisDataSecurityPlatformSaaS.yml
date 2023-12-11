@@ -117,7 +117,7 @@ script:
     - default: false
       description: User domain name (cannot be provided without user_name)
       isArray: false
-      name: user_domain_name
+      name: user_name
       required: false
       secret: false
     - default: false
@@ -267,7 +267,7 @@ script:
         description: Note
         isArray: false
         name: note
-        required: false
+        required: true
         secret: false
     deprecated: false
     description: Add note to alerts
@@ -341,13 +341,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: Start time of alert range
+      description: Start UTC time of alert range
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: End time of alert range
+      description: End UTC time of alert range
       isArray: false
       name: end_time
       required: false
@@ -375,10 +375,10 @@ script:
     execution: false
     name: varonis-get-alerted-events
     outputs:
-    - contextPath: Event.ID
+    - contextPath: Varonis.Event.ID
       description: Event ID
       type: String
-    - contextPath: Event.Alert.ID
+    - contextPath: Varonis.Event.Alert.ID
       description: Alert ID
       type: String
     - contextPath: Varonis.Event.Type.Name
@@ -482,7 +482,7 @@ script:
     - contextPath: Varonis.Event.Device.Name
       description: Name of the device that triggered the event
       type: String
-    - contextPath: Event.Destination.DeviceName
+    - contextPath: Varonis.Event.Destination.DeviceName
       description: Destination host name for relevant services
       type: String
     - contextPath: Varonis.Event.OnResource.Path
@@ -522,6 +522,22 @@ script:
     deprecated: false
     description: Get Varonis threat models
     execution: false
+    outputs:
+      - contextPath: ID
+        description: ID of the threat model
+        type: String
+      - contextPath: Name
+        description: Name of the threat model
+        type: String
+      - contextPath: Category
+        description: Category of the threat model
+        type: String
+      - contextPath: Severity
+        description: Severity of the threat model
+        type: String
+      - contextPath: Source
+        description: Predefined/User-defined
+        type: String
     name: varonis-get-threat-models
   dockerimage: demisto/ntlm:1.0.0.78782
   feed: false

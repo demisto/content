@@ -406,7 +406,7 @@ def varonis_get_threat_models_command(client: Client, args: Dict[str, Any]) -> C
     })
 
     outputs = dict()
-    outputs['threat_models'] = filtered_items
+    outputs['ThreatModel'] = filtered_items
 
     readable_output = tableToMarkdown('Varonis Threat Models', filtered_items, headers=[
                                       'ID', 'Name', 'Category', 'Severity', 'Source'])
@@ -414,7 +414,7 @@ def varonis_get_threat_models_command(client: Client, args: Dict[str, Any]) -> C
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Varonis',
-        outputs_key_field='Varonis.ThreatModel.ID',
+        outputs_key_field='ID',
         outputs=outputs
     )
 
@@ -606,7 +606,8 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
             if status.lower() not in ALERT_STATUSES.keys():
                 raise ValueError(f'There is no status {status}.')
 
-    alerts = client.varonis_get_alerts(threat_model_names, alert_ids, start_time, end_time, ingest_time_from, ingest_time_to, device_names,
+    alerts = client.varonis_get_alerts(threat_model_names, alert_ids, start_time, end_time, ingest_time_from, ingest_time_to,
+                                       device_names,
                                        user_names,
                                        last_days, alert_statuses, alert_severities,
                                        extra_fields,
@@ -783,9 +784,10 @@ def main() -> None:
     args = demisto.args()
 
     if not is_xsoar_env():
-        url = 'https://intfc35a.varonis-preprod.com/'
-        apiKey = 'vkey1_aa57d02a83af4ed5ad0655d186d83bff_F7AVsU0FwwzPRjvaATeC9Lq/Cr+HIR+uZaiImlntgjA='
-        command = 'varonis-update-alert-status'  # 'test-module'|
+        url = 'https://intaf6fb.varonis-preprod.com/'
+        apiKey = 'vkey1_3443ddca00844b7fbe348ae37f19d22f_ujK4J4OJGQX4AA2vCnL1f/hrBTRHGu6T0IkmieLzVUk='
+        command = 'varonis-get-alerted-events'  
+        # 'test-module'|
         # 'varonis-get-threat-models'|
         # 'varonis-get-alerts'|
         # 'varonis-get-alerted-events'|
@@ -805,7 +807,7 @@ def main() -> None:
             'first_fetch': '1 week'
         }
 
-        test_alert_id = '4D7A3206-5EBF-4C93-83E4-AA06D5DA81F1'
+        test_alert_id = 'A5F4B69A-F5C0-494F-B5B4-185185BC3FBE'
         if command == 'test-module':
             pass
 
