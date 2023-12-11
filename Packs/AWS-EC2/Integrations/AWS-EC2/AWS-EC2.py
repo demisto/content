@@ -75,7 +75,30 @@ def parse_date(dt):
 
 
 def run_on_all_accounts(func):
-    def account_runner(args: dict, )
+    params = demisto.params()
+    accounts = argToList(params.get('accounts_to_access'))
+    role_name = params.get('access_role_name')
+
+    def account_runner(args: dict, aws_client: 'AWSClient') -> list[CommandResults]:
+        if 'roleArn' in args:  # if a roleArn is specified in args, ignore the parameter config.
+            return func(args, aws_client)
+        results = []
+        for account_id in accounts:
+            args.update({
+                'roleArn': ROLE_ARN_TEMPLATE.format(account_id=account_id, role_name=role_name),
+                'roleSessionName': args.get('roleSessionName', f'account_{account_id}'),
+                'roleSessionDuration': args.get('roleSessionDuration', 900),
+            })
+            result: CommandResults = func(args, aws_client)
+
+            if isinstance(result.outputs, list):
+                for obj in result.outputs:
+                    obj['accountId'] = account_id
+            if isinstance(result.outputs, dict):
+                result.outputs['accountId'] = account_id
+            results.append(result)
+        return results
+    return account_runner if role_name else func
 
 
 """MAIN FUNCTIONS"""
@@ -267,6 +290,7 @@ def describe_images_command(args, aws_client):
     return_outputs(human_readable, ec)
 
 
+@run_on_all_accounts
 def describe_addresses_command(args: dict, aws_client: 'AWSClient') -> CommandResults:
     client = aws_client.aws_session(
         service='ec2',
@@ -3004,9 +3028,6 @@ def main():
         aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
                                aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
                                retries, sts_endpoint_url=sts_endpoint_url, endpoint_url=endpoint_url)
-        
-        accounts_to_access = argToList(params.get('accounts_to_access'))
-        access_role_name = params.get('access_role_name')
 
         command = demisto.command()
         args = demisto.args()
