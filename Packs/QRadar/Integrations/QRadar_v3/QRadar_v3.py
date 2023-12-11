@@ -16,7 +16,7 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 ''' ADVANCED GLOBAL PARAMETERS '''
 
 FAILURE_SLEEP = 20  # sleep between consecutive failures events fetch
-FETCH_SLEEP = 60  # sleep between fetches
+FETCH_SLEEP = arg_to_number(demisto.params().get("fetch_interval")) or 60  # sleep between fetches
 BATCH_SIZE = 100  # batch size used for offense ip enrichment
 OFF_ENRCH_LIMIT = BATCH_SIZE * 10  # max amount of IPs to enrich per offense
 MAX_WORKERS = 8  # max concurrent workers used for events enriching
@@ -36,6 +36,9 @@ EVENTS_MODIFIED_SECS = 5  # interval between events status polling in modified
 EVENTS_SEARCH_TRIES = 3  # number of retries for creating a new search
 EVENTS_POLLING_TRIES = 10  # number of retries for events polling
 EVENTS_SEARCH_RETRY_SECONDS = 100  # seconds between retries to create a new search
+CONNECTION_ERRORS_RETRIES = 5  # num of times to retry in case of connection-errors
+CONNECTION_ERRORS_INTERVAL = 1  # num of seconds between each time to send an http-request in case of a connection error.
+
 
 ADVANCED_PARAMETERS_STRING_NAMES = [
     'DOMAIN_ENRCH_FLG',
@@ -359,7 +362,9 @@ FIELDS_MIRRORING = 'id,start_time,event_count,last_persisted_time,close_time'
 
 class Client(BaseClient):
 
-    def __init__(self, server: str, verify: bool, proxy: bool, api_version: str, credentials: dict):
+    def __init__(
+        self, server: str, verify: bool, proxy: bool, api_version: str, credentials: dict, timeout: Optional[int] = None
+    ):
         username = credentials.get('identifier')
         password = credentials.get('password')
         if username == API_USERNAME:
@@ -370,6 +375,7 @@ class Client(BaseClient):
             self.base_headers = {'Version': api_version}
         base_url = urljoin(server, '/api')
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, auth=auth)
+        self.timeout = timeout  # type: ignore[assignment]
         self.password = password
         self.server = server
 
@@ -377,16 +383,30 @@ class Client(BaseClient):
                      json_data: Optional[dict] = None, additional_headers: Optional[dict] = None,
                      timeout: Optional[int] = None, resp_type: str = 'json'):
         headers = {**additional_headers, **self.base_headers} if additional_headers else self.base_headers
-        return self._http_request(
-            method=method,
-            url_suffix=url_suffix,
-            params=params,
-            json_data=json_data,
-            headers=headers,
-            error_handler=self.qradar_error_handler,
-            timeout=timeout,
-            resp_type=resp_type
-        )
+        for _time in range(1, CONNECTION_ERRORS_RETRIES + 1):
+            try:
+                return self._http_request(
+                    method=method,
+                    url_suffix=url_suffix,
+                    params=params,
+                    json_data=json_data,
+                    headers=headers,
+                    error_handler=self.qradar_error_handler,
+                    timeout=timeout or self.timeout,
+                    resp_type=resp_type
+                )
+            except (DemistoException, requests.ReadTimeout) as error:
+                demisto.error(f'Error {error} in time {_time}')
+                if (
+                    isinstance(
+                        error, DemistoException
+                    ) and not isinstance(
+                        error.exception, requests.ConnectionError) or _time == CONNECTION_ERRORS_RETRIES
+                ):
+                    raise
+                else:
+                    time.sleep(CONNECTION_ERRORS_INTERVAL)  # pylint: disable=sleep-exists
+        return None
 
     @staticmethod
     def qradar_error_handler(res: requests.Response):
@@ -1734,38 +1754,13 @@ def test_module_command(client: Client, params: dict) -> str:
         - (str): 'ok' if test passed
         - raises DemistoException if something had failed the test.
     """
-    global EVENTS_SEARCH_TRIES, EVENTS_POLLING_TRIES
-    EVENTS_SEARCH_TRIES = 1
-    EVENTS_POLLING_TRIES = 1
     try:
         ctx = get_integration_context()
         print_context_data_stats(ctx, "Test Module")
         is_long_running = params.get('longRunning')
-        mirror_options = params.get('mirror_options', DEFAULT_MIRRORING_DIRECTION)
-        mirror_direction = MIRROR_DIRECTION.get(mirror_options)
-
         if is_long_running:
             validate_long_running_params(params)
-            ip_enrich, asset_enrich = get_offense_enrichment(params.get('enrichment', 'IPs And Assets'))
-            # Try to retrieve the last successfully retrieved offense
-            last_highest_id = max(ctx.get(LAST_FETCH_KEY, 0) - 1, 0)
-            get_incidents_long_running_execution(
-                client=client,
-                offenses_per_fetch=1,
-                user_query=params.get('query', ''),
-                fetch_mode=params.get('fetch_mode', ''),
-                events_columns=params.get('events_columns') or DEFAULT_EVENTS_COLUMNS,
-                events_limit=0,
-                ip_enrich=ip_enrich,
-                asset_enrich=asset_enrich,
-                last_highest_id=last_highest_id,
-                incident_type=params.get('incident_type'),
-                mirror_direction=mirror_direction,
-                first_fetch=params.get('first_fetch', '3 days'),
-                mirror_options=params.get('mirror_options', '')
-            )
-        else:
-            client.offenses_list(range_="items=0-0")
+        client.offenses_list(range_="items=0-0")
         message = 'ok'
     except DemistoException as e:
         err_msg = str(e)
@@ -4211,6 +4206,7 @@ def main() -> None:  # pragma: no cover
     if api_version and float(api_version) < MINIMUM_API_VERSION:
         raise DemistoException(f'API version cannot be lower than {MINIMUM_API_VERSION}')
     credentials = params.get('credentials')
+    timeout = arg_to_number(params.get("timeout"))
 
     try:
 
@@ -4219,7 +4215,9 @@ def main() -> None:  # pragma: no cover
             verify=verify_certificate,
             proxy=proxy,
             api_version=api_version,
-            credentials=credentials)
+            credentials=credentials,
+            timeout=timeout
+        )
         # All command names with or are for supporting QRadar v2 command names for backward compatibility
         if command == 'test-module':
             validate_integration_context()
