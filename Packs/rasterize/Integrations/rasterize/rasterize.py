@@ -27,21 +27,20 @@ os.environ['no_proxy'] = 'localhost,127.0.0.1'
 # Needed for cases that rasterize is running with non-root user (docker hardening)
 os.environ['HOME'] = tempfile.gettempdir()
 
-# TODO: pass this to the start chrome shell script
 CHROME_EXE = os.getenv('CHROME_EXE', '/opt/google/chrome/google-chrome')
 
-# TODO: decide on a return error strategy (see return error or warning method) basically "should we fail silently"
 WITH_ERRORS = demisto.params().get('with_error', True)
 
 # The default wait time before taking a screenshot
 DEFAULT_WAIT_TIME = max(int(demisto.params().get('wait_time', 0)), 0)
 DEFAULT_PAGE_LOAD_TIME = int(demisto.params().get('max_page_load_time', 180))
 
-# TODO: decide if we want to reuse it in several places
+# Used it in several places
 DEFAULT_RETRIES_COUNT = 3
 DEFAULT_RETRY_WAIT_IN_SECONDS = 2
 PAGES_LIMITATION = 20
 
+# TODO Make instance param
 MAX_CHROMES_COUNT = 32
 
 # Polling for rasterization commands to complete
@@ -89,8 +88,12 @@ class TabLifecycleManager:
         return self.tab
 
     def __exit__(self, exc_type, exc_val, exc_tb):  # pylint: disable=unused-argument
+        if exc_type or exc_val or exc_tb:
+            demisto.info(f'TabLifecycleManager, __exit__ with exception, {exc_type=}, {exc_val=}, {exc_tb=}')
+
         if self.tab:
             try:
+                sleep(1)  # pylint: disable=E9003
                 tab_id = self.tab.id
                 self.tab.Page.disable()
                 self.browser.close_tab(tab_id)
@@ -162,18 +165,22 @@ def is_chrome_running(port):
 
 def is_chrome_running_locally(port):
 
+    browser_url = f"http://{LOCAL_CHROME_HOST}:{port}"
     for i in range(DEFAULT_RETRIES_COUNT):
         try:
-            browser_url = f"http://{LOCAL_CHROME_HOST}:{port}"
             demisto.debug(f"Trying to connect to {browser_url=}, iteration {i+1}/{DEFAULT_RETRIES_COUNT}")
             browser = pychrome.Browser(url=browser_url)
 
-            # Use list tab to ping the browser and make sure it's available
+            # Use list_tab to ping the browser and make sure it's available
             browser.list_tab()
             return browser
         except requests.exceptions.ConnectionError as exp:
             exp_str = str(exp)
-            demisto.debug(f"Failed to connect to Chrome on port {port=} on iteration {i+1}. ConnectionError, {exp_str=}, {exp=}")
+            connection_refused = 'connection refused'
+            if connection_refused in exp_str:
+                demisto.debug(f"Failed to connect to Chrome on port {port=} on iteration {i+1}. {connection_refused}")
+            else:
+                demisto.info(f"Failed to connect to Chrome on port {port=} on iteration {i+1}. ConnectionError, {exp_str=}, {exp=}")
 
         # mild backoff
         time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS + i * 2)  # pylint: disable=E9003
@@ -182,10 +189,10 @@ def is_chrome_running_locally(port):
 
 
 def ensure_chrome_running():  # pragma: no cover
-    chrome_port = 9201
-    for i in range(MAX_CHROMES_COUNT):
-        chrome_port = 9201 + i
-
+    first_chrome_port = 9201
+    ports_list = list(range(first_chrome_port, first_chrome_port + MAX_CHROMES_COUNT))
+    demisto.debug(f"Searching for Chrome on these ports: {ports_list}")
+    for chrome_port in ports_list:
         chrome_is_running = is_chrome_running(chrome_port)
         browser = is_chrome_running_locally(chrome_port)
         demisto.debug(f"Checking port {chrome_port}: {chrome_is_running=}, {browser}")
@@ -196,20 +203,21 @@ def ensure_chrome_running():  # pragma: no cover
         elif chrome_is_running:
             # There's a Chrome in that port, but we couldn't connect to it
             demisto.debug(f"Found Chrome running on port {chrome_port}, but couldn't connect to it")
-            pass
         else:
             # There's no Chrome in that port
             demisto.debug(f"No Chrome found on port {chrome_port}")
             break
         demisto.debug(f'Could not connect to Chrome on port {chrome_port}')
 
-    if i + 1 == MAX_CHROMES_COUNT:
+    if chrome_port == ports_list[-1]:
         demisto.error(f'Max retries ({MAX_CHROMES_COUNT}) reached, could not connect to chrome')
         return None
 
-    demisto.debug(f'Initializing a new Chrome session on port: {chrome_port}')
+    demisto.debug(f'Initializing a new Chrome session on port {chrome_port}')
     try:
-        process = subprocess.run(['bash', '/start_chrome_headless.sh', '--port', str(chrome_port)],
+        process = subprocess.run(['bash', '/start_chrome_headless.sh',
+                                 '--port', str(chrome_port),
+                                 '--chrome-binary', CHROME_EXE],
                                  text=True, stdout=subprocess.DEVNULL,
                                  stderr=subprocess.DEVNULL)
 
