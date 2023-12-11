@@ -15,6 +15,7 @@ CONTENT_NIGHTLY_JOBS = [
     'xpanse-prepare-testing-bucket',
     'xsoar-prepare-testing-bucket',
     'xsiam_server_ga',
+    'xsoar_ng_server_ga'
     'tests_xsoar_server: [Server 6.9]',
     'tests_xsoar_server: [Server 6.10]',
     'tests_xsoar_server: [Server 6.11]',
