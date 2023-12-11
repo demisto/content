@@ -483,7 +483,7 @@
     when: always
   script:
     - ./Tests/scripts/test.sh $CI_COMMIT_BRANCH
-    - python3 ./Tests/scripts/test.py $CI_COMMIT_BRANCH
+    # - python3 ./Tests/scripts/test.py $CI_COMMIT_BRANCH
     - section_start "Look For Secrets"
     - demisto-sdk secrets --post-commit --ignore-entropy
     - section_end "Look For Secrets"

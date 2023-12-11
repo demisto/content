@@ -9,7 +9,6 @@ import socket
 import tempfile
 from typing import Any
 import pytest
-import Whois
 from pytest_mock import MockerFixture
 from Whois import (
     WhoisInvalidDomain,
