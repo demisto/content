@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 
-from packaging.version import parse, Version, LegacyVersion
+from packaging.version import parse, Version
 
 SCRIPT_NAME = 'ContentPackInstaller'
 
@@ -12,9 +12,9 @@ class ContentPackInstaller:
     PACK_ID_VERSION_FORMAT = '{}::{}'
 
     def __init__(self, instance_name: str = None):
-        self.installed_packs: Dict[str, Union[Version, LegacyVersion]] = {}
+        self.installed_packs: Dict[str, Version] = {}
         self.newly_installed_packs: Dict[str, Version] = {}
-        self.already_on_machine_packs: Dict[str, Union[Version, LegacyVersion]] = {}
+        self.already_on_machine_packs: Dict[str, Version] = {}
         self.packs_data: Dict[str, Dict[str, str]] = {}
         self.packs_dependencies: Dict[str, Dict[str, Dict[str, str]]] = {}
         self.packs_failed: Dict[str, str] = {}

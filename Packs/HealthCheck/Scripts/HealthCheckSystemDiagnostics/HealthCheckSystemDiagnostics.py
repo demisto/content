@@ -102,13 +102,13 @@ SystemDiagnosticsResults = {
 }
 
 out = []
-for key in SystemDiagnosticsResults:
+for key, value in SystemDiagnosticsResults.copy().items():
     if key != "bigTasks":
-        res = FormatTableAndSet(SystemDiagnosticsResults[key], key)
+        res = FormatTableAndSet(value, key)
         SystemDiagnosticsResults[key] = res
         out.extend(res)
     else:
-        bigTasksNewFormat = FormatTableAndSet(SystemDiagnosticsResults[key], key)
+        bigTasksNewFormat = FormatTableAndSet(value, key)
 
 actionableItems = []
 if SystemDiagnosticsResults['largeIncidents']:
