@@ -5,6 +5,7 @@ import glob
 import json
 import os
 import re
+import ast
 import traceback
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from functools import lru_cache
@@ -431,10 +432,52 @@ def install_packs(client: demisto_client,
 
     def should_try_handler():
         nonlocal packs_to_install
+        for pack_id in packs_to_install:
+            pack_installed, _ = check_if_pack_installed(client=client,
+                                                        pack_id=pack_id)
+            if pack_installed:
+                packs_to_install.remove(pack_id)
+                logging.info(f"{pack_id} already install removed from retry")
         logging.info(f"Retrying to install packs on server {host}:")
         for pack in packs_to_install:
             logger.info(f"\tID:{pack['id']} Version:{pack['version']}")
         return True
+
+    def check_if_pack_installed(client: demisto_client,
+                                pack_id: str,
+                                attempts_count: int = 3,
+                                sleep_interval: int = 30,
+                                request_timeout: int = 300,
+                                ):
+        """
+
+        Args:
+        client (demisto_client): The client to connect to.
+        attempts_count (int): The number of attempts to install the packs.
+        sleep_interval (int): The sleep interval, in seconds, between install attempts.
+        pack_id: pack id to check id still installed on the machine.
+        request_timeout (int): The timeout per call to the server.
+
+        Returns:
+            True if the pack is still installed, False otherwise.
+
+        """
+        def success_handler(response_data):
+            installed_packs = ast.literal_eval(response_data)
+            installed_packs_ids = [pack.get('id') for pack in installed_packs]
+            return pack_id in installed_packs_ids, None
+
+        return generic_request_with_retries(client=client,
+                                            retries_message="Failed to get all installed packs.",
+                                            exception_message="Failed to get installed packs.",
+                                            prior_message=f"Checking if pack {pack_id} is still installed",
+                                            path='/contentpacks/metadata/installed',
+                                            method='GET',
+                                            attempts_count=attempts_count,
+                                            sleep_interval=sleep_interval,
+                                            success_handler=success_handler,
+                                            request_timeout=request_timeout,
+                                            )
 
     retries_message = f"Retrying to install packs on server {host}"
     exception_massage = f"Failed to install packs on server {host}"
@@ -456,7 +499,7 @@ def install_packs(client: demisto_client,
                                         success_handler=success_handler,
                                         api_exception_handler=api_exception_handler,
                                         should_try_handler=should_try_handler,
-                                        request_timeout=request_timeout,
+                                        request_timeout=30,
                                         )
 
 
