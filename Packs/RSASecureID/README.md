@@ -8,7 +8,7 @@ You need to configure RSA SecureID to forward Syslog messages.
  
 In RSA Authentication Manager 8.4 there is rsyslog instead of syslog-ng.
 In the configuration file in /etc/rsyslog.d/remote.conf you define the syslog server(s) to which you want to connect.
-There is /etc/rsylog.conf for rest of the configuration related to rsyslog.
+In /etc/rsylog.conf define the rest of the configuration related to rsyslog.
 1. Launch an SSH client, such as PuTTY.
 2. Login to the primary Authentication Manager server as **rsaadmin** and enter the operating system password.
 3. Changes the privileges of **rsaadmin**.
