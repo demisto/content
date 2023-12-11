@@ -9838,7 +9838,15 @@ class IndicatorsSearcher:
             search_args['sort'] = self._sort
         res = demisto.searchIndicators(**search_args)
         self._total = res.get('total')
+        self._total = None
         demisto.debug('IndicatorsSearcher: page {}, result size: {}'.format(self._page, self._total))
+        # when total is None, there is a problem with the server, hence need to restart the container, see XSUP-26699
+        # container can only reset for SaaS enviorments
+        if self._total is None and is_xsiam_or_xsoar_saas():
+            raise SystemExit(
+                "Encountered issue when trying to fetch indicators for integration {integration}. "
+                "Restarting container and trying again.".format(integration=get_integration_name())
+            )
         if isinstance(self._page, int):
             self._page += 1  # advance pages
         self._search_after_param = res.get(self.SEARCH_AFTER_TITLE)
