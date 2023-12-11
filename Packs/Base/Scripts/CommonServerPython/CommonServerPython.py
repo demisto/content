@@ -2781,6 +2781,15 @@ def get_integration_name():
     return demisto.callingContext.get('context', {}).get('IntegrationBrand', '')
 
 
+def get_integration_instance_name():
+    """
+    Getting calling integration instance name
+    :return: Calling integration instance name
+    :rtype: ``str``
+    """
+    return demisto.callingContext.get('context', {}).get('IntegrationInstance', '')
+
+
 def get_script_name():
     """
     Getting calling script name
@@ -9844,7 +9853,7 @@ class IndicatorsSearcher:
         if self._total is None and is_xsiam_or_xsoar_saas():
             raise SystemExit(
                 "Encountered issue when trying to fetch indicators for integration {integration}. "
-                "Restarting container and trying again.".format(integration=get_integration_name())
+                "Restarting container and trying again.".format(integration=get_integration_instance_name())
             )
         if isinstance(self._page, int):
             self._page += 1  # advance pages
