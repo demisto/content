@@ -11314,9 +11314,9 @@ def has_passed_time_threshold(timestamp_str, seconds_threshold):
         raise ValueError("Failed to parse timestamp: {timestamp_str}".format(timestamp_str=timestamp_str))
 
 def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
-                         chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type="events"):
+                         chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS):
     """
-    Send the fetched events or assets into the XDR data-collector private api.
+    Send the supported fetched data types into the XDR data-collector private api.
 
     :type data: ``Union[str, list]``
     :param data: The data to send to XSIAM server. Should be of the following:
