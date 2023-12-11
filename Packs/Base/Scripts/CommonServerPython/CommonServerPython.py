@@ -11129,7 +11129,7 @@ def xsiam_api_call_with_retries(
     error_msg='',
     is_json_response=False,
     data_type=EVENTS
-):
+):    # pragma: no cover
     """
     Send the fetched events or assests into the XDR data-collector private api.
 
