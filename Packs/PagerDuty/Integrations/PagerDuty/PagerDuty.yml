@@ -34,7 +34,7 @@ configuration:
   type: 13
   required: false
 - defaultvalue: '1'
-  display: Initial Fetch Interval(In minutes, used only for first fetch or after Reset last run)
+  display: Initial Fetch Interval (In minutes, used only for first fetch or after Reset last run)
   name: FetchInterval
   type: 0
   required: false
@@ -42,57 +42,57 @@ configuration:
   name: DefaultRequestor
   type: 0
   required: false
-description: Alert and notify users using PagerDuty
+description: Alert and notify users using PagerDuty.
 display: PagerDuty v2
 name: PagerDuty v2
 script:
   commands:
   - arguments:
-    - description: Show only the schedules whose name matches the query
+    - description: Show only the schedules whose name matches the query.
       name: query
-    - description: The limit for the amount of schedules to receive(Default is 25, max value is 100)
+    - description: The limit for the amount of schedules to receive(Default is 25, max value is 100).
       name: limit
-    description: Receive all schedules from PagerDuty
+    description: Receive all schedules from PagerDuty.
     name: PagerDuty-get-all-schedules
     outputs:
     - contextPath: PagerDuty.Schedules.id
-      description: The ID of the schedule
+      description: The ID of the schedule.
       type: string
     - contextPath: PagerDuty.Schedules.name
-      description: The name of the schedule
+      description: The name of the schedule.
       type: string
   - arguments:
     - default: true
-      description: (default and mandatory) The unique identifier of the schedule
+      description: (default and mandatory) The unique identifier of the schedule.
       name: scheduleID
       required: true
-    - description: The start of the date range Using ISO 8601 Representation. E.g. !PagerDutyGetUsersOnCall since=2011-05-06T17:00Z
+    - description: The start of the date range Using ISO 8601 Representation. Maximum range is 6 months and default is 1 month. E.g. !PagerDutyGetUsersOnCall since=2011-05-06T17:00Z.
       name: since
-    - description: The end of the date range
+    - description: The end of the date range. Maximum range is 6 months and default is 1 month.
       name: until
-    description: Returns the names and details of on call users at a certain time or by specific schedule
+    description: Returns the names and details of on call users at a certain time or by specific schedule.
     name: PagerDuty-get-users-on-call
     outputs:
     - contextPath: PagerDutyUser.id
-      description: User's ID
+      description: User's ID.
       type: string
     - contextPath: PagerDutyUser.Emails
-      description: Email of user
+      description: Email of user.
       type: string
     - contextPath: PagerDutyUser.Username
-      description: Username of person
+      description: Username of person.
       type: string
     - contextPath: PagerDutyUser.DisplayName
-      description: Display name of person
+      description: Display name of person.
       type: string
     - contextPath: PagerDutyUser.Role
-      description: Display role of person
+      description: Display role of person.
       type: string
     - contextPath: PagerDutyUser.TimeZone
-      description: The time zone of the user
+      description: The time zone of the user.
       type: string
   - arguments:
-    - description: The limit for the amount of users to receive(Default is 25, max value is 100)
+    - description: The limit for the amount of users to receive(Default is 25, max value is 100).
       name: limit
     - description: Filters the results, showing only on-call users for the specified escalation policy IDs.
       isArray: true
@@ -100,90 +100,110 @@ script:
     - description: Filters the results, showing only on-call users for the specified schedule IDs. If the value is null, permanent on-call user are included due to direct user escalation policy targets.
       isArray: true
       name: schedule_ids
-    description: Returns the names and details of current on call personnel
+    description: Returns the names and details of current on call personnel.
     name: PagerDuty-get-users-on-call-now
     outputs:
     - contextPath: PagerDutyUser.ID
-      description: User's ID
+      description: User's ID.
       type: string
     - contextPath: PagerDutyUser.Email
-      description: Email of user
+      description: Email of user.
       type: string
     - contextPath: PagerDutyUser.Username
-      description: Username of person
+      description: Username of person.
       type: string
     - contextPath: PagerDutyUser.DisplayName
-      description: Display name of person
+      description: Display name of person.
       type: string
     - contextPath: PagerDutyUser.Role
-      description: Role of person
+      description: Role of person.
       type: string
     - contextPath: PagerDutyUser.TimeZone
-      description: The time zone of the user
+      description: The time zone of the user.
       type: string
   - arguments:
     - auto: PREDEFINED
-      description: Returns only the incidents currently in the passed status(es). Valid status options are triggered,acknowledged, and resolved. (Default values are triggered,acknowledged)
+      description: Returns only the incidents currently in the passed status(es). Valid status options are triggered,acknowledged, and resolved. (Default values are triggered,acknowledged).
       name: status
       predefined:
       - triggered
       - acknowledged
       - resolved
-    - description: Beginning date and time. Using ISO 8601 Representation. E.g. PagerDutyIncidents since=2011-05-06T17:00Z (must be used with until argument)
+    - description: Beginning date and time. Using ISO 8601 Representation. E.g. PagerDutyIncidents since=2011-05-06T17:00Z (must be used with until argument).
       name: since
-    - description: Used to specify both the field you wish to sort the results on, as well as the direction (ascending/descending) of the results.See more https://v2.developer.pagerduty.com/v2/page/api-reference#!/Incidents/get_incidents
+    - description: Used to specify both the field you wish to sort the results on, as well as the direction (ascending/descending) of the results.See more https://v2.developer.pagerduty.com/v2/page/api-reference#!/Incidents/get_incidents.
       name: sortBy
-    - description: Last date and time.  Using ISO 8601 Representation. E.g. PagerDutyIncidents until=2016-05-06T13:00Z
+    - description: Last date and time.  Using ISO 8601 Representation. E.g. PagerDutyIncidents until=2016-05-06T13:00Z.
       name: until
-    - description: Incident de-duplication key. E.g. 8e42eeb6391a4a2abeda5d12e09bddec
+    - description: Incident de-duplication key. E.g., 8e42eeb6391a4a2abeda5d12e09bddec.
       name: incident_key
-    description: Shows incidents in PagerDuty. Default status parameters are triggered,acknowledged
+    - description: The maximum number of incidents to retrieve. If "page_size" is defined, this argument is ignored.
+      name: limit
+      defaultValue: 50
+    - description: "Comma separated list of User IDs. Returns only the incidents currently assigned to the passed user(s). Note: When using the assigned_to_user filter, you will only receive incidents with statuses of triggered or acknowledged. This is because resolved incidents are not assigned to any user."
+      name: user_id
+    - auto: PREDEFINED
+      description: Array of the urgencies of the incidents to be returned. Defaults to all urgencies. Account must have the urgencies ability to do this.
+      name: urgencies
+      predefined:
+      - high
+      - low
+    - auto: PREDEFINED
+      description: When set to all, the since and until parameters and defaults are ignored.
+      name: date_range
+      predefined:
+      - all
+    - description: The page number of incidents to retrieve (used for pagination) starting from 1. The page size is defined by the "page_size" argument.
+      name: page
+    - description: The number of incidents per page to retrieve (used for pagination). The page number is defined by the "page" argument. The maximum value is 100.
+      name: page_size
+    description: Shows incidents in PagerDuty. Default status parameters are triggered,acknowledged.
     name: PagerDuty-incidents
     outputs:
     - contextPath: PagerDuty.Incidents.ID
-      description: Incident ID
+      description: Incident ID.
       type: string
     - contextPath: PagerDuty.Incidents.Title
-      description: The title of the incident
+      description: The title of the incident.
       type: string
     - contextPath: PagerDuty.Incidents.Status
-      description: Incident Status
+      description: Incident Status.
       type: string
     - contextPath: PagerDuty.Incidents.created_at
-      description: Time in which the incident was created
+      description: Time in which the incident was created.
       type: date
     - contextPath: PagerDuty.Incidents.urgency
-      description: Incident Urgency
+      description: Incident Urgency.
       type: string
     - contextPath: PagerDuty.Incidents.assignee
-      description: 'The assignee of the incident '
+      description: 'The assignee of the incident.'
       type: string
     - contextPath: PagerDuty.Incidents.service_id
-      description: The id of the impacted service
+      description: The id of the impacted service.
       type: string
     - contextPath: PagerDuty.Incidents.service_name
-      description: The name of the impacted service
+      description: The name of the impacted service.
       type: string
     - contextPath: PagerDuty.Incidents.escalation_policy
-      description: The escalation policy
+      description: The escalation policy.
       type: string
     - contextPath: PagerDuty.Incidents.last_status_change_at
-      description: Time in which the last status change occurred
+      description: Time in which the last status change occurred.
       type: date
     - contextPath: PagerDuty.Incidents.last_status_change_by
-      description: Name of the user who done the last status change
+      description: Name of the user who done the last status change.
       type: string
     - contextPath: PagerDuty.Incidents.number_of_escalations
-      description: Number of escalations that took place
+      description: Number of escalations that took place.
       type: number
     - contextPath: PagerDuty.Incidents.resolved_by
-      description: Name of the User who resolved the incident
+      description: Name of the User who resolved the incident.
       type: string
     - contextPath: PagerDuty.Incidents.resolve_reason
-      description: The reason for resolving the issue
+      description: The reason for resolving the issue.
       type: string
     - contextPath: PagerDuty.Incidents.Description
-      description: The Description of the incident
+      description: The Description of the incident.
       type: string
     - contextPath: PagerDuty.Incidents.teams.ID
       description: The ID of the team assigned for the incident.
@@ -192,25 +212,25 @@ script:
       description: The name of the team assigned for the incident.
       type: string
     - contextPath: PagerDuty.Incidents.assignment.time
-      description: The time of the assignment to the incident
+      description: The time of the assignment to the incident.
       type: date
     - contextPath: PagerDuty.Incidents.assignment.assignee
-      description: The name of the assignee to the incident
+      description: The name of the assignee to the incident.
       type: string
     - contextPath: PagerDuty.Incidents.assignment.assigneeId
-      description: The ID of the assignee to the incident
+      description: The ID of the assignee to the incident.
       type: string
     - contextPath: PagerDuty.Incidents.acknowledgement.time
-      description: The time of the acknowledgement to the incident
+      description: The time of the acknowledgement to the incident.
       type: date
     - contextPath: PagerDuty.Incidents.acknowledgement.acknowledger
-      description: The name of the acknowledger to the incident
+      description: The name of the acknowledger to the incident.
       type: string
     - contextPath: PagerDuty.Incidents.acknowledgement.acknowledgerId
-      description: The ID of the acknowledger to the incident
+      description: The ID of the acknowledger to the incident.
       type: string
     - contextPath: PagerDuty.Incidents.incident_key
-      description: The incident's de-duplication key
+      description: The incident's de-duplication key.
       type: String
   - arguments:
     - description: Specific human-readable unique identifier, such as a hostname, for the system having the problem.
@@ -220,7 +240,7 @@ script:
       name: summary
       required: true
     - auto: PREDEFINED
-      description: The severity of the event
+      description: The severity of the event.
       name: severity
       predefined:
       - critical
@@ -229,150 +249,150 @@ script:
       - info
       required: true
     - auto: PREDEFINED
-      description: The action to be executed
+      description: The action to be executed.
       name: action
       predefined:
       - trigger
       - acknowledge
       - resolve
       required: true
-    - description: A short description of the problem
+    - description: A short description of the problem.
       name: description
-    - description: 'A cluster or grouping of sources. For example, sources “prod-datapipe-02” and “prod-datapipe-03” might both be part of “prod-datapipe”. Example: "prod-datapipe" "www"'
+    - description: 'A cluster or grouping of sources. For example, sources “prod-datapipe-02” and “prod-datapipe-03” might both be part of “prod-datapipe”. Example: "prod-datapipe" "www".'
       name: group
-    - description: 'The class/type of the event. Example: "High CPU" "Latency"'
+    - description: 'The class/type of the event. Example: "High CPU" "Latency".'
       name: event_class
-    - description: 'The part or component of the affected system that is broken. Example: "keepalive" "webping"'
+    - description: 'The part or component of the affected system that is broken. Example: "keepalive" "webping".'
       name: component
-    - description: Incident key, used to acknowledge/resolve specific event
+    - description: Incident key, used to acknowledge/resolve specific event.
       name: incident_key
-    - description: Service key for the integration
+    - description: Service key for the integration.
       name: serviceKey
-    description: Creates a new event/incident in PagerDuty(In order to use this command you have to enter the Service Key in the integration settings)
+    description: Creates a new event/incident in PagerDuty(In order to use this command you have to enter the Service Key in the integration settings).
     name: PagerDuty-submit-event
     outputs:
     - contextPath: PagerDuty.Event.Status
-      description: Status of the action on the event
+      description: Status of the action on the event.
       type: string
     - contextPath: PagerDuty.Event.incident_key
-      description: Incident key
+      description: Incident key.
       type: string
   - arguments:
-    - description: 'ID of the wanted user '
+    - description: 'ID of the wanted user.'
       name: UserID
       required: true
-    description: Get the contact methods of a given user
+    description: Get the contact methods of a given user.
     name: PagerDuty-get-contact-methods
     outputs:
     - contextPath: PagerDuty.Contact_methods.phone
-      description: The phone number of the user
+      description: The phone number of the user.
       type: string
     - contextPath: PagerDuty.Contact_methods.id
-      description: ID of the contact method
+      description: ID of the contact method.
       type: string
     - contextPath: PagerDuty.Contact_methods.type
-      description: The type of the current contact method
+      description: The type of the current contact method.
       type: string
     - contextPath: PagerDuty.Contact_methods.email
-      description: The email of the user
+      description: The email of the user.
       type: string
   - arguments:
-    - description: ID of the wanted user
+    - description: ID of the wanted user.
       name: UserID
       required: true
-    description: Get the users notification rules
+    description: Get the users notification rules.
     name: PagerDuty-get-users-notification
     outputs:
     - contextPath: PagerDuty.Notification_rules.start_delay_in_minutes
-      description: The delay time for notifying the user
+      description: The delay time for notifying the user.
       type: string
     - contextPath: PagerDuty.Notification_rules.urgency
-      description: The urgency of the notification
+      description: The urgency of the notification.
       type: string
     - contextPath: PagerDuty.Notification_rules.id
-      description: The id of the notification rule
+      description: The id of the notification rule.
       type: string
   - arguments:
-    - description: Incident key
+    - description: Incident key.
       name: incident_key
       required: true
-    - description: Service key for the integration
+    - description: Service key for the integration.
       name: serviceKey
-    description: Resolves an existing event in PagerDuty
+    description: Resolves an existing event in PagerDuty.
     name: PagerDuty-resolve-event
     outputs:
     - contextPath: PagerDuty.Event.Status
-      description: Status of the action on the event
+      description: Status of the action on the event.
       type: string
     - contextPath: PagerDuty.Event.incident_key
-      description: Incident key
+      description: Incident key.
       type: string
   - arguments:
-    - description: Incident key
+    - description: Incident key.
       name: incident_key
       required: true
-    - description: Service key for the integration
+    - description: Service key for the integration.
       name: serviceKey
-    description: Acknowledges an existing event in PagerDuty
+    description: Acknowledges an existing event in PagerDuty.
     name: PagerDuty-acknowledge-event
     outputs:
     - contextPath: PagerDuty.Event.Status
-      description: Status of the action on the event
+      description: Status of the action on the event.
       type: string
     - contextPath: PagerDuty.Event.incident_key
-      description: Incident key
+      description: Incident key.
       type: string
   - arguments:
     - description: ID of the incident to get information for.
       name: incident_id
       required: true
-    description: Get data about a incident from PagerDuty
+    description: Get data about a incident from PagerDuty.
     name: PagerDuty-get-incident-data
     outputs:
     - contextPath: PagerDuty.Incidents.ID
-      description: Incident ID
+      description: Incident ID.
       type: string
     - contextPath: PagerDuty.Incidents.Title
-      description: The title of the incident
+      description: The title of the incident.
       type: string
     - contextPath: PagerDuty.Incidents.Status
-      description: Incident Status
+      description: Incident Status.
       type: string
     - contextPath: PagerDuty.Incidents.created_at
-      description: Time in which the incident was created
+      description: Time in which the incident was created.
       type: date
     - contextPath: PagerDuty.Incidents.urgency
-      description: Incident Urgency
+      description: Incident Urgency.
       type: string
     - contextPath: PagerDuty.Incidents.assignee
-      description: The assignee of the incident
+      description: The assignee of the incident.
       type: string
     - contextPath: PagerDuty.Incidents.service_id
-      description: The id of the impacted service
+      description: The id of the impacted service.
       type: string
     - contextPath: PagerDuty.Incidents.service_name
-      description: The name of the impacted service
+      description: The name of the impacted service.
       type: string
     - contextPath: PagerDuty.Incidents.escalation_policy
-      description: The escalation policy
+      description: The escalation policy.
       type: string
     - contextPath: PagerDuty.Incidents.last_status_change_at
-      description: Time in which the last status change occurred
+      description: Time in which the last status change occurred.
       type: date
     - contextPath: PagerDuty.Incidents.last_status_change_by
-      description: Name of the user who done the last status change
+      description: Name of the user who done the last status change.
       type: string
     - contextPath: PagerDuty.Incidents.number_of_escalations
-      description: Number of escalations that took place
+      description: Number of escalations that took place.
       type: number
     - contextPath: PagerDuty.Incidents.resolved_by
-      description: Name of the User who resolved the incident
+      description: Name of the User who resolved the incident.
       type: string
     - contextPath: PagerDuty.Incidents.resolve_reason
-      description: The reason for resolving the issue
+      description: The reason for resolving the issue.
       type: string
     - contextPath: PagerDuty.Incidents.Description
-      description: The Description of the incident
+      description: The Description of the incident.
       type: string
     - contextPath: PagerDuty.Incidents.teams.ID
       description: The ID of the team assigned for the incident.
@@ -381,90 +401,90 @@ script:
       description: The name of the team assigned for the incident.
       type: string
     - contextPath: PagerDuty.Incidents.assignment.time
-      description: The time of the assignment to the incident
+      description: The time of the assignment to the incident.
       type: date
     - contextPath: PagerDuty.Incidents.assignment.assignee
-      description: The name of the assignee to the incident
+      description: The name of the assignee to the incident.
       type: string
     - contextPath: PagerDuty.Incidents.assignment.assigneeId
-      description: The ID of the assignee to the incident
+      description: The ID of the assignee to the incident.
       type: string
     - contextPath: PagerDuty.Incidents.acknowledgement.time
-      description: The time of the acknowledgement to the incident
+      description: The time of the acknowledgement to the incident.
       type: date
     - contextPath: PagerDuty.Incidents.acknowledgement.acknowledger
-      description: The name of the acknowledger to the incident
+      description: The name of the acknowledger to the incident.
       type: string
     - contextPath: PagerDuty.Incidents.acknowledgement.acknowledgerId
-      description: The ID of the acknowledger to the incident
+      description: The ID of the acknowledger to the incident.
       type: string
     - contextPath: PagerDuty.Incidents.incident_key
-      description: The incident's de-duplication key
+      description: The incident's de-duplication key.
       type: String
-  - description: Get Service keys for each of the services configured in the PagerDuty instance
+  - description: Get Service keys for each of the services configured in the PagerDuty instance.
     name: PagerDuty-get-service-keys
     outputs:
     - contextPath: PagerDuty.Service.ID
-      description: The ID of the service connected to PagerDuty
+      description: The ID of the service connected to PagerDuty.
       type: string
     - contextPath: PagerDuty.Service.Name
-      description: The name of the service connected to PagerDuty
+      description: The name of the service connected to PagerDuty.
       type: string
     - contextPath: PagerDuty.Service.Status
-      description: The status of the service connected to PagerDuty
+      description: The status of the service connected to PagerDuty.
       type: string
     - contextPath: PagerDuty.Service.CreatedAt
-      description: The date in which the service connected to PagerDuty was created
+      description: The date in which the service connected to PagerDuty was created.
       type: date
     - contextPath: PagerDuty.Service.Integration.Name
-      description: The name of the integration used with the service
+      description: The name of the integration used with the service.
       type: string
     - contextPath: PagerDuty.Service.Integration.Vendor
-      description: The name of the vendor for the integration used with the service.(A value of 'Missing Vendor information' will appear once no information could be found)
+      description: The name of the vendor for the integration used with the service.(A value of 'Missing Vendor information' will appear once no information could be found).
       type: string
     - contextPath: PagerDuty.Service.Integration.Key
-      description: The key used to control events with the integration
+      description: The key used to control events with the integration.
       type: string
   - arguments:
-    - description: PagerDuty Incident ID to add responders to
+    - description: PagerDuty Incident ID to add responders to.
       name: incident_id
       required: true
-    - description: Message to send to responders
+    - description: Message to send to responders.
       name: message
       required: true
-    - description: Comma separated list of User IDs to request response from
+    - description: Comma separated list of User IDs to request response from.
       name: user_requests
-    - description: Comma separated list of Escalation Policy IDs to request response from
+    - description: Comma separated list of Escalation Policy IDs to request response from.
       name: escalation_policy_requests
-    - description: UserID sending the request (if blank, uses the default for the integration)
+    - description: UserID sending the request (if blank, uses the default for the integration).
       name: requestor_id
-    description: Add responders to an incident
+    description: Add responders to an incident.
     name: PagerDuty-add-responders
     outputs:
     - contextPath: PagerDuty.ResponderRequests.ResponderID
-      description: The User ID of the responder added
+      description: The user ID of the responder added.
       type: String
     - contextPath: PagerDuty.ResponderRequests.ResponderName
-      description: The name of the responder added
+      description: The name of the responder added.
       type: String
   - arguments:
-    - description: The PagerDuty Incident ID to run the play on
+    - description: The PagerDuty incident ID to run the play on.
       name: incident_id
       required: true
-    - description: User's email to trigger the response play from
+    - description: User's email to trigger the response play from.
       name: from_email
       required: true
-    - description: The UUID of the response play to run
+    - description: The UUID of the response play to run.
       name: response_play_uuid
       required: true
     name: PagerDuty-run-response-play
-    description: Run a response play on PagerDuty (based on its UUID)
+    description: Run a response play on PagerDuty (based on its UUID).
   isfetch: true
   runonce: false
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.13.81631
 tests:
 - PagerDuty Test
 fromversion: 5.0.0

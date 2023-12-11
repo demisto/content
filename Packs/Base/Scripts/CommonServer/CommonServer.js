@@ -1945,7 +1945,7 @@ function stringToDate(dateString, format) {
   /**************************** REGEX FORMATTING *******************************/
 
     var ipRegex = /\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\b/;
-    var emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/;
+    var emailRegex = /\b(?:(?:\\|\^{3})u[a-f\d]{4})?(?<localpart>[\p{L}\d.!#$%&'*+\/=?^_\xe60{}~-][\p{L}\d.!#$%&'*+\/=?^_\xe60{|}~-]{0,63})\[?@\]?(?<domain>[\p{L}\d-]{1,255}(?:\[?\.\]?(?:[\p{L}\d-]{2,}))*(?:\[?\.\]?(?<tld>[\p{L}]{2,})))\b/gm;
     var hashRegex = /[a-fA-F0-9]/;
     var md5Regex = /\b[a-fA-F\d]{32}\b/gm;
     var sha1Regex = /\b[a-fA-F\d]{40}\b/gm;

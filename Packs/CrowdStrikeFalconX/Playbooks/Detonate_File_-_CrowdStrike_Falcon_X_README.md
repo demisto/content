@@ -1,24 +1,4 @@
-Detonates a File using CrowdStrike Falcon Intelligence Sandbox.
-Accepted file formats:
-Portable executables: .exe, .scr, .pif, .dll, .com, .cpl, etc.
-Office documents: .doc, .docx, .ppt, .pps, .pptx, .ppsx, .xls, .xlsx, .rtf, .pub
-PDF
-APK
-Executable JAR
-Windows script component: .sct
-Windows shortcut: .lnk
-Windows help: .chm
-HTML application: .hta
-Windows script file: .wsf
-Javascript: .js
-Visual Basic: .vbs, .vbe
-Shockwave Flash: .swf
-Perl: .pl
-Powershell: .ps1, .psd1, .psm1
-Scalable vector graphics: .svg
-Python: .py
-Linux ELF executables
-Email files: MIME RFC 822 .eml, Outlook .msg.
+Deprecated. Use Detonate File - CrowdStrike Falcon Intelligence Sandbox v2 instead.
 
 ## Dependencies
 
@@ -26,7 +6,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* GenericPolling
+GenericPolling
 
 ### Integrations
 
@@ -41,9 +21,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Commands
 
 * cs-fx-upload-file
-* cs-fx-submit-uploaded-file
 * cs-fx-get-report-summary
 * cs-fx-get-full-report
+* cs-fx-submit-uploaded-file
 
 ## Playbook Inputs
 

@@ -53,7 +53,7 @@ script:
     - name: uri
       required: true
       default: true
-      description: Request URI (i.e. /incident).
+      description: Request endpoint (e.g. /incident or /public_api/v1/incidents/update_incident).
     - name: body
       description: Body of HTTP POST.
     description: send HTTP POST request.
@@ -63,14 +63,14 @@ script:
     - name: uri
       required: true
       default: true
-      description: Request URI (i.e. /user).
+      description: Request endpoint (e.g. /user or /public_api/v1/rbac/get_users).
     description: send HTTP GET requests.
   - name: demisto-api-put
     arguments:
     - name: uri
       required: true
       default: true
-      description: Request URI (i.e. /user).
+      description: Request endpoint (e.g. /user).
     - name: body
       description: Request body.
     description: send HTTP PUT request.
@@ -80,14 +80,14 @@ script:
     - name: uri
       required: true
       default: true
-      description: Request URI (i.e. /user).
+      description: Request endpoint (e.g. /user).
     description: send HTTP DELETE request.
     execution: true
   - name: demisto-api-download
     arguments:
     - name: uri
       required: true
-      description: Request URI.
+      description: Request endpoint.
     - name: filename
       description: File name of download.
     - name: description
@@ -145,7 +145,7 @@ script:
     - name: uri
       required: true
       default: true
-      description: Request URI (i.e. /incident).
+      description: Request endpoint (e.g. /incident or /public_api/v1/incidents/update_incident).
     - name: body
       description: Body of HTTP POST.
     description: send HTTP POST request.
@@ -155,14 +155,14 @@ script:
     - name: uri
       required: true
       default: true
-      description: Request URI (i.e. /user).
+      description: Request endpoint (e.g. /user or /public_api/v1/rbac/get_users).
     description: send HTTP GET requests.
   - name: core-api-put
     arguments:
     - name: uri
       required: true
       default: true
-      description: Request URI (i.e. /user).
+      description: Request endpoint (e.g. /user).
     - name: body
       description: Request body.
     description: send HTTP PUT request.
@@ -172,14 +172,14 @@ script:
     - name: uri
       required: true
       default: true
-      description: Request URI (i.e. /user).
+      description: Request endpoint (e.g. /user).
     description: send HTTP DELETE request.
     execution: true
   - name: core-api-download
     arguments:
     - name: uri
       required: true
-      description: Request URI.
+      description: Request endpoint.
     - name: filename
       description: File name of download.
     - name: description
@@ -189,7 +189,7 @@ script:
     arguments:
     - name: uri
       required: true
-      description: Request URI.
+      description: Request endpoint.
     - name: entryID
       required: true
       description: File entry ID.

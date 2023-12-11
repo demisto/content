@@ -1,0 +1,14 @@
+[INGEST:vendor="symantec", product="swg", target_dataset="symantec_swg_raw", no_hit=keep]
+filter _raw_log ~= "^\w+\s+\d{4}\-\d{2}\-\d{2}\s+\d{2}\:\d{2}\:\d{2}\s+" and _raw_log !~= "^#"
+
+// extract GMT date and time from log prefix: x-bluecoat-request-tenant-id YYYY-MM-DD HH:MM:SS
+| alter tmp_date_time_string = arrayindex(regextract(_raw_log, "^\w+\s+(\d{4}\-\d{2}\-\d{2}\s+\d{2}\:\d{2}\:\d{2})\s"), 0)
+
+// convert date time string representation to a datetime object 
+| alter tmp_timestamp = parse_timestamp("%F %T", tmp_date_time_string)
+
+// initialize _time with the extracted timestamp 
+| alter _time = tmp_timestamp
+
+// remove util temporary fields 
+| fields - tmp_date_time_string, tmp_timestamp;

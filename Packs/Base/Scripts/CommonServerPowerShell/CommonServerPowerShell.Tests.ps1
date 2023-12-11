@@ -10,6 +10,82 @@ Describe 'Check-DemistoServerRequest' {
     }
 }
 
+Describe 'Check-incidents'{
+    It 'Check Incidents creation in a case of more than one incident'{
+        $test_incidents = @()
+        0..2 | ForEach-Object {
+            $test_incidents += [PSCustomObject]@{
+                id           = "1111"
+                name         = "incident_name"
+                type         = "type"
+                createdOn    = "2023-05-28T05:57:18.404Z"
+            }
+        }
+        $incidents = @()
+        $test_incidents | Foreach-Object {
+            $NewAlert = @{
+                name = "$($_.type)-$($_.name)"
+                occurred = $_.createdOn
+                rawJSON = $_ | ConvertTo-JSON -Depth 2
+                severity = 1
+            }
+            $Incidents += $NewAlert
+        }
+        class DemistoObject {
+            DemistoObject () {
+            }
+
+            [array] Incidents ($Incidents) {
+                # This cmdlet returns a string representing the input object converted to a JSON string.
+                $Incidents = $Incidents | ConvertTo-Json -Depth 6 -AsArray
+                return $Incidents
+            }
+        }
+        [DemistoObject]$demisto = [DemistoObject]::New()
+        $r = $demisto.Incidents($incidents)
+        $r.GetType().IsArray | Should -BeTrue
+        $incidentArray = $r | ConvertFrom-Json
+        $incidentArray.Length | Should -Be 3
+    }
+
+    It 'Check Incidents creation in a case of only one incident'{
+        $test_incidents = @()
+        0..0 | ForEach-Object {
+            $test_incidents += [PSCustomObject]@{
+                id           = "1111"
+                name         = "incident_name"
+                type         = "type"
+                createdOn    = "2023-05-28T05:57:18.404Z"
+            }
+        }
+        $incidents = @()
+        $test_incidents | Foreach-Object {
+            $NewAlert = @{
+                name = "$($_.type)-$($_.name)"
+                occurred = $_.createdOn
+                rawJSON = $_ | ConvertTo-JSON -Depth 2
+                severity = 1
+            }
+            $Incidents += $NewAlert
+        }
+        class DemistoObject {
+            DemistoObject () {
+            }
+            
+            [array] Incidents ($Incidents) {
+                # This cmdlet returns a string representing the input object converted to a JSON string.
+                $Incidents = $Incidents | ConvertTo-Json -Depth 6 -AsArray
+                return $Incidents
+            }
+        }
+        [DemistoObject]$demisto = [DemistoObject]::New()
+        $r = $demisto.Incidents($incidents)
+        $r.GetType().IsArray | Should -BeTrue
+        $incidentArray = $r | ConvertFrom-Json
+        $incidentArray.Length | Should -Be 1
+    }
+}
+
 Describe 'Check-UtilityFunctions' {
     It "VersionEqualGreaterThen" {
         class DemistoObject {

@@ -1,0 +1,886 @@
+id: Test - AWS_Organizations
+version: -1
+name: Test - AWS_Organizations
+description: Test playbook for AWS Organizations.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 92a3a5c4-8e9b-4f60-8ed5-713d37ad595d
+    type: start
+    task:
+      id: 92a3a5c4-8e9b-4f60-8ed5-713d37ad595d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 464279e1-b59b-4226-8fd6-db67f5f8fcfb
+    type: regular
+    task:
+      id: 464279e1-b59b-4226-8fd6-db67f5f8fcfb
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 1f780249-f84d-47de-8fff-14b290fc546e
+    type: regular
+    task:
+      id: 1f780249-f84d-47de-8fff-14b290fc546e
+      version: -1
+      name: aws-org-root-list
+      script: AWS - Organizations|||aws-org-root-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 290cef22-a900-4833-84cb-8dae1a670a6a
+    type: condition
+    task:
+      id: 290cef22-a900-4833-84cb-8dae1a670a6a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AWS.Organizations.Root.Id
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 0a6d0158-4c92-4c4d-8d82-35bf3cd9d327
+    type: regular
+    task:
+      id: 0a6d0158-4c92-4c4d-8d82-35bf3cd9d327
+      version: -1
+      name: aws-org-children-list
+      script: AWS - Organizations|||aws-org-children-list
+      type: regular
+      iscommand: true
+      brand: AWS - Organizations
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      child_type:
+        simple: OrganizationalUnit
+      parent_id:
+        simple: ${AWS.Organizations.Root.Id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 787338d5-6fae-46f7-8039-db15686fbcd1
+    type: condition
+    task:
+      id: 787338d5-6fae-46f7-8039-db15686fbcd1
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AWS.Organizations.Children.Id
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 732fb5a3-b223-4bff-8ef1-a73320b74ab7
+    type: regular
+    task:
+      id: 732fb5a3-b223-4bff-8ef1-a73320b74ab7
+      version: -1
+      name: aws-org-parent-list
+      script: AWS - Organizations|||aws-org-parent-list
+      type: regular
+      iscommand: true
+      brand: AWS - Organizations
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      child_id:
+        simple: ${AWS.Organizations.Children.Id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 04111838-ce67-404e-8f66-5c34feb8e751
+    type: condition
+    task:
+      id: 04111838-ce67-404e-8f66-5c34feb8e751
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AWS.Organizations.Parent.Id
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 4b69b5f2-6001-4cd5-8280-7d4c36a596b7
+    type: regular
+    task:
+      id: 4b69b5f2-6001-4cd5-8280-7d4c36a596b7
+      version: -1
+      name: aws-org-account-list
+      script: AWS - Organizations|||aws-org-account-list
+      type: regular
+      iscommand: true
+      brand: AWS - Organizations
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 936aca93-2b0a-4567-8089-5709e36401e0
+    type: condition
+    task:
+      id: 936aca93-2b0a-4567-8089-5709e36401e0
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AWS.Organizations.Account.Id
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 0da1b1fe-2801-416b-8a5f-643f6c0d57ac
+    type: regular
+    task:
+      id: 0da1b1fe-2801-416b-8a5f-643f6c0d57ac
+      version: -1
+      name: aws-org-organization-get
+      script: AWS - Organizations|||aws-org-organization-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 14931615-f11b-463d-8c53-9c55d71f95bc
+    type: condition
+    task:
+      id: 14931615-f11b-463d-8c53-9c55d71f95bc
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AWS.Organizations.Organization.Id
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: bd7a91bb-6363-4a85-8632-0e2015f85344
+    type: title
+    task:
+      id: bd7a91bb-6363-4a85-8632-0e2015f85344
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 73bae0e4-e636-45cd-8061-21da16407287
+    type: regular
+    task:
+      id: 73bae0e4-e636-45cd-8061-21da16407287
+      version: -1
+      name: aws-org-organization-unit-create
+      description: Creates an organizational unit (OU) within a root or parent OU. An OU is a container for accounts that enables the organization of accounts to apply policies according to business requirements. The number of levels deep that OUs can be nested is dependent upon the policy types enabled for that root. For service control policies, the limit is five.
+      script: AWS - Organizations|||aws-org-organization-unit-create
+      type: regular
+      iscommand: true
+      brand: AWS - Organizations
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      name:
+        simple: test_ou
+      parent_id:
+        simple: ${AWS.Organizations.Root.Id}
+      tags:
+        simple: test=yes,ttl=now
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: ec1ef2da-0068-4620-83ed-76720793f9d5
+    type: regular
+    task:
+      id: ec1ef2da-0068-4620-83ed-76720793f9d5
+      version: -1
+      name: aws-org-organization-unit-get
+      description: |
+        Retrieve information about an organizational unit (OU).
+        This command can be called only from the organization's management account or by a member account that is a delegated administrator for an Amazon Web Services service.
+      script: AWS - Organizations|||aws-org-organization-unit-get
+      type: regular
+      iscommand: true
+      brand: AWS - Organizations
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      organization_unit_id:
+        simple: ${AWS.Organizations.OrganizationUnit.Id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 7a6bf723-b17e-4510-8705-bd8af622a888
+    type: regular
+    task:
+      id: 7a6bf723-b17e-4510-8705-bd8af622a888
+      version: -1
+      name: aws-org-organization-unit-rename
+      script: AWS - Organizations|||aws-org-organization-unit-rename
+      type: regular
+      iscommand: true
+      brand: AWS - Organizations
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      name:
+        simple: test_ou_new_name
+      organizational_unit_id:
+        simple: ${AWS.Organizations.OrganizationUnit.Id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: b7889e97-d5ca-4a6e-8410-1fba46846bbd
+    type: condition
+    task:
+      id: b7889e97-d5ca-4a6e-8410-1fba46846bbd
+      version: -1
+      name: Is OU renamed?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AWS.Organizations.OrganizationUnit.Name
+            iscontext: true
+          right:
+            value:
+              simple: test_ou_new_name
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 51d32d55-0663-4c10-86bf-f969a51badaa
+    type: regular
+    task:
+      id: 51d32d55-0663-4c10-86bf-f969a51badaa
+      version: -1
+      name: aws-org-policy-list
+      description: Retrieves the list of all policies in an organization of a specified type.
+      script: AWS - Organizations|||aws-org-policy-list
+      type: regular
+      iscommand: true
+      brand: AWS - Organizations
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      policy_type:
+        simple: Service Control Policy
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: d01bdd04-a188-4725-8f28-3b4e954ca73f
+    type: regular
+    task:
+      id: d01bdd04-a188-4725-8f28-3b4e954ca73f
+      version: -1
+      name: aws-org-resource-tag-add
+      description: Adds one or more tags to the specified resource.
+      script: AWS - Organizations|||aws-org-resource-tag-add
+      type: regular
+      iscommand: true
+      brand: AWS - Organizations
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      resource_id:
+        simple: ${AWS.Organizations.OrganizationUnit.Id}
+      tags:
+        simple: key=value,test=true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: bd7b162b-79f5-453f-8d41-572aa5d212b9
+    type: regular
+    task:
+      id: bd7b162b-79f5-453f-8d41-572aa5d212b9
+      version: -1
+      name: aws-org-resource-tag-list
+      description: Lists tags that are attached to the specified resource.
+      script: AWS - Organizations|||aws-org-resource-tag-list
+      type: regular
+      iscommand: true
+      brand: AWS - Organizations
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      resource_id:
+        simple: ${AWS.Organizations.OrganizationUnit.Id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: c8e248e5-a05e-4d65-8081-3ee8de5d934f
+    type: condition
+    task:
+      id: c8e248e5-a05e-4d65-8081-3ee8de5d934f
+      version: -1
+      name: Are tags added
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: inList
+          left:
+            value:
+              simple: AWS.Organizations.Tag.[0].Key
+            iscontext: true
+          right:
+            value:
+              simple: key,test,ttl
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: f15dca77-ab06-4b64-8ede-b729e899c828
+    type: regular
+    task:
+      id: f15dca77-ab06-4b64-8ede-b729e899c828
+      version: -1
+      name: aws-org-organization-unit-delete
+      description: Deletes an organizational unit (OU) from a root or another OU. All accounts and child OUs must first be removed.
+      script: AWS - Organizations|||aws-org-organization-unit-delete
+      type: regular
+      iscommand: true
+      brand: AWS - Organizations
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      organizational_unit_id:
+        simple: ${AWS.Organizations.OrganizationUnit.Id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 69e163cf-14fd-43ff-8f23-30817c40c004
+    type: regular
+    task:
+      id: 69e163cf-14fd-43ff-8f23-30817c40c004
+      version: -1
+      name: aws-org-target-policy-list
+      description: Lists the policies that are directly attached to the specified target root, organizational unit (OU), or account.
+      script: AWS - Organizations|||aws-org-target-policy-list
+      type: regular
+      iscommand: true
+      brand: AWS - Organizations
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      policy_type:
+        simple: Service Control Policy
+      target_id:
+        simple: ${AWS.Organizations.Root.Id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 9b9716de-cae8-4e86-8c6c-48c89d27ada7
+    type: regular
+    task:
+      id: 9b9716de-cae8-4e86-8c6c-48c89d27ada7
+      version: -1
+      name: aws-org-policy-attach
+      description: Attaches a policy to a root, an organizational unit (OU), or an individual account.
+      script: AWS - Organizations|||aws-org-policy-attach
+      type: regular
+      iscommand: true
+      brand: AWS - Organizations
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      policy_id:
+        simple: p-sotkk36n
+      target_id:
+        simple: ${AWS.Organizations.OrganizationUnit.Id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 4060,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.10.0

@@ -1,9 +1,7 @@
 id: Detonate URL - CrowdStrike Falcon Intelligence Sandbox
 version: -1
 name: Detonate URL - CrowdStrike Falcon Intelligence Sandbox
-description: Detonate one or more files using the CrowdStrike Falcon Intelligence Sandbox integration.
-  This playbook returns relevant reports to the War Room and file reputations to the
-  context data.
+description: Deprecated. Use Detonate URL - CrowdStrike Falcon Intelligence Sandbox v2 instead.
 starttaskid: "0"
 tasks:
   "0":
@@ -445,58 +443,59 @@ inputs:
     Set to "False" to get report summary.
   playbookInputQuery:
 outputs:
-    - contextPath: csfalconx.resource.id
-      description: Analysis ID.
-      type: String
-    - contextPath: csfalconx.resource.verdict
-      description: Analysis verdict.
-      type: String
-    - contextPath: csfalconx.resource.created_timestamp
-      description: Analysis start time.
-      type: String
-    - contextPath: csfalconx.resource.environment_id
-      description: Environment ID.
-      type: String
-    - contextPath: csfalconx.resource.environment_description
-      description: Environment description.
-      type: String
-    - contextPath: csfalconx.resource.threat_score
-      description: Score of the threat.
-      type: Int
-    - contextPath: csfalconx.resource.submit_url
-      description: URL submitted for analysis.
-      type: String
-    - contextPath: csfalconx.resource.submission_type
-      description: Type of submitted artifact, for example file, URL, etc.
-      type: String
-    - contextPath: csfalconx.resource.sha256
-      description: SHA256 hash of the submitted file.
-      type: String
-    - contextPath: csfalconx.resource.ioc_report_strict_csv_artifact_id
-      description: ID of the IOC pack to download (CSV).
-      type: String
-    - contextPath: csfalconx.resource.ioc_report_broad_csv_artifact_id
-      description: ID of the IOC pack to download (CSV).
-      type: String
-    - contextPath: csfalconx.resource.ioc_report_strict_json_artifact_id
-      description: ID of the IOC pack to download (JSON).
-      type: Int
-    - contextPath: csfalconx.resource.ioc_report_broad_json_artifact_id
-      description: ID of the IOC pack to download (JSON).
-      type: String
-    - contextPath: csfalconx.resource.ioc_report_strict_stix_artifact_id
-      description: ID of the IOC pack to download (STIX).
-      type: String
-    - contextPath: csfalconx.resource.ioc_report_broad_stix_artifact_id
-      description: ID of the IOC pack to download (STIX).
-      type: Int
-    - contextPath: csfalconx.resource.ioc_report_strict_maec_artifact_id
-      description: ID of the IOC pack to download (MAEC).
-      type: String
-    - contextPath: csfalconx.resource.ioc_report_broad_maec_artifact_id
-      description: ID of the IOC pack to download (MAEC).
-      type: String
+- contextPath: csfalconx.resource.id
+  description: Analysis ID.
+  type: String
+- contextPath: csfalconx.resource.verdict
+  description: Analysis verdict.
+  type: String
+- contextPath: csfalconx.resource.created_timestamp
+  description: Analysis start time.
+  type: String
+- contextPath: csfalconx.resource.environment_id
+  description: Environment ID.
+  type: String
+- contextPath: csfalconx.resource.environment_description
+  description: Environment description.
+  type: String
+- contextPath: csfalconx.resource.threat_score
+  description: Score of the threat.
+  type: Int
+- contextPath: csfalconx.resource.submit_url
+  description: URL submitted for analysis.
+  type: String
+- contextPath: csfalconx.resource.submission_type
+  description: Type of submitted artifact, for example file, URL, etc.
+  type: String
+- contextPath: csfalconx.resource.sha256
+  description: SHA256 hash of the submitted file.
+  type: String
+- contextPath: csfalconx.resource.ioc_report_strict_csv_artifact_id
+  description: ID of the IOC pack to download (CSV).
+  type: String
+- contextPath: csfalconx.resource.ioc_report_broad_csv_artifact_id
+  description: ID of the IOC pack to download (CSV).
+  type: String
+- contextPath: csfalconx.resource.ioc_report_strict_json_artifact_id
+  description: ID of the IOC pack to download (JSON).
+  type: Int
+- contextPath: csfalconx.resource.ioc_report_broad_json_artifact_id
+  description: ID of the IOC pack to download (JSON).
+  type: String
+- contextPath: csfalconx.resource.ioc_report_strict_stix_artifact_id
+  description: ID of the IOC pack to download (STIX).
+  type: String
+- contextPath: csfalconx.resource.ioc_report_broad_stix_artifact_id
+  description: ID of the IOC pack to download (STIX).
+  type: Int
+- contextPath: csfalconx.resource.ioc_report_strict_maec_artifact_id
+  description: ID of the IOC pack to download (MAEC).
+  type: String
+- contextPath: csfalconx.resource.ioc_report_broad_maec_artifact_id
+  description: ID of the IOC pack to download (MAEC).
+  type: String
 fromversion: 5.0.0
 quiet: true
 tests:
- -  No tests
+- No tests (deprecated)
+deprecated: true

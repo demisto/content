@@ -1,0 +1,4 @@
+{
+    "breakingChanges":true,
+    "breakingChangesNotes":"Removed the **Email.Attachments.entryID**, **Gmail.Attachments** context entries from the **gmail-get-mail** command."
+}
