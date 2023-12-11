@@ -5,18 +5,24 @@
 import subprocess
 import os
 import sys
+import multiprocessing
 
 
 def run_script(args, files):
     try:
-        results = [subprocess.run(args + [os.path.abspath(file)], cwd=os.path.dirname(file)) for file in files]
-        if any(result.returncode != 0 for result in results):
+        with multiprocessing.Pool() as pool:
+            results = pool.map(run_command, [(args + [os.path.abspath(file)], os.path.dirname(file)) for file in files])
+        if any(result != 0 for result in results):
             return 1
     except subprocess.CalledProcessError as e:
         print("Error: {e}".format(e=e))  # noqa: T201,UP032
     except Exception as e:
         print("An error occurred: {e}".format(e=e))  # noqa: T201,UP032
     return 0
+
+def run_command(args_dir):
+    args, directory = args_dir
+    return subprocess.run(args, cwd=directory).returncode
 
 
 def main():
