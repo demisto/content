@@ -91,13 +91,13 @@ class TabLifecycleManager:
     def __exit__(self, exc_type, exc_val, exc_tb):  # pylint: disable=unused-argument
         if self.tab:
             try:
-                self.tab.Page.disable()
                 tab_id = self.tab.id
+                self.tab.Page.disable()
                 self.browser.close_tab(tab_id)
                 demisto.debug(f'TabLifecycleManager, __exit__, closing tab {tab_id}')
                 demisto.debug(f'TabLifecycleManager, __exit__, active tabs len: {len(self.browser.list_tab())}')
             except Exception as ex:
-                demisto.debug(f'TabLifecycleManager, failed ot stop {tab_id} due to {ex}')
+                demisto.debug(f'TabLifecycleManager, failed to exit {tab_id} due to {ex}')
 
 
 class PychromeEventHandler:
@@ -116,7 +116,7 @@ class PychromeEventHandler:
             demisto.debug(f'Frame started loading: {frameId}')
 
     def frame_stopped_loading(self, frameId):
-        demisto.debug('Frame stopped loading')
+        demisto.debug(f'Frame stopped loading, {frameId=}')
         if self.start_frame == frameId:
             try:
                 with self.screen_lock:
@@ -304,6 +304,10 @@ def screenshot_image(browser, tab, path, wait_time, navigation_timeout, include_
     demisto.debug(f"{include_source=}")
     if include_source:
         request_id, operation_time = backoff(tab_event_handler.request_id)
+        if request_id:
+            demisto.debug(f"request_id available after {operation_time} seconds.")
+        else:
+            demisto.info(f"request_id not available available after {operation_time} seconds.")
         demisto.debug(f"Got {request_id=} after {operation_time} seconds.")
         response_body = tab.Network.getResponseBody(requestId=request_id, _timeout=navigation_timeout)['body']
         response_body, operation_time = backoff(response_body)
@@ -354,21 +358,26 @@ def rasterize(path: str,
     :param width: window width
     :param height: window height
     """
-
+    demisto.debug(f"rasterize, {path=}")
     if browser := ensure_chrome_running():
         with TabLifecycleManager(browser, offline_mode) as tab:
             tab.call_method("Emulation.setVisibleSize", width=width, height=height)
 
             if rasterize_type == RasterizeType.PNG or str(rasterize_type).lower == RasterizeType.PNG.value:
-                return screenshot_image(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout)
+                ret_value, _ = screenshot_image(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout)
+                demisto.debug(f"rasterize, after screenshot_image, {len(ret_value)=}")
+                return ret_value, None
 
             elif rasterize_type == RasterizeType.PDF or str(rasterize_type).lower == RasterizeType.PDF.value:
-                return screenshot_pdf(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout,
-                                      include_url=include_url)
+                ret_value, _ = screenshot_pdf(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout,
+                                              include_url=include_url)
+                return ret_value, None
 
             elif rasterize_type == RasterizeType.JSON or str(rasterize_type).lower == RasterizeType.JSON.value:
-                return screenshot_image(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout,
-                                        include_source=True)
+                ret_value, response_body = screenshot_image(browser, tab, path, wait_time=wait_time,
+                                                            navigation_timeout=navigation_timeout,
+                                                            include_source=True)
+                return ret_value, response_body
             else:
                 message = f'Unsupported rasterization type: {rasterize_type}.'
                 demisto.error(message)
@@ -533,22 +542,20 @@ def rasterize_command():  # pragma: no cover
         url = f'http://{url}'
     file_name = f'{file_name}.{"pdf" if rasterize_type == RasterizeType.PDF else "png"}'  # type: ignore
 
-    output, response_body = rasterize(path=url, rasterize_type=rasterize_type, wait_time=wait_time,
-                                      navigation_timeout=navigation_timeout, include_url=include_url)
+    rasterize_output, response_body = rasterize(path=url, rasterize_type=rasterize_type, wait_time=wait_time,
+                                                navigation_timeout=navigation_timeout, include_url=include_url)
+    demisto.debug(f"rasterize_command response, {rasterize_type=}, {len(rasterize_output)=}")
 
     if rasterize_type == RasterizeType.JSON or str(rasterize_type).lower == RasterizeType.JSON.value:
-        # html = driver.page_source
-        # url = driver.current_url
-        # output = {'image_b64': base64.b64encode(get_image(driver, width, height, full_screen, include_url)).decode('utf8'),
-        #             'html': html, 'current_url': url}
-        output = {'image_b64': base64.b64encode(output).decode('utf8'),
+        demisto.info("JSON output needed")
+        output = {'image_b64': base64.b64encode(rasterize_output).decode('utf8'),
                   'html': response_body, 'current_url': url}
-        # return_results(CommandResults(raw_response=output, readable_output="Successfully rasterize url: " + url))
         demisto.results(CommandResults(raw_response=output, readable_output="Successfully rasterize url: " + url))
     else:
-        res = fileResult(filename=file_name, data=output)
-        if rasterize_type == RasterizeType.PNG:
+        res = fileResult(filename=file_name, data=rasterize_output)
+        if rasterize_type == RasterizeType.PNG or str(rasterize_type).lower == RasterizeType.PNG.value:
             res['Type'] = entryTypes['image']
+        demisto.debug(f"rasterize_command {res.keys()=}")
 
         demisto.results(res)
 
