@@ -2,6 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from dateutil import parser
 from bs4 import BeautifulSoup
+from itertools import chain
 
 
 """ CONSTANTS """
@@ -11,6 +12,11 @@ ADMIN_AUDITS_MAX_LIMIT = 500
 MAX_FETCH = 5000
 VENDOR = 'CyberArk'
 PRODUCT = 'EPM'
+XSIAM_EVENT_TYPE = {
+    'policy_audits': 'policy audit raw event details',
+    'admin_audits': 'set admin audit data',
+    'events': 'detailed raw',
+}
 
 """ CLIENT CLASS """
 
@@ -102,6 +108,16 @@ class Client(BaseClient):
 """ HELPER FUNCTIONS """
 
 
+def create_last_run(set_ids: list, from_date: str) -> dict:
+    return {
+        set_id: {
+            'policy_audits': from_date,
+            'admin_audits': from_date,
+            'detailed_events': from_date,
+        } for set_id in set_ids
+    }
+
+
 def prepare_datetime(date_time: Any, increase: bool = False) -> str:
     if isinstance(date_time, str):
         date_time = parser.parse(date_time, ignoretz=True)
@@ -121,6 +137,12 @@ def prepare_next_run(last_run: dict, next_run: dict, set_id: str, events: list, 
         next_run[set_id][event_type] = prepare_datetime(latest_event_date, increase=True)
     else:
         next_run[set_id] = {event_type: prepare_datetime(latest_event_date, increase=True)}
+
+
+def add_fields_to_events(events: list, date_field: str, event_type: str):
+    for event in events:
+        event['_time'] = event.get(date_field)
+        event['eventTypeXsiam'] = XSIAM_EVENT_TYPE.get(event_type)
 
 
 def get_set_ids_by_set_names(client: Client, set_names: list) -> list[str]:
@@ -166,6 +188,7 @@ def get_policy_audits(client: Client, set_ids_with_from_date: dict, limit: int) 
             policy_audits[set_id].extend(results.get('events', []))
 
         sorted_events = sorted(policy_audits.get(set_id), key=lambda e: parser.parse(e.get('arrivalTime')))
+        add_fields_to_events(sorted_events, 'arrivalTime', 'policy_audits')
         policy_audits[set_id] = sorted_events[:limit]
 
     return policy_audits
@@ -192,6 +215,7 @@ def get_admin_audits(client: Client, set_ids_with_from_date: dict, limit: int) -
             result = client.get_admin_audits(set_id, prepare_datetime(latest_event_date, increase=True), limit)
             admin_audits[set_id].extend(result.get('AdminAudits', []))
 
+        add_fields_to_events(admin_audits[set_id], 'EventTime', 'admin_audits')
         admin_audits[set_id] = admin_audits[set_id][:limit]
 
     return admin_audits
@@ -217,12 +241,37 @@ def get_detailed_events(client: Client, set_ids_with_from_date: dict, limit: int
             detailed_events[set_id].extend(results.get('events', []))
 
         sorted_events = sorted(detailed_events[set_id], key=lambda e: parser.parse(e.get('arrivalTime')))
+        add_fields_to_events(sorted_events, 'arrivalTime', 'events')
         detailed_events[set_id] = sorted_events[:limit]
 
     return detailed_events
 
 
 """ COMMAND FUNCTIONS """
+
+
+def get_policy_audits_command(client: Client, set_ids: list, args: dict) -> [list, CommandResults]:
+    set_ids_with_from_date = create_last_run(set_ids, args.get('from_date'))
+    events = get_policy_audits(client, set_ids_with_from_date, arg_to_number(args.get('limit', 5)))
+    events_list = list(chain(*events.values()))
+    human_readable = tableToMarkdown('Policy Audits', events_list)
+    return events_list, CommandResults(readable_output=human_readable, raw_response=events_list)
+
+
+def get_admin_audits_command(client: Client, set_ids: list, args: dict) -> [list, CommandResults]:
+    set_ids_with_from_date = create_last_run(set_ids, args.get('from_date'))
+    events = get_admin_audits(client, set_ids_with_from_date, arg_to_number(args.get('limit', 5)))
+    events_list = list(chain(*events.values()))
+    human_readable = tableToMarkdown('Admin Audits', events_list)
+    return events_list, CommandResults(readable_output=human_readable, raw_response=events_list)
+
+
+def get_detailed_events_command(client: Client, set_ids: list, args: dict) -> [list, CommandResults]:
+    set_ids_with_from_date = create_last_run(set_ids, args.get('from_date'))
+    events = get_detailed_events(client, set_ids_with_from_date, arg_to_number(args.get('limit', 5)))
+    events_list = list(chain(*events.values()))
+    human_readable = tableToMarkdown('Events', events_list)
+    return events_list, CommandResults(readable_output=human_readable, raw_response=events_list)
 
 
 def fetch_events(client: Client, last_run: dict, max_fetch: int = MAX_FETCH) -> [list, dict]:
@@ -309,29 +358,37 @@ def main():  # pragma: no cover
         )
 
         set_ids = get_set_ids_by_set_names(client, set_names)
-
         if not (last_run := demisto.getLastRun()):
             demisto.info('First fetch....')
-            now = datetime.now() - timedelta(hours=3)
-            last_run = {
-                set_id: {
-                    'policy_audits': prepare_datetime(now),
-                    'admin_audits': prepare_datetime(now),
-                    'detailed_events': prepare_datetime(now),
-                } for set_id in set_ids
-            }
+            last_run = create_last_run(set_ids, prepare_datetime(datetime.now() - timedelta(hours=3)))
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(client, last_run)
             return_results(result)
 
-        elif command in ('cyberarkepm-get-events', 'fetch-events'):
-            events, next_run = fetch_events(client, last_run, max_fetch)
-
-            if command == 'fetch-events' or argToBoolean(args.get('should_push_events', False)):
+        if command == 'cyberarkepm-get-policy-audits':
+            events, result = get_policy_audits_command(client, set_ids, args)
+            if argToBoolean(args.get('should_push_events', False)):
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-                demisto.setLastRun(next_run)
+            return_results(result)
+
+        if command == 'cyberarkepm-get-admin-audits':
+            events, result = get_admin_audits_command(client, set_ids, args)
+            if argToBoolean(args.get('should_push_events', False)):
+                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+            return_results(result)
+
+        if command == 'cyberarkepm-get-events':
+            events, result = get_detailed_events_command(client, set_ids, args)
+            if argToBoolean(args.get('should_push_events', False)):
+                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+            return_results(result)
+
+        elif command in 'fetch-events':
+            events, next_run = fetch_events(client, last_run, max_fetch)
+            send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+            demisto.setLastRun(next_run)
 
     except Exception as e:
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
