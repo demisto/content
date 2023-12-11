@@ -8,7 +8,9 @@ from MicrosoftGraphSecurity import MsGraphClient, create_search_alerts_filters, 
     capitalize_dict_keys_first_letter, created_by_fields_to_hr, list_ediscovery_search_command, purge_ediscovery_data_command, \
     list_ediscovery_non_custodial_data_source_command, list_ediscovery_case_command, activate_ediscovery_custodian_command, \
     release_ediscovery_custodian_command, close_ediscovery_case_command, reopen_ediscovery_case_command, \
-    create_ediscovery_non_custodial_data_source_command, list_ediscovery_custodian_command
+    create_ediscovery_non_custodial_data_source_command, list_ediscovery_custodian_command, \
+    create_mail_assessment_request_command, create_email_file_request_command, create_file_assessment_request_command, \
+    create_url_assessment_request_command, list_threat_assessment_requests_command, get_message_user
 from CommonServerPython import DemistoException
 import pytest
 import json
@@ -544,28 +546,37 @@ def test_test_auth_code_command(mocker, command_to_check):
     mock_ediscovery = mocker.patch.object(client_mocker, "list_ediscovery_cases",
                                           return_value=load_json("./test_data/list_cases_response.json"))
     mock_alerts = mocker.patch('MicrosoftGraphSecurity.test_function')
+    mock_threat_assessment = mocker.patch.object(client_mocker, "list_threat_assessment_requests",
+                                                 return_value=load_json("./test_data/list_threat_assessment.json"))
     test_auth_code_command(client_mocker, {'permission_type': command_to_check})
 
     if command_to_check == 'alerts':
         assert not mock_ediscovery.called
+        assert not mock_threat_assessment.called
         assert mock_alerts.called
     elif command_to_check == 'any':
         assert mock_ediscovery.called
         assert mock_alerts.called
+        assert mock_threat_assessment.called
     elif command_to_check == 'ediscovery':
         assert mock_ediscovery.called
         assert not mock_alerts.called
+        assert not mock_threat_assessment.called
+    elif command_to_check == 'threat assessment':
+        assert not mock_ediscovery.called
+        assert not mock_alerts.called
+        assert mock_threat_assessment.called
 
 
 def test_purge_ediscovery_data_command(mocker):
     mocker.patch.object(client_mocker, 'purge_ediscovery_data', return_value=SimpleNamespace(headers={}))
-    assert 'eDiscovery purge status is success.' == purge_ediscovery_data_command(client_mocker, {}).readable_output
+    assert purge_ediscovery_data_command(client_mocker, {}).readable_output == 'eDiscovery purge status is success.'
 
 
 def test_list_ediscovery_non_custodial_data_source_command_empty_output(mocker):
     mocker.patch.object(client_mocker, 'list_ediscovery_noncustodial_datasources', return_value={'value': []})
-    assert '### Results:\n**No entries.**\n' == \
-           list_ediscovery_non_custodial_data_source_command(client_mocker, {}).readable_output
+    assert list_ediscovery_non_custodial_data_source_command(client_mocker, {}).readable_output == \
+        '### Results:\n**No entries.**\n'
 
 
 def test_list_ediscovery_case_command(mocker):
@@ -626,3 +637,71 @@ def test_create_ediscovery_non_custodial_data_source_command_invalid_args(mocker
 def test_empty_list_ediscovery_custodian_command(mocker):
     mocker.patch.object(client_mocker, 'list_ediscovery_custodians', return_value={})
     assert list_ediscovery_custodian_command(client_mocker, {}).readable_output == '### Results:\n**No entries.**\n'
+
+
+THREAT_ASSESSMENT_COMMANDS = {
+    'mail_assessment_request': create_mail_assessment_request_command,
+    'email_file_assessment_request': create_email_file_request_command,
+    'file_assessment_request': create_file_assessment_request_command,
+    'url_assessment_request': create_url_assessment_request_command,
+    'list_assessment_requests': list_threat_assessment_requests_command
+}
+
+
+@pytest.mark.parametrize('mock_func, command_name, expected_result',
+                         [
+                             ('create_mail_assessment_request', 'mail_assessment_request', 'mail_assessment_request.json'),
+                             ('create_email_file_assessment_request', 'email_file_assessment_request',
+                              'email_file_assessment_request.json'),
+                             ('create_file_assessment_request', 'file_assessment_request', 'file_assessment_request.json'),
+                             ('create_url_assessment_request', 'url_assessment_request', 'url_assessment_request.json')])
+def test_create_mail_assessment_request_command(mocker, mock_func, command_name, expected_result):
+    """
+
+    Given:
+        A raw response with one result
+    When:
+        calling list search command
+    Then:
+        Nested value is in the readable output
+    """
+    raw_response = load_json(f"./test_data/{expected_result}")
+    mocker.patch.object(client_mocker, mock_func,
+                        return_value={'request_id': '123'})
+    mocker.patch.object(client_mocker, "get_threat_assessment_request_status",
+                        return_value={'status': 'completed'})
+    mocker.patch.object(client_mocker, "get_threat_assessment_request",
+                        return_value=raw_response)
+    mocker.patch("MicrosoftGraphSecurity.get_content_data", return_value="content_data")
+    mocker.patch("MicrosoftGraphSecurity.get_message_user", return_value="user_mail")
+    mocker.patch("CommonServerPython.is_demisto_version_ge", return_value=True)
+    results = THREAT_ASSESSMENT_COMMANDS[command_name]({}, client_mocker)
+
+    assert results.raw_response == raw_response
+    assert results.outputs.get('ID') == raw_response.get('id')
+    assert results.outputs.get("Content Type") == raw_response.get("contentType")
+
+
+def test_list_threat_assessment_requests_command(mocker):
+    raw_response = load_json("./test_data/list_threat_assessment.json")
+    mocker.patch.object(client_mocker, "list_threat_assessment_requests",
+                        return_value=raw_response)
+
+    result = list_threat_assessment_requests_command(client_mocker, {})
+    assert len(result) == 2
+    assert result[0].outputs_prefix == 'MSGraphMail.AssessmentRequest'
+    assert len(result[0].outputs) == 4
+    assert result[1].outputs_prefix == 'MsGraph.AssessmentRequestNextToken'
+    assert result[1].outputs == {'next_token': 'test_token'}
+
+
+@pytest.mark.parametrize('user, expected_result',
+                         [
+                             ('testuser@test.com', 'test user id'),
+                             ('test user id', 'test user id')
+                         ])
+def test_get_message_user(mocker, user, expected_result):
+    mocker.patch.object(client_mocker, "get_user_id",
+                        return_value={'value': [{"id": "test user id"}]})
+    message_user = get_message_user(client_mocker, user)
+    assert message_user == expected_result

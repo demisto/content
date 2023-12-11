@@ -1,0 +1,697 @@
+category: Identity and Access Management
+commonfields:
+  id: AWS - Organizations
+  version: -1
+sectionOrder:
+- Connect
+configuration:
+- display: Role Arn
+  name: role_arn
+  type: 0
+  section: Connect
+  additionalinfo: The Amazon Resource Name (ARN) of the role to assume.
+- display: Role Session Name
+  name: role_session_name
+  type: 0
+  additionalinfo: An identifier for the assumed role session.
+  section: Connect
+- display: Role Session Duration
+  name: role_session_duration
+  type: 0
+  advanced: true
+  additionalinfo: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+  section: Connect
+- display: Access Key
+  name: credentials
+  type: 9
+  displaypassword: Secret Key
+  required: false
+  section: Connect
+- display: Timeout
+  name: timeout
+  defaultvalue: 60,10
+  additionalinfo: "The time in seconds until a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 seconds will be used."
+  type: 0
+  required: false
+  section: Connect
+- display: Retries
+  name: retries
+  type: 0
+  defaultvalue: 5
+  additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
+  required: false
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  advanced: true
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  advanced: true
+  section: Connect
+description: Manage Amazon Web Services accounts and their resources.
+display: AWS - Organizations
+name: AWS - Organizations
+script:
+  commands:
+  - name: aws-org-root-list
+    arguments:
+    - description: The number of roots to return.
+      name: limit
+      defaultValue: '50'
+    - description: The number of roots to return per page. The maximum is 1000.
+      name: page_size
+    - description: The token denoting the next page of roots, as given by the response of the previous run of this command under the context key "AWS.Organizations.RootNextToken".
+      name: next_token
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    description: List the roots that are defined in the current organization.
+    outputs:
+    - contextPath: AWS.Organizations.Root.Id
+      description: The unique identifier (ID) of the root.
+      type: String
+    - contextPath: AWS.Organizations.Root.Arn
+      description: The Amazon Resource Name (ARN) of the root.
+      type: String
+    - contextPath: AWS.Organizations.Root.Name
+      description: The friendly name of the root.
+      type: String
+    - contextPath: AWS.Organizations.Root.PolicyTypes.Type
+      description: The name of the policy type.
+      type: String
+    - contextPath: AWS.Organizations.Root.PolicyTypes.Status
+      description: The status of the policy type as it relates to the associated root.
+      type: String
+    - contextPath: AWS.Organizations.RootNextToken
+      description: If not null, indicates that more output is available than is included in the current response. Use this value as the next_token argument in a subsequent call of the command to get the next part of the output.
+      type: String
+  - name: aws-org-children-list
+    arguments:
+    - description: The unique identifier (ID) for the parent root or organizational unit (OU) whose children are to be listed.
+      name: parent_id
+      required: true
+    - auto: PREDEFINED
+      description: Filters the output to include only the specified child type.
+      name: child_type
+      predefined:
+      - Account
+      - OrganizationalUnit
+      required: true
+    - description: The number of children to return.
+      name: limit
+      defaultValue: '50'
+    - description: The number of children to return per page. The maximum is 1000.
+      name: page_size
+    - description: The token denoting the next page of children as given by the response of the previous run of this command under the context key "AWS.Organizations.ChildrenNextToken".
+      name: next_token
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    description: List all of the organizational units (OUs) or accounts that are contained in the specified parent OU or root.
+    outputs:
+    - contextPath: AWS.Organizations.Children.Id
+      description: The unique identifier (ID) of the child entity.
+      type: String
+    - contextPath: AWS.Organizations.Children.Type
+      description: The type of the child entity.
+      type: String
+    - contextPath: AWS.Organizations.Children.ParentId
+      description: The unique identifier (ID) for the parent root or organizational unit of the child entity.
+      type: String
+    - contextPath: AWS.Organizations.ChildrenNextToken
+      description: If not null, indicates that more output is available than is included in the current response. Use this value as the next_token argument in a subsequent call of the command to get the next part of the output.
+      type: String
+  - name: aws-org-parent-list
+    arguments:
+    - description: |
+        The unique identifier (ID) of the organizational unit or account whose parent containers you want to list. Don't specify a root.
+        This value can be retrieved by running the command "aws-org-account-list".
+      name: child_id
+      required: true
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    description: |
+      Lists all of the organizational units (OUs) or accounts that are a parent OU or root of the specified child.
+      This command returns only the immediate parents in the hierarchy.
+    outputs:
+    - contextPath: AWS.Organizations.Parent.Id
+      description: The unique identifier (ID) of the parent entity.
+      type: String
+    - contextPath: AWS.Organizations.Parent.Type
+      description: The type of the parent entity.
+      type: String
+    - contextPath: AWS.Organizations.Parent.ChildId
+      description: The unique identifier (ID) of the organizational unit or account of the child of the parent entity.
+      type: String
+  - name: aws-org-organization-unit-get
+    arguments:
+    - description: The unique identifier (ID) of the organizational unit to retrieve details about.
+      name: organization_unit_id
+      required: true
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    description: |
+      Retrieve information about an organizational unit (OU).
+      This command can be called only from the organization's management account or by a member account that is a delegated administrator for an Amazon Web Services service.
+    outputs:
+    - contextPath: AWS.Organizations.OrganizationUnit.Id
+      description: The unique identifier (ID) associated with the organizational unit.
+      type: String
+    - contextPath: AWS.Organizations.OrganizationUnit.Arn
+      description: The Amazon Resource Name (ARN) of the organizational unit.
+      type: String
+    - contextPath: AWS.Organizations.OrganizationUnit.Name
+      description: The friendly name of the organizational unit.
+      type: String
+  - name: aws-org-account-list
+    arguments:
+    - description: Get a specific account by ID.
+      name: account_id
+    - description: The number of accounts to return.
+      name: limit
+      defaultValue: '50'
+    - description: The number of accounts to return per page. The maximum is 1000.
+      name: page_size
+    - description: The token denoting the next page of accounts, as given by the response of the previous run of this command under the context key "AWS.Organizations.AccountNextToken".
+      name: next_token
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    description: Lists all the accounts in the organization or a specific account by ID.
+    outputs:
+    - contextPath: AWS.Organizations.Account.Id
+      description: The unique identifier (ID) of the account.
+      type: String
+    - contextPath: AWS.Organizations.Account.Arn
+      description: The Amazon Resource Name (ARN) of the account.
+      type: String
+    - contextPath: AWS.Organizations.Account.Email
+      description: The email address associated with the Amazon Web Services account.
+      type: String
+    - contextPath: AWS.Organizations.Account.Name
+      description: The friendly name of the account.
+      type: String
+    - contextPath: AWS.Organizations.Account.Status
+      description: The status of the account in the organization.
+      type: String
+    - contextPath: AWS.Organizations.Account.JoinedMethod
+      description: The method by which the account joined the organization.
+      type: String
+    - contextPath: AWS.Organizations.Account.JoinedTimestamp
+      description: The date the account became a part of the organization.
+      type: Date
+    - contextPath: AWS.Organizations.AccountNextToken
+      description: If not null, indicates that more output is available than is included in the current response. Use this value as the next_token argument in a subsequent call of the command to get the next part of the output.
+      type: String
+  - name: aws-org-organization-get
+    arguments:
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    description: Retrieves information about the organization that the user's account belongs to.
+    outputs:
+    - contextPath: AWS.Organizations.Organization.Id
+      description: The unique identifier (ID) of the organization.
+      type: String
+    - contextPath: AWS.Organizations.Organization.Arn
+      description: The Amazon Resource Name (ARN) of the organization.
+      type: String
+    - contextPath: AWS.Organizations.Organization.FeatureSet
+      description: |
+        Specifies the functionality that currently is available to the organization.
+        If set to “ALL”, then all features are enabled and policies can be applied to accounts in the organization.
+        If set to “CONSOLIDATED_BILLING”, then only consolidated billing functionality is available.
+      type: String
+    - contextPath: AWS.Organizations.Organization.MasterAccountArn
+      description: The Amazon Resource Name (ARN) of the account that is designated as the management account for the organization.
+      type: String
+    - contextPath: AWS.Organizations.Organization.MasterAccountId
+      description: The unique identifier (ID) of the management account of the organization.
+      type: String
+    - contextPath: AWS.Organizations.Organization.MasterAccountEmail
+      description: The email address that is associated with the Amazon Web Services account that is designated as the management account for the organization.
+      type: String
+  - name: aws-org-account-remove
+    arguments:
+    - description: The unique identifier (ID) of the member account to be removed from the organization. This can be obtained with the command "aws-organizations-account-list".
+      name: account_id
+      required: true
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    description: 'Removes an account from the organization. For more information on this action: https://docs.aws.amazon.com/organizations/latest/APIReference/API_RemoveAccountFromOrganization.html'
+    outputs: []
+  - name: aws-org-account-move
+    arguments:
+    - description: The unique identifier (ID) of the member account move. This value can be retrieved by running the command "aws-org-account-list".
+      name: account_id
+      required: true
+    - description: |
+        The unique identifier (ID) of the root or organizational unit to move the account to.
+        This value can be retrieved by running the command "aws-org-root-list".
+      name: destination_parent_id
+      required: true
+    - description: |
+        The unique identifier (ID) of the root or organizational unit to move the account from.
+        This value can be retrieved by running the command "aws-org-parent-list" with the child_id set to the account_id.
+      name: source_parent_id
+      required: true
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    description: Moves an account from one parent to another.
+    outputs: []
+  - name: aws-org-account-create
+    polling: true
+    arguments:
+    - description: The friendly name of the member account.
+      name: account_name
+      required: true
+    - description: The email address of the owner to assign to the new member account. This email address must not already be associated with another Amazon Web Services account. Use a valid email address to complete account creation.
+      name: email
+      required: true
+    - auto: PREDEFINED
+      defaultValue: Allow
+      description: If set to ALLOW, the new account enables IAM users to access account billing information if they have the required permissions. If set to DENY, only the root user of the new account can access account billing information.
+      name: iam_user_access_to_billing
+      predefined:
+      - Allow
+      - Deny
+    - defaultValue: OrganizationAccountAccessRole
+      description: The name of an IAM role that AWS Organizations automatically pre-configures in the new member account. This role trusts the management account, allowing users in the management account to assume the role, as permitted by the management account administrator. The role has administrator permissions in the new member account.
+      name: role_name
+    - description: 'A comma-separated list of tags to attach to the newly created account. Each tag should be in the format: "key=value".'
+      name: tags
+      isArray: true
+    - description: The ID of the create request that is used for polling.
+      name: request_id
+      hidden: true
+    - defaultValue: '30'
+      description: Indicates how long to wait between command executions (in seconds) when the 'polling' argument is true. Minimum value is 10 seconds.
+      name: interval_in_seconds
+    - defaultValue: '600'
+      description: Indicates the time in seconds until the polling sequence times out.
+      name: timeout
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    - name: hide_polling_output
+      hidden: true
+      description: ''
+    description: Creates an AWS Account that is automatically a member of the organization.
+    outputs:
+    - contextPath: AWS.Organizations.Account.Id
+      description: The unique identifier (ID) of the account.
+      type: String
+    - contextPath: AWS.Organizations.Account.Arn
+      description: The Amazon Resource Name (ARN) of the account.
+      type: String
+    - contextPath: AWS.Organizations.Account.Email
+      description: The email address associated with the Amazon Web Services account.
+      type: String
+    - contextPath: AWS.Organizations.Account.Name
+      description: The friendly name of the account.
+      type: String
+    - contextPath: AWS.Organizations.Account.Status
+      description: The status of the account in the organization.
+      type: String
+    - contextPath: AWS.Organizations.Account.JoinedMethod
+      description: The method by which the account joined the organization.
+      type: String
+    - contextPath: AWS.Organizations.Account.JoinedTimestamp
+      description: The date the account became a part of the organization.
+      type: Date
+  - name: aws-org-account-close
+    polling: true
+    arguments:
+    - description: The unique identifier (ID) of the member account to close. This can be obtained with the command "aws-organizations-account-list".
+      name: account_id
+      required: true
+    - defaultValue: '30'
+      description: Indicates how long to wait between command executions (in seconds) when the 'polling' argument is true. Minimum value is 10 seconds.
+      name: interval_in_seconds
+    - defaultValue: '600'
+      description: Indicates the time in seconds until the polling sequence times out.
+      name: timeout
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    - description: whether the initial API call to close the account has been executed.
+      name: is_closed
+      hidden: true
+      defaultValue: false
+    - name: hide_polling_output
+      hidden: true
+      description: ''
+    description: Closes an AWS member account within an organization.
+    outputs: []
+  - name: aws-org-organization-unit-create
+    arguments:
+    - description: The friendly name to assign to the new organizational unit.
+      name: name
+      required: true
+    - description: The unique identifier (ID) of the parent root or organizational unit to create the new organizational unit in. This value can be retrieved by running the command "aws-org-root-list".
+      name: parent_id
+      required: true
+    - description: 'A comma-separated list of tags to attach to the newly created organizational unit. Each tag should be in the format: "key=value".'
+      name: tags
+      isArray: true
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    description: Creates an organizational unit (OU) within a root or parent OU. An OU is a container for accounts that enables the organization of accounts to apply policies according to business requirements. The number of levels deep that OUs can be nested is dependent upon the policy types enabled for that root. For service control policies, the limit is five.
+    outputs:
+    - contextPath: AWS.Organizations.OrganizationUnit.Id
+      description: The unique identifier (ID) associated with this organizational unit.
+      type: String
+    - contextPath: AWS.Organizations.OrganizationUnit.Arn
+      description: The Amazon Resource Name (ARN) of this organizational unit.
+      type: String
+    - contextPath: AWS.Organizations.OrganizationUnit.Name
+      description: The friendly name of this organizational unit.
+      type: String
+  - name: aws-org-organization-unit-delete
+    arguments:
+    - description: The unique identifier (ID) of the organizational unit that you want to delete.
+      name: organizational_unit_id
+      required: true
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    description: Deletes an organizational unit (OU) from a root or another OU. All accounts and child OUs must first be removed.
+    outputs: []
+  - name: aws-org-organization-unit-rename
+    arguments:
+    - description: The unique identifier (ID) of the OU to rename. This value can be retrieved by running the command "aws-org-parent-list".
+      name: organizational_unit_id
+      required: true
+    - description: The new name to assign to the organizational unit.
+      name: name
+      required: true
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    description: Renames the specified organizational unit (OU). The ID and ARN don't change. The child OUs and accounts remain in place, and any attached policies of the OU remain attached.
+    outputs: []
+  - name: aws-org-policy-list
+    arguments:
+    - auto: PREDEFINED
+      description: Specifies the type of policy to include in the response.
+      name: policy_type
+      predefined:
+      - Service Control Policy
+      - Tag Policy
+      - Backup Policy
+      - AI Services Opt Out Policy
+      required: true
+    - description: The number of policies to return.
+      name: limit
+      defaultValue: '50'
+    - description: The number of policies to return per page. The maximum is 1000.
+      name: page_size
+    - description: The token denoting the next page of policies, as given by the response of the previous run of this command under the context key "AWS.Organizations.PolicyNextToken".
+      name: next_token
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    description: Retrieves the list of all policies in an organization of a specified type.
+    outputs:
+    - contextPath: AWS.Organizations.Policy.Id
+      description: The unique identifier (ID) of the policy.
+      type: String
+    - contextPath: AWS.Organizations.Policy.Arn
+      description: The Amazon Resource Name (ARN) of the policy.
+      type: String
+    - contextPath: AWS.Organizations.Policy.Name
+      description: The friendly name of the policy.
+      type: String
+    - contextPath: AWS.Organizations.Policy.Description
+      description: The description of the policy.
+      type: String
+    - contextPath: AWS.Organizations.Policy.Type
+      description: The type of policy.
+      type: String
+    - contextPath: AWS.Organizations.Policy.AwsManaged
+      description: Indicates whether the specified policy is an Amazon Web Services managed policy. If true, the policy can be attached to roots, organizational units, or accounts, but cannot be edited.
+      type: Boolean
+    - contextPath: AWS.Organizations.PolicyNextToken
+      description: If not null, indicates that more output is available than is included in the current response. Use this value as the next_token argument in a subsequent call of the command to get the next part of the output.
+      type: String
+  - name: aws-org-target-policy-list
+    arguments:
+    - auto: PREDEFINED
+      description: The type of policy to include in the returned list.
+      name: policy_type
+      predefined:
+      - Service Control Policy
+      - Tag Policy
+      - Backup Policy
+      - AI Services Opt Out Policy
+      required: true
+    - description: The unique identifier (ID) of the root, organizational unit, or account whose policies are to be listed.
+      name: target_id
+      required: true
+    - description: The number of policies to return.
+      name: limit
+      defaultValue: '50'
+    - description: The number of policies to return per page. The maximum is 1000.
+      name: page_size
+    - description: The token denoting the next page of policies, as given by the response of the previous run of this command under the context key "AWS.Organizations.PolicyNextToken".
+      name: next_token
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    description: Lists the policies that are directly attached to the specified target root, organizational unit (OU), or account.
+    outputs:
+    - contextPath: AWS.Organizations.TargetPolicy.Id
+      description: The unique identifier (ID) of the policy.
+      type: String
+    - contextPath: AWS.Organizations.TargetPolicy.Arn
+      description: The Amazon Resource Name (ARN) of the policy.
+      type: String
+    - contextPath: AWS.Organizations.TargetPolicy.Name
+      description: The friendly name of the policy.
+      type: String
+    - contextPath: AWS.Organizations.TargetPolicy.Description
+      description: The description of the policy.
+      type: String
+    - contextPath: AWS.Organizations.TargetPolicy.Type
+      description: The type of policy.
+      type: String
+    - contextPath: AWS.Organizations.TargetPolicy.AwsManaged
+      description: Indicates whether the specified policy is an Amazon Web Services managed policy. If true, the policy can be attached to roots, organizational units, or accounts, but cannot be edited.
+      type: Boolean
+    - contextPath: AWS.Organizations.TargetId
+      description: The unique identifier (ID) of the target.
+      type: String
+    - contextPath: AWS.Organizations.TargetPolicyNextToken
+      description: If not null, indicates that more output is available than is included in the current response. Use this value as the next_token argument in a subsequent call of the command to get the next part of the output.
+      type: String
+  - name: aws-org-policy-get
+    arguments:
+    - description: The unique identifier (ID) of the policy that you want details about. This value can be retrieved by running the command "aws-org-policy-list".
+      name: policy_id
+      required: true
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    description: Retrieves information about a policy.
+    outputs:
+    - contextPath: AWS.Organizations.Policy.Id
+      description: The unique identifier (ID) of the policy.
+      type: String
+    - contextPath: AWS.Organizations.Policy.Arn
+      description: The Amazon Resource Name (ARN) of the policy.
+      type: String
+    - contextPath: AWS.Organizations.Policy.Name
+      description: The friendly name of the policy.
+      type: String
+    - contextPath: AWS.Organizations.Policy.Description
+      description: The description of the policy.
+      type: String
+    - contextPath: AWS.Organizations.Policy.Type
+      description: The type of policy.
+      type: String
+    - contextPath: AWS.Organizations.Policy.AwsManaged
+      description: Indicates whether the specified policy is an Amazon Web Services managed policy. If true, the policy can be attached to roots, organizational units, or accounts, but cannot be edited.
+      type: Boolean
+  - name: aws-org-policy-delete
+    arguments:
+    - description: The unique identifier (ID) of the policy that you want to delete. This value can be retrieved by running the command "aws-org-policy-list".
+      name: policy_id
+      required: true
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    description: Deletes the specified policy from the organization. Before performing this operation, the policy must be detached from all organizational units (OUs), roots, and accounts.
+    outputs: []
+  - name: aws-org-policy-attach
+    arguments:
+    - description: The unique identifier (ID) of the policy to attach to the target. This value can be retrieved by running the command "aws-org-policy-list".
+      name: policy_id
+      required: true
+    - description: The unique identifier (ID) of the root, organizational unit, or account to attach the policy to. This value can be retrieved by running the command "aws-org-root-list" or "aws-org-account-list".
+      name: target_id
+      required: true
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    description: Attaches a policy to a root, an organizational unit (OU), or an individual account.
+    outputs: []
+  - name: aws-org-policy-target-list
+    arguments:
+    - description: The unique identifier (ID) of the policy whose attachments are to be listed.
+      name: policy_id
+      required: true
+    - description: The number of policies to return.
+      name: limit
+      defaultValue: '50'
+    - description: The number of policies to return per page. The maximum is 1000.
+      name: page_size
+    - description: The token denoting the next page of policies, as given by the response of the previous run of this command under the context key "AWS.Organizations.PolicyTargetNextToken".
+      name: next_token
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    description: Lists all the roots, organizational units (OUs), and accounts that the specified policy is attached to.
+    outputs:
+    - contextPath: AWS.Organizations.PolicyTarget.TargetId
+      description: The unique identifier (ID) of the policy target.
+      type: String
+    - contextPath: AWS.Organizations.PolicyTarget.Arn
+      description: The Amazon Resource Name (ARN) of the policy target.
+      type: String
+    - contextPath: AWS.Organizations.PolicyTarget.Name
+      description: The friendly name of the policy target.
+      type: String
+    - contextPath: AWS.Organizations.PolicyTarget.Type
+      description: The type of the policy target.
+      type: String
+    - contextPath: AWS.Organizations.PolicyTarget.PolicyId
+      description: The unique identifier (ID) of the policy.
+      type: String
+    - contextPath: AWS.Organizations.PolicyTargetNextToken
+      description: If not null, indicates that more output is available than is included in the current response. Use this value as the next_token argument in a subsequent call of the command to get the next part of the output.
+      type: String
+  - name: aws-org-resource-tag-add
+    arguments:
+    - description: The ID of the resource to add a tag to. This value can be retrieved by running the command "aws-org-root-list", "aws-org-account-list", "aws-org-root-list", or "aws-org-policy-list".
+      name: resource_id
+      required: true
+    - description: 'A comma-separated list of tags to attach to the resource. Each tag should be in the format: "key=value".'
+      name: tags
+      isArray: true
+      required: true
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    description: Adds one or more tags to the specified resource.
+    outputs: []
+  - name: aws-org-resource-tag-list
+    arguments:
+    - description: The ID of the resource with the tags to list. This value can be retrieved by running the command "aws-org-root-list", "aws-org-account-list", "aws-org-root-list" or "aws-org-policy-list".
+      name: resource_id
+      required: true
+    - description: The token denoting the next page of tags, as given by the response of the previous run of this command under the context key "AWS.Organizations.TagNextToken".
+      name: next_token
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    description: Lists tags that are attached to the specified resource.
+    outputs:
+    - contextPath: AWS.Organizations.Tag.Key
+      description: The key identifier, or name, of the tag.
+      type: String
+    - contextPath: AWS.Organizations.Tag.Value
+      description: The string value that's associated with the key of the tag.
+      type: String
+    - contextPath: AWS.Organizations.Tag.ResourceId
+      description: The unique identifier (ID) of the resource.
+      type: String
+    - contextPath: AWS.Organizations.TagNextToken
+      description: If not null, indicates that more output is available than is included in the current response. Use this value as the next_token argument in a subsequent call of the command to get the next part of the output.
+      type: String
+  dockerimage: demisto/boto3py3:1.0.0.81279
+  feed: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 6.10.0
+marketplaces:
+- xsoar
+- marketplacev2
+tests:
+- Test - AWS_Organizations
