@@ -19,7 +19,7 @@ In /etc/rsylog.conf define the rest of the configuration related to rsyslog.
 8. Restart the syslog daemon and verify the status with commands (described in the documentation).
 9. Configure Security Console Logging to send to localhost **127.0.0.1**.
 10. Monitor the outgoing traffic to the remote syslog server.
-11. Once done with the primary, please repeat steps 1 through 9 above on each replica server in your deployment.  Be sure to complete the tasks on one before moving to the other(s).
+11. When the configuration is completed on the primary server, repeat steps 1 through 9 on each replica server in your deployment.  Be sure to complete the tasks on one server before moving to another server.
 
 * To configure RSA Authentication Manager 8.4 or later to send data to remote syslog servers, refer to the full documentation provided by [RSA] (https://community.rsa.com/t5/securid-knowledge-base/how-to-configure-rsa-authentication-manager-8-4-or-later-to-send/ta-p/2823).
   
