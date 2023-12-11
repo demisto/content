@@ -68,7 +68,15 @@ def login():
 
 def logout():
     cmd_url = '/jwt/logout'
-    http_request('POST', cmd_url, None, DEFAULT_HEADERS)
+
+    try:
+        LOG(f'Running logout: auth={DEFAULT_HEADERS["Authorization"]}')
+        res = http_request('POST', cmd_url, None, DEFAULT_HEADERS)
+        LOG(f'After logout: res={res}')
+    except Exception as ex:
+        LOG(f'Exception is: {ex}')
+        LOG(f'Exception is: {ex.response}')
+        LOG(f'Exception is: {ex.response.text}')
 
 
 def get_server_details(qualification, fields):
@@ -117,6 +125,12 @@ def get_server_details(qualification, fields):
 auth = login()
 token = auth.content
 DEFAULT_HEADERS['Authorization'] = f'AR-JWT {token}'
+# try: DEFAULT_HEADERS['Authorization'] = 'AR-JWT' + token
+# try: DEFAULT_HEADERS['Authorization'] = f'AR-JWT {str(token)}'
+
+LOG(f'Got the token, first option: AR-JWT {token}')
+LOG(f'Got the token, second option: AR-JWT {str(token)}')
+LOG(f'Got the token, third option: TODO')
 
 LOG('command is %s' % (demisto.command(), ))
 try:
