@@ -73,7 +73,7 @@ def test_validate_entry_context(capfd, entry_context: dict, raise_exception: boo
                          ])
 def test_build_grid(mocker, keys: list, columns: list, dt_response_json: str, expected_json: str,
                     unpack_nested: bool):
-    """Unit test
+    """
     Given
     - script args
     - a file
@@ -105,7 +105,7 @@ very_long_column_name = 11 * "column_name_OF_LEN_264__"
                          ])
 def test_build_grid_command(mocker, keys: list[str], columns: list[str], unpack_nested_elements: bool,
                             dt_response_path: str, expected_results_path: str):
-    """Unit test
+    """
     Given
     - script args
     - a file
@@ -136,7 +136,7 @@ def test_build_grid_command(mocker, keys: list[str], columns: list[str], unpack_
 def test_build_grid_command_with_sort_by(mocker, keys: list[str], columns: list[str],
                                          unpack_nested_elements: bool, dt_response_path: str,
                                          expected_results_path: str):
-    """Unit test
+    """
     Given
     - script args, including sort_by
     - a file
@@ -169,7 +169,7 @@ def test_build_grid_command_with_sort_by(mocker, keys: list[str], columns: list[
 def test_build_grid_command_with_multi_sort_by(mocker, keys: list[str], columns: list[str],
                                                unpack_nested_elements: bool, dt_response_path: str,
                                                expected_results_path: str):
-    """Unit test
+    """
     Given
     - script args, including multi sort_by cols
     - a file
@@ -201,7 +201,7 @@ def side_effect_for_execute_command_in_playground(command: str, arguments: dict)
 
 
 def test_main_does_not_raises_list_index_in_playground(mocker):
-    """Unit test
+    """
      Given
     - An output from executeCommand in the playground.
      When
@@ -224,7 +224,7 @@ def test_main_does_not_raises_list_index_in_playground(mocker):
 
 
 def test_main_raises_list_index_not_in_playground(mocker):
-    """Unit test
+    """
      Given
     - An output from executeCommand not in the playground.
      When
@@ -247,7 +247,7 @@ def test_main_raises_list_index_not_in_playground(mocker):
 
 
 def test_get_current_table_exception(mocker):
-    """Unit test
+    """
      Given
     - An output from demisto.incident in the playground.
      When
