@@ -1,4 +1,4 @@
-from ExtractEmailTransformer import extract
+from ExtractEmailTransformer_6_10 import extract
 import pytest
 
 TEST_EXTRACT__ARGUMENTS = (
