@@ -890,6 +890,8 @@ tasks:
       URL:
         complex:
           root: inputs.URL
+          transformers:
+          - operator: uniq
     separatecontext: true
     continueonerrortype: ""
     loop:
