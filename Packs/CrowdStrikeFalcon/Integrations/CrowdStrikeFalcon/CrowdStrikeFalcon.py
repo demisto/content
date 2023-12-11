@@ -3810,7 +3810,7 @@ def run_command():
 
     if target == 'batch':
         batch_id = args.get('batch_id', None) if args.get('batch_id', None) else init_rtr_batch_session(host_ids, offline)
-        # demisto.debug(f'{args.get('batch_id', None)=}, {batch_id=}')
+        demisto.debug(f"{args.get('batch_id', None)=} , {batch_id=}")
         timer = Timer(300, batch_refresh_session, kwargs={'batch_id': batch_id})
         timer.start()
         try:
@@ -3823,6 +3823,7 @@ def run_command():
         finally:
             timer.cancel()
 
+        demisto.debug(f'{response=}')
         resources: dict = response.get('combined', {}).get('resources', {})
 
         for _, resource in resources.items():
