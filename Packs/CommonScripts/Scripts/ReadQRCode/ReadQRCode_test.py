@@ -39,16 +39,16 @@ def test_with_non_qr_code_file(mocker):
         - Calling the ReadQRCode script.
 
     Then:
-        Return a messsage that no QR code was found. 
+        Return a message that no QR code was found.
     """
     from ReadQRCode import extract_info_from_qr_code
 
     mocker.patch.object(
         demisto, 'getFilePath', return_value={'path': 'test_data/not_a_qr_code.png'},
     )
-    
+
     result = extract_info_from_qr_code('entry_id')
-    
+
     assert result.readable_output == 'No QR code was found in the image.'
 
 
@@ -61,7 +61,7 @@ def test_with_non_image_file(mocker):
         - Calling the ReadQRCode script.
 
     Then:
-        Return an informative error. 
+        Return an informative error.
     """
     from ReadQRCode import extract_info_from_qr_code
 
