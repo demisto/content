@@ -3075,10 +3075,10 @@ def get_ipam_discovered_public_addresses_command(args: Dict[str, Any], aws_clien
     """
     client = aws_client.aws_session(
         service='ec2',
-        region=args.get('region'),
+        region=args.get('AddressRegion'),
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration')
+        role_session_duration=args.get('roleSessionDuration')
     )
 
     if (args.get('IpamResourceDiscoveryId') is None) or (args.get('AddressRegion') is None):
@@ -3139,7 +3139,7 @@ def main():
         # required for typing of IPAM commands
         client: 'EC2Client' = aws_client.aws_session(
             service='ec2',
-            region=args.get('region'),
+            region=args.get('AddressRegion'),
             role_arn=args.get('roleArn'),
             role_session_name=args.get('roleSessionName'),
             role_session_duration=args.get('roleSessionDuration'),
