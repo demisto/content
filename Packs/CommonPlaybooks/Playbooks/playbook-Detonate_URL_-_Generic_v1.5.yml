@@ -333,7 +333,7 @@ tasks:
       id: 36274297-5bc4-4f17-8f71-eace307e6ffd
       version: -1
       name: Detonate URL - Cuckoo
-      description: Detonating URL with Cuckoo
+      description: Detonate a URL with Cuckoo.
       playbookName: Detonate URL - Cuckoo
       type: playbook
       iscommand: false
