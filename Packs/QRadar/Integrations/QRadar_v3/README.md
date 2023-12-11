@@ -29,7 +29,7 @@ This integration was integrated and tested with version 14-20 of QRadar v3
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Timeout for http-requests | The timeout of the HTTP requests sent to the Qradar API (in seconds). If no value is provided, the timeout will be set to 60 seconds. | False |
-    | Fetch Incidents Interval | The fetch interval between before each fetch-incidents execution. | False |
+    | Fetch Incidents Interval | The fetch interval between before each fetch-incidents execution. (seconds) | False |
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Required Permissions

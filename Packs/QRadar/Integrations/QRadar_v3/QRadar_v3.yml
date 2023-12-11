@@ -164,7 +164,7 @@ configuration:
 - defaultvalue: '60'
   display: "Fetch Incidents Interval"
   name: fetch_interval
-  additionalinfo: The fetch interval between before each fetch-incidents execution.
+  additionalinfo: The fetch interval between before each fetch-incidents execution (seconds).
   type: 0
   section: Collect
   advanced: true
