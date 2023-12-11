@@ -201,10 +201,9 @@ class Client:
             url=f'{self.session_metadata["base_url"]}/php/utils/router.php/PoliciesDirect.getPoliciesByUsage',
             json_cmd=json_cmd)
 
-    def policy_optimizer_get_rules(
-            self, timeframe: str, usage: str, exclude: bool, position: str, rule_type: str
-    ) -> dict:
-        def generate_paginated_request(start: int, limit: int = 200) -> dict:
+    def policy_optimizer_get_rules(self, timeframe: str, usage: str, exclude: bool, position: str, rule_type: str,
+                                   page_size: int = 200, limit: int = 200) -> dict:
+        def generate_paginated_request(_start: int, _limit: int) -> dict:
             return {
                 "action": "PanDirect", "method": "run",
                 "data": [
@@ -224,8 +223,8 @@ class Client:
                                 "exclude-reset-text": "90"
                             },
                             "pageContext": "rule_usage",
-                            "start": start,
-                            "limit": limit,
+                            "start": _start,
+                            "limit": _limit,
                         }
                     ]
                 ],
@@ -237,20 +236,33 @@ class Client:
 
         response = self.session_post(
             url=f'{self.session_metadata["base_url"]}/php/utils/router.php/PoliciesDirect.getPoliciesByUsage',
-            json_cmd=generate_paginated_request(start=0),
+            json_cmd=generate_paginated_request(_start=0, _limit=min(page_size, limit)),
         )
 
         # Handle pagination
         total_results_count = int(response.get('result', {}).get('result', {}).get('@total-count', 0))
         collected_results_count = int(response.get('result', {}).get('result', {}).get('@count', 0))
 
-        while collected_results_count < total_results_count:
+        while collected_results_count < limit and collected_results_count < total_results_count:
+            offset = collected_results_count
+            remaining_results_count = min(total_results_count - collected_results_count, limit - collected_results_count)
+
+            if remaining_results_count > page_size:  # If we have more than 'page_size' results left to fetch
+                current_limit = page_size
+
+            else:  # If we have less than 'page_size' results left, we'll set the limit to the amount of the remaining results
+                current_limit = remaining_results_count
+
             current_response = self.session_post(
                 url=f'{self.session_metadata["base_url"]}/php/utils/router.php/PoliciesDirect.getPoliciesByUsage',
-                json_cmd=generate_paginated_request(start=collected_results_count),
+                json_cmd=generate_paginated_request(_start=offset, _limit=current_limit),
             )
+
+            # Update collected results
             current_entry_data = current_response.get('result', {}).get('result', {}).get('entry', [])
             response['result']['result']['entry'].extend(current_entry_data)
+
+            # Update collected results count
             current_results_count = int(current_response.get('result', {}).get('result', {}).get('@count', 0))
             collected_results_count += current_results_count
             response['result']['result']['@count'] = str(collected_results_count)
@@ -306,14 +318,16 @@ class Client:
             json_cmd=json_cmd)
 
 
-def get_unused_rules_by_position(client: Client, position, exclude, rule_type, usage, timeframe) -> Tuple[Dict, List]:
+def get_unused_rules_by_position(client: Client, position: str, exclude: bool, rule_type: str,
+                                 usage: str, timeframe: str, page_size: int, limit: int) -> Tuple[Dict, List]:
     """
 
     Get unused rules from panorama based on user defined arguments.
 
     """
     raw_response = client.policy_optimizer_get_rules(
-        timeframe=timeframe, usage=usage, exclude=exclude, position=position, rule_type=rule_type  # type: ignore
+        timeframe=timeframe, usage=usage, exclude=exclude, position=position, rule_type=rule_type,
+        page_size=page_size, limit=limit,
     )
 
     stats = raw_response.get('result', {})
@@ -429,13 +443,27 @@ def policy_optimizer_get_rules_command(client: Client, args: dict) -> CommandRes
     position = args.get('position')
     rule_type = args.get('rule_type') or 'security'
     position = position if client.is_cms_selected else 'main'  # firewall instance only has position main
+    page_size: int = arg_to_number(args.get('page_size')) or 200
+    limit: int = arg_to_number(args.get('limit')) or 200
+
+    if page_size > 200:
+        raise ValueError('The maximum page size is 200.')
+
+    params = {  # All params without the 'position' param
+        'client': client,
+        'exclude': exclude,
+        'rule_type': rule_type,
+        'usage': usage,
+        'timeframe': timeframe,
+        'page_size': page_size,
+        'limit': limit,
+    }
+
     rules = []
 
     if position == 'both':
-        post_raw, post_rules = get_unused_rules_by_position(client=client, position='post', exclude=exclude,
-                                                            rule_type=rule_type, usage=usage, timeframe=timeframe)
-        pre_raw, pre_rules = get_unused_rules_by_position(client=client, position='pre', exclude=exclude,
-                                                          rule_type=rule_type, usage=usage, timeframe=timeframe)
+        post_raw, post_rules = get_unused_rules_by_position(position='post', **params)
+        pre_raw, pre_rules = get_unused_rules_by_position(position='pre', **params)
         raw_response = {
             'post': post_raw,
             'pre': pre_raw,
@@ -444,8 +472,7 @@ def policy_optimizer_get_rules_command(client: Client, args: dict) -> CommandRes
         rules.extend(pre_rules)
 
     else:
-        raw_response, rules = get_unused_rules_by_position(client=client, position=position, exclude=exclude,
-                                                           rule_type=rule_type, usage=usage, timeframe=timeframe)
+        raw_response, rules = get_unused_rules_by_position(position=position, **params)
 
     if rules:
         headers = ['@name', '@uuid', 'action', 'description', 'source', 'destination']
