@@ -345,7 +345,7 @@ def domain_reputation_command(client: Client, args: dict[str, Any],
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """
     main function, parses params and runs command functions
     """
