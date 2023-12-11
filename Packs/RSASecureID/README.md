@@ -14,7 +14,7 @@ In /etc/rsylog.conf define the rest of the configuration related to rsyslog.
 3. Changes the privileges of **rsaadmin**.
 4. Enter the operating system password when prompted.
 5. Go to **/etc/rsyslog.d/** and make a copy of the **remote.conf** file.
-6. Edit the **remote.conf** configuration file using an editor such as vi.
+6. Open the **remote.conf** configuration file in an editor such as vi.
 7. Append the remote syslog servers in the **/etc/rsyslog.d/remote.conf** file.
 8. Restart the syslog daemon and verify the status with commands (described in the documentation).
 9. Configure Security Console Logging to send to localhost **127.0.0.1**.
