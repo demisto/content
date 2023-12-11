@@ -1,6 +1,6 @@
 #!/bin/bash
 pwd
-ls -l
+ls -la
 ./darwin -p 9980 &pid=$!
 echo "running darwin on pid: $pid"
 sleep 5
