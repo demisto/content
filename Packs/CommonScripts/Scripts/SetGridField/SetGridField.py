@@ -9,6 +9,22 @@ import phrases_case
 from CommonServerUserPython import *
 
 
+
+def get_error_message(grid_id: str) -> str:
+    """ Gets error message.
+
+    Args:
+        grid_id: The grid ID.
+
+    Returns:
+        str: The error message.
+    """
+    return f"The following grid id was not found: {grid_id}. Make sure you entered the correct " \
+           f"incident type with the \"Machine name\" as it appears in the incident field editor in " \
+           f"Settings->Advanced ->Fields (Incident). Also make sure that this value appears in the " \
+           f"incident Context Data under incident - if not then consult with PANW support team."
+
+
 def normalized_string(phrase: str) -> str:
     """ Normalize a string to flatcase (to match `cli name`).
 
@@ -165,10 +181,7 @@ def get_current_table(grid_id: str) -> pd.DataFrame:
     custom_fields = incident.get("CustomFields", {}) or {}
     is_playground = incident.get("isPlayground")
     if is_playground and grid_id not in custom_fields:
-        raise ValueError(f"The following grid id was not found: {grid_id}. Make sure you entered the correct "
-                         f"incident type with the \"Machine name\" as it appears in the incident field editor in "
-                         f"Settings->Advanced ->Fields (Incident). Also make sure that this value appears in the "
-                         f"incident Context Data under incident - if not then consult with PANW support team.")
+        raise ValueError(get_error_message(grid_id))
     current_table: list[dict] | None = custom_fields.get(grid_id)
     return pd.DataFrame(current_table) if current_table else pd.DataFrame()
 
@@ -384,11 +397,7 @@ def main():  # pragma: no cover
                 data = entry["Contents"]["data"]
                 custom_fields = data[0].get("CustomFields") if data and data[0].get("CustomFields") else {}
         if (not is_playground) and table and grid_id not in custom_fields:
-            raise ValueError(f"The following grid id was not found: {grid_id}. Make sure you entered the correct "
-                             f"incident type with the \"Machine name\" as it appears in the incident field editor in "
-                             f"Settings->Advanced ->Fields (Incident). Also make sure that this value appears in the "
-                             f"incident Context Data under incident - if not then consult with PANW support team.")
-
+            raise ValueError(get_error_message(grid_id))
         if is_error(res_set):
             demisto.error(f'failed to execute "setIncident" with table: {table}')
             return_results(res)
