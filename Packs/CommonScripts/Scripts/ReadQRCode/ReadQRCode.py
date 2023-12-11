@@ -7,7 +7,8 @@ def read_qr_code(filename: str) -> str:
 
     detect = cv2.QRCodeDetector()
     img = cv2.imread(filename)
-    text, *_ = detect.detectAndDecode(img)
+    text, *rest = detect.detectAndDecode(img)
+    demisto.debug(f'QR code matrices: {rest}')
     return text
 
 
