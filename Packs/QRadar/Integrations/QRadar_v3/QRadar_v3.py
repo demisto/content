@@ -396,6 +396,7 @@ class Client(BaseClient):
                     resp_type=resp_type
                 )
             except (DemistoException, requests.ReadTimeout) as error:
+                demisto.error(f'Error {error} in time {_time}')
                 if (
                     isinstance(
                         error, DemistoException
