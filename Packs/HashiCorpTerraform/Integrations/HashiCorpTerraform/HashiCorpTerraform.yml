@@ -96,6 +96,135 @@ script:
     - type: Date
       contextPath: Terraform.Run.data.attributes.status-timestamps.planned-at
       description: The date time the plan was planned.
+    - contextPath: Terraform.Run.data.type
+      description: 'Type of the Terraform run data.'
+      type: String
+    - contextPath: Terraform.Run.data.attributes.actions.is-cancelable
+      description: 'Flag indicating whether the Terraform run can be canceled.'
+      type: Boolean
+    - contextPath: Terraform.Run.data.attributes.actions.is-confirmable
+      description: 'Flag indicating whether the Terraform run can be confirmed.'
+      type: Boolean
+    - contextPath: Terraform.Run.data.attributes.actions.is-discardable
+      description: 'Flag indicating whether the Terraform run can be discarded.'
+      type: Boolean
+    - contextPath: Terraform.Run.data.attributes.actions.is-force-cancelable
+      description: 'Flag indicating whether the Terraform run can be force-canceled.'
+      type: Boolean
+    - contextPath: Terraform.Run.data.attributes.canceled-at
+      description: 'Timestamp indicating when the Terraform run was canceled.'
+      type: Unknown
+    - contextPath: Terraform.Run.data.attributes.created-at
+      description: 'Timestamp indicating when the Terraform run was created.'
+      type: Date
+    - contextPath: Terraform.Run.data.attributes.has-changes
+      description: 'Flag indicating whether there are changes in the Terraform run.'
+      type: Boolean
+    - contextPath: Terraform.Run.data.attributes.auto-apply
+      description: 'Flag indicating whether auto-apply is enabled for the Terraform run.'
+      type: Boolean
+    - contextPath: Terraform.Run.data.attributes.allow-empty-apply
+      description: 'Flag indicating whether empty apply is allowed for the Terraform run.'
+      type: Boolean
+    - contextPath: Terraform.Run.data.attributes.allow-config-generation
+      description: 'Flag indicating whether configuration generation is allowed for the Terraform run.'
+      type: Boolean
+    - contextPath: Terraform.Run.data.attributes.is-destroy
+      description: 'Flag indicating whether the Terraform run is a destroy operation.'
+      type: Boolean
+    - contextPath: Terraform.Run.data.attributes.message
+      description: 'Text message associated with the Terraform run.'
+      type: String
+    - contextPath: Terraform.Run.data.attributes.plan-only
+      description: 'Flag indicating whether the Terraform run is for planning only.'
+      type: Boolean
+    - contextPath: Terraform.Run.data.attributes.source
+      description: 'Source of the Terraform run.'
+      type: String
+    - contextPath: Terraform.Run.data.attributes.status-timestamps.plan-queueable-at
+      description: 'Timestamp indicating when the Terraform run is queueable in the plan stage.'
+      type: Date
+    - contextPath: Terraform.Run.data.attributes.trigger-reason
+      description: 'Reason for triggering the Terraform run.'
+      type: String
+    - contextPath: Terraform.Run.data.attributes.target-addrs
+      description: 'Target addresses associated with the Terraform run.'
+      type: Unknown
+    - contextPath: Terraform.Run.data.attributes.permissions.can-apply
+      description: 'Flag indicating whether the user has permission to apply changes.'
+      type: Boolean
+    - contextPath: Terraform.Run.data.attributes.permissions.can-cancel
+      description: 'Flag indicating whether the user has permission to cancel the Terraform run.'
+      type: Boolean
+    - contextPath: Terraform.Run.data.attributes.permissions.can-comment
+      description: 'Flag indicating whether the user has permission to add comments.'
+      type: Boolean
+    - contextPath: Terraform.Run.data.attributes.permissions.can-discard
+      description: 'Flag indicating whether the user has permission to discard the Terraform run.'
+      type: Boolean
+    - contextPath: Terraform.Run.data.attributes.permissions.can-force-execute
+      description: 'Flag indicating whether the user has permission to force execute the Terraform run.'
+      type: Boolean
+    - contextPath: Terraform.Run.data.attributes.permissions.can-force-cancel
+      description: 'Flag indicating whether the user has permission to force cancel the Terraform run.'
+      type: Boolean
+    - contextPath: Terraform.Run.data.attributes.permissions.can-override-policy-check
+      description: 'Flag indicating whether the user has permission to override policy checks.'
+      type: Boolean
+    - contextPath: Terraform.Run.data.attributes.refresh
+      description: 'Flag indicating whether the Terraform run should perform a refresh.'
+      type: Boolean
+    - contextPath: Terraform.Run.data.attributes.refresh-only
+      description: 'Flag indicating whether the Terraform run is for refresh only.'
+      type: Boolean
+    - contextPath: Terraform.Run.data.attributes.replace-addrs
+      description: 'Replacement addresses associated with the Terraform run.'
+      type: Unknown
+    - contextPath: Terraform.Run.data.attributes.save-plan
+      description: 'Flag indicating whether the Terraform run plan should be saved.'
+      type: Boolean
+    - contextPath: Terraform.Run.data.attributes.variables
+      description: 'Variables associated with the Terraform run.'
+      type: Unknown
+    - contextPath: Terraform.Run.data.relationships.apply
+      description: 'Relationship information for the Terraform run apply.'
+      type: String
+    - contextPath: Terraform.Run.data.relationships.comments
+      description: 'Relationship information for comments associated with the Terraform run.'
+      type: String
+    - contextPath: Terraform.Run.data.relationships.configuration-version
+      description: 'Relationship information for the Terraform configuration version associated with the run.'
+      type: String
+    - contextPath: Terraform.Run.data.relationships.cost-estimate
+      description: 'Relationship information for cost estimates associated with the Terraform run.'
+      type: String
+    - contextPath: Terraform.Run.data.relationships.created-by
+      description: 'Relationship information for the user who created the Terraform run.'
+      type: String
+    - contextPath: Terraform.Run.data.relationships.input-state-version
+      description: 'Relationship information for the input state version associated with the Terraform run.'
+      type: String
+    - contextPath: Terraform.Run.data.relationships.plan
+      description: 'Relationship information for the Terraform run plan.'
+      type: String
+    - contextPath: Terraform.Run.data.relationships.run-events
+      description: 'Relationship information for events associated with the Terraform run.'
+      type: String
+    - contextPath: Terraform.Run.data.relationships.policy-checks
+      description: 'Relationship information for policy checks associated with the Terraform run.'
+      type: String
+    - contextPath: Terraform.Run.data.relationships.workspace
+      description: 'Relationship information for the Terraform workspace associated with the run.'
+      type: String
+    - contextPath: Terraform.Run.data.relationships.workspace-run-alerts
+      description: 'Relationship information for alerts associated with the Terraform workspace run.'
+      type: String
+    - contextPath: Terraform.Run.data.links.self
+      description: 'Link to the Terraform run data.'
+      type: String
+    - contextPath: Terraform.Run.data
+      description: 'Information about the Terraform run.'
+      type: String
   - name: terraform-run-action
     arguments:
     - name: run_id

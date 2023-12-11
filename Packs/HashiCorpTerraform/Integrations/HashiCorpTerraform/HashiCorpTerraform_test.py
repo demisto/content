@@ -1,7 +1,9 @@
 import pytest
+from pytest import raises
 import io
 from CommonServerPython import *
 from HashiCorpTerraform import Client, runs_list_command, run_action_command, plan_get_command, policies_list_command, policy_set_list_command, policies_checks_list_command
+import re
 SERVER_URL = 'https://test_url.com'
 
 
@@ -20,36 +22,41 @@ def client():
 
 def test_runs_list_command(client, requests_mock):
     """
-        When:
         Given:
+            - Client object.
+        When:
+            - run the list runs command.
         Then:
+            - validate the results are as expected. 
     """
-    args = {'workspace_id': None, 'run_id': None, 'filter_status': None}
-    mock_response_runs_list_request = util_load_json(
-        './test_data/outputs/runs_list_request.json')
-    mock_results = util_load_json('./test_data/outputs/runs_list_command.json')
-    requests_mock.post(SERVER_URL, json=mock_response_runs_list_request)
-    results = runs_list_command(client=client, args=args)
-    assert results.outputs_prefix == 'Terraform.Run'
-    assert results.outputs_key_field == 'data.id'
-    assert results.outputs == mock_results.get('outputs')
-    assert results.readable_output == mock_results.get('readable_output')
+    mock_response = util_load_json('./test_data/runs_list_request.json')['mock_response']
+    requests_mock.get(re.compile(f'{SERVER_URL}.*'), json=mock_response)
+    expected_results = util_load_json('./test_data/runs_list_request.json')['expected_results']
+    
+    results = runs_list_command(client=client, args={'workspace_id': 'workspace_id'})
+    
+    assert results.to_context() == expected_results
 
 
 def test_run_action_command(client, requests_mock):
     """
-        When:
         Given:
+            - Client object.
+        When:
+            - run the run action command.
         Then:
-        """
-    args = {'run_id': 'run-Q2kS54r6pJjdyYfk', 'action': 'apply', 'comment':
-            'comment'}
-    mock_response_run_action = util_load_json(
-        './test_data/outputs/run_action.json')
-    mock_results = util_load_json('./test_data/outputs/run_action_command.json'
-                                  )
-    requests_mock.post(SERVER_URL, json=mock_response_run_action)
-    results = run_action_command(client=client, args=args)
+            - validate the results are as expected. 
+    """
+    mock_response = util_load_json('./test_data/run_action_request.json')['mock_response']
+    requests_mock.post(re.compile(f'{SERVER_URL}.*'), json=mock_response, status_code=409)
+    expected_results = util_load_json('./test_data/run_action_request.json')['expected_results']
+    
+    with raises(DemistoException) as err:
+        results = run_action_command(client=client, args={
+            'run_id': 'run-ABCABCABCABCABCa',
+            'action': 'apply', 'comment': 'comment'
+        })
+    assert err
 
 
 def test_plan_get_command(client, requests_mock):
