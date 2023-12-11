@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 
 
-def main():
+def main():  # pragma: no cover
     try:
         return_results(extract(argToList(demisto.args().get('value'))))
     except Exception as error:
