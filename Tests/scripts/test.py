@@ -1,13 +1,13 @@
 import sys
+
 sys.path.append('../../Packs/Whois/Integrations/Whois')
 import datetime
 import json
 import pathlib
 import pickle
 import socket
-from typing import Any
 import tempfile
-import ipwhois
+from typing import Any
 import pytest
 import Whois
 from pytest_mock import MockerFixture
