@@ -384,7 +384,7 @@ def test_create_single_asset_for_offense_enrichment():
                            None,
                            ([], QueryStatus.ERROR.value))
                           ])
-def test_poll_offense_events_with_retry(requests_mock, status_exception, status_response, results_response, search_id,
+def test_poll_offense_events_with_retry(mocker, requests_mock, status_exception, status_response, results_response, search_id,
                                         expected):
     """
     Given:
@@ -399,6 +399,7 @@ def test_poll_offense_events_with_retry(requests_mock, status_exception, status_
      - Case a: Ensure that expected events are returned.
      - Case b: Ensure that None is returned.
     """
+    mocker.patch.object(demisto, "error")
     context_data = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
                     MIRRORED_OFFENSES_FINISHED_CTX_KEY: {}}
     set_integration_context(context_data)
