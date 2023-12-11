@@ -22,7 +22,7 @@ class Client(BaseClient):
 
 def test_module(client: Client) -> str:
     try:
-        return client._http_request(
+        client._http_request(
             method='GET',
             url_suffix='/',
             params={
