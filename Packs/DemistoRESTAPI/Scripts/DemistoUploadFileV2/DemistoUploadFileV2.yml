@@ -30,7 +30,7 @@ args:
   - 'incident attachment'
 comment: Deprecated. Use UploadFile instead.
 subtype: python3
-dockerimage: demisto/python3:3.10.6.33415
+dockerimage: demisto/python3:3.10.13.83255
 tags:
 - DemistoAPI
 timeout: '0'
