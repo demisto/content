@@ -657,7 +657,7 @@ tasks:
       id: aaaae5ac-95e9-4542-81c2-a3f634f13437
       version: -1
       name: Detonate URL - FireEye AX
-      description: Detonating URL with FireEye AX.
+      description: Detonates a URL with FireEye AX.
       playbookName: Detonate URL - FireEye AX
       type: playbook
       iscommand: false
