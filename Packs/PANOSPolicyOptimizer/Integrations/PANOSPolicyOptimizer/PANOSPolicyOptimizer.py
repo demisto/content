@@ -425,7 +425,7 @@ def policy_optimizer_get_rules_command(client: Client, args: dict) -> CommandRes
     """
     timeframe = args.get('timeframe')
     usage = args.get('usage')
-    exclude = argToBoolean(args.get('exclude'))
+    exclude = argToBoolean(args.get('exclude', False))
     position = args.get('position')
     rule_type = args.get('rule_type') or 'security'
     position = position if client.is_cms_selected else 'main'  # firewall instance only has position main
