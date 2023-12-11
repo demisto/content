@@ -9,6 +9,9 @@ from typing import List, Dict, Union, Optional, Callable, Tuple
 # disable insecure warnings
 urllib3.disable_warnings()
 
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+THRESHOLD_IN_SECONDS = 43200        # 12 hours in seconds
+
 
 class Client:
     def __init__(self, url: str = '', credentials: dict = None,
@@ -81,7 +84,7 @@ class Client:
 
         if isinstance(self.post_data, str):
             content_type_header = 'Content-Type'
-            if content_type_header.lower() not in [k.lower() for k in self.headers.keys()]:
+            if content_type_header.lower() not in [k.lower() for k in self.headers]:
                 self.headers[content_type_header] = 'application/x-www-form-urlencoded'
 
     @staticmethod
@@ -118,6 +121,15 @@ class Client:
             last_run = demisto.getLastRun()
             etag = last_run.get(prefix_feed_name, {}).get('etag') or last_run.get(feed_name, {}).get('etag')
             last_modified = last_run.get(prefix_feed_name, {}).get('last_modified') or last_run.get(feed_name, {}).get('last_modified')  # noqa: E501
+            last_updated = last_run.get(prefix_feed_name, {}).get('last_updated') or last_run.get(feed_name, {}).get('last_updated')  # noqa: E501
+            # To avoid issues with indicators expiring, if 'last_updated' is over X hours old,
+            # we'll refresh the indicators to ensure their expiration time is updated.
+            # For further details, refer to : https://confluence-dc.paloaltonetworks.com/display/DemistoContent/Json+Api+Module
+            if last_updated and has_passed_time_threshold(timestamp_str=last_updated, seconds_threshold=THRESHOLD_IN_SECONDS):
+                last_modified = None
+                etag = None
+                demisto.debug("Since it's been a long time with no update, to make sure we are keeping the indicators alive, \
+                    we will refetch them from scratch")
 
             if etag:
                 self.headers['If-None-Match'] = etag
@@ -180,6 +192,9 @@ def get_no_update_value(response: requests.Response, feed_name: str) -> bool:
 
     etag = response.headers.get('ETag')
     last_modified = response.headers.get('Last-Modified')
+    current_time = datetime.utcnow()
+    # Save the current time as the last updated time. This will be used to indicate the last time the feed was updated in XSOAR.
+    last_updated = current_time.strftime(DATE_FORMAT)
 
     if not etag and not last_modified:
         demisto.debug('Last-Modified and Etag headers are not exists,'
@@ -189,7 +204,8 @@ def get_no_update_value(response: requests.Response, feed_name: str) -> bool:
     last_run = demisto.getLastRun()
     last_run[feed_name] = {
         'last_modified': last_modified,
-        'etag': etag
+        'etag': etag,
+        'last_updated': last_updated
     }
     demisto.setLastRun(last_run)
     demisto.debug(f'JSON: The new last run is: {last_run}')
