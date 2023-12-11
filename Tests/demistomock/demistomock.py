@@ -1343,7 +1343,7 @@ def setAssetsLastRun(obj):
     Returns:
       None: No data returned
     """
-    return None
+    return
 
 
 def getAssetsLastRun():
