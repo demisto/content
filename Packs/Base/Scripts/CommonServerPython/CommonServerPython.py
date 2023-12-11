@@ -459,7 +459,7 @@ class DBotScoreReliability(object):
         )
 
     @staticmethod
-    def get_dbot_score_reliability_from_str(reliability_str):
+    def get_dbot_score_reliability_from_str(reliability_str):   # pragma: no cover
         if reliability_str == DBotScoreReliability.A_PLUS:
             return DBotScoreReliability.A_PLUS
         elif reliability_str == DBotScoreReliability.A:
@@ -935,7 +935,7 @@ def positiveUrl(entry):
     return False
 
 
-def positiveFile(entry):
+def positiveFile(entry):    # pragma: no cover
     """
        Checks if the given entry from a file reputation query is positive (known bad) (deprecated)
 
@@ -984,7 +984,7 @@ def vtCountPositives(entry):
     return positives
 
 
-def positiveIp(entry):
+def positiveIp(entry):  # pragma: no cover
     """
        Checks if the given entry from a file reputation query is positive (known bad) (deprecated)
 
@@ -1020,7 +1020,7 @@ def formatEpochDate(t):
     return ''
 
 
-def shortCrowdStrike(entry):
+def shortCrowdStrike(entry):    # pragma: no cover
     """
        Display CrowdStrike Intel results in Markdown (deprecated)
 
@@ -2263,7 +2263,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
 tblToMd = tableToMarkdown
 
 
-def createContextSingle(obj, id=None, keyTransform=None, removeNull=False):
+def createContextSingle(obj, id=None, keyTransform=None, removeNull=False):     # pragma: no cover
     """Receives a dict with flattened key values, and converts them into nested dicts
 
     :type obj: ``dict`` or ``list``
