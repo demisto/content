@@ -7,9 +7,9 @@ Script Data
 
 | **Name** | **Description** |
 | --- | --- |
-| Script Type | javascript |
+| Script Type | python3 |
 | Tags | transformer |
-| Cortex XSOAR Version | 6.11.0 |
+| Cortex XSOAR Version | 6.1.0 |
 
 Inputs
 ---
