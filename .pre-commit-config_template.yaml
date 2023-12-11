@@ -88,6 +88,7 @@ repos:
      - --override-ini='asyncio_mode=auto'
      - --rootdir=/src
      - --junitxml=/src/.pre-commit/pytest-junit/.report_pytest.xml
+     - --color=yes
      - --files
     copy_files: 
       - Tests/scripts/dev_envs/pytest/conftest.py

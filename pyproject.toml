@@ -10,7 +10,7 @@ python = "^3.8,<3.11"
 defusedxml = "^0.7.1"
 
 [tool.poetry.group.dev.dependencies]
-demisto-sdk = {git = "https://github.com/demisto/demisto-sdk", rev = "e4888d3429a92fdf18f2b8114c5eb50fc6776696"}
+demisto-sdk = {git = "https://github.com/demisto/demisto-sdk", rev = "b2ed5a8ef603349468645616e510535293d9629f"}
 requests = "^2.22.0"
 pre-commit = "^3.5.0"
 google-cloud-compute = "^1.8.0"
@@ -517,7 +517,7 @@ asyncio_mode = "auto"
 
 [tool.coverage.run]
 relative_files = true
-omit = ["*/test_data/*", "*_test.py", "demistomock.py"]
+omit = ["*/test_data/*", "*_test.py", "demistomock.py", "conftest.py", "**/conftest.py"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
