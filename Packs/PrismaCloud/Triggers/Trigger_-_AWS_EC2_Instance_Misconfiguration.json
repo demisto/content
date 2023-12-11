@@ -6,16 +6,11 @@
   "trigger_name": "AWS EC2 Instance Misconfiguration",
   "alerts_filter": {
     "filter": {
-      "OR": [
+      "AND": [
         {
-            "SEARCH_FIELD": "alert_name",
+            "SEARCH_FIELD": "alert_type",
             "SEARCH_TYPE": "CONTAINS",
-            "SEARCH_VALUE": "AWS Default Security Group does not restrict all traffic"
-        },
-        {
-            "SEARCH_FIELD": "alert_name",
-            "SEARCH_TYPE": "CONTAINS",
-            "SEARCH_VALUE": "AWS Security Group allows all traffic on RDP port (3389)"
+            "SEARCH_VALUE": "AWS EC2 Instance Misconfiguration"
         }
       ]
     }

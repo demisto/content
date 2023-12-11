@@ -6,16 +6,11 @@
   "trigger_name": "Azure AKS Misconfiguration",
   "alerts_filter": {
     "filter": {
-      "OR": [
+      "AND": [
         {
-            "SEARCH_FIELD": "alert_name",
+            "SEARCH_FIELD": "alert_type",
             "SEARCH_TYPE": "CONTAINS",
-            "SEARCH_VALUE": "Azure AKS cluster HTTP application routing enabled"
-        },
-        {
-            "SEARCH_FIELD": "alert_name",
-            "SEARCH_TYPE": "CONTAINS",
-            "SEARCH_VALUE": "Azure AKS cluster monitoring not enabled"
+            "SEARCH_VALUE": "Azure AKS Misconfiguration"
         }
       ]
     }

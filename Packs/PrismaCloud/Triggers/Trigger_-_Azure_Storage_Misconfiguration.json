@@ -6,16 +6,11 @@
   "trigger_name": "Azure Storage Misconfiguration",
   "alerts_filter": {
     "filter": {
-      "OR": [
+      "AND": [
         {
-            "SEARCH_FIELD": "alert_name",
+            "SEARCH_FIELD": "alert_type",
             "SEARCH_TYPE": "CONTAINS",
-            "SEARCH_VALUE": "Azure Storage Account without Secure transfer enabled"
-        },
-        {
-            "SEARCH_FIELD": "alert_name",
-            "SEARCH_TYPE": "CONTAINS",
-            "SEARCH_VALUE": "Azure storage account has a blob container with public access"
+            "SEARCH_VALUE": "Azure Storage Misconfiguration"
         }
       ]
     }

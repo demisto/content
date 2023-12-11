@@ -6,26 +6,11 @@
   "trigger_name": "AWS CloudTrail Misconfiguration",
   "alerts_filter": {
     "filter": {
-      "OR": [
+      "AND": [
         {
-            "SEARCH_FIELD": "alert_name",
+            "SEARCH_FIELD": "alert_type",
             "SEARCH_TYPE": "CONTAINS",
-            "SEARCH_VALUE": "AWS CloudTrail is not enabled on the account"
-        },
-        {
-            "SEARCH_FIELD": "alert_name",
-            "SEARCH_TYPE": "CONTAINS",
-            "SEARCH_VALUE": "AWS CloudTrail is not enabled with multi trail and not capturing all management events"
-        },
-        {
-            "SEARCH_FIELD": "alert_name",
-            "SEARCH_TYPE": "CONTAINS",
-            "SEARCH_VALUE": "AWS CloudTrail log validation is not enabled in all regions"
-        },
-        {
-            "SEARCH_FIELD": "alert_name",
-            "SEARCH_TYPE": "CONTAINS",
-            "SEARCH_VALUE": "AWS CloudTrail trail logs is not integrated with CloudWatch Log"
+            "SEARCH_VALUE": "AWS CloudTrail Misconfiguration"
         }
       ]
     }
