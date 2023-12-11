@@ -1,6 +1,16 @@
+import sys
 sys.path.append('../../Packs/Whois/Integrations/Whois')
-from CommonServerPython import DBotScoreReliability, EntryType, ErrorTypes, ExecutionMetrics
-import demistomock as demisto
+import datetime
+import json
+import pathlib
+import pickle
+import socket
+from typing import Any
+import tempfile
+import ipwhois
+import pytest
+import Whois
+from pytest_mock import MockerFixture
 from Whois import (
     WhoisInvalidDomain,
     domain_command,
@@ -12,17 +22,9 @@ from Whois import (
     whois_command,
     whois_exception_mapping,
 )
-from pytest_mock import MockerFixture
-import Whois
-import pytest
-import ipwhois
-from typing import Any
-import sys
-import socket
-import pickle
-import pathlib
-import json
-import datetime
+
+import demistomock as demisto
+from CommonServerPython import DBotScoreReliability, EntryType, ErrorTypes, ExecutionMetrics
 
 
 def assert_results_ok():
