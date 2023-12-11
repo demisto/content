@@ -49,7 +49,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | isolateRemoteAttacker | Whether to isolate the remote attacker host. | true | Optional |
 | isolateSimilarEndpoints | Whether to isolate endpoints which has been detected with the alert IoCs. | false | Optional |
 | FileSHA256 | The ransomware file SHA256. | alert.initiatorsha256 | Optional |
-| detonateRansomFile | Whether to detonate the ransomware file in sandbox, Set to True to enable file detonation and False to disable it.<br/>By default is set to True | True | Optional |
+| detonateRansomFile | Whether to detonate the ransomware file in sandbox. Set to True to enable file detonation and False to disable it.<br/> | True | Optional |
 
 ## Playbook Outputs
 
