@@ -1,7 +1,7 @@
 import pytest
 
 from CommonServerPython import *
-from FindSimilarIncidentsV2 import main
+import demistomock as demisto
 
 default_args = {
     'hoursBack': 5,
@@ -154,6 +154,11 @@ incident_by_keys = [
 ]
 
 
+@pytest.fixture(autouse=True)
+def mock_demistoVersion(mocker):
+    mocker.patch.object(demisto, 'demistoVersion', return_value={'platform': 'xsoar'})
+
+
 def execute_command(command, args=None):
     if command == 'getIncidents':
         entry = {}
@@ -209,6 +214,7 @@ def test_build_similar_keys_list():
 
 
 def test_similar_incidents_fields(mocker):
+    from FindSimilarIncidentsV2 import main
     args = dict(default_args)
     args.update({'similarIncidentFields': 'name', 'similarLabelsKeys': 'subject'})
 
@@ -223,6 +229,7 @@ def test_similar_incidents_fields(mocker):
 
 
 def test_similar_incidents_fields_with_diff(mocker):
+    from FindSimilarIncidentsV2 import main
     args = dict(default_args)
     args.update({'similarIncidentFields': 'name', 'similarLabelsKeys': 'subject:1'})
 
@@ -239,6 +246,7 @@ def test_similar_incidents_fields_with_diff(mocker):
 
 
 def test_similar_incidents_missing_fields(mocker):
+    from FindSimilarIncidentsV2 import main
     args = dict(default_args)
     args.update({'similarIncidentFields': 'name,emailbody', 'similarLabelsKeys': 'emailbody'})
 
@@ -253,6 +261,7 @@ def test_similar_incidents_missing_fields(mocker):
 
 
 def test_similar_incidents_list_field(mocker):
+    from FindSimilarIncidentsV2 import main
     args = dict(default_args)
     args.update({'similarIncidentFields': 'attachment.name:1'})
 
@@ -268,6 +277,7 @@ def test_similar_incidents_list_field(mocker):
 
 
 def test_similar_incidents_no_results(mocker):
+    from FindSimilarIncidentsV2 import main
     args = dict(default_args)
     args.update({'similarIncidentFields': 'name', 'similarLabelsKeys': 'unique'})
 
@@ -281,6 +291,7 @@ def test_similar_incidents_no_results(mocker):
 
 
 def test_similar_incidents_order(mocker):
+    from FindSimilarIncidentsV2 import main
     args = dict(default_args)
     args.update({'similarIncidentFields': 'name', 'similarLabelsKeys': 'subject'})
 
@@ -296,6 +307,7 @@ def test_similar_incidents_order(mocker):
 
 
 def test_similar_context_simple_value(mocker):
+    from FindSimilarIncidentsV2 import main
     args = dict(default_args)
     args.update({'similarIncidentFields': 'name', 'similarContextKeys': 'simpleValue'})
 
@@ -310,6 +322,7 @@ def test_similar_context_simple_value(mocker):
 
 
 def test_similar_context_list_value(mocker):
+    from FindSimilarIncidentsV2 import main
     args = dict(default_args)
     args.update({'similarIncidentFields': 'name', 'similarContextKeys': 'listValue.name'})
 
@@ -330,6 +343,7 @@ def test_similar_context_list_value(mocker):
 
 
 def test_similar_context_dict_list_value(mocker):
+    from FindSimilarIncidentsV2 import main
     args = dict(default_args)
     args.update({'similarIncidentFields': 'name', 'similarContextKeys': 'dictListValue'})
 
@@ -351,6 +365,7 @@ def test_similar_context_dict_list_value(mocker):
 
 
 def test_similar_context_dict_list_value2(mocker):
+    from FindSimilarIncidentsV2 import main
     args = dict(default_args)
     args.update({'similarIncidentFields': 'name', 'similarContextKeys': 'dictListValue2'})
 
@@ -377,6 +392,7 @@ def test_similar_context_dict_list_value2(mocker):
 
 
 def test_similar_context_multiple_dicts_value(mocker):
+    from FindSimilarIncidentsV2 import main
     args = dict(default_args)
     args.update({'similarIncidentFields': 'name', 'similarContextKeys': 'multipleDictsValue'})
 
@@ -408,6 +424,7 @@ def test_similar_context_multiple_dicts_value(mocker):
 
 
 def test_similar_context_simple_list_value(mocker):
+    from FindSimilarIncidentsV2 import main
     args = dict(default_args)
     args.update({'similarIncidentFields': 'name', 'similarContextKeys': 'simpleListValue'})
 
@@ -424,6 +441,7 @@ def test_similar_context_simple_list_value(mocker):
 
 
 def test_similar_context_missing_key(mocker):
+    from FindSimilarIncidentsV2 import main
     args = dict(default_args)
     args.update({'skipMissingValues': 'no', 'similarContextKeys': 'missingKey'})
 
