@@ -450,10 +450,11 @@ def policy_optimizer_get_rules_command(client: Client, args: dict) -> CommandRes
     if rules:
         headers = ['@name', '@uuid', 'action', 'description', 'source', 'destination']
         table = tableToMarkdown(
-            name=f'PolicyOptimizer {usage}-{rule_type}-rules:', t=rules, headers=headers, removeNull=True
+            name=f'PolicyOptimizer {usage.capitalize()} {rule_type.capitalize()} Rules: ({len(rules)} Results)',
+            t=rules, headers=headers, removeNull=True
         )
     else:
-        table = f'No {usage} {rule_type} rules were found.'
+        table = f'No {usage.lower()} {rule_type.lower()} rules were found.'
 
     return CommandResults(
         outputs_prefix=f'PanOS.PolicyOptimizer.{usage}Rules',
