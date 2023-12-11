@@ -1,7 +1,6 @@
 {
-    "associatedToAll": false,
+    "associatedToAll": true,
     "associatedTypes": [
-        "Certificate"
     ],
     "caseInsensitive": true,
     "cliName": "subjectdn",
