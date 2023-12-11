@@ -4,7 +4,7 @@ commonfields:
 name: Email Hippo
 display: Email Hippo
 category: Data Enrichment & Threat Intelligence
-description: "This is the Email Hippo integration used to verify email sources as fake emails that were used as part of phishing attacks.\n."
+description: "This is the Email Hippo integration used to verify email sources as fake emails that were used as part of phishing attacks."
 configuration:
 - section: Connect
   display: MORE Server URL (e.g., https://api.hippoapi.com)
@@ -192,9 +192,9 @@ script:
       description: The expiration date of the domain.
       type: Date
     description: Returns domain information and reputation.
-  dockerimage: demisto/python3:3.10.13.80593
+  dockerimage: demisto/python3:3.10.13.82467
   runonce: false
   subtype: python3
-fromversion: 6.10.0
+fromversion: 6.9.0
 tests:
 - No tests (auto formatted)
