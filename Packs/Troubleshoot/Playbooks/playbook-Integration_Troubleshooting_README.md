@@ -45,9 +45,3 @@ This playbook does not use any integrations.
 
 ---
 There are no outputs for this playbook.
-
-## Playbook Image
-
----
-
-![Integration Troubleshooting](../doc_files/Integration_Troubleshooting.png)
