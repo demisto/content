@@ -6558,8 +6558,8 @@ def test_run_command_batch_id(requests_mock, mocker):
                 "BaseCommand": "ls",
                 "BatchID": "batch_id",
                 "Command": "ls",
-                "HostID": "8ed44198a6f64f9fabd0479c3098f303",
-                "SessionID": "79e0b99b-215e-462c-94bc-a947fd4c8ea9",
+                "HostID": "aid",
+                "SessionID": "session_id",
                 "Stderr": "",
                 "Stdout": 'Directory listing for C:\\ -\n\n'
                           'Name                                     Type         Size (bytes)    Size (MB)       '
@@ -6587,7 +6587,7 @@ def test_run_command_without_batch_id(requests_mock, mocker):
     Then:
      - Check that the batch_id is correct.
     """
-    import CrowdStrikeFalcon
+    from CrowdStrikeFalcon import run_command
     args = {
         'host_ids': 'host_id',
         'command_type': 'ls',
@@ -6598,10 +6598,39 @@ def test_run_command_without_batch_id(requests_mock, mocker):
         'args',
         return_value=args
     )
-    mocker.patch.object(CrowdStrikeFalcon, 'init_rtr_batch_session', return_value='batch_id')
-
-    # call
-    CrowdStrikeFalcon.run_command()
-
-    # assert
-    CrowdStrikeFalcon.init_rtr_batch_session.assert_called_with('host_id', False)
+    requests_mock.post(
+        f'{SERVER_URL}/real-time-response/combined/batch-init-session/v1',
+        json={
+            'batch_id': 'new_batch_id'
+        },
+        status_code=201
+    )
+    response = load_json('test_data/run_command/run_command_with_batch.json')
+    requests_mock.post(
+        f'{SERVER_URL}/real-time-response/combined/batch-command/v1',
+        json=response,
+        status_code=201
+    )
+    results = run_command()
+    expected_results = {
+        'CrowdStrike': {
+            'Command': [{
+                "BaseCommand": "ls",
+                "BatchID": "new_batch_id",
+                "Command": "ls",
+                "HostID": "aid",
+                "SessionID": "session_id",
+                "Stderr": "",
+                "Stdout": 'Directory listing for C:\\ -\n\n'
+                          'Name                                     Type         Size (bytes)    Size (MB)       '
+                          'Last Modified (UTC+2)     Created (UTC+2)          \n'
+                          '----                                     ----         ------------    ---------       '
+                          '---------------------     ---------------          \n'
+                          '$Recycle.Bin                             <Directory>  --              --              '
+                          '6/19/2023 4:11:43 PM      9/15/2018 10:19:00 AM    \n'
+                          'Config.Msi                               <Directory>  --              --              '
+                          '11/14/2023 1:56:25 AM     8/17/2023 1:49:07 AM     \n'
+            }]
+        }
+    }
+    assert results['EntryContext'] == expected_results
