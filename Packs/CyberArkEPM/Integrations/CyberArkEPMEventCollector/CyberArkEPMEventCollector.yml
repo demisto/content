@@ -109,7 +109,8 @@ script:
       - 'true'
       - 'false'
       required: true
-    - description: Maximum number of results to return.
+    - defaultValue: '5'
+      description: Maximum number of results to return.
       name: limit
     - description: Date to return results from. (in ISO format '01-01-24T00:00:00.123Z')
       name: from_date
