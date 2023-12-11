@@ -3262,6 +3262,10 @@ def is_pack_changed_before_previous_commit(pack_id: str, content_repo: git.Repo,
     Returns:
         bool: Whether pack's index commit is not updated and need to be uploaded in current upload-flow run.
     """
+    if not os.path.exists(os.path.join(index_folder_path, pack_id)):
+        logging.debug(f"Pack '{pack_id}' is hidden, considering as not changed pack")
+        return False
+
     last_pack_commit = load_json(os.path.join(index_folder_path, pack_id, Pack.METADATA)).get(Metadata.COMMIT)
 
     if not last_pack_commit:
