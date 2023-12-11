@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 71f4b135-054a-41ef-8fb6-cf9ec09b7b6f
+    taskid: 883d16af-a224-4614-8f57-3bd4e2c64193
     type: start
     task:
-      id: 71f4b135-054a-41ef-8fb6-cf9ec09b7b6f
+      id: 883d16af-a224-4614-8f57-3bd4e2c64193
       version: -1
       name: ""
       iscommand: false
@@ -22,7 +22,6 @@ tasks:
       - "4"
       - "5"
       - "6"
-      - "7"
       - "9"
       - "16"
       - "18"
@@ -31,8 +30,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
-          "y": 50
+          "x": 1555,
+          "y": 65
         }
       }
     note: false
@@ -44,10 +43,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: cebfc5be-b048-4906-8b1a-3611a8df4162
+    taskid: 60d7c354-6580-4210-8963-c8d3b62ebc21
     type: condition
     task:
-      id: cebfc5be-b048-4906-8b1a-3611a8df4162
+      id: 60d7c354-6580-4210-8963-c8d3b62ebc21
       version: -1
       name: Test ExtractEmailTransformer
       description: Extracts email addresses from the given value.
@@ -77,7 +76,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 400
         }
       }
     note: false
@@ -89,10 +88,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: fd401e36-324e-4e38-8324-fc8f4ef9b13e
+    taskid: b4e0cb46-0b76-44dc-8d46-f7229ff201b1
     type: regular
     task:
-      id: fd401e36-324e-4e38-8324-fc8f4ef9b13e
+      id: b4e0cb46-0b76-44dc-8d46-f7229ff201b1
       version: -1
       name: Set value - example@example.com
       description: Set a value in context under the key you entered.
@@ -113,8 +112,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2630,
-          "y": 195
+          "x": 2200,
+          "y": 225
         }
       }
     note: false
@@ -126,10 +125,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: cc80582e-7036-40d6-8a48-629e6227680a
+    taskid: 23a32fe8-5530-43ac-87d9-de354f1d9588
     type: regular
     task:
-      id: cc80582e-7036-40d6-8a48-629e6227680a
+      id: 23a32fe8-5530-43ac-87d9-de354f1d9588
       version: -1
       name: Set value - ["example@example.com", "foo"]
       description: Set a value in context under the key you entered.
@@ -150,8 +149,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
-          "y": 195
+          "x": 1770,
+          "y": 225
         }
       }
     note: false
@@ -163,10 +162,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 1b7e5839-6457-4e55-8512-f1b1cefd16ed
+    taskid: 8375c829-321a-4c80-8752-99019df3a012
     type: regular
     task:
-      id: 1b7e5839-6457-4e55-8512-f1b1cefd16ed
+      id: 8375c829-321a-4c80-8752-99019df3a012
       version: -1
       name: Set value - ["example@example.com", "notanem@il"]
       description: Set a value in context under the key you entered.
@@ -187,8 +186,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
-          "y": 195
+          "x": 1340,
+          "y": 225
         }
       }
     note: false
@@ -200,10 +199,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 939fcd6c-387d-42c0-8b77-0ff7789be332
+    taskid: 4fcdb780-7aaa-4ae0-877d-1629407fdc60
     type: regular
     task:
-      id: 939fcd6c-387d-42c0-8b77-0ff7789be332
+      id: 4fcdb780-7aaa-4ae0-877d-1629407fdc60
       version: -1
       name: Set value - EXAMPLE@example.com
       description: Set a value in context under the key you entered.
@@ -225,7 +224,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 225
         }
       }
     note: false
@@ -237,10 +236,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 123e7944-4241-4ee1-8d22-251efd4bbe94
+    taskid: a97681df-436d-4166-82f2-57058d0b43d9
     type: regular
     task:
-      id: 123e7944-4241-4ee1-8d22-251efd4bbe94
+      id: a97681df-436d-4166-82f2-57058d0b43d9
       version: -1
       name: Set value - ["example1@example.com", "example2@example.com"]
       description: Set a value in context under the key you entered.
@@ -262,7 +261,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 195
+          "y": 225
         }
       }
     note: false
@@ -274,20 +273,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 6d5e0c82-9872-485a-83f3-6634ec66fe19
+    taskid: b0c79131-97c5-4d3b-82a1-93a87129f75b
     type: regular
     task:
-      id: 6d5e0c82-9872-485a-83f3-6634ec66fe19
+      id: b0c79131-97c5-4d3b-82a1-93a87129f75b
       version: -1
-      name: "Set value - 😎@example.com"
+      name: "Set value - 😎@example.com - It's correct, but for now the regex doesn't catch it"
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
       iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "12"
     scriptarguments:
       key:
         simple: test6
@@ -298,8 +294,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 195
+          "x": 1985,
+          "y": 50
         }
       }
     note: false
@@ -311,10 +307,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 4ef89226-8154-40e4-8713-76506da93804
+    taskid: 6d4a253a-9b78-4f6b-8997-d87111741e02
     type: title
     task:
-      id: 4ef89226-8154-40e4-8713-76506da93804
+      id: 6d4a253a-9b78-4f6b-8997-d87111741e02
       version: -1
       name: Done
       type: title
@@ -326,8 +322,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
-          "y": 545
+          "x": 1340,
+          "y": 575
         }
       }
     note: false
@@ -339,10 +335,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 87c28dce-8ca8-4e08-889a-2d3b6d933348
+    taskid: ff5ef991-e05f-4bfd-8c0f-9ddf79ae4030
     type: regular
     task:
-      id: 87c28dce-8ca8-4e08-889a-2d3b6d933348
+      id: ff5ef991-e05f-4bfd-8c0f-9ddf79ae4030
       version: -1
       name: Set value - example@example.
       description: Set a value in context under the key you entered.
@@ -364,7 +360,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 195
+          "y": 225
         }
       }
     note: false
@@ -376,12 +372,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: cfd1033f-a08d-4e52-8e23-736fd654176c
+    taskid: 7e0b2ecd-c359-4470-80cd-0355de5434bb
     type: condition
     task:
-      id: cfd1033f-a08d-4e52-8e23-736fd654176c
+      id: 7e0b2ecd-c359-4470-80cd-0355de5434bb
       version: -1
-      name: Test ExtractEmailTransformer
+      name: Test ExtractEmailTransformer - Is empty
       description: Extracts email addresses from the given value.
       type: condition
       iscommand: false
@@ -401,12 +397,14 @@ tasks:
                 transformers:
                 - operator: ExtractEmailTransformer
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 370
+          "y": 400
         }
       }
     note: false
@@ -418,10 +416,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: b7bb4a44-d8bf-4da4-83f4-dedbbd526858
+    taskid: 01e8ae6a-c246-4220-8412-5c06c517e4e8
     type: condition
     task:
-      id: b7bb4a44-d8bf-4da4-83f4-dedbbd526858
+      id: 01e8ae6a-c246-4220-8412-5c06c517e4e8
       version: -1
       name: Test ExtractEmailTransformer
       description: Extracts email addresses from the given value.
@@ -451,49 +449,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
-    taskid: c093f3e3-ed7c-4a28-8c9d-47c4c5ef43ee
-    type: condition
-    task:
-      id: c093f3e3-ed7c-4a28-8c9d-47c4c5ef43ee
-      version: -1
-      name: Test ExtractEmailTransformer
-      description: Extracts email addresses from the given value.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "8"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEmpty
-          left:
-            value:
-              complex:
-                root: test6
-                transformers:
-                - operator: ExtractEmailTransformer
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 370
+          "y": 400
         }
       }
     note: false
@@ -505,10 +461,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 5162a40c-cbb9-44b2-8f4a-99c21962baee
+    taskid: aa752c0b-b763-4fda-8bcf-d27e242955dc
     type: condition
     task:
-      id: 5162a40c-cbb9-44b2-8f4a-99c21962baee
+      id: aa752c0b-b763-4fda-8bcf-d27e242955dc
       version: -1
       name: Test ExtractEmailTransformer
       description: Extracts email addresses from the given value.
@@ -537,8 +493,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
-          "y": 370
+          "x": 1340,
+          "y": 400
         }
       }
     note: false
@@ -550,10 +506,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: c3a8235a-1450-4dff-8eee-d4f0acaf759b
+    taskid: ae44df7c-adf2-4ac9-81b9-2d9a053f416a
     type: condition
     task:
-      id: c3a8235a-1450-4dff-8eee-d4f0acaf759b
+      id: ae44df7c-adf2-4ac9-81b9-2d9a053f416a
       version: -1
       name: Test ExtractEmailTransformer
       description: Extracts email addresses from the given value.
@@ -582,8 +538,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
-          "y": 370
+          "x": 1770,
+          "y": 400
         }
       }
     note: false
@@ -595,10 +551,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 29574f14-ad07-43de-83e3-3a45b73ef914
+    taskid: 84657198-3817-483b-82b2-721e606ccb39
     type: condition
     task:
-      id: 29574f14-ad07-43de-83e3-3a45b73ef914
+      id: 84657198-3817-483b-82b2-721e606ccb39
       version: -1
       name: Test ExtractEmailTransformer
       description: Extracts email addresses from the given value.
@@ -627,8 +583,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2630,
-          "y": 370
+          "x": 2200,
+          "y": 400
         }
       }
     note: false
@@ -640,10 +596,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: a54107d7-8e61-4221-8b4e-6318e6fd1a63
+    taskid: c94258e0-4b47-4af9-8645-7dcdd531c185
     type: regular
     task:
-      id: a54107d7-8e61-4221-8b4e-6318e6fd1a63
+      id: c94258e0-4b47-4af9-8645-7dcdd531c185
       version: -1
       name: Set value - טסט@example.com
       description: Set a value in context under the key you entered.
@@ -664,8 +620,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3490,
-          "y": 195
+          "x": 2630,
+          "y": 225
         }
       }
     note: false
@@ -677,10 +633,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 8da33933-a0ed-4131-80b7-42da82819bb5
+    taskid: 5f05c38c-34b4-4ff2-84f9-ccd56ce3617d
     type: regular
     task:
-      id: 8da33933-a0ed-4131-80b7-42da82819bb5
+      id: 5f05c38c-34b4-4ff2-84f9-ccd56ce3617d
       version: -1
       name: Set value - double.tld@test.co.jp
       description: Set a value in context under the key you entered.
@@ -702,7 +658,7 @@ tasks:
       {
         "position": {
           "x": 3060,
-          "y": 195
+          "y": 225
         }
       }
     note: false
@@ -714,10 +670,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 49ed7612-50ab-46e8-846c-a19c4a0aa575
+    taskid: 1c50ed73-251f-4d35-8b67-28145b874ca0
     type: condition
     task:
-      id: 49ed7612-50ab-46e8-846c-a19c4a0aa575
+      id: 1c50ed73-251f-4d35-8b67-28145b874ca0
       version: -1
       name: Test ExtractEmailTransformer
       description: Extracts email addresses from the given value.
@@ -746,8 +702,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3490,
-          "y": 370
+          "x": 2630,
+          "y": 400
         }
       }
     note: false
@@ -759,10 +715,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: b420bc41-4b6b-47fa-8adf-e75820dd017b
+    taskid: 61476bf4-29cc-4a03-8519-7a8564a14f2d
     type: condition
     task:
-      id: b420bc41-4b6b-47fa-8adf-e75820dd017b
+      id: 61476bf4-29cc-4a03-8519-7a8564a14f2d
       version: -1
       name: Test ExtractEmailTransformer
       description: Extracts email addresses from the given value.
@@ -792,7 +748,7 @@ tasks:
       {
         "position": {
           "x": 3060,
-          "y": 370
+          "y": 400
         }
       }
     note: false
@@ -807,8 +763,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 560,
-        "width": 3820,
+        "height": 590,
+        "width": 3390,
         "x": 50,
         "y": 50
       }
