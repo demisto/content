@@ -435,19 +435,18 @@ def policy_optimizer_get_rules_command(client: Client, args: dict) -> CommandRes
     """
     Get rules information from Panorama/Firewall instances.
     """
-    timeframe = args.get('timeframe')
-    usage = args.get('usage')
-    exclude = argToBoolean(args.get('exclude', False))
-    position = args.get('position')
-    rule_type = args.get('rule_type') or 'security'
-    position = position if client.is_cms_selected else 'main'  # firewall instance only has position main
+    timeframe: str = args['timeframe']
+    usage: str = args['usage']
+    exclude: bool = argToBoolean(args.get('exclude', False))
+    position: str = args['position'] if client.is_cms_selected else 'main'  # Firewall instances have only main position
+    rule_type: str = args.get('rule_type', 'security')
     page_size: int = arg_to_number(args.get('page_size')) or 200
     limit: int = arg_to_number(args.get('limit')) or 200
 
     if page_size > 200:
         raise ValueError('The maximum page size is 200.')
 
-    params = {  # All params without the 'position' param
+    params: dict[str, Any] = {  # All params without the 'position' param
         'client': client,
         'exclude': exclude,
         'rule_type': rule_type,
