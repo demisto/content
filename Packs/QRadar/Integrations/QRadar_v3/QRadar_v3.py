@@ -16,7 +16,7 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 ''' ADVANCED GLOBAL PARAMETERS '''
 
 FAILURE_SLEEP = 20  # sleep between consecutive failures events fetch
-FETCH_SLEEP = demisto.params().get("fetch_interval") or 60  # sleep between fetches
+FETCH_SLEEP = arg_to_number(demisto.params().get("fetch_interval")) or 60  # sleep between fetches
 BATCH_SIZE = 100  # batch size used for offense ip enrichment
 OFF_ENRCH_LIMIT = BATCH_SIZE * 10  # max amount of IPs to enrich per offense
 MAX_WORKERS = 8  # max concurrent workers used for events enriching
