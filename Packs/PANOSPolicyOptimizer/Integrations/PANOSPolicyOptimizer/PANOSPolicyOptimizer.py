@@ -1,5 +1,4 @@
 import hashlib
-from typing import Tuple
 
 from CommonServerPython import *
 
@@ -91,9 +90,8 @@ class Client:
         # Use RegEx to parse the ServerToken string from the JavaScript variable
         match = re.search(r'(?:window\.Pan\.st\.st\.st[0-9]+\s=\s\")(\w+)(?:\")', response.text)
         # Fix to login validation for version 9
-        if LooseVersion(self.version) >= LooseVersion('9'):
-            if 'window.Pan.staticMOTD' not in response.text:
-                match = None
+        if LooseVersion(self.version) >= LooseVersion('9') and 'window.Pan.staticMOTD' not in response.text:
+            match = None
         # The JavaScript calls the ServerToken a "cookie" so we will use that variable name
         # The "data" field is the MD5 calculation of "cookie" + "TID"
         if not match:
@@ -319,7 +317,7 @@ class Client:
 
 
 def get_unused_rules_by_position(client: Client, position: str, exclude: bool, rule_type: str,
-                                 usage: str, timeframe: str, page_size: int, limit: int) -> Tuple[Dict, List]:
+                                 usage: str, timeframe: str, page_size: int, limit: int) -> tuple[Dict, List]:
     """
 
     Get unused rules from panorama based on user defined arguments.
