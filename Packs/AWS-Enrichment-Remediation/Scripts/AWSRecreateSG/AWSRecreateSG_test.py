@@ -20,6 +20,10 @@ import pytest
           "UserIdGroupPairs": [], 'FromPort': 22, 'ToPort': 100},
          {'IpProtocol': 'tcp', 'IpRanges': [{'CidrIp': '0.0.0.0/0'}], 'Ipv6Ranges': [],
           'PrefixListIds': [], 'UserIdGroupPairs': [], 'FromPort': 23, 'ToPort': 100}),
+        ({"IpProtocol": "tcp", "IpRanges": [], "Ipv6Ranges": [{'CidrIpv6': '::/0'}], "PrefixListIds": [],
+          "UserIdGroupPairs": [], 'FromPort': 22, 'ToPort': 100},
+         {'IpProtocol': 'tcp', 'IpRanges': [], 'Ipv6Ranges': [{'CidrIpv6': '::/0'}], 'PrefixListIds': [],
+          'UserIdGroupPairs': [], 'FromPort': 23, 'ToPort': 100}),
     ]
 )
 def test_split_rule(rule, first_rule_created):
