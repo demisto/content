@@ -716,6 +716,7 @@ def send_email_to_mailbox(account, to, subject, body, body_type, bcc, cc, reply_
     Send an email to a mailbox.
 
     Args:
+        body_type: type of the body. Can be 'html' or 'text'.
         account (Account): account from which to send an email.
         to (list[str]): a list of emails to send an email.
         subject (str): subject of the mail.
