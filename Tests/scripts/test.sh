@@ -1,7 +1,7 @@
 #!/bin/bash
 pwd
 ls -la
-./darwin -p 9980 &pid=$!
+# ./darwin -p 9980 &pid=$!
 echo "running darwin on pid: $pid"
 sleep 5
 netstat -p tcp -l -n | grep 9980
