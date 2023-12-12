@@ -1,6 +1,9 @@
 from AWSApiModule import *
+from CommonServerPython import *  # noqa: F401
+import demistomock as demisto  # noqa: F401
 import importlib
 import pytest
+
 AWS_EC2 = importlib.import_module("AWS-EC2")
 
 
@@ -153,3 +156,38 @@ def test_parse_filter_field(filter, expected_results):
     """
     res = AWS_EC2.parse_filter_field(filter)
     assert res == expected_results
+
+
+def mock_command_func(args, aws_client):
+    return CommandResults(
+        outputs=[{}],
+        readable_output='readable_output'
+    )
+
+
+@pytest.mark.parametrize('get_param_side_effect, roleArn, expected_output', [
+    ({'accounts_to_access': '1,2,3', 'access_role_name': 'name'}.get, None, ()),
+    ({'accounts_to_access': '1,2,3', 'access_role_name': 'name'}.get, 'role'),
+    ({'accounts_to_access': '1,2,3', 'access_role_name': None}.get, None),
+])
+def test_account_runner(mocker, args, get_param_side_effect, roleArn, expected_output):
+    """
+    Given:
+        - account_runner function
+    
+    When:
+        - Calling account_runner
+    
+    Then: 
+        - Ensure account_runner runs without exceptions
+    """
+
+    mocker.patch.object(demisto, 'getParam', side_effect=get_param_side_effect)
+    mocker.patch.object(demisto, 'getArg', return_value=roleArn)
+
+    result_func = AWS_EC2.account_runner(mock_command_func)
+    
+    result: CommandResults = result_func({}, None)
+    
+    assert result.readable_output == expected_output[0]
+    assert result.outputs == expected_output[1]
