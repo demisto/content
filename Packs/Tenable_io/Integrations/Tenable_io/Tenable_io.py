@@ -164,7 +164,7 @@ PRODUCT = 'io'
 CHUNK_SIZE = 5000
 MAX_CHUNKS_PER_FETCH = 10
 ASSETS_FETCH_FROM = '90 days'
-
+MIN_ASSETS_INTERVAL = 60
 
 class Client(BaseClient):
 
@@ -728,8 +728,10 @@ def call_send_data_to_xsiam(assets, vulnerabilities):
     demisto.info("Done Sending data to XSIAM.")
 
 
-def test_module(client: Client):
+def test_module(client: Client, params):
     client.list_scan_filters()
+    if params.get('assetsFetchInterval') < 60:
+        return_error(f"Assets Fetch Interval is supposed to be 1 hour minimum")
     return 'ok'
 
 
@@ -2000,6 +2002,18 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
 
 
+def skip_fetch_assets(last_run):
+    time_to_check = last_run.get("assets_last_fetch")
+    if not time_to_check:
+        return False
+    passed_time = (time.time() - time_to_check) / 60
+    to_skip = not last_run.get('nextTrigger') and (passed_time < MIN_ASSETS_INTERVAL)
+    if to_skip:
+        demisto.info(f"Skipping fetch-assets command. Only {passed_time} minutes have passed since the last fetch. "
+                     f"It should be minimum 1 hour.")
+    return to_skip
+
+
 def main():  # pragma: no cover
     """main function, parses params and runs command functions
     """
@@ -2031,7 +2045,7 @@ def main():  # pragma: no cover
             proxy=proxy)
 
         if command == 'test-module':
-            demisto.results(test_module(client))
+            demisto.results(test_module(client, params))
         elif command == 'tenable-io-list-scans':
             demisto.results(get_scans_command())
         elif command == 'tenable-io-launch-scan':
@@ -2096,6 +2110,11 @@ def main():  # pragma: no cover
             assets_last_run = demisto.getAssetsLastRun()
             demisto.debug(f"saved lastrun assets: {assets_last_run}")
             assets_last_run_copy = assets_last_run.copy()
+            if skip_fetch_assets(assets_last_run):
+                return
+            elif not assets_last_run.get("nextTrigger"):
+                # assets_last_run.update({"assets_last_fetch": get_timestamp(datetime.now(tz=timezone.utc))})
+                assets_last_run.update({"assets_last_fetch": time.time()})
             # Fetch Assets (no nextTrigger -> new fetch, or assets_export_uuid -> continue prev fetch)
             if assets_last_run_copy.get('assets_export_uuid') or not assets_last_run_copy.get('nextTrigger'):
                 assets = run_assets_fetch(client, assets_last_run)
