@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": null
+    "breakingChangesNotes": "The Demisto REST API integration has been deprecated. Use the Core REST API integration in its place, the functionalities are the same."
 }
