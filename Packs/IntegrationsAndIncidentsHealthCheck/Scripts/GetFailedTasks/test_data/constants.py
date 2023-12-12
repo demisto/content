@@ -243,8 +243,8 @@ INCIDENTS_RESULT = [
 
 RESTAPI_TAS_RESULT = [
     {
-        "ModuleName": "Demisto REST API_instance_1",
-        "Brand": "Demisto REST API",
+        "ModuleName": "Core REST API_instance_1",
+        "Brand": "Core REST API",
         "Category": "Utilities",
         "ID": "",
         "Version": 0,
@@ -411,8 +411,8 @@ RESTAPI_TAS_RESULT = [
             "playbookId": "",
             "reputationSize": 0,
             "contentsSize": 0,
-            "brand": "Demisto REST API",
-            "instance": "Demisto REST API_instance_1",
+            "brand": "Core REST API",
+            "instance": "Core REST API_instance_1",
             "IndicatorTimeline": None,
             "mirrored": False
         },

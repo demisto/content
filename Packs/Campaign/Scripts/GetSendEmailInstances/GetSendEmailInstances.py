@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 
 
 def get_all_integrations_commands():
-    """ Send API request with demisto rest api, to get all integration instances configured in the demisto. """
+    """ Send API request with Core REST API, to get all integration instances configured in the demisto. """
     integration_commands_res = demisto.internalHttpRequest('GET', '/settings/integration-commands')
     if integration_commands_res and integration_commands_res['statusCode'] == 200:
         return json.loads(integration_commands_res.get('body', '{}'))
@@ -12,7 +12,7 @@ def get_all_integrations_commands():
 
 
 def get_all_instances():
-    """ Send API request with demisto rest api, to get all integration instances configured in the demisto."""
+    """ Send API request with Core REST API, to get all integration instances configured in the demisto."""
     integration_search_res = demisto.internalHttpRequest('POST', '/settings/integration/search', '{\"size\":1000}')
     if integration_search_res and integration_search_res['statusCode'] == 200:
         integration_search = json.loads(integration_search_res.get('body', '{}'))
