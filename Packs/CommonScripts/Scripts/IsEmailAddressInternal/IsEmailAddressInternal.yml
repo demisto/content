@@ -41,3 +41,4 @@ scripttarget: 0
 fromversion: 5.0.0
 tests:
 - IsEmailAddressInternal_Test
+- TestIsEmailAddressInternal
