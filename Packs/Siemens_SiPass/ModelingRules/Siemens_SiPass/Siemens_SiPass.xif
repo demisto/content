@@ -1,4 +1,4 @@
-[MODEL:siemens_sipass_raw]
+[MODEL: dataset = siemens_sipass_raw]
 | alter log_array = split(_raw_log,"    ")
 | alter id_num = split(arrayindex(log_array,0)," ")
 | alter
