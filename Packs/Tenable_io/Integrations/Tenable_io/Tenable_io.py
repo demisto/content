@@ -1844,8 +1844,9 @@ def fetch_vulnerabilities(client: Client, last_run: dict, severity: List[str]):
         # set params for next run
         if status == 'FINISHED':
             last_run.pop('vuln_export_uuid')
-            last_run.pop('nextTrigger', None)
-            last_run.pop('type', None)
+            if not last_run.get('assets_export_uuid'):
+                last_run.pop('nextTrigger', None)
+                last_run.pop('type', None)
         elif status in ['CANCELLED', 'ERROR']:
             export_uuid = client.get_vuln_export_uuid(num_assets=CHUNK_SIZE,
                                                       last_found=get_timestamp(arg_to_datetime(ASSETS_FETCH_FROM)),
@@ -2085,7 +2086,7 @@ def main():  # pragma: no cover
             last_run = demisto.getLastRun()
             events, new_last_run = fetch_events_command(client, first_fetch, last_run, max_fetch)
             # send_data_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-            send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+            send_data_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
             demisto.setLastRun(new_last_run)
 
