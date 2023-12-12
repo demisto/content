@@ -496,6 +496,7 @@ Describes one or more of your Elastic IP addresses.
 | AWS.EC2.ElasticIPs.Region | string | The aws region were the elastic ip is located. | 
 | AWS.EC2.ElasticIPs.Tags.Key | string | The key of the tag. | 
 | AWS.EC2.ElasticIPs.Tags.Value | string | The value of the tag. | 
+| AWS.EC2.ElasticIPs.AccountId | string | The ID of the AWS account with which the Elastic IP address is associated. This key is only present when the parameter "AWS organization accounts to access" is provided. | 
 
 
 #### Command Example
