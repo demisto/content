@@ -1,10 +1,10 @@
 {
-    "id": "indicator_validitynotafter",
+    "id": "indicator_validitynotbefore",
     "version": -1,
     "modified": "2023-09-28T08:00:15.145651049Z",
-    "name": "Validity Not After",
+    "name": "Validity Not Before",
     "ownerOnly": false,
-    "cliName": "validitynotafter",
+    "cliName": "validitynotbefore",
     "type": "date",
     "closeForm": false,
     "editForm": true,
