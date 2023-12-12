@@ -9,7 +9,6 @@ import phrases_case
 from CommonServerUserPython import *
 
 
-
 def get_error_message(grid_id: str) -> str:
     """ Gets error message.
 
@@ -399,7 +398,10 @@ def main():  # pragma: no cover
         if (not is_playground) and table and grid_id not in custom_fields:
             raise ValueError(get_error_message(grid_id))
         if is_error(res_set):
-            demisto.error(f'failed to execute "setIncident" with table: {table}')
+            demisto.error(f'failed to execute "setIncident" with table: {table}.')
+            return_results(res_set)
+        elif is_error(res):
+            demisto.error('failed to execute "getIncidents".')
             return_results(res)
         else:
             return_results(f'Set grid {grid_id} using {context_path} successfully.')
