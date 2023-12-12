@@ -49,8 +49,8 @@ class ContentPackInstaller:
 
         packs_data: List[Dict[str, str]] = res.get('response', [])
         for pack in packs_data:
-            self.installed_packs[pack['id']] = parse(pack['currentVersion'])
-            self.already_on_machine_packs[pack['id']] = parse(pack['currentVersion'])
+            self.installed_packs[pack['id']] = parse(pack['currentVersion'])  # type: ignore[assignment]
+            self.already_on_machine_packs[pack['id']] = parse(pack['currentVersion'])  # type: ignore[assignment]
 
     def get_pack_data_from_marketplace(self, pack_id: str) -> Dict[str, str]:
         """Returns the marketplace's data for a specific pack.
@@ -195,7 +195,7 @@ class ContentPackInstaller:
                 demisto.error(f'{SCRIPT_NAME} - Failed to install the pack {pack_id} - {str(res)}')
                 self.packs_failed[pack_id] = str(pack['version'])
             else:
-                self.installed_packs[pack_id] = packs_names_versions[pack_id]
+                self.installed_packs[pack_id] = packs_names_versions[pack_id]  # type: ignore[assignment]
                 self.newly_installed_packs[pack_id] = packs_names_versions[pack_id]  # type: ignore
 
     def get_dependencies_for_pack(self, pack_data: Dict[str, str]) -> List[Dict[str, str]]:
