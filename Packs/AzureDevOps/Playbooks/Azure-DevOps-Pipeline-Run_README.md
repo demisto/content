@@ -18,8 +18,8 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* azure-devops-pipeline-run-get
 * azure-devops-pipeline-run
+* azure-devops-pipeline-run-get
 
 ## Playbook Inputs
 
