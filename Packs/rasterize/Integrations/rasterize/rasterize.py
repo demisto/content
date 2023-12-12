@@ -65,6 +65,14 @@ class RasterizeType(Enum):
 
 # region utility classes
 
+def custom_hook(args):
+    if '(_recv_loop)' in args.thread.name \
+        and type(args.exc_value) == json.decoder.JSONDecodeError \
+        and str(args.exc_value) == "Expecting value: line 1 column 1 (char 0)":
+        demisto.debug("Caught a JSONDecodeError exception in _recv_loop, suppressing")
+    else:
+        raise args.exc_value
+
 class TabLifecycleManager:
     def __init__(self, browser, offline_mode):
         self.browser = browser
@@ -93,6 +101,7 @@ class TabLifecycleManager:
 
         if self.tab and self.tab.id:
             tab_id = self.tab.id
+            threading.excepthook = custom_hook
 
             try:
                 time.sleep(1)  # pylint: disable=E9003
@@ -102,9 +111,16 @@ class TabLifecycleManager:
                 demisto.info(f'TabLifecycleManager, failed to disable page due to {ex}')
                 pass
 
-            time.sleep(1)  # pylint: disable=E9003
             try:
-                demisto.debug(f'TabLifecycleManager, __exit__, stopping tab {tab_id}, active tabs len: {len(self.browser.list_tab())}')
+                demisto.debug(f'TabLifecycleManager, __exit__, waiting for tab {tab_id}, active tabs len: {len(self.browser.list_tab())}')
+                tab_wait_response = self.tab.wait(timeout=1)
+                demisto.debug(f"TabLifecycleManager, __exit__, {tab_wait_response=}")
+            except Exception as ex:
+                demisto.info(f'TabLifecycleManager, failed to stop tab {tab_id} due to {ex}')
+                pass
+
+            try:
+                demisto.debug(f'TabLifecycleManager, __exit__, {threading.current_thread().name=}, stopping tab {tab_id}, active tabs len: {len(self.browser.list_tab())}')
                 tab_stop_response = self.tab.stop()
                 demisto.debug(f"TabLifecycleManager, __exit__, {tab_stop_response=}")
             except json.decoder.JSONDecodeError:
@@ -114,7 +130,6 @@ class TabLifecycleManager:
                 demisto.info(f'TabLifecycleManager, failed to stop tab {tab_id} due to {ex}')
                 pass
 
-            time.sleep(1)  # pylint: disable=E9003
             try:
                 demisto.debug(f'TabLifecycleManager, __exit__, closing tab {tab_id}, active tabs len: {len(self.browser.list_tab())}')
                 self.browser.close_tab(tab_id)
