@@ -1,9 +1,9 @@
 args:
 - defaultValue: ${incident.attachment}
-  description: Attachments
+  description: Attachments.
   isArray: true
   name: attachments
-- description: Files
+- description: Files.
   name: files
 - name: CreateIncidentUntaggedEmail
   description: Allow the creation of an email for which we can't find an existing incident.
@@ -33,7 +33,7 @@ tags:
 - email
 - preProcessing
 type: python
-dockerimage: demisto/python3:3.10.12.68300
+dockerimage: demisto/python3:3.10.13.80593
 runas: DBotRole
 tests:
 - No tests (auto formatted)

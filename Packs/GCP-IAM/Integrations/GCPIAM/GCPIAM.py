@@ -20,7 +20,8 @@ class Client:
         proxies = handle_proxy()
 
         if proxy or verify_certificate:
-            http_client = credentials.authorize(self.get_http_client_with_proxy(proxies))
+            http_client = credentials.authorize(self.get_http_client_with_proxy(
+                proxies, disable_ssl_certificate=not verify_certificate))
             self.cloud_identity_service = discovery.build('cloudidentity', 'v1', http=http_client)
             self.cloud_resource_manager_service = discovery.build('cloudresourcemanager', 'v3', http=http_client)
             self.iam_service = discovery.build('iam', 'v1', http=http_client)
@@ -32,9 +33,9 @@ class Client:
             self.iam_service = discovery.build('iam', 'v1', credentials=credentials)
             self.iam_credentials = discovery.build('iamcredentials', 'v1', credentials=credentials)
 
-    def get_http_client_with_proxy(self, proxies: dict, proxy: bool = False, verify_certificate: bool = False):
+    def get_http_client_with_proxy(self, proxies: dict, disable_ssl_certificate: bool = False):
         proxy_info = None
-        if proxy:
+        if proxies:
             if not proxies or not proxies['https']:
                 raise Exception('https proxy value is empty. Check Demisto server configuration')
             https_proxy = proxies['https']
@@ -47,7 +48,7 @@ class Client:
                 proxy_port=parsed_proxy.port,
                 proxy_user=parsed_proxy.username,
                 proxy_pass=parsed_proxy.password)
-        return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=verify_certificate)
+        return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=disable_ssl_certificate)
 
     def gcp_iam_tagbindings_list_request(self, parent: str, limit: int = None) -> dict:
         """
@@ -3838,11 +3839,12 @@ def gcp_iam_tagbindings_list_command(client: Client, args: Dict[str, Any]) -> Un
     return command_results
 
 
-def test_module(service_account_key: str) -> None:
+def test_module(service_account_key: str, proxy: bool, verify_certificate: bool) -> None:
     try:
-        client: Client = Client(client_secret=service_account_key)
+        client: Client = Client(client_secret=service_account_key, proxy=proxy, verify_certificate=verify_certificate)
         client.gcp_iam_predefined_role_list_request(include_permissions=False, limit=1)
-    except Exception:
+    except Exception as e:
+        demisto.error(f'Error when running test-module {e}')
         return return_results('Authorization Error: make sure API Service Account Key is valid.')
 
     return_results('ok')
@@ -3854,16 +3856,18 @@ def main() -> None:
     args: Dict[str, Any] = demisto.args()
 
     service_account_key = params['credentials']['password']
-    verify_certificate: bool = not params.get('insecure', False)
+    verify_certificate: bool = not argToBoolean(params.get('insecure', False))
     proxy: bool = params.get('proxy', False)
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
 
     try:
+
         if command == 'test-module':
-            return test_module(service_account_key)
+            return test_module(service_account_key, proxy=proxy, verify_certificate=verify_certificate)
 
         client: Client = Client(client_secret=service_account_key, proxy=proxy, verify_certificate=verify_certificate)
+
         commands = {
             'gcp-iam-projects-get': gcp_iam_projects_get_command,
             'gcp-iam-project-iam-policy-get': gcp_iam_project_iam_policy_get_command,
