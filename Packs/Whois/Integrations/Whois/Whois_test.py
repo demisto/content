@@ -6,6 +6,9 @@ import socket
 from typing import Any
 
 import ipwhois
+import tempfile
+import time
+import subprocess
 import pytest
 import Whois
 from pytest_mock import MockerFixture
