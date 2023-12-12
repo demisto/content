@@ -78,11 +78,19 @@ def test_body_request_is_valid_when_querying_rules(mocker, client, position):
             'PoliciesDirect.getPoliciesByUsage',
             [
                 {
-                    'type': 'security', 'position': position, 'vsysName': 'test',
-                    'isCmsSelected': client.is_cms_selected, 'isMultiVsys': False, 'showGrouped': False,
+                    'type': 'security',
+                    'position': position,
+                    'vsysName': 'test',
+                    'isCmsSelected': client.is_cms_selected,
+                    'isMultiVsys': False, 'showGrouped': False,
                     'usageAttributes': {
-                        'timeframe': '30', 'usage': 'Unused', 'exclude': False, 'exclude-reset-text': '90'
+                        'timeframe': '30',
+                        'usage': 'Unused',
+                        'exclude': False,
+                        'exclude-reset-text': '90'
                     },
+                    'start': 0,
+                    'limit': 200,
                     'pageContext': 'rule_usage'
                 }
             ]
@@ -232,13 +240,14 @@ def test_querying_rules_is_valid(mocker, client):
     mocker.patch.object(json, 'loads', return_value=read_json_file(path='test_data/valid_security_rules_response.json'))
 
     client.session_metadata["headers"] = 'test'
+    client.is_cms_selected = False
     rules = policy_optimizer_get_rules_command(
         client=client, args={'timeframe': '30', 'usage': 'Unused', 'exclude': 'false'}
     )
 
     assert isinstance(rules.outputs, list)
     assert len(rules.outputs) > 0
-    assert 'PolicyOptimizer Unused-security-rules' in rules.readable_output
+    assert 'PolicyOptimizer Unused Security Rules' in rules.readable_output
 
 
 @pytest.mark.parametrize("client", CLIENTS)
@@ -291,8 +300,8 @@ def test_extract_csrf():
            '422JE5PO1WARA1I91CB5FRS99UQ65RF31P9Y3L4T'  # noqa
 
 
-@pytest.mark.parametrize("position, num_of_rules", [('both', 3), ('pre', 2), ('post', 1)])
-def test_get_unused_rules(mocker, position, num_of_rules):
+@pytest.mark.parametrize("position_value, num_of_rules", [('both', 3), ('pre', 2), ('post', 1)])
+def test_get_unused_rules(mocker, position_value, num_of_rules):
     """
 
     Given: position of unused rules (pre, post or any)
@@ -303,7 +312,7 @@ def test_get_unused_rules(mocker, position, num_of_rules):
 
     """
 
-    def mock_policy_optimizer_get_rules(timeframe: str, usage: str, exclude: bool, position: str, rule_type: str):
+    def mock_policy_optimizer_get_rules(position: str, **kwargs):
         pre = {'result': {'result': {'entry': ['test1', 'test2']}}}
         post = {'result': {'result': {'entry': ['test3']}}}
         if position == 'pre':
@@ -316,7 +325,7 @@ def test_get_unused_rules(mocker, position, num_of_rules):
     args = {'timeframe': '',
             'usage': 'test',
             'exclude': 'false',
-            'position': position,
+            'position': position_value,
             'rule_type': 'unused'
             }
     rules = policy_optimizer_get_rules_command(client, args).outputs
