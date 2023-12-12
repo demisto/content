@@ -4,7 +4,7 @@ import pytest
 def load_json_data(path):
     import json
 
-    with open(path, 'r') as f:
+    with open(path) as f:
         return json.load(f)
 
 

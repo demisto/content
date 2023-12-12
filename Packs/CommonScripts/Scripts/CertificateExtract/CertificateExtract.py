@@ -15,7 +15,7 @@ from cryptography.x509 import (
     general_name,
     certificate_transparency
 )
-from typing import Dict, Union, Any, Optional, cast, List
+from typing import Any, cast
 
 _INSTANCE_TO_TYPE = {
     general_name.OtherName: 'otherName',
@@ -122,7 +122,7 @@ def load_certificate(path: str) -> x509.Certificate:
     return certificate
 
 
-def int_to_comma_hex(n: int, blength: Optional[int] = None) -> str:
+def int_to_comma_hex(n: int, blength: int | None = None) -> str:
     """
     int_to_comma_hex
     Translates an integer in its corresponding hex string
@@ -146,11 +146,11 @@ def int_to_comma_hex(n: int, blength: Optional[int] = None) -> str:
     return ':'.join([bhex[i:i + 2] for i in range(0, len(bhex), 2)])
 
 
-def public_key_context(pkey: Union[asymmetric.dsa.DSAPublicKey,
-                       asymmetric.rsa.RSAPublicKey,
-                       asymmetric.ec.EllipticCurvePublicKey,
-                       asymmetric.ed25519.Ed25519PublicKey,
-                       asymmetric.ed448.Ed448PublicKey]) -> Common.CertificatePublicKey:
+def public_key_context(pkey: asymmetric.dsa.DSAPublicKey
+                       | asymmetric.rsa.RSAPublicKey
+                       | asymmetric.ec.EllipticCurvePublicKey
+                       | asymmetric.ed25519.Ed25519PublicKey
+                       | asymmetric.ed448.Ed448PublicKey) -> Common.CertificatePublicKey:
     """
     public_key_context function
     Translates an X509 certificate Public Key into a Common.CertificatePublicKey object
@@ -210,7 +210,7 @@ def map_gn(gn: Any) -> Common.GeneralName:
     if gn is None:
         raise ValueError('gn cannot be None')
 
-    itype = next((t for t in _INSTANCE_TO_TYPE.keys() if isinstance(gn, t)), None)
+    itype = next((t for t in _INSTANCE_TO_TYPE if isinstance(gn, t)), None)
     if itype is not None:
         return Common.GeneralName(
             gn_type=_INSTANCE_TO_TYPE[itype],
@@ -286,7 +286,7 @@ def extension_context(oid: str, extension_name: str, critical: bool, extension_v
             usages=[oid_name(o) for o in extension_value]
         )
     elif isinstance(extension_value, extensions.CRLDistributionPoints):
-        distribution_points: List[Common.CertificateExtension.DistributionPoint] = []
+        distribution_points: list[Common.CertificateExtension.DistributionPoint] = []
         dp: extensions.DistributionPoint
         for dp in extension_value:
             distribution_points.append(Common.CertificateExtension.DistributionPoint(
@@ -301,7 +301,7 @@ def extension_context(oid: str, extension_name: str, critical: bool, extension_v
             distribution_points=distribution_points
         )
     elif isinstance(extension_value, extensions.CertificatePolicies):
-        policies: List[Common.CertificateExtension.CertificatePolicy] = []
+        policies: list[Common.CertificateExtension.CertificatePolicy] = []
         p: extensions.PolicyInformation
         for p in extension_value:
             policies.append(Common.CertificateExtension.CertificatePolicy(
@@ -314,7 +314,7 @@ def extension_context(oid: str, extension_name: str, critical: bool, extension_v
             certificate_policies=policies
         )
     elif isinstance(extension_value, extensions.AuthorityInformationAccess):
-        descriptions: List[Common.CertificateExtension.AuthorityInformationAccess] = []
+        descriptions: list[Common.CertificateExtension.AuthorityInformationAccess] = []
         d: extensions.AccessDescription
         for d in extension_value:
             descriptions.append(Common.CertificateExtension.AuthorityInformationAccess(
@@ -337,7 +337,7 @@ def extension_context(oid: str, extension_name: str, critical: bool, extension_v
             )
         )
     elif isinstance(extension_value, extensions.PrecertificateSignedCertificateTimestamps):
-        presigcerttimestamps: List[Common.CertificateExtension.SignedCertificateTimestamp] = []
+        presigcerttimestamps: list[Common.CertificateExtension.SignedCertificateTimestamp] = []
         presct: extensions.SignedCertificateTimestamp
         for presct in extension_value:
             presigcerttimestamps.append(Common.CertificateExtension.SignedCertificateTimestamp(
@@ -352,7 +352,7 @@ def extension_context(oid: str, extension_name: str, critical: bool, extension_v
             signed_certificate_timestamps=presigcerttimestamps
         )
     elif isinstance(extension_value, extensions.SignedCertificateTimestamps):
-        sigcerttimestamps: List[Common.CertificateExtension.SignedCertificateTimestamp] = []
+        sigcerttimestamps: list[Common.CertificateExtension.SignedCertificateTimestamp] = []
         sct: extensions.SignedCertificateTimestamp
         for sct in extension_value:
             sigcerttimestamps.append(Common.CertificateExtension.SignedCertificateTimestamp(
@@ -391,7 +391,7 @@ def certificate_to_context(certificate: x509.Certificate) -> Common.Certificate:
             encoding=serialization.Encoding.DER,
             format=serialization.PublicFormat.SubjectPublicKeyInfo))
 
-    extensions_contexts: List[Common.CertificateExtension] = []
+    extensions_contexts: list[Common.CertificateExtension] = []
     for extension in certificate.extensions:
         extension_oid = cast(oid.ObjectIdentifier, extension.oid)
         extensions_contexts.append(extension_context(
@@ -431,9 +431,9 @@ def certificate_to_context(certificate: x509.Certificate) -> Common.Certificate:
 ''' COMMAND FUNCTION '''
 
 
-def certificate_extract_command(args: Dict[str, Any]) -> CommandResults:
-    pem: Optional[str] = args.get('pem')
-    entry_id: Optional[str] = args.get('entry_id')
+def certificate_extract_command(args: dict[str, Any]) -> CommandResults:
+    pem: str | None = args.get('pem')
+    entry_id: str | None = args.get('entry_id')
 
     if pem is None and entry_id is None:
         raise ValueError("You should specify pem or entry_id")

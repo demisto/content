@@ -5,7 +5,7 @@ from CommonServerUserPython import *  # noqa # pylint: disable=unused-wildcard-i
 import dateparser
 from datetime import timedelta
 from enum import Enum
-from typing import List, Dict, Any, Optional, Tuple
+from typing import Any
 
 
 # Threshold defining "long expiration". When validity_not_after - validity_not_before is greater than
@@ -39,7 +39,7 @@ def get_indicator_from_value(indicator_value: str):
         return None
 
 
-def indicator_set_validation_checks(ivalue: str, checks: List[CertificateValidationTag]) -> None:
+def indicator_set_validation_checks(ivalue: str, checks: list[CertificateValidationTag]) -> None:
     # we call setIndicator for each check because if you pass the full list to setIndicator at once
     # it will just set the field with the stringified version of the list
     for c in checks:
@@ -50,8 +50,8 @@ def indicator_set_validation_checks(ivalue: str, checks: List[CertificateValidat
         })
 
 
-def certificate_fields_to_context(certindicator_fields: Dict[str, Any]) -> Optional[Dict[str, Any]]:
-    pem: Optional[str]
+def certificate_fields_to_context(certindicator_fields: dict[str, Any]) -> dict[str, Any] | None:
+    pem: str | None
     if (pem := certindicator_fields.get('pem')) is None:
         return None
 
@@ -72,10 +72,10 @@ def certificate_fields_to_context(certindicator_fields: Dict[str, Any]) -> Optio
     return entry_context
 
 
-def dbot_context(value: str, certificate_context: Dict[str, Any]
-                 ) -> Tuple[List[CertificateValidationTag], List[str], Dict[str, Any]]:
-    comments: List[str] = []
-    tags: List[CertificateValidationTag] = []
+def dbot_context(value: str, certificate_context: dict[str, Any]
+                 ) -> tuple[list[CertificateValidationTag], list[str], dict[str, Any]]:
+    comments: list[str] = []
+    tags: list[CertificateValidationTag] = []
     some_checks_not_performed: bool = False
     current_score = Common.DBotScore.NONE
 
@@ -237,7 +237,7 @@ def dbot_context(value: str, certificate_context: Dict[str, Any]
 ''' COMMAND FUNCTION '''
 
 
-def certificate_reputation_command(args: Dict[str, Any]) -> Dict[str, Any]:
+def certificate_reputation_command(args: dict[str, Any]) -> dict[str, Any]:
     input_ = args.get('input')
     if input_ is None:
         raise ValueError("input argument is required")
@@ -253,7 +253,7 @@ def certificate_reputation_command(args: Dict[str, Any]) -> Dict[str, Any]:
             'ReadableContentsFormat': formats['markdown']
         }
 
-    comments: List[str] = []
+    comments: list[str] = []
 
     indicator_value = indicator.get('value')
     if indicator_value is None:
