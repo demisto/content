@@ -40,32 +40,25 @@ def test_prepare_datetime():
     assert prepare_datetime(from_date, increase=True) == '2023-01-01T00:00:00.001Z'
 
 
-def test_prepare_next_run():
-    from_date = '2023-01-01T00:00:00Z'
-    last_run = {
-        '123': {'policy_audits': from_date, 'admin_audits': from_date, 'detailed_events': from_date},
-        '456': {'policy_audits': from_date, 'admin_audits': from_date, 'detailed_events': from_date}
-    }
-    next_run = {}
-    expected_next_run = {
-        '123': {'policy_audits': '2023-12-11T13:09:56.056Z', 'admin_audits': "2023-12-12T07:45:27.141Z", 'detailed_events': "2023-12-12T06:59:18.141Z"},
-        '456': {'policy_audits': '2023-12-11T13:09:56.056Z', 'admin_audits': "2023-12-12T07:45:27.141Z", 'detailed_events': "2023-12-12T06:59:18.141Z"}
-    }
-    set_ids = ['123', '456']
+def test_add_fields_to_events():
     policy_audits = util_load_json('test_data/policy_audits.json').get('events')
     admin_audits = util_load_json('test_data/admin_audits.json').get('AdminAudits')
     events = util_load_json('test_data/events.json').get('events')
 
-    for set_id in set_ids:
-        prepare_next_run(last_run, next_run, set_id, policy_audits, 'policy_audits')
-        prepare_next_run(last_run, next_run, set_id, admin_audits, 'admin_audits')
-        prepare_next_run(last_run, next_run, set_id, events, 'detailed_events')
+    assert not any(key in policy_audits[0] for key in ('_time', 'eventTypeXsiam'))
+    assert not any(key in admin_audits[0] for key in ('_time', 'eventTypeXsiam'))
+    assert not any(key in events[0] for key in ('_time', 'eventTypeXsiam'))
 
-    assert next_run == expected_next_run
+    add_fields_to_events(policy_audits, 'arrivalTime', 'policy_audits')
+    add_fields_to_events(admin_audits, 'EventTime', 'admin_audits')
+    add_fields_to_events(events, 'arrivalTime', 'detailed_events')
 
-
-def test_add_fields_to_events():
-    ...
+    assert policy_audits[0]['_time'] == policy_audits[0]['arrivalTime']
+    assert policy_audits[0]['eventTypeXsiam'] == XSIAM_EVENT_TYPE.get('policy_audits')
+    assert admin_audits[0]['_time'] == admin_audits[0]['EventTime']
+    assert admin_audits[0]['eventTypeXsiam'] == XSIAM_EVENT_TYPE.get('admin_audits')
+    assert events[0]['_time'] == events[0]['arrivalTime']
+    assert events[0]['eventTypeXsiam'] == XSIAM_EVENT_TYPE.get('detailed_events')
 
 
 def test_get_set_ids_by_set_names():

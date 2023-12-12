@@ -13,7 +13,7 @@ Every method needs different parameters as show in the following:
 
 
 * SAML authentication
-    - url: `https://<EPM_server>`
+    - url: `https://login.epm.cyberark.com/SAML/Logon`
     - username: `admin`
     - password: `123456`
     - authentication URL: `https://paloaltonetworks.okta.com/api/v1/authn`

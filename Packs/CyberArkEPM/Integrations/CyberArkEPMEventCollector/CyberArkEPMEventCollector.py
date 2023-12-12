@@ -16,7 +16,7 @@ PRODUCT = 'EPM'
 XSIAM_EVENT_TYPE = {
     'policy_audits': 'policy audit raw event details',
     'admin_audits': 'set admin audit data',
-    'events': 'detailed raw',
+    'detailed_events': 'detailed raw',
 }
 
 """ CLIENT CLASS """
@@ -128,18 +128,6 @@ def prepare_datetime(date_time: Any, increase: bool = False) -> str:
     return f'{date_time_str}Z'
 
 
-def prepare_next_run(last_run: dict, next_run: dict, set_id: str, events: list, event_type: str):
-    if events:
-        latest_event_date = events[-1].get('arrivalTime') or events[-1].get('EventTime')
-    else:
-        latest_event_date = demisto.get(last_run, f'{set_id}.{event_type}', datetime.now())
-
-    if next_run.get(set_id):
-        next_run[set_id][event_type] = prepare_datetime(latest_event_date, increase=True)
-    else:
-        next_run[set_id] = {event_type: prepare_datetime(latest_event_date, increase=True)}
-
-
 def add_fields_to_events(events: list, date_field: str, event_type: str):
     for event in events:
         event['_time'] = event.get(date_field)
@@ -242,7 +230,7 @@ def get_detailed_events(client: Client, set_ids_with_from_date: dict, limit: int
             detailed_events[set_id].extend(results.get('events', []))
 
         sorted_events = sorted(detailed_events[set_id], key=lambda e: parser.parse(e.get('arrivalTime')))
-        add_fields_to_events(sorted_events, 'arrivalTime', 'events')
+        add_fields_to_events(sorted_events, 'arrivalTime', 'detailed_events')
         detailed_events[set_id] = sorted_events[:limit]
 
     return detailed_events
@@ -299,13 +287,16 @@ def fetch_events(client: Client, last_run: dict, max_fetch: int = MAX_FETCH) -> 
     demisto.info(f'Start fetching last run: {last_run}')
 
     for set_id, policy_audits in get_policy_audits(client, last_run, max_fetch).items():
-        prepare_next_run(last_run, next_run, set_id, policy_audits, 'policy_audits')
+        if policy_audits:
+            last_run[set_id]['policy_audits'] = prepare_datetime(policy_audits[-1].get('arrivalTime'))
         events.extend(policy_audits)
     for set_id, admin_audits in get_admin_audits(client, last_run, max_fetch).items():
-        prepare_next_run(last_run, next_run, set_id, admin_audits, 'admin_audits')
+        if admin_audits:
+            last_run[set_id]['admin_audits'] = prepare_datetime(admin_audits[-1].get('EventTime'))
         events.extend(admin_audits)
     for set_id, detailed_events in get_detailed_events(client, last_run, max_fetch).items():
-        prepare_next_run(last_run, next_run, set_id, detailed_events, 'detailed_events')
+        if detailed_events:
+            last_run[set_id]['detailed_events'] = prepare_datetime(detailed_events[-1].get('arrivalTime'))
         events.extend(detailed_events)
 
     demisto.info(f'Sending len {len(events)} to XSIAM. updated_next_run={next_run}.')
