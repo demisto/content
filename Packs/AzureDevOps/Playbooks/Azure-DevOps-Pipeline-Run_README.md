@@ -1,4 +1,4 @@
-This playbook runs a pipeline on the Azure DevOps Environment.
+Deprecated. Use azure-devops-pipeline-run command instead.
 
 ## Dependencies
 
@@ -42,3 +42,9 @@ This playbook does not use any scripts.
 | AzureDevOps.Project | The result of the search. | unknown |
 | AzureDevOps.Project.Pipeline | AzureDevOps Pipeline Object. | unknown |
 | AzureDevOps.Project.Pipeline.Run | AzureDevOps Pipeling Run. | unknown |
+
+## Playbook Image
+
+---
+
+![Azure-DevOps-Pipeline-Run](../doc_files/Azure-DevOps-Pipeline-Run.png)
