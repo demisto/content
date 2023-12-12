@@ -1480,20 +1480,29 @@ def test_upload_entries_update_remote_system_command(mocker, mirror_entries):
     update_remote_system_command(client, args, params)
 
 
-TICKET_FIELDS = {'close_notes': 'This is closed', 'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
+TICKET_FIELDS = {'close_notes': 'Closed by XSOAR', 'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
                  'priority': '4', 'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - Low',
                  'short_description': 'Post parcel', 'sla_due': '0001-01-01T00:00:00Z', 'urgency': '3', 'state': '1',
                  'work_start': '0001-01-01T00:00:00Z'}
 
 
 def ticket_fields(*args, **kwargs):
-    state = '7' if kwargs.get('ticket_type') == 'incident' else '3'
-    assert {'close_notes': 'This is closed', 'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
-            'priority': '4', 'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - Low',
-            'short_description': 'Post parcel', 'sla_due': '0001-01-01T00:00:00Z', 'urgency': '3', 'state': state,
-            'work_start': '0001-01-01T00:00:00Z'} == args[0]
+    fields = {'close_notes': 'Closed by XSOAR', 'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
+                'priority': '4', 'resolved_at': '2020-10-29T13:19:07.345995+02:00',
+                'severity': '1 - Low',
+                'short_description': 'Post parcel', 'sla_due': '0001-01-01T00:00:00Z', 'urgency': '3',
+                'work_start': '0001-01-01T00:00:00Z'}
+    if kwargs.get('ticket_type') == 'incident':
+        fields['state'] = '7'
+        fields['close_code'] = 'Closed/Resolved by Caller'
+        assert fields == args[0]
 
-    return {'close_notes': 'This is closed', 'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
+    else:
+        fields['state'] = '3'
+        assert fields == args[0]
+
+    return {'close_notes': 'Closed by XSOAR', 'close_code': 'Closed/Resolved by Caller',
+            'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
             'priority': '4', 'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - Low',
             'short_description': 'Post parcel', 'sla_due': '0001-01-01T00:00:00Z', 'urgency': '3', 'state': '1',
             'work_start': '0001-01-01T00:00:00Z'}
@@ -1501,7 +1510,7 @@ def ticket_fields(*args, **kwargs):
 
 def update_ticket(*args):
     state = '7' if 'incident' in args else '3'
-    return {'short_description': 'Post parcel', 'close_notes': 'This is closed',
+    return {'short_description': 'Post parcel', 'close_notes': 'Closed by XSOAR',
             'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3', 'priority': '4',
             'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - High - Low',
             'sla_due': '0001-01-01T00:00:00Z', 'state': state, 'urgency': '3', 'work_start': '0001-01-01T00:00:00Z'}
@@ -1916,11 +1925,19 @@ def test_converts_close_code_or_state_to_close_reason(ticket_state, ticket_close
 
 
 def ticket_fields_mocker(*args, **kwargs):
-    state = '88' if kwargs.get('ticket_type') == 'incident' else '90'
-    fields = {'close_notes': 'This is closed', 'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
-              'priority': '4', 'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - Low',
-              'short_description': 'Post parcel', 'sla_due': '0001-01-01T00:00:00Z', 'urgency': '3', 'state': state,
-              'work_start': '0001-01-01T00:00:00Z'}
+    if kwargs.get('ticket_type') == 'incident':
+        state = '88'
+        fields = {'close_notes': 'Closed by XSOAR', 'close_code': 'Closed/Resolved by Caller',
+                  'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
+                  'priority': '4', 'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - Low',
+                  'short_description': 'Post parcel', 'sla_due': '0001-01-01T00:00:00Z', 'urgency': '3', 'state': state,
+                  'work_start': '0001-01-01T00:00:00Z'}
+    else:
+        state = '90'
+        fields = {'close_notes': 'Closed by XSOAR', 'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
+                  'priority': '4', 'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - Low',
+                  'short_description': 'Post parcel', 'sla_due': '0001-01-01T00:00:00Z', 'urgency': '3', 'state': state,
+                  'work_start': '0001-01-01T00:00:00Z'}
     assert fields == args[0]
     return fields
 
@@ -1973,6 +1990,7 @@ def test_update_remote_data_custom_state(mocker, ticket_type, ticket_state, clos
               'close_custom_state': close_custom_state}
 
     TICKET_FIELDS['state'] = ticket_state
+    TICKET_FIELDS['close_notes'] = 'Closed by XSOAR'
     args = {'remoteId': '1234', 'data': TICKET_FIELDS, 'entries': [], 'incidentChanged': True, 'delta': {},
             'status': 2}
 
@@ -1980,7 +1998,7 @@ def test_update_remote_data_custom_state(mocker, ticket_type, ticket_state, clos
         # Represents only the response of the last call to client.update
         # In case the custom state doesn't exist -
         # in the first call will return the ticket's state as before (in case2 - '16', case4 - '1')
-        return {'result': {'short_description': 'Post parcel', 'close_notes': 'This is closed',
+        return {'result': {'short_description': 'Post parcel', 'close_notes': 'Closed by XSOAR',
                            'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3', 'priority': '4',
                            'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - High - Low',
                            'sla_due': '0001-01-01T00:00:00Z', 'state': result_close_state, 'urgency': '3',
