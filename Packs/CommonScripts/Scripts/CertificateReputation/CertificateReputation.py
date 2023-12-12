@@ -185,8 +185,10 @@ def dbot_context(value: str, certificate_context: dict[str, Any]
         comments.append('No Extensions available, some checks could not be performed')
         some_checks_not_performed = True
     else:
-        subject_key_identifier = next((e.get('Value') for e in extensions if e.get('OID') == '2.5.29.14'), None)
-        authority_key_identifier = next((e.get('Value') for e in extensions if e.get('OID') == '2.5.29.35'), None)
+        subject_key_identifier = next((e.get('Value') for e in extensions
+                                       if e.get('OID') == '2.5.29.14'), None)  # disable-secrets-detection
+        authority_key_identifier = next((e.get('Value') for e in extensions
+                                         if e.get('OID') == '2.5.29.35'), None)  # disable-secrets-detection
 
         subject_key_identifier_digest = None
         authority_key_identifier_ki = None
@@ -199,25 +201,31 @@ def dbot_context(value: str, certificate_context: dict[str, Any]
             some_checks_not_performed = True
             comments.append('Valid AuthorityKeyIdentifier Extension not available, some checks not performed')
 
-        if subject_key_identifier_digest is not None and authority_key_identifier_ki is not None:
-            if subject_key_identifier_digest == authority_key_identifier_ki:
-                comments.append(f'{CertificateValidationTag.SELF_SIGNED.value} Self-Signed Certificate')
-                tags.append(CertificateValidationTag.SELF_SIGNED)
-                current_score = max(current_score, Common.DBotScore.SUSPICIOUS)
+        if (subject_key_identifier_digest is not None
+            and authority_key_identifier_ki is not None
+                and subject_key_identifier_digest == authority_key_identifier_ki):
+            comments.append(f'{CertificateValidationTag.SELF_SIGNED.value} Self-Signed Certificate')
+            tags.append(CertificateValidationTag.SELF_SIGNED)
+            current_score = max(current_score, Common.DBotScore.SUSPICIOUS)
 
-        elif subject_key_identifier_digest is not None and authority_key_identifier_ki is None:
-            if subject_dn is not None and issuer_dn is not None and subject_dn == issuer_dn:
-                comments.append(f'{CertificateValidationTag.SELF_SIGNED.value} Self-Signed Certificate')
-                tags.append(CertificateValidationTag.SELF_SIGNED)
-                current_score = max(current_score, Common.DBotScore.SUSPICIOUS)
+        elif (subject_key_identifier_digest is not None
+              and authority_key_identifier_ki is None
+              and subject_dn is not None
+              and issuer_dn is not None
+              and subject_dn == issuer_dn):
+            comments.append(f'{CertificateValidationTag.SELF_SIGNED.value} Self-Signed Certificate')
+            tags.append(CertificateValidationTag.SELF_SIGNED)
+            current_score = max(current_score, Common.DBotScore.SUSPICIOUS)
 
         # if self-signed we also check this is self-issued
-        if CertificateValidationTag.SELF_SIGNED in tags:
-            if subject_dn is not None and issuer_dn is not None and subject_dn != issuer_dn:
-                comments.append(f'{CertificateValidationTag.INVALID_DISTINGUISHED_NAMES.value}'
-                                ' Self-Signed Certificate with different Issuer DN and Subject DN')
-                tags.append(CertificateValidationTag.INVALID_DISTINGUISHED_NAMES)
-                current_score = Common.DBotScore.BAD
+        if (CertificateValidationTag.SELF_SIGNED in tags
+            and subject_dn is not None
+            and issuer_dn is not None
+                and subject_dn != issuer_dn):
+            comments.append(f'{CertificateValidationTag.INVALID_DISTINGUISHED_NAMES.value}'
+                            ' Self-Signed Certificate with different Issuer DN and Subject DN')
+            tags.append(CertificateValidationTag.INVALID_DISTINGUISHED_NAMES)
+            current_score = Common.DBotScore.BAD
 
     if not some_checks_not_performed:
         # if we didn't have to skip any check we can mark the cert as good
