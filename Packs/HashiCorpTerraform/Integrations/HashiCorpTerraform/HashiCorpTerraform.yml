@@ -259,12 +259,72 @@ script:
     - contextPath: Terraform.Plan.id
       type: String
       description: The plan id.
-    - contextPath: Terraform.Plan.attributes.status-timestamps.queued-at
-      type: Date
-      description: The time the plan was queued.
     - contextPath: Terraform.Plan.attributes.status
       type: String
       description: The plan status.
+    - contextPath: Terraform.Plan.type
+      description: 'Type of the Terraform plan data.'
+      type: String
+    - contextPath: Terraform.Plan.attributes.has-changes
+      description: 'Flag indicating whether the Terraform plan has changes.'
+      type: Boolean
+    - contextPath: Terraform.Plan.attributes.status-timestamps.started-at
+      description: 'Timestamp indicating when the Terraform plan started.'
+      type: Date
+    - contextPath: Terraform.Plan.attributes.status-timestamps.finished-at
+      description: 'Timestamp indicating when the Terraform plan finished.'
+      type: Date
+    - contextPath: Terraform.Plan.attributes.status-timestamps.agent-queued-at
+      description: 'Timestamp indicating when the Terraform plan was queued for an agent.'
+      type: Date
+    - contextPath: Terraform.Plan.attributes.log-read-url
+      description: 'URL for reading the Terraform plan log.'
+      type: String
+    - contextPath: Terraform.Plan.attributes.resource-additions
+      description: 'Number of resource additions in the Terraform plan.'
+      type: Number
+    - contextPath: Terraform.Plan.attributes.resource-changes
+      description: 'Number of resource changes in the Terraform plan.'
+      type: Number
+    - contextPath: Terraform.Plan.attributes.resource-destructions
+      description: 'Number of resource destructions in the Terraform plan.'
+      type: Number
+    - contextPath: Terraform.Plan.attributes.resource-imports
+      description: 'Number of resource imports in the Terraform plan.'
+      type: Number
+    - contextPath: Terraform.Plan.attributes.structured-run-output-enabled
+      description: 'Flag indicating whether structured run output is enabled in the Terraform plan.'
+      type: Boolean
+    - contextPath: Terraform.Plan.attributes.generated-configuration
+      description: 'Flag indicating whether the Terraform plan has generated configuration.'
+      type: Boolean
+    - contextPath: Terraform.Plan.attributes.actions.is-exportable
+      description: 'Flag indicating whether the Terraform plan is exportable.'
+      type: Boolean
+    - contextPath: Terraform.Plan.attributes.execution-details.mode
+      description: 'Execution mode details for the Terraform plan.'
+      type: String
+    - contextPath: Terraform.Plan.attributes.permissions.can-export
+      description: 'Flag indicating whether the user has permission to export the Terraform plan.'
+      type: Boolean
+    - contextPath: Terraform.Plan.relationships.state-versions.data
+      description: 'Relationship information for state versions associated with the Terraform plan.'
+      type: Unknown
+    - contextPath: Terraform.Plan.relationships.exports.data
+      description: 'Relationship information for exports associated with the Terraform plan.'
+      type: Unknown
+    - contextPath: Terraform.Plan.links.self
+      description: 'Link to the Terraform plan data.'
+      type: String
+    - contextPath: Terraform.Plan.links.json-output
+      description: 'Link to the JSON output of the Terraform plan.'
+      type: String
+    - contextPath: Terraform.Plan.links.json-output-redacted
+      description: 'Link to the redacted JSON output of the Terraform plan.'
+      type: String
+    - contextPath: Terraform.Plan.links.json-schema
+      description: 'Link to the JSON schema of the Terraform plan.'
+      type: String
     description: Get plan JSON file or the plan meta data.
   - name: terraform-policies-list
     description: List the policies for an organization or get a specific policy.
@@ -283,23 +343,89 @@ script:
       description: If specified, get the specific policy.
     outputs:
     - contextPath: Terraform.Policy.id
+      description: 'Unique identifier for the Terraform policy data.'
       type: String
-      description: The policy id.
+    - contextPath: Terraform.Policy.type
+      description: 'Type of the Terraform policy data.'
+      type: String
     - contextPath: Terraform.Policy.attributes.name
+      description: 'Name of the Terraform policy.'
       type: String
-      description: The policy name.
     - contextPath: Terraform.Policy.attributes.description
+      description: 'Description of the Terraform policy.'
+      type: Unknown
+    - contextPath: Terraform.Policy.attributes.enforce.path
+      description: 'Path for enforcing the Terraform policy.'
       type: String
-      description: The policy description.
+    - contextPath: Terraform.Policy.attributes.enforce.mode
+      description: 'Enforcement mode for the Terraform policy.'
+      type: String
+    - contextPath: Terraform.Policy.attributes.policy-set-count
+      description: 'Count of policy sets associated with the Terraform policy.'
+      type: Number
+    - contextPath: Terraform.Policy.attributes.updated-at
+      description: 'Timestamp indicating when the Terraform policy was last updated.'
+      type: Date
     - contextPath: Terraform.Policy.attributes.kind
+      description: 'Kind of the Terraform policy.'
       type: String
-      description: The policy kind.
-    - contextPath: Terraform.Policy.relationships.policy-sets
-      type: Unknwon
-      description: The Policy sets that the returned policy are members of.
+    - contextPath: Terraform.Policy.attributes.enforcement-level
+      description: 'Enforcement level for the Terraform policy.'
+      type: String
     - contextPath: Terraform.Policy.relationships.organization.data.id
+      description: 'Unique identifier for the organization associated with the Terraform policy.'
       type: String
-      description: The policy organization id.
+    - contextPath: Terraform.Policy.relationships.organization.data.type
+      description: 'Type of the organization associated with the Terraform policy.'
+      type: String
+    - contextPath: Terraform.Policy.relationships.policy-sets.data.id
+      description: 'Unique identifier for the policy sets associated with the Terraform policy.'
+      type: String
+    - contextPath: Terraform.Policy.relationships.policy-sets.data.type
+      description: 'Type of the policy sets associated with the Terraform policy.'
+      type: String
+    - contextPath: Terraform.Policy.links.self
+      description: 'Link to the Terraform policy data.'
+      type: String
+    - contextPath: Terraform.Policy.links.upload
+      description: 'Link for uploading the Terraform policy.'
+      type: String
+    - contextPath: Terraform.Policy.links.download
+      description: 'Link for downloading the Terraform policy.'
+      type: String
+    - contextPath: Terraform.Policy.links.self
+      description: 'Link to the Terraform policy.'
+      type: String
+    - contextPath: Terraform.Policy.links.first
+      description: 'Link to the first page of Terraform policies.'
+      type: String
+    - contextPath: Terraform.Policy.links.prev
+      description: 'Link to the previous page of Terraform policies.'
+      type: Unknown
+    - contextPath: Terraform.Policy.links.next
+      description: 'Link to the next page of Terraform policies.'
+      type: Unknown
+    - contextPath: Terraform.Policy.links.last
+      description: 'Link to the last page of Terraform policies.'
+      type: String
+    - contextPath: Terraform.Policy.meta.pagination.current-page
+      description: 'Current page number in the pagination of Terraform policies.'
+      type: Number
+    - contextPath: Terraform.Policy.meta.pagination.page-size
+      description: 'Number of policies displayed per page in pagination.'
+      type: Number
+    - contextPath: Terraform.Policy.meta.pagination.prev-page
+      description: 'Previous page number in the pagination of Terraform policies.'
+      type: Unknown
+    - contextPath: Terraform.Policy.meta.pagination.next-page
+      description: 'Next page number in the pagination of Terraform policies.'
+      type: Unknown
+    - contextPath: Terraform.Policy.meta.pagination.total-pages
+      description: 'Total number of pages in the pagination of Terraform policies.'
+      type: Number
+    - contextPath: Terraform.Policy.meta.pagination.total-count
+      description: 'Total count of Terraform policies.'
+      type: Number
   - name: terraform-policy-set-list
     description: List the policy sets for an organization or get a specific policy set.
     arguments:
@@ -329,30 +455,105 @@ script:
     - name: page_size
       description: The number of results to return per page. Default is 20, maximum is 100.
     outputs:
-    - contextPath: Terraform.PolicySet.data.id
+    - contextPath: Terraform.PolicySet.id
+      description: 'Unique identifier for the Terraform policy set data.'
       type: String
-      description: The policy set id.
-    - contextPath: Terraform.PolicySet.data.attributes.name
+    - contextPath: Terraform.PolicySet.type
+      description: 'Type of the Terraform policy set data.'
       type: String
-      description: The policy set name.
-    - contextPath: Terraform.PolicySet.data.attributes.description
+    - contextPath: Terraform.PolicySet.attributes.name
+      description: 'Name of the Terraform policy set.'
       type: String
-      description: The policy set description.
-    - contextPath: Terraform.PolicySet.data.relationships.organization.data.id
-      type: String
-      description: The policy set organization id.
-    - contextPath: Terraform.PolicySet.data.relationships.policies.data.id
+    - contextPath: Terraform.PolicySet.attributes.description
+      description: 'Description of the Terraform policy set.'
       type: Unknown
-      description: The policy set policies ids.
-    - contextPath: Terraform.PolicySet.data.relationships.workspaces.data.id
-      type: Unknown
-      description: The policy set workspaces ids.
-    - contextPath: Terraform.PolicySet.data.relationships.projects.data.id
-      type: Unknown
-      description: The policy set projects ids.
-    - contextPath: Terraform.PolicySet.next
+    - contextPath: Terraform.PolicySet.attributes.global
+      description: 'Flag indicating whether the Terraform policy set is global.'
+      type: Boolean
+    - contextPath: Terraform.PolicySet.attributes.workspace-count
+      description: 'Number of workspaces associated with the Terraform policy set.'
+      type: Number
+    - contextPath: Terraform.PolicySet.attributes.project-count
+      description: 'Number of projects associated with the Terraform policy set.'
+      type: Number
+    - contextPath: Terraform.PolicySet.attributes.created-at
+      description: 'Timestamp indicating when the Terraform policy set was created.'
+      type: Date
+    - contextPath: Terraform.PolicySet.attributes.updated-at
+      description: 'Timestamp indicating when the Terraform policy set was last updated.'
+      type: Date
+    - contextPath: Terraform.PolicySet.attributes.kind
+      description: 'Kind of the Terraform policy set.'
       type: String
-      description: The url for the next policies set page results.
+    - contextPath: Terraform.PolicySet.attributes.agent-enabled
+      description: 'Flag indicating whether the Terraform policy set has agents enabled.'
+      type: Boolean
+    - contextPath: Terraform.PolicySet.attributes.policy-count
+      description: 'Number of policies associated with the Terraform policy set.'
+      type: Number
+    - contextPath: Terraform.PolicySet.attributes.versioned
+      description: 'Flag indicating whether the Terraform policy set is versioned.'
+      type: Boolean
+    - contextPath: Terraform.PolicySet.relationships.organization.data.id
+      description: 'ID of the organization associated with the Terraform policy set.'
+      type: String
+    - contextPath: Terraform.PolicySet.relationships.organization.data.type
+      description: 'Type of the organization associated with the Terraform policy set.'
+      type: String
+    - contextPath: Terraform.PolicySet.relationships.policies.data.id
+      description: 'ID of the policies associated with the Terraform policy set.'
+      type: String
+    - contextPath: Terraform.PolicySet.relationships.policies.data.type
+      description: 'Type of the policies associated with the Terraform policy set.'
+      type: String
+    - contextPath: Terraform.PolicySet.relationships.workspaces.data.id
+      description: 'ID of the workspaces associated with the Terraform policy set.'
+      type: String
+    - contextPath: Terraform.PolicySet.relationships.workspaces.data.type
+      description: 'Type of the workspaces associated with the Terraform policy set.'
+      type: String
+    - contextPath: Terraform.PolicySet.relationships.projects.data
+      description: 'Relationship information for projects associated with the Terraform policy set.'
+      type: Unknown
+    - contextPath: Terraform.PolicySet.relationships.workspace-exclusions.data
+      description: 'Relationship information for workspace exclusions associated with the Terraform policy set.'
+      type: Unknown
+    - contextPath: Terraform.PolicySet.links.self
+      description: 'Link to the Terraform policy set data.'
+      type: String
+    - contextPath: Terraform.PolicySet.links.self
+      description: 'Link to the Terraform policy set.'
+      type: String
+    - contextPath: Terraform.PolicySet.links.first
+      description: 'Link to the first page of Terraform policy sets.'
+      type: String
+    - contextPath: Terraform.PolicySet.links.prev
+      description: 'Link to the previous page of Terraform policy sets.'
+      type: Unknown
+    - contextPath: Terraform.PolicySet.links.next
+      description: 'Link to the next page of Terraform policy sets.'
+      type: Unknown
+    - contextPath: Terraform.PolicySet.links.last
+      description: 'Link to the last page of Terraform policy sets.'
+      type: String
+    - contextPath: Terraform.PolicySet.meta.pagination.current-page
+      description: 'Current page number in the pagination of Terraform policy sets.'
+      type: Number
+    - contextPath: Terraform.PolicySet.meta.pagination.page-size
+      description: 'Number of items per page in the pagination of Terraform policy sets.'
+      type: Number
+    - contextPath: Terraform.PolicySet.meta.pagination.prev-page
+      description: 'Link to the previous page in the pagination of Terraform policy sets.'
+      type: Unknown
+    - contextPath: Terraform.PolicySet.meta.pagination.next-page
+      description: 'Link to the next page in the pagination of Terraform policy sets.'
+      type: Unknown
+    - contextPath: Terraform.PolicySet.meta.pagination.total-pages
+      description: 'Total number of pages in the pagination of Terraform policy sets.'
+      type: Number
+    - contextPath: Terraform.PolicySet.meta.pagination.total-count
+      description: 'Total number of Terraform policy sets.'
+      type: Number
   - name: terraform-policies-checks-list
     description: List the policy checks for a Terraform run.
     arguments:
@@ -366,22 +567,67 @@ script:
       description: The number of results to return per page. Default is 20, maximum is 100.
     outputs:
     - contextPath: Terraform.PolicyCheck.id
+      description: 'Unique identifier for the Terraform policy check data.'
       type: String
-      description: The policy check id.
-    - contextPath: Terraform.PolicyCheck.attributes.result
+    - contextPath: Terraform.PolicyCheck.type
+      description: 'Type of the Terraform policy check data.'
+      type: String
+    - contextPath: Terraform.PolicyCheck.attributes.result.result
+      description: 'Overall result of the Terraform policy check.'
+      type: Boolean
+    - contextPath: Terraform.PolicyCheck.attributes.result.passed
+      description: 'Number of policy checks that passed.'
+      type: Number
+    - contextPath: Terraform.PolicyCheck.attributes.result.total-failed
+      description: 'Total number of policy checks that failed.'
+      type: Number
+    - contextPath: Terraform.PolicyCheck.attributes.result.hard-failed
+      description: 'Number of policy checks that resulted in hard failures.'
+      type: Number
+    - contextPath: Terraform.PolicyCheck.attributes.result.soft-failed
+      description: 'Number of policy checks that resulted in soft failures.'
+      type: Number
+    - contextPath: Terraform.PolicyCheck.attributes.result.advisory-failed
+      description: 'Number of policy checks that resulted in advisory failures.'
+      type: Number
+    - contextPath: Terraform.PolicyCheck.attributes.result.duration-ms
+      description: 'Duration of the policy check execution in milliseconds.'
+      type: Number
+    - contextPath: Terraform.PolicyCheck.attributes.result.sentinel
+      description: 'Sentinel-specific result of the policy check.'
       type: Unknown
-      description: The policy check results.
-    - contextPath: Terraform.PolicyCheck.attributes.status
-      type: String
-      description: The policy check status.
     - contextPath: Terraform.PolicyCheck.attributes.scope
+      description: 'Scope or context of the Terraform policy check.'
       type: String
-      description: The policy check scope.
+    - contextPath: Terraform.PolicyCheck.attributes.status
+      description: 'Status of the Terraform policy check.'
+      type: String
+    - contextPath: Terraform.PolicyCheck.attributes.status-timestamps.queued-at
+      description: 'Timestamp indicating when the Terraform policy check was queued.'
+      type: Date
+    - contextPath: Terraform.PolicyCheck.attributes.status-timestamps.soft-failed-at
+      description: 'Timestamp indicating when the Terraform policy check encountered a soft failure.'
+      type: Date
+    - contextPath: Terraform.PolicyCheck.attributes.actions.is-overridable
+      description: 'Flag indicating whether the Terraform policy check is overridable.'
+      type: Boolean
+    - contextPath: Terraform.PolicyCheck.attributes.permissions.can-override
+      description: 'Flag indicating whether the user has permission to override the Terraform policy check.'
+      type: Boolean
+    - contextPath: Terraform.PolicyCheck.relationships.run.data.id
+      description: 'Unique identifier for the Terraform run associated with the policy check.'
+      type: String
+    - contextPath: Terraform.PolicyCheck.relationships.run.data.type
+      description: 'Type of the Terraform run associated with the policy check.'
+      type: String
+    - contextPath: Terraform.PolicyCheck.links.output
+      description: 'Link to the output of the Terraform policy check.'
+      type: String
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.82467
+  dockerimage: demisto/python3:3.10.13.83255
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)

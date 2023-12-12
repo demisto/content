@@ -265,7 +265,7 @@ def policy_set_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
     return CommandResults(
         outputs_prefix='Terraform.PolicySet',
         outputs_key_field='id',
-        outputs={'data': data, 'next': demisto.get(res, 'links.next')},
+        outputs=data,
         raw_response=res,
         readable_output=tableToMarkdown('Terraform Policy Sets', hr_items, removeNull=True)
     )
