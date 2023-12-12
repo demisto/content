@@ -21,7 +21,7 @@ def extract_indicators_from_text(text: str) -> dict:
     )[0]['Contents'])
 
 
-def extract_info_from_qr_code(entry_id: str) -> CommandResults:
+def extract_info_from_qr_code(entry_id: str, **kwargs) -> CommandResults:
 
     try:
         filename = demisto.getFilePath(entry_id)['path']
