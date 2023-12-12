@@ -25,17 +25,17 @@ configuration:
   section: Connect
   required: false
 - display: Use OAuth 2.0 Authentication
-  additionalinfo: See detailed instructions on the 'Help' tab.
   name: use_oauth
   type: 8
   section: Connect
   required: false
+  additionalinfo: See detailed instructions on the 'Help' tab.
 - display: Client ID
-  additionalinfo: Required and used if OAuth 2.0 is used for authentication. See detailed instructions on the 'Help' tab.
   name: client_id
   type: 0
   section: Connect
   required: false
+  additionalinfo: Required and used if OAuth 2.0 is used for authentication. See detailed instructions on the 'Help' tab.
 - display: Private Key
   additionalinfo: Required and used if OAuth 2.0 is used for authentication. See detailed instructions on the 'Help' tab.
   name: private_key
@@ -1483,7 +1483,7 @@ script:
     - contextPath: Account.Username
       description: Okta account usernames returned by the search.
       type: String
-  dockerimage: demisto/crypto:1.0.0.82278
+  dockerimage: demisto/crypto:1.0.0.83343
   runonce: false
   script: ""
   subtype: python3
