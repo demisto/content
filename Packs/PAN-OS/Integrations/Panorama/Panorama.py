@@ -11828,7 +11828,7 @@ def get_device_state(topology: Topology, target: str, filename: str = None) -> d
     :param target: String to filter to only show specific hostnames or serial numbers.
     """
 
-    if filename == '' or filename == None:
+    if not filename:
         file_name = f"{target}_device_state.tar.gz"
     else:
         file_name = f"{target}_{filename}_device_state.tar.gz"
