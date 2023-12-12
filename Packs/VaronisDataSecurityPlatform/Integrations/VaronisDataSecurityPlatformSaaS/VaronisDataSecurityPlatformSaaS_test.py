@@ -1,11 +1,10 @@
 import json
 import io
-from SearchAlertObjectMapper import SearchAlertObjectMapper
 import demistomock as demisto
 from pytest_mock import MockerFixture
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
-from Client import Client
+from VaronisDataSecurityPlatformSaaS import *
 
 
 def util_load_json(path):
@@ -16,7 +15,7 @@ def util_load_json(path):
 ''' COMMAND UNIT TESTS '''
 
 
-def test_varonis_get_alerts_command(mocker: MockerFixture):
+def test_varonis_get_alerts_command(mocker: MockerFixture, requests_mock: MockerFixture):
     """
         When:
             - Get alerts from Varonis api
@@ -26,27 +25,23 @@ def test_varonis_get_alerts_command(mocker: MockerFixture):
     """
     from VaronisDataSecurityPlatformSaaS import varonis_get_alerts_command
 
+    requests_mock.post(
+        'https://test.com/app/dataquery/api/search/v2/search',
+        json=util_load_json('test_data/varonis_get_alerts_create_search_response.json'))
+    requests_mock.get(
+        'https://test.com/app/dataquery/api/search/v2/rows/af6a26a1d70e4be182adc148b831f476/',
+        json=util_load_json('test_data/varonis_get_alerts_execute_search_response.json'))
+
+    args = util_load_json("test_data/demisto_search_alerts_args.json")
+
     client = Client(
         base_url='https://test.com',
         verify=False,
         proxy=False
     )
-    mocker.patch.object(
-        client,
-        'varonis_get_alerts',
-        return_value=util_load_json('test_data/test_varonis_get_alerts_command/varonis_get_alerts_api_response.json')
-    )
-    mocker.patch.object(
-        client,
-        'varonis_get_enum',
-        return_value=util_load_json('test_data/varonis_get_enum_response.json')
-    )
-
-    args = util_load_json("test_data/test_varonis_get_alerts_command/demisto_search_alerts_args.json")
-    expected_outputs = util_load_json('test_data/test_varonis_get_alerts_command/varonis_get_alerts_command_output.json')
-
     result = varonis_get_alerts_command(client, args)
 
+    expected_outputs = util_load_json('test_data/varonis_get_alerts_command_output.json')
     assert result.outputs_prefix == 'Varonis'
     assert result.outputs == expected_outputs
 
@@ -93,7 +88,7 @@ def test_varonis_close_alert_command(requests_mock):
     assert resp is True
 
 
-def test_varonis_get_alerted_events_command(mocker: MockerFixture):
+def test_varonis_get_alerted_events_command(mocker: MockerFixture, requests_mock: MockerFixture):
     """
         When:
             - Get alerted events from Varonis api
@@ -109,11 +104,12 @@ def test_varonis_get_alerted_events_command(mocker: MockerFixture):
         verify=False,
         proxy=False
     )
-    mocker.patch.object(
-        client,
-        'varonis_get_alerted_events',
-        return_value=util_load_json('test_data/varonis_get_alerted_events_response.json')
-    )
+    requests_mock.post(
+        'https://test.com/app/dataquery/api/search/v2/search',
+        json=util_load_json('test_data/varonis_get_alerted_events_create_search_response.json'))
+    requests_mock.get(
+        'https://test.com/app/dataquery/api/search/v2/rows/af6a26a1d70e4be182adc148b831f476/',
+        json=util_load_json('test_data/varonis_get_alerted_events_execute_search_response.json'))
 
     args = util_load_json("test_data/demisto_alerted_events_args.json")
     expected_outputs = util_load_json('test_data/varonis_get_alerted_events_command_output.json')
@@ -127,136 +123,12 @@ def test_varonis_get_alerted_events_command(mocker: MockerFixture):
 def test_fetch_incidents(mocker: MockerFixture, requests_mock: MockerFixture):
     from VaronisDataSecurityPlatformSaaS import fetch_incidents_command
 
-    threat_models = util_load_json('test_data/varonis_get_enum_response.json')
-    threat_model = threat_models[0]["ruleName"]
-    ingest_time = datetime.now() - timedelta(hours=1)
-    alerts = {
-        "columns": [
-            "Alert.ID",
-            "Alert.Rule.Name",
-            "Alert.Rule.ID",
-            "Alert.TimeUTC",
-            "Alert.Rule.Severity.Name",
-            "Alert.Rule.Severity.ID",
-            "Alert.Rule.Category.Name",
-            "Alert.Location.CountryName",
-            "Alert.Location.SubdivisionName",
-            "Alert.Status.Name",
-            "Alert.Status.ID",
-            "Alert.EventsCount",
-            "Alert.Initial.Event.TimeUTC",
-            "Alert.User.Name",
-            "Alert.User.SamAccountName",
-            "Alert.User.AccountType.Name",
-            "Alert.Device.HostName",
-            "Alert.Device.IsMaliciousExternalIP",
-            "Alert.Device.ExternalIPThreatTypesName",
-            "Alert.Data.IsFlagged",
-            "Alert.Data.IsSensitive",
-            "Alert.Filer.Platform.Name",
-            "Alert.Asset.Path",
-            "Alert.Filer.Name",
-            "Alert.CloseReason.Name",
-            "Alert.Location.BlacklistedLocation",
-            "Alert.Location.AbnormalLocation",
-            "Alert.User.SidID",
-            "Alert.IngestTime",
-            "Alert.Time"
-        ],
-        "rows": [
-            [
-                "A5277B32-037E-4700-A55D-42065FB6ADD5",
-                "Deletion: Multiple directory service objects",
-                "140",
-                "2023-10-25T04:56:00",
-                "High",
-                "0",
-                "Denial of Service",
-                "",
-                "",
-                "New",
-                "1",
-                "14",
-                "2023-10-25T04:51:00",
-                "varadm (int0bf5b.com)",
-                "varadm",
-                "Admin",
-                "int0bf5bdh",
-                "",
-                "",
-                "0",
-                "0",
-                "Active Directory",
-                "int0bf5b.com(AD-int0bf5b.com)",
-                "AD-int0bf5b.com",
-                "",
-                "",
-                "",
-                "602",
-                ingest_time.isoformat(),
-                "2023-10-25T04:56:00"
-            ],
-            [
-                "44DC5CBE-9F3D-4B12-AA81-BF1FFF00EBE1",
-                "Deletion: Active Directory containers, Foreign Security Principal, or GPO",
-                "154",
-                "2023-10-25T04:56:00",
-                "High",
-                "0",
-                "Denial of Service",
-                "",
-                "",
-                "New",
-                "1",
-                "1",
-                "2023-10-25T04:51:00",
-                "varadm (int0bf5b.com)",
-                "varadm",
-                "Admin",
-                "int0bf5bdh",
-                "",
-                "",
-                "0",
-                "0",
-                "Active Directory",
-                "int0bf5b.com(AD-int0bf5b.com)",
-                "AD-int0bf5b.com",
-                "",
-                "",
-                "",
-                "602",
-                ingest_time.isoformat(),
-                "2023-10-25T04:56:00"
-            ]
-        ],
-        "hasResults": "true",
-        "rowsCount": 3,
-        "cappedNumber": 50000,
-        "progress": 100,
-        "finished": "true",
-        "entityTagHeaderValue": {
-            "tag": "\"3\"",
-            "isWeak": "false"
-        },
-        "versionId": 3
-    }
+    create_search_result = util_load_json('test_data/fetch_incidents_create_search_response.json')
+    alerts = util_load_json('test_data/fetch_incidents_execute_search_response.json')
 
     requests_mock.post(
         'https://test.com/app/dataquery/api/search/v2/search',
-        json=[
-            {
-                "location": "v2/rows/af6a26a1d70e4be182adc148b831f476/",
-                "dataType": "rows"
-            },
-            {
-                "location": "v2/search/af6a26a1d70e4be182adc148b831f476/terminate/",
-                "dataType": "terminate"
-            },
-            {
-                "location": "af6a26a1-d70e-4be1-82ad-c148b831f476",
-                "dataType": "searchId"
-            }
-        ])
+        json=create_search_result)
     requests_mock.get(
         'https://test.com/app/dataquery/api/search/v2/rows/af6a26a1d70e4be182adc148b831f476/',
         json=alerts)
@@ -266,13 +138,6 @@ def test_fetch_incidents(mocker: MockerFixture, requests_mock: MockerFixture):
         verify=False,
         proxy=False
     )
-
-    mocker.patch.object(
-        client,
-        'varonis_get_enum',
-        return_value=threat_models
-    )
-
     mocker.patch.object(demisto, 'debug', return_value=None)
 
     last_run = {'last_fetched_id': datetime.now() - timedelta(days=1)}
@@ -282,51 +147,47 @@ def test_fetch_incidents(mocker: MockerFixture, requests_mock: MockerFixture):
         client=client,
         alert_status=None,
         severity=None,
-        threat_model=threat_model,
+        threat_model=None,
         last_run=last_run,
         first_fetch_time=first_fetch_time
     )
 
-    assert next_run == {'last_fetched_ingest_time': (ingest_time + timedelta(minutes=1)).isoformat()}
-
-    mapper = SearchAlertObjectMapper()
-    mapped_alerts = mapper.map(alerts)
-
-    for output in mapped_alerts:
-        id = output["ID"]
-        output.update({"Url": f"https://test.com/#/app/analytics/entity/Alert/{id}"})
-        output.update({"Locations": []})
-        output.update({"Sources": [
-            {
-                "Platform": "Active Directory",
-                "FileServerOrDomain": "AD-int0bf5b.com"
-            }
-        ]})
-        output.update({"Devices": [
-            {
-                "Name": "int0bf5bdh",
-                "Asset": "int0bf5b.com(AD-int0bf5b.com)"
-            }
-        ]})
-        output.update({"Users": [
-            {
-                "Name": "varadm (int0bf5b.com)",
-                "SamAccountName": "varadm",
-                "PrivilegedAccountType": "Admin",
-                "Department": ""
-            }
-        ]})
+    expected_alerts = util_load_json('test_data/fetch_incidents_output.json')
 
     expected_incidents = list(map(lambda alert:
                                   {
-                                      'name': f'Varonis alert {alert["Name"]}',
-                                      'occurred': f'{alert["Time"]}Z',
+                                      'name': f'Varonis alert {alert[AlertAttributes.Alert_Rule_Name]}',
+                                      'occurred': f'{alert[AlertAttributes.Alert_Time]}Z',
                                       'rawJSON': json.dumps(alert),
                                       'type': 'Varonis DSP Incident',
-                                      'severity': IncidentSeverity.HIGH,
-                                  }, mapped_alerts))
+                                      'severity': IncidentSeverity.MEDIUM,
+                                  }, expected_alerts))
 
     assert incidents == expected_incidents
+
+
+def test_varonis_authenticate(requests_mock: MockerFixture):
+
+    fetch_output = {
+        "access_token": "token_here",
+        "token_type": "bearer",
+        "expires_in": 599
+    }
+    auth_url = 'https://test.com/api/authentication/api_keys/token'
+
+    requests_mock.post(
+        auth_url,
+        json=fetch_output)
+
+    client = Client(
+        base_url='https://test.com',
+        verify=False,
+        proxy=False
+    )
+
+    client.varonis_authenticate('mock_api_key')
+
+    assert client.headers['authorization'] == 'bearer token_here'
 
 
 def test_enrich_with_url():
@@ -374,28 +235,3 @@ def test_get_excluded_severitires():
     assert get_included_severitires('Low') == ['high', 'medium', 'low']
     assert get_included_severitires('Medium') == ['high', 'medium']
     assert get_included_severitires('High') == ['high']
-
-
-def test_varonis_authenticate(requests_mock: MockerFixture):
-
-    client = Client(
-        base_url='https://test.com',
-        verify=False,
-        proxy=False
-    )
-
-    # fetch_output = util_load_json('test_data/test_varonis_authenticate/demisto_auth_response.json')
-    fetch_output = {
-        "access_token": "token_here",
-        "token_type": "bearer",
-        "expires_in": 599
-    }
-    auth_url = 'https://test.com/api/authentication/api_keys/token'
-
-    requests_mock.post(
-        auth_url,
-        json=fetch_output)
-
-    client.varonis_authenticate('mock_api_key')
-
-    assert client.headers['authorization'] == 'bearer token_here'

@@ -1,14 +1,14 @@
 from typing import Dict, Any, List, Tuple
-import traceback
-import requests
+import json
 import fnmatch
-from typing import List
+import traceback
 from typing import Any, Dict, List
+import requests
 import demistomock as demisto
 from typing import Dict, List
-import json
 from CommonServerUserPython import *
 from CommonServerPython import *
+from typing import List
 
 
 class AlertAttributes:
@@ -2030,9 +2030,9 @@ def main() -> None:
     args = demisto.args()
 
     if not is_xsoar_env():
-        url = 'https://intaf6fb.varonis-preprod.com/'
-        apiKey = 'vkey1_3443ddca00844b7fbe348ae37f19d22f_ujK4J4OJGQX4AA2vCnL1f/hrBTRHGu6T0IkmieLzVUk='
-        command = 'varonis-get-alerted-events'  
+        url = 'https://int2a26a.varonis-preprod.com/'
+        apiKey = 'vkey1_17944a55aa824cfbb472ce2256bb9417_luHz5L/2ul2tGuiibpgSVDjcz/K8CC/HPyujFyieT18='
+        command = 'varonis-get-alerted-events'
         # 'test-module'|
         # 'varonis-get-threat-models'|
         # 'varonis-get-alerts'|
@@ -2053,7 +2053,7 @@ def main() -> None:
             'first_fetch': '1 week'
         }
 
-        test_alert_id = 'A5F4B69A-F5C0-494F-B5B4-185185BC3FBE'
+        test_alert_id = '6769D061-A714-4C95-A8AE-121E5379BF3C'
         if command == 'test-module':
             pass
 
@@ -2074,7 +2074,7 @@ def main() -> None:
             args['alert_status'] = None  # List of required alerts status
             args['alert_severity'] = None  # List of alerts severity
             args['device_name'] = None  # List of device names
-            args['user_name'] = "varadm"  # List of device names
+            args['user_name'] = None  # List of device names
             args['last_days'] = None  # Number of days you want the search to go back to
             args['extra_fields'] = ""  # extra fields
             args['descending_order'] = None  # Indicates whether alerts should be ordered in newest to oldest order
