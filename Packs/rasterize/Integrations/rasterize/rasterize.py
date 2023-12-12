@@ -91,16 +91,43 @@ class TabLifecycleManager:
         if exc_type or exc_val or exc_tb:
             demisto.info(f'TabLifecycleManager, __exit__ with exception, {exc_type=}, {exc_val=}, {exc_tb=}')
 
-        if self.tab:
+        if self.tab and self.tab.id:
+            tab_id = self.tab.id
+
             try:
-                sleep(1)  # pylint: disable=E9003
-                tab_id = self.tab.id
+                time.sleep(1)  # pylint: disable=E9003
+                demisto.debug('TabLifecycleManager, __exit__, disabling page')
                 self.tab.Page.disable()
-                self.browser.close_tab(tab_id)
-                demisto.debug(f'TabLifecycleManager, __exit__, closing tab {tab_id}')
-                demisto.debug(f'TabLifecycleManager, __exit__, active tabs len: {len(self.browser.list_tab())}')
             except Exception as ex:
-                demisto.debug(f'TabLifecycleManager, failed to exit {tab_id} due to {ex}')
+                demisto.info(f'TabLifecycleManager, failed to disable page due to {ex}')
+                pass
+
+            time.sleep(1)  # pylint: disable=E9003
+            try:
+                demisto.debug(f'TabLifecycleManager, __exit__, stopping tab {tab_id}, active tabs len: {len(self.browser.list_tab())}')
+                tab_stop_response = self.tab.stop()
+                demisto.debug(f"TabLifecycleManager, __exit__, {tab_stop_response=}")
+            except json.decoder.JSONDecodeError:
+                demisto.info(f'TabLifecycleManager, failed to close tab {tab_id} due to JSONDecodeError')
+                pass
+            except Exception as ex:
+                demisto.info(f'TabLifecycleManager, failed to stop tab {tab_id} due to {ex}')
+                pass
+
+            time.sleep(1)  # pylint: disable=E9003
+            try:
+                demisto.debug(f'TabLifecycleManager, __exit__, closing tab {tab_id}, active tabs len: {len(self.browser.list_tab())}')
+                self.browser.close_tab(tab_id)
+            except json.decoder.JSONDecodeError:
+                demisto.info(f'TabLifecycleManager, failed to close tab {tab_id} due to JSONDecodeError')
+                pass
+            except Exception as ex:
+                demisto.info(f'TabLifecycleManager, failed to close tab {tab_id} due to {ex}')
+                pass
+
+            demisto.debug(f'TabLifecycleManager, __exit__, sleeping, allowing the tab to close, active tabs len: {len(self.browser.list_tab())}')
+            time.sleep(1)  # pylint: disable=E9003
+            demisto.debug(f'TabLifecycleManager, __exit__, active tabs len: {len(self.browser.list_tab())}')
 
 
 class PychromeEventHandler:
@@ -119,7 +146,7 @@ class PychromeEventHandler:
             demisto.debug(f'Frame started loading: {frameId}')
 
     def frame_stopped_loading(self, frameId):
-        demisto.debug(f'Frame stopped loading, {frameId=}')
+        # demisto.debug(f'Frame stopped loading, {frameId=}')
         if self.start_frame == frameId:
             try:
                 with self.screen_lock:
@@ -127,13 +154,14 @@ class PychromeEventHandler:
                     # Activate current tab
                     activation_result = self.browser.activate_tab(self.tab.id)
                     activation_result, operation_time = backoff(activation_result)
-                    if activation_result:
-                        demisto.debug(f'Tab activated: {activation_result=} after {operation_time} seconds.")')
-                    else:
-                        demisto.error('Tab not activated. Timeout.')
+                    # if activation_result:
+                    #     demisto.debug(f'Tab activated: {activation_result=} after {operation_time} seconds.")')
+                    # else:
+                    #     demisto.error('Tab not activated. Timeout.')
                     self.tab_ready_event.set()
             except pychrome.exceptions.PyChromeException as e:
-                demisto.error(f'Error stopping page loading: {self.tab=}, {frameId=}, {e}')
+                # demisto.error(f'Error stopping page loading: {self.tab=}, {frameId=}, {e}')
+                pass
 
     def network_data_received(self, requestId, timestamp, dataLength, encodedDataLength):  # pylint: disable=unused-argument
         if requestId and not self.request_id:
@@ -149,8 +177,10 @@ def is_chrome_running(port):
                                             text=True).splitlines()
 
         chrome_identifiers = ["chrom", "headless", f"--remote-debugging-port={port}"]
+        chrome_renderer_identifiers = ["renderer"]
         chrome_processes = [process for process in processes
-                            if all(identifier in process for identifier in chrome_identifiers)]
+                            if all(identifier in process for identifier in chrome_identifiers)
+                            and not any(identifier in process for identifier in chrome_renderer_identifiers) ]
 
         demisto.debug(f'Detected {len(chrome_processes)} Chrome processes running on port {port}')
         return len(chrome_processes) > 0
@@ -539,6 +569,7 @@ def module_test():  # pragma: no cover
 
 def rasterize_command():  # pragma: no cover
     url = demisto.getArg('url')
+    demisto.debug(f"rasterize_command {url=}")
     width, height = get_width_height(demisto.args())
     rasterize_type = RasterizeType(demisto.args().get('type', 'png').lower())
     wait_time = int(demisto.args().get('wait_time', 0))
@@ -587,6 +618,7 @@ def get_width_height(args: dict):
 
 
 def main():  # pragma: no cover
+    demisto.debug(f"main, {demisto.command()=}")
     try:
         if demisto.command() == 'test-module':
             module_test()
