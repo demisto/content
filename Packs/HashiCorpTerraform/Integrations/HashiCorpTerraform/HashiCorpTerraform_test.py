@@ -43,28 +43,31 @@ def test_run_action_command(client, requests_mock):
         Given:
             - Client object.
         When:
-            - run the run action command.
+            - error occurred when run the run action command.
         Then:
-            - validate the results are as expected. 
+            - validate the exception raised as expected. 
     """
     mock_response = util_load_json('./test_data/run_action_request.json')['mock_response']
     requests_mock.post(re.compile(f'{SERVER_URL}.*'), json=mock_response, status_code=409)
-    expected_results = util_load_json('./test_data/run_action_request.json')['expected_results']
     
+    run_id = 'run-ABCABCABCABCABCa'
     with raises(DemistoException) as err:
-        results = run_action_command(client=client, args={
-            'run_id': 'run-ABCABCABCABCABCa',
+        run_action_command(client=client, args={
+            'run_id': run_id,
             'action': 'apply', 'comment': 'comment'
         })
-    assert err
+    assert f'Error occurred when queued an apply request for run id {run_id}' in str(err)
 
 
 def test_plan_get_command(client, requests_mock):
     """
-        When:
         Given:
+            - Client object.
+        When:
+            - run the list runs command.
         Then:
-        """
+            - validate the results are as expected. 
+    """
     args = {'plan_id': 'plan-V4fvpvCzGQrsZikD', 'json_output': None}
     mock_response_get_plan = util_load_json('./test_data/outputs/get_plan.json'
                                             )

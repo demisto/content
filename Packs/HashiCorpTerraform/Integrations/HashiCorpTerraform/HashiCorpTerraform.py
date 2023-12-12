@@ -14,14 +14,14 @@ RUN_HR_KEY_TO_RES_KEY = {
 PLAN_HR_KEY_TO_RES_KEY = {
     "Plan id": "id",
     "Status": "attributes.status",
-    "Queued at": "attributes.status-timestamps.queued-at"
+    "Agent Queued at": "attributes.status-timestamps.agent-queued-at"
 }
 POLICIES_HR_KEY_TO_RES_KEY = {
     'Policy id': 'id',
     'Policy name' : 'attributes.name',
     'Policy description': 'attributes.description',
     'Kind': 'attributes.kind',
-    'Policy Sets': 'relationships.policy-sets',
+    'Policy Set ids': 'relationships.policy-sets.data.id',
     'Organization id': 'relationships.organization.data.id'  
 }
 SET_HR_KEY_TO_RES_KEY = {
@@ -29,7 +29,7 @@ SET_HR_KEY_TO_RES_KEY = {
     'Policy Set name': 'attributes.name',
     'Description': 'attributes.description',
     'Organization': 'relationships.organization.data.id',
-    'Policies': 'relationships.policies.data.id',
+    'Policies ids': 'relationships.policies.data.id',
     'Workspaces': 'relationships.workspaces.data.id',
     'Projects': 'relationships.projects.data.id'
 }
@@ -200,7 +200,9 @@ def plan_get_command(client: Client, args: Dict[str, Any]) -> CommandResults | d
     res = client.get_plan(plan_id, json_output)
     
     if json_output:
-        return fileResult(f'{plan_id}.json', res.content)
+        return fileResult(filename=f'{plan_id}.json',
+                          data=res.content,
+                          file_type=EntryType.ENTRY_INFO_FILE)
     
     res_json = res.json()
     plan = res_json.get('data', {})
@@ -227,7 +229,7 @@ def policies_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
     # when policy_id is provided, it returns a single policy instead of a list
     data = [res.get('data', {})] if policy_id else res.get('data', [])
     hr_items = [
-        {hr_key: demisto.get(policy, response_key) for hr_key, response_key in POLICIES_HR_KEY_TO_RES_KEY.items()}
+        {hr_key: demisto.dt(policy, response_key) for hr_key, response_key in POLICIES_HR_KEY_TO_RES_KEY.items()}
         for policy in data
     ]
 
