@@ -636,6 +636,7 @@ def get_host_command():
 def get_hosts(args={}):
     url_suffix = '/api/hosts'
     headers = create_web_api_headers()
+    demisto.debug(f'{headers=}')
     rule_ids = args.get('rule_ids')
     fields = args.get('fields')
     if rule_ids and fields:
@@ -644,7 +645,9 @@ def get_hosts(args={}):
         url_suffix += '?matchRuleId=' + rule_ids
     elif fields:
         url_suffix += '?' + fields
+    demisto.debug(f'{url_suffix=}')
     response_data = http_request('GET', url_suffix, headers=headers, resp_type='json')
+    demisto.debug(f'{response_data=}')
     return response_data
 
 
@@ -731,10 +734,14 @@ def update_lists(args={}):
         lists = '&'.join([list_name + '=' + values for list_name in list_names])
     else:
         lists = '&'.join(list_names)
+    demisto.debug(f'{lists=}')
     req_body = create_update_lists_request_body(update_type, lists)
+    demisto.debug(f'{req_body=}')
     data = ET_PHONE_HOME.tostring(req_body, encoding='UTF-8', method='xml')
+    demisto.debug(f'{data=}')
     url_suffix = '/fsapi/niCore/Lists'
     resp_content = http_request('POST', url_suffix, headers=DEX_HEADERS, auth=DEX_AUTH, data=data, resp_type='content')
+    demisto.debug(f'{resp_content=}')
     return resp_content
 
 
