@@ -37,7 +37,7 @@ tasks:
       version: -1
       name: List Demisto users
       description: List all Demisto users via Demisto REST API integration
-      script: Demisto REST API|||core-api-get
+      script: Demisto REST API|||demisto-api-get
       type: regular
       iscommand: true
       brand: Demisto REST API
@@ -139,8 +139,106 @@ tasks:
       iscommand: true
       brand: Builtin
     scriptarguments:
+      addLabels: {}
+      amarkdownsection: {}
+      anothernumberpleasejusttomakesure: {}
+      app: {}
+      arcsightcaseid: {}
+      attach: {}
+      attachamenthash: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentitem: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      backupowner: {}
+      blah: {}
+      booltest: {}
+      compliance: {}
+      customFields: {}
+      customfield: {}
+      daysbetweenreportcreation: {}
+      dest: {}
+      destntdomain: {}
+      details: {}
+      duration: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      escalationdate: {}
+      eventid: {}
+      falses: {}
+      fetchid: {}
+      fetchtype: {}
+      hjhj: {}
+      htmltypefield: {}
+      id: {}
+      important: {}
+      importantfield: {}
+      itaytestfield: {}
+      labels: {}
+      longtextone: {}
+      longtexttoo: {}
+      mailbody: {}
+      multilinetext: {}
+      name: {}
+      numberplease: {}
+      occurred: {}
+      one: {}
+      owner: {}
+      phase: {}
+      relatedincidentssummary: {}
+      replacePlaybook: {}
+      reporteduser: {}
+      roles: {}
+      screenshot: {}
+      screenshot2: {}
+      selector: {}
       severity:
         simple: critical
+      single: {}
+      single2: {}
+      sla: {}
+      source: {}
+      sourceip: {}
+      sourceip1: {}
+      src: {}
+      srcntdomain: {}
+      srcuser: {}
+      subcat: {}
+      subcategory: {}
+      systems: {}
+      team: {}
+      test: {}
+      test2: {}
+      testfield: {}
+      testhtml: {}
+      timeassignedtolevel2: {}
+      timefield1: {}
+      timelevel1: {}
+      tldr: {}
+      tttttt: {}
+      type: {}
+      username: {}
     separatecontext: false
     view: |-
       {

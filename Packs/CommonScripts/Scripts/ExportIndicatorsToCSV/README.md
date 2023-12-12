@@ -1,4 +1,4 @@
-This automation uses the Demisto REST API Integration to batch export Indicators to CSV and return the resulting CSV file to the war room.
+This automation uses the Core REST API Integration to batch export Indicators to CSV and return the resulting CSV file to the war room.
 
 ## Script Data
 

@@ -1,4 +1,4 @@
-Finds which integrations implement a specific Demisto command.  The results will be returned as comma-separated values (CSV).  The "Demisto REST API" integration must first be enabled.
+Finds which integrations implement a specific Demisto command.  The results will be returned as comma-separated values (CSV).  The "Core REST API" integration must first be enabled.
 
 ## Script Data
 

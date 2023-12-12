@@ -1,4 +1,4 @@
-Uses the Demisto REST API integration to query the server audit trail logs, and return back a CSV or JSON file.
+Uses the Core REST API integration to query the server audit trail logs, and return back a CSV or JSON file.
 
 ## Script Data
 

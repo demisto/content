@@ -14,7 +14,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* Demisto REST API
+* Core REST API
 
 ### Scripts
 

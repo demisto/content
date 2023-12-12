@@ -22,7 +22,7 @@ configuration:
   type: 8
   required: false
 description: |-
-  This is a wrapper on top of XSOAR API. Can be used to implement commands that call the XSOAR API in the background.  This is mostly to avoid  constructing raw json strings while calling the demisto rest api integration.
+  This is a wrapper on top of XSOAR API. Can be used to implement commands that call the XSOAR API in the background.  This is mostly to avoid  constructing raw json strings while calling the Core REST API integration.
 
   The first implemented command can be used to create an entry on any investigation; playground by default.  An example use-case could be debugging a pre-process script. (Call demisto.execute_command("xsoar-create-entry",{arguments})
 

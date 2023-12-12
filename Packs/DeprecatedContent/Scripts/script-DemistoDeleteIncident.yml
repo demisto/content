@@ -10,7 +10,7 @@ script: >-
   };
 
 
-  var res = executeCommand('core-api-post', {uri: '/incident/batchDelete', body: body});
+  var res = executeCommand('demisto-api-post', {uri: '/incident/batchDelete', body: body});
 
   if (isError(res[0])) {
       throw res[0].Contents;
@@ -31,18 +31,16 @@ script: >-
 type: javascript
 tags:
 - DemistoAPI
-comment: Deprecated. Delete an incident from Demisto (note action is irreversible).
+comment: Deprecated. Delete an incident from Demisto (note action is irreversible)
 enabled: true
 args:
 - name: id
   required: true
   default: true
-  description: Incident ID to delete.
+  description: Incident ID to delete
 scripttarget: 0
 dependson:
   must:
-  - core-api-post
+  - demisto-api-post
 deprecated: true
 fromversion: 5.0.0
-tests:
-- No tests (auto formatted)

@@ -19,7 +19,7 @@ The content update flow can be triggered in one of the following ways.
 ## Configuration & Dependencies
  
 - GetServerURL pack - This is a mandatory dependency for the **Content Update Manager** playbook to run properly. You must install the GetServerURL pack through the XSOAR marketplace. No further configuration is required for this pack.
-- Demisto REST API - This is a mandatory dependency for the **Content Update Manager** playbook to run properly. 
+- Core REST API - This is a mandatory dependency for the **Content Update Manager** playbook to run properly. 
 - Send Notifications - Configure an email gateway integration or the Slack messaging integration to get notifications about the content update process.
 
 ### Sub-playbooks
@@ -28,7 +28,7 @@ The content update flow can be triggered in one of the following ways.
 
 ### Integrations
 
-- Demisto REST API
+- Core REST API
 - Scripts
 - GetServerURL
 - CollectPacksData

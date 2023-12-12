@@ -475,7 +475,7 @@ tasks:
     task:
       id: 05bcecfa-4041-45c8-869d-35bb3b6e88a4
       version: -1
-      name: Is Demisto Rest API Instance Available
+      name: Is Core REST API Instance Available
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
@@ -488,7 +488,7 @@ tasks:
       - "1"
     scriptarguments:
       brandname:
-        simple: Demisto REST API
+        simple: Core REST API
     results:
     - brandInstances
     separatecontext: false

@@ -26,7 +26,7 @@ def main():
 
     except ValueError as err:
         if "core-delete-incidents" in str(err):
-            raise Exception("Please enable Demisto REST API integration")
+            raise Exception("Please enable Core REST API integration")
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:

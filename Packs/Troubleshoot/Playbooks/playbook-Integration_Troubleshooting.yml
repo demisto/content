@@ -952,8 +952,8 @@ tasks:
     task:
       id: 44cebb67-c8c0-4247-804f-623e8caf4ae7
       version: -1
-      name: Is Demisto REST API integration configured?
-      description: Is the Demisto REST API integration configured?
+      name: Is Core REST API integration configured?
+      description: Is the Core REST API integration configured?
       type: condition
       iscommand: false
       brand: ""
@@ -979,7 +979,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: Demisto REST API
+                        simple: Core REST API
                 accessor: state
             iscontext: true
           right:
@@ -1012,7 +1012,7 @@ tasks:
       brand: ""
     scriptarguments:
       message:
-        simple: The Demisto REST API integration is not configured. Configure the integration in order to use this playbook.
+        simple: The Core REST API integration is not configured. Configure the integration in order to use this playbook.
     separatecontext: false
     view: |-
       {
