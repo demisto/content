@@ -192,7 +192,7 @@ def is_chrome_running(port):
                                             text=True).splitlines()
 
         chrome_identifiers = ["chrom", "headless", f"--remote-debugging-port={port}"]
-        chrome_renderer_identifiers = ["renderer"]
+        chrome_renderer_identifiers = ["--type=renderer"]
         chrome_processes = [process for process in processes
                             if all(identifier in process for identifier in chrome_identifiers)
                             and not any(identifier in process for identifier in chrome_renderer_identifiers) ]
