@@ -1211,7 +1211,7 @@ tasks:
             - operator: isEqualString
               left:
                 value:
-                  simple: InfoFile.Info
+                  simple: InfoFile.Name
                 iscontext: true
               right:
                 value:

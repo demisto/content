@@ -123,7 +123,8 @@ class TabLifecycleManager:
 
             try:
                 demisto.debug(
-                    f'TabLifecycleManager, __exit__, {threading.current_thread().name=}, stopping tab {tab_id}, active tabs len: {len(self.browser.list_tab())}')
+                    f'TabLifecycleManager, __exit__, {threading.current_thread().name=}, stopping tab {tab_id},'
+                    ' active tabs len: {len(self.browser.list_tab())}')
                 tab_stop_response = self.tab.stop()
                 demisto.debug(f"TabLifecycleManager, __exit__, {tab_stop_response=}")
             except json.decoder.JSONDecodeError:
@@ -145,7 +146,8 @@ class TabLifecycleManager:
                 pass
 
             demisto.debug(
-                f'TabLifecycleManager, __exit__, sleeping, allowing the tab to close, active tabs len: {len(self.browser.list_tab())}')
+                          'TabLifecycleManager, __exit__, sleeping, allowing the tab to close,'
+                          f' active tabs len: {len(self.browser.list_tab())}')
             time.sleep(1)  # pylint: disable=E9003
             demisto.debug(f'TabLifecycleManager, __exit__, active tabs len: {len(self.browser.list_tab())}')
 
