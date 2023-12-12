@@ -39,7 +39,7 @@ function getAllPlaybookTasks(tasks) {
 
 function getStates(states) {
     var input_states = states.split(",");
-    if (input_states.includes('error')) {
+    if (input_states.indexOf('error') > -1) {
         input_states = input_states.concat('loopError')
     }
     var readyStates = {};
