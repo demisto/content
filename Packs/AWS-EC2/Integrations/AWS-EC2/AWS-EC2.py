@@ -1,6 +1,8 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from datetime import date
+from AWSApiModule import *  # noqa: E402
+from collections.abc import Callable
 
 """HELPER FUNCTIONS"""
 
@@ -71,31 +73,50 @@ def parse_date(dt):
     return parsed_date
 
 
-def run_on_all_accounts(func: type()):
-    params = demisto.params()
-    accounts = argToList(params.get('accounts_to_access'))
-    role_name = params.get('access_role_name')
+def run_on_all_accounts(func: Callable[[dict, AWSClient], CommandResults]):
+    """Decorator that runs the given command function on all AWS accounts configured in the params.
 
-    def account_runner(args: dict, aws_client: 'AWSClient') -> list[CommandResults]:
-        if 'roleArn' in args:  # if a roleArn is specified in args, ignore the parameter config.
-            return func(args, aws_client)
+    Args:
+        func (callable): The command function to run on each account.
+            Must accept the args dict and an AWSClient as arguments.
+            Must return a CommandResults object.
+
+    Returns:
+        callable: If a role name is configured in the params, returns a function
+        that handles running on all accounts.
+        If no role exists, returns the passed in func unchanged.
+
+    This decorator handles setting up the proper roleArn, roleSessionName,
+    roleSessionDuration for accessing each account before calling the function
+    and adds the account details to the result.
+
+    Returns either a list of CommandResults for each accounts,
+    or a single CommandResults if a role name is not specified.
+    """
+
+    accounts = argToList(demisto.getParam('accounts_to_access'))
+    role_name = demisto.getParam('access_role_name')
+
+    def account_runner(args: dict, aws_client: AWSClient) -> list[CommandResults]:
         results = []
         for account_id in accounts:
             args.update({
-                'roleArn': f'arn:aws:iam::{account_id}:{role_name}',
+                #  the role ARN must be in the format: arn:aws:iam::<account_id>:role/<role_name>
+                'roleArn': f'arn:aws:iam::{account_id}:role/{role_name.removeprefix("role/")}',
                 'roleSessionName': args.get('roleSessionName', f'account_{account_id}'),
                 'roleSessionDuration': args.get('roleSessionDuration', 900),
             })
-            result: CommandResults = func(args, aws_client)
-
+            result = func(args, aws_client)
+            result.readable_output = f"#### Result for account *{account_id}*:\n{result.readable_output}"
             if isinstance(result.outputs, list):
                 for obj in result.outputs:
-                    obj['accountId'] = account_id
-            if isinstance(result.outputs, dict):
-                result.outputs['accountId'] = account_id
+                    obj['AccountId'] = account_id
+            elif isinstance(result.outputs, dict):
+                result.outputs['AccountId'] = account_id
             results.append(result)
         return results
-    return account_runner if role_name else func
+    # if a roleArn is specified in the command args, ignore the parameter config.
+    return account_runner if (role_name and not demisto.getArg('roleArn')) else func
 
 
 """MAIN FUNCTIONS"""
@@ -3255,10 +3276,6 @@ def main():
         LOG(e)
         return_error('Error has occurred in the AWS EC2 Integration: {code}\n {message}'.format(
             code=type(e), message=e))
-
-
-from AWSApiModule import *  # noqa: E402
-
 
 if __name__ in ['__builtin__', 'builtins', '__main__']:
     main()
