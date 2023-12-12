@@ -3823,7 +3823,6 @@ def run_command():
         finally:
             timer.cancel()
 
-        demisto.debug(f'{response=}')
         resources: dict = response.get('combined', {}).get('resources', {})
 
         for _, resource in resources.items():
