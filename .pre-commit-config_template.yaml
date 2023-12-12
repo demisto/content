@@ -74,21 +74,16 @@ repos:
     language: docker
     files: Packs\/.*_test\.py$
     exclude: test_data
-    env:
-      # the data-file argument is not supported in coverage-py 5.5 which is the LTS on python2
-      COVERAGE_FILE: /src/.pre-commit/coverage/.coverage
     args: 
      - /src/Tests/scripts/script_runner.py
-     - coverage
-     - run
-     - --parallel
-     - -m
      - pytest
      - -v
      - --override-ini='asyncio_mode=auto'
      - --rootdir=/src
-     - --junitxml=/src/.pre-commit/pytest-junit/.report_pytest.xml
+     - --junitxml=/src/pre-commit/pytest-junit/.report_pytest.xml
      - --color=yes
+     - --cov=.
+     - --cov-report=
      - --files
     copy_files: 
       - Tests/scripts/dev_envs/pytest/conftest.py
@@ -107,35 +102,60 @@ repos:
     language: script
     pass_filenames: false
 
-- repo: https://github.com/demisto/demisto-sdk
-  rev: ""
-  hooks:
-  - id: update-additional-dependencies
-    args: [--pre_commit_config, .pre-commit-config_template.yaml]
+  - id: validate
+    name: validate
+    description: validate content
+    entry: demisto-sdk validate
+    args: ["--skip-pack-dependencies"]
+    pass_filenames: false
+    language: system
+    require_serial: true
 
   - id: format
-          # update docker image to the latest version, assume no
+    name: format
+    description: Format non-code files, to comply with XSOAR standards.
+    entry: demisto-sdk format
     args: ["-ud", "-n", "--no-validate"]
+    language: system
+    pass_filenames: false
+    require_serial: true
 
-  - id: validate
-    args: ["--skip-pack-dependencies"]
+  - id: secrets
+    name: secrets
+    description: Check for secrets in files.
+    entry: demisto-sdk secrets
+    args: ["--ignore-entropy"]
+    pass_filenames: false
+    language: system
 
+  - id: update-additional-dependencies
+    name: update-additional-dependencies
+    entry: update-additional-dependencies
+    language: system
+    files: poetry.lock
+    require_serial: true
+    pass_filenames: false
+    args: [--pre_commit_config, .pre-commit-config_template.yaml]
+  
   - id: merge-pytest-reports
+    name: merge-pytest-reports
+    entry: merge-pytest-reports
+    language: system
+    require_serial: true
+    pass_filenames: false
     needs: 
       - pytest-in-docker
 
   - id: coverage-analyze
+    name: coverage-analyze
+    entry: demisto-sdk coverage-analyze
+    description: Running demisto-sdk coverage-analyze and showing a coverage report.
+    language: system
+    pass_filenames: false
     args: [ "-i", ".coverage", "--report-dir", "coverage_report", "--report-type", "all", "--previous-coverage-report-url", "https://storage.googleapis.com/marketplace-dist-dev/code-coverage-reports/coverage-min.json"]
     args:nightly: [ "-i", ".coverage", "--report-dir", "coverage_report", "--report-type", "all", "--allowed-coverage-degradation-percentage", "100"]
     needs: 
       - pytest-in-docker
-
-  - id: secrets
-    args: ["--ignore-entropy"]
-
-  - id: no-implicit-optional
-      # remove this argument when this hook is ready to use
-    skip: true
 
 - repo: https://github.com/sourcery-ai/sourcery
   rev: "v1.6.0"

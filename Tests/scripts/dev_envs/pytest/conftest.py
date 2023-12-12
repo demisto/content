@@ -52,8 +52,7 @@ def check_std_out_err(capfd):
     if err:
         pytest.fail("Found output in stderr: [{}]".format(err.strip()))
 
-
-def pytest_configure(config):
+def pytest_configure(config: pytest.Config):
     junit_xml = config.option.xmlpath
     if junit_xml:
         image = os.getenv("DOCKER_IMAGE")
