@@ -11943,10 +11943,12 @@ def pan_os_get_running_config(args: dict):
     if args.get("target"):
         params["target"] = args.get("target")
 
-    if str(args.get("filename")) != 'running_config':
-        file_name = str(args.get("target")) + '_' + str(args.get("filename")) + '_running_config'
+    file_name_arg = args.get("filename")
+    target = args.get("target")
+    if file_name_arg != 'running_config':
+        file_name =  target + '_' + file_name_arg + '_running_config'
     else:
-        file_name = str(args.get("filename"))
+        file_name = file_name_arg
 
     result = http_request(URL, 'POST', params=params, is_xml=True)
     return fileResult(file_name, result)
