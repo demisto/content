@@ -15,7 +15,7 @@ Checks if the provided Cortex XSOAR REST API instance is available for the XSOAR
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| instanceName | The name of the Core REST API instance to check. |
+| instanceName | The name of the Core/Demisto REST API instance to check. |
 
 ## Outputs
 

@@ -48,7 +48,7 @@ To begin, you need to setup the following:
 If you are intending to use the **JOB - XSOAR - Simple Dev to Prod** playbook for the automated push to production, I recommend the following additional settings on your Development Server:
 
 1. Set the server configuration **ignore.default.in.playbooks = true**, which prevents playbook tasks from using integration instances which are marked as "Do not use by default".
-    * This ensures any other playbooks in your Development Server which use the Demisto Rest API integration don't try and use the Demisto Prod instance that you may have setup as part of this pack.
+    * This ensures any other playbooks in your Development Server which use the Core Rest API integration don't try and use the Demisto Prod instance that you may have setup as part of this pack.
     * The "Do not use by default" setting also ensures that users running manually Core REST API integration commands via the Command Line Interface (CLI) don't use the Demisto Prod instance by mistake.
 
 2. Restrict access to the Demisto Prod integration instance commands to approved XSOAR Administrators, please refer to the [Cortex XSOAR Administrators Guide](https://docs-cortex.paloaltonetworks.com/p/XSOAR) for your version for how to do this. 
