@@ -200,7 +200,7 @@ class Client:
             json_cmd=json_cmd)
 
     def policy_optimizer_get_rules(self, timeframe: str, usage: str, exclude: bool, position: str, rule_type: str,
-                                   page_size: int = 200, limit: int = 200) -> dict:
+                                   page_size: int = 200, limit: int = 200, page: int | None = None) -> dict:
         def generate_paginated_request(_start: int, _limit: int) -> dict:
             return {
                 "action": "PanDirect", "method": "run",
@@ -232,10 +232,15 @@ class Client:
 
         self.session_metadata['tid'] += 1  # Increment TID
 
+        start = page_size * (page - 1) if page else 0
+
         response = self.session_post(
             url=f'{self.session_metadata["base_url"]}/php/utils/router.php/PoliciesDirect.getPoliciesByUsage',
-            json_cmd=generate_paginated_request(_start=0, _limit=min(page_size, limit)),
+            json_cmd=generate_paginated_request(_start=start, _limit=min(page_size, limit)),
         )
+
+        if page:  # If returning a specific page, we don't need to handle pagination
+            return response
 
         # Handle pagination
         total_results_count = int(response.get('result', {}).get('result', {}).get('@total-count', 0))
@@ -316,16 +321,14 @@ class Client:
             json_cmd=json_cmd)
 
 
-def get_unused_rules_by_position(client: Client, position: str, exclude: bool, rule_type: str,
-                                 usage: str, timeframe: str, page_size: int, limit: int) -> tuple[Dict, List]:
+def get_unused_rules_by_position(client: Client, position: str, exclude: bool, rule_type: str, usage: str,
+                                 timeframe: str, page_size: int, limit: int, page: int | None = None) -> tuple[Dict, List]:
     """
-
     Get unused rules from panorama based on user defined arguments.
-
     """
     raw_response = client.policy_optimizer_get_rules(
         timeframe=timeframe, usage=usage, exclude=exclude, position=position, rule_type=rule_type,
-        page_size=page_size, limit=limit,
+        page_size=page_size, limit=limit, page=page,
     )
 
     stats = raw_response.get('result', {})
@@ -442,6 +445,7 @@ def policy_optimizer_get_rules_command(client: Client, args: dict) -> CommandRes
     rule_type: str = args.get('rule_type', 'security')
     page_size: int = arg_to_number(args.get('page_size')) or 200
     limit: int = arg_to_number(args.get('limit')) or 200
+    page: int | None = arg_to_number(args.get('page'))
 
     if page_size > 200:
         raise ValueError('The maximum page size is 200.')
@@ -454,6 +458,7 @@ def policy_optimizer_get_rules_command(client: Client, args: dict) -> CommandRes
         'timeframe': timeframe,
         'page_size': page_size,
         'limit': limit,
+        'page': page,
     }
 
     rules = []

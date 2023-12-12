@@ -234,6 +234,7 @@ Gets unused, used, or any rules.
 | rule_type | Which type of rules to query. Possible values are: security, nat, qos, pbf, decryption, tunnel-inspect, application-override, authentication, dos, sdwan. Default is security. | Optional | 
 | limit | The maximum number of rules to return. Default is 200. | Optional | 
 | page_size | The amount of items to return in each paginated call. Can only be a value of up to 200. Default is 200. | Optional | 
+| page | A specific pagination page to get items from. | Optional | 
 
 #### Context Output
 
