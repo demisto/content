@@ -85,6 +85,8 @@ def download_markdown_image_from_url_and_upload_to_gcs(
 
             with open(image_name, "wb") as f:
                 shutil.copyfileobj(r.raw, f)
+
+            relative_image_path = urllib.parse.unquote(relative_image_path)
             # init the blob with the correct path to save the image on gcs
             gcs_storage_path = os.path.join(storage_base_path, relative_image_path)
             logging.debug(f"{gcs_storage_path=}")
