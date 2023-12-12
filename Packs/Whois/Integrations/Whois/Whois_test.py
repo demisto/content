@@ -3,12 +3,13 @@ import json
 import pathlib
 import pickle
 import socket
+import subprocess
+import sys
+import tempfile
+import time
 from typing import Any
 
 import ipwhois
-import tempfile
-import time
-import subprocess
 import pytest
 import Whois
 from pytest_mock import MockerFixture
@@ -375,6 +376,7 @@ def test_get_raw_response_with_non_recursive_data_query(mocker: MockerFixture):
           queried, without the response of the refer server.
     """
     import socket
+
     from Whois import get_whois_raw
 
     def connect_mocker(curr_server):
