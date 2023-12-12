@@ -65,7 +65,7 @@ class RasterizeType(Enum):
 
 # region utility classes
 
-def custom_hook(args):
+def except_hook_recv_loop(args):
     if '(_recv_loop)' in args.thread.name \
         and type(args.exc_value) == json.decoder.JSONDecodeError \
         and str(args.exc_value) == "Expecting value: line 1 column 1 (char 0)":
@@ -101,7 +101,7 @@ class TabLifecycleManager:
 
         if self.tab and self.tab.id:
             tab_id = self.tab.id
-            threading.excepthook = custom_hook
+            threading.excepthook = except_hook_recv_loop
 
             try:
                 time.sleep(1)  # pylint: disable=E9003
