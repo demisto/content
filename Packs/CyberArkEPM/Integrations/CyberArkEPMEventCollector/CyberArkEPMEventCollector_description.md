@@ -1,8 +1,8 @@
-## Qualys Vulnerability Management Help
+## CyberArk EPM Help
 
 ### Authentication
-There are two methods to authenticate EPM and SAML,
-Every method needs different parameters as following.
+There are two methods to authenticate EPM and SAML.
+Every method needs different parameters as show in the following:
 
 * EPM authentication
     - url: `https://<EPM_server>`

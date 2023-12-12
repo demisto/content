@@ -9,13 +9,13 @@ This integration was integrated and tested with version 23.12.0 of CyberArk EPM.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | SAML/EPM Logon URL | SAML example: https://login.epm.cyberark.com/SAML/Logon | True |
+    | SAML/EPM Logon URL | SAML example: https://login.epm.cyberark.com/SAML/Logon. | True |
     | Username |  | True |
     | Password |  | True |
-    | Set name | A comma-separated list of set names | True |
-    | Application ID | Required for local\(EPM\) authentication only | False |
-    | Authentication URL | Required for SAML authentication only, Example for PAN OKTA: https://paloaltonetworks.okta.com/api/v1/authn | False |
-    | Application URL | Required for SAML authentication only, Example for PAN OKTA: https://paloaltonetworks.okta.com/home/\[APP_NAME\]/\[APP_ID\] | False |
+    | Set name | A comma-separated list of set names. | True |
+    | Application ID | Required for local\(EPM\) authentication only. | False |
+    | Authentication URL | Required for SAML authentication only, Example for PAN OKTA: https://paloaltonetworks.okta.com/api/v1/authn. | False |
+    | Application URL | Required for SAML authentication only, Example for PAN OKTA: https://paloaltonetworks.okta.com/home/\[APP_NAME\]/\[APP_ID\]. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Maximum number of events per fetch |  | False |

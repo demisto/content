@@ -6,7 +6,7 @@ commonfields:
   id: CyberArkEPMEventCollector
   version: -1
 configuration:
-- additionalinfo: 'SAML example: https://login.epm.cyberark.com/SAML/Logon'
+- additionalinfo: 'SAML example: https://login.epm.cyberark.com/SAML/Logon.'
   display: SAML/EPM Logon URL
   name: url
   required: true
@@ -18,24 +18,24 @@ configuration:
   type: 9
   section: Connect
 - display: Set name
-  additionalinfo: A comma-separated list of set names
+  additionalinfo: A comma-separated list of set names.
   name: set_name
   required: true
   type: 0
   section: Connect
-- additionalinfo: Required for local(EPM) authentication only
+- additionalinfo: Required for local(EPM) authentication only.
   display: Application ID
   name: application_id
   required: false
   type: 0
   section: Connect
-- additionalinfo: 'Required for SAML authentication only, Example for PAN OKTA: https://paloaltonetworks.okta.com/api/v1/authn'
+- additionalinfo: 'Required for SAML authentication only, Example for PAN OKTA: https://paloaltonetworks.okta.com/api/v1/authn.'
   display: Authentication URL
   name: authentication_url
   required: false
   type: 0
   section: Connect
-- additionalinfo: 'Required for SAML authentication only, Example for PAN OKTA: https://paloaltonetworks.okta.com/home/[APP_NAME]/[APP_ID]'
+- additionalinfo: 'Required for SAML authentication only, Example for PAN OKTA: https://paloaltonetworks.okta.com/home/[APP_NAME]/[APP_ID].'
   display: Application URL
   name: application_url
   required: false

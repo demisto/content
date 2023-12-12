@@ -91,8 +91,8 @@ class Client(BaseClient):
     def get_set_list(self) -> dict:
         return self._http_request('GET', url_suffix='Sets')
 
-    def get_policy_audits(self, set_id: str, from_date: str = '', limit: int = MAX_LIMIT, next_cursor: str = 'start') -> dict:
-        url_suffix = f'Sets/{set_id}/policyaudits/search?sortDir=asc&nextCursor={next_cursor}&limit={min(limit, MAX_LIMIT)}'
+    def get_policy_audits(self, set_id: str, from_date: str = '', next_cursor: str = 'start') -> dict:
+        url_suffix = f'Sets/{set_id}/policyaudits/search?nextCursor={next_cursor}&limit=1000'
         data = assign_params(filter=f'arrivalTime GE {from_date}')
         return self._http_request('POST', url_suffix=url_suffix, json_data=data)
 
@@ -100,8 +100,8 @@ class Client(BaseClient):
         url_suffix = f'Sets/{set_id}/AdminAudit?dateFrom={from_date}&limit={min(limit, ADMIN_AUDITS_MAX_LIMIT)}'
         return self._http_request('GET', url_suffix=url_suffix)
 
-    def get_events(self, set_id: str, from_date: str = '', limit: int = MAX_LIMIT, next_cursor: str = 'start') -> dict:
-        url_suffix = f'Sets/{set_id}/Events/Search?sortDir=asc&nextCursor={next_cursor}&limit={min(limit, MAX_LIMIT)}'
+    def get_events(self, set_id: str, from_date: str = '', next_cursor: str = 'start') -> dict:
+        url_suffix = f'Sets/{set_id}/Events/Search?nextCursor={next_cursor}&limit=1000'
         data = assign_params(filter=f'arrivalTime GE {from_date}')
         return self._http_request('POST', url_suffix=url_suffix, json_data=data)
 
@@ -181,11 +181,11 @@ def get_policy_audits(client: Client, set_ids_with_from_date: dict, limit: int) 
     policy_audits: dict[str, list] = {}
 
     for set_id, from_date in set_ids_with_from_date.items():
-        results = client.get_policy_audits(set_id, from_date.get('policy_audits'), limit)
+        results = client.get_policy_audits(set_id, from_date.get('policy_audits'))
         policy_audits[set_id] = results.get('events', [])
 
-        while len(policy_audits[set_id]) < limit and (next_cursor := results.get('nextCursor')):
-            results = client.get_policy_audits(set_id, from_date.get('policy_audits'), limit, next_cursor)
+        while next_cursor := results.get('nextCursor'):
+            results = client.get_policy_audits(set_id, from_date.get('policy_audits'), next_cursor)
             policy_audits[set_id].extend(results.get('events', []))
 
         sorted_events = sorted(policy_audits.get(set_id, []), key=lambda e: parser.parse(e.get('arrivalTime')))
@@ -234,11 +234,11 @@ def get_detailed_events(client: Client, set_ids_with_from_date: dict, limit: int
     detailed_events: dict[str, list] = {}
 
     for set_id, from_date in set_ids_with_from_date.items():
-        results = client.get_events(set_id, from_date.get('detailed_events'), limit)
+        results = client.get_events(set_id, from_date.get('detailed_events'))
         detailed_events[set_id] = results.get('events', [])
 
-        while len(detailed_events[set_id]) < limit and (next_cursor := results.get('nextCursor')):
-            results = client.get_events(set_id, from_date.get('detailed_events'), limit, next_cursor)
+        while next_cursor := results.get('nextCursor'):
+            results = client.get_events(set_id, from_date.get('detailed_events'), next_cursor)
             detailed_events[set_id].extend(results.get('events', []))
 
         sorted_events = sorted(detailed_events[set_id], key=lambda e: parser.parse(e.get('arrivalTime')))
@@ -294,7 +294,7 @@ def fetch_events(client: Client, last_run: dict, max_fetch: int = MAX_FETCH) -> 
         (list) A list of events to push to XSIAM
     """
     events: list = []
-    next_run: dict = {}
+    next_run: dict = last_run
 
     demisto.info(f'Start fetching last run: {last_run}')
 
