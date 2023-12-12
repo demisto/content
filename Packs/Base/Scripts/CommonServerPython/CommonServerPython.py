@@ -9850,9 +9850,9 @@ class IndicatorsSearcher:
         demisto.debug('IndicatorsSearcher: page {}, result size: {}'.format(self._page, self._total))
         # when total is None, there is a problem with the server, hence need to restart the container, see XSUP-26699
         # container can only reset for SaaS enviorments
-        if self._total is None and is_xsiam_or_xsoar_saas():
+        if self._total is None and get_integration_name() == "EDL":
             raise SystemExit(
-                "Encountered issue when trying to fetch indicators for integration {integration}. "
+                "Encountered issue when trying to fetch indicators for EDL integration in instance {integration}. "
                 "Restarting container and trying again.".format(integration=get_integration_instance_name())
             )
         if isinstance(self._page, int):
