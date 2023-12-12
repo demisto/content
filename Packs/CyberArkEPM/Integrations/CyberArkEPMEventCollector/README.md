@@ -30,7 +30,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### cyberarkepm-get-events
 
 ***
-Gets events from Cyber Ark EPM.
+Gets events from CyberArk EPM.
 
 #### Base Command
 
