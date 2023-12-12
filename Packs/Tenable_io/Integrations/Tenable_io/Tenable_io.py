@@ -1844,6 +1844,8 @@ def fetch_vulnerabilities(client: Client, last_run: dict, severity: List[str]):
         # set params for next run
         if status == 'FINISHED':
             last_run.pop('vuln_export_uuid')
+            last_run.pop('nextTrigger', None)
+            last_run.pop('type', None)
         elif status in ['CANCELLED', 'ERROR']:
             export_uuid = client.get_vuln_export_uuid(num_assets=CHUNK_SIZE,
                                                       last_found=get_timestamp(arg_to_datetime(ASSETS_FETCH_FROM)),
