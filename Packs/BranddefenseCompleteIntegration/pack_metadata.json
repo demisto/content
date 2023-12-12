@@ -1,0 +1,21 @@
+{
+    "name": "Branddefense Complete Integration",
+    "description": "Branddefense is looking for data for each brand and collecting information and alarming the related brand about dark web finding (credentials, similar domain names etc.) related to the firm.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Asim Sarp Kurt",
+    "url": "",
+    "email": "",
+    "created": "2023-12-12T14:48:51Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "asimsarpkurt"
+    ]
+}
