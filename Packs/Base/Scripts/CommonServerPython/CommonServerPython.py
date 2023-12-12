@@ -9848,8 +9848,8 @@ class IndicatorsSearcher:
         res = demisto.searchIndicators(**search_args)
         self._total = res.get('total')
         demisto.debug('IndicatorsSearcher: page {}, result size: {}'.format(self._page, self._total))
-        # when total is None, there is a problem with the server, hence need to restart the container, see XSUP-26699
-        # container can only reset for SaaS enviorments
+        # when total is None, there is a problem with the server for returning indicators, hence need to restart the container,
+        # see XSUP-26699
         if self._total is None and get_integration_name() == "EDL":
             raise SystemExit(
                 "Encountered issue when trying to fetch indicators for EDL integration in instance {integration}. "
