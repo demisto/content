@@ -8,7 +8,7 @@ import io
 import requests_mock
 
 
-client = Client(base_url="demisto.com")
+client = Client(base_url="demisto.com", api_token="XXX")
 
 user_data = {
     "id": "TestID",
@@ -924,10 +924,10 @@ def test_get_readable_logs():
 
 
 def test_set_password_command():
-    client = Client('https://demisto.com')
+    client = Client(base_url='https://demisto.com', api_token="XXX")
     with requests_mock.Mocker() as m:
-        m.get('https://demisto.com/users?filter=profile.login eq "test"', json=[{'id': '1234'}])
-        mock_request = m.post('https://demisto.com/users/1234', json={'passwordChanged': '2020-03-26T13:57:13.000Z'})
+        m.get('https://demisto.com/api/v1/users?filter=profile.login eq "test"', json=[{'id': '1234'}])
+        mock_request = m.post('https://demisto.com/api/v1/users/1234', json={'passwordChanged': '2020-03-26T13:57:13.000Z'})
 
         result = set_password_command(client, {'username': 'test', 'password': 'a1b2c3'})
 
@@ -936,11 +936,11 @@ def test_set_password_command():
 
 
 def test_set_temp_password_command():
-    client = Client('https://demisto.com')
+    client = Client(base_url='https://demisto.com', api_token="XXX")
     with requests_mock.Mocker() as m:
-        m.get('https://demisto.com/users?filter=profile.login eq "test"', json=[{'id': '1234'}])
-        m.post('https://demisto.com/users/1234', json={'passwordChanged': '2023-03-22T10:15:26.000Z'})
-        m.post('https://demisto.com/users/1234/lifecycle/expire_password', json={})
+        m.get('https://demisto.com/api/v1/users?filter=profile.login eq "test"', json=[{'id': '1234'}])
+        m.post('https://demisto.com/api/v1/users/1234', json={'passwordChanged': '2023-03-22T10:15:26.000Z'})
+        m.post('https://demisto.com/api/v1/users/1234/lifecycle/expire_password', json={})
 
         result = set_password_command(client, {'username': 'test', 'password': 'a1b2c3', 'temporary_password': 'true'})
 
