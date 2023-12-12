@@ -161,33 +161,62 @@ def test_parse_filter_field(filter, expected_results):
 def mock_command_func(args, aws_client):
     return CommandResults(
         outputs=[{}],
-        readable_output='readable_output'
+        readable_output='readable_output',
+        outputs_prefix='prefix',
     )
 
 
-@pytest.mark.parametrize('get_param_side_effect, roleArn, expected_output', [
-    ({'accounts_to_access': '1,2,3', 'access_role_name': 'name'}.get, None, ()),
-    ({'accounts_to_access': '1,2,3', 'access_role_name': 'name'}.get, 'role'),
-    ({'accounts_to_access': '1,2,3', 'access_role_name': None}.get, None),
-])
-def test_account_runner(mocker, args, get_param_side_effect, roleArn, expected_output):
+def test_run_on_all_accounts(mocker):
     """
     Given:
-        - account_runner function
-    
+        - The accounts_to_access and access_role_name params are provided.
+
     When:
-        - Calling account_runner
-    
-    Then: 
-        - Ensure account_runner runs without exceptions
+        - Calling a command function that is decorated with test_account_runner.
+
+    Then:
+        - Ensure account_runner runs the command function for each of the accounts provided.
+    """
+
+    mocker.patch.object(demisto, 'getParam', side_effect={
+        'accounts_to_access': '1,2,3', 'access_role_name': 'name'}.get)
+    mocker.patch.object(demisto, 'getArg', return_value=None)
+
+    result_func = AWS_EC2.run_on_all_accounts(mock_command_func)
+
+    results: list[CommandResults] = result_func({}, None)
+
+    assert results[0].readable_output == '#### Result for account *1*:\nreadable_output'
+    assert results[0].outputs == [{'AccountId': '1'}]
+    assert results[1].readable_output == '#### Result for account *2*:\nreadable_output'
+    assert results[1].outputs == [{'AccountId': '2'}]
+    assert results[2].readable_output == '#### Result for account *3*:\nreadable_output'
+    assert results[2].outputs == [{'AccountId': '3'}]
+
+
+@pytest.mark.parametrize('get_param_side_effect, roleArn', [
+    ({'accounts_to_access': '1,2,3', 'access_role_name': None}.get, None),
+    ({'accounts_to_access': '1,2,3', 'access_role_name': 'name'}.get, 'role'),
+])
+def test_run_on_all_accounts_no_new_func(mocker, get_param_side_effect, roleArn):
+    """
+    Given:
+        - 1. The access_role_name param is not provided.
+        - 2. The roleArn arg is provided.
+
+    When:
+        - Calling a command function that is decorated with test_account_runner.
+
+    Then:
+        - Ensure account_runner returns the command function unchanged.
     """
 
     mocker.patch.object(demisto, 'getParam', side_effect=get_param_side_effect)
     mocker.patch.object(demisto, 'getArg', return_value=roleArn)
 
-    result_func = AWS_EC2.account_runner(mock_command_func)
-    
+    result_func = AWS_EC2.run_on_all_accounts(mock_command_func)
+
     result: CommandResults = result_func({}, None)
-    
-    assert result.readable_output == expected_output[0]
-    assert result.outputs == expected_output[1]
+
+    assert result.readable_output == 'readable_output'
+    assert result.outputs == [{}]
