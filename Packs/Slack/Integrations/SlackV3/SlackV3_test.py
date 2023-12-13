@@ -1,17 +1,16 @@
+import datetime
 import json as js
 import threading
+from unittest.mock import MagicMock
 
 import aiohttp
 import pytest
 import slack_sdk
+from slack_sdk.errors import SlackApiError
 from slack_sdk.web.async_slack_response import AsyncSlackResponse
 from slack_sdk.web.slack_response import SlackResponse
-from slack_sdk.errors import SlackApiError
-from unittest.mock import MagicMock
-from CommonServerPython import *
-import datetime
 
-from asynctest import mock as async_mock
+from CommonServerPython import *
 
 
 def load_test_data(path):
@@ -5071,106 +5070,104 @@ def test_conversation_replies(mocker):
     assert demisto.results.call_args[0][0]['ContentsFormat'] == 'json'
 
 
-
-
 SAMPLE_PAYLOAD = {
-        "type": "block_actions",
-        "user": {
+    "type": "block_actions",
+    "user": {
             "id": "UAALZT5D2",
             "username": "andrew",
             "name": "andrew",
             "team_id": "TABQMPKP0"
-        },
-        "api_app_id": "A067C0HKQGG",
-        "token": "JKaZlupf3BUiOnO1ieZ3sccm",
-        "container": {
-            "type": "message",
-            "message_ts": "1702470027.519239",
-            "channel_id": "CAA78KABS",
-            "is_ephemeral": False
-        },
-        "trigger_id": "6324138653431.351837801782.0cf0f8fd0f082c98e35d700950f291b4",
-        "team": {
-            "id": "TABQMPKP0",
-            "domain": "lexiapplications"
-        },
-        "channel": {
-            "id": "CAA78KABS",
-            "name": "general"
-        },
-        "message": {
-            "type": "message",
-            "subtype": "bot_message",
-            "text": "New message from SOC Bot",
-            "ts": "1702470027.519239",
-            "username": "Cortex XSOAR",
-            "icons": {
+    },
+    "api_app_id": "A067C0HKQGG",
+    "token": "JKaZlupf3BUiOnO1ieZ3sccm",
+    "container": {
+        "type": "message",
+        "message_ts": "1702470027.519239",
+        "channel_id": "CAA78KABS",
+        "is_ephemeral": False
+    },
+    "trigger_id": "6324138653431.351837801782.0cf0f8fd0f082c98e35d700950f291b4",
+    "team": {
+        "id": "TABQMPKP0",
+        "domain": "lexiapplications"
+    },
+    "channel": {
+        "id": "CAA78KABS",
+        "name": "general"
+    },
+    "message": {
+        "type": "message",
+        "subtype": "bot_message",
+        "text": "New message from SOC Bot",
+        "ts": "1702470027.519239",
+        "username": "Cortex XSOAR",
+        "icons": {
                 "image_48": "https:\/\/s3-us-west-2.amazonaws.com\/slack-files2\/bot_icons\/2021-06-29\/2227534346388_48.png"
-            },
-            "bot_id": "B066NTXKT5Z",
-            "app_id": "A067C0HKQGG",
-            "blocks": [{
-                "type": "header",
-                "block_id": "Pl4fr",
-                "text": {
+        },
+        "bot_id": "B066NTXKT5Z",
+        "app_id": "A067C0HKQGG",
+        "blocks": [{
+            "type": "header",
+            "block_id": "Pl4fr",
+            "text": {
                     "type": "plain_text",
                     "text": "This is a test of the SlackBlockBuilder Automation"
-                }
-            }, {
-                "type": "input",
-                "block_id": "checkboxes_0",
-                "label": {
+            }
+        }, {
+            "type": "input",
+            "block_id": "checkboxes_0",
+            "label": {
                     "type": "plain_text",
                     "text": "Please Select Some Option"
-                },
-                "element": {
-                    "type": "checkboxes",
-                    "action_id": "checkboxes-action",
-                    "options": [{
+            },
+            "element": {
+                "type": "checkboxes",
+                "action_id": "checkboxes-action",
+                "options": [{
                         "text": {
                             "type": "plain_text",
                             "text": "*Option 1*",
                             "emoji": True
                         },
-                        "value": "value-0"
-                    }, {
-                        "text": {
-                            "type": "plain_text",
-                            "text": "*Option 2*",
-                            "emoji": True
-                        },
-                        "value": "value-1"
-                    }, {
-                        "text": {
-                            "type": "plain_text",
-                            "text": "*Option 3*",
-                            "emoji": True
-                        },
-                        "value": "value-2"
-                    }]
-                }
-            }, {
-                "type": "section",
-                "block_id": "timepicker_1",
-                "text": {
+                    "value": "value-0"
+                }, {
+                    "text": {
+                        "type": "plain_text",
+                        "text": "*Option 2*",
+                        "emoji": True
+                    },
+                    "value": "value-1"
+                }, {
+                    "text": {
+                        "type": "plain_text",
+                        "text": "*Option 3*",
+                        "emoji": True
+                    },
+                    "value": "value-2"
+                }]
+            }
+        }, {
+            "type": "section",
+            "block_id": "timepicker_1",
+            "text": {
                     "type": "mrkdwn",
                     "text": "Also Pick a Time",
                     "verbatim": True
-                },
-                "accessory": {
-                    "type": "timepicker",
-                    "action_id": "timepicker1",
-                    "initial_time": "13:37",
-                    "placeholder": {
+            },
+            "accessory": {
+                "type": "timepicker",
+                "action_id": "timepicker1",
+                "initial_time": "13:37",
+                "placeholder": {
                         "type": "plain_text",
                         "text": "Select time",
                         "emoji": True
-                    }
                 }
-            }, {
-                "type": "actions",
-                "block_id": "button_2",
-                "elements": [{
+            }
+        }, {
+            "type": "actions",
+            "block_id": "button_2",
+            "elements": [{
                     "type": "button",
                     "action_id": "xsoar-button-submit",
                     "text": {
@@ -5178,47 +5175,47 @@ SAMPLE_PAYLOAD = {
                         "text": "Submit",
                         "emoji": True
                     },
-                    "value": "{\"entitlement\": \"326a8a51-3dbd-4b07-8662-d36bfa9509fb@3|4\", \"reply\": \"reply to 3\"}"
-                }]
+                "value": "{\"entitlement\": \"326a8a51-3dbd-4b07-8662-d36bfa9509fb@3|4\", \"reply\": \"reply to 3\"}"
             }]
-        },
-        "state": {
-            "values": {
-                "checkboxes_0": {
-                    "checkboxes-action": {
-                        "type": "checkboxes",
-                        "selected_options": [{
+        }]
+    },
+    "state": {
+        "values": {
+            "checkboxes_0": {
+                "checkboxes-action": {
+                    "type": "checkboxes",
+                    "selected_options": [{
                             "text": {
                                 "type": "plain_text",
                                 "text": "*Option 3*",
                                 "emoji": True
                             },
-                            "value": "value-2"
-                        }]
-                    }
-                },
-                "timepicker_1": {
-                    "timepicker1": {
-                        "type": "timepicker",
-                        "selected_time": "06:00"
-                    }
+                        "value": "value-2"
+                    }]
+                }
+            },
+            "timepicker_1": {
+                "timepicker1": {
+                    "type": "timepicker",
+                    "selected_time": "06:00"
                 }
             }
-        },
-        "response_url": "https:\/\/hooks.slack.com\/actions\/TABQMPKP0\/6338568051731\/GgysWcvYua3VFLfhPrrreost",
-        "actions": [{
-            "action_id": "xsoar-button-submit",
-            "block_id": "button_2",
-            "text": {
+        }
+    },
+    "response_url": "https:\/\/hooks.slack.com\/actions\/TABQMPKP0\/6338568051731\/GgysWcvYua3VFLfhPrrreost",
+    "actions": [{
+        "action_id": "xsoar-button-submit",
+        "block_id": "button_2",
+        "text": {
                 "type": "plain_text",
                 "text": "Submit",
                 "emoji": True
-            },
-            "value": "{\"entitlement\": \"326a8a51-3dbd-4b07-8662-d36bfa9509fb@3|4\", \"reply\": \"reply to 3\"}",
-            "type": "button",
-            "action_ts": "1702470035.432402"
-        }]
-    }
+                },
+        "value": "{\"entitlement\": \"326a8a51-3dbd-4b07-8662-d36bfa9509fb@3|4\", \"reply\": \"reply to 3\"}",
+        "type": "button",
+        "action_ts": "1702470035.432402"
+    }]
+}
 
 
 @pytest.fixture
@@ -5243,22 +5240,23 @@ async def test_listen(client_session):
     from unittest import mock
     from slack_sdk.socket_mode.aiohttp import SocketModeClient
     from slack_sdk.socket_mode.request import SocketModeRequest
+    from asynctest import mock as async_mock
 
     import SlackV3
 
     default_envelope_id = "SOMEID"
 
     expected_content = ('{"values": {"checkboxes_0": {"checkboxes-action": {"type": "checkboxes", '
- '"selected_options": [{"text": {"type": "plain_text", "text": "*Option 3*", '
- '"emoji": true}, "value": "value-2"}]}}, "timepicker_1": {"timepicker1": '
- '{"type": "timepicker", "selected_time": "06:00"}}}, "xsoar-button-submit": '
- '"Successful"}')
+                        '"selected_options": [{"text": {"type": "plain_text", "text": "*Option 3*", '
+                        '"emoji": true}, "value": "value-2"}]}}, "timepicker_1": {"timepicker1": '
+                        '{"type": "timepicker", "selected_time": "06:00"}}}, "xsoar-button-submit": '
+                        '"Successful"}')
     req = SocketModeRequest(type='event', payload=SAMPLE_PAYLOAD, envelope_id=default_envelope_id)
     client = mock.MagicMock(spec=SocketModeClient)
     with async_mock.patch.object(SlackV3, 'get_user_details') as mock_get_user_details, \
-         mock.patch.object(demisto, 'debug') as mock_debug,\
-         mock.patch.object(requests, 'post') as mock_send_slack_request,\
-         mock.patch.object(SlackV3, 'reset_listener_health'),\
+        mock.patch.object(demisto, 'debug') as mock_debug, \
+        mock.patch.object(requests, 'post') as mock_send_slack_request, \
+        mock.patch.object(SlackV3, 'reset_listener_health'), \
             mock.patch.object(demisto, 'handleEntitlementForUser') as mock_result:
 
         # Set the return value of the mocked get_user_details function

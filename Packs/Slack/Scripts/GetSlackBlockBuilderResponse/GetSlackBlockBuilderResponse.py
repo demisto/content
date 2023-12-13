@@ -1,10 +1,10 @@
 import json
-from typing import List, Dict, Any
+from typing import Any
 from CommonServerPython import *
 import demistomock as demisto
 
 
-def get_slack_block_builder_entry(entries: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
+def get_slack_block_builder_entry(entries: list[dict[str, Any]]) -> Optional[dict[str, Any]]:
     """
     Retrieves the entry which contains the SlackBlockBuilder response.
 
@@ -21,7 +21,7 @@ def get_slack_block_builder_entry(entries: List[Dict[str, Any]]) -> Optional[Dic
     return None
 
 
-def parse_entry(entry: Dict[str, Any]) -> None:
+def parse_entry(entry: dict[str, Any]) -> None:
     """
     Parses the entry content and returns the results.
 

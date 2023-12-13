@@ -1,7 +1,7 @@
 import json
 import unittest
 from unittest.mock import patch, MagicMock
-from typing import Dict, Any, List
+from typing import Any
 
 import GetSlackBlockBuilderResponse
 
@@ -10,7 +10,7 @@ class TestGetSlackBlockBuilderResponseScript(unittest.TestCase):
 
     def test_get_slack_block_builder_entry_found(self):
         # Given: A list of entries where one contains the SlackBlockBuilder response
-        entries: List[Dict[str, Any]] = [
+        entries: list[dict[str, Any]] = [
             {"Contents": "random content"},
             {"Contents": "xsoar-button-submit: some data"}
         ]
@@ -19,23 +19,23 @@ class TestGetSlackBlockBuilderResponseScript(unittest.TestCase):
         result = GetSlackBlockBuilderResponse.get_slack_block_builder_entry(entries)
 
         # Then: The appropriate entry is found
-        self.assertIsNotNone(result)
-        self.assertIn("xsoar-button-submit", result["Contents"])
+        assert result is not None
+        assert "xsoar-button-submit" in result["Contents"]
 
     def test_get_slack_block_builder_entry_not_found(self):
         # Given: A list of entries without the SlackBlockBuilder response
-        entries: List[Dict[str, Any]] = [{"Contents": "random content"}]
+        entries: list[dict[str, Any]] = [{"Contents": "random content"}]
 
         # When: Searching for the SlackBlockBuilder entry
         result = GetSlackBlockBuilderResponse.get_slack_block_builder_entry(entries)
 
         # Then: No entry is found
-        self.assertIsNone(result)
+        assert result is None
 
     @patch('GetSlackBlockBuilderResponse.return_results')
     def test_parse_entry_valid(self, mock_return_results: MagicMock):
         # Given: A valid entry with JSON contents
-        entry: Dict[str, Any] = {"Contents": json.dumps({"key": "value"})}
+        entry: dict[str, Any] = {"Contents": json.dumps({"key": "value"})}
 
         # When: Parsing the entry
         GetSlackBlockBuilderResponse.parse_entry(entry)
@@ -46,7 +46,7 @@ class TestGetSlackBlockBuilderResponseScript(unittest.TestCase):
     @patch('GetSlackBlockBuilderResponse.return_error')
     def test_parse_entry_invalid(self, mock_return_error: MagicMock):
         # Given: An entry with invalid JSON contents
-        entry: Dict[str, Any] = {"Contents": "not a valid json"}
+        entry: dict[str, Any] = {"Contents": "not a valid json"}
 
         # When: Parsing the entry
         GetSlackBlockBuilderResponse.parse_entry(entry)
