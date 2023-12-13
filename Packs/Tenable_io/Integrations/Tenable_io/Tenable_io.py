@@ -1651,29 +1651,29 @@ def export_scan_command(args: dict[str, Any], client: Client) -> PollResult:
     status_response = client.check_export_scan_status(scan_id, file_id)
     demisto.debug(f'{status_response=}')
 
-    # match status_response.get('status'):
-    #     case 'ready':
-    #         return PollResult(
-    #             client.download_export_scan(
-    #                 scan_id, file_id, args['format']),
-    #             continue_to_poll=False)
-    #
-    #     case 'loading':
-    #         return PollResult(
-    #             None,
-    #             continue_to_poll=True,
-    #             args_for_next_run={
-    #                 'fileId': file_id,
-    #                 'scanId': scan_id,
-    #                 'format': args['format'],  # not necessary but avoids confusion
-    #             })
-    #
-    #     case _:
-    #         raise DemistoException(
-    #             'Tenable IO encountered an error while exporting the scan report file.\n'
-    #             f'Scan ID: {scan_id}\n'
-    #             f'File ID: {file_id}\n')
-    #
+    match status_response.get('status'):
+        case 'ready':
+            return PollResult(
+                client.download_export_scan(
+                    scan_id, file_id, args['format']),
+                continue_to_poll=False)
+
+        case 'loading':
+            return PollResult(
+                None,
+                continue_to_poll=True,
+                args_for_next_run={
+                    'fileId': file_id,
+                    'scanId': scan_id,
+                    'format': args['format'],  # not necessary but avoids confusion
+                })
+
+        case _:
+            raise DemistoException(
+                'Tenable IO encountered an error while exporting the scan report file.\n'
+                f'Scan ID: {scan_id}\n'
+                f'File ID: {file_id}\n')
+
 
 def get_audit_logs_command(client: Client, from_date: Optional[str] = None, to_date: Optional[str] = None,
                            actor_id: Optional[str] = None, target_id: Optional[str] = None,
