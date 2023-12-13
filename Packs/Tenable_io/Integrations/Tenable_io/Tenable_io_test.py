@@ -834,4 +834,3 @@ def test_fetch_assets(requests_mock):
     assets, last_run = handle_assets_chunks(client, last_run)
 
     assert len(assets) == 2
-
