@@ -305,8 +305,8 @@ def is_probe_connected(client: Client, machine: str) -> dict:
 
 
 def query_inbox_command(client: Client, args: dict):
-    args.get('startTime', 0)
-    args.get('endTime', 9007199254740991)
+    start_time = args.get('startTime', 0)
+    end_time = args.get('endTime', 9007199254740991)
     rangeTime = args.get('rangeTime', False)
     guid = args.get('guid', False)
 
@@ -314,13 +314,13 @@ def query_inbox_command(client: Client, args: dict):
         return {i: x[i] for i in x if i in set(y)}
 
     if rangeTime:
-        startTime = parse_date_range(rangeTime, to_timestamp=True)[0]
-        endTime = parse_date_range(rangeTime, to_timestamp=True)[1]
+        start_time = parse_date_range(rangeTime, to_timestamp=True)[0]
+        end_time = parse_date_range(rangeTime, to_timestamp=True)[1]
 
-    demisto.debug(startTime)
-    demisto.debug(endTime)
+    demisto.debug(start_time)
+    demisto.debug(end_time)
 
-    response = query_inbox(client, startTime, endTime)
+    response = query_inbox(client, start_time, end_time)
     response = response['malops']
 
     demisto.info(json.dumps(response))
