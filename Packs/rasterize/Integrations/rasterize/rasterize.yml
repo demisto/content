@@ -40,8 +40,8 @@ configuration:
   type: 8
   required: false
 description: Converts URLs, PDF files, and emails to an image file or PDF file.
-display: Rasterize
-name: Rasterize
+display: Rasterize_headless
+name: Rasterize_headless
 script:
   commands:
   - arguments:
@@ -320,7 +320,7 @@ script:
     - contextPath: InfoFile.Type
       description: The type of the image/pdf file.
       type: string
-  dockerimage: demisto/chromium:120.0.6099.83247
+  dockerimage: demisto/py3-native:8.4.0.83579
   runonce: false
   script: '-'
   subtype: python3
