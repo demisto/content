@@ -287,7 +287,7 @@ tasks:
                   simple: 'value:'
               suffix:
                 value:
-                  simple: ' and -certificatevalidationchecks:"" and type:"X509 Certificate"'
+                  simple: 'and type:"X509 Certificate"'
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
