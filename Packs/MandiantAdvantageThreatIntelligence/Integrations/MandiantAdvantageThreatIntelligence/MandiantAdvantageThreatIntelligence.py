@@ -272,6 +272,7 @@ class MandiantClient(BaseClient):
 
 """ HELPER FUNCTIONS """
 
+
 def extract_attack_patterns(indicator_patterns: dict, attack_patterns: dict) -> list[str]:
     output = []
     for attack_pattern_name, attack_pattern_list in indicator_patterns.items():
@@ -282,6 +283,8 @@ def extract_attack_patterns(indicator_patterns: dict, attack_patterns: dict) -> 
                 output.append(attack_patterns.get(subtechnique.get("id")).get("name"))
 
     return output
+
+
 def get_last_updated(indicator: dict) -> datetime:
     last_updated = arg_to_datetime(indicator.get("last_updated"))
     if not last_updated:
