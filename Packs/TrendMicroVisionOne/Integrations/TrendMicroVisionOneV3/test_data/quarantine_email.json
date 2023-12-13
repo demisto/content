@@ -1,0 +1,11 @@
+[
+    {
+        "status": 202,
+        "headers": [
+            {
+                "name": "Operation-Location",
+                "value": "{{request.baseUrl}}/v3.0/xdr/response/tasks/00000002"
+            }
+        ]
+    }
+]
