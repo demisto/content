@@ -120,11 +120,11 @@ INBOX_HEADERS = [element['header'] for element in INBOX_INFO]
 
 def build_query(query_fields: list, path: list, template_context: str = 'SPECIFIC') -> dict:
     limit = demisto.getArg('limit')
-    startTime = demisto.getArg('startTime')
-    endTime = demisto.getArg('endTime')
+    start_time = demisto.getArg('startTime')
+    end_time = demisto.getArg('endTime')
 
-    startTime = int(startTime) if startTime else 0
-    endTime = int(endTime) if endTime else 9007199254740991
+    start_time = int(start_time) if start_time else 0
+    end_time = int(end_time) if end_time else 9007199254740991
     results_limit = int(limit) if limit else 10000
     group_limit = int(limit) if limit else 100
 
