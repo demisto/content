@@ -134,8 +134,8 @@ def build_query(query_fields: list, path: list, template_context: str = 'SPECIFI
         'perGroupLimit': group_limit,
         'queryPath': path,
         'queryTimeout': 120000,
-        'startTime': startTime,
-        'endTime': endTime,
+        'startTime': start_time,
+        'endTime': end_time,
         'templateContext': template_context,
         'totalResultLimit': results_limit
     }
@@ -305,8 +305,8 @@ def is_probe_connected(client: Client, machine: str) -> dict:
 
 
 def query_inbox_command(client: Client, args: dict):
-    start_time = args.get('startTime', 0)
-    end_time = args.get('endTime', 9007199254740991)
+    args.get('startTime', 0)
+    args.get('endTime', 9007199254740991)
     rangeTime = args.get('rangeTime', False)
     guid = args.get('guid', False)
 
@@ -348,24 +348,17 @@ def query_inbox_command(client: Client, args: dict):
             machine['lastConnectedDate'] = datetime.utcfromtimestamp(
                 machine['lastConnected'] / 1000).strftime('%Y-%m-%d %H:%M:%S')
 
-    ec = {
-        'Cybereason.Inbox': context
-    }
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': response,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Cybereason Inbox', context, INBOX_FIELDS),
-        'EntryContext': ec
-    })
+    return CommandResults(
+        readable_output=tableToMarkdown('Cybereason Inbox', context, headers=INBOX_FIELDS),
+        outputs_prefix='Cybereason.Inbox',
+        outputs_key_field='Name',
+        outputs=context)
 
 
-def query_inbox(client, startTime, endTime):
+def query_inbox(client, start_time, end_time):
     json_body = {
-        'startTime': startTime,
-        'endTime': endTime,
+        'startTime': start_time,
+        'endTime': end_time,
     }
 
     return client.cybereason_api_call('POST', '/rest/detection/inbox', json_body=json_body)
@@ -772,7 +765,7 @@ def malop_connection_command(client: Client, args: dict):
     elif not isinstance(malop_guids, list):
         raise Exception('malopGuids must be array of strings')
 
-    response = malop_connection(client, malop_guids, filter_input, startTime, endTime)
+    response = malop_connection(client, malop_guids, filter_input, start_time, end_time)
     elements = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], default_return_value={}, return_type=dict)
     outputs = []
 
@@ -828,8 +821,8 @@ def malop_connection(client: Client, malop_guids: list, filter_value: list, star
         'totalResultLimit': 1000,
         'perGroupLimit': 1200,
         'perFeatureLimit': 1200,
-        'startTime': startTime,
-        'endTime': endTime,
+        'startTime': start_time,
+        'endTime': end_time,
         'templateContext': 'MALOP',
         'queryTimeout': None,
         "customFields": [
@@ -871,7 +864,7 @@ def malop_processes_command(client: Client, args: dict):
 
     machine_name_list = [machine.lower() for machine in argToList(machine_name)]
 
-    response = malop_processes(client, malop_guids, filter_input, startTime, endTime)
+    response = malop_processes(client, malop_guids, filter_input, start_time, end_time)
     elements = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], default_return_value={}, return_type=dict)
     outputs = []
 
@@ -919,7 +912,7 @@ def malop_processes_command(client: Client, args: dict):
         outputs=context)
 
 
-def malop_processes(client: Client, malop_guids: list, filter_value: list, startTime: int, endTime: int) -> dict:
+def malop_processes(client: Client, malop_guids: list, filter_value: list, start_time: int, end_time: int) -> dict:
     json_body = {
         'queryPath': [
             {
@@ -940,8 +933,8 @@ def malop_processes(client: Client, malop_guids: list, filter_value: list, start
         'totalResultLimit': 1000,
         'perGroupLimit': 1200,
         'perFeatureLimit': 1200,
-        'startTime': startTime,
-        'endTime': endTime,
+        'startTime': start_time,
+        'endTime': end_time,
         'templateContext': 'MALOP',
         'queryTimeout': None
     }
