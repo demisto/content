@@ -30,7 +30,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| device-group |  |  | Optional |
+| device-group |  The device group  | Optional |
 
 ## Playbook Outputs
 

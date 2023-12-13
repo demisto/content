@@ -30,8 +30,8 @@ This playbook does not use any scripts.
 | Project Name | The name of the pipeline project. | xsoar | Required |
 | Pipeline ID | The ID of the pipeline. | 1 | Required |
 | Branch Name | The name of the repository branch which runs the pipeline. | main | Required |
-| interval | Indicates how long to wait between each poll. | 1 | Required |
-| Timeout | The amount of time until the playbook stops waiting for the process to finish. After this time has passed, the playbook finishes its run, even if it didn't receive confirmation that the remote process completed. | 60 | Required |
+| interval | Indicates how long to wait between each poll. (In seconds) | 1 | Required |
+| Timeout | The amount of time until the playbook stops waiting for the process to finish. After this time has passed, the playbook finishes its run, even if it didn't receive confirmation that the remote process completed. (In seconds) | 60 | Required |
 
 ## Playbook Outputs
 

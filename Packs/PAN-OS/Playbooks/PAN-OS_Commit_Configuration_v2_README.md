@@ -29,7 +29,7 @@ PrintErrorEntry
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| device-group |  |  | Optional |
+| device-group |  The device group | Optional |
 
 ## Playbook Outputs
 
