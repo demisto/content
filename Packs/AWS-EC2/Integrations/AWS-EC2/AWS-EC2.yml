@@ -105,7 +105,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-  additionalinfo: The role name used to access accounts in the organization. This role name must exist in the accounts provided in "AWS Organization accounts to access" and be assumable with the credentials provided. 
+  additionalinfo: The role name used to access accounts in the organization. This role name must exist in the accounts provided in "AWS Organization accounts to access" and be assumable with the credentials provided.
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -3822,7 +3822,7 @@ script:
       name: roleSessionDuration
     description: Release on demand dedicated host.
     name: aws-ec2-release-hosts
-  dockerimage: demisto/boto3py3:1.0.0.76862
+  dockerimage: demisto/boto3py3:1.0.0.83521
   runonce: false
   script: '-'
   subtype: python3
