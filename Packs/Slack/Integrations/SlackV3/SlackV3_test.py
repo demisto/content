@@ -1,4 +1,3 @@
-import datetime
 import json as js
 import threading
 from unittest.mock import MagicMock
@@ -2797,7 +2796,7 @@ def test_send_request_with_entitlement(mocker):
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
     mocker.patch.object(SlackV3, 'send_message', return_value=SLACK_RESPONSE)
-    mocker.patch.object(SlackV3, 'get_current_utc_time', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
+    mocker.patch.object(SlackV3, 'get_current_utc_time', return_value=datetime(2019, 9, 26, 18, 38, 25))
     questions = [{
         'thread': 'cool',
         'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@22|43',
@@ -2863,7 +2862,7 @@ def test_send_request_with_entitlement_blocks(mocker):
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
     mocker.patch.object(SlackV3, 'send_message', return_value=SLACK_RESPONSE)
-    mocker.patch.object(SlackV3, 'get_current_utc_time', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
+    mocker.patch.object(SlackV3, 'get_current_utc_time', return_value=datetime(2019, 9, 26, 18, 38, 25))
     questions = [{
         'thread': 'cool',
         'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
@@ -2930,7 +2929,7 @@ def test_send_request_with_entitlement_blocks_message(mocker):
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
     mocker.patch.object(SlackV3, 'send_message', return_value=SLACK_RESPONSE)
-    mocker.patch.object(SlackV3, 'get_current_utc_time', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
+    mocker.patch.object(SlackV3, 'get_current_utc_time', return_value=datetime(2019, 9, 26, 18, 38, 25))
 
     questions = [{
         'thread': 'cool',
@@ -4270,7 +4269,7 @@ def test_get_poll_minutes(sent, expected_minutes):
     from SlackV3 import get_poll_minutes
 
     # Set
-    current = datetime.datetime(2019, 9, 26, 18, 38, 25)
+    current = datetime(2019, 9, 26, 18, 38, 25)
 
     # Arrange
     minutes = get_poll_minutes(current, sent)
