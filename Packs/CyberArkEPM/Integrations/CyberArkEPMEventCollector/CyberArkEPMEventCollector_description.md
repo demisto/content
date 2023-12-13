@@ -8,7 +8,7 @@ Every method needs different parameters as show in the following:
     - url: `https://<EPM_server>`
     - username: `admin`
     - password: `123456`
-    - application ID: `1111`
+    - [application ID](https://docs.cyberark.com/Idaptive/Latest/en/Content/Applications/AppsOvw/SpecifyAppID.htm#%23SpecifytheApplicationID): `1111`
     - set name: `admin, jhon`
 
 
@@ -16,7 +16,7 @@ Every method needs different parameters as show in the following:
     - url: `https://login.epm.cyberark.com/SAML/Logon`
     - username: `admin`
     - password: `123456`
-    - authentication URL: `https://paloaltonetworks.okta.com/api/v1/authn`
+    - authentication URL [Okta example](https://developer.okta.com/docs/reference/api/authn/#authentication-operations): `https://paloaltonetworks.okta.com/api/v1/authn`
     - application URL: `https://paloaltonetworks.okta.com/home/[APP_NAME]/[APP_ID]`
     - set name: `admin, jhon`
 

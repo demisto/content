@@ -23,30 +23,34 @@ configuration:
   required: true
   type: 0
   section: Connect
-- additionalinfo: Required for local(EPM) authentication only.
+- additionalinfo: 'Required for local(EPM) authentication only. See how to get the application ID https://docs.cyberark.com/Idaptive/Latest/en/Content/Applications/AppsOvw/SpecifyAppID.htm#%23SpecifytheApplicationID'.
   display: Application ID
   name: application_id
   required: false
   type: 0
   section: Connect
-- additionalinfo: 'Required for SAML authentication only, Example for PAN OKTA: https://paloaltonetworks.okta.com/api/v1/authn.'
+- additionalinfo: 'Required for SAML authentication only, Example for OKTA: https://[COMPANY_NAME].okta.com/api/v1/authn. See how to get the Authentication URL https://developer.okta.com/docs/reference/api/authn/#authentication-operations'
+  advanced: true
   display: Authentication URL
   name: authentication_url
   required: false
   type: 0
   section: Connect
-- additionalinfo: 'Required for SAML authentication only, Example for PAN OKTA: https://paloaltonetworks.okta.com/home/[APP_NAME]/[APP_ID].'
+- additionalinfo: 'Required for SAML authentication only, Example for OKTA: https://[COMPANY_NAME].okta.com/home/[APP_NAME]/[APP_ID].'
+  advanced: true
   display: Application URL
   name: application_url
   required: false
   type: 0
   section: Connect
 - display: Trust any certificate (not secure)
+  advanced: true
   name: insecure
   required: false
   type: 8
   section: Connect
 - display: Use system proxy settings
+  advanced: true
   name: proxy
   required: false
   type: 8
