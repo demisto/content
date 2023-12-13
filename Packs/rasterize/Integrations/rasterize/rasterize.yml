@@ -40,8 +40,8 @@ configuration:
   type: 8
   required: false
 description: Converts URLs, PDF files, and emails to an image file or PDF file.
-display: Rasterize_headless
-name: Rasterize_headless
+display: Rasterize
+name: Rasterize
 script:
   commands:
   - arguments:
