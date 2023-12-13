@@ -730,7 +730,7 @@ def call_send_data_to_xsiam(assets, vulnerabilities):
 
 def test_module(client: Client, params):
     client.list_scan_filters()
-    if params.get('assetsFetchInterval') < 60:
+    if int(params.get('assetsFetchInterval')) < 60:
         return_error(f"Assets Fetch Interval is supposed to be 1 hour minimum")
     return 'ok'
 
@@ -1270,8 +1270,8 @@ def request_uuid_export_vulnerabilities(args: Dict[str, Any]) -> PollResult:
     )
 
 
-@polling_function(name=demisto.command(), timeout=arg_to_number(demisto.args().get('timeout', 600)),
-                  interval=arg_to_number(demisto.args().get('intervalInSeconds', 10)),
+@polling_function(name=demisto.command(), timeout=arg_to_number(demisto.args().get('timeout', 720)),
+                  interval=arg_to_number(demisto.args().get('intervalInSeconds', 15)),
                   requires_polling_arg=False)
 def export_assets_command(args: Dict[str, Any]) -> PollResult:
     """
