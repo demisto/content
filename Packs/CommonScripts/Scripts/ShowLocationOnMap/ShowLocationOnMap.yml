@@ -2,7 +2,7 @@ commonfields:
   id: ShowLocationOnMap
   version: -1
 name: ShowLocationOnMap
-comment: Show indicator geo location on map
+comment: Show indicator geo location on map.
 script: '-'
 type: python
 tags:
