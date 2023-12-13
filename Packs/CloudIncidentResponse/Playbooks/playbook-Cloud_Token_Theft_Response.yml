@@ -2009,7 +2009,7 @@ tasks:
       AWS-newRoleName:
         simple: ${inputs.AWS-newRoleName}
       AWS-roleNameToRestrict:
-        simple: ${inputs.AWS-newRoleName}
+        simple: ${inputs.AWS-roleNameToRestrict}
       AWS-userID:
         simple: ${alert.username}
       Azure-AppID:
@@ -2101,7 +2101,8 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: inpuCredentialsRotation
+              complex:
+                root: inputs.autoCredentialsRotation
             iscontext: true
           right:
             value:
