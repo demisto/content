@@ -5,12 +5,12 @@
 import subprocess
 import os
 import sys
-import multiprocessing
+from multiprocessing.pool import ThreadPool
 
 
 def run_script(args, files):
     try:
-        with multiprocessing.Pool() as pool:
+        with ThreadPool() as pool:
             results = pool.map(run_command, [(args + [os.path.abspath(file)], os.path.dirname(file)) for file in files])
         if any(result != 0 for result in results):
             return 1
