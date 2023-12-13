@@ -167,17 +167,6 @@ files = [
 ]
 
 [[package]]
-name = "astor"
-version = "0.8.1"
-description = "Read/rewrite/write Python ASTs"
-optional = false
-python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,>=2.7"
-files = [
-    {file = "astor-0.8.1-py2.py3-none-any.whl", hash = "sha256:070a54e890cefb5b3739d19f30f5a5ec840ffc9c50ffa7d23cc9fc1a38ebbfc5"},
-    {file = "astor-0.8.1.tar.gz", hash = "sha256:6a6effda93f4e1ce9f618779b2dd1d9d84f1e32812c23a29b3fff6fd7f63fa5e"},
-]
-
-[[package]]
 name = "astroid"
 version = "2.9.3"
 description = "An abstract syntax tree for Python with inference support."
@@ -1134,21 +1123,6 @@ files = [
 ]
 
 [[package]]
-name = "configargparse"
-version = "1.7"
-description = "A drop-in replacement for argparse that allows options to also be set via config files and/or environment variables."
-optional = false
-python-versions = ">=3.5"
-files = [
-    {file = "ConfigArgParse-1.7-py3-none-any.whl", hash = "sha256:d249da6591465c6c26df64a9f73d2536e743be2f244eb3ebe61114af2f94f86b"},
-    {file = "ConfigArgParse-1.7.tar.gz", hash = "sha256:e7067471884de5478c58a511e529f0f9bd1c66bfef1dea90935438d6c23306d1"},
-]
-
-[package.extras]
-test = ["PyYAML", "mock", "pytest"]
-yaml = ["PyYAML"]
-
-[[package]]
 name = "configparser"
 version = "5.3.0"
 description = "Updated configparser from stdlib for earlier Pythons."
@@ -1415,7 +1389,6 @@ inflection = "^0.5.1"
 json5 = "^0.9.14"
 jsonschema = "^4.4.0"
 junitparser = "^3.1.0"
-klara = "^0.6.3"
 mergedeep = "^1.3.4"
 more-itertools = "^9.0.0"
 mypy = "^0.982"
@@ -1475,12 +1448,13 @@ yamlordereddictloader = "^0.4.0"
 
 [package.extras]
 build = ["gsutil (==5.17)"]
+generate-unit-tests = ["klara (>=0.6.3,<0.7.0)"]
 
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk"
-reference = "6ca6f2d75691b83d55e17c2b2b32190f825ac336"
-resolved_reference = "6ca6f2d75691b83d55e17c2b2b32190f825ac336"
+reference = "f4e4caf89aaf3957924aee986a3a0f8a19311839"
+resolved_reference = "f4e4caf89aaf3957924aee986a3a0f8a19311839"
 
 [[package]]
 name = "deprecated"
@@ -2747,23 +2721,6 @@ files = [
 
 [package.dependencies]
 future = "*"
-
-[[package]]
-name = "klara"
-version = "0.6.3"
-description = "Automatic test case generation and static analysis library"
-optional = false
-python-versions = ">=3.6.2,<4.0"
-files = [
-    {file = "klara-0.6.3-py3-none-any.whl", hash = "sha256:9687fb2503e0d0ae1ecc789d88af46d4008522a89db5d542c9c993ee6d0875d2"},
-    {file = "klara-0.6.3.tar.gz", hash = "sha256:8a739b58b94f01b5464ca8d90282cb320e8aff8e221441a43bc423c3595525c1"},
-]
-
-[package.dependencies]
-astor = ">=0.8.1,<0.9.0"
-ConfigArgParse = ">=1.5.2,<2.0.0"
-typed-ast = ">=1.4.3,<2.0.0"
-z3-solver = ">=4.8.12,<5.0.0"
 
 [[package]]
 name = "lark"
@@ -7096,21 +7053,6 @@ idna = ">=2.0"
 multidict = ">=4.0"
 
 [[package]]
-name = "z3-solver"
-version = "4.12.2.0"
-description = "an efficient SMT solver library"
-optional = false
-python-versions = "*"
-files = [
-    {file = "z3-solver-4.12.2.0.tar.gz", hash = "sha256:65ab47a0a8ef0bfb80db0670775beb11b32c3c0ae4b35943e44121f4af7ef411"},
-    {file = "z3_solver-4.12.2.0-py2.py3-none-macosx_10_16_x86_64.whl", hash = "sha256:127b7c3fcadd61415320ef1b469c22464d3270d25a63c9eb5ee31a0859910826"},
-    {file = "z3_solver-4.12.2.0-py2.py3-none-macosx_11_0_arm64.whl", hash = "sha256:f605de84f87cff04de8339a6d007c80167606a4e6904d6ace8208b066f22f4be"},
-    {file = "z3_solver-4.12.2.0-py2.py3-none-manylinux2014_x86_64.whl", hash = "sha256:03921d3021cb6e5dbeaeb94634132a5fbf5403748aa21774efac4047e633af1e"},
-    {file = "z3_solver-4.12.2.0-py2.py3-none-win32.whl", hash = "sha256:ea1688e64aada67ec720e2f148c5c41fece2870c55a2901dda36f6b4bb9aec7e"},
-    {file = "z3_solver-4.12.2.0-py2.py3-none-win_amd64.whl", hash = "sha256:553af6a989d8943d9a556c4f83ea54b2afc8b4fd58230e97fcc526dc3f97249a"},
-]
-
-[[package]]
 name = "zipp"
 version = "3.17.0"
 description = "Backport of pathlib-compatible object wrapper for zip files"
@@ -7181,4 +7123,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "22375f26ec6c8d6384033ed20724f13eb354bd06c47e8a1846d526d7c20dc4b8"
+content-hash = "a37abeffd9c8f5c40195ce966bfb51798471c57c2a20fa786a875e18d47e52fd"
