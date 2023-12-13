@@ -519,7 +519,7 @@ def main():
 
     pipeline_url, pipeline_failed_jobs = collect_pipeline_data(gitlab_client, project_id, pipeline_id)
     shame_message = None
-    if options.current_branch == DEFAULT_BRANCH and triggering_workflow == CONTENT_MERGE:
+    if True:
         # We check if the previous build failed and this one passed, or wise versa.
         list_of_pipelines, commits = get_pipelines_and_commits(gitlab_url=server_url, gitlab_access_token=ci_token,
                                                                project_id=project_id, look_back_hours=LOOK_BACK_HOURS)
@@ -530,6 +530,9 @@ def main():
         logging.info(f'Pivot commit is {pivot_commit}, pipeline changed status is {pipeline_changed_status}')
         if pipeline_changed_status is not None:
             name, email, pr = shame(pivot_commit)
+            if name == 'content-bot':
+                name = "israelpoli"
+            #if name == 
             msg = "broke" if pipeline_changed_status else "fixed"  
             shame_message = (f"Hi @{name}, You {msg} the build.", f" That was done in this {slack_link(pr,'PR.')}")
 
