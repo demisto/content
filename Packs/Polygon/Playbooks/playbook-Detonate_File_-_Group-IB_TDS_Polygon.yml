@@ -443,7 +443,7 @@ tasks:
     task:
       id: f827eaad-0371-4dd5-8567-d5a3a080a499
       version: -1
-      name: set
+      name: Set report number to context 
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
