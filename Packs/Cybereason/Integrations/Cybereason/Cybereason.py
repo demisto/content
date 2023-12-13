@@ -799,7 +799,7 @@ def malop_connection_command(client: Client, args: dict):
         outputs=context)
 
 
-def malop_connection(client: Client, malop_guids: list, filter_value: list, startTime: int, endTime: int) -> dict:
+def malop_connection(client: Client, malop_guids: list, filter_value: list, start_time: int, end_time: int) -> dict:
     json_body = {
         'queryPath': [
             {
