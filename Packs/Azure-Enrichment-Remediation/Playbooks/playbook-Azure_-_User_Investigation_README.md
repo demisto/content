@@ -20,16 +20,16 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-Azure Log Analytics
+* Azure Log Analytics
 
 ### Scripts
 
-* SetMultipleValues
 * SetAndHandleEmpty
+* SetMultipleValues
 
 ### Commands
 
-azure-log-analytics-execute-query
+* azure-log-analytics-execute-query
 
 ## Playbook Inputs
 
