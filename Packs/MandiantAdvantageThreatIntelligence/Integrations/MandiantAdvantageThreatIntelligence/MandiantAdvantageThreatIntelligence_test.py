@@ -1022,7 +1022,7 @@ def test_fetch_indicators(
     assert actor["relationships"][1]["entityB"] == "SOME_FREE_TOOL"
     assert actor["relationships"][1]["name"] == "uses"
 
-    assert len(actor["relationships"]) == 7
+    assert len(actor["relationships"]) == 8
 
     assert file_ioc["value"] == "0cc22fd05a3e771b09b584db0a16aaaa"
 

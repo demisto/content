@@ -278,9 +278,9 @@ def extract_attack_patterns(indicator_patterns: dict, attack_patterns: dict) -> 
     for attack_pattern_name, attack_pattern_list in indicator_patterns.items():
         output.append(attack_pattern_name)
         for pattern in attack_pattern_list:
-            output.append(attack_patterns.get(pattern.get("id")).get("name"))
+            output.append(attack_patterns.get(pattern.get("id"), {}).get("name"))
             for subtechnique in pattern.get("sub_techniques", []):
-                output.append(attack_patterns.get(subtechnique.get("id")).get("name"))
+                output.append(attack_patterns.get(subtechnique.get("id"), {}).get("name"))
 
     return output
 
