@@ -575,11 +575,24 @@ inputs:
   description: ""
   playbookInputQuery:
 outputs:
-- contextPath: Panorama.Commit
-  description: All the fields from the commit command.
-  type: unknown
-- contextPath: Panorama.Push
-  description: All the fields from the push command.
+- contextPath: Panorama.Commit.JobID
+  description: The job ID to commit.
+- contextPath: Panorama.Commit.Status
+  description: The commit status.
+- contextPath: Panorama.Commit.Description
+  description: The commit description from the the command input.
+- contextPath: Panorama.Push.DeviceGroup
+  description: The device group in which the policies were pushed.
+- contextPath: Panorama.Push.JobID
+  description: The job ID of the policies that were pushed.
+- contextPath: Panorama.Push.Status
+  description: The push status.
+- contextPath: Panorama.Push.Warnings
+  description: The push warnings.
+- contextPath: Panorama.Push.Errors
+  description: The push errors.
+- contextPath: Panorama.Push.Details
+  description: The job ID details.
 tests:
 - PAN-OS URL Filtering enrichment - Test
 - PAN-OS - Add Anti-Spyware Security Profile To Rule - Test

@@ -18,8 +18,8 @@ PrintErrorEntry
 
 ### Commands
 
-* pan-os
 * pan-os-push-to-device-group
+* pan-os
 * pan-os-commit-status
 * pan-os-commit
 
@@ -37,8 +37,15 @@ PrintErrorEntry
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| Panorama.Commit | All the fields from the commit command. | unknown |
-| Panorama.Push | All the fields from the push command. | unknown |
+| Panorama.Commit.JobID | The job ID to commit. | unknown |
+| Panorama.Commit.Status | The commit status. | unknown |
+| Panorama.Commit.Description | The commit description from the the command input. | unknown |
+| Panorama.Push.DeviceGroup | The device group in which the policies were pushed. | unknown |
+| Panorama.Push.JobID | The job ID of the policies that were pushed. | unknown |
+| Panorama.Push.Status | The push status. | unknown |
+| Panorama.Push.Warnings | The push warnings. | unknown |
+| Panorama.Push.Errors | The push errors. | unknown |
+| Panorama.Push.Details | The job ID details. | unknown |
 
 ## Playbook Image
 
