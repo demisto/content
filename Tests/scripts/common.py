@@ -326,7 +326,7 @@ def is_pivot(single_pipeline_id, list_of_pipelines, commits):
     return None, None
 
 
-def get_github_pr_info(pr_url):
+def get_reviewer(pr_url: str) -> str|None:
     # Extract the owner, repo, and pull request number from the URL
     parts = pr_url.split('/')
     repo_owner = parts[-4]
@@ -339,19 +339,18 @@ def get_github_pr_info(pr_url):
     reviews_data = reviews_response.json()
 
     # Find the reviewer who provided approval
-    approved_reviewer = None
+    approved_reviewer= None
     for review in reviews_data:
         if review['state'] == 'APPROVED':
             approved_reviewer = review['user']['login']
             break
-
     return approved_reviewer if approved_reviewer else None
 
 def load_json(file):
     with open(file, 'r') as f:
         return json.load(f)
 
-def get_slack_user_name(name):
+def get_slack_user_name(name:str) -> str:
     if name == 'github-actions[bot]':
         return 'Israel Polishuk'
     else:
