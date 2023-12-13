@@ -120,11 +120,11 @@ INBOX_HEADERS = [element['header'] for element in INBOX_INFO]
 
 def build_query(query_fields: list, path: list, template_context: str = 'SPECIFIC') -> dict:
     limit = demisto.getArg('limit')
-    startTime = demisto.getArg('startTime')
-    endTime = demisto.getArg('endTime')
+    start_time = demisto.getArg('startTime')
+    end_time = demisto.getArg('endTime')
 
-    startTime = int(startTime) if startTime else 0
-    endTime = int(endTime) if endTime else 9007199254740991
+    start_time = int(start_time) if start_time else 0
+    end_time = int(end_time) if end_time else 9007199254740991
     results_limit = int(limit) if limit else 10000
     group_limit = int(limit) if limit else 100
 
@@ -305,8 +305,8 @@ def is_probe_connected(client: Client, machine: str) -> dict:
 
 
 def query_inbox_command(client: Client, args: dict):
-    startTime = args.get('startTime', 0)
-    endTime = args.get('endTime', 9007199254740991)
+    start_time = args.get('startTime', 0)
+    end_time = args.get('endTime', 9007199254740991)
     rangeTime = args.get('rangeTime', False)
     guid = args.get('guid', False)
 
@@ -755,8 +755,8 @@ def unisolate_machine(client: Client, machine: str) -> Any:
 def malop_connection_command(client: Client, args: dict):
     malop_guids = args.get('malopGuids')
     date_time = str(args.get('dateTime'))
-    startTime = args.get('startTime', 0)
-    endTime = args.get('endTime', 9007199254740991)
+    start_time = args.get('startTime', 0)
+    end_time = args.get('endTime', 9007199254740991)
 
     filter_input = []
     if date_time != 'None':
@@ -799,7 +799,7 @@ def malop_connection_command(client: Client, args: dict):
         outputs=context)
 
 
-def malop_connection(client: Client, malop_guids: list, filter_value: list, startTime: int, endTime: int) -> dict:
+def malop_connection(client: Client, malop_guids: list, filter_value: list, start_time: int, end_time: int) -> dict:
     json_body = {
         'queryPath': [
             {
@@ -852,8 +852,8 @@ def malop_processes_command(client: Client, args: dict):
     malop_guids = args.get('malopGuids')
     machine_name = str(args.get('machineName'))
     date_time = str(args.get('dateTime'))
-    startTime = args.get('startTime', 0)
-    endTime = args.get('endTime', 9007199254740991)
+    start_time = args.get('startTime', 0)
+    end_time = args.get('endTime', 9007199254740991)
 
     filter_input = []
     if date_time != 'None':
