@@ -12,17 +12,17 @@ args:
 - name: entry_id
   required: true
   default: true
-  description: Enter an entry id or tag to close
+  description: Enter an entry id or tag to close.
   defaultValue: ${lastCompletedTaskEntries}
 - name: context_key
   required: true
-  description: The context key to place the comments
+  description: The context key to place the comments.
 - name: comments
   required: true
-  description: The comments to place into the context
+  description: The comments to place into the context.
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.13.83255
 runas: DBotWeakRole
 
 fromversion: 5.0.0
