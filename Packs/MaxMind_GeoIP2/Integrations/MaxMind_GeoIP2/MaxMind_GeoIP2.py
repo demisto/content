@@ -157,21 +157,24 @@ def get_geo_ip(query):
 
 
 def geo_ip_command():
-    ip_query = demisto.args().get('ip')
-    res_json = get_geo_ip(ip_query)
-    hr, ip_ec, maxmind_ec, dbot_score = format_results(res_json)
-    ec = ({
-        'IP(val.Address && val.Address == obj.Address)': ip_ec,
-        'MaxMind(val.Address && val.Address == obj.Address)': maxmind_ec,
-        'DBotScore': dbot_score
-    })
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['markdown'],
-        'Contents': res_json,
-        'HumanReadable': tableToMarkdown(f'{ip_query} - Scan Results', hr, HR_HEADERS, removeNull=True),
-        'EntryContext': ec
-    })
+    ip_list = argToList(demisto.args().get('ip', ""))
+    results = []
+    for ip in ip_list:
+        res_json = get_geo_ip(ip)
+        hr, ip_ec, maxmind_ec, dbot_score = format_results(res_json)
+        ec = ({
+            'IP(val.Address && val.Address == obj.Address)': ip_ec,
+            'MaxMind(val.Address && val.Address == obj.Address)': maxmind_ec,
+            'DBotScore': dbot_score
+        })
+        results.append({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['markdown'],
+            'Contents': res_json,
+            'HumanReadable': tableToMarkdown(f'{ip} - Scan Results', hr, HR_HEADERS, removeNull=True),
+            'EntryContext': ec
+        })
+    demisto.results(results)
 
 
 ''' EXECUTION CODE '''

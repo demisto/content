@@ -233,6 +233,12 @@ script:
     - contextPath: AzureSentinel.Incident.AssigneeEmail
       description: The email address of the incident assignee.
       type: String
+    - contextPath: AzureSentinel.Incident.AssigneeObjectID
+      description: The object ID of the incident assignee.
+      type: string
+    - contextPath: AzureSentinel.Incident.AssigneeUPN
+      description: The user principal name of incident assignee.
+      type: string
     - contextPath: AzureSentinel.Incident.Label.Name
       description: The name of the incident label.
       type: String
@@ -545,13 +551,22 @@ script:
       name: assignee_email
     - description: The user principal name of the client. Note that the updated API field is `owner.userPrincipalName`.
       name: user_principal_name
+    - description: Object ID of assignee. This is the unique object ID of a user to update the assignee of the incident. Updated key is owner.objectId.
+      name: assignee_objectid
     - description: Incident labels. Note that all labels will be set as labelType='User'.
-      isArray: true
       name: labels
+      isArray: true
     - description: The subscription ID.
       name: subscription_id
     - description: The resource group name.
       name: resource_group_name
+    - auto: PREDEFINED
+      description: If set to true, the assignee will be removed and the incident will remain unassigned. Overrides the other arguments related to the assignee.
+      name: unassign
+      predefined:
+      - 'false'
+      - 'true'
+      type: unknown
     description: Updates a single incident in Azure Sentinel.
     name: azure-sentinel-update-incident
     outputs:
@@ -576,6 +591,12 @@ script:
     - contextPath: AzureSentinel.Incident.AssigneeEmail
       description: The email address of the incident assignee.
       type: String
+    - contextPath: AzureSentinel.Incident.AssigneeObjectID
+      description: The object ID of the incident assignee.
+      type: string
+    - contextPath: AzureSentinel.Incident.AssigneeUPN
+      description: The user principal name of the incident assignee.
+      type: string
     - contextPath: AzureSentinel.Incident.Label.Name
       description: The name of the incident label.
       type: String
@@ -2360,7 +2381,7 @@ script:
     execution: false
     name: azure-sentinel-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.80694
+  dockerimage: demisto/crypto:1.0.0.83343
   isfetch: true
   runonce: false
   script: '-'
