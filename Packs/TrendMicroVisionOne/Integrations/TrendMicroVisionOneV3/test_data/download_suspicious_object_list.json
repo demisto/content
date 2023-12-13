@@ -1,0 +1,21 @@
+[
+    {
+        "status": 200,
+        "transformers": ["response-template"],
+        "jsonBody": {
+            "items": [
+                {
+                    "riskLevel": "high",
+                    "analysisCompletionDateTime": "{{now offset='-10 seconds'}}",
+                    "expiredDateTime": "{{now offset='1 days'}}",
+                    "rootSha1": "fb5608fa03de204a12fe1e9e5275e4a682107471",
+                    "type": "url",
+                    "value": "http://208.67.105.179:80/robinzx.exe"
+                }
+            ]
+        },
+        "headers": {
+            "Content-Type": "application/json"
+        }
+    }
+]
