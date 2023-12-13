@@ -136,10 +136,6 @@ tasks:
       input:
         complex:
           root: QRadar.SearchEvents.Events
-      input_key:
-        simple: ${QRadar.Search.Result}
-      key:
-        simple: ${QRadar.Search.Results}
       output_key:
         simple: QRadar.Events
     separatecontext: false
