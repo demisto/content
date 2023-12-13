@@ -33,6 +33,9 @@ script:
     arguments:
     - name: qualification
       description: 'Search qualification, given as: ''key1''="value1" AND ''key2''!="value2"'
+    - name: form_name
+      description: 'The form for which an entries are to be read. i.e. AST:ComputerSystem.'
+      defaultValue: AST:ComputerSystem
     - name: fields
       description: Parts of the entry object to retrieve, given as CSV (i.e. Company,Name)
       defaultValue: Name,Company,Short Description,NC_IOPs,Reconciliation Identity

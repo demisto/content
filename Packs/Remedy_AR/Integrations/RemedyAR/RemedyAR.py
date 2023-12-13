@@ -34,7 +34,7 @@ def http_request(method, url_suffix, data, headers):
                                headers=headers
                                )
         if res.status_code not in (200, 204):
-            raise Exception(f'Your request failed with the following error: {res.reason}')
+            raise Exception(f'Your request failed with the following error: {res.reason}, {res.content}')
     except Exception as ex:
         raise Exception(ex)
     return res
@@ -69,17 +69,14 @@ def login():
 def logout():
     cmd_url = '/jwt/logout'
 
-    try:
-        LOG(f'Running logout: auth={DEFAULT_HEADERS["Authorization"]}')
-        res = http_request('POST', cmd_url, None, DEFAULT_HEADERS)
-        LOG(f'After logout: res={res}')
-    except Exception as ex:
-        LOG(f'Exception is: {ex}')
-        LOG(f'Exception is: {ex.response}')
-        LOG(f'Exception is: {ex.response.text}')
+    LOG(f'Running logout: auth={DEFAULT_HEADERS["Authorization"]}')
+    http_request('POST', cmd_url, None, DEFAULT_HEADERS)
 
 
-def get_server_details(qualification, fields):
+def get_server_details(args):
+    fields = args.get('fields')
+    qualification = args.get('qualification', '')
+    form_name = args.get('form_name', 'AST:ComputerSystem')
 
     # Adds fields to filter by
     if isinstance(fields, list):
@@ -89,7 +86,7 @@ def get_server_details(qualification, fields):
     # URL Encodes qualification
     qualification = quote_plus(qualification)
 
-    cmd_url = f'/arsys/v1/entry/AST:ComputerSystem/?q={qualification}&{fields}'
+    cmd_url = f'/arsys/v1/entry/{form_name}/?q={qualification}&{fields}'
     result = http_request('GET', cmd_url, None, DEFAULT_HEADERS).json()
 
     entries = result['entries']
@@ -124,13 +121,7 @@ def get_server_details(qualification, fields):
 ''' EXECUTION CODE '''
 auth = login()
 token = auth.content
-DEFAULT_HEADERS['Authorization'] = f'AR-JWT {token}'
-# try: DEFAULT_HEADERS['Authorization'] = 'AR-JWT' + token
-# try: DEFAULT_HEADERS['Authorization'] = f'AR-JWT {str(token)}'
-
-LOG(f'Got the token, first option: AR-JWT {token}')
-LOG(f'Got the token, second option: AR-JWT {str(token)}')
-LOG(f'Got the token, third option: TODO')
+DEFAULT_HEADERS['Authorization'] = f'AR-JWT {token.decode()}'
 
 LOG('command is %s' % (demisto.command(), ))
 try:
@@ -138,11 +129,7 @@ try:
         # Login is made and tests connectivity and credentials
         demisto.results('ok')
     elif demisto.command() == 'remedy-get-server-details':
-        if 'qualification' in demisto.args():
-            qualification = demisto.args()['qualification']
-        else:
-            qualification = ''
-        demisto.results(get_server_details(qualification, demisto.args()['fields']))
+        demisto.results(get_server_details(demisto.args()))
 except Exception as e:
     LOG(e)
     LOG.print_log()
