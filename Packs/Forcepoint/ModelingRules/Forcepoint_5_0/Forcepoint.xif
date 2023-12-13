@@ -1,4 +1,4 @@
-[MODEL: dataset="forcepoint_firewall_raw"]
+[MODEL: dataset="forcepoint_firewall_check_raw"]
 alter
     dvchost_ipv4 = if(dvchost !~= ":", dvchost, null),
     dvchost_ipv6 = if(dvchost ~= ":", dvchost, null),
