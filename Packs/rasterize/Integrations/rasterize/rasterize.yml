@@ -66,7 +66,7 @@ script:
       - png
       - json
       auto: PREDEFINED
-    - description: Rasterize mode to use (WebDriver or Headless CLI). Optional. If not specified, will use according to the integration instance settings.
+    - description: Deprecated.
       name: mode
       auto: PREDEFINED
       predefined:
@@ -80,7 +80,7 @@ script:
       name: file_name
     - auto: PREDEFINED
       defaultValue: 'False'
-      description: Deprecated. Use width and height. Get the full page. The actual page width and height will be auto calculated up to a max value of 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected).
+      description: Deprecated. Use width and height.
       name: full_screen
       predefined:
       - 'True'
@@ -88,11 +88,12 @@ script:
       deprecated: true
     - auto: PREDEFINED
       defaultValue: 'False'
-      description: Whether to include the URL bar in the returned screenshot. (Only for WebDriver mode. Ignored in Headless CLI mode).
+      description: Deprecated.
       name: include_url
       predefined:
       - 'True'
       - 'False'
+      deprecated: true
     description: Converts the contents of a URL to an image file or a PDF file.
     name: rasterize
     outputs:
@@ -139,7 +140,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: Rasterize mode to use (WebDriver or Headless CLI). Optional. If not specified, will use according to the integration instance settings.
+    - description: Deprecated.
       name: mode
       auto: PREDEFINED
       predefined:
@@ -153,7 +154,7 @@ script:
       name: file_name
     - auto: PREDEFINED
       defaultValue: 'False'
-      description: Deprecated. Use width and height. Get the full page. The actual page width and height will be auto calculated up to a max value of 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected).
+      description: Deprecated. Use width and height.
       name: full_screen
       predefined:
       - 'True'
@@ -193,7 +194,7 @@ script:
       name: height
     - description: The name the file will be saved as.
       name: file_name
-    - description: Rasterize mode to use (WebDriver or Headless CLI). Optional. If not specified, will use according to the integration instance settings.
+    - description: Deprecated.
       name: mode
       auto: PREDEFINED
       predefined:
@@ -204,7 +205,7 @@ script:
       deprecated: true
     - auto: PREDEFINED
       defaultValue: 'False'
-      description: Deprecated. Use width and height. Get the full page. The actual page width and height will be auto calculated up to a max value of 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected).
+      description: Deprecated. Use width and height.
       name: full_screen
       predefined:
       - 'True'
@@ -243,7 +244,7 @@ script:
       name: pdfPassword
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Whether to stack the pages horizontally. If "true", will stack the pages horizontally. If "false", will stack the pages vertically. Default is "false".
+      description: Deprecated.
       name: horizontal
       predefined:
       - 'true'
@@ -291,7 +292,7 @@ script:
       name: file_name
     - auto: PREDEFINED
       defaultValue: 'False'
-      description: Deprecated. Use width and height. Get the full page. The actual page width and height will be auto calculated up to a max value of 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected).
+      description: Deprecated. Use width and height.
       name: full_screen
       predefined:
       - 'True'
