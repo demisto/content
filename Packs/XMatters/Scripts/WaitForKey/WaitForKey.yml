@@ -10,7 +10,7 @@ enabled: true
 args:
 - name: context_key
   required: true
-  description: The context key to wait for
+  description: The context key to wait for.
 - name: iterations
   required: true
   default: true

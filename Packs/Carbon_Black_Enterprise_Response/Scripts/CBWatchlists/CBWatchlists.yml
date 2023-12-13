@@ -12,7 +12,7 @@ system: true
 args:
 - name: id
   default: true
-  description: Display a specific watchlist by watchlist ID (numeric)
+  description: Display a specific watchlist by watchlist ID (numeric).
 scripttarget: 0
 dependson:
   must:
