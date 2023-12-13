@@ -1488,10 +1488,10 @@ TICKET_FIELDS = {'close_notes': 'Closed by XSOAR', 'closed_at': '2020-10-29T13:1
 
 def ticket_fields(*args, **kwargs):
     fields = {'close_notes': 'Closed by XSOAR', 'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
-                'priority': '4', 'resolved_at': '2020-10-29T13:19:07.345995+02:00',
-                'severity': '1 - Low',
-                'short_description': 'Post parcel', 'sla_due': '0001-01-01T00:00:00Z', 'urgency': '3',
-                'work_start': '0001-01-01T00:00:00Z'}
+              'priority': '4', 'resolved_at': '2020-10-29T13:19:07.345995+02:00',
+              'severity': '1 - Low',
+              'short_description': 'Post parcel', 'sla_due': '0001-01-01T00:00:00Z', 'urgency': '3',
+              'work_start': '0001-01-01T00:00:00Z'}
     if kwargs.get('ticket_type') == 'incident':
         fields['state'] = '7'
         fields['close_code'] = 'Closed/Resolved by Caller'
