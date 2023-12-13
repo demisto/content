@@ -1,0 +1,116 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Tessian
+  version: -1
+configuration:
+- display: Portal URL
+  name: url
+  additionalinfo: The URL that you use to access the Tessian Portal. Please include the extension, e.g. "example.tessian-platform.com" or "example.tessian-app.com"
+  type: 0
+  required: true
+- displaypassword: API Key
+  additionalinfo: The API Key to use to connect to the Tessian API. This can be found under "Security Integrations" in your Tessian Portal (/0/admin/integrations/api/tokens)
+  name: api_key
+  type: 9
+  hiddenusername: true
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+description: Tessian is an email security platform that allows organizations to protect their users from inbound phishing threats, outbound data loss (both malicious and accidental) and account takeovers.
+display: Tessian
+name: Tessian
+script:
+  commands:
+  - name: tessian-list-events
+    description: This command allows you to pull Tessian event data into your XSOAR instance.
+    arguments:
+    - name: limit
+      description: The maximum number of events you would like Tessian to return per call. The maximum value is 100. The minimum value is 2.
+      required: false
+    - name: after_checkpoint
+      description: If provided, this parameter must be set to the checkpoint returned by a previous request to this endpoint. When provided, events from the previous request will not be included in the response from this request. If the new checkpoint returned by this request is used in yet another call to this endpoint events from both previous requests will not be included in the response (and so on). By making a number of consecutive requests to this endpoint where the checkpoint from the previous request is provided, clients can get all events from the Tessian platform, even when there are many more than can be returned in a single request. This process is often referred to as pagination. If an event is updated, it will no longer be excluded from subsequent requests.
+      required: false
+    - name: created_after
+      description: Only include events that were created after this time. For example, 2020-02-02T19:00:00Z.
+      required: false
+    outputs:
+    - contextPath: Tessian.EventsOutput.checkpoint
+      description: This value can be provided to a subsequent request via the after_checkpoint query parameter to ensure that events from this request are not returned in future responses. This allows clients to paginate through results.
+      type: String
+    - contextPath: Tessian.EventsOutput.additional_results
+      description: True if there may be more events that can be immediately retrieved.
+      type: Boolean
+    - contextPath: Tessian.EventsOutput.results
+      description: The events returned by this request.
+      type: Unknown
+  - name: tessian-release-from-quarantine
+    description: This command allows you to release a quarantined emails associated with an event from Tessian.
+    arguments:
+    - name: event_id
+      description: The ID of the event you would like to release from quarantine.
+      required: true
+    outputs:
+    - contextPath: Tessian.ReleaseFromQuarantineOutput.number_of_actions_attempted
+      description: The number of users that release from quarantine actions were attempted for.
+      type: String
+    - contextPath: Tessian.ReleaseFromQuarantineOutput.number_of_actions_succeeded
+      description: The number of users that the release from quarantine action was successful for.
+      type: String
+    - contextPath: Tessian.ReleaseFromQuarantineOutput.results
+      description: The results of the release action. This is an array of objects mapping the email address of users to the result of the release action.
+      type: Unknown
+    - contextPath: Tessian.ReleaseFromQuarantineOutput.event_id
+      description: The event ID that was submitted for release.
+      type: String
+  - name: tessian-delete-from-quarantine
+    description: This command allows you to delete quarantined emails associated with an event from Tessian.
+    arguments:
+    - name: event_id
+      description: The ID of the event you would like to delete from quarantine.
+      required: true
+    outputs:
+    - contextPath: Tessian.DeleteFromQuarantineOutput.number_of_actions_attempted
+      description: The number of users that delete from quarantine actions were attempted for.
+      type: String
+    - contextPath: Tessian.DeleteFromQuarantineOutput.number_of_actions_succeeded
+      description: The number of users that the delete from quarantine action was successful for.
+      type: String
+    - contextPath: Tessian.DeleteFromQuarantineOutput.results
+      description: The results of the delete action. This is an array of objects mapping the email address of users to the result of the delete action.
+      type: Unknown
+    - contextPath: Tessian.DeleteFromQuarantineOutput.event_id
+      description: The event ID that was submitted for deletion.
+      type: String
+  - name: tessian-delete-from-inbox
+    description: This command allows you to delete emails associated with a Tessian event from your inbox.
+    arguments:
+    - name: event_id
+      description: The ID of the event you would like to delete from inbox.
+      required: true
+    outputs:
+    - contextPath: Tessian.DeleteFromQuarantineOutput.number_of_actions_attempted
+      description: The number of users that delete from inbox actions were attempted for.
+      type: String
+    - contextPath: Tessian.DeleteFromQuarantineOutput.number_of_actions_succeeded
+      description: The number of users that the delete from inbox action was successful for.
+      type: String
+    - contextPath: Tessian.DeleteFromQuarantineOutput.results
+      description: The results of the delete action. This is an array of objects mapping the email address of users to the result of the delete action.
+      type: Unknown
+    - contextPath: Tessian.DeleteFromQuarantineOutput.event_id
+      description: The event ID that was submitted for deletion.
+      type: String
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.13.82467
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

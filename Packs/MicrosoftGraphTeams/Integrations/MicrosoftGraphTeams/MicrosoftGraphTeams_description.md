@@ -2,8 +2,8 @@ Microsoft integrations (Graph and Azure) in Cortex XSOAR use Azure Active Direct
 
 # Self-Deployed Application
 To use a [Self-Deployed Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application)
-, you need to add a [new Azure App Registration in the Azure Portal](https://docs.microsoft.com/en-us/graph/auth-register-app-v2#register-a-new-application-using-the-azure-portal).
-
+ , you need to add a [new Azure App Registration in the Azure Portal](https://docs.microsoft.com/en-us/graph/auth-register-app-v2#register-a-new-application-using-the-azure-portal).
+ 
 ### Authentication Using the User - Authorization Code Flow
 
 Follow these steps for [Authorization Code flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#authorize-on-behalf-of-a-user) configuration:
@@ -27,6 +27,3 @@ ChatMember.Read - Delegated
 ChatMember.ReadWrite - Delegated 
 ChatMessage.Read - Delegated 
 ChatMessage.Send - Delegated
-
----
-[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph-teams)

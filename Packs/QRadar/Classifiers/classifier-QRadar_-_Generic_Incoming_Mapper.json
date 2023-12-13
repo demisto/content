@@ -388,7 +388,7 @@
           "complex": null,
           "simple": "mirroring_events_message"
         },
-        "LastMirroredInTime": {
+        "Last Mirrored Time Stamp": {
           "complex": null,
           "simple": "last_mirror_in_time"
         },

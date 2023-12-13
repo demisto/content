@@ -14,6 +14,7 @@ urllib3.disable_warnings()
 TAGS = 'tags'
 TLP_COLOR = 'trafficlightprotocol'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+THRESHOLD_IN_SECONDS = 43200        # 12 hours in seconds
 
 
 class Client(BaseClient):
@@ -216,6 +217,16 @@ class Client(BaseClient):
                     last_run = demisto.getLastRun()
                     etag = last_run.get(url, {}).get('etag')
                     last_modified = last_run.get(url, {}).get('last_modified')
+                    last_updated = last_run.get(url, {}).get('last_updated')
+                    # To avoid issues with indicators expiring, if 'last_updated' is over X hours old,
+                    # we'll refresh the indicators to ensure their expiration time is updated.
+                    # For further details, refer to : https://confluence-dc.paloaltonetworks.com/display/DemistoContent/Json+Api+Module     # noqa: E501
+                    if last_updated and has_passed_time_threshold(timestamp_str=last_updated,
+                                                                  seconds_threshold=THRESHOLD_IN_SECONDS):
+                        last_modified = None
+                        etag = None
+                        demisto.debug("Since it's been a long time with no update, to make sure we are keeping the indicators\
+                            alive, we will refetch them from scratch")
                     if etag:
                         if not kwargs.get('headers'):
                             kwargs['headers'] = {}
@@ -269,15 +280,9 @@ class Client(BaseClient):
                 lines = res_data.get('response')
                 result = lines.iter_lines()
                 if self.encoding is not None:
-                    result = map(
-                        lambda x: x.decode(self.encoding).encode('utf_8'),
-                        result
-                    )
+                    result = (x.decode(self.encoding).encode('utf_8') for x in result)
                 else:
-                    result = map(
-                        lambda x: x.decode('utf_8'),
-                        result
-                    )
+                    result = (x.decode('utf_8') for x in result)
                 if self.ignore_regex is not None:
                     result = filter(
                         lambda x: self.ignore_regex.match(x) is None,  # type: ignore[union-attr, arg-type]
@@ -288,8 +293,8 @@ class Client(BaseClient):
 
     def custom_fields_creator(self, attributes: dict):
         created_custom_fields = {}
-        for attribute in attributes.keys():
-            if attribute in self.custom_fields_mapping.keys() or attribute in [TAGS, TLP_COLOR]:
+        for attribute in attributes:
+            if attribute in self.custom_fields_mapping or attribute in [TAGS, TLP_COLOR]:
                 if attribute in [TAGS, TLP_COLOR]:
                     created_custom_fields[attribute] = attributes[attribute]
                 else:
@@ -317,6 +322,9 @@ def get_no_update_value(response: requests.Response, url: str) -> bool:
 
     etag = response.headers.get('ETag')
     last_modified = response.headers.get('Last-Modified')
+    current_time = datetime.utcnow()
+    # Save the current time as the last updated time. This will be used to indicate the last time the feed was updated in XSOAR.
+    last_updated = current_time.strftime(DATE_FORMAT)
 
     if not etag and not last_modified:
         demisto.debug('Last-Modified and Etag headers are not exists,'
@@ -324,7 +332,7 @@ def get_no_update_value(response: requests.Response, url: str) -> bool:
         return False
 
     last_run = demisto.getLastRun()
-    last_run[url] = {'last_modified': last_modified, 'etag': etag}
+    last_run[url] = {'last_modified': last_modified, 'etag': etag, 'last_updated': last_updated}
     demisto.setLastRun(last_run)
 
     demisto.debug('New indicators fetched - the Last-Modified value has been updated,'
@@ -357,13 +365,12 @@ def get_indicator_fields(line, url, feed_tags: list, tlp_color: Optional[str], c
     indicator = None
     fields_to_extract = []
     feed_config = client.feed_url_to_config.get(url, {})
-    if feed_config:
-        if 'indicator' in feed_config:
-            indicator = feed_config['indicator']
-            if 'regex' in indicator:
-                indicator['regex'] = re.compile(indicator['regex'])
-            if 'transform' not in indicator:
-                indicator['transform'] = r'\g<0>'
+    if feed_config and 'indicator' in feed_config:
+        indicator = feed_config['indicator']
+        if 'regex' in indicator:
+            indicator['regex'] = re.compile(indicator['regex'])
+        if 'transform' not in indicator:
+            indicator['transform'] = r'\g<0>'
 
     if 'fields' in feed_config:
         fields = feed_config['fields']
@@ -418,17 +425,17 @@ def fetch_indicators_command(client, feed_tags, tlp_color, itype, auto_detect, c
     indicators = []
 
     # set noUpdate flag in createIndicators command True only when all the results from all the urls are True.
-    no_update = all([next(iter(iterator.values())).get('no_update', False) for iterator in iterators])
+    no_update = all(next(iter(iterator.values())).get('no_update', False) for iterator in iterators)
 
     for iterator in iterators:
         for url, lines in iterator.items():
             for line in lines.get('result', []):
                 attributes, value = get_indicator_fields(line, url, feed_tags, tlp_color, client)
                 if value:
-                    if 'lastseenbysource' in attributes.keys():
+                    if 'lastseenbysource' in attributes:
                         attributes['lastseenbysource'] = datestring_to_server_format(attributes['lastseenbysource'])
 
-                    if 'firstseenbysource' in attributes.keys():
+                    if 'firstseenbysource' in attributes:
                         attributes['firstseenbysource'] = datestring_to_server_format(attributes['firstseenbysource'])
                     indicator_type = determine_indicator_type(
                         client.feed_url_to_config.get(url, {}).get('indicator_type'), itype, auto_detect, value)
@@ -450,7 +457,7 @@ def fetch_indicators_command(client, feed_tags, tlp_color, itype, auto_detect, c
                             relationships_of_indicator = [relationships_lst.to_indicator()]
                             indicator_data['relationships'] = relationships_of_indicator
 
-                    if len(client.custom_fields_mapping.keys()) > 0 or TAGS in attributes.keys():
+                    if len(client.custom_fields_mapping.keys()) > 0 or TAGS in attributes:
                         custom_fields = client.custom_fields_creator(attributes)
                         indicator_data["fields"] = custom_fields
 

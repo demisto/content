@@ -18,3 +18,5 @@ ignore=BA124
 [file:RegexGroups.yml]
 ignore=BA124
 
+[file:ExtractEmailTransformer_6_10.yml]
+ignore=BA108,BA109

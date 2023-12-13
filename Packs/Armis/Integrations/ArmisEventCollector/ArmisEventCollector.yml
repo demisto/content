@@ -82,7 +82,7 @@ script:
       required: false
     - auto: PREDEFINED
       defaultValue: 'Alerts'
-      description: The type of event to fetch. 
+      description: The type of event to fetch.
       name: event_type
       predefined:
       - 'Alerts'
@@ -99,7 +99,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.80593
+  dockerimage: demisto/python3:3.10.13.82980
 marketplaces:
 - marketplacev2
 fromversion: 6.10.0

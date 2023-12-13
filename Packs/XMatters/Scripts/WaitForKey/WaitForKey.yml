@@ -10,7 +10,7 @@ enabled: true
 args:
 - name: context_key
   required: true
-  description: The context key to wait for
+  description: The context key to wait for.
 - name: iterations
   required: true
   default: true
@@ -18,7 +18,7 @@ args:
   defaultValue: "10"
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.13.83255
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:

@@ -76,31 +76,46 @@ def sg_fix(sg_info: list, port: int, protocol: str, assume_role: str, instance_t
     # Keep track of change in SG or not.
     change = False
     for rule in info['IpPermissions']:
-        # Check if 'FromPort' is in rule, else it is an "all traffic rule".
-        if rule.get('FromPort'):
-            # Don't recrete if it targets just the port of interest.
-            if rule['FromPort'] == port and port == rule['ToPort'] and rule['IpRanges'][0]['CidrIp'] == "0.0.0.0/0" and \
-               rule['IpProtocol'] == protocol:
-                change = True
-            elif rule['FromPort'] <= port and port <= rule['ToPort'] and rule['IpRanges'][0]['CidrIp'] == "0.0.0.0/0" and \
-                 rule['IpProtocol'] == protocol:  # noqa: E127
+        if rule.get('IpRanges') and len(rule.get('IpRanges')) > 0:
+            # Check if 'FromPort' is in rule, else it is an "all traffic rule".
+            if rule.get('FromPort'):
+                # Don't recreate if it targets just the port of interest.
+                if (
+                    rule['FromPort'] == port
+                    and port == rule['ToPort']
+                    and rule['IpRanges'][0]['CidrIp'] == "0.0.0.0/0"
+                    and rule['IpProtocol'] == protocol
+                ):
+                    change = True
+                elif (
+                    rule["FromPort"] == port and port == rule["ToPort"]
+                    and any(d["CidrIp"] == "0.0.0.0/0" for d in rule["IpRanges"])
+                    and rule["IpProtocol"] == protocol
+                ):
+                    # If condition to check for Quad 0 in the rules list for matching port.
+                    change = True
+                elif (
+                    rule['FromPort'] <= port and port <= rule['ToPort']
+                    and rule['IpRanges'][0]['CidrIp'] == "0.0.0.0/0"
+                    and rule['IpProtocol'] == protocol
+                ):  # noqa: E127
+                    fixed = split_rule(rule, port, protocol)
+                    for rule_fix in fixed:
+                        new_rule = (str([rule_fix])).replace("'", "\"")
+                        recreate_list.append(new_rule)
+                        change = True
+                else:
+                    new_rule = (str([rule])).replace("'", "\"")
+                    recreate_list.append(new_rule)
+            elif rule.get('IpRanges') and rule['IpRanges'][0].get('CidrIp') == "0.0.0.0/0":
                 fixed = split_rule(rule, port, protocol)
+                change = True
                 for rule_fix in fixed:
                     new_rule = (str([rule_fix])).replace("'", "\"")
                     recreate_list.append(new_rule)
-                    change = True
             else:
                 new_rule = (str([rule])).replace("'", "\"")
                 recreate_list.append(new_rule)
-        elif rule.get('IpRanges') and rule['IpRanges'][0].get('CidrIp') == "0.0.0.0/0":
-            fixed = split_rule(rule, port, protocol)
-            change = True
-            for rule_fix in fixed:
-                new_rule = (str([rule_fix])).replace("'", "\"")
-                recreate_list.append(new_rule)
-        else:
-            new_rule = (str([rule])).replace("'", "\"")
-            recreate_list.append(new_rule)
     if change is False:
         return {}
     else:
