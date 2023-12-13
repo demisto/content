@@ -223,7 +223,6 @@ class OktaClient(BaseClient):
 
         original_headers = kwargs.get('headers', {})
         kwargs['headers'] = {**auth_headers, **original_headers}
-        demisto.debug('kwargs: ' + str(kwargs))
         return super()._http_request(**kwargs)
 
 
