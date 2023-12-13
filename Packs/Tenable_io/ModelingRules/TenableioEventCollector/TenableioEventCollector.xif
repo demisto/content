@@ -1,4 +1,4 @@
-[MODEL: model=Endpoint, dataset=tenable_io_vulnerabilities_raw]
+[MODEL: model=Endpoint, dataset=tenable_io_raw]
 filter xsiam_type = "vulnerability"
 | alter XDM.Endpoint.Target.host.hostname=replace(json_extract(asset,"$.hostname"),"\"",""),
         XDM.Endpoint.Target.host.ipv4_addresses=arraycreate(replace(json_extract(asset,"$.ipv4"),"\"","")),
