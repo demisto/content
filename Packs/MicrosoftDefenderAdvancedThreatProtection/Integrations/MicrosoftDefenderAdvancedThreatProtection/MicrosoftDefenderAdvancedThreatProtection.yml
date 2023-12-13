@@ -123,7 +123,7 @@ configuration:
   section: Connect
   required: false
 - defaultvalue: New
-  display: 'Status to filter out alerts for fetching as incidents. Comma-separated lists are supported, e.g., New,Resolved.'
+  display: 'Status for fetching alerts as incidents. Comma-separated lists are supported, e.g., New,Resolved.'
   name: fetch_status
   options:
   - New
@@ -151,7 +151,7 @@ configuration:
   advanced: true
   required: false
 - defaultvalue: Informational,Low,Medium,High
-  display: 'Severity to filter out alerts for fetching as incidents. Comma-separated lists are supported, e.g., Medium,High.'
+  display: 'Severity for fetching alerts as incidents. Comma-separated lists are supported, e.g., Medium,High.'
   name: fetch_severity
   type: 16
   options:
@@ -5534,7 +5534,7 @@ script:
     execution: false
     name: microsoft-atp-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.80214
+  dockerimage: demisto/crypto:1.0.0.83343
   isfetch: true
   runonce: false
   script: '-'

@@ -7,6 +7,7 @@ from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 
 CONTENT_NIGHTLY_JOBS = [
+    'init',
     'run-unittests-and-lint: [native:dev,from-yml]',
     'run-unittests-and-lint: [native:ga,native:maintenance,native:candidate]',
     'run-validations',
@@ -25,7 +26,7 @@ CONTENT_NIGHTLY_JOBS = [
     'xsiam-test_playbooks_results',
     'xsiam-test_modeling_rule_results',
     'cloning-content-repo-last-upload-commit',
-    'init'
+    'xsoar-saas_test_e2e_results',
 ]
 
 SDK_NIGHTLY_JOBS = [
