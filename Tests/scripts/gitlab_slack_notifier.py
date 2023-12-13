@@ -24,7 +24,7 @@ from Tests.scripts.common import CONTENT_NIGHTLY, CONTENT_PR, WORKFLOW_TYPES, ge
     get_test_results_files, CONTENT_MERGE, UNIT_TESTS_WORKFLOW_SUBSTRINGS, TEST_PLAYBOOKS_REPORT_FILE_NAME, \
     replace_escape_characters
 from Tests.scripts.github_client import GithubPullRequest
-from Tests.scripts.common import get_pipelines_and_commits, is_pivot, shame
+from Tests.scripts.common import get_pipelines_and_commits, is_pivot, shame, get_github_pr_info, get_slack_user_name
 from Tests.scripts.test_modeling_rule_report import calculate_test_modeling_rule_results, \
     read_test_modeling_rule_to_jira_mapping, get_summary_for_test_modeling_rule, TEST_MODELING_RULES_TO_JIRA_TICKETS_CONVERTED
 from Tests.scripts.test_playbooks_report import read_test_playbook_to_jira_mapping, TEST_PLAYBOOKS_TO_JIRA_TICKETS_CONVERTED
@@ -531,8 +531,8 @@ def main():
         if pipeline_changed_status is not None:
             name, email, pr = shame(pivot_commit)
             if name == 'content-bot':
-                name = "israelpoli"
-            #if name == 
+                name = get_github_pr_info(pr)
+            name = get_slack_user_name(name)
             msg = "broke" if pipeline_changed_status else "fixed"  
             shame_message = (f"Hi @{name}, You {msg} the build.", f" That was done in this {slack_link(pr,'PR.')}")
 

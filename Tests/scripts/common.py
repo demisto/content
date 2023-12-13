@@ -1,9 +1,11 @@
+import json
 from pathlib import Path
 from typing import Any
 
 import pandas as pd
 from jira import Issue
 from junitparser import TestSuite, JUnitXml
+import requests
 from Tests.scripts.utils import logging_wrapper as logging
 import gitlab
 from datetime import datetime, timedelta
@@ -322,3 +324,37 @@ def is_pivot(single_pipeline_id, list_of_pipelines, commits):
         if previous_pipeline.status == 'failed' and current_pipeline.status == 'success':
             return False, pivot_commit
     return None, None
+
+
+def get_github_pr_info(pr_url):
+    # Extract the owner, repo, and pull request number from the URL
+    parts = pr_url.split('/')
+    repo_owner = parts[-4]
+    repo_name = parts[-3]
+    pr_number = parts[-1]
+
+    # Get reviewers
+    reviews_url = f'https://api.github.com/repos/{repo_owner}/{repo_name}/pulls/{pr_number}/reviews'
+    reviews_response = requests.get(reviews_url, verify=False)
+    reviews_data = reviews_response.json()
+
+    # Find the reviewer who provided approval
+    approved_reviewer = None
+    for review in reviews_data:
+        if review['state'] == 'APPROVED':
+            approved_reviewer = review['user']['login']
+            break
+
+    return approved_reviewer if approved_reviewer else None
+
+def load_json(file):
+    with open(file, 'r') as f:
+        return json.load(f)
+
+def get_slack_user_name(name):
+    if name == 'github-actions[bot]':
+        return 'Israel Polishuk'
+    else:
+        return load_json(
+            '/Users/yrosenberg/dev/demisto/content/.gitlab/ci/name_mapping.json'
+        ).get(name, name)
