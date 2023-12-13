@@ -305,8 +305,8 @@ def is_probe_connected(client: Client, machine: str) -> dict:
 
 
 def query_inbox_command(client: Client, args: dict):
-    startTime = args.get('startTime', 0)
-    endTime = args.get('endTime', 9007199254740991)
+    start_time = args.get('startTime', 0)
+    end_time = args.get('endTime', 9007199254740991)
     rangeTime = args.get('rangeTime', False)
     guid = args.get('guid', False)
 
