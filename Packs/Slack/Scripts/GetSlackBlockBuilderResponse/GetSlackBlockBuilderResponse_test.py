@@ -54,6 +54,32 @@ class TestGetSlackBlockBuilderResponseScript(unittest.TestCase):
         # Then: The return_error function is called with a specific error message
         mock_return_error.assert_called_once_with("The response is not a valid JSON format.")
 
+    @patch('GetSlackBlockBuilderResponse.demisto.executeCommand')
+    @patch('GetSlackBlockBuilderResponse.return_error')
+    def test_main_no_entries(self, mock_return_error, mock_execute_command):
+        # Given: No entries are returned from executeCommand
+        mock_execute_command.return_value = []
+
+        # When: The main function is called
+        GetSlackBlockBuilderResponse.main()
+
+        # Then: return_error is called with a specific message
+        mock_return_error.assert_called_once_with("No entries found.")
+
+    @patch('GetSlackBlockBuilderResponse.demisto.executeCommand')
+    @patch('GetSlackBlockBuilderResponse.get_slack_block_builder_entry')
+    @patch('GetSlackBlockBuilderResponse.parse_entry')
+    def test_main_valid_entry(self, mock_parse_entry, mock_get_entry, mock_execute_command):
+        # Given: A valid entry is returned from get_slack_block_builder_entry
+        mock_execute_command.return_value = [{"Contents": "some content"}]
+        mock_get_entry.return_value = {"Contents": "xsoar-button-submit: valid json"}
+
+        # When: The main function is called
+        GetSlackBlockBuilderResponse.main()
+
+        # Then: parse_entry is called with the valid entry
+        mock_parse_entry.assert_called_once_with({"Contents": "xsoar-button-submit: valid json"})
+
 
 if __name__ == '__main__':
     unittest.main()
