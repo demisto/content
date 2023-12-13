@@ -201,6 +201,7 @@ class OktaClient(BaseClient):
 
             self.get_token()
 
+        integration_context = get_integration_context()
         integration_context['initialized'] = True
         set_integration_context(integration_context)
 
