@@ -594,7 +594,5 @@ outputs:
 - contextPath: Panorama.Push.Details
   description: The job ID details.
 tests:
-- PAN-OS URL Filtering enrichment - Test
-- PAN-OS - Add Anti-Spyware Security Profile To Rule - Test
 - PAN-OS Create Or Edit Rule Test
 fromversion: 6.10.0
