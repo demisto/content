@@ -1807,27 +1807,5 @@ outputs:
   description: The domain object.
   type: unknown
 tests:
-- Containment Plan - Test
-- Calculate Severity - Generic v2 - Test
-- Endpoint Enrichment - Generic v2.1.6.8 - Test
-- Wait Until Datetime - Test
-- Calculate Severity - Standard - Test
-- Extract Indicators From File - Generic v2 - Test
-- URL Enrichment - Generic v2 - Test
-- File Enrichment - Generic v2 - Test
-- Domain Enrichment - Generic v2 - Test
-- Account Enrichment - Generic v2.1 - Test
-- Eradication plan - Test
-- IP Enrichment - Generic v2 - Test
-- Get endpoint details - Generic - test
-- Detonate URL - Generic Test
-- Email Address Enrichment - Generic v2.1 - Test
-- Enrichment for Verdict - Test
-- Generic Polling Test
-- Retrieve File from Endpoint - Generic V3 Test
-- Detonate File - No Files test
-- Detonate File - Generic Test
-- Endpoint Enrichment - Generic v2.1 - Test
-- Isolate and unisolate endpoint - test
-- Block IP - Generic V3_Test
+  - no tests
 fromversion: 6.0.0
