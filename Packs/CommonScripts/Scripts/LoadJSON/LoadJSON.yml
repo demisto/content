@@ -7,18 +7,18 @@ type: python
 subtype: python3
 tags:
 - Utility
-comment: Loads a json from string input, and returns a json object result
+comment: Loads a json from string input, and returns a json object result.
 enabled: true
 args:
 - name: input
   required: true
   default: true
-  description: Input string to transform to JSON object
+  description: Input string to transform to JSON object.
 outputs:
 - contextPath: JsonObject
-  description: The JSON object loaded from input
+  description: The JSON object loaded from input.
 scripttarget: 0
 tests:
 - JSONtoCSV-Test
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.13.83255
